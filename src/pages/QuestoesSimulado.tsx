@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Timer, Gavel, ChevronRight, Loader2 } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import QuestoesBottomNav from '@/components/questoes/QuestoesBottomNav';
 import ResolverPadrao from '@/components/questoes/ResolverPadrao';
 import { useQuestoesCargos, useQuestoesSessao, type Cargo } from '@/hooks/useQuestoes';

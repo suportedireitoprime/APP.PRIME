@@ -2,18 +2,18 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Info, Sparkles, Flame, BookOpenText } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { TEMAS, type BlogPost, type BlogTema } from '@/data/blogPosts';
-import BlogPostSheet from '@/components/vademecum/BlogPostSheet';
-import BlogHeroHeader from '@/components/vademecum/BlogHeroHeader';
+import BlogPostSheet from '@/components/vademecum/blog/BlogPostSheet';
+import BlogHeroHeader from '@/components/vademecum/blog/BlogHeroHeader';
 import { useBlogPostsCache } from '@/hooks/useBlogPostsCache';
 import { useFeatureLimit } from '@/hooks/useFeatureLimit';
 import PremiumGate from '@/components/PremiumGate';
-import BloggerBottomNav, { type BloggerTab } from '@/components/vademecum/BloggerBottomNav';
-import BiografiaCategoriasView from '@/components/vademecum/BiografiaCategoriasView';
-import BiografiaListView from '@/components/vademecum/BiografiaListView';
-import BiografiaArtigoView from '@/components/vademecum/BiografiaArtigoView';
-import BlogCategoriasView from '@/components/vademecum/BlogCategoriasView';
+import BloggerBottomNav, { type BloggerTab } from '@/components/vademecum/blog/BloggerBottomNav';
+import BiografiaCategoriasView from '@/components/vademecum/biografias/BiografiaCategoriasView';
+import BiografiaListView from '@/components/vademecum/biografias/BiografiaListView';
+import BiografiaArtigoView from '@/components/vademecum/biografias/BiografiaArtigoView';
+import BlogCategoriasView from '@/components/vademecum/blog/BlogCategoriasView';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { LoadingState, EmptyState } from '@/components/ui/states';
 import { KeepAlive } from '@/components/ui/KeepAlive';
@@ -24,7 +24,7 @@ import { blogThumb } from '@/lib/blogImg';
 // Novos hooks e componentes extraídos na refatoração
 import { useBlogTrending } from '@/hooks/useBlogTrending';
 import { useBlogPostsFilter } from '@/hooks/useBlogPostsFilter';
-import { BlogPostCard } from '@/components/vademecum/BlogPostCard';
+import { BlogPostCard } from '@/components/vademecum/blog/BlogPostCard';
 
 export type BlogFilter = 'trending' | 'todos' | BlogTema;
 

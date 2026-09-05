@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PageHeader } from "@/components/vademecum/PageHeader";
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useGoBack } from "@/hooks/useGoBack";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";

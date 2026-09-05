@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2, Target, Play, Check, ChevronRight, X, Route, List } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import {
   Drawer,
@@ -17,7 +17,7 @@ import type { ArtigoProgress, NivelDominio } from '@/lib/praticarProgress';
 import { formatarFaixaArtigos, montarBlocosDaLei } from '@/lib/praticarLeiEstrutura';
 import type { BlocoLei, ArtigoTrilha, LinhaLeiPraticar } from '@/lib/praticarLeiEstrutura';
 import TrilhaArtigos from '@/components/praticar/TrilhaArtigos';
-import { GeracaoAnimacaoOverlay } from '@/components/vademecum/GeracaoAnimacaoOverlay';
+import { GeracaoAnimacaoOverlay } from '@/components/vademecum/overlays/GeracaoAnimacaoOverlay';
 
 type Modo = 'trilha' | 'lista';
 

@@ -13,11 +13,11 @@ export function useHomeWarmup(imagesToPreload: string[], queryClient?: QueryClie
 
     const id = ric(() => {
       // 1. Prefetch Overlays and Heavy Components
-      import('@/components/vademecum/SearchOverlay').catch(() => {});
-      import('@/components/vademecum/AssistenteOverlayV2').catch(() => {});
+      import('@/components/vademecum/overlays/SearchOverlay').catch(() => {});
+      import('@/components/vademecum/overlays/AssistenteOverlayV2').catch(() => {});
       
       if (!isDesktop) {
-        import('@/components/vademecum/SideMenu').catch(() => {});
+        import('@/components/vademecum/navigation/SideMenu').catch(() => {});
         import('@/components/biblioteca/RecomendacoesCarousel').catch(() => {});
       }
 

@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { MessageCircle, Settings, Sparkles, MessagesSquare, Megaphone, Bell, BarChart3, Dumbbell, Trophy, ChevronRight, Radio } from 'lucide-react';
 import { HorusAdminTab } from '@/components/admin/horus/HorusAdminTab';
 import { HorusFuncoesTab } from '@/components/admin/horus/HorusFuncoesTab';

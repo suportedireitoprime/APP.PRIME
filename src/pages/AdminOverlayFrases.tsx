@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Loader2, Play, Trash2, Plus, Volume2 } from "lucide-react";
-import { PageHeader } from "@/components/vademecum/PageHeader";
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from '@/hooks/useGoBack';
 

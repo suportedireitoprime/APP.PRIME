@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search, NotebookText, ChevronRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
-import HeroMotifs from '../vademecum/HeroMotifs';
-import HeroCoverCarousel from '../vademecum/HeroCoverCarousel';
+import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
+import HeroCoverCarousel from '@/components/vademecum/home/HeroCoverCarousel';
 import { useHeroHomeImages } from '@/hooks/useHeroHomeImages';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 

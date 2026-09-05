@@ -61,6 +61,14 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
   const [readerMode, setReaderMode] = useState<null | 'pdf' | 'nativa' | 'online'>(null);
   const [lerDialog, setLerDialog] = useState(false);
 
+  // Cache do livro para não quebrar a animação de exit da AnimatePresence
+  const [cachedLivro, setCachedLivro] = useState<LivroNormalizado | null>(livro);
+  useEffect(() => {
+    if (livro) setCachedLivro(livro);
+  }, [livro]);
+  
+  const currentLivro = livro || cachedLivro;
+
   const [pdfCached, setPdfCached] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState<null | number>(null);
   const [pdfUrlForReader, setPdfUrlForReader] = useState<string | null>(null);
@@ -122,28 +130,25 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
   // Trava scroll do fundo enquanto a folha estiver aberta, exceto se for renderizado inline
   useBodyScrollLock(open && !inline);
 
-  // Reset síncrono do scroll no mount/troca de livro. O `key={livro.id}` no
-  // container abaixo força remount, então este effect roda com scrollTop já 0.
+  // Reset síncrono do scroll no mount/troca de livro.
   useLayoutEffect(() => {
-    if (!open || !livro) return;
+    if (!open || !currentLivro) return;
     const el = contentRef.current;
     if (el) el.scrollTop = 0;
-  }, [open, livro?.id]);
+  }, [open, currentLivro?.id]);
 
+  if (!currentLivro) return null;
 
-  if (!livro && !open) return null;
-  if (!livro) return null;
-
-  const hasOnline = !!livro.link;
-  const hasPdf = !!livro.download;
+  const hasOnline = !!currentLivro.link;
+  const hasPdf = !!currentLivro.download;
 
   const ensurePdfLocalUrl = async (): Promise<string> => {
-    if (!livro.download) return '';
+    if (!currentLivro.download) return '';
     if (Capacitor.isNativePlatform()) {
-      const local = await getLocalPdfUrl(livro.download);
+      const local = await getLocalPdfUrl(currentLivro.download);
       if (local) return local;
     }
-    return livro.download;
+    return currentLivro.download;
   };
 
   const handleDownloadPdf = async () => {
@@ -172,14 +177,14 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
     // Bloqueio de leitura: 1 livro por mês (bypass se este mesmo livro já foi liberado)
     if (!canUse) { setLerDialog(false); setGateOpen(true); return; }
     // Registra o uso antes de liberar qualquer modo (scope/ref = id do livro)
-    register(String(livro.id));
+    register(String(currentLivro.id));
 
     if (modo === 'download') { handleDownloadPdf(); return; }
     if (modo === 'desktop') {
       const url = typeof window !== 'undefined' ? window.location.href : '';
       try {
         if (podeCompartilhar()) {
-          await compartilharNativo({ title: livro.titulo, url });
+          await compartilharNativo({ title: currentLivro.titulo, url });
         } else if (navigator.clipboard && url) {
           await copiarTexto(url);
           toast.success('Link copiado', { description: 'Cole no navegador do desktop para continuar lendo.' });
@@ -194,7 +199,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
       const url = await ensurePdfLocalUrl();
       setPdfUrlForReader(url);
       setReaderMode('pdf');
-    } else if (modo === 'online' && livro.link) {
+    } else if (modo === 'online' && currentLivro.link) {
       setReaderMode('online');
     }
   };
@@ -255,7 +260,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
               <button
                 onClick={() => {
                   haptic.selection();
-                  const now = toggleFavorito(livro);
+                  const now = toggleFavorito(currentLivro);
                   setFav(now);
                   toast.success(now ? 'Adicionado aos favoritos' : 'Removido dos favoritos');
                 }}
@@ -267,7 +272,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
             </div>
 
             {/* Content scroll */}
-            <div key={String(livro.id)} ref={contentRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
+            <div key={String(currentLivro.id)} ref={contentRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
               {/* Backdrop horizontal — cover fills full landscape with palette-tinted gradient */}
               <div className="relative w-full h-[clamp(210px,28dvh,252px)] overflow-hidden bg-background">
                 {(capaHorizontalUrl || capaUrl) && (
@@ -304,7 +309,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
                   <div className="absolute left-1/2 -translate-x-1/2 bottom-3 z-10">
                     <img
                       src={capaUrl}
-                      alt={livro.titulo}
+                      alt={currentLivro.titulo}
                       loading="eager"
                       fetchPriority="high"
                       decoding="async"
@@ -319,15 +324,15 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
               <div className="px-5 pb-[calc(18px+var(--sai-bottom,0px))] space-y-4 max-w-2xl mx-auto pt-4">
                 <div className="text-center space-y-1.5">
                   <h2 className="font-display text-lg sm:text-xl font-bold text-foreground leading-tight break-words px-2">
-                    {livro.titulo}
+                    {currentLivro.titulo}
                   </h2>
-                  {livro.autor && (
-                    <p className="text-sm text-muted-foreground">{livro.autor}</p>
+                  {currentLivro.autor && (
+                    <p className="text-sm text-muted-foreground">{currentLivro.autor}</p>
                   )}
-                  {livro.area && (
+                  {currentLivro.area && (
                     <div className="flex items-center justify-center gap-2 pt-1">
                       <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-medium uppercase tracking-wider">
-                        {livro.area}
+                        {currentLivro.area}
                       </span>
                     </div>
                   )}
@@ -347,13 +352,13 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
                     Ler agora
                   </Button>
 
-                  {livro.audioResumoUrl && (
+                  {currentLivro.audioResumoUrl && (
                     <Button
                       variant="secondary"
                       className="w-full h-14 text-lg font-semibold gap-2.5 rounded-2xl shadow-sm mt-3 bg-secondary/80 hover:bg-secondary text-foreground border border-white/5"
                       onClick={() => {
                         haptic.selection();
-                        tocarResumo(livro);
+                        tocarResumo(currentLivro);
                         abrirPlayerResumo(true);
                       }}
                     >
@@ -365,24 +370,24 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
 
 
                 {/* Ficha técnica rápida — páginas, tempo médio, ano */}
-                {(numPages || minutosLeitura || livro.anoLancamento) && (
+                {(numPages || minutosLeitura || currentLivro.anoLancamento) && (
                   <div className="grid grid-cols-3 gap-2">
                     <FichaItem
                       icon={Layers}
                       label="Páginas"
                       value={numPages ? String(numPages) : '—'}
-                      loading={!numPages && !!livro.download}
+                      loading={!numPages && !!currentLivro.download}
                     />
                     <FichaItem
                       icon={Clock}
                       label="Leitura média"
                       value={formatarDuracao(minutosLeitura)}
-                      loading={!minutosLeitura && !!livro.download}
+                      loading={!minutosLeitura && !!currentLivro.download}
                     />
                     <FichaItem
                       icon={Calendar}
                       label="Publicado"
-                      value={livro.anoLancamento || '—'}
+                      value={currentLivro.anoLancamento || '—'}
                     />
                   </div>
                 )}
@@ -426,24 +431,24 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
                         Análise técnica ainda não disponível para este livro.
                       </p>
                     )}
-                    {(livro.anoLancamento || livro.editora) && (
+                    {(currentLivro.anoLancamento || currentLivro.editora) && (
                       <div className="grid grid-cols-2 gap-3">
-                        {livro.anoLancamento && (
-                          <InfoBlock label="Ano" value={livro.anoLancamento} />
+                        {currentLivro.anoLancamento && (
+                          <InfoBlock label="Ano" value={currentLivro.anoLancamento} />
                         )}
-                        {livro.editora && (
-                          <InfoBlock label="Editora" value={livro.editora} />
+                        {currentLivro.editora && (
+                          <InfoBlock label="Editora" value={currentLivro.editora} />
                         )}
                       </div>
                     )}
 
-                    {livro.curiosidades && livro.curiosidades.length > 0 && (
+                    {currentLivro.curiosidades && currentLivro.curiosidades.length > 0 && (
                       <div className="space-y-2">
                         <h4 className="text-xs font-display font-semibold uppercase tracking-widest text-primary/80">
                           Curiosidades
                         </h4>
                         <ul className="space-y-2">
-                          {livro.curiosidades.map((c, i) => (
+                          {currentLivro.curiosidades.map((c, i) => (
                             <li
                               key={i}
                               className="text-[15px] text-foreground/85 leading-relaxed pl-4 relative before:content-['•'] before:absolute before:left-0 before:text-primary before:font-bold"
@@ -492,47 +497,50 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
       />
 
       {/* Leitores em fullscreen */}
-      {readerMode === 'pdf' && (pdfUrlForReader || livro.download) && (
-        <ErrorBoundary>
-          <Suspense fallback={<div className="flex h-full items-center justify-center p-8 text-zinc-400">Carregando leitor...</div>}>
-            {isDesktop ? (
-              <PdfPaginatedReader
-                url={pdfUrlForReader || livro.download!}
-                titulo={livro.titulo}
-                livroId={String(livro.id)}
-                capaUrl={capaUrl}
-                onClose={() => { setReaderMode(null); setPdfUrlForReader(null); }}
-              />
-            ) : (
-              <PdfScrollReader
-                url={pdfUrlForReader || livro.download!}
-                titulo={livro.titulo}
-                livroId={String(livro.id)}
-                capaUrl={capaUrl}
-                onClose={() => { setReaderMode(null); setPdfUrlForReader(null); }}
-              />
-            )}
-          </Suspense>
-        </ErrorBoundary>
-      )}
-      {readerMode === 'nativa' && livro.download && (
-        <LeitorNativo
-          livroId={String(livro.id)}
-          livroTabela={livro.colecaoId}
-          pdfUrl={livro.download}
-          titulo={livro.titulo}
-          autor={livro.autor}
-          ano={livro.anoLancamento}
-          editora={livro.editora}
-          sobre={livro.sobre}
-          curiosidades={livro.curiosidades}
-          capa={livro.capa}
-          onClose={() => setReaderMode(null)}
-        />
-      )}
-      {readerMode === 'online' && livro.link && (
-        <InAppWebView url={livro.link} titulo={livro.titulo} onClose={() => setReaderMode(null)} />
-      )}
+      <AnimatePresence>
+        {readerMode === 'pdf' && (pdfUrlForReader || currentLivro.download) && (
+          <ErrorBoundary key="pdf-reader">
+            <Suspense fallback={<div className="flex h-full items-center justify-center p-8 text-zinc-400">Carregando leitor...</div>}>
+              {isDesktop ? (
+                <PdfPaginatedReader
+                  url={pdfUrlForReader || currentLivro.download!}
+                  titulo={currentLivro.titulo}
+                  livroId={String(currentLivro.id)}
+                  capaUrl={capaUrl}
+                  onClose={() => { setReaderMode(null); setPdfUrlForReader(null); }}
+                />
+              ) : (
+                <PdfScrollReader
+                  url={pdfUrlForReader || currentLivro.download!}
+                  titulo={currentLivro.titulo}
+                  livroId={String(currentLivro.id)}
+                  capaUrl={capaUrl}
+                  onClose={() => { setReaderMode(null); setPdfUrlForReader(null); }}
+                />
+              )}
+            </Suspense>
+          </ErrorBoundary>
+        )}
+        {readerMode === 'nativa' && currentLivro.download && (
+          <LeitorNativo
+            key="nativa-reader"
+            livroId={String(currentLivro.id)}
+            livroTabela={currentLivro.colecaoId}
+            pdfUrl={currentLivro.download}
+            titulo={currentLivro.titulo}
+            autor={currentLivro.autor}
+            ano={currentLivro.anoLancamento}
+            editora={currentLivro.editora}
+            sobre={currentLivro.sobre}
+            curiosidades={currentLivro.curiosidades}
+            capa={currentLivro.capa}
+            onClose={() => setReaderMode(null)}
+          />
+        )}
+        {readerMode === 'online' && currentLivro.link && (
+          <InAppWebView key="online-reader" url={currentLivro.link} titulo={currentLivro.titulo} onClose={() => setReaderMode(null)} />
+        )}
+      </AnimatePresence>
 
       <PremiumGate
         open={gateOpen}
@@ -546,9 +554,9 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
       <LembreteSheet
         open={lembreteOpen}
         onClose={() => setLembreteOpen(false)}
-        livroId={String(livro.id)}
-        livroArea={livro.colecaoId}
-        livroTitulo={livro.titulo}
+        livroId={String(currentLivro.id)}
+        livroArea={currentLivro.colecaoId}
+        livroTitulo={currentLivro.titulo}
         livroCapa={capaUrl}
       />
     </>

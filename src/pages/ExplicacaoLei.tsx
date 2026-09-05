@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Play, Square, Loader2, CheckCircle2, AlertCircle, Check } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';

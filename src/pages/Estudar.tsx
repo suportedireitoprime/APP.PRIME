@@ -1,6 +1,6 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, GraduationCap, Layers, Target, ChevronRight, Search, Loader2, BarChart3, Network, BookOpen, ClipboardList, Film } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { motion } from 'framer-motion';
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';

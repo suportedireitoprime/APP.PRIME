@@ -5,7 +5,7 @@ import {
   ChevronRight, FileText, BookOpen, Globe, Eye, RefreshCcw, ChevronDown, Check,
   ThumbsUp, ThumbsDown, ListChecks, AlertCircle, Play,
 } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';

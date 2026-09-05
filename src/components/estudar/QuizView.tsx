@@ -2,10 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, XCircle, Loader2, RotateCw, Target, Trophy, BarChart3, Lightbulb } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
-import GeracaoAnimacaoOverlay from '@/components/vademecum/GeracaoAnimacaoOverlay';
+import GeracaoAnimacaoOverlay from '@/components/vademecum/overlays/GeracaoAnimacaoOverlay';
 
 interface QuestionMC {
   tipo: string;

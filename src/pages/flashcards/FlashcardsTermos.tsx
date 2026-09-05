@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Quote, Library, GraduationCap } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { FlashcardsTermosFiltro, TermoTipo } from '@/components/flashcards/FlashcardsTermosFiltro';

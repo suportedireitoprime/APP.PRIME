@@ -10,7 +10,8 @@ import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { isAdminEmail } from '@/lib/adminEmails';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import ShapeGrid from '@/components/ui/ShapeGrid';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import AprenderBottomNav from '@/components/aprender/AprenderBottomNav';
 import AprenderLembretesSheet from '@/components/aprender/AprenderLembretesSheet';
 import ContinueCarousel from '@/components/aprender/ContinueCarousel';
@@ -269,7 +270,10 @@ const Aprender = () => {
       mobileHeader={mobileHeader}
       wide
     >
-      <div className={cn("w-full 2xl:max-w-[1750px] mx-auto px-3 sm:px-6 lg:px-8 lg:pt-4 pb-[calc(7rem+var(--sai-bottom))]", !isAdmin && "relative h-[100dvh] sm:h-auto overflow-hidden")}>
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
+        <ShapeGrid />
+      </div>
+      <div className={cn("relative z-10 w-full 2xl:max-w-[1750px] mx-auto px-3 sm:px-6 lg:px-8 lg:pt-4 pb-[calc(7rem+var(--sai-bottom))]", !isAdmin && "relative h-[100dvh] sm:h-auto overflow-hidden")}>
         <div className="lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
           {/* ── Sidebar Esquerda Desktop: Filtros & Lembretes de Estudo ───────────── */}
           <aside className="hidden lg:block lg:col-span-3 space-y-4 bg-card/40 border border-border/60 rounded-2xl p-4 shadow-sm">
@@ -326,11 +330,11 @@ const Aprender = () => {
           <div className="lg:col-span-6 space-y-5">
             {/* Hero amarelo full-bleed */}
             <section
-              className="bg-hero-yellow relative isolate overflow-hidden -mx-3 sm:mx-0 rounded-none sm:rounded-2xl border-b border-black/10 sm:border-x sm:border-t shadow-lg"
+              className="bg-black/40 backdrop-blur-md relative isolate overflow-hidden -mx-3 sm:mx-0 rounded-none sm:rounded-2xl border-b border-black/10 sm:border border-white/10 shadow-xl"
               aria-label="Seu progresso em trilhas"
             >
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.25),transparent_60%)]" />
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.18),transparent_65%)]" />
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.15),transparent_60%)]" />
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.4),transparent_65%)]" />
 
               <div
                 className="pointer-events-none absolute inset-y-0 right-0 w-[42%] sm:w-[34%] overflow-hidden"
@@ -347,14 +351,15 @@ const Aprender = () => {
                     style={{ opacity: i === heroIdx ? 1 : 0 }}
                   />
                 ))}
+                {/* Subtle glow behind the illustration */}
                 <div
-                  className="absolute inset-0 opacity-40"
+                  className="absolute inset-0 opacity-60 mix-blend-overlay"
                   style={{
-                    background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-light)) 100%)',
-                    mixBlendMode: 'multiply',
+                    background: 'linear-gradient(135deg, hsl(var(--primary)/0.6) 0%, transparent 100%)',
                   }}
                 />
-                <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-background via-background/60 to-transparent" />
+                {/* Fade left edge to blend with background */}
+                <div className="absolute inset-y-0 left-0 w-2/3 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
               </div>
 
               <div className="relative p-4 sm:p-5">
@@ -439,7 +444,7 @@ const Aprender = () => {
               <div className="flex items-center justify-between gap-2">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Matérias ({areasOrdenadas.length})</p>
                 {emAndamentoCount > 0 && (
-                  <div className="flex items-center gap-1 rounded-full bg-muted p-0.5 lg:hidden">
+                  <div className="flex items-center gap-1 rounded-full bg-black/40 backdrop-blur-md border border-white/10 p-0.5 lg:hidden shadow-sm">
                     {(['todas', 'andamento'] as const).map((f) => (
                       <button
                         key={f}
@@ -447,8 +452,8 @@ const Aprender = () => {
                         className={[
                           'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors',
                           filtro === f
-                            ? 'bg-[hsl(var(--aprender-accent))] text-[hsl(var(--aprender-accent-foreground))]'
-                            : 'text-muted-foreground hover:text-foreground',
+                            ? 'bg-primary text-primary-foreground shadow-md'
+                            : 'text-white/60 hover:text-white',
                         ].join(' ')}
                       >
                         {f === 'todas' ? 'Todas' : `Andamento (${emAndamentoCount})`}

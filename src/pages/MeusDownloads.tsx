@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Download, Trash2, HardDrive, Music, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Button } from '@/components/ui/button';
 import { useGoBack } from '@/hooks/useGoBack';
 import {

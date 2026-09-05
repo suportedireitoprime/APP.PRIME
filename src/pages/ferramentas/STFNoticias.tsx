@@ -5,8 +5,8 @@ import { Clock, Info, Calendar, Newspaper, Scale } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import { ptBR } from 'date-fns/locale';
-import NoticiaViewerSheet from '@/components/vademecum/NoticiaViewerSheet';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import NoticiaViewerSheet from '@/components/vademecum/blog/NoticiaViewerSheet';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { newsImg } from '@/lib/cdnImg';
 import { useGoBack } from '@/hooks/useGoBack';
 

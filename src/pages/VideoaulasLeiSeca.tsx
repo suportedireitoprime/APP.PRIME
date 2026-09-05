@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Book, Scale, Users, HeartHandshake, Briefcase, Calculator, Vote, Car, TreePine, Radio, ShieldAlert } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 

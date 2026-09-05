@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { speakNative } from '@/lib/nativeTts';
 import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { Mic, Loader2, Play, Pause, CheckCircle2 } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';

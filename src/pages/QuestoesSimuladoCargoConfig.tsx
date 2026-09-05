@@ -18,7 +18,7 @@ import {
   HelpCircle,
   Info
 } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import ResolverPadrao from '@/components/questoes/ResolverPadrao';
 import { useQuestoesCargos, useQuestoesSessao, useQuestoesAreas, type Cargo } from '@/hooks/useQuestoes';

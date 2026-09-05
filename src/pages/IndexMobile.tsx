@@ -13,18 +13,18 @@ import camaraHeroAsset from '@/assets/radar/camara-hero.webp';
 const camaraHero = camaraHeroAsset;
 import senadoHeroAsset from '@/assets/radar/senado-hero.webp';
 const senadoHero = senadoHeroAsset;
-import BottomNav from '@/components/vademecum/BottomNav';
+import BottomNav from '@/components/vademecum/navigation/BottomNav';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { leiPath, tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 // Heavy overlays are only rendered when opened — lazy-load their chunks so
 // the initial mobile bundle stays lean and the home paints faster.
-const SideMenu = lazyWithRetry(() => import('@/components/vademecum/SideMenu'));
-const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/SearchOverlay'));
-const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/AssistenteOverlayV2'));
-import HomeHeaderHero from '@/components/vademecum/HomeHeaderHero';
-import FeatureDiscoveryCard from '@/components/vademecum/FeatureDiscoveryCard';
-import MobileHomeSections from '@/components/vademecum/MobileHomeSections';
+const SideMenu = lazyWithRetry(() => import('@/components/vademecum/navigation/SideMenu'));
+const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/SearchOverlay'));
+const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/AssistenteOverlayV2'));
+import HomeHeaderHero from '@/components/vademecum/home/HomeHeaderHero';
+import FeatureDiscoveryCard from '@/components/vademecum/ui_elements/FeatureDiscoveryCard';
+import MobileHomeSections from '@/components/vademecum/home/MobileHomeSections';
 import { useHomeWarmup } from '@/hooks/useHomeWarmup';
 import { pushRecente } from '@/lib/leisRecentes';
 import { warmCoverCache } from '@/lib/coverLoader';
@@ -33,7 +33,7 @@ import { track } from '@/lib/analyticsEvents';
 import { useHideSplashScreen } from '@/hooks/useHideSplashScreen';
 
 import { useProfileSummary } from '@/hooks/useProfileSummary';
-import { useUnreadNotifCount } from '@/components/vademecum/NotificationsSheet';
+import { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
 
 const HERO_CONFIG = { radar: camaraHero, legislacao: heroImage, noticias: senadoHero } as const;
 

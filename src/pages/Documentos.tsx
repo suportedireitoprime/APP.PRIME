@@ -1,6 +1,6 @@
 import React, { useState, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { motion } from 'framer-motion';
 import { Scale, FileSignature, FileText, Briefcase, BookOpen, Landmark, FolderOpen, Loader2, Search } from 'lucide-react';
 import { DocumentCard } from '@/components/documentos/DocumentCard';

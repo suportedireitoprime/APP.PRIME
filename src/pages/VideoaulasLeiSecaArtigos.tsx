@@ -2,7 +2,7 @@ import { useState, useMemo, Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronRight, PlayCircle, Search } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { fetchArtigosPaginado } from '@/services/legislacaoService';
 import type { ArtigoLei } from '@/data/mockData';
@@ -10,8 +10,8 @@ import { lazyWithRetry } from '@/utils/lazyWithRetry';
 import { haptic } from '@/lib/nativeHaptics';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const VideoaulaSheet = lazyWithRetry(() => import('@/components/vademecum/VideoaulaSheet'));
-const VideoaulasListSheet = lazyWithRetry(() => import('@/components/vademecum/VideoaulasListSheet'));
+const VideoaulaSheet = lazyWithRetry(() => import('@/components/vademecum/sheets/VideoaulaSheet'));
+const VideoaulasListSheet = lazyWithRetry(() => import('@/components/vademecum/sheets/VideoaulasListSheet'));
 
 const VideoaulasLeiSecaArtigos = () => {
   const { leiId } = useParams();

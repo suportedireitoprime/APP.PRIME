@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom';
 import { useIsDesktop } from '@/hooks/use-desktop';
-import DesktopTopHeader from '@/components/vademecum/DesktopTopHeader';
+import DesktopTopHeader from '@/components/vademecum/desktop/DesktopTopHeader';
 
 // Rotas onde NÃO queremos o cabeçalho amarelo global:
 // - Index (`/`) já renderiza o próprio DesktopTopHeader

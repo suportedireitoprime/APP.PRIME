@@ -673,8 +673,8 @@ const Auth = () => {
     const id = ric(() => {
       import('@/pages/Index').catch(() => {});
       import('@/pages/IndexMobile').catch(() => {});
-      import('@/components/vademecum/HomeHeaderHero').catch(() => {});
-      import('@/components/vademecum/MobileHomeSections').catch(() => {});
+      import('@/components/vademecum/home/HomeHeaderHero').catch(() => {});
+      import('@/components/vademecum/home/MobileHomeSections').catch(() => {});
     });
     
     return () => {

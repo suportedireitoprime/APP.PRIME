@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Play, MessageCircle, UserPlus, Sparkles, Database, Activity } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import HorusOnboardingOverlay from '@/components/horus/onboarding/HorusOnboardingOverlay';
 import CadastroOnboardingOverlay from '@/components/onboarding/CadastroOnboardingOverlay';

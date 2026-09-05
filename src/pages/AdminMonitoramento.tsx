@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, Activity, Users, Cpu } from "lucide-react";
-import { PageHeader } from "@/components/vademecum/PageHeader";
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 
 type Item = { id: string; label: string; desc: string; icon: any; route: string };
 

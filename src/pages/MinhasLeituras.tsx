@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { BookOpen, Clock, Play, Timer } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
 import { useGoBack } from '@/hooks/useGoBack';
 import { subscribeTracking, type LivroSnapshot } from '@/lib/bibliotecaTracking';

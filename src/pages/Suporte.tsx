@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useGoBack } from '@/hooks/useGoBack';
 import { InicioTab } from '@/components/suporte/InicioTab';
 import { ConversasTab } from '@/components/suporte/ConversasTab';

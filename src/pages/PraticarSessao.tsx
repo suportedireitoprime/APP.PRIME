@@ -2,7 +2,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { PageHeader } from "@/components/vademecum/PageHeader";
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import DesktopPageLayout from "@/components/layout/DesktopPageLayout";
 import SessaoRunner from "@/components/praticar/SessaoRunner";
 import { Artigo, shuffle } from "@/components/praticar/desafios/utils";

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, FileText, Heart, Loader2, Search, ChevronRight, NotebookText, BookOpen, Mic, X, Brain } from "lucide-react";
-import { PageHeader } from "@/components/vademecum/PageHeader";
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Input } from "@/components/ui/input";
 import ResumoJuridicoReaderSheet, { ResumoRow } from "@/components/resumos-juridicos/ResumoJuridicoReaderSheet";
 import { resumosLocal } from "@/lib/resumosLocal";

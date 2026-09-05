@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Search, ArrowLeft, ChevronRight, Mic, MicOff, Bookmark } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
@@ -28,8 +28,8 @@ import { useLivroBadges, type LivroBadgeInfo } from '@/hooks/useLivroBadges';
 import { getRecentes, subscribeTracking, type LivroSnapshot } from '@/lib/bibliotecaTracking';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { useIsDesktop } from '@/hooks/use-desktop';
-import DesktopSidebar from '@/components/vademecum/DesktopSidebar';
-import DesktopBreadcrumb from '@/components/vademecum/DesktopBreadcrumb';
+import DesktopSidebar from '@/components/vademecum/desktop/DesktopSidebar';
+import DesktopBreadcrumb from '@/components/vademecum/desktop/DesktopBreadcrumb';
 
 const norm = (s: string) =>
   (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');

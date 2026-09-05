@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BellOff, Loader2, Plus } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import LembretesBottomNav from '@/components/lembretes/LembretesBottomNav';
 import LembreteCard from '@/components/lembretes/LembreteCard';
 import NovoLembreteSheet from '@/components/lembretes/NovoLembreteSheet';

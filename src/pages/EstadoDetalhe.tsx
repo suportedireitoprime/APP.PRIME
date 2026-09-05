@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { ExternalLink, BookOpen, FileText, ScrollText, Landmark, ChevronRight, ChevronDown, Search, Loader2 } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ESTADOS } from './LegislacaoEstadual';
 import { useState, useEffect } from 'react';

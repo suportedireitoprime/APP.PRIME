@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, LayoutGrid, Play, Video, ShieldAlert, Scale, GraduationCap, BookOpen, Briefcase } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import ThumbImg from '@/components/videoaulas/ThumbImg';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
 import { CATALOGOS } from '@/lib/videoaulasCatalogos';

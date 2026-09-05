@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Medal, Trophy } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import DesafiosBottomNav from '@/components/questoes/DesafiosBottomNav';
 import { NIVEL_LABEL } from '@/components/questoes/DesafioLinha';
 import { useDesafios } from '@/hooks/useQuestoesExtras';

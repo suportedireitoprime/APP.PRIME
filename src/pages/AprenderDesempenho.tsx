@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Flame, TrendingUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { DominioRing } from '@/components/aprender/DominioRing';
 import AprenderBottomNav from '@/components/aprender/AprenderBottomNav';
 

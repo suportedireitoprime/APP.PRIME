@@ -1,0 +1,487 @@
+import { useState, useEffect, memo } from 'react';
+import {pickAsset, srcOf } from '@/lib/assetUrl';
+import { Scale, BookOpen, FileText, Newspaper, Landmark, Shield, ScrollText, Gavel, Settings, PanelLeftClose, Radar, RefreshCw, Bell, Info, LogOut, BookMarked, HeartPulse, Lock, User as UserIcon, Clapperboard, Mail, Wrench, FileSignature, BookOpenText, Mic, CloudDownload, BellRing, CreditCard, LifeBuoy, MessageSquare, MicVocal, CalendarDays, Library, HardDrive, Route as RouteIcon, FileUp, Heart } from 'lucide-react';
+import { abrirAtalhoBiblioteca } from '@/components/biblioteca/BibliotecaBottomNav';
+import { tipoToSlug } from '@/lib/legislacaoSlugs';
+import { getLeisPorTipo } from '@/data/leisCatalog';
+import { COLECOES } from '@/lib/bibliotecaColecoes';
+import SuporteSheet from '@/components/vademecum/sheets/SuporteSheet';
+import DesktopCategoriaSheet from '@/components/vademecum/desktop/DesktopCategoriaSheet';
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
+const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { isAdminEmail } from '@/lib/adminEmails';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+
+type Tab = 'legislacao' | 'noticias' | 'ferramentas';
+
+interface DesktopSidebarProps {
+  activeTab: Tab;
+  onTabChange: (tab: Tab) => void;
+}
+
+const CATEGORIAS = [
+  { id: 'constituicao', tipo: 'constituicao', label: 'Constituição', icon: Landmark, color: '#FFD400' },
+  { id: 'codigo', tipo: 'codigo', label: 'Códigos', icon: BookOpen, color: '#3B82F6' },
+  { id: 'estatuto', tipo: 'estatuto', label: 'Estatutos', icon: Shield, color: '#F43F5E' },
+  { id: 'lei-ordinaria', tipo: 'lei-ordinaria', label: 'Leis Ordinárias', icon: FileText, color: '#DC2626' },
+  { id: 'decreto', tipo: 'decreto', label: 'Decretos', icon: ScrollText, color: '#F97316' },
+  { id: 'sumula', tipo: 'sumula', label: 'Súmulas', icon: Gavel, color: 'hsl(348 78% 38%)' },
+  { id: 'lei-especial', tipo: 'lei-especial', label: 'Leis Especiais', icon: BookMarked, color: '#A855F7' },
+  { id: 'previdenciario', tipo: 'previdenciario', label: 'Previdenciário', icon: HeartPulse, color: '#14B8A6' },
+];
+
+
+const CONTEUDO_ITEMS = [
+  { id: 'explicacao', label: 'Artigos e Análises', icon: FileText, color: '#6366F1' },
+  { id: 'atualizacao', label: 'Notícias Jurídicas', icon: Newspaper, route: '/noticias', color: '#EC4899' },
+  { id: 'boletins', label: 'Boletins Jurídicos', icon: MicVocal, route: '/boletins', color: 'hsl(348 78% 38%)' },
+  { id: 'newsletter', label: 'Newsletter', icon: Mail, route: '/newsletter', color: '#F97316' },
+  { id: 'blog', label: 'Blog', icon: BookOpen, route: '/blog', color: '#0EA5E9' },
+  { id: 'novidades', label: 'Novidades', icon: Bell, route: '/novidades', color: '#8B5CF6' },
+];
+
+const FERRAMENTAS_ITEMS = [
+  { id: 'ferramentas', label: 'Todas as Ferramentas', icon: Wrench, route: '/ferramentas', color: '#DC2626' },
+  { id: 'dicionario', label: 'Dicionário Jurídico', icon: BookOpenText, route: '/ferramentas/dicionario', color: '#3B82F6' },
+  { id: 'gravar', label: 'Gravar aula', icon: Mic, route: '/anotacoes/audio', color: '#F43F5E' },
+  { id: 'offline', label: 'Modo Offline', icon: CloudDownload, route: '/modo-offline', color: '#64748B' },
+];
+
+const CONTA_ITEMS = [
+  { id: 'assinatura', label: 'Assinatura', icon: CreditCard, route: '/assinatura', color: '#10B981' },
+  { id: 'suporte', label: 'Suporte', icon: LifeBuoy, route: '/suporte', color: '#EC4899' },
+  { id: 'opiniao', label: 'Opinião', icon: MessageSquare, route: '/opiniao', color: '#0891B2' },
+];
+
+const CONFIG_ITEMS = [
+  { id: 'perfil', label: 'Perfil', icon: Settings, route: '/perfil', color: '#64748B' },
+  { id: 'sobre', label: 'Sobre o App', icon: Info, route: '/sobre', color: '#06B6D4' },
+  { id: 'sair', label: 'Sair', icon: LogOut, color: 'hsl(348 78% 38%)' },
+];
+
+
+const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) => {
+  const navigate = useNavigate();
+  const { signOut, user } = useAuth();
+  const isAdmin = isAdminEmail(user?.email);
+  const [collapsed, setCollapsed] = useState(false);
+  const [suporteOpen, setSuporteOpen] = useState(false);
+  const [catSheet, setCatSheet] = useState<{ tipo: string; label: string; color?: string } | null>(null);
+  const [profile, setProfile] = useState<{ display_name?: string; perfil_tipos?: string[] } | null>(null);
+  const [avatarBroken, setAvatarBroken] = useState(false);
+  const [logoutPrompt, setLogoutPrompt] = useState(false);
+
+  const rawAvatarUrl =
+    ((user?.user_metadata as any)?.avatar_url as string | undefined) ||
+    ((user?.user_metadata as any)?.picture as string | undefined) ||
+    undefined;
+  const avatarUrl = avatarBroken ? undefined : rawAvatarUrl;
+  useEffect(() => { setAvatarBroken(false); }, [rawAvatarUrl]);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('profiles')
+      .select('display_name, perfil_tipos')
+      .eq('id', user.id)
+      .maybeSingle()
+      .then(({ data }) => data && setProfile(data as any));
+  }, [user]);
+
+  const handleItemClick = async (item: { id: string; route?: string }) => {
+    console.log('[DesktopSidebar] click', item.id, '� ', item.route ?? '(sem rota)');
+    if (item.id === 'sair') {
+      setLogoutPrompt(true);
+      return;
+    }
+    if (item.id === 'explicacao') {
+      navigate('/pessoal/artigos');
+      return;
+    }
+    if (item.route) navigate(item.route);
+    else console.warn('[DesktopSidebar] item sem rota nem handler:', item.id);
+  };
+
+  const displayName = profile?.display_name || user?.email?.split('@')[0] || 'Visitante';
+  const initial = displayName.charAt(0).toUpperCase();
+  const profissao = (profile?.perfil_tipos && profile.perfil_tipos[0]) || 'Vade Mecum Profissional';
+
+  const renderSection = (
+    title: string,
+    items: ReadonlyArray<{ id: string; label: string; icon: any; route?: string; color?: string; disabled?: boolean }>,
+  ) => (
+    <div className="py-1 border-t border-border/50">
+      {!collapsed && (
+        <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
+          {title}
+        </p>
+      )}
+      {items.map(item => {
+        const Icon = item.icon;
+        const isDisabled = (item as any).disabled;
+        const color = (item as any).color || '#DC2626';
+        return (
+          <button
+            key={item.id}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (!isDisabled) handleItemClick(item);
+            }}
+            disabled={isDisabled}
+            title={collapsed ? item.label : undefined}
+            className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body transition-colors ${
+              isDisabled
+                ? 'text-muted-foreground/40 cursor-not-allowed'
+                : 'text-foreground/75 hover:bg-secondary hover:text-foreground'
+            }`}
+          >
+            <div
+              className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm"
+              style={isDisabled ? {} : { backgroundColor: `${color}33`, boxShadow: `0 2px 6px -2px ${color}55` }}
+            >
+              <span className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: isDisabled ? undefined : color }} />
+              <Icon
+                className="w-[16px] h-[16px] drop-shadow-sm"
+                style={isDisabled ? {} : { color, filter: 'saturate(1.4) brightness(1.15)' }}
+              />
+            </div>
+            {!collapsed && <span>{item.label}</span>}
+          </button>
+        );
+      })}
+    </div>
+  );
+
+  return (
+    <>
+    <aside className={`${collapsed ? 'w-[68px]' : 'w-[268px]'} shrink-0 sticky top-0 min-h-dvh bg-card border-r border-border flex flex-col`} style={{ transitionProperty: 'width', transitionDuration: '320ms', transitionTimingFunction: 'cubic-bezier(0.22, 0.61, 0.36, 1)' }}>
+      {/* Header � user profile */}
+      <div className="p-3 border-b border-border">
+        {collapsed ? (
+          <button
+            onClick={() => setCollapsed(false)}
+            className="w-11 h-11 rounded-2xl overflow-hidden bg-primary/15 flex items-center justify-center border-2 border-primary/40 mx-auto"
+            title="Expandir menu"
+            aria-label="Expandir menu lateral"
+            aria-expanded={false}
+          >
+            {avatarUrl ? (
+              <img src={avatarUrl} alt={displayName} onError={() => setAvatarBroken(true)} className="w-full h-full object-cover" />
+            ) : (
+              <span className="font-display text-lg font-bold text-primary">{initial}</span>
+            )}
+          </button>
+        ) : (
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl overflow-hidden bg-primary/15 flex items-center justify-center border-2 border-primary/40 shrink-0">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt={displayName} onError={() => setAvatarBroken(true)} className="w-full h-full object-cover" />
+              ) : (
+                <span className="font-display text-lg font-bold text-primary" aria-hidden="true">{initial}</span>
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <h1 className="font-display text-base text-foreground leading-tight truncate">{displayName}</h1>
+              <p className="text-[11px] font-body text-muted-foreground truncate">{profissao}</p>
+            </div>
+            <button
+              onClick={() => setCollapsed(true)}
+              className="w-8 h-8 rounded-lg hover:bg-secondary flex items-center justify-center transition-colors shrink-0"
+              title="Recolher menu"
+              aria-label="Recolher menu lateral"
+              aria-expanded={true}
+            >
+              <PanelLeftClose className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+            </button>
+          </div>
+        )}
+      </div>
+
+
+      {/* Scrollable content */}
+      <div className="flex-1 overflow-y-auto py-1 overscroll-contain">
+        {/* Funções Admin - only for admin */}
+        {isAdmin && (
+          <div className="pb-1">
+            {!collapsed && (
+              <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
+                Admin
+              </p>
+            )}
+            <button
+              onPointerDown={() => { import('@/pages/AdminFuncoes.tsx').catch(() => {}); }}
+              onClick={() => navigate('/admin-funcoes')}
+              title={collapsed ? 'Funções Admin' : undefined}
+              className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors`}
+            >
+              <div className="w-7 h-7 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
+                <Lock className="w-[16px] h-[16px] text-primary" />
+              </div>
+              {!collapsed && <span className="font-semibold">Funções Admin</span>}
+            </button>
+          </div>
+        )}
+
+        {/* Main Nav */}
+        <div className={`pb-1 ${isAdmin ? 'border-t border-border/50 pt-1' : ''}`}>
+          {!collapsed && (
+            <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
+              Seções
+            </p>
+          )}
+          {[
+            { id: 'radar', label: 'Radar Legislativo', icon: Radar, color: '#0EA5E9', route: '/radar-360' },
+            { id: 'legislacao' as Tab, label: 'Legislação', icon: Scale, color: '#DC2626', route: '/' },
+            { id: 'biblioteca' as Tab, label: 'Biblioteca', icon: Library, color: '#D97706', route: '/bibliotecas' },
+            { id: 'noticias' as Tab, label: 'Atualizações', icon: RefreshCw, color: '#10B981', route: '/noticias' },
+          ].map(item => {
+            const Icon = item.icon;
+            const route = (item as any).route as string | undefined;
+            const active = !route && activeTab === (item.id as Tab);
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('[DesktopSidebar] seção click', item.id, '� ', route ?? '(tab)');
+                  if (route) navigate(route);
+                  else onTabChange(item.id as Tab);
+                }}
+                title={collapsed ? item.label : undefined}
+                className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body transition-all ${
+                  active
+                    ? 'bg-primary text-primary-foreground font-bold shadow-md shadow-primary/25'
+                    : 'text-foreground/75 hover:bg-secondary hover:text-foreground'
+                }`}
+              >
+                <div
+                  className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden ${
+                    active ? 'bg-primary-foreground/20' : ''
+                  }`}
+                  style={active ? {} : { backgroundColor: `${item.color}33`, boxShadow: `0 2px 6px -2px ${item.color}55` }}
+                >
+                  <Icon
+                    className={`w-[16px] h-[16px] drop-shadow-sm ${active ? 'text-primary-foreground' : ''}`}
+                    style={active ? {} : { color: item.color, filter: 'saturate(1.4) brightness(1.15)' }}
+                  />
+                </div>
+                {!collapsed && <span>{item.label}</span>}
+              </button>
+            );
+          })}
+        </div>
+
+        {activeTab === 'biblioteca' ? (
+          <>
+            <div className="pb-1 border-t border-border/50 pt-1">
+              {!collapsed && (
+                <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
+                  Meu Acervo
+                </p>
+              )}
+              <button
+                type="button"
+                onClick={() => abrirAtalhoBiblioteca('leitura')}
+                title={collapsed ? 'Leitura' : undefined}
+                className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors`}
+              >
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm" style={{ backgroundColor: 'hsl(var(--primary) / 0.2)', boxShadow: '0 2px 6px -2px hsl(var(--primary) / 0.3)' }}>
+                  <BookMarked className="w-[16px] h-[16px] text-primary" />
+                </div>
+                {!collapsed && <span>Leitura</span>}
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('/bibliotecas/trilhas')}
+                title={collapsed ? 'Trilhas' : undefined}
+                className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors`}
+              >
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm" style={{ backgroundColor: 'hsl(var(--primary) / 0.2)', boxShadow: '0 2px 6px -2px hsl(var(--primary) / 0.3)' }}>
+                  <RouteIcon className="w-[16px] h-[16px] text-primary" />
+                </div>
+                {!collapsed && <span>Trilhas</span>}
+              </button>
+              <button
+                type="button"
+                onClick={() => abrirAtalhoBiblioteca('favoritos')}
+                title={collapsed ? 'Favoritos' : undefined}
+                className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors`}
+              >
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm" style={{ backgroundColor: 'hsl(var(--primary) / 0.2)', boxShadow: '0 2px 6px -2px hsl(var(--primary) / 0.3)' }}>
+                  <Heart className="w-[16px] h-[16px] text-primary" />
+                </div>
+                {!collapsed && <span>Favoritos</span>}
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('/modo-offline')}
+                title={collapsed ? 'Personalizado' : undefined}
+                className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors`}
+              >
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm" style={{ backgroundColor: 'hsl(var(--primary) / 0.2)', boxShadow: '0 2px 6px -2px hsl(var(--primary) / 0.3)' }}>
+                  <FileUp className="w-[16px] h-[16px] text-primary" />
+                </div>
+                {!collapsed && <span>Personalizado</span>}
+              </button>
+            </div>
+            
+            <div className="pb-1 border-t border-border/50 pt-1">
+              {!collapsed && (
+                <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
+                  Coleções
+                </p>
+              )}
+              {COLECOES.map(cat => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  title={collapsed ? cat.label : undefined}
+                  className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors group`}
+                >
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm" style={{ backgroundColor: '#D9770633', boxShadow: '0 2px 6px -2px #D9770655' }}>
+                    <span className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: '#D97706' }} />
+                    <BookOpenText className="w-[16px] h-[16px] drop-shadow-sm" style={{ color: '#D97706' }} />
+                  </div>
+                  {!collapsed && <span className="truncate">{cat.label}</span>}
+                </button>
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Categorias - book spine style */}
+            <div className="pb-1 border-t border-border/50 pt-1">
+              {!collapsed && (
+                <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
+                  Categorias
+                </p>
+              )}
+              {CATEGORIAS.map(cat => {
+                const Icon = cat.icon;
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      // Constituição é única no seu tipo    abre direto.
+                      if (cat.tipo === 'constituicao') {
+                        navigate(`/legislacao/${tipoToSlug(cat.tipo)}`);
+                        return;
+                      }
+                      // Categorias carregadas do banco (leis ordinárias, decretos,
+                      // súmulas) têm página própria; as demais abrem o painel.
+                      const doCatalogo = getLeisPorTipo(cat.tipo);
+                      if (doCatalogo.length === 0) {
+                        navigate(`/legislacao/${tipoToSlug(cat.tipo)}`);
+                        return;
+                      }
+                      setCatSheet({ tipo: cat.tipo, label: cat.label, color: cat.color });
+                    }}
+                    title={collapsed ? cat.label : undefined}
+                    className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors group`}
+                  >
+                    <div
+                      className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm"
+                      style={{ backgroundColor: `${cat.color}33`, boxShadow: `0 2px 6px -2px ${cat.color}55` }}
+                    >
+                      <span className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: cat.color }} />
+                      <Icon className="w-[16px] h-[16px] drop-shadow-sm" style={{ color: cat.color, filter: 'saturate(1.4) brightness(1.15)' }} />
+                    </div>
+                    {!collapsed && <span>{cat.label}</span>}
+                  </button>
+                );
+              })}
+            </div>
+
+
+            {/* Conteúdo */}
+            {renderSection('Conteúdo', CONTEUDO_ITEMS)}
+
+            {/* Ferramentas */}
+            {renderSection('Ferramentas', FERRAMENTAS_ITEMS)}
+          </>
+        )}
+
+        {/* Minha conta */}
+        {renderSection('Minha conta', CONTA_ITEMS)}
+
+        {/* Configurações */}
+        {renderSection('Configurações', CONFIG_ITEMS)}
+      </div>
+
+      {/* Footer */}
+      <div className="p-4 border-t border-border">
+        {collapsed ? (
+          <div className="flex justify-center">
+            <img src={primeLogo} alt="Direito Prime" className="w-5 h-5 rounded-full object-cover opacity-50" />
+          </div>
+        ) : (
+          <div className="flex items-center justify-between">
+            <img src={primeLogo} alt="Direito Prime" className="w-6 h-6 rounded-lg object-cover opacity-70" />
+            <p className="text-[10px] font-body text-muted-foreground">© 2026 Direito Prime</p>
+          </div>
+        )}
+      </div>
+    </aside>
+
+    <SuporteSheet open={suporteOpen} onClose={() => setSuporteOpen(false)} />
+    <DesktopCategoriaSheet
+      open={!!catSheet}
+      tipo={catSheet?.tipo ?? null}
+      label={catSheet?.label ?? ''}
+      color={catSheet?.color}
+      onClose={() => setCatSheet(null)}
+    />
+    <AlertDialog open={logoutPrompt} onOpenChange={setLogoutPrompt}>
+      <AlertDialogContent className="w-11/12 max-w-md rounded-2xl">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Sair da conta</AlertDialogTitle>
+          <AlertDialogDescription>
+            Você quer realmente sair da conta?
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={(e) => {
+              e.preventDefault();
+              setLogoutPrompt(false);
+              setTimeout(() => {
+                document.body.style.pointerEvents = '';
+                document.body.style.overflow = '';
+                document.body.removeAttribute('data-scroll-locked');
+                document.querySelectorAll('[data-scroll-locked]').forEach((el) =>
+                  el.removeAttribute('data-scroll-locked'),
+                );
+                setTimeout(() => signOut(), 150);
+              }, 250);
+            }} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            Sim, sair
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
+  );
+});
+
+export default DesktopSidebar;
+

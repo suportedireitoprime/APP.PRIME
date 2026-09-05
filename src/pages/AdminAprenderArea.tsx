@@ -3,7 +3,7 @@ import { ShieldAlert } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { isAdminEmail } from '@/lib/adminEmails';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import AprenderPorLivroTab from '@/components/admin/AprenderPorLivroTab';
 
 const AdminAprenderArea = () => {

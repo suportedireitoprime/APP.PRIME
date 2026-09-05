@@ -4,7 +4,7 @@ import { StickyNote, Search, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { db, type OfflineHighlight } from '@/services/offlineDb';
 import { Input } from '@/components/ui/input';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useGoBack } from '@/hooks/useGoBack';
 
 

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Loader2, Target, CheckCircle2, Timer, CalendarDays } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import QuestoesBottomNav from '@/components/questoes/QuestoesBottomNav';
 import { useQuestoesDesempenho } from '@/hooks/useQuestoes';
 import { visualDaArea } from '@/lib/questoesVisual';

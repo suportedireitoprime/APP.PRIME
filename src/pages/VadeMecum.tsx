@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import VadeMecumHero from '@/components/vademecum/VadeMecumHero';
-import BuscaLeisOverlay, { type LeiSelecionada } from '@/components/vademecum/BuscaLeisOverlay';
-import MobileHomeSections from '@/components/vademecum/MobileHomeSections';
-import VadeMecumBottomNav from '@/components/vademecum/VadeMecumBottomNav';
+import VadeMecumHero from '@/components/vademecum/home/VadeMecumHero';
+import BuscaLeisOverlay, { type LeiSelecionada } from '@/components/vademecum/overlays/BuscaLeisOverlay';
+import MobileHomeSections from '@/components/vademecum/home/MobileHomeSections';
+import VadeMecumBottomNav from '@/components/vademecum/navigation/VadeMecumBottomNav';
 import VadeMecumFavoritos from './VadeMecumFavoritos';
-import VadeMecumTutorialOverlay from '@/components/vademecum/VadeMecumTutorialOverlay';
+import VadeMecumTutorialOverlay from '@/components/vademecum/overlays/VadeMecumTutorialOverlay';
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 import { pushRecente } from '@/lib/leisRecentes';
 import { useIsDesktop } from '@/hooks/use-desktop';
-import DesktopSidebar from '@/components/vademecum/DesktopSidebar';
+import DesktopSidebar from '@/components/vademecum/desktop/DesktopSidebar';
 import { Scale, BookOpen, Gavel, Library, MessageSquare, BookOpenText, GraduationCap } from 'lucide-react';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 

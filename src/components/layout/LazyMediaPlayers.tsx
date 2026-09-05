@@ -16,7 +16,7 @@ const GlobalLeisCantadasMiniPlayer = lazyWithRetry(() => import("@/components/le
 const GlobalResumoMiniPlayer = lazyWithRetry(() => import("@/components/biblioteca/GlobalResumoMiniPlayer").then(m => ({ default: m.GlobalResumoMiniPlayer })));
 const ResumoLivroAudioSheet = lazyWithRetry(() => import("@/components/biblioteca/ResumoLivroAudioSheet"));
 const GravacaoFlutuante = lazyWithRetry(() => import("@/components/GravacaoFlutuante").then(m => ({ default: m.GravacaoFlutuante })));
-const NarracaoMiniPlayer = lazyWithRetry(() => import("@/components/vademecum/NarracaoMiniPlayer"));
+const NarracaoMiniPlayer = lazyWithRetry(() => import('@/components/vademecum/media/NarracaoMiniPlayer'));
 
 const VideoaulaWrapper = () => {
   const { atual } = useVideoaulasPlayer();

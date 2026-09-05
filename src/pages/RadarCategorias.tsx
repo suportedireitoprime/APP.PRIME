@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, Scale, BookOpen, AlertCircle, Book, Shield, Users, Heart, Car } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useGoBack } from '@/hooks/useGoBack';
 import RadarBottomNav from '@/components/radar/RadarBottomNav';
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Loader2, ListMusic, Play, Pause, CheckCircle2, StickyNote } from 'lucide-react';
-import ArtigoCard from '@/components/vademecum/ArtigoCard';
+import ArtigoCard from '@/components/vademecum/artigo/ArtigoCard';
 import type { ArtigoLei } from '@/data/mockData';
 
 // ─── Favoritos Panel ───

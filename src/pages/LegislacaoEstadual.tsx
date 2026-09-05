@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { MapPin, ExternalLink } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { motion } from 'framer-motion';
 import { bandeiraUF } from '@/data/estadoFlags';
 import { useGoBack } from '@/hooks/useGoBack';

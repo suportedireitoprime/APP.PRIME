@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Heart, X, BookOpen, Loader2, Trophy, Star, RotateCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import GeracaoAnimacaoOverlay from "@/components/vademecum/GeracaoAnimacaoOverlay";
+import GeracaoAnimacaoOverlay from '@/components/vademecum/overlays/GeracaoAnimacaoOverlay';
 
 import { Progress } from "@/components/ui/progress";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";

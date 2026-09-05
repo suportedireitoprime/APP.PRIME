@@ -4,9 +4,9 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Search, Loader2, Gavel, Scale, ChevronRight, Ban, BadgeCheck, Heart, Clock, List, RefreshCw, XCircle, Mic, ListMusic, StickyNote, History, Radar } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { fetchSumulas, getSumulasCached, subscribeSumulas, fetchSumulasFavoritas, syncSumulasFavoritas, toggleSumulaFavorita, SUMULA_TRIBUNAIS, type Sumula } from '@/services/sumulasService';
-import SumulaVinculanteSheet from '@/components/vademecum/SumulaVinculanteSheet';
-import ArtigoBottomSheet from '@/components/vademecum/ArtigoBottomSheet';
-import HeroOrnaments from '@/components/vademecum/HeroOrnaments';
+import SumulaVinculanteSheet from '@/components/vademecum/sheets/SumulaVinculanteSheet';
+import ArtigoBottomSheet from '@/components/vademecum/artigo/ArtigoBottomSheet';
+import HeroOrnaments from '@/components/vademecum/home/HeroOrnaments';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 

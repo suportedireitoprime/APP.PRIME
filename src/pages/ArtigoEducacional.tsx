@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Loader2, RefreshCw, WifiOff, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import ArtigoBlocosMarkdown from '@/components/aprender/ArtigoBlocosMarkdown';
 import { CATEGORIAS_EDUCACIONAIS } from '@/data/artigosEducacionais';
 import { supabase } from '@/integrations/supabase/client';

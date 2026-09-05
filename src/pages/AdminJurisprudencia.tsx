@@ -7,8 +7,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { isAdminEmail } from '@/lib/adminEmails';
 import { fetchAllRows } from '@/lib/fetchAllRows';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
-import { PageHeader } from '@/components/vademecum/PageHeader';
-import GeracaoAnimacaoOverlay from '@/components/vademecum/GeracaoAnimacaoOverlay';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
+import GeracaoAnimacaoOverlay from '@/components/vademecum/overlays/GeracaoAnimacaoOverlay';
 import { toast } from 'sonner';
 
 type Lei = { id: string; slug: string | null; nome: string | null; nome_curto: string | null; numero_lei: string | null; ano_lei: number | null };

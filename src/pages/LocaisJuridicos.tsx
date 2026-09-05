@@ -22,7 +22,7 @@ import wazeLogo from '@/assets/logos/waze.svg';
 import uberLogo from '@/assets/logos/uber.svg';
 import nnLogo from '@/assets/logos/99.svg';
 import gmapsLogo from '@/assets/logos/gmaps.svg';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { useUserLocation } from '@/hooks/useUserLocation';

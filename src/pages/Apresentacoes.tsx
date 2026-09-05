@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Presentation, Loader2, PlayCircle } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
 

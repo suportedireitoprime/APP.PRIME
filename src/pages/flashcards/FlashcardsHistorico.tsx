@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { getFlashcardsSessoes, removeFlashcardsSessao, type FlashcardsSessaoHistorico } from '@/lib/flashcardsSessoes';
 import { haptic } from '@/lib/nativeHaptics';
 import { Layers, PlayCircle, Trash2, Calendar, Target, CheckCircle2 } from 'lucide-react';

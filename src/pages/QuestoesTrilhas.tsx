@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { Capacitor } from '@capacitor/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
 
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import QuestoesBottomNav from '@/components/questoes/QuestoesBottomNav';
 import { useQuestoesAreas } from '@/hooks/useQuestoes';
 import { visualDaArea } from '@/lib/questoesVisual';

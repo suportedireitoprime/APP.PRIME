@@ -15,22 +15,22 @@ const camaraHero = camaraHeroAsset;
 import senadoHeroAsset from '@/assets/radar/senado-hero.webp';
 const senadoHero = senadoHeroAsset;
 
-import DesktopHeroBanner from '@/components/vademecum/DesktopHeroBanner';
-import DesktopTopHeader from '@/components/vademecum/DesktopTopHeader';
+import DesktopHeroBanner from '@/components/vademecum/desktop/DesktopHeroBanner';
+import DesktopTopHeader from '@/components/vademecum/desktop/DesktopTopHeader';
 import DesktopOnboardingOverlay from '@/components/desktop/DesktopOnboardingOverlay';
-import DesktopBreadcrumb from '@/components/vademecum/DesktopBreadcrumb';
-import DesktopSidebar from '@/components/vademecum/DesktopSidebar';
-import AtualizacaoTab from '@/components/vademecum/AtualizacaoTab';
+import DesktopBreadcrumb from '@/components/vademecum/desktop/DesktopBreadcrumb';
+import DesktopSidebar from '@/components/vademecum/desktop/DesktopSidebar';
+import AtualizacaoTab from '@/components/vademecum/outros/AtualizacaoTab';
 import DesktopEstudosGrid from '@/components/desktop/DesktopEstudosGrid';
-import HomeNoticiasCarousel from '@/components/vademecum/HomeNoticiasCarousel';
+import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 
 // Overlays only mount when opened — lazy so they don't inflate the initial
 // desktop chunk.
-const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/SearchOverlay'));
-const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/AssistenteOverlayV2'));
+const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/SearchOverlay'));
+const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/AssistenteOverlayV2'));
 import { useQueryClient } from '@tanstack/react-query';
 import { pushRecente } from '@/lib/leisRecentes';
 import { warmCoverCache } from '@/lib/coverLoader';

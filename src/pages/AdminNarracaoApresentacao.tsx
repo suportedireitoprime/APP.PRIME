@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { pdfjsLib, configurarPdfWorker, getPdfDocumentParams } from '@/lib/pdfWorkerConfig';
 import { Presentation, Upload, Loader2, Trash2, Play, Search, Eye, EyeOff, Check, Mic, FileText, Star, ChevronRight, ArrowLeft, X, BookOpen, Folder } from 'lucide-react';
 import { toast } from 'sonner';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import {
   iniciarApresJob, subscribeApresJob, pararApresJob, limparApresJob,

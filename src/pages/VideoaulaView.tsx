@@ -1,7 +1,7 @@
 import { Suspense, useMemo, useState, useEffect } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useParams } from 'react-router-dom';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 const VideoaulaAcoesBar = lazyWithRetry(() => import('@/components/videoaulas/VideoaulaAcoesBar'));
 import { AnotacoesAulaSheet } from '@/components/videoaulas/AnotacoesAulaSheet';
 import { TrilhaAula } from '@/components/videoaulas/TrilhaAula';

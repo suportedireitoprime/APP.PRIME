@@ -9,7 +9,7 @@ import {
   BookOpen, Scale, BookMarked, Eye, EyeOff, Search, Sparkles, Filter,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import {

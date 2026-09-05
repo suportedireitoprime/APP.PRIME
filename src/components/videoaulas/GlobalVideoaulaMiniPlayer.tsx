@@ -213,6 +213,13 @@ export default function GlobalVideoaulaMiniPlayer() {
     };
   }, [onVideoPage, atual]);
 
+  // Se não estiver na página do vídeo, fecha a sessão de vídeo (remove mini player flutuante)
+  useEffect(() => {
+    if (!onVideoPage && atual) {
+      fechar();
+    }
+  }, [onVideoPage, atual, fechar]);
+
   // Se não tem vídeo ativo, não renderiza nada
   if (!atual) return null;
 

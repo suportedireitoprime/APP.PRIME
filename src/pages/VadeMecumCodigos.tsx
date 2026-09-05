@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { leiPath } from '@/lib/legislacaoSlugs';
 import { pushRecente } from '@/lib/leisRecentes';
-import VadeMecumSubpage from '@/components/vademecum/VadeMecumSubpage';
+import VadeMecumSubpage from '@/components/vademecum/outros/VadeMecumSubpage';
 
 const norm = (v: string) => v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 

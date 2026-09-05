@@ -4,7 +4,7 @@ import { CheckCheck, Loader2, Trash2, type LucideIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { confirmar } from '@/lib/nativo/dialogos';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import ItemDownloadRow, { type ItemAudio } from '@/components/offline/ItemDownloadRow';
 import { useNavigate } from 'react-router-dom';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';

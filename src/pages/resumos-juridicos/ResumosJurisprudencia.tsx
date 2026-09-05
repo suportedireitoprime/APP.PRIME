@@ -9,7 +9,7 @@ import {
   Scroll,
 } from "lucide-react";
 import ShapeGrid from "@/components/ui/ShapeGrid";
-import { PageHeader } from "@/components/vademecum/PageHeader";
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { haptic } from "@/lib/nativeHaptics";
 
 const JURIS_ITENS: { label: string; desc: string; rota: string; color: string }[] = [

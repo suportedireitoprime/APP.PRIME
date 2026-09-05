@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -10,8 +10,8 @@ import { toast } from 'sonner';
 import { COLECOES, type ColecaoConfig, type LivroNormalizado, normalizeLivro } from '@/lib/bibliotecaColecoes';
 import { copiar } from '@/lib/nativo/copiar';
 
-import { CustomAudioPlayer } from '@/components/vademecum/CustomAudioPlayer';
-import GrafoOverlay from '@/components/vademecum/GrafoOverlay';
+import { CustomAudioPlayer } from '@/components/vademecum/media/CustomAudioPlayer';
+import GrafoOverlay from '@/components/vademecum/overlays/GrafoOverlay';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 
 interface LivroComColecao {
@@ -42,7 +42,7 @@ type SelectedItemType =
   | { type: 'artigo'; data: ArtigoCP }
   | { type: 'ministro'; data: Ministro };
 
-type ScreenState = 'menu' | 'classicos' | 'rapidas' | 'cp' | 'cf' | 'cc' | 'ministros';
+type ScreenState = 'menu' | 'classicos' | 'rapidas' | 'cp' | 'cf' | 'cc' | 'cpp' | 'clt' | 'ministros';
 
 export default function AdminPilulas() {
   const navigate = useNavigate();
@@ -57,6 +57,12 @@ export default function AdminPilulas() {
   
   const [loadingCC, setLoadingCC] = useState(true);
   const [artigosCC, setArtigosCC] = useState<ArtigoCP[]>([]);
+
+  const [loadingCPP, setLoadingCPP] = useState(true);
+  const [artigosCPP, setArtigosCPP] = useState<ArtigoCP[]>([]);
+
+  const [loadingCLT, setLoadingCLT] = useState(true);
+  const [artigosCLT, setArtigosCLT] = useState<ArtigoCP[]>([]);
   
   const [loadingMinistros, setLoadingMinistros] = useState(true);
   const [ministros, setMinistros] = useState<Ministro[]>([]);
@@ -75,6 +81,8 @@ export default function AdminPilulas() {
     carregarLei('cp');
     carregarLei('cf');
     carregarLei('cc');
+    carregarLei('cpp');
+    carregarLei('clt');
     carregarMinistros();
   }, []);
 
@@ -120,9 +128,9 @@ export default function AdminPilulas() {
     }
   }
 
-  async function carregarLei(slug: 'cp' | 'cf' | 'cc') {
-    const setLoad = slug === 'cp' ? setLoadingCP : slug === 'cf' ? setLoadingCF : setLoadingCC;
-    const setData = slug === 'cp' ? setArtigosCP : slug === 'cf' ? setArtigosCF : setArtigosCC;
+  async function carregarLei(slug: 'cp' | 'cf' | 'cc' | 'cpp' | 'clt') {
+    const setLoad = slug === 'cp' ? setLoadingCP : slug === 'cf' ? setLoadingCF : slug === 'cc' ? setLoadingCC : slug === 'cpp' ? setLoadingCPP : setLoadingCLT;
+    const setData = slug === 'cp' ? setArtigosCP : slug === 'cf' ? setArtigosCF : slug === 'cc' ? setArtigosCC : slug === 'cpp' ? setArtigosCPP : setArtigosCLT;
     
     setLoad(true);
     try {
@@ -149,7 +157,7 @@ export default function AdminPilulas() {
         return;
       }
       
-      const nomeMap = { cp: 'Código Penal', cf: 'Constituição Federal', cc: 'Código Civil' };
+      const nomeMap = { cp: 'Código Penal', cf: 'Constituição Federal', cc: 'Código Civil', cpp: 'Código de Processo Penal', clt: 'CLT' };
       const artigosComLei = (data || []).map(a => ({ ...a, lei_slug: slug, lei_nome: nomeMap[slug] }));
       
       setData(artigosComLei as any[]);
@@ -184,10 +192,12 @@ export default function AdminPilulas() {
     if (activeScreen === 'cp') lista = artigosCP;
     if (activeScreen === 'cf') lista = artigosCF;
     if (activeScreen === 'cc') lista = artigosCC;
+    if (activeScreen === 'cpp') lista = artigosCPP;
+    if (activeScreen === 'clt') lista = artigosCLT;
     
     if (!q) return lista;
     return lista.filter(a => a.numero.toLowerCase().includes(q));
-  }, [artigosCP, artigosCF, artigosCC, busca, activeScreen]);
+  }, [artigosCP, artigosCF, artigosCC, artigosCPP, artigosCLT, busca, activeScreen]);
 
   const virtualizer = useWindowVirtualizer({
     count: artigosFiltrados.length,
@@ -262,6 +272,8 @@ export default function AdminPilulas() {
         if (slug === 'cp') setArtigosCP((prev) => prev.map(a => a.id === itemId ? updatedArtigoCP : a));
         if (slug === 'cf') setArtigosCF((prev) => prev.map(a => a.id === itemId ? updatedArtigoCP : a));
         if (slug === 'cc') setArtigosCC((prev) => prev.map(a => a.id === itemId ? updatedArtigoCP : a));
+        if (slug === 'cpp') setArtigosCPP((prev) => prev.map(a => a.id === itemId ? updatedArtigoCP : a));
+        if (slug === 'clt') setArtigosCLT((prev) => prev.map(a => a.id === itemId ? updatedArtigoCP : a));
 
         updatedItemForTranscription = { type: 'artigo', data: updatedArtigoCP };
         setSelectedItem((prev) => (prev && prev.type === 'artigo' && prev.data.id === itemId) ? updatedItemForTranscription : prev);
@@ -396,6 +408,8 @@ export default function AdminPilulas() {
         if (slug === 'cp') setArtigosCP((prev) => prev.map((a) => (a.id === itemId ? updatedArtigo : a)));
         if (slug === 'cf') setArtigosCF((prev) => prev.map((a) => (a.id === itemId ? updatedArtigo : a)));
         if (slug === 'cc') setArtigosCC((prev) => prev.map((a) => (a.id === itemId ? updatedArtigo : a)));
+        if (slug === 'cpp') setArtigosCPP((prev) => prev.map((a) => (a.id === itemId ? updatedArtigo : a)));
+        if (slug === 'clt') setArtigosCLT((prev) => prev.map((a) => (a.id === itemId ? updatedArtigo : a)));
         
         setSelectedItem((prev) => (prev && prev.type === 'artigo' && prev.data.id === itemId) ? { type: 'artigo', data: updatedArtigo } : prev);
 
@@ -441,9 +455,9 @@ export default function AdminPilulas() {
     title = "Pílulas Rápidas";
     subtitle = "Gerencie pílulas de leitura rápida";
     onBack = () => setActiveScreen('menu');
-  } else if (['cp', 'cf', 'cc'].includes(activeScreen)) {
-    const nomeMap = { cp: 'Código Penal', cf: 'Constituição Federal', cc: 'Código Civil' };
-    title = nomeMap[activeScreen as 'cp'|'cf'|'cc'];
+  } else if (['cp', 'cf', 'cc', 'cpp', 'clt'].includes(activeScreen)) {
+    const nomeMap = { cp: 'Código Penal', cf: 'Constituição Federal', cc: 'Código Civil', cpp: 'Código de Processo Penal', clt: 'CLT' };
+    title = nomeMap[activeScreen as 'cp'|'cf'|'cc'|'cpp'|'clt'];
     subtitle = `Gerencie as pílulas de ${title} (${artigosFiltrados.length})`;
     onBack = () => setActiveScreen('rapidas');
   } else if (activeScreen === 'ministros') {
@@ -463,7 +477,7 @@ export default function AdminPilulas() {
       <div className="px-4 pt-6 max-w-4xl mx-auto space-y-6">
         
         {/* Busca Global (sempre visível nas listas) */}
-        {(activeScreen === 'menu' || activeScreen === 'classicos' || activeScreen === 'ministros' || ['cp', 'cf', 'cc'].includes(activeScreen)) && (
+        {(activeScreen === 'menu' || activeScreen === 'classicos' || activeScreen === 'ministros' || ['cp', 'cf', 'cc', 'cpp', 'clt'].includes(activeScreen)) && (
           <div className="relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <Input
@@ -535,6 +549,24 @@ export default function AdminPilulas() {
             >
               <span className="font-bold text-lg uppercase tracking-wider text-foreground">
                 Código Civil ({artigosCC.length})
+              </span>
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            </button>
+            <button
+              onClick={() => setActiveScreen('cpp')}
+              className="w-full flex items-center justify-between px-5 py-4 bg-card rounded-2xl shadow-sm border border-border hover:bg-muted/30 transition-colors active:scale-[0.98]"
+            >
+              <span className="font-bold text-lg uppercase tracking-wider text-foreground">
+                Código de Processo Penal ({artigosCPP.length})
+              </span>
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            </button>
+            <button
+              onClick={() => setActiveScreen('clt')}
+              className="w-full flex items-center justify-between px-5 py-4 bg-card rounded-2xl shadow-sm border border-border hover:bg-muted/30 transition-colors active:scale-[0.98]"
+            >
+              <span className="font-bold text-lg uppercase tracking-wider text-foreground">
+                CLT ({artigosCLT.length})
               </span>
               <ChevronRight className="w-5 h-5 text-muted-foreground" />
             </button>
@@ -668,9 +700,9 @@ export default function AdminPilulas() {
         )}
 
         {/* Tela Artigos (Listagem) */}
-        {['cp', 'cf', 'cc'].includes(activeScreen) && (
+        {['cp', 'cf', 'cc', 'cpp', 'clt'].includes(activeScreen) && (
           <div className="space-y-4">
-            {(activeScreen === 'cp' ? loadingCP : activeScreen === 'cf' ? loadingCF : loadingCC) ? (
+            {(activeScreen === 'cp' ? loadingCP : activeScreen === 'cf' ? loadingCF : activeScreen === 'cc' ? loadingCC : activeScreen === 'cpp' ? loadingCPP : loadingCLT) ? (
               <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
                 <Loader2 className="w-8 h-8 animate-spin mb-4" />
                 <p>Carregando {title}...</p>

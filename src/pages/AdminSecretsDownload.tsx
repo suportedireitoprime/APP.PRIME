@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Loader2, Download, ShieldAlert, KeyRound, Copy, Github, CheckCircle2, XCircle, BookOpen, ExternalLink } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { AdminGithubTabs } from '@/components/admin/AdminGithubTabs';

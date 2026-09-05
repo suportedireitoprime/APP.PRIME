@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronLeft, Calendar, PlayCircle, Route as RouteIcon, CheckCircle2, Settings2, Lightbulb } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useCategoriaTrilhaStore } from '@/lib/categoriaTrilhaStore';
 import { getCatalogo, limparTitulo, slugify, ytThumb, formatDuracao, getCapaDaArea } from '@/lib/videoaulasCatalogos';
 import { loadCatalogo, getCachedCatalogo, loadProgresso, getCachedProgresso } from '@/lib/videoaulasStore';

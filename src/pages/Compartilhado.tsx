@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Search, Sparkles, ExternalLink, Copy, Check, FileText } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { motion } from 'framer-motion';
 import { useGoBack } from '@/hooks/useGoBack';
 import { copiarTexto } from '@/lib/nativo/copiar';

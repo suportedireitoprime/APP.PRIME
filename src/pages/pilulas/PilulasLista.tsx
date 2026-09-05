@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Search, Headphones } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { directImg } from '@/lib/cdnImg';

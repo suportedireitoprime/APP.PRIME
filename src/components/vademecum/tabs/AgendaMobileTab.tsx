@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { CalendarDays, Inbox, ChevronLeft, ChevronRight, FileCheck, Library, Map, BookOpen } from 'lucide-react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
-import ContinueLendoCard from '../ContinueLendoCard';
+import ContinueLendoCard from '@/components/vademecum/ui_elements/ContinueLendoCard';
 
 const DAYS_OF_WEEK = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 

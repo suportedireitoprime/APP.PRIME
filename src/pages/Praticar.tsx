@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, ChevronRight, Loader2, Target } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import PraticarHeroPanel from '@/components/praticar/PraticarHeroPanel';
 import { agruparPorArea, getPraticarAreaCover, LeiSimples } from '@/lib/praticarAreas';

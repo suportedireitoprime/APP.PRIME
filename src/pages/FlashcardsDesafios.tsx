@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Trophy, Flame, CheckCircle2, Play, Sparkles, ArrowRight, Layers, Search, X, ChevronRight } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import {
   DESAFIOS_DECKS_CATALOGO,
   DesafioDeckPronto,

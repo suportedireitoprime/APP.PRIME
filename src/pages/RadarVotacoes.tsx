@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import VotacoesPanel from '@/components/radar/VotacoesPanel';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useGoBack } from '@/hooks/useGoBack';
 
 const RadarVotacoes = () => {

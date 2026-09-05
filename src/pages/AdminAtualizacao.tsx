@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ExternalLink, Github, KeyRound, PlayCircle, Download, Edit3, Check, Copy, Bell, ImageIcon } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { motion } from 'framer-motion';
 import GithubBuildPanel from '@/components/admin/GithubBuildPanel';
 import { useGoBack } from '@/hooks/useGoBack';

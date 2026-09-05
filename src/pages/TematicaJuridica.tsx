@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Film, Search, Star, Trophy, Heart, ListVideo, CalendarHeart, Sparkles } from "lucide-react";
-import { PageHeader } from "@/components/vademecum/PageHeader";
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import DesktopPageLayout from "@/components/layout/DesktopPageLayout";
 import ObraDetailSheet, { type Obra } from "@/components/tematica/ObraDetailSheet";
 import CinemaPanel from "@/components/tematica/CinemaPanel";

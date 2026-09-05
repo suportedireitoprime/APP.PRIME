@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { PageHeader } from "@/components/vademecum/PageHeader";
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { LucideIcon, WifiOff } from "lucide-react";
 import { useGoBack } from '@/hooks/useGoBack';
 

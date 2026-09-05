@@ -16,9 +16,9 @@ import {
 import { getNoticiasCache, prefetchNoticias, fetchNoticiaConteudo, type Noticia } from '@/services/noticiasService';
 import { useReadNoticias } from '@/hooks/useNoticiaTracking';
 import { newsImg } from '@/lib/cdnImg';
-import NoticiaComentarios from '@/components/vademecum/NoticiaComentarios';
-import NoticiaViewerSheet from '@/components/vademecum/NoticiaViewerSheet';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import NoticiaComentarios from '@/components/vademecum/blog/NoticiaComentarios';
+import NoticiaViewerSheet from '@/components/vademecum/blog/NoticiaViewerSheet';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { LoadingState, EmptyState } from '@/components/ui/states';
 import { Newspaper } from 'lucide-react';
 import { toast } from 'sonner';

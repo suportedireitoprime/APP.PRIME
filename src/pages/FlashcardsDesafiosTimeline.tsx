@@ -17,7 +17,7 @@ import {
   Filter,
   ArrowLeft,
 } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { DESAFIOS_DECKS_CATALOGO, DesafioDeckPronto, AREA_TEMAS_COUNT_MAP } from '@/config/flashcardsDesafiosDecks';
 import { useFlashcardsDesafiosStore } from '@/lib/flashcardsDesafiosStore';
 import { DesafiosTimeline } from '@/components/flashcards/DesafiosTimeline';

@@ -30,7 +30,7 @@ import {
   List,
 } from "lucide-react";
 import ShapeGrid from "@/components/ui/ShapeGrid";
-import { PageHeader } from "@/components/vademecum/PageHeader";
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import CircularGallery from "@/components/ui/CircularGallery";
 import { haptic } from "@/lib/nativeHaptics";
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Loader2, ExternalLink, WifiOff, User, Sparkles } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -79,7 +79,7 @@ function AuthorInfo({ proposicaoId }: { proposicaoId: string }) {
   );
 }
 
-import { GeracaoAnimacaoOverlay } from '@/components/vademecum/GeracaoAnimacaoOverlay';
+import { GeracaoAnimacaoOverlay } from '@/components/vademecum/overlays/GeracaoAnimacaoOverlay';
 
 function EmentaExplicacao({ detalhe }: { detalhe: any }) {
   const [explicacao, setExplicacao] = useState<string | null>(null);

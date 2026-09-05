@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Flame } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import DesafioLinha from '@/components/questoes/DesafioLinha';
 import QuestoesBottomNav from '@/components/questoes/QuestoesBottomNav';
 import { useDesafios, type DesafioStatus } from '@/hooks/useQuestoesExtras';

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, FileDown, Trash2, RefreshCw } from 'lucide-react';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { toast } from 'sonner';
 import { confirmar } from '@/lib/nativo/dialogos';
 import { formatBytes } from '@/data/offlineCatalog';

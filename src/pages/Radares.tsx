@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ScanEye, Landmark, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import radarLeisLocal from '@/assets/radares/radar-leis.webp';
 import radarLegislativoLocal from '@/assets/radares/radar-legislativo.webp';
 import radarLeisAsset from '@/assets/radares/radar-leis.webp.asset.json';

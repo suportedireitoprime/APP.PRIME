@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Layers } from 'lucide-react';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import AprenderBottomNav from '@/components/aprender/AprenderBottomNav';
 import AreaEscolhaLista from '@/components/aprender/AreaEscolhaLista';
 import { useAprenderAreasResumo } from '@/hooks/useAprenderAreasResumo';

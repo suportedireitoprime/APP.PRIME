@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Loader2, Download, KeyRound, FileText, Apple, ShieldCheck, CheckCircle2, Upload, Package, Smartphone } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 

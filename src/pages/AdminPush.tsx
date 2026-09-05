@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { PageHeader } from "@/components/vademecum/PageHeader";
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 
 import { Send, Calendar, BarChart3, Stethoscope, History, LucideIcon } from "lucide-react";
 

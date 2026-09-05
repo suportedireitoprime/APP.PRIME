@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Search, Mic } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
 import VideoaulasDesempenhoSheet from '@/components/videoaulas/VideoaulasDesempenhoSheet';
 import { useIsDesktop } from '@/hooks/use-desktop';

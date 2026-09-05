@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { Shield, CreditCard, LayoutGrid } from 'lucide-react';
 import { useSubscription } from '@/hooks/useSubscription';
 import MinhaAssinaturaView from '@/components/planos/MinhaAssinaturaView';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useAuth } from '@/hooks/useAuth';
 import { isAdminEmail } from '@/lib/adminEmails';
 import { Button } from '@/components/ui/button';

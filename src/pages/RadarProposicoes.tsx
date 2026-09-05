@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Calendar, FileDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import ProposicoesPanel from '@/components/radar/ProposicoesPanel';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useGoBack } from '@/hooks/useGoBack';
 import RadarBottomNav from '@/components/radar/RadarBottomNav';
 

@@ -4,7 +4,7 @@ import { ArrowLeft, AlertCircle, List } from 'lucide-react';
 import { useResumoLivroPlayer } from '@/contexts/ResumoLivroPlayerContext';
 import { usePilulasPlayer } from '@/contexts/PilulasPlayerContext';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import GrafoOverlay from '@/components/vademecum/GrafoOverlay';
+import GrafoOverlay from '@/components/vademecum/overlays/GrafoOverlay';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
 import { usePilulaData } from './hooks/usePilulaData';

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Award, Flame, Lock, Trophy, Video } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
 import { CATALOGOS } from '@/lib/videoaulasCatalogos';
 import {

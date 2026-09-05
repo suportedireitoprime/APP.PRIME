@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
 import { motion } from 'framer-motion';
 import { BookOpenText, Play, Calendar, Video, FileText } from 'lucide-react';

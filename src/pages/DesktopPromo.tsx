@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
 import { useNavigate } from 'react-router-dom';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import {
   Monitor,
   QrCode,

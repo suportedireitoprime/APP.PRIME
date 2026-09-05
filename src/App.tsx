@@ -78,7 +78,7 @@ import { useAppUpdateStore } from "@/lib/appUpdateStore";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000,
+      staleTime: 24 * 60 * 60 * 1000, // 24h: cache extremamente agressivo para performance máxima
       gcTime: 24 * 60 * 60 * 1000, // 24h para persistência
       retry: 2,
       refetchOnWindowFocus: false,

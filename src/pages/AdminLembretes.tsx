@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Bell, BookOpen, GraduationCap, Landmark, Video, ChevronRight, Sparkles } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 
 const FUNCOES = [
   { id: 'biblioteca', label: 'Biblioteca', desc: 'Lembretes de leitura de livros', icon: BookOpen, route: '/admin-lembretes/biblioteca', ativo: true },

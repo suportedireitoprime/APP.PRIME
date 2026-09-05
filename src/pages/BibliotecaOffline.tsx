@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Capacitor } from '@capacitor/core';
 import { HardDrive, Image as ImageIcon, BookOpen, FileDown, Trash2, RefreshCw, Wifi } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { toast } from 'sonner';
 import {
   subscribeCapasProgress,

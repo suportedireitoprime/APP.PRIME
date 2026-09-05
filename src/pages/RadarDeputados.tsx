@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import DeputadosPanel from '@/components/radar/DeputadosPanel';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useGoBack } from '@/hooks/useGoBack';
 
 const RadarDeputados = () => {

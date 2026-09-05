@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Play, Star, Video } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { CATALOGOS, limparTitulo, slugify, ytThumb } from '@/lib/videoaulasCatalogos';
 import { loadFavoritos, loadProgresso } from '@/lib/videoaulasStore';
 import { useGoBack } from '@/hooks/useGoBack';

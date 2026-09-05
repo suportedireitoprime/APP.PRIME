@@ -14,7 +14,7 @@ import HorusVerifyPhoneSheet from '@/components/horus/HorusVerifyPhoneSheet';
 import HorusEuSheet from '@/components/horus/HorusEuSheet';
 import HorusOnboardingOverlay from '@/components/horus/onboarding/HorusOnboardingOverlay';
 import { useHorusOnboarding } from '@/components/horus/onboarding/useHorusOnboarding';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 
 import { useAssistenteHorus } from '@/hooks/domain/useAssistenteHorus';

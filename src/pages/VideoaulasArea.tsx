@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { CheckCircle2, History, Mic, PlayCircle, Play, Search, Star, Video, BookOpenText, Route as RouteIcon, Calendar, Lightbulb, Settings2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useVoiceInput } from '@/hooks/useVoiceInput';

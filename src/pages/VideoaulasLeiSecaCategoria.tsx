@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { LEI_SECA_CATEGORIAS } from './VideoaulasLeiSeca';
 import { pushRecente } from '@/lib/leisRecentes';

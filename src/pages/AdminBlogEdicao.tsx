@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Play, Trash2, Sparkles, CheckCircle2, AlertCircle, Settings, Image as ImageIcon, Headphones, Loader2, Pause, Volume2, Wand2, CalendarClock, PenLine, ImagePlus, Bell, ChevronRight, Zap, Edit3, Database, Library, Plus } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { TEMA_COLORS } from '@/data/blogPosts';

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { ChevronRight, Folder } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { loadConcursos, type ConcursoRow } from '@/lib/videoaulasStore';

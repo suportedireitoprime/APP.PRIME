@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Plus, NotebookPen, Trash2, ChevronRight, Sparkles } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useCadernos } from '@/hooks/useQuestoesExtras';
 import QuestoesFiltroSheet, { FILTRO_KEY, FILTRO_VAZIO, type QuestoesFiltro } from '@/components/questoes/QuestoesFiltroSheet';
 import { toast } from 'sonner';

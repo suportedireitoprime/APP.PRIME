@@ -11,7 +11,7 @@ import {
 
 import { toast } from 'sonner';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { AdminHojeCards } from '@/components/admin/AdminHojeCards';
 
 

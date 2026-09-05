@@ -71,18 +71,18 @@ export function prefetchArtigoFuncoesChunks() {
   chunksPrefetched = true;
   idle(() => {
     const loaders = [
-      () => import('@/components/vademecum/AnotacoesSheet'),
-      () => import('@/components/vademecum/PerguntarSheet'),
-      () => import('@/components/vademecum/VideoaulasListSheet'),
-      () => import('@/components/vademecum/VideoaulaSheet'),
-      () => import('@/components/vademecum/LembretesArtigoSheet'),
-      () => import('@/components/vademecum/BaixarArtigoSheet'),
-      () => import('@/components/vademecum/GrafoOverlay'),
-      () => import('@/components/vademecum/GrifoFotoSheet'),
-      () => import('@/components/vademecum/GrifoVoiceSheet'),
-      () => import('@/components/vademecum/GrifoEraseSheet'),
-      () => import('@/components/vademecum/KaraokeOverlay'),
-      () => import('@/components/vademecum/GeracaoAnimacaoOverlay'),
+      () => import('@/components/vademecum/sheets/AnotacoesSheet'),
+      () => import('@/components/vademecum/sheets/PerguntarSheet'),
+      () => import('@/components/vademecum/sheets/VideoaulasListSheet'),
+      () => import('@/components/vademecum/sheets/VideoaulaSheet'),
+      () => import('@/components/vademecum/sheets/LembretesArtigoSheet'),
+      () => import('@/components/vademecum/sheets/BaixarArtigoSheet'),
+      () => import('@/components/vademecum/overlays/GrafoOverlay'),
+      () => import('@/components/vademecum/sheets/GrifoFotoSheet'),
+      () => import('@/components/vademecum/sheets/GrifoVoiceSheet'),
+      () => import('@/components/vademecum/sheets/GrifoEraseSheet'),
+      () => import('@/components/vademecum/overlays/KaraokeOverlay'),
+      () => import('@/components/vademecum/overlays/GeracaoAnimacaoOverlay'),
     ];
     // Sequencial para não competir com o conteúdo do artigo pela banda.
     loaders.reduce<Promise<unknown>>(

@@ -11,10 +11,10 @@ import { useVisibleColecoes } from '@/hooks/useVisibleColecoes';
 import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
 import { directImg } from '@/lib/cdnImg';
 
-import DesktopTopHeader from '@/components/vademecum/DesktopTopHeader';
+import DesktopTopHeader from '@/components/vademecum/desktop/DesktopTopHeader';
 import DesktopOnboardingOverlay from '@/components/desktop/DesktopOnboardingOverlay';
-import DesktopBreadcrumb from '@/components/vademecum/DesktopBreadcrumb';
-import DesktopSidebar from '@/components/vademecum/DesktopSidebar';
+import DesktopBreadcrumb from '@/components/vademecum/desktop/DesktopBreadcrumb';
+import DesktopSidebar from '@/components/vademecum/desktop/DesktopSidebar';
 
 import DesktopBibliotecaHero from '@/components/desktop/DesktopBibliotecaHero';
 import DesktopBibliotecaGrid from '@/components/desktop/DesktopBibliotecaGrid';
@@ -23,8 +23,8 @@ import RecomendacoesCarousel from '@/components/biblioteca/RecomendacoesCarousel
 import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
 import BibliotecaAtalhosBar from '@/components/biblioteca/BibliotecaAtalhosBar';
 
-const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/SearchOverlay'));
-const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/AssistenteOverlayV2'));
+const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/SearchOverlay'));
+const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/AssistenteOverlayV2'));
 
 const DESKTOP_TABS: Array<{ id: string; label: string; icon: any; path: string; prefetch?: PrefetchKey }> = [
   { id: 'legislacao', label: 'Legislação', icon: Scale, path: '/' },

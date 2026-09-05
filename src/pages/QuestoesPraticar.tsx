@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import ResolverPadrao from '@/components/questoes/ResolverPadrao';
 import { useQuestoesSessao } from '@/hooks/useQuestoes';
 import { lerFiltroSalvo } from '@/components/questoes/QuestoesFiltroSheet';

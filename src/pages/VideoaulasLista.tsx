@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Play, Star } from 'lucide-react';
 import { CATALOGOS, limparTitulo, slugify, ytThumb } from '@/lib/videoaulasCatalogos';
 import { loadFavoritos, loadProgresso } from '@/lib/videoaulasStore';

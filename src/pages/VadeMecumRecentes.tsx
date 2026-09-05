@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, History, Calendar, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
-import VadeMecumSubpage from '@/components/vademecum/VadeMecumSubpage';
+import VadeMecumSubpage from '@/components/vademecum/outros/VadeMecumSubpage';
 import { supabase } from '@/integrations/supabase/client';
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 

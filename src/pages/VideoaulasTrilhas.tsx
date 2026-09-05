@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Calendar, PlayCircle, Route as RouteIcon, MapPin, CheckCircle2, Settings2, Lightbulb, Target, Plus, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useTrilhaStore } from '@/lib/trilhasStore';
 import { useAreaTrilhaStore } from '@/lib/areaTrilhasStore';
 import { loadConcursos, type ConcursoRow } from '@/lib/videoaulasStore';

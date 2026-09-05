@@ -5,7 +5,7 @@ import {
   PauseCircle, Radio, ChevronRight, Library, Smartphone, MessageCircle, Upload,
   X, Tag as TagIcon, Check,
 } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';

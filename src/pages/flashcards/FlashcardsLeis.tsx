@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { useFlashcardsResumoAreas } from '@/lib/flashcardsQueries';
 import { Search, Scale, ChevronRight, ArrowLeft, BookOpen, ChevronLeft, Sparkles, Check, CheckCircle2, Clock, FileText, Landmark, Users, Gavel, File, Circle, LucideIcon } from 'lucide-react';

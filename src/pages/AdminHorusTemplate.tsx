@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Eye, Image as ImageIcon, Info, Trash2, Bell, BookOpen, AlertTriangle, CheckCircle2, CircleDashed, Copy } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import horusBellAsset from '@/assets/horus/horus-bell.webp';
 import { useAuth } from '@/hooks/useAuth';
 

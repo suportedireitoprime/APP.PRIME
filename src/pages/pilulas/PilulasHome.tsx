@@ -5,7 +5,7 @@ import { ArrowRight, Search, PlayCircle, Pill, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { usePilulasWarmup } from './hooks/usePilulasWarmup';
 import { directImg } from '@/lib/cdnImg';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { AnimatedDivider } from '@/components/ui/AnimatedDivider';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';

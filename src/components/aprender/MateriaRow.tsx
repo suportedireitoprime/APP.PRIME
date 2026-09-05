@@ -29,7 +29,7 @@ const MateriaRow = ({ area, icon, onOpen, onPrefetch }: Props) => {
       onPointerEnter={onPrefetch}
       onFocus={onPrefetch}
       onTouchStart={onPrefetch}
-      className="group flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-3.5 text-left transition-all hover:border-primary/40 hover:shadow-md focus-visible:outline-none sm:p-4"
+      className="group flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md p-3.5 text-left transition-all hover:bg-black/60 hover:border-primary/40 hover:shadow-lg focus-visible:outline-none sm:p-4"
     >
       {icon ? (
         <div className="relative flex h-12 w-12 shrink-0 items-center justify-center sm:h-14 sm:w-14">

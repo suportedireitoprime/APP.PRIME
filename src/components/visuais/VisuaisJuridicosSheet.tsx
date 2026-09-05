@@ -11,7 +11,7 @@ import { isAdminEmail } from '@/lib/adminEmails';
 import { toast } from 'sonner';
 import PremiumGate from '@/components/PremiumGate';
 import VisualViewer from './VisualViewer';
-import GeracaoAnimacaoOverlay from '@/components/vademecum/GeracaoAnimacaoOverlay';
+import GeracaoAnimacaoOverlay from '@/components/vademecum/overlays/GeracaoAnimacaoOverlay';
 import { CATEGORIA_INFO, itensDaCategoria, MATERIAS, type CatalogoItem } from '@/lib/visuaisJuridicos/catalogo';
 import { TIPO_SLUG } from '@/lib/visuaisJuridicos/rotas';
 import { TIPO_INFO, type VisualCategoria, type VisualRecord, type VisualTipo } from '@/lib/visuaisJuridicos/types';
@@ -19,7 +19,7 @@ import { prefetchVisuais, registrarVisual, visuaisEmCache } from '@/lib/visuaisJ
 import { fetchArtigosLei, getCachedArtigos } from '@/services/legislacaoService';
 import type { ArtigoLei } from '@/data/mockData';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { iconeDoItem } from '@/lib/visuaisJuridicos/icones';
 import {
   fetchAreasResumos,

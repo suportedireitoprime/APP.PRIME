@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, ChevronRight, Loader2, Sparkles } from 'lucide-react';
 import type { ArtigoLei } from '@/data/mockData';
-import type { ModificationInfo } from '@/components/vademecum/ArtigoBottomSheet';
+import type { ModificationInfo } from '@/components/vademecum/artigo/ArtigoBottomSheet';
 
 type DbAlteracao = {
   artigo_numero: string;

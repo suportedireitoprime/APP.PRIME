@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, useMotionValue, useTransform, useAnimation, AnimatePresence } from 'framer-motion';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { haptic } from '@/lib/nativeHaptics';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
@@ -191,6 +191,8 @@ export default function PilulasViewer() {
                         <img
                           src={pilula.imagem}
                           alt={pilula.titulo}
+                          loading={i === 0 ? 'eager' : 'lazy'}
+                          decoding="async"
                           className="absolute inset-0 w-full h-full object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
@@ -225,6 +227,8 @@ export default function PilulasViewer() {
                           <img
                             src={pilula.imagem}
                             alt={pilula.titulo}
+                            loading={i === 0 ? 'eager' : 'lazy'}
+                            decoding="async"
                             className="w-full h-full object-cover blur-xl scale-110 opacity-40"
                           />
                           <div className="absolute inset-0 bg-black/60" />

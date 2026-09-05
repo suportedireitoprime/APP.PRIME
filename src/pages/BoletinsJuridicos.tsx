@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Play, Clock, Sparkles, Scale, Newspaper, ArrowRight, CheckCircle2, Moon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import BoletimPlayer, { type BoletimScene } from '@/components/boletim/BoletimPlayer';
 import { Skeleton } from '@/components/ui/skeleton';
 import {pickAsset, srcOf } from '@/lib/assetUrl';

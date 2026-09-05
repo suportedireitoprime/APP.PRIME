@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { MELODIAS, montarPrompt, type TipoPrompt } from '@/lib/leisCantadasPrompt';
 import { toast } from 'sonner';

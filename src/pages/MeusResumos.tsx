@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Heart, History, Loader2 } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import ResumoJuridicoReaderSheet, { ResumoRow } from '@/components/resumos-juridicos/ResumoJuridicoReaderSheet';
 import { resumosLocal, type ResumoRef } from '@/lib/resumosLocal';
 import { supabase } from '@/integrations/supabase/client';

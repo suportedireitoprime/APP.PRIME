@@ -1,12 +1,12 @@
 import React, { useState, Suspense, lazy } from 'react';
 import { X, Book, Wand2, Cpu, ChevronRight, ArrowLeft, PlayCircle, Music, Upload, User, FileSignature, CalendarDays } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import AnimacaoExemplo from '@/components/laboratorio/AnimacaoExemplo';
 import AnimacaoPixi from '@/components/laboratorio/AnimacaoPixi';
 import AIGeneratorPanel from '@/components/laboratorio/AIGeneratorPanel';
 import { motion, AnimatePresence } from 'framer-motion';
-import FilosofoPresentationOverlay from '@/components/vademecum/FilosofoPresentationOverlay';
+import FilosofoPresentationOverlay from '@/components/vademecum/overlays/FilosofoPresentationOverlay';
 
 
 const AdminLaboratorio = () => {

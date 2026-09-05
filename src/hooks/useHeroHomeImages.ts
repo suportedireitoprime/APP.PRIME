@@ -31,7 +31,7 @@ export function useHeroHomeImages() {
     (async () => {
       const { data, error } = await (supabase as any)
         .from('hero_home_images')
-        .select('*')
+        .select('id, imagem_url, animation_preset')
         .eq('ativo', true)
         .order('ordem', { ascending: true });
       if (!mounted) return;

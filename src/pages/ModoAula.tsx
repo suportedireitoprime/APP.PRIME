@@ -4,7 +4,7 @@ import {
   GraduationCap, Plus, Mic, Upload, Loader2, BookMarked, Clock, ChevronRight,
   Trash2, AlertCircle, Sparkles, Check,
 } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';

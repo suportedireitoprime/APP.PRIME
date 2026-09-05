@@ -1,7 +1,7 @@
 import { useMemo, useState, memo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Video, Clock, ChevronRight, Scale, BookOpenText, Gavel, Library, MessageSquare, GraduationCap } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { areaIconFor } from '@/lib/areasDireitoIcons';
 import { simplificarNomeArea } from '@/lib/videoaulasCatalogos';
 import type { ResumoVideoaulas } from '@/lib/videoaulasResumo';
@@ -10,8 +10,8 @@ import { haptic } from '@/lib/nativeHaptics';
 import ContinuarAssistindoCarousel from '@/components/videoaulas/ContinuarAssistindoCarousel';
 import { prefetchCatalogo } from '@/lib/videoaulasStore';
 import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
-import DesktopSidebar from '@/components/vademecum/DesktopSidebar';
-import DesktopBreadcrumb from '@/components/vademecum/DesktopBreadcrumb';
+import DesktopSidebar from '@/components/vademecum/desktop/DesktopSidebar';
+import DesktopBreadcrumb from '@/components/vademecum/desktop/DesktopBreadcrumb';
 import DesktopOnboardingOverlay from '@/components/desktop/DesktopOnboardingOverlay';
 
 const DESKTOP_TABS: Array<{ id: string; label: string; icon: any; path: string; prefetch?: PrefetchKey }> = [

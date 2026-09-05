@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useDicionarioJuridico, type DicionarioTermo } from '@/hooks/useDicionarioJuridico';
 import { useDicionarioStats } from '@/hooks/useDicionarioStats';
 import { useDicionarioPrefs } from '@/hooks/useDicionarioPrefs';

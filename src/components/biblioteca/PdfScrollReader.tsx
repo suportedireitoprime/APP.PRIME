@@ -616,8 +616,15 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId, capaUrl }: Props) => {
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
         >
-          {loading && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-neutral-950 text-white z-[50]">
+          <AnimatePresence>
+            {loading && (
+              <motion.div
+                key="loading-overlay"
+                initial={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+                className="absolute inset-0 flex flex-col items-center justify-center bg-neutral-950 text-white z-[50]"
+              >
               {capaUrl && (
                 <div className="absolute inset-0 z-0 overflow-hidden opacity-30">
                   <img src={capaUrl} alt="" className="w-full h-full object-cover blur-[100px] scale-125 mix-blend-screen" />
@@ -679,8 +686,9 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId, capaUrl }: Props) => {
                   <span>{loadingProgress}%</span>
                 </div>
               </div>
-            </div>
-          )}
+              </motion.div>
+            )}
+          </AnimatePresence>
           {error && (
             <div className="flex flex-col items-center justify-center h-full text-white/80 gap-3 px-6 text-center">
               <p className="text-sm">{error}</p>

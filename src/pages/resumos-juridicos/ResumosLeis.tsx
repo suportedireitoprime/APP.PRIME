@@ -12,7 +12,7 @@ import {
   MicOff,
 } from "lucide-react";
 import ShapeGrid from "@/components/ui/ShapeGrid";
-import { PageHeader } from "@/components/vademecum/PageHeader";
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { haptic } from "@/lib/nativeHaptics";
 import { AREAS_LEIS, AreaLeis, leisDaArea } from "@/lib/leisPorArea";
 import { LEI_ICON_MAP } from "@/lib/leiIcons";

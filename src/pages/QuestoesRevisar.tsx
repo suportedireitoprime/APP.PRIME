@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import QuestoesBottomNav from '@/components/questoes/QuestoesBottomNav';
 import ResolverPadrao from '@/components/questoes/ResolverPadrao';
 import { useQuestoesSessao } from '@/hooks/useQuestoes';

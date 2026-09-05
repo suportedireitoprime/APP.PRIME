@@ -7,7 +7,7 @@ import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import TematicaCarrossel from '@/components/ferramentas/TematicaCarrossel';
 const DicionarioJuridico = lazyWithRetry(() => import('@/components/ferramentas/DicionarioJuridico'));
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { DESKTOP_TOOL_GROUPS, DESKTOP_TOOLS_FLAT } from '@/config/desktopTools';
 

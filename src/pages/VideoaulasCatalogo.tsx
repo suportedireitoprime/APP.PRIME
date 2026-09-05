@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Input } from '@/components/ui/input';
 import { ChevronRight, History, Mic, Play, Search, Star, Video } from 'lucide-react';
 import ThumbImg from '@/components/videoaulas/ThumbImg';

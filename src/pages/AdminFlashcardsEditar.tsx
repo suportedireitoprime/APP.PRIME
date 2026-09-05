@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { Layers, Plus, Sparkles, Loader2, Trash2, BookOpen, Scale, Landmark, BookA, Users, Clock, AlertTriangle, ListTree, ChevronRight, Database } from 'lucide-react';
 import { Input } from '@/components/ui/input';

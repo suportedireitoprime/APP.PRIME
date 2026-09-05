@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, ScrollText, Gavel, Scale, Newspaper, ListChecks } from 'lucide-react';
 import { motion } from 'framer-motion';
-import VadeMecumSubpage from '@/components/vademecum/VadeMecumSubpage';
+import VadeMecumSubpage from '@/components/vademecum/outros/VadeMecumSubpage';
 
 const ITENS = [
   { label: 'Súmulas Vinculantes', desc: 'Efeito vinculante para o Judiciário', to: '/jurisprudencia/sumulas-vinculantes', icon: Gavel },

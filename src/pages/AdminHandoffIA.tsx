@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Copy, Download, Github, FileText, Info } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { toast } from 'sonner';

@@ -2,7 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Download, Loader2, ImageIcon, ChevronLeft, ChevronRight, Image, Type } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { motion } from 'framer-motion';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { fetchArtigosLei } from '@/services/legislacaoService';

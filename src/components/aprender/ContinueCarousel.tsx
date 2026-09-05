@@ -27,8 +27,8 @@ function AulaCard({ aula, onOpen, wide }: { aula: AprenderHomeAula; onOpen: (id:
       onFocus={prefetch}
       onTouchStart={prefetch}
       className={[
-        'group relative overflow-hidden rounded-2xl border border-border bg-card text-left transition-all min-h-[135px] w-full',
-        'hover:border-primary/50 hover:shadow-xl focus-visible:outline-none',
+        'group relative overflow-hidden rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md text-left transition-all min-h-[135px] w-full',
+        'hover:bg-black/60 hover:border-primary/50 hover:shadow-xl focus-visible:outline-none',
       ].join(' ')}
     >
       {cover?.cover && (
@@ -42,10 +42,10 @@ function AulaCard({ aula, onOpen, wide }: { aula: AprenderHomeAula; onOpen: (id:
             decoding="async"
           />
           <div
-            className="absolute inset-0"
+            className="absolute inset-0 mix-blend-multiply"
             style={{
               background:
-                'linear-gradient(90deg, rgba(18,18,18,0.95) 0%, rgba(28,28,28,0.85) 55%, rgba(0,0,0,0.9) 100%)',
+                'linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 55%, rgba(0,0,0,0.7) 100%)',
             }}
           />
         </>

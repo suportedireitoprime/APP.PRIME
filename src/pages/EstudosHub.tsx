@@ -16,7 +16,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { syncWidgetData } from '@/lib/widgetData';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useStudyStats, TABLE_NAMES } from '@/hooks/useStudyStats';
 import { track } from '@/lib/analyticsEvents';
 import { agendarNotificacaoOfensiva } from '@/lib/alarmeEstudo';

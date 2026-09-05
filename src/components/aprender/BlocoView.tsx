@@ -128,53 +128,69 @@ export function BlocoView({
   if (bloco.tipo === 'mapa_mental') {
     const { raiz, definicao_raiz, ramos = [] } = bloco.payload || {};
     return (
-      <article>
-        <p className="mb-3 text-xs font-semibold uppercase text-primary">Mapa mental</p>
-        <div className="rounded-2xl border-2 border-primary/40 bg-gradient-to-br from-primary/10 to-accent/10 p-5 text-center">
-          <p className="font-display text-2xl font-bold text-foreground leading-tight">{raiz}</p>
+      <article className="mt-4 mb-8">
+        <div className="flex items-center gap-2 mb-4">
+          <span className="w-1.5 h-4 bg-primary rounded-full animate-pulse" />
+          <p className="text-[11px] font-black uppercase tracking-widest text-primary">Mapa mental</p>
+        </div>
+        
+        {/* Raiz do Mapa */}
+        <div className="relative z-10 rounded-2xl border border-primary/40 bg-black/40 backdrop-blur-md p-6 text-center shadow-[0_0_20px_rgba(0,0,0,0.5)] ring-1 ring-white/5">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent opacity-50 rounded-2xl pointer-events-none" />
+          <p className="relative z-10 font-display text-[26px] sm:text-[30px] font-black text-white leading-tight tracking-wide drop-shadow-md">{raiz}</p>
           {definicao_raiz && (
-            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{definicao_raiz}</p>
+            <p className="relative z-10 mt-2 text-[13px] sm:text-sm text-white/70 leading-relaxed font-medium max-w-lg mx-auto">{definicao_raiz}</p>
           )}
         </div>
+
+        {/* Conector Vertical */}
         {ramos.length > 0 && (
-          <div className="flex justify-center" aria-hidden>
-            <span className="block w-0.5 h-6 bg-primary/50" />
+          <div className="flex justify-center -mt-2 -mb-2 relative z-0" aria-hidden>
+            <span className="block w-[2px] h-10 bg-gradient-to-b from-primary/80 to-primary/20" />
           </div>
         )}
-        <div className="relative pl-8">
+
+        <div className="relative pl-6 sm:pl-8">
+          {/* Linha da Esquerda */}
           {ramos.length > 0 && (
             <span
               aria-hidden
-              className="absolute left-3 top-0 bottom-6 w-0.5 bg-gradient-to-b from-primary/60 via-primary/40 to-transparent"
+              className="absolute left-1.5 sm:left-3 top-0 bottom-8 w-[2px] bg-gradient-to-b from-primary/60 via-primary/20 to-transparent"
             />
           )}
-          <div className="space-y-4">
+          
+          <div className="space-y-5">
             {ramos.map((r: any, i: number) => (
-              <div key={i} className="relative">
-                <span aria-hidden className="absolute -left-5 top-6 h-0.5 w-5 bg-primary/50" />
+              <div key={i} className="relative group">
+                {/* Conector Horizontal */}
+                <span aria-hidden className="absolute -left-4 sm:-left-[22px] top-[26px] h-[2px] w-4 sm:w-5 bg-primary/40 group-hover:bg-primary/80 transition-colors" />
                 <span
                   aria-hidden
-                  className="absolute -left-[26px] top-[19px] h-3 w-3 rounded-full border-2 border-primary bg-background"
+                  className="absolute -left-[20px] sm:-left-[26px] top-[22px] h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full border-[2px] border-primary bg-black shadow-[0_0_8px_rgba(var(--primary-rgb),0.6)]"
                 />
-                <div className="rounded-xl border-2 border-border bg-card p-4 shadow-sm">
-                  <p className="font-display text-base font-bold text-foreground">{r.titulo}</p>
+                
+                {/* Card do Ramo */}
+                <div className="rounded-xl border border-white/5 bg-card/40 backdrop-blur-sm p-4 sm:p-5 shadow-lg transition-colors group-hover:border-primary/30 group-hover:bg-card/60">
+                  <p className="font-display text-[17px] font-black text-white tracking-wide">{r.titulo}</p>
                   {r.definicao && (
-                    <p className="mt-1 mb-3 text-xs text-muted-foreground italic leading-relaxed">{r.definicao}</p>
+                    <p className="mt-1 mb-4 text-[13px] text-white/60 italic leading-relaxed font-medium">{r.definicao}</p>
                   )}
-                  <ul className="relative space-y-2 text-[14px] pl-4">
-                    <span aria-hidden className="absolute left-1 top-1 bottom-1 w-px bg-border" />
+                  
+                  {/* Itens do Ramo */}
+                  <ul className="relative space-y-2.5 text-[14px] pl-3">
+                    <span aria-hidden className="absolute left-0 top-1 bottom-1 w-[1px] bg-white/10" />
                     {(r.itens || []).map((it: any, j: number) => {
                       const isObj = it && typeof it === 'object';
                       const termo = isObj ? it.termo : String(it);
                       const definicao = isObj ? it.definicao : '';
                       return (
-                        <li key={j} className="relative flex gap-2 items-start">
-                          <span aria-hidden className="absolute -left-3 top-[9px] h-px w-3 bg-border" />
-                          <span className="mt-1.5 inline-block w-2 h-2 rounded-full bg-primary flex-shrink-0" />
+                        <li key={j} className="relative flex gap-3 items-start">
+                          <span aria-hidden className="absolute -left-3 top-[10px] h-[1px] w-2.5 bg-white/10" />
+                          <span className="mt-[7px] inline-block w-1.5 h-1.5 rounded-full bg-primary/80 flex-shrink-0 shadow-[0_0_5px_rgba(255,255,255,0.3)]" />
                           <span className="flex-1 leading-snug">
-                            <span className="font-semibold text-foreground">{termo}</span>
+                            <span className="font-bold text-white/90">{termo}</span>
                             {definicao && (
-                              <span className="text-muted-foreground"> — {definicao}</span>
+                              <span className="text-white/60"> <span className="text-primary/60">—</span> {definicao}</span>
                             )}
                           </span>
                         </li>

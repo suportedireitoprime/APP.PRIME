@@ -20,7 +20,7 @@ const MateriaCard = ({ area, icon, onOpen, onPrefetch }: Props) => {
       onPointerEnter={onPrefetch}
       onFocus={onPrefetch}
       onTouchStart={onPrefetch}
-      className="group flex flex-col justify-between w-[210px] sm:w-[250px] h-[170px] shrink-0 snap-start rounded-2xl border border-border bg-card p-4 text-left transition-all hover:border-primary/50 hover:shadow-lg active:scale-[0.99] relative overflow-hidden"
+      className="group flex flex-col justify-between w-[210px] sm:w-[250px] h-[170px] shrink-0 snap-start rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md p-4 text-left transition-all hover:bg-black/60 hover:border-primary/50 hover:shadow-lg active:scale-[0.99] relative overflow-hidden"
     >
       {/* Top bar: icon + percentage badge */}
       <div className="flex items-start justify-between w-full z-10">

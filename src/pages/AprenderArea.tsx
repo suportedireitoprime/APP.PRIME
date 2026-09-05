@@ -3,7 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import AreaHeroPanel from '@/components/aprender/AreaHeroPanel';
 import TemaRow from '@/components/aprender/TemaRow';
 import TemaAulasSheet from '@/components/aprender/TemaAulasSheet';
@@ -19,7 +19,7 @@ import {
   invalidateAprenderArea,
   loadAprenderArea,
 } from '@/lib/aprenderAreaLoader';
-import GeracaoAnimacaoOverlay from '@/components/vademecum/GeracaoAnimacaoOverlay';
+import GeracaoAnimacaoOverlay from '@/components/vademecum/overlays/GeracaoAnimacaoOverlay';
 import {
   PASSOS_GERACAO,
   RANGES_GERACAO,

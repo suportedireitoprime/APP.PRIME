@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { PageHeader } from "@/components/vademecum/PageHeader";
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Activity, Image as ImageIcon, Mic, Type, ChevronRight, RefreshCw, User as UserIcon, Bot, Mail, Clock } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";

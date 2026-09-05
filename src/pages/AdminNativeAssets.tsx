@@ -5,7 +5,7 @@ import {
   Upload, Trash2, CheckCircle2, XCircle, Loader2, Image as ImageIcon,
   FileJson, Sparkles, ExternalLink, RefreshCw, Download, Info, Rocket,
 } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { generateVariants, blobToBase64 } from '@/lib/generateIconVariants';
 import { AdminGithubTabs } from '@/components/admin/AdminGithubTabs';
