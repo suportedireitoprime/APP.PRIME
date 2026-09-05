@@ -3,25 +3,12 @@ import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Eye, EyeOff, Star, Heart, Highlighter, Copy, Plus, Minus, Type, MessageSquare, ChevronUp, ChevronDown, ChevronRight, ExternalLink, Volume2, Pause, Target, StickyNote, MessageCircle, Loader2, Share2, Network, BookOpen, Layers, Sparkles, GraduationCap, Play, Camera, Feather, History, LayoutGrid, Mic, Square, Bell, Scale, Download, Trash2, Box } from 'lucide-react';
-const LembretesArtigoSheet = lazyWithRetry(() => import('@/components/vademecum/sheets/LembretesArtigoSheet'));
 const QuizView = lazyWithRetry(() => import('@/components/estudar/QuizView'));
 const JurisprudenciaArtigoView = lazyWithRetry(() => import('@/pages/JurisprudenciaArtigo'));
-const BaixarArtigoSheet = lazyWithRetry(() => import('@/components/vademecum/sheets/BaixarArtigoSheet'));
-// Sheets/overlays pesados são carregados sob demanda: o chunk só desce
-// quando o usuário abre o painel. Reduz o bundle inicial que o
-// ArtigoBottomSheet arrasta para toda navegação do app.
-const GrifoFotoSheet = lazyWithRetry(() => import('@/components/vademecum/sheets/GrifoFotoSheet'));
-const AnotacoesSheet = lazyWithRetry(() => import('@/components/vademecum/sheets/AnotacoesSheet'));
 import ArtigoSidePanel from '@/components/vademecum/artigo/ArtigoSidePanel';
-const PerguntarSheet = lazyWithRetry(() => import('@/components/vademecum/sheets/PerguntarSheet'));
-const GrafoOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/GrafoOverlay'));
-const GrifoEraseSheet = lazyWithRetry(() => import('@/components/vademecum/sheets/GrifoEraseSheet'));
-const GrifoVoiceSheet = lazyWithRetry(() => import('@/components/vademecum/sheets/GrifoVoiceSheet'));
-import type { VoicePassage } from '@/components/vademecum/sheets/GrifoVoiceSheet';
 import GrifoVoicePanel, { type GrifoVoicePanelHandle, type VoicePhase } from '@/components/vademecum/grifos_ocr/GrifoVoicePanel';
-const KaraokeOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/KaraokeOverlay'));
 import { useNavigate } from 'react-router-dom';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
@@ -34,20 +21,13 @@ const brasaoImg = brasaoImgAsset;
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useHighlights, type Highlight } from '@/hooks/useHighlights';
-import HighlightColorBar from '@/components/vademecum/grifos_ocr/HighlightColorBar';
-const GeracaoAnimacaoOverlay = lazyWithRetry(() =>
-  import('@/components/vademecum/overlays/GeracaoAnimacaoOverlay').then((m) => ({ default: m.GeracaoAnimacaoOverlay })),
-);
 import { supabase } from '@/integrations/supabase/client';
 import { buildPlanaltoArticleUrl } from '@/services/legislacaoService';
-import ShareButtons from '@/components/vademecum/navigation/ShareButtons';
-const VideoaulaSheet = lazyWithRetry(() => import('@/components/vademecum/sheets/VideoaulaSheet'));
-const VideoaulasListSheet = lazyWithRetry(() => import('@/components/vademecum/sheets/VideoaulasListSheet'));
-import type { VideoaulaItem } from '@/components/vademecum/sheets/VideoaulasListSheet';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 
 import { useSubscription } from '@/hooks/useSubscription';
-import PremiumGate, { type PremiumFeatureKey } from '@/components/PremiumGate';
+import { type PremiumFeatureKey } from '@/components/PremiumGate';
+
 import { toast } from 'sonner';
 import { requireOnline } from '@/lib/offlineFeatures';
 import { useArtigoGrifoMagico } from './useArtigoGrifoMagico';
@@ -86,6 +66,16 @@ import {
   NARRACAO_CACHE_VERSION,
 } from './artigoConstants';
 export type { ModificationInfo } from './artigoConstants';
+import {
+  ArtigoTabsNavigation,
+  ArtigoTabHistorico,
+  ArtigoSheetHeader,
+  ArtigoBottomBar,
+  ArtigoActionMenuSheet,
+  ArtigoPraticarModal,
+  ArtigoTermosSheet,
+  ArtigoOverlays,
+} from './chunks';
 
 import {
   stripRedacao,
@@ -1412,249 +1402,32 @@ const ArtigoBottomSheet = ({ artigo: rawArtigo, onClose, isFavorito, onToggleFav
         {/* Scrollable content area: header, tabs and article content scroll up; bottom nav stays fixed */}
         <div ref={scrollContainerRef as any} className="flex-1 overflow-y-auto min-h-0 relative overscroll-contain">
 
-        {/* Top bar: heart/eye (left) + online count + close (right) */}
-        <div className="px-4 pt-1 pb-2 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            {!highlightMode && (
-              <>
-                <motion.button
-                  onClick={() => {
-                    if (!isPremium) {
-                      openPremiumGate('favorito');
-                      return;
-                    }
-                    import('@/lib/appEvents').then(({ appEvents }) =>
-                      appEvents.favoritarArtigo({ tabela: tabelaNome, numero: artigo.numero, on: !isFavorito })
-                    ).catch(() => {});
-                    onToggleFavorito?.();
-                  }}
-                  whileTap={{ scale: 0.85 }}
-                  className={`w-11 h-11 rounded-full flex items-center justify-center transition-colors ${isFavorito ? 'bg-rose-500/15' : 'hover:bg-secondary active:bg-secondary'}`}
-                  title={isFavorito ? 'Remover favorito' : 'Favoritar'}
-                  aria-label={isFavorito ? 'Remover favorito' : 'Favoritar'}
-                >
-                  <motion.span
-                    key={isFavorito ? 'on' : 'off'}
-                    initial={{ scale: isFavorito ? 0.6 : 1 }}
-                    animate={{ scale: isFavorito ? [0.6, 1.35, 1] : 1 }}
-                    transition={{ duration: 0.45, ease: [0.34, 1.56, 0.64, 1] }}
-                    className="inline-flex"
-                  >
-                    <Heart
-                      className={`w-6 h-6 transition-colors ${isFavorito ? 'text-rose-500 fill-rose-500 drop-shadow-[0_0_8px_rgba(244,63,94,0.55)]' : 'text-muted-foreground'}`}
-                      strokeWidth={2}
-                    />
-                  </motion.span>
-                </motion.button>
-                <motion.button
-                  onClick={() => setShowRedacao(!showRedacao)}
-                  whileTap={{ scale: 0.9 }}
-                  className={`w-11 h-11 rounded-full flex items-center justify-center transition-colors ${showRedacao ? 'bg-primary/20' : 'hover:bg-secondary active:bg-secondary'}`}
-                  title={showRedacao ? 'Ocultar redações' : 'Mostrar redações'}
-                  aria-label={showRedacao ? 'Ocultar redações' : 'Mostrar redações'}
-                >
-                  {showRedacao
-                    ? <Eye className="w-6 h-6 text-primary" />
-                    : <EyeOff className="w-6 h-6 text-muted-foreground" />
-                  }
-                </motion.button>
-                <motion.button
-                  onClick={() => setShowFontControls(v => !v)}
-                  whileTap={{ scale: 0.9 }}
-                  className={`w-11 h-11 rounded-full flex items-center justify-center transition-colors ${showFontControls ? 'bg-primary text-primary-foreground shadow-md' : 'hover:bg-secondary active:bg-secondary text-muted-foreground'}`}
-                  title="Tamanho da fonte"
-                  aria-label="Tamanho da fonte"
-                >
-                  <Type className="w-5 h-5" />
-                </motion.button>
-              </>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            {onlineCount > 1 && (
-              <span className="flex items-center gap-1 text-[11px] text-emerald-400 bg-emerald-400/10 rounded-full px-2 py-0.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                {onlineCount}
-              </span>
-            )}
-            {!highlightMode && (
-              <button onClick={handleSheetClose} className="w-11 h-11 rounded-full bg-primary hover:bg-primary/90 transition-colors flex items-center justify-center" aria-label="Fechar">
-                <X className="w-5 h-5 text-primary-foreground" />
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Painel expansível de ajuste de tamanho de fonte */}
-        <AnimatePresence>
-          {showFontControls && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden px-4 pb-2"
-            >
-              <div className="flex items-center justify-between gap-3 px-4 py-2 rounded-2xl bg-secondary/80 border border-border backdrop-blur-md">
-                <span className="text-xs font-semibold text-foreground/80 flex items-center gap-1.5">
-                  <Type className="w-3.5 h-3.5 text-primary" /> Tamanho do texto
-                </span>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setFontSize(prev => Math.max(prev - 1, 12))}
-                    className="w-8 h-8 rounded-full bg-card hover:bg-card/80 border border-border flex items-center justify-center text-foreground active:scale-95 transition"
-                    aria-label="Diminuir fonte"
-                  >
-                    <Minus className="w-3.5 h-3.5" />
-                  </button>
-                  <span className="text-xs font-bold text-foreground min-w-[36px] text-center">
-                    {fontSize}px
-                  </span>
-                  <button
-                    onClick={() => setFontSize(prev => Math.min(prev + 1, 26))}
-                    className="w-8 h-8 rounded-full bg-card hover:bg-card/80 border border-border flex items-center justify-center text-foreground active:scale-95 transition"
-                    aria-label="Aumentar fonte"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Breadcrumb: PARTE > TÍTULO / descrição */}
-        {(breadcrumb?.parte || breadcrumb?.titulo) && (
-          <div className="px-5 pb-1">
-            <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-              {breadcrumb?.parte && <span>{breadcrumb.parte}</span>}
-              {breadcrumb?.parte && breadcrumb?.titulo && <ChevronRight className="w-3 h-3" />}
-              {breadcrumb?.titulo && <span>{breadcrumb.titulo}</span>}
-            </div>
-            {breadcrumb?.tituloDesc && (
-              <p className="text-[11px] uppercase tracking-wide text-foreground/70 font-body leading-snug mt-0.5">
-                {breadcrumb.tituloDesc}
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* Big Art. Nº + Ver no Planalto */}
-        <div className="px-5 pt-1 pb-3 flex items-center justify-between gap-3">
-          <h3 className="font-display text-3xl font-bold text-foreground">
-            {/^\d/.test(artigo.numero) ? `Art. ${artigo.numero}` : artigo.numero}
-          </h3>
-          {planaltoUrl && !highlightMode && (
-            <a
-              href={planaltoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 pl-3.5 pr-4 py-2 rounded-full bg-neutral-900/85 border border-white/10 shadow-lg shadow-black/40 text-white/90 hover:text-white hover:bg-neutral-800 active:scale-95 transition shrink-0"
-              aria-label="Ver no Planalto"
-            >
-              <ExternalLink className="w-4 h-4" />
-              <span className="text-[13px] font-medium whitespace-nowrap">Ver no Planalto</span>
-            </a>
-          )}
-        </div>
-
-        {/* Share panel */}
-        <AnimatePresence>
-          {showSharePanel && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="px-5 pb-2 overflow-hidden"
-            >
-              <ShareButtons
-                artigoNumero={artigo.numero}
-                artigoTexto={artigo.caput}
-                leiNome={tabelaNome}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Título (fallback if no breadcrumb prop) */}
-        {!breadcrumb && artigo.titulo && (() => {
-          const parts = artigo.titulo.match(/^(T[IÍ]TULO\s+[IVXLC\d]+)\s*[-–]?\s*(.*)/i);
-          if (parts) {
-            return (
-              <div className="px-5 pb-1">
-                <p className="text-[11px] text-foreground/70 font-body uppercase tracking-wide">{parts[1]}</p>
-                <p className="text-[11px] text-foreground font-body leading-snug">{parts[2]}</p>
-              </div>
-            );
-          }
-          return (
-            <div className="px-5 pb-1">
-              <p className="text-[11px] text-foreground font-body leading-snug">{artigo.titulo}</p>
-            </div>
-          );
-        })()}
-
-        {/* Capítulo (fallback if no breadcrumb prop) */}
-        {!breadcrumb && artigo.capitulo && (() => {
-          const parts = artigo.capitulo.match(/^(CAP[IÍ]TULO\s+[IVXLC\d]+)\s*[-–]?\s*(.*)/i);
-          if (parts) {
-            return (
-              <div className="px-5 pb-2">
-                <p className="text-[11px] text-foreground/70 font-body uppercase tracking-wide">{parts[1]}</p>
-                <p className="text-[11px] text-foreground font-body leading-snug">{parts[2]}</p>
-              </div>
-            );
-          }
-          return (
-            <div className="px-5 pb-2">
-              <p className="text-[11px] text-foreground font-body leading-snug">{artigo.capitulo}</p>
-            </div>
-          );
-        })()}
-
-        <AnimatePresence>
-          {(highlightMode || voiceGrifoActive) && (
-            <HighlightColorBar
-              selectedColor={selectedColor}
-              onSelectColor={setSelectedColor}
-              onClearAll={clearAll}
-            />
-          )}
-        </AnimatePresence>
-
-        {/* Magic Highlights Legend */}
-        <AnimatePresence>
-          {magicMode && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="px-5 pb-2 overflow-hidden"
-            >
-              <div className="flex items-center gap-3 flex-wrap py-1.5">
-                {(() => {
-                  const LABELS: Record<string, string> = {
-                    amarelo: 'Chave',
-                    verde: 'Exceção',
-                    azul: 'Efeito',
-                    rosa: 'Termo',
-                    laranja: 'Pegadinha',
-                  };
-                  const ORDER = ['amarelo', 'verde', 'azul', 'rosa', 'laranja'];
-                  const present = new Set(magicHighlights.map((g) => g.cor));
-                  return ORDER.filter((c) => present.has(c as any)).map((cor) => (
-                    <span key={cor} className="flex items-center gap-1 text-[10px] text-foreground/70">
-                      <span
-                        className="w-2.5 h-2.5 rounded-full"
-                        style={{ backgroundColor: MAGIC_COLORS[cor], boxShadow: `0 0 0 1px ${MAGIC_COLORS[cor]}` }}
-                      />
-                      {LABELS[cor]}
-                    </span>
-                  ));
-                })()}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <ArtigoSheetHeader
+          artigo={artigo}
+          tabelaNome={tabelaNome}
+          breadcrumb={breadcrumb}
+          isFavorito={isFavorito}
+          onToggleFavorito={onToggleFavorito}
+          isPremium={isPremium}
+          openPremiumGate={openPremiumGate}
+          showRedacao={showRedacao}
+          setShowRedacao={setShowRedacao}
+          showFontControls={showFontControls}
+          setShowFontControls={setShowFontControls}
+          fontSize={fontSize}
+          setFontSize={setFontSize}
+          onlineCount={onlineCount}
+          highlightMode={highlightMode}
+          voiceGrifoActive={voiceGrifoActive}
+          onClose={handleSheetClose}
+          planaltoUrl={planaltoUrl}
+          showSharePanel={showSharePanel}
+          selectedColor={selectedColor}
+          setSelectedColor={setSelectedColor}
+          clearAll={clearAll}
+          magicMode={magicMode}
+          magicHighlights={magicHighlights}
+        />
 
         <Tabs value={activeTab} onValueChange={(v) => {
           if (showAnotacoesSheet || showPerguntarSheet || showPraticarSheet) return;
@@ -1673,20 +1446,8 @@ const ArtigoBottomSheet = ({ artigo: rawArtigo, onClose, isFavorito, onToggleFav
           setActiveTab(v);
         }} className="flex flex-col">
 
-          {modificationInfo ? (
-            <TabsList className="mx-5 bg-secondary/60 rounded-2xl h-11 grid grid-cols-2 w-auto p-1">
-              <TabsTrigger value="artigo" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Artigo</TabsTrigger>
-              <TabsTrigger value="explicacao" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Explicação</TabsTrigger>
-            </TabsList>
-          ) : (
-            <TabsList className="mx-5 bg-secondary/60 rounded-2xl h-11 grid grid-cols-4 w-auto p-1">
-              <TabsTrigger value="artigo" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Artigo</TabsTrigger>
-              <TabsTrigger value="explicacao" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Explicação</TabsTrigger>
-              <TabsTrigger value="exemplo" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Exemplo</TabsTrigger>
-              <TabsTrigger value="historico" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Histórico</TabsTrigger>
-            </TabsList>
+          <ArtigoTabsNavigation modificationInfo={modificationInfo} />
 
-          )}
 
 
           <TabsContent value="artigo" className="px-5 pb-[calc(9rem+var(--sai-bottom))] pt-4 relative">
@@ -2175,53 +1936,7 @@ const ArtigoBottomSheet = ({ artigo: rawArtigo, onClose, isFavorito, onToggleFav
             )}
           </TabsContent>
 
-          <TabsContent value="historico" className="px-5 pb-[calc(8rem+var(--sai-bottom))] pt-4">
-            {(() => {
-              const modRegex = /\(((?:Redação\s+dada|Incluíd[oa]|Acrescid[oa]|Revogad[oa]|Alterad[oa]|Vetad[oa]|Vigência|Regulamento|Renumerado|Transformado|Suprimido|Restabelecido|Produção de efeito)[^)]*)\)/gi;
-              const found: { texto: string; ano: number }[] = [];
-              const seen = new Set<string>();
-              let m: RegExpExecArray | null;
-              const src = artigo?.caput || '';
-              while ((m = modRegex.exec(src)) !== null) {
-                const t = m[1].trim();
-                if (seen.has(t)) continue;
-                seen.add(t);
-                const y = t.match(/\b(1\d{3}|20\d{2})\b/);
-                found.push({ texto: t, ano: y ? Number(y[1]) : 0 });
-              }
-              found.sort((a, b) => b.ano - a.ano);
-
-              return (
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-primary">
-                    <History className="w-4 h-4" />
-                    <p className="text-sm font-semibold uppercase tracking-wider">Histórico de alterações</p>
-                  </div>
-                  {found.length === 0 ? (
-                    <p className="text-muted-foreground text-sm py-8 text-center">
-                      Este artigo não possui alterações registradas em seu texto oficial.
-                    </p>
-                  ) : (
-                    <ul className="space-y-2">
-                      {found.map((item, i) => (
-                        <li key={i} className="rounded-xl bg-secondary/40 border border-border/60 border-l-4 border-l-primary/70 px-4 py-3">
-                          {item.ano > 0 && (
-                            <p className="text-[11px] font-bold uppercase tracking-wider text-primary mb-1">
-                              {item.ano}
-                            </p>
-                          )}
-                          <p className="text-[14px] text-foreground/90 leading-relaxed">{item.texto}</p>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  <p className="text-[11px] text-muted-foreground/70 text-center pt-2">
-                    Fonte: metadados oficiais do dispositivo.
-                  </p>
-                </div>
-              );
-            })()}
-          </TabsContent>
+          <ArtigoTabHistorico caput={artigo?.caput} />
         </Tabs>
 
 
@@ -2231,329 +1946,65 @@ const ArtigoBottomSheet = ({ artigo: rawArtigo, onClose, isFavorito, onToggleFav
             IMPORTANTE: o createPortal fica FORA do AnimatePresence — um portal não é
             um elemento React válido, então o AnimatePresence o descartaria e o menu
             nunca apareceria (bug do menu de rodapé no mobile). */}
-        {(activeTab ?? 'artigo') === 'artigo' && createPortal(
-          <AnimatePresence>
-            {activeActionMenu && (() => {
-              let funcoesItems = [
-                { id: 'juris', icon: Scale, label: 'Jurisprudência', desc: 'Súmulas, temas e acórdãos do STF/STJ', color: '#D4AF37', onClick: () => {
-                  setActiveActionMenu(null);
-                  if (!requireOnline('Jurisprudência')) return;
-                  if (!tabelaNome || !artigo?.numero) { toast.error('Artigo não identificado'); return; }
-                  gateFeature('jurisprudencia', 'jurisprudencia', 'Jurisprudência', () =>
-                    navigate(`/jurisprudencia/${tabelaNome}/${encodeURIComponent(String(artigo.numero))}`),
-                  );
-                } },
-                { icon: Play, label: 'Videoaulas', desc: 'Aulas em vídeo sobre este artigo', color: 'hsl(348 78% 38%)', onClick: () => {
-                  setActiveActionMenu(null);
-                  if (!requireOnline('Videoaulas')) return;
-                  gateFeature('videoaula', 'videoaula', 'Videoaulas', () => setShowVideoaulasListSheet(true));
-                } },
-                
-                { icon: BookOpen, label: 'Termos jurídicos', desc: 'Vocabulário do artigo explicado', color: '#F97316', onClick: () => { setActiveActionMenu(null); if (!requireOnline('Termos jurídicos')) return; gateFeature('termos', 'termos', 'Termos jurídicos', () => setShowTermosSheet(true)); } },
-                { icon: MessageCircle, label: 'Perguntar', desc: 'Tire dúvidas com a IA', color: '#A855F7', onClick: () => { setActiveActionMenu(null); if (!requireOnline('Perguntar à IA')) return; gateFeature('perguntar', 'perguntar', 'Perguntar à IA', () => setShowPerguntarSheet(true)); } },
-                ...(tabelaNome ? [{ icon: Network, label: 'Grafo de conexões', desc: 'Ver relações do artigo', color: '#10B981', onClick: () => { setActiveActionMenu(null); gateFeature('grafo', 'grafo', 'Grafo de conexões', () => setShowGrafo(true)); } }] : []),
-                { icon: Copy, label: 'Copiar artigo', desc: 'Texto para a área de transferência', color: '#8B5CF6', onClick: () => { setActiveActionMenu(null); handleCopy(); } },
-                { icon: Bell, label: 'Lembretes', desc: 'Avisar ao chegar em um local', color: '#DC2626', onClick: () => { setActiveActionMenu(null); import('@/components/vademecum/sheets/LembretesArtigoSheet'); gateFeature('lembretes', 'lembretes', 'Lembretes', () => setShowLembretesLocal(true)); } },
-                { icon: Download, label: 'Baixar artigo', desc: 'PDF ou imagem, lei seca ou comentado', color: '#0EA5E9', onClick: () => { setActiveActionMenu(null); gateFeature('baixar', 'baixar', 'Baixar artigo', () => setShowBaixarSheet(true)); } },
-                { icon: Share2, label: 'Compartilhar', desc: 'Enviar para outro app', color: '#06B6D4', onClick: () => { setActiveActionMenu(null); gateFeature('default', 'default', 'Compartilhar', () => setShowSharePanel(p => !p)); } },
-              ];
-
-              if (tabelaNome === 'LEIS_CF') {
-                funcoesItems = funcoesItems.filter(item => item.id !== 'juris');
-              }
-
-              const gateGrifo = (label: string, action: () => void) =>
-                gateFeature('grifo', 'grifo', label, action);
-              const grifarItems = [
-                { icon: Highlighter, label: highlightMode ? 'Desativar grifo manual' : 'Grifo manual', desc: 'Marcar com o dedo', color: '#EC4899', active: highlightMode, onClick: () => { setActiveActionMenu(null); if (highlightMode) { toggleMode(); return; } gateGrifo('Grifar', () => toggleMode()); } },
-                { icon: Sparkles, label: 'Grifo mágico (IA)', desc: 'Destaques automáticos', color: '#DC2626', active: magicMode, spin: magicLoading, badge: magicHighlights.length, onClick: () => { setActiveActionMenu(null); gateGrifo('Grifar', () => handleToggleMagic()); } },
-                { icon: Mic, label: 'Grifar por voz', desc: 'Dite o trecho a destacar', color: '#DC2626', onClick: () => { setActiveActionMenu(null); gateGrifo('Grifar', () => setVoiceGrifoActive(true)); } },
-                { icon: Camera, label: 'Grifar de foto', desc: 'OCR de imagem', color: '#3B82F6', onClick: () => { setActiveActionMenu(null); gateGrifo('Grifar', () => setShowGrifoFoto(true)); } },
-                { icon: Trash2, label: 'Apagar grifos', desc: 'Escolha por cor ou apague todos', color: 'hsl(348 78% 38%)', badge: eraseSheetHighlights.length, onClick: () => { setActiveActionMenu(null); setShowEraseSheet(true); } },
-              ];
-              const isGrifar = activeActionMenu === 'grifar';
-              const items = isGrifar ? grifarItems : funcoesItems;
-              const title = isGrifar ? 'Grifar' : 'Funções';
-              const HeaderIcon = isGrifar ? Feather : LayoutGrid;
-              return (
-                <>
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    data-artigo-menu=""
-                    onClick={() => setActiveActionMenu(null)}
-                    style={{ pointerEvents: 'auto' }}
-                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[10005]"
-                  />
-                  <motion.aside
-                    initial={{ y: '100%' }}
-                    animate={{ y: 0 }}
-                    exit={{ y: '100%' }}
-                    data-artigo-menu=""
-                    style={{ pointerEvents: 'auto' }}
-                    transition={{ type: 'spring', damping: 26, stiffness: 260 }}
-                    className="fixed bottom-0 left-0 right-0 z-[10006] bg-card border-t border-border rounded-t-3xl shadow-2xl flex flex-col pb-safe min-h-[74vh] max-h-[92vh] mx-auto max-w-lg md:left-1/2 md:right-auto md:-translate-x-1/2 md:bottom-6 md:top-auto md:w-[92vw] md:max-w-2xl md:rounded-3xl md:border md:border-border md:shadow-2xl md:min-h-0"
-                  >
-                    <div className="pt-3 pb-2 flex justify-center">
-                      <span className="w-10 h-1 rounded-full bg-border" />
-                    </div>
-                    <div className="flex items-center justify-between px-5 pb-3 border-b border-border">
-                      <div className="flex items-center gap-2">
-                        <HeaderIcon className={`w-5 h-5 ${isGrifar ? 'text-primary' : 'text-primary'}`} />
-                        <h3 className="font-heading text-base font-semibold text-foreground">{title}</h3>
-                      </div>
-                      <button
-                        onClick={() => setActiveActionMenu(null)}
-                        className="w-8 h-8 rounded-full hover:bg-secondary flex items-center justify-center text-foreground/70"
-                        aria-label="Fechar"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <div className="flex-1 overflow-y-auto py-2">
-                      {items.map((item, i, arr) => {
-                        const Icon = item.icon;
-                        return (
-                          <div key={i}>
-                            <button
-                              onClick={item.onClick}
-                              className={`w-full min-h-[68px] flex items-center gap-3 px-5 py-3.5 transition-colors text-left ${(item as any).active ? 'bg-primary/10' : 'hover:bg-secondary/60'}`}
-                            >
-                              <span
-                                className="w-9 h-9 flex items-center justify-center shrink-0"
-                                style={{ color: item.color }}
-                              >
-                                <Icon className={`w-[22px] h-[22px] ${(item as any).spin ? 'animate-spin' : ''}`} strokeWidth={2} />
-                              </span>
-                              <span className="flex-1 min-w-0">
-                                <span className="block text-[14.5px] font-medium text-foreground truncate">{item.label}</span>
-                                <span className="block text-[12px] text-foreground/60 truncate mt-0.5">{item.desc}</span>
-                              </span>
-                              {(item as any).badge > 0 && (
-                                <span className="ml-2 inline-flex min-w-[22px] h-[22px] px-1.5 rounded-full bg-primary text-primary-foreground text-[11px] font-bold items-center justify-center">
-                                  {(item as any).badge}
-                                </span>
-                              )}
-                            </button>
-                            {i < arr.length - 1 && (
-                              <div className="mx-5 h-px bg-border/60" />
-                            )}
-                          </div>
-                        );
-                      })}
-                      {isGrifar && (
-                        <div className="mt-2 mx-5 p-3 rounded-2xl bg-secondary/40 border border-border flex items-center justify-between gap-3">
-                          <div className="min-w-0">
-                            <p className="text-[13.5px] font-medium text-foreground">Mostrar grifo por padrão</p>
-                            <p className="text-[11.5px] text-foreground/60 mt-0.5">Ao abrir o artigo, exibe os grifos da IA automaticamente.</p>
-                          </div>
-                          <button
-                            type="button"
-                            role="switch"
-                            aria-checked={grifoIaDefaultOn}
-                            onClick={() => setGrifoIaDefault(!grifoIaDefaultOn)}
-                            className={`relative shrink-0 w-11 h-6 rounded-full transition-colors ${grifoIaDefaultOn ? 'bg-primary' : 'bg-muted'}`}
-                          >
-                            <span
-                              className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${grifoIaDefaultOn ? 'translate-x-5' : ''}`}
-                            />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </motion.aside>
-                </>
-              );
-            })()}
-          </AnimatePresence>,
-          document.body
+        {(activeTab ?? 'artigo') === 'artigo' && (
+          <ArtigoActionMenuSheet
+            activeActionMenu={activeActionMenu}
+            setActiveActionMenu={setActiveActionMenu}
+            tabelaNome={tabelaNome}
+            artigoNumero={artigo?.numero}
+            requireOnline={requireOnline}
+            gateFeature={gateFeature}
+            navigate={navigate}
+            setShowVideoaulasListSheet={setShowVideoaulasListSheet}
+            setShowTermosSheet={setShowTermosSheet}
+            setShowPerguntarSheet={setShowPerguntarSheet}
+            setShowGrafo={setShowGrafo}
+            handleCopy={handleCopy}
+            setShowLembretesLocal={setShowLembretesLocal}
+            setShowBaixarSheet={setShowBaixarSheet}
+            setShowSharePanel={setShowSharePanel}
+            highlightMode={highlightMode}
+            toggleMode={toggleMode}
+            magicMode={magicMode}
+            magicLoading={magicLoading}
+            magicHighlightsCount={magicHighlights.length}
+            handleToggleMagic={handleToggleMagic}
+            setVoiceGrifoActive={setVoiceGrifoActive}
+            setShowGrifoFoto={setShowGrifoFoto}
+            eraseSheetHighlightsCount={eraseSheetHighlights.length}
+            setShowEraseSheet={setShowEraseSheet}
+            grifoIaDefaultOn={grifoIaDefaultOn}
+            setGrifoIaDefault={setGrifoIaDefault}
+          />
         )}
-
 
         {/* Bottom nav bar — only visible on "artigo" tab; fixed as a flex item below the scrollable area */}
         {(activeTab ?? 'artigo') === 'artigo' && !isDesktop && (
-        <div className="shrink-0 relative z-[55] bg-zinc-900/95 backdrop-blur-md border-t border-zinc-800/80 rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.6)] pb-[calc(0.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
-          <div className="relative grid grid-cols-5 items-end px-2 py-1 max-w-lg mx-auto">
-            {(highlightMode || voiceGrifoActive) ? (
-              <button
-                onClick={() => setShowEraseSheet(true)}
-                className="flex flex-col items-center justify-end gap-1.5 py-1.5 text-zinc-300 hover:text-red-400 transition-colors"
-              >
-                <svg className="w-7 h-7 sm:w-8 sm:h-8 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
-                <span className="font-body text-[11px] sm:text-[12px] leading-tight">Apagar</span>
-              </button>
-            ) : (
-              <button
-                onClick={() => setActiveActionMenu('funcoes')}
-                className={`flex flex-col items-center justify-end gap-1 py-2 transition-colors ${activeActionMenu === 'funcoes' ? 'text-primary' : 'text-zinc-300 hover:text-white'}`}
-              >
-                <LayoutGrid className="w-7 h-7 sm:w-8 sm:h-8" />
-                <span className="font-body text-[11px] sm:text-[12px] leading-tight">Funções</span>
-              </button>
-            )}
-            {(highlightMode || voiceGrifoActive) ? (
-              <div aria-hidden="true" />
-            ) : (
-              <button
-                onClick={() => {
-                  if (!isPremium) {
-                    openPremiumGate('praticar');
-                    return;
-                  }
-                  setShowPraticarSheet(true);
-                }}
-                className="flex flex-col items-center justify-end gap-1 py-2 text-zinc-300 hover:text-white transition-colors"
-              >
-                <Target className="w-7 h-7 sm:w-8 sm:h-8" />
-                <span className="font-body text-[11px] sm:text-[12px] leading-tight">Praticar</span>
-              </button>
-            )}
-
-            {/* FAB central: Narrar por padrão; vira gravador quando Grifar por voz está ativo */}
-            {voiceGrifoActive ? (
-              <button
-                onClick={() => {
-                  if (voicePhase === 'recording') voicePanelRef.current?.stop();
-                  else if (voicePhase === 'idle') voicePanelRef.current?.start();
-                }}
-                disabled={voicePhase === 'processing'}
-                className="relative z-[80] flex flex-col items-center justify-end gap-1 py-2 touch-manipulation select-none"
-                aria-label={voicePhase === 'recording' ? 'Parar gravação' : 'Gravar voz'}
-              >
-                <div className="w-7 h-7 sm:w-8 sm:h-8 invisible" aria-hidden="true" />
-                <div className="absolute bottom-[28px] sm:bottom-[32px] pointer-events-none">
-                  <span className={`relative w-[4rem] h-[4rem] sm:w-[4.5rem] sm:h-[4.5rem] rounded-full flex items-center justify-center shadow-lg ring-4 ring-zinc-900 transition-all duration-300 pointer-events-auto ${voicePhase === 'recording' ? 'bg-red-500 shadow-red-500/40 scale-105' : voicePhase === 'processing' ? 'bg-secondary' : 'bg-primary shadow-primary/40'}`}>
-                    {voicePhase === 'recording' && (
-                      <>
-                        <span className="absolute inset-0 rounded-full bg-red-500/40 animate-ping" style={{ animationDuration: '1.2s' }} />
-                        <span className="absolute -inset-1 rounded-full bg-red-500/20 animate-ping" style={{ animationDuration: '1.8s', animationDelay: '0.2s' }} />
-                      </>
-                    )}
-                    {voicePhase === 'processing' ? (
-                      <Loader2 className="w-8 h-8 sm:w-9 sm:h-9 text-foreground animate-spin relative z-20" />
-                    ) : voicePhase === 'recording' ? (
-                      <Square className="w-7 h-7 sm:w-8 sm:h-8 text-white fill-white relative z-20" />
-                    ) : (
-                      <Mic className="w-8 h-8 sm:w-9 sm:h-9 text-black relative z-20" />
-                    )}
-                  </span>
-                </div>
-                <span className="font-body text-[11px] sm:text-[12px] font-semibold text-primary leading-tight">
-                  {voicePhase === 'recording' ? 'Parar' : voicePhase === 'processing' ? 'Analisando' : 'Gravar'}
-                </span>
-              </button>
-            ) : (
-              <button
-                onPointerDown={handleNarrarButtonPress}
-                onTouchStart={handleNarrarButtonPress}
-                onClick={handleNarrarButtonPress}
-                disabled={narracaoLoading}
-                className="relative z-[80] flex flex-col items-center justify-end gap-1 py-2 touch-manipulation select-none"
-                aria-label="Narrar"
-              >
-                <div className="w-7 h-7 sm:w-8 sm:h-8 invisible" aria-hidden="true" />
-                <div className="absolute bottom-[28px] sm:bottom-[32px] pointer-events-none">
-                  <span className={`relative w-[4rem] h-[4rem] sm:w-[4.5rem] sm:h-[4.5rem] rounded-full flex items-center justify-center shadow-lg ring-4 ring-zinc-900 transition-all duration-300 pointer-events-auto ${narracaoPlaying ? 'bg-primary shadow-primary/40 scale-105' : 'bg-primary shadow-primary/30 hover:bg-primary/90'}`}>
-                    {narracaoPlaying && (
-                      <>
-                        <span className="absolute inset-0 rounded-full bg-primary/30 animate-ping" style={{ animationDuration: '1.5s' }} />
-                        <span className="absolute -inset-1 rounded-full bg-primary/15 animate-ping" style={{ animationDuration: '2s', animationDelay: '0.3s' }} />
-                      </>
-                    )}
-                    {narracaoPlaying && (
-                      <svg className="absolute inset-0 w-full h-full -rotate-90 z-10 pointer-events-none" viewBox="0 0 56 56">
-                        <circle cx="28" cy="28" r="26" fill="none" stroke="hsl(var(--primary-foreground))" strokeWidth="3" strokeOpacity="0.2" />
-                        <circle
-                          ref={narracaoRingRef}
-                          cx="28" cy="28" r="26" fill="none"
-                          stroke="hsl(var(--primary-foreground))"
-                          strokeWidth="3"
-                          strokeLinecap="round"
-                          strokeDasharray={`${RING_CIRCUMFERENCE}`}
-                          strokeDashoffset={`${RING_CIRCUMFERENCE}`}
-                        />
-                      </svg>
-                    )}
-                    {narracaoLoading ? (
-                      <Loader2 className="w-8 h-8 sm:w-9 sm:h-9 text-primary-foreground animate-spin relative z-20" />
-                    ) : narracaoPlaying ? (
-                      <Pause className="w-8 h-8 sm:w-9 sm:h-9 text-primary-foreground relative z-20" />
-                    ) : (
-                      <Volume2 className="w-8 h-8 sm:w-9 sm:h-9 text-primary-foreground relative z-20" />
-                    )}
-                  </span>
-                </div>
-                <span className="font-body text-[11px] sm:text-[12px] font-semibold text-primary leading-tight">
-                  {narracaoPlaying ? 'Pausar' : narracaoUrl ? 'Ouvir' : 'Narrar'}
-                </span>
-              </button>
-            )}
-            {(highlightMode || voiceGrifoActive) ? (
-              <div aria-hidden="true" />
-            ) : (
-              <button
-                onClick={() => {
-                  if (!isPremium) {
-                    openPremiumGate('anotacoes');
-                    return;
-                  }
-                  setShowAnotacoesSheet(true);
-                  setShowFontControls(false);
-                }}
-                className="relative flex flex-col items-center justify-end gap-1 py-2 text-zinc-300 hover:text-white transition-colors"
-              >
-                <span className="relative">
-                  <StickyNote className="w-7 h-7 sm:w-8 sm:h-8" />
-                  {anotacoesCount > 0 && (
-                    <span className="absolute -top-1.5 -right-2 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-[10px] font-bold text-primary-foreground flex items-center justify-center leading-none shadow-md ring-2 ring-zinc-900">
-                      {anotacoesCount > 99 ? '99+' : anotacoesCount}
-                    </span>
-                  )}
-                </span>
-                <span className="font-body text-[11px] sm:text-[12px] leading-tight">Anotações</span>
-              </button>
-            )}
-            {(highlightMode || voiceGrifoActive) ? (
-              <button
-                onClick={() => {
-                  if (voiceGrifoActive) {
-                    try { voicePanelRef.current?.stop(); } catch {}
-                    setVoiceGrifoActive(false);
-                  } else {
-                    toggleMode();
-                  }
-                }}
-                className="flex flex-col items-center justify-end gap-1.5 py-1.5 text-primary hover:text-primary-light transition-colors"
-              >
-                <X className="w-7 h-7 sm:w-8 sm:h-8" />
-                <span className="font-body text-[11px] sm:text-[12px] font-semibold leading-tight">Fechar</span>
-              </button>
-            ) : (
-              <button
-                onClick={() => {
-                  if (!isPremium) {
-                    openPremiumGate('grifo');
-                    return;
-                  }
-                  setActiveActionMenu('grifar');
-                }}
-                className={`relative flex flex-col items-center justify-end gap-1 py-2 transition-colors ${activeActionMenu === 'grifar' || magicMode || highlightMode ? 'text-primary' : 'text-zinc-300 hover:text-white'}`}
-              >
-                <span className="relative">
-                  <Feather className={`w-7 h-7 sm:w-8 sm:h-8 ${magicLoading ? 'animate-spin' : ''}`} />
-                  {(highlights.length + magicHighlights.length) > 0 && (
-                    <span className="absolute -top-1.5 -right-2 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-[10px] font-bold text-primary-foreground flex items-center justify-center leading-none shadow-md ring-2 ring-card">
-                      {(highlights.length + magicHighlights.length) > 99 ? '99+' : (highlights.length + magicHighlights.length)}
-                    </span>
-                  )}
-                </span>
-                <span className="font-body text-[11px] sm:text-[12px] leading-tight">Grifar</span>
-              </button>
-            )}
-
-          </div>
-        </div>
+          <ArtigoBottomBar
+            highlightMode={highlightMode}
+            voiceGrifoActive={voiceGrifoActive}
+            setShowEraseSheet={setShowEraseSheet}
+            activeActionMenu={activeActionMenu}
+            setActiveActionMenu={setActiveActionMenu}
+            isPremium={isPremium}
+            openPremiumGate={openPremiumGate}
+            setShowPraticarSheet={setShowPraticarSheet}
+            voicePhase={voicePhase}
+            voicePanelRef={voicePanelRef}
+            setVoiceGrifoActive={setVoiceGrifoActive}
+            toggleMode={toggleMode}
+            handleNarrarButtonPress={handleNarrarButtonPress}
+            narracaoLoading={narracaoLoading}
+            narracaoPlaying={narracaoPlaying}
+            narracaoUrl={narracaoUrl}
+            narracaoRingRef={narracaoRingRef}
+            setShowAnotacoesSheet={setShowAnotacoesSheet}
+            setShowFontControls={setShowFontControls}
+            anotacoesCount={anotacoesCount}
+            magicMode={magicMode}
+            magicLoading={magicLoading}
+            highlightsCount={highlights.length + magicHighlights.length}
+          />
         )}
 
         <GrifoMagicoLoader open={magicLoading} />
@@ -2604,328 +2055,85 @@ const ArtigoBottomSheet = ({ artigo: rawArtigo, onClose, isFavorito, onToggleFav
 
         </AnimatePresence>
 
-        <Suspense fallback={null}>
-          {showEraseSheet && (
-            <GrifoEraseSheet
-              open={showEraseSheet}
-              onClose={() => setShowEraseSheet(false)}
-              highlights={eraseSheetHighlights}
-              onRemoveByColor={handleRemoveGrifosByColor}
-              onClearAll={handleClearAllGrifos}
-              portalContainer={typeof document !== 'undefined' ? document.body : undefined}
-            />
-          )}
+        {/* GrifoVoicePanel usa ref imperativo — mantido eager */}
+        <GrifoVoicePanel
+          ref={voicePanelRef}
+          active={voiceGrifoActive}
+          linhas={displayLines}
+          onPhaseChange={setVoicePhase}
+          onDeactivate={() => setVoiceGrifoActive(false)}
+          onApplyPassages={(passages) => {
+            for (const p of passages) {
+              addHighlightAtOffsets(p.lineIndex, p.startOffset, p.endOffset, p.text, p.color);
+            }
+          }}
+        />
 
-          {showVoiceSheet && (
-            <GrifoVoiceSheet
-              open={showVoiceSheet}
-              onClose={() => setShowVoiceSheet(false)}
-              linhas={displayLines}
-              onApplyPassages={(passages: VoicePassage[]) => {
-                for (const p of passages) {
-                  addHighlightAtOffsets(p.lineIndex, p.startOffset, p.endOffset, p.text, p.color);
-                }
-              }}
-            />
-          )}
+        {/* Praticar Modal */}
+        <ArtigoPraticarModal
+          showPraticarSheet={showPraticarSheet}
+          setShowPraticarSheet={setShowPraticarSheet}
+          artigoNumero={artigo?.numero}
+          tabelaNome={tabelaNome}
+          isPremium={isPremium}
+          openPremiumGate={openPremiumGate}
+          isDesktop={isDesktop}
+          setShowQuestoesPanel={setShowQuestoesPanel}
+          navigate={navigate}
+        />
 
-          {/* GrifoVoicePanel usa ref imperativo — mantido eager */}
-          <GrifoVoicePanel
-            ref={voicePanelRef}
-            active={voiceGrifoActive}
-            linhas={displayLines}
-            onPhaseChange={setVoicePhase}
-            onDeactivate={() => setVoiceGrifoActive(false)}
-            onApplyPassages={(passages) => {
-              for (const p of passages) {
-                addHighlightAtOffsets(p.lineIndex, p.startOffset, p.endOffset, p.text, p.color);
-              }
-            }}
-          />
-
-          {/* Overlay do gatinho + checklist enquanto gera a narração */}
-          {narracaoLoading && (
-            <GeracaoAnimacaoOverlay
-              open={narracaoLoading}
-              titulo="Gerando sua narração"
-              steps={[
-                'Preparando o texto do artigo',
-                'Gerando narração realista em HD',
-                'Salvando narração',
-                'Pronto para ouvir',
-              ]}
-              stepIdx={narracaoStepIdx}
-              stepRanges={[[0, 15], [15, 92], [92, 98], [100, 100]]}
-              estTotalSec={22}
-            />
-          )}
-
-          {/* Overlay animado ao gerar Explicação / Exemplo / Termos com IA */}
-          {aiGeneratingMode !== null && (
-            <GeracaoAnimacaoOverlay
-              open={aiGeneratingMode !== null}
-              titulo={
-                aiGeneratingMode === 'explicacao' ? 'Gerando explicação com IA' :
-                aiGeneratingMode === 'exemplo' ? 'Gerando exemplos práticos' :
-                aiGeneratingMode === 'termos' ? 'Analisando termos jurídicos' :
-                'Gerando conteúdo'
-              }
-              steps={[
-                'Preparando o texto do artigo',
-                'Consultando a IA',
-                'Formatando conteúdo',
-                'Pronto para ler',
-              ]}
-              stepIdx={aiGeneratingStep}
-              stepRanges={[[0, 20], [20, 85], [85, 98], [100, 100]]}
-              estTotalSec={12}
-            />
-          )}
-        </Suspense>
-
-
-
-
-
-        {/* Praticar Sheet */}
-        <AnimatePresence>
-          {showPraticarSheet && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/50 z-[10040]"
-                onClick={() => setShowPraticarSheet(false)}
-              />
-              <motion.div
-                initial={{ y: '100%' }}
-                animate={{ y: 0 }}
-                exit={{ y: '100%' }}
-                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                className="fixed bottom-0 left-0 right-0 z-[10041] bg-card rounded-t-3xl border-t border-border pb-safe h-[85vh] max-h-[85vh] overflow-y-auto mx-auto max-w-lg flex flex-col md:left-auto md:right-0 md:top-0 md:bottom-0 md:h-full md:max-h-none md:w-[min(30rem,92vw)] md:max-w-none md:rounded-none md:rounded-l-3xl md:border-l md:border-t-0 md:shadow-2xl md:mx-0"
-              >
-                <div className="pt-3 pb-2 flex justify-center">
-                  <span className="w-10 h-1 rounded-full bg-border" />
-                </div>
-                <div className="flex items-center justify-between px-5 pb-3 border-b border-border">
-                  <div className="flex items-center gap-2">
-                    <Target className="w-5 h-5 text-primary" />
-                    <h3 className="font-heading text-base font-semibold text-foreground">Praticar</h3>
-                  </div>
-                  <button
-                    onClick={() => setShowPraticarSheet(false)}
-                    className="w-8 h-8 rounded-full hover:bg-secondary flex items-center justify-center text-foreground/70"
-                    aria-label="Fechar"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-                <p className="px-5 pt-3 text-[12.5px] text-foreground/60">Art. {artigo?.numero} — Escolha o modo de estudo</p>
-                <div className="flex-1 py-2">
-                  {[
-                    {
-                      icon: Target,
-                      label: 'Questões',
-                      desc: 'Múltipla escolha com comentários e exemplos',
-                      color: '#DC2626',
-                      onClick: () => {
-                        setShowPraticarSheet(false);
-                        if (!isPremium) {
-                          openPremiumGate('questoes');
-                          return;
-                        }
-                        if (isDesktop) {
-                          setShowQuestoesPanel(true);
-                        } else {
-                          navigate(`/estudos?mode=questoes&tabela=${tabelaNome}&artigo=${artigo?.numero}`);
-                        }
-                      },
-                    },
-                    {
-                      icon: Layers,
-                      label: 'Flashcards',
-                      desc: 'Cards com flip animado e exemplos práticos',
-                      color: '#DC2626',
-                      onClick: () => {
-                        setShowPraticarSheet(false);
-                        if (!isPremium) {
-                          openPremiumGate('flashcards');
-                          return;
-                        }
-                        navigate(`/estudos?mode=flashcards&tabela=${tabelaNome}&artigo=${artigo?.numero}`);
-                      },
-                    },
-                  ].map((item, i, arr) => {
-                    const Icon = item.icon;
-                    return (
-                      <div key={i}>
-                        <button
-                          onClick={item.onClick}
-                          className="w-full flex items-center gap-4 px-5 py-5 transition-colors text-left hover:bg-secondary/60"
-                        >
-                          <span className="w-11 h-11 flex items-center justify-center shrink-0" style={{ color: item.color }}>
-                            <Icon className="w-[26px] h-[26px]" strokeWidth={2} />
-                          </span>
-                          <span className="flex-1 min-w-0">
-                            <span className="block text-[15.5px] font-medium text-foreground truncate">{item.label}</span>
-                            <span className="block text-[12.5px] text-foreground/60 truncate mt-0.5">{item.desc}</span>
-                          </span>
-                          <ChevronRight className="w-5 h-5 text-foreground/40 shrink-0" />
-                        </button>
-                        {i < arr.length - 1 && <div className="mx-5 h-px bg-border/60" />}
-                      </div>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
-
-        {/* Estudar Sheet removido */}
-
-
-        <Suspense fallback={null}>
-          {/* Videoaula full-screen sheet */}
-          {showVideoaulaSheet && (
-            <VideoaulaSheet
-              open={showVideoaulaSheet}
-              onClose={() => setShowVideoaulaSheet(false)}
-              video={videoaula}
-              tabelaNome={tabelaNome || ''}
-              artigoNumero={artigo?.numero || ''}
-              artigoTexto={artigo?.caput || ''}
-            />
-          )}
-
-          {showVideoaulasListSheet && (
-            <VideoaulasListSheet
-              open={showVideoaulasListSheet}
-              onClose={() => setShowVideoaulasListSheet(false)}
-              tabelaNome={tabelaNome || ''}
-              artigoNumero={artigo?.numero || ''}
-              leiNome={tabelaNome}
-              onSelectVideo={(v) => {
-                setVideoaula({ titulo: v.titulo, url: v.url, canal: v.canal, videoId: v.videoId });
-                setShowVideoaulasListSheet(false);
-                setShowVideoaulaSheet(true);
-              }}
-            />
-          )}
-
-          {showAnotacoesSheet && (
-            <AnotacoesSheet
-              open={showAnotacoesSheet}
-              onClose={() => setShowAnotacoesSheet(false)}
-              tabelaNome={tabelaNome || 'unknown'}
-              artigoNumero={artigo.numero}
-              artigoTexto={artigo.caput}
-              onCountChange={setAnotacoesCount}
-            />
-          )}
-
-          {showPerguntarSheet && (
-            <PerguntarSheet
-              open={showPerguntarSheet}
-              onClose={() => setShowPerguntarSheet(false)}
-              tabelaNome={tabelaNome || 'unknown'}
-              artigoNumero={artigo.numero}
-              artigoTexto={artigo.caput}
-            />
-          )}
-        </Suspense>
-
-        {/* Termos jurídicos Sheet (aberto pelo menu Grifar) */}
-        <Sheet open={showTermosSheet} onOpenChange={(open) => setShowTermosSheet(open)}>
-          <SheetContent side="bottom" className="z-[10041] h-[90vh] max-w-lg mx-auto rounded-t-3xl p-0 flex flex-col md:left-auto md:right-0 md:top-0 md:bottom-0 md:h-full md:w-[min(30rem,92vw)] md:max-w-none md:rounded-none md:rounded-l-3xl md:border-l md:mx-0">
-            <div className="flex items-center gap-2 px-5 py-4 border-b border-border">
-              <BookOpen className="w-5 h-5 text-orange-400" />
-              <h3 className="font-heading text-base font-semibold text-foreground flex-1">Termos jurídicos</h3>
-              <button onClick={() => setShowTermosSheet(false)} className="w-8 h-8 rounded-full hover:bg-secondary flex items-center justify-center text-foreground/70" aria-label="Fechar">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto px-5 py-4">
-              {aiLoading.termos ? (
-                <div className="flex flex-col items-center justify-center py-12 gap-3">
-                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                  <p className="text-sm text-muted-foreground font-body">Analisando termos jurídicos com IA...</p>
-                </div>
-              ) : aiContent.termos ? (
-                (() => {
-                  const sections = splitSections(aiContent.termos, '---TERMO---');
-                  if (sections.length <= 1) {
-                    return (
-                      <div className="prose prose-sm dark:prose-invert max-w-none font-body leading-relaxed [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-1 [&_h2]:font-bold [&_h2]:text-foreground [&_h3]:font-bold [&_strong]:text-foreground" style={{ fontSize: `${fontSize}px` }}>
-                        <ReactMarkdown>{aiContent.termos}</ReactMarkdown>
-                      </div>
-                    );
-                  }
-                  return (
-                    <Accordion type="single" collapsible className="space-y-2">
-                      {sections.map((sec, i) => {
-                        const borderColors = ['border-l-pink-500/70', 'border-l-orange-500/70', 'border-l-cyan-500/70', 'border-l-red-500/70', 'border-l-indigo-500/70', 'border-l-lime-500/70'];
-                        const strongColors = ['[&_strong]:text-pink-400', '[&_strong]:text-orange-400', '[&_strong]:text-cyan-400', '[&_strong]:text-red-400', '[&_strong]:text-indigo-400', '[&_strong]:text-lime-400'];
-                        return (
-                          <AccordionItem key={i} value={`term-${i}`} className={`border border-border rounded-xl overflow-hidden bg-secondary/30 border-l-4 ${borderColors[i % borderColors.length]}`}>
-                            <AccordionTrigger className="px-4 py-4 text-base font-semibold text-foreground text-left hover:no-underline [&[data-state=open]>svg]:rotate-180">
-                              {sec.title}
-                            </AccordionTrigger>
-                            <AccordionContent className="px-4 pb-4">
-                              <div className={`prose prose-sm dark:prose-invert max-w-none font-body leading-relaxed [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-1 ${strongColors[i % strongColors.length]}`} style={{ fontSize: `${fontSize}px` }}>
-                                <ReactMarkdown>{sec.body}</ReactMarkdown>
-                              </div>
-                            </AccordionContent>
-                          </AccordionItem>
-                        );
-                      })}
-                    </Accordion>
-                  );
-                })()
-              ) : (
-                <p className="text-muted-foreground text-sm text-center py-8">Carregando termos...</p>
-              )}
-            </div>
-          </SheetContent>
-        </Sheet>
+        {/* Termos jurídicos Sheet */}
+        <ArtigoTermosSheet
+          open={showTermosSheet}
+          onOpenChange={setShowTermosSheet}
+          loading={aiLoading.termos}
+          content={aiContent.termos}
+          fontSize={fontSize}
+        />
         </SheetContent>
       </Sheet>
 
-
-      <Suspense fallback={null}>
-        {tabelaNome && artigo && showGrafo && (
-          <GrafoOverlay
-            open={showGrafo}
-            onClose={() => setShowGrafo(false)}
-            tabelaNome={tabelaNome}
-            leiNome={tabelaNome}
-            artigoNumero={artigo.numero}
-            artigoTexto={[artigo.caput, ...(artigo.incisos?.map((x: any) => typeof x === 'string' ? x : x?.texto) || []), ...(artigo.paragrafos?.map((x: any) => typeof x === 'string' ? x : x?.texto) || [])].filter(Boolean).join('\n\n')}
-          />
-        )}
-        <PremiumGate open={showPremiumGate} onClose={() => setShowPremiumGate(false)} feature={premiumGateFeature} description={premiumGateDesc} />
-        {showLembretesLocal && (
-          <LembretesArtigoSheet
-            open={showLembretesLocal}
-            onClose={() => setShowLembretesLocal(false)}
-            artigoRef={`${tabelaNome || 'artigo'}::${artigo?.numero ?? 'x'}`}
-            artigoTitulo={artigo ? `Art. ${artigo.numero}${tabelaNome ? ' — ' + tabelaNome : ''}` : 'Artigo'}
-          />
-        )}
-        {showBaixarSheet && (
-          <BaixarArtigoSheet
-            open={showBaixarSheet}
-            onClose={() => setShowBaixarSheet(false)}
-            artigo={artigo ? { numero: String(artigo.numero), caput: artigo.caput || '', incisos: (artigo as any).incisos, paragrafos: (artigo as any).paragrafos } : null}
-            tabelaNome={tabelaNome}
-          />
-        )}
-        {showGrifoFoto && (
-          <GrifoFotoSheet open={showGrifoFoto} onClose={() => setShowGrifoFoto(false)} />
-        )}
-
-      </Suspense>
+      {/* Overlays e sheets secundários lazy-loaded */}
+      <ArtigoOverlays
+        showEraseSheet={showEraseSheet}
+        setShowEraseSheet={setShowEraseSheet}
+        eraseSheetHighlights={eraseSheetHighlights}
+        handleRemoveGrifosByColor={handleRemoveGrifosByColor}
+        handleClearAllGrifos={handleClearAllGrifos}
+        showVoiceSheet={showVoiceSheet}
+        setShowVoiceSheet={setShowVoiceSheet}
+        displayLines={displayLines}
+        addHighlightAtOffsets={addHighlightAtOffsets}
+        narracaoLoading={narracaoLoading}
+        narracaoStepIdx={narracaoStepIdx}
+        aiGeneratingMode={aiGeneratingMode}
+        aiGeneratingStep={aiGeneratingStep}
+        showVideoaulaSheet={showVideoaulaSheet}
+        setShowVideoaulaSheet={setShowVideoaulaSheet}
+        videoaula={videoaula}
+        setVideoaula={setVideoaula}
+        showVideoaulasListSheet={showVideoaulasListSheet}
+        setShowVideoaulasListSheet={setShowVideoaulasListSheet}
+        tabelaNome={tabelaNome}
+        artigo={artigo}
+        showAnotacoesSheet={showAnotacoesSheet}
+        setShowAnotacoesSheet={setShowAnotacoesSheet}
+        setAnotacoesCount={setAnotacoesCount}
+        showPerguntarSheet={showPerguntarSheet}
+        setShowPerguntarSheet={setShowPerguntarSheet}
+        showGrafo={showGrafo}
+        setShowGrafo={setShowGrafo}
+        showPremiumGate={showPremiumGate}
+        setShowPremiumGate={setShowPremiumGate}
+        premiumGateFeature={premiumGateFeature}
+        premiumGateDesc={premiumGateDesc}
+        showLembretesLocal={showLembretesLocal}
+        setShowLembretesLocal={setShowLembretesLocal}
+        showBaixarSheet={showBaixarSheet}
+        setShowBaixarSheet={setShowBaixarSheet}
+        showGrifoFoto={showGrifoFoto}
+        setShowGrifoFoto={setShowGrifoFoto}
+      />
 
       {/* Desktop: Questões e Jurisprudência como painel lateral */}
       {isDesktop && artigo && (

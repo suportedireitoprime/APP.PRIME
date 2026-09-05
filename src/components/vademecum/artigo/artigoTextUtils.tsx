@@ -338,3 +338,18 @@ export function formatNarracaoTime(seconds: number): string {
   const s = Math.floor(seconds % 60);
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
+
+/** Split AI content into titled sections using a separator marker */
+export function splitSections(text: string, marker: string): Array<{ title: string; body: string }> {
+  const parts = text.split(marker).filter((s) => s.trim());
+  return parts.map((part, i) => {
+    const lines = part.trim().split('\n');
+    const titleLine = lines.find((l) => l.startsWith('## ') || l.startsWith('**'));
+    const title = titleLine
+      ? titleLine.replace(/^##\s*/, '').replace(/^\*\*/, '').replace(/\*\*$/, '').trim()
+      : `Seção ${i + 1}`;
+    const body = lines.filter((l) => l !== titleLine).join('\n').trim();
+    return { title, body: body || part.trim() };
+  });
+}
+
