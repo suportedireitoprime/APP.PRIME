@@ -79,6 +79,8 @@ const MAIN_TAB_KEYS: PrefetchKey[] = [
 let mainTabsScheduled = false;
 let idleScheduled = false;
 
+import { prewarmFavoritosERecentesIdle } from '@/services/warmFavoritosService';
+
 /** Pre-aquecimento imediato das 6 abas e rotas principais do BottomNav em idle. */
 export function prefetchMainTabsIdle(): void {
   if (mainTabsScheduled || typeof window === "undefined") return;
@@ -88,6 +90,9 @@ export function prefetchMainTabsIdle(): void {
     MAIN_TAB_KEYS.forEach((key) => {
       try { routePrefetch[key](); } catch { /* noop */ }
     });
+    try {
+      prewarmFavoritosERecentesIdle();
+    } catch { /* noop */ }
   };
 
   const ric = (window as any).requestIdleCallback as

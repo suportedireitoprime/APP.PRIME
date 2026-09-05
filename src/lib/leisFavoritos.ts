@@ -1,5 +1,6 @@
 // "Leis favoritas" — local (instantâneo) + sincronizado no Supabase por usuário
 import { createSyncedList, registerForSync } from './userSync';
+import { haptic } from '@/lib/nativeHaptics';
 
 export type LeiFavorita = {
   tipo: string;
@@ -33,13 +34,19 @@ export function isFavorito(leiId: string): boolean {
 
 export function addFavorito(lei: Omit<LeiFavorita, 'favoritedAt'>) {
   list.put({ ...lei, favoritedAt: Date.now() });
+  if (lei.tabela_nome) {
+    import('@/services/warmFavoritosService')
+      .then((m) => {
+        void m.persistLeiArtigosInBackground(lei.tabela_nome);
+      })
+      .catch(() => {});
+  }
 }
 
 export function removeFavorito(leiId: string) {
   list.remove(leiId);
 }
 
-import { haptic } from '@/lib/nativeHaptics';
 export function toggleFavorito(lei: Omit<LeiFavorita, 'favoritedAt'>): boolean {
   haptic.selection();
   if (isFavorito(lei.leiId)) {

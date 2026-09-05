@@ -6,6 +6,7 @@ import ResumoJuridicoReaderSheet, { ResumoRow } from '@/components/resumos-jurid
 import { resumosLocal, type ResumoRef } from '@/lib/resumosLocal';
 import { supabase } from '@/integrations/supabase/client';
 import { useGoBack } from '@/hooks/useGoBack';
+import { getPersistedResumo, setPersistedResumo } from '@/services/offlineDb';
 
 type Filtro = 'todos' | 'favoritos' | 'recentes';
 
@@ -23,7 +24,7 @@ export default function MeusResumos() {
       setFavs(resumosLocal.favoritos());
       setRecentes(resumosLocal.recentes());
     };
-    void resumosLocal.pull().then(sync);
+    sync();
     window.addEventListener('resumos-local-change', sync);
     return () => window.removeEventListener('resumos-local-change', sync);
   }, []);
@@ -40,6 +41,31 @@ export default function MeusResumos() {
   }, [favs, recentes, filtro]);
 
   const abrir = async (ref: ResumoRef) => {
+    // 1) Fast-path do IndexedDB: abertura instantânea (0ms)
+    const cached = await getPersistedResumo<ResumoRow>(ref.id);
+    if (cached) {
+      resumosLocal.registrarRecente({
+        id: cached.id,
+        area: cached.area,
+        tema: cached.tema,
+        subtema: cached.subtema,
+      });
+      setSelected(cached);
+      // Revalida em background sem travar UI
+      void (supabase as any)
+        .from('resumos_juridicos')
+        .select('id, area, tema, subtema, ordem_subtema, markdown, exemplos, termos')
+        .eq('id', ref.id)
+        .maybeSingle()
+        .then(({ data }: any) => {
+          if (data) {
+            void setPersistedResumo(ref.id, data);
+            setSelected(data as ResumoRow);
+          }
+        });
+      return;
+    }
+
     setLoadingId(ref.id);
     const { data } = await (supabase as any)
       .from('resumos_juridicos')
@@ -48,6 +74,7 @@ export default function MeusResumos() {
       .maybeSingle();
     setLoadingId(null);
     if (data) {
+      void setPersistedResumo(ref.id, data);
       resumosLocal.registrarRecente({
         id: data.id,
         area: data.area,

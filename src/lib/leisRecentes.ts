@@ -30,6 +30,13 @@ export function pushRecente(lei: Omit<LeiRecente, 'openedAt'>) {
     const list = getRecentes().filter((l) => l.leiId !== lei.leiId);
     list.unshift({ ...lei, openedAt: Date.now() });
     localStorage.setItem(KEY, JSON.stringify(list.slice(0, MAX)));
+    if (lei.tabela_nome) {
+      import('@/services/warmFavoritosService')
+        .then((m) => {
+          void m.persistLeiArtigosInBackground(lei.tabela_nome);
+        })
+        .catch(() => {});
+    }
   } catch {}
 }
 

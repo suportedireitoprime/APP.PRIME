@@ -6,6 +6,7 @@ import ResumosBottomNav from "@/components/resumos/ResumosBottomNav";
 import ResumoJuridicoReaderSheet, { ResumoRow } from "@/components/resumos-juridicos/ResumoJuridicoReaderSheet";
 import { resumosLocal, ResumoRef } from "@/lib/resumosLocal";
 import { supabase } from "@/integrations/supabase/client";
+import { getPersistedResumo, setPersistedResumo } from "@/services/offlineDb";
 
 export default function ResumosJuridicosLista({ modo }: { modo: "favoritos" | "recentes" }) {
  const navigate = useNavigate();
@@ -35,6 +36,31 @@ export default function ResumosJuridicosLista({ modo }: { modo: "favoritos" | "r
  }, [refs, q]);
 
  const abrir = async (ref: ResumoRef) => {
+ // 1) Fast-path do IndexedDB: abertura instantânea (0ms)
+ const cached = await getPersistedResumo<ResumoRow>(ref.id);
+ if (cached) {
+ resumosLocal.registrarRecente({
+ id: cached.id,
+ area: cached.area,
+ tema: cached.tema,
+ subtema: cached.subtema,
+ });
+ setSelected(cached);
+ // Revalida em background sem travar UI
+ void (supabase as any)
+ .from("resumos_juridicos")
+ .select("id, area, tema, subtema, ordem_subtema, markdown, exemplos, termos")
+ .eq("id", ref.id)
+ .maybeSingle()
+ .then(({ data }: any) => {
+ if (data) {
+ void setPersistedResumo(ref.id, data);
+ setSelected(data as ResumoRow);
+ }
+ });
+ return;
+ }
+
  setLoadingId(ref.id);
  const { data } = await (supabase as any)
  .from("resumos_juridicos")
@@ -43,6 +69,7 @@ export default function ResumosJuridicosLista({ modo }: { modo: "favoritos" | "r
  .maybeSingle();
  setLoadingId(null);
  if (data) {
+ void setPersistedResumo(ref.id, data);
  resumosLocal.registrarRecente({
  id: data.id,
  area: data.area,

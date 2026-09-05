@@ -188,6 +188,25 @@ export async function setPersistedArtigosCache(tabelaNome: string, artigos: any[
   } catch { /* ignore quota errors */ }
 }
 
+// ─────────── Resumos jurídicos persistidos (favoritos e recentes) ───────────
+export async function getPersistedResumo<T = any>(id: string): Promise<T | null> {
+  try {
+    const row = await db.bibliotecaColecoes.get(`resumo:${id}`);
+    if (!row?.payload) return null;
+    return JSON.parse(row.payload) as T;
+  } catch { return null; }
+}
+
+export async function setPersistedResumo(id: string, resumo: any): Promise<void> {
+  try {
+    await db.bibliotecaColecoes.put({
+      id: `resumo:${id}`,
+      payload: JSON.stringify(resumo),
+      updatedAt: Date.now(),
+    });
+  } catch { /* ignore quota */ }
+}
+
 export async function saveArtigosOffline(tabelaNome: string, artigos: any[]) {
   const mapped: OfflineArtigo[] = artigos.map(a => ({
     id: a.id,

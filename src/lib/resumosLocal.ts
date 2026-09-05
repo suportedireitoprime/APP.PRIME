@@ -46,11 +46,25 @@ export const resumosLocal = {
       return false;
     }
     favList.put({ ...ref, ts: Date.now() });
+    if (ref.id) {
+      import('@/services/warmFavoritosService')
+        .then((m) => {
+          void m.persistResumoInBackground(ref.id);
+        })
+        .catch(() => {});
+    }
     return true;
   },
 
   registrarRecente(ref: Omit<ResumoRef, "ts">) {
     recList.put({ ...ref, ts: Date.now() });
+    if (ref.id) {
+      import('@/services/warmFavoritosService')
+        .then((m) => {
+          void m.persistResumoInBackground(ref.id);
+        })
+        .catch(() => {});
+    }
   },
 
   limparRecentes: () => recList.clear(),

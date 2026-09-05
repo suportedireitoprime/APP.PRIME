@@ -10,7 +10,6 @@ import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { isAdminEmail } from '@/lib/adminEmails';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
-import ShapeGrid from '@/components/ui/ShapeGrid';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import AprenderBottomNav from '@/components/aprender/AprenderBottomNav';
 import AprenderLembretesSheet from '@/components/aprender/AprenderLembretesSheet';
@@ -270,9 +269,6 @@ const Aprender = () => {
       mobileHeader={mobileHeader}
       wide
     >
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
-        <ShapeGrid />
-      </div>
       <div className={cn("relative z-10 w-full 2xl:max-w-[1750px] mx-auto px-3 sm:px-6 lg:px-8 lg:pt-4 pb-[calc(7rem+var(--sai-bottom))]", !isAdmin && "relative h-[100dvh] sm:h-auto overflow-hidden")}>
         <div className="lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
           {/* ── Sidebar Esquerda Desktop: Filtros & Lembretes de Estudo ───────────── */}
