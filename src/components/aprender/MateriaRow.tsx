@@ -29,7 +29,7 @@ const MateriaRow = ({ area, icon, onOpen, onPrefetch }: Props) => {
       onPointerEnter={onPrefetch}
       onFocus={onPrefetch}
       onTouchStart={onPrefetch}
-      className="group flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md p-3.5 text-left transition-all hover:bg-black/60 hover:border-primary/40 hover:shadow-lg focus-visible:outline-none sm:p-4"
+      className="group flex w-full items-center gap-3 rounded-2xl border border-border/80 bg-card p-3.5 text-left transition-all hover:bg-muted/70 hover:border-primary/50 hover:shadow-lg focus-visible:outline-none sm:p-4"
     >
       {icon ? (
         <div className="relative flex h-12 w-12 shrink-0 items-center justify-center sm:h-14 sm:w-14">
@@ -76,8 +76,8 @@ const MateriaRow = ({ area, icon, onOpen, onPrefetch }: Props) => {
             className={[
               'shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums',
               iniciada
-                ? 'bg-[hsl(var(--aprender-accent)/0.18)] text-[hsl(var(--aprender-accent))]'
-                : 'bg-muted text-muted-foreground',
+                ? 'bg-primary/20 text-primary border border-primary/30'
+                : 'bg-muted text-muted-foreground border border-border/60',
             ].join(' ')}
           >
             {pct}%

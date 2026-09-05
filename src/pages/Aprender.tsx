@@ -272,7 +272,7 @@ const Aprender = () => {
       <div className={cn("relative z-10 w-full 2xl:max-w-[1750px] mx-auto px-3 sm:px-6 lg:px-8 lg:pt-4 pb-[calc(7rem+var(--sai-bottom))]", !isAdmin && "relative h-[100dvh] sm:h-auto overflow-hidden")}>
         <div className="lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
           {/* ── Sidebar Esquerda Desktop: Filtros & Lembretes de Estudo ───────────── */}
-          <aside className="hidden lg:block lg:col-span-3 space-y-4 bg-card/40 border border-border/60 rounded-2xl p-4 shadow-sm">
+          <aside className="hidden lg:block lg:col-span-3 space-y-4 bg-card border border-border rounded-2xl p-4 shadow-sm">
             <div className="flex items-center justify-between border-b border-border/60 pb-3">
               <h2 className="text-sm font-bold text-foreground">Filtrar Matérias</h2>
               <span className="text-[11px] font-semibold text-primary px-2.5 py-0.5 rounded-full bg-primary/10">
@@ -324,13 +324,13 @@ const Aprender = () => {
 
           {/* ── Coluna Central Widescreen: Trilha Hero, Continuar & Matérias ─────── */}
           <div className="lg:col-span-6 space-y-5">
-            {/* Hero amarelo full-bleed */}
+            {/* Hero trilhas em cinza elevado */}
             <section
-              className="bg-black/40 backdrop-blur-md relative isolate overflow-hidden -mx-3 sm:mx-0 rounded-none sm:rounded-2xl border-b border-black/10 sm:border border-white/10 shadow-xl"
+              className="bg-card relative isolate overflow-hidden -mx-3 sm:mx-0 rounded-none sm:rounded-2xl border-b border-border sm:border shadow-xl"
               aria-label="Seu progresso em trilhas"
             >
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.15),transparent_60%)]" />
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.4),transparent_65%)]" />
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.08),transparent_60%)]" />
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.25),transparent_65%)]" />
 
               <div
                 className="pointer-events-none absolute inset-y-0 right-0 w-[42%] sm:w-[34%] overflow-hidden"
@@ -355,7 +355,7 @@ const Aprender = () => {
                   }}
                 />
                 {/* Fade left edge to blend with background */}
-                <div className="absolute inset-y-0 left-0 w-2/3 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
+                <div className="absolute inset-y-0 left-0 w-2/3 bg-gradient-to-r from-card via-card/70 to-transparent" />
               </div>
 
               <div className="relative p-4 sm:p-5">
@@ -403,21 +403,21 @@ const Aprender = () => {
                 </div>
 
                 {/* Barra única com as 3 métricas */}
-                <div className="relative mt-3 rounded-xl bg-black/85 text-white ring-1 ring-black/20 shadow-lg">
-                  <div className="grid grid-cols-3 divide-x divide-white/10">
+                <div className="relative mt-3 rounded-xl bg-background/80 text-foreground border border-border/80 shadow-md">
+                  <div className="grid grid-cols-3 divide-x divide-border/60">
                     <div className="flex flex-col items-center justify-center px-2 py-2">
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">Matérias</span>
-                      <span className="mt-0.5 font-display text-base font-black leading-none">{data.areas.length}</span>
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Matérias</span>
+                      <span className="mt-0.5 font-display text-base font-black leading-none text-foreground">{data.areas.length}</span>
                     </div>
                     <div className="flex flex-col items-center justify-center px-2 py-2">
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">Aulas</span>
-                      <span className="mt-0.5 font-display text-base font-black leading-none">{data.totalAulas}</span>
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Aulas</span>
+                      <span className="mt-0.5 font-display text-base font-black leading-none text-foreground">{data.totalAulas}</span>
                     </div>
                     <div className="flex flex-col items-center justify-center px-2 py-2">
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">Concluídas</span>
-                      <span className="mt-0.5 font-display text-base font-black leading-none text-[hsl(var(--aprender-accent))]">
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Concluídas</span>
+                      <span className="mt-0.5 font-display text-base font-black leading-none text-primary">
                         {data.totalConcluidas}
-                        <span className="text-white/50">/{data.totalAulas}</span>
+                        <span className="text-muted-foreground/60">/{data.totalAulas}</span>
                       </span>
                     </div>
                   </div>
@@ -440,7 +440,7 @@ const Aprender = () => {
               <div className="flex items-center justify-between gap-2">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Matérias ({areasOrdenadas.length})</p>
                 {emAndamentoCount > 0 && (
-                  <div className="flex items-center gap-1 rounded-full bg-black/40 backdrop-blur-md border border-white/10 p-0.5 lg:hidden shadow-sm">
+                  <div className="flex items-center gap-1 rounded-full bg-card border border-border p-0.5 lg:hidden shadow-sm">
                     {(['todas', 'andamento'] as const).map((f) => (
                       <button
                         key={f}
@@ -449,7 +449,7 @@ const Aprender = () => {
                           'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors',
                           filtro === f
                             ? 'bg-primary text-primary-foreground shadow-md'
-                            : 'text-white/60 hover:text-white',
+                            : 'text-muted-foreground hover:text-foreground',
                         ].join(' ')}
                       >
                         {f === 'todas' ? 'Todas' : `Andamento (${emAndamentoCount})`}

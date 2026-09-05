@@ -454,14 +454,19 @@ body {
     --ring: 348 80% 50%;
   }
   
-  /* Escopo de tema do módulo Aprender — Vermelho Vivo, Luminous & Deep Dark */
+  /* Escopo de tema do módulo Aprender — Paleta refinada de cinzas (escuro, médio e claro) com acento vivo */
   .theme-aprender {
-    --background: 0 0% 4%;
-    --card: 0 0% 7%;
-    --popover: 0 0% 7%;
-    --secondary: 0 0% 12%;
-    --muted: 0 0% 10%;
-    --border: 0 0% 14%;
+    --background: 224 14% 12%;
+    --foreground: 220 20% 98%;
+    --card: 224 14% 17%;
+    --card-foreground: 220 20% 98%;
+    --popover: 224 14% 17%;
+    --popover-foreground: 220 20% 98%;
+    --secondary: 224 13% 22%;
+    --secondary-foreground: 220 20% 98%;
+    --muted: 224 12% 20%;
+    --muted-foreground: 220 14% 70%;
+    --border: 224 12% 25%;
     
     --primary: 350 89% 60%;
     --primary-foreground: 0 0% 100%;

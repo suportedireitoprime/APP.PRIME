@@ -20,7 +20,7 @@ const MateriaCard = ({ area, icon, onOpen, onPrefetch }: Props) => {
       onPointerEnter={onPrefetch}
       onFocus={onPrefetch}
       onTouchStart={onPrefetch}
-      className="group flex flex-col justify-between w-[210px] sm:w-[250px] h-[170px] shrink-0 snap-start rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md p-4 text-left transition-all hover:bg-black/60 hover:border-primary/50 hover:shadow-lg active:scale-[0.99] relative overflow-hidden"
+      className="group flex flex-col justify-between w-[210px] sm:w-[250px] h-[170px] shrink-0 snap-start rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:bg-muted/70 hover:border-primary/50 hover:shadow-lg active:scale-[0.99] relative overflow-hidden"
     >
       {/* Top bar: icon + percentage badge */}
       <div className="flex items-start justify-between w-full z-10">
@@ -41,8 +41,8 @@ const MateriaCard = ({ area, icon, onOpen, onPrefetch }: Props) => {
           className={[
             'rounded-full px-2.5 py-1 text-[11px] font-bold tabular-nums shadow-sm',
             iniciada
-              ? 'bg-primary/15 text-primary border border-primary/30'
-              : 'bg-muted text-muted-foreground',
+              ? 'bg-primary/20 text-primary border border-primary/30'
+              : 'bg-muted text-muted-foreground border border-border/60',
           ].join(' ')}
         >
           {pct}%
