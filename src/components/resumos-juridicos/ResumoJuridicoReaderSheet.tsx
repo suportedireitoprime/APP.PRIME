@@ -67,8 +67,7 @@ const METODOS: { id: Metodo; label: string }[] = [
 export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoChange, pregerarMetodos, initialMetodo, initialTab }: Props) {
   const gateResumo = useGatedFeature('resumo_ver', 'resumo', { scope: resumo?.id ? String(resumo.id) : null });
   const gateDownload = useGatedFeature('resumo_download', 'resumo_download');
-  const isDesktop = useIsDesktop();
-  const [fontScale, setFontScale] = useState(1.05);
+  const [fontScale, setFontScale] = useState(1.15);
   const [tab, setTab] = useState<Tab>("resumo");
   const [metodo, setMetodo] = useState<Metodo>("conceitos");
   const [cornell, setCornell] = useState<CornellContent | null>(null);
@@ -292,7 +291,7 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
             transition={{ type: "spring", damping: 28, stiffness: 280 }}
             className="fixed inset-0 z-[91] flex flex-col bg-[#0c0c0e] text-foreground shadow-2xl overflow-hidden lg:inset-auto lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:w-full lg:max-w-4xl lg:h-[86vh] lg:max-h-[850px] lg:rounded-3xl lg:border lg:border-white/10"
           >
-            <div ref={scrollRef} className="flex-1 overflow-y-auto pb-8 relative">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto pb-[calc(10rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative">
               <div className="sticky top-0 z-10 bg-[#0c0c0e]/95 backdrop-blur-md border-b border-white/10">
                 <div
                   className="flex items-center gap-3 py-3.5 shrink-0"
@@ -330,36 +329,6 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
                   </button>
                 </div>
 
-                {/* ── Seletor Superior de Metodologia: Conceitos (Vermelho) | Cornell (Azul) | Feynman (Amarelo) ── */}
-                <div className="px-4 py-2 bg-black/40 border-t border-white/5 flex items-center justify-center gap-2">
-                  {([
-                    { id: "conceitos", label: "Conceitos", color: "#ef4444", bgActive: "bg-[#ef4444]/20 border-[#ef4444]/60 text-white", dot: "bg-[#ef4444]" },
-                    { id: "cornell", label: "Cornell", color: "#38bdf8", bgActive: "bg-[#38bdf8]/20 border-[#38bdf8]/60 text-white", dot: "bg-[#38bdf8]" },
-                    { id: "feynman", label: "Feynman", color: "#fbbf24", bgActive: "bg-[#fbbf24]/20 border-[#fbbf24]/60 text-white", dot: "bg-[#fbbf24]" },
-                  ] as const).map((m) => {
-                    const isAtivo = metodo === m.id;
-                    return (
-                      <button
-                        key={m.id}
-                        type="button"
-                        onClick={() => setMetodo(m.id as Metodo)}
-                        className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl border text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-all active:scale-95 ${
-                          isAtivo
-                            ? `${m.bgActive} shadow-lg shadow-black/40`
-                            : "bg-white/[0.02] border-white/10 text-white/50 hover:text-white/90 hover:bg-white/[0.06]"
-                        }`}
-                      >
-                        <span
-                          className={`w-2 h-2 rounded-full ${m.dot} shrink-0 transition-transform ${
-                            isAtivo ? "scale-125 shadow-[0_0_8px_currentColor]" : "opacity-40"
-                          }`}
-                          style={{ color: m.color }}
-                        />
-                        <span>{m.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
               </div>
 
               <div className="space-y-4 px-4 pt-4 md:px-5 md:pt-5">
@@ -408,11 +377,11 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
                             prose prose-sm md:prose-base max-w-none font-body prose-invert
                             prose-headings:font-display prose-headings:text-foreground prose-headings:mt-6 prose-headings:mb-3
                             prose-h2:text-xl prose-h3:text-lg
-                            prose-p:text-foreground/90 prose-p:leading-[1.8] prose-p:my-4 prose-p:text-[15px] sm:prose-p:text-base
+                            prose-p:text-foreground/90 prose-p:leading-[1.8] prose-p:my-4 prose-p:text-[17px] sm:prose-p:text-lg
                             prose-a:text-[#ef4444] prose-a:no-underline hover:prose-a:underline
                             prose-strong:text-foreground
                             prose-blockquote:border-l-4 prose-blockquote:border-[#ef4444] prose-blockquote:bg-[#ef4444]/10 prose-blockquote:py-2.5 prose-blockquote:px-4 prose-blockquote:rounded-r-xl prose-blockquote:not-italic
-                            prose-ul:my-4 prose-li:my-1.5 prose-li:marker:text-[#ef4444] prose-li:text-[15px] sm:prose-li:text-base
+                            prose-ul:my-4 prose-li:my-1.5 prose-li:marker:text-[#ef4444] prose-li:text-[17px] sm:prose-li:text-lg
                           "
                         >
                           {content ? (
@@ -466,12 +435,12 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
                       )}
                     </motion.div>
                   </AnimatePresence>
-                <div className="h-28" />
+                <div className="h-40" />
               </div>
             </div>
 
             {/* Ações flutuantes */}
-            <div className="pointer-events-none absolute bottom-5 right-4 flex flex-col items-end gap-3">
+            <div className="pointer-events-none absolute bottom-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] right-4 flex flex-col items-end gap-3 z-20">
               <AnimatePresence>
                 {fontOpen && (
                   <motion.div

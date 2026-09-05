@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Scale, Radar, BellRing, Heart, Newspaper, History, LayoutGrid, Briefcase, Menu, X, ChevronRight, Gavel, Landmark } from 'lucide-react';
@@ -63,10 +64,15 @@ const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [maisOpen, setMaisOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const keyboardHeight = useKeyboardHeight();
   const actuallyHidden = hidden || keyboardHeight > 0;
 
-  return (
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const navContent = (
     <>
       <motion.nav
         aria-label="Navegação Vade Mecum"
@@ -182,6 +188,12 @@ const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
       </AnimatePresence>
     </>
   );
+
+  if (!mounted || typeof document === 'undefined') {
+    return null;
+  }
+
+  return createPortal(navContent, document.body);
 };
 
 export default VadeMecumBottomNav;
