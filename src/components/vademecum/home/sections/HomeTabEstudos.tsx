@@ -1,15 +1,18 @@
-import { memo } from 'react';
+import { Suspense, memo } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import HomeCard from '@/components/vademecum/home/HomeCard';
-import CircularGallery from '@/components/ui/CircularGallery';
 import { toast } from '@/hooks/use-toast';
+const HomeNoticiasCarousel = lazyWithRetry(() => import('@/components/vademecum/home/HomeNoticiasCarousel'));
 import { GRID_CATS, EMALTA_CATS, Cat } from './homeSectionsData';
 
 interface HomeTabEstudosProps {
   emAltaLeis?: boolean;
   hideBlog?: boolean;
-  pillsItems: any[];
+  hideNoticias?: boolean;
+  noticiasAutoplay?: boolean;
+  onNewsOpenChange?: (open: boolean) => void;
   onOpenCategory: (cat: Cat) => void;
   onOpenVisuais: () => void;
   onOpenAreas: () => void;
@@ -18,7 +21,9 @@ interface HomeTabEstudosProps {
 const HomeTabEstudos = ({
   emAltaLeis = false,
   hideBlog = false,
-  pillsItems,
+  hideNoticias = false,
+  noticiasAutoplay = true,
+  onNewsOpenChange,
   onOpenCategory,
   onOpenVisuais,
   onOpenAreas,
@@ -89,31 +94,12 @@ const HomeTabEstudos = ({
             ))}
       </div>
 
-      {/* Pílulas em Carrossel 3D */}
-      {!hideBlog && (
-        <div className="pt-8">
-          <div className="mb-4">
-            <h3 className="font-display text-foreground text-[18px] font-bold flex items-center gap-2">
-              <span className="w-1 h-5 rounded-full bg-[#10B981]" />
-              Pílulas de Códigos
-            </h3>
-            <p className="font-body text-sm text-muted-foreground mt-1 ml-3">
-              Áudios curtos sobre os artigos mais cobrados
-            </p>
-          </div>
-          <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen h-[350px]">
-            <CircularGallery
-              items={pillsItems}
-              bend={0.3}
-              textColor="#ffffff"
-              scrollEase={0.15}
-              borderRadius={0.05}
-              onItemClick={(item) => {
-                import('@/lib/nativeHaptics').then((m) => m.haptic.selection());
-                navigate(`/pilulas/${item.id}`);
-              }}
-            />
-          </div>
+      {/* Carrossel de notícias movido para o final */}
+      {!hideNoticias && (
+        <div className="pt-8 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
+          <Suspense fallback={<div className="h-48 bg-muted/20 animate-pulse rounded-xl mx-4" />}>
+            <HomeNoticiasCarousel onOpenChange={onNewsOpenChange} autoplay={noticiasAutoplay} />
+          </Suspense>
         </div>
       )}
 
