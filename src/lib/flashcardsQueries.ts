@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { withBundleFallback, bundle } from '@/services/offlineBundle';
 import { getOfflineDecks } from '@/lib/flashcardsOfflineManager';
+import { saveOfflinePackage } from '@/services/downloadManager';
 
 export type FlashcardsDash = {
   total_cards: number;
@@ -57,7 +58,11 @@ export const useFlashcardsResumoAreas = () => {
       const onlineFn = async () => {
         const { data, error } = await supabase.rpc('flashcards_resumo_areas');
         if (error) throw error;
-        return (data || []) as unknown as FlashcardsAreaRow[];
+        const rows = (data || []) as unknown as FlashcardsAreaRow[];
+        if (rows && rows.length > 0) {
+          void saveOfflinePackage('flashcards-resumo-areas', 'Flashcards Áreas', rows);
+        }
+        return rows;
       };
       return withBundleFallback(onlineFn(), () => bundle.flashcardsResumoAreas<FlashcardsAreaRow>());
     },
@@ -124,7 +129,23 @@ export const useFlashcardsSessao = (params: {
           _limit: params.limit,
         });
         if (error) throw error;
-        return (data || []) as unknown as FlashcardCard[];
+        const list = (data || []) as unknown as FlashcardCard[];
+        if (list.length > 0 && params.areas && params.areas.length > 0) {
+          // Persiste cartões baixados por área no IndexedDB para estudo offline
+          const byArea = new Map<string, FlashcardCard[]>();
+          for (const card of list) {
+            if (card.area) {
+              const arr = byArea.get(card.area) || [];
+              arr.push(card);
+              byArea.set(card.area, arr);
+            }
+          }
+          for (const [area, cards] of byArea.entries()) {
+            const safeName = area.replace(/[^a-zA-Z0-9_-]/g, '_');
+            void saveOfflinePackage(`flashcards-cards_${safeName}`, `Flashcards ${area}`, cards);
+          }
+        }
+        return list;
       };
       
       const offlineFn = async () => {
@@ -159,7 +180,11 @@ export const prefetchFlashcardsDashboard = async (queryClient: any) => {
     queryKey: ['flashcards_resumo_areas'],
     queryFn: async () => {
       const { data } = await supabase.rpc('flashcards_resumo_areas');
-      return (data || []) as unknown as FlashcardsAreaRow[];
+      const rows = (data || []) as unknown as FlashcardsAreaRow[];
+      if (rows && rows.length > 0) {
+        void saveOfflinePackage('flashcards-resumo-areas', 'Flashcards Áreas', rows);
+      }
+      return rows;
     },
   });
 };

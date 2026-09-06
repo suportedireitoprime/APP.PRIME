@@ -32,56 +32,90 @@ export interface Deck {
   cards_a_revisar?: number;
 }
 
+import { get as idbGet, set as idbSet } from 'idb-keyval';
+
 const DECKS_KEY = 'APP_PRIME_FLASHCARDS_DECKS';
 const FOLDERS_KEY = 'APP_PRIME_FLASHCARDS_FOLDERS';
 const CARDS_PREFIX = 'APP_PRIME_FLASHCARDS_CARDS_';
 
+let memDecks: Deck[] | null = null;
+let memFolders: Folder[] | null = null;
+const memCardsByDeck = new Map<string, OfflineFlashcard[]>();
+
 export function getOfflineDecks(): Deck[] {
+  if (memDecks && memDecks.length > 0) return memDecks;
   try {
     const raw = localStorage.getItem(DECKS_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        memDecks = parsed;
+        return parsed;
+      }
+    }
   } catch {}
   return [];
 }
 
 export function saveOfflineDecks(decks: Deck[]) {
+  memDecks = decks;
   try {
     localStorage.setItem(DECKS_KEY, JSON.stringify(decks));
   } catch (e) {
-    console.error('Erro ao salvar decks offline', e);
+    console.error('Erro ao salvar decks offline no localStorage', e);
   }
+  void idbSet(DECKS_KEY, decks).catch(() => {});
 }
 
 export function getOfflineFolders(): Folder[] {
+  if (memFolders && memFolders.length > 0) return memFolders;
   try {
     const raw = localStorage.getItem(FOLDERS_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        memFolders = parsed;
+        return parsed;
+      }
+    }
   } catch {}
   return [];
 }
 
 export function saveOfflineFolders(folders: Folder[]) {
+  memFolders = folders;
   try {
     localStorage.setItem(FOLDERS_KEY, JSON.stringify(folders));
   } catch (e) {
-    console.error('Erro ao salvar pastas offline', e);
+    console.error('Erro ao salvar pastas offline no localStorage', e);
   }
+  void idbSet(FOLDERS_KEY, folders).catch(() => {});
 }
 
 export function getOfflineCards(deckId: string): OfflineFlashcard[] {
+  const inMem = memCardsByDeck.get(deckId);
+  if (inMem && inMem.length > 0) return inMem;
   try {
     const raw = localStorage.getItem(`${CARDS_PREFIX}${deckId}`);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        memCardsByDeck.set(deckId, parsed);
+        return parsed;
+      }
+    }
   } catch {}
   return [];
 }
 
 export function saveOfflineCards(deckId: string, cards: OfflineFlashcard[]) {
+  memCardsByDeck.set(deckId, cards);
   try {
     localStorage.setItem(`${CARDS_PREFIX}${deckId}`, JSON.stringify(cards));
   } catch (e) {
     console.error(`Erro ao salvar cards offline do deck ${deckId}`, e);
   }
+  void idbSet(`${CARDS_PREFIX}${deckId}`, cards).catch(() => {});
 }
 
 /**
@@ -103,7 +137,16 @@ export async function syncDecksOffline(): Promise<Deck[]> {
     console.warn('Falha ao sincronizar decks online, usando fallback offline.', err);
   }
   
-  const localCache = getOfflineDecks();
+  let localCache = getOfflineDecks();
+  if (localCache.length === 0) {
+    try {
+      const fromIdb = await idbGet<Deck[]>(DECKS_KEY);
+      if (fromIdb && Array.isArray(fromIdb) && fromIdb.length > 0) {
+        localCache = fromIdb;
+        memDecks = fromIdb;
+      }
+    } catch {}
+  }
   let bundleDecks: Deck[] = [];
   try {
     const { bundle } = await import('@/services/offlineBundle');
