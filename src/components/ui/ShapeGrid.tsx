@@ -267,9 +267,8 @@ const ShapeGrid = ({
     if (prefersReducedMotion) {
       drawGrid();
       return () => {
+        if (resizeFrameId) cancelAnimationFrame(resizeFrameId);
         resizeObserver.disconnect();
-        canvas.removeEventListener('mousemove', handleMouseMove);
-        canvas.removeEventListener('mouseleave', handleMouseLeave);
       };
     }
 
@@ -367,18 +366,24 @@ const ShapeGrid = ({
       }
     };
 
-    const handleMouseMove = (event: MouseEvent) => {
+    // Fase 4: Manipulação unificada de PointerEvents (Mouse, Touch e Pen) com normalização de escala
+    const handlePointerMove = (event: PointerEvent) => {
       tryStart();
       const rect = canvas.getBoundingClientRect();
-      const mouseX = event.clientX - rect.left;
-      const mouseY = event.clientY - rect.top;
+      if (rect.width <= 0 || rect.height <= 0) return;
+
+      // Compensar zoom/scale CSS (ex: modais e animações Framer Motion)
+      const scaleX = logicalWidth.current > 0 ? logicalWidth.current / rect.width : 1;
+      const scaleY = logicalHeight.current > 0 ? logicalHeight.current / rect.height : 1;
+      const pointerX = (event.clientX - rect.left) * scaleX;
+      const pointerY = (event.clientY - rect.top) * scaleY;
 
       if (isHex) {
         const colShift = Math.floor(gridOffset.current.x / hexHoriz);
         const offsetX = ((gridOffset.current.x % hexHoriz) + hexHoriz) % hexHoriz;
         const offsetY = ((gridOffset.current.y % hexVert) + hexVert) % hexVert;
-        const adjustedX = mouseX - offsetX;
-        const adjustedY = mouseY - offsetY;
+        const adjustedX = pointerX - offsetX;
+        const adjustedY = pointerY - offsetY;
 
         const col = Math.round(adjustedX / hexHoriz);
         const rowOffset = (col + colShift) % 2 !== 0 ? hexVert / 2 : 0;
@@ -400,8 +405,8 @@ const ShapeGrid = ({
         const offsetX = ((gridOffset.current.x % halfW) + halfW) % halfW;
         const offsetY = ((gridOffset.current.y % safeSquareSize) + safeSquareSize) % safeSquareSize;
 
-        const adjustedX = mouseX - offsetX;
-        const adjustedY = mouseY - offsetY;
+        const adjustedX = pointerX - offsetX;
+        const adjustedY = pointerY - offsetY;
 
         const col = Math.round(adjustedX / halfW);
         const row = Math.floor(adjustedY / safeSquareSize);
@@ -421,8 +426,8 @@ const ShapeGrid = ({
         const offsetX = ((gridOffset.current.x % safeSquareSize) + safeSquareSize) % safeSquareSize;
         const offsetY = ((gridOffset.current.y % safeSquareSize) + safeSquareSize) % safeSquareSize;
 
-        const adjustedX = mouseX - offsetX;
-        const adjustedY = mouseY - offsetY;
+        const adjustedX = pointerX - offsetX;
+        const adjustedY = pointerY - offsetY;
 
         const col = Math.round(adjustedX / safeSquareSize);
         const row = Math.round(adjustedY / safeSquareSize);
@@ -442,8 +447,8 @@ const ShapeGrid = ({
         const offsetX = ((gridOffset.current.x % safeSquareSize) + safeSquareSize) % safeSquareSize;
         const offsetY = ((gridOffset.current.y % safeSquareSize) + safeSquareSize) % safeSquareSize;
 
-        const adjustedX = mouseX - offsetX;
-        const adjustedY = mouseY - offsetY;
+        const adjustedX = pointerX - offsetX;
+        const adjustedY = pointerY - offsetY;
 
         const col = Math.floor(adjustedX / safeSquareSize);
         const row = Math.floor(adjustedY / safeSquareSize);
@@ -462,7 +467,7 @@ const ShapeGrid = ({
       }
     };
 
-    const handleMouseLeave = () => {
+    const handlePointerEnd = () => {
       tryStart();
       if (hoveredSquare.current && hoverTrailAmount > 0) {
         trailCells.current.unshift({ ...hoveredSquare.current });
@@ -471,8 +476,14 @@ const ShapeGrid = ({
       hoveredSquare.current = null;
     };
 
-    canvas.addEventListener('mousemove', handleMouseMove);
-    canvas.addEventListener('mouseleave', handleMouseLeave);
+    const isInteractive = hoverTrailAmount > 0;
+    if (isInteractive) {
+      canvas.addEventListener('pointermove', handlePointerMove, { passive: true });
+      canvas.addEventListener('pointerdown', handlePointerMove, { passive: true });
+      canvas.addEventListener('pointerup', handlePointerEnd, { passive: true });
+      canvas.addEventListener('pointerleave', handlePointerEnd, { passive: true });
+      canvas.addEventListener('pointercancel', handlePointerEnd, { passive: true });
+    }
 
     let isVisible = false;
     let isPageVisible = !document.hidden;
@@ -525,12 +536,26 @@ const ShapeGrid = ({
       tryStop();
       io.disconnect();
       document.removeEventListener('visibilitychange', onVisibility);
-      canvas.removeEventListener('mousemove', handleMouseMove);
-      canvas.removeEventListener('mouseleave', handleMouseLeave);
+      if (isInteractive) {
+        canvas.removeEventListener('pointermove', handlePointerMove);
+        canvas.removeEventListener('pointerdown', handlePointerMove);
+        canvas.removeEventListener('pointerup', handlePointerEnd);
+        canvas.removeEventListener('pointerleave', handlePointerEnd);
+        canvas.removeEventListener('pointercancel', handlePointerEnd);
+      }
     };
   }, [direction, speed, borderColor, hoverFillColor, squareSize, shape, hoverTrailAmount, active]);
 
-  return <canvas ref={canvasRef} className={`shapegrid-canvas ${className}`}></canvas>;
+  const isInteractive = hoverTrailAmount > 0;
+  const pointerClass = isInteractive ? '' : 'pointer-events-none';
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className={`shapegrid-canvas ${pointerClass} ${className}`}
+      style={{ touchAction: isInteractive ? 'none' : 'auto' }}
+    />
+  );
 };
 
 export default ShapeGrid;
