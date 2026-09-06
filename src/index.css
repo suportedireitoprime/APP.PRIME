@@ -78,10 +78,25 @@ body::-webkit-scrollbar-track,
  * evitando as APIs deprecadas Window.setStatusBarColor/*.
  * ============================================================ */
 :root {
+  background-color: #0D0D0D;
+  color-scheme: dark;
   --sai-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
   --sai-right: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
   --sai-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
   --sai-left: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
+}
+
+html,
+body,
+#root {
+  background-color: #0D0D0D !important;
+  color: #FFFFFF;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* No Android WebView com edge-to-edge, env(safe-area-inset-*) NÃO é propagado
@@ -91,7 +106,7 @@ body::-webkit-scrollbar-track,
  * padding porque isso desloca o padding-box de headers sticky (dobra o inset
  * no iOS). */
 html {
-  background-color: hsl(var(--background));
+  background-color: #0D0D0D !important;
   
   /* Evita layout shift de 15px na barra de rolagem e conflito de barras no desktop (Item 26) */
   scrollbar-gutter: stable;

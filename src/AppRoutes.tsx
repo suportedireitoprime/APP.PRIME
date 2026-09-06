@@ -595,19 +595,83 @@ function EstudosRouter() {
 }
 
 function LazyFallback() {
+  const location = useLocation();
+  const path = location.pathname.toLowerCase();
+
+  // Skeleton contextual para Leis, Artigos e Vade Mecum (Item 43)
+  if (path.includes('/vade-mecum') || path.includes('/legislacao') || path.includes('/codigos')) {
+    return (
+      <div className="min-h-dvh bg-[#0D0D0D] p-4 pt-16 space-y-6 max-w-4xl mx-auto" aria-busy="true">
+        <div className="space-y-2">
+          <div className="h-7 w-56 rounded-lg bg-white/[0.06] animate-pulse" />
+          <div className="h-4 w-80 rounded bg-white/[0.04] animate-pulse" />
+        </div>
+        <div className="space-y-4 mt-6">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.04] space-y-3 animate-pulse">
+              <div className="h-5 w-28 rounded bg-primary/20" />
+              <div className="space-y-2">
+                <div className="h-3.5 w-full rounded bg-white/[0.05]" />
+                <div className="h-3.5 w-[90%] rounded bg-white/[0.04]" />
+                <div className="h-3.5 w-[75%] rounded bg-white/[0.03]" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Skeleton contextual para Questões e Simulados (Item 43)
+  if (path.includes('/questoes')) {
+    return (
+      <div className="min-h-dvh bg-[#0D0D0D] p-4 pt-16 space-y-6 max-w-3xl mx-auto" aria-busy="true">
+        <div className="h-6 w-40 rounded bg-white/[0.06] animate-pulse" />
+        <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.04] space-y-4 animate-pulse">
+          <div className="h-4 w-full rounded bg-white/[0.05]" />
+          <div className="h-4 w-4/5 rounded bg-white/[0.04]" />
+          <div className="space-y-2.5 pt-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-12 rounded-xl bg-white/[0.02] border border-white/[0.03]" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Skeleton contextual para Aprender e Videoaulas (Item 43)
+  if (path.includes('/aprender') || path.includes('/videoaulas')) {
+    return (
+      <div className="min-h-dvh bg-[#0D0D0D] p-4 pt-16 space-y-5 max-w-5xl mx-auto" aria-busy="true">
+        <div className="h-8 w-60 rounded bg-white/[0.06] animate-pulse" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-2">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="h-44 rounded-2xl bg-white/[0.03] border border-white/[0.04] p-4 space-y-3 animate-pulse">
+              <div className="h-24 rounded-xl bg-white/[0.04]" />
+              <div className="h-4 w-3/4 rounded bg-white/[0.05]" />
+              <div className="h-3 w-1/2 rounded bg-white/[0.03]" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Fallback padrão balanceado
   return (
     <div
-      className="min-h-dvh bg-[#0D0D0D] p-4 pt-16 space-y-4"
+      className="min-h-dvh bg-[#0D0D0D] p-4 pt-16 space-y-4 max-w-4xl mx-auto"
       aria-busy="true"
       aria-live="polite"
     >
-      <div className="h-8 w-48 rounded-md bg-white/[0.04]" />
-      <div className="h-4 w-64 rounded bg-white/[0.04]" />
+      <div className="h-8 w-48 rounded-md bg-white/[0.06] animate-pulse" />
+      <div className="h-4 w-64 rounded bg-white/[0.04] animate-pulse" />
       <div className="space-y-3 mt-6">
-        {[1, 2, 3, 4, 5].map(i => (
+        {[1, 2, 3, 4, 5].map((i) => (
           <div
             key={i}
-            className="h-20 rounded-xl bg-white/[0.03]"
+            className="h-20 rounded-xl bg-white/[0.03] border border-white/[0.04] animate-pulse"
           />
         ))}
       </div>

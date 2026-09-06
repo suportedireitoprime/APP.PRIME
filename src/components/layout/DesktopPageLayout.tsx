@@ -1,5 +1,5 @@
 import { startTransition } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Scale, BookOpen, Gavel, Library, MessageSquare, BookOpenText } from 'lucide-react';
 import DesktopHeroBanner from '@/components/vademecum/desktop/DesktopHeroBanner';
 
@@ -29,9 +29,22 @@ interface DesktopPageLayoutProps {
 
 const DesktopPageLayout = ({ children, activeId, title, subtitle, mobileHeader, wide, hideTabs }: DesktopPageLayoutProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const isDesktop = useIsDesktop();
 
-  const themeClass = activeId === 'aprender' ? 'theme-aprender' : activeId === 'questoes' ? 'theme-questoes' : 'theme-vademecum';
+  // Deriva o tema de forma síncrona diretamente da rota para evitar qualquer flicker de cor (Item 45)
+  const currentPath = location.pathname.toLowerCase();
+  const themeClass = currentPath.startsWith('/aprender')
+    ? 'theme-aprender'
+    : currentPath.startsWith('/questoes')
+    ? 'theme-questoes'
+    : currentPath.startsWith('/biblioteca')
+    ? 'theme-biblioteca'
+    : activeId === 'aprender'
+    ? 'theme-aprender'
+    : activeId === 'questoes'
+    ? 'theme-questoes'
+    : 'theme-vademecum';
 
   if (!isDesktop) {
     return (
