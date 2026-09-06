@@ -16,6 +16,7 @@ import { useEscapeKey } from '@/hooks/useEscapeKey';
 import OpiniaoSheet from '@/components/menu/OpiniaoSheet';
 import { useBodyScrollLock, resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { haptic } from '@/lib/nativeHaptics';
+import { SideMenuFuncoes } from './SideMenuFuncoes';
 
 interface SideMenuProps {
   open: boolean;
@@ -240,6 +241,14 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
                   />
                 ))}
               </GroupCard>
+
+              {/* Seção de Funções & Recursos com menu suspenso de Legislação */}
+              <SideMenuFuncoes
+                onNavigate={(route) => {
+                  navigate(route);
+                  onClose();
+                }}
+              />
 
               {/* Regular groups */}
               {GROUPS.map((g, idx) => (
