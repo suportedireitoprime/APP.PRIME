@@ -1,6 +1,6 @@
-import { useMemo, useRef, useEffect, useState, useCallback, memo } from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import { Play } from 'lucide-react';
+import { useState, useEffect, useMemo, memo, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { AprenderItem } from './aprenderCarouselTypes';
 
 interface AprenderCarousel3DProps {
@@ -8,313 +8,210 @@ interface AprenderCarousel3DProps {
   onItemClick: (item: { id: string }) => void;
 }
 
-const CARD_W = 114; // px
-const GAP = 14; // px
-const STEP = CARD_W + GAP; // 128px
+/** Posição visual em leque (deck de cards) inspirada no PaywallImageStack */
+const getSlot = (diff: number) => {
+  switch (diff) {
+    case 0:
+      return { x: 0, y: 0, rotate: 0, scale: 1.06, opacity: 1, z: 60 };
+    case 1:
+      return { x: 72, y: 10, rotate: 9.5, scale: 0.88, opacity: 0.85, z: 50 };
+    case 2:
+      return { x: 124, y: 20, rotate: 17, scale: 0.75, opacity: 0.45, z: 40 };
+    case -1:
+      return { x: -72, y: 10, rotate: -9.5, scale: 0.88, opacity: 0.85, z: 50 };
+    case -2:
+      return { x: -124, y: 20, rotate: -17, scale: 0.75, opacity: 0.45, z: 40 };
+    default:
+      if (diff > 0) {
+        return { x: 160, y: 28, rotate: 22, scale: 0.65, opacity: 0, z: 10 };
+      }
+      return { x: -160, y: 28, rotate: -22, scale: 0.65, opacity: 0, z: 10 };
+  }
+};
 
 export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel3DProps) => {
-  const scrollerRef = useRef<HTMLDivElement>(null);
-  const [activeIdx, setActiveIdx] = useState(0);
+  const [ativo, setAtivo] = useState(0);
   const [paused, setPaused] = useState(false);
-  const didInitRef = useRef(false);
+  const total = items?.length || 0;
 
-  // Triplica os itens para criar o loop contínuo e infinito idêntico à biblioteca
-  const lista = useMemo(() => (items.length ? [...items, ...items, ...items] : []), [items]);
-  const BASE_LEN = items.length;
-
-  const dragRef = useRef<{
-    active: boolean;
-    startX: number;
-    startScroll: number;
-    moved: number;
-    pointerId: number;
-  } | null>(null);
-
-  const lastOpenRef = useRef(0);
-
-  // Detecta o item central via scroll
-  const updateActive = useCallback(() => {
-    const el = scrollerRef.current;
-    if (!el || !BASE_LEN) return;
-    const idx = Math.round(el.scrollLeft / STEP);
-    const clamped = Math.max(0, Math.min(lista.length - 1, idx));
-    setActiveIdx(clamped);
-  }, [lista.length, BASE_LEN]);
-
-  // Salta invisivelmente para o bloco central quando estiver perto das extremidades
-  const normalizeLoop = useCallback(() => {
-    const el = scrollerRef.current;
-    if (!el || !BASE_LEN) return;
-    if (activeIdx < BASE_LEN * 0.5) {
-      el.scrollTo({ left: (activeIdx + BASE_LEN) * STEP, behavior: 'auto' });
-    } else if (activeIdx >= BASE_LEN * 2.5) {
-      el.scrollTo({ left: (activeIdx - BASE_LEN) * STEP, behavior: 'auto' });
-    }
-  }, [activeIdx, BASE_LEN]);
-
-  // Inicializa o scroll centralizado no segundo bloco
+  // Auto-avanço a cada 3.2 segundos se o usuário não estiver interagindo
   useEffect(() => {
-    const el = scrollerRef.current;
-    if (!el || !BASE_LEN || didInitRef.current) return;
-    el.scrollTo({ left: BASE_LEN * STEP, behavior: 'auto' });
-    didInitRef.current = true;
-    updateActive();
-  }, [BASE_LEN, updateActive]);
-
-  useEffect(() => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    updateActive();
-    const onScroll = () => updateActive();
-    el.addEventListener('scroll', onScroll, { passive: true });
-    return () => el.removeEventListener('scroll', onScroll);
-  }, [updateActive]);
-
-  // Normaliza o loop quando o usuário para de interagir
-  useEffect(() => {
-    if (paused) return;
-    const t = window.setTimeout(normalizeLoop, 200);
-    return () => clearTimeout(t);
-  }, [paused, activeIdx, normalizeLoop]);
-
-  // Auto-avanço a cada 3.2s (pausa ao interagir)
-  useEffect(() => {
-    if (paused || lista.length === 0) return;
-    const el = scrollerRef.current;
-    if (!el) return;
+    if (paused || total <= 1) return;
     const id = window.setInterval(() => {
       if (document.querySelector('[role="dialog"],[data-state="open"][data-radix-dialog-content]')) return;
-      const next = (activeIdx + 1) % lista.length;
-      el.scrollTo({ left: next * STEP, behavior: 'smooth' });
+      setAtivo((i) => (i + 1) % total);
     }, 3200);
-    return () => clearInterval(id);
-  }, [paused, activeIdx, lista.length]);
+    return () => window.clearInterval(id);
+  }, [paused, total]);
 
-  const columnVirtualizer = useVirtualizer({
-    horizontal: true,
-    count: lista.length,
-    getScrollElement: () => scrollerRef.current,
-    estimateSize: () => STEP,
-    overscan: 4,
-  });
-
-  const sidePad = 'calc(50% - 57px)'; // Metade da tela menos metade do card (114 / 2 = 57px)
-
-  const onScrollerPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+  const handlePrev = useCallback(() => {
     setPaused(true);
-    const scroller = scrollerRef.current;
-    if (scroller) scroller.scrollTo({ left: scroller.scrollLeft, behavior: 'auto' });
-    if (e.pointerType !== 'mouse') return;
-    const el = scrollerRef.current;
-    if (!el) return;
-    dragRef.current = {
-      active: true,
-      startX: e.clientX,
-      startScroll: el.scrollLeft,
-      moved: 0,
-      pointerId: e.pointerId,
-    };
-  };
+    setAtivo((i) => (i - 1 + total) % total);
+    setTimeout(() => setPaused(false), 2500);
+  }, [total]);
 
-  const onScrollerPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    const d = dragRef.current;
-    if (!d?.active || e.pointerId !== d.pointerId) return;
-    const el = scrollerRef.current;
-    if (!el) return;
-    const dx = e.clientX - d.startX;
-    d.moved = Math.max(d.moved, Math.abs(dx));
-    if (d.moved > 6) {
-      if (!el.hasPointerCapture(e.pointerId)) {
-        try { el.setPointerCapture(e.pointerId); } catch {}
-        el.style.cursor = 'grabbing';
-      }
-      el.scrollLeft = d.startScroll - dx;
-    }
-  };
+  const handleNext = useCallback(() => {
+    setPaused(true);
+    setAtivo((i) => (i + 1) % total);
+    setTimeout(() => setPaused(false), 2500);
+  }, [total]);
 
-  const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
-    const d = dragRef.current;
-    const el = scrollerRef.current;
-    if (el) el.style.cursor = '';
-    if (d?.active && el?.hasPointerCapture(e.pointerId)) {
-      el.releasePointerCapture(e.pointerId);
-    }
-    setTimeout(() => setPaused(false), 1500);
-    if (d) {
-      setTimeout(() => {
-        if (dragRef.current === d) dragRef.current = null;
-      }, 0);
-    }
-  };
+  const activeItem = useMemo(() => {
+    if (!items || total === 0) return null;
+    return items[ativo] || items[0];
+  }, [items, ativo, total]);
 
-  if (!items || items.length === 0) return null;
+  if (!items || total === 0) return null;
 
   return (
-    <div className="relative w-full overflow-hidden">
-      <div
-        ref={scrollerRef}
-        className="overflow-x-auto no-scrollbar snap-x snap-mandatory md:cursor-grab select-none overscroll-x-contain"
-        style={{ scrollPaddingInline: sidePad }}
-        onPointerDown={onScrollerPointerDown}
-        onPointerMove={onScrollerPointerMove}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
-        onPointerLeave={() => setPaused(false)}
-        onTouchStart={() => setPaused(true)}
-        onTouchEnd={() => setTimeout(() => setPaused(false), 1500)}
-      >
-        <div
-          className="relative pb-6 pt-8"
-          style={{
-            height: '290px',
-            width: `${columnVirtualizer.getTotalSize()}px`,
-            marginLeft: sidePad,
-            marginRight: sidePad,
+    <div
+      className="relative w-full pt-3 pb-2 flex flex-col items-center select-none overflow-hidden"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onTouchStart={() => setPaused(true)}
+      onTouchEnd={() => setTimeout(() => setPaused(false), 2500)}
+    >
+      {/* Glow ambiente vermelho suave atrás da capa central em destaque */}
+      <div className="absolute top-[100px] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[220px] h-[220px] bg-[#E11D48]/15 blur-3xl rounded-full pointer-events-none" />
+
+      {/* Container principal do Deck de Cards em leque */}
+      <div className="relative flex items-center justify-center w-full max-w-[360px] sm:max-w-[420px] h-[220px] sm:h-[235px]">
+        {/* Botão de navegação anterior */}
+        <button
+          type="button"
+          onClick={handlePrev}
+          aria-label="Área anterior"
+          className="absolute -left-1 sm:left-1 z-[70] w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:scale-95"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+
+        {/* Botão de navegação próximo */}
+        <button
+          type="button"
+          onClick={handleNext}
+          aria-label="Próxima área"
+          className="absolute -right-1 sm:right-1 z-[70] w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:scale-95"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+
+        {/* Deck interativo com suporte a swipe horizontal */}
+        <motion.div
+          className="relative flex items-center justify-center w-full h-full cursor-grab active:cursor-grabbing"
+          onPanEnd={(_, info) => {
+            if (info.offset.x < -25) {
+              handleNext();
+            } else if (info.offset.x > 25) {
+              handlePrev();
+            }
           }}
         >
-          {columnVirtualizer.getVirtualItems().map((virtualColumn) => {
-            const i = virtualColumn.index;
-            const item = lista[i];
-            const isActive = i === activeIdx;
+          {items.map((item, i) => {
+            // Distância relativa circular mais curta entre o item e o ativo
+            let diff = (i - ativo) % total;
+            if (diff > total / 2) diff -= total;
+            if (diff < -total / 2) diff += total;
 
-            if (!item) return null;
+            const slot = getSlot(diff);
+            const frente = diff === 0;
 
-            const openThis = () => {
-              const now = Date.now();
-              if (now - lastOpenRef.current < 800) return;
-              lastOpenRef.current = now;
-              onItemClick(item);
-            };
+            // Otimização: esconde itens muito distantes do leque para economizar renderização
+            if (Math.abs(diff) > 3) return null;
 
             return (
-              <button
-                key={virtualColumn.key}
-                data-cover-item
-                type="button"
-                onClick={(e) => {
-                  if ((dragRef.current?.moved ?? 0) > 6) {
-                    e.preventDefault();
-                    return;
-                  }
-                  openThis();
+              <motion.div
+                key={item.id}
+                animate={{
+                  x: slot.x,
+                  y: slot.y,
+                  rotate: slot.rotate,
+                  scale: slot.scale,
+                  opacity: slot.opacity,
                 }}
-                draggable={false}
-                className="absolute top-0 pt-8 shrink-0 snap-center outline-none group cursor-pointer flex flex-col justify-start"
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 style={{
-                  width: CARD_W,
-                  touchAction: 'pan-x pan-y',
-                  transform: `translateX(${virtualColumn.start}px)`,
+                  zIndex: slot.z,
+                  clipPath: 'inset(0 round 16px)',
+                  WebkitClipPath: 'inset(0 round 16px)',
                 }}
-                aria-label={item.fullName || item.text}
+                onClick={() => {
+                  if (frente) {
+                    onItemClick(item);
+                  } else {
+                    setPaused(true);
+                    setAtivo(i);
+                    setTimeout(() => setPaused(false), 2500);
+                  }
+                }}
+                className={`absolute w-[140px] sm:w-[152px] h-[192px] sm:h-[208px] rounded-2xl overflow-hidden shadow-2xl shrink-0 cursor-pointer will-change-transform bg-zinc-950 ${
+                  frente
+                    ? 'border-[3.5px] border-[#E11D48] shadow-[0_15px_40px_rgba(225,29,72,0.45)]'
+                    : 'border-2 border-white/20 shadow-black/60'
+                }`}
               >
-                <div
-                  className="relative rounded-2xl overflow-hidden bg-muted transition-transform duration-500 ease-out will-change-transform w-full"
+                {/* Imagem da capa */}
+                <img
+                  src={item.image}
+                  alt={item.fullName}
+                  loading="eager"
+                  decoding="async"
+                  className="w-full h-full object-cover pointer-events-none select-none block"
                   style={{
-                    aspectRatio: '2 / 3',
-                    transform: isActive ? 'scale(1.14)' : 'scale(0.86)',
-                    opacity: isActive ? 1 : 0.55,
-                    boxShadow: isActive
-                      ? '0 24px 40px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(225,29,72,0.45)'
-                      : '0 10px 20px -10px rgba(0,0,0,0.5)',
-                    filter: isActive ? 'none' : 'saturate(0.85) brightness(0.85)',
-                    transitionProperty: 'transform, opacity, filter, box-shadow',
-                    borderRadius: '16px',
                     clipPath: 'inset(0 round 16px)',
                     WebkitClipPath: 'inset(0 round 16px)',
                   }}
-                >
-                  <img
-                    src={item.image}
-                    alt={item.text}
-                    loading={i < 8 ? 'eager' : 'lazy'}
-                    {...(i < 8 ? { fetchPriority: 'high' } : {})}
-                    decoding="async"
-                    className="absolute inset-0 w-full h-full object-cover"
-                    style={{
-                      borderRadius: '16px',
-                      clipPath: 'inset(0 round 16px)',
-                      WebkitClipPath: 'inset(0 round 16px)',
-                    }}
-                  />
+                />
 
-                  {/* Gradiente de contraste inferior */}
+                {/* Camada de escurecimento sutil para cards que não estão na frente */}
+                {!frente && (
+                  <div className="absolute inset-0 bg-black/35 pointer-events-none" />
+                )}
+
+                {/* Botão Play central translúcido no card da frente */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div
-                    className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none"
-                    style={{
-                      borderRadius: '16px',
-                      clipPath: 'inset(0 round 16px)',
-                      WebkitClipPath: 'inset(0 round 16px)',
-                    }}
-                  />
-
-                  {/* Botão Play central translúcido */}
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div
-                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg transition-all duration-300 ${
-                        isActive ? 'opacity-90 scale-100' : 'opacity-0 scale-75'
-                      }`}
-                    >
-                      <Play className="w-4 h-4 text-white fill-white ml-0.5" />
-                    </div>
+                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg transition-all duration-300 ${
+                      frente ? 'opacity-90 scale-100' : 'opacity-0 scale-75'
+                    }`}
+                  >
+                    <Play className="w-4 h-4 text-white fill-white ml-0.5" />
                   </div>
-
-                  {/* Título sem abreviação dentro da capa */}
-                  <div className="absolute bottom-0 left-0 right-0 px-2 pb-2.5 pt-7 z-10 pointer-events-none bg-gradient-to-t from-black/95 via-black/60 to-transparent">
-                    <span className="font-bold text-[11px] sm:text-[12px] text-white leading-tight block drop-shadow-md text-center">
-                      {item.fullName || item.text}
-                    </span>
-                  </div>
-
-                  {/* Reflexo / brilho passando pela capa ao ficar ativa */}
-                  {isActive && (
-                    <span
-                      key={`shine-${i}-${activeIdx}`}
-                      aria-hidden
-                      className="pointer-events-none absolute inset-0 overflow-hidden"
-                      style={{
-                        borderRadius: '16px',
-                        clipPath: 'inset(0 round 16px)',
-                        WebkitClipPath: 'inset(0 round 16px)',
-                      }}
-                    >
-                      <span
-                        className="absolute top-0 left-0 h-full w-1/2"
-                        style={{
-                          background:
-                            'linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.6) 50%, transparent 80%)',
-                          transform: 'translateX(-120%) skewX(-18deg)',
-                          animation: 'aprender-cover-shine 1.4s ease-out 0.15s forwards',
-                        }}
-                      />
-                    </span>
-                  )}
                 </div>
 
-                {/* Descrição embaixo apenas na capa em destaque (central) sem abreviação */}
-                <div
-                  className="mt-2.5 text-center transition-opacity duration-300 w-[170px] -ml-[28px] pointer-events-none"
-                  style={{ opacity: isActive ? 1 : 0 }}
-                >
-                  <p className="text-[11px] sm:text-[11.5px] text-zinc-400 font-normal leading-snug px-1">
-                    {item.descricao || 'Aulas passo a passo e detalhadas'}
-                  </p>
+                {/* Nome/título SEM abreviação dentro da capa */}
+                <div className="absolute bottom-0 left-0 right-0 px-2.5 pb-2.5 pt-8 z-10 pointer-events-none bg-gradient-to-t from-black/95 via-black/65 to-transparent">
+                  <span className="font-bold text-[11px] sm:text-[12px] text-white leading-tight block drop-shadow-md text-center">
+                    {item.fullName || item.text}
+                  </span>
                 </div>
-              </button>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       </div>
 
-      <style>{`
-        @keyframes aprender-cover-shine {
-          0%   { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
-          25%  { opacity: 1; }
-          100% { transform: translateX(260%) skewX(-18deg); opacity: 0; }
-        }
-      `}</style>
+      {/* Descrição embaixo da capa em destaque SEM abreviação */}
+      {activeItem && (
+        <div className="mt-3 text-center px-4 max-w-sm mx-auto min-h-[44px] flex flex-col items-center justify-center">
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={activeItem.id}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.22 }}
+              className="text-[12px] sm:text-[12.5px] text-zinc-300 font-medium leading-snug px-1"
+            >
+              {activeItem.descricao || 'Aulas de Direito passo a passo e detalhadas'}
+            </motion.p>
+          </AnimatePresence>
+        </div>
+      )}
     </div>
   );
 });
 
 AprenderCarousel3D.displayName = 'AprenderCarousel3D';
+
 
