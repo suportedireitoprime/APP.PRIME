@@ -72,7 +72,7 @@ export const ApresentacaoModais: React.FC<ApresentacaoModaisProps> = ({
         <SheetContent side="bottom" className="h-[70vh] flex flex-col bg-[#111] border-t-zinc-800">
           <SheetHeader><SheetTitle className="text-white">Roteiro da Narração</SheetTitle></SheetHeader>
           <div className="flex-1 overflow-y-auto p-4 pb-[calc(1rem+var(--sai-bottom))] bg-white/5 rounded-xl text-sm leading-relaxed text-white/90 font-body">
-            {slide?.roteiro || <span className="text-white/40 italic">Nenhum roteiro disponível para este slide.</span>}
+            {roteiroAtual || <span className="text-white/40 italic">Nenhum roteiro disponível para este slide.</span>}
           </div>
         </SheetContent>
       </Sheet>
