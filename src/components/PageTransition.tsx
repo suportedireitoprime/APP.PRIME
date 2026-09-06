@@ -1,10 +1,32 @@
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 
 interface PageTransitionProps {
   children: ReactNode;
   className?: string;
   instant?: boolean;
+  fallback?: ReactNode;
+}
+
+export function RouteLazyFallback() {
+  return (
+    <div
+      className="min-h-dvh bg-[#0D0D0D] p-4 pt-16 space-y-4 w-full"
+      aria-busy="true"
+      aria-live="polite"
+    >
+      <div className="h-8 w-48 rounded-md bg-white/[0.05] animate-pulse" />
+      <div className="h-4 w-64 rounded bg-white/[0.04] animate-pulse" />
+      <div className="space-y-3 mt-6">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div
+            key={i}
+            className="h-20 rounded-xl bg-white/[0.03] animate-pulse"
+          />
+        ))}
+      </div>
+    </div>
+  );
 }
 
 /**
@@ -25,6 +47,7 @@ const pageVariants: Variants = {
   },
   exit: {
     opacity: 0,
+    pointerEvents: "none",
     transition: {
       duration: 0.08, // Padronizado em 80ms para saída ultra-rápida sem retenção de frame
       ease: [0.32, 0, 0.67, 0],
@@ -32,8 +55,14 @@ const pageVariants: Variants = {
   },
 };
 
-const PageTransition = ({ children, className, instant }: PageTransitionProps) => {
+const PageTransition = ({ children, className, instant, fallback }: PageTransitionProps) => {
   const shouldReduceMotion = useReducedMotion();
+
+  const content = (
+    <Suspense fallback={fallback || <RouteLazyFallback />}>
+      {children}
+    </Suspense>
+  );
 
   if (shouldReduceMotion || instant) {
     return (
@@ -44,7 +73,7 @@ const PageTransition = ({ children, className, instant }: PageTransitionProps) =
           minHeight: "100dvh",
         }}
       >
-        {children}
+        {content}
       </div>
     );
   }
@@ -61,7 +90,7 @@ const PageTransition = ({ children, className, instant }: PageTransitionProps) =
         minHeight: "100dvh",
       }}
     >
-      {children}
+      {content}
     </motion.div>
   );
 };

@@ -54,6 +54,7 @@ import { useHorusStatsSync } from "@/hooks/useHorusStatsSync";
 import { useSessionTracker } from "@/hooks/useSessionTracker";
 import { useDesktopSessionGuard } from "@/hooks/useDesktopSessionGuard";
 import { useProfileSummary } from "@/hooks/useProfileSummary";
+import { resetBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import brasaoImgAsset from '@/assets/brasao-republica.webp';
 const brasaoImg = brasaoImgAsset;
 import { Analytics } from "@vercel/analytics/react";
@@ -730,7 +731,13 @@ function AnimatedRoutes() {
     trackPageview(location.pathname + location.search);
     markRouteChange(location.pathname + location.search);
     prefetchNearby(location.pathname);
-  }, [location.pathname, location.search]);
+    // Purga qualquer trava residual de scroll deixada por sheets/modais desmontados
+    resetBodyScrollLock();
+    // Reseta o scroll para o topo caso não haja âncora (#) na rota
+    if (!location.hash) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+  }, [location.pathname, location.search, location.hash]);
 
   // Hidrata o cache das Videoaulas (IndexedDB → memória) logo no boot, em idle:
   // ao entrar na área, a lista já pinta sem skeleton nem rede.
@@ -820,7 +827,7 @@ function AnimatedRoutes() {
       <DesktopFileDropOverlay />
       <PersistentHome />
       <Suspense fallback={<LazyFallback />}>
-        <AnimatePresence mode="wait" initial={false}>
+        <AnimatePresence mode="popLayout" initial={false}>
           <Routes location={location} key={getRouteKey(location.pathname)}>
             <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
             <Route path="/landing" element={<PageTransition><Landing /></PageTransition>} />
