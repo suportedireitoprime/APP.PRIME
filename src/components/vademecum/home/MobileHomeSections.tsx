@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, memo, Suspense, startTransition } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { AnimatePresence } from 'framer-motion';
-import { ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
@@ -18,9 +17,7 @@ import {
   TABS_VADEMECUM,
   RADAR_CATS,
   ALL_CATS,
-  AREA_CATS,
   FAST_PILLS_ITEMS,
-  shuffle,
   normalizeSearch,
 } from './sections/homeSectionsData';
 
@@ -31,7 +28,9 @@ import HomeTabAreas from './sections/HomeTabAreas';
 import HomeTabEstudos from './sections/HomeTabEstudos';
 import HomeCategorySheet from './sections/HomeCategorySheet';
 import HomeAreasModal from './sections/HomeAreasModal';
-import CircularGallery from '@/components/ui/CircularGallery';
+import { AprenderCarouselSkeleton } from '@/components/vademecum/home/aprender/chunks';
+
+const HomeAprenderCarousel = lazyWithRetry(() => import('@/components/vademecum/home/aprender/HomeAprenderCarousel'));
 
 const HomeNoticiasCarousel = lazyWithRetry(() => import('@/components/vademecum/home/HomeNoticiasCarousel'));
 const VoiceCaptureOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/VoiceCaptureOverlay'));
@@ -86,34 +85,7 @@ const MobileHomeSections = ({
   }, []);
   const voiceSearch = useVoiceInput(handleVoiceSearch);
 
-  const pillsItems = useMemo(() => {
-    return shuffle(FAST_PILLS_ITEMS).map((item) => ({
-      ...item,
-      progress: Math.random() * 0.7 + 0.1,
-      showPlayButton: true,
-    }));
-  }, []);
 
-  const aprenderItems = useMemo(() => {
-    const images = FAST_PILLS_ITEMS.map((item) => item.image);
-    const cpImage = images[0];
-    
-    // Embaralha para que nunca haja uma ordem fixa nem começo pré-determinado
-    const randomAreas = shuffle(AREA_CATS);
-    
-    return randomAreas.map((area, index) => {
-      const image = index < images.length ? images[index] : cpImage;
-      return {
-        id: area.id,
-        image,
-        text: area.label, // Remove 'Direito\n' para não ficar tão grande e igual ao blog
-        fullName: 'Direito ' + area.label,
-        progress: Math.random() * 0.7 + 0.1,
-        showPlayButton: true,
-        position: 'inside-bottom',
-      };
-    });
-  }, []);
 
   useEffect(() => {
     onTabChange?.(tab);
@@ -194,45 +166,11 @@ const MobileHomeSections = ({
 
   return (
     <div className="space-y-6 pt-4">
-      {/* Aprender em Carrossel 3D no topo */}
+      {/* Aprender em Carrossel 3D no topo (Modularizado em Chunks) */}
       {!hideBlog && (
-        <div className="pt-2 pb-0 -mb-6 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
-          <div className="mb-0 relative z-10 pointer-events-none px-5 flex items-start justify-between gap-3">
-            <div>
-              <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 pointer-events-auto">
-                <span className="w-1 h-5 rounded-full bg-[#E11D48]" />
-                Aprender
-              </h3>
-              <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3 pointer-events-auto">
-                Aulas de Direito passo a passo e detalhado
-              </p>
-            </div>
-            <button 
-              type="button"
-              onClick={() => navigate('/aprender')}
-              className="group pointer-events-auto shrink-0 mt-0.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.14] active:scale-95 backdrop-blur-md border border-white/15 hover:border-white/25 text-[12px] font-semibold text-foreground/90 hover:text-white transition-all shadow-sm"
-            >
-              <span>Ver todos</span>
-              <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all" />
-            </button>
-          </div>
-          <div className="relative w-full h-[265px] -mt-6">
-            <CircularGallery
-              items={aprenderItems}
-              bend={0.3}
-              textColor="#ffffff"
-              font="bold 52px 'Plus Jakarta Sans', 'Barlow', sans-serif"
-              scrollEase={0.15}
-              borderRadius={0.05}
-              autoScroll={true}
-              autoScrollSpeed={0.005}
-              onItemClick={(item) => {
-                import('@/lib/nativeHaptics').then((m) => m.haptic.selection());
-                navigate(`/aprender/area/${item.id.replace('area-', '')}`);
-              }}
-            />
-          </div>
-        </div>
+        <Suspense fallback={<AprenderCarouselSkeleton />}>
+          <HomeAprenderCarousel hideBlog={hideBlog} />
+        </Suspense>
       )}
 
       {/* Alternância de Abas Segmentadas */}
