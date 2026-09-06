@@ -8,8 +8,13 @@ export function useAprenderItems() {
   const navigate = useNavigate();
 
   const items = useMemo<AprenderItem[]>(() => {
-    // Seleciona 8 áreas para compor a galeria circular fluida com metade da alocação de texturas WebGL
-    const randomAreas = shuffle(AREA_CATS).slice(0, 8);
+    // Filtra apenas as áreas que possuem uma capa própria carregada e sorteia 8 delas
+    const availableAreas = AREA_CATS.filter(area => {
+      const coverObj = getAreaCover('Direito ' + area.label) || getAreaCover(area.label);
+      return !!coverObj;
+    });
+    
+    const randomAreas = shuffle(availableAreas).slice(0, 8);
     const cpImage = FAST_PILLS_ITEMS[0].image;
 
     return randomAreas.map((area, index) => {
