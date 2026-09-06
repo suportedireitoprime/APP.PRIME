@@ -4,6 +4,7 @@ import { motion, useReducedMotion, type Variants } from "framer-motion";
 interface PageTransitionProps {
   children: ReactNode;
   className?: string;
+  instant?: boolean;
 }
 
 /**
@@ -31,10 +32,10 @@ const pageVariants: Variants = {
   },
 };
 
-const PageTransition = ({ children, className }: PageTransitionProps) => {
+const PageTransition = ({ children, className, instant }: PageTransitionProps) => {
   const shouldReduceMotion = useReducedMotion();
 
-  if (shouldReduceMotion) {
+  if (shouldReduceMotion || instant) {
     return (
       <div
         className={className}

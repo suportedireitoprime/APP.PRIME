@@ -909,18 +909,18 @@ function AnimatedRoutes() {
           <Route path="/vade-mecum/sumulas" element={<ProtectedRoute><PageTransition><VadeMecumSumulas /></PageTransition></ProtectedRoute>} />
           <Route path="/vade-mecum/favoritos" element={<ProtectedRoute><PageTransition><VadeMecum /></PageTransition></ProtectedRoute>} />
           <Route path="/vade-mecum/recentes" element={<ProtectedRoute><PageTransition><VadeMecumRecentes /></PageTransition></ProtectedRoute>} />
-          <Route path="/aprender" element={<ProtectedRoute><PageTransition><Aprender /></PageTransition></ProtectedRoute>} />
+          <Route path="/aprender" element={<ProtectedRoute><PageTransition instant><Aprender /></PageTransition></ProtectedRoute>} />
           <Route path="/gamificacao/forca" element={<ProtectedRoute><PageTransition><ForcaPage /></PageTransition></ProtectedRoute>} />
 
-          <Route path="/aprender/categoria/:categoriaId" element={<ProtectedRoute><PageTransition><CategoriaAprender /></PageTransition></ProtectedRoute>} />
-          <Route path="/aprender/area/:slug" element={<ProtectedRoute><PageTransition><AprenderArea /></PageTransition></ProtectedRoute>} />
-          <Route path="/aprender/modulo/:moduloId" element={<ProtectedRoute><PageTransition><AprenderModulo /></PageTransition></ProtectedRoute>} />
-          <Route path="/aprender/teoria" element={<ProtectedRoute><PageTransition><AprenderTeoria /></PageTransition></ProtectedRoute>} />
-          <Route path="/aprender/trilhas" element={<ProtectedRoute><PageTransition><AprenderTrilhas /></PageTransition></ProtectedRoute>} />
-          <Route path="/aprender/questoes" element={<ProtectedRoute><PageTransition><AprenderQuestoes /></PageTransition></ProtectedRoute>} />
-          <Route path="/aprender/flashcards" element={<ProtectedRoute><PageTransition><AprenderFlashcards /></PageTransition></ProtectedRoute>} />
-          <Route path="/aprender/desempenho" element={<ProtectedRoute><PageTransition><AprenderDesempenho /></PageTransition></ProtectedRoute>} />
-          <Route path="/aprender/aula/:aulaId" element={<ProtectedRoute><AprenderAula /></ProtectedRoute>} />
+          <Route path="/aprender/categoria/:categoriaId" element={<ProtectedRoute><PageTransition instant><CategoriaAprender /></PageTransition></ProtectedRoute>} />
+          <Route path="/aprender/area/:slug" element={<ProtectedRoute><PageTransition instant><AprenderArea /></PageTransition></ProtectedRoute>} />
+          <Route path="/aprender/modulo/:moduloId" element={<ProtectedRoute><PageTransition instant><AprenderModulo /></PageTransition></ProtectedRoute>} />
+          <Route path="/aprender/teoria" element={<ProtectedRoute><PageTransition instant><AprenderTeoria /></PageTransition></ProtectedRoute>} />
+          <Route path="/aprender/trilhas" element={<ProtectedRoute><PageTransition instant><AprenderTrilhas /></PageTransition></ProtectedRoute>} />
+          <Route path="/aprender/questoes" element={<ProtectedRoute><PageTransition instant><AprenderQuestoes /></PageTransition></ProtectedRoute>} />
+          <Route path="/aprender/flashcards" element={<ProtectedRoute><PageTransition instant><AprenderFlashcards /></PageTransition></ProtectedRoute>} />
+          <Route path="/aprender/desempenho" element={<ProtectedRoute><PageTransition instant><AprenderDesempenho /></PageTransition></ProtectedRoute>} />
+          <Route path="/aprender/aula/:aulaId" element={<ProtectedRoute><PageTransition instant><AprenderAula /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards" element={<ProtectedRoute><FlashcardsRouteWrapper><PageTransition><Flashcards /></PageTransition></FlashcardsRouteWrapper></ProtectedRoute>} />
           <Route path="/flashcards/estudar" element={<ProtectedRoute><PageTransition><FlashcardsEstudo /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/trilhas" element={<ProtectedRoute><PageTransition><FlashcardsTrilhas /></PageTransition></ProtectedRoute>} />
