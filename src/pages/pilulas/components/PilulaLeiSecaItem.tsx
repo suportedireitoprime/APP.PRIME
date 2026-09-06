@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Headphones, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
+import { PrimeImage } from '@/components/ui/PrimeImage';
 import type { LeiConfig } from '../data/leiSecaConfig';
 
 export interface ArtigoLeiSeca {
@@ -50,17 +51,14 @@ export function PilulaLeiSecaItem({ artigo, navigate, config }: PilulaLeiSecaIte
       }`}
     >
       {/* Capa */}
-      <div className="w-16 h-24 rounded-lg bg-white/5 shrink-0 overflow-hidden shadow-md">
-        <img 
-          src={config.cover} 
-          alt={config.title} 
-          className="w-full h-full object-cover" 
-          loading="eager" 
-          fetchPriority="high"
-          decoding="async"
-          onError={(e) => { 
-            e.currentTarget.src = 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop'; 
-          }} 
+      <div className="w-16 h-24 rounded-lg shrink-0 overflow-hidden shadow-md">
+        <PrimeImage
+          src={config.cover}
+          alt={config.title}
+          aspectRatio="2/3"
+          targetWidth={160}
+          containerClassName="w-full h-full rounded-lg"
+          fallbackText={config.title}
         />
       </div>
 

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { PrimeImage } from "@/components/ui/PrimeImage";
 import { toast } from "sonner";
 import type { Obra } from "./ObraDetailSheet";
 import { MARATONA_TEMPLATES, resolverTemplate } from "@/lib/tematicaMaratonaTemplates";
@@ -146,15 +147,16 @@ export default function TematicaMaratonaView({ obras, onAbrirObra }: Props) {
               >
                 <button
                   onClick={() => onAbrirObra(obra)}
-                  className="shrink-0 w-14 aspect-[2/3] overflow-hidden bg-muted"
+                  className="shrink-0 w-14 aspect-[2/3] overflow-hidden bg-muted rounded-l-xl"
                 >
-                  {obra.poster_url ? (
-                    <img src={obra.poster_url} alt={obra.titulo} loading="lazy" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-muted">
-                      <Film className="w-4 h-4 text-muted-foreground" />
-                    </div>
-                  )}
+                  <PrimeImage
+                    src={obra.poster_url}
+                    alt={obra.titulo}
+                    aspectRatio="2/3"
+                    targetWidth={140}
+                    containerClassName="w-full h-full"
+                    fallbackIcon={<Film className="w-4 h-4 text-muted-foreground" />}
+                  />
                 </button>
                 <div className="flex-1 min-w-0 py-2 pr-2 flex flex-col justify-center">
                   <p className={cn(
@@ -244,13 +246,14 @@ export default function TematicaMaratonaView({ obras, onAbrirObra }: Props) {
                   className="text-left"
                 >
                   <div className="relative aspect-[2/3] rounded-lg overflow-hidden bg-muted border border-border/50">
-                    {o.poster_url ? (
-                      <img src={o.poster_url} alt={o.titulo} loading="lazy" className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Film className="w-5 h-5 text-muted-foreground" />
-                      </div>
-                    )}
+                    <PrimeImage
+                      src={o.poster_url}
+                      alt={o.titulo}
+                      aspectRatio="2/3"
+                      targetWidth={180}
+                      containerClassName="w-full h-full rounded-lg"
+                      fallbackIcon={<Film className="w-5 h-5 text-muted-foreground" />}
+                    />
                   </div>
                   <p className="mt-1 text-[11px] font-medium text-foreground leading-tight line-clamp-2">{o.titulo}</p>
                 </button>

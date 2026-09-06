@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Bell, Plus, Clock, BookOpen, Smartphone, MessageCircle, Loader2, Sparkles } from 'lucide-react';
+import { PrimeImage } from '@/components/ui/PrimeImage';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -92,13 +93,16 @@ const MeusLembretes = () => {
                 onClick={() => { setEditing(r); setSheetOpen(true); }}
                 className="w-full p-4 flex gap-3 text-left"
               >
-                {r.livro_capa ? (
-                  <img src={r.livro_capa} alt="" className="w-14 h-20 rounded-lg object-cover" />
-                ) : (
-                  <div className="w-14 h-20 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <BookOpen className="w-6 h-6 text-primary" />
-                  </div>
-                )}
+                <div className="w-14 h-20 rounded-lg overflow-hidden shrink-0 shadow-sm">
+                  <PrimeImage
+                    src={r.livro_capa}
+                    alt={r.livro_titulo || 'Livro'}
+                    aspectRatio="2/3"
+                    targetWidth={140}
+                    containerClassName="w-full h-full rounded-lg"
+                    fallbackIcon={<BookOpen className="w-6 h-6 text-primary" />}
+                  />
+                </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-body font-bold text-sm text-foreground truncate">
                     {r.livro_titulo || 'Rotina de leitura'}

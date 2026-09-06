@@ -19,22 +19,22 @@ const LAW_CODES_META: Record<string, LawCodeConfig> = {
   },
   cf: {
     autor: 'Constituição Federal',
-    capa: '/pilulas/cf_square.jpg',
+    capa: '/pilulas/cf_square.webp',
     isCP: false,
   },
   cc: {
     autor: 'Código Civil',
-    capa: '/pilulas/cc_square.png',
+    capa: '/pilulas/cc_square.webp',
     isCP: false,
   },
   cpp: {
     autor: 'Código de Processo Penal',
-    capa: '/pilulas/cpp_portrait.jpg',
+    capa: '/pilulas/cpp_portrait.webp',
     isCP: false,
   },
   clt: {
     autor: 'Consolidação das Leis do Trabalho',
-    capa: '/pilulas/clt_portrait.jpg',
+    capa: '/pilulas/clt_portrait.webp',
     isCP: false,
   },
 };

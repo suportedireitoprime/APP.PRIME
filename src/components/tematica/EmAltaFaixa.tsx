@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Flame, Star, Film } from "lucide-react";
 import type { Obra } from "@/components/tematica/ObraDetailSheet";
 import { cn } from "@/lib/utils";
+import { PrimeImage } from "@/components/ui/PrimeImage";
 
 interface Props {
   obras: Obra[];
@@ -43,21 +44,15 @@ export default function EmAltaFaixa({ obras, onAbrir }: Props) {
               className="group relative shrink-0 w-[110px] text-left"
             >
               <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-muted border border-red-500/10 shadow-lg shadow-black/40 group-hover:border-red-500/40 transition-colors">
-                {obra.poster_url ? (
-                  <img
-                    src={obra.poster_url}
-                    alt={obra.titulo}
-                    loading="lazy"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div
-                    className="w-full h-full flex items-center justify-center"
-                    style={{ background: "linear-gradient(135deg, hsl(0 55% 22%), hsl(05 65% 14%))" }}
-                  >
-                    <Film className="w-6 h-6 text-red-200/50" strokeWidth={1.5} />
-                  </div>
-                )}
+                <PrimeImage
+                  src={obra.poster_url}
+                  alt={obra.titulo}
+                  aspectRatio="2/3"
+                  targetWidth={220}
+                  priority={i < 3}
+                  containerClassName="w-full h-full rounded-xl"
+                  fallbackIcon={<Film className="w-6 h-6 text-red-200/50" strokeWidth={1.5} />}
+                />
                 {/* Overlay + posição */}
                 <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
                 <div

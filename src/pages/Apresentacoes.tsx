@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Presentation, Loader2, PlayCircle } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
+import { PrimeImage } from '@/components/ui/PrimeImage';
 import { supabase } from '@/integrations/supabase/client';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
 
@@ -86,9 +87,16 @@ const Apresentacoes = () => {
                 className="text-left rounded-2xl border border-border bg-card overflow-hidden hover:border-primary/50 transition-colors"
               >
                 <span className="block aspect-video bg-muted relative overflow-hidden group">
-                  {a.capa_url
-                    ? <img src={a.capa_url} alt={a.titulo} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="eager" fetchPriority="high" decoding="async" />
-                    : <Presentation className="w-8 h-8 text-primary absolute inset-0 m-auto" />}
+                  <PrimeImage
+                    src={a.capa_url}
+                    alt={a.titulo}
+                    aspectRatio="16/9"
+                    targetWidth={500}
+                    priority={filtrados.indexOf(a) < 2}
+                    containerClassName="w-full h-full"
+                    className="transition-transform duration-500 group-hover:scale-105"
+                    fallbackIcon={<Presentation className="w-8 h-8 text-primary" />}
+                  />
                   
                   {/* Player de Vidro */}
                   <span className="absolute inset-0 flex items-center justify-center pointer-events-none transition-transform duration-300 group-hover:scale-110">

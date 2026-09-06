@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { CalendarDays, Film, MapPin, Sparkles, Star, UtensilsCrossed, ExternalLink, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PrimeImage } from "@/components/ui/PrimeImage";
 import type { Obra } from "./ObraDetailSheet";
 import {
   CATEGORIAS_RECOMENDACAO,
@@ -88,13 +89,15 @@ export default function TematicaRecomendacoesView({ obras, onAbrirObra }: Props)
                 onClick={() => onAbrirObra(destaque.obra as Obra)}
                 className="shrink-0 w-24 aspect-[2/3] rounded-xl overflow-hidden bg-muted border border-border/50"
               >
-                {destaque.obra.poster_url ? (
-                  <img src={destaque.obra.poster_url} alt={destaque.obra.titulo} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Film className="w-6 h-6 text-muted-foreground" />
-                  </div>
-                )}
+                <PrimeImage
+                  src={destaque.obra.poster_url}
+                  alt={destaque.obra.titulo}
+                  aspectRatio="2/3"
+                  targetWidth={200}
+                  priority={true}
+                  containerClassName="w-full h-full rounded-xl"
+                  fallbackIcon={<Film className="w-6 h-6 text-muted-foreground" />}
+                />
               </button>
               <div className="min-w-0 flex-1">
                 <p className="text-[11px] font-semibold text-muted-foreground">
@@ -202,13 +205,14 @@ export default function TematicaRecomendacoesView({ obras, onAbrirObra }: Props)
                   </p>
                 </div>
                 <div className="shrink-0 w-10 aspect-[2/3] rounded-md overflow-hidden bg-muted">
-                  {obra.poster_url ? (
-                    <img src={obra.poster_url} alt={obra.titulo} loading="lazy" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Film className="w-4 h-4 text-muted-foreground" />
-                    </div>
-                  )}
+                  <PrimeImage
+                    src={obra.poster_url}
+                    alt={obra.titulo}
+                    aspectRatio="2/3"
+                    targetWidth={100}
+                    containerClassName="w-full h-full rounded-md"
+                    fallbackIcon={<Film className="w-4 h-4 text-muted-foreground" />}
+                  />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-[11px] text-muted-foreground">{cat.emoji} {cat.label}</p>
@@ -255,13 +259,14 @@ export default function TematicaRecomendacoesView({ obras, onAbrirObra }: Props)
               {listaCategoria.map((o) => (
                 <button key={o.id} onClick={() => onAbrirObra(o as Obra)} className="text-left">
                   <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-muted border border-border/50">
-                    {o.poster_url ? (
-                      <img src={o.poster_url} alt={o.titulo} loading="lazy" className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Film className="w-5 h-5 text-muted-foreground" />
-                      </div>
-                    )}
+                    <PrimeImage
+                      src={o.poster_url}
+                      alt={o.titulo}
+                      aspectRatio="2/3"
+                      targetWidth={240}
+                      containerClassName="w-full h-full rounded-xl"
+                      fallbackIcon={<Film className="w-5 h-5 text-muted-foreground" />}
+                    />
                   </div>
                   <p className="mt-1.5 text-[12px] font-semibold text-foreground leading-tight line-clamp-2">
                     {o.titulo}

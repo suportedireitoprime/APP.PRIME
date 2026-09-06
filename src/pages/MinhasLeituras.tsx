@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { BookOpen, Clock, Play, Timer } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
+import { PrimeImage } from '@/components/ui/PrimeImage';
 import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
 import { useGoBack } from '@/hooks/useGoBack';
 import { subscribeTracking, type LivroSnapshot } from '@/lib/bibliotecaTracking';
@@ -62,16 +63,14 @@ export default function MinhasLeituras() {
               className="w-full flex gap-3 items-stretch rounded-2xl border border-border/60 bg-card p-3 text-left active:scale-[0.99] transition"
             >
               <div className="relative w-[72px] h-[100px] shrink-0 rounded-xl overflow-hidden bg-muted">
-                {snap.capa ? (
-                  <img
-                    src={directImg(snap.capa, 240)}
-                    alt=""
-                    loading="lazy"
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-                ) : (
-                  <BookOpen className="absolute inset-0 m-auto h-6 w-6 text-muted-foreground" />
-                )}
+                <PrimeImage
+                  src={snap.capa}
+                  alt={snap.titulo}
+                  aspectRatio="2/3"
+                  targetWidth={240}
+                  containerClassName="w-full h-full rounded-xl"
+                  fallbackIcon={<BookOpen className="h-6 w-6 text-muted-foreground" />}
+                />
               </div>
 
               <div className="flex-1 min-w-0 flex flex-col justify-between">

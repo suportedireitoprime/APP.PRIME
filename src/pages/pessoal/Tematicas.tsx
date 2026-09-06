@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Film, ChevronRight } from "lucide-react";
+import { PrimeImage } from "@/components/ui/PrimeImage";
 import PessoalListLayout from "./PessoalListLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { getCache, setCache } from "@/lib/pessoalCache";
@@ -75,13 +76,14 @@ export default function MinhasTematicasPage() {
               className="text-left rounded-2xl overflow-hidden border border-border/60 bg-secondary/30 hover:bg-secondary/60 active:scale-[0.98] transition"
             >
               <div className="aspect-[2/3] bg-secondary overflow-hidden">
-                {o.poster_url ? (
-                  <img src={o.poster_url} alt={o.titulo} loading="lazy" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                    <Film className="w-10 h-10" />
-                  </div>
-                )}
+                <PrimeImage
+                  src={o.poster_url}
+                  alt={o.titulo}
+                  aspectRatio="2/3"
+                  targetWidth={320}
+                  containerClassName="w-full h-full"
+                  fallbackIcon={<Film className="w-10 h-10 text-muted-foreground" />}
+                />
               </div>
               <div className="p-3">
                 <div className="font-body text-sm font-semibold text-foreground truncate">{o.titulo}</div>

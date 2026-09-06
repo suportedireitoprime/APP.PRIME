@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Film, Search, Star, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { PrimeImage } from "@/components/ui/PrimeImage";
 import type { Obra } from "./ObraDetailSheet";
 
 interface Props {
@@ -105,21 +106,14 @@ export default function VerTodosSheet({ open, titulo, eyebrow, obras, onAbrir, o
                       className="group text-left"
                     >
                       <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-muted border border-border/50 group-hover:border-primary/40 transition-colors">
-                        {obra.poster_url ? (
-                          <img
-                            src={obra.poster_url}
-                            alt={obra.titulo}
-                            loading="lazy"
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div
-                            className="w-full h-full flex items-center justify-center"
-                            style={{ background: "linear-gradient(135deg, hsl(0 55% 22%), hsl(05 65% 14%))" }}
-                          >
-                            <Film className="w-6 h-6 text-red-200/60" strokeWidth={1.5} />
-                          </div>
-                        )}
+                        <PrimeImage
+                          src={obra.poster_url}
+                          alt={obra.titulo}
+                          aspectRatio="2/3"
+                          targetWidth={200}
+                          containerClassName="w-full h-full rounded-xl"
+                          fallbackIcon={<Film className="w-6 h-6 text-red-200/60" strokeWidth={1.5} />}
+                        />
                         {obra.nota ? (
                           <div className="absolute top-1.5 right-1.5 flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-black/80 backdrop-blur text-amber-300 text-[10px] font-bold">
                             <Star className="w-2.5 h-2.5 fill-amber-400" strokeWidth={0} />

@@ -1,6 +1,7 @@
 import { motion, useAnimation, AnimatePresence, type PanInfo } from 'framer-motion';
 import { RotateCcw } from 'lucide-react';
 import { useMotionValue, useTransform } from 'framer-motion';
+import { PrimeImage } from '@/components/ui/PrimeImage';
 
 const SWIPE_THRESHOLD = 80;
 
@@ -89,16 +90,18 @@ export function PilulaFlipCard({ pilulas, index, flipped, onFlip, onAdvance }: P
               >
                 {/* Frente */}
                 <div className="absolute inset-0 backface-hidden rounded-[2rem] overflow-hidden bg-zinc-900 border border-zinc-800">
-                  <img
+                  <PrimeImage
                     src={pilula.imagem}
                     alt={pilula.titulo}
-                    loading={i === 0 ? 'eager' : 'lazy'}
-                    decoding="async"
-                    className="absolute inset-0 w-full h-full object-cover"
+                    aspectRatio="auto"
+                    targetWidth={600}
+                    priority={i === 0}
+                    containerClassName="absolute inset-0 w-full h-full"
+                    className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10 z-10 pointer-events-none" />
                   
-                  <div className="absolute inset-x-0 bottom-0 p-8 flex flex-col items-center text-center">
+                  <div className="absolute inset-x-0 bottom-0 p-8 flex flex-col items-center text-center z-20">
                     <span className="text-[12px] font-bold text-[#36AF85] tracking-widest uppercase mb-3 drop-shadow-md">
                       Pílula {i + 1} de {pilulas.length}
                     </span>

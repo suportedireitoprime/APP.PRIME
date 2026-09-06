@@ -8,6 +8,7 @@ import ShapeGrid from '@/components/ui/ShapeGrid';
 import { prefetchImages } from '@/lib/coverLoader';
 import { CODIGOS_ITEMS, MINISTROS_ITEMS, type PillGalleryItem } from './data/galleryItems';
 import { navigateToCodigoByItem, navigateToMinistros } from './utils/pilulasNavigation';
+import { PrimeImage } from '@/components/ui/PrimeImage';
 
 export default function PilulasLista() {
   const navigate = useNavigate();
@@ -90,17 +91,15 @@ export default function PilulasLista() {
                 className="group flex items-stretch p-3.5 rounded-2xl bg-[#1A1A1A] border border-white/5 active:scale-[0.98] transition-all text-left relative overflow-hidden hover:border-white/15"
               >
                 {/* Imagem vertical */}
-                <div className="w-[72px] h-[96px] rounded-xl overflow-hidden flex-shrink-0 bg-zinc-800 shadow-md">
-                  <img 
+                <div className="w-[72px] h-[96px] rounded-xl overflow-hidden flex-shrink-0 shadow-md">
+                  <PrimeImage 
                     src={item.image} 
                     alt={item.fullName} 
-                    className="w-full h-full object-cover" 
-                    loading="eager"
-                    fetchPriority="high"
-                    decoding="async"
-                    onError={(e) => {
-                      e.currentTarget.src = '/placeholder.svg';
-                    }}
+                    aspectRatio="2/3"
+                    targetWidth={180}
+                    priority={index < 4}
+                    containerClassName="w-full h-full rounded-xl"
+                    fallbackText={item.text}
                   />
                 </div>
                 

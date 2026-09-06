@@ -2,6 +2,7 @@ import { motion, type Variants } from 'framer-motion';
 import { Headphones, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
+import { PrimeImage } from '@/components/ui/PrimeImage';
 import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
 
 interface PilulaClassicoItemProps {
@@ -43,20 +44,15 @@ export function PilulaClassicoItem({ livro, itemVariants, navigate }: PilulaClas
       }`}
     >
       {/* Capa */}
-      <div className="w-16 h-24 rounded-lg bg-white/5 shrink-0 overflow-hidden shadow-md">
-        {livro.capa ? (
-          <img 
-            src={livro.capa} 
-            alt={livro.titulo} 
-            className="w-full h-full object-cover" 
-            loading="lazy" 
-            decoding="async"
-          />
-        ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center text-white/30 text-[10px] uppercase text-center p-1">
-            Sem<br />Capa
-          </div>
-        )}
+      <div className="w-16 h-24 rounded-lg shrink-0 overflow-hidden shadow-md">
+        <PrimeImage
+          src={livro.capa}
+          alt={livro.titulo}
+          aspectRatio="2/3"
+          targetWidth={160}
+          containerClassName="w-full h-full rounded-lg"
+          fallbackText={livro.titulo}
+        />
       </div>
 
       {/* Detalhes */}
