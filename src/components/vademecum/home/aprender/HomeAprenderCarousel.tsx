@@ -12,7 +12,7 @@ const HomeAprenderCarousel = ({ hideBlog }: HomeAprenderCarouselProps) => {
   if (hideBlog) return null;
 
   return (
-    <div className="pt-2 pb-0 -mb-6 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
+    <div className="pt-2 pb-1 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
       <AprenderCarouselHeader />
       <AprenderCarousel3D items={items} onItemClick={handleItemClick} />
     </div>
