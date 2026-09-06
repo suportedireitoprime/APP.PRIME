@@ -351,11 +351,26 @@ class Media {
 
         if (this.positionType === 'inside-bottom') {
           // Draw gradient from bottom
-          const gradient = ctx.createLinearGradient(0, canvas.height, 0, canvas.height * 0.6);
-          gradient.addColorStop(0, 'rgba(0,0,0,0.9)');
+          const gradient = ctx.createLinearGradient(0, canvas.height, 0, canvas.height * 0.5);
+          gradient.addColorStop(0, 'rgba(0,0,0,0.95)');
+          gradient.addColorStop(0.5, 'rgba(0,0,0,0.6)');
           gradient.addColorStop(1, 'rgba(0,0,0,0)');
           ctx.fillStyle = gradient;
-          ctx.fillRect(0, canvas.height * 0.6, canvas.width, canvas.height * 0.4);
+          ctx.fillRect(0, canvas.height * 0.5, canvas.width, canvas.height * 0.5);
+
+          if (this.text) {
+            ctx.save();
+            ctx.fillStyle = this.textColor || '#ffffff';
+            ctx.font = `600 ${Math.round(canvas.height * 0.09)}px 'Barlow Condensed', 'Bebas Neue', sans-serif`;
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'bottom';
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+            ctx.shadowBlur = 12;
+            ctx.shadowOffsetY = 4;
+            const textY = canvas.height * 0.94 - (this.progress !== undefined ? canvas.height * 0.025 : 0);
+            ctx.fillText(this.text.toUpperCase(), canvas.width * 0.08, textY);
+            ctx.restore();
+          }
         }
 
         if (this.showPlayButton) {
@@ -445,6 +460,7 @@ class Media {
     this.plane.setParent(this.scene);
   }
   createTitle() {
+    if (this.positionType !== 'inside-bottom') {
       this.title = new Title({
         gl: this.gl,
         plane: this.plane,
@@ -454,6 +470,7 @@ class Media {
         font: this.font,
         position: this.positionType
       });
+    }
     if (this.fullName) {
       this.innerTitle = new Title({
         gl: this.gl,
@@ -527,9 +544,9 @@ class Media {
       }
     }
     this.scale = this.screen.height / 1500;
-    // Aumentando um pouco as capas para melhorar a visualização sem exagerar
-    this.plane.scale.y = (this.viewport.height * (800 * this.scale)) / this.screen.height;
-    this.plane.scale.x = (this.viewport.width * (600 * this.scale)) / this.screen.width;
+    // Aumentando um pouco as capas para melhorar a visualização
+    this.plane.scale.y = (this.viewport.height * (880 * this.scale)) / this.screen.height;
+    this.plane.scale.x = (this.viewport.width * (660 * this.scale)) / this.screen.width;
     this.plane.program.uniforms.uPlaneSizes.value = [this.plane.scale.x, this.plane.scale.y];
     this.padding = 2;
     this.width = this.plane.scale.x + this.padding;
