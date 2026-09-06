@@ -80,13 +80,16 @@ const PersistentHome = () => {
       className="persistent-home-root"
       style={{
         width: "100%",
+        height: visible ? "auto" : 0,
+        maxHeight: visible ? "none" : 0,
+        overflow: visible ? "visible" : "hidden",
         opacity: visible ? 1 : 0,
         pointerEvents: visible ? "auto" : "none",
         visibility: visible ? "visible" : "hidden",
         position: visible ? "relative" : "absolute",
         top: 0,
         left: 0,
-        zIndex: visible ? 1 : 0,
+        zIndex: visible ? 1 : -1,
         transform: "none",
         transition: transitionStyle,
         willChange: visible ? "auto" : "opacity",

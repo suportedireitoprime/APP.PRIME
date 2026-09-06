@@ -61,7 +61,7 @@ export default function STFDashboard() {
   ];
 
   return (
-    <div className="min-h-dvh bg-zinc-950 pb-20 relative overflow-hidden">
+    <div className="min-h-dvh bg-zinc-950 pb-20 relative overflow-x-hidden">
       {/* Botão de Voltar Premium */}
       <button
         onClick={handleBack}

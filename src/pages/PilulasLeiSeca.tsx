@@ -62,7 +62,7 @@ export default function PilulasLeiSeca({ slug }: { slug: LeiSecaSlug }) {
   });
 
   return (
-    <div className="min-h-dvh bg-zinc-950 text-white pb-32 relative overflow-hidden">
+    <div className="min-h-dvh bg-zinc-950 text-white pb-32 relative overflow-x-hidden">
       <div className="fixed inset-0 z-0">
         <ShapeGrid 
           speed={0.5} 

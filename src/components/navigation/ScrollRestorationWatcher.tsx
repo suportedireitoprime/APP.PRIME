@@ -138,24 +138,15 @@ export function ScrollRestorationWatcher() {
       setSessionSaved(prevKey, pos);
     }
 
-    // Item 22: Purga qualquer trava de scroll residual
+    // Purga qualquer trava de scroll residual deixada por modais ou menus
     resetBodyScrollLock();
-
-    // Item 35: Estanca o momentum scrolling inercial no iOS durante a janela de transição de 80ms
-    const htmlEl = document.documentElement;
-    const prevOverflow = htmlEl.style.overflow;
-    htmlEl.style.overflow = 'hidden';
 
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
 
-    // Item 25: Aguarda os 80ms da animação de saída para reposicionar a barra de rolagem,
-    // garantindo que a página saindo não dê salto visual brusco.
+    // Reposiciona a barra de rolagem na nova rota
     timeoutRef.current = setTimeout(() => {
-      // Restaura overflow do documento após o término do exit de 80ms
-      htmlEl.style.overflow = prevOverflow;
-
       const desktopContainer = document.querySelector<HTMLElement>(
         '#desktop-scroll-container, [data-desktop-scroll="true"]'
       );
@@ -217,7 +208,6 @@ export function ScrollRestorationWatcher() {
     }, 85);
 
     return () => {
-      htmlEl.style.overflow = prevOverflow;
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }

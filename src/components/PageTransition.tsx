@@ -69,10 +69,9 @@ const PageTransition = ({ children, className, instant, fallback }: PageTransiti
     maxWidth: "100vw",
     minHeight: "100dvh",
     overflowX: "hidden",
-    overscrollBehaviorY: "contain",
   };
 
-  const baseClass = `w-full max-w-full overflow-x-hidden min-h-screen min-h-[100dvh] overscroll-contain ${className || ""}`.trim();
+  const baseClass = `w-full max-w-full overflow-x-hidden min-h-screen min-h-[100dvh] ${className || ""}`.trim();
 
   if (shouldReduceMotion || instant) {
     return (

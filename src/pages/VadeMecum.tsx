@@ -168,7 +168,7 @@ const VadeMecum = () => {
   }
 
   return (
-    <div className={`theme-vademecum min-h-dvh bg-zinc-950 pb-24 relative overflow-hidden ${activeTab !== 'emalta' && activeTab !== 'favoritos' ? 'pt-8' : ''}`}>
+    <div className={`theme-vademecum min-h-dvh bg-zinc-950 pb-24 relative overflow-x-hidden ${activeTab !== 'emalta' && activeTab !== 'favoritos' ? 'pt-8' : ''}`}>
       {gridReady && (
         <div className="absolute inset-0 z-0 opacity-60">
           <Suspense fallback={null}>

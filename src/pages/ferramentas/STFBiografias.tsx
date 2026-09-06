@@ -186,7 +186,7 @@ export default function STFBiografias() {
   };
 
   return (
-    <div className="min-h-dvh bg-zinc-950 pb-20 relative overflow-hidden flex flex-col">
+    <div className="min-h-dvh bg-zinc-950 pb-20 relative overflow-x-hidden flex flex-col">
       {/* Botão de Voltar Premium */}
       <button
         onClick={handleBack}
