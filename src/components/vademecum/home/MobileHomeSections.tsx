@@ -173,17 +173,17 @@ const MobileHomeSections = ({
     <div className="space-y-6 pt-4">
       {/* Pílulas em Carrossel 3D no topo */}
       {!hideBlog && (
-        <div className="pt-2">
-          <div className="mb-4">
-            <h3 className="font-display text-foreground text-[18px] font-bold flex items-center gap-2">
+        <div className="pt-2 overflow-hidden pb-4">
+          <div className="mb-0 relative z-10 pointer-events-none px-4">
+            <h3 className="font-display text-foreground text-[18px] font-bold flex items-center gap-2 pointer-events-auto">
               <span className="w-1 h-5 rounded-full bg-[#10B981]" />
               Pílulas de Códigos
             </h3>
-            <p className="font-body text-sm text-muted-foreground mt-1 ml-3">
+            <p className="font-body text-sm text-muted-foreground mt-1 ml-3 pointer-events-auto">
               Áudios curtos sobre os artigos mais cobrados
             </p>
           </div>
-          <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen h-[300px]">
+          <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen h-[280px] -mt-6">
             <CircularGallery
               items={pillsItems}
               bend={0.3}

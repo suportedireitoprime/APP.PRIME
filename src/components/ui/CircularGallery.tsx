@@ -527,9 +527,9 @@ class Media {
       }
     }
     this.scale = this.screen.height / 1500;
-    // Capas ainda menores (650x450) para mostrar mais itens na tela
-    this.plane.scale.y = (this.viewport.height * (650 * this.scale)) / this.screen.height;
-    this.plane.scale.x = (this.viewport.width * (450 * this.scale)) / this.screen.width;
+    // Aumentando um pouco as capas para melhorar a visualização sem exagerar
+    this.plane.scale.y = (this.viewport.height * (800 * this.scale)) / this.screen.height;
+    this.plane.scale.x = (this.viewport.width * (600 * this.scale)) / this.screen.width;
     this.plane.program.uniforms.uPlaneSizes.value = [this.plane.scale.x, this.plane.scale.y];
     this.padding = 2;
     this.width = this.plane.scale.x + this.padding;
@@ -654,11 +654,7 @@ class App {
     this.mouse.x = 2.0 * (startX - rect.left) / this.screen.width - 1.0;
     this.mouse.y = 2.0 * (1.0 - (startY - rect.top) / this.screen.height) - 1.0;
     this.raycast.castMouse(this.camera, this.mouse);
-    const meshes = this.medias.map(m => m.plane);
-    const hits = this.raycast.intersectBounds(meshes);
-    
-    if (hits.length === 0) return; // Prevent drag if no card is hit
-
+    // Permitir arrastar a partir de qualquer lugar dentro do container, não apenas nas capas
     this.isDown = true;
     this.scroll.position = this.scroll.current;
     this.start = startX;
