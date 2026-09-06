@@ -288,9 +288,21 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
                     </div>
                   </div>
 
-                  {/* Nome/título SEM abreviação dentro da capa, mantendo a arte visível sem escurecer */}
-                  <div className="absolute bottom-0 left-0 right-0 px-2 pb-2 pt-4 z-10 pointer-events-none bg-gradient-to-t from-black/60 via-black/20 to-transparent">
-                    <span className="font-bold text-[11px] sm:text-[12px] text-white leading-tight block drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] text-center">
+                  {/* Nome/título SEM abreviação dentro da capa com degradê de baixo para cima dando ênfase */}
+                  <div
+                    className={`absolute bottom-0 left-0 right-0 z-10 pointer-events-none transition-all duration-300 ${
+                      frente
+                        ? 'px-2.5 pb-2.5 pt-12 bg-gradient-to-t from-black/95 via-black/75 to-transparent'
+                        : 'px-2 pb-2 pt-6 bg-gradient-to-t from-black/70 via-black/25 to-transparent'
+                    }`}
+                  >
+                    <span
+                      className={`font-bold leading-tight block text-center transition-all duration-300 ${
+                        frente
+                          ? 'text-[12px] sm:text-[13px] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,1)] tracking-wide'
+                          : 'text-[10.5px] sm:text-[11px] text-zinc-200 drop-shadow-md'
+                      }`}
+                    >
                       {item.fullName || item.text}
                     </span>
                   </div>
