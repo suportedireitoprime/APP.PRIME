@@ -5,7 +5,7 @@ import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { AnimatedDivider } from '@/components/ui/AnimatedDivider';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import CircularGallery, { type CircularGalleryHandle } from '@/components/ui/CircularGallery';
+import { PilulasDeck3D } from './components/PilulasDeck3D';
 import { CODIGOS_ITEMS, MINISTROS_ITEMS, CLASSICOS_ITEMS, type PillGalleryItem } from './data/galleryItems';
 import { navigateToCodigoByItem, navigateToMinistros } from './utils/pilulasNavigation';
 
@@ -13,8 +13,6 @@ type TabType = 'Todos' | 'Pílulas Rápidas' | 'Só Pílulas' | 'Códigos' | 'Mi
 
 export default function PilulasHome() {
   const navigate = useNavigate();
-  const galleryRef = useRef<CircularGalleryHandle>(null);
-  const ministrosGalleryRef = useRef<CircularGalleryHandle>(null);
   const [activeTab, setActiveTab] = useState<TabType>('Todos');
   const tabs: TabType[] = ['Todos', 'Pílulas Rápidas', 'Só Pílulas', 'Códigos', 'Ministros'];
   
@@ -46,7 +44,7 @@ export default function PilulasHome() {
   const showMinistros = activeTab === 'Todos' || activeTab === 'Só Pílulas' || activeTab === 'Ministros';
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D] overflow-hidden pb-20">
+    <div className="min-h-screen bg-[#0D0D0D] overflow-x-hidden pb-20">
       <div className="absolute inset-0 z-0">
         <ShapeGrid 
           speed={0.5} 
@@ -114,15 +112,11 @@ export default function PilulasHome() {
                 </button>
               </div>
 
-              <div style={{ height: '350px', position: 'relative' }} className="-mx-4">
-                <CircularGallery
-                  ref={galleryRef}
+              <div className="-mx-4">
+                <PilulasDeck3D
                   items={CODIGOS_ITEMS}
-                  bend={1.5}
-                  textColor="#ffffff"
-                  borderRadius={0.05}
-                  scrollEase={0.08}
                   onItemClick={handleItemClick}
+                  defaultBorderColor="#EF4444"
                 />
               </div>
             </div>
@@ -152,15 +146,11 @@ export default function PilulasHome() {
                 </button>
               </div>
 
-              <div style={{ height: '350px', position: 'relative' }} className="-mx-4">
-                <CircularGallery
-                  ref={ministrosGalleryRef}
+              <div className="-mx-4">
+                <PilulasDeck3D
                   items={MINISTROS_ITEMS}
-                  bend={1.5}
-                  textColor="#ffffff"
-                  borderRadius={0.05}
-                  scrollEase={0.08}
                   onItemClick={handleMinistroClick}
+                  defaultBorderColor="#D4AF37"
                 />
               </div>
             </div>
@@ -186,14 +176,11 @@ export default function PilulasHome() {
                 </button>
               </div>
 
-              <div style={{ height: '350px', position: 'relative' }} className="-mx-4">
-                <CircularGallery
+              <div className="-mx-4">
+                <PilulasDeck3D
                   items={CLASSICOS_ITEMS}
-                  bend={1.5}
-                  textColor="#ffffff"
-                  borderRadius={0.05}
-                  scrollEase={0.08}
                   onItemClick={handleSelectClassicos}
+                  defaultBorderColor="#E11D48"
                 />
               </div>
             </div>
