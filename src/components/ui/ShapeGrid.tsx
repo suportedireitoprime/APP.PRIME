@@ -4,9 +4,9 @@ import './ShapeGrid.css';
 const ShapeGrid = ({
   direction = 'right',
   speed = 1,
-  borderColor = '#999',
+  borderColor = 'rgba(255, 255, 255, 0.05)',
   squareSize = 40,
-  hoverFillColor = '#222',
+  hoverFillColor = 'rgba(255, 255, 255, 0.08)',
   shape = 'square',
   hoverTrailAmount = 0,
   className = ''
@@ -19,6 +19,9 @@ const ShapeGrid = ({
   const hoveredSquare = useRef<{ x: number; y: number } | null>(null);
   const trailCells = useRef<Array<{ x: number; y: number }>>([]);
   const cellOpacities = useRef(new Map());
+  const logicalWidth = useRef<number>(0);
+  const logicalHeight = useRef<number>(0);
+  const dprRef = useRef<number>(1);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -27,17 +30,41 @@ const ShapeGrid = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    // Fase 1: Sanitização estrita de tamanho e proporções geométricas
+    const safeSquareSize = Math.max(10, Number(squareSize) || 40);
     const isHex = shape === 'hexagon';
     const isTri = shape === 'triangle';
-    const hexHoriz = squareSize * 1.5;
-    const hexVert = squareSize * Math.sqrt(3);
+    const hexHoriz = safeSquareSize * 1.5;
+    const hexVert = safeSquareSize * Math.sqrt(3);
 
+    // Fase 1: Resolução de variáveis CSS/Tokens caso informadas
+    const resolveColor = (colorStr: string): string => {
+      if (typeof window !== 'undefined' && colorStr.startsWith('var(')) {
+        const varName = colorStr.slice(4, -1).trim();
+        const resolved = getComputedStyle(canvas).getPropertyValue(varName).trim();
+        if (resolved) return resolved;
+      }
+      return colorStr;
+    };
+    const activeBorderColor = resolveColor(borderColor);
+    const activeHoverFillColor = resolveColor(hoverFillColor);
+
+    // Fase 1: High-DPI (Retina / AMOLED) Scaling com limitador em 2x
     const resizeCanvas = () => {
       if (!canvas) return;
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-      numSquaresX.current = Math.ceil(canvas.width / squareSize) + 1;
-      numSquaresY.current = Math.ceil(canvas.height / squareSize) + 1;
+      const w = canvas.offsetWidth;
+      const h = canvas.offsetHeight;
+      if (w <= 0 || h <= 0) return;
+
+      const dpr = Math.min(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1, 2);
+      dprRef.current = dpr;
+      logicalWidth.current = w;
+      logicalHeight.current = h;
+
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      numSquaresX.current = Math.ceil(w / safeSquareSize) + 1;
+      numSquaresY.current = Math.ceil(h / safeSquareSize) + 1;
     };
 
     const resizeObserver = new ResizeObserver(() => {
@@ -47,7 +74,7 @@ const ShapeGrid = ({
     resizeObserver.observe(canvas);
     resizeCanvas();
 
-    const drawHex = (cx, cy, size) => {
+    const drawHex = (cx: number, cy: number, size: number) => {
       ctx.beginPath();
       for (let i = 0; i < 6; i++) {
         const angle = (Math.PI / 3) * i;
@@ -59,13 +86,13 @@ const ShapeGrid = ({
       ctx.closePath();
     };
 
-    const drawCircle = (cx, cy, size) => {
+    const drawCircle = (cx: number, cy: number, size: number) => {
       ctx.beginPath();
       ctx.arc(cx, cy, size / 2, 0, Math.PI * 2);
       ctx.closePath();
     };
 
-    const drawTriangle = (cx, cy, size, flip) => {
+    const drawTriangle = (cx: number, cy: number, size: number, flip: boolean) => {
       ctx.beginPath();
       if (flip) {
         ctx.moveTo(cx, cy + size / 2);
@@ -80,122 +107,129 @@ const ShapeGrid = ({
     };
 
     const drawGrid = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const w = logicalWidth.current;
+      const h = logicalHeight.current;
+      if (w <= 0 || h <= 0) return;
+
+      const dpr = dprRef.current;
+      // Normalização de DPI e limpeza com precisão lógica
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      ctx.lineWidth = 1;
 
       if (isHex) {
         const colShift = Math.floor(gridOffset.current.x / hexHoriz);
         const offsetX = ((gridOffset.current.x % hexHoriz) + hexHoriz) % hexHoriz;
         const offsetY = ((gridOffset.current.y % hexVert) + hexVert) % hexVert;
 
-        const cols = Math.ceil(canvas.width / hexHoriz) + 3;
-        const rows = Math.ceil(canvas.height / hexVert) + 3;
+        const cols = Math.ceil(w / hexHoriz) + 3;
+        const rows = Math.ceil(h / hexVert) + 3;
 
         for (let col = -2; col < cols; col++) {
           for (let row = -2; row < rows; row++) {
-            const cx = col * hexHoriz + offsetX;
-            const cy = row * hexVert + ((col + colShift) % 2 !== 0 ? hexVert / 2 : 0) + offsetY;
+            const cx = Math.round(col * hexHoriz + offsetX);
+            const cy = Math.round(row * hexVert + ((col + colShift) % 2 !== 0 ? hexVert / 2 : 0) + offsetY);
 
             const cellKey = `${col},${row}`;
             const alpha = cellOpacities.current.get(cellKey);
             if (alpha) {
               ctx.globalAlpha = alpha;
-              drawHex(cx, cy, squareSize);
-              ctx.fillStyle = hoverFillColor;
+              drawHex(cx, cy, safeSquareSize);
+              ctx.fillStyle = activeHoverFillColor;
               ctx.fill();
               ctx.globalAlpha = 1;
             }
 
-            drawHex(cx, cy, squareSize);
-            ctx.strokeStyle = borderColor;
+            drawHex(cx, cy, safeSquareSize);
+            ctx.strokeStyle = activeBorderColor;
             ctx.stroke();
           }
         }
       } else if (isTri) {
-        const halfW = squareSize / 2;
+        const halfW = safeSquareSize / 2;
         const colShift = Math.floor(gridOffset.current.x / halfW);
-        const rowShift = Math.floor(gridOffset.current.y / squareSize);
+        const rowShift = Math.floor(gridOffset.current.y / safeSquareSize);
         const offsetX = ((gridOffset.current.x % halfW) + halfW) % halfW;
-        const offsetY = ((gridOffset.current.y % squareSize) + squareSize) % squareSize;
+        const offsetY = ((gridOffset.current.y % safeSquareSize) + safeSquareSize) % safeSquareSize;
 
-        const cols = Math.ceil(canvas.width / halfW) + 4;
-        const rows = Math.ceil(canvas.height / squareSize) + 4;
+        const cols = Math.ceil(w / halfW) + 4;
+        const rows = Math.ceil(h / safeSquareSize) + 4;
 
         for (let col = -2; col < cols; col++) {
           for (let row = -2; row < rows; row++) {
-            const cx = col * halfW + offsetX;
-            const cy = row * squareSize + squareSize / 2 + offsetY;
+            const cx = Math.round(col * halfW + offsetX);
+            const cy = Math.round(row * safeSquareSize + safeSquareSize / 2 + offsetY);
             const flip = ((col + colShift + row + rowShift) % 2 + 2) % 2 !== 0;
 
             const cellKey = `${col},${row}`;
             const alpha = cellOpacities.current.get(cellKey);
             if (alpha) {
               ctx.globalAlpha = alpha;
-              drawTriangle(cx, cy, squareSize, flip);
-              ctx.fillStyle = hoverFillColor;
+              drawTriangle(cx, cy, safeSquareSize, flip);
+              ctx.fillStyle = activeHoverFillColor;
               ctx.fill();
               ctx.globalAlpha = 1;
             }
 
-            drawTriangle(cx, cy, squareSize, flip);
-            ctx.strokeStyle = borderColor;
+            drawTriangle(cx, cy, safeSquareSize, flip);
+            ctx.strokeStyle = activeBorderColor;
             ctx.stroke();
           }
         }
       } else if (shape === 'circle') {
-        const offsetX = ((gridOffset.current.x % squareSize) + squareSize) % squareSize;
-        const offsetY = ((gridOffset.current.y % squareSize) + squareSize) % squareSize;
+        const offsetX = ((gridOffset.current.x % safeSquareSize) + safeSquareSize) % safeSquareSize;
+        const offsetY = ((gridOffset.current.y % safeSquareSize) + safeSquareSize) % safeSquareSize;
 
-        const cols = Math.ceil(canvas.width / squareSize) + 3;
-        const rows = Math.ceil(canvas.height / squareSize) + 3;
+        const cols = Math.ceil(w / safeSquareSize) + 3;
+        const rows = Math.ceil(h / safeSquareSize) + 3;
 
         for (let col = -2; col < cols; col++) {
           for (let row = -2; row < rows; row++) {
-            const cx = col * squareSize + squareSize / 2 + offsetX;
-            const cy = row * squareSize + squareSize / 2 + offsetY;
+            const cx = Math.round(col * safeSquareSize + safeSquareSize / 2 + offsetX);
+            const cy = Math.round(row * safeSquareSize + safeSquareSize / 2 + offsetY);
 
             const cellKey = `${col},${row}`;
             const alpha = cellOpacities.current.get(cellKey);
             if (alpha) {
               ctx.globalAlpha = alpha;
-              drawCircle(cx, cy, squareSize);
-              ctx.fillStyle = hoverFillColor;
+              drawCircle(cx, cy, safeSquareSize);
+              ctx.fillStyle = activeHoverFillColor;
               ctx.fill();
               ctx.globalAlpha = 1;
             }
 
-            drawCircle(cx, cy, squareSize);
-            ctx.strokeStyle = borderColor;
+            drawCircle(cx, cy, safeSquareSize);
+            ctx.strokeStyle = activeBorderColor;
             ctx.stroke();
           }
         }
       } else {
-        const offsetX = ((gridOffset.current.x % squareSize) + squareSize) % squareSize;
-        const offsetY = ((gridOffset.current.y % squareSize) + squareSize) % squareSize;
+        const offsetX = ((gridOffset.current.x % safeSquareSize) + safeSquareSize) % safeSquareSize;
+        const offsetY = ((gridOffset.current.y % safeSquareSize) + safeSquareSize) % safeSquareSize;
 
-        const cols = Math.ceil(canvas.width / squareSize) + 3;
-        const rows = Math.ceil(canvas.height / squareSize) + 3;
+        const cols = Math.ceil(w / safeSquareSize) + 3;
+        const rows = Math.ceil(h / safeSquareSize) + 3;
 
         for (let col = -2; col < cols; col++) {
           for (let row = -2; row < rows; row++) {
-            const sx = col * squareSize + offsetX;
-            const sy = row * squareSize + offsetY;
+            // Fase 1: Alinhamento de coordenadas inteiras para eliminar efeito de tremor (shimmering)
+            const sx = Math.round(col * safeSquareSize + offsetX);
+            const sy = Math.round(row * safeSquareSize + offsetY);
 
             const cellKey = `${col},${row}`;
             const alpha = cellOpacities.current.get(cellKey);
             if (alpha) {
               ctx.globalAlpha = alpha;
-              ctx.fillStyle = hoverFillColor;
-              ctx.fillRect(sx, sy, squareSize, squareSize);
+              ctx.fillStyle = activeHoverFillColor;
+              ctx.fillRect(sx, sy, safeSquareSize, safeSquareSize);
               ctx.globalAlpha = 1;
             }
 
-            ctx.strokeStyle = borderColor;
-            ctx.strokeRect(sx, sy, squareSize, squareSize);
+            ctx.strokeStyle = activeBorderColor;
+            ctx.strokeRect(sx, sy, safeSquareSize, safeSquareSize);
           }
         }
       }
-
-      // Fundo radial transparente removido para não escurecer a tela
     };
 
     const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -210,8 +244,8 @@ const ShapeGrid = ({
 
     const updateAnimation = () => {
       const effectiveSpeed = Math.max(speed, 0.1);
-      const wrapX = isHex ? hexHoriz * 2 : squareSize;
-      const wrapY = isHex ? hexVert : isTri ? squareSize * 2 : squareSize;
+      const wrapX = isHex ? hexHoriz * 2 : safeSquareSize;
+      const wrapY = isHex ? hexVert : isTri ? safeSquareSize * 2 : safeSquareSize;
 
       switch (direction) {
         case 'right':
@@ -304,15 +338,15 @@ const ShapeGrid = ({
           hoveredSquare.current = { x: col, y: row };
         }
       } else if (isTri) {
-        const halfW = squareSize / 2;
+        const halfW = safeSquareSize / 2;
         const offsetX = ((gridOffset.current.x % halfW) + halfW) % halfW;
-        const offsetY = ((gridOffset.current.y % squareSize) + squareSize) % squareSize;
+        const offsetY = ((gridOffset.current.y % safeSquareSize) + safeSquareSize) % safeSquareSize;
 
         const adjustedX = mouseX - offsetX;
         const adjustedY = mouseY - offsetY;
 
         const col = Math.round(adjustedX / halfW);
-        const row = Math.floor(adjustedY / squareSize);
+        const row = Math.floor(adjustedY / safeSquareSize);
 
         if (
           !hoveredSquare.current ||
@@ -326,14 +360,14 @@ const ShapeGrid = ({
           hoveredSquare.current = { x: col, y: row };
         }
       } else if (shape === 'circle') {
-        const offsetX = ((gridOffset.current.x % squareSize) + squareSize) % squareSize;
-        const offsetY = ((gridOffset.current.y % squareSize) + squareSize) % squareSize;
+        const offsetX = ((gridOffset.current.x % safeSquareSize) + safeSquareSize) % safeSquareSize;
+        const offsetY = ((gridOffset.current.y % safeSquareSize) + safeSquareSize) % safeSquareSize;
 
         const adjustedX = mouseX - offsetX;
         const adjustedY = mouseY - offsetY;
 
-        const col = Math.round(adjustedX / squareSize);
-        const row = Math.round(adjustedY / squareSize);
+        const col = Math.round(adjustedX / safeSquareSize);
+        const row = Math.round(adjustedY / safeSquareSize);
 
         if (
           !hoveredSquare.current ||
@@ -347,14 +381,14 @@ const ShapeGrid = ({
           hoveredSquare.current = { x: col, y: row };
         }
       } else {
-        const offsetX = ((gridOffset.current.x % squareSize) + squareSize) % squareSize;
-        const offsetY = ((gridOffset.current.y % squareSize) + squareSize) % squareSize;
+        const offsetX = ((gridOffset.current.x % safeSquareSize) + safeSquareSize) % safeSquareSize;
+        const offsetY = ((gridOffset.current.y % safeSquareSize) + safeSquareSize) % safeSquareSize;
 
         const adjustedX = mouseX - offsetX;
         const adjustedY = mouseY - offsetY;
 
-        const col = Math.floor(adjustedX / squareSize);
-        const row = Math.floor(adjustedY / squareSize);
+        const col = Math.floor(adjustedX / safeSquareSize);
+        const row = Math.floor(adjustedY / safeSquareSize);
 
         if (
           !hoveredSquare.current ||
