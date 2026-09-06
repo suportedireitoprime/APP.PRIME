@@ -3,10 +3,20 @@ import { useReducedMotion } from "framer-motion";
 import Index from "@/pages/Index";
 import { useAuth } from "@/hooks/useAuth";
 
+const HEAVY_GPU_PATHS = new Set([
+  "/grafo-artigos",
+  "/apresentacoes",
+  "/modo-offline/apresentacoes",
+  "/admin/laboratorio",
+  "/admin-laboratorio",
+]);
+
 /**
  * Mantém a Home montada em memória o tempo todo.
- * Não utiliza `display: none` para preservar os backing stores da GPU (composite layers)
+ * Não utiliza `display: none` em rotas normais para preservar os backing stores da GPU
  * e evitar o 'piscar preto' ao retornar ao início do aplicativo.
+ * Em rotas 3D pesadas (WebGL / Three.js), alterna para `display: none` para liberar
+ * completamente a VRAM e evitar travamentos por Out-Of-Memory (OOM).
  * A transição é equalizada com o PageTransition a 80ms e 120fps puros.
  */
 const PersistentHome = () => {
@@ -38,6 +48,24 @@ const PersistentHome = () => {
     location.pathname.startsWith("/desktop-link/");
 
   if (isPublic) return null;
+
+  // Em rotas com Three.js / WebGL pesado, libera a VRAM do compositor mantendo o estado React
+  const isHeavyGpuRoute =
+    HEAVY_GPU_PATHS.has(location.pathname) ||
+    location.pathname.startsWith("/apresentacoes/") ||
+    location.pathname.startsWith("/grafo-artigos");
+
+  if (isHeavyGpuRoute) {
+    return (
+      <div
+        className="persistent-home-root"
+        style={{ display: "none" }}
+        aria-hidden="true"
+      >
+        <Index />
+      </div>
+    );
+  }
 
   const visible = location.pathname === "/";
 
