@@ -85,7 +85,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
       />
 
       {/* Container principal do Deck de Cards em leque */}
-      <div className="relative flex items-center justify-center w-full max-w-[360px] sm:max-w-[420px] h-[220px] sm:h-[235px]">
+      <div className="relative flex items-center justify-center w-full max-w-[360px] sm:max-w-[420px] h-[240px] sm:h-[258px]">
         {/* Botão de navegação anterior */}
         <button
           type="button"
@@ -145,12 +145,6 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 style={{
                   zIndex: slot.z,
-                  clipPath: 'inset(0 round 16px)',
-                  WebkitClipPath: 'inset(0 round 16px)',
-                  borderColor: frente ? activeBorderColor : undefined,
-                  boxShadow: frente
-                    ? `0 15px 40px ${activeGlowColor}`
-                    : undefined,
                 }}
                 onClick={() => {
                   if (frente) {
@@ -161,47 +155,92 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
                     setTimeout(() => setPaused(false), 2500);
                   }
                 }}
-                className={`absolute w-[140px] sm:w-[152px] h-[192px] sm:h-[208px] rounded-2xl overflow-hidden shadow-2xl shrink-0 cursor-pointer will-change-transform bg-zinc-950 transition-colors duration-300 ${
-                  frente
-                    ? 'border-[3.5px]'
-                    : 'border-2 border-white/20 shadow-black/60'
-                }`}
+                className="absolute w-[140px] sm:w-[152px] h-[192px] sm:h-[208px] shrink-0 cursor-pointer will-change-transform"
               >
-                {/* Imagem da capa */}
-                <img
-                  src={item.image}
-                  alt={item.fullName}
-                  loading="eager"
-                  decoding="async"
-                  className="w-full h-full object-cover pointer-events-none select-none block"
+                {/* Card principal com borda, glow e cores reais da capa */}
+                <div
+                  className={`relative w-full h-full rounded-2xl overflow-hidden shadow-2xl bg-zinc-950 transition-colors duration-300 ${
+                    frente
+                      ? 'border-[3.5px]'
+                      : 'border-2 border-white/20 shadow-black/60'
+                  }`}
                   style={{
+                    borderColor: frente ? activeBorderColor : undefined,
+                    boxShadow: frente
+                      ? `0 15px 40px ${activeGlowColor}`
+                      : undefined,
                     clipPath: 'inset(0 round 16px)',
                     WebkitClipPath: 'inset(0 round 16px)',
                   }}
-                />
+                >
+                  {/* Imagem da capa com as cores 100% reais sem escurecer */}
+                  <img
+                    src={item.image}
+                    alt={item.fullName}
+                    loading="eager"
+                    decoding="async"
+                    className="w-full h-full object-cover pointer-events-none select-none block"
+                  />
 
-                {/* Camada de escurecimento sutil para cards que não estão na frente */}
-                {!frente && (
-                  <div className="absolute inset-0 bg-black/35 pointer-events-none" />
-                )}
+                  {/* Camada de escurecimento suave APENAS para os cards secundários no fundo */}
+                  {!frente && (
+                    <div className="absolute inset-0 bg-black/35 pointer-events-none" />
+                  )}
 
-                {/* Botão Play central translúcido no card da frente */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <div
-                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg transition-all duration-300 ${
-                      frente ? 'opacity-90 scale-100' : 'opacity-0 scale-75'
-                    }`}
-                  >
-                    <Play className="w-4 h-4 text-white fill-white ml-0.5" />
+                  {/* Animação de reflexo de luz (sheen sweep) cruzando a capa quando ela aparece na frente */}
+                  {frente && (
+                    <motion.div
+                      key={`reflexo-sweep-${item.id}`}
+                      initial={{ x: '-150%', opacity: 0 }}
+                      animate={{ x: '180%', opacity: [0, 0.65, 0.65, 0] }}
+                      transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+                      className="absolute inset-y-0 w-3/4 -skew-x-12 pointer-events-none z-20 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                    />
+                  )}
+
+                  {/* Botão Play central translúcido no card da frente */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div
+                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg transition-all duration-300 ${
+                        frente ? 'opacity-90 scale-100' : 'opacity-0 scale-75'
+                      }`}
+                    >
+                      <Play className="w-4 h-4 text-white fill-white ml-0.5" />
+                    </div>
+                  </div>
+
+                  {/* Nome/título SEM abreviação dentro da capa, mantendo a arte visível sem escurecer */}
+                  <div className="absolute bottom-0 left-0 right-0 px-2 pb-2 pt-4 z-10 pointer-events-none bg-gradient-to-t from-black/60 via-black/20 to-transparent">
+                    <span className="font-bold text-[11px] sm:text-[12px] text-white leading-tight block drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] text-center">
+                      {item.fullName || item.text}
+                    </span>
                   </div>
                 </div>
 
-                {/* Nome/título SEM abreviação dentro da capa */}
-                <div className="absolute bottom-0 left-0 right-0 px-2.5 pb-2.5 pt-8 z-10 pointer-events-none bg-gradient-to-t from-black/95 via-black/65 to-transparent">
-                  <span className="font-bold text-[11px] sm:text-[12px] text-white leading-tight block drop-shadow-md text-center">
-                    {item.fullName || item.text}
-                  </span>
-                </div>
+                {/* Animação de reflexo espelhado no chão sob a capa principal com a cor real da arte */}
+                {frente && (
+                  <motion.div
+                    key={`reflexo-chao-${item.id}`}
+                    initial={{ opacity: 0, y: -2 }}
+                    animate={{ opacity: 0.42, y: 0 }}
+                    transition={{ duration: 0.45, ease: 'easeOut' }}
+                    className="absolute top-[calc(100%+3px)] left-0 right-0 h-[44px] sm:h-[50px] rounded-b-xl overflow-hidden pointer-events-none select-none"
+                    style={{
+                      maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 88%)',
+                      WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 88%)',
+                    }}
+                  >
+                    <img
+                      src={item.image}
+                      alt=""
+                      aria-hidden="true"
+                      className="w-full h-[192px] sm:h-[208px] object-cover block origin-top"
+                      style={{
+                        transform: 'scaleY(-1)',
+                      }}
+                    />
+                  </motion.div>
+                )}
               </motion.div>
             );
           })}
@@ -210,7 +249,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
 
       {/* Descrição embaixo da capa em destaque SEM abreviação */}
       {activeItem && (
-        <div className="mt-3 text-center px-4 max-w-sm mx-auto min-h-[44px] flex flex-col items-center justify-center">
+        <div className="mt-2 text-center px-4 max-w-sm mx-auto min-h-[42px] flex flex-col items-center justify-center">
           <AnimatePresence mode="wait">
             <motion.p
               key={activeItem.id}
