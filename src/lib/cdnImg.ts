@@ -1,15 +1,11 @@
 import { Capacitor } from '@capacitor/core';
 import { assetUrl } from './assetUrl';
 
-
-
-
 /**
- * No app nativo (Android/iOS) o Origin é `https://localhost`, o que faz o
- * proxy wsrv.nl responder 403/erro de referer em muitos casos e as imagens
- * não aparecem. Nesse ambiente pulamos o proxy e usamos a URL original.
+ * No app nativo (Android/iOS) o Origin é `https://localhost`, o que faz
+ * proxies externos como wsrv.nl responderem 403 em muitos casos.
  */
-const shouldBypassProxy = () => {
+const isNativePlatform = () => {
   try {
     return Capacitor.isNativePlatform();
   } catch {
@@ -22,54 +18,54 @@ const proxied = (url: string, w: number) =>
 
 /**
  * Resolve caminhos relativos do CDN Lovable (`/__l5e/...`) ou pointers de asset
- * para uma URL absoluta/local antes de passar por qualquer proxy externo.
- * Sem isso, o wsrv.nl recebia uma URL relativa e devolvia erro (capas somem).
+ * para uma URL absoluta/local antes de passar por qualquer redimensionador.
  */
 const resolve = (url: string) => assetUrl(url) || url;
 
 /**
- * Regra única de otimização.
- *
- * Antes as URLs do Supabase Storage passavam DIRETO, em resolução cheia — era a
- * maior fonte de "Cached Egress" do projeto (capas de 1–3 MB servidas em
- * miniaturas de 150 px). Agora tudo passa pelo redimensionador, que também
- * funciona como cache externo: o Supabase entrega o arquivo uma vez e o wsrv
- * serve todas as demais requisições.
- *
- * No app nativo o Origin é `https://localhost` e o proxy pode responder 403,
- * então mantemos a URL original — lá as capas já ficam em cache no filesystem
- * (ver `bibliotecaCapasPrefetch`), então o download acontece uma vez por device.
+ * Transforma uma URL pública do Supabase Storage no endpoint de Image Transformation:
+ * `/storage/v1/object/public/<bucket>/<path>` -> `/storage/v1/render/image/public/<bucket>/<path>?width=<w>&quality=<q>&resize=contain`
+ * 
+ * Benefício: Reduz o download de imagens de 1.5MB-3MB para 25KB-50KB em WebP dinâmico direto da infraestrutura Supabase,
+ * operando sem proxy de terceiros (funciona perfeitamente em Web, Desktop e Native Capacitor).
  */
-const otimizar = (url: string, w: number) => {
-  if (!url) return '';
+export const toSupabaseRenderUrl = (url: string, w: number, quality = 80): string => {
+  try {
+    if (!url || typeof url !== 'string') return '';
+    // Preserva SVGs intactos (vetores não devem ser rasterizados)
+    if (url.toLowerCase().endsWith('.svg')) return url;
+
+    if (url.includes('/storage/v1/object/public/')) {
+      const renderBase = url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/');
+      const parsed = new URL(renderBase);
+      parsed.searchParams.set('width', String(Math.min(Math.max(w, 100), 1600)));
+      parsed.searchParams.set('quality', String(quality));
+      parsed.searchParams.set('resize', 'contain');
+      return parsed.toString();
+    }
+  } catch {
+    // Fallback defensivo
+  }
+  return url;
+};
+
+/**
+ * Regra centralizada de otimização de imagens do APP.PRIME.
+ */
+const otimizar = (url: string, w: number): string => {
+  if (!url || typeof url !== 'string') return '';
+  
   // URLs de instâncias legadas/desativadas do Supabase descartadas para prevenir broken images
   if (url.includes('izspjvegxdfgkgibpyst.supabase.co')) return '';
   const resolved = resolve(url);
   if (resolved.includes('izspjvegxdfgkgibpyst.supabase.co')) return '';
-  if (shouldBypassProxy()) return resolved;
-  
-  // Se a imagem já vem do nosso storage Supabase, 
-  // ela já foi comprimida na extração e o proxy só causa lentidão
-  // Vamos tentar solicitar formato AVIF nativamente no Supabase Storage (se transform enabled)
+
+  // 1. Supabase Storage: utiliza o endpoint nativo de Image Transformation
   if (resolved.includes('.supabase.co/storage/')) {
-    try {
-      const parsed = new URL(resolved);
-      if (!parsed.searchParams.has('format')) {
-        parsed.searchParams.set('format', 'avif');
-      }
-      return parsed.toString();
-    } catch {
-      return resolved;
-    }
+    return toSupabaseRenderUrl(resolved, w, 80);
   }
 
-  // Bypass wsrv.nl for Migalhas to prevent double-proxy 403 blocks and latency
-  if (resolved.includes('migalhas.com.br')) {
-    return resolved;
-  }
-
-  // TMDB (Filmes e Séries da Temática Jurídica) possui CDN global próprio (Cloudflare).
-  // Ajustamos o parâmetro de resolução nativo sem necessidade de proxy externo.
+  // 2. TMDB (Filmes e Séries da Temática Jurídica) possui CDN global Cloudflare com tiers de tamanho
   if (resolved.includes('image.tmdb.org/t/p/')) {
     let size = 'w500';
     if (w <= 92) size = 'w92';
@@ -81,7 +77,18 @@ const otimizar = (url: string, w: number) => {
     else size = 'w1280';
     return resolved.replace(/\/t\/p\/[^/]+\//, `/t/p/${size}/`);
   }
-  
+
+  // 3. Domínios externos que bloqueiam proxy
+  if (resolved.includes('migalhas.com.br')) {
+    return resolved;
+  }
+
+  // 4. No app nativo (Android/iOS), se não for Supabase nem TMDB, preserva a URL original para evitar 403 de proxy
+  if (isNativePlatform()) {
+    return resolved;
+  }
+
+  // 5. Demais URLs web externas: proxy WebP via wsrv.nl
   if (!/^https?:\/\//i.test(resolved)) return resolved;
   return proxied(resolved, w);
 };
@@ -89,31 +96,105 @@ const otimizar = (url: string, w: number) => {
 /** Imagem grande (hero, leitor, detalhe) */
 export const cdnImg = (url: string, w = 800) => otimizar(url, w);
 
-/** Imagem pequena (capas, listas, grids) */
+/** Imagem média/pequena (capas, listas, decks, carrosséis) */
 export const directImg = (url: string, w = 400) => otimizar(url, w);
 
-/** Imagem de notícias/cards */
+/** Imagem de notícias e cards horizontais */
 export const newsImg = (url: string, w = 640) => otimizar(url, w);
 
-/** Avatar de usuário (crop circular via proxy, mesmo para supabase URL) */
+/** Avatar de usuário com máscara circular */
 export const avatarImg = (url: string, size = 128) => {
   if (!url) return '';
   const resolved = resolve(url);
-  if (shouldBypassProxy()) return resolved;
-  // Para avatares, sempre queremos usar o proxy wsrv.nl no frontend web para forçar o mask circular e diminuir o peso
+  if (isNativePlatform()) return resolved;
   return `https://wsrv.nl/?url=${encodeURIComponent(resolved)}&w=${size}&h=${size}&fit=cover&mask=circle&output=webp`;
 };
 
-export function prefetchImage(url: string | null | undefined) {
-  if (!url) return;
-  const img = new Image();
-  img.src = directImg(url, 400);
+/**
+ * Fila inteligente de Pré-Aquecimento (Prefetch) com controle de concorrência,
+ * prevenção de saturação de rede (Item 31 do relatório) e descarte seguro de memória (Item 33).
+ */
+class ImagePrefetchQueue {
+  private queue: string[] = [];
+  private activeCount = 0;
+  private readonly maxConcurrency = 3;
+  private readonly fetched = new Set<string>();
+  private readonly activeImages = new Set<HTMLImageElement>();
+
+  add(url: string | null | undefined, width = 400): void {
+    if (!url || typeof window === 'undefined') return;
+
+    // Respeito à economia de dados do usuário (Item 36)
+    const conn = (navigator as unknown as { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+    if (conn?.saveData || conn?.effectiveType === 'slow-2g' || conn?.effectiveType === '2g') {
+      return;
+    }
+
+    const optimized = directImg(url, width);
+    if (!optimized || this.fetched.has(optimized) || this.queue.includes(optimized)) {
+      return;
+    }
+
+    // Limite máximo da fila para evitar consumo excessivo de memória em scroll infinito
+    if (this.queue.length > 50) {
+      this.queue.shift();
+    }
+
+    this.queue.push(optimized);
+    this.process();
+  }
+
+  private process(): void {
+    while (this.activeCount < this.maxConcurrency && this.queue.length > 0) {
+      const nextUrl = this.queue.shift();
+      if (!nextUrl) break;
+
+      this.activeCount++;
+      this.fetched.add(nextUrl);
+
+      const img = new Image();
+      img.decoding = 'async';
+      this.activeImages.add(img);
+
+      const cleanup = () => {
+        img.onload = null;
+        img.onerror = null;
+        this.activeImages.delete(img);
+        this.activeCount--;
+        this.process();
+      };
+
+      img.onload = cleanup;
+      img.onerror = cleanup;
+      img.src = nextUrl;
+    }
+  }
+
+  cancelAll(): void {
+    this.queue = [];
+    this.activeImages.forEach((img) => {
+      img.onload = null;
+      img.onerror = null;
+      img.src = '';
+    });
+    this.activeImages.clear();
+    this.activeCount = 0;
+  }
 }
 
-export function prefetchImages(urls: (string | null | undefined)[]) {
-  urls.filter(Boolean).forEach((url) => {
-    const img = new Image();
-    img.src = directImg(url!, 400);
-  });
+const prefetchQueue = new ImagePrefetchQueue();
+
+/** Pré-carrega uma única imagem de forma concorrente e segura */
+export function prefetchImage(url: string | null | undefined, width = 400): void {
+  prefetchQueue.add(url, width);
 }
 
+/** Pré-carrega uma lista de imagens através da fila de prioridade */
+export function prefetchImages(urls: (string | null | undefined)[], width = 400): void {
+  urls.forEach((u) => prefetchQueue.add(u, width));
+}
+
+/** Cancela downloads de prefetch pendentes ao trocar de tela */
+export function cancelAllPrefetches(): void {
+  prefetchQueue.cancelAll();
+}

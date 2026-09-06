@@ -63,19 +63,27 @@ export const PrimeImage = React.memo(function PrimeImage({
   onError,
   ...rest
 }: PrimeImageProps) {
+  const [attemptLevel, setAttemptLevel] = useState<'optimized' | 'raw' | 'fallback'>('optimized');
   const [isLoaded, setIsLoaded] = useState(false);
-  const [hasError, setHasError] = useState(false);
-  const erroredRef = useRef(false);
 
   // Sanitização de URL: evita requisições GET /undefined quando src é inválido
   const cleanSrc = src && typeof src === 'string' && src.trim().length > 0 ? src.trim() : null;
   const optimizedSrc = cleanSrc ? directImg(cleanSrc, targetWidth) : null;
-  const activeSrc = hasError ? fallbackSrc : (optimizedSrc || fallbackSrc);
+
+  let activeSrc: string | null = null;
+  if (attemptLevel === 'optimized') {
+    activeSrc = optimizedSrc || cleanSrc || fallbackSrc || null;
+  } else if (attemptLevel === 'raw') {
+    activeSrc = cleanSrc || fallbackSrc || null;
+  } else {
+    activeSrc = fallbackSrc || null;
+  }
+
+  const hasFailed = attemptLevel === 'fallback';
 
   useEffect(() => {
     setIsLoaded(false);
-    setHasError(false);
-    erroredRef.current = false;
+    setAttemptLevel('optimized');
   }, [src]);
 
   const handleLoad = () => {
@@ -84,9 +92,13 @@ export const PrimeImage = React.memo(function PrimeImage({
   };
 
   const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    if (!erroredRef.current) {
-      erroredRef.current = true;
-      setHasError(true);
+    if (attemptLevel === 'optimized' && cleanSrc && optimizedSrc !== cleanSrc) {
+      // Tenta a URL bruta caso a transformação da CDN/Supabase retorne erro transitório
+      setAttemptLevel('raw');
+      return;
+    }
+    if (attemptLevel !== 'fallback') {
+      setAttemptLevel('fallback');
       onError?.(e);
     }
   };
@@ -104,7 +116,7 @@ export const PrimeImage = React.memo(function PrimeImage({
       style={customAspectStyle}
     >
       {/* Skeleton de alta precisão calibrado para o tema dark (Zero Flash Branco) */}
-      {!isLoaded && !hasError && (
+      {!isLoaded && !hasFailed && (
         <div 
           aria-hidden="true" 
           className="absolute inset-0 bg-gradient-to-br from-zinc-900/90 via-zinc-800/50 to-zinc-900/90 animate-pulse z-0" 
@@ -125,7 +137,7 @@ export const PrimeImage = React.memo(function PrimeImage({
           onError={handleError}
           className={cn(
             "w-full h-full object-cover transition-opacity duration-300 ease-out relative z-10",
-            !isLoaded && !hasError ? "opacity-0" : "opacity-100",
+            !isLoaded && !hasFailed ? "opacity-0" : "opacity-100",
             className
           )}
           crossOrigin="anonymous"

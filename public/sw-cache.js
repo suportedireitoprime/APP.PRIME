@@ -1,7 +1,7 @@
 // Estudos Jurídicos service worker — estratégias inspiradas em Workbox (sem dependência),
 // mantém compat com o registro atual em src/main.tsx. Não interfere no
 // firebase-messaging-sw.js nem no push-sw.js.
-const VERSION = 'v6';
+const VERSION = 'v7';
 const IMG_CACHE = `vacatio-img-${VERSION}`;
 const ASSET_CACHE = `vacatio-assets-${VERSION}`;
 const RUNTIME_CACHE = `vacatio-runtime-${VERSION}`;
@@ -11,7 +11,7 @@ const AUDIO_EXT = /\.(mp3|wav|ogg|m4a)(\?|$)/i;
 const FONT_EXT = /\.(woff2?|ttf|otf)(\?|$)/i;
 const BLOG_COVERS_STORAGE = '/storage/v1/object/sign/blog-capas/';
 
-const IMG_LIMIT = 200;
+const IMG_LIMIT = 350;
 const AUDIO_LIMIT = 50;
 const RUNTIME_LIMIT = 60;
 
@@ -115,7 +115,8 @@ self.addEventListener('fetch', (e) => {
     (isSupabaseStorage && !url.pathname.includes('boletins-audio'));
 
   if (isImage) {
-    e.respondWith(staleWhileRevalidate(req, IMG_CACHE, IMG_LIMIT));
+    // Cache-first para capas, avatares e imagens estáticas (0ms em visitas recorrentes e offline)
+    e.respondWith(cacheFirst(req, IMG_CACHE, IMG_LIMIT));
     return;
   }
 
