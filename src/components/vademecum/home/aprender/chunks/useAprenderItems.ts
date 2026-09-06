@@ -8,16 +8,18 @@ export function useAprenderItems() {
   const navigate = useNavigate();
 
   const items = useMemo<AprenderItem[]>(() => {
-    // Filtra apenas as áreas que possuem uma capa própria carregada e sorteia 8 delas
+    // Filtra apenas as áreas que possuem uma capa própria carregada
     const availableAreas = AREA_CATS.filter(area => {
       const coverObj = getAreaCover('Direito ' + area.label) || getAreaCover(area.label);
       return !!coverObj;
     });
     
-    const randomAreas = shuffle(availableAreas).slice(0, 8);
+    // Ordena as matérias em ordem alfabética
+    const sortedAreas = availableAreas.sort((a, b) => a.label.localeCompare(b.label, 'pt-BR'));
+    
     const cpImage = FAST_PILLS_ITEMS[0].image;
 
-    return randomAreas.map((area, index) => {
+    return sortedAreas.map((area, index) => {
       const coverObj = getAreaCover('Direito ' + area.label) || getAreaCover(area.label);
       const image = coverObj?.cover || cpImage;
       
