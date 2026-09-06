@@ -809,8 +809,12 @@ function AnimatedRoutes() {
 
   const getRouteKey = (path: string) => {
     // Agrupa abas do Vade Mecum para não acionar a transição de página inteira
-    if (path.match(/^\/vade-mecum(\/areas|\/categorias|\/favoritos)?$/)) {
+    if (path.match(/^\/vade-mecum(\/(areas|categorias|favoritos|recentes|codigos|sumulas))?$/)) {
       return '/vade-mecum-tabs';
+    }
+    // Agrupa abas de Resumos Jurídicos para navegação instantânea sem desmontar rota
+    if (path.match(/^\/resumos-juridicos(\/(materias|leis|jurisprudencia|favoritos|recentes))?$/)) {
+      return '/resumos-juridicos-tabs';
     }
     return path;
   };
