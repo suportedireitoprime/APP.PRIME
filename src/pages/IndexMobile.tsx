@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, Suspense, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import heroImageAsset from '@/assets/hero-vademecum.webp';
 const heroImage = heroImageAsset;
@@ -53,10 +53,10 @@ const IndexMobile = () => {
       import('@/plugins/NativeHomePlugin').then(({ NativeHome }) => {
         NativeHome.showHome({
           data: {
-            nome: profileSummary?.nome || 'Usuário',
-            iniciais: profileSummary?.iniciais || 'DP',
-            perfilLabel: profileSummary?.perfil_tipos?.[0] || 'Estudando pra OAB',
-            avatarUrl: profileSummary?.avatar_url || '',
+            nome: profileSummary?.displayName || 'Usuário',
+            iniciais: (profileSummary?.displayName || 'DP').slice(0, 2).toUpperCase(),
+            perfilLabel: 'Estudando pra OAB',
+            avatarUrl: profileSummary?.avatarUrl || '',
             unreadCount: unreadCount || 0,
             livros: [
               { id: 'livro_1', titulo: 'Como as Democracias Morrem', autor: 'Steven Levitsky', ano: 2018 },
@@ -87,6 +87,7 @@ const IndexMobile = () => {
     };
   }, [navigate]);
 
+  const location = useLocation();
   const [, setActiveTab] = useState<Tab>('legislacao');
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -162,7 +163,7 @@ const IndexMobile = () => {
             <MobileHomeSections onTabChange={setHomeTab} onNewsOpenChange={setNewsOpen} />
           </main>
         </div>
-        {!bottomNavHidden && <BottomNav />}
+        {location.pathname === '/' && !bottomNavHidden && <BottomNav />}
         <Suspense fallback={null}>
           {menuOpen && (
             <SideMenu
