@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, memo, useCallback } from 'react';
+import { useState, useEffect, useMemo, memo, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { AprenderItem } from './aprenderCarouselTypes';
@@ -36,6 +36,10 @@ const getSlot = (diff: number) => {
 export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel3DProps) => {
   const [ativo, setAtivo] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  const isSwipingRef = useRef(false);
+  const lastWheelTime = useRef(0);
   const total = items?.length || 0;
 
   // Auto-avanço a cada 3.2 segundos se o usuário não estiver interagindo
@@ -60,6 +64,72 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
     setTimeout(() => setPaused(false), 2500);
   }, [total]);
 
+  // Touch handlers nativos e infalíveis para celular / tablet
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      touchStartRef.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+        time: Date.now(),
+      };
+      isSwipingRef.current = false;
+      setPaused(true);
+    }
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!touchStartRef.current || e.touches.length !== 1) return;
+    const deltaX = e.touches[0].clientX - touchStartRef.current.x;
+    const deltaY = e.touches[0].clientY - touchStartRef.current.y;
+
+    // Se o movimento for predominantemente horizontal, marca como swipe
+    if (Math.abs(deltaX) > 8 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      isSwipingRef.current = true;
+    }
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (!touchStartRef.current) return;
+    const deltaX = (e.changedTouches[0]?.clientX || 0) - touchStartRef.current.x;
+    const deltaY = (e.changedTouches[0]?.clientY || 0) - touchStartRef.current.y;
+    const deltaTime = Date.now() - touchStartRef.current.time;
+    touchStartRef.current = null;
+
+    if (isSwipingRef.current || (Math.abs(deltaX) > 24 && Math.abs(deltaX) > Math.abs(deltaY))) {
+      const velocityX = deltaX / Math.max(deltaTime, 1);
+      const isFar = Math.abs(deltaX) > 110;
+      const isFast = Math.abs(velocityX) > 0.7;
+      const step = (isFar && isFast) ? 2 : 1;
+
+      if (deltaX < -22 || velocityX < -0.28) {
+        setAtivo((i) => (i + step) % total);
+      } else if (deltaX > 22 || velocityX > 0.28) {
+        setAtivo((i) => (i - step + total) % total);
+      }
+
+      setIsDragging(true);
+      setTimeout(() => setIsDragging(false), 120);
+    } else {
+      setIsDragging(false);
+    }
+    setTimeout(() => setPaused(false), 2500);
+  }, [total]);
+
+  // Suporte a scroll com mouse / trackpad no Desktop
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    if (Math.abs(e.deltaX) > 20) {
+      const now = Date.now();
+      if (now - lastWheelTime.current > 300) {
+        lastWheelTime.current = now;
+        if (e.deltaX > 0) {
+          handleNext();
+        } else {
+          handlePrev();
+        }
+      }
+    }
+  }, [handleNext, handlePrev]);
+
   const activeItem = useMemo(() => {
     if (!items || total === 0) return null;
     return items[ativo] || items[0];
@@ -72,18 +142,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
       className="relative w-full pt-3 pb-2 flex flex-col items-center select-none overflow-hidden"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      onTouchStart={() => setPaused(true)}
-      onTouchEnd={() => setTimeout(() => setPaused(false), 2500)}
     >
-      {/* Glow ambiente dinâmico suave atrás da capa central com a cor predominante da capa */}
-      <motion.div
-        animate={{
-          backgroundColor: activeItem?.glowColor || 'rgba(225, 29, 72, 0.25)',
-        }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="absolute top-[100px] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[240px] h-[240px] blur-3xl rounded-full pointer-events-none opacity-60"
-      />
-
       {/* Container principal do Deck de Cards em leque */}
       <div className="relative flex items-center justify-center w-full max-w-[360px] sm:max-w-[420px] h-[240px] sm:h-[258px]">
         {/* Botão de navegação anterior */}
@@ -106,16 +165,32 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
           <ChevronRight className="w-4 h-4" />
         </button>
 
-        {/* Deck interativo com suporte a swipe horizontal */}
+        {/* Deck interativo com suporte a swipe horizontal com o dedo e drag */}
         <motion.div
-          className="relative flex items-center justify-center w-full h-full cursor-grab active:cursor-grabbing"
-          onPanEnd={(_, info) => {
-            if (info.offset.x < -25) {
-              handleNext();
-            } else if (info.offset.x > 25) {
-              handlePrev();
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.2}
+          onDragStart={() => {
+            setIsDragging(true);
+            setPaused(true);
+          }}
+          onDragEnd={(_, info) => {
+            setTimeout(() => setIsDragging(false), 120);
+            const isFar = Math.abs(info.offset.x) > 110;
+            const isFast = Math.abs(info.velocity.x) > 550;
+            const step = (isFar && isFast) ? 2 : 1;
+
+            if (info.offset.x < -24 || info.velocity.x < -180) {
+              setAtivo((i) => (i + step) % total);
+            } else if (info.offset.x > 24 || info.velocity.x > 180) {
+              setAtivo((i) => (i - step + total) % total);
             }
           }}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onWheel={handleWheel}
+          className="relative flex items-center justify-center w-full h-full cursor-grab active:cursor-grabbing touch-pan-y"
         >
           {items.map((item, i) => {
             // Distância relativa circular mais curta entre o item e o ativo
@@ -130,7 +205,6 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
             if (Math.abs(diff) > 3) return null;
 
             const activeBorderColor = item.borderColor || '#E11D48';
-            const activeGlowColor = item.glowColor || 'rgba(225, 29, 72, 0.45)';
 
             return (
               <motion.div
@@ -142,11 +216,16 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
                   scale: slot.scale,
                   opacity: slot.opacity,
                 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
                 style={{
                   zIndex: slot.z,
                 }}
-                onClick={() => {
+                onClick={(e) => {
+                  if (isDragging || isSwipingRef.current) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                  }
                   if (frente) {
                     onItemClick(item);
                   } else {
@@ -157,7 +236,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
                 }}
                 className="absolute w-[140px] sm:w-[152px] h-[192px] sm:h-[208px] shrink-0 cursor-pointer will-change-transform"
               >
-                {/* Card principal com borda, glow e cores reais da capa */}
+                {/* Card principal com borda colorida na capa da frente e sem fundo colorido atrás */}
                 <div
                   className={`relative w-full h-full rounded-2xl overflow-hidden shadow-2xl bg-zinc-950 transition-colors duration-300 ${
                     frente
@@ -167,7 +246,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
                   style={{
                     borderColor: frente ? activeBorderColor : undefined,
                     boxShadow: frente
-                      ? `0 15px 40px ${activeGlowColor}`
+                      ? '0 18px 42px -6px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.06)'
                       : undefined,
                     clipPath: 'inset(0 round 16px)',
                     WebkitClipPath: 'inset(0 round 16px)',
