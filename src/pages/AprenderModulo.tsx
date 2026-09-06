@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Play, Sparkles } from 'lucide-react';
+import { ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Home, Play, Sparkles } from 'lucide-react';
 import { shortenAreaName } from '@/lib/areaNameShortener';
 import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
 import { cn } from '@/lib/utils';
@@ -178,10 +178,27 @@ const AprenderModulo = () => {
     }
   };
 
+  const homeButton = (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        haptic.light();
+        navigate('/aprender');
+      }}
+      aria-label="Ir para o início do Aprender"
+      className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-muted flex items-center justify-center shrink-0 active:scale-95 transition-transform touch-manipulation select-none cursor-pointer"
+    >
+      <Home className="w-6 h-6 sm:w-7 sm:h-7 text-foreground" strokeWidth={2.2} />
+    </button>
+  );
+
   const mobileHeader = (
     <PageHeader
       title={modulo?.titulo ?? 'Trilha do Tópico'}
       onBack={handleVoltar}
+      rightAction={homeButton}
     />
   );
 
@@ -202,13 +219,27 @@ const AprenderModulo = () => {
 
       <div className="relative z-10 w-full max-w-4xl mx-auto space-y-6 pb-20 pt-2 px-3 sm:px-6">
         {/* Botão de Voltar Desktop */}
-        <button
-          onClick={handleVoltar}
-          className="hidden sm:inline-flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Voltar para {areaCurta}</span>
-        </button>
+        <div className="hidden sm:flex items-center justify-between">
+          <button
+            type="button"
+            onClick={handleVoltar}
+            className="inline-flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Voltar para {areaCurta}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              haptic.light();
+              navigate('/aprender');
+            }}
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          >
+            <Home className="w-4 h-4" />
+            <span>Início Aprender</span>
+          </button>
+        </div>
 
         {loading ? (
           <div className="space-y-4">

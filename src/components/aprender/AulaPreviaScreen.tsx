@@ -1,5 +1,6 @@
 import { motion, type Variants } from 'framer-motion';
-import { ArrowLeft, Clock, ListChecks, Play, RotateCcw, Target } from 'lucide-react';
+import { ArrowLeft, Clock, Home, ListChecks, Play, RotateCcw, Target } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -50,6 +51,7 @@ export function AulaPreviaScreen({
   onComecar,
   onContinuar,
 }: Props) {
+  const navigate = useNavigate();
   const topicos = (previa?.topicos ?? []).filter(Boolean).slice(0, 6);
   const aoFinal = (previa?.ao_final ?? []).filter(Boolean).slice(0, 4);
   const porque = previa?.porque_importa || objetivo || null;
@@ -67,14 +69,22 @@ export function AulaPreviaScreen({
             size="icon"
             onClick={onVoltar}
             aria-label="Voltar"
-            className="h-11 w-11 rounded-full text-foreground hover:bg-muted"
+            className="h-11 w-11 rounded-full text-foreground hover:bg-muted cursor-pointer"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <p className="absolute left-1/2 -translate-x-1/2 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
             Prévia da aula
           </p>
-          <div className="h-11 w-11" aria-hidden="true" />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate('/aprender')}
+            aria-label="Ir para o início do Aprender"
+            className="h-11 w-11 rounded-full text-foreground hover:bg-muted cursor-pointer"
+          >
+            <Home className="h-5 w-5" />
+          </Button>
         </div>
       </header>
 
