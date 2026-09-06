@@ -6,9 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import { withOnlineGuard, assertOnline } from '@/lib/onlineGuard';
-import { getResenhaCache, prefetchResenha, getLatestDate, type ResenhaItem } from '@/services/atualizacaoService';
+import { getResenhaCache, getResenhaOfflineOrCache, prefetchResenha, getLatestDate, type ResenhaItem } from '@/services/atualizacaoService';
 import LeiOrdinariaDetail from '@/components/vademecum/artigo/LeiOrdinariaDetail';
 import { resenhaSelect, RESENHA_SELECT, RESENHA_LIST_SELECT, garantirTextoIntegral, invokeResenhaFn } from '@/lib/resenhaBackend';
+import { getPersistedResumo, setPersistedResumo, setListSnapshot } from '@/services/offlineDb';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import type { LeiOrdinaria } from '@/services/legislacaoService';
 import brasaoImgAsset from '@/assets/brasao-republica.webp';
@@ -80,7 +81,10 @@ export default function Radar360() {
         order: 'data_dou.desc',
         limit: '150',
       });
-      if (data && data.length) setItems(data);
+      if (data && data.length) {
+        setItems(data);
+        setListSnapshot('radar-360:resenha', data).catch(() => {});
+      }
     } catch (e) {
       console.warn('[Radar360] Erro ao recarregar:', e);
     }
@@ -88,30 +92,36 @@ export default function Radar360() {
 
   useEffect(() => {
     let active = true;
-    const cached = getResenhaCache();
-    if (cached && cached.length > 0) {
-      setItems(cached);
-      setLoading(false);
-    } else {
-      setLoading(true);
-      prefetchResenha()
-        .then(() => {
-          if (!active) return;
-          const d = getResenhaCache();
-          if (d && d.length > 0) setItems(d);
-        })
-        .catch((e) => {
-          console.warn('[Radar360] Erro ao carregar resenha:', e);
-        })
-        .finally(() => {
-          if (active) setLoading(false);
-        });
-    }
 
-    // Timeout de segurança: nunca deixa loading preso por mais de 3 segundos
+    // 1) Offline-first: tenta exibir imediatamente do cache de memória ou IndexedDB (0ms)
+    const initData = async () => {
+      const offline = await getResenhaOfflineOrCache();
+      if (active && offline && offline.length > 0) {
+        setItems(offline);
+        setLoading(false);
+      }
+
+      // 2) Sincroniza em segundo plano com o backend
+      try {
+        await prefetchResenha();
+        if (!active) return;
+        const fresh = getResenhaCache();
+        if (fresh && fresh.length > 0) {
+          setItems(fresh);
+        }
+      } catch (e) {
+        console.warn('[Radar360] Sincronização em background falhou:', e);
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    initData();
+
+    // Timeout de segurança: nunca deixa a tela presa em loading por mais de 2.5 segundos
     const timeout = setTimeout(() => {
       if (active) setLoading(false);
-    }, 3000);
+    }, 2500);
 
     try { localStorage.setItem('radar_leis_last_seen', new Date().toISOString()); } catch { /* ignore */ }
 
@@ -193,6 +203,18 @@ export default function Radar360() {
     setDetailItem(lei);
     // Fallback silencioso caso o texto ainda não esteja populado no cache
     if (!texto || texto.length < 200) {
+      // 1) Tenta ler do IndexedDB primeiro para abertura 100% offline
+      getPersistedResumo<{ texto_completo: string | null; explicacao: string | null }>(`radar-artigo:${item.id}`)
+        .then((cachedRow) => {
+          if (cachedRow?.texto_completo) {
+            item.texto_completo = cachedRow.texto_completo;
+            item.explicacao = cachedRow.explicacao ?? item.explicacao;
+            setDetailItem({ ...lei, texto_completo: cachedRow.texto_completo, explicacao: item.explicacao });
+          }
+        })
+        .catch(() => {});
+
+      // 2) Se estiver online, busca o texto integral atualizado e grava no IndexedDB
       try {
         const data = await withOnlineGuard(
           () => garantirTextoIntegral(item.id),
@@ -203,6 +225,10 @@ export default function Radar360() {
           item.texto_completo = novoTexto;
           item.explicacao = (data as any)?.explicacao ?? item.explicacao;
           setDetailItem({ ...lei, texto_completo: novoTexto, explicacao: item.explicacao });
+          setPersistedResumo(`radar-artigo:${item.id}`, {
+            texto_completo: novoTexto,
+            explicacao: item.explicacao,
+          }).catch(() => {});
         }
       } catch { /* silencioso */ }
     }
