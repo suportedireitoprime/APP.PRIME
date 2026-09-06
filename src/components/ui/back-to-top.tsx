@@ -4,11 +4,47 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import { useLocation } from 'react-router-dom';
 
+/**
+ * Verifica se a rota atual possui listas longas de leitura (Vade Mecum, Blog, Notícias, etc.)
+ * onde o botão de voltar ao topo é útil e autorizado.
+ * No início do aplicativo (Home/Index) ou em telas curtas, o botão NUNCA é exibido.
+ */
+function isLongListRoute(pathname: string): boolean {
+  if (!pathname || pathname === '/' || pathname === '/home' || pathname === '/inicio' || pathname === '/landing') {
+    return false;
+  }
+
+  const longListPrefixes = [
+    '/vade-mecum',
+    '/legislacao',
+    '/legislacao-estadual',
+    '/blog',
+    '/noticias',
+    '/boletins',
+    '/boletins-noticias',
+    '/radar',
+    '/jurisprudencia',
+    '/resumos-juridicos',
+    '/lei-seca',
+    '/questoes',
+    '/normas',
+  ];
+
+  return longListPrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+}
+
 export default function BackToTop() {
   const [isVisible, setIsVisible] = useState(false);
   const location = useLocation();
 
+  const isAllowed = isLongListRoute(location.pathname);
+
   useEffect(() => {
+    if (!isAllowed) {
+      setIsVisible(false);
+      return;
+    }
+
     const handleScroll = () => {
       const desktopContainer = document.querySelector<HTMLElement>(
         '#desktop-scroll-container, [data-desktop-scroll="true"]'
@@ -19,6 +55,8 @@ export default function BackToTop() {
       );
       setIsVisible(y > 500);
     };
+
+    handleScroll();
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     const desktopContainer = document.querySelector<HTMLElement>(
@@ -34,12 +72,9 @@ export default function BackToTop() {
         desktopContainer.removeEventListener('scroll', handleScroll);
       }
     };
-  }, []);
+  }, [isAllowed, location.pathname]);
 
-  // Oculta momentaneamente na mudança de rota
-  useEffect(() => {
-    setIsVisible(false);
-  }, [location.pathname]);
+  if (!isAllowed) return null;
 
   const scrollToTop = () => {
     haptic.selection();
