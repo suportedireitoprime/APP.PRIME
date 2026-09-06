@@ -64,14 +64,20 @@ const PageTransition = ({ children, className, instant, fallback }: PageTransiti
     </Suspense>
   );
 
+  const baseStyle: React.CSSProperties = {
+    width: "100%",
+    maxWidth: "100vw",
+    minHeight: "100dvh",
+    overflowX: "hidden",
+  };
+
+  const baseClass = `w-full max-w-full overflow-x-hidden min-h-screen min-h-[100dvh] ${className || ""}`.trim();
+
   if (shouldReduceMotion || instant) {
     return (
       <div
-        className={className}
-        style={{
-          width: "100%",
-          minHeight: "100dvh",
-        }}
+        className={baseClass}
+        style={baseStyle}
       >
         {content}
       </div>
@@ -84,11 +90,8 @@ const PageTransition = ({ children, className, instant, fallback }: PageTransiti
       initial="initial"
       animate="animate"
       exit="exit"
-      className={className}
-      style={{
-        width: "100%",
-        minHeight: "100dvh",
-      }}
+      className={baseClass}
+      style={baseStyle}
     >
       {content}
     </motion.div>

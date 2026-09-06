@@ -1,10 +1,12 @@
+import React, { memo } from "react";
+
 /**
  * Skip-to-content link visible only on keyboard focus.
  * WCAG 2.4.1 (Bypass Blocks) — permite pular a navegação/header
  * e ir direto ao conteúdo principal com Tab.
  * Também é anunciado pelo TalkBack quando o app roda no WebView.
  */
-export function SkipToContent({ targetId = "main-content" }: { targetId?: string }) {
+export const SkipToContent = memo(function SkipToContent({ targetId = "main-content" }: { targetId?: string }) {
   return (
     <a
       href={`#${targetId}`}
@@ -13,4 +15,6 @@ export function SkipToContent({ targetId = "main-content" }: { targetId?: string
       Pular para o conteúdo
     </a>
   );
-}
+});
+
+export default SkipToContent;
