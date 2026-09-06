@@ -102,10 +102,11 @@ const MobileHomeSections = ({
       return {
         id: area.id,
         image,
-        text: 'Direito\\n' + area.label,
+        text: area.label, // Remove 'Direito\n' para não ficar tão grande e igual ao blog
         fullName: 'Direito ' + area.label,
         progress: Math.random() * 0.7 + 0.1,
         showPlayButton: true,
+        position: 'inside-bottom',
       };
     });
   }, []);
@@ -214,7 +215,7 @@ const MobileHomeSections = ({
               items={aprenderItems}
               bend={0.3}
               textColor="#ffffff"
-              font="bold 64px Figtree, system-ui, sans-serif"
+              font="normal 64px 'Barlow Condensed', 'Bebas Neue', sans-serif"
               scrollEase={0.15}
               borderRadius={0.05}
               onItemClick={(item) => {
