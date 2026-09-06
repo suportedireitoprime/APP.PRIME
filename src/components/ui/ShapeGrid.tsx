@@ -263,14 +263,38 @@ const ShapeGrid = ({
       }
     };
 
-    const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) {
-      drawGrid();
-      return () => {
-        if (resizeFrameId) cancelAnimationFrame(resizeFrameId);
-        resizeObserver.disconnect();
-      };
+    // Fase 5: Reatividade dinâmica a prefers-reduced-motion
+    let reducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const motionQuery = typeof window !== 'undefined' ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const handleMotionChange = (e: MediaQueryListEvent) => {
+      reducedMotion = e.matches;
+      if (reducedMotion) {
+        tryStop();
+        drawGrid();
+      } else {
+        tryStart();
+      }
+    };
+    if (motionQuery) {
+      motionQuery.addEventListener('change', handleMotionChange);
     }
+
+    // Fase 5: Recuperação de perda de contexto GPU (contextlost / contextrestored) no Android/iOS
+    let isContextLost = false;
+    const handleContextLost = (e: Event) => {
+      e.preventDefault(); // Permite recuperação automática pela GPU
+      isContextLost = true;
+      tryStop();
+    };
+    const handleContextRestored = () => {
+      isContextLost = false;
+      if (canvas && canvas.offsetWidth > 0 && canvas.offsetHeight > 0) {
+        applyResize(canvas.offsetWidth, canvas.offsetHeight);
+      }
+      tryStart();
+    };
+    canvas.addEventListener('contextlost', handleContextLost);
+    canvas.addEventListener('contextrestored', handleContextRestored);
 
     let lastFrameTime = 0;
     const isMoving = speed > 0;
@@ -278,7 +302,7 @@ const ShapeGrid = ({
     const minFrameInterval = 1000 / 45;
 
     const updateAnimation = (now: number) => {
-      if (!isVisible || !isPageVisible || !active) {
+      if (!isVisible || !isPageVisible || !active || reducedMotion || isContextLost) {
         tryStop();
         return;
       }
@@ -363,6 +387,11 @@ const ShapeGrid = ({
         } else {
           cellOpacities.current.set(key, next);
         }
+      }
+
+      // Fase 5: Limpeza preventiva de trailCells para evitar acúmulo de memória
+      if (cellOpacities.current.size === 0 && !hoveredSquare.current && trailCells.current.length > 0) {
+        trailCells.current = [];
       }
     };
 
@@ -489,7 +518,7 @@ const ShapeGrid = ({
     let isPageVisible = !document.hidden;
 
     const tryStart = () => {
-      if (isVisible && isPageVisible && active && !requestRef.current) {
+      if (isVisible && isPageVisible && active && !reducedMotion && !isContextLost && !requestRef.current) {
         lastFrameTime = performance.now();
         requestRef.current = requestAnimationFrame(updateAnimation);
       }
@@ -536,6 +565,11 @@ const ShapeGrid = ({
       tryStop();
       io.disconnect();
       document.removeEventListener('visibilitychange', onVisibility);
+      if (motionQuery) {
+        motionQuery.removeEventListener('change', handleMotionChange);
+      }
+      canvas.removeEventListener('contextlost', handleContextLost);
+      canvas.removeEventListener('contextrestored', handleContextRestored);
       if (isInteractive) {
         canvas.removeEventListener('pointermove', handlePointerMove);
         canvas.removeEventListener('pointerdown', handlePointerMove);
@@ -543,6 +577,13 @@ const ShapeGrid = ({
         canvas.removeEventListener('pointerleave', handlePointerEnd);
         canvas.removeEventListener('pointercancel', handlePointerEnd);
       }
+
+      // Fase 5: Liberação explícita de VRAM no WebKit / Safari (iOS) e Chromium (Android)
+      canvas.width = 0;
+      canvas.height = 0;
+      cellOpacities.current.clear();
+      trailCells.current = [];
+      hoveredSquare.current = null;
     };
   }, [direction, speed, borderColor, hoverFillColor, squareSize, shape, hoverTrailAmount, active]);
 
