@@ -1,4 +1,4 @@
-import { memo, useRef, useEffect, useState, useCallback, useMemo } from 'react';
+import { memo, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Play } from 'lucide-react';
 import { AprenderItem } from './aprenderCarouselTypes';
 
@@ -11,10 +11,13 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const isInteractingRef = useRef(false);
   const interactTimeoutRef = useRef<number | null>(null);
+  const scrollSettleTimeoutRef = useRef<number | null>(null);
   const rafIdRef = useRef<number | null>(null);
+  const rafScrollRef = useRef<number | null>(null);
+  const currentScrollRef = useRef(0);
   const dragStartX = useRef(0);
   const dragStartScrollLeft = useRef(0);
-  const isDragging = useRef(false);
+  const isDraggingMouse = useRef(false);
   const hasDragged = useRef(false);
 
   // Duplica os itens 3 vezes para criar o loop circular contínuo e infinito
@@ -23,32 +26,53 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
     return [...items, ...items, ...items];
   }, [items]);
 
-  // Atualiza dinamicamente o arco circular (curvatura e rotação tangente) de cada capa
-  const updateCardTransforms = useCallback(() => {
+  // Atualiza a curvatura do arco circular matematicamente
+  // Sem getBoundingClientRect (zero layout thrashing) e sem transições CSS conflitantes
+  const updateCardTransforms = useCallback((scrollPos: number) => {
     const scroller = scrollerRef.current;
     if (!scroller) return;
-    const scrollerRect = scroller.getBoundingClientRect();
-    const centerX = scrollerRect.width / 2;
-    const cards = scroller.querySelectorAll<HTMLElement>('[data-aprender-card="true"]');
-    const maxDist = Math.max(1, scrollerRect.width * 0.58);
 
-    cards.forEach((card) => {
-      const cardRect = card.getBoundingClientRect();
-      const cardCenterX = cardRect.left + cardRect.width / 2 - scrollerRect.left;
+    const viewportWidth = scroller.clientWidth;
+    if (!viewportWidth) return;
+
+    const centerX = viewportWidth / 2;
+    const cards = scroller.children;
+    const count = cards.length;
+    if (count === 0) return;
+
+    const firstCard = cards[0] as HTMLElement | undefined;
+    const cardWidth = firstCard?.offsetWidth || 124;
+    const gap = 12; // gap-3 = 12px
+    const stride = cardWidth + gap;
+    const paddingLeft = 16; // px-4 = 16px
+    const maxDist = viewportWidth * 0.62;
+
+    for (let i = 0; i < count; i++) {
+      const card = cards[i] as HTMLElement;
+      if (!card) continue;
+
+      const cardCenterX = paddingLeft + i * stride + cardWidth / 2 - scrollPos;
       const distX = cardCenterX - centerX;
-      const t = Math.max(-1.35, Math.min(1.35, distX / maxDist));
 
-      // Arco circular elegante: no centro eleva levemente; nas pontas desce e inclina tangencialmente
-      const translateY = Math.abs(t) * Math.abs(t) * 14;
-      const rotate = t * 5.5; // -5.5° à esquerda, 0° no centro, +5.5° à direita
-      const scale = Math.max(0.92, 1 - Math.abs(t) * 0.05);
+      // Se o card estiver fora da visualização com margem de segurança, desativa transform
+      if (Math.abs(distX) > viewportWidth * 1.1) {
+        card.style.transform = 'none';
+        continue;
+      }
 
-      card.style.transform = `translate3d(0, ${translateY.toFixed(1)}px, 0) rotate(${rotate.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
-      card.style.transformOrigin = '50% 90%';
-    });
+      const t = Math.max(-1.25, Math.min(1.25, distX / maxDist));
+
+      // Curvatura circular suave e estável (arco sutil com centro em destaque)
+      const translateY = Math.abs(t) * Math.abs(t) * 9.5;
+      const rotate = t * 3.8; // -3.8° à esquerda, 0° no centro, +3.8° à direita
+      const scale = Math.max(0.92, 1 - Math.abs(t) * 0.045);
+
+      card.style.transform = `translate3d(0, ${translateY.toFixed(2)}px, 0) rotate(${rotate.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
+      card.style.transformOrigin = '50% 100%';
+    }
   }, []);
 
-  // Inicializa o scroll no terço central para permitir rolagem bidirecional imediata
+  // Inicializa a rolagem no centro com medição assíncrona
   useEffect(() => {
     const scroller = scrollerRef.current;
     if (!scroller || items.length === 0) return;
@@ -58,39 +82,42 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
         const totalWidth = scroller.scrollWidth;
         const oneThird = totalWidth / 3;
         scroller.scrollLeft = oneThird;
-        updateCardTransforms();
+        currentScrollRef.current = oneThird;
+        updateCardTransforms(oneThird);
       }
     }, 60);
 
     return () => clearTimeout(timer);
   }, [items.length, updateCardTransforms]);
 
-  // Loop contínuo de movimentação circular ultra-suave em requestAnimationFrame
+  // Loop contínuo com acumulador suave quando não houver interação do usuário
   useEffect(() => {
     const scroller = scrollerRef.current;
     if (!scroller || items.length === 0) return;
 
     let lastTime = performance.now();
-    const speed = 0.55; // pixels por frame a 60fps (aprox 33px/s)
+    const speed = 0.5; // pixels por frame a 60fps
 
     const loop = (currentTime: number) => {
       const delta = Math.min((currentTime - lastTime) / 16.67, 2);
       lastTime = currentTime;
 
       if (!isInteractingRef.current && scroller) {
-        scroller.scrollLeft += speed * delta;
+        currentScrollRef.current += speed * delta;
 
         const totalWidth = scroller.scrollWidth;
         const oneThird = totalWidth / 3;
 
-        if (scroller.scrollLeft >= oneThird * 2) {
-          scroller.scrollLeft -= oneThird;
-        } else if (scroller.scrollLeft <= 5) {
-          scroller.scrollLeft += oneThird;
+        if (currentScrollRef.current >= oneThird * 2) {
+          currentScrollRef.current -= oneThird;
+        } else if (currentScrollRef.current <= 5) {
+          currentScrollRef.current += oneThird;
         }
+
+        scroller.scrollLeft = currentScrollRef.current;
+        updateCardTransforms(currentScrollRef.current);
       }
 
-      updateCardTransforms();
       rafIdRef.current = requestAnimationFrame(loop);
     };
 
@@ -110,50 +137,81 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
     if (interactTimeoutRef.current) clearTimeout(interactTimeoutRef.current);
     interactTimeoutRef.current = window.setTimeout(() => {
       isInteractingRef.current = false;
-    }, 1800);
+    }, 2200);
   }, []);
 
-  // Normalização circular durante scroll manual ou por toque
+  // Sincronização durante rolagem nativa
+  // Re-centraliza o carrossel apenas quando o usuário terminar a rolagem para evitar solavancos
   const handleScroll = useCallback(() => {
     const scroller = scrollerRef.current;
     if (!scroller || items.length === 0) return;
 
-    const totalWidth = scroller.scrollWidth;
-    const oneThird = totalWidth / 3;
+    currentScrollRef.current = scroller.scrollLeft;
 
-    if (scroller.scrollLeft >= oneThird * 2) {
-      scroller.scrollLeft -= oneThird;
-    } else if (scroller.scrollLeft <= 5) {
-      scroller.scrollLeft += oneThird;
-    }
+    if (rafScrollRef.current) cancelAnimationFrame(rafScrollRef.current);
+    rafScrollRef.current = requestAnimationFrame(() => {
+      updateCardTransforms(currentScrollRef.current);
+    });
 
-    updateCardTransforms();
+    // Quando o scroll estabilizar, normaliza a posição se tiver saído do terço central
+    if (scrollSettleTimeoutRef.current) clearTimeout(scrollSettleTimeoutRef.current);
+    scrollSettleTimeoutRef.current = window.setTimeout(() => {
+      if (!scroller) return;
+      const totalWidth = scroller.scrollWidth;
+      const oneThird = totalWidth / 3;
+
+      if (scroller.scrollLeft >= oneThird * 2) {
+        scroller.scrollLeft -= oneThird;
+        currentScrollRef.current = scroller.scrollLeft;
+        updateCardTransforms(currentScrollRef.current);
+      } else if (scroller.scrollLeft <= 20) {
+        scroller.scrollLeft += oneThird;
+        currentScrollRef.current = scroller.scrollLeft;
+        updateCardTransforms(currentScrollRef.current);
+      }
+    }, 200);
   }, [items.length, updateCardTransforms]);
 
-  const handlePointerDown = (e: React.PointerEvent) => {
+  // Arraste com o mouse no Desktop
+  const handleMouseDown = (e: React.MouseEvent) => {
     pauseAutoScroll();
-    isDragging.current = true;
+    isDraggingMouse.current = true;
     hasDragged.current = false;
     dragStartX.current = e.clientX;
     const scroller = scrollerRef.current;
     dragStartScrollLeft.current = scroller ? scroller.scrollLeft : 0;
   };
 
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDragging.current) return;
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDraggingMouse.current) return;
     const dx = e.clientX - dragStartX.current;
-    if (Math.abs(dx) > 6) {
+    if (Math.abs(dx) > 5) {
       hasDragged.current = true;
     }
     const scroller = scrollerRef.current;
     if (scroller) {
       scroller.scrollLeft = dragStartScrollLeft.current - dx;
-      updateCardTransforms();
+      currentScrollRef.current = scroller.scrollLeft;
+      updateCardTransforms(currentScrollRef.current);
     }
   };
 
-  const handlePointerUp = () => {
-    isDragging.current = false;
+  const handleMouseUp = () => {
+    isDraggingMouse.current = false;
+    resumeAutoScroll();
+  };
+
+  // Interação de toque em celulares e tablets
+  const handleTouchStart = () => {
+    pauseAutoScroll();
+    hasDragged.current = false;
+  };
+
+  const handleTouchMove = () => {
+    hasDragged.current = true;
+  };
+
+  const handleTouchEnd = () => {
     resumeAutoScroll();
   };
 
@@ -161,55 +219,79 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
 
   return (
     <div
-      className="relative w-full overflow-hidden pt-2 pb-6"
+      className="relative w-full overflow-hidden pt-1 pb-5"
       onMouseEnter={pauseAutoScroll}
       onMouseLeave={resumeAutoScroll}
     >
       <div
         ref={scrollerRef}
         onScroll={handleScroll}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-        onTouchStart={pauseAutoScroll}
-        onTouchEnd={resumeAutoScroll}
-        className="flex gap-3 sm:gap-3.5 overflow-x-auto select-none touch-pan-x [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden px-4 cursor-grab active:cursor-grabbing items-start"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
+        className="flex gap-3 overflow-x-auto select-none touch-pan-x overscroll-x-contain [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden px-4 cursor-grab active:cursor-grabbing items-start"
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {tripleItems.map((item, index) => (
           <div
             key={`${item.id}-${index}`}
-            data-aprender-card="true"
             onClick={() => {
               if (!hasDragged.current) {
                 onItemClick(item);
               }
             }}
-            className="w-[134px] sm:w-[150px] h-[196px] sm:h-[218px] shrink-0 rounded-2xl overflow-hidden relative border border-white/10 shadow-lg shadow-black/50 bg-zinc-950 group cursor-pointer active:scale-95 transition-transform duration-100 will-change-transform"
+            className="w-[124px] sm:w-[140px] h-[180px] sm:h-[204px] shrink-0 overflow-hidden relative border border-white/10 shadow-md shadow-black/40 bg-zinc-950 cursor-pointer will-change-transform [isolation:isolate] [-webkit-mask-image:-webkit-radial-gradient(white,black)] [mask-image:radial-gradient(white,black)]"
+            style={{
+              borderRadius: '16px',
+              clipPath: 'inset(0 round 16px)',
+              WebkitClipPath: 'inset(0 round 16px)',
+              WebkitBackfaceVisibility: 'hidden',
+              backfaceVisibility: 'hidden',
+              WebkitTransformStyle: 'flat',
+              transformStyle: 'flat',
+            }}
           >
-            {/* Capa normal (imagem padrão idêntica ao carrossel de notícias) */}
+            {/* Imagem com clip-path e border-radius de hardware inquebráveis */}
             <img
               src={item.image}
               alt={item.text}
               loading="eager"
               decoding="async"
-              className="w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform duration-500"
+              className="w-full h-full object-cover pointer-events-none select-none block"
+              style={{
+                borderRadius: '16px',
+                clipPath: 'inset(0 round 16px)',
+                WebkitClipPath: 'inset(0 round 16px)',
+                WebkitBackfaceVisibility: 'hidden',
+                backfaceVisibility: 'hidden',
+              }}
             />
 
-            {/* Gradientes para contraste e elegância visual */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/10 pointer-events-none" />
+            {/* Gradiente de contraste com cantos arredondados inquebráveis */}
+            <div
+              className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10 pointer-events-none"
+              style={{
+                borderRadius: '16px',
+                clipPath: 'inset(0 round 16px)',
+                WebkitClipPath: 'inset(0 round 16px)',
+              }}
+            />
 
             {/* Botão de Play circular translúcido centralizado */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-xl group-hover:scale-110 group-active:scale-95 transition-transform">
-                <Play className="w-4.5 h-4.5 text-white fill-white ml-0.5" />
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg">
+                <Play className="w-4 h-4 text-white fill-white ml-0.5" />
               </div>
             </div>
 
             {/* Título da matéria no rodapé do card */}
-            <div className="absolute bottom-0 left-0 right-0 p-3 z-10 pointer-events-none">
-              <span className="font-bold text-[13px] sm:text-[14px] text-white leading-tight line-clamp-2 drop-shadow-md">
+            <div className="absolute bottom-0 left-0 right-0 p-2.5 z-10 pointer-events-none">
+              <span className="font-bold text-[12px] sm:text-[13px] text-white leading-tight line-clamp-2 drop-shadow-md">
                 {item.text}
               </span>
             </div>
@@ -221,3 +303,4 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
 });
 
 AprenderCarousel3D.displayName = 'AprenderCarousel3D';
+
