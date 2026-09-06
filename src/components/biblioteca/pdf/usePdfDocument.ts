@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { pdfjsLib } from '@/lib/pdfWorkerConfig';
+import { pdfjsLib, configurarPdfWorker, getPdfDocumentParams } from '@/lib/pdfWorkerConfig';
 import { Capacitor } from '@capacitor/core';
 import { logPdfEvent } from '@/lib/pdfTelemetry';
 import {
@@ -45,6 +45,9 @@ export function usePdfDocument({
 
     (async () => {
       try {
+        // Assegura que o worker esteja ativo e configurado com URL absoluta/fallback
+        configurarPdfWorker(pdfjsLib);
+
         const normalizedUrl = normalizePdfUrl(url);
         const isNativeNow = Capacitor.isNativePlatform();
         const isLocalMem = normalizedUrl.startsWith('blob:') || normalizedUrl.startsWith('data:');
@@ -52,9 +55,7 @@ export function usePdfDocument({
         let source: any;
         if (isNativeNow && !isLocalMem) {
           const bytes = await fetchPdfBytes(normalizedUrl);
-          const blob = new Blob([bytes.buffer], { type: 'application/pdf' });
-          localBlobUrl = URL.createObjectURL(blob);
-          source = { url: localBlobUrl, withCredentials: false };
+          source = getPdfDocumentParams(bytes);
         } else {
           source = { url: normalizedUrl, withCredentials: false };
         }

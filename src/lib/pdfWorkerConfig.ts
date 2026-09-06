@@ -6,13 +6,44 @@ import pdfjsWorker from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url';
 
 let workerConfigurado = false;
 
+function resolveWorkerUrl(url: string, version: string): string {
+  if (!url) {
+    return `https://unpkg.com/pdfjs-dist@${version}/build/pdf.worker.min.js`;
+  }
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:') || url.startsWith('data:')) {
+    return url;
+  }
+  if (typeof window !== 'undefined' && window.location) {
+    try {
+      return new URL(url, window.location.href).href;
+    } catch {
+      return url;
+    }
+  }
+  return url;
+}
+
 export function configurarPdfWorker(lib: typeof pdfjsLib = pdfjsLib) {
-  if (workerConfigurado && lib.GlobalWorkerOptions.workerSrc) {
+  if (workerConfigurado && lib?.GlobalWorkerOptions?.workerSrc) {
     return;
   }
-  // Usamos o worker local e embutido via Vite ?url garantindo funcionamento offline perfeito e seguro
-  lib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
-  workerConfigurado = true;
+  const version = lib.version || '3.11.174';
+  try {
+    const workerUrl = resolveWorkerUrl(pdfjsWorker, version);
+    lib.GlobalWorkerOptions.workerSrc = workerUrl;
+    workerConfigurado = true;
+  } catch (err) {
+    console.warn('[pdfWorkerConfig] Falha ao resolver worker local, usando fallback CDN:', err);
+    lib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${version}/build/pdf.worker.min.js`;
+    workerConfigurado = true;
+  }
+}
+
+// Auto-configuração imediata na carga do módulo: garante que qualquer import direto de pdfjsLib já venha com workerSrc definido
+try {
+  configurarPdfWorker(pdfjsLib);
+} catch (e) {
+  console.warn('[pdfWorkerConfig] Falha na auto-configuração do worker:', e);
 }
 
 export function getPdfDocumentParams(buf: Uint8Array | ArrayBuffer) {
@@ -28,3 +59,4 @@ export function getPdfDocumentParams(buf: Uint8Array | ArrayBuffer) {
 
 // Exportar pdfjsLib do config para centralizar o import correto (legacy build) e evitar mix de versões
 export { pdfjsLib };
+

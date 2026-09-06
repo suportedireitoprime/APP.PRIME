@@ -42,7 +42,10 @@ const resolve = (url: string) => assetUrl(url) || url;
  */
 const otimizar = (url: string, w: number) => {
   if (!url) return '';
+  // URLs de instâncias legadas/desativadas do Supabase descartadas para prevenir broken images
+  if (url.includes('izspjvegxdfgkgibpyst.supabase.co')) return '';
   const resolved = resolve(url);
+  if (resolved.includes('izspjvegxdfgkgibpyst.supabase.co')) return '';
   if (shouldBypassProxy()) return resolved;
   
   // Se a imagem já vem do nosso storage Supabase, 

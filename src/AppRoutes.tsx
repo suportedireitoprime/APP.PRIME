@@ -820,23 +820,24 @@ function AnimatedRoutes() {
       <DesktopFileDropOverlay />
       <PersistentHome />
       <Suspense fallback={<LazyFallback />}>
-        <Routes location={location}>
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/landing" element={<Landing />} />
+        <AnimatePresence mode="wait" initial={false}>
+          <Routes location={location} key={getRouteKey(location.pathname)}>
+            <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
+            <Route path="/landing" element={<PageTransition><Landing /></PageTransition>} />
 
-          <Route path="/ir/*" element={<SmartLink />} />
-            <Route path="/admin/assinantes" element={<AdminAssinantes />} />
-            <Route path="/admin/funil" element={<AdminFunil />} />
-            <Route path="/admin/monitor/usuarios" element={<AdminMonitorUsuarios />} />
-          <Route path="/privacidade" element={<Privacidade />} />
-          <Route path="/termos" element={<Termos />} />
-          <Route path="/excluir-conta" element={<ExcluirContaPublico />} />
-          <Route path="/suporte-publico" element={<SuportePublico />} />
+            <Route path="/ir/*" element={<SmartLink />} />
+              <Route path="/admin/assinantes" element={<AdminAssinantes />} />
+              <Route path="/admin/funil" element={<AdminFunil />} />
+              <Route path="/admin/monitor/usuarios" element={<AdminMonitorUsuarios />} />
+            <Route path="/privacidade" element={<PageTransition><Privacidade /></PageTransition>} />
+            <Route path="/termos" element={<PageTransition><Termos /></PageTransition>} />
+            <Route path="/excluir-conta" element={<PageTransition><ExcluirContaPublico /></PageTransition>} />
+            <Route path="/suporte-publico" element={<PageTransition><SuportePublico /></PageTransition>} />
 
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/desktop-link/:token" element={<DesktopLinkConfirm />} />
-          <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
-          <Route path="/" element={<ProtectedRoute><HomeGate /></ProtectedRoute>} />
+            <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
+            <Route path="/desktop-link/:token" element={<PageTransition><DesktopLinkConfirm /></PageTransition>} />
+            <Route path="/onboarding" element={<ProtectedRoute><PageTransition><Onboarding /></PageTransition></ProtectedRoute>} />
+            <Route path="/" element={<ProtectedRoute><HomeGate /></ProtectedRoute>} />
 
           <Route path="/legislacao/:tipo" element={<ProtectedRoute><PageTransition><CategoriaLegislacao /></PageTransition></ProtectedRoute>} />
           <Route path="/legislacao/:tipo/:leiSlug" element={<ProtectedRoute><PageTransition><CategoriaLegislacao /></PageTransition></ProtectedRoute>} />
@@ -1147,6 +1148,7 @@ function AnimatedRoutes() {
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
 
           </Routes>
+        </AnimatePresence>
       </Suspense>
     </div>
   );

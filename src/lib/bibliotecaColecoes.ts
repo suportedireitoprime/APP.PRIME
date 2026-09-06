@@ -271,17 +271,24 @@ export function normalizeLivro(row: any, colecao: ColecaoConfig): LivroNormaliza
     ];
   }
 
+  const sanitizeCover = (u: any): string | null => {
+    if (!u || typeof u !== 'string') return null;
+    const trimmed = u.trim();
+    if (!trimmed || trimmed.includes('izspjvegxdfgkgibpyst.supabase.co')) return null;
+    return trimmed;
+  };
+
   return {
     id: row.id,
     titulo,
     autor,
     sobre,
-    capa: row[colecao.capaField] ?? null,
+    capa: sanitizeCover(row[colecao.capaField]),
     link: row[colecao.linkField] ?? null,
     download: row[colecao.downloadField] ?? null,
     area,
     colecaoId: colecao.id,
-    capaHorizontal: row.capa_horizontal ?? null,
+    capaHorizontal: sanitizeCover(row.capa_horizontal),
     anoLancamento: row.ano_lancamento ?? null,
     editora: row.editora ?? null,
     curiosidades,
@@ -293,3 +300,4 @@ export function normalizeLivro(row: any, colecao: ColecaoConfig): LivroNormaliza
     transcricaoAudio,
   };
 }
+
