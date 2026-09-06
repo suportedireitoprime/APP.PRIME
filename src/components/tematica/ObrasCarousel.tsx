@@ -1,6 +1,7 @@
 import { useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight, Film, Star, Tv, Video } from 'lucide-react';
+import { PrimeImage } from '@/components/ui/PrimeImage';
 import type { Obra } from './ObraDetailSheet';
 
 interface Props {
@@ -116,27 +117,16 @@ const ObrasCarousel = ({ titulo, eyebrow, subtitulo, obras, onAbrir, cardSize = 
             className={`group relative shrink-0 ${w} ${h} rounded-xl overflow-hidden bg-card border border-border/50 text-left`}
           >
 
-            {obra.poster_url ? (
-              <img
-                src={obra.poster_url}
-                alt={obra.titulo}
-                loading="lazy"
-                draggable={false}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 pointer-events-none"
-              />
-            ) : (
-              <div
-                className="w-full h-full flex flex-col items-center justify-center p-3 text-center"
-                style={{
-                  background: 'linear-gradient(135deg, hsl(0 55% 22%), hsl(05 65% 14%))',
-                }}
-              >
-                <Film className="w-8 h-8 text-red-200/60 mb-2" strokeWidth={1.5} />
-                <p className="text-[11px] font-semibold text-red-50 line-clamp-3 leading-tight">
-                  {obra.titulo}
-                </p>
-              </div>
-            )}
+            <PrimeImage
+              src={obra.poster_url}
+              alt={obra.titulo}
+              aspectRatio="auto"
+              targetWidth={300}
+              fallbackText={obra.titulo}
+              fallbackIcon={<Film className="w-8 h-8 text-red-200/60 mb-2" strokeWidth={1.5} />}
+              containerClassName="w-full h-full"
+              className="transition-transform duration-300 group-hover:scale-105 pointer-events-none"
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none" />
             <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-sm text-white text-[9px] font-semibold uppercase tracking-wide flex items-center gap-1">
               <IconeTipo tipo={obra.tipo} />

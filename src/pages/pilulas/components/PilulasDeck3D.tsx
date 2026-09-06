@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, memo, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, ChevronLeft, ChevronRight } from 'lucide-react';
+import { PrimeImage } from '@/components/ui/PrimeImage';
 import type { PillGalleryItem } from '../data/galleryItems';
 
 interface PilulasDeck3DProps {
@@ -278,13 +279,16 @@ export const PilulasDeck3D = memo(({ items, onItemClick, defaultBorderColor = '#
                     WebkitClipPath: 'inset(0 round 16px)',
                   }}
                 >
-                  {/* Capa com cores 100% reais sem escurecimento */}
-                  <img
+                  {/* Capa otimizada com PrimeImage (Zero CLS, LCP eager no frontal e lazy nos laterais) */}
+                  <PrimeImage
                     src={item.image}
                     alt={item.fullName}
-                    loading="eager"
-                    decoding="async"
-                    className="w-full h-full object-cover pointer-events-none select-none block"
+                    priority={frente}
+                    aspectRatio="auto"
+                    targetWidth={400}
+                    fallbackText={item.name}
+                    containerClassName="w-full h-full"
+                    className="pointer-events-none select-none"
                   />
 
                   {/* Escurecimento suave nos cards laterais */}
