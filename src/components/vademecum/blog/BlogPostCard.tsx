@@ -63,7 +63,17 @@ export const BlogPostCard = memo(function BlogPostCard({
   const favorite = () => {
     try {
       const key = 'blog:favorites';
-      const cur = new Set<string>(JSON.parse(localStorage.getItem(key) || '[]'));
+      let list: string[] = [];
+      try {
+        const raw = localStorage.getItem(key);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) list = parsed;
+        }
+      } catch {
+        /* ignore */
+      }
+      const cur = new Set<string>(list);
       if (cur.has(post.id)) {
         cur.delete(post.id);
         toast('Removido dos favoritos');

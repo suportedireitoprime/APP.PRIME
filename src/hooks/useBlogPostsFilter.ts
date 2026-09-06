@@ -26,12 +26,19 @@ export function useBlogPostsFilter(
     let base = byDate;
 
     if (bottomTab === 'favoritos') {
+      let cur = new Set<string>();
       try {
-        const cur = new Set<string>(JSON.parse(localStorage.getItem('blog:favorites') || '[]'));
-        base = base.filter((p) => cur.has(p.id));
-      } catch { 
-        // ignore 
+        const raw = localStorage.getItem('blog:favorites');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            cur = new Set<string>(parsed);
+          }
+        }
+      } catch {
+        /* ignore */
       }
+      base = base.filter((p) => cur.has(p.id));
     } else if (bottomTab === 'biografia') {
       base = []; // A aba de biografia tem sua própria view.
     } else if (bottomTab === 'carreiras') {
