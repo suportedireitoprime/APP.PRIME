@@ -13,10 +13,15 @@ export const AprenderCarouselSkeleton = memo(() => {
         </div>
         <div className="w-20 h-7 rounded-full bg-white/5 border border-white/10 animate-pulse" />
       </div>
-      <div className="w-full pt-2 pb-6 flex items-center justify-center gap-3 px-4 overflow-hidden">
-        <div className="w-[124px] sm:w-[140px] h-[180px] sm:h-[204px] rounded-2xl bg-white/[0.04] border border-white/10 animate-pulse shrink-0 opacity-50 translate-y-3 -rotate-3" />
-        <div className="w-[124px] sm:w-[140px] h-[180px] sm:h-[204px] rounded-2xl bg-white/[0.06] border border-white/10 animate-pulse shrink-0 shadow-lg" />
-        <div className="w-[124px] sm:w-[140px] h-[180px] sm:h-[204px] rounded-2xl bg-white/[0.04] border border-white/10 animate-pulse shrink-0 opacity-50 translate-y-3 rotate-3" />
+      <div className="w-full pt-4 pb-4 flex items-center justify-center gap-3.5 px-4 overflow-hidden">
+        <div className="w-[114px] aspect-[2/3] rounded-2xl bg-white/[0.04] border border-white/10 animate-pulse shrink-0 opacity-55 scale-[0.86]" />
+        <div className="w-[114px] aspect-[2/3] rounded-2xl bg-white/[0.08] border border-white/20 animate-pulse shrink-0 opacity-100 scale-[1.14] shadow-2xl relative">
+          <div className="absolute -bottom-8 left-0 right-0 flex flex-col items-center gap-1">
+            <div className="w-16 h-3 bg-white/15 rounded-md animate-pulse" />
+            <div className="w-10 h-2.5 bg-white/10 rounded-md animate-pulse" />
+          </div>
+        </div>
+        <div className="w-[114px] aspect-[2/3] rounded-2xl bg-white/[0.04] border border-white/10 animate-pulse shrink-0 opacity-55 scale-[0.86]" />
       </div>
     </div>
   );

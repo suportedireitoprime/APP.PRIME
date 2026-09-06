@@ -1,4 +1,5 @@
-import { memo, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useMemo, useRef, useEffect, useState, useCallback, memo } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { Play } from 'lucide-react';
 import { AprenderItem } from './aprenderCarouselTypes';
 
@@ -7,297 +8,306 @@ interface AprenderCarousel3DProps {
   onItemClick: (item: { id: string }) => void;
 }
 
+const CARD_W = 114; // px
+const GAP = 14; // px
+const STEP = CARD_W + GAP; // 128px
+
 export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel3DProps) => {
-  const scrollerRef = useRef<HTMLDivElement | null>(null);
-  const isInteractingRef = useRef(false);
-  const interactTimeoutRef = useRef<number | null>(null);
-  const scrollSettleTimeoutRef = useRef<number | null>(null);
-  const rafIdRef = useRef<number | null>(null);
-  const rafScrollRef = useRef<number | null>(null);
-  const currentScrollRef = useRef(0);
-  const dragStartX = useRef(0);
-  const dragStartScrollLeft = useRef(0);
-  const isDraggingMouse = useRef(false);
-  const hasDragged = useRef(false);
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const didInitRef = useRef(false);
 
-  // Duplica os itens 3 vezes para criar o loop circular contínuo e infinito
-  const tripleItems = useMemo(() => {
-    if (!items || items.length === 0) return [];
-    return [...items, ...items, ...items];
-  }, [items]);
+  // Triplica os itens para criar o loop contínuo e infinito idêntico à biblioteca
+  const lista = useMemo(() => (items.length ? [...items, ...items, ...items] : []), [items]);
+  const BASE_LEN = items.length;
 
-  // Atualiza a curvatura do arco circular matematicamente
-  // Sem getBoundingClientRect (zero layout thrashing) e sem transições CSS conflitantes
-  const updateCardTransforms = useCallback((scrollPos: number) => {
-    const scroller = scrollerRef.current;
-    if (!scroller) return;
+  const dragRef = useRef<{
+    active: boolean;
+    startX: number;
+    startScroll: number;
+    moved: number;
+    pointerId: number;
+  } | null>(null);
 
-    const viewportWidth = scroller.clientWidth;
-    if (!viewportWidth) return;
+  const lastOpenRef = useRef(0);
 
-    const centerX = viewportWidth / 2;
-    const cards = scroller.children;
-    const count = cards.length;
-    if (count === 0) return;
+  // Detecta o item central via scroll
+  const updateActive = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el || !BASE_LEN) return;
+    const idx = Math.round(el.scrollLeft / STEP);
+    const clamped = Math.max(0, Math.min(lista.length - 1, idx));
+    setActiveIdx(clamped);
+  }, [lista.length, BASE_LEN]);
 
-    const firstCard = cards[0] as HTMLElement | undefined;
-    const cardWidth = firstCard?.offsetWidth || 124;
-    const gap = 12; // gap-3 = 12px
-    const stride = cardWidth + gap;
-    const paddingLeft = 16; // px-4 = 16px
-    const maxDist = viewportWidth * 0.62;
-
-    for (let i = 0; i < count; i++) {
-      const card = cards[i] as HTMLElement;
-      if (!card) continue;
-
-      const cardCenterX = paddingLeft + i * stride + cardWidth / 2 - scrollPos;
-      const distX = cardCenterX - centerX;
-
-      // Se o card estiver fora da visualização com margem de segurança, desativa transform
-      if (Math.abs(distX) > viewportWidth * 1.1) {
-        card.style.transform = 'none';
-        continue;
-      }
-
-      const t = Math.max(-1.25, Math.min(1.25, distX / maxDist));
-
-      // Curvatura circular suave e estável (arco sutil com centro em destaque)
-      const translateY = Math.abs(t) * Math.abs(t) * 9.5;
-      const rotate = t * 3.8; // -3.8° à esquerda, 0° no centro, +3.8° à direita
-      const scale = Math.max(0.92, 1 - Math.abs(t) * 0.045);
-
-      card.style.transform = `translate3d(0, ${translateY.toFixed(2)}px, 0) rotate(${rotate.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
-      card.style.transformOrigin = '50% 100%';
+  // Salta invisivelmente para o bloco central quando estiver perto das extremidades
+  const normalizeLoop = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el || !BASE_LEN) return;
+    if (activeIdx < BASE_LEN * 0.5) {
+      el.scrollTo({ left: (activeIdx + BASE_LEN) * STEP, behavior: 'auto' });
+    } else if (activeIdx >= BASE_LEN * 2.5) {
+      el.scrollTo({ left: (activeIdx - BASE_LEN) * STEP, behavior: 'auto' });
     }
-  }, []);
+  }, [activeIdx, BASE_LEN]);
 
-  // Inicializa a rolagem no centro com medição assíncrona
+  // Inicializa o scroll centralizado no segundo bloco
   useEffect(() => {
-    const scroller = scrollerRef.current;
-    if (!scroller || items.length === 0) return;
+    const el = scrollerRef.current;
+    if (!el || !BASE_LEN || didInitRef.current) return;
+    el.scrollTo({ left: BASE_LEN * STEP, behavior: 'auto' });
+    didInitRef.current = true;
+    updateActive();
+  }, [BASE_LEN, updateActive]);
 
-    const timer = setTimeout(() => {
-      if (scroller) {
-        const totalWidth = scroller.scrollWidth;
-        const oneThird = totalWidth / 3;
-        scroller.scrollLeft = oneThird;
-        currentScrollRef.current = oneThird;
-        updateCardTransforms(oneThird);
-      }
-    }, 60);
-
-    return () => clearTimeout(timer);
-  }, [items.length, updateCardTransforms]);
-
-  // Loop contínuo com acumulador suave quando não houver interação do usuário
   useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    updateActive();
+    const onScroll = () => updateActive();
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, [updateActive]);
+
+  // Normaliza o loop quando o usuário para de interagir
+  useEffect(() => {
+    if (paused) return;
+    const t = window.setTimeout(normalizeLoop, 200);
+    return () => clearTimeout(t);
+  }, [paused, activeIdx, normalizeLoop]);
+
+  // Auto-avanço a cada 3.2s (pausa ao interagir)
+  useEffect(() => {
+    if (paused || lista.length === 0) return;
+    const el = scrollerRef.current;
+    if (!el) return;
+    const id = window.setInterval(() => {
+      if (document.querySelector('[role="dialog"],[data-state="open"][data-radix-dialog-content]')) return;
+      const next = (activeIdx + 1) % lista.length;
+      el.scrollTo({ left: next * STEP, behavior: 'smooth' });
+    }, 3200);
+    return () => clearInterval(id);
+  }, [paused, activeIdx, lista.length]);
+
+  const columnVirtualizer = useVirtualizer({
+    horizontal: true,
+    count: lista.length,
+    getScrollElement: () => scrollerRef.current,
+    estimateSize: () => STEP,
+    overscan: 4,
+  });
+
+  const sidePad = 'calc(50% - 57px)'; // Metade da tela menos metade do card (114 / 2 = 57px)
+
+  const onScrollerPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    setPaused(true);
     const scroller = scrollerRef.current;
-    if (!scroller || items.length === 0) return;
-
-    let lastTime = performance.now();
-    const speed = 0.5; // pixels por frame a 60fps
-
-    const loop = (currentTime: number) => {
-      const delta = Math.min((currentTime - lastTime) / 16.67, 2);
-      lastTime = currentTime;
-
-      if (!isInteractingRef.current && scroller) {
-        currentScrollRef.current += speed * delta;
-
-        const totalWidth = scroller.scrollWidth;
-        const oneThird = totalWidth / 3;
-
-        if (currentScrollRef.current >= oneThird * 2) {
-          currentScrollRef.current -= oneThird;
-        } else if (currentScrollRef.current <= 5) {
-          currentScrollRef.current += oneThird;
-        }
-
-        scroller.scrollLeft = currentScrollRef.current;
-        updateCardTransforms(currentScrollRef.current);
-      }
-
-      rafIdRef.current = requestAnimationFrame(loop);
+    if (scroller) scroller.scrollTo({ left: scroller.scrollLeft, behavior: 'auto' });
+    if (e.pointerType !== 'mouse') return;
+    const el = scrollerRef.current;
+    if (!el) return;
+    dragRef.current = {
+      active: true,
+      startX: e.clientX,
+      startScroll: el.scrollLeft,
+      moved: 0,
+      pointerId: e.pointerId,
     };
-
-    rafIdRef.current = requestAnimationFrame(loop);
-
-    return () => {
-      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
-    };
-  }, [items.length, updateCardTransforms]);
-
-  const pauseAutoScroll = useCallback(() => {
-    isInteractingRef.current = true;
-    if (interactTimeoutRef.current) clearTimeout(interactTimeoutRef.current);
-  }, []);
-
-  const resumeAutoScroll = useCallback(() => {
-    if (interactTimeoutRef.current) clearTimeout(interactTimeoutRef.current);
-    interactTimeoutRef.current = window.setTimeout(() => {
-      isInteractingRef.current = false;
-    }, 2200);
-  }, []);
-
-  // Sincronização durante rolagem nativa
-  // Re-centraliza o carrossel apenas quando o usuário terminar a rolagem para evitar solavancos
-  const handleScroll = useCallback(() => {
-    const scroller = scrollerRef.current;
-    if (!scroller || items.length === 0) return;
-
-    currentScrollRef.current = scroller.scrollLeft;
-
-    if (rafScrollRef.current) cancelAnimationFrame(rafScrollRef.current);
-    rafScrollRef.current = requestAnimationFrame(() => {
-      updateCardTransforms(currentScrollRef.current);
-    });
-
-    // Quando o scroll estabilizar, normaliza a posição se tiver saído do terço central
-    if (scrollSettleTimeoutRef.current) clearTimeout(scrollSettleTimeoutRef.current);
-    scrollSettleTimeoutRef.current = window.setTimeout(() => {
-      if (!scroller) return;
-      const totalWidth = scroller.scrollWidth;
-      const oneThird = totalWidth / 3;
-
-      if (scroller.scrollLeft >= oneThird * 2) {
-        scroller.scrollLeft -= oneThird;
-        currentScrollRef.current = scroller.scrollLeft;
-        updateCardTransforms(currentScrollRef.current);
-      } else if (scroller.scrollLeft <= 20) {
-        scroller.scrollLeft += oneThird;
-        currentScrollRef.current = scroller.scrollLeft;
-        updateCardTransforms(currentScrollRef.current);
-      }
-    }, 200);
-  }, [items.length, updateCardTransforms]);
-
-  // Arraste com o mouse no Desktop
-  const handleMouseDown = (e: React.MouseEvent) => {
-    pauseAutoScroll();
-    isDraggingMouse.current = true;
-    hasDragged.current = false;
-    dragStartX.current = e.clientX;
-    const scroller = scrollerRef.current;
-    dragStartScrollLeft.current = scroller ? scroller.scrollLeft : 0;
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDraggingMouse.current) return;
-    const dx = e.clientX - dragStartX.current;
-    if (Math.abs(dx) > 5) {
-      hasDragged.current = true;
-    }
-    const scroller = scrollerRef.current;
-    if (scroller) {
-      scroller.scrollLeft = dragStartScrollLeft.current - dx;
-      currentScrollRef.current = scroller.scrollLeft;
-      updateCardTransforms(currentScrollRef.current);
+  const onScrollerPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const d = dragRef.current;
+    if (!d?.active || e.pointerId !== d.pointerId) return;
+    const el = scrollerRef.current;
+    if (!el) return;
+    const dx = e.clientX - d.startX;
+    d.moved = Math.max(d.moved, Math.abs(dx));
+    if (d.moved > 6) {
+      if (!el.hasPointerCapture(e.pointerId)) {
+        try { el.setPointerCapture(e.pointerId); } catch {}
+        el.style.cursor = 'grabbing';
+      }
+      el.scrollLeft = d.startScroll - dx;
     }
   };
 
-  const handleMouseUp = () => {
-    isDraggingMouse.current = false;
-    resumeAutoScroll();
-  };
-
-  // Interação de toque em celulares e tablets
-  const handleTouchStart = () => {
-    pauseAutoScroll();
-    hasDragged.current = false;
-  };
-
-  const handleTouchMove = () => {
-    hasDragged.current = true;
-  };
-
-  const handleTouchEnd = () => {
-    resumeAutoScroll();
+  const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
+    const d = dragRef.current;
+    const el = scrollerRef.current;
+    if (el) el.style.cursor = '';
+    if (d?.active && el?.hasPointerCapture(e.pointerId)) {
+      el.releasePointerCapture(e.pointerId);
+    }
+    setTimeout(() => setPaused(false), 1500);
+    if (d) {
+      setTimeout(() => {
+        if (dragRef.current === d) dragRef.current = null;
+      }, 0);
+    }
   };
 
   if (!items || items.length === 0) return null;
 
   return (
-    <div
-      className="relative w-full overflow-hidden pt-1 pb-5"
-      onMouseEnter={pauseAutoScroll}
-      onMouseLeave={resumeAutoScroll}
-    >
+    <div className="relative w-full overflow-hidden">
       <div
         ref={scrollerRef}
-        onScroll={handleScroll}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onTouchCancel={handleTouchEnd}
-        className="flex gap-3 overflow-x-auto select-none touch-pan-x overscroll-x-contain [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden px-4 cursor-grab active:cursor-grabbing items-start"
-        style={{ WebkitOverflowScrolling: 'touch' }}
+        className="overflow-x-auto no-scrollbar snap-x snap-mandatory md:cursor-grab select-none overscroll-x-contain"
+        style={{ scrollPaddingInline: sidePad }}
+        onPointerDown={onScrollerPointerDown}
+        onPointerMove={onScrollerPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onPointerLeave={() => setPaused(false)}
+        onTouchStart={() => setPaused(true)}
+        onTouchEnd={() => setTimeout(() => setPaused(false), 1500)}
       >
-        {tripleItems.map((item, index) => (
-          <div
-            key={`${item.id}-${index}`}
-            onClick={() => {
-              if (!hasDragged.current) {
-                onItemClick(item);
-              }
-            }}
-            className="w-[124px] sm:w-[140px] h-[180px] sm:h-[204px] shrink-0 overflow-hidden relative border border-white/10 shadow-md shadow-black/40 bg-zinc-950 cursor-pointer will-change-transform [isolation:isolate] [-webkit-mask-image:-webkit-radial-gradient(white,black)] [mask-image:radial-gradient(white,black)]"
-            style={{
-              borderRadius: '16px',
-              clipPath: 'inset(0 round 16px)',
-              WebkitClipPath: 'inset(0 round 16px)',
-              WebkitBackfaceVisibility: 'hidden',
-              backfaceVisibility: 'hidden',
-              WebkitTransformStyle: 'flat',
-              transformStyle: 'flat',
-            }}
-          >
-            {/* Imagem com clip-path e border-radius de hardware inquebráveis */}
-            <img
-              src={item.image}
-              alt={item.text}
-              loading="eager"
-              decoding="async"
-              className="w-full h-full object-cover pointer-events-none select-none block"
-              style={{
-                borderRadius: '16px',
-                clipPath: 'inset(0 round 16px)',
-                WebkitClipPath: 'inset(0 round 16px)',
-                WebkitBackfaceVisibility: 'hidden',
-                backfaceVisibility: 'hidden',
-              }}
-            />
+        <div
+          className="relative pb-6 pt-8"
+          style={{
+            height: '280px',
+            width: `${columnVirtualizer.getTotalSize()}px`,
+            marginLeft: sidePad,
+            marginRight: sidePad,
+          }}
+        >
+          {columnVirtualizer.getVirtualItems().map((virtualColumn) => {
+            const i = virtualColumn.index;
+            const item = lista[i];
+            const isActive = i === activeIdx;
 
-            {/* Gradiente de contraste com cantos arredondados inquebráveis */}
-            <div
-              className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10 pointer-events-none"
-              style={{
-                borderRadius: '16px',
-                clipPath: 'inset(0 round 16px)',
-                WebkitClipPath: 'inset(0 round 16px)',
-              }}
-            />
+            if (!item) return null;
 
-            {/* Botão de Play circular translúcido centralizado */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg">
-                <Play className="w-4 h-4 text-white fill-white ml-0.5" />
-              </div>
-            </div>
+            const openThis = () => {
+              const now = Date.now();
+              if (now - lastOpenRef.current < 800) return;
+              lastOpenRef.current = now;
+              onItemClick(item);
+            };
 
-            {/* Título da matéria no rodapé do card */}
-            <div className="absolute bottom-0 left-0 right-0 p-2.5 z-10 pointer-events-none">
-              <span className="font-bold text-[12px] sm:text-[13px] text-white leading-tight line-clamp-2 drop-shadow-md">
-                {item.text}
-              </span>
-            </div>
-          </div>
-        ))}
+            return (
+              <button
+                key={virtualColumn.key}
+                data-cover-item
+                type="button"
+                onClick={(e) => {
+                  if ((dragRef.current?.moved ?? 0) > 6) {
+                    e.preventDefault();
+                    return;
+                  }
+                  openThis();
+                }}
+                draggable={false}
+                className="absolute top-0 pt-8 shrink-0 snap-center outline-none group cursor-pointer flex flex-col justify-start"
+                style={{
+                  width: CARD_W,
+                  touchAction: 'pan-x pan-y',
+                  transform: `translateX(${virtualColumn.start}px)`,
+                }}
+                aria-label={item.fullName || item.text}
+              >
+                <div
+                  className="relative rounded-2xl overflow-hidden bg-muted transition-transform duration-500 ease-out will-change-transform w-full"
+                  style={{
+                    aspectRatio: '2 / 3',
+                    transform: isActive ? 'scale(1.14)' : 'scale(0.86)',
+                    opacity: isActive ? 1 : 0.55,
+                    boxShadow: isActive
+                      ? '0 24px 40px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(225,29,72,0.45)'
+                      : '0 10px 20px -10px rgba(0,0,0,0.5)',
+                    filter: isActive ? 'none' : 'saturate(0.85) brightness(0.85)',
+                    transitionProperty: 'transform, opacity, filter, box-shadow',
+                    borderRadius: '16px',
+                    clipPath: 'inset(0 round 16px)',
+                    WebkitClipPath: 'inset(0 round 16px)',
+                  }}
+                >
+                  <img
+                    src={item.image}
+                    alt={item.text}
+                    loading={i < 8 ? 'eager' : 'lazy'}
+                    {...(i < 8 ? { fetchPriority: 'high' } : {})}
+                    decoding="async"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    style={{
+                      borderRadius: '16px',
+                      clipPath: 'inset(0 round 16px)',
+                      WebkitClipPath: 'inset(0 round 16px)',
+                    }}
+                  />
+
+                  {/* Gradiente de contraste inferior */}
+                  <div
+                    className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none"
+                    style={{
+                      borderRadius: '16px',
+                      clipPath: 'inset(0 round 16px)',
+                      WebkitClipPath: 'inset(0 round 16px)',
+                    }}
+                  />
+
+                  {/* Botão Play central translúcido */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div
+                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg transition-all duration-300 ${
+                        isActive ? 'opacity-90 scale-100' : 'opacity-0 scale-75'
+                      }`}
+                    >
+                      <Play className="w-4 h-4 text-white fill-white ml-0.5" />
+                    </div>
+                  </div>
+
+                  {/* Reflexo / brilho passando pela capa ao ficar ativa */}
+                  {isActive && (
+                    <span
+                      key={`shine-${i}-${activeIdx}`}
+                      aria-hidden
+                      className="pointer-events-none absolute inset-0 overflow-hidden"
+                      style={{
+                        borderRadius: '16px',
+                        clipPath: 'inset(0 round 16px)',
+                        WebkitClipPath: 'inset(0 round 16px)',
+                      }}
+                    >
+                      <span
+                        className="absolute top-0 left-0 h-full w-1/2"
+                        style={{
+                          background:
+                            'linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.6) 50%, transparent 80%)',
+                          transform: 'translateX(-120%) skewX(-18deg)',
+                          animation: 'aprender-cover-shine 1.4s ease-out 0.15s forwards',
+                        }}
+                      />
+                    </span>
+                  )}
+                </div>
+
+                {/* Título e legenda apenas na capa central */}
+                <div
+                  className="mt-3 text-center transition-opacity duration-300 w-full"
+                  style={{ opacity: isActive ? 1 : 0 }}
+                >
+                  <p className="text-[13px] font-bold text-foreground leading-tight line-clamp-1 px-1">
+                    {item.fullName || item.text}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5 px-1">
+                    Aprender Direito
+                  </p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </div>
+
+      <style>{`
+        @keyframes aprender-cover-shine {
+          0%   { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
+          25%  { opacity: 1; }
+          100% { transform: translateX(260%) skewX(-18deg); opacity: 0; }
+        }
+      `}</style>
     </div>
   );
 });
