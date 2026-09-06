@@ -87,7 +87,7 @@ const DesktopPageLayout = ({ children, activeId, title, subtitle, mobileHeader, 
       )}
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden relative">
+      <div id="desktop-scroll-container" data-desktop-scroll="true" className="flex-1 overflow-y-auto overflow-x-hidden relative">
         <div
           className={
             wide

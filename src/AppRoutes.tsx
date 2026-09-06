@@ -36,6 +36,7 @@ const Router = typeof window !== "undefined" && ((window as any).desktopApp?.isE
 
 import PageTransition from "@/components/PageTransition";
 import { TopRouteProgress } from "@/components/TopRouteProgress";
+import { ScrollRestorationWatcher } from "@/components/navigation/ScrollRestorationWatcher";
 import { useMediaQuery } from "./hooks/useMediaQuery.ts";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { routePrefetch, prefetchRoute } from "@/lib/routePrefetch";
@@ -740,12 +741,6 @@ function AnimatedRoutes() {
     try {
       qc.cancelQueries({ fetchStatus: 'fetching' });
     } catch {}
-    // Purga qualquer trava residual de scroll deixada por sheets/modais desmontados
-    resetBodyScrollLock();
-    // Reseta o scroll para o topo caso não haja âncora (#) na rota
-    if (!location.hash) {
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    }
   }, [location.pathname, location.search, location.hash, qc]);
 
   // Hidrata o cache das Videoaulas (IndexedDB → memória) logo no boot, em idle:
@@ -785,14 +780,6 @@ function AnimatedRoutes() {
     if (ric) ric(carregarChunks, { timeout: 3000 }); else setTimeout(carregarChunks, 1200);
   }, [user]);
 
-  // Sempre voltar ao topo ao navegar (voltar, avançar, clique) suavemente sem layout thrashing.
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      requestAnimationFrame(() => {
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-      });
-    }
-  }, [location.pathname, location.search]);
 
   // GA4/Meta: vincular user_id e propriedades quando autentica / desloga.
   useEffect(() => {
@@ -835,6 +822,7 @@ function AnimatedRoutes() {
   return (
     <div className="overflow-x-hidden">
       <TopRouteProgress />
+      <ScrollRestorationWatcher />
       <NativeBootstrap />
       <PushNavListener />
       <DeepLinkBootstrap />
