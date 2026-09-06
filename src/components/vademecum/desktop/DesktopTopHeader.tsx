@@ -110,6 +110,6 @@ const DesktopTopHeader = memo(({ onAssistenteClick }: Props) => {
       <NotificationsSheet open={notifOpen} onClose={() => setNotifOpen(false)} />
     </div>
   );
-};
+});
 
 export default DesktopTopHeader;
