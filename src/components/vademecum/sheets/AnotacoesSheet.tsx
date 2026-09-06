@@ -18,6 +18,7 @@ import {
   anotacoesKey,
   type AnotacoesPayload,
 } from '@/lib/artigoFuncoesPrefetch';
+import { addAnotacaoItem, removeAnotacaoItem } from '@/services/anotacoesCache';
 
 interface Anotacao {
   id: string;
@@ -198,11 +199,20 @@ const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, 
       toast.error(error.code === '23505' ? 'Esta anotação já está salva' : 'Erro ao salvar');
       return;
     }
-    if (data) setNotas(prev => {
-      const next = mergeNotes([...prev, data as Anotacao], []);
-      onCountChange?.(next.length);
-      return next;
-    });
+    if (data) {
+      setNotas(prev => {
+        const next = mergeNotes([...prev, data as Anotacao], []);
+        onCountChange?.(next.length);
+        return next;
+      });
+      void addAnotacaoItem(userId, {
+        id: data.id,
+        tabela_codigo: tabelaNome,
+        numero_artigo: artigoNumero,
+        anotacao: data.anotacao,
+        updated_at: data.created_at,
+      });
+    }
     if (userId) invalidateCache(anotacoesKey(tabelaNome, artigoNumero, userId));
     if (!sugerida) setComposerOpen(false);
   };
@@ -231,6 +241,7 @@ const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, 
     } else {
       const { error } = await supabase.from('artigos_anotacoes').delete().eq('id', nota.id);
       if (error) { toast.error('Erro ao apagar'); return; }
+      void removeAnotacaoItem(userId, nota.id);
     }
     if (nota.audio_url && userId) {
       // audio_url é o path no bucket: {user_id}/{filename}

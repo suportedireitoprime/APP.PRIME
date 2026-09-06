@@ -19,14 +19,21 @@ import {
   LocalDetailSheet,
 } from '@/components/locais/chunks';
 import type { SortOption } from '@/components/locais/LocaisFiltroBar';
+import {
+  getSyncContagens,
+  isContagensFresh,
+  saveContagens,
+  getPersistedLocaisCategoria,
+  saveLocaisCategoria,
+} from '@/services/locaisCache';
 
 export default function LocaisJuridicos() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { location, loading: geoLoading, request } = useUserLocation(false);
   const [categoriaAtiva, setCategoriaAtiva] = useState<CategoriaLocal | null>(null);
-  const [contagens, setContagens] = useState<Contagens>({});
-  const [carregandoContagens, setCarregandoContagens] = useState(true);
+  const [contagens, setContagens] = useState<Contagens>(() => getSyncContagens() ?? {});
+  const [carregandoContagens, setCarregandoContagens] = useState(() => !getSyncContagens());
   const [locais, setLocais] = useState<Local[]>([]);
   const [carregandoLocais, setCarregandoLocais] = useState(false);
   const [locaisProximosGeral, setLocaisProximosGeral] = useState<Local[]>([]);
@@ -147,11 +154,18 @@ export default function LocaisJuridicos() {
   const photos = useLocaisPhotos(idsParaFoto);
 
   const carregarContagens = useCallback(async () => {
+    // Se as contagens já estão em cache e frescas (TTL 7 dias), não consome requisições Supabase
+    if (isContagensFresh()) {
+      setCarregandoContagens(false);
+      return;
+    }
     setCarregandoContagens(true);
     const { data, error } = await supabase.from('locais_juridicos').select('categoria');
     if (error) {
       console.error(error);
-      toast.error('Falha ao carregar categorias de locais.');
+      if (Object.keys(contagens).length === 0) {
+        toast.error('Falha ao carregar categorias de locais.');
+      }
       setCarregandoContagens(false);
       return;
     }
@@ -161,13 +175,21 @@ export default function LocaisJuridicos() {
       proximasContagens[categoria] = (proximasContagens[categoria] ?? 0) + 1;
     }
     setContagens(proximasContagens);
+    void saveContagens(proximasContagens);
     setCarregandoContagens(false);
-  }, []);
+  }, [contagens]);
 
   const carregarLocais = useCallback(
     async (categoria: CategoriaLocal) => {
-      setCarregandoLocais(true);
-      setLocais([]);
+      // SWR: Tenta carregar cache prévio imediatamente (0ms de resposta)
+      const cached = await getPersistedLocaisCategoria(categoria);
+      if (cached && cached.length > 0) {
+        setLocais(cached);
+        setCarregandoLocais(false);
+      } else {
+        setCarregandoLocais(true);
+        setLocais([]);
+      }
 
       if (coordsAtivas) {
         const { data, error } = await supabase.rpc('locais_proximos', {
@@ -179,11 +201,15 @@ export default function LocaisJuridicos() {
         });
         if (error) {
           console.error(error);
-          toast.error('Falha ao carregar locais próximos.');
+          if (!cached || cached.length === 0) {
+            toast.error('Falha ao carregar locais próximos.');
+          }
           setCarregandoLocais(false);
           return;
         }
-        setLocais((data as Local[]) ?? []);
+        const lista = (data as Local[]) ?? [];
+        setLocais(lista);
+        void saveLocaisCategoria(categoria, lista);
         setCarregandoLocais(false);
         return;
       }
@@ -198,11 +224,15 @@ export default function LocaisJuridicos() {
         .limit(100);
       if (error) {
         console.error(error);
-        toast.error('Falha ao carregar locais desta categoria.');
+        if (!cached || cached.length === 0) {
+          toast.error('Falha ao carregar locais desta categoria.');
+        }
         setCarregandoLocais(false);
         return;
       }
-      setLocais(((data as Local[]) ?? []).map((l) => ({ ...l, dist_km: null })));
+      const lista = ((data as Local[]) ?? []).map((l) => ({ ...l, dist_km: null }));
+      setLocais(lista);
+      void saveLocaisCategoria(categoria, lista);
       setCarregandoLocais(false);
     },
     [coordsAtivas?.lat, coordsAtivas?.lng],

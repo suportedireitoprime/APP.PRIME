@@ -7,20 +7,24 @@ import { supabase } from "@/integrations/supabase/client";
 import { getCache, setCache } from "@/lib/pessoalCache";
 import { getLeiByTabela } from "@/data/leisCatalog";
 import { tipoToSlug, leiToSlug } from "@/lib/legislacaoSlugs";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  getSyncAnotacoes,
+  getPersistedAnotacoes,
+  saveAnotacoes,
+  type AnotacaoItem,
+} from "@/services/anotacoesCache";
 
-type Anot = {
-  id: string;
-  tabela_codigo: string;
-  numero_artigo: string;
-  anotacao: string | null;
-  updated_at: string;
-};
+type Anot = AnotacaoItem;
 
 const CK = "anotacoes";
 
 export default function AnotacoesPage() {
   const navigate = useNavigate();
-  const [items, setItems] = useState<Anot[]>(() => getCache<Anot[]>(CK) ?? []);
+  const { user } = useAuth();
+  const [items, setItems] = useState<Anot[]>(() => {
+    return getSyncAnotacoes(user?.id) ?? getCache<Anot[]>(CK) ?? [];
+  });
   const [loading, setLoading] = useState(items.length === 0);
   const [offline, setOffline] = useState(!navigator.onLine);
 
@@ -29,22 +33,46 @@ export default function AnotacoesPage() {
     const off = () => setOffline(true);
     window.addEventListener("online", on);
     window.addEventListener("offline", off);
+
+    let cancel = false;
+
+    // Hidratação profunda assíncrona do IndexedDB se a RAM/localStorage estiver vazia
+    if (items.length === 0) {
+      void getPersistedAnotacoes(user?.id).then((persisted) => {
+        if (cancel) return;
+        if (persisted && persisted.length > 0) {
+          setItems(persisted);
+          setLoading(false);
+        }
+      });
+    }
+
     (async () => {
-      const { data, error } = await supabase
-        .from("artigos_anotacoes")
-        .select("id, tabela_codigo, numero_artigo, anotacao, updated_at")
-        .order("updated_at", { ascending: false });
-      if (!error && data) {
-        setItems(data as any);
-        setCache(CK, data);
+      try {
+        const { data, error } = await supabase
+          .from("artigos_anotacoes")
+          .select("id, tabela_codigo, numero_artigo, anotacao, updated_at")
+          .order("updated_at", { ascending: false });
+        if (cancel) return;
+        if (!error && data) {
+          const list = data as Anot[];
+          setItems(list);
+          setCache(CK, list);
+          void saveAnotacoes(user?.id, list);
+        }
+      } catch (err) {
+        console.error("anotacoes fetch error", err);
+      } finally {
+        if (!cancel) setLoading(false);
       }
-      setLoading(false);
     })();
+
     return () => {
+      cancel = true;
       window.removeEventListener("online", on);
       window.removeEventListener("offline", off);
     };
-  }, []);
+  }, [user?.id]);
 
   const grupos = useMemo(() => {
     const m: Record<string, Anot[]> = {};

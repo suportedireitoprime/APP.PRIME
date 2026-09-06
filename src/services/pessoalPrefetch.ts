@@ -5,6 +5,7 @@ import type { QueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { setCache, getCache } from '@/lib/pessoalCache';
 import { preloadCover } from '@/assets/pessoal/covers';
+import { saveAnotacoes } from '@/services/anotacoesCache';
 
 export const PESSOAL_KEYS = {
   artigos: (uid: string) => ['pessoal', 'artigos', uid] as const,
@@ -33,6 +34,7 @@ export async function fetchPessoalAnotacoes() {
     .order('updated_at', { ascending: false });
   const rows = (data ?? []) as any[];
   setCache('anotacoes', rows);
+  void saveAnotacoes(undefined, rows);
   return rows;
 }
 
