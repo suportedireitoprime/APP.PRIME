@@ -803,17 +803,20 @@ class App {
     const startX = e.touches ? e.touches[0].clientX : e.clientX;
     const startY = e.touches ? e.touches[0].clientY : e.clientY;
     const rect = this.container.getBoundingClientRect();
-    
-    // Restringe interação apenas à altura real das capas e vãos (ignora toques acima ou abaixo das capas)
-    const cardTop = rect.top + rect.height * 0.08;
-    const cardBottom = rect.top + rect.height * 0.88;
-    if (startY < cardTop || startY > cardBottom) {
-      return;
-    }
 
     this.mouse.x = 2.0 * (startX - rect.left) / this.screen.width - 1.0;
     this.mouse.y = 2.0 * (1.0 - (startY - rect.top) / this.screen.height) - 1.0;
     this.raycast.castMouse(this.camera, this.mouse);
+    
+    // O ponto de contato deve ser LITERALMENTE SÓ DENTRO DAS CAPAS
+    // Nenhum centímetro fora delas (nem vãos, nem acima, nem abaixo)
+    if (!this.medias || !this.medias.length) return;
+    const meshes = this.medias.map(m => m.plane);
+    const hits = this.raycast.intersectBounds(meshes);
+    if (!hits || hits.length === 0) {
+      // O toque foi fora das capas (vão, fundo ou borda). Ignora completamente!
+      return;
+    }
     
     this.isDown = true;
     this.scroll.position = this.scroll.current;
@@ -824,8 +827,26 @@ class App {
     this.velocity = 0;
   }
   onTouchMove(e) {
-    if (!this.isDown) return;
+    if (!this.isDown) {
+      // Atualiza cursor no desktop indicando interatividade apenas sobre as capas
+      if (!e.touches && this.container && this.medias && this.medias.length) {
+        const rect = this.container.getBoundingClientRect();
+        if (
+          e.clientX >= rect.left && e.clientX <= rect.right &&
+          e.clientY >= rect.top && e.clientY <= rect.bottom
+        ) {
+          this.mouse.x = 2.0 * (e.clientX - rect.left) / this.screen.width - 1.0;
+          this.mouse.y = 2.0 * (1.0 - (e.clientY - rect.top) / this.screen.height) - 1.0;
+          this.raycast.castMouse(this.camera, this.mouse);
+          const meshes = this.medias.map(m => m.plane);
+          const hits = this.raycast.intersectBounds(meshes);
+          this.container.style.cursor = (hits && hits.length > 0) ? 'grab' : 'default';
+        }
+      }
+      return;
+    }
     const x = e.touches ? e.touches[0].clientX : e.clientX;
+    const y = e.touches ? e.touches[0].clientY : e.clientY;
     const now = performance.now();
     const dt = now - (this.lastTouchTime || now);
     
@@ -835,12 +856,20 @@ class App {
     this.lastTouchTime = now;
     this.lastTouchX = x;
 
+    // Se estiver arrastando a capa horizontalmente, previne scroll vertical nativo
+    const dx = Math.abs(x - this.start);
+    const dy = this.clickStart ? Math.abs(y - this.clickStart.y) : 0;
+    if (dx > 8 && dx > dy && e.cancelable) {
+      e.preventDefault();
+    }
+
     // Multiplier matches WebGL units to screen pixels for 1:1 tracking
     const multiplier = (this.viewport.width / this.screen.width) * 2.5;
     const distance = (this.start - x) * multiplier;
     this.scroll.target = this.scroll.position + distance;
   }
   onTouchUp(e) {
+    if (!this.isDown && !this.clickStart) return;
     this.isDown = false;
     
     // Add inertia if flicking
@@ -860,25 +889,19 @@ class App {
       // If distance is small, it's a click
       if (dist < 10) {
         const rect = this.container.getBoundingClientRect();
-        const cardTop = rect.top + rect.height * 0.08;
-        const cardBottom = rect.top + rect.height * 0.88;
+        this.mouse.x = 2.0 * (endX - rect.left) / this.screen.width - 1.0;
+        this.mouse.y = 2.0 * (1.0 - (endY - rect.top) / this.screen.height) - 1.0;
         
-        // Só dispara clique se estiver rigorosamente na altura das capas
-        if (endY >= cardTop && endY <= cardBottom) {
-          this.mouse.x = 2.0 * (endX - rect.left) / this.screen.width - 1.0;
-          this.mouse.y = 2.0 * (1.0 - (endY - rect.top) / this.screen.height) - 1.0;
-          
-          this.raycast.castMouse(this.camera, this.mouse);
-          const meshes = this.medias.map(m => m.plane);
-          const hits = this.raycast.intersectBounds(meshes);
-          
-          if (hits.length > 0) {
-            const hitMesh = hits[0];
-            const media = this.medias.find(m => m.plane === hitMesh);
-            if (media) {
-              const actualIndex = media.index % this.originalLength;
-              this.onItemClick(this.mediasImages[actualIndex], actualIndex);
-            }
+        this.raycast.castMouse(this.camera, this.mouse);
+        const meshes = this.medias.map(m => m.plane);
+        const hits = this.raycast.intersectBounds(meshes);
+        
+        if (hits && hits.length > 0) {
+          const hitMesh = hits[0];
+          const media = this.medias.find(m => m.plane === hitMesh);
+          if (media) {
+            const actualIndex = media.index % this.originalLength;
+            this.onItemClick(this.mediasImages[actualIndex], actualIndex);
           }
         }
       }
@@ -886,6 +909,14 @@ class App {
     }
   }
   onWheel(e) {
+    const rect = this.container.getBoundingClientRect();
+    this.mouse.x = 2.0 * (e.clientX - rect.left) / this.screen.width - 1.0;
+    this.mouse.y = 2.0 * (1.0 - (e.clientY - rect.top) / this.screen.height) - 1.0;
+    this.raycast.castMouse(this.camera, this.mouse);
+    const meshes = this.medias.map(m => m.plane);
+    const hits = this.raycast.intersectBounds(meshes);
+    if (!hits || hits.length === 0) return;
+
     const delta = e.deltaY || e.wheelDelta || e.detail;
     this.scroll.target += (delta > 0 ? this.scrollSpeed : -this.scrollSpeed) * 0.2;
     this.onCheckDebounce();
@@ -1093,18 +1124,18 @@ const CircularGallery = forwardRef<CircularGalleryHandle, any>(({
         const currentCycle = Math.floor(currentPos / (itemWidth * appInstance.originalLength));
         
         // Target in the current cycle
-        let target1 = (currentCycle * appInstance.originalLength + index) * itemWidth;
+        const target1 = (currentCycle * appInstance.originalLength + index) * itemWidth;
         // Target in the next cycle
-        let target2 = ((currentCycle + 1) * appInstance.originalLength + index) * itemWidth;
+        const target2 = ((currentCycle + 1) * appInstance.originalLength + index) * itemWidth;
         // Target in the prev cycle
-        let target3 = ((currentCycle - 1) * appInstance.originalLength + index) * itemWidth;
+        const target3 = ((currentCycle - 1) * appInstance.originalLength + index) * itemWidth;
         
         // Find the closest target to current position
         const targets = [target1, target2, target3];
         let closestTarget = targets[0];
         let minDiff = Math.abs(targets[0] - currentPos);
         for(let i = 1; i < targets.length; i++) {
-            let diff = Math.abs(targets[i] - currentPos);
+            const diff = Math.abs(targets[i] - currentPos);
             if(diff < minDiff) {
                 minDiff = diff;
                 closestTarget = targets[i];
