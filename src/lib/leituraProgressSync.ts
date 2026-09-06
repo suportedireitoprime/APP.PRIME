@@ -10,13 +10,19 @@ const notify = (key: string) => {
   }
 };
 
-const readLocal = (table: string, id: string) => {
+export function readLocalLeituraProgress(table: string, id: string): Record<string, any> {
+  if (typeof window === 'undefined') return {};
   try {
-    return JSON.parse(localStorage.getItem(LOCAL_KEY(table, id)) || '{}');
+    const raw = localStorage.getItem(LOCAL_KEY(table, id));
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
   } catch {
-    return {} as Record<string, unknown>;
+    return {};
   }
-};
+}
+
+const readLocal = readLocalLeituraProgress;
 
 let pulled = false;
 
@@ -57,8 +63,12 @@ export async function pullLeituraProgress(force = false): Promise<void> {
         capa: row.capa ?? prev?.capa ?? null,
         updatedAt: remoteAt,
       };
-      localStorage.setItem(key, JSON.stringify(merged));
-      notify(key);
+      try {
+        localStorage.setItem(key, JSON.stringify(merged));
+        notify(key);
+      } catch {
+        /* storage quota */
+      }
     }
     notify('leitura-nativa:sync');
   } catch {
