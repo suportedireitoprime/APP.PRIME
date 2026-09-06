@@ -363,11 +363,12 @@ class Media {
             ctx.fillStyle = this.textColor || '#ffffff';
             ctx.font = `600 ${Math.round(canvas.height * 0.09)}px 'Barlow Condensed', 'Bebas Neue', sans-serif`;
             ctx.textAlign = 'left';
-            ctx.textBaseline = 'bottom';
+            ctx.textBaseline = 'alphabetic'; // Mudado para evitar que o Bebas Neue desça muito
             ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
             ctx.shadowBlur = 12;
             ctx.shadowOffsetY = 4;
-            const textY = canvas.height * 0.94 - (this.progress !== undefined ? canvas.height * 0.025 : 0);
+            // Subindo mais o texto para garantir que fontes com baseline estranho não cortem
+            const textY = canvas.height * 0.88 - (this.progress !== undefined ? canvas.height * 0.025 : 0);
             ctx.fillText(this.text.toUpperCase(), canvas.width * 0.08, textY);
             ctx.restore();
           }
@@ -548,7 +549,7 @@ class Media {
     this.plane.scale.y = (this.viewport.height * (880 * this.scale)) / this.screen.height;
     this.plane.scale.x = (this.viewport.width * (660 * this.scale)) / this.screen.width;
     this.plane.program.uniforms.uPlaneSizes.value = [this.plane.scale.x, this.plane.scale.y];
-    this.padding = 2;
+    this.padding = 0.6; // Reduzido drasticamente para remover margens laterais enormes
     this.width = this.plane.scale.x + this.padding;
     this.widthTotal = this.width * this.length;
     this.x = this.width * this.index;
