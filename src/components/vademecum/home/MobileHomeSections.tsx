@@ -192,7 +192,7 @@ const MobileHomeSections = ({
     <div className="space-y-6 pt-4">
       {/* Aprender em Carrossel 3D no topo */}
       {!hideBlog && (
-        <div className="pt-2 overflow-hidden pb-4">
+        <div className="pt-2 pb-4">
           <div className="mb-0 relative z-10 pointer-events-none px-4 flex items-center justify-between">
             <div>
               <h3 className="font-display text-foreground text-[18px] font-bold flex items-center gap-2 pointer-events-auto">
