@@ -23,6 +23,31 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
     return [...items, ...items, ...items];
   }, [items]);
 
+  // Atualiza dinamicamente o arco circular (curvatura e rotação tangente) de cada capa
+  const updateCardTransforms = useCallback(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+    const scrollerRect = scroller.getBoundingClientRect();
+    const centerX = scrollerRect.width / 2;
+    const cards = scroller.querySelectorAll<HTMLElement>('[data-aprender-card="true"]');
+    const maxDist = Math.max(1, scrollerRect.width * 0.58);
+
+    cards.forEach((card) => {
+      const cardRect = card.getBoundingClientRect();
+      const cardCenterX = cardRect.left + cardRect.width / 2 - scrollerRect.left;
+      const distX = cardCenterX - centerX;
+      const t = Math.max(-1.35, Math.min(1.35, distX / maxDist));
+
+      // Arco circular elegante: no centro eleva levemente; nas pontas desce e inclina tangencialmente
+      const translateY = Math.abs(t) * Math.abs(t) * 14;
+      const rotate = t * 5.5; // -5.5° à esquerda, 0° no centro, +5.5° à direita
+      const scale = Math.max(0.92, 1 - Math.abs(t) * 0.05);
+
+      card.style.transform = `translate3d(0, ${translateY.toFixed(1)}px, 0) rotate(${rotate.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
+      card.style.transformOrigin = '50% 90%';
+    });
+  }, []);
+
   // Inicializa o scroll no terço central para permitir rolagem bidirecional imediata
   useEffect(() => {
     const scroller = scrollerRef.current;
@@ -33,11 +58,12 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
         const totalWidth = scroller.scrollWidth;
         const oneThird = totalWidth / 3;
         scroller.scrollLeft = oneThird;
+        updateCardTransforms();
       }
     }, 60);
 
     return () => clearTimeout(timer);
-  }, [items.length]);
+  }, [items.length, updateCardTransforms]);
 
   // Loop contínuo de movimentação circular ultra-suave em requestAnimationFrame
   useEffect(() => {
@@ -45,7 +71,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
     if (!scroller || items.length === 0) return;
 
     let lastTime = performance.now();
-    const speed = 0.6; // pixels por frame a 60fps (aprox 36px/s)
+    const speed = 0.55; // pixels por frame a 60fps (aprox 33px/s)
 
     const loop = (currentTime: number) => {
       const delta = Math.min((currentTime - lastTime) / 16.67, 2);
@@ -64,6 +90,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
         }
       }
 
+      updateCardTransforms();
       rafIdRef.current = requestAnimationFrame(loop);
     };
 
@@ -72,7 +99,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
     return () => {
       if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
     };
-  }, [items.length]);
+  }, [items.length, updateCardTransforms]);
 
   const pauseAutoScroll = useCallback(() => {
     isInteractingRef.current = true;
@@ -99,7 +126,9 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
     } else if (scroller.scrollLeft <= 5) {
       scroller.scrollLeft += oneThird;
     }
-  }, [items.length]);
+
+    updateCardTransforms();
+  }, [items.length, updateCardTransforms]);
 
   const handlePointerDown = (e: React.PointerEvent) => {
     pauseAutoScroll();
@@ -119,6 +148,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
     const scroller = scrollerRef.current;
     if (scroller) {
       scroller.scrollLeft = dragStartScrollLeft.current - dx;
+      updateCardTransforms();
     }
   };
 
@@ -131,7 +161,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
 
   return (
     <div
-      className="relative w-full overflow-hidden pt-3 pb-3"
+      className="relative w-full overflow-hidden pt-2 pb-6"
       onMouseEnter={pauseAutoScroll}
       onMouseLeave={resumeAutoScroll}
     >
@@ -144,18 +174,19 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
         onPointerCancel={handlePointerUp}
         onTouchStart={pauseAutoScroll}
         onTouchEnd={resumeAutoScroll}
-        className="flex gap-3.5 overflow-x-auto select-none touch-pan-x [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden px-4 cursor-grab active:cursor-grabbing"
+        className="flex gap-3 sm:gap-3.5 overflow-x-auto select-none touch-pan-x [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden px-4 cursor-grab active:cursor-grabbing items-start"
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {tripleItems.map((item, index) => (
           <div
             key={`${item.id}-${index}`}
+            data-aprender-card="true"
             onClick={() => {
               if (!hasDragged.current) {
                 onItemClick(item);
               }
             }}
-            className="w-[155px] sm:w-[175px] h-[225px] sm:h-[250px] shrink-0 rounded-2xl overflow-hidden relative border border-white/10 shadow-lg shadow-black/50 bg-zinc-950 group cursor-pointer active:scale-95 transition-transform duration-150"
+            className="w-[134px] sm:w-[150px] h-[196px] sm:h-[218px] shrink-0 rounded-2xl overflow-hidden relative border border-white/10 shadow-lg shadow-black/50 bg-zinc-950 group cursor-pointer active:scale-95 transition-transform duration-100 will-change-transform"
           >
             {/* Capa normal (imagem padrão idêntica ao carrossel de notícias) */}
             <img
@@ -171,14 +202,14 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
 
             {/* Botão de Play circular translúcido centralizado */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-xl group-hover:scale-110 group-active:scale-95 transition-transform">
-                <Play className="w-5 h-5 text-white fill-white ml-0.5" />
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-xl group-hover:scale-110 group-active:scale-95 transition-transform">
+                <Play className="w-4.5 h-4.5 text-white fill-white ml-0.5" />
               </div>
             </div>
 
             {/* Título da matéria no rodapé do card */}
-            <div className="absolute bottom-0 left-0 right-0 p-3.5 z-10 pointer-events-none">
-              <span className="font-bold text-[14.5px] sm:text-[15.5px] text-white leading-tight line-clamp-2 drop-shadow-md">
+            <div className="absolute bottom-0 left-0 right-0 p-3 z-10 pointer-events-none">
+              <span className="font-bold text-[13px] sm:text-[14px] text-white leading-tight line-clamp-2 drop-shadow-md">
                 {item.text}
               </span>
             </div>
