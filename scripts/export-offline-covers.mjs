@@ -34,17 +34,10 @@ const OUT = path.resolve('public/offline-covers');
 await mkdir(OUT, { recursive: true });
 
 function safeName(url) {
-  const clean = url.split('?')[0].split('#')[0];
-  const base = clean.substring(clean.lastIndexOf('/') + 1) || 'cover';
-  
   let h = 0;
   for (let i = 0; i < url.length; i++) h = (h << 5) - h + url.charCodeAt(i);
   const hash = Math.abs(h).toString(36);
-  
-  const extMatch = base.match(/\.(webp|jpg|jpeg|png|gif)$/i);
-  const ext = (extMatch ? extMatch[1] : 'webp').toLowerCase();
-  
-  return `${hash}.${ext}`;
+  return `${hash}.webp`;
 }
 
 const proxied = (url, w) => `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${w}&q=80&output=webp`;
