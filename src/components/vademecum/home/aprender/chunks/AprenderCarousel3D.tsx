@@ -8,24 +8,28 @@ interface AprenderCarousel3DProps {
   onItemClick: (item: { id: string }) => void;
 }
 
-/** Posição visual em leque (deck de cards) inspirada no PaywallImageStack */
+/** Posição visual em leque (deck de 7 cards) com profundidade e perspectiva */
 const getSlot = (diff: number) => {
   switch (diff) {
     case 0:
-      return { x: 0, y: 0, rotate: 0, scale: 1.06, opacity: 1, z: 60 };
+      return { x: 0, y: 0, rotate: 0, scale: 1.07, opacity: 1, z: 70 };
     case 1:
-      return { x: 72, y: 10, rotate: 9.5, scale: 0.88, opacity: 0.85, z: 50 };
+      return { x: 68, y: 9, rotate: 8.5, scale: 0.9, opacity: 0.92, z: 60 };
     case 2:
-      return { x: 124, y: 20, rotate: 17, scale: 0.75, opacity: 0.45, z: 40 };
+      return { x: 118, y: 19, rotate: 15.5, scale: 0.78, opacity: 0.68, z: 50 };
+    case 3:
+      return { x: 156, y: 29, rotate: 22, scale: 0.67, opacity: 0.42, z: 40 };
     case -1:
-      return { x: -72, y: 10, rotate: -9.5, scale: 0.88, opacity: 0.85, z: 50 };
+      return { x: -68, y: 9, rotate: -8.5, scale: 0.9, opacity: 0.92, z: 60 };
     case -2:
-      return { x: -124, y: 20, rotate: -17, scale: 0.75, opacity: 0.45, z: 40 };
+      return { x: -118, y: 19, rotate: -15.5, scale: 0.78, opacity: 0.68, z: 50 };
+    case -3:
+      return { x: -156, y: 29, rotate: -22, scale: 0.67, opacity: 0.42, z: 40 };
     default:
       if (diff > 0) {
-        return { x: 160, y: 28, rotate: 22, scale: 0.65, opacity: 0, z: 10 };
+        return { x: 180, y: 36, rotate: 26, scale: 0.58, opacity: 0, z: 10 };
       }
-      return { x: -160, y: 28, rotate: -22, scale: 0.65, opacity: 0, z: 10 };
+      return { x: -180, y: 36, rotate: -26, scale: 0.58, opacity: 0, z: 10 };
   }
 };
 
@@ -71,8 +75,14 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
       onTouchStart={() => setPaused(true)}
       onTouchEnd={() => setTimeout(() => setPaused(false), 2500)}
     >
-      {/* Glow ambiente vermelho suave atrás da capa central em destaque */}
-      <div className="absolute top-[100px] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[220px] h-[220px] bg-[#E11D48]/15 blur-3xl rounded-full pointer-events-none" />
+      {/* Glow ambiente dinâmico suave atrás da capa central com a cor predominante da capa */}
+      <motion.div
+        animate={{
+          backgroundColor: activeItem?.glowColor || 'rgba(225, 29, 72, 0.25)',
+        }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="absolute top-[100px] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[240px] h-[240px] blur-3xl rounded-full pointer-events-none opacity-60"
+      />
 
       {/* Container principal do Deck de Cards em leque */}
       <div className="relative flex items-center justify-center w-full max-w-[360px] sm:max-w-[420px] h-[220px] sm:h-[235px]">
@@ -81,7 +91,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
           type="button"
           onClick={handlePrev}
           aria-label="Área anterior"
-          className="absolute -left-1 sm:left-1 z-[70] w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:scale-95"
+          className="absolute -left-1 sm:left-1 z-[75] w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:scale-95"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
@@ -91,7 +101,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
           type="button"
           onClick={handleNext}
           aria-label="Próxima área"
-          className="absolute -right-1 sm:right-1 z-[70] w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:scale-95"
+          className="absolute -right-1 sm:right-1 z-[75] w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:scale-95"
         >
           <ChevronRight className="w-4 h-4" />
         </button>
@@ -116,8 +126,11 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
             const slot = getSlot(diff);
             const frente = diff === 0;
 
-            // Otimização: esconde itens muito distantes do leque para economizar renderização
+            // Otimização: renderiza exatamente os 7 cards do leque (-3 a +3)
             if (Math.abs(diff) > 3) return null;
+
+            const activeBorderColor = item.borderColor || '#E11D48';
+            const activeGlowColor = item.glowColor || 'rgba(225, 29, 72, 0.45)';
 
             return (
               <motion.div
@@ -134,6 +147,10 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
                   zIndex: slot.z,
                   clipPath: 'inset(0 round 16px)',
                   WebkitClipPath: 'inset(0 round 16px)',
+                  borderColor: frente ? activeBorderColor : undefined,
+                  boxShadow: frente
+                    ? `0 15px 40px ${activeGlowColor}`
+                    : undefined,
                 }}
                 onClick={() => {
                   if (frente) {
@@ -144,9 +161,9 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
                     setTimeout(() => setPaused(false), 2500);
                   }
                 }}
-                className={`absolute w-[140px] sm:w-[152px] h-[192px] sm:h-[208px] rounded-2xl overflow-hidden shadow-2xl shrink-0 cursor-pointer will-change-transform bg-zinc-950 ${
+                className={`absolute w-[140px] sm:w-[152px] h-[192px] sm:h-[208px] rounded-2xl overflow-hidden shadow-2xl shrink-0 cursor-pointer will-change-transform bg-zinc-950 transition-colors duration-300 ${
                   frente
-                    ? 'border-[3.5px] border-[#E11D48] shadow-[0_15px_40px_rgba(225,29,72,0.45)]'
+                    ? 'border-[3.5px]'
                     : 'border-2 border-white/20 shadow-black/60'
                 }`}
               >

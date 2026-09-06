@@ -4,6 +4,8 @@ export interface AprenderItem {
   text: string;
   fullName: string;
   descricao?: string;
+  borderColor?: string;
+  glowColor?: string;
   progress: number;
   showPlayButton: boolean;
   position: string;

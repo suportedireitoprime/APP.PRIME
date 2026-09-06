@@ -14,15 +14,23 @@ export const AprenderCarouselSkeleton = memo(() => {
         <div className="w-20 h-7 rounded-full bg-white/5 border border-white/10 animate-pulse" />
       </div>
       <div className="w-full pt-3 pb-2 flex flex-col items-center">
-        <div className="relative flex items-center justify-center w-full max-w-[360px] h-[220px]">
-          {/* Card Esquerda - leque inclinado */}
-          <div className="absolute w-[140px] h-[192px] rounded-2xl bg-white/[0.04] border border-white/10 -translate-x-[72px] translate-y-[10px] -rotate-[9.5deg] scale-[0.88] opacity-80" />
-          {/* Card Centro - destaque com borda vermelha */}
-          <div className="absolute z-20 w-[140px] h-[192px] rounded-2xl bg-white/[0.08] border-[3px] border-[#E11D48]/50 shadow-[0_15px_40px_rgba(225,29,72,0.3)] scale-[1.06] flex items-end justify-center p-3">
+        <div className="relative flex items-center justify-center w-full max-w-[360px] sm:max-w-[420px] h-[220px] sm:h-[235px]">
+          {/* Cards Fundo Extremo */}
+          <div className="absolute w-[140px] h-[192px] rounded-2xl bg-white/[0.02] border border-white/5 -translate-x-[156px] translate-y-[29px] -rotate-[22deg] scale-[0.67] opacity-40" />
+          <div className="absolute w-[140px] h-[192px] rounded-2xl bg-white/[0.02] border border-white/5 translate-x-[156px] translate-y-[29px] rotate-[22deg] scale-[0.67] opacity-40" />
+
+          {/* Cards Meio-Fundo */}
+          <div className="absolute w-[140px] h-[192px] rounded-2xl bg-white/[0.03] border border-white/10 -translate-x-[118px] translate-y-[19px] -rotate-[15.5deg] scale-[0.78] opacity-65" />
+          <div className="absolute w-[140px] h-[192px] rounded-2xl bg-white/[0.03] border border-white/10 translate-x-[118px] translate-y-[19px] rotate-[15.5deg] scale-[0.78] opacity-65" />
+
+          {/* Cards Laterais Frontais */}
+          <div className="absolute z-10 w-[140px] h-[192px] rounded-2xl bg-white/[0.05] border border-white/10 -translate-x-[68px] translate-y-[9px] -rotate-[8.5deg] scale-[0.9] opacity-85" />
+          <div className="absolute z-10 w-[140px] h-[192px] rounded-2xl bg-white/[0.05] border border-white/10 translate-x-[68px] translate-y-[9px] rotate-[8.5deg] scale-[0.9] opacity-85" />
+
+          {/* Card Centro - destaque com borda iluminada */}
+          <div className="absolute z-20 w-[140px] sm:w-[152px] h-[192px] sm:h-[208px] rounded-2xl bg-white/[0.08] border-[3.5px] border-white/20 shadow-[0_15px_40px_rgba(255,255,255,0.1)] scale-[1.07] flex items-end justify-center p-3">
             <div className="w-24 h-3 bg-white/20 rounded animate-pulse" />
           </div>
-          {/* Card Direita - leque inclinado */}
-          <div className="absolute w-[140px] h-[192px] rounded-2xl bg-white/[0.04] border border-white/10 translate-x-[72px] translate-y-[10px] rotate-[9.5deg] scale-[0.88] opacity-80" />
         </div>
         <div className="mt-3 w-44 h-3.5 bg-white/10 rounded-md animate-pulse" />
       </div>

@@ -169,6 +169,36 @@ const APRENDER_AREAS = [
   },
 ];
 
+export const AREA_THEME_COLORS: Record<string, { border: string; glow: string }> = {
+  'direito-ambiental': { border: '#10B981', glow: 'rgba(16, 185, 129, 0.55)' },
+  'direito-penal': { border: '#E11D48', glow: 'rgba(225, 29, 72, 0.55)' },
+  'direito-civil': { border: '#3B82F6', glow: 'rgba(59, 130, 246, 0.55)' },
+  'direito-constitucional': { border: '#0EA5E9', glow: 'rgba(14, 165, 233, 0.55)' },
+  'direito-administrativo': { border: '#F97316', glow: 'rgba(249, 115, 22, 0.55)' },
+  'direito-tributario': { border: '#EAB308', glow: 'rgba(234, 179, 8, 0.55)' },
+  'direito-do-trabalho': { border: '#EC4899', glow: 'rgba(236, 72, 153, 0.55)' },
+  'direito-empresarial': { border: '#8B5CF6', glow: 'rgba(139, 92, 246, 0.55)' },
+  'direito-processual-civil': { border: '#F59E0B', glow: 'rgba(245, 158, 11, 0.55)' },
+  'direito-processual-penal': { border: '#A855F7', glow: 'rgba(168, 85, 247, 0.55)' },
+  'direitos-humanos': { border: '#F43F5E', glow: 'rgba(244, 63, 94, 0.55)' },
+  'direito-internacional-publico': { border: '#06B6D4', glow: 'rgba(6, 182, 212, 0.55)' },
+  'direito-internacional-privado': { border: '#14B8A6', glow: 'rgba(20, 184, 166, 0.55)' },
+  'direito-previdenciario': { border: '#FB7185', glow: 'rgba(251, 113, 133, 0.55)' },
+  'direito-desportivo': { border: '#FBBF24', glow: 'rgba(251, 191, 36, 0.55)' },
+  'direito-processual-do-trabalho': { border: '#D946EF', glow: 'rgba(217, 70, 239, 0.55)' },
+  'direito-financeiro': { border: '#FACC15', glow: 'rgba(250, 204, 21, 0.55)' },
+  'direito-concorrencial': { border: '#FDE047', glow: 'rgba(253, 224, 71, 0.55)' },
+  'direito-urbanistico': { border: '#FB923C', glow: 'rgba(251, 146, 60, 0.55)' },
+  'lei-penal-especial': { border: '#BE123C', glow: 'rgba(190, 18, 60, 0.55)' },
+  'formacao-complementar': { border: '#818CF8', glow: 'rgba(129, 140, 248, 0.55)' },
+  'pesquisa-cientifica': { border: '#38BDF8', glow: 'rgba(56, 189, 248, 0.55)' },
+  'politicas-publicas': { border: '#F472B6', glow: 'rgba(244, 114, 182, 0.55)' },
+  'portugues': { border: '#FBBF24', glow: 'rgba(251, 191, 36, 0.55)' },
+  'pratica-profissional': { border: '#94A3B8', glow: 'rgba(148, 163, 184, 0.55)' },
+  'revisao-oab': { border: '#F59E0B', glow: 'rgba(245, 158, 11, 0.55)' },
+  'teoria-e-filosofia-do-direito': { border: '#A78BFA', glow: 'rgba(167, 139, 250, 0.55)' },
+};
+
 export function useAprenderItems() {
   const navigate = useNavigate();
 
@@ -187,6 +217,7 @@ export function useAprenderItems() {
     return sortedAreas.map((area, index) => {
       const coverObj = getAreaCover(area.fullName) || getAreaCover(area.label);
       const image = coverObj?.cover || cpImage;
+      const theme = AREA_THEME_COLORS[area.id] || { border: '#E11D48', glow: 'rgba(225, 29, 72, 0.55)' };
       
       return {
         id: area.id,
@@ -194,6 +225,8 @@ export function useAprenderItems() {
         text: area.fullName,
         fullName: area.fullName,
         descricao: area.descricao,
+        borderColor: theme.border,
+        glowColor: theme.glow,
         progress: Math.min(0.85, 0.2 + (index * 0.08)),
         showPlayButton: true,
         position: 'inside-bottom',
