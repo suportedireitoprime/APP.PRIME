@@ -166,7 +166,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
         <div
           className="relative pb-6 pt-8"
           style={{
-            height: '280px',
+            height: '290px',
             width: `${columnVirtualizer.getTotalSize()}px`,
             marginLeft: sidePad,
             marginRight: sidePad,
@@ -258,6 +258,13 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
                     </div>
                   </div>
 
+                  {/* Título sem abreviação dentro da capa */}
+                  <div className="absolute bottom-0 left-0 right-0 px-2 pb-2.5 pt-7 z-10 pointer-events-none bg-gradient-to-t from-black/95 via-black/60 to-transparent">
+                    <span className="font-bold text-[11px] sm:text-[12px] text-white leading-tight block drop-shadow-md text-center">
+                      {item.fullName || item.text}
+                    </span>
+                  </div>
+
                   {/* Reflexo / brilho passando pela capa ao ficar ativa */}
                   {isActive && (
                     <span
@@ -283,16 +290,13 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
                   )}
                 </div>
 
-                {/* Título e legenda apenas na capa central */}
+                {/* Descrição embaixo apenas na capa em destaque (central) sem abreviação */}
                 <div
-                  className="mt-3 text-center transition-opacity duration-300 w-full"
+                  className="mt-2.5 text-center transition-opacity duration-300 w-[170px] -ml-[28px] pointer-events-none"
                   style={{ opacity: isActive ? 1 : 0 }}
                 >
-                  <p className="text-[13px] font-bold text-foreground leading-tight line-clamp-1 px-1">
-                    {item.fullName || item.text}
-                  </p>
-                  <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5 px-1">
-                    Aprender Direito
+                  <p className="text-[11px] sm:text-[11.5px] text-zinc-400 font-normal leading-snug px-1">
+                    {item.descricao || 'Aulas passo a passo e detalhadas'}
                   </p>
                 </div>
               </button>

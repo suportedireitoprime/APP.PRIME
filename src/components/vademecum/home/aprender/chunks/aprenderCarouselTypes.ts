@@ -3,6 +3,7 @@ export interface AprenderItem {
   image: string;
   text: string;
   fullName: string;
+  descricao?: string;
   progress: number;
   showPlayButton: boolean;
   position: string;
