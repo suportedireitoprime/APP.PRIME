@@ -40,10 +40,10 @@ const Bibliotecas = () => {
   }
 
   return (
-    <main className="min-h-dvh bg-zinc-950 pb-20 relative overflow-hidden">
-      {/* Fundo ShapeGrid — adiado para não bloquear a montagem */}
+    <main className="min-h-dvh bg-zinc-950 pb-[calc(2.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative overflow-x-hidden">
+      {/* Fundo ShapeGrid fixo em toda a viewport para cobrir 100% da tela sem cortes */}
       {gridReady && (
-        <div className="absolute inset-0 z-0">
+        <div className="fixed inset-0 z-0 pointer-events-none">
           <Suspense fallback={null}>
             <ShapeGrid
               speed={0.5}
