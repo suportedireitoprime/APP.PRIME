@@ -1,7 +1,7 @@
 import { useState, useEffect, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export const SUBTITLES = [
+const SUBTITLES = [
   'Uso Profissional',
   'Para Estudantes',
   'Para Advogados',
@@ -24,14 +24,19 @@ const HomeBrandBanner = () => {
   return (
     <div className="flex flex-col items-center text-center gap-2 pt-1">
       <div className="relative h-24 mb-2 flex items-center justify-center">
-        <img
-          src="/logo-prime.png"
-          alt="Direito Prime"
-          loading="eager"
-          decoding="sync"
-          {...({ fetchpriority: 'high' } as any)}
-          className="w-auto h-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]"
-        />
+        <picture>
+          <source srcSet="/logo-prime.webp" type="image/webp" />
+          <img
+            src="/logo-prime.png"
+            alt="Direito Prime"
+            loading="eager"
+            decoding="async"
+            width={96}
+            height={96}
+            fetchPriority="high"
+            className="w-auto h-24 object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]"
+          />
+        </picture>
       </div>
       <h1 className="font-serif italic text-white text-[24px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)]">
         Estudos Jurídicos

@@ -107,9 +107,18 @@ const MobileHomeSections = ({
   }, []);
 
   useEffect(() => {
-    import('@/lib/cdnImg').then(({ prefetchImages }) => {
-      prefetchImages(FAST_PILLS_ITEMS.map((item) => item.image));
-    });
+    const prefetch = () => {
+      import('@/lib/cdnImg').then(({ prefetchImages }) => {
+        prefetchImages(FAST_PILLS_ITEMS.slice(0, 6).map((item) => item.image));
+      });
+    };
+    const w = window as any;
+    if (typeof w.requestIdleCallback === 'function') {
+      const id = w.requestIdleCallback(prefetch, { timeout: 3500 });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const t = setTimeout(prefetch, 1800);
+    return () => clearTimeout(t);
   }, []);
 
   const handle = useCallback(

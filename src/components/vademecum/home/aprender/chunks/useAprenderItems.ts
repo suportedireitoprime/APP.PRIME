@@ -10,8 +10,8 @@ export function useAprenderItems() {
     const images = FAST_PILLS_ITEMS.map((item) => item.image);
     const cpImage = images[0];
 
-    // Embaralha para que nunca haja uma ordem fixa nem começo pré-determinado
-    const randomAreas = shuffle(AREA_CATS);
+    // Seleciona 8 áreas para compor a galeria circular fluida com metade da alocação de texturas WebGL
+    const randomAreas = shuffle(AREA_CATS).slice(0, 8);
 
     return randomAreas.map((area, index) => {
       const image = index < images.length ? images[index] : cpImage;
@@ -20,7 +20,7 @@ export function useAprenderItems() {
         image,
         text: area.label,
         fullName: 'Direito ' + area.label,
-        progress: Math.random() * 0.7 + 0.1,
+        progress: Math.min(0.85, 0.2 + (index * 0.08)),
         showPlayButton: true,
         position: 'inside-bottom',
       };

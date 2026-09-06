@@ -11,13 +11,13 @@ const ShapeGrid = ({
   hoverTrailAmount = 0,
   className = ''
 }) => {
-  const canvasRef = useRef(null);
-  const requestRef = useRef(null);
-  const numSquaresX = useRef();
-  const numSquaresY = useRef();
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const requestRef = useRef<number | null>(null);
+  const numSquaresX = useRef<number>(0);
+  const numSquaresY = useRef<number>(0);
   const gridOffset = useRef({ x: 0, y: 0 });
-  const hoveredSquare = useRef(null);
-  const trailCells = useRef([]);
+  const hoveredSquare = useRef<{ x: number; y: number } | null>(null);
+  const trailCells = useRef<Array<{ x: number; y: number }>>([]);
   const cellOpacities = useRef(new Map());
 
   useEffect(() => {
@@ -198,6 +198,16 @@ const ShapeGrid = ({
       // Fundo radial transparente removido para não escurecer a tela
     };
 
+    const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      drawGrid();
+      return () => {
+        resizeObserver.disconnect();
+        canvas.removeEventListener('mousemove', handleMouseMove);
+        canvas.removeEventListener('mouseleave', handleMouseLeave);
+      };
+    }
+
     const updateAnimation = () => {
       const effectiveSpeed = Math.max(speed, 0.1);
       const wrapX = isHex ? hexHoriz * 2 : squareSize;
@@ -230,6 +240,9 @@ const ShapeGrid = ({
     };
 
     const updateCellOpacities = () => {
+      if (!hoveredSquare.current && trailCells.current.length === 0 && cellOpacities.current.size === 0) {
+        return;
+      }
       const targets = new Map();
 
       if (hoveredSquare.current) {
@@ -386,7 +399,11 @@ const ShapeGrid = ({
     const io = new IntersectionObserver(
       ([entry]) => {
         isVisible = entry.isIntersecting;
-        isVisible ? tryStart() : tryStop();
+        if (isVisible) {
+          tryStart();
+        } else {
+          tryStop();
+        }
       },
       { threshold: 0 }
     );
@@ -394,7 +411,11 @@ const ShapeGrid = ({
 
     const onVisibility = () => {
       isPageVisible = !document.hidden;
-      isPageVisible ? tryStart() : tryStop();
+      if (isPageVisible) {
+        tryStart();
+      } else {
+        tryStop();
+      }
     };
     document.addEventListener('visibilitychange', onVisibility);
 

@@ -1,10 +1,9 @@
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { useState, useEffect, useRef, useMemo, Suspense } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfileSummary } from '@/hooks/useProfileSummary';
-import { supabase } from '@/integrations/supabase/client';
 import cover2Asset from '@/assets/covers/cover-2.png.asset.json';
 import cover2Bundled from '@/assets/covers/cover-2.webp';
 import cover3Asset from '@/assets/covers/cover-3.png.asset.json';
@@ -34,11 +33,12 @@ import HomeUserHeader from './HomeUserHeader';
 import HomeBrandBanner from './HomeBrandBanner';
 import HomeSearchButton from './HomeSearchButton';
 import HomeActionShortcuts from './HomeActionShortcuts';
-import NotificationsSheet, { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
-import SearchOverlay from '@/components/vademecum/overlays/SearchOverlay';
-import RecentesOverlay from '@/components/vademecum/overlays/RecentesOverlay';
+import { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
 
 const SideMenu = lazyWithRetry(() => import('@/components/vademecum/navigation/SideMenu'));
+const NotificationsSheet = lazyWithRetry(() => import('@/components/vademecum/outros/NotificationsSheet'));
+const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/SearchOverlay'));
+const RecentesOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/RecentesOverlay'));
 
 // Re-exports for backward compatibility
 export { RotatingStatCard, PHILOSOPHER_QUOTES, LEGAL_CURIOSITIES, TERMOS_JURIDICOS, type CardItem } from './RotatingStatCard';
@@ -82,8 +82,21 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
   const [recentesOpen, setRecentesOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const unreadCount = useUnreadNotifCount();
-  const [perfilLabel, setPerfilLabel] = useState<string>('');
   const reduceMotion = useRef(false);
+
+  const perfilLabel = useMemo(() => {
+    if (profileSummary?.perfilContexto) return String(profileSummary.perfilContexto);
+    if (Array.isArray(profileSummary?.perfilTipos) && profileSummary.perfilTipos.length > 0) {
+      const mapa: Record<string, string> = {
+        faculdade: 'Estudante de Direito',
+        oab: 'Concurseiro OAB',
+        concurso: 'Concurseiro',
+        advogado: 'Advogado(a)',
+      };
+      return mapa[profileSummary.perfilTipos[0]] || 'Estudante de Direito';
+    }
+    return 'Estudando pra OAB';
+  }, [profileSummary?.perfilContexto, profileSummary?.perfilTipos]);
 
   useEffect(() => {
     reduceMotion.current = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -96,27 +109,6 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
     const idle = w.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 500));
     idle(() => { void import('@/components/vademecum/navigation/SideMenu').catch(() => {}); });
   }, []);
-
-  useEffect(() => {
-    if (!user?.id) return;
-    (async () => {
-      const { data } = await supabase
-        .from('profiles')
-        .select('perfil_contexto, perfil_tipos')
-        .eq('id', user.id)
-        .maybeSingle();
-      if (data?.perfil_contexto) setPerfilLabel(String(data.perfil_contexto));
-      else if (Array.isArray(data?.perfil_tipos) && data.perfil_tipos.length > 0) {
-        const mapa: Record<string, string> = {
-          faculdade: 'Estudante de Direito',
-          oab: 'Concurseiro OAB',
-          concurso: 'Concurseiro',
-          advogado: 'Advogado(a)',
-        };
-        setPerfilLabel(mapa[data.perfil_tipos[0] as string] || 'Estudante de Direito');
-      }
-    })();
-  }, [user?.id]);
 
   useEffect(() => {
     onSearchOpenChange?.(searchOpen);
@@ -194,28 +186,34 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
         </div>
       </div>
 
-      <Suspense fallback={null}>{menuOpen && <SideMenu open={menuOpen} onClose={() => setMenuOpen(false)} />}</Suspense>
-      <NotificationsSheet open={notifOpen} onClose={() => setNotifOpen(false)} />
-      <SearchOverlay
-        open={searchOpen}
-        onClose={() => setSearchOpen(false)}
-        onSelectLei={(lei) => {
-          setSearchOpen(false);
-          pushRecente({ tipo: lei.tipo, leiId: lei.leiId, nome: lei.nome, descricao: lei.descricao, tabela_nome: lei.tabela_nome });
-          const slug = leiToSlug({ id: lei.leiId, nome: lei.nome });
-          const base = `/legislacao/${tipoToSlug(lei.tipo)}/${slug}`;
-          navigate(lei.artigoNumero ? `${base}/${encodeURIComponent(lei.artigoNumero)}` : base);
-        }}
-      />
-      <RecentesOverlay
-        open={recentesOpen}
-        onClose={() => setRecentesOpen(false)}
-        onSelectLei={(lei) => {
-          setRecentesOpen(false);
-          pushRecente(lei);
-          navigate(`/legislacao/${tipoToSlug(lei.tipo)}/${leiToSlug({ id: lei.leiId, nome: lei.nome })}`);
-        }}
-      />
+      <Suspense fallback={null}>
+        {menuOpen && <SideMenu open={menuOpen} onClose={() => setMenuOpen(false)} />}
+        {notifOpen && <NotificationsSheet open={notifOpen} onClose={() => setNotifOpen(false)} />}
+        {searchOpen && (
+          <SearchOverlay
+            open={searchOpen}
+            onClose={() => setSearchOpen(false)}
+            onSelectLei={(lei) => {
+              setSearchOpen(false);
+              pushRecente({ tipo: lei.tipo, leiId: lei.leiId, nome: lei.nome, descricao: lei.descricao, tabela_nome: lei.tabela_nome });
+              const slug = leiToSlug({ id: lei.leiId, nome: lei.nome });
+              const base = `/legislacao/${tipoToSlug(lei.tipo)}/${slug}`;
+              navigate(lei.artigoNumero ? `${base}/${encodeURIComponent(lei.artigoNumero)}` : base);
+            }}
+          />
+        )}
+        {recentesOpen && (
+          <RecentesOverlay
+            open={recentesOpen}
+            onClose={() => setRecentesOpen(false)}
+            onSelectLei={(lei) => {
+              setRecentesOpen(false);
+              pushRecente(lei);
+              navigate(`/legislacao/${tipoToSlug(lei.tipo)}/${leiToSlug({ id: lei.leiId, nome: lei.nome })}`);
+            }}
+          />
+        )}
+      </Suspense>
     </>
   );
 };

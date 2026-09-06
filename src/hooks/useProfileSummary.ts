@@ -15,6 +15,8 @@ export interface ProfileSummary {
   interacoesTotal: number;
   segundosEmTela: number;
   email: string;
+  perfilContexto?: string | null;
+  perfilTipos?: string[] | null;
 }
 
 const KEY = (uid: string | null | undefined) => ['profile-summary', uid ?? 'anon'] as const;
@@ -47,11 +49,13 @@ async function fetchProfileSummary(userId: string, fallbackEmail: string, fallba
       interacoesTotal: 0,
       segundosEmTela: 0,
       email: fallbackEmail,
+      perfilContexto: null,
+      perfilTipos: null,
     };
   }
   const { data } = await supabase
     .from('profiles')
-    .select('display_name,is_premium,bio,capa_id,interacoes_total,segundos_em_tela')
+    .select('display_name,is_premium,bio,capa_id,interacoes_total,segundos_em_tela,perfil_contexto,perfil_tipos')
     .eq('id', userId)
     .maybeSingle();
   const p: any = data ?? {};
@@ -64,6 +68,8 @@ async function fetchProfileSummary(userId: string, fallbackEmail: string, fallba
     interacoesTotal: Number(p.interacoes_total ?? 0),
     segundosEmTela: Number(p.segundos_em_tela ?? 0),
     email: fallbackEmail,
+    perfilContexto: p.perfil_contexto ?? null,
+    perfilTipos: Array.isArray(p.perfil_tipos) ? p.perfil_tipos : null,
   };
   writeCache(userId, summary);
   return summary;
