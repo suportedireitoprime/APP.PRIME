@@ -309,13 +309,20 @@ const AprenderModulo = () => {
 
                         {/* Card da Aula na Trilha */}
                         <button
+                          type="button"
                           onClick={() => {
-                            haptic.impact();
-                            navigate(`/aprender/aula/${aula.id}`);
+                            try { haptic.light(); } catch {}
+                            navigate(`/aprender/aula/${aula.id}`, {
+                              state: {
+                                aulaTitulo: aula.titulo,
+                                moduloTitulo: modulo?.titulo,
+                                areaSlug: modulo?.areaSlug,
+                              },
+                            });
                           }}
                           onPointerEnter={() => prefetchAprenderAula(aula.id)}
                           className={cn(
-                            'w-full flex items-center justify-between p-4 sm:p-5 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer',
+                            'w-full flex items-center justify-between p-4 sm:p-5 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
                             isNext
                               ? 'border-primary/60 bg-card hover:border-primary shadow-primary/5'
                               : aula.concluida

@@ -18,6 +18,12 @@ export const haptic = {
   light: () => run(({ Haptics, ImpactStyle }) => Haptics.impact({ style: ImpactStyle.Light })),
   medium: () => run(({ Haptics, ImpactStyle }) => Haptics.impact({ style: ImpactStyle.Medium })),
   heavy: () => run(({ Haptics, ImpactStyle }) => Haptics.impact({ style: ImpactStyle.Heavy })),
+  impact: (style: 'light' | 'medium' | 'heavy' = 'medium') =>
+    run(({ Haptics, ImpactStyle }) =>
+      Haptics.impact({
+        style: style === 'heavy' ? ImpactStyle.Heavy : style === 'light' ? ImpactStyle.Light : ImpactStyle.Medium,
+      })
+    ),
   selection: () => run(({ Haptics }) => Haptics.selectionStart().then(() => Haptics.selectionEnd())),
   success: () => run(({ Haptics, NotificationType }) => Haptics.notification({ type: NotificationType.Success })),
   warning: () => run(({ Haptics, NotificationType }) => Haptics.notification({ type: NotificationType.Warning })),
