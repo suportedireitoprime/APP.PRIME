@@ -17,19 +17,33 @@ export type ArtigoProgress = {
 
 type Store = Record<string, ArtigoProgress>;
 
+let memStore: Store | null = null;
+
 function read(): Store {
+  if (memStore) return memStore;
   if (typeof window === 'undefined') return {};
   try {
-    return JSON.parse(localStorage.getItem(KEY) || '{}') as Store;
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      memStore = parsed as Store;
+      return memStore;
+    }
   } catch {
-    return {};
+    /* ignore */
   }
+  return {};
 }
 
 function write(s: Store) {
+  memStore = s;
+  if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(KEY, JSON.stringify(s));
-  } catch { /* ignore */ }
+  } catch {
+    /* quota cheia */
+  }
 }
 
 export function getProgressoArtigos(ids: string[]): Record<string, ArtigoProgress> {
