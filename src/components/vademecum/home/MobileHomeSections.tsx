@@ -192,7 +192,7 @@ const MobileHomeSections = ({
     <div className="space-y-6 pt-4">
       {/* Aprender em Carrossel 3D no topo */}
       {!hideBlog && (
-        <div className="pt-2 pb-4">
+        <div className="pt-2 pb-0 -mb-6">
           <div className="mb-0 relative z-10 pointer-events-none px-4 flex items-center justify-between">
             <div>
               <h3 className="font-display text-foreground text-[18px] font-bold flex items-center gap-2 pointer-events-auto">
@@ -210,14 +210,16 @@ const MobileHomeSections = ({
               Ver todos
             </button>
           </div>
-          <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen h-[280px] -mt-6">
+          <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen h-[250px] -mt-6">
             <CircularGallery
               items={aprenderItems}
               bend={0.3}
               textColor="#ffffff"
-              font="normal 64px 'Barlow Condensed', 'Bebas Neue', sans-serif"
+              font="bold 52px 'Plus Jakarta Sans', 'Barlow', sans-serif"
               scrollEase={0.15}
               borderRadius={0.05}
+              autoScroll={true}
+              autoScrollSpeed={0.005}
               onItemClick={(item) => {
                 import('@/lib/nativeHaptics').then((m) => m.haptic.selection());
                 navigate(`/aprender/area/${item.id.replace('area-', '')}`);

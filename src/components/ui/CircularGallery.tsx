@@ -349,35 +349,97 @@ class Media {
       if (ctx) {
         ctx.drawImage(img, 0, 0);
 
+        // Calcular a área visível do canvas no plano 3D (levando em conta o ratio do shader)
+        const planeAspect = 660 / 880; // 0.75
+        const imgAspect = canvas.width / canvas.height;
+        
+        let visibleLeftX = 0;
+        let visibleWidth = canvas.width;
+        let visibleTopY = 0;
+        let visibleHeight = canvas.height;
+        let visibleBottomY = canvas.height;
+
+        if (imgAspect < planeAspect) {
+          const cropRatioY = imgAspect / planeAspect;
+          visibleHeight = canvas.height * cropRatioY;
+          visibleTopY = canvas.height * (1.0 - cropRatioY) * 0.5;
+          visibleBottomY = visibleTopY + visibleHeight;
+        } else {
+          const cropRatioX = planeAspect / imgAspect;
+          visibleWidth = canvas.width * cropRatioX;
+          visibleLeftX = canvas.width * (1.0 - cropRatioX) * 0.5;
+        }
+
+        const textX = visibleLeftX + visibleWidth * 0.08;
+
         if (this.positionType === 'inside-bottom') {
-          // Draw gradient from bottom
-          const gradient = ctx.createLinearGradient(0, canvas.height, 0, canvas.height * 0.5);
+          // Gradiente escuro para contraste a partir da base visível da capa
+          const gradBottom = visibleBottomY;
+          const gradTop = Math.max(0, visibleBottomY - visibleHeight * 0.55);
+          const gradient = ctx.createLinearGradient(0, gradBottom, 0, gradTop);
           gradient.addColorStop(0, 'rgba(0,0,0,0.95)');
           gradient.addColorStop(0.5, 'rgba(0,0,0,0.6)');
           gradient.addColorStop(1, 'rgba(0,0,0,0)');
           ctx.fillStyle = gradient;
-          ctx.fillRect(0, canvas.height * 0.5, canvas.width, canvas.height * 0.5);
+          ctx.fillRect(0, gradTop, canvas.width, canvas.height - gradTop);
 
           if (this.text) {
             ctx.save();
             ctx.fillStyle = this.textColor || '#ffffff';
-            ctx.font = `600 ${Math.round(canvas.height * 0.08)}px 'Barlow Condensed', 'Bebas Neue', sans-serif`; // Reduzido de 0.09 para 0.08 para caber naturalmente sem maxWidth
+
+            // Quebra em duas linhas quando houver 2 palavras (ex: Processual Penal -> Linha 1: Processual, Linha 2: Penal)
+            // Sem caixa alta forçada: preserva visual elegante
+            const rawText = String(this.text).trim();
+            const formatWord = (w: string) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+            const words = rawText.split(/\s+/).map((w) => {
+              if (w === w.toUpperCase() && w.length > 3) {
+                return formatWord(w);
+              }
+              return w;
+            });
+
+            let lines: string[] = [];
+            if (words.length <= 1) {
+              lines = [words[0] || ''];
+            } else if (words.length === 2) {
+              lines = [words[0], words[1]];
+            } else {
+              const mid = Math.ceil(words.length / 2);
+              lines = [words.slice(0, mid).join(' '), words.slice(mid).join(' ')];
+            }
+
+            // Tipografia moderna e limpa (Plus Jakarta Sans / Barlow)
+            const fontSize = lines.length > 1 
+              ? Math.round(visibleHeight * 0.062) 
+              : Math.round(visibleHeight * 0.074);
+            const lineHeight = Math.round(fontSize * 1.2);
+
+            ctx.font = `700 ${fontSize}px 'Plus Jakarta Sans', 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
             ctx.textAlign = 'left';
             ctx.textBaseline = 'alphabetic';
             ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
             ctx.shadowBlur = 12;
             ctx.shadowOffsetY = 4;
-            const textY = canvas.height * 0.88 - (this.progress !== undefined ? canvas.height * 0.025 : 0);
-            ctx.fillText(this.text.toUpperCase(), canvas.width * 0.08, textY);
+
+            // Recuo seguro da base visível para nunca cortar a borda inferior
+            const bottomMargin = visibleHeight * 0.09 + (this.progress !== undefined ? visibleHeight * 0.03 : 0);
+            const startY = visibleBottomY - bottomMargin;
+
+            if (lines.length === 1) {
+              ctx.fillText(lines[0], textX, startY);
+            } else {
+              ctx.fillText(lines[0], textX, startY - lineHeight);
+              ctx.fillText(lines[1], textX, startY);
+            }
             ctx.restore();
           }
         }
 
         if (this.showPlayButton) {
-          // Draw Play Button overlay
-          const centerX = canvas.width / 2;
-          const centerY = canvas.height / 2;
-          const radius = canvas.width * 0.12;
+          // Draw Play Button overlay centralizado na área visível
+          const centerX = visibleLeftX + visibleWidth / 2;
+          const centerY = visibleTopY + visibleHeight * 0.44;
+          const radius = visibleWidth * 0.12;
 
           ctx.save();
           // Glassmorphism-like background
@@ -408,19 +470,19 @@ class Media {
         } else if (this.positionType === 'inside-bottom') {
           // Draw right arrow indicator
           ctx.save();
-          const arrowSize = canvas.width * 0.04;
-          const paddingRight = canvas.width * 0.08;
-          const centerY = canvas.height / 2;
+          const arrowSize = visibleWidth * 0.04;
+          const paddingRight = visibleWidth * 0.08;
+          const centerY = visibleTopY + visibleHeight * 0.5;
           
           ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-          ctx.lineWidth = Math.max(4, canvas.width * 0.008);
+          ctx.lineWidth = Math.max(4, visibleWidth * 0.008);
           ctx.lineCap = 'round';
           ctx.lineJoin = 'round';
           
           ctx.beginPath();
-          ctx.moveTo(canvas.width - paddingRight - arrowSize, centerY - arrowSize);
-          ctx.lineTo(canvas.width - paddingRight, centerY);
-          ctx.lineTo(canvas.width - paddingRight - arrowSize, centerY + arrowSize);
+          ctx.moveTo(visibleLeftX + visibleWidth - paddingRight - arrowSize, centerY - arrowSize);
+          ctx.lineTo(visibleLeftX + visibleWidth - paddingRight, centerY);
+          ctx.lineTo(visibleLeftX + visibleWidth - paddingRight - arrowSize, centerY + arrowSize);
           ctx.stroke();
           ctx.restore();
         }
@@ -429,22 +491,22 @@ class Media {
           ctx.save();
           // Draw large transparent number on the left
           ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-          ctx.font = `bold ${Math.round(canvas.width * 0.15)}px sans-serif`;
+          ctx.font = `bold ${Math.round(visibleWidth * 0.15)}px sans-serif`;
           ctx.textAlign = 'left';
           ctx.textBaseline = 'top';
-          ctx.fillText(this.badgeText, canvas.width * 0.08, canvas.width * 0.08);
+          ctx.fillText(this.badgeText, textX, visibleTopY + visibleWidth * 0.08);
           ctx.restore();
         }
 
         if (this.progress !== undefined) {
-          const barHeight = Math.max(4, canvas.height * 0.015);
-          const y = canvas.height - barHeight;
+          const barHeight = Math.max(4, visibleHeight * 0.015);
+          const y = visibleBottomY - barHeight - (visibleHeight * 0.025);
           
           ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-          ctx.fillRect(0, y, canvas.width, barHeight);
+          ctx.fillRect(textX, y, visibleWidth * 0.84, barHeight);
           
           ctx.fillStyle = 'rgba(52, 211, 153, 0.9)'; // Emerald 400
-          ctx.fillRect(0, y, canvas.width * this.progress, barHeight);
+          ctx.fillRect(textX, y, visibleWidth * 0.84 * this.progress, barHeight);
         }
       }
 
@@ -456,22 +518,53 @@ class Media {
     // desenha um fundo cinza chumbo de fallback para a tela não ficar invisível/preta
     img.onerror = () => {
       const canvas = document.createElement('canvas');
-      canvas.width = 600;
-      canvas.height = 800;
+      canvas.width = 660;
+      canvas.height = 880;
       const ctx = canvas.getContext('2d');
       if (ctx) {
-        ctx.fillStyle = '#1A1A1A';
+        ctx.fillStyle = '#18181B';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         if (this.positionType === 'inside-bottom') {
           if (this.text) {
             ctx.save();
             ctx.fillStyle = this.textColor || '#ffffff';
-            ctx.font = `600 ${Math.round(canvas.height * 0.08)}px 'Barlow Condensed', 'Bebas Neue', sans-serif`;
+
+            const rawText = String(this.text).trim();
+            const formatWord = (w: string) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+            const words = rawText.split(/\s+/).map((w) => {
+              if (w === w.toUpperCase() && w.length > 3) {
+                return formatWord(w);
+              }
+              return w;
+            });
+
+            let lines: string[] = [];
+            if (words.length <= 1) {
+              lines = [words[0] || ''];
+            } else if (words.length === 2) {
+              lines = [words[0], words[1]];
+            } else {
+              const mid = Math.ceil(words.length / 2);
+              lines = [words.slice(0, mid).join(' '), words.slice(mid).join(' ')];
+            }
+
+            const fontSize = lines.length > 1 
+              ? Math.round(canvas.height * 0.062) 
+              : Math.round(canvas.height * 0.074);
+            const lineHeight = Math.round(fontSize * 1.2);
+
+            ctx.font = `700 ${fontSize}px 'Plus Jakarta Sans', 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
             ctx.textAlign = 'left';
             ctx.textBaseline = 'alphabetic';
             const textY = canvas.height * 0.88 - (this.progress !== undefined ? canvas.height * 0.025 : 0);
-            ctx.fillText(this.text.toUpperCase(), canvas.width * 0.08, textY, canvas.width * 0.84);
+            
+            if (lines.length === 1) {
+              ctx.fillText(lines[0], canvas.width * 0.08, textY);
+            } else {
+              ctx.fillText(lines[0], canvas.width * 0.08, textY - lineHeight);
+              ctx.fillText(lines[1], canvas.width * 0.08, textY);
+            }
             ctx.restore();
           }
         }
@@ -594,6 +687,8 @@ class App {
       font = 'bold 40px Figtree',
       scrollSpeed = 2,
       scrollEase = 0.05,
+      autoScroll = false,
+      autoScrollSpeed = 0.006,
       onItemClick,
       onActiveIndexChange
     } = {}
@@ -601,6 +696,8 @@ class App {
     document.documentElement.classList.remove('no-js');
     this.container = container;
     this.scrollSpeed = scrollSpeed;
+    this.autoScroll = autoScroll;
+    this.autoScrollSpeed = autoScrollSpeed;
     this.scroll = { ease: scrollEase, current: 0, target: 0, last: 0 };
     this.onCheckDebounce = debounce(this.onCheck, 200);
     this.onItemClick = onItemClick;
@@ -831,6 +928,10 @@ class App {
       this.raf = null;
       return;
     }
+    // Auto-scroll contínuo e bem lento quando o usuário não estiver tocando na tela
+    if (this.autoScroll && !this.isDown) {
+      this.scroll.target += this.autoScrollSpeed;
+    }
     this.scroll.current = lerp(this.scroll.current, this.scroll.target, this.scroll.ease);
     const direction = this.scroll.current > this.scroll.last ? 'right' : 'left';
     
@@ -920,6 +1021,8 @@ const CircularGallery = forwardRef<CircularGalleryHandle, any>(({
   fontUrl,
   scrollSpeed = 2,
   scrollEase = 0.05,
+  autoScroll = false,
+  autoScrollSpeed = 0.006,
   onItemClick
 }, ref) => {
   const containerRef = useRef(null);
@@ -946,6 +1049,8 @@ const CircularGallery = forwardRef<CircularGalleryHandle, any>(({
         font: resolvedFont,
         scrollSpeed,
         scrollEase,
+        autoScroll,
+        autoScrollSpeed,
         onItemClick,
         onActiveIndexChange: (index, scrolling) => {
           setActiveItem(index);
@@ -959,7 +1064,7 @@ const CircularGallery = forwardRef<CircularGalleryHandle, any>(({
       isMounted = false;
       if (app) app.destroy();
     };
-  }, [items, bend, textColor, borderRadius, font, fontUrl, scrollSpeed, scrollEase, onItemClick]);
+  }, [items, bend, textColor, borderRadius, font, fontUrl, scrollSpeed, scrollEase, autoScroll, autoScrollSpeed, onItemClick]);
   
   useImperativeHandle(ref, () => ({
     scrollToIndex: (index) => {
