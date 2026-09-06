@@ -3,6 +3,9 @@ import { cn } from '@/lib/utils';
 import { directImg } from '@/lib/cdnImg';
 import fallbackCover from '@/assets/covers/fundamentos-da-lei.webp';
 import { BookOpen } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
+import { getImageOfflineUrl, fetchAndCacheImageOffline } from '@/services/imageOfflineStore';
+import { getOfflineCover } from '@/hooks/useBibliotecaAsset';
 
 export interface PrimeImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src'> {
   src?: string | null;
@@ -45,7 +48,7 @@ const ASPECT_RATIO_CLASSES: Record<string, string> = {
  * 3. Lazy loading nativo e decoding="async" desacoplado da thread da UI para rolagem a 120fps.
  * 4. Redimensionamento dinâmico via directImg() evitando download de imagens 4K em cards pequenos.
  * 5. Skeleton escuro grafite (sem flashes brancos em tema escuro) com transição de opacidade suave.
- * 6. Fallback gracioso com capa jurídica alternativa sem quebra visual de layout.
+ * 6. Fallback gracioso com auto-recuperação em IndexedDB / bundle offline antes da capa de contingência.
  */
 export const PrimeImage = React.memo(function PrimeImage({
   src,
@@ -63,7 +66,8 @@ export const PrimeImage = React.memo(function PrimeImage({
   onError,
   ...rest
 }: PrimeImageProps) {
-  const [attemptLevel, setAttemptLevel] = useState<'optimized' | 'raw' | 'fallback'>('optimized');
+  const [attemptLevel, setAttemptLevel] = useState<'optimized' | 'raw' | 'offline' | 'fallback'>('optimized');
+  const [offlineCandidateSrc, setOfflineCandidateSrc] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Sanitização de URL: evita requisições GET /undefined quando src é inválido
@@ -75,6 +79,8 @@ export const PrimeImage = React.memo(function PrimeImage({
     activeSrc = optimizedSrc || cleanSrc || fallbackSrc || null;
   } else if (attemptLevel === 'raw') {
     activeSrc = cleanSrc || fallbackSrc || null;
+  } else if (attemptLevel === 'offline') {
+    activeSrc = offlineCandidateSrc || fallbackSrc || null;
   } else {
     activeSrc = fallbackSrc || null;
   }
@@ -84,19 +90,51 @@ export const PrimeImage = React.memo(function PrimeImage({
   useEffect(() => {
     setIsLoaded(false);
     setAttemptLevel('optimized');
+    setOfflineCandidateSrc(null);
   }, [src]);
 
   const handleLoad = () => {
     setIsLoaded(true);
     onLoadComplete?.();
+
+    // Sincronização offline em background (apenas na Web/PWA e se conectado)
+    if (
+      cleanSrc &&
+      cleanSrc.startsWith('http') &&
+      typeof window !== 'undefined' &&
+      !Capacitor.isNativePlatform() &&
+      typeof navigator !== 'undefined' &&
+      navigator.onLine
+    ) {
+      fetchAndCacheImageOffline(cleanSrc).catch(() => {});
+    }
   };
 
-  const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+  const handleError = async (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     if (attemptLevel === 'optimized' && cleanSrc && optimizedSrc !== cleanSrc) {
       // Tenta a URL bruta caso a transformação da CDN/Supabase retorne erro transitório
       setAttemptLevel('raw');
       return;
     }
+
+    if (attemptLevel === 'raw' || (attemptLevel === 'optimized' && optimizedSrc === cleanSrc)) {
+      if (cleanSrc) {
+        // Tenta auto-recuperação offline: verifica bundle estático e IndexedDB
+        const bundled = await getOfflineCover(cleanSrc);
+        if (bundled) {
+          setOfflineCandidateSrc(bundled);
+          setAttemptLevel('offline');
+          return;
+        }
+        const idb = await getImageOfflineUrl(cleanSrc);
+        if (idb) {
+          setOfflineCandidateSrc(idb);
+          setAttemptLevel('offline');
+          return;
+        }
+      }
+    }
+
     if (attemptLevel !== 'fallback') {
       setAttemptLevel('fallback');
       onError?.(e);

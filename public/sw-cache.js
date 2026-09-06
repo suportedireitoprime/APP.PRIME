@@ -1,7 +1,7 @@
 // Estudos Jurídicos service worker — estratégias inspiradas em Workbox (sem dependência),
 // mantém compat com o registro atual em src/main.tsx. Não interfere no
 // firebase-messaging-sw.js nem no push-sw.js.
-const VERSION = 'v7';
+const VERSION = 'v8';
 const IMG_CACHE = `vacatio-img-${VERSION}`;
 const ASSET_CACHE = `vacatio-assets-${VERSION}`;
 const RUNTIME_CACHE = `vacatio-runtime-${VERSION}`;
@@ -15,10 +15,16 @@ const IMG_LIMIT = 350;
 const AUDIO_LIMIT = 50;
 const RUNTIME_LIMIT = 60;
 
+// SVG de fallback elegante para imagens quando offline (sem ícone quebrado de navegador)
+const OFFLINE_IMAGE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600" fill="#121214"><rect width="100%" height="100%" fill="#121214"/><path d="M160 270 L240 270 L200 220 Z" fill="#27272a"/><circle cx="175" cy="235" r="12" fill="#27272a"/><text x="50%" y="330" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#71717a" text-anchor="middle" letter-spacing="1">MODO OFFLINE</text></svg>`;
+
 self.addEventListener('install', (e) => {
   e.waitUntil((async () => {
     const cache = await caches.open(ASSET_CACHE);
-    await cache.add('/index.html');
+    await cache.addAll([
+      '/index.html',
+      '/offline-covers/manifest.json',
+    ]).catch(() => cache.add('/index.html'));
   })());
   self.skipWaiting();
 });
@@ -39,15 +45,25 @@ async function trimCache(cacheName, maxItems) {
   await Promise.all(keys.slice(0, keys.length - maxItems).map((k) => cache.delete(k)));
 }
 
-async function cacheFirst(req, cacheName, limit) {
+async function cacheFirst(req, cacheName, limit, isImg = false) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(req);
   if (cached) return cached;
-  const res = await fetch(req);
-  if (res.ok) {
-    cache.put(req, res.clone()).then(() => limit && trimCache(cacheName, limit));
+  try {
+    const res = await fetch(req);
+    if (res && res.ok) {
+      cache.put(req, res.clone()).then(() => limit && trimCache(cacheName, limit));
+    }
+    return res;
+  } catch (err) {
+    if (isImg) {
+      return new Response(OFFLINE_IMAGE_SVG, {
+        status: 200,
+        headers: { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'no-store' },
+      });
+    }
+    throw err;
   }
-  return res;
 }
 
 async function staleWhileRevalidate(req, cacheName, limit) {
@@ -116,7 +132,7 @@ self.addEventListener('fetch', (e) => {
 
   if (isImage) {
     // Cache-first para capas, avatares e imagens estáticas (0ms em visitas recorrentes e offline)
-    e.respondWith(cacheFirst(req, IMG_CACHE, IMG_LIMIT));
+    e.respondWith(cacheFirst(req, IMG_CACHE, IMG_LIMIT, true));
     return;
   }
 
