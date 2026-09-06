@@ -75,32 +75,82 @@ export function LeiSecaHero({
           <Sparkles className="h-3 w-3" /> Lei Seca · seu painel
         </div>
 
-        <h1 className="font-semibold text-[22px] sm:text-2xl tracking-tight leading-[1.05] drop-shadow">
-          Domine o texto da lei
-        </h1>
-        <p className="text-[12.5px] text-white/70 mt-0.5">
-          {resumo
-            ? `${resumo.totalConcluidas}/${resumo.totalLicoes} lições · ${resumo.totalEstrelas} estrelas`
-            : "Carregando seu progresso…"}
-        </p>
+      {/* Glow de fundo */}
+      <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-purple-400/20 blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-16 -left-16 w-56 h-56 rounded-full bg-fuchsia-400/15 blur-3xl pointer-events-none" />
 
-        <div className="mt-4 flex items-center gap-4">
-          <div className="relative h-[88px] w-[88px] shrink-0">
-            <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
-              <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="9" />
+      {/* Header com botão voltar se fornecido */}
+      <div className="relative z-10 flex items-center justify-between gap-3 mb-4">
+        <div className="flex items-center gap-3">
+          {onBack && (
+            <button
+              onClick={() => {
+                haptic.selection();
+                onBack();
+              }}
+              className="w-10 h-10 -ml-1 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center transition-all"
+              aria-label="Voltar"
+            >
+              <ArrowLeft className="w-5 h-5 text-white" />
+            </button>
+          )}
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm text-xs font-semibold tracking-wide text-purple-100">
+            <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+            Trilhas da Lei Seca
+          </div>
+        </div>
+
+        {recentePrincipal && (
+          <button
+            onClick={() => {
+              haptic.selection();
+              navigate(`/lei-seca/${recentePrincipal.slug}`);
+            }}
+            className="text-xs font-semibold text-purple-200 hover:text-white flex items-center gap-1 transition-colors"
+          >
+            Continuar
+            <ChevronRight className="h-3.5 w-3.5" />
+          </button>
+        )}
+      </div>
+
+      {/* Título */}
+      <div className="relative z-10 mb-5">
+        <h1 className="text-xl md:text-2xl font-black tracking-tight leading-tight">
+          Estudo Esquematizado & Guiado
+        </h1>
+        <p className="text-xs md:text-sm text-purple-100/80 mt-1 max-w-xl">
+          Percorra os artigos divididos em partes pedagógicas. Marque como lido, resolva questões e acompanhe seu progresso real.
+        </p>
+      </div>
+
+      {/* Linha de métricas: Rosca de % + Mini-stats */}
+      <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4 pt-2 border-t border-white/10">
+        <div className="flex items-center gap-3.5 w-full sm:w-auto">
+          {/* Gráfico circular de progresso */}
+          <div className="relative h-20 w-20 shrink-0">
+            <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90" role="presentation" aria-hidden="true">
               <circle
                 cx="50"
                 cy="50"
                 r="42"
                 fill="none"
-                stroke="url(#leiSecaRingHero)"
+                stroke="rgba(255, 255, 255, 0.15)"
+                strokeWidth="9"
+              />
+              <circle
+                cx="50"
+                cy="50"
+                r="42"
+                fill="none"
+                stroke={`url(#${ringGradId})`}
                 strokeWidth="9"
                 strokeLinecap="round"
                 strokeDasharray={`${(2 * Math.PI * 42 * pctGlobal) / 100} ${2 * Math.PI * 42}`}
                 className="transition-[stroke-dasharray] duration-700"
               />
               <defs>
-                <linearGradient id="leiSecaRingHero" x1="0" y1="0" x2="1" y2="1">
+                <linearGradient id={ringGradId} x1="0" y1="0" x2="1" y2="1">
                   <stop offset="0%" stopColor="#c4b5fd" />
                   <stop offset="100%" stopColor="#a855f7" />
                 </linearGradient>

@@ -887,7 +887,11 @@ const ArtigoBottomSheet = ({
                   <img
                     src={brasaoImg}
                     alt=""
-                    className="w-48 h-48 opacity-[0.06] object-contain"
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                    style={{ contain: 'paint layout', willChange: 'transform' }}
+                    className="w-48 h-48 opacity-[0.06] object-contain pointer-events-none select-none"
                   />
                 </div>
 

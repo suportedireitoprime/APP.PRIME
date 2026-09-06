@@ -1,6 +1,7 @@
 import { useState, useEffect, type RefObject } from 'react';
 import { BookOpen } from 'lucide-react';
 import { PrimeImage } from '@/components/ui/PrimeImage';
+import { SeloVerificadoBadge } from '@/components/ui/SeloVerificadoBadge';
 
 interface LivroHeaderBackdropProps {
   capaHorizontalUrl?: string | null;
@@ -123,10 +124,11 @@ export const LivroHeaderBackdrop = ({
           <p className="text-sm text-muted-foreground">{autor}</p>
         )}
         {area && (
-          <div className="flex items-center justify-center gap-2 pt-1">
+          <div className="flex items-center justify-center gap-1.5 pt-1">
             <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-medium uppercase tracking-wider">
               {area}
             </span>
+            <SeloVerificadoBadge size={15} title="Obra Auditada e Verificada" />
           </div>
         )}
       </div>

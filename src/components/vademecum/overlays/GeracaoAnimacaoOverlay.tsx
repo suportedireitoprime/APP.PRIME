@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useId } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, ArrowLeft } from "lucide-react";
@@ -76,6 +76,7 @@ export const GeracaoAnimacaoOverlay = ({
   onCancel,
   cancelLabel = "Voltar",
 }: GeracaoAnimacaoOverlayProps) => {
+  const gradId = useId();
   const [autoStepIdx, setAutoStepIdx] = useState(0);
   const stepIdx = stepIdxProp ?? autoStepIdx;
   const [frases, setFrases] = useState<FraseOverlay[]>([]);
@@ -234,11 +235,11 @@ export const GeracaoAnimacaoOverlay = ({
               />
 
               <div className="relative mx-auto mb-5 h-32 w-32">
-                <svg className="absolute inset-0 h-full w-full -rotate-90" viewBox="0 0 100 100">
+                <svg className="absolute inset-0 h-full w-full -rotate-90" viewBox="0 0 100 100" role="presentation" aria-hidden="true">
                   <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(244,63,94, 0.15)" strokeWidth="6" />
-                  <circle cx="50" cy="50" r="46" fill="none" stroke="url(#geracao-grad)" strokeWidth="6" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={circumference * (1 - pctInt / 100)} style={{ transition: "stroke-dashoffset 0.4s ease" }} />
+                  <circle cx="50" cy="50" r="46" fill="none" stroke={`url(#${gradId})`} strokeWidth="6" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={circumference * (1 - pctInt / 100)} style={{ transition: "stroke-dashoffset 0.4s ease" }} />
                   <defs>
-                    <linearGradient id="geracao-grad" x1="0" y1="0" x2="1" y2="1">
+                    <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="1">
                       <stop offset="0%" stopColor="#fb7185" />
                       <stop offset="100%" stopColor="#9f1239" />
                     </linearGradient>

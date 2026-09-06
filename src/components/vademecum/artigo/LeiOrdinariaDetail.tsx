@@ -251,7 +251,7 @@ const LeiOrdinariaDetail = ({ lei, onBack }: LeiOrdinariaDetailProps) => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-6">
         {/* Brasão */}
         <div className="flex flex-col items-center text-center mb-6">
-          <img src={brasaoImg} alt="Brasão da República" loading="eager" decoding="sync" fetchPriority="high" className="w-16 h-16 mb-3" />
+          <img src={brasaoImg} alt="Brasão da República" loading="eager" decoding="async" fetchPriority="high" className="w-16 h-16 mb-3" style={{ contain: 'paint layout' }} />
           <p className="text-[var(--copper-light)] font-display text-sm font-bold">Presidência da República</p>
           <p className="text-[var(--copper-light)] font-display text-xs">Casa Civil</p>
           <p className="text-muted-foreground font-display text-[11px]">Subchefia para Assuntos Jurídicos</p>

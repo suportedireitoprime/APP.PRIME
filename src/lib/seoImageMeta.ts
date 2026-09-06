@@ -47,3 +47,85 @@ export function setDynamicOgImage(imageUrl: string | null | undefined, title?: s
     // Falha silenciosa caso o DOM esteja inacessível
   }
 }
+
+/**
+ * Injeta ou atualiza dados estruturados JSON-LD (Schema.org/Book e ImageObject)
+ * para indexação orgânica das capas no Google Search e Google Imagens (Item 80).
+ */
+export function setDynamicJsonLdBook(data: {
+  title: string;
+  author?: string | null;
+  coverUrl?: string | null;
+  description?: string | null;
+  isbn?: string | null;
+}): void {
+  if (typeof document === 'undefined') return;
+
+  try {
+    const id = 'seo-jsonld-book-schema';
+    let script = document.getElementById(id) as HTMLScriptElement | null;
+    if (!script) {
+      script = document.createElement('script');
+      script.id = id;
+      script.type = 'application/ld+json';
+      document.head.appendChild(script);
+    }
+
+    const absoluteCover = data.coverUrl
+      ? data.coverUrl.startsWith('http')
+        ? data.coverUrl
+        : `${window.location.origin}${data.coverUrl.startsWith('/') ? '' : '/'}${data.coverUrl}`
+      : undefined;
+
+    const schema: Record<string, unknown> = {
+      '@context': 'https://schema.org',
+      '@type': 'Book',
+      name: data.title,
+      url: window.location.href,
+    };
+
+    if (data.author) {
+      schema.author = {
+        '@type': 'Person',
+        name: data.author,
+      };
+    }
+
+    if (data.description) {
+      schema.description = data.description;
+    }
+
+    if (data.isbn) {
+      schema.isbn = data.isbn;
+    }
+
+    if (absoluteCover) {
+      schema.image = {
+        '@type': 'ImageObject',
+        url: absoluteCover,
+        contentUrl: absoluteCover,
+        caption: `Capa oficial da obra ${data.title}`,
+      };
+    }
+
+    script.textContent = JSON.stringify(schema, null, 2);
+  } catch {
+    // Falha graciosa
+  }
+}
+
+/**
+ * Remove os dados estruturados de livro ao fechar ou desmontar a visualização.
+ */
+export function removeDynamicJsonLdBook(): void {
+  if (typeof document === 'undefined') return;
+  try {
+    const script = document.getElementById('seo-jsonld-book-schema');
+    if (script) {
+      script.remove();
+    }
+  } catch {
+    // Falha silenciosa
+  }
+}
+

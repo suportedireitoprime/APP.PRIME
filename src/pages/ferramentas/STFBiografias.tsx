@@ -288,24 +288,28 @@ export default function STFBiografias() {
                 className="group relative bg-zinc-900/50 backdrop-blur-sm rounded-2xl border border-white/5 overflow-hidden hover:border-purple-500/50 transition-all duration-300 cursor-pointer flex hover:shadow-[0_0_30px_rgba(168,85,247,0.15)] h-32 sm:h-40"
               >
                   {/* Foto 3x4 */}
-                  <div className="relative w-24 sm:w-28 flex-shrink-0 overflow-hidden bg-zinc-900/50 border-r border-white/5">
+                  <div className="relative w-24 sm:w-28 flex-shrink-0 overflow-hidden bg-zinc-900/80 border-r border-white/5">
                     {ministro.foto_url ? (
-                      <img 
-                        src={ministro.foto_url}
-                        alt={ministro.nome}
-                        loading="lazy"
-                        className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).style.display = 'none';
-                          const parent = (e.target as HTMLImageElement).parentElement;
-                          if (parent && !parent.querySelector('.fallback-icon')) {
-                            const fallback = document.createElement('div');
-                            fallback.className = 'fallback-icon w-full h-full flex flex-col items-center justify-center p-4 text-center';
-                            fallback.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-700 mb-2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span class="text-[10px] text-zinc-600 uppercase tracking-widest font-semibold">Sem<br/>Foto</span>';
-                            parent.appendChild(fallback);
-                          }
-                        }}
-                      />
+                      <>
+                        <img 
+                          src={ministro.foto_url}
+                          alt={ministro.nome}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                            const parent = (e.target as HTMLImageElement).parentElement;
+                            if (parent && !parent.querySelector('.fallback-icon')) {
+                              const fallback = document.createElement('div');
+                              fallback.className = 'fallback-icon w-full h-full flex flex-col items-center justify-center p-4 text-center';
+                              fallback.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-700 mb-2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span class="text-[10px] text-zinc-600 uppercase tracking-widest font-semibold">Sem<br/>Foto</span>';
+                              parent.appendChild(fallback);
+                            }
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 via-transparent to-black/20 pointer-events-none" />
+                      </>
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">
                         <User className="w-6 h-6 text-zinc-700 mb-2" />

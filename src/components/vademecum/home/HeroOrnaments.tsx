@@ -1,3 +1,5 @@
+import { useId } from 'react';
+
 /**
  * Ornamentos SVG decorativos posicionados atrás da figura vazada do hero.
  * Duas colunas coríntias nas bordas, arco central com laurel, filigrana nos cantos.
@@ -5,6 +7,10 @@
  * em loop via `.svg-shimmer-layer` (definida em index.css).
  */
 const HeroOrnaments = () => {
+  const uid = useId();
+  const heroGoldId = `hero-gold-${uid}`;
+  const heroGoldSoftId = `hero-gold-soft-${uid}`;
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
       {/* SVG dos ornamentos */}
@@ -13,21 +19,22 @@ const HeroOrnaments = () => {
         preserveAspectRatio="xMidYMid slice"
         className="absolute inset-0 w-full h-full"
         aria-hidden="true"
+        role="presentation"
       >
         <defs>
-          <linearGradient id="hero-gold" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id={heroGoldId} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="hsl(0 85% 70%)" stopOpacity="0.55" />
             <stop offset="50%" stopColor="hsl(0 75% 55%)" stopOpacity="0.35" />
             <stop offset="100%" stopColor="hsl(0 60% 40%)" stopOpacity="0.15" />
           </linearGradient>
-          <linearGradient id="hero-gold-soft" x1="0" y1="0" x2="1" y2="0">
+          <linearGradient id={heroGoldSoftId} x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stopColor="hsl(0 85% 70%)" stopOpacity="0.35" />
             <stop offset="100%" stopColor="hsl(0 85% 70%)" stopOpacity="0.15" />
           </linearGradient>
         </defs>
 
         {/* Coluna coríntia — esquerda */}
-        <g stroke="url(#hero-gold)" strokeWidth="1.2" fill="none" opacity="0.9">
+        <g stroke={`url(#${heroGoldId})`} strokeWidth="1.2" fill="none" opacity="0.9">
           {/* Capitel */}
           <path d="M18 60 Q18 50 30 48 L70 48 Q82 50 82 60 L82 72 L18 72 Z" />
           <path d="M22 62 Q30 56 40 60 Q50 64 60 60 Q70 56 78 62" />
@@ -45,7 +52,7 @@ const HeroOrnaments = () => {
         </g>
 
         {/* Coluna coríntia — direita (espelhada) */}
-        <g stroke="url(#hero-gold)" strokeWidth="1.2" fill="none" opacity="0.9">
+        <g stroke={`url(#${heroGoldId})`} strokeWidth="1.2" fill="none" opacity="0.9">
           <path d="M718 60 Q718 50 730 48 L770 48 Q782 50 782 60 L782 72 L718 72 Z" />
           <path d="M722 62 Q730 56 740 60 Q750 64 760 60 Q770 56 778 62" />
           <circle cx="735" cy="66" r="2" />
@@ -60,29 +67,29 @@ const HeroOrnaments = () => {
         </g>
 
         {/* Arco central com laurel */}
-        <g stroke="url(#hero-gold)" strokeWidth="1.4" fill="none" opacity="0.5">
+        <g stroke={`url(#${heroGoldId})`} strokeWidth="1.4" fill="none" opacity="0.5">
           <path d="M180 90 Q400 -10 620 90" />
           <path d="M180 100 Q400 4 620 100" />
           {/* Laurel esquerdo */}
           <g transform="translate(220 60) rotate(-25)">
             {[0, 1, 2, 3, 4, 5].map(i => (
-              <ellipse key={`ll-${i}`} cx={i * 18} cy="0" rx="9" ry="3.5" fill="url(#hero-gold-soft)" stroke="none" />
+              <ellipse key={`ll-${i}`} cx={i * 18} cy="0" rx="9" ry="3.5" fill={`url(#${heroGoldSoftId})`} stroke="none" />
             ))}
           </g>
           {/* Laurel direito */}
           <g transform="translate(580 60) rotate(25) scale(-1 1)">
             {[0, 1, 2, 3, 4, 5].map(i => (
-              <ellipse key={`lr-${i}`} cx={i * 18} cy="0" rx="9" ry="3.5" fill="url(#hero-gold-soft)" stroke="none" />
+              <ellipse key={`lr-${i}`} cx={i * 18} cy="0" rx="9" ry="3.5" fill={`url(#${heroGoldSoftId})`} stroke="none" />
             ))}
           </g>
           {/* Medalhão central */}
           <circle cx="400" cy="72" r="14" />
           <circle cx="400" cy="72" r="8" />
-          <path d="M394 72 L400 66 L406 72 L400 78 Z" fill="url(#hero-gold-soft)" stroke="none" />
+          <path d="M394 72 L400 66 L406 72 L400 78 Z" fill={`url(#${heroGoldSoftId})`} stroke="none" />
         </g>
 
         {/* Filigrana nos 4 cantos */}
-        <g stroke="url(#hero-gold)" strokeWidth="1" fill="none" opacity="0.55">
+        <g stroke={`url(#${heroGoldId})`} strokeWidth="1" fill="none" opacity="0.55">
           {/* topo-esq */}
           <path d="M0 20 Q30 20 40 30 Q50 40 50 60" />
           <path d="M0 30 Q40 30 55 55" />
@@ -98,7 +105,7 @@ const HeroOrnaments = () => {
         </g>
 
         {/* Linha de conexão horizontal (frisas) */}
-        <g stroke="url(#hero-gold-soft)" strokeWidth="0.6" fill="none" opacity="0.4">
+        <g stroke={`url(#${heroGoldSoftId})`} strokeWidth="0.6" fill="none" opacity="0.4">
           <line x1="90" y1="120" x2="180" y2="120" strokeDasharray="2 4" />
           <line x1="620" y1="120" x2="710" y2="120" strokeDasharray="2 4" />
         </g>

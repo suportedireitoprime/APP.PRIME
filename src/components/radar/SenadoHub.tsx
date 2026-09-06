@@ -66,7 +66,7 @@ const SenadoHub = ({ searchQuery, onBack }: SenadoHubProps) => {
           <Card className="border-border/50 bg-card/50 hover:bg-muted/50 transition-colors cursor-pointer">
             <CardContent className="p-4 flex items-center gap-4">
               <div className="relative w-14 h-14 rounded-xl overflow-hidden shrink-0">
-                <img src={senadoHero} alt="" className="w-full h-full object-cover" loading="lazy" />
+                <img src={senadoHero} alt="Senado Federal" className="w-full h-full object-cover" loading="lazy" decoding="async" />
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                   <Users className="w-5 h-5 text-primary" />
                 </div>

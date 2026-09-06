@@ -1,3 +1,4 @@
+import { BookOpen } from 'lucide-react';
 import { PrimeImage } from '@/components/ui/PrimeImage';
 import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
 

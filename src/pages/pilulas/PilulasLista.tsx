@@ -90,8 +90,8 @@ export default function PilulasLista() {
                 onClick={() => handleItemClick(item)}
                 className="group flex items-stretch p-3.5 rounded-2xl bg-[#1A1A1A] border border-white/5 active:scale-[0.98] transition-all text-left relative overflow-hidden hover:border-white/15"
               >
-                {/* Imagem vertical */}
-                <div className="w-[72px] h-[96px] rounded-xl overflow-hidden flex-shrink-0 shadow-md">
+                {/* Imagem vertical 2:3 */}
+                <div className="w-[72px] h-[108px] rounded-xl overflow-hidden flex-shrink-0 shadow-md">
                   <PrimeImage 
                     src={item.image} 
                     alt={item.fullName} 

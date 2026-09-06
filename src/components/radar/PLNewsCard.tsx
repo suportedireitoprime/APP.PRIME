@@ -27,9 +27,9 @@ const PLNewsCard = ({ pl, onVerAnalise }: PLNewsCardProps) => {
       {/* Thumbnail */}
       <div className="shrink-0 w-11 h-11 rounded-full overflow-hidden bg-muted mt-0.5">
         {pl.autorFoto ? (
-          <img src={pl.autorFoto} alt="" className="w-full h-full object-cover" />
+          <img src={pl.autorFoto} alt={pl.autorNome || 'Autor da proposição'} className="w-full h-full object-cover" loading="lazy" decoding="async" />
         ) : (
-          <img src={camaraPlenario} alt="Câmara dos Deputados" className="w-full h-full object-cover" loading="lazy" />
+          <img src={camaraPlenario} alt="Plenário da Câmara dos Deputados" className="w-full h-full object-cover" loading="lazy" decoding="async" />
         )}
       </div>
 

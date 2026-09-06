@@ -3,6 +3,7 @@ import { ListChecks, ChevronRight, Trophy, Award, BarChart2, Sparkles, UserCheck
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { haptic } from '@/lib/nativeHaptics';
 import { useQuestoesAreas } from '@/hooks/useQuestoes';
+import { SeloOabBadge } from '@/components/ui/SeloOabBadge';
 import q1 from '@/assets/questoes-hero/q-1.webp';
 import q2 from '@/assets/questoes-hero/q-2.webp';
 import q3 from '@/assets/questoes-hero/q-3.webp';
@@ -123,7 +124,10 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis, onBack }: Props)
           </div>
 
           <div className="min-w-0 max-w-[58%]">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-white/75">Hora de praticar</p>
+            <div className="flex items-center gap-1.5">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-white/75">Hora de praticar</p>
+              <SeloOabBadge size={15} />
+            </div>
             <h1 className="mt-0.5 font-display text-[22px] font-black leading-tight text-white sm:text-[28px]">
               Questões
               <span className="ml-2 font-display text-[15px] font-semibold italic text-white/75 sm:text-[20px]">

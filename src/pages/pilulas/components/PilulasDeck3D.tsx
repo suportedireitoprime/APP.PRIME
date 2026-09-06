@@ -284,7 +284,7 @@ export const PilulasDeck3D = memo(({ items, onItemClick, defaultBorderColor = '#
                     src={item.image}
                     alt={item.fullName}
                     priority={frente}
-                    aspectRatio="auto"
+                    aspectRatio="2/3"
                     targetWidth={400}
                     fallbackText={item.name}
                     containerClassName="w-full h-full"

@@ -3,6 +3,7 @@ import { Settings, CalendarClock, CheckCircle2, ChevronRight } from 'lucide-reac
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { validateAndCompressImage } from '@/lib/imageUploadOptimizer';
 import { useGoBack } from '@/hooks/useGoBack';
 import {
   Tema,
@@ -304,12 +305,17 @@ export default function AdminBlogEdicao() {
 
   const handleCapaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !e.target.files[0] || !editingPost) return;
-    const file = e.target.files[0];
-    const ext = file.name.split('.').pop();
-    const fileName = `${editingPost.id}-${Date.now()}.${ext}`;
-    toast.loading('Enviando imagem...', { id: 'upload-capa' });
+    const rawFile = e.target.files[0];
+    toast.loading('Otimizando e enviando imagem...', { id: 'upload-capa' });
     try {
-      const { error: uploadError } = await supabase.storage.from('blog-capas').upload(fileName, file);
+      const { file: optimizedFile } = await validateAndCompressImage(rawFile, {
+        maxWidth: 1440,
+        maxHeight: 960,
+        quality: 0.82,
+      });
+      const ext = optimizedFile.name.split('.').pop() || 'webp';
+      const fileName = `${editingPost.id}-${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage.from('blog-capas').upload(fileName, optimizedFile);
       if (uploadError) throw uploadError;
       const {
         data: { publicUrl },

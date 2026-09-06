@@ -58,6 +58,7 @@ export function LeiSecaParteHero({
   onSelectParte,
   onPrefetchParte,
 }: LeiSecaParteHeroProps) {
+  const gradPainelLSId = React.useId();
   const r = 30;
   const circ = 2 * Math.PI * r;
   const offset = circ - (stats.pct / 100) * circ;
@@ -150,6 +151,8 @@ export function LeiSecaParteHero({
               width="84"
               height="84"
               viewBox="0 0 84 84"
+              role="presentation"
+              aria-hidden="true"
               className="-rotate-90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.35)]"
             >
               <circle cx="42" cy="42" r={r} fill="none" stroke="rgba(0,0,0,0.30)" strokeWidth="7" />
@@ -158,7 +161,7 @@ export function LeiSecaParteHero({
                 cy="42"
                 r={r}
                 fill="none"
-                stroke="url(#gradPainelLS)"
+                stroke={`url(#${gradPainelLSId})`}
                 strokeWidth="7"
                 strokeLinecap="round"
                 strokeDasharray={circ}
@@ -166,7 +169,7 @@ export function LeiSecaParteHero({
                 style={{ transition: "stroke-dashoffset 1.1s cubic-bezier(.2,.7,.2,1)" }}
               />
               <defs>
-                <linearGradient id="gradPainelLS" x1="0" y1="0" x2="1" y2="1">
+                <linearGradient id={gradPainelLSId} x1="0" y1="0" x2="1" y2="1">
                   <stop offset="0%" stopColor="rgba(255,255,255,0.95)" />
                   <stop offset="100%" stopColor="rgba(255,255,255,0.7)" />
                 </linearGradient>

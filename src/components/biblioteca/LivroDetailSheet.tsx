@@ -18,7 +18,7 @@ import { isFavorito, toggleFavorito, pushRecente, subscribeTracking } from '@/li
 import { copiarTexto } from '@/lib/nativo/copiar';
 import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar';
 import { haptic } from '@/lib/nativeHaptics';
-import { setDynamicOgImage } from '@/lib/seoImageMeta';
+import { setDynamicOgImage, setDynamicJsonLdBook, removeDynamicJsonLdBook } from '@/lib/seoImageMeta';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import PremiumGate from '@/components/PremiumGate';
@@ -120,8 +120,18 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
     setFav(isFavorito(livro));
     pushRecente(livro);
     setDynamicOgImage(capaUrl || livro.capa, livro.titulo);
+    setDynamicJsonLdBook({
+      title: livro.titulo,
+      author: livro.autor,
+      coverUrl: capaUrl || livro.capa,
+      description: livro.sobre,
+      isbn: (livro as any).isbn || null,
+    });
     const unsub = subscribeTracking(() => setFav(isFavorito(livro)));
-    return () => unsub();
+    return () => {
+      unsub();
+      removeDynamicJsonLdBook();
+    };
   }, [livro, open, capaUrl]);
 
   // Trava scroll do fundo enquanto a folha estiver aberta, exceto se for renderizado inline
