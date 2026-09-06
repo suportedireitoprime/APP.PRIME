@@ -1,4 +1,5 @@
 import { useLocation } from "react-router-dom";
+import { useReducedMotion } from "framer-motion";
 import Index from "@/pages/Index";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -6,11 +7,12 @@ import { useAuth } from "@/hooks/useAuth";
  * Mantém a Home montada em memória o tempo todo.
  * Não utiliza `display: none` para preservar os backing stores da GPU (composite layers)
  * e evitar o 'piscar preto' ao retornar ao início do aplicativo.
- * A transição é suave (opacity + subtle scale) a 120fps.
+ * A transição é equalizada com o PageTransition a 80ms e 120fps puros.
  */
 const PersistentHome = () => {
   const location = useLocation();
   const { user, loading } = useAuth();
+  const shouldReduceMotion = useReducedMotion();
 
   // Só monta depois que a auth resolveu e temos usuário — evita rodar
   // efeitos da Home no fluxo público (auth/landing/etc).
@@ -39,6 +41,12 @@ const PersistentHome = () => {
 
   const visible = location.pathname === "/";
 
+  const transitionStyle = shouldReduceMotion
+    ? "none"
+    : visible
+      ? "opacity 0.08s cubic-bezier(0.16, 1, 0.3, 1)"
+      : "opacity 0.08s cubic-bezier(0.32, 0, 0.67, 0)";
+
   return (
     <div
       className="persistent-home-root"
@@ -51,9 +59,9 @@ const PersistentHome = () => {
         top: 0,
         left: 0,
         zIndex: visible ? 1 : 0,
-        transform: visible ? "none" : "scale(0.994) translateY(6px)",
-        transition: "opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1), transform 0.24s cubic-bezier(0.16, 1, 0.3, 1)",
-        willChange: visible ? "auto" : "opacity, transform",
+        transform: "none",
+        transition: transitionStyle,
+        willChange: visible ? "auto" : "opacity",
       }}
       aria-hidden={!visible}
     >
@@ -63,3 +71,4 @@ const PersistentHome = () => {
 };
 
 export default PersistentHome;
+
