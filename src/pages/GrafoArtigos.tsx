@@ -233,10 +233,11 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
           data: { description: e.description }
         }));
 
-        const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(rfNodes, rfEdges, 'TB');
-        
-        setNodes(layoutedNodes);
-        setEdges(layoutedEdges);
+        requestAnimationFrame(() => {
+          const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(rfNodes, rfEdges, 'TB');
+          setNodes(layoutedNodes);
+          setEdges(layoutedEdges);
+        });
       } catch (err: any) {
         console.error("Erro ao montar grafo pré-carregado:", err);
         toast.error("Não foi possível montar as conexões deste artigo.");
@@ -323,10 +324,11 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
           data: { description: e.description }
         }));
 
-        const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(rfNodes, rfEdges, 'TB');
-        
-        setNodes(layoutedNodes);
-        setEdges(layoutedEdges);
+        requestAnimationFrame(() => {
+          const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(rfNodes, rfEdges, 'TB');
+          setNodes(layoutedNodes);
+          setEdges(layoutedEdges);
+        });
       } catch (err: any) {
         console.error("Erro ao gerar grafo IA:", err);
         toast.error("Não foi possível gerar as conexões deste artigo com Inteligência Artificial.");

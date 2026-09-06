@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import DesktopTopHeader from '@/components/vademecum/desktop/DesktopTopHeader';
@@ -18,7 +19,7 @@ const EXCLUDED_EXACT = new Set<string>([
 
 const EXCLUDED_PREFIXES = ['/desktop-link/', '/aprender/aula/', '/questoes/praticar', '/questoes/revisar', '/questoes/simulado'];
 
-const GlobalDesktopHeader = () => {
+const GlobalDesktopHeader = memo(function GlobalDesktopHeader() {
   const isDesktop = useIsDesktop();
   const location = useLocation();
 
@@ -31,6 +32,6 @@ const GlobalDesktopHeader = () => {
       <DesktopTopHeader />
     </div>
   );
-};
+});
 
 export default GlobalDesktopHeader;

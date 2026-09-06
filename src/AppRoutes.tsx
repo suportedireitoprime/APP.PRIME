@@ -789,7 +789,7 @@ function DeepLinkBootstrap() {
 
 function AnimatedRoutes() {
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { data: profile } = useProfileSummary();
   const qc = useQueryClient();
 
@@ -859,6 +859,13 @@ function AnimatedRoutes() {
 
 
   const HomeGate = () => {
+    if (authLoading) {
+      return (
+        <div className="min-h-screen bg-[#0D0D0D] flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
+        </div>
+      );
+    }
     if (!user) return <Landing />;
     // O PersistentHome já renderiza a Home para usuários logados.
     // Retornamos null aqui para evitar duplicação do Index no DOM.

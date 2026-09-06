@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bell, Scale, Gavel, BookOpen, Landmark, Feather, ScrollText, Bird } from 'lucide-react';
 import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
@@ -25,7 +25,7 @@ interface Props {
   onAssistenteClick?: () => void;
 }
 
-const DesktopTopHeader = ({ onAssistenteClick }: Props) => {
+const DesktopTopHeader = memo(({ onAssistenteClick }: Props) => {
   const navigate = useNavigate();
   const [notifOpen, setNotifOpen] = useState(false);
   const unreadCount = useUnreadNotifCount();
