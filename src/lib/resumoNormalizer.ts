@@ -4,6 +4,38 @@
  * herdados de extrações brutas de PDFs e sites, padronizando a estrutura para Markdown limpo.
  */
 
+const SIGLAS_CONHECIDAS = new Set([
+  'STF', 'STJ', 'TST', 'TSE', 'TRF', 'TJ', 'TJRJ', 'TJSP', 'TJMG', 'TJRS',
+  'OAB', 'CF', 'CLT', 'CP', 'CC', 'CPC', 'CPP', 'CTN', 'CDC', 'MP', 'CNJ',
+  'ECA', 'SUS', 'ADI', 'ADC', 'ADPF', 'RE', 'HC', 'MS', 'AI', 'RESP', 'RO'
+]);
+
+const PALAVRAS_MINUSCULAS = new Set([
+  'de', 'da', 'do', 'das', 'dos', 'em', 'com', 'a', 'o', 'as', 'os',
+  'para', 'por', 'e', 'ou', 'sob', 'sobre', 'na', 'no', 'nas', 'nos',
+  'ao', 'aos', 'à', 'às', 'um', 'uma', 'uns', 'umas', 'que', 'se'
+]);
+
+/**
+ * Converte títulos em CAIXA ALTA para Title Case elegante e editorial.
+ */
+export function toTitleCasePt(titulo: string): string {
+  const palavras = titulo.trim().split(/\s+/);
+  return palavras
+    .map((palavra, index) => {
+      const limpaPura = palavra.replace(/[^a-zA-ZÀ-Ú0-9]/g, '');
+      if (SIGLAS_CONHECIDAS.has(limpaPura.toUpperCase())) {
+        return palavra;
+      }
+      const limpa = palavra.toLowerCase();
+      if (index > 0 && PALAVRAS_MINUSCULAS.has(limpa.replace(/[^a-zà-ú]/g, ''))) {
+        return limpa;
+      }
+      return limpa.charAt(0).toUpperCase() + limpa.slice(1);
+    })
+    .join(' ');
+}
+
 const ABREVIACOES_JURIDICAS = [
   'art',
   'arts',
@@ -60,6 +92,7 @@ const SECOES_DOUTRINA = [
   'Requisitos',
   'Elementos',
   'Espécies',
+  'Aspectos Relevantes',
   'Características Principais',
   'Características',
   'Efeitos Jurídicos',
@@ -96,6 +129,14 @@ const SECOES_DOUTRINA = [
   'Conclusão',
 ];
 
+const REGEX_TRANSICAO = /^(?:Incluem-se|Destacam-se|São exemplos|Exemplos?:|Por exemplo|Assim,|Dessa forma,|Desse modo,|Portanto,|Nesse contexto,|Nesse sentido,|Contudo,|Todavia,|Entretanto,|No entanto,|Por outro lado,|A atuação|O controle|Vale ressaltar|Importa notar|Ressalte-se|Cumpre destacar|Nessa linha|Ademais|Outrossim)/i;
+
+// Regex seguro para quebrar sentenças em português sem quebrar palavras acentuadas (ex: administração.) nem abreviações
+const REGEX_SEPARADOR_SENTENCAS = new RegExp(
+  `(?<=[.!?])(?<!\\b(?:${ABREVIACOES_JURIDICAS})\\.)(?<!(?:\\s|^)[a-zA-Z]\\.)\\s+(?=[A-ZÀ-Ú0-9"“])`,
+  'i'
+);
+
 export function normalizarResumo(rawText: string | null | undefined): string {
   if (!rawText || typeof rawText !== 'string') return '';
 
@@ -104,27 +145,12 @@ export function normalizarResumo(rawText: string | null | undefined): string {
   // 1. Desfaz escape literal de quebras de linha
   text = text.replace(/\\n/g, '\n');
 
-  // 2. Remove marcas d'água de extração e números de página soltos (ex: www.trilhante.com.br 5)
+  // 2. Remove marcas d'água de extração e números de página soltos
   text = text.replace(/www\.[a-z0-9.-]+\.[a-z]{2,}(?:\.br)?\s*\d*/gi, '');
   text = text.replace(/trilhante\.com(?:\.br)?\s*\d*/gi, '');
 
   // 3. Normaliza quebras Windows
   text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-
-  // Verifica se o texto já possui parágrafos ou títulos estruturados
-  const contagemParagrafos = (text.match(/\n\s*\n/g) || []).length;
-  const temTitulosMarkdown = /^#{1,4}\s+/m.test(text);
-  const estaEstruturado = contagemParagrafos >= 3 || (temTitulosMarkdown && contagemParagrafos >= 1);
-
-  if (estaEstruturado) {
-    // Apenas limpa espaços excessivos e garante espaçamento dos títulos existentes
-    text = text.replace(/[ \t]{2,}/g, ' ');
-    text = text.replace(/([^\n])\n*(#{1,4}\s+[^\n]+)/g, '$1\n\n$2');
-    text = text.replace(/(#{1,4}\s+[^\n]+)\n*([^\n#])/g, '$1\n\n$2');
-    return text.trim();
-  }
-
-  // === ESTRUTURAÇÃO DE TEXTO CONTÍNUO (SEM QUEBRAS) ===
 
   // 4. Identifica seções doutrinárias comuns e insere cabeçalho ##
   for (const secao of SECOES_DOUTRINA) {
@@ -139,58 +165,72 @@ export function normalizarResumo(rawText: string | null | undefined): string {
     return (p1 ? p1 + '\n\n' : '') + '### ' + p2.trim() + '\n\n';
   });
 
-  // 6. Itens numerados em sequência (ex: "...requisitos. 1. Primeiro item... 2. Segundo item...")
+  // 6. Itens numerados em sequência
   text = text.replace(/([.;!?])\s+(\b\d{1,2}[.)]\s+[A-ZÀ-Ú])/g, '$1\n\n$2');
 
-  // 7. Marcadores de lista: '- Item...' ou '• Item...'
+  // 7. Marcadores de lista
   text = text.replace(/([.;!?])\s+([–—-]|•)\s*([A-ZÀ-Ú])/g, '$1\n\n* $3');
 
-  // 8. Títulos totalmente em caixa alta (ex: "CONCEITO E FUNDAMENTOS DOS PRINCÍPIOS")
+  // 8. Títulos totalmente em caixa alta
   text = text.replace(/(?:^|([.:;!?]))\s*([A-ZÀ-Ú0-9\s]{8,60})(?=[.:;!?]|\s+[a-zà-ú])/g, (match, p1, p2) => {
     const trimmed = p2.trim();
-    // Verifica se parece um título real (mais de 2 palavras em caps e tamanho razoável)
     const palavras = trimmed.split(/\s+/);
     if (palavras.length >= 2 && palavras.length <= 10 && trimmed.length >= 12) {
-      return (p1 ? p1 + '\n\n' : '') + '## ' + trimmed + '\n\n';
+      return (p1 ? p1 + '\n\n' : '') + '## ' + toTitleCasePt(trimmed) + '\n\n';
     }
     return match;
   });
 
-  // 9. Quebra o texto restante em blocos de parágrafos confortáveis
-  // Divide em sentenças sem quebrar abreviações jurídicas
-  const regexSeparadorSentencas = new RegExp(
-    `(?<=[.!?])(?<!\\b(?:${ABREVIACOES_JURIDICAS})\\.)(?<!\\b[A-Za-z]\\.)\\s+(?=[A-ZÀ-Ú0-9])`
-  );
+  // 9. Garante que títulos existentes fiquem isolados com quebras duplas
+  text = text.replace(/([^\n])\n*(#{1,4}\s+[^\n]+)/g, '$1\n\n$2');
+  text = text.replace(/(#{1,4}\s+[^\n]+)\n*([^\n#])/g, '$1\n\n$2');
 
-  // Divide pelas partes que já possuem quebra de linha (títulos, listas) para preservar
-  const blocosAtuais = text.split(/\n\n+/);
+  // 10. Processa cada bloco preservando markdown e quebrando parágrafos longos
+  const blocosAtuais = text.split(/\n\s*\n+/);
   const blocosFinais: string[] = [];
 
   for (const bloco of blocosAtuais) {
     const blocoLimpo = bloco.trim();
     if (!blocoLimpo) continue;
 
-    // Se o bloco é um título Markdown, citação ou item de lista, mantém direto
+    // Se for título Markdown
+    if (blocoLimpo.startsWith('#')) {
+      const match = blocoLimpo.match(/^(#{1,4}\s+)(.+)$/);
+      if (match) {
+        const hashes = match[1];
+        const conteudoTitulo = match[2].trim();
+        // Se estiver em caixa alta (sem minúsculas e com letras)
+        if (!/[a-zà-ú]/.test(conteudoTitulo) && /[A-ZÀ-Ú]/.test(conteudoTitulo)) {
+          blocosFinais.push(hashes + toTitleCasePt(conteudoTitulo));
+          continue;
+        }
+      }
+      blocosFinais.push(blocoLimpo);
+      continue;
+    }
+
+    // Se for citação de artigo constitucional ou legal
+    if (/^["“']?(?:Art\.\s*\d+|CF\/88|Constituição Federal|Código Penal|Código Civil|Súmula)/i.test(blocoLimpo)) {
+      const citacao = blocoLimpo.startsWith('>') ? blocoLimpo : `> ${blocoLimpo}`;
+      blocosFinais.push(citacao);
+      continue;
+    }
+
+    // Se for citação existente, tabela ou item de lista
     if (
-      blocoLimpo.startsWith('#') ||
       blocoLimpo.startsWith('>') ||
       blocoLimpo.startsWith('* ') ||
       blocoLimpo.startsWith('- ') ||
-      /^\d{1,2}[.)]\s/.test(blocoLimpo)
+      /^\d{1,2}[.)]\s/.test(blocoLimpo) ||
+      blocoLimpo.startsWith('|')
     ) {
       blocosFinais.push(blocoLimpo);
       continue;
     }
 
-    // Se o bloco já é curto, não precisa quebrar
-    if (blocoLimpo.length <= 320) {
-      blocosFinais.push(blocoLimpo);
-      continue;
-    }
-
-    // Bloco longo: quebra em sentenças inteligentes
-    const sentencas = blocoLimpo.split(regexSeparadorSentencas);
-    if (sentencas.length <= 2) {
+    // Para parágrafos comuns: segmenta sentenças e evita blocos longos
+    const sentencas = blocoLimpo.split(REGEX_SEPARADOR_SENTENCAS);
+    if (sentencas.length <= 1) {
       blocosFinais.push(blocoLimpo);
       continue;
     }
@@ -199,11 +239,16 @@ export function normalizarResumo(rawText: string | null | undefined): string {
     for (const sentenca of sentencas) {
       const s = sentenca.trim();
       if (!s) continue;
-      sentencasAcumuladas.push(s);
 
-      // Agrupa 2 a 3 sentenças ou ~260-350 caracteres por parágrafo
+      const eTransicao = REGEX_TRANSICAO.test(s);
+      if (eTransicao && sentencasAcumuladas.length > 0) {
+        blocosFinais.push(sentencasAcumuladas.join(' '));
+        sentencasAcumuladas = [];
+      }
+
+      sentencasAcumuladas.push(s);
       const comprimentoAtual = sentencasAcumuladas.join(' ').length;
-      if (sentencasAcumuladas.length >= 3 || (sentencasAcumuladas.length >= 2 && comprimentoAtual >= 260)) {
+      if (sentencasAcumuladas.length >= 2 || comprimentoAtual >= 180) {
         blocosFinais.push(sentencasAcumuladas.join(' '));
         sentencasAcumuladas = [];
       }

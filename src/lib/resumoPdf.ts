@@ -150,7 +150,7 @@ function limpar(t: string) {
 
 /* ------------------------------------------------------------------- pdf */
 
-export async function gerarResumoPdf(resumo: ResumoLike) {
+export async function gerarResumoPdfDocument(resumo: ResumoLike) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const L = 210;
   const A = 297;
@@ -200,12 +200,12 @@ export async function gerarResumoPdf(resumo: ResumoLike) {
 
   moldura(1);
 
-  const tituloLinhas = doc.setFont("times", "bold").setFontSize(30).splitTextToSize(titulo, UTIL - 34);
-  const capaH = Math.max(96, 46 + tituloLinhas.length * 12 + 30);
+  const tituloLinhas = doc.setFont("times", "bold").setFontSize(28).splitTextToSize(titulo, UTIL - 34);
+  const capaH = Math.max(94, 44 + tituloLinhas.length * 11 + 28);
 
-  fill(COR.wineDeep);
+  fill([22, 22, 26]); // Grafite escuro elegante no lugar do vermelho sólido
   doc.rect(0, 0, L, capaH, "F");
-  fill(COR.gold);
+  fill(COR.wine);
   doc.rect(0, capaH - 2, L, 2, "F");
   if (cerebro) doc.addImage(cerebro, "PNG", L - 62, capaH / 2 - 26, 52, 52);
 
@@ -346,8 +346,20 @@ export async function gerarResumoPdf(resumo: ResumoLike) {
     .toLowerCase()
     .slice(0, 60);
 
-  await baixarBlob(doc.output("blob"), `${nome || "resumo"}.pdf`, {
-    titulo: resumo.subtema || resumo.tema || "Resumo",
+  return { doc, nome: `${nome || "resumo"}.pdf`, titulo };
+}
+
+export async function gerarResumoPdfBase64(resumo: ResumoLike): Promise<{ base64: string; nome: string; titulo: string }> {
+  const { doc, nome, titulo } = await gerarResumoPdfDocument(resumo);
+  const dataUri = doc.output("datauristring");
+  const base64 = dataUri.split(",")[1];
+  return { base64, nome, titulo };
+}
+
+export async function gerarResumoPdf(resumo: ResumoLike) {
+  const { doc, nome, titulo } = await gerarResumoPdfDocument(resumo);
+  await baixarBlob(doc.output("blob"), nome, {
+    titulo,
   });
 }
 

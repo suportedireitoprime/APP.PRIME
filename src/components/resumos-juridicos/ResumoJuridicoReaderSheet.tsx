@@ -18,7 +18,9 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useIsDesktop } from "@/hooks/use-desktop";
 import { resumosLocal } from "@/lib/resumosLocal";
-import { gerarResumoPdf, resumoParaTexto } from "@/lib/resumoPdf";
+import { gerarResumoPdf, gerarResumoPdfBase64, resumoParaTexto } from "@/lib/resumoPdf";
+import { obterOuSalvarResumoNoDrive } from "@/services/driveMirror";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useGatedFeature } from "@/hooks/useGatedFeature";
 import CornellView from "./CornellView";
@@ -88,7 +90,8 @@ export default function ResumoJuridicoReaderSheet({
   const isDesktop = useIsDesktop();
   const gateResumo = useGatedFeature('resumo_ver', 'resumo', { scope: resumo?.id ? String(resumo.id) : null });
   const gateDownload = useGatedFeature('resumo_download', 'resumo_download');
-  const [fontSize, setFontSize] = useState(16);
+  const [fontSize, setFontSize] = useState(17);
+  const [salvandoDrive, setSalvandoDrive] = useState(false);
   const [tab, setTab] = useState<Tab>("resumo");
   const [metodo, setMetodo] = useState<Metodo>("conceitos");
   const [cornell, setCornell] = useState<CornellContent | null>(null);
@@ -251,24 +254,58 @@ export default function ResumoJuridicoReaderSheet({
   };
 
   const baixarPdf = async () => {
-    if (!resumo) return;
-    if (metodo !== "conceitos" && markdownAtivo) {
-      await gerarResumoPdf({
-        area: resumo.area,
-        tema: resumo.tema,
-        subtema: `${resumo.subtema || resumo.tema} — Método ${
-          metodo === "cornell" ? "Cornell" : "Feynman"
-        }`,
-        markdown: markdownAtivo,
+    if (!resumo || salvandoDrive) return;
+    setSalvandoDrive(true);
+    toast.loading("Preparando PDF no Google Drive...", { id: "salvar-drive-pdf" });
+    try {
+      const dadosPdf =
+        metodo !== "conceitos" && markdownAtivo
+          ? {
+              area: resumo.area,
+              tema: resumo.tema,
+              subtema: `${resumo.subtema || resumo.tema} — Método ${
+                metodo === "cornell" ? "Cornell" : "Feynman"
+              }`,
+              markdown: markdownAtivo,
+            }
+          : {
+              ...resumo,
+              markdown: normalizarResumo(resumo.markdown),
+              exemplos: normalizarResumo(resumo.exemplos),
+              termos: normalizarResumo(resumo.termos),
+            };
+
+      const tituloDoc = `${resumo.tema} - ${resumo.subtema || resumo.tema}${
+        metodo !== "conceitos" ? ` (${metodo})` : ""
+      }`;
+
+      const resultado = await obterOuSalvarResumoNoDrive({
+        titulo: tituloDoc,
+        gerarBase64: async () => {
+          const { base64 } = await gerarResumoPdfBase64(dadosPdf);
+          return base64;
+        },
       });
-      return;
+
+      if (resultado?.link) {
+        toast.success(
+          resultado.reutilizado
+            ? "Abrindo PDF no Google Drive..."
+            : "PDF salvo no Google Drive! Abrindo...",
+          { id: "salvar-drive-pdf" }
+        );
+        await abrirLink(resultado.link);
+      } else {
+        toast.error("Não foi possível salvar no Google Drive agora. Tente novamente.", {
+          id: "salvar-drive-pdf",
+        });
+      }
+    } catch (err) {
+      console.error("Erro ao salvar PDF no Drive:", err);
+      toast.error("Falha ao salvar PDF no Google Drive.", { id: "salvar-drive-pdf" });
+    } finally {
+      setSalvandoDrive(false);
     }
-    await gerarResumoPdf({
-      ...resumo,
-      markdown: normalizarResumo(resumo.markdown),
-      exemplos: normalizarResumo(resumo.exemplos),
-      termos: normalizarResumo(resumo.termos),
-    });
   };
 
   const share = async () => {
@@ -426,19 +463,30 @@ export default function ResumoJuridicoReaderSheet({
                         style={{ fontSize: `${fontSize}px` }}
                         className="
                           prose prose-sm md:prose-base max-w-none dark:prose-invert font-body
-                          prose-headings:font-display prose-headings:text-foreground prose-headings:mt-6 prose-headings:mb-3
-                          prose-h2:text-xl prose-h3:text-lg
-                          prose-p:text-foreground/90 prose-p:leading-[1.75] prose-p:my-4
+                          prose-headings:font-body prose-headings:text-foreground
+                          prose-p:text-foreground/90 prose-p:leading-[1.75] prose-p:my-3
                           prose-a:text-[#ef4444] prose-a:no-underline hover:prose-a:underline
                           prose-strong:text-foreground
                           prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/5 prose-blockquote:py-1 prose-blockquote:px-3 prose-blockquote:rounded-r
-                          prose-ul:my-4 prose-li:my-1
+                          prose-ul:my-3 prose-li:my-1
                         "
                       >
                         {content ? (
                           <ReactMarkdown
                             remarkPlugins={[remarkGfm]}
                             components={{
+                              h1: ({ node, ...props }) => (
+                                <h1 className="text-[17px] sm:text-[18px] font-bold text-foreground font-body tracking-tight mt-6 mb-2.5" {...props} />
+                              ),
+                              h2: ({ node, ...props }) => (
+                                <h2 className="text-[15.5px] sm:text-[16.5px] font-bold text-foreground/95 font-body tracking-tight mt-5 mb-2" {...props} />
+                              ),
+                              h3: ({ node, ...props }) => (
+                                <h3 className="text-[14px] sm:text-[15px] font-semibold text-foreground/90 font-body tracking-tight mt-4 mb-1.5" {...props} />
+                              ),
+                              p: ({ node, ...props }) => (
+                                <p className="my-3 text-foreground/90 leading-[1.75]" {...props} />
+                              ),
                               table: ({ node, ...props }) => (
                                 <div className="my-6 w-full overflow-x-auto rounded-2xl border border-primary/20 bg-card/70 shadow-lg backdrop-blur-md">
                                   <table className="w-full text-left text-xs md:text-sm border-collapse" {...props} />
@@ -585,10 +633,15 @@ export default function ResumoJuridicoReaderSheet({
                     }
                     void baixarPdf();
                   }}
-                  aria-label="Baixar em PDF"
-                  className="w-11 h-11 flex items-center justify-center rounded-full bg-card/95 backdrop-blur-md border border-border shadow-xl text-foreground hover:bg-secondary active:scale-95 transition-all"
+                  disabled={salvandoDrive}
+                  aria-label="Salvar PDF no Google Drive"
+                  className="w-11 h-11 flex items-center justify-center rounded-full bg-card/95 backdrop-blur-md border border-border shadow-xl text-foreground hover:bg-secondary active:scale-95 transition-all disabled:opacity-60"
                 >
-                  <FileDown className="w-5 h-5" />
+                  {salvandoDrive ? (
+                    <Loader2 className="w-5 h-5 animate-spin text-[#ef4444]" />
+                  ) : (
+                    <FileDown className="w-5 h-5" />
+                  )}
                 </button>
                 <button
                   onClick={share}

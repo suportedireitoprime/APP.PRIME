@@ -41,6 +41,32 @@ Deno.serve(async (req) => {
 
     if (!CATEGORIAS[categoria]) return json({ error: "categoria inválida" }, 400);
     if (!titulo || titulo.length > 200) return json({ error: "titulo inválido" }, 400);
+
+    // 1. Verifica se este PDF já foi gerado e salvo no Google Drive anteriormente
+    const { data: existente } = await admin
+      .from("pdfs_gerados")
+      .select("drive_link, drive_file_id, nome_arquivo")
+      .eq("categoria", categoria)
+      .eq("titulo", titulo)
+      .not("drive_link", "is", null)
+      .order("id", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (existente?.drive_link) {
+      const fileId = existente.drive_file_id;
+      const link = existente.drive_link.includes("/file/d/")
+        ? existente.drive_link
+        : fileId
+        ? `https://drive.google.com/file/d/${fileId}/view?usp=sharing`
+        : existente.drive_link;
+      return json({ ok: true, file_id: fileId, link, nome: existente.nome_arquivo, reutilizado: true });
+    }
+
+    if (body?.checkOnly) {
+      return json({ ok: true, exists: false });
+    }
+
     if (!base64 || base64.length > 30_000_000) return json({ error: "arquivo inválido" }, 400);
 
     let userId: string | null = null;
@@ -58,19 +84,21 @@ Deno.serve(async (req) => {
     const nome = `${dia}_${categoria}_${slug(titulo)}.${ext}`;
 
     const fileId = await uploadFile({ name: nome, parentId: parent, mime, data: bin });
-    const link = await makePublic(fileId);
+    await makePublic(fileId);
+    const viewLink = `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;
+    const downloadLink = `https://drive.google.com/uc?export=download&id=${fileId}`;
 
     await admin.from("pdfs_gerados").insert({
       categoria,
       titulo,
       nome_arquivo: nome,
       drive_file_id: fileId,
-      drive_link: link,
+      drive_link: viewLink,
       tamanho_bytes: bin.length,
       user_id: userId,
     });
 
-    return json({ ok: true, file_id: fileId, link, nome });
+    return json({ ok: true, file_id: fileId, link: viewLink, download_link: downloadLink, nome });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error("drive-upload:", msg);
