@@ -161,9 +161,10 @@ function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: Props) {
 
   if (feed.length === 0) {
     return (
-      <div>
+      <div className="space-y-2.5">
+        <div className="h-6 w-32 rounded-md bg-white/[0.04] animate-pulse mx-4" />
         <div className="flex gap-3 overflow-hidden px-4">
-          <div className="shrink-0 w-full h-[140px] rounded-2xl bg-card animate-pulse" />
+          <div className="shrink-0 w-full h-[140px] rounded-2xl bg-card/60 animate-pulse aspect-[16/9] sm:aspect-[21/9]" />
         </div>
       </div>
     );

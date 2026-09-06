@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useLocation, useNavigationType } from 'react-router-dom';
 import { resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { cancelMouseDragScroll } from '@/lib/enableMouseDragScroll';
+import { haptic } from '@/lib/nativeHaptics';
 
 const scrollMemory = new Map<string, { windowY: number; containerY: number }>();
 
@@ -20,16 +21,18 @@ function setSessionSaved(key: string, pos: { windowY: number; containerY: number
 }
 
 /**
- * Observador global de Scroll Restoration (Itens 21 a 29):
+ * Observador global de Scroll Restoration (Itens 21 a 35):
  * - Item 21: Centraliza a restauração e o reset de rolagem no nível do roteador.
  * - Item 22: Desbloqueia travas residuais de overflow deixadas por modais/sheets (`resetBodyScrollLock`).
  * - Item 23: Preserva a posição exata de leitura ao navegar de volta (`POP`), evitando volta forçada ao topo.
  * - Item 24: Sincroniza tanto `window` quanto o container interno Desktop (`#desktop-scroll-container`).
- * - Item 25: Aguarda o término da animação de saída de 80ms antes de reposicionar a barra de rolagem,
- *            eliminando saltos visuais abruptos na página que está saindo.
- * - Item 27: Observador assíncrono (MutationObserver) para âncoras/hash (#art-5) que aguarda o artigo carregar.
+ * - Item 25: Aguarda o término da animação de saída de 80ms antes de reposicionar a barra de rolagem.
+ * - Item 27: Observador assíncrono (MutationObserver) para âncoras/hash (#art-5).
  * - Item 28: Cancela arraste de mouse residual na transição de rotas (`cancelMouseDragScroll`).
- * - Item 29: Força o blur de campos de texto focados para restaurar o viewport mobile após fechamento do teclado.
+ * - Item 29: Força o blur de campos de texto focados para restaurar o viewport mobile.
+ * - Item 31: Dispara micro-feedback háptico ao concluir a rolagem/transição (`haptic.light()`).
+ * - Item 34: Recalcula offsets e âncoras na mudança de orientação (portrait/landscape) em tablets.
+ * - Item 35: Estanca o momentum scrolling inercial no iOS durante os 80ms de transição de rota.
  */
 export function ScrollRestorationWatcher() {
   const location = useLocation();
@@ -77,6 +80,33 @@ export function ScrollRestorationWatcher() {
     };
   }, [currentKey]);
 
+  // Item 34: Recalcula posicionamento ao alternar orientação (Portrait / Landscape em Tablets/iPads)
+  useEffect(() => {
+    const handleOrientationChange = () => {
+      requestAnimationFrame(() => {
+        if (location.hash) {
+          const targetId = location.hash.replace('#', '');
+          const el = document.getElementById(targetId);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            return;
+          }
+        }
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        if (window.scrollY > maxScroll && maxScroll > 0) {
+          window.scrollTo({ top: maxScroll, behavior: 'instant' });
+        }
+      });
+    };
+
+    window.addEventListener('orientationchange', handleOrientationChange);
+    window.addEventListener('resize', handleOrientationChange, { passive: true });
+    return () => {
+      window.removeEventListener('orientationchange', handleOrientationChange);
+      window.removeEventListener('resize', handleOrientationChange);
+    };
+  }, [location.hash]);
+
   // 2. Transição entre rotas
   useEffect(() => {
     const prevKey = prevKeyRef.current;
@@ -111,6 +141,11 @@ export function ScrollRestorationWatcher() {
     // Item 22: Purga qualquer trava de scroll residual
     resetBodyScrollLock();
 
+    // Item 35: Estanca o momentum scrolling inercial no iOS durante a janela de transição de 80ms
+    const htmlEl = document.documentElement;
+    const prevOverflow = htmlEl.style.overflow;
+    htmlEl.style.overflow = 'hidden';
+
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
@@ -118,6 +153,9 @@ export function ScrollRestorationWatcher() {
     // Item 25: Aguarda os 80ms da animação de saída para reposicionar a barra de rolagem,
     // garantindo que a página saindo não dê salto visual brusco.
     timeoutRef.current = setTimeout(() => {
+      // Restaura overflow do documento após o término do exit de 80ms
+      htmlEl.style.overflow = prevOverflow;
+
       const desktopContainer = document.querySelector<HTMLElement>(
         '#desktop-scroll-container, [data-desktop-scroll="true"]'
       );
@@ -128,6 +166,7 @@ export function ScrollRestorationWatcher() {
         const targetEl = document.getElementById(targetId);
         if (targetEl) {
           targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          haptic.light(); // Item 31
           prevKeyRef.current = currentKey;
           return;
         }
@@ -137,6 +176,7 @@ export function ScrollRestorationWatcher() {
           const el = document.getElementById(targetId);
           if (el) {
             el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            haptic.light(); // Item 31
             obs.disconnect();
             if (observerRef.current === obs) observerRef.current = null;
           }
@@ -160,6 +200,7 @@ export function ScrollRestorationWatcher() {
           if (desktopContainer) {
             desktopContainer.scrollTop = saved.containerY;
           }
+          haptic.light(); // Item 31
           prevKeyRef.current = currentKey;
           return;
         }
@@ -170,11 +211,13 @@ export function ScrollRestorationWatcher() {
       if (desktopContainer) {
         desktopContainer.scrollTop = 0;
       }
+      haptic.light(); // Item 31
 
       prevKeyRef.current = currentKey;
     }, 85);
 
     return () => {
+      htmlEl.style.overflow = prevOverflow;
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }

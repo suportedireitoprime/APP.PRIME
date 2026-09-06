@@ -49,6 +49,8 @@ const CarouselMediaCard = ({ item, isActive, index, onOpen }: CarouselMediaCardP
           <img
             src={img}
             alt=""
+            width={640}
+            height={360}
             loading="eager"
             fetchPriority="high"
             decoding="async"
