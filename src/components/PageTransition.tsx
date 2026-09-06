@@ -14,24 +14,18 @@ interface PageTransitionProps {
 const pageVariants: Variants = {
   initial: {
     opacity: 0,
-    y: 8,
-    scale: 0.996,
   },
   animate: {
     opacity: 1,
-    y: 0,
-    scale: 1,
     transition: {
-      duration: 0.26,
+      duration: 0.2,
       ease: [0.16, 1, 0.3, 1],
     },
   },
   exit: {
     opacity: 0,
-    y: -6,
-    scale: 0.998,
     transition: {
-      duration: 0.16,
+      duration: 0.12,
       ease: [0.32, 0, 0.67, 0],
     },
   },
@@ -64,8 +58,6 @@ const PageTransition = ({ children, className }: PageTransitionProps) => {
       style={{
         width: "100%",
         minHeight: "100dvh",
-        willChange: "transform, opacity",
-        transform: "translateZ(0)",
       }}
     >
       {children}

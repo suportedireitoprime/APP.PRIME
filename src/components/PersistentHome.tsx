@@ -51,9 +51,9 @@ const PersistentHome = () => {
         top: 0,
         left: 0,
         zIndex: visible ? 1 : 0,
-        transform: visible ? "translateZ(0) scale(1)" : "translateZ(0) scale(0.994) translateY(6px)",
+        transform: visible ? "none" : "scale(0.994) translateY(6px)",
         transition: "opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1), transform 0.24s cubic-bezier(0.16, 1, 0.3, 1)",
-        willChange: "opacity, transform",
+        willChange: visible ? "auto" : "opacity, transform",
       }}
       aria-hidden={!visible}
     >
