@@ -74,21 +74,21 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
 
   // Avanço automático perfeitamente sincronizado com o término do ciclo da luzinha (quando a volta se completa)
   const handleTimerComplete = useCallback(() => {
-    if (paused || total <= 1) return;
+    if (total <= 1) return;
     if (document.querySelector('[role="dialog"],[data-state="open"][data-radix-dialog-content]')) return;
     setAtivo((i) => (i + 1) % total);
-  }, [paused, total]);
+  }, [total]);
 
   const handlePrev = useCallback(() => {
     setPaused(true);
     setAtivo((i) => (i - 1 + total) % total);
-    setTimeout(() => setPaused(false), 2500);
+    setTimeout(() => setPaused(false), 400);
   }, [total]);
 
   const handleNext = useCallback(() => {
     setPaused(true);
     setAtivo((i) => (i + 1) % total);
-    setTimeout(() => setPaused(false), 2500);
+    setTimeout(() => setPaused(false), 400);
   }, [total]);
 
   // Touch handlers nativos e infalíveis para celular / tablet
@@ -139,7 +139,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
     } else {
       setIsDragging(false);
     }
-    setTimeout(() => setPaused(false), 2500);
+    setTimeout(() => setPaused(false), 400);
   }, [total]);
 
   // Suporte a scroll com mouse / trackpad no Desktop
@@ -337,53 +337,60 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
                 {/* Linha fina com luzinha animada que vai percorrendo o contorno até completar a volta do próximo card */}
                 {frente && (
                   <svg
+                    key={`beam-svg-${ativo}`}
                     className="absolute inset-0 w-full h-full pointer-events-none z-30 overflow-visible"
                     style={{ width: cardDims.w, height: cardDims.h }}
                   >
+                    <style>{`
+                      @keyframes aprenderBorderProgress {
+                        0% { stroke-dashoffset: 1000; }
+                        100% { stroke-dashoffset: 0; }
+                      }
+                      @keyframes aprenderBorderGlow {
+                        0% { stroke-dashoffset: 0; }
+                        100% { stroke-dashoffset: -1000; }
+                      }
+                    `}</style>
+
                     {/* Linha base fina contornando a capa com a cor predominante */}
                     <path
                       d={pathD}
+                      pathLength="1000"
                       fill="none"
                       stroke={activeBorderColor}
                       strokeWidth="1.5"
-                      strokeOpacity="0.32"
+                      strokeOpacity="0.28"
                     />
 
-                    {/* Linha que vai aparecendo progressivamente ao longo do contorno */}
-                    <motion.path
-                      key={`border-track-${ativo}`}
+                    {/* Linha fina que vai aparecendo progressivamente ao longo do contorno (+2s de demora: 5.5s) */}
+                    <path
                       d={pathD}
+                      pathLength="1000"
                       fill="none"
                       stroke={activeBorderColor}
                       strokeWidth="1.8"
                       strokeLinecap="round"
-                      initial={{ pathLength: 0 }}
-                      animate={{ pathLength: paused ? 0 : 1 }}
-                      transition={{
-                        duration: 3.5,
-                        ease: 'linear',
-                      }}
-                      onAnimationComplete={handleTimerComplete}
                       style={{
+                        strokeDasharray: '1000 1000',
+                        animation: 'aprenderBorderProgress 5.5s linear forwards',
+                        animationPlayState: paused ? 'paused' : 'running',
                         filter: `drop-shadow(0 0 3px ${activeBorderColor})`,
                       }}
+                      onAnimationEnd={handleTimerComplete}
                     />
 
-                    {/* Luzinha brilhante que vai percorrendo na ponta da linha */}
-                    <motion.path
-                      key={`border-glow-head-${ativo}`}
+                    {/* Luzinha brilhante que vai percorrendo na ponta da linha em sentido único sem voltar */}
+                    <path
                       d={pathD}
+                      pathLength="1000"
                       fill="none"
                       stroke="#FFFFFF"
                       strokeWidth="2.5"
                       strokeLinecap="round"
-                      initial={{ pathLength: 0.08, pathOffset: 0 }}
-                      animate={{ pathOffset: paused ? 0 : 1 }}
-                      transition={{
-                        duration: 3.5,
-                        ease: 'linear',
-                      }}
                       style={{
+                        strokeDasharray: '70 930',
+                        animation: 'aprenderBorderGlow 5.5s linear forwards',
+                        animationPlayState: paused ? 'paused' : 'running',
                         filter: `drop-shadow(0 0 4px #FFFFFF) drop-shadow(0 0 8px ${activeBorderColor})`,
                       }}
                     />
