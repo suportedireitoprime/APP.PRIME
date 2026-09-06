@@ -2,19 +2,20 @@ import { useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AREA_CATS, FAST_PILLS_ITEMS, shuffle } from '@/components/vademecum/home/sections/homeSectionsData';
 import { AprenderItem } from './aprenderCarouselTypes';
+import { getAreaCover } from '@/lib/areasDireitoCovers';
 
 export function useAprenderItems() {
   const navigate = useNavigate();
 
   const items = useMemo<AprenderItem[]>(() => {
-    const images = FAST_PILLS_ITEMS.map((item) => item.image);
-    const cpImage = images[0];
-
     // Seleciona 8 áreas para compor a galeria circular fluida com metade da alocação de texturas WebGL
     const randomAreas = shuffle(AREA_CATS).slice(0, 8);
+    const cpImage = FAST_PILLS_ITEMS[0].image;
 
     return randomAreas.map((area, index) => {
-      const image = index < images.length ? images[index] : cpImage;
+      const coverObj = getAreaCover('Direito ' + area.label) || getAreaCover(area.label);
+      const image = coverObj?.cover || cpImage;
+      
       return {
         id: area.id,
         image,
