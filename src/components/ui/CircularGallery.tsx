@@ -327,7 +327,7 @@ class Media {
       uniforms: {
         tMap: { value: texture },
         uPlaneSizes: { value: [0, 0] },
-        uImageSizes: { value: [0, 0] },
+        uImageSizes: { value: [1, 1] }, // Inicializa com 1,1 para evitar divisão por zero (NaN -> preto)
         uSpeed: { value: 0 },
         uTime: { value: 100 * Math.random() },
         uBorderRadius: { value: this.borderRadius }
@@ -361,15 +361,14 @@ class Media {
           if (this.text) {
             ctx.save();
             ctx.fillStyle = this.textColor || '#ffffff';
-            ctx.font = `600 ${Math.round(canvas.height * 0.09)}px 'Barlow Condensed', 'Bebas Neue', sans-serif`;
+            ctx.font = `600 ${Math.round(canvas.height * 0.08)}px 'Barlow Condensed', 'Bebas Neue', sans-serif`; // Reduzido de 0.09 para 0.08 para caber naturalmente sem maxWidth
             ctx.textAlign = 'left';
-            ctx.textBaseline = 'alphabetic'; // Mudado para evitar que o Bebas Neue desça muito
+            ctx.textBaseline = 'alphabetic';
             ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
             ctx.shadowBlur = 12;
             ctx.shadowOffsetY = 4;
-            // Usar maxWidth (canvas.width * 0.84) para espremer o texto horizontalmente caso seja muito longo (ex: PROCESSUAL CONSTITUCIONAL)
-            const maxWidth = canvas.width * 0.84;
-            ctx.fillText(this.text.toUpperCase(), canvas.width * 0.08, textY, maxWidth);
+            const textY = canvas.height * 0.88 - (this.progress !== undefined ? canvas.height * 0.025 : 0);
+            ctx.fillText(this.text.toUpperCase(), canvas.width * 0.08, textY);
             ctx.restore();
           }
         }
@@ -451,6 +450,34 @@ class Media {
 
       texture.image = canvas;
       this.program.uniforms.uImageSizes.value = [img.naturalWidth, img.naturalHeight];
+    };
+
+    // Caso a imagem falhe ao carregar (ex: picsum fora do ar ou bloqueio de rede),
+    // desenha um fundo cinza chumbo de fallback para a tela não ficar invisível/preta
+    img.onerror = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 600;
+      canvas.height = 800;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.fillStyle = '#1A1A1A';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        if (this.positionType === 'inside-bottom') {
+          if (this.text) {
+            ctx.save();
+            ctx.fillStyle = this.textColor || '#ffffff';
+            ctx.font = `600 ${Math.round(canvas.height * 0.08)}px 'Barlow Condensed', 'Bebas Neue', sans-serif`;
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'alphabetic';
+            const textY = canvas.height * 0.88 - (this.progress !== undefined ? canvas.height * 0.025 : 0);
+            ctx.fillText(this.text.toUpperCase(), canvas.width * 0.08, textY, canvas.width * 0.84);
+            ctx.restore();
+          }
+        }
+      }
+      texture.image = canvas;
+      this.program.uniforms.uImageSizes.value = [canvas.width, canvas.height];
     };
   }
   createMesh() {
@@ -549,7 +576,7 @@ class Media {
     this.plane.scale.y = (this.viewport.height * (880 * this.scale)) / this.screen.height;
     this.plane.scale.x = (this.viewport.width * (660 * this.scale)) / this.screen.width;
     this.plane.program.uniforms.uPlaneSizes.value = [this.plane.scale.x, this.plane.scale.y];
-    this.padding = 0.15; // Removendo quase toda a margem para ficar coladinho
+    this.padding = 0.8; // Aumentado de 0.15 para 0.8 para dar um respiro entre as capas, mas ainda próximas
     this.width = this.plane.scale.x + this.padding;
     this.widthTotal = this.width * this.length;
     this.x = this.width * this.index;
