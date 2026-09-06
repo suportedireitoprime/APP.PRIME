@@ -5,6 +5,12 @@ import type { Exercicio } from "@/lib/leiSeca";
 import { ArtigoComentarioSlide } from "./ArtigoComentarioSlide";
 import { RespondidoContext } from "./respondidoContext";
 
+import {
+  ExercicioMultiplaEscolha,
+  ExercicioSimNao,
+  ExercicioSlideFeedback as Slide,
+} from "./chunks";
+
 interface Props {
   exercicio: Exercicio;
   artigoTexto?: string;
@@ -19,11 +25,11 @@ export function ExercicioRunner({ exercicio, artigoTexto = "", onRespondido, onR
       case "completar":
       case "alternativas":
       case "prazo_numero":
-        return <MultiplaEscolha ex={exercicio} {...common} />;
+        return <ExercicioMultiplaEscolha ex={exercicio as any} {...common} />;
       case "pena":
         return <Pena ex={exercicio} {...common} />;
       case "sim_nao":
-        return <SimNao ex={exercicio} {...common} />;
+        return <ExercicioSimNao ex={exercicio as any} {...common} />;
       case "organizar":
         return <Organizar ex={exercicio} {...common} />;
       case "ligar":
@@ -49,133 +55,12 @@ export function ExercicioRunner({ exercicio, artigoTexto = "", onRespondido, onR
   );
 }
 
-/** Garante que o enunciado da pergunta de alternativa começa com "Segundo o art. X," */
-function enunciadoComArtigo(enun: string, artigo: string | number): string {
-  const s = String(enun ?? "").trim();
-  if (!s) return `Segundo o art. ${artigo}, complete corretamente:`;
-  if (/\bart(?:igo|\.)\s*\d/i.test(s)) return s;
-  // se já começa com "Segundo" ou "De acordo", mantém
-  if (/^(segundo|de acordo|conforme)\b/i.test(s)) return s;
-  const head = `Segundo o art. ${artigo}, `;
-  return head + s.charAt(0).toLowerCase() + s.slice(1);
-}
-
 /* ---------------------- helpers ---------------------- */
 const ROSE_BTN =
   "bg-gradient-to-br from-rose-500 to-pink-600 hover:from-rose-400 hover:to-pink-500 text-white shadow-lg shadow-rose-600/25";
 const ENUN =
   "text-[1.05rem] sm:text-xl md:text-2xl font-normal normal-case tracking-normal leading-[1.65] text-white/95 mb-6 [text-wrap:pretty]";
 const ART_LABEL = "text-[11px] font-extrabold tracking-wider text-pink-300/90 uppercase mb-2";
-
-function Slide({
-  resp,
-  ex,
-  artigoTexto,
-  grifos,
-  onContinuar,
-}: {
-  resp: boolean | null;
-  ex: any;
-  artigoTexto: string;
-  grifos?: string[];
-  onContinuar: () => void;
-}) {
-  return (
-    <ArtigoComentarioSlide
-      open={resp !== null}
-      certo={!!resp}
-      artigo={ex.artigo}
-      artigoTexto={artigoTexto}
-      explicacao={ex.explicacao ?? ex.frase_correta ?? ex.texto_correto}
-      grifos={grifos}
-      onContinuar={onContinuar}
-    />
-  );
-}
-
-/* ------------------------- Múltipla escolha + completar ------------------------- */
-function MultiplaEscolha({ ex, artigoTexto, onResultado }: { ex: any; artigoTexto: string; onResultado: (b: boolean) => void }) {
-  const [sel, setSel] = useState<number | null>(null);
-  const [resp, setResp] = useState<boolean | null>(null);
-  const enun = enunciadoComArtigo(ex.enunciado as string, ex.artigo);
-  const grifos = [String(ex.alternativas?.[ex.correta] ?? "")];
-  return (
-    <div>
-      <div className={ART_LABEL}>Art. {ex.artigo}</div>
-      <h2 className={ENUN}>
-        {enun}
-      </h2>
-      <div className="space-y-2.5">
-        {ex.alternativas.map((alt: string, i: number) => {
-          const isCorrect = i === ex.correta;
-          const isSel = sel === i;
-          let cls = "border-white/10 bg-white/[0.04] hover:bg-white/[0.07] text-white/90";
-          if (resp !== null) {
-            if (isCorrect) cls = "border-emerald-400/70 bg-emerald-500/15 text-emerald-100";
-            else if (isSel) cls = "border-rose-400/70 bg-rose-500/15 text-rose-100";
-          } else if (isSel) cls = "border-pink-400 bg-pink-500/15 text-white";
-          return (
-            <button
-              key={i}
-              disabled={resp !== null}
-              onClick={() => setSel(i)}
-              className={cn(
-                "w-full text-left p-4 rounded-2xl border-2 transition-all font-medium flex items-center gap-3",
-                cls,
-              )}
-            >
-              <span className="inline-grid place-items-center h-7 w-7 rounded-full bg-pink-500/20 text-pink-200 text-xs font-bold shrink-0">
-                {String.fromCharCode(65 + i)}
-              </span>
-              <span className="flex-1">{alt}</span>
-            </button>
-          );
-        })}
-      </div>
-      {resp === null && (
-        <Button
-          disabled={sel === null}
-          onClick={() => setResp(sel === ex.correta)}
-          className={cn("w-full mt-6 h-12 font-bold text-base rounded-xl", ROSE_BTN)}
-        >
-          Verificar
-        </Button>
-      )}
-      <Slide resp={resp} ex={ex} artigoTexto={artigoTexto} grifos={grifos} onContinuar={() => onResultado(resp!)} />
-    </div>
-  );
-}
-
-/* ------------------------- Sim ou Não ------------------------- */
-function SimNao({ ex, artigoTexto, onResultado }: { ex: any; artigoTexto: string; onResultado: (b: boolean) => void }) {
-  const [resp, setResp] = useState<boolean | null>(null);
-  return (
-    <div>
-      <div className={ART_LABEL}>Art. {ex.artigo}</div>
-      <h2 className={ENUN}>Segundo o art. {ex.artigo}, a afirmação abaixo é verdadeira?</h2>
-      <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.04] border border-white/10 text-sm sm:text-base mb-6 leading-relaxed text-white/90 italic">
-        "{ex.afirmacao}"
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <Button
-          onClick={() => setResp(ex.correta === true)}
-          disabled={resp !== null}
-          className="h-14 bg-gradient-to-br from-emerald-500 to-emerald-700 hover:from-emerald-400 hover:to-emerald-600 text-base font-bold rounded-xl shadow-lg shadow-emerald-700/30"
-        >
-          Verdadeiro
-        </Button>
-        <Button
-          onClick={() => setResp(ex.correta === false)}
-          disabled={resp !== null}
-          className="h-14 bg-gradient-to-br from-rose-500 to-rose-700 hover:from-rose-400 hover:to-rose-600 text-base font-bold rounded-xl shadow-lg shadow-rose-700/30"
-        >
-          Falso
-        </Button>
-      </div>
-      <Slide resp={resp} ex={ex} artigoTexto={artigoTexto} grifos={[ex.afirmacao]} onContinuar={() => onResultado(resp!)} />
-    </div>
-  );
-}
 
 /* ------------------------- Organizar palavras ------------------------- */
 function Organizar({ ex, artigoTexto, onResultado }: { ex: any; artigoTexto: string; onResultado: (b: boolean) => void }) {

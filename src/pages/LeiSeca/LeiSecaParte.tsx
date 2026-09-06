@@ -12,7 +12,7 @@ import PremiumGate from "@/components/PremiumGate";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { getMateriaByTrilha } from "@/lib/leiSecaMaterias";
-
+import { LeiSecaParteHero, LeiSecaLicaoNode } from "@/components/lei-seca/chunks";
 
 // Paleta hex por trilha (fallback rosa). Casa com a estética da home.
 const TRILHA_HEX: Record<string, { from: string; solid: string; to: string }> = {
@@ -152,129 +152,20 @@ export default function LeiSecaParte() {
 
   return (
     <div className="min-h-screen bg-background animate-ls-enter">
-      {/* Painel — estilo "Desempenho" */}
-      <section
-        className="relative overflow-hidden rounded-b-3xl text-white shadow-2xl shadow-black/40 ring-1 ring-black/20"
-
-        style={{ background: `linear-gradient(160deg, ${tema.from} 0%, ${tema.solid} 55%, ${tema.to} 100%)` }}
-      >
-        <div className="absolute -top-16 -right-10 h-44 w-44 rounded-full bg-white/10 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-16 -left-8 h-36 w-36 rounded-full bg-black/30 blur-3xl pointer-events-none" />
-        {MateriaIcone && (
-          <div aria-hidden className="pointer-events-none absolute -right-6 -bottom-8 z-0 opacity-[0.13]">
-            <MateriaIcone className="h-52 w-52 text-white" strokeWidth={0.9} />
-          </div>
-        )}
-        {MateriaIcone && (
-          <div aria-hidden className="pointer-events-none absolute right-24 top-2 z-0 opacity-[0.07] rotate-12">
-            <MateriaIcone className="h-24 w-24 text-white" strokeWidth={0.8} />
-          </div>
-        )}
-        <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-[55%] overflow-hidden z-0">
-          <div className="absolute inset-y-0 -left-1/3 w-1/2 bg-gradient-to-r from-transparent via-white/10 to-transparent rotate-[18deg] animate-pulse" />
-        </div>
-
-        <div className="relative z-10 px-5 pt-[calc(1.25rem+var(--sai-top))] pb-5">
-          <button
-            onClick={() => navigate("/lei-seca", { replace: true })}
-            aria-label="Voltar"
-            className="w-11 h-11 rounded-full touch-manipulation bg-white/15 ring-1 ring-white/25 backdrop-blur-sm flex items-center justify-center text-white mb-3 active:scale-95 transition"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <p className="text-white/70 text-[10px] uppercase tracking-[0.22em] font-semibold mb-1">
-            {trilhaQ.data?.sigla ?? "Lei Seca"} · Seu painel
-          </p>
-
-          <div className="flex items-center gap-2">
-            <h1 className="font-body font-bold text-[22px] sm:text-2xl tracking-[0.01em] leading-[1.2] drop-shadow">
-              {parteNome ?? trilhaQ.data?.nome ?? "Carregando..."}
-            </h1>
-            {stats.pct === 100 && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/20 text-emerald-100 text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 border border-emerald-300/30 shadow-[0_0_12px_rgba(16,185,129,0.3)]">
-                <Check className="h-3 w-3" strokeWidth={4} /> Concluído
-              </span>
-            )}
-          </div>
-          <p className="mt-1 text-[12px] text-white/80 leading-snug">
-            {stats.total} lição{stats.total === 1 ? "" : "ões"} · {stats.estrelas}/{stats.maxEstrelas} estrelas
-          </p>
-
-          {(trilhaQ.data?.partes?.length ?? 0) > 1 && (
-            <div className="mt-3 inline-flex p-1 rounded-full bg-black/30 ring-1 ring-white/10 backdrop-blur-sm max-w-full overflow-x-auto no-scrollbar">
-              {trilhaQ.data!.partes.map((p) => {
-                const ativa = p.slug === parte;
-                return (
-                  <button
-                    key={p.slug}
-                    onPointerDown={() => prefetchParte(qc, slug, p.slug)}
-                    onMouseEnter={() => prefetchParte(qc, slug, p.slug)}
-                    onTouchStart={() => prefetchParte(qc, slug, p.slug)}
-                    onClick={() => navigate(`/lei-seca/${slug}/${p.slug}`, { replace: true })}
-                    className={cn(
-                      "px-3.5 py-1.5 min-h-[36px] rounded-full text-[11px] font-bold uppercase tracking-wider whitespace-nowrap transition-all active:scale-[0.97] touch-manipulation",
-                      ativa ? "bg-white text-black shadow" : "text-white/75 hover:text-white",
-                    )}
-                  >
-                    {p.nome}
-                  </button>
-
-                );
-              })}
-            </div>
-          )}
-
-
-          <div className="mt-4 flex items-center gap-4">
-            <div className="relative shrink-0">
-              <svg width="84" height="84" viewBox="0 0 84 84" className="-rotate-90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.35)]">
-                <circle cx="42" cy="42" r={r} fill="none" stroke="rgba(0,0,0,0.30)" strokeWidth="7" />
-                <circle
-                  cx="42"
-                  cy="42"
-                  r={r}
-                  fill="none"
-                  stroke="url(#gradPainelLS)"
-                  strokeWidth="7"
-                  strokeLinecap="round"
-                  strokeDasharray={circ}
-                  strokeDashoffset={offset}
-                  style={{ transition: "stroke-dashoffset 1.1s cubic-bezier(.2,.7,.2,1)" }}
-                />
-                <defs>
-                  <linearGradient id="gradPainelLS" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="rgba(255,255,255,0.95)" />
-                    <stop offset="100%" stopColor="rgba(255,255,255,0.7)" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <div className="absolute inset-0 grid place-items-center">
-                <div className="text-center leading-none">
-                  {stats.pct === 100 ? (
-                    <>
-                      <Trophy className="h-7 w-7 mx-auto text-amber-300 drop-shadow-[0_0_8px_rgba(252,211,77,0.5)]" />
-                      <p className="text-[8px] uppercase tracking-[0.2em] text-white/70 font-bold mt-1">Concluído</p>
-                    </>
-                  ) : (
-                    <>
-                      <p className="font-black text-[22px] tabular-nums tracking-tight">
-                        {stats.pct}
-                        <span className="text-[11px] align-top ml-0.5 opacity-80">%</span>
-                      </p>
-                      <p className="text-[8px] uppercase tracking-[0.2em] text-white/70 font-bold mt-0.5">Progresso</p>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex-1 min-w-0 space-y-2">
-              <PainelBar label="Concluídas" valor={`${stats.concluidas}/${stats.total}`} pct={stats.total ? (stats.concluidas / stats.total) * 100 : 0} />
-              <PainelBar label="Estrelas" valor={`${stats.estrelas}/${stats.maxEstrelas}`} pct={stats.maxEstrelas ? (stats.estrelas / stats.maxEstrelas) * 100 : 0} />
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Chunk 6: Hero da Parte com Progresso e Paleta Temática */}
+      <LeiSecaParteHero
+        slug={slug}
+        parteAtual={parte}
+        sigla={trilhaQ.data?.sigla}
+        titulo={parteNome ?? trilhaQ.data?.nome ?? "Carregando..."}
+        partes={trilhaQ.data?.partes}
+        tema={tema}
+        MateriaIcone={MateriaIcone}
+        stats={stats}
+        onBack={() => navigate("/lei-seca", { replace: true })}
+        onSelectParte={(pSlug) => navigate(`/lei-seca/${slug}/${pSlug}`, { replace: true })}
+        onPrefetchParte={(pSlug) => prefetchParte(qc, slug, pSlug)}
+      />
 
       <div className="max-w-5xl mx-auto px-4 py-6 pb-[calc(7.5rem+var(--sai-bottom))]">
         {(licoesQ.isLoading || estruturando) && (
@@ -287,99 +178,55 @@ export default function LeiSecaParte() {
         {grupos.map(([tituloPai, items], gi) => {
           const { nivel, descricao } = tituloPai !== "—" ? parseTituloPai(tituloPai) : { nivel: "", descricao: "" };
           return (
-          <div key={tituloPai} className="mb-7 animate-fade-in-up" style={{ animationDelay: `${gi * 40}ms` }}>
-            {tituloPai !== "—" && (
-              <div className="mb-3 px-1">
-                <div
-                  className="text-[10px] font-extrabold uppercase tracking-[0.22em]"
-                  style={{ color: tema.solid }}
-                >
-                  {nivel}
+            <div key={tituloPai} className="mb-7 animate-fade-in-up" style={{ animationDelay: `${gi * 40}ms` }}>
+              {tituloPai !== "—" && (
+                <div className="mb-3 px-1">
+                  <div
+                    className="text-[10px] font-extrabold uppercase tracking-[0.22em]"
+                    style={{ color: tema.solid }}
+                  >
+                    {nivel}
+                  </div>
+                  {descricao && (
+                    <h2 className="mt-0.5 font-body text-[17px] sm:text-[18px] font-bold text-foreground leading-snug tracking-[0.015em]">
+                      {descricao}
+                    </h2>
+                  )}
+                  <div
+                    className="mt-2 h-px w-10 rounded-full opacity-60"
+                    style={{ background: tema.solid }}
+                  />
                 </div>
-                {descricao && (
-                  <h2 className="mt-0.5 font-body text-[17px] sm:text-[18px] font-bold text-foreground leading-snug tracking-[0.015em]">
-                    {descricao}
-                  </h2>
-                )}
-                <div
-                  className="mt-2 h-px w-10 rounded-full opacity-60"
-                  style={{ background: tema.solid }}
-                />
-              </div>
-            )}
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-              {items.map((l, li) => {
-                const idx = licoes.findIndex((x) => x.id === l.id);
-                const desbloq = isDesbloqueada(idx);
-                const prog = progressoQ.data?.get(l.id);
-                const isProx = idx === proxIdx;
-                return (
-                  <li key={l.id} className="animate-fade-in-up" style={{ animationDelay: `${(gi * 40) + li * 30}ms` }}>
-                    <button
-                      disabled={!desbloq}
-                      onClick={() => {
-                        if (!isPremium) {
-                          setPremiumGateOpen(true);
-                          return;
-                        }
-                        navigate(`/lei-seca/${slug}/${parte}/licao/${l.id}`);
-                      }}
-                      className={cn(
-                        "w-full flex items-center gap-3 rounded-2xl border px-3 py-3 text-left transition-all duration-200 active:scale-[0.99]",
-                        desbloq
-                          ? "border-white/10 bg-card hover:bg-card/80 hover:-translate-y-0.5 hover:shadow-lg"
-                          : "border-white/5 bg-card/40 opacity-60 cursor-not-allowed",
-                        isProx && "ring-2 ring-offset-0",
-                      )}
-                      style={isProx ? { boxShadow: `0 0 0 2px ${tema.solid}55, 0 8px 24px -8px ${tema.solid}66` } : undefined}
-                    >
-                      <div
-                        className={cn(
-                          "h-11 w-11 shrink-0 rounded-xl grid place-items-center border transition-transform",
-                          prog?.concluida
-                            ? "bg-gradient-to-br from-emerald-500 to-green-600 border-emerald-300/40"
-                            : desbloq
-                              ? "border-white/10"
-                              : "bg-muted border-muted-foreground/15",
-                        )}
-                        style={
-                          !prog?.concluida && desbloq
-                            ? { background: `linear-gradient(135deg, ${tema.from}, ${tema.solid})` }
-                            : undefined
-                        }
-                      >
-                        {!desbloq ? (
-                          <Lock className="h-4 w-4 text-muted-foreground" />
-                        ) : prog?.concluida ? (
-                          <Check className="h-5 w-5 text-white" strokeWidth={3} />
-                        ) : (
-                          <Play className="h-5 w-5 text-white fill-white ml-0.5" />
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                          Lição {idx + 1}
-                        </div>
-                        <div className="text-sm font-semibold leading-tight truncate">{l.titulo}</div>
-                        {prog?.concluida && (
-                          <div className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-emerald-500">
-                            <Check className="h-3 w-3" strokeWidth={3} /> Concluído
-                          </div>
-                        )}
-                      </div>
-                      {prog && (
-                        <div className="flex gap-0.5 shrink-0">
-                          {[0, 1, 2].map((i) => (
-                            <Star key={i} className={cn("h-3.5 w-3.5", i < (prog.estrelas ?? 0) ? "text-amber-400 fill-amber-400" : "text-muted-foreground/40")} />
-                          ))}
-                        </div>
-                      )}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+              )}
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                {items.map((l, li) => {
+                  const idx = licoes.findIndex((x) => x.id === l.id);
+                  const desbloq = isDesbloqueada(idx);
+                  const prog = progressoQ.data?.get(l.id);
+                  const isProx = idx === proxIdx;
+                  return (
+                    <li key={l.id} className="animate-fade-in-up" style={{ animationDelay: `${(gi * 40) + li * 30}ms` }}>
+                      {/* Chunk 7: Nó de Lição Gamificada */}
+                      <LeiSecaLicaoNode
+                        licao={l}
+                        index={idx}
+                        desbloqueada={desbloq}
+                        isProxima={isProx}
+                        progresso={prog}
+                        tema={tema}
+                        onSelect={() => {
+                          if (!isPremium) {
+                            setPremiumGateOpen(true);
+                            return;
+                          }
+                          navigate(`/lei-seca/${slug}/${parte}/licao/${l.id}`);
+                        }}
+                      />
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           );
         })}
 
