@@ -78,8 +78,8 @@ export const JURI_OPCOES = [
 export type EmAltaCat = Cat & { route: string; emBreve?: boolean };
 export const EMALTA_CATS: EmAltaCat[] = [
   { id: 'ea-biblioteca',  label: 'Biblioteca',     sublabel: 'Livros, clássicos e coleções',   icon: Library,     color: 'hsl(var(--primary))', route: '/bibliotecas' },
-  { id: 'ea-videoaulas',  label: 'Videoaulas',     sublabel: 'Aulas em vídeo por área',        icon: Video,       color: 'hsl(var(--primary))', route: '/videoaulas' },
   { id: 'ea-resumos',     label: 'Resumos',        sublabel: 'Resumos jurídicos por tema',     icon: NotebookPen, color: 'hsl(var(--primary))', route: '/resumos-juridicos' },
+  { id: 'ea-videoaulas',  label: 'Videoaulas',     sublabel: 'Aulas em vídeo por área',        icon: Video,       color: 'hsl(var(--primary))', route: '/videoaulas' },
   { id: 'ea-audioaulas',  label: 'Audioaulas',     sublabel: 'Estude ouvindo, onde estiver',   icon: Headphones,  color: 'hsl(var(--primary))', route: '/audioaulas' },
   { id: 'ea-mapas',       label: 'Mapas Mentais',  sublabel: 'Mapas, infográficos e fluxogramas',    icon: Brain,       color: 'hsl(var(--primary))', route: '/assistente' },
   { id: 'ea-dicionario',  label: 'Dicionário',     sublabel: 'Termos jurídicos explicados',    icon: BookA,       color: 'hsl(var(--primary))', route: '/ferramentas/dicionario' },

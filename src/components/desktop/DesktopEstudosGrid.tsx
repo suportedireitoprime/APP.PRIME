@@ -22,9 +22,9 @@ interface Props {
 
 const ESTUDOS: Item[] = [
   { id: 'biblioteca', label: 'Biblioteca', sublabel: 'Livros, clássicos e coleções', icon: Library, color: 'hsl(var(--primary))', route: '/bibliotecas' },
+  { id: 'resumos', label: 'Resumos', sublabel: 'Resumos jurídicos por tema', icon: NotebookPen, color: 'hsl(var(--primary))', route: '/resumos-juridicos' },
   { id: 'videoaulas', label: 'Videoaulas', sublabel: 'Aulas em vídeo por área', icon: Video, color: 'hsl(var(--primary))', route: '/videoaulas' },
   { id: 'audioaulas', label: 'Audioaulas', sublabel: 'Estude ouvindo, onde estiver', icon: Headphones, color: 'hsl(var(--primary))', route: '/audioaulas' },
-  { id: 'resumos', label: 'Resumos', sublabel: 'Resumos jurídicos por tema', icon: NotebookPen, color: 'hsl(var(--primary))', route: '/resumos-juridicos' },
   { id: 'mapas', label: 'Mapas Mentais', sublabel: 'Mapas, infográficos e fluxogramas', icon: Brain, color: 'hsl(var(--primary))', route: '/assistente' },
   { id: 'dicionario', label: 'Dicionário', sublabel: 'Termos jurídicos explicados', icon: BookA, color: 'hsl(var(--primary))', route: '/ferramentas/dicionario' },
 ];
