@@ -664,12 +664,12 @@ class Media {
         this.plane.program.uniforms.uViewportSizes.value = [this.viewport.width, this.viewport.height];
       }
     }
-    this.scale = this.screen.height / 1500;
-    // Aumentando um pouco as capas para melhorar a visualização
-    this.plane.scale.y = (this.viewport.height * (880 * this.scale)) / this.screen.height;
-    this.plane.scale.x = (this.viewport.width * (660 * this.scale)) / this.screen.width;
+    this.scale = this.screen.height / 1450;
+    // Aumentando mais um pouco o tamanho das capas conforme solicitado
+    this.plane.scale.y = (this.viewport.height * (980 * this.scale)) / this.screen.height;
+    this.plane.scale.x = (this.viewport.width * (735 * this.scale)) / this.screen.width;
     this.plane.program.uniforms.uPlaneSizes.value = [this.plane.scale.x, this.plane.scale.y];
-    this.padding = 0.8; // Aumentado de 0.15 para 0.8 para dar um respiro entre as capas, mas ainda próximas
+    this.padding = 0.9; // Proporcional ao novo tamanho para manter o respiro elegante
     this.width = this.plane.scale.x + this.padding;
     this.widthTotal = this.width * this.length;
     this.x = this.width * this.index;

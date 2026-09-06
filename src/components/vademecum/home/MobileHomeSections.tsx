@@ -213,7 +213,7 @@ const MobileHomeSections = ({
               Ver todos
             </button>
           </div>
-          <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen h-[250px] -mt-6">
+          <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen h-[265px] -mt-6">
             <CircularGallery
               items={aprenderItems}
               bend={0.3}
