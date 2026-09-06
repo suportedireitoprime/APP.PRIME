@@ -95,14 +95,17 @@ export const LivroHeaderBackdrop = ({
         <div className="absolute inset-0 bg-gradient-to-r from-primary/25 via-transparent to-primary/15 mix-blend-multiply pointer-events-none" />
         <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent pointer-events-none" />
 
-        {/* Capa vertical sobreposta */}
+        {/* Capa vertical sobreposta com suporte a zoom tátil em tela cheia */}
         <div className="absolute left-1/2 -translate-x-1/2 bottom-3 z-10 w-28 h-40">
           <PrimeImage
             src={capaUrl}
             alt={`Capa da obra: ${titulo}`}
             aspectRatio="auto"
-            targetWidth={300}
+            targetWidth={500}
             priority={true}
+            zoomable={true}
+            zoomTitle={titulo}
+            zoomSubtitle={autor || area || undefined}
             fallbackText={titulo}
             containerClassName="w-28 h-40 rounded-lg shadow-[0_20px_60px_-10px_rgba(0,0,0,0.8)] ring-1 ring-white/15 overflow-hidden"
             className="w-full h-full object-cover"

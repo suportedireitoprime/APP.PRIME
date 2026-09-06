@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { directImg } from '@/lib/cdnImg';
 import fallbackCover from '@/assets/covers/fundamentos-da-lei.webp';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Maximize2 } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { getImageOfflineUrl, fetchAndCacheImageOffline } from '@/services/imageOfflineStore';
 import { getOfflineCover } from '@/hooks/useBibliotecaAsset';
+import { ImageLightboxModal } from './ImageLightboxModal';
+import { haptic } from '@/lib/nativeHaptics';
 
 export interface PrimeImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src'> {
   src?: string | null;
@@ -28,6 +30,12 @@ export interface PrimeImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageE
   decorative?: boolean;
   /** Callback disparado quando a imagem estiver 100% decodificada e visível */
   onLoadComplete?: () => void;
+  /** Se true, permite abrir a imagem em tela cheia com zoom tátil (Item 64) */
+  zoomable?: boolean;
+  /** Título opcional exibido no topo do Lightbox */
+  zoomTitle?: string;
+  /** Subtítulo opcional exibido no topo do Lightbox */
+  zoomSubtitle?: string;
 }
 
 const ASPECT_RATIO_CLASSES: Record<string, string> = {
@@ -64,11 +72,16 @@ export const PrimeImage = React.memo(function PrimeImage({
   decorative = false,
   onLoadComplete,
   onError,
+  zoomable = false,
+  zoomTitle,
+  zoomSubtitle,
+  onClick,
   ...rest
 }: PrimeImageProps) {
   const [attemptLevel, setAttemptLevel] = useState<'optimized' | 'raw' | 'offline' | 'fallback'>('optimized');
   const [offlineCandidateSrc, setOfflineCandidateSrc] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   // Sanitização de URL: evita requisições GET /undefined quando src é inválido
   const cleanSrc = src && typeof src === 'string' && src.trim().length > 0 ? src.trim() : null;
@@ -144,22 +157,43 @@ export const PrimeImage = React.memo(function PrimeImage({
   const aspectClass = ASPECT_RATIO_CLASSES[aspectRatio] || '';
   const customAspectStyle = !aspectClass && aspectRatio !== 'auto' ? { aspectRatio } : undefined;
 
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (zoomable && activeSrc) {
+      haptic.light();
+      setIsLightboxOpen(true);
+    }
+    onClick?.(e as unknown as React.MouseEvent<HTMLImageElement>);
+  };
+
   return (
-    <div
-      className={cn(
-        "relative overflow-hidden bg-zinc-900/90 w-full select-none transform-gpu backface-hidden contrast-more:border contrast-more:border-amber-400/80 contrast-more:ring-1",
-        aspectClass,
-        containerClassName
-      )}
-      style={customAspectStyle}
-    >
-      {/* Skeleton de alta precisão calibrado para o tema dark (Zero Flash Branco) */}
-      {!isLoaded && !hasFailed && (
-        <div 
-          aria-hidden="true" 
-          className="absolute inset-0 bg-gradient-to-br from-zinc-900/90 via-zinc-800/50 to-zinc-900/90 animate-pulse z-0" 
-        />
-      )}
+    <>
+      <div
+        onClick={handleClick}
+        className={cn(
+          "relative overflow-hidden bg-zinc-900/90 w-full select-none transform-gpu backface-hidden contrast-more:border contrast-more:border-amber-400/80 contrast-more:ring-1",
+          zoomable && "cursor-zoom-in group/prime-zoom",
+          aspectClass,
+          containerClassName
+        )}
+        style={customAspectStyle}
+      >
+        {/* Skeleton de alta precisão calibrado para o tema dark (Zero Flash Branco) */}
+        {!isLoaded && !hasFailed && (
+          <div 
+            aria-hidden="true" 
+            className="absolute inset-0 bg-gradient-to-br from-zinc-900/90 via-zinc-800/50 to-zinc-900/90 animate-pulse z-0" 
+          />
+        )}
+
+        {/* Indicador de Zoom no Hover */}
+        {zoomable && isLoaded && !hasFailed && (
+          <div
+            aria-hidden="true"
+            className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 text-white/90 opacity-0 group-hover/prime-zoom:opacity-100 transition-opacity z-20 backdrop-blur-sm pointer-events-none"
+          >
+            <Maximize2 className="w-3.5 h-3.5" />
+          </div>
+        )}
 
       {/* Renderização da Imagem Otimizada */}
       {activeSrc ? (
@@ -192,7 +226,20 @@ export const PrimeImage = React.memo(function PrimeImage({
           )}
         </div>
       )}
-    </div>
+      </div>
+
+      {/* Lightbox Modal com Zoom Tátil quando zoomable=true */}
+      {zoomable && (
+        <ImageLightboxModal
+          isOpen={isLightboxOpen}
+          onClose={() => setIsLightboxOpen(false)}
+          src={cleanSrc || activeSrc}
+          alt={alt}
+          title={zoomTitle || alt}
+          subtitle={zoomSubtitle}
+        />
+      )}
+    </>
   );
 });
 
