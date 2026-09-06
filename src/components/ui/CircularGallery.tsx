@@ -194,7 +194,7 @@ class Title {
     const aspect = width / height;
     let textScaleMultiplier = 0.15;
     if (this.positionType === 'outside') {
-      textScaleMultiplier = 0.28; 
+      textScaleMultiplier = 0.45; // Aumentado bastante para ficar mais legível
     } else if (this.positionType === 'inside-bottom') {
       textScaleMultiplier = 0.15;
     }
@@ -204,7 +204,7 @@ class Title {
     this.mesh.scale.set(textWidth, textHeight, 1);
     
     if (this.positionType === 'outside') {
-      this.mesh.position.y = -this.plane.scale.y * 0.5 - textHeight * 0.5 - 0.08;
+      this.mesh.position.y = -this.plane.scale.y * 0.5 - textHeight * 0.5 - 0.15;
       this.mesh.position.z = 0;
     } else if (this.positionType === 'inside-top') {
       this.mesh.position.y = this.plane.scale.y * 0.5 - textHeight * 0.5 - 0.1;

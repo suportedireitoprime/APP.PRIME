@@ -214,6 +214,7 @@ const MobileHomeSections = ({
               items={aprenderItems}
               bend={0.3}
               textColor="#ffffff"
+              font="bold 64px 'Bebas Neue', 'Barlow Condensed', sans-serif"
               scrollEase={0.15}
               borderRadius={0.05}
               onItemClick={(item) => {
