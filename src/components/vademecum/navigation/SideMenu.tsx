@@ -167,7 +167,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.18 }}
+          transition={{ duration: 0.08, ease: [0.16, 1, 0.3, 1] }}
           className="fixed inset-0 z-[2000] bg-background flex flex-col"
         >
           <PageHeader title="Menu" onBack={onClose} />
@@ -245,6 +245,11 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
               {/* Seção de Funções & Recursos com menu suspenso de Legislação */}
               <SideMenuFuncoes
                 onNavigate={(route) => {
+                  if (route === 'chat') {
+                    window.dispatchEvent(new CustomEvent('direitoprime:abrir-chat'));
+                    onClose();
+                    return;
+                  }
                   navigate(route);
                   onClose();
                 }}

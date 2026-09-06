@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  GraduationCap, Layers, CheckSquare, Sparkles, Scale, Gavel, ScrollText,
+  GraduationCap, Layers, ListChecks, Camera, Scale, Gavel, ScrollText,
   BookOpen, Library, FileText, Video, Headphones, Workflow, BookA, Bookmark,
-  Presentation, Newspaper, Flame, Bot, BellRing, Compass, Music,
+  Presentation, Newspaper, Flame, MessageCircle, BellRing, Compass, Music,
   ChevronDown, ChevronRight,
 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
+import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
 
 interface SubItem {
   id: string;
@@ -20,22 +21,23 @@ interface FuncaoItem {
   label: string;
   icon: React.ElementType;
   route?: string;
+  prefetchKey?: PrefetchKey;
   badge?: string;
   badgeColor?: string;
   isExpandable?: boolean;
   subItems?: SubItem[];
 }
 
+const RED_BADGE_STYLE = 'bg-[#ff2d55]/15 text-[#ff2d55] border-[#ff2d55]/35';
+
+// Funções ordenadas rigorosamente pela frequência de acesso dos estudantes e operadores do Direito
 const FUNCOES: FuncaoItem[] = [
-  { id: 'aprender', label: 'Aprender', icon: GraduationCap, route: '/aprender' },
-  { id: 'flashcards', label: 'Flashcards', icon: Layers, route: '/flashcards' },
-  { id: 'questoes', label: 'Questões', icon: CheckSquare, route: '/questoes' },
-  { id: 'me-explique', label: 'Me Explique', icon: Sparkles, route: '/me-explique', badge: 'IA', badgeColor: 'bg-[#E11D48]/15 text-[#E11D48] border-[#E11D48]/30' },
   {
     id: 'legislacao',
     label: 'Legislação & Vade Mecum',
     icon: Scale,
     isExpandable: true,
+    prefetchKey: 'vadeMecum',
     subItems: [
       { id: 'constituicao', label: 'Constituição Federal (CF/88)', route: '/legislacao/constituicao', icon: BookOpen },
       { id: 'vade-mecum', label: 'Vade Mecum Completo', route: '/vade-mecum', icon: Scale },
@@ -48,20 +50,24 @@ const FUNCOES: FuncaoItem[] = [
       { id: 'legislacao-estadual', label: 'Legislação Estadual', route: '/legislacao-estadual', icon: Compass },
     ],
   },
-  { id: 'biblioteca', label: 'Biblioteca', icon: Library, route: '/bibliotecas' },
-  { id: 'resumos', label: 'Resumos Jurídicos', icon: FileText, route: '/resumos-juridicos' },
-  { id: 'videoaulas', label: 'Videoaulas', icon: Video, route: '/videoaulas' },
-  { id: 'audioaulas', label: 'Audioaulas', icon: Headphones, route: '/audioaulas' },
-  { id: 'visuais', label: 'Mapas Mentais & Visuais', icon: Workflow, route: '/visuais', badge: 'Mapas', badgeColor: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
-  { id: 'dicionario', label: 'Dicionário Jurídico', icon: BookA, route: '/ferramentas/dicionario' },
-  { id: 'lei-seca', label: 'Lei Seca', icon: Bookmark, route: '/lei-seca' },
-  { id: 'apresentacoes', label: 'Apresentações', icon: Presentation, route: '/apresentacoes' },
-  { id: 'blog', label: 'Blog Jurídico', icon: Newspaper, route: '/blog' },
-  { id: 'pilulas', label: 'Pílulas do Conhecimento', icon: Flame, route: '/pilulas' },
-  { id: 'assistente-horus', label: 'Assistente Hórus (Chat)', icon: Bot, route: '/assistente-horus', badge: 'IA', badgeColor: 'bg-[#E11D48]/15 text-[#E11D48] border-[#E11D48]/30' },
-  { id: 'boletins', label: 'Boletins & Informativos', icon: BellRing, route: '/boletins' },
-  { id: 'radar-360', label: 'Radar Legislativo 360', icon: Compass, route: '/radar-360' },
-  { id: 'leis-cantadas', label: 'Leis Cantadas', icon: Music, route: '/leis-cantadas' },
+  { id: 'questoes', label: 'Questões', icon: ListChecks, route: '/questoes', prefetchKey: 'questoes' },
+  { id: 'flashcards', label: 'Flashcards', icon: Layers, route: '/flashcards', prefetchKey: 'flashcards' },
+  { id: 'aprender', label: 'Aprender', icon: GraduationCap, route: '/aprender', prefetchKey: 'aprender' },
+  { id: 'me-explique', label: 'Me Explique', icon: Camera, route: '/me-explique', prefetchKey: 'meExplique', badge: 'IA', badgeColor: RED_BADGE_STYLE },
+  { id: 'chat-juridico', label: 'Chat Jurídico', icon: MessageCircle, route: 'chat', badge: 'IA', badgeColor: RED_BADGE_STYLE },
+  { id: 'resumos', label: 'Resumos Jurídicos', icon: FileText, route: '/resumos-juridicos', prefetchKey: 'resumosJuridicos' },
+  { id: 'videoaulas', label: 'Videoaulas', icon: Video, route: '/videoaulas', prefetchKey: 'videoaulas' },
+  { id: 'audioaulas', label: 'Audioaulas', icon: Headphones, route: '/audioaulas', prefetchKey: 'audioaulas' },
+  { id: 'pilulas', label: 'Pílulas do Conhecimento', icon: Flame, route: '/pilulas', prefetchKey: 'pilulas' },
+  { id: 'biblioteca', label: 'Biblioteca', icon: Library, route: '/bibliotecas', prefetchKey: 'biblioteca' },
+  { id: 'lei-seca', label: 'Lei Seca', icon: Bookmark, route: '/lei-seca', prefetchKey: 'leiSeca' },
+  { id: 'visuais', label: 'Mapas Mentais & Visuais', icon: Workflow, route: '/resumos-juridicos', prefetchKey: 'resumosJuridicos', badge: 'Mapas', badgeColor: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
+  { id: 'dicionario', label: 'Dicionário Jurídico', icon: BookA, route: '/ferramentas/dicionario', prefetchKey: 'dicionario' },
+  { id: 'boletins', label: 'Boletins & Informativos', icon: BellRing, route: '/boletins', prefetchKey: 'boletins' },
+  { id: 'radar-360', label: 'Radar Legislativo 360', icon: Compass, route: '/radar-360', prefetchKey: 'radar360' },
+  { id: 'blog', label: 'Blog Jurídico', icon: Newspaper, route: '/blog', prefetchKey: 'blog' },
+  { id: 'apresentacoes', label: 'Apresentações', icon: Presentation, route: '/apresentacoes', prefetchKey: 'apresentacoes' },
+  { id: 'leis-cantadas', label: 'Leis Cantadas', icon: Music, route: '/leis-cantadas', prefetchKey: 'leisCantadas' },
 ];
 
 interface SideMenuFuncoesProps {
@@ -70,6 +76,12 @@ interface SideMenuFuncoesProps {
 
 export function SideMenuFuncoes({ onNavigate }: SideMenuFuncoesProps) {
   const [legislacaoAberta, setLegislacaoAberta] = useState(false);
+
+  const handleWarm = (prefetchKey?: PrefetchKey) => {
+    if (prefetchKey) {
+      prefetchRoute(prefetchKey);
+    }
+  };
 
   return (
     <div className="mb-3">
@@ -85,18 +97,21 @@ export function SideMenuFuncoes({ onNavigate }: SideMenuFuncoesProps) {
               <div key={item.id} className="flex flex-col">
                 <button
                   type="button"
+                  onPointerDown={() => handleWarm(item.prefetchKey)}
+                  onMouseEnter={() => handleWarm(item.prefetchKey)}
+                  onFocus={() => handleWarm(item.prefetchKey)}
                   onClick={() => {
                     haptic.selection();
                     setLegislacaoAberta((prev) => !prev);
                   }}
                   aria-expanded={legislacaoAberta}
-                  className="w-full flex items-center gap-3 px-4 py-[17px] text-left transition-colors hover:bg-secondary active:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
+                  className="w-full flex items-center gap-3 px-4 py-[17px] text-left transition-all duration-[80ms] hover:bg-secondary active:scale-[0.99] active:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
                 >
                   <Icon className="w-5 h-5 shrink-0 text-hero-panel" aria-hidden="true" />
                   <span className="font-body text-[15px] font-medium text-foreground/90 flex-1">{item.label}</span>
                   <motion.div
                     animate={{ rotate: legislacaoAberta ? 180 : 0 }}
-                    transition={{ duration: 0.2, ease: 'easeInOut' }}
+                    transition={{ duration: 0.08, ease: 'easeInOut' }}
                     className="shrink-0"
                   >
                     <ChevronDown className="w-4 h-4 text-muted-foreground" />
@@ -109,7 +124,7 @@ export function SideMenuFuncoes({ onNavigate }: SideMenuFuncoesProps) {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                      transition={{ duration: 0.08, ease: [0.16, 1, 0.3, 1] }}
                       className="overflow-hidden bg-background/50 border-t border-border/40 divide-y divide-border/30"
                     >
                       {item.subItems?.map((sub) => {
@@ -118,11 +133,13 @@ export function SideMenuFuncoes({ onNavigate }: SideMenuFuncoesProps) {
                           <button
                             key={sub.id}
                             type="button"
+                            onPointerDown={() => handleWarm('vadeMecum')}
+                            onMouseEnter={() => handleWarm('vadeMecum')}
                             onClick={() => {
                               haptic.selection();
                               onNavigate(sub.route);
                             }}
-                            className="w-full flex items-center gap-3 pl-8 pr-4 py-3 text-left transition-colors hover:bg-secondary/70 active:bg-muted/60"
+                            className="w-full flex items-center gap-3 pl-8 pr-4 py-3 text-left transition-all duration-[80ms] hover:bg-secondary/70 active:scale-[0.99] active:bg-muted/60"
                           >
                             <SubIcon className="w-4 h-4 shrink-0 text-muted-foreground" />
                             <span className="font-body text-[13.5px] text-foreground/80 flex-1">{sub.label}</span>
@@ -141,11 +158,14 @@ export function SideMenuFuncoes({ onNavigate }: SideMenuFuncoesProps) {
             <button
               key={item.id}
               type="button"
+              onPointerDown={() => handleWarm(item.prefetchKey)}
+              onMouseEnter={() => handleWarm(item.prefetchKey)}
+              onFocus={() => handleWarm(item.prefetchKey)}
               onClick={() => {
                 haptic.selection();
                 if (item.route) onNavigate(item.route);
               }}
-              className="w-full flex items-center gap-3 px-4 py-[17px] text-left transition-colors hover:bg-secondary active:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
+              className="w-full flex items-center gap-3 px-4 py-[17px] text-left transition-all duration-[80ms] hover:bg-secondary active:scale-[0.99] active:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
             >
               <Icon className="w-5 h-5 shrink-0 text-hero-panel" aria-hidden="true" />
               <span className="font-body text-[15px] font-medium text-foreground/90 flex-1">{item.label}</span>

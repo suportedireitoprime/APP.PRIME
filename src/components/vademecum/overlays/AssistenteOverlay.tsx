@@ -187,7 +187,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
             name: `foto-${Date.now()}.${res.format || 'jpg'}`,
           });
           setAttachOpen(false);
-          haptic.notification();
+          haptic.success();
           toast.success('Foto anexada com sucesso');
           return;
         } else if (res.reason && !/cancel/i.test(res.reason)) {
@@ -589,7 +589,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
           initial={{ y: '100%' }}
           animate={{ y: 0 }}
           exit={{ y: '100%', pointerEvents: 'none' }}
-          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          transition={{ duration: 0.08, ease: [0.16, 1, 0.3, 1] }}
           className={
             isDesktop
               ? 'fixed inset-0 z-[60] bg-[#07080b] flex flex-row'

@@ -98,6 +98,12 @@ const BottomNav = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    const handleOpenChat = () => setChatOpen(true);
+    window.addEventListener('direitoprime:abrir-chat', handleOpenChat);
+    return () => window.removeEventListener('direitoprime:abrir-chat', handleOpenChat);
+  }, []);
+
   // Qualquer troca de rota reabilita a nav (evita ficar escondida se um menu
   // externo desmontou sem emitir o evento de fechamento).
   useEffect(() => {

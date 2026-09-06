@@ -417,9 +417,9 @@ body {
     background: linear-gradient(90deg, hsl(350 68% 32%) 0%, hsl(350 74% 42%) 25%, hsl(348 80% 50%) 50%, hsl(350 74% 42%) 75%, hsl(350 68% 32%) 100%);
   }
 
-  /* Vermelho do rodapé/painel em cor sólida — usado nos ícones do menu */
+  /* Vermelho do rodapé/painel em cor sólida — mais vivo e vibrante nos ícones do menu */
   .text-hero-panel {
-    color: hsl(348 80% 50%);
+    color: #ff2d55;
   }
 
   /* Mesmo painel, versão amarela/dourada (Vade Mecum) */

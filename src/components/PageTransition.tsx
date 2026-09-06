@@ -18,14 +18,14 @@ const pageVariants: Variants = {
   animate: {
     opacity: 1,
     transition: {
-      duration: 0.2,
+      duration: 0.08, // Padronizado em 80ms para resposta instantânea de app nativo (120fps)
       ease: [0.16, 1, 0.3, 1],
     },
   },
   exit: {
     opacity: 0,
     transition: {
-      duration: 0.12,
+      duration: 0.08, // Padronizado em 80ms para saída ultra-rápida sem retenção de frame
       ease: [0.32, 0, 0.67, 0],
     },
   },

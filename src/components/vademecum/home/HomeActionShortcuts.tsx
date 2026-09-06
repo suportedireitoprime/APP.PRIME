@@ -27,15 +27,17 @@ const HomeActionShortcuts = () => {
           <button
             key={item.label}
             onPointerDown={() => prefetchRoute(item.prefetch)}
+            onTouchStart={() => prefetchRoute(item.prefetch)}
             onMouseEnter={() => prefetchRoute(item.prefetch)}
             onFocus={() => prefetchRoute(item.prefetch)}
             onClick={() => {
+              haptic.selection();
               if (Capacitor.isNativePlatform()) Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
               if (item.badgeKey) shortcutBadges.markSeen(item.badgeKey);
               navigate(item.to);
             }}
             style={{ '--shimmer-delay': `${index * 150}ms` } as React.CSSProperties}
-            className="group relative flex flex-col items-center justify-center gap-1 h-[72px] rounded-2xl bg-black/45 backdrop-blur-md border border-white/15 shadow-lg shadow-black/30 active:scale-[0.96] transition shortcut-button-shine"
+            className="group relative flex flex-col items-center justify-center gap-1 h-[72px] rounded-2xl bg-black/45 backdrop-blur-md border border-white/15 shadow-lg shadow-black/30 active:scale-[0.96] transition-all duration-[80ms] shortcut-button-shine"
           >
             {badgeCount > 0 && item.badgeColor && (
               <span

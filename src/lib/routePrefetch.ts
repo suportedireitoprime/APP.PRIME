@@ -68,20 +68,31 @@ export const routePrefetch = {
   vadeMecumFavoritos: () => import("@/pages/VadeMecumFavoritos.tsx"),
   vadeMecumRecentes: () => import("@/pages/VadeMecumRecentes.tsx"),
   meExplique: () => import("@/pages/MeExplique.tsx"),
+  apresentacoes: () => import("@/pages/Apresentacoes.tsx"),
+  leisCantadas: () => import("@/pages/LeisCantadas.tsx"),
 } as const;
 
 export type PrefetchKey = keyof typeof routePrefetch;
 
+// Rotas de funções mais acessadas pré-aquecidas em idle para resposta instantânea (0ms de espera)
 const MAIN_TAB_KEYS: PrefetchKey[] = [
   'vadeMecum',
-  'biblioteca',
+  'questoes',
+  'flashcards',
+  'aprender',
+  'meExplique',
   'resumosJuridicos',
   'videoaulas',
-  'vademecum',
+  'audioaulas',
   'pilulas',
+  'biblioteca',
+  'leiSeca',
+  'dicionario',
+  'boletins',
+  'radar360',
+  'vademecum',
   'ferramentas',
   'blog',
-  'aprender',
   'meuEspaco',
 ];
 
