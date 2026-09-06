@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useRef, useState, useCallb
 import { registrarMidia, clearMediaSession } from '@/lib/mediaSession';
 import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { fonteDeAudio } from '@/lib/nativo/audioOffline';
+import { prefetchImage } from '@/lib/cdnImg';
 import { toast } from 'sonner';
 import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
 
@@ -105,6 +106,10 @@ export const ResumoLivroPlayerProvider: React.FC<{ children: React.ReactNode }> 
       setLivroAtual(livro);
       setTempo(0);
       setDur(0);
+
+      // Pré-aquecimento em memória das capas para renderização instantânea a 0ms (Item 69)
+      if (livro.capa) prefetchImage(livro.capa, 500);
+      if (livro.capaHorizontal) prefetchImage(livro.capaHorizontal, 800);
 
       try {
         const src = await fonteDeAudio(audioIdOf(livro), livro.audioResumoUrl);

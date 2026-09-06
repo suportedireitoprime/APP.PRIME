@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, ArrowRight, X } from 'lucide-react';
 import { useResumoLivroPlayer } from '@/contexts/ResumoLivroPlayerContext';
+import { PrimeImage } from '@/components/ui/PrimeImage';
 import { haptic } from '@/lib/nativeHaptics';
 
 export function GlobalResumoMiniPlayer() {
@@ -54,6 +55,29 @@ export function GlobalResumoMiniPlayer() {
               <Play className="w-4 h-4 text-primary-foreground ml-0.5" fill="currentColor" />
             )}
           </button>
+
+          {/* Miniatura da Capa da Obra Ativa (Item 69) */}
+          {livroAtual.capa && (
+            <button
+              onClick={() => {
+                haptic.selection();
+                setAberto(true);
+              }}
+              aria-label={`Ver capa de ${livroAtual.titulo}`}
+              className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-white/20 relative z-10 shadow-sm active:scale-95 transition"
+            >
+              <PrimeImage
+                src={livroAtual.capa}
+                alt=""
+                aspectRatio="1/1"
+                targetWidth={96}
+                priority={true}
+                decorative={true}
+                containerClassName="w-full h-full"
+                className="w-full h-full object-cover"
+              />
+            </button>
+          )}
 
           {/* Equalizer indicando áudio tocando */}
           <div className="flex items-end gap-[2px] h-5 flex-shrink-0 pl-0.5 relative z-10" aria-hidden>

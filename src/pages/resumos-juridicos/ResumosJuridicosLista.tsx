@@ -86,7 +86,7 @@ export default function ResumosJuridicosLista({ modo }: { modo: "favoritos" | "r
  return (
  <div className="min-h-dvh bg-background pb-28">
  <div className="bg-hero-panel-cyan relative overflow-hidden rounded-b-[32px] border-b border-white/10 shadow-xl shadow-black/50 pt-[var(--sai-top)]">
- <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+ <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent" />
  <div className="relative px-4 pt-4 pb-5 flex flex-col gap-4">
  <div className="flex items-center gap-2">
  <button
