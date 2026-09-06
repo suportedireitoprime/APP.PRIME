@@ -33,6 +33,18 @@ const getSlot = (diff: number) => {
   }
 };
 
+/** Gera o path SVG exato do contorno com cantos arredondados iniciando no topo central (12h) no sentido horário */
+const getCardPath = (w: number, h: number, r = 16) => {
+  const pad = 1;
+  const x = pad;
+  const y = pad;
+  const width = w - pad * 2;
+  const height = h - pad * 2;
+  const radius = Math.min(r, width / 2, height / 2);
+
+  return `M ${x + width / 2} ${y} H ${x + width - radius} A ${radius} ${radius} 0 0 1 ${x + width} ${y + radius} V ${y + height - radius} A ${radius} ${radius} 0 0 1 ${x + width - radius} ${y + height} H ${x + radius} A ${radius} ${radius} 0 0 1 ${x} ${y + height - radius} V ${y + radius} A ${radius} ${radius} 0 0 1 ${x + radius} ${y} Z`.replace(/\s+/g, ' ').trim();
+};
+
 export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel3DProps) => {
   const [ativo, setAtivo] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -42,14 +54,29 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
   const lastWheelTime = useRef(0);
   const total = items?.length || 0;
 
-  // Auto-avanço a cada 3.2 segundos se o usuário não estiver interagindo
+  // Dimensões responsivas do card para traçado exato do contorno
+  const [cardDims, setCardDims] = useState(() => {
+    if (typeof window !== 'undefined' && window.innerWidth >= 640) {
+      return { w: 152, h: 208 };
+    }
+    return { w: 140, h: 192 };
+  });
+
   useEffect(() => {
+    const handleResize = () => {
+      setCardDims(window.innerWidth >= 640 ? { w: 152, h: 208 } : { w: 140, h: 192 });
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const pathD = useMemo(() => getCardPath(cardDims.w, cardDims.h, 16), [cardDims]);
+
+  // Avanço automático perfeitamente sincronizado com o término do ciclo da luzinha (quando a volta se completa)
+  const handleTimerComplete = useCallback(() => {
     if (paused || total <= 1) return;
-    const id = window.setInterval(() => {
-      if (document.querySelector('[role="dialog"],[data-state="open"][data-radix-dialog-content]')) return;
-      setAtivo((i) => (i + 1) % total);
-    }, 3200);
-    return () => window.clearInterval(id);
+    if (document.querySelector('[role="dialog"],[data-state="open"][data-radix-dialog-content]')) return;
+    setAtivo((i) => (i + 1) % total);
   }, [paused, total]);
 
   const handlePrev = useCallback(() => {
@@ -236,15 +263,14 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
                 }}
                 className="absolute w-[140px] sm:w-[152px] h-[192px] sm:h-[208px] shrink-0 cursor-pointer will-change-transform"
               >
-                {/* Card principal com borda colorida na capa da frente e sem fundo colorido atrás */}
+                {/* Card principal com contorno refinado e fino */}
                 <div
                   className={`relative w-full h-full rounded-2xl overflow-hidden shadow-2xl bg-zinc-950 transition-colors duration-300 ${
                     frente
-                      ? 'border-[3.5px]'
-                      : 'border-2 border-white/20 shadow-black/60'
+                      ? 'border border-white/10'
+                      : 'border border-white/15 shadow-black/60'
                   }`}
                   style={{
-                    borderColor: frente ? activeBorderColor : undefined,
                     boxShadow: frente
                       ? '0 18px 42px -6px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.06)'
                       : undefined,
@@ -307,6 +333,62 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
                     </span>
                   </div>
                 </div>
+
+                {/* Linha fina com luzinha animada que vai percorrendo o contorno até completar a volta do próximo card */}
+                {frente && (
+                  <svg
+                    className="absolute inset-0 w-full h-full pointer-events-none z-30 overflow-visible"
+                    style={{ width: cardDims.w, height: cardDims.h }}
+                  >
+                    {/* Linha base fina contornando a capa com a cor predominante */}
+                    <path
+                      d={pathD}
+                      fill="none"
+                      stroke={activeBorderColor}
+                      strokeWidth="1.5"
+                      strokeOpacity="0.32"
+                    />
+
+                    {/* Linha que vai aparecendo progressivamente ao longo do contorno */}
+                    <motion.path
+                      key={`border-track-${ativo}`}
+                      d={pathD}
+                      fill="none"
+                      stroke={activeBorderColor}
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      initial={{ pathLength: 0 }}
+                      animate={{ pathLength: paused ? 0 : 1 }}
+                      transition={{
+                        duration: 3.5,
+                        ease: 'linear',
+                      }}
+                      onAnimationComplete={handleTimerComplete}
+                      style={{
+                        filter: `drop-shadow(0 0 3px ${activeBorderColor})`,
+                      }}
+                    />
+
+                    {/* Luzinha brilhante que vai percorrendo na ponta da linha */}
+                    <motion.path
+                      key={`border-glow-head-${ativo}`}
+                      d={pathD}
+                      fill="none"
+                      stroke="#FFFFFF"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      initial={{ pathLength: 0.08, pathOffset: 0 }}
+                      animate={{ pathOffset: paused ? 0 : 1 }}
+                      transition={{
+                        duration: 3.5,
+                        ease: 'linear',
+                      }}
+                      style={{
+                        filter: `drop-shadow(0 0 4px #FFFFFF) drop-shadow(0 0 8px ${activeBorderColor})`,
+                      }}
+                    />
+                  </svg>
+                )}
 
                 {/* Animação de reflexo espelhado no chão sob a capa principal com a cor real da arte */}
                 {frente && (
