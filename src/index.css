@@ -1659,3 +1659,9 @@ html.light .bg-\[\#212121\]\/95 { background-color: hsl(var(--card) / 0.95) !imp
   .icon-shine-mask { animation: none; opacity: 0; }
 }
 
+/* Item 52: Desativa temporariamente backdrop-filter nos 80ms de transição de rota para manter 120fps fluido */
+html[data-route-transitioning="true"] * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+

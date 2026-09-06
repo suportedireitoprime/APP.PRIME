@@ -37,6 +37,7 @@ export function PageHeader({
         paddingLeft: 'calc(1rem + var(--sai-left))',
         paddingRight: 'calc(1rem + var(--sai-right))',
         minHeight: 'calc(5rem + var(--sai-top))',
+        contain: 'layout',
       }}
     >
       {onBack ? (

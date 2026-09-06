@@ -1,4 +1,5 @@
 import { AlertCircle, Inbox, RefreshCw, type LucideIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -130,7 +131,10 @@ export function EmptyState({
   action,
 }: EmptyStateProps) {
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.15, ease: "easeOut" }}
       className={cn(
         'w-full flex flex-col items-center justify-center text-center gap-3 py-12 px-6',
         'rounded-2xl border border-dashed border-border/60 bg-card/30',
@@ -149,6 +153,6 @@ export function EmptyState({
           {action.label}
         </Button>
       )}
-    </div>
+    </motion.div>
   );
 }

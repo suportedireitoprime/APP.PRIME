@@ -86,7 +86,7 @@ export function AppHeader({
           : "border-b border-transparent",
         className,
       )}
-      style={{ paddingTop: "var(--sai-top)" }}
+      style={{ paddingTop: "var(--sai-top)", minHeight: "calc(2.75rem + var(--sai-top))", contain: "layout" }}
     >
       <div className="relative h-11 flex items-center px-2">
         {/* Left slot */}

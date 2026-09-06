@@ -95,6 +95,24 @@ export function initNavTelemetry() {
   } catch {}
 }
 
+let transitionTimer: any = null;
+
+/**
+ * Item 55: Fecha tooltips e popovers órfãos imediatamente ao navegar para outra rota.
+ */
+export function dismissActiveTooltips() {
+  if (typeof document === 'undefined') return;
+  try {
+    if (document.activeElement && (document.activeElement as HTMLElement).blur) {
+      (document.activeElement as HTMLElement).blur();
+    }
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', bubbles: true }));
+    document.querySelectorAll('[role="tooltip"], [data-radix-popper-content-wrapper]').forEach((el) => {
+      (el as HTMLElement).style.display = 'none';
+    });
+  } catch {}
+}
+
 // Called by the router on every location change. Marks the transition start
 // so we can measure how long the next paint takes (the "section transition"
 // cost users perceive as slowness).
@@ -106,6 +124,18 @@ export function markRouteChange(nextPath: string) {
   currentPath = nextPath;
   transitionStart = performance.now();
   emit({ type: 'route-change', from, to: nextPath, ts: Date.now() });
+
+  // Item 55: Desmonta qualquer tooltip aberto para não ficar flutuando órfão na nova rota
+  dismissActiveTooltips();
+
+  // Item 52: Desativa backdrop-filter durante os 80ms de transição para manter 120fps fluido na GPU
+  try {
+    document.documentElement.setAttribute('data-route-transitioning', 'true');
+    if (transitionTimer) clearTimeout(transitionTimer);
+    transitionTimer = setTimeout(() => {
+      document.documentElement.removeAttribute('data-route-transitioning');
+    }, 95);
+  } catch {}
 
   // Wait two RAFs → after the new route mounts and paints once.
   requestAnimationFrame(() => {

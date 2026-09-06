@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 interface LeiSecaEmptyStateProps {
   icon: React.ReactNode;
@@ -16,7 +17,12 @@ export function LeiSecaEmptyState({
   onAcao,
 }: LeiSecaEmptyStateProps) {
   return (
-    <div className="rounded-2xl border border-dashed border-border/70 px-6 py-10 grid place-items-center text-center bg-card/40">
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.15, ease: "easeOut" }}
+      className="rounded-2xl border border-dashed border-border/70 px-6 py-10 grid place-items-center text-center bg-card/40"
+    >
       <div className="h-14 w-14 rounded-full bg-violet-500/10 grid place-items-center mb-3">
         {icon}
       </div>
@@ -31,6 +37,6 @@ export function LeiSecaEmptyState({
           {acaoLabel}
         </button>
       )}
-    </div>
+    </motion.div>
   );
 }
