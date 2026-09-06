@@ -1,6 +1,5 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Scale, BookOpen, Gavel, Library, MessageSquare, BookOpenText } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import DesktopHeroBanner from '@/components/vademecum/desktop/DesktopHeroBanner';
 
 import { useIsDesktop } from '@/hooks/use-desktop';
@@ -30,7 +29,6 @@ interface DesktopPageLayoutProps {
 const DesktopPageLayout = ({ children, activeId, title, subtitle, mobileHeader, wide, hideTabs }: DesktopPageLayoutProps) => {
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
-  const location = useLocation();
 
   const themeClass = activeId === 'aprender' ? 'theme-aprender' : activeId === 'questoes' ? 'theme-questoes' : 'theme-vademecum';
 
@@ -89,18 +87,19 @@ const DesktopPageLayout = ({ children, activeId, title, subtitle, mobileHeader, 
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden relative">
-          <div
-            key={location.pathname}
-            className={`animate-in fade-in slide-in-from-bottom-3 duration-300 ease-out ${
-              wide ? 'w-full max-w-[1600px] mx-auto px-6 lg:px-10 2xl:px-16 py-8' : 'w-full max-w-6xl mx-auto px-6 lg:px-10 2xl:px-14 py-8'
-            }`}
-          >
-            <div className="mb-6">
-              <h1 className="font-display text-2xl text-foreground font-bold">{title}</h1>
-              {subtitle && <p className="text-muted-foreground text-sm mt-1">{subtitle}</p>}
-            </div>
-            {children}
+        <div
+          className={
+            wide
+              ? 'w-full max-w-[1600px] mx-auto px-6 lg:px-10 2xl:px-16 py-8'
+              : 'w-full max-w-6xl mx-auto px-6 lg:px-10 2xl:px-14 py-8'
+          }
+        >
+          <div className="mb-6">
+            <h1 className="font-display text-2xl text-foreground font-bold">{title}</h1>
+            {subtitle && <p className="text-muted-foreground text-sm mt-1">{subtitle}</p>}
           </div>
+          {children}
+        </div>
       </div>
     </div>
   );
