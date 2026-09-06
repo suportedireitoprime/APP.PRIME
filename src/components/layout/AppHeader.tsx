@@ -24,6 +24,8 @@ interface AppHeaderProps {
   scrollTargetRef?: React.RefObject<HTMLElement>;
   /** Show a translucent blurred background (default true). */
   translucent?: boolean;
+  /** Exibe barra de progresso horizontal sutil no rodapé ao rolar a página (Item 40). */
+  showProgress?: boolean;
 }
 
 /**
@@ -40,19 +42,30 @@ export function AppHeader({
   className,
   scrollTargetRef,
   translucent = true,
+  showProgress = true,
 }: AppHeaderProps) {
   const navigate = useNavigate();
   const goBack = useGoBack();
   const [scrolled, setScrolled] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
     const el: any = scrollTargetRef?.current ?? window;
-    const getY = () =>
-      scrollTargetRef?.current ? scrollTargetRef.current.scrollTop : window.scrollY;
-    const handler = () => setScrolled(getY() > 4);
-    handler();
-    el.addEventListener("scroll", handler, { passive: true });
-    return () => el.removeEventListener("scroll", handler);
+    const updateProgress = () => {
+      const current = scrollTargetRef?.current ? scrollTargetRef.current.scrollTop : window.scrollY;
+      const total = scrollTargetRef?.current
+        ? scrollTargetRef.current.scrollHeight - scrollTargetRef.current.clientHeight
+        : document.documentElement.scrollHeight - window.innerHeight;
+      if (total > 0) {
+        setScrollProgress(Math.min(100, Math.max(0, (current / total) * 100)));
+      } else {
+        setScrollProgress(0);
+      }
+      setScrolled(current > 4);
+    };
+    updateProgress();
+    el.addEventListener("scroll", updateProgress, { passive: true });
+    return () => el.removeEventListener("scroll", updateProgress);
   }, [scrollTargetRef]);
 
   const handleBack = () => {
@@ -113,6 +126,14 @@ export function AppHeader({
           {right}
         </div>
       </div>
+
+      {/* Indicador de progresso de leitura horizontal no rodapé do header (Item 40) */}
+      {showProgress && scrollProgress > 0 && (
+        <div
+          className="absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-primary via-amber-400 to-primary transition-[width] duration-150 ease-out pointer-events-none"
+          style={{ width: `${scrollProgress}%` }}
+        />
+      )}
     </header>
   );
 }

@@ -10,19 +10,33 @@ export default function BackToTop() {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Show when scrolled down 800px
-      if (window.scrollY > 800) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
+      const desktopContainer = document.querySelector<HTMLElement>(
+        '#desktop-scroll-container, [data-desktop-scroll="true"]'
+      );
+      const y = Math.max(
+        window.scrollY || document.documentElement.scrollTop || 0,
+        desktopContainer ? desktopContainer.scrollTop : 0
+      );
+      setIsVisible(y > 500);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    const desktopContainer = document.querySelector<HTMLElement>(
+      '#desktop-scroll-container, [data-desktop-scroll="true"]'
+    );
+    if (desktopContainer) {
+      desktopContainer.addEventListener('scroll', handleScroll, { passive: true });
+    }
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (desktopContainer) {
+        desktopContainer.removeEventListener('scroll', handleScroll);
+      }
+    };
   }, []);
 
-  // Hide on route change temporarily until user scrolls again
+  // Oculta momentaneamente na mudança de rota
   useEffect(() => {
     setIsVisible(false);
   }, [location.pathname]);
@@ -31,8 +45,17 @@ export default function BackToTop() {
     haptic.selection();
     window.scrollTo({
       top: 0,
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
+    const desktopContainer = document.querySelector<HTMLElement>(
+      '#desktop-scroll-container, [data-desktop-scroll="true"]'
+    );
+    if (desktopContainer) {
+      desktopContainer.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
+    }
   };
 
   return (

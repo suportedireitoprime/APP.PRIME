@@ -18,6 +18,9 @@ interface LeiArtigosVirtualListProps {
   anotadoNumeros: Set<string>;
 }
 
+// Cache de offset para restauração de posição na virtualização (Item 37)
+const virtualOffsetCache = new Map<string, number>();
+
 const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
   visibleArtigos,
   shouldVirtualizeArtigos,
@@ -34,6 +37,7 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
 }) => {
   const artigosListRef = useRef<HTMLDivElement | null>(null);
   const [artigosListOffset, setArtigosListOffset] = useState(0);
+  const listKey = loadedKey || selectedTabelaNome || 'artigos-vade-mecum';
 
   const highlightText = (text: string) => text; // Implement real highlighting if needed, or pass it from parent
 
@@ -67,7 +71,21 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
     estimateSize: () => 116,
     overscan: 20,
     scrollMargin: artigosListOffset,
+    initialOffset: () => virtualOffsetCache.get(listKey) ?? (typeof window !== 'undefined' ? window.scrollY : 0),
   });
+
+  // Salva periodicamente o scroll offset da lista para restaurar na navegação de volta (Item 37)
+  useLayoutEffect(() => {
+    if (!shouldVirtualizeArtigos) return;
+    const saveOffset = () => {
+      virtualOffsetCache.set(listKey, window.scrollY);
+    };
+    window.addEventListener('scroll', saveOffset, { passive: true });
+    return () => {
+      saveOffset();
+      window.removeEventListener('scroll', saveOffset);
+    };
+  }, [shouldVirtualizeArtigos, listKey]);
 
   return (
     <div ref={artigosListRef} className={shouldVirtualizeArtigos ? 'pb-8' : 'space-y-2 pb-8'}>

@@ -96,6 +96,9 @@ html {
   /* Evita layout shift de 15px na barra de rolagem e conflito de barras no desktop (Item 26) */
   scrollbar-gutter: stable;
 
+  /* Garante margem de respiro para que o header fixo não cubra âncoras e títulos (Item 36) */
+  scroll-padding-top: calc(4.5rem + var(--sai-top, 0px));
+
   /* Bloqueia o "esticar a tela" nos topos e rodapés (rubber-banding) */
   overscroll-behavior-y: none;
   
