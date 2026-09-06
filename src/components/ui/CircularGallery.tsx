@@ -422,7 +422,7 @@ class Media {
             ctx.shadowOffsetY = 4;
 
             // Recuo seguro da base visível para nunca cortar a borda inferior
-            const bottomMargin = visibleHeight * 0.09 + (this.progress !== undefined ? visibleHeight * 0.03 : 0);
+            const bottomMargin = visibleHeight * 0.15 + (this.progress !== undefined ? visibleHeight * 0.03 : 0);
             const startY = visibleBottomY - bottomMargin;
 
             if (lines.length === 1) {
@@ -708,6 +708,17 @@ class App {
     this.onResize();
     this.createGeometry();
     this.createMedias(items, bend, textColor, borderRadius, font);
+    
+    // Iniciar em uma posição aleatória para que nunca haja um começo fixo (fluxo sempre infinito e aleatório)
+    if (this.medias && this.medias[0]) {
+      const width = this.medias[0].width;
+      const randomOffset = Math.floor(Math.random() * this.originalLength) * width;
+      this.scroll.target = randomOffset;
+      this.scroll.current = randomOffset;
+      this.scroll.position = randomOffset;
+      this.scroll.last = randomOffset;
+    }
+
     this.update();
     this.addEventListeners();
     
@@ -789,14 +800,21 @@ class App {
   onTouchDown(e) {
     if (this.container && !this.container.contains(e.target)) return;
 
-    // Hit test: only allow dragging/touching if started on a card
     const startX = e.touches ? e.touches[0].clientX : e.clientX;
     const startY = e.touches ? e.touches[0].clientY : e.clientY;
     const rect = this.container.getBoundingClientRect();
+    
+    // Restringe interação apenas à altura real das capas e vãos (ignora toques acima ou abaixo das capas)
+    const cardTop = rect.top + rect.height * 0.08;
+    const cardBottom = rect.top + rect.height * 0.88;
+    if (startY < cardTop || startY > cardBottom) {
+      return;
+    }
+
     this.mouse.x = 2.0 * (startX - rect.left) / this.screen.width - 1.0;
     this.mouse.y = 2.0 * (1.0 - (startY - rect.top) / this.screen.height) - 1.0;
     this.raycast.castMouse(this.camera, this.mouse);
-    // Permitir arrastar a partir de qualquer lugar dentro do container, não apenas nas capas
+    
     this.isDown = true;
     this.scroll.position = this.scroll.current;
     this.start = startX;
@@ -842,27 +860,25 @@ class App {
       // If distance is small, it's a click
       if (dist < 10) {
         const rect = this.container.getBoundingClientRect();
-        this.mouse.x = 2.0 * (endX - rect.left) / this.screen.width - 1.0;
-        this.mouse.y = 2.0 * (1.0 - (endY - rect.top) / this.screen.height) - 1.0;
+        const cardTop = rect.top + rect.height * 0.08;
+        const cardBottom = rect.top + rect.height * 0.88;
         
-        this.raycast.castMouse(this.camera, this.mouse);
-        const meshes = this.medias.map(m => m.plane);
-        const hits = this.raycast.intersectBounds(meshes);
-        
-        if (hits.length > 0) {
-          // Sort hits by z-index if necessary, but intersectBounds returns closest first
-          const hitMesh = hits[0];
-          const media = this.medias.find(m => m.plane === hitMesh);
-          if (media) {
-            const actualIndex = media.index % this.originalLength;
-            this.onItemClick(this.mediasImages[actualIndex], actualIndex);
-          }
-        } else {
-          // Fallback to centered item if raycast misses but user clicked
-          if (this.medias && this.medias[0]) {
-            const width = this.medias[0].width;
-            const itemIndex = Math.round(Math.abs(this.scroll.target) / width) % this.originalLength;
-            this.onItemClick(this.mediasImages[itemIndex], itemIndex);
+        // Só dispara clique se estiver rigorosamente na altura das capas
+        if (endY >= cardTop && endY <= cardBottom) {
+          this.mouse.x = 2.0 * (endX - rect.left) / this.screen.width - 1.0;
+          this.mouse.y = 2.0 * (1.0 - (endY - rect.top) / this.screen.height) - 1.0;
+          
+          this.raycast.castMouse(this.camera, this.mouse);
+          const meshes = this.medias.map(m => m.plane);
+          const hits = this.raycast.intersectBounds(meshes);
+          
+          if (hits.length > 0) {
+            const hitMesh = hits[0];
+            const media = this.medias.find(m => m.plane === hitMesh);
+            if (media) {
+              const actualIndex = media.index % this.originalLength;
+              this.onItemClick(this.mediasImages[actualIndex], actualIndex);
+            }
           }
         }
       }

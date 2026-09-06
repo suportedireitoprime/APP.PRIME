@@ -97,7 +97,10 @@ const MobileHomeSections = ({
     const images = FAST_PILLS_ITEMS.map((item) => item.image);
     const cpImage = images[0];
     
-    return AREA_CATS.map((area, index) => {
+    // Embaralha para que nunca haja uma ordem fixa nem começo pré-determinado
+    const randomAreas = shuffle(AREA_CATS);
+    
+    return randomAreas.map((area, index) => {
       const image = index < images.length ? images[index] : cpImage;
       return {
         id: area.id,
