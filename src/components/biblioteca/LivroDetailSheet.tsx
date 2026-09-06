@@ -18,6 +18,7 @@ import { isFavorito, toggleFavorito, pushRecente, subscribeTracking } from '@/li
 import { copiarTexto } from '@/lib/nativo/copiar';
 import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar';
 import { haptic } from '@/lib/nativeHaptics';
+import { setDynamicOgImage } from '@/lib/seoImageMeta';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import PremiumGate from '@/components/PremiumGate';
@@ -118,9 +119,10 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
     haptic.light();
     setFav(isFavorito(livro));
     pushRecente(livro);
+    setDynamicOgImage(capaUrl || livro.capa, livro.titulo);
     const unsub = subscribeTracking(() => setFav(isFavorito(livro)));
     return () => unsub();
-  }, [livro, open]);
+  }, [livro, open, capaUrl]);
 
   // Trava scroll do fundo enquanto a folha estiver aberta, exceto se for renderizado inline
   useBodyScrollLock(open && !inline);

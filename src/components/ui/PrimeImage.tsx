@@ -147,7 +147,7 @@ export const PrimeImage = React.memo(function PrimeImage({
   return (
     <div
       className={cn(
-        "relative overflow-hidden bg-zinc-900/90 w-full select-none",
+        "relative overflow-hidden bg-zinc-900/90 w-full select-none transform-gpu backface-hidden contrast-more:border contrast-more:border-amber-400/80 contrast-more:ring-1",
         aspectClass,
         containerClassName
       )}
@@ -174,7 +174,7 @@ export const PrimeImage = React.memo(function PrimeImage({
           onLoad={handleLoad}
           onError={handleError}
           className={cn(
-            "w-full h-full object-cover transition-opacity duration-300 ease-out relative z-10",
+            "w-full h-full object-cover transition-opacity duration-300 ease-out relative z-10 transform-gpu will-change-transform",
             !isLoaded && !hasFailed ? "opacity-0" : "opacity-100",
             className
           )}

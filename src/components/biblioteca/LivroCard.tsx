@@ -1,3 +1,4 @@
+import { PrimeImage } from '@/components/ui/PrimeImage';
 import { useBibliotecaCapa } from '@/hooks/useBibliotecaAsset';
 import { useIsPdfCached } from '@/hooks/useIsPdfCached';
 import { CloudOff, CheckCircle2 } from 'lucide-react';
@@ -32,33 +33,28 @@ const LivroCard = ({ livro, onClick, priority }: LivroCardProps) => {
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.97 }}
       onClick={onClick}
-      className="flex-shrink-0 w-[120px] snap-start group text-left relative focus-visible:outline-none"
+      aria-label={`Abrir livro ${livro.titulo}${livro.autor ? ` de ${livro.autor}` : ''}`}
+      className="flex-shrink-0 w-[120px] snap-start group text-left relative rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/80 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
     >
       <div className="w-[120px] h-[170px] rounded-lg overflow-hidden bg-muted border border-border shadow-sm group-hover:shadow-md transition-shadow relative">
         {isDownloaded && (
-          <div className="absolute top-1.5 right-1.5 z-10 bg-black/60 backdrop-blur-sm p-1 rounded-full border border-white/10 shadow-sm">
+          <div className="absolute top-1.5 right-1.5 z-20 bg-black/60 backdrop-blur-sm p-1 rounded-full border border-white/10 shadow-sm">
             <CheckCircle2 className="w-3.5 h-3.5 text-green-400" />
           </div>
         )}
-        <div className="absolute bottom-1.5 right-1.5 z-10 bg-black/70 backdrop-blur-md px-1.5 py-0.5 rounded-md border border-white/10 shadow-sm">
+        <div className="absolute bottom-1.5 right-1.5 z-20 bg-black/70 backdrop-blur-md px-1.5 py-0.5 rounded-md border border-white/10 shadow-sm">
           <span className="text-[9px] font-medium text-white/90 tracking-wide">{tempoEstimado}</span>
         </div>
-        {capaUrl ? (
-            <img
-              src={capaUrl}
-              alt={livro.titulo}
-              className="w-full h-full object-cover"
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-            />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5 p-2">
-            <span className="text-[10px] text-center text-muted-foreground font-medium leading-tight line-clamp-4">
-              {livro.titulo}
-            </span>
-          </div>
-        )}
+        <PrimeImage
+          src={capaUrl}
+          alt={`Capa do livro: ${livro.titulo}`}
+          aspectRatio="auto"
+          targetWidth={300}
+          priority={priority}
+          fallbackText={livro.titulo}
+          containerClassName="w-full h-full"
+          className="w-full h-full object-cover"
+        />
       </div>
       <p className="mt-1.5 text-[11px] font-semibold text-foreground line-clamp-2 leading-tight group-hover:text-primary transition-colors">
         {livro.titulo}

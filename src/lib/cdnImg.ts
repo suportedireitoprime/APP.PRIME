@@ -23,6 +23,15 @@ const proxied = (url: string, w: number) =>
 const resolve = (url: string) => assetUrl(url) || url;
 
 /**
+ * Retorna o multiplicador de densidade de tela (DPR) seguro (clamped entre 1x e 2x).
+ * Em telas ultra high-DPI (3.5x a 4x no Android/Samsung), evita alocação de texturas gigantescas na VRAM (Item 54).
+ */
+export const getSafeDpr = (): number => {
+  if (typeof window === 'undefined') return 1;
+  return Math.min(Math.max(window.devicePixelRatio || 1, 1), 2);
+};
+
+/**
  * Transforma uma URL pública do Supabase Storage no endpoint de Image Transformation:
  * `/storage/v1/object/public/<bucket>/<path>` -> `/storage/v1/render/image/public/<bucket>/<path>?width=<w>&quality=<q>&resize=contain`
  * 
@@ -32,13 +41,16 @@ const resolve = (url: string) => assetUrl(url) || url;
 export const toSupabaseRenderUrl = (url: string, w: number, quality = 80): string => {
   try {
     if (!url || typeof url !== 'string') return '';
+    // Normalização de barras invertidas para compatibilidade total com Android WebView (Item 55)
+    const normalized = url.replace(/\\/g, '/');
     // Preserva SVGs intactos (vetores não devem ser rasterizados)
-    if (url.toLowerCase().endsWith('.svg')) return url;
+    if (normalized.toLowerCase().endsWith('.svg')) return normalized;
 
-    if (url.includes('/storage/v1/object/public/')) {
-      const renderBase = url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/');
+    if (normalized.includes('/storage/v1/object/public/')) {
+      const renderBase = normalized.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/');
       const parsed = new URL(renderBase);
-      parsed.searchParams.set('width', String(Math.min(Math.max(w, 100), 1600)));
+      const safeWidth = Math.round(w * getSafeDpr());
+      parsed.searchParams.set('width', String(Math.min(Math.max(safeWidth, 100), 1600)));
       parsed.searchParams.set('quality', String(quality));
       parsed.searchParams.set('resize', 'contain');
       return parsed.toString();

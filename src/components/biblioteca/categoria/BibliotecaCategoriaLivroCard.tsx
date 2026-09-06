@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 import { Bookmark } from 'lucide-react';
 import { useBibliotecaCapa } from '@/hooks/useBibliotecaAsset';
+import { PrimeImage } from '@/components/ui/PrimeImage';
 import type { LivroBadgeInfo } from '@/hooks/useLivroBadges';
 import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
 
@@ -41,22 +42,16 @@ export const BibliotecaCategoriaLivroCard = memo(function BibliotecaCategoriaLiv
       className="group flex items-stretch gap-3 p-2.5 rounded-2xl bg-card border border-border hover:border-primary/40 hover:bg-secondary/40 transition-colors text-left w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 relative overflow-hidden"
     >
       <div className="w-[72px] h-[100px] shrink-0 rounded-lg overflow-hidden bg-muted shadow-sm">
-        {capaUrl ? (
-          <img
-            src={capaUrl}
-            alt={livro.titulo}
-            className="w-full h-full object-cover"
-            loading={priority ? 'eager' : 'lazy'}
-            decoding="async"
-            {...(priority ? { fetchpriority: 'high' as any } : {})}
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5 p-1.5">
-            <span className="text-[9px] text-center text-muted-foreground font-medium leading-tight line-clamp-4">
-              {livro.titulo}
-            </span>
-          </div>
-        )}
+        <PrimeImage
+          src={capaUrl}
+          alt={`Capa do livro: ${livro.titulo}`}
+          aspectRatio="auto"
+          targetWidth={200}
+          priority={priority}
+          fallbackText={livro.titulo}
+          containerClassName="w-full h-full"
+          className="w-full h-full object-cover"
+        />
       </div>
       <div className="flex-1 min-w-0 flex flex-col justify-center py-0.5">
         <p className="text-[14px] sm:text-[15px] font-bold text-foreground line-clamp-2 leading-tight group-hover:text-primary transition-colors break-words">

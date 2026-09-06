@@ -6,6 +6,7 @@ import { readLeituraProgress, formatDuration } from '@/lib/leituraProgress';
 import { directImg, prefetchImage } from '@/lib/cdnImg';
 import { pullLeituraProgress } from '@/lib/leituraProgressSync';
 import { useBibliotecaCapa } from '@/hooks/useBibliotecaAsset';
+import { PrimeImage } from '@/components/ui/PrimeImage';
 
 interface Props {
   onAbrirLivro: (livro: LivroNormalizado) => void;
@@ -71,19 +72,20 @@ const ContinueCard = memo(({ item, onAbrirLivro }: { item: any, onAbrirLivro: (l
   return (
     <button
       onClick={() => onAbrirLivro(snapToNormalizado(snap))}
-      className="snap-start shrink-0 w-[300px] sm:w-[340px] flex gap-4 items-stretch rounded-2xl border border-border/60 bg-card shadow-lg shadow-black/30 overflow-hidden text-left active:scale-[0.985] transition-transform"
+      aria-label={`Continuar leitura do livro ${snap.titulo}`}
+      className="snap-start shrink-0 w-[300px] sm:w-[340px] flex gap-4 items-stretch rounded-2xl border border-border/60 bg-card shadow-lg shadow-black/30 overflow-hidden text-left active:scale-[0.985] transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/80"
     >
       <div className="relative w-[104px] shrink-0 bg-muted">
-        {capaUrl ? (
-          <img
-            src={capaUrl}
-            alt=""
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-        ) : null}
+        <PrimeImage
+          src={capaUrl}
+          alt={`Capa da obra: ${snap.titulo}`}
+          aspectRatio="auto"
+          targetWidth={240}
+          priority={true}
+          fallbackText={snap.titulo}
+          containerClassName="w-full h-full"
+          className="w-full h-full object-cover"
+        />
       </div>
       <div className="flex-1 min-w-0 flex flex-col justify-between py-3 pr-3">
         <div>

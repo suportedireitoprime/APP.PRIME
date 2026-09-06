@@ -40,6 +40,8 @@ export function bootstrapIdleNative() {
 
   // RUM de Core Web Vitals (LCP/INP/CLS/FCP/TTFB) — env real dos usuários.
   import('../webVitalsRum').then((m) => m.initWebVitals()).catch(() => {});
+  // Telemetria especializada de LCP de Imagens (Item 88 do Relatório)
+  import('../imageTelemetry').then((m) => m.initImageTelemetry()).catch(() => {});
 
   // Sincronização incremental de leis + prime da memória com o bundle nativo.
   // Rodam em idle real para não competir com o primeiro paint —

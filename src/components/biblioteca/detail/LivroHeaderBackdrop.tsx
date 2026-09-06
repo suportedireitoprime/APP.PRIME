@@ -1,5 +1,6 @@
 import { useState, useEffect, type RefObject } from 'react';
 import { BookOpen } from 'lucide-react';
+import { PrimeImage } from '@/components/ui/PrimeImage';
 
 interface LivroHeaderBackdropProps {
   capaHorizontalUrl?: string | null;
@@ -95,29 +96,18 @@ export const LivroHeaderBackdrop = ({
         <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent pointer-events-none" />
 
         {/* Capa vertical sobreposta */}
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-3 z-10">
-          {!frontCoverFailed && capaUrl ? (
-            <img
-              src={capaUrl}
-              alt={titulo}
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-              className="w-28 h-40 rounded-lg object-cover shadow-[0_20px_60px_-10px_rgba(0,0,0,0.8)] ring-1 ring-white/15"
-              onLoad={handleScrollReset}
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                setFrontCoverFailed(true);
-              }}
-            />
-          ) : (
-            <div className="w-28 h-40 rounded-lg bg-gradient-to-br from-neutral-800 to-neutral-900 border border-white/10 shadow-[0_20px_60px_-10px_rgba(0,0,0,0.8)] flex flex-col items-center justify-center p-2.5 text-center">
-              <BookOpen className="w-7 h-7 text-primary/80 mb-2" />
-              <span className="text-[11px] font-semibold text-foreground leading-tight line-clamp-3">
-                {titulo}
-              </span>
-            </div>
-          )}
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-3 z-10 w-28 h-40">
+          <PrimeImage
+            src={capaUrl}
+            alt={`Capa da obra: ${titulo}`}
+            aspectRatio="auto"
+            targetWidth={300}
+            priority={true}
+            fallbackText={titulo}
+            containerClassName="w-28 h-40 rounded-lg shadow-[0_20px_60px_-10px_rgba(0,0,0,0.8)] ring-1 ring-white/15 overflow-hidden"
+            className="w-full h-full object-cover"
+            onLoadComplete={handleScrollReset}
+          />
         </div>
       </div>
 
