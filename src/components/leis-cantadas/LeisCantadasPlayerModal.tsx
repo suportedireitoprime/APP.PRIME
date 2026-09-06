@@ -294,7 +294,7 @@ export function LeisCantadasPlayerModal({
               </div>
               {atual.resumo_texto ? (
                 <div
-                  className="resumo-markdown break-words text-white/90 [overflow-wrap:anywhere]"
+                  className="resumo-markdown text-white/90 [overflow-wrap:anywhere]"
                   style={{ fontSize: `${resumoFontSize}px`, lineHeight: 1.7 }}
                 >
                   <ReactMarkdown
@@ -430,7 +430,7 @@ export function LeisCantadasPlayerModal({
                 </div>
               ) : artigoTexto ? (
                 <div
-                  className="break-words [overflow-wrap:anywhere]"
+                  className="[overflow-wrap:anywhere]"
                   style={{ fontSize: `${artigoFontSize}px`, lineHeight: 1.75 }}
                 >
                   <span className="block text-white/90 whitespace-pre-line leading-relaxed">
