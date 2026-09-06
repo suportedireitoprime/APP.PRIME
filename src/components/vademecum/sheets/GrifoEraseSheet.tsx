@@ -72,7 +72,7 @@ const GrifoEraseSheet = ({ open, onClose, highlights, onRemoveByColor, onClearAl
           onClick={(e) => e.stopPropagation()}
           className="relative z-10 w-full max-w-sm bg-card border border-border/80 rounded-3xl shadow-2xl p-5 flex flex-col max-h-[85vh] overflow-hidden pointer-events-auto cursor-default select-none touch-manipulation"
           style={{
-            marginBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0px))',
+            marginBottom: 'max(1.5rem, env(safe-area-inset-bottom, 0px))',
           }}
         >
           {/* Header */}
@@ -109,7 +109,7 @@ const GrifoEraseSheet = ({ open, onClose, highlights, onRemoveByColor, onClearAl
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    haptic.notification();
+                    haptic.success();
                     onClearAll();
                     onClose();
                   }}
@@ -141,7 +141,7 @@ const GrifoEraseSheet = ({ open, onClose, highlights, onRemoveByColor, onClearAl
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      haptic.notification();
+                      haptic.success();
                       onRemoveByColor(g.color);
                       if (grouped.length <= 1) {
                         onClose();
@@ -165,7 +165,7 @@ const GrifoEraseSheet = ({ open, onClose, highlights, onRemoveByColor, onClearAl
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  haptic.notification();
+                  haptic.success();
                   onClearAll();
                   onClose();
                 }}

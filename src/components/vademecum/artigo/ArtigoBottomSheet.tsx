@@ -506,7 +506,6 @@ const ArtigoBottomSheet = ({
 
   const handleTextSelection = useCallback(() => {
     if (!highlightMode) return;
-    if (isMobile) return;
     setTimeout(() => {
       const sel = window.getSelection();
       if (!sel || sel.isCollapsed || !sel.toString().trim()) return;
@@ -517,8 +516,8 @@ const ArtigoBottomSheet = ({
       if (newId) {
         openCreatePrompt(newId);
       }
-    }, 10);
-  }, [highlightMode, addHighlight, isMobile, containerRef, openCreatePrompt]);
+    }, 40);
+  }, [highlightMode, addHighlight, containerRef, openCreatePrompt]);
 
   // Mobile: Grifo instantâneo por toque e arraste
   useEffect(() => {
@@ -840,7 +839,7 @@ const ArtigoBottomSheet = ({
               showSharePanel={showSharePanel}
               selectedColor={selectedColor}
               setSelectedColor={setSelectedColor}
-              clearAll={clearAll}
+              clearAll={handleClearAllGrifos}
               magicMode={magicMode}
               magicHighlights={magicHighlights}
             />
@@ -939,6 +938,7 @@ const ArtigoBottomSheet = ({
                       }
                     }}
                     onMouseUp={handleTextSelection}
+                    onTouchEnd={handleTextSelection}
                   >
                     {displayLines.map((line, i) => (
                       <ArtigoLineRenderer

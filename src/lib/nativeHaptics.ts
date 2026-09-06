@@ -22,4 +22,5 @@ export const haptic = {
   success: () => run(({ Haptics, NotificationType }) => Haptics.notification({ type: NotificationType.Success })),
   warning: () => run(({ Haptics, NotificationType }) => Haptics.notification({ type: NotificationType.Warning })),
   error: () => run(({ Haptics, NotificationType }) => Haptics.notification({ type: NotificationType.Error })),
+  notification: () => run(({ Haptics, NotificationType }) => Haptics.notification({ type: NotificationType.Success })),
 };

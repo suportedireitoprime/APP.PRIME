@@ -375,7 +375,7 @@ export function useArtigoGrifoMagico({
     setMagicHighlights([]);
     setMagicMode(false);
     setMagicTooltip(null);
-    import('@/lib/nativeHaptics').then(({ haptic }) => haptic.notification()).catch(() => {});
+    import('@/lib/nativeHaptics').then(({ haptic }) => haptic.success()).catch(() => {});
     toast.success('Todos os grifos foram apagados');
   }, [clearAll, magicHighlights, persistMagicRemoval, tabelaNome, artigo?.numero]);
 
@@ -634,6 +634,10 @@ export function useArtigoGrifoMagico({
 
   const handleRemoveSingleMagicHighlight = useCallback((grifo: MagicGrifo) => {
     const next = magicHighlights.filter((g) => g.trechoExato !== grifo.trechoExato);
+    setMagicHighlights(next);
+    if (next.length === 0) {
+      setMagicMode(false);
+    }
     void persistMagicRemoval(next, [grifo]);
     if (tabelaNome && artigo?.numero) {
       writeArtigoGrifos(tabelaNome, String(artigo.numero), next.length > 0 ? (next as any) : []);

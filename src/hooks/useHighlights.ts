@@ -45,7 +45,7 @@ export function useHighlights(artigoId: string | null) {
   const persist = useCallback((h: Highlight[]) => {
     if (!artigoId) return;
     localStorage.setItem(storageKey(artigoId), JSON.stringify(h));
-    // Sync to Supabase
+    // Sync to Supabase com upsert seguro
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session?.user) return;
       supabase
@@ -58,11 +58,14 @@ export function useHighlights(artigoId: string | null) {
           allHighlights[artigoId] = h;
           supabase
             .from('user_preferences')
-            .update({ highlights: allHighlights, updated_at: new Date().toISOString() })
-            .eq('user_id', session.user.id)
+            .upsert(
+              { user_id: session.user.id, highlights: allHighlights, updated_at: new Date().toISOString() },
+              { onConflict: 'user_id' }
+            )
             .then(() => {});
-        });
-    });
+        })
+        .catch(() => {});
+    }).catch(() => {});
   }, [artigoId]);
 
   const addHighlight = useCallback((): string | null => {

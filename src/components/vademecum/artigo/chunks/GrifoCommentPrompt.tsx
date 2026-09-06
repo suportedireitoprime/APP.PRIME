@@ -143,7 +143,7 @@ export const GrifoCommentPrompt = ({
                 </div>
               </div>
 
-              <div className="flex gap-2.5 pt-4 mt-auto border-t border-border/50 shrink-0 pb-[calc(env(safe-area-inset-bottom,0px))]">
+              <div className="flex gap-2.5 pt-4 mt-auto border-t border-border/50 shrink-0 pb-[max(1.5rem,calc(0.75rem+env(safe-area-inset-bottom,0px)))]">
                 <button
                   onClick={handleDismissComment}
                   className="flex-1 h-12 min-h-[48px] rounded-2xl text-sm font-bold text-muted-foreground bg-secondary hover:bg-secondary/80 transition-colors"

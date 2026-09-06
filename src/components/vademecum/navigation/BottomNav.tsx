@@ -200,7 +200,7 @@ const BottomNav = () => {
       />
       {/* Menu Principal */}
       <div className="relative z-10 bg-nav-panel border-t border-white/10 rounded-t-2xl md:border-t-0 md:rounded-none md:h-full md:bg-black/95 shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)] md:shadow-none pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] md:pb-0">
-        <div className="max-w-2xl mx-auto px-2 py-2 md:py-8 md:h-full md:flex md:flex-col md:justify-center md:gap-6">
+        <div className="max-w-2xl mx-auto px-2 py-1.5 md:py-8 md:h-full md:flex md:flex-col md:justify-center md:gap-6">
         <div className="grid grid-cols-5 md:grid-cols-1 items-stretch md:gap-6">
           {/* Slot 1: Blog */}
           <motion.button
@@ -211,7 +211,7 @@ const BottomNav = () => {
             onClick={() => { haptic.light(); navigate('/blog'); }}
             data-track="bottom_nav_click"
             data-track-destino="blog"
-            className={`flex flex-col items-center justify-center gap-1 py-2 md:py-3 rounded-xl transition-colors relative ${
+            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-colors relative ${
               path.startsWith('/blog') ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
             }`}
             aria-label="Blog"
@@ -227,7 +227,7 @@ const BottomNav = () => {
             onClick={() => { haptic.selection(); setChatOpen(true); }}
             data-track="bottom_nav_click"
             data-track-destino="chat"
-            className={`flex flex-col items-center justify-center gap-1 py-2 md:py-3 rounded-xl transition-colors ${
+            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-colors ${
               chatOpen ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
             }`}
             aria-label="Chat Jurídico"
@@ -245,7 +245,7 @@ const BottomNav = () => {
             onClick={() => { haptic.light(); if (!path.startsWith('/vade-mecum')) navigate('/vade-mecum'); }}
             data-track="bottom_nav_click"
             data-track-destino="vade-mecum"
-            className="relative flex flex-col items-center justify-end gap-1 py-2 md:py-3 md:justify-center md:rounded-xl md:hover:bg-white/10"
+            className="relative flex flex-col items-center justify-end gap-1 py-1.5 md:py-3 md:justify-center md:rounded-xl md:hover:bg-white/10"
             aria-label="Vade Mecum"
           >
             <span
@@ -277,7 +277,7 @@ const BottomNav = () => {
             }}
             data-track="bottom_nav_click"
             data-track-destino="ferramentas"
-            className={`flex flex-col items-center justify-center gap-1 py-2 md:py-3 rounded-xl transition-colors ${
+            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-colors ${
               location.pathname.startsWith('/ferramentas') ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
             }`}
             aria-label="Ferramentas"
@@ -295,7 +295,7 @@ const BottomNav = () => {
             onClick={() => { haptic.selection(); navigate('/pilulas'); }}
             data-track="bottom_nav_click"
             data-track-destino="pilulas"
-            className={`flex flex-col items-center justify-center gap-1 py-2 md:py-3 rounded-xl transition-colors ${
+            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-colors ${
               path.startsWith('/pilulas') ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
             }`}
             aria-label="Pílulas"
@@ -306,8 +306,6 @@ const BottomNav = () => {
         </div>
       </div>
     </div>
-    {/* Inset de fundo do sistema do celular (preto/escuro) sem puxar a cor do menu */}
-    <div className="bg-black h-[calc(0.5rem+var(--sai-bottom))] md:hidden" />
   </nav>
 
 

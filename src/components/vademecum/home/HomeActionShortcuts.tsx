@@ -6,9 +6,10 @@ import { Capacitor } from '@capacitor/core';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { useShortcutBadges } from '@/hooks/useShortcutBadges';
 import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
+import { haptic } from '@/lib/nativeHaptics';
 
 const SHORTCUT_ITEMS = [
-  { label: 'Aprender',    icon: GraduationCap,    to: '/aprender',     color: '#FACC15', badgeColor: null, badgeKey: null, prefetch: 'aprender' as any },
+  { label: 'Aprender',    icon: GraduationCap,    to: '/aprender',     color: '#FACC15', badgeColor: null, badgeKey: null, prefetch: 'aprender' as PrefetchKey },
   { label: 'Flashcards',  icon: FlashcardsIcon,   to: '/flashcards',   color: '#34D399', badgeColor: null, badgeKey: null, prefetch: 'flashcards' as PrefetchKey },
   { label: 'Questões',    icon: ListChecks,       to: '/questoes',     color: '#F87171', badgeColor: null, badgeKey: null, prefetch: 'questoes' as PrefetchKey },
   { label: 'Me Explique', icon: Camera,           to: '/me-explique',  color: '#F97316', badgeColor: null, badgeKey: null, prefetch: 'meExplique' as PrefetchKey },
@@ -26,18 +27,24 @@ const HomeActionShortcuts = () => {
         return (
           <button
             key={item.label}
+            type="button"
             onPointerDown={() => prefetchRoute(item.prefetch)}
-            onTouchStart={() => prefetchRoute(item.prefetch)}
             onMouseEnter={() => prefetchRoute(item.prefetch)}
             onFocus={() => prefetchRoute(item.prefetch)}
             onClick={() => {
-              haptic.selection();
-              if (Capacitor.isNativePlatform()) Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
-              if (item.badgeKey) shortcutBadges.markSeen(item.badgeKey);
+              try {
+                haptic.selection();
+                if (Capacitor.isNativePlatform()) {
+                  void Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
+                }
+                if (item.badgeKey) shortcutBadges.markSeen(item.badgeKey);
+              } catch (err) {
+                console.warn('[HomeActionShortcuts] Feedback error:', err);
+              }
               navigate(item.to);
             }}
             style={{ '--shimmer-delay': `${index * 150}ms` } as React.CSSProperties}
-            className="group relative flex flex-col items-center justify-center gap-1 h-[72px] rounded-2xl bg-black/45 backdrop-blur-md border border-white/15 shadow-lg shadow-black/30 active:scale-[0.96] transition-all duration-[80ms] shortcut-button-shine"
+            className="group relative flex flex-col items-center justify-center gap-1 h-[72px] rounded-2xl bg-black/45 backdrop-blur-md border border-white/15 shadow-lg shadow-black/30 active:scale-[0.96] transition-all duration-[80ms] shortcut-button-shine cursor-pointer"
           >
             {badgeCount > 0 && item.badgeColor && (
               <span
