@@ -367,9 +367,9 @@ class Media {
             ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
             ctx.shadowBlur = 12;
             ctx.shadowOffsetY = 4;
-            // Subindo mais o texto para garantir que fontes com baseline estranho não cortem
-            const textY = canvas.height * 0.88 - (this.progress !== undefined ? canvas.height * 0.025 : 0);
-            ctx.fillText(this.text.toUpperCase(), canvas.width * 0.08, textY);
+            // Usar maxWidth (canvas.width * 0.84) para espremer o texto horizontalmente caso seja muito longo (ex: PROCESSUAL CONSTITUCIONAL)
+            const maxWidth = canvas.width * 0.84;
+            ctx.fillText(this.text.toUpperCase(), canvas.width * 0.08, textY, maxWidth);
             ctx.restore();
           }
         }
@@ -549,7 +549,7 @@ class Media {
     this.plane.scale.y = (this.viewport.height * (880 * this.scale)) / this.screen.height;
     this.plane.scale.x = (this.viewport.width * (660 * this.scale)) / this.screen.width;
     this.plane.program.uniforms.uPlaneSizes.value = [this.plane.scale.x, this.plane.scale.y];
-    this.padding = 0.6; // Reduzido drasticamente para remover margens laterais enormes
+    this.padding = 0.15; // Removendo quase toda a margem para ficar coladinho
     this.width = this.plane.scale.x + this.padding;
     this.widthTotal = this.width * this.length;
     this.x = this.width * this.index;
