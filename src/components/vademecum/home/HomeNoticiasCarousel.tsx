@@ -21,13 +21,25 @@ interface Props {
   autoplay?: boolean;
 }
 
+// Preserva o índice ativo do carrossel em memória durante navegação de páginas (Item 30)
+let savedCarouselIndex = 0;
+
 function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: Props) {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const autoplayRef = useRef<number | null>(null);
   const userInteractingRef = useRef(false);
 
   const { feed, feedMode } = useHomeFeed();
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndexState] = useState(() => savedCarouselIndex);
+  
+  const setActiveIndex = useCallback((idx: number | ((prev: number) => number)) => {
+    setActiveIndexState((prev) => {
+      const next = typeof idx === 'function' ? idx(prev) : idx;
+      savedCarouselIndex = next;
+      return next;
+    });
+  }, []);
+
   const [selectedNoticia, setSelectedNoticia] = useState<Noticia | null>(null);
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [selectedLivro, setSelectedLivro] = useState<LivroNormalizado | null>(null);
@@ -50,6 +62,15 @@ function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: Props) {
     const target = child.offsetLeft - (scroller.clientWidth - child.clientWidth) / 2;
     scroller.scrollTo({ left: target, behavior });
   }, []);
+
+  // Restaura a posição visual do carrossel na montagem caso já estivesse em um slide salvo (Item 30)
+  useEffect(() => {
+    if (savedCarouselIndex > 0 && feed.length > savedCarouselIndex) {
+      requestAnimationFrame(() => {
+        scrollToIndex(savedCarouselIndex, 'instant');
+      });
+    }
+  }, [feed.length, scrollToIndex]);
 
   useEffect(() => {
     if (!autoplay || feed.length < 2) return;

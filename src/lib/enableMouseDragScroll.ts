@@ -25,6 +25,16 @@ function findScrollTarget(start: EventTarget | null): HTMLElement | null {
   return null;
 }
 
+let cancelActiveDrag: (() => void) | null = null;
+
+/**
+ * Força o cancelamento imediato de qualquer arrasto de mouse ativo.
+ * Chamado durante transições de rota para evitar que a nova página entre em modo de arraste involuntário (Item 28).
+ */
+export function cancelMouseDragScroll() {
+  cancelActiveDrag?.();
+}
+
 export function enableMouseDragScroll() {
   if (installed || typeof window === 'undefined') return;
   installed = true;
@@ -34,6 +44,17 @@ export function enableMouseDragScroll() {
   let startScroll = 0;
   let dragging = false;
   let moved = false;
+
+  cancelActiveDrag = () => {
+    if (!dragging) return;
+    dragging = false;
+    if (target) {
+      target.style.cursor = '';
+      target.style.userSelect = '';
+    }
+    target = null;
+    moved = false;
+  };
 
   const onMouseDown = (e: MouseEvent) => {
     if (e.button !== 0) return; // left click only
@@ -87,4 +108,5 @@ export function enableMouseDragScroll() {
   window.addEventListener('mousemove', onMouseMove, { passive: false });
   window.addEventListener('mouseup', endDrag);
   window.addEventListener('mouseleave', endDrag);
+  window.addEventListener('blur', cancelMouseDragScroll);
 }

@@ -93,6 +93,9 @@ body::-webkit-scrollbar-track,
 html {
   background-color: hsl(var(--background));
   
+  /* Evita layout shift de 15px na barra de rolagem e conflito de barras no desktop (Item 26) */
+  scrollbar-gutter: stable;
+
   /* Bloqueia o "esticar a tela" nos topos e rodapés (rubber-banding) */
   overscroll-behavior-y: none;
   
