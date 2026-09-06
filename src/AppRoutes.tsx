@@ -875,11 +875,11 @@ function AnimatedRoutes() {
           <Route path="/narracao" element={<ProtectedRoute><PageTransition><NarracaoLei /></PageTransition></ProtectedRoute>} />
           <Route path="/visuais/*" element={<ProtectedRoute><VisualJuridico /></ProtectedRoute>} />
           <Route path="/grafo-artigos" element={<ProtectedRoute><PageTransition><GrafoArtigos /></PageTransition></ProtectedRoute>} />
-          <Route path="/ferramentas" element={<ProtectedRoute><PageTransition><Ferramentas /></PageTransition></ProtectedRoute>} />
+          <Route path="/ferramentas" element={<ProtectedRoute><PageTransition instant><Ferramentas /></PageTransition></ProtectedRoute>} />
           <Route path="/documentos" element={<ProtectedRoute><PageTransition><Documentos /></PageTransition></ProtectedRoute>} />
-          <Route path="/ferramentas/locais" element={<ProtectedRoute><PageTransition><LocaisJuridicos /></PageTransition></ProtectedRoute>} />
-          <Route path="/ferramentas/dicionario" element={<ProtectedRoute><PageTransition><DicionarioJuridicoPage /></PageTransition></ProtectedRoute>} />
-          <Route path="/ferramentas/stf" element={<ProtectedRoute><PageTransition><STFDashboard /></PageTransition></ProtectedRoute>} />
+          <Route path="/ferramentas/locais" element={<ProtectedRoute><PageTransition instant><LocaisJuridicos /></PageTransition></ProtectedRoute>} />
+          <Route path="/ferramentas/dicionario" element={<ProtectedRoute><PageTransition instant><DicionarioJuridicoPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/ferramentas/stf" element={<ProtectedRoute><PageTransition instant><STFDashboard /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/stf/biografias" element={<ProtectedRoute><PageTransition><STFBiografias /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/stf/noticias" element={<ProtectedRoute><PageTransition><STFNoticias /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/stf/sessoes" element={<ProtectedRoute><PageTransition><SessoesSTF /></PageTransition></ProtectedRoute>} />
@@ -888,13 +888,13 @@ function AnimatedRoutes() {
           <Route path="/ferramentas/peticao-inicial/:id" element={<ProtectedRoute><PageTransition><PeticaoInicialEditor /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/plano-estudos" element={<ProtectedRoute><PageTransition><PlanoEstudos /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/locais" element={<ProtectedRoute><PageTransition><AdminLocais /></PageTransition></ProtectedRoute>} />
-          <Route path="/pilulas" element={<ProtectedRoute><PageTransition><PilulasHome /></PageTransition></ProtectedRoute>} />
-          <Route path="/pilulas/lista" element={<ProtectedRoute><PageTransition><PilulasLista /></PageTransition></ProtectedRoute>} />
-          <Route path="/pilulas/deck/:deckId" element={<ProtectedRoute><PageTransition><PilulasViewer /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas" element={<ProtectedRoute><PageTransition instant><PilulasHome /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas/lista" element={<ProtectedRoute><PageTransition instant><PilulasLista /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas/deck/:deckId" element={<ProtectedRoute><PageTransition instant><PilulasViewer /></PageTransition></ProtectedRoute>} />
           <Route path="/tematica-juridica" element={<ProtectedRoute><PageTransition><TematicaJuridica /></PageTransition></ProtectedRoute>} />
-          <Route path="/radar-360" element={<ProtectedRoute><PageTransition><Radar360 /></PageTransition></ProtectedRoute>} />
+          <Route path="/radar-360" element={<ProtectedRoute><PageTransition instant><Radar360 /></PageTransition></ProtectedRoute>} />
           <Route path="/normas/:slug" element={<ProtectedRoute><PageTransition><OutrasNormasLista /></PageTransition></ProtectedRoute>} />
-          <Route path="/radares" element={<ProtectedRoute><PageTransition><Radares /></PageTransition></ProtectedRoute>} />
+          <Route path="/radares" element={<ProtectedRoute><PageTransition instant><Radares /></PageTransition></ProtectedRoute>} />
           <Route path="/praticar" element={<ProtectedRoute><PageTransition><Praticar /></PageTransition></ProtectedRoute>} />
           <Route path="/praticar/area/:areaSlug" element={<ProtectedRoute><PageTransition><PraticarArea /></PageTransition></ProtectedRoute>} />
           <Route path="/praticar/:leiSlug" element={<ProtectedRoute><PageTransition><PraticarLei /></PageTransition></ProtectedRoute>} />
@@ -902,13 +902,13 @@ function AnimatedRoutes() {
           <Route path="/tribunal-simulado" element={<ProtectedRoute><PageTransition><TribunalSimulado /></PageTransition></ProtectedRoute>} />
           <Route path="/compartilhado" element={<ProtectedRoute><PageTransition><Compartilhado /></PageTransition></ProtectedRoute>} />
           <Route path="/estudos" element={<ProtectedRoute><PageTransition><EstudosRouter /></PageTransition></ProtectedRoute>} />
-          <Route path="/vade-mecum" element={<ProtectedRoute><PageTransition><VadeMecum /></PageTransition></ProtectedRoute>} />
-          <Route path="/vade-mecum/areas" element={<ProtectedRoute><PageTransition><VadeMecum /></PageTransition></ProtectedRoute>} />
-          <Route path="/vade-mecum/categorias" element={<ProtectedRoute><PageTransition><VadeMecum /></PageTransition></ProtectedRoute>} />
-          <Route path="/vade-mecum/codigos" element={<ProtectedRoute><PageTransition><VadeMecumCodigos /></PageTransition></ProtectedRoute>} />
-          <Route path="/vade-mecum/sumulas" element={<ProtectedRoute><PageTransition><VadeMecumSumulas /></PageTransition></ProtectedRoute>} />
-          <Route path="/vade-mecum/favoritos" element={<ProtectedRoute><PageTransition><VadeMecum /></PageTransition></ProtectedRoute>} />
-          <Route path="/vade-mecum/recentes" element={<ProtectedRoute><PageTransition><VadeMecumRecentes /></PageTransition></ProtectedRoute>} />
+          <Route path="/vade-mecum" element={<ProtectedRoute><PageTransition instant><VadeMecum /></PageTransition></ProtectedRoute>} />
+          <Route path="/vade-mecum/areas" element={<ProtectedRoute><PageTransition instant><VadeMecum /></PageTransition></ProtectedRoute>} />
+          <Route path="/vade-mecum/categorias" element={<ProtectedRoute><PageTransition instant><VadeMecum /></PageTransition></ProtectedRoute>} />
+          <Route path="/vade-mecum/codigos" element={<ProtectedRoute><PageTransition instant><VadeMecumCodigos /></PageTransition></ProtectedRoute>} />
+          <Route path="/vade-mecum/sumulas" element={<ProtectedRoute><PageTransition instant><VadeMecumSumulas /></PageTransition></ProtectedRoute>} />
+          <Route path="/vade-mecum/favoritos" element={<ProtectedRoute><PageTransition instant><VadeMecum /></PageTransition></ProtectedRoute>} />
+          <Route path="/vade-mecum/recentes" element={<ProtectedRoute><PageTransition instant><VadeMecumRecentes /></PageTransition></ProtectedRoute>} />
           <Route path="/aprender" element={<ProtectedRoute><PageTransition instant><Aprender /></PageTransition></ProtectedRoute>} />
           <Route path="/gamificacao/forca" element={<ProtectedRoute><PageTransition><ForcaPage /></PageTransition></ProtectedRoute>} />
 
@@ -921,22 +921,22 @@ function AnimatedRoutes() {
           <Route path="/aprender/flashcards" element={<ProtectedRoute><PageTransition instant><AprenderFlashcards /></PageTransition></ProtectedRoute>} />
           <Route path="/aprender/desempenho" element={<ProtectedRoute><PageTransition instant><AprenderDesempenho /></PageTransition></ProtectedRoute>} />
           <Route path="/aprender/aula/:aulaId" element={<ProtectedRoute><PageTransition instant><AprenderAula /></PageTransition></ProtectedRoute>} />
-          <Route path="/flashcards" element={<ProtectedRoute><FlashcardsRouteWrapper><PageTransition><Flashcards /></PageTransition></FlashcardsRouteWrapper></ProtectedRoute>} />
-          <Route path="/flashcards/estudar" element={<ProtectedRoute><PageTransition><FlashcardsEstudo /></PageTransition></ProtectedRoute>} />
-          <Route path="/flashcards/trilhas" element={<ProtectedRoute><PageTransition><FlashcardsTrilhas /></PageTransition></ProtectedRoute>} />
-          <Route path="/flashcards/cargos" element={<ProtectedRoute><PageTransition><FlashcardsCargos /></PageTransition></ProtectedRoute>} />
-          <Route path="/flashcards/cargos/:id" element={<ProtectedRoute><PageTransition><FlashcardsCargosDetalhes /></PageTransition></ProtectedRoute>} />
-          <Route path="/flashcards/revisar" element={<ProtectedRoute><PageTransition><FlashcardsRevisar /></PageTransition></ProtectedRoute>} />
-          <Route path="/flashcards/cornell" element={<ProtectedRoute><PageTransition><FlashcardsCornell /></PageTransition></ProtectedRoute>} />
-          <Route path="/flashcards/progresso" element={<ProtectedRoute><PageTransition><FlashcardsProgresso /></PageTransition></ProtectedRoute>} />
-          <Route path="/flashcards/historico" element={<ProtectedRoute><PageTransition><FlashcardsHistorico /></PageTransition></ProtectedRoute>} />
-          <Route path="/flashcards/desafios" element={<ProtectedRoute><PageTransition><FlashcardsDesafios /></PageTransition></ProtectedRoute>} />
-          <Route path="/flashcards/desafios/:slug" element={<ProtectedRoute><PageTransition><FlashcardsDesafiosTimeline /></PageTransition></ProtectedRoute>} />
-          <Route path="/flashcards/estudo" element={<ProtectedRoute><PageTransition><FlashcardsEstudo /></PageTransition></ProtectedRoute>} />
-          <Route path="/flashcards/decks" element={<ProtectedRoute><PageTransition><FlashcardsDecks /></PageTransition></ProtectedRoute>} />
-          <Route path="/flashcards/personalizado" element={<ProtectedRoute><PageTransition><FlashcardsPersonalizado /></PageTransition></ProtectedRoute>} />
-          <Route path="/flashcards/materias" element={<ProtectedRoute><PageTransition><FlashcardsMaterias /></PageTransition></ProtectedRoute>} />
-          <Route path="/flashcards/leis" element={<ProtectedRoute><PageTransition><FlashcardsLeis /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards" element={<ProtectedRoute><FlashcardsRouteWrapper><PageTransition instant><Flashcards /></PageTransition></FlashcardsRouteWrapper></ProtectedRoute>} />
+          <Route path="/flashcards/estudar" element={<ProtectedRoute><PageTransition instant><FlashcardsEstudo /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/trilhas" element={<ProtectedRoute><PageTransition instant><FlashcardsTrilhas /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/cargos" element={<ProtectedRoute><PageTransition instant><FlashcardsCargos /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/cargos/:id" element={<ProtectedRoute><PageTransition instant><FlashcardsCargosDetalhes /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/revisar" element={<ProtectedRoute><PageTransition instant><FlashcardsRevisar /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/cornell" element={<ProtectedRoute><PageTransition instant><FlashcardsCornell /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/progresso" element={<ProtectedRoute><PageTransition instant><FlashcardsProgresso /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/historico" element={<ProtectedRoute><PageTransition instant><FlashcardsHistorico /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/desafios" element={<ProtectedRoute><PageTransition instant><FlashcardsDesafios /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/desafios/:slug" element={<ProtectedRoute><PageTransition instant><FlashcardsDesafiosTimeline /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/estudo" element={<ProtectedRoute><PageTransition instant><FlashcardsEstudo /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/decks" element={<ProtectedRoute><PageTransition instant><FlashcardsDecks /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/personalizado" element={<ProtectedRoute><PageTransition instant><FlashcardsPersonalizado /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/materias" element={<ProtectedRoute><PageTransition instant><FlashcardsMaterias /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/leis" element={<ProtectedRoute><PageTransition instant><FlashcardsLeis /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/jurisprudencia" element={<Suspense fallback={<div className="min-h-dvh bg-background" />}><FlashcardsJurisprudencia /></Suspense>} />
           <Route path="/flashcards/termos" element={<Suspense fallback={<div className="min-h-dvh bg-background" />}><FlashcardsTermos /></Suspense>} />
           <Route path="/flashcards/filosofos" element={<Suspense fallback={<div className="min-h-dvh bg-background" />}><FlashcardsFilosofos /></Suspense>} />
@@ -945,21 +945,21 @@ function AnimatedRoutes() {
           <Route path="/flashcards/excecoes" element={<Suspense fallback={<div className="min-h-dvh bg-background" />}><FlashcardsExcecoes /></Suspense>} />
           <Route path="/flashcards/classificacoes" element={<Suspense fallback={<div className="min-h-dvh bg-background" />}><FlashcardsClassificacoes /></Suspense>} />
           <Route path="/videoaulas" element={<Navigate to="/videoaulas/painel" replace />} />
-          <Route path="/videoaulas/painel" element={<ProtectedRoute><VideoaulasRouteWrapper><PageTransition><Videoaulas /></PageTransition></VideoaulasRouteWrapper></ProtectedRoute>} />
-          <Route path="/videoaulas/favoritos" element={<ProtectedRoute><PageTransition><VideoaulasLista modo="favoritos" /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/recentes" element={<ProtectedRoute><PageTransition><VideoaulasLista modo="recentes" /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/trilhas" element={<ProtectedRoute><PageTransition><VideoaulasTrilhas /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/:catalogo/trilha" element={<ProtectedRoute><PageTransition><VideoaulasCatalogoTrilha /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/praticar" element={<ProtectedRoute><PageTransition><VideoaulasPraticar /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/lei-seca" element={<ProtectedRoute><PageTransition><VideoaulasLeiSeca /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/lei-seca/categoria/:categoriaId" element={<ProtectedRoute><PageTransition><VideoaulasLeiSecaCategoria /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/lei-seca/lei/:leiId" element={<ProtectedRoute><PageTransition><VideoaulasLeiSecaArtigos /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/anotacoes" element={<ProtectedRoute><PageTransition><VideoaulasAnotacoes /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/categorias" element={<ProtectedRoute><PageTransition><VideoaulasCategorias /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/concurso/:id" element={<ProtectedRoute><PageTransition><VideoaulasConcurso /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/conquistas" element={<ProtectedRoute><PageTransition><VideoaulasConquistas /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/:catalogo" element={<ProtectedRoute><PageTransition><VideoaulasCatalogo /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/:catalogo/:area" element={<ProtectedRoute><PageTransition><VideoaulasArea /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/painel" element={<ProtectedRoute><VideoaulasRouteWrapper><PageTransition instant><Videoaulas /></PageTransition></VideoaulasRouteWrapper></ProtectedRoute>} />
+          <Route path="/videoaulas/favoritos" element={<ProtectedRoute><PageTransition instant><VideoaulasLista modo="favoritos" /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/recentes" element={<ProtectedRoute><PageTransition instant><VideoaulasLista modo="recentes" /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/trilhas" element={<ProtectedRoute><PageTransition instant><VideoaulasTrilhas /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/:catalogo/trilha" element={<ProtectedRoute><PageTransition instant><VideoaulasCatalogoTrilha /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/praticar" element={<ProtectedRoute><PageTransition instant><VideoaulasPraticar /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/lei-seca" element={<ProtectedRoute><PageTransition instant><VideoaulasLeiSeca /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/lei-seca/categoria/:categoriaId" element={<ProtectedRoute><PageTransition instant><VideoaulasLeiSecaCategoria /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/lei-seca/lei/:leiId" element={<ProtectedRoute><PageTransition instant><VideoaulasLeiSecaArtigos /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/anotacoes" element={<ProtectedRoute><PageTransition instant><VideoaulasAnotacoes /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/categorias" element={<ProtectedRoute><PageTransition instant><VideoaulasCategorias /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/concurso/:id" element={<ProtectedRoute><PageTransition instant><VideoaulasConcurso /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/conquistas" element={<ProtectedRoute><PageTransition instant><VideoaulasConquistas /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/:catalogo" element={<ProtectedRoute><PageTransition instant><VideoaulasCatalogo /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/:catalogo/:area" element={<ProtectedRoute><PageTransition instant><VideoaulasArea /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/:catalogo/:area/:videoId" element={<ProtectedRoute><VideoaulaView /></ProtectedRoute>} />
           <Route path="/jurisprudencia/:slugLei/:numeroArtigo" element={<ProtectedRoute><PageTransition><JurisprudenciaArtigo /></PageTransition></ProtectedRoute>} />
           <Route path="/jurisprudencia/prontas/:tribunal" element={<ProtectedRoute><PageTransition><PesquisasProntasLista /></PageTransition></ProtectedRoute>} />
@@ -972,72 +972,72 @@ function AnimatedRoutes() {
          <Route path="/jurisprudencia/informativos-stf" element={<ProtectedRoute><PageTransition><InformativosSTF /></PageTransition></ProtectedRoute>} />
         <Route path="/jurisprudencia/teses-stj" element={<ProtectedRoute><PageTransition><TesesSTJ /></PageTransition></ProtectedRoute>} />
         <Route path="/jurisprudencia/teses-stf" element={<ProtectedRoute><PageTransition><TesesSTF /></PageTransition></ProtectedRoute>} />
-          <Route path="/jurisprudencia" element={<ProtectedRoute><PageTransition><Jurisprudencia /></PageTransition></ProtectedRoute>} />
+          <Route path="/jurisprudencia" element={<ProtectedRoute><PageTransition instant><Jurisprudencia /></PageTransition></ProtectedRoute>} />
           <Route path="/aprender/:slug" element={<ProtectedRoute><PageTransition><ArtigoEducacional /></PageTransition></ProtectedRoute>} />
           {/* Pílulas */}
           <Route path="/pilulas/classicos" element={<ProtectedRoute><PageTransition><Pilulas /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/cp" element={<ProtectedRoute><PageTransition><PilulasLeiSeca slug="cp" /></PageTransition></ProtectedRoute>} />
-          <Route path="/pilulas/cf" element={<ProtectedRoute><PageTransition><PilulasLeiSeca slug="cf" /></PageTransition></ProtectedRoute>} />
-          <Route path="/pilulas/cc" element={<ProtectedRoute><PageTransition><PilulasLeiSeca slug="cc" /></PageTransition></ProtectedRoute>} />
-          <Route path="/pilulas/cpp" element={<ProtectedRoute><PageTransition><PilulasLeiSeca slug="cpp" /></PageTransition></ProtectedRoute>} />
-          <Route path="/pilulas/clt" element={<ProtectedRoute><PageTransition><PilulasLeiSeca slug="clt" /></PageTransition></ProtectedRoute>} />
-          <Route path="/pilulas/:id" element={<ProtectedRoute><PageTransition><PilulasPlayer /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas/cf" element={<ProtectedRoute><PageTransition instant><PilulasLeiSeca slug="cf" /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas/cc" element={<ProtectedRoute><PageTransition instant><PilulasLeiSeca slug="cc" /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas/cpp" element={<ProtectedRoute><PageTransition instant><PilulasLeiSeca slug="cpp" /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas/clt" element={<ProtectedRoute><PageTransition instant><PilulasLeiSeca slug="clt" /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas/:id" element={<ProtectedRoute><PageTransition instant><PilulasPlayer /></PageTransition></ProtectedRoute>} />
           {/* Lei Seca */}
-          <Route path="/lei-seca" element={<ProtectedRoute><PageTransition><LeiSecaIndex /></PageTransition></ProtectedRoute>} />
-          <Route path="/lei-seca/favoritos" element={<ProtectedRoute><PageTransition><LeiSecaIndex modo="favoritos" /></PageTransition></ProtectedRoute>} />
-          <Route path="/lei-seca/recentes" element={<ProtectedRoute><PageTransition><LeiSecaIndex modo="recentes" /></PageTransition></ProtectedRoute>} />
-          <Route path="/lei-seca/lembretes" element={<ProtectedRoute><PageTransition><LeiSecaLembretes /></PageTransition></ProtectedRoute>} />
-          <Route path="/lei-seca/:slug" element={<ProtectedRoute><PageTransition><LeiSecaTrilhaRoute /></PageTransition></ProtectedRoute>} />
-          <Route path="/lei-seca/:slug/:parte" element={<ProtectedRoute><PageTransition><LeiSecaParteRoute /></PageTransition></ProtectedRoute>} />
-          <Route path="/lei-seca/:slug/:parte/licao/:id" element={<ProtectedRoute><PageTransition><LeiSecaPlayer /></PageTransition></ProtectedRoute>} />
+          <Route path="/lei-seca" element={<ProtectedRoute><PageTransition instant><LeiSecaIndex /></PageTransition></ProtectedRoute>} />
+          <Route path="/lei-seca/favoritos" element={<ProtectedRoute><PageTransition instant><LeiSecaIndex modo="favoritos" /></PageTransition></ProtectedRoute>} />
+          <Route path="/lei-seca/recentes" element={<ProtectedRoute><PageTransition instant><LeiSecaIndex modo="recentes" /></PageTransition></ProtectedRoute>} />
+          <Route path="/lei-seca/lembretes" element={<ProtectedRoute><PageTransition instant><LeiSecaLembretes /></PageTransition></ProtectedRoute>} />
+          <Route path="/lei-seca/:slug" element={<ProtectedRoute><PageTransition instant><LeiSecaTrilhaRoute /></PageTransition></ProtectedRoute>} />
+          <Route path="/lei-seca/:slug/:parte" element={<ProtectedRoute><PageTransition instant><LeiSecaParteRoute /></PageTransition></ProtectedRoute>} />
+          <Route path="/lei-seca/:slug/:parte/licao/:id" element={<ProtectedRoute><PageTransition instant><LeiSecaPlayer /></PageTransition></ProtectedRoute>} />
           <Route path="/resumos" element={<Navigate to="/resumos-juridicos" replace />} />
 
-          <Route path="/resumos-juridicos" element={<ProtectedRoute><ResumosJuridicosRouteWrapper><PageTransition><ResumosJuridicosAreas /></PageTransition></ResumosJuridicosRouteWrapper></ProtectedRoute>} />
-          <Route path="/resumos-juridicos/materias" element={<ProtectedRoute><PageTransition><ResumosMaterias /></PageTransition></ProtectedRoute>} />
-          <Route path="/resumos-juridicos/leis" element={<ProtectedRoute><PageTransition><ResumosLeis /></PageTransition></ProtectedRoute>} />
-          <Route path="/resumos-juridicos/jurisprudencia" element={<ProtectedRoute><PageTransition><ResumosJurisprudencia /></PageTransition></ProtectedRoute>} />
-          <Route path="/resumos-juridicos/cargos/magistratura" element={<ProtectedRoute><PageTransition><Magistratura /></PageTransition></ProtectedRoute>} />
-          <Route path="/resumos-juridicos/cargos/oab" element={<ProtectedRoute><PageTransition><Oab /></PageTransition></ProtectedRoute>} />
-          <Route path="/resumos-juridicos/cargos/ministerio-publico" element={<ProtectedRoute><PageTransition><MinisterioPublico /></PageTransition></ProtectedRoute>} />
-          <Route path="/resumos-juridicos/cargos/carreira-policial" element={<ProtectedRoute><PageTransition><CarreiraPolicial /></PageTransition></ProtectedRoute>} />
-          <Route path="/resumos-juridicos/favoritos" element={<ProtectedRoute><PageTransition><ResumosJuridicosLista modo="favoritos" /></PageTransition></ProtectedRoute>} />
-          <Route path="/resumos-juridicos/recentes" element={<ProtectedRoute><PageTransition><ResumosJuridicosLista modo="recentes" /></PageTransition></ProtectedRoute>} />
-          <Route path="/resumos-juridicos/jurisprudencia/:categoria" element={<ProtectedRoute><PageTransition><ResumosJuridicosJurisprudencia /></PageTransition></ProtectedRoute>} />
-          <Route path="/resumos-juridicos/:area" element={<ProtectedRoute><ResumosJuridicosRouteWrapper><PageTransition><ResumosJuridicosTemas /></PageTransition></ResumosJuridicosRouteWrapper></ProtectedRoute>} />
-          <Route path="/resumos-juridicos/:area/:tema" element={<ProtectedRoute><ResumosJuridicosRouteWrapper><PageTransition><ResumosJuridicosSubtemas /></PageTransition></ResumosJuridicosRouteWrapper></ProtectedRoute>} />
-          <Route path="/questoes" element={<ProtectedRoute><PageTransition><Questoes /></PageTransition></ProtectedRoute>} />
-          <Route path="/questoes/areas" element={<ProtectedRoute><PageTransition><QuestoesAreas /></PageTransition></ProtectedRoute>} />
-          <Route path="/questoes/praticar" element={<ProtectedRoute><PageTransition><QuestoesPraticar /></PageTransition></ProtectedRoute>} />
-          <Route path="/questoes/simulado" element={<ProtectedRoute><PageTransition><QuestoesSimulado /></PageTransition></ProtectedRoute>} />
-          <Route path="/questoes/simulado/:cargoId" element={<ProtectedRoute><PageTransition><QuestoesSimuladoCargoConfig /></PageTransition></ProtectedRoute>} />
-          <Route path="/questoes/desafios" element={<ProtectedRoute><PageTransition><QuestoesDesafios /></PageTransition></ProtectedRoute>} />
-          <Route path="/questoes/revisar" element={<ProtectedRoute><PageTransition><QuestoesRevisar /></PageTransition></ProtectedRoute>} />
-          <Route path="/questoes/lembretes" element={<ProtectedRoute><PageTransition><QuestoesLembretes /></PageTransition></ProtectedRoute>} />
-          <Route path="/questoes/trilhas" element={<ProtectedRoute><PageTransition><QuestoesTrilhas /></PageTransition></ProtectedRoute>} />
-          <Route path="/questoes/cadernos" element={<ProtectedRoute><PageTransition><QuestoesCadernos /></PageTransition></ProtectedRoute>} />
-          <Route path="/questoes/desafios" element={<ProtectedRoute><PageTransition><QuestoesDesafios /></PageTransition></ProtectedRoute>} />
-          <Route path="/questoes/desafios/conquistas" element={<ProtectedRoute><PageTransition><QuestoesConquistas /></PageTransition></ProtectedRoute>} />
+          <Route path="/resumos-juridicos" element={<ProtectedRoute><ResumosJuridicosRouteWrapper><PageTransition instant><ResumosJuridicosAreas /></PageTransition></ResumosJuridicosRouteWrapper></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/materias" element={<ProtectedRoute><PageTransition instant><ResumosMaterias /></PageTransition></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/leis" element={<ProtectedRoute><PageTransition instant><ResumosLeis /></PageTransition></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/jurisprudencia" element={<ProtectedRoute><PageTransition instant><ResumosJurisprudencia /></PageTransition></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/cargos/magistratura" element={<ProtectedRoute><PageTransition instant><Magistratura /></PageTransition></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/cargos/oab" element={<ProtectedRoute><PageTransition instant><Oab /></PageTransition></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/cargos/ministerio-publico" element={<ProtectedRoute><PageTransition instant><MinisterioPublico /></PageTransition></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/cargos/carreira-policial" element={<ProtectedRoute><PageTransition instant><CarreiraPolicial /></PageTransition></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/favoritos" element={<ProtectedRoute><PageTransition instant><ResumosJuridicosLista modo="favoritos" /></PageTransition></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/recentes" element={<ProtectedRoute><PageTransition instant><ResumosJuridicosLista modo="recentes" /></PageTransition></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/jurisprudencia/:categoria" element={<ProtectedRoute><PageTransition instant><ResumosJuridicosJurisprudencia /></PageTransition></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/:area" element={<ProtectedRoute><ResumosJuridicosRouteWrapper><PageTransition instant><ResumosJuridicosTemas /></PageTransition></ResumosJuridicosRouteWrapper></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/:area/:tema" element={<ProtectedRoute><ResumosJuridicosRouteWrapper><PageTransition instant><ResumosJuridicosSubtemas /></PageTransition></ResumosJuridicosRouteWrapper></ProtectedRoute>} />
+          <Route path="/questoes" element={<ProtectedRoute><PageTransition instant><Questoes /></PageTransition></ProtectedRoute>} />
+          <Route path="/questoes/areas" element={<ProtectedRoute><PageTransition instant><QuestoesAreas /></PageTransition></ProtectedRoute>} />
+          <Route path="/questoes/praticar" element={<ProtectedRoute><PageTransition instant><QuestoesPraticar /></PageTransition></ProtectedRoute>} />
+          <Route path="/questoes/simulado" element={<ProtectedRoute><PageTransition instant><QuestoesSimulado /></PageTransition></ProtectedRoute>} />
+          <Route path="/questoes/simulado/:cargoId" element={<ProtectedRoute><PageTransition instant><QuestoesSimuladoCargoConfig /></PageTransition></ProtectedRoute>} />
+          <Route path="/questoes/desafios" element={<ProtectedRoute><PageTransition instant><QuestoesDesafios /></PageTransition></ProtectedRoute>} />
+          <Route path="/questoes/revisar" element={<ProtectedRoute><PageTransition instant><QuestoesRevisar /></PageTransition></ProtectedRoute>} />
+          <Route path="/questoes/lembretes" element={<ProtectedRoute><PageTransition instant><QuestoesLembretes /></PageTransition></ProtectedRoute>} />
+          <Route path="/questoes/trilhas" element={<ProtectedRoute><PageTransition instant><QuestoesTrilhas /></PageTransition></ProtectedRoute>} />
+          <Route path="/questoes/cadernos" element={<ProtectedRoute><PageTransition instant><QuestoesCadernos /></PageTransition></ProtectedRoute>} />
+          <Route path="/questoes/desafios" element={<ProtectedRoute><PageTransition instant><QuestoesDesafios /></PageTransition></ProtectedRoute>} />
+          <Route path="/questoes/desafios/conquistas" element={<ProtectedRoute><PageTransition instant><QuestoesConquistas /></PageTransition></ProtectedRoute>} />
 
-          <Route path="/questoes/desempenho" element={<ProtectedRoute><PageTransition><QuestoesDesempenho /></PageTransition></ProtectedRoute>} />
-          <Route path="/questoes/historico" element={<ProtectedRoute><PageTransition><QuestoesHistorico /></PageTransition></ProtectedRoute>} />
+          <Route path="/questoes/desempenho" element={<ProtectedRoute><PageTransition instant><QuestoesDesempenho /></PageTransition></ProtectedRoute>} />
+          <Route path="/questoes/historico" element={<ProtectedRoute><PageTransition instant><QuestoesHistorico /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/questoes" element={<ProtectedRoute><PageTransition><AdminQuestoes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/laboratorio" element={<ProtectedRoute><PageTransition><AdminLaboratorio /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/pilulas" element={<ProtectedRoute><PageTransition><AdminPilulas /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/resumo-livro-audio" element={<ProtectedRoute><PageTransition><AdminResumoLivroAudioEditar /></PageTransition></ProtectedRoute>} />
 
           <Route path="/admin-monitor" element={<ProtectedRoute><PageTransition><AdminMonitor /></PageTransition></ProtectedRoute>} />
-          <Route path="/perfil" element={<ProtectedRoute><PageTransition><Perfil /></PageTransition></ProtectedRoute>} />
+          <Route path="/perfil" element={<ProtectedRoute><PageTransition instant><Perfil /></PageTransition></ProtectedRoute>} />
           <Route path="/sobre" element={<ProtectedRoute><PageTransition><SobreApp /></PageTransition></ProtectedRoute>} />
           <Route path="/gerador-post" element={<ProtectedRoute><PageTransition><GeradorPost /></PageTransition></ProtectedRoute>} />
-          <Route path="/blog" element={<ProtectedRoute><PageTransition><Blog /></PageTransition></ProtectedRoute>} />
+          <Route path="/blog" element={<ProtectedRoute><PageTransition instant><Blog /></PageTransition></ProtectedRoute>} />
           <Route path="/newsletter" element={<ProtectedRoute><PageTransition><Newsletter /></PageTransition></ProtectedRoute>} />
-          <Route path="/biblioteca" element={<ProtectedRoute><PageTransition><Bibliotecas /></PageTransition></ProtectedRoute>} />
-          <Route path="/bibliotecas" element={<ProtectedRoute><PageTransition><Bibliotecas /></PageTransition></ProtectedRoute>} />
-          <Route path="/biblioteca/caderno" element={<ProtectedRoute><PageTransition><BibliotecaCaderno /></PageTransition></ProtectedRoute>} />
-          <Route path="/bibliotecas/trilhas" element={<ProtectedRoute><PageTransition><BibliotecaTrilhas /></PageTransition></ProtectedRoute>} />
-          <Route path="/bibliotecas/:colecaoId" element={<ProtectedRoute><PageTransition><BibliotecaCategoria /></PageTransition></ProtectedRoute>} />
-          <Route path="/bibliotecas/:colecaoId/:areaSlug" element={<ProtectedRoute><PageTransition><BibliotecaCategoria /></PageTransition></ProtectedRoute>} />
-          <Route path="/biblioteca-offline" element={<ProtectedRoute><PageTransition><BibliotecaOffline /></PageTransition></ProtectedRoute>} />
+          <Route path="/biblioteca" element={<ProtectedRoute><PageTransition instant><Bibliotecas /></PageTransition></ProtectedRoute>} />
+          <Route path="/bibliotecas" element={<ProtectedRoute><PageTransition instant><Bibliotecas /></PageTransition></ProtectedRoute>} />
+          <Route path="/biblioteca/caderno" element={<ProtectedRoute><PageTransition instant><BibliotecaCaderno /></PageTransition></ProtectedRoute>} />
+          <Route path="/bibliotecas/trilhas" element={<ProtectedRoute><PageTransition instant><BibliotecaTrilhas /></PageTransition></ProtectedRoute>} />
+          <Route path="/bibliotecas/:colecaoId" element={<ProtectedRoute><PageTransition instant><BibliotecaCategoria /></PageTransition></ProtectedRoute>} />
+          <Route path="/bibliotecas/:colecaoId/:areaSlug" element={<ProtectedRoute><PageTransition instant><BibliotecaCategoria /></PageTransition></ProtectedRoute>} />
+          <Route path="/biblioteca-offline" element={<ProtectedRoute><PageTransition instant><BibliotecaOffline /></PageTransition></ProtectedRoute>} />
 
           
           <Route path="/compressao-imagens" element={<ProtectedRoute><PageTransition><CompressaoImagens /></PageTransition></ProtectedRoute>} />
@@ -1095,8 +1095,8 @@ function AnimatedRoutes() {
           <Route path="/admin-biblioteca-editar" element={<ProtectedRoute><PageTransition><BibliotecaEditar /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-leitura-nativa" element={<ProtectedRoute><PageTransition><AdminLeituraNativa /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-audioaulas" element={<ProtectedRoute><PageTransition><AdminAudioaulas /></PageTransition></ProtectedRoute>} />
-          <Route path="/audioaulas" element={<ProtectedRoute><PageTransition><Audioaulas /></PageTransition></ProtectedRoute>} />
-          <Route path="/audioaulas/:area" element={<ProtectedRoute><PageTransition><Audioaulas /></PageTransition></ProtectedRoute>} />
+          <Route path="/audioaulas" element={<ProtectedRoute><PageTransition instant><Audioaulas /></PageTransition></ProtectedRoute>} />
+          <Route path="/audioaulas/:area" element={<ProtectedRoute><PageTransition instant><Audioaulas /></PageTransition></ProtectedRoute>} />
           <Route path="/meus-downloads" element={<ProtectedRoute><PageTransition><MeusDownloads /></PageTransition></ProtectedRoute>} />
           <Route path="/minhas-leituras" element={<ProtectedRoute><PageTransition><MinhasLeituras /></PageTransition></ProtectedRoute>} />
           <Route path="/meus-resumos" element={<ProtectedRoute><PageTransition><MeusResumos /></PageTransition></ProtectedRoute>} />
@@ -1131,8 +1131,8 @@ function AnimatedRoutes() {
 
           <Route path="/admin-handoff" element={<ProtectedRoute><PageTransition><AdminHandoffIA /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-transferencia-app" element={<ProtectedRoute><PageTransition><AdminTransferenciaApp /></PageTransition></ProtectedRoute>} />
-          <Route path="/assistente" element={<ProtectedRoute><PageTransition><AssistenteApp /></PageTransition></ProtectedRoute>} />
-          <Route path="/assistente-horus" element={<ProtectedRoute><PageTransition><AssistenteHorus /></PageTransition></ProtectedRoute>} />
+          <Route path="/assistente" element={<ProtectedRoute><PageTransition instant><AssistenteApp /></PageTransition></ProtectedRoute>} />
+          <Route path="/assistente-horus" element={<ProtectedRoute><PageTransition instant><AssistenteHorus /></PageTransition></ProtectedRoute>} />
 
           <Route path="/pessoal/avisos" element={<ProtectedRoute><PageTransition><PessoalAvisos /></PageTransition></ProtectedRoute>} />
           <Route path="/pessoal/grifos" element={<ProtectedRoute><PageTransition><PessoalGrifos /></PageTransition></ProtectedRoute>} />
@@ -1143,7 +1143,7 @@ function AnimatedRoutes() {
           <Route path="/pessoal/filmes" element={<ProtectedRoute><PageTransition><PessoalFilmes /></PageTransition></ProtectedRoute>} />
           <Route path="/pessoal/jurisprudencias" element={<ProtectedRoute><PageTransition><PessoalJurisprudencias /></PageTransition></ProtectedRoute>} />
           <Route path="/pessoal/tematicas" element={<ProtectedRoute><PageTransition><PessoalTematicas /></PageTransition></ProtectedRoute>} />
-          <Route path="/meu-espaco" element={<ProtectedRoute><PageTransition><MeuEspaco /></PageTransition></ProtectedRoute>} />
+          <Route path="/meu-espaco" element={<ProtectedRoute><PageTransition instant><MeuEspaco /></PageTransition></ProtectedRoute>} />
           <Route path="/graficos/avaliacao" element={<ProtectedRoute><PageTransition><AvaliacaoInteligente /></PageTransition></ProtectedRoute>} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
 
