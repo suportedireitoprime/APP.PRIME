@@ -32,6 +32,9 @@ function idle(cb: () => void, timeout = 600) {
   if (ric) ric(cb, { timeout }); else setTimeout(cb, 100);
 }
 
+const prefetchedAssets = new Set<string>();
+const MAX_PREFETCH_ASSETS = 25;
+
 /**
  * Prefetch route chunks likely to be visited next from `path`.
  * Also inserts <link rel="prefetch"> hints so nearby chunks land in HTTP cache
@@ -43,22 +46,33 @@ export function prefetchNearby(path: string): void {
   if (!match) return;
   idle(() => {
     for (const key of match[1]) {
-      try { routePrefetch[key](); } catch {}
+      try {
+        const p = routePrefetch[key]();
+        if (p && typeof (p as any).catch === 'function') {
+          (p as any).catch(() => {});
+        }
+      } catch {}
     }
   });
 }
 
-/** Prefetch a single asset URL via <link rel="prefetch"> (dedup by href). */
+/** Prefetch a single asset URL via <link rel="prefetch"> (dedup por cache em memória e baixa prioridade). */
 export function prefetchAsset(href: string, as: 'image' | 'fetch' | 'script' = 'fetch') {
   if (typeof window === 'undefined' || !href) return;
+  if (prefetchedAssets.has(href) || prefetchedAssets.size >= MAX_PREFETCH_ASSETS) return;
   try {
     const existing = document.head.querySelector(`link[rel="prefetch"][href="${href}"]`);
-    if (existing) return;
+    if (existing) {
+      prefetchedAssets.add(href);
+      return;
+    }
     const link = document.createElement('link');
     link.rel = 'prefetch';
     link.href = href;
     link.as = as;
+    (link as any).fetchPriority = 'low';
     if (as === 'image') link.crossOrigin = 'anonymous';
     document.head.appendChild(link);
+    prefetchedAssets.add(href);
   } catch {}
 }

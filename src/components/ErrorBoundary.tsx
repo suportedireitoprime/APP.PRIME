@@ -17,8 +17,12 @@ export class ErrorBoundary extends Component<Props, State> {
     return { error };
   }
 
+  private isChunkError(message: string): boolean {
+    return /Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module|Loading chunk \d+ failed|Failed to load module script/i.test(message);
+  }
+
   componentDidCatch(error: Error, info: ErrorInfo) {
-    const isChunkLoadFailed = error.message.includes('Failed to fetch dynamically imported module');
+    const isChunkLoadFailed = this.isChunkError(error?.message || '');
 
     if (isChunkLoadFailed) {
       const reloadCount = parseInt(sessionStorage.getItem('chunk_reload') || '0', 10);
@@ -38,7 +42,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   reset = () => {
-    if (this.state.error?.message.includes('Failed to fetch dynamically imported module')) {
+    if (this.isChunkError(this.state.error?.message || '')) {
       window.location.reload();
     } else {
       this.setState({ error: null });

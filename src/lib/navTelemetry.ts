@@ -100,6 +100,8 @@ export function initNavTelemetry() {
 // cost users perceive as slowness).
 export function markRouteChange(nextPath: string) {
   if (typeof window === 'undefined') return;
+  // Item 8: Ignora disparos duplicados em micro-intervalos (<100ms) para a mesma rota
+  if (currentPath === nextPath && performance.now() - transitionStart < 100) return;
   const from = currentPath;
   currentPath = nextPath;
   transitionStart = performance.now();

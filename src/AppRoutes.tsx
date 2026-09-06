@@ -627,7 +627,12 @@ function PresenceWrapper() {
   const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
-    // Adia a inicialização de trackers pesados para liberar a main thread no boot
+    // Item 15: Adia a inicialização de trackers pesados via requestIdleCallback
+    const ric = (window as any).requestIdleCallback as ((cb: () => void, opts?: { timeout?: number }) => number) | undefined;
+    if (ric) {
+      const id = ric(() => setMounted(true), { timeout: 2000 });
+      return () => (window as any).cancelIdleCallback?.(id);
+    }
     const t = setTimeout(() => setMounted(true), 1500);
     return () => clearTimeout(t);
   }, []);
@@ -731,13 +736,17 @@ function AnimatedRoutes() {
     trackPageview(location.pathname + location.search);
     markRouteChange(location.pathname + location.search);
     prefetchNearby(location.pathname);
+    // Item 7: Cancela queries ativas da rota anterior para liberar banda e acelerar nova tela
+    try {
+      qc.cancelQueries({ fetchStatus: 'fetching' });
+    } catch {}
     // Purga qualquer trava residual de scroll deixada por sheets/modais desmontados
     resetBodyScrollLock();
     // Reseta o scroll para o topo caso não haja âncora (#) na rota
     if (!location.hash) {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }
-  }, [location.pathname, location.search, location.hash]);
+  }, [location.pathname, location.search, location.hash, qc]);
 
   // Hidrata o cache das Videoaulas (IndexedDB → memória) logo no boot, em idle:
   // ao entrar na área, a lista já pinta sem skeleton nem rede.

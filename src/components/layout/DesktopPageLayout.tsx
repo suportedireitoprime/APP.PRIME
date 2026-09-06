@@ -1,3 +1,4 @@
+import { startTransition } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Scale, BookOpen, Gavel, Library, MessageSquare, BookOpenText } from 'lucide-react';
 import DesktopHeroBanner from '@/components/vademecum/desktop/DesktopHeroBanner';
@@ -66,7 +67,7 @@ const DesktopPageLayout = ({ children, activeId, title, subtitle, mobileHeader, 
                   key={tab.id}
                   onMouseEnter={() => { if (tab.prefetch) prefetchRoute(tab.prefetch); }}
                   onFocus={() => { if (tab.prefetch) prefetchRoute(tab.prefetch); }}
-                  onClick={() => navigate(tab.path)}
+                  onClick={() => startTransition(() => navigate(tab.path))}
                   className={`relative flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-body font-medium transition-colors min-w-[130px] ${
                     isActive
                       ? 'text-primary bg-primary/10'
