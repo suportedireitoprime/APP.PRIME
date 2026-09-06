@@ -17,6 +17,7 @@ import {
   TABS_VADEMECUM,
   RADAR_CATS,
   ALL_CATS,
+  AREA_CATS,
   FAST_PILLS_ITEMS,
   shuffle,
   normalizeSearch,
@@ -90,6 +91,23 @@ const MobileHomeSections = ({
       progress: Math.random() * 0.7 + 0.1,
       showPlayButton: true,
     }));
+  }, []);
+
+  const aprenderItems = useMemo(() => {
+    const images = FAST_PILLS_ITEMS.map((item) => item.image);
+    const cpImage = images[0];
+    
+    return AREA_CATS.map((area, index) => {
+      const image = index < images.length ? images[index] : cpImage;
+      return {
+        id: area.id,
+        image,
+        text: 'Direito\\n' + area.label,
+        fullName: 'Direito ' + area.label,
+        progress: Math.random() * 0.7 + 0.1,
+        showPlayButton: true,
+      };
+    });
   }, []);
 
   useEffect(() => {
@@ -171,28 +189,36 @@ const MobileHomeSections = ({
 
   return (
     <div className="space-y-6 pt-4">
-      {/* Pílulas em Carrossel 3D no topo */}
+      {/* Aprender em Carrossel 3D no topo */}
       {!hideBlog && (
         <div className="pt-2 overflow-hidden pb-4">
-          <div className="mb-0 relative z-10 pointer-events-none px-4">
-            <h3 className="font-display text-foreground text-[18px] font-bold flex items-center gap-2 pointer-events-auto">
-              <span className="w-1 h-5 rounded-full bg-[#10B981]" />
-              Pílulas de Códigos
-            </h3>
-            <p className="font-body text-sm text-muted-foreground mt-1 ml-3 pointer-events-auto">
-              Áudios curtos sobre os artigos mais cobrados
-            </p>
+          <div className="mb-0 relative z-10 pointer-events-none px-4 flex items-center justify-between">
+            <div>
+              <h3 className="font-display text-foreground text-[18px] font-bold flex items-center gap-2 pointer-events-auto">
+                <span className="w-1 h-5 rounded-full bg-[#E11D48]" />
+                Aprender
+              </h3>
+              <p className="font-body text-sm text-muted-foreground mt-1 ml-3 pointer-events-auto">
+                Explore doutrinas, resumos e questões por área
+              </p>
+            </div>
+            <button 
+              className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors pointer-events-auto"
+              onClick={() => navigate('/aprender')}
+            >
+              Ver todos
+            </button>
           </div>
           <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen h-[280px] -mt-6">
             <CircularGallery
-              items={pillsItems}
+              items={aprenderItems}
               bend={0.3}
               textColor="#ffffff"
               scrollEase={0.15}
               borderRadius={0.05}
               onItemClick={(item) => {
                 import('@/lib/nativeHaptics').then((m) => m.haptic.selection());
-                navigate(`/pilulas/${item.id}`);
+                navigate(`/aprender/area/${item.id.replace('area-', '')}`);
               }}
             />
           </div>
