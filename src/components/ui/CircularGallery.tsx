@@ -127,12 +127,12 @@ function createTextTexture(gl, text, font = 'bold 30px monospace', color = 'blac
   
   const textWidth = Math.ceil(maxWidth);
   const fontSize = getFontSize(font);
-  const lineHeight = Math.ceil(fontSize * 1.2);
+  const lineHeight = Math.ceil(fontSize * 1.4); // Aumentado para evitar colisão entre linhas
   const textHeight = lineHeight * lines.length;
   
-  // Increased padding to prevent horizontal clipping of text edges
+  // Increased padding to prevent horizontal and vertical clipping of text edges
   canvas.width = Math.max(textWidth + 300, 512);
-  canvas.height = Math.max(textHeight + 100, 128);
+  canvas.height = Math.max(textHeight + 200, 256);
   
   context.textBaseline = 'middle';
   context.textAlign = 'center';
