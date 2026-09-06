@@ -7,7 +7,6 @@ import ShapeGrid from '@/components/ui/ShapeGrid';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import AreaHeroPanel from '@/components/aprender/AreaHeroPanel';
 import TemaRow from '@/components/aprender/TemaRow';
-import TemaAulasSheet from '@/components/aprender/TemaAulasSheet';
 import {
   AprenderAreaData,
   ModuloRow,
@@ -45,18 +44,20 @@ const AprenderArea = () => {
   const initial = slug ? getCachedAprenderArea(slug, user?.id ?? null) : undefined;
   const [data, setData] = useState<AprenderAreaData | null>(initial ?? null);
   const [loading, setLoading] = useState(!initial);
-  const [temaAberto, setTemaAberto] = useState<{ modulo: ModuloRow; numero: number } | null>(null);
 
   const [searchParams] = useSearchParams();
   const moduloIdParam = searchParams.get('moduloId');
 
   useEffect(() => {
     if (!data || !moduloIdParam) return;
-    const idx = data.modulos.findIndex((m) => m.id === moduloIdParam);
-    if (idx >= 0) {
-      setTemaAberto({ modulo: data.modulos[idx], numero: idx + 1 });
+    const found = data.modulos.find((m) => m.id === moduloIdParam);
+    if (found) {
+      navigate(`/aprender/modulo/${moduloIdParam}`, {
+        replace: true,
+        state: { modulo: found, area: data.area },
+      });
     }
-  }, [data, moduloIdParam]);
+  }, [data, moduloIdParam, navigate]);
 
   useEffect(() => {
     if (!slug) return;
@@ -138,7 +139,6 @@ const AprenderArea = () => {
 
 
   const mobileHeader = <PageHeader title={area?.nome ?? 'Aprender'} onBack={() => navigate('/aprender')} />;
-  const temaAulas = temaAberto ? aulas.filter((a) => a.modulo_id === temaAberto.modulo.id) : [];
 
   return (
     <DesktopPageLayout
@@ -218,7 +218,7 @@ const AprenderArea = () => {
                         totalAulas={total}
                         emPreparo={aulasPreparo[m.id] ?? 0}
                         pct={pct}
-                        onClick={() => setTemaAberto({ modulo: m, numero: i + 1 })}
+                        onClick={() => navigate(`/aprender/modulo/${m.id}`, { state: { modulo: m, area: data?.area } })}
                       />
                     </motion.li>
                   );
@@ -276,17 +276,6 @@ const AprenderArea = () => {
         stepRanges={RANGES_GERACAO}
         estTotalSec={120}
       />
-
-      {temaAberto && (
-        <TemaAulasSheet
-          open={!!temaAberto}
-          onOpenChange={(v) => !v && setTemaAberto(null)}
-          numero={temaAberto.numero}
-          titulo={temaAberto.modulo.titulo}
-          aulas={temaAulas}
-          progresso={progresso}
-        />
-      )}
     </DesktopPageLayout>
   );
 };

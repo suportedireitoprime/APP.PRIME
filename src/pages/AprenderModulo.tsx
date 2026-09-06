@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
@@ -10,6 +10,7 @@ import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+import { haptic } from '@/lib/nativeHaptics';
 
 export type ModuloDetalhe = {
   id: string;
@@ -34,13 +35,32 @@ export type AulaItem = {
 
 const AprenderModulo = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { moduloId } = useParams<{ moduloId: string }>();
   const { user } = useAuth();
   const uid = user?.id ?? null;
 
-  const [modulo, setModulo] = useState<ModuloDetalhe | null>(null);
+  const routeState = location.state as {
+    modulo?: { id: string; titulo: string; resumo: string | null; ordem: number; area_id?: string };
+    area?: { id: string; nome: string; slug: string };
+  } | undefined;
+
+  const [modulo, setModulo] = useState<ModuloDetalhe | null>(() => {
+    if (routeState?.modulo) {
+      return {
+        id: routeState.modulo.id,
+        titulo: routeState.modulo.titulo,
+        resumo: routeState.modulo.resumo,
+        ordem: routeState.modulo.ordem,
+        areaId: routeState.area?.id ?? routeState.modulo.area_id ?? '',
+        areaNome: routeState.area?.nome ?? 'Direito',
+        areaSlug: routeState.area?.slug ?? 'geral',
+      };
+    }
+    return null;
+  });
   const [aulas, setAulas] = useState<AulaItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!routeState?.modulo);
 
   useEffect(() => {
     if (!moduloId) return;
@@ -48,31 +68,54 @@ const AprenderModulo = () => {
 
     (async () => {
       try {
-        setLoading(true);
-        // 1. Fetch modulo + area info
-        const { data: rawMod, error: errMod } = await supabase
+        if (!modulo) setLoading(true);
+
+        // 1. Fetch modulo + area info com fallback robusto
+        let rawMod: any = null;
+        let areaData: any = null;
+
+        const { data: joinData } = await supabase
           .from('aprender_modulos')
           .select('id, titulo, resumo, ordem, area_id, aprender_areas(id, nome, slug)')
           .eq('id', moduloId)
-          .single();
+          .maybeSingle();
 
-        if (cancelled || errMod || !rawMod) {
-          if (!cancelled) setLoading(false);
-          return;
+        if (joinData) {
+          rawMod = joinData;
+          const relArea = (joinData as any).aprender_areas;
+          areaData = Array.isArray(relArea) ? relArea[0] : relArea;
+        } else {
+          const { data: simpleMod } = await supabase
+            .from('aprender_modulos')
+            .select('id, titulo, resumo, ordem, area_id')
+            .eq('id', moduloId)
+            .maybeSingle();
+          if (simpleMod) rawMod = simpleMod;
         }
 
-        const areaData = (rawMod as any).aprender_areas;
-        const modInfo: ModuloDetalhe = {
-          id: rawMod.id,
-          titulo: rawMod.titulo,
-          resumo: rawMod.resumo,
-          ordem: rawMod.ordem,
-          areaId: rawMod.area_id,
-          areaNome: areaData?.nome ?? 'Direito',
-          areaSlug: areaData?.slug ?? 'geral',
-        };
+        if (!areaData && rawMod?.area_id) {
+          const { data: a } = await supabase
+            .from('aprender_areas')
+            .select('id, nome, slug')
+            .eq('id', rawMod.area_id)
+            .maybeSingle();
+          if (a) areaData = a;
+        }
 
-        if (!cancelled) setModulo(modInfo);
+        if (cancelled) return;
+
+        if (rawMod) {
+          const modInfo: ModuloDetalhe = {
+            id: rawMod.id,
+            titulo: rawMod.titulo,
+            resumo: rawMod.resumo,
+            ordem: rawMod.ordem,
+            areaId: rawMod.area_id,
+            areaNome: areaData?.nome ?? routeState?.area?.nome ?? 'Direito',
+            areaSlug: areaData?.slug ?? routeState?.area?.slug ?? 'geral',
+          };
+          setModulo(modInfo);
+        }
 
         // 2. Fetch aulas for this modulo
         const { data: rawAulas } = await supabase
@@ -126,10 +169,19 @@ const AprenderModulo = () => {
   const pctConcluido = totalAulas > 0 ? Math.round((concluidasCount / totalAulas) * 100) : 0;
   const areaCurta = modulo ? shortenAreaName(modulo.areaNome) : 'Matéria';
 
+  const handleVoltar = () => {
+    haptic.light();
+    if (modulo?.areaSlug) {
+      navigate(`/aprender/area/${modulo.areaSlug}`);
+    } else {
+      navigate('/aprender');
+    }
+  };
+
   const mobileHeader = (
     <PageHeader
       title={modulo?.titulo ?? 'Trilha do Tópico'}
-      onBack={() => (modulo?.areaSlug ? navigate(`/aprender/area/${modulo.areaSlug}`) : navigate('/aprender'))}
+      onBack={handleVoltar}
     />
   );
 
@@ -151,8 +203,8 @@ const AprenderModulo = () => {
       <div className="relative z-10 w-full max-w-4xl mx-auto space-y-6 pb-20 pt-2 px-3 sm:px-6">
         {/* Botão de Voltar Desktop */}
         <button
-          onClick={() => (modulo?.areaSlug ? navigate(`/aprender/area/${modulo.areaSlug}`) : navigate('/aprender'))}
-          className="hidden sm:inline-flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors"
+          onClick={handleVoltar}
+          className="hidden sm:inline-flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Voltar para {areaCurta}</span>
@@ -257,10 +309,13 @@ const AprenderModulo = () => {
 
                         {/* Card da Aula na Trilha */}
                         <button
-                          onClick={() => navigate(`/aprender/aula/${aula.id}`)}
+                          onClick={() => {
+                            haptic.impact();
+                            navigate(`/aprender/aula/${aula.id}`);
+                          }}
                           onPointerEnter={() => prefetchAprenderAula(aula.id)}
                           className={cn(
-                            'w-full flex items-center justify-between p-4 sm:p-5 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99]',
+                            'w-full flex items-center justify-between p-4 sm:p-5 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer',
                             isNext
                               ? 'border-primary/60 bg-card hover:border-primary shadow-primary/5'
                               : aula.concluida
