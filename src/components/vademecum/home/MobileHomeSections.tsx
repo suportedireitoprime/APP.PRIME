@@ -196,7 +196,7 @@ const MobileHomeSections = ({
     <div className="space-y-6 pt-4">
       {/* Aprender em Carrossel 3D no topo */}
       {!hideBlog && (
-        <div className="pt-2 pb-0 -mb-6">
+        <div className="pt-2 pb-0 -mb-6 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
           <div className="mb-0 relative z-10 pointer-events-none px-5 flex items-start justify-between gap-3">
             <div>
               <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 pointer-events-auto">
@@ -216,7 +216,7 @@ const MobileHomeSections = ({
               <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all" />
             </button>
           </div>
-          <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen h-[265px] -mt-6">
+          <div className="relative w-full h-[265px] -mt-6">
             <CircularGallery
               items={aprenderItems}
               bend={0.3}
