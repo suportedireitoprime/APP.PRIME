@@ -9,6 +9,7 @@ import type { QueryClient } from '@tanstack/react-query';
 import { scheduleWarmBiblioteca } from '@/services/bibliotecaWarmup';
 import { warmResumosCache } from '@/services/resumosWarmup';
 import { warmVideoaulasStartup } from '@/services/videoaulasWarmup';
+import { warmQuestoesStartup } from '@/services/questoesWarmup';
 import { prewarmFavoritosERecentesIdle } from '@/services/warmFavoritosService';
 import { routePrefetch } from '@/lib/routePrefetch';
 import brasaoImg from '@/assets/brasao-republica.webp';
@@ -30,7 +31,10 @@ export function scheduleAppWarmup(qc: QueryClient): void {
       // 3. Aquece Videoaulas (IndexedDB + catálogos + progresso + agregador síncrono)
       warmVideoaulasStartup();
 
-      // 4. Aquece Vade Mecum (favoritos, recentes e imagem do brasão)
+      // 4. Aquece Questões (cargos + desempenho + estatísticas)
+      warmQuestoesStartup();
+
+      // 5. Aquece Vade Mecum (favoritos, recentes e imagem do brasão)
       prewarmFavoritosERecentesIdle();
       try {
         const img = new Image();
@@ -41,12 +45,15 @@ export function scheduleAppWarmup(qc: QueryClient): void {
         /* noop */
       }
 
-      // 5. Pre-carrega os chunks das 4 rotas prioritárias no cache de módulos do navegador
+      // 6. Pre-carrega os chunks das rotas prioritárias no cache de módulos do navegador
       const prefetchKeyRoutes = () => {
         try { routePrefetch.vadeMecum(); } catch {}
         try { routePrefetch.biblioteca(); } catch {}
         try { routePrefetch.resumosJuridicos(); } catch {}
         try { routePrefetch.videoaulas(); } catch {}
+        try { routePrefetch.questoes(); } catch {}
+        try { routePrefetch.flashcards(); } catch {}
+        try { routePrefetch.aprender(); } catch {}
       };
 
       const ric = (window as any).requestIdleCallback;

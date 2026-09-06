@@ -100,6 +100,8 @@ let mainTabsScheduled = false;
 let idleScheduled = false;
 
 import { prewarmFavoritosERecentesIdle } from '@/services/warmFavoritosService';
+import { warmVideoaulasStartup } from '@/services/videoaulasWarmup';
+import { warmQuestoesStartup } from '@/services/questoesWarmup';
 
 /** Pre-aquecimento imediato das 6 abas e rotas principais do BottomNav em idle. */
 export function prefetchMainTabsIdle(): void {
@@ -112,6 +114,12 @@ export function prefetchMainTabsIdle(): void {
     });
     try {
       prewarmFavoritosERecentesIdle();
+    } catch { /* noop */ }
+    try {
+      warmVideoaulasStartup();
+    } catch { /* noop */ }
+    try {
+      warmQuestoesStartup();
     } catch { /* noop */ }
   };
 

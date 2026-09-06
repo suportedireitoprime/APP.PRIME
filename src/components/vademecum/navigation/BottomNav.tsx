@@ -21,6 +21,8 @@ import { usePrefetchProfileSummary } from '@/hooks/useProfileSummary';
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
 import { prefetchRoute, prefetchMainTabsIdle, type PrefetchKey } from '@/lib/routePrefetch';
+import { warmVideoaulasStartup } from '@/services/videoaulasWarmup';
+import { warmQuestoesStartup } from '@/services/questoesWarmup';
 import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
 import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 
@@ -117,6 +119,22 @@ const BottomNav = () => {
     prefetchMainTabsIdle();
   }, []);
 
+  const handleNavWarmup = () => {
+    try {
+      prefetchRoute('questoes');
+      prefetchRoute('videoaulas');
+      prefetchRoute('flashcards');
+      prefetchRoute('aprender');
+      prefetchRoute('vadeMecum');
+      prefetchRoute('ferramentas');
+      prefetchRoute('pilulas');
+      warmVideoaulasStartup();
+      warmQuestoesStartup();
+    } catch {
+      /* noop */
+    }
+  };
+
   const keyboardHeight = useKeyboardHeight();
   const hideNav = sideMenuOpen || externalMenuOpen || keyboardHeight > 0;
 
@@ -199,7 +217,11 @@ const BottomNav = () => {
         className="absolute bottom-full left-0 right-0 h-20 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none md:hidden"
       />
       {/* Menu Principal */}
-      <div className="relative z-10 bg-nav-panel border-t border-white/10 rounded-t-2xl md:border-t-0 md:rounded-none md:h-full md:bg-black/95 shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)] md:shadow-none pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] md:pb-0">
+      <div 
+        onPointerDown={handleNavWarmup}
+        onTouchStart={handleNavWarmup}
+        className="relative z-10 bg-nav-panel border-t border-white/10 rounded-t-2xl md:border-t-0 md:rounded-none md:h-full md:bg-black/95 shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)] md:shadow-none pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] md:pb-0"
+      >
         <div className="max-w-2xl mx-auto px-2 py-1.5 md:py-8 md:h-full md:flex md:flex-col md:justify-center md:gap-6">
         <div className="grid grid-cols-5 md:grid-cols-1 items-stretch md:gap-6">
           {/* Slot 1: Blog */}
