@@ -1,6 +1,6 @@
 import { jsPDF } from 'jspdf';
-import brasaoUrl from '@/assets/juris-brasao.png';
-import coverArtUrl from '@/assets/juris-cover-art.png';
+import brasaoUrl from '@/assets/juris-brasao.webp';
+import coverArtUrl from '@/assets/juris-cover-art.webp';
 
 const YELLOW: [number, number, number] = [239, 224, 57];
 const YELLOW_DARK: [number, number, number] = [212, 184, 0];

@@ -3,9 +3,9 @@ import { Play, Trophy, Flame, Sparkles, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { DesafioDeckPronto } from '@/config/flashcardsDesafiosDecks';
 import { haptic } from '@/lib/nativeHaptics';
-import q1 from '@/assets/questoes-hero/q-1.png';
-import q2 from '@/assets/questoes-hero/q-2.png';
-import q3 from '@/assets/questoes-hero/q-3.png';
+import q1 from '@/assets/questoes-hero/q-1.webp';
+import q2 from '@/assets/questoes-hero/q-2.webp';
+import q3 from '@/assets/questoes-hero/q-3.webp';
 
 const FIGURAS = [q1, q2, q3];
 

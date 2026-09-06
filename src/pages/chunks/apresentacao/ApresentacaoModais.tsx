@@ -1,6 +1,8 @@
 import React from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Send } from 'lucide-react';
+import { PrimeImage } from '@/components/ui/PrimeImage';
+import { toSupabaseRenderUrl } from '@/lib/cdnImg';
 
 export type ApresentacaoModaisProps = {
   abrirComentarios: boolean;
@@ -58,9 +60,22 @@ export const ApresentacaoModais: React.FC<ApresentacaoModaisProps> = ({
               <button 
                 key={s.slide_index} 
                 onClick={() => { irPara(i); setAbrirSumario(false); }}
-                className={`text-left rounded-xl overflow-hidden bg-white/5 border-2 ${i === idx ? 'border-primary' : 'border-transparent'}`}
+                className={`text-left rounded-xl overflow-hidden bg-white/5 border-2 transition-all hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary ${i === idx ? 'border-primary' : 'border-transparent'}`}
               >
-                {s.imagem_url ? <img src={s.imagem_url} alt="" className="w-full aspect-video object-cover" /> : <div className="w-full aspect-video bg-white/10" />}
+                {s.imagem_url ? (
+                  <PrimeImage
+                    src={toSupabaseRenderUrl(s.imagem_url, { width: 320, quality: 75, format: 'origin' })}
+                    alt={`Slide ${i + 1}`}
+                    aspectRatio="16/9"
+                    width={320}
+                    height={180}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full aspect-video object-cover"
+                  />
+                ) : (
+                  <div className="w-full aspect-video bg-white/10" />
+                )}
                 <div className="p-2 text-xs font-medium text-white/80">Slide {i + 1}</div>
               </button>
             ))}

@@ -15,8 +15,8 @@ import {
   Shuffle,
 } from "lucide-react";
 import { getTemaCover } from "@/lib/flashcards-tema-cover";
-import laurel from '@/assets/landing-tribunal/laurel-leaf.png';
-import scales from '@/assets/landing-tribunal/scales.png';
+import laurel from '@/assets/landing-tribunal/laurel-leaf.webp';
+import scales from '@/assets/landing-tribunal/scales.webp';
 import { haptic } from "@/lib/nativeHaptics";
 import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 
@@ -271,6 +271,29 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
       if (synth) synth.cancel();
     };
   }, [isAutoPlaying, idx, flipped, card, isLast, goNext, playFlip, onComplete]);
+
+  // Prefetch seletivo N+1 e N+2 de capas de Flashcards (Item 95)
+  useEffect(() => {
+    if (!cards || cards.length === 0) return;
+    const proximoCard = cards[idx + 1];
+    if (proximoCard) {
+      const nextCover = proximoCard.coverUrl ?? getTemaCover(proximoCard.tema ?? titulo);
+      if (nextCover) {
+        const img = new Image();
+        img.decoding = 'async';
+        img.src = nextCover;
+      }
+    }
+    const cardFuturo = cards[idx + 2];
+    if (cardFuturo) {
+      const futureCover = cardFuturo.coverUrl ?? getTemaCover(cardFuturo.tema ?? titulo);
+      if (futureCover) {
+        const img = new Image();
+        img.decoding = 'async';
+        img.src = futureCover;
+      }
+    }
+  }, [idx, cards, titulo]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDragEnd = (e: any, { offset }: any) => {

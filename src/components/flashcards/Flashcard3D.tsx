@@ -4,8 +4,8 @@ import gsap from 'gsap';
 import { ChevronRight, Scale, RotateCcw, CheckCircle2, Lightbulb, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FlashcardCard } from '@/lib/flashcardsQueries';
-import laurel from '@/assets/landing-tribunal/laurel-leaf.png';
-import scales from '@/assets/landing-tribunal/scales.png';
+import laurel from '@/assets/landing-tribunal/laurel-leaf.webp';
+import scales from '@/assets/landing-tribunal/scales.webp';
 
 type Flashcard3DProps = {
   atual: FlashcardCard;

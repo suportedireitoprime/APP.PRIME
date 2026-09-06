@@ -124,28 +124,43 @@ const ApresentacaoPlayer = () => {
     if (audioBRef.current) audioBRef.current.playbackRate = velocidade;
   }, [velocidade]);
 
+  // Carregamento instantâneo do slide ativo e prefetch N+1 e N-1 (Item 97)
   useEffect(() => {
     if (!slides.length) return;
     let vivo = true;
-    const urls = slides.map((s) => s.imagem_url).filter(Boolean) as string[];
-    if (!urls.length) { setMidiaPronta(true); return; }
 
-    const tm = setTimeout(() => { if (vivo) setMidiaPronta(true); }, 3000);
+    // Slide atual
+    const atualUrl = slides[idx]?.imagem_url;
+    if (!atualUrl) {
+      setMidiaPronta(true);
+    } else {
+      const img = new Image();
+      img.decoding = 'async';
+      img.onload = () => { if (vivo) setMidiaPronta(true); };
+      img.onerror = () => { if (vivo) setMidiaPronta(true); };
+      img.src = atualUrl;
+    }
 
-    Promise.all(
-      urls.map((u) => new Promise<void>((resolve) => {
-        const img = new Image();
-        img.decoding = 'async';
-        img.onload = () => resolve();
-        img.onerror = () => resolve();
-        img.src = u;
-      }))
-    ).then(() => {
-      if (vivo) { clearTimeout(tm); setMidiaPronta(true); }
-    });
+    // Prefetch seletivo do próximo slide (N+1)
+    const proximaUrl = slides[idx + 1]?.imagem_url;
+    if (proximaUrl) {
+      const nextImg = new Image();
+      nextImg.decoding = 'async';
+      nextImg.src = proximaUrl;
+    }
+
+    // Prefetch do slide anterior se houver (N-1)
+    const anteriorUrl = slides[idx - 1]?.imagem_url;
+    if (anteriorUrl) {
+      const prevImg = new Image();
+      prevImg.decoding = 'async';
+      prevImg.src = anteriorUrl;
+    }
+
+    const tm = setTimeout(() => { if (vivo) setMidiaPronta(true); }, 1500);
 
     return () => { vivo = false; clearTimeout(tm); };
-  }, [slides]);
+  }, [slides, idx]);
 
   // Pre-fetch áudio
   useEffect(() => {
@@ -472,7 +487,9 @@ const ApresentacaoPlayer = () => {
                 <img
                   src={slide.imagem_url}
                   alt={`Slide ${idx + 1}`}
-                  decoding="sync"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
                   className={`shadow-[0_10px_40px_rgba(0,0,0,0.5)] border-white/5 ${deitado ? 'w-full h-full object-contain' : 'w-full h-auto border-y'}`}
                 />
               ) : (
@@ -494,11 +511,6 @@ const ApresentacaoPlayer = () => {
             />
           </div>
         )}
-
-        {/* Caches */}
-        <div className="hidden" aria-hidden>
-          {slides.map((s) => (s.imagem_url ? <img key={s.slide_index} src={s.imagem_url} alt="" /> : null))}
-        </div>
       </div>
 
       {/* Controles Inferiores (Ocultáveis) */}
