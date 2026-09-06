@@ -8,7 +8,7 @@ import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import LeiOrdinariaDetail from '@/components/vademecum/artigo/LeiOrdinariaDetail';
 import type { LeiOrdinaria } from '@/services/legislacaoService';
 import { getListSnapshot, setListSnapshot } from '@/services/offlineDb';
-import { resenhaSelect, RESENHA_SELECT, garantirTextoIntegral } from '@/lib/resenhaBackend';
+import { resenhaSelect, RESENHA_LIST_SELECT, garantirTextoIntegral } from '@/lib/resenhaBackend';
 import { withOnlineGuard } from '@/lib/onlineGuard';
 import brasaoImgAsset from '@/assets/brasao-republica.webp';
 import coverLei from '@/assets/norma-cover-lei.jpg';
@@ -120,10 +120,10 @@ export default function OutrasNormasLista() {
       }
       // 2) Revalida online.
       const data = await resenhaSelect<ResenhaRow>({
-        select: RESENHA_SELECT,
+        select: RESENHA_LIST_SELECT,
         tipo_ato: `eq.${meta.tipo}`,
         order: 'data_dou.desc',
-        limit: '500',
+        limit: '200',
       });
       if (mounted) {
         const list = data;

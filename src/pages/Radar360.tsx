@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { withOnlineGuard, assertOnline } from '@/lib/onlineGuard';
 import { getResenhaCache, prefetchResenha, getLatestDate, type ResenhaItem } from '@/services/atualizacaoService';
 import LeiOrdinariaDetail from '@/components/vademecum/artigo/LeiOrdinariaDetail';
-import { resenhaSelect, RESENHA_SELECT, garantirTextoIntegral, invokeResenhaFn } from '@/lib/resenhaBackend';
+import { resenhaSelect, RESENHA_SELECT, RESENHA_LIST_SELECT, garantirTextoIntegral, invokeResenhaFn } from '@/lib/resenhaBackend';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import type { LeiOrdinaria } from '@/services/legislacaoService';
 import brasaoImgAsset from '@/assets/brasao-republica.webp';
@@ -71,35 +71,82 @@ export default function Radar360() {
   const centerDate = useMemo(() => getLatestDate() || new Date(), [items]);
   const dayList = useMemo(() => getDayList(centerDate, 3), [centerDate]);
 
+  const [nativeDispatched, setNativeDispatched] = useState(false);
+
   const reload = useCallback(async () => {
-    const data = await resenhaSelect<ResenhaItem>({
-      select: RESENHA_SELECT,
-      order: 'data_dou.desc',
-      limit: '200',
-    });
-    if (data.length) setItems(data);
+    try {
+      const data = await resenhaSelect<ResenhaItem>({
+        select: RESENHA_LIST_SELECT,
+        order: 'data_dou.desc',
+        limit: '150',
+      });
+      if (data && data.length) setItems(data);
+    } catch (e) {
+      console.warn('[Radar360] Erro ao recarregar:', e);
+    }
   }, []);
 
   useEffect(() => {
+    let active = true;
     const cached = getResenhaCache();
-    if (cached) { setItems(cached); setLoading(false); }
-    else { prefetchResenha().then(() => { const d = getResenhaCache(); if (d) setItems(d); setLoading(false); }); }
+    if (cached && cached.length > 0) {
+      setItems(cached);
+      setLoading(false);
+    } else {
+      setLoading(true);
+      prefetchResenha()
+        .then(() => {
+          if (!active) return;
+          const d = getResenhaCache();
+          if (d && d.length > 0) setItems(d);
+        })
+        .catch((e) => {
+          console.warn('[Radar360] Erro ao carregar resenha:', e);
+        })
+        .finally(() => {
+          if (active) setLoading(false);
+        });
+    }
+
+    // Timeout de segurança: nunca deixa loading preso por mais de 3 segundos
+    const timeout = setTimeout(() => {
+      if (active) setLoading(false);
+    }, 3000);
+
     try { localStorage.setItem('radar_leis_last_seen', new Date().toISOString()); } catch { /* ignore */ }
+
+    return () => {
+      active = false;
+      clearTimeout(timeout);
+    };
   }, []);
 
   useEffect(() => {
-    if (Capacitor.isNativePlatform() && !loading && items.length > 0) {
+    if (Capacitor.isNativePlatform() && !nativeDispatched && !loading && items.length > 0) {
+      setNativeDispatched(true);
       const abrirNativo = async () => {
-        const { data } = await supabase.auth.getSession();
-        await NativeRadar360Plugin.openRadar360({
-          accessToken: data.session?.access_token || '',
-          itemsJson: JSON.stringify(items),
-        });
-        goBack(); // Volta no React para não ficar na pilha
+        try {
+          const { data } = await supabase.auth.getSession();
+          // Prepara itens enxutos (evita TransactionTooLargeException no Android Binder)
+          const cleanItems = items.map(i => ({
+            id: i.id,
+            tipo_ato: i.tipo_ato || 'Outro',
+            numero_ato: i.numero_ato || 'Sem número',
+            ementa: i.ementa || '',
+            data_publicacao: i.data_publicacao || i.data_dou || '',
+          }));
+          await NativeRadar360Plugin.openRadar360({
+            accessToken: data.session?.access_token || '',
+            itemsJson: JSON.stringify(cleanItems),
+          });
+          goBack();
+        } catch (e) {
+          console.warn('[Radar360] Plugin nativo falhou, mantendo interface React:', e);
+        }
       };
       abrirNativo();
     }
-  }, [loading, items, goBack]);
+  }, [loading, items, goBack, nativeDispatched]);
 
   const availableDates = useMemo(() => {
     const set = new Set<string>();
@@ -237,14 +284,7 @@ export default function Radar360() {
     );
   }
 
-  // Se for nativo, já despachou a Intent no useEffect. Evitamos renderizar a interface React pesada.
-  if (Capacitor.isNativePlatform()) {
-    return (
-      <div className="min-h-dvh bg-background flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
-  }
+  // Detail view de lei selecionada
 
   const selectedDateKey = toDateKey(selectedDate);
 

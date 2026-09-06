@@ -1,4 +1,4 @@
-import { resenhaSelect, RESENHA_SELECT } from '@/lib/resenhaBackend';
+import { resenhaSelect, RESENHA_LIST_SELECT } from '@/lib/resenhaBackend';
 
 export interface ResenhaItem {
   id: string;
@@ -6,8 +6,8 @@ export interface ResenhaItem {
   numero_ato: string;
   ementa: string;
   url: string;
-  texto_completo: string | null;
-  explicacao: string | null;
+  texto_completo?: string | null;
+  explicacao?: string | null;
   data_publicacao: string;
   data_dou: string;
   created_at: string;
@@ -38,21 +38,26 @@ export function getLatestDate(): Date | null {
 }
 
 export async function prefetchResenha(): Promise<void> {
-  if (resenhaCache) return;
+  if (resenhaCache && resenhaCache.length > 0) return;
   if (fetchPromise) return fetchPromise;
 
   fetchPromise = (async () => {
-    // Traz já com texto_completo/explicacao para abertura instantânea.
-    const data = await resenhaSelect<ResenhaItem>({
-      select: RESENHA_SELECT,
-      order: 'data_dou.desc',
-      limit: '200',
-    });
+    try {
+      // Traz metadados enxutos da lista (35 KB) para carregamento instantâneo no mobile sem travar IPC/rede
+      const data = await resenhaSelect<ResenhaItem>({
+        select: RESENHA_LIST_SELECT,
+        order: 'data_dou.desc',
+        limit: '150',
+      });
 
-    if (data.length) {
-      resenhaCache = data;
+      if (data && data.length) {
+        resenhaCache = data;
+      }
+    } catch (e) {
+      console.warn('[resenha] Erro no prefetchResenha:', e);
+    } finally {
+      fetchPromise = null;
     }
-    fetchPromise = null;
   })();
 
   return fetchPromise;
