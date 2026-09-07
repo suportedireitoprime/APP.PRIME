@@ -22,6 +22,7 @@ import { track } from "@/lib/analyticsEvents";
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { useGoBack } from '@/hooks/useGoBack';
 import { useHideSplashScreen } from '@/hooks/useHideSplashScreen';
+import { PrimeImage } from '@/components/ui/PrimeImage';
 
 const PESSOAL_SNAP = "sheet_snapshot";
 const prefetchRoute = (path: string) => {
@@ -366,20 +367,17 @@ const MeuEspaco = () => {
   return (
     <div className="min-h-[100dvh] bg-background overflow-y-auto">
       {/* Cover */}
-      <div
-        className="relative w-full h-52 sm:h-64 bg-secondary overflow-hidden bg-cover bg-center"
-        style={{ backgroundImage: `url(${getCoverLqip(capaId)})` }}
-      >
-        <img
+      <div className="relative w-full h-52 sm:h-64 bg-secondary overflow-hidden">
+        <PrimeImage
           key={capaId}
           src={getCoverSrc(capaId)}
+          lqip={getCoverLqip(capaId)}
           alt="Capa do perfil"
-          loading="eager"
-          decoding="sync"
-          {...({ fetchpriority: 'high' } as any)}
-          className="absolute inset-0 w-full h-full object-cover"
+          priority
+          className="w-full h-full object-cover"
+          containerClassName="w-full h-full"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-background pointer-events-none" />
         <button
           onClick={handleBack}
           aria-label="Voltar"

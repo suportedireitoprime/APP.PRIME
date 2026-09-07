@@ -12,6 +12,7 @@ import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar'
 import { copiarTexto } from '@/lib/nativo/copiar';
 import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { PrimeImage } from '@/components/ui/PrimeImage';
 
 type Slide = { slide_index: number; imagem_url: string | null; audio_url: string | null; roteiro: string | null };
 type Apres = { id: string; titulo: string; descricao: string | null; total_slides: number; livro_tabela: string; livro_id: string };
@@ -365,7 +366,9 @@ const ApresentacaoPlayer = () => {
     return (
       <div className="min-h-dvh bg-black text-white flex flex-col relative overflow-hidden">
         {stateCapa && (
-          <div className="absolute inset-0 z-0 opacity-30 bg-cover bg-center blur-[100px] scale-150" style={{ backgroundImage: `url(${stateCapa})` }} />
+          <div className="absolute inset-0 z-0 opacity-30 blur-[100px] scale-150 overflow-hidden pointer-events-none">
+            <PrimeImage src={stateCapa} alt="" decorative className="w-full h-full object-cover object-center" containerClassName="w-full h-full" />
+          </div>
         )}
         <div className="absolute inset-0 z-0 bg-black/60 pointer-events-none" />
         
@@ -377,7 +380,7 @@ const ApresentacaoPlayer = () => {
         <div className="flex-1 relative z-10 flex flex-col items-center justify-center w-full pb-8">
            {stateCapa && (
              <div className="w-full transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] -translate-y-2">
-               <img src={stateCapa} alt="Capa" className="w-full h-auto shadow-[0_10px_40px_rgba(0,0,0,0.5)] border-y border-white/5 opacity-50" />
+               <PrimeImage src={stateCapa} alt="Capa" priority className="w-full h-auto shadow-[0_10px_40px_rgba(0,0,0,0.5)] border-y border-white/5 opacity-50" />
              </div>
            )}
            <Loader2 className="w-8 h-8 animate-spin text-white absolute" />
@@ -408,9 +411,10 @@ const ApresentacaoPlayer = () => {
       {/* Ambient Background Blur */}
       {slide?.imagem_url && (
         <div 
-          className="absolute inset-0 z-0 opacity-30 transition-all duration-1000 bg-cover bg-center blur-[100px] scale-150"
-          style={{ backgroundImage: `url(${slide.imagem_url})` }}
-        />
+          className="absolute inset-0 z-0 opacity-30 transition-all duration-1000 blur-[100px] scale-150 overflow-hidden pointer-events-none"
+        >
+          <PrimeImage src={slide.imagem_url} alt="" decorative className="w-full h-full object-cover object-center" containerClassName="w-full h-full" />
+        </div>
       )}
       
       <div className="absolute inset-0 z-0 bg-black/60 pointer-events-none" />

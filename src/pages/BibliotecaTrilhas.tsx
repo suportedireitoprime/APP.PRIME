@@ -12,6 +12,7 @@ import LeitorNativo from '@/components/biblioteca/LeitorNativo';
 import { readLeituraProgress } from '@/lib/leituraProgress';
 import BibliotecaBottomNav from '@/components/biblioteca/BibliotecaBottomNav';
 import { useIsPdfCached } from '@/hooks/useIsPdfCached';
+import { PrimeImage } from '@/components/ui/PrimeImage';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -281,7 +282,15 @@ export const BibliotecaTrilhas = () => {
                       onClick={() => { haptic.selection(); setColecaoAberta(colecao.id); }}
                       className="w-full relative overflow-hidden flex flex-col items-start gap-4 text-left p-4 rounded-3xl border border-border/40 bg-card/60 backdrop-blur-md shadow-lg shadow-black/10 active:scale-[0.98] transition-all"
                     >
-                      <div className="absolute inset-0 z-0 bg-cover bg-center opacity-[0.03]" style={{ backgroundImage: `url(${colecao.cover})` }} />
+                      <div className="absolute inset-0 z-0 opacity-[0.03] overflow-hidden pointer-events-none">
+                        <PrimeImage 
+                          src={colecao.cover} 
+                          alt="" 
+                          decorative 
+                          className="w-full h-full object-cover object-center" 
+                          containerClassName="w-full h-full"
+                        />
+                      </div>
                       
                       <div className="relative z-10 flex items-center gap-4 w-full">
                         <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center shrink-0">

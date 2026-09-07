@@ -11,6 +11,7 @@ import { useIsDesktop } from '@/hooks/use-desktop';
 import VideoaulasBottomNav from '../videoaulas/VideoaulasBottomNav';
 import FilosofoPresentationOverlay from '@/components/vademecum/overlays/FilosofoPresentationOverlay';
 import { DocumentarioSettingsModal } from '@/components/vademecum/media/DocumentarioSettingsModal';
+import { PrimeImage } from '@/components/ui/PrimeImage';
 
 interface Props {
   personagemId: string;
@@ -95,7 +96,15 @@ export const BiografiaArtigoView = ({ personagemId, onBack }: Props) => {
           <div className="relative w-full h-[400px] md:h-[500px]">
             {bio.imagemUrl ? (
               <>
-                <div className="absolute inset-0 bg-cover bg-top" style={{ backgroundImage: `url(${bio.imagemUrl})` }} />
+                <div className="absolute inset-0 overflow-hidden">
+                  <PrimeImage 
+                    src={bio.imagemUrl} 
+                    alt={bio.nome} 
+                    priority 
+                    className="w-full h-full object-cover object-top" 
+                    containerClassName="w-full h-full"
+                  />
+                </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
               </>
             ) : (
