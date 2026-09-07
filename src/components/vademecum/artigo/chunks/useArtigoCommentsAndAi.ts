@@ -39,6 +39,21 @@ export function useArtigoCommentsAndAi({
   const activeArtigoIdRef = useRef<string | null>(artigo?.id ?? null);
   const activeAbortCtrlRef = useRef<AbortController | null>(null);
 
+  // Item 5: Cancelamento de requisições de IA ao fechar modal ou trocar artigo/aba
+  const activeAiAbortCtrlRef = useRef<AbortController | null>(null);
+  const activeTermosAbortCtrlRef = useRef<AbortController | null>(null);
+  const activeNoteAbortCtrlRef = useRef<AbortController | null>(null);
+
+  // Aborta todas as requisições ativas de IA no desmonte do hook/modal
+  useEffect(() => {
+    return () => {
+      activeAbortCtrlRef.current?.abort();
+      activeAiAbortCtrlRef.current?.abort();
+      activeTermosAbortCtrlRef.current?.abort();
+      activeNoteAbortCtrlRef.current?.abort();
+    };
+  }, []);
+
   const [isGeneratingAiNote, setIsGeneratingAiNote] = useState(false);
   const [aiContent, setAiContent] = useState<Record<string, string>>({});
   const [aiLoading, setAiLoading] = useState<Record<string, boolean>>({});
@@ -65,6 +80,12 @@ export function useArtigoCommentsAndAi({
       const trecho = currentHl?.text || artigo?.caput;
       if (!trecho) return;
       setIsGeneratingAiNote(true);
+
+      // Item 5: Aborta requisição de anotação de IA anterior
+      activeNoteAbortCtrlRef.current?.abort();
+      const noteAbortCtrl = new AbortController();
+      activeNoteAbortCtrlRef.current = noteAbortCtrl;
+
       try {
         const { data, error } = await supabase.functions.invoke('assistente-juridica', {
           body: {
@@ -79,7 +100,10 @@ export function useArtigoCommentsAndAi({
               },
             ],
           },
+          // @ts-ignore
+          signal: noteAbortCtrl.signal,
         });
+        if (noteAbortCtrl.signal.aborted) return;
         if (error) throw error;
         const reply = data?.reply || data?.text || data?.content;
         if (reply) {
@@ -88,7 +112,8 @@ export function useArtigoCommentsAndAi({
         } else {
           toast.error('Não foi possível gerar a anotação.');
         }
-      } catch (err) {
+      } catch (err: any) {
+        if (noteAbortCtrl.signal.aborted || err?.name === 'AbortError') return;
         console.error(err);
         toast.error('Erro ao conectar com a IA');
       } finally {
@@ -261,9 +286,15 @@ export function useArtigoCommentsAndAi({
           const mode = activeTab as 'explicacao' | 'exemplo';
           setAiGeneratingMode(mode);
           setAiGeneratingStep(0);
-          const stepInterval = setInterval(() => {
-            if (activeArtigoIdRef.current !== currentId) {
-              clearInterval(stepInterval);
+
+          // Item 5: Aborta requisição de IA anterior e associa novo controller
+          activeAiAbortCtrlRef.current?.abort();
+          const aiAbortCtrl = new AbortController();
+          activeAiAbortCtrlRef.current = aiAbortCtrl;
+
+          stepInterval = setInterval(() => {
+            if (aiAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) {
+              if (stepInterval) clearInterval(stepInterval);
               return;
             }
             setAiGeneratingStep((prev) => (prev < 2 ? prev + 1 : prev));
@@ -277,10 +308,12 @@ export function useArtigoCommentsAndAi({
                 artigoNumero: artigo.numero,
                 leiNome: tabelaNome || '',
               },
+              // @ts-ignore
+              signal: aiAbortCtrl.signal,
             })
             .then(({ data, error }) => {
-              clearInterval(stepInterval);
-              if (activeArtigoIdRef.current !== currentId) return;
+              if (stepInterval) clearInterval(stepInterval);
+              if (aiAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) return;
               if (!error && data?.reply) {
                 setAiGeneratingStep(3);
                 setAiContent((prev) => ({ ...prev, [activeTab]: data.reply }));
@@ -310,24 +343,29 @@ export function useArtigoCommentsAndAi({
                 }
               }, 500);
             })
-            .catch(() => {
-              clearInterval(stepInterval);
-              if (activeArtigoIdRef.current === currentId) {
-                setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
-                setAiGeneratingMode(null);
-              }
+            .catch((err: any) => {
+              if (stepInterval) clearInterval(stepInterval);
+              if (aiAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) return;
+              setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
+              setAiGeneratingMode(null);
             });
         });
     });
+
+    return () => {
+      activeAiAbortCtrlRef.current?.abort();
+      if (stepInterval) clearInterval(stepInterval);
+    };
   }, [activeTab, artigo?.id]);
 
-  // Fetch termos (Item 1: Protegido contra race conditions)
+  // Fetch termos (Item 1 & Item 5: Protegido contra race conditions e com cancelamento via AbortController)
   useEffect(() => {
     if (!showTermosSheet || !artigo) return;
     if (aiContent.termos || aiLoading.termos) return;
     const currentId = artigo.id;
     const cacheKey = { tabela: tabelaNome || 'unknown', numero: artigo.numero };
     setAiLoading((prev) => ({ ...prev, termos: true }));
+    let stepInterval: ReturnType<typeof setInterval> | null = null;
 
     import('@/lib/aiCacheLocal').then(({ getLocalAiCache, setLocalAiCache }) => {
       if (activeArtigoIdRef.current !== currentId) return;
@@ -363,13 +401,20 @@ export function useArtigoCommentsAndAi({
           }
           setAiGeneratingMode('termos');
           setAiGeneratingStep(0);
-          const stepInterval = setInterval(() => {
-            if (activeArtigoIdRef.current !== currentId) {
-              clearInterval(stepInterval);
+
+          // Item 5: Aborta chamada de termos anterior e associa novo controller
+          activeTermosAbortCtrlRef.current?.abort();
+          const termosAbortCtrl = new AbortController();
+          activeTermosAbortCtrlRef.current = termosAbortCtrl;
+
+          stepInterval = setInterval(() => {
+            if (termosAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) {
+              if (stepInterval) clearInterval(stepInterval);
               return;
             }
             setAiGeneratingStep((prev) => (prev < 2 ? prev + 1 : prev));
           }, 1800);
+
           supabase.functions
             .invoke('assistente-juridica', {
               body: {
@@ -378,10 +423,12 @@ export function useArtigoCommentsAndAi({
                 artigoNumero: artigo.numero,
                 leiNome: tabelaNome || '',
               },
+              // @ts-ignore
+              signal: termosAbortCtrl.signal,
             })
             .then(({ data, error }) => {
-              clearInterval(stepInterval);
-              if (activeArtigoIdRef.current !== currentId) return;
+              if (stepInterval) clearInterval(stepInterval);
+              if (termosAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) return;
               if (!error && data?.reply) {
                 setAiGeneratingStep(3);
                 setAiContent((prev) => ({ ...prev, termos: data.reply }));
@@ -411,15 +458,19 @@ export function useArtigoCommentsAndAi({
                 }
               }, 500);
             })
-            .catch(() => {
-              clearInterval(stepInterval);
-              if (activeArtigoIdRef.current === currentId) {
-                setAiLoading((prev) => ({ ...prev, termos: false }));
-                setAiGeneratingMode(null);
-              }
+            .catch((err: any) => {
+              if (stepInterval) clearInterval(stepInterval);
+              if (termosAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) return;
+              setAiLoading((prev) => ({ ...prev, termos: false }));
+              setAiGeneratingMode(null);
             });
         });
     });
+
+    return () => {
+      activeTermosAbortCtrlRef.current?.abort();
+      if (stepInterval) clearInterval(stepInterval);
+    };
   }, [showTermosSheet, artigo?.id]);
 
   return {
