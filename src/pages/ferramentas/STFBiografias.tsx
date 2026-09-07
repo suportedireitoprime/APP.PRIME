@@ -5,7 +5,23 @@ import { ArrowLeft, BookOpen, User, CheckCircle2, AlertCircle, Download, Loader2
 import { motion, AnimatePresence } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import { jsPDF } from 'jspdf';
+import { pdf, Document, Page, Text as PdfText, StyleSheet } from '@react-pdf/renderer';
+
+const pdfStyles = StyleSheet.create({
+  page: { padding: 40, fontFamily: 'Helvetica' },
+  title: { fontSize: 16, marginBottom: 20 },
+  text: { fontSize: 11, lineHeight: 1.5, color: '#333333' }
+});
+
+const CurriculoPdf = ({ nome, curriculo }: { nome: string, curriculo: string }) => (
+  <Document>
+    <Page size="A4" style={pdfStyles.page}>
+      <PdfText style={pdfStyles.title}>Currículo - {nome}</PdfText>
+      <PdfText style={pdfStyles.text}>{curriculo}</PdfText>
+    </Page>
+  </Document>
+);
+
 
 type Ministro = {
   id: string;
@@ -40,26 +56,22 @@ export default function STFBiografias() {
   const [expandedTimeline, setExpandedTimeline] = useState<Record<number, boolean>>({});
   const [loadingDetails, setLoadingDetails] = useState(false);
 
-  const downloadPDF = () => {
+  const downloadPDF = async () => {
     if (!selectedMinistro || !selectedMinistro.curriculo) return;
     try {
-      const doc = new jsPDF();
-      doc.setFontSize(16);
-      doc.text(`Currículo - ${selectedMinistro.nome_completo}`, 14, 20);
-      doc.setFontSize(11);
-      
-      const splitText = doc.splitTextToSize(selectedMinistro.curriculo, 180);
-      let y = 30;
-      for (let i = 0; i < splitText.length; i++) {
-        if (y > 280) {
-          doc.addPage();
-          y = 20;
-        }
-        doc.text(splitText[i], 14, y);
-        y += 6;
-      }
-      
-      doc.save(`curriculo_${selectedMinistro.nome.replace(/\s+/g, '_')}.pdf`);
+      const doc = <CurriculoPdf nome={selectedMinistro.nome_completo} curriculo={selectedMinistro.curriculo} />;
+      const asPdf = pdf(doc);
+      const blob = await asPdf.toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `curriculo_${selectedMinistro.nome.replace(/\s+/g, '_')}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 100);
     } catch (e) {
       console.error("Erro ao gerar PDF", e);
     }

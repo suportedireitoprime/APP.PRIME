@@ -2,6 +2,37 @@ import { useMemo, useState, useCallback, memo } from 'react';
 import { Download, FileText, Copy, X, Loader2 } from 'lucide-react';
 import { baixarBlob, copiarTexto, haptic } from '@/lib/nativo';
 import { toast } from 'sonner';
+import { pdf, Document, Page, Text as PdfText, StyleSheet, View } from '@react-pdf/renderer';
+
+const pdfStyles = StyleSheet.create({
+  page: { padding: 48, fontFamily: 'Helvetica' },
+  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 20 },
+  subtitle: { fontSize: 10, color: '#787878', marginBottom: 26 },
+  falaContainer: { marginBottom: 12 },
+  quem: { fontSize: 10, fontWeight: 'bold', marginBottom: 8 },
+  texto: { fontSize: 11.5, color: '#191919', lineHeight: 1.5 }
+});
+
+const TranscricaoPdf = ({ falas, timestamp }: { falas: FalaSalva[], timestamp: string }) => (
+  <Document>
+    <Page size="A4" style={pdfStyles.page}>
+      <PdfText style={pdfStyles.title}>Me Explique</PdfText>
+      <PdfText style={pdfStyles.subtitle}>Direito Prime — registrado em {timestamp}</PdfText>
+      
+      {falas.map((f, i) => {
+        const professor = f.quem === 'professor';
+        return (
+          <View key={i} style={pdfStyles.falaContainer} wrap={false}>
+            <PdfText style={[pdfStyles.quem, { color: professor ? '#828282' : '#282828' }]}>
+              {professor ? 'PROFESSOR' : 'VOCÊ'} · {hora(f.em)}
+            </PdfText>
+            <PdfText style={pdfStyles.texto}>{f.texto}</PdfText>
+          </View>
+        );
+      })}
+    </Page>
+  </Document>
+);
 
 export type FalaSalva = { quem: 'professor' | 'aluno'; texto: string; em: number };
 
@@ -39,56 +70,17 @@ const TranscricaoSheet = memo(function TranscricaoSheet({ open, onClose, falas }
     }
   }, [texto, nomeBase]);
 
-  const baixarPdf = useCallback(async () => {
+    const baixarPdf = useCallback(async () => {
     setGerando('pdf');
     try {
       void haptic.light();
-      const { jsPDF } = await import('jspdf');
-      const doc = new jsPDF({ unit: 'pt', format: 'a4' });
-      const margem = 48;
-      const largura = doc.internal.pageSize.getWidth() - margem * 2;
-      const alturaPagina = doc.internal.pageSize.getHeight();
-      let y = margem;
+      
+      const timestamp = new Date().toLocaleString('pt-BR');
+      const doc = <TranscricaoPdf falas={falas} timestamp={timestamp} />;
+      const asPdf = pdf(doc);
+      const blob = await asPdf.toBlob();
 
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(18);
-      doc.text('Me Explique', margem, y);
-      y += 20;
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(10);
-      doc.setTextColor(120);
-      doc.text(`Direito Prime — registrado em ${new Date().toLocaleString('pt-BR')}`, margem, y);
-      y += 26;
-
-      falas.forEach((f) => {
-        const professor = f.quem === 'professor';
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(10);
-        doc.setTextColor(professor ? 130 : 40);
-        const rotulo = `${professor ? 'PROFESSOR' : 'VOCÊ'} · ${hora(f.em)}`;
-        if (y > alturaPagina - margem - 40) {
-          doc.addPage();
-          y = margem;
-        }
-        doc.text(rotulo, margem, y);
-        y += 14;
-
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(11.5);
-        doc.setTextColor(25);
-        const linhas = doc.splitTextToSize(f.texto, largura) as string[];
-        linhas.forEach((linha) => {
-          if (y > alturaPagina - margem) {
-            doc.addPage();
-            y = margem;
-          }
-          doc.text(linha, margem, y);
-          y += 16;
-        });
-        y += 12;
-      });
-
-      await baixarBlob(doc.output('blob'), `${nomeBase}.pdf`, {
+      await baixarBlob(blob, `${nomeBase}.pdf`, {
         titulo: 'Explicação em PDF',
       });
     } catch {

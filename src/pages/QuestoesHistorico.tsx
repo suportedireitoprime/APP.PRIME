@@ -4,7 +4,7 @@ import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { getSessoes, removeSessao, type SessaoHistorico } from '@/lib/questoesSessoes';
 import { haptic } from '@/lib/nativeHaptics';
 import { Layers, PlayCircle, Trash2, Calendar, Target, CheckCircle2 } from 'lucide-react';
-import {  format, isToday, isYesterday, parseISO  } from "@/lib/dateUtils";
+import { formatDate, isToday, isYesterday, parseISO } from "@/lib/dateUtils";
 
 import { useGoBack } from '@/hooks/useGoBack';
 import { motion } from 'framer-motion';
@@ -33,7 +33,7 @@ export default function QuestoesHistorico() {
     const grupos: Record<string, SessaoHistorico[]> = {};
     for (const s of sessoes) {
       const data = parseISO(s.dataInicio);
-      let chave = format(data, "dd 'de' MMMM");
+      let chave = formatDate(data, "dd 'de' MMMM");
       if (isToday(data)) chave = 'Hoje';
       else if (isYesterday(data)) chave = 'Ontem';
 

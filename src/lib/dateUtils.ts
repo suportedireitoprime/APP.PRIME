@@ -6,16 +6,18 @@ export const formatDate = (date: Date | number | string, pattern = 'dd/MM/yyyy')
   const hours = d.getHours().toString().padStart(2, '0');
   const minutes = d.getMinutes().toString().padStart(2, '0');
   
-  if (pattern === 'dd/MM/yyyy') return \\/\/\\;
-  if (pattern === 'dd/MM/yyyy HH:mm') return \\/\/\ \:\\;
+  if (pattern === 'dd/MM/yyyy') return `${day}/${month}/${year}`;
+  if (pattern === 'dd/MM/yyyy HH:mm') return `${day}/${month}/${year} ${hours}:${minutes}`;
   if (pattern === 'dd MMM, yyyy') return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).format(d);
   if (pattern === 'MMMM yyyy') return new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(d);
   if (pattern === 'dd MMM yyyy') return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).format(d);
   if (pattern === 'dd \'de\' MMMM \'de\' yyyy') return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }).format(d);
   
-  // Fallback genérico para suportar outros padrões
+  // Fallback generico para suportar outros padroes
   return new Intl.DateTimeFormat('pt-BR').format(d);
 };
+
+export const format = formatDate;
 
 export const differenceInDays = (dateLeft: Date | number | string, dateRight: Date | number | string) => {
   const left = new Date(dateLeft).setHours(0,0,0,0);
@@ -56,14 +58,14 @@ export const formatDistanceToNow = (date: Date | number | string, options?: { ad
 
   let result = '';
   if (diffInSeconds < 60) result = 'agora mesmo';
-  else if (diffInMinutes < 60) result = \\ minuto\\;
-  else if (diffInHours < 24) result = \\ hora\\;
-  else if (diffInDays < 30) result = \\ dia\\;
-  else if (diffInMonths < 12) result = \\ mês\\;
-  else result = \\ ano\\;
+  else if (diffInMinutes < 60) result = ` minuto`;
+  else if (diffInHours < 24) result = ` hora`;
+  else if (diffInDays < 30) result = ` dia`;
+  else if (diffInMonths < 12) result = ` m\u00EAs`;
+  else result = ` ano`;
 
   if (options?.addSuffix && result !== 'agora mesmo') {
-    return \há \\;
+    return `h\u00E1 `;
   }
   return result;
 };

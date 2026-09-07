@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { pdf, Document, Page, Image } from '@react-pdf/renderer';
 import { buildScene, PALETA, type Scene, type SceneNode } from '@/lib/visuaisJuridicos/layout';
 import type { VisualContent, VisualEstilo } from '@/lib/visuaisJuridicos/types';
 
@@ -187,14 +188,26 @@ async function entregarArquivo(dataUrl: string, nomeArquivo: string, mime: strin
 /** Exporta o visual em PDF (página ajustada ao formato do visual). */
 export async function exportarPdf(content: VisualContent, estilo: VisualEstilo, nome: string) {
   const { canvas } = await renderCanvas(content, estilo);
-  const { default: JsPDF } = await import('jspdf');
   const w = canvas.width / 2;
   const h = canvas.height / 2;
-  const pdf = new JsPDF({ orientation: w >= h ? 'landscape' : 'portrait', unit: 'pt', format: [w, h] });
-  pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, w, h);
-  const dataUrl = pdf.output('datauristring');
-  await entregarArquivo(dataUrl, `${nome}.pdf`, 'application/pdf');
-  void espelhar(content, dataUrl, 'application/pdf');
+  const data = canvas.toDataURL('image/png');
+  
+  const Doc = (
+    <Document>
+      <Page size={[w, h]} style={{ margin: 0, padding: 0 }}>
+        <Image src={data} style={{ width: w, height: h }} />
+      </Page>
+    </Document>
+  );
+
+  const blob = await pdf(Doc).toBlob();
+  const reader = new FileReader();
+  reader.readAsDataURL(blob);
+  reader.onloadend = async () => {
+    const dataUrl = reader.result as string;
+    await entregarArquivo(dataUrl, `${nome}.pdf`, 'application/pdf');
+    void espelhar(content, dataUrl, 'application/pdf');
+  };
 }
 
 /** Exporta o visual em PNG de alta resolução. */
