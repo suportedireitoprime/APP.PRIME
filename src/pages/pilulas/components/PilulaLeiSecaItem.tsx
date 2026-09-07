@@ -107,4 +107,5 @@ export const PilulaLeiSecaItem = memo(function PilulaLeiSecaItem({ artigo, navig
       </div>
     </motion.button>
   );
-}
+});
+

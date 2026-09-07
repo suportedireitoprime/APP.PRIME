@@ -102,4 +102,5 @@ export const PilulaClassicoItem = memo(function PilulaClassicoItem({ livro, item
       </div>
     </motion.button>
   );
-}
+});
+
