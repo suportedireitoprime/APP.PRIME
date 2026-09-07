@@ -67,6 +67,32 @@ const SINONIMOS_JURIDICOS: Array<{
   { termo: 'mandado de seguranca', sugestao: 'Mandado de Segurança · Art. 5º, LXIX CF/88', leiId: 'cf88', artigo: '5' },
 ];
 
+// Item 33: Distância de Levenshtein para pesquisa tolerante a erros de digitação (Fuzzy Search)
+function levenshteinDistance(a: string, b: string): number {
+  if (a === b) return 0;
+  if (!a.length) return b.length;
+  if (!b.length) return a.length;
+
+  const matrix: number[][] = [];
+  for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+  for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        );
+      }
+    }
+  }
+  return matrix[b.length][a.length];
+}
+
 // Item 40: Ramos jurídicos para filtragem rápida
 const RAMOS_FILTRO: Array<{ id: RamoJuridico; label: string }> = [
   { id: 'todos', label: 'Todos' },
@@ -171,6 +197,41 @@ const BuscaLeisOverlay = ({ open, onClose, onSelectLei }: Props) => {
     );
   }, [query]);
 
+  // Item 33: Sugestão de "Você quis dizer..." tolerante a erros de digitação
+  const fuzzySugestao = useMemo(() => {
+    const q = norm(query.trim());
+    if (q.length < 4) return null;
+
+    const hasExact = LEIS_CATALOG.some(
+      (l) => norm(l.nome).includes(q) || norm(l.sigla || '').includes(q)
+    );
+    if (hasExact) return null;
+
+    const candidatos: Array<{ display: string; target: string; lei?: LeiCatalogItem }> = [
+      ...LEIS_CATALOG.map((l) => ({ display: l.nome, target: l.sigla || l.nome, lei: l })),
+      ...SINONIMOS_JURIDICOS.map((s) => ({ display: s.sugestao, target: s.termo })),
+    ];
+
+    let bestMatch: { display: string; target: string; lei?: LeiCatalogItem } | null = null;
+    let minDistance = Infinity;
+
+    for (const item of candidatos) {
+      const targetNorm = norm(item.target);
+      const words = targetNorm.split(/\s+/);
+      for (const w of words) {
+        if (w.length < 4) continue;
+        const d = levenshteinDistance(q, w);
+        const maxTol = q.length <= 5 ? 1 : q.length <= 8 ? 2 : 3;
+        if (d <= maxTol && d < minDistance) {
+          minDistance = d;
+          bestMatch = item;
+        }
+      }
+    }
+
+    return bestMatch;
+  }, [query]);
+
   // Filtro de leis quando o usuário pesquisa um artigo específico
   const leisParaArtigo = useMemo(() => {
     if (!artigoQueryDigits) return [];
@@ -219,13 +280,20 @@ const BuscaLeisOverlay = ({ open, onClose, onSelectLei }: Props) => {
       return base.filter((l) => l.tipo === 'constituicao' || l.tipo === 'codigo' || l.tipo === 'estatuto').slice(0, 30);
     }
 
-    return base
+    const matches = base
       .filter((l) => {
         const alvo = norm(`${l.nome} ${l.sigla} ${l.descricao} ${(l.tags ?? []).join(' ')}`);
         return alvo.includes(q);
       })
       .slice(0, 50);
-  }, [query, ramoAtivo]);
+
+    // Item 33: Se nenhum resultado exato for encontrado mas houver correspondência fuzzy
+    if (matches.length === 0 && fuzzySugestao?.lei) {
+      return [fuzzySugestao.lei];
+    }
+
+    return matches;
+  }, [query, ramoAtivo, fuzzySugestao]);
 
   // Item 39: Realce de texto encontrado nas descrições
   const highlightMatch = (text: string) => {
@@ -338,6 +406,24 @@ const BuscaLeisOverlay = ({ open, onClose, onSelectLei }: Props) => {
                   </button>
                 )}
               </div>
+
+              {/* Item 33: Sugestão "Você quis dizer..." tolerante a erros de digitação */}
+              {fuzzySugestao && (
+                <div className="mt-2 flex items-center gap-2 text-xs text-amber-200 bg-amber-500/15 border border-amber-500/30 px-3 py-1.5 rounded-xl">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <span>Você quis dizer:</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setQuery(fuzzySugestao.target);
+                      saveRecentSearch(fuzzySugestao.target);
+                    }}
+                    className="font-bold underline text-amber-300 hover:text-white transition-colors"
+                  >
+                    {fuzzySugestao.target}
+                  </button>
+                </div>
+              )}
 
               {/* Item 35: Sugestão de Autocomplete */}
               {autocompleteSugestao && query.trim().length >= 2 && norm(autocompleteSugestao.sigla || '') !== norm(query) && (

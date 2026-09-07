@@ -405,8 +405,8 @@ const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, 
         </header>
 
         <div
-          className="flex-1 overflow-y-auto px-4 sm:px-6 py-5 pb-safe space-y-5"
-          style={{ paddingBottom: keyboardHeight > 0 ? `${keyboardHeight + 24}px` : undefined }}
+          className="flex-1 overflow-y-auto px-4 sm:px-6 py-5 pb-safe space-y-5 transition-[padding] duration-200"
+          style={{ paddingBottom: keyboardHeight > 0 ? `${keyboardHeight + 48}px` : undefined }}
         >
           <AnimatePresence initial={false}>
             {composerOpen && (
@@ -424,6 +424,12 @@ const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, 
                     value={novaTexto}
                     maxLength={5000}
                     onChange={e => setNovaTexto(e.target.value)}
+                    onFocus={(e) => {
+                      const target = e.currentTarget;
+                      setTimeout(() => {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      }, 250);
+                    }}
                     placeholder="Escreva sua anotação sobre este artigo..."
                     className="min-h-[108px] rounded-lg bg-secondary/30 border-border text-sm resize-none focus:border-primary/50 placeholder:text-muted-foreground pb-7"
                   />

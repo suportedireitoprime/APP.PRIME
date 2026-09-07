@@ -8,6 +8,12 @@ import { speakNative, stopNativeSpeech } from '@/lib/nativeTts';
 import { formatTextoArtigoParaNarracao, formatNarracaoTime } from './artigoTextUtils';
 import { LEIS_SUPABASE_URL, LEIS_SUPABASE_ANON_KEY } from '@/lib/legislacaoBackend';
 import type { ArtigoLei } from '@/data/mockData';
+import {
+  getCachedAudio,
+  saveCachedAudio,
+  buildAudioCacheKey,
+  prefetchNextArticleAudio,
+} from '@/services/audioOfflineCache';
 
 const SB_URL = LEIS_SUPABASE_URL;
 const SB_KEY = LEIS_SUPABASE_ANON_KEY;
@@ -113,6 +119,25 @@ export function useArtigoNarracao({
   const narracaoAdoptedRef = useRef(false);
   // Item 12: Guard against concurrent audio generation (double-click flooding)
   const isGeneratingAudioRef = useRef(false);
+  const prefetchedNextRef = useRef(false);
+
+  // Item 18: Persistência no storage da velocidade de reprodução customizada (0.75x a 2.0x)
+  const [playbackRate, setPlaybackRateState] = useState<number>(() => {
+    try {
+      const saved = Number(localStorage.getItem('vademecum_audio_speed'));
+      return [0.75, 1, 1.25, 1.5, 2].includes(saved) ? saved : 1.0;
+    } catch {
+      return 1.0;
+    }
+  });
+
+  const setPlaybackRate = useCallback((rate: number) => {
+    setPlaybackRateState(rate);
+    try { localStorage.setItem('vademecum_audio_speed', String(rate)); } catch {}
+    if (narracaoAudioRef.current) {
+      narracaoAudioRef.current.playbackRate = rate;
+    }
+  }, []);
 
   // ─── Floating mini-player integration ───
   const location = useLocation();
@@ -122,6 +147,7 @@ export function useArtigoNarracao({
 
   // ─── Check for existing narration when artigo changes ───
   useEffect(() => {
+    prefetchedNextRef.current = false;
     const reclaimed = artigo?.id ? reclaimNarracao(artigo.id) : null;
 
     setNarracaoUrl(null);
@@ -156,6 +182,17 @@ export function useArtigoNarracao({
 
     (async () => {
       try {
+        const cacheKey = buildAudioCacheKey(tabelaNome, artigo.numero);
+        // Item 14: Cache persistente IndexedDB com cota inteligente LRU
+        const cached = await getCachedAudio(cacheKey);
+        if (cached) {
+          setNarracaoUrl(cached.blobUrl);
+          if (cached.wordTimings && cached.wordTimings.length > 0) {
+            setNarracaoWordTimings(cached.wordTimings as any[]);
+          }
+          return;
+        }
+
         const aliases = Array.from(new Set([
           tabelaNome,
           tabelaNome.toLowerCase(),
@@ -177,6 +214,16 @@ export function useArtigoNarracao({
           if (Array.isArray(row.word_timings) && row.word_timings.length > 0) {
             setNarracaoWordTimings(row.word_timings as any[]);
           }
+          // Salva no IndexedDB em background para próximas reproduções offline instantâneas
+          void (async () => {
+            try {
+              const resp = await fetch(row.audio_url);
+              if (resp.ok) {
+                const blob = await resp.blob();
+                await saveCachedAudio(cacheKey, blob, row.word_timings as any);
+              }
+            } catch {}
+          })();
         }
       } catch (e) {
         console.error('Erro ao verificar narração no banco principal:', e);
@@ -221,6 +268,15 @@ export function useArtigoNarracao({
 
       if (dur > 0) {
         const pct = Math.min(100, (t / dur) * 100);
+        // Item 15: Pré-carregamento especulativo do áudio do próximo artigo durante a reprodução (>40%)
+        if (pct > 40 && !prefetchedNextRef.current && artigo?.numero && tabelaNome) {
+          prefetchedNextRef.current = true;
+          const num = parseInt(String(artigo.numero).replace(/\D/g, ''), 10);
+          if (!isNaN(num) && num > 0) {
+            void prefetchNextArticleAudio(tabelaNome, num + 1);
+          }
+        }
+
         if (narracaoProgressFillRef.current) {
           narracaoProgressFillRef.current.style.width = `${pct}%`;
         }
@@ -283,6 +339,8 @@ export function useArtigoNarracao({
 
     const audio = new Audio(audioUrl);
     audio.preload = 'auto';
+    // Item 18: Aplica a velocidade de reprodução customizada persistida no storage (0.75x a 2.0x)
+    audio.playbackRate = playbackRate;
     setNarracaoDuration(0);
     const syncDuration = () => {
       const d = audio.duration;
@@ -507,6 +565,20 @@ export function useArtigoNarracao({
         setNarracaoUrl(audio_url);
         if (Array.isArray(word_timings)) setNarracaoWordTimings(word_timings);
 
+        // Item 14: Salva o novo áudio gerado no cache IndexedDB
+        if (artigo?.numero && tabelaNome) {
+          const cKey = buildAudioCacheKey(tabelaNome, artigo.numero);
+          void (async () => {
+            try {
+              const resp = await fetch(audio_url!);
+              if (resp.ok) {
+                const blob = await resp.blob();
+                await saveCachedAudio(cKey, blob, word_timings as any);
+              }
+            } catch {}
+          })();
+        }
+
         if (!silent) setNarracaoLoading(false);
         await playNarracao(audio_url);
         return;
@@ -647,5 +719,7 @@ export function useArtigoNarracao({
     startProgressTracking,
     adoptNarracao,
     closeFlutuante,
+    playbackRate,
+    setPlaybackRate,
   };
 }

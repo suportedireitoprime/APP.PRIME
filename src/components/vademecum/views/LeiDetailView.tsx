@@ -176,9 +176,59 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   // Item 27: Recálculo debounced/deferred de visibleArtigos durante busca interna
   const deferredSearchQuery = useDeferredValue(searchQuery);
 
+  // Item 37: Web Worker para indexação e busca prévia em leis com mais de 800 artigos (ex: CC, CPC)
+  const workerRef = useRef<Worker | null>(null);
+  const [workerResultIds, setWorkerResultIds] = useState<string[] | null>(null);
+  const queryCounterRef = useRef(0);
+
+  useEffect(() => {
+    if (typeof Worker === 'undefined' || artigos.length <= 800) {
+      if (workerRef.current) {
+        workerRef.current.terminate();
+        workerRef.current = null;
+      }
+      return;
+    }
+
+    try {
+      const worker = new Worker(new URL('@/workers/artigoSearchWorker.ts', import.meta.url), { type: 'module' });
+      workerRef.current = worker;
+      worker.postMessage({ type: 'INDEX', payload: { artigos } });
+
+      worker.onmessage = (e) => {
+        if (e.data?.type === 'SEARCH_RESULT') {
+          setWorkerResultIds(e.data.matchingIds);
+        }
+      };
+
+      return () => {
+        worker.terminate();
+        workerRef.current = null;
+      };
+    } catch {
+      workerRef.current = null;
+    }
+  }, [artigos]);
+
+  useEffect(() => {
+    if (!workerRef.current || artigos.length <= 800) return;
+    const queryId = ++queryCounterRef.current;
+    workerRef.current.postMessage({
+      type: 'SEARCH',
+      payload: { query: deferredSearchQuery, queryId },
+    });
+  }, [deferredSearchQuery, artigos.length]);
+
   const filteredArtigos = useMemo(() => {
     const raw = deferredSearchQuery.trim();
     if (!raw) return artigos;
+
+    // Se o Web Worker já respondeu com IDs indexados (leis extensas)
+    if (artigos.length > 800 && workerResultIds !== null) {
+      const idSet = new Set(workerResultIds);
+      return artigos.filter((a) => idSet.has(String(a.id)));
+    }
+
     const q = raw.replace(/[^\d\-a-zA-Z]/g, '').replace(/^[a-zA-Z]+/, '').toLowerCase();
     if (!q) {
       const lower = raw.toLowerCase();
@@ -188,7 +238,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
       const artNum = (a.numero || '').replace(/^art\.?\s*/i, '').replace(/[º°]/g, '').trim().toLowerCase();
       return artNum === q;
     });
-  }, [artigos, deferredSearchQuery]);
+  }, [artigos, deferredSearchQuery, workerResultIds]);
 
   const handleSearch = (override?: string) => {
     const raw = (override ?? searchQuery).trim();

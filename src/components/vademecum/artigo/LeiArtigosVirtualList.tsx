@@ -255,6 +255,7 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
                   isHighlighted={highlightedArtigoId === String(artigo.id)}
                   accentColor={leiAccent}
                   withShine={virtualItem.index < 6}
+                  isFastScrolling={artigosVirtualizer.isScrolling}
                   tags={{ favorito: isArtigoFav(artigo), grifado: grifadoNumeros.has(artigo.numero), anotado: anotadoNumeros.has(artigo.numero) }}
                 />
               </div>

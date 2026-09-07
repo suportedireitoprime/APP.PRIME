@@ -1171,7 +1171,7 @@ const ArtigoBottomSheet = ({
                 splitSections={splitSections}
               />
 
-              <ArtigoTabHistorico caput={artigo?.caput} />
+              <ArtigoTabHistorico artigo={artigo} caput={artigo?.caput} />
             </Tabs>
           </div>
 

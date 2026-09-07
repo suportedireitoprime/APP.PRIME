@@ -19,6 +19,8 @@ interface ArtigoCardProps {
   withShine?: boolean;
   /** Tag indicators (favorito / grifado / anotado) rendered under the number badge. */
   tags?: { favorito?: boolean; grifado?: boolean; anotado?: boolean };
+  /** Item 23: Desativa sombras e animações pesadas durante scroll rápido (120fps) */
+  isFastScrolling?: boolean;
 }
 
 const normalizeArtigoLabel = (value: string) => value
@@ -38,7 +40,7 @@ const planaltoAnnotationRe = /\s*[\(\[]?\s*(?:Redação\s+dada|Incluíd[oa]|Acre
 
 const cleanStructuralText = (value: string) => value.replace(planaltoAnnotationRe, '').replace(/\s+/g, ' ').trim();
 
-const ArtigoCard = ({ artigo, index, onClick, highlightText, isHighlighted, withShine, tags }: ArtigoCardProps) => {
+const ArtigoCard = ({ artigo, index, onClick, highlightText, isHighlighted, withShine, tags, isFastScrolling }: ArtigoCardProps) => {
   const displayNumero = normalizeArtigoLabel(artigo.numero);
 
   // Cabeçalhos estruturais (PARTE, TÍTULO, CAPÍTULO…) — cartõezinhos verticais
@@ -156,9 +158,9 @@ const ArtigoCard = ({ artigo, index, onClick, highlightText, isHighlighted, with
             : isADCT
               ? 'border-sky-400/40 hover:border-sky-300/60 hover:bg-card'
               : 'border-border/60 hover:border-amber-400/40 hover:bg-card'
-        }`}
+        } ${isFastScrolling ? 'shadow-none transition-none' : ''}`}
       >
-        {withShine && (
+        {withShine && !isFastScrolling && (
           <span
             aria-hidden
             className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-amber-200/15 to-transparent animate-card-shine"
@@ -166,7 +168,7 @@ const ArtigoCard = ({ artigo, index, onClick, highlightText, isHighlighted, with
         )}
         <div className="shrink-0 flex flex-col items-center gap-1">
           <span className="relative h-12 w-12 rounded-xl bg-gradient-to-br from-amber-300/25 to-amber-600/10 border border-amber-400/30 flex flex-col items-center justify-center leading-none overflow-hidden">
-            {withShine && (
+            {withShine && !isFastScrolling && (
               <span
                 aria-hidden
                 className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-amber-100/30 to-transparent animate-card-shine"
