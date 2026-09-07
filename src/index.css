@@ -212,12 +212,9 @@ input, textarea, [contenteditable], .ProseMirror, .aui-composer-input, [data-aui
    usuários com visão subnormal que ativam alto contraste no SO.
    ========================================================================== */
 @media (prefers-contrast: more) {
-  /* Contorno visível em todas as imagens e capas */
+  /* Contorno visível em todas as imagens e capas do PrimeImage */
   img,
-  [data-prime-image],
-  .aspect-\\[2\\/3\\],
-  .aspect-video,
-  .aspect-square {
+  [data-prime-image] {
     outline: 2px solid rgba(255, 255, 255, 0.85) !important;
     outline-offset: -1px;
   }
