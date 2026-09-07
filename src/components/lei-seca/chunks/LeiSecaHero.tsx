@@ -208,6 +208,8 @@ export function LeiSecaHero({
           </div>
         )}
       </div>
-    </section>
-  );
+    </div>
+  </section>
+);
 }
+

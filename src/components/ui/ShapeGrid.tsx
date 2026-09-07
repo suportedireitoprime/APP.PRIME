@@ -67,44 +67,17 @@ const ShapeGrid = ({
     const activeBorderColor = resolveColor(borderColor);
     const activeHoverFillColor = resolveColor(hoverFillColor);
 
-    // Fase 3: Eliminação de Layout Thrashing no ResizeObserver com contentRect e desacoplamento via rAF
+    // State flags (declaradas antecipadamente)
+    let isVisible = false;
+    let isPageVisible = typeof document !== 'undefined' ? !document.hidden : true;
+    let reducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let isContextLost = false;
+    let lastFrameTime = 0;
+    const isMoving = speed > 0;
+    const minFrameInterval = 1000 / 45;
     let resizeFrameId: number | null = null;
-    const applyResize = (w: number, h: number) => {
-      if (!canvas || w <= 0 || h <= 0) return;
 
-      const dpr = Math.min(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1, 2);
-      dprRef.current = dpr;
-      logicalWidth.current = w;
-      logicalHeight.current = h;
-
-      const nextWidth = Math.floor(w * dpr);
-      const nextHeight = Math.floor(h * dpr);
-      if (canvas.width !== nextWidth || canvas.height !== nextHeight) {
-        canvas.width = nextWidth;
-        canvas.height = nextHeight;
-        numSquaresX.current = Math.ceil(w / safeSquareSize) + 1;
-        numSquaresY.current = Math.ceil(h / safeSquareSize) + 1;
-        drawGrid();
-      }
-    };
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      if (!entry) return;
-      const { width, height } = entry.contentRect;
-      if (width <= 0 || height <= 0) return;
-
-      if (resizeFrameId) cancelAnimationFrame(resizeFrameId);
-      resizeFrameId = requestAnimationFrame(() => {
-        applyResize(width, height);
-      });
-    });
-    
-    resizeObserver.observe(canvas);
-    if (canvas.offsetWidth > 0 && canvas.offsetHeight > 0) {
-      applyResize(canvas.offsetWidth, canvas.offsetHeight);
-    }
-
+    // 1. Geometria e formas básicas
     const drawHex = (cx: number, cy: number, size: number) => {
       ctx.beginPath();
       for (let i = 0; i < 6; i++) {
@@ -137,13 +110,56 @@ const ShapeGrid = ({
       ctx.closePath();
     };
 
+    // 2. Opacidade e rastro de hover
+    const updateCellOpacities = () => {
+      if (!hoveredSquare.current && trailCells.current.length === 0 && cellOpacities.current.size === 0) {
+        return;
+      }
+      const targets = new Map();
+
+      if (hoveredSquare.current) {
+        targets.set(`${hoveredSquare.current.x},${hoveredSquare.current.y}`, 1);
+      }
+
+      if (hoverTrailAmount > 0) {
+        for (let i = 0; i < trailCells.current.length; i++) {
+          const t = trailCells.current[i];
+          const key = `${t.x},${t.y}`;
+          if (!targets.has(key)) {
+            targets.set(key, (trailCells.current.length - i) / (trailCells.current.length + 1));
+          }
+        }
+      }
+
+      for (const [key] of targets) {
+        if (!cellOpacities.current.has(key)) {
+          cellOpacities.current.set(key, 0);
+        }
+      }
+
+      for (const [key, opacity] of cellOpacities.current) {
+        const target = targets.get(key) || 0;
+        const next = opacity + (target - opacity) * 0.15;
+        if (next < 0.005) {
+          cellOpacities.current.delete(key);
+        } else {
+          cellOpacities.current.set(key, next);
+        }
+      }
+
+      // Limpeza preventiva de trailCells para evitar acúmulo de memória
+      if (cellOpacities.current.size === 0 && !hoveredSquare.current && trailCells.current.length > 0) {
+        trailCells.current = [];
+      }
+    };
+
+    // 3. Renderização do Grid
     const drawGrid = () => {
       const w = logicalWidth.current;
       const h = logicalHeight.current;
       if (w <= 0 || h <= 0) return;
 
       const dpr = dprRef.current;
-      // Normalização de DPI e limpeza com precisão lógica
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
       ctx.lineWidth = 1;
@@ -243,7 +259,6 @@ const ShapeGrid = ({
 
         for (let col = -2; col < cols; col++) {
           for (let row = -2; row < rows; row++) {
-            // Fase 1: Alinhamento de coordenadas inteiras para eliminar efeito de tremor (shimmering)
             const sx = Math.round(col * safeSquareSize + offsetX);
             const sy = Math.round(row * safeSquareSize + offsetY);
 
@@ -263,44 +278,22 @@ const ShapeGrid = ({
       }
     };
 
-    // Fase 5: Reatividade dinâmica a prefers-reduced-motion
-    let reducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const motionQuery = typeof window !== 'undefined' ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
-    const handleMotionChange = (e: MediaQueryListEvent) => {
-      reducedMotion = e.matches;
-      if (reducedMotion) {
-        tryStop();
-        drawGrid();
-      } else {
-        tryStart();
+    // 4. Controles de animação
+    const tryStop = () => {
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+        requestRef.current = null;
       }
     };
-    if (motionQuery) {
-      motionQuery.addEventListener('change', handleMotionChange);
-    }
 
-    // Fase 5: Recuperação de perda de contexto GPU (contextlost / contextrestored) no Android/iOS
-    let isContextLost = false;
-    const handleContextLost = (e: Event) => {
-      e.preventDefault(); // Permite recuperação automática pela GPU
-      isContextLost = true;
-      tryStop();
-    };
-    const handleContextRestored = () => {
-      isContextLost = false;
-      if (canvas && canvas.offsetWidth > 0 && canvas.offsetHeight > 0) {
-        applyResize(canvas.offsetWidth, canvas.offsetHeight);
+    const tryStart = () => {
+      if (isVisible && isPageVisible && active && !reducedMotion && !isContextLost && !requestRef.current) {
+        lastFrameTime = performance.now();
+        requestRef.current = requestAnimationFrame(updateAnimation);
       }
-      tryStart();
     };
-    canvas.addEventListener('contextlost', handleContextLost);
-    canvas.addEventListener('contextrestored', handleContextRestored);
 
-    let lastFrameTime = 0;
-    const isMoving = speed > 0;
-    // Fase 2: Limitar a 45fps em telas de 90Hz/120Hz economiza mais de 60% de energia e temperatura
-    const minFrameInterval = 1000 / 45;
-
+    // 5. Loop de animação
     const updateAnimation = (now: number) => {
       if (!isVisible || !isPageVisible || !active || reducedMotion || isContextLost) {
         tryStop();
@@ -344,7 +337,7 @@ const ShapeGrid = ({
       updateCellOpacities();
       drawGrid();
 
-      // Fase 2: Auto-sleep quando speed === 0 e todas as células de hover voltaram à opacidade zero
+      // Auto-sleep quando parado e células voltaram à opacidade zero
       if (!isMoving && cellOpacities.current.size === 0 && !hoveredSquare.current) {
         tryStop();
         return;
@@ -353,55 +346,56 @@ const ShapeGrid = ({
       requestRef.current = requestAnimationFrame(updateAnimation);
     };
 
-    const updateCellOpacities = () => {
-      if (!hoveredSquare.current && trailCells.current.length === 0 && cellOpacities.current.size === 0) {
-        return;
-      }
-      const targets = new Map();
+    // 6. Redimensionamento e DPI
+    const applyResize = (w: number, h: number) => {
+      if (!canvas || w <= 0 || h <= 0) return;
 
-      if (hoveredSquare.current) {
-        targets.set(`${hoveredSquare.current.x},${hoveredSquare.current.y}`, 1);
-      }
+      const dpr = Math.min(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1, 2);
+      dprRef.current = dpr;
+      logicalWidth.current = w;
+      logicalHeight.current = h;
 
-      if (hoverTrailAmount > 0) {
-        for (let i = 0; i < trailCells.current.length; i++) {
-          const t = trailCells.current[i];
-          const key = `${t.x},${t.y}`;
-          if (!targets.has(key)) {
-            targets.set(key, (trailCells.current.length - i) / (trailCells.current.length + 1));
-          }
-        }
-      }
-
-      for (const [key] of targets) {
-        if (!cellOpacities.current.has(key)) {
-          cellOpacities.current.set(key, 0);
-        }
-      }
-
-      for (const [key, opacity] of cellOpacities.current) {
-        const target = targets.get(key) || 0;
-        const next = opacity + (target - opacity) * 0.15;
-        if (next < 0.005) {
-          cellOpacities.current.delete(key);
-        } else {
-          cellOpacities.current.set(key, next);
-        }
-      }
-
-      // Fase 5: Limpeza preventiva de trailCells para evitar acúmulo de memória
-      if (cellOpacities.current.size === 0 && !hoveredSquare.current && trailCells.current.length > 0) {
-        trailCells.current = [];
+      const nextWidth = Math.floor(w * dpr);
+      const nextHeight = Math.floor(h * dpr);
+      if (canvas.width !== nextWidth || canvas.height !== nextHeight) {
+        canvas.width = nextWidth;
+        canvas.height = nextHeight;
+        numSquaresX.current = Math.ceil(w / safeSquareSize) + 1;
+        numSquaresY.current = Math.ceil(h / safeSquareSize) + 1;
+        drawGrid();
       }
     };
 
-    // Fase 4: Manipulação unificada de PointerEvents (Mouse, Touch e Pen) com normalização de escala
+    // 7. Handlers de Eventos
+    const handleMotionChange = (e: MediaQueryListEvent) => {
+      reducedMotion = e.matches;
+      if (reducedMotion) {
+        tryStop();
+        drawGrid();
+      } else {
+        tryStart();
+      }
+    };
+
+    const handleContextLost = (e: Event) => {
+      e.preventDefault();
+      isContextLost = true;
+      tryStop();
+    };
+
+    const handleContextRestored = () => {
+      isContextLost = false;
+      if (canvas && canvas.offsetWidth > 0 && canvas.offsetHeight > 0) {
+        applyResize(canvas.offsetWidth, canvas.offsetHeight);
+      }
+      tryStart();
+    };
+
     const handlePointerMove = (event: PointerEvent) => {
       tryStart();
       const rect = canvas.getBoundingClientRect();
       if (rect.width <= 0 || rect.height <= 0) return;
 
-      // Compensar zoom/scale CSS (ex: modais e animações Framer Motion)
       const scaleX = logicalWidth.current > 0 ? logicalWidth.current / rect.width : 1;
       const scaleY = logicalHeight.current > 0 ? logicalHeight.current / rect.height : 1;
       const pointerX = (event.clientX - rect.left) * scaleX;
@@ -505,6 +499,24 @@ const ShapeGrid = ({
       hoveredSquare.current = null;
     };
 
+    const onVisibility = () => {
+      isPageVisible = !document.hidden;
+      if (isPageVisible && active) {
+        tryStart();
+      } else {
+        tryStop();
+      }
+    };
+
+    // 8. Registro de Observers e Event Listeners (Apenas APÓS todas as funções declaradas)
+    const motionQuery = typeof window !== 'undefined' ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+    if (motionQuery) {
+      motionQuery.addEventListener('change', handleMotionChange);
+    }
+
+    canvas.addEventListener('contextlost', handleContextLost);
+    canvas.addEventListener('contextrestored', handleContextRestored);
+
     const isInteractive = hoverTrailAmount > 0;
     if (isInteractive) {
       canvas.addEventListener('pointermove', handlePointerMove, { passive: true });
@@ -513,22 +525,6 @@ const ShapeGrid = ({
       canvas.addEventListener('pointerleave', handlePointerEnd, { passive: true });
       canvas.addEventListener('pointercancel', handlePointerEnd, { passive: true });
     }
-
-    let isVisible = false;
-    let isPageVisible = !document.hidden;
-
-    const tryStart = () => {
-      if (isVisible && isPageVisible && active && !reducedMotion && !isContextLost && !requestRef.current) {
-        lastFrameTime = performance.now();
-        requestRef.current = requestAnimationFrame(updateAnimation);
-      }
-    };
-    const tryStop = () => {
-      if (requestRef.current) {
-        cancelAnimationFrame(requestRef.current);
-        requestRef.current = null;
-      }
-    };
 
     const io = new IntersectionObserver(
       ([entry]) => {
@@ -543,15 +539,24 @@ const ShapeGrid = ({
     );
     io.observe(canvas);
 
-    const onVisibility = () => {
-      isPageVisible = !document.hidden;
-      if (isPageVisible && active) {
-        tryStart();
-      } else {
-        tryStop();
-      }
-    };
     document.addEventListener('visibilitychange', onVisibility);
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      const { width, height } = entry.contentRect;
+      if (width <= 0 || height <= 0) return;
+
+      if (resizeFrameId) cancelAnimationFrame(resizeFrameId);
+      resizeFrameId = requestAnimationFrame(() => {
+        applyResize(width, height);
+      });
+    });
+    resizeObserver.observe(canvas);
+
+    if (canvas.offsetWidth > 0 && canvas.offsetHeight > 0) {
+      applyResize(canvas.offsetWidth, canvas.offsetHeight);
+    }
 
     if (active) {
       tryStart();

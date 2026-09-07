@@ -152,9 +152,6 @@ importers:
       '@capgo/capacitor-updater':
         specifier: ^8.51.12
         version: 8.51.12(@capacitor/core@8.5.0)
-      '@capgo/native-audio':
-        specifier: ^8.0.0
-        version: 8.4.2(@capacitor/core@8.5.0)
       '@capgo/native-purchases':
         specifier: ^8.6.4
         version: 8.6.4(@capacitor/core@8.5.0)
@@ -1475,12 +1472,6 @@ packages:
     resolution: {integrity: sha512-GBFEQu3nq6xmSqthmXLml7yWrUN7WOKJTtLUremtRAmO45tTe6zRiME70E7G98m/iXyj+egOdc5kEZVZ/JH4dA==}
     peerDependencies:
       '@capacitor/core': ^8.0.0
-
-  '@capgo/native-audio@8.4.2':
-    resolution: {integrity: sha512-YI85cH5IQkiab12QvSozwqq0uuhTqcfsYtrFjC0IQQCIAca7yq6hlG6zxScjr6a8XpQc8xWyyEVWuWxa3lIHPw==}
-    deprecated: This package has moved to @capgo/capacitor-native-audio. Please install @capgo/capacitor-native-audio instead.
-    peerDependencies:
-      '@capacitor/core': '>=8.0.0'
 
   '@capgo/native-purchases@8.6.4':
     resolution: {integrity: sha512-7kGNvK7EiPiSbn+LVzc2GzR2Zcx2uxV4N457s84tsIV42ZccJmmsJpIvit6AOCFoUky8mLbcDsMhQvHCDivWhQ==}
@@ -9666,10 +9657,6 @@ snapshots:
       '@capacitor/core': 8.5.0
 
   '@capgo/capacitor-updater@8.51.12(@capacitor/core@8.5.0)':
-    dependencies:
-      '@capacitor/core': 8.5.0
-
-  '@capgo/native-audio@8.4.2(@capacitor/core@8.5.0)':
     dependencies:
       '@capacitor/core': 8.5.0
 
