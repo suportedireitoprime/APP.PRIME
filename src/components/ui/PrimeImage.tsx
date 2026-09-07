@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { directImg, generateResponsiveSrcSet, safeStorageUrl } from '@/lib/cdnImg';
+import { directImg, generateResponsiveSrcSet, safeStorageUrl, convertGoogleDriveUrl } from '@/lib/cdnImg';
 import fallbackCover from '@/assets/covers/fundamentos-da-lei.webp';
 import { BookOpen, Maximize2 } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
@@ -205,8 +205,9 @@ export function PrimeImageBase({
   const [attemptLevel, setAttemptLevel] = useState<'optimized' | 'raw' | 'offline' | 'fallback'>('optimized');
   const [offlineCandidateSrc, setOfflineCandidateSrc] = useState<string | null>(null);
 
-  // Sanitização de URL: evita requisições GET /undefined quando src é inválido e normaliza storage (Fase 44)
-  const cleanSrc = src && typeof src === 'string' && src.trim().length > 0 ? safeStorageUrl(src.trim()) : null;
+  // Sanitização de URL: evita requisições GET /undefined quando src é inválido, normaliza storage (Fase 44) e Google Drive (Fase 45)
+  const rawStorageClean = src && typeof src === 'string' && src.trim().length > 0 ? safeStorageUrl(src.trim()) : null;
+  const cleanSrc = rawStorageClean ? convertGoogleDriveUrl(rawStorageClean, targetWidth) : null;
 
   // Fase 35: Suporte a Save-Data (Item 36) - Reduz resolução para teto de 200px se economia de dados estiver ativa
   const isSaveData = typeof navigator !== 'undefined' &&

@@ -61,24 +61,49 @@ export const getAdaptiveQuality = (baseQuality = 80): number => {
 };
 
 /**
- * Fase 45: Converte links do Google Drive para stream direto de imagem, contornando bloqueios de CORS/HTML (Item 45).
+ * Fase 45: Verifica se uma URL pertence ao ecossistema do Google Drive (Item 45).
  */
-export const convertGoogleDriveUrl = (url: string): string => {
-  if (!url || typeof url !== 'string' || !url.includes('drive.google.com')) return url;
+export const isGoogleDriveUrl = (url: string | null | undefined): boolean => {
+  if (!url || typeof url !== 'string') return false;
+  return url.includes('drive.google.com') || url.includes('docs.google.com');
+};
 
-  // Formato 1: drive.google.com/file/d/<FILE_ID>/view
+/**
+ * Fase 45: Extrai o ID único de um arquivo hospedado no Google Drive a partir de múltiplos formatos de link.
+ */
+export const extractGoogleDriveId = (url: string | null | undefined): string | null => {
+  if (!url || typeof url !== 'string') return null;
+
+  // Pastas não representam arquivos diretos de imagem
+  if (url.includes('/drive/folders/')) return null;
+
+  // Formato 1: drive.google.com/file/d/<FILE_ID>/...
   const fileIdMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-  if (fileIdMatch && fileIdMatch[1]) {
-    return `https://drive.google.com/thumbnail?id=${fileIdMatch[1]}&sz=w1200`;
-  }
+  if (fileIdMatch && fileIdMatch[1]) return fileIdMatch[1];
 
-  // Formato 2: drive.google.com/open?id=<FILE_ID> ou uc?id=<FILE_ID>
+  // Formato 2: ?id=<FILE_ID> ou &id=<FILE_ID> (uc?id=, open?id=, thumbnail?id=)
   const idParamMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-  if (idParamMatch && idParamMatch[1]) {
-    return `https://drive.google.com/thumbnail?id=${idParamMatch[1]}&sz=w1200`;
-  }
+  if (idParamMatch && idParamMatch[1]) return idParamMatch[1];
 
-  return url;
+  // Formato 3: /d/<FILE_ID>
+  const dMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (dMatch && dMatch[1]) return dMatch[1];
+
+  return null;
+};
+
+/**
+ * Fase 45: Converte links do Google Drive para stream direto de imagem com calibração de resolução,
+ * contornando bloqueios de CORS, rate limits e páginas HTML de visualização do Google (Item 45).
+ */
+export const convertGoogleDriveUrl = (url: string, targetWidth = 1200): string => {
+  if (!url || typeof url !== 'string' || !isGoogleDriveUrl(url)) return url;
+
+  const fileId = extractGoogleDriveId(url);
+  if (!fileId) return url;
+
+  const safeWidth = Math.min(Math.max(Math.round(targetWidth), 100), 1600);
+  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w${safeWidth}`;
 };
 
 /**
