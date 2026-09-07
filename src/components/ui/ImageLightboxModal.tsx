@@ -152,6 +152,21 @@ export const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({
     }
   };
 
+  // Fase 25: Limite físico de movimentação (Boundary Clamping) proporcional ao zoom atual
+  const clampPosition = useCallback((posX: number, posY: number, currentScale: number) => {
+    if (!containerRef.current || currentScale <= 1) {
+      return { x: 0, y: 0 };
+    }
+    const container = containerRef.current;
+    const maxPanX = Math.max(0, (container.clientWidth * (currentScale - 1)) / 2);
+    const maxPanY = Math.max(0, (container.clientHeight * (currentScale - 1)) / 2);
+
+    return {
+      x: Math.min(maxPanX, Math.max(-maxPanX, posX)),
+      y: Math.min(maxPanY, Math.max(-maxPanY, posY)),
+    };
+  }, []);
+
   const handleTouchMove = (e: React.TouchEvent) => {
     if (e.touches.length === 2 && pinchRef.current) {
       // Executa pinch-to-zoom
@@ -162,15 +177,17 @@ export const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({
       const ratio = dist / pinchRef.current.dist;
       const nextScale = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, pinchRef.current.scale * ratio));
       setScale(nextScale);
-      if (nextScale === MIN_ZOOM) setPosition({ x: 0, y: 0 });
+      setPosition((prev) => clampPosition(prev.x, prev.y, nextScale));
     } else if (e.touches.length === 1 && isDragging && dragStartRef.current && scale > 1) {
       // Pan com limites de rolagem
       const dx = e.touches[0].clientX - dragStartRef.current.x;
       const dy = e.touches[0].clientY - dragStartRef.current.y;
-      setPosition({
-        x: dragStartRef.current.posX + dx,
-        y: dragStartRef.current.posY + dy,
-      });
+      const clamped = clampPosition(
+        dragStartRef.current.posX + dx,
+        dragStartRef.current.posY + dy,
+        scale
+      );
+      setPosition(clamped);
     }
   };
 
@@ -201,10 +218,12 @@ export const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({
     if (isDragging && dragStartRef.current && scale > 1) {
       const dx = e.clientX - dragStartRef.current.x;
       const dy = e.clientY - dragStartRef.current.y;
-      setPosition({
-        x: dragStartRef.current.posX + dx,
-        y: dragStartRef.current.posY + dy,
-      });
+      const clamped = clampPosition(
+        dragStartRef.current.posX + dx,
+        dragStartRef.current.posY + dy,
+        scale
+      );
+      setPosition(clamped);
     }
   };
 

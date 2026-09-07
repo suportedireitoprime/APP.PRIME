@@ -100,12 +100,23 @@ export interface ImageLoadMetric {
 const slowImagesLog: ImageLoadMetric[] = [];
 const MAX_SLOW_LOG = 30;
 
+// Fase 26: Buffer de percentis estatísticos para diagnóstico de Core Web Vitals
+const loadDurationsWindow: number[] = [];
+const MAX_DURATIONS_WINDOW = 100;
+let cumulativeLayoutShiftScore = 0;
+
 /**
  * Registra o tempo de carregamento de uma imagem renderizada pelo PrimeImage.
  * Se a duração for superior a 2.500ms, registra no buffer de slow images e dispara telemetria.
  */
 export function recordImageLoadMetric(url: string, durationMs: number): void {
   if (typeof window === 'undefined' || !url) return;
+
+  // Atualiza janela de percentis
+  loadDurationsWindow.push(durationMs);
+  if (loadDurationsWindow.length > MAX_DURATIONS_WINDOW) {
+    loadDurationsWindow.shift();
+  }
 
   if (durationMs > 2500) {
     const metric: ImageLoadMetric = {
@@ -134,4 +145,34 @@ export function recordImageLoadMetric(url: string, durationMs: number): void {
 export function getSlowImagesLog(): readonly ImageLoadMetric[] {
   return slowImagesLog;
 }
+
+/**
+ * Fase 26: Retorna resumo estatístico dos tempos de carregamento (Média, P75, P95 e CLS).
+ */
+export function getImagePerformanceSummary() {
+  if (loadDurationsWindow.length === 0) {
+    return { count: 0, avgMs: 0, p75Ms: 0, p95Ms: 0, clsScore: cumulativeLayoutShiftScore };
+  }
+
+  const sorted = [...loadDurationsWindow].sort((a, b) => a - b);
+  const p75Idx = Math.floor(sorted.length * 0.75);
+  const p95Idx = Math.floor(sorted.length * 0.95);
+  const sum = sorted.reduce((acc, v) => acc + v, 0);
+
+  return {
+    count: sorted.length,
+    avgMs: Math.round(sum / sorted.length),
+    p75Ms: sorted[p75Idx] || 0,
+    p95Ms: sorted[p95Idx] || 0,
+    clsScore: Math.round(cumulativeLayoutShiftScore * 1000) / 1000,
+  };
+}
+
+/**
+ * Registra impacto de layout shift relacionado a contêineres de mídia
+ */
+export function recordImageClsMetric(shiftValue: number): void {
+  cumulativeLayoutShiftScore += shiftValue;
+}
+
 
