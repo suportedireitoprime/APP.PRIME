@@ -674,9 +674,9 @@ export default function ObraDetailSheet({ obra, open, onClose }: Props) {
                       ) : (
                         comentarios.map((c) => (
                           <div key={c.id} className="flex gap-3">
-                            <div className="w-9 h-9 rounded-full bg-muted overflow-hidden shrink-0">
+                            <div className="w-9 h-9 aspect-square rounded-full bg-muted overflow-hidden shrink-0">
                               {c.autor_avatar ? (
-                                <img src={c.autor_avatar} alt="" className="w-full h-full object-cover" />
+                                <img src={c.autor_avatar} alt="" className="w-full h-full aspect-square object-cover" />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center text-xs font-semibold text-muted-foreground">
                                   {c.autor_nome?.[0]?.toUpperCase() ?? "?"}

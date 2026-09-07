@@ -332,7 +332,7 @@ const PessoalSheet = ({ open, onClose }: PessoalSheetProps) => {
 
           {/* Avatar + identidade */}
           <div className="relative -mt-14 px-5 flex flex-col items-center">
-            <div className="w-28 h-28 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-4xl font-display font-black ring-4 ring-background shadow-xl overflow-hidden">
+            <div className="w-28 h-28 aspect-square shrink-0 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-4xl font-display font-black ring-4 ring-background shadow-xl overflow-hidden">
               {avatarUrl ? (
                 <img
                   src={avatarUrl}
@@ -340,7 +340,7 @@ const PessoalSheet = ({ open, onClose }: PessoalSheetProps) => {
                   loading="eager"
                   decoding="async"
                   referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full aspect-square object-cover"
                   onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                 />
               ) : (

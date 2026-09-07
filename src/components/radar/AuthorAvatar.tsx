@@ -54,11 +54,11 @@ export function AuthorAvatar({ proposicaoId }: AuthorAvatarProps) {
           <User className="w-6 h-6 text-muted-foreground/30" />
         </div>
       ) : photoUrl ? (
-        <div className="w-14 h-14 rounded-full bg-muted overflow-hidden border border-border shrink-0">
+        <div className="w-14 h-14 aspect-square rounded-full bg-muted overflow-hidden border border-border shrink-0">
           <img 
             src={avatarImg(photoUrl, 96)} 
             alt={authorName || 'Autor'} 
-            className="w-full h-full object-cover"
+            className="w-full h-full aspect-square object-cover"
             loading="lazy"
             onError={(e) => {
               (e.target as HTMLImageElement).style.display = 'none';
