@@ -7,8 +7,8 @@ import { useQuery } from '@tanstack/react-query';
 import { Scale, Calendar, PlayCircle, Info } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import {  format  } from "@/lib/dateUtils";
+
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function SessoesSTF() {
@@ -144,7 +144,7 @@ export default function SessoesSTF() {
                           </CardTitle>
                           <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground font-medium">
                             <Calendar className="w-4 h-4" />
-                            {format(new Date(session.scheduled_at), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                            {format(new Date(session.scheduled_at), "EEEE, dd 'de' MMMM 'de' yyyy")}
                           </div>
                         </div>
                         <div className="shrink-0 mt-2 md:mt-0">

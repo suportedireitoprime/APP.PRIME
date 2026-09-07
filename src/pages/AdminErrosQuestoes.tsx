@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import {  format  } from "@/lib/dateUtils";
+
 import { AlertTriangle, CheckCircle2, Trash2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
@@ -85,7 +85,7 @@ export default function AdminErrosQuestoes() {
                       {erro.status.toUpperCase()}
                     </Badge>
                     <span className="text-xs text-zinc-500">
-                      {format(new Date(erro.created_at), "dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}
+                      {format(new Date(erro.created_at), "dd 'de' MMMM 'às' HH:mm")}
                     </span>
                   </div>
                   

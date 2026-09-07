@@ -7,8 +7,8 @@ import { useQuery } from '@tanstack/react-query';
 import { Scale, Calendar, PlayCircle, Info, ChevronLeft } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import {  format  } from "@/lib/dateUtils";
+
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 
@@ -71,7 +71,7 @@ export default function SessaoSTFDetalhes() {
             {!isLoading && session && (
               <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground font-medium">
                 <Calendar className="w-4 h-4" />
-                {format(new Date(session.scheduled_at), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                {format(new Date(session.scheduled_at), "EEEE, dd 'de' MMMM 'de' yyyy")}
                 <span>•</span>
                 {getStatusBadge(session.status)}
               </div>

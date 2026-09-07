@@ -8,8 +8,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { format, differenceInDays } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import {  format, differenceInDays  } from "@/lib/dateUtils";
 import { Capacitor } from '@capacitor/core';
 import CancelarAssinaturaSheet from './CancelarAssinaturaSheet';
 import { abrirLink } from '@/lib/nativo';
@@ -34,7 +33,7 @@ function planoLabel(plano: string | null): string {
 function fmtDate(iso: string | null): string {
   if (!iso) return '—';
   try {
-    return format(new Date(iso), "dd 'de' MMMM 'de' yyyy", { locale: ptBR });
+    return format(new Date(iso), "dd 'de' MMMM 'de' yyyy");
   } catch {
     return iso;
   }

@@ -6,8 +6,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Loader2, Search, Send, Ban, Phone } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatDistanceToNow } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import {  formatDistanceToNow  } from "@/lib/dateUtils";
+
 
 type User = { id: string; phone_e164: string; blocked: boolean; last_seen_at: string | null };
 type Msg = { id: string; role: string; content: string; created_at: string; duration_ms?: number | null; tokens_in?: number | null; tokens_out?: number | null; tokens_total?: number | null; cost_usd?: number | null; tools_used?: string[] | null; model?: string | null };

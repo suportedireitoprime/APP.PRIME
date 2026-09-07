@@ -4,8 +4,8 @@ import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { getSessoes, removeSessao, type SessaoHistorico } from '@/lib/questoesSessoes';
 import { haptic } from '@/lib/nativeHaptics';
 import { Layers, PlayCircle, Trash2, Calendar, Target, CheckCircle2 } from 'lucide-react';
-import { format, isToday, isYesterday, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import {  format, isToday, isYesterday, parseISO  } from "@/lib/dateUtils";
+
 import { useGoBack } from '@/hooks/useGoBack';
 import { motion } from 'framer-motion';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
@@ -33,7 +33,7 @@ export default function QuestoesHistorico() {
     const grupos: Record<string, SessaoHistorico[]> = {};
     for (const s of sessoes) {
       const data = parseISO(s.dataInicio);
-      let chave = format(data, "dd 'de' MMMM", { locale: ptBR });
+      let chave = format(data, "dd 'de' MMMM");
       if (isToday(data)) chave = 'Hoje';
       else if (isYesterday(data)) chave = 'Ontem';
 
@@ -151,7 +151,7 @@ export default function QuestoesHistorico() {
 
                     <div className="flex justify-between items-center pt-1 mt-auto border-t border-border/50">
                       <span className="text-[10px] text-muted-foreground font-medium">
-                        {format(parseISO(sessao.dataUltimoAcesso), "HH:mm", { locale: ptBR })}
+                        {format(parseISO(sessao.dataUltimoAcesso), "HH:mm")}
                       </span>
                       
                       <div className="flex items-center gap-1.5 font-bold text-xs text-primary group-hover:scale-105 transition-transform">

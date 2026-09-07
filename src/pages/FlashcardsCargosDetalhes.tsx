@@ -11,8 +11,8 @@ import { Building, ArrowLeft, Target, Calendar, CheckCircle2, ChevronLeft, Trash
 import { useFlashcardsTrilhasStore, type FlashcardTrilhaAtiva } from '@/lib/flashcardsTrilhasStore';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { format, addDays } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import {  format, addDays  } from "@/lib/dateUtils";
+
 import prfLogo from '@/assets/cargos/policia-rodoviaria-federal.webp';
 import pfLogo from '@/assets/cargos/policia-federal.webp';
 
@@ -210,7 +210,7 @@ const TrilhaMapaEdital = ({ cargo, trilha, onBack }: { cargo: Cargo, trilha: Fla
             const isAccessible = isCompleted || isNext || (dia === 1);
             
             const dataDoDia = addDays(dataInicioDate, dia - 1);
-            const dataFormatada = format(dataDoDia, "dd/MM/yyyy", { locale: ptBR });
+            const dataFormatada = format(dataDoDia, "dd/MM/yyyy");
             const isHoje = format(dataDoDia, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
             const dataDisplay = isHoje ? `Hoje, ${dataFormatada}` : dataFormatada;
 

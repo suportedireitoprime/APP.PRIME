@@ -6,8 +6,8 @@ import { Bell, Users, BookOpen, Send, CheckCircle2, XCircle, Clock, Calendar, Re
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { CanaisSaudeCard } from '@/components/admin/CanaisSaudeCard';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import {  format  } from "@/lib/dateUtils";
+
 
 const DIAS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
@@ -219,7 +219,7 @@ const AdminLembretesBiblioteca = () => {
                       <span className="text-muted-foreground"> · {d.livro_titulo || 'sem livro'}</span>
                     </p>
                     <p className="text-[11px] text-muted-foreground">
-                      {d.canal} · {format(new Date(d.created_at), "d MMM HH:mm", { locale: ptBR })}
+                      {d.canal} · {format(new Date(d.created_at), "d MMM HH:mm")}
                       {d.error ? ` · ${d.error}` : ''}
                     </p>
                   </div>

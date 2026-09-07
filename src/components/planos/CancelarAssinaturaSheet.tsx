@@ -6,8 +6,7 @@ import {
   AlertTriangle, Clock, Sparkles, TrendingUp, Heart,
   BookOpen, Brain, X, Loader2, CheckCircle2,
 } from 'lucide-react';
-import { differenceInDays, format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import {  differenceInDays, format  } from "@/lib/dateUtils";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -40,7 +39,7 @@ const PERDE = [
 
 function fmt(iso: string | null) {
   if (!iso) return '—';
-  try { return format(new Date(iso), "dd 'de' MMMM 'de' yyyy", { locale: ptBR }); }
+  try { return format(new Date(iso), "dd 'de' MMMM 'de' yyyy"); }
   catch { return iso; }
 }
 

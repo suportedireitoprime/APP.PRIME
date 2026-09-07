@@ -4,8 +4,8 @@ import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { getFlashcardsSessoes, removeFlashcardsSessao, type FlashcardsSessaoHistorico } from '@/lib/flashcardsSessoes';
 import { haptic } from '@/lib/nativeHaptics';
 import { Layers, PlayCircle, Trash2, Calendar, Target, CheckCircle2 } from 'lucide-react';
-import { format, isToday, isYesterday, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import {  format, isToday, isYesterday, parseISO  } from "@/lib/dateUtils";
+
 
 export default function FlashcardsHistorico() {
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ export default function FlashcardsHistorico() {
     for (const s of sessoes) {
       if (!s.dataInicio) continue;
       const data = parseISO(s.dataInicio);
-      let chave = format(data, "dd 'de' MMMM", { locale: ptBR });
+      let chave = format(data, "dd 'de' MMMM");
       if (isToday(data)) chave = 'Hoje';
       else if (isYesterday(data)) chave = 'Ontem';
 
@@ -106,7 +106,7 @@ export default function FlashcardsHistorico() {
 
                       <div className="flex justify-between items-center pt-1 border-t border-border/50">
                         <span className="text-[10px] text-muted-foreground font-medium">
-                          {sessao.dataUltimoAcesso ? format(parseISO(sessao.dataUltimoAcesso), "HH:mm", { locale: ptBR }) : ''}
+                          {sessao.dataUltimoAcesso ? format(parseISO(sessao.dataUltimoAcesso), "HH:mm") : ''}
                         </span>
                         
                         <div className="flex items-center gap-1.5 font-bold text-xs text-[#36AF85] group-hover:scale-105 transition-transform">

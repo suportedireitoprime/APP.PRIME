@@ -1,7 +1,6 @@
 import React from 'react';
 import { CalendarDays } from 'lucide-react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import {  format  } from "@/lib/dateUtils";
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
@@ -30,7 +29,7 @@ export function MonitorDayUsersCard({
   onUserClick,
 }: MonitorDayUsersCardProps) {
   const isToday = selectedDate.toDateString() === new Date().toDateString();
-  const dateLabel = isToday ? 'Hoje' : format(selectedDate, "dd 'de' MMMM", { locale: ptBR });
+  const dateLabel = isToday ? 'Hoje' : format(selectedDate, "dd 'de' MMMM");
 
   return (
     <div className="rounded-2xl bg-secondary/40 border border-border/30 overflow-hidden">

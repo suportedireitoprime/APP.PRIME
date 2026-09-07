@@ -7,8 +7,8 @@ import { BookOpenText, Play, Calendar, Video, FileText } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { CATALOGOS, ytThumb, limparTitulo } from '@/lib/videoaulasCatalogos';
 import { getCachedAula } from '@/lib/videoaulasStore';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import {  format  } from "@/lib/dateUtils";
+
 import { db } from '@/services/offlineDb';
 import type { CadernoDocument } from '@/components/videoaulas/AnotacoesAulaSheet';
 import ReactMarkdown from 'react-markdown';
@@ -217,7 +217,7 @@ const VideoaulasAnotacoes = () => {
               >
                 <div className="flex items-center gap-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest border-b border-white/5 pb-2">
                   <Calendar className="w-3.5 h-3.5 text-primary/70" />
-                  Atualizado em {format(new Date(caderno.documento.updated_at), "dd/MM 'às' HH:mm", { locale: ptBR })}
+                  Atualizado em {format(new Date(caderno.documento.updated_at), "dd/MM 'às' HH:mm")}
                 </div>
                 
                 <div className="prose prose-invert prose-p:leading-relaxed prose-sm line-clamp-[6] text-foreground/80 opacity-90 group-hover/card:opacity-100 transition-opacity">

@@ -1,5 +1,4 @@
-import { format, formatDistanceToNow } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import {  format, formatDistanceToNow  } from "@/lib/dateUtils";
 import type { LucideIcon } from 'lucide-react';
 
 export interface PresenceUser {
@@ -165,8 +164,8 @@ export function formatPreciseTime(time: string) {
   if (diffSec < 5) return 'agora';
   if (diffSec < 60) return `${diffSec}s atrás`;
   if (diffSec < 3600) return `${Math.floor(diffSec / 60)}min atrás`;
-  if (diffSec < 86400) return format(d, 'HH:mm', { locale: ptBR });
-  return formatDistanceToNow(d, { addSuffix: true, locale: ptBR });
+  if (diffSec < 86400) return format(d, 'HH:mm');
+  return formatDistanceToNow(d, { addSuffix: true });
 }
 
 export function formatDuration(ms: number) {
