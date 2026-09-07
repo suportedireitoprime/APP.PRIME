@@ -158,6 +158,7 @@ const ArtigoLineRendererComponent = ({
                 } else {
                   const targetEl = e.currentTarget as HTMLElement;
                   requestAnimationFrame(() => {
+                    if (!targetEl.isConnected) return;
                     const rect = targetEl.getBoundingClientRect();
                     setMagicTooltip(prev => prev?.grifo.trechoExato === m.grifo.trechoExato ? null : { grifo: m.grifo, rect });
                   });

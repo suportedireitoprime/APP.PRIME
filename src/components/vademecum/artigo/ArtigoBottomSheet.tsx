@@ -189,6 +189,7 @@ const ArtigoBottomSheet = ({
   const [showGrafo, setShowGrafo] = useState(false);
   const [activeActionMenu, setActiveActionMenu] = useState<null | 'funcoes' | 'grifar'>(null);
   const [selectionPill, setSelectionPill] = useState<{ x: number; y: number } | null>(null);
+  const narracaoActiveIdxRef = useRef(-1);
   const [showPremiumGate, setShowPremiumGate] = useState(false);
   const [premiumGateDesc, setPremiumGateDesc] = useState<string | undefined>(undefined);
   const [premiumGateFeature, setPremiumGateFeature] = useState<PremiumFeatureKey>('default');
@@ -216,7 +217,7 @@ const ArtigoBottomSheet = ({
 
   // Desktop text selection
   useEffect(() => {
-    if (!isDesktop || !artigo) {
+    if (!isDesktop || !artigo || activeTab !== 'artigo') {
       setSelectionPill(null);
       return;
     }
@@ -248,7 +249,31 @@ const ArtigoBottomSheet = ({
       if (rafId !== null) cancelAnimationFrame(rafId);
       document.removeEventListener('selectionchange', handler);
     };
-  }, [isDesktop, artigo?.numero]);
+  }, [isDesktop, artigo?.id, activeTab]);
+
+  // Item 8: Dessincronização de Grifos Táteis ao Alternar Abas
+  useEffect(() => {
+    if (activeTab !== 'artigo') {
+      setMagicTooltip(null);
+      setTooltipData(null);
+      setSelectionPill(null);
+      setFocusedSegment(null);
+    } else {
+      let rafId1: number | null = null;
+      let rafId2: number | null = null;
+      rafId1 = requestAnimationFrame(() => {
+        rafId2 = requestAnimationFrame(() => {
+          if (scrollContainerRef.current) {
+            void scrollContainerRef.current.scrollTop;
+          }
+        });
+      });
+      return () => {
+        if (rafId1 !== null) cancelAnimationFrame(rafId1);
+        if (rafId2 !== null) cancelAnimationFrame(rafId2);
+      };
+    }
+  }, [activeTab, setMagicTooltip]);
 
   useEffect(() => {
     if (activeActionMenu === 'funcoes') {
@@ -374,6 +399,7 @@ const ArtigoBottomSheet = ({
     clearAll,
     onAnotacoesCountChange: setAnotacoesCount,
     onAnotacoesRefresh: () => setAnotacoesRefreshTick((t) => t + 1),
+    activeTab,
   });
 
   const [showEraseSheet, setShowEraseSheet] = useState(false);
@@ -969,7 +995,7 @@ const ArtigoBottomSheet = ({
                   narracaoProgressFillRef={narracaoProgressFillRef}
                   narracaoTimeRef={narracaoTimeRef}
                   narracaoTotalTimeRef={narracaoTotalTimeRef}
-                  narracaoActiveIdxRef={useRef(-1)}
+                  narracaoActiveIdxRef={narracaoActiveIdxRef}
                 />
 
                 <div

@@ -34,17 +34,17 @@ export function useArtigoTextProcessing({
   narracaoAudioRef,
   activeNarracaoWordIndex,
 }: UseArtigoTextProcessingProps) {
-  return useMemo(() => {
+  // 1. Processamento estrutural e tokenização de texto (isolado por memoização estrita de conteúdo)
+  const baseContent = useMemo(() => {
     if (!artigo) {
       return {
         nomenJuris: null,
         isRevogado: false,
-        displayLines: [],
-        renderedLineTexts: [],
+        displayLines: [] as string[],
+        renderedLineTexts: [] as string[],
         lineSegmentMap: new Map<number, string>(),
-        lineWordStartIndexes: [],
-        activeRenderedWordIndex: -1,
-        timingsAtivos: null,
+        lineWordStartIndexes: [] as number[],
+        renderedArticleTokens: [] as string[],
       };
     }
 
@@ -123,6 +123,49 @@ export function useArtigoTextProcessing({
       .map(normalizeNarracaoToken)
       .filter(Boolean);
 
+    return {
+      nomenJuris,
+      isRevogado,
+      displayLines,
+      renderedLineTexts,
+      lineSegmentMap,
+      lineWordStartIndexes,
+      renderedArticleTokens,
+    };
+  }, [
+    artigo?.id,
+    artigo?.caput,
+    tabelaNome,
+    showNomenJuris,
+    showRedacao,
+    modificationInfo,
+  ]);
+
+  // 2. Alinhamento de timings de áudio e índice de narração ativa
+  return useMemo(() => {
+    const {
+      nomenJuris,
+      isRevogado,
+      displayLines,
+      renderedLineTexts,
+      lineSegmentMap,
+      lineWordStartIndexes,
+      renderedArticleTokens,
+    } = baseContent;
+
+    if (!artigo || !renderedArticleTokens.length) {
+      return {
+        nomenJuris,
+        isRevogado,
+        displayLines,
+        renderedLineTexts,
+        lineSegmentMap,
+        lineWordStartIndexes,
+        activeRenderedWordIndex: -1,
+        timingsAtivos: null,
+      };
+    }
+
     const duracaoAtual = narracaoDuration || narracaoAudioRef.current?.duration || 0;
 
     const alignedTimings = (() => {
@@ -165,14 +208,11 @@ export function useArtigoTextProcessing({
       timingsAtivos,
     };
   }, [
+    baseContent,
     artigo,
-    tabelaNome,
-    showNomenJuris,
-    showRedacao,
-    modificationInfo,
-    narracaoWordTimings,
     narracaoDuration,
     narracaoAudioRef,
+    narracaoWordTimings,
     activeNarracaoWordIndex,
   ]);
 }

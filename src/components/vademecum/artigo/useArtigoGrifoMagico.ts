@@ -20,6 +20,7 @@ export interface UseArtigoGrifoMagicoOptions {
   clearAll: () => void;
   onAnotacoesCountChange?: (updater: (count: number) => number) => void;
   onAnotacoesRefresh?: () => void;
+  activeTab?: string;
 }
 
 export function useArtigoGrifoMagico({
@@ -30,6 +31,7 @@ export function useArtigoGrifoMagico({
   clearAll,
   onAnotacoesCountChange,
   onAnotacoesRefresh,
+  activeTab,
 }: UseArtigoGrifoMagicoOptions) {
   const [magicMode, setMagicMode] = useState(false);
   const [magicHighlights, setMagicHighlights] = useState<MagicGrifo[]>([]);
@@ -74,6 +76,14 @@ export function useArtigoGrifoMagico({
       window.removeEventListener('orientationchange', handleResizeOrScroll);
     };
   }, [magicTooltip]);
+
+  // Item 8: Dessincronização de Grifos Táteis ao Alternar Abas
+  // Força reset e re-alinhamento de coordenadas de grifos mágicos ao alternar abas
+  useEffect(() => {
+    if (activeTab && activeTab !== 'artigo') {
+      setMagicTooltip(null);
+    }
+  }, [activeTab]);
 
   // Persiste grifos IA em `artigos_grifos` (1 linha/artigo) e cria uma
   // anotação por grifo em `artigos_anotacoes`, com dedupe por texto.

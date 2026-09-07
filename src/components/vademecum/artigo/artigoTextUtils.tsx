@@ -381,6 +381,7 @@ export function applyHighlightsToText(
               e.stopPropagation();
               const target = e.currentTarget as HTMLElement;
               requestAnimationFrame(() => {
+                if (!target.isConnected) return;
                 const rect = target.getBoundingClientRect();
                 onTapHighlight(seg.id!, rect);
               });
@@ -389,6 +390,7 @@ export function applyHighlightsToText(
           onMouseEnter={!highlightMode && seg.hasComment && onHoverHighlight ? (e) => {
             const target = e.currentTarget as HTMLElement;
             requestAnimationFrame(() => {
+              if (!target.isConnected) return;
               const rect = target.getBoundingClientRect();
               onHoverHighlight(seg.id!, rect);
             });
