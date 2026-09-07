@@ -1,5 +1,6 @@
-import React, { useRef, useState, useLayoutEffect } from 'react';
+import React, { useRef, useState, useLayoutEffect, useEffect, useMemo } from 'react';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import { Bookmark, X as XCloseIcon } from 'lucide-react';
 import ArtigoCard from '@/components/vademecum/artigo/ArtigoCard';
 import type { ArtigoLei } from '@/data/mockData';
 
@@ -39,6 +40,33 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
   const [artigosListOffset, setArtigosListOffset] = useState(0);
   const listKey = loadedKey || selectedTabelaNome || 'artigos-vade-mecum';
 
+  // Item 30: Restauração do último artigo lido
+  const [lastReadArtigo, setLastReadArtigo] = useState<{ numero: string; id: string } | null>(null);
+  const [dismissedLastRead, setDismissedLastRead] = useState(false);
+
+  useEffect(() => {
+    if (!selectedTabelaNome) return;
+    try {
+      const raw = localStorage.getItem(`last_artigo_${selectedTabelaNome}`);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed?.numero) setLastReadArtigo(parsed);
+      }
+    } catch {}
+  }, [selectedTabelaNome]);
+
+  const handleOpenArtigo = (artigo: ArtigoLei) => {
+    if (selectedTabelaNome) {
+      try {
+        localStorage.setItem(`last_artigo_${selectedTabelaNome}`, JSON.stringify({
+          numero: artigo.numero,
+          id: String(artigo.id),
+        }));
+      } catch {}
+    }
+    openArtigoWithRecent(artigo);
+  };
+
   // Item 22: Real highlight implementation for search terms in article cards
   const highlightText = (text: string) => {
     if (!searchQuery || !searchQuery.trim()) return text;
@@ -60,30 +88,40 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
     }
   };
 
+  // Item 24: Previne layout thrashing limitando getBoundingClientRect a RAF no mount/resize
   useLayoutEffect(() => {
     if (!shouldVirtualizeArtigos) return;
 
+    let rafId: number | null = null;
     const measureOffset = () => {
-      const next = artigosListRef.current
-        ? artigosListRef.current.getBoundingClientRect().top + window.scrollY
-        : 0;
-      setArtigosListOffset(next);
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const next = artigosListRef.current
+          ? artigosListRef.current.getBoundingClientRect().top + window.scrollY
+          : 0;
+        setArtigosListOffset(next);
+      });
     };
 
     measureOffset();
-    const element = artigosListRef.current;
-    const resizeObserver = element && typeof ResizeObserver !== 'undefined'
-      ? new ResizeObserver(measureOffset)
-      : null;
-
-    if (element && resizeObserver) resizeObserver.observe(element);
-    window.addEventListener('resize', measureOffset);
+    window.addEventListener('resize', measureOffset, { passive: true });
 
     return () => {
-      resizeObserver?.disconnect();
+      if (rafId) cancelAnimationFrame(rafId);
       window.removeEventListener('resize', measureOffset);
     };
-  }, [shouldVirtualizeArtigos, visibleArtigos.length]);
+  }, [shouldVirtualizeArtigos]);
+
+  // Item 29: Overscan dinâmico calibrado por dispositivo e largura de tela
+  const dynamicOverscan = useMemo(() => {
+    if (typeof window === 'undefined') return 12;
+    const w = window.innerWidth;
+    if (w >= 1280) return 20; // Desktop widescreen
+    if (w >= 768) return 14;  // Tablet
+    const nav = typeof navigator !== 'undefined' ? (navigator as unknown as { deviceMemory?: number }) : null;
+    if (nav?.deviceMemory && nav.deviceMemory <= 4) return 6; // Mobile modesto
+    return 10; // Mobile moderno
+  }, []);
 
   const artigosVirtualizer = useWindowVirtualizer({
     count: shouldVirtualizeArtigos ? visibleArtigos.length : 0,
@@ -97,10 +135,36 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
       const totalLen = caputLen + paragrafosLen + incisosLen;
       return Math.max(64, Math.min(600, Math.round(totalLen / 3)));
     },
-    overscan: 20,
+    overscan: dynamicOverscan,
     scrollMargin: artigosListOffset,
-    initialOffset: () => virtualOffsetCache.get(listKey) ?? (typeof window !== 'undefined' ? window.scrollY : 0),
+    // Item 25: Validate restored offset against total list height to prevent blank screen
+    initialOffset: () => {
+      const saved = virtualOffsetCache.get(listKey);
+      if (saved === undefined) return typeof window !== 'undefined' ? window.scrollY : 0;
+      const approxTotal = visibleArtigos.length * 120;
+      const winHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
+      const maxAllowed = Math.max(0, approxTotal - winHeight);
+      return Math.min(saved, maxAllowed);
+    },
   });
+
+  // Item 28: Manter artigo do centro visível na mudança de orientação (tablet portrait <-> landscape)
+  useEffect(() => {
+    if (!shouldVirtualizeArtigos) return;
+    const handleOrientation = () => {
+      const virtualItems = artigosVirtualizer.getVirtualItems();
+      if (virtualItems.length > 0) {
+        const midItem = virtualItems[Math.floor(virtualItems.length / 2)];
+        if (midItem) {
+          setTimeout(() => {
+            artigosVirtualizer.scrollToIndex(midItem.index, { align: 'center', behavior: 'auto' });
+          }, 150);
+        }
+      }
+    };
+    window.addEventListener('orientationchange', handleOrientation);
+    return () => window.removeEventListener('orientationchange', handleOrientation);
+  }, [shouldVirtualizeArtigos, artigosVirtualizer]);
 
   // Salva periodicamente o scroll offset da lista para restaurar na navegação de volta (Item 37)
   useLayoutEffect(() => {
@@ -115,8 +179,47 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
     };
   }, [shouldVirtualizeArtigos, listKey]);
 
+  const handleResumeLastRead = () => {
+    if (!lastReadArtigo) return;
+    const idx = visibleArtigos.findIndex(
+      (a) => String(a.numero).trim() === String(lastReadArtigo.numero).trim() || String(a.id) === String(lastReadArtigo.id)
+    );
+    if (idx !== -1) {
+      artigosVirtualizer.scrollToIndex(idx, { align: 'center', behavior: 'smooth' });
+    }
+  };
+
   return (
     <div ref={artigosListRef} className={shouldVirtualizeArtigos ? 'pb-8' : 'space-y-2 pb-8'}>
+      {/* Item 30: Banner discreto para continuar leitura anterior */}
+      {lastReadArtigo && !dismissedLastRead && !searchQuery && (
+        <div className="mb-4 flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-sm backdrop-blur-md">
+          <div className="flex items-center gap-2 min-w-0">
+            <Bookmark className="w-4 h-4 shrink-0 text-amber-400" />
+            <span className="truncate">
+              Continuar leitura do <strong className="font-semibold text-amber-200">Art. {lastReadArtigo.numero}</strong>
+            </span>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={handleResumeLastRead}
+              className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-amber-500 text-zinc-950 hover:bg-amber-400 transition-colors"
+            >
+              Ir para artigo
+            </button>
+            <button
+              type="button"
+              onClick={() => setDismissedLastRead(true)}
+              className="p-1 text-amber-400/60 hover:text-amber-300 rounded-md transition-colors"
+              aria-label="Fechar"
+            >
+              <XCloseIcon className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {shouldVirtualizeArtigos ? (
         <div
           style={{
@@ -147,7 +250,7 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
                 <ArtigoCard
                   artigo={artigo}
                   index={virtualItem.index}
-                  onClick={() => openArtigoWithRecent(artigo)}
+                  onClick={() => handleOpenArtigo(artigo)}
                   highlightText={searchQuery ? highlightText : undefined}
                   isHighlighted={highlightedArtigoId === String(artigo.id)}
                   accentColor={leiAccent}
@@ -164,7 +267,7 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
             key={artigo.id}
             artigo={artigo}
             index={i}
-            onClick={() => openArtigoWithRecent(artigo)}
+            onClick={() => handleOpenArtigo(artigo)}
             highlightText={searchQuery ? highlightText : undefined}
             isHighlighted={highlightedArtigoId === String(artigo.id)}
             accentColor={leiAccent}

@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useCallback, useRef, useLayoutEffect } from 'react';
+import React, { useMemo, useState, useEffect, useCallback, useRef, useLayoutEffect, useDeferredValue } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, BookOpen, LayoutGrid, History, Mic, MicOff, Camera, X as XIcon, Heart, ListMusic, StickyNote, Radar, ArrowUp, ArrowLeft, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -173,8 +173,11 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
     prefetchRadarData(selectedLeiNome, selectedTabelaNome);
   }, [selectedLeiId, selectedLeiNome, selectedTabelaNome]);
 
+  // Item 27: Recálculo debounced/deferred de visibleArtigos durante busca interna
+  const deferredSearchQuery = useDeferredValue(searchQuery);
+
   const filteredArtigos = useMemo(() => {
-    const raw = searchQuery.trim();
+    const raw = deferredSearchQuery.trim();
     if (!raw) return artigos;
     const q = raw.replace(/[^\d\-a-zA-Z]/g, '').replace(/^[a-zA-Z]+/, '').toLowerCase();
     if (!q) {
@@ -185,7 +188,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
       const artNum = (a.numero || '').replace(/^art\.?\s*/i, '').replace(/[º°]/g, '').trim().toLowerCase();
       return artNum === q;
     });
-  }, [artigos, searchQuery]);
+  }, [artigos, deferredSearchQuery]);
 
   const handleSearch = (override?: string) => {
     const raw = (override ?? searchQuery).trim();
