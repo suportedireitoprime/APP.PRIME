@@ -18,9 +18,9 @@ const VadeMecumSearchBar: React.FC<Props> = ({ onBuscar }) => {
       role="button"
       aria-haspopup="dialog"
       aria-label="Pesquisar artigos e leis no Vade Mecum"
-      className="mt-2 relative w-full flex items-center h-15 sm:h-16 pl-11 sm:pl-13 pr-[94px] sm:pr-[102px] rounded-2xl bg-black/55 backdrop-blur-md border border-primary/40 shadow-lg shadow-black/30 active:scale-[0.99] transition search-bar-shine text-left cursor-pointer"
+      className="mt-2 relative w-full flex items-center h-[60px] sm:h-16 pl-11 sm:pl-14 pr-[94px] sm:pr-[102px] rounded-2xl bg-black/55 backdrop-blur-md border border-primary/40 shadow-lg shadow-black/30 active:scale-[0.99] transition search-bar-shine text-left cursor-pointer"
     >
-      <Search className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 w-5 h-5 sm:w-6 sm:h-6 text-primary shrink-0 pointer-events-none" strokeWidth={2.2} />
+      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 sm:w-6 sm:h-6 text-primary shrink-0 pointer-events-none" strokeWidth={2.2} />
       <span className="relative z-[2] font-body text-white/75 text-[14px] sm:text-[15px] font-medium truncate pointer-events-none">
         <TypingHint />
       </span>
