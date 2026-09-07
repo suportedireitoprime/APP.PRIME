@@ -135,15 +135,15 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
 
   const isLeisMode = activeTab === 'leis' || activeTab === 'tudo';
 
-  const filteredByNumero = useFuzzySearch(LEIS_CATALOG, isLeisMode ? query : '', {
+  const filteredByNumero = useFuzzySearch(LEIS_CATALOG, isLeisMode ? debouncedQuery : '', {
     keys: ['descricao', 'sigla', 'nome', 'tags'],
-    threshold: 0.35,
-    limit: 40,
+    threshold: 0.25,
+    limit: 15,
   });
 
   const leiNumericResults = useMemo(() => {
     if (!isLeisMode) return [] as typeof LEIS_CATALOG;
-    const raw = query.trim();
+    const raw = debouncedQuery.trim();
     if (!raw) return [];
     
     const digits = raw.replace(/[^\d]/g, '');
@@ -159,10 +159,10 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
       }
       return false;
     });
-  }, [isLeisMode, query]);
+  }, [isLeisMode, debouncedQuery]);
 
   const leiResults = useMemo(() => {
-    if (!isLeisMode || !query.trim()) return [] as typeof LEIS_CATALOG;
+    if (!isLeisMode || !debouncedQuery.trim()) return [] as typeof LEIS_CATALOG;
     const seen = new Set<string>();
     const merged: typeof LEIS_CATALOG = [];
     
@@ -173,15 +173,15 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
       if (!seen.has(l.id)) { seen.add(l.id); merged.push(l); }
     }
     return merged.slice(0, 40);
-  }, [isLeisMode, query, leiNumericResults, filteredByNumero]);
+  }, [isLeisMode, debouncedQuery, leiNumericResults, filteredByNumero]);
 
-  const artigoQueryDigits = useMemo(() => (query.match(/\d+[-a-zA-Z]*/)?.[0] || '').replace(/^[a-zA-Z]+/, ''), [query]);
-  const leiSearchTerm = useMemo(() => query
+  const artigoQueryDigits = useMemo(() => (debouncedQuery.match(/\d+[-a-zA-Z]*/)?.[0] || '').replace(/^[a-zA-Z]+/, ''), [debouncedQuery]);
+  const leiSearchTerm = useMemo(() => debouncedQuery
     .toLowerCase()
     .replace(/\d+[-a-zA-Z]*/g, '')
     .replace(/art(?:igo)?\.?/gi, '')
-    .replace(/\b(do|da|de|no|na|paragrafo|parágrafo)\b/gi, '')
-    .trim(), [query]);
+    .replace(/\b(paragrafo|parágrafo)\b/gi, '')
+    .trim(), [debouncedQuery]);
 
   const baseArtigoLeis = useMemo(() => sortByRelevance(
     LEIS_CATALOG.filter((l) => l.tipo === 'constituicao' || l.tipo === 'codigo' || l.tipo === 'estatuto')
@@ -274,7 +274,10 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
                   ref={inputRef}
                   autoFocus
                   value={voice.listening && voice.partial ? voice.partial : query}
-                  onChange={(e) => setQuery(e.target.value)}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    if (voice.listening && voice.toggle) voice.toggle(); // desativa voz ao digitar manualmente
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === 'ArrowDown') {
                       e.preventDefault();
@@ -342,7 +345,7 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
             )}
 
             {isLeisMode && (() => {
-              const temTextoSemNumero = !artigoQueryDigits && query.trim().length >= 1;
+              const temTextoSemNumero = !artigoQueryDigits && debouncedQuery.trim().length >= 1;
               const leisPorTexto = temTextoSemNumero ? leiResults : [];
               return (
               <div className="space-y-2 mb-4">
@@ -399,7 +402,7 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
                             <button
                               onClick={(e) => { e.stopPropagation(); toggleFavorito({ tipo: lei.tipo, leiId: lei.id, nome: lei.nome, descricao: lei.descricao, tabela_nome: lei.tabela_nome }); }}
                               aria-label={fav ? 'Remover dos favoritos' : 'Favoritar lei'}
-                              className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-transform ${fav ? 'text-primary' : 'text-muted-foreground'}`}
+                              className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-transform ${fav ? 'text-primary' : 'text-muted-foreground'}`}
                             >
                               <Heart className={`w-6 h-6 ${fav ? 'fill-current' : ''}`} />
                             </button>
