@@ -273,6 +273,8 @@ export function useArtigoNarracao({
 
   // ─── playNarracao ───
   const playNarracao = useCallback(async (audioUrl: string, options?: { onRecover?: () => void }) => {
+    // Item 19: Stop native TTS speech before playing recorded audio (mutex)
+    stopNativeSpeech();
     closeFlutuante();
     if (narracaoAudioRef.current) {
       narracaoAudioRef.current.pause();
@@ -550,9 +552,23 @@ export function useArtigoNarracao({
     }
 
     if (narracaoPlaying) {
+      // Item 20: Fade-out suave de 150ms antes de pausar para evitar clipping
       if (narracaoAudioRef.current) {
-        narracaoAudioRef.current.pause();
-        stopProgressTracking();
+        const audio = narracaoAudioRef.current;
+        const originalVolume = audio.volume;
+        const fadeSteps = 6;
+        const fadeInterval = 25; // 6 * 25ms = 150ms
+        let step = 0;
+        const fadeTimer = setInterval(() => {
+          step++;
+          audio.volume = Math.max(0, originalVolume * (1 - step / fadeSteps));
+          if (step >= fadeSteps) {
+            clearInterval(fadeTimer);
+            audio.pause();
+            audio.volume = originalVolume; // Restore for next play
+            stopProgressTracking();
+          }
+        }, fadeInterval);
       }
       stopNativeSpeech();
       setNarracaoPlaying(false);
