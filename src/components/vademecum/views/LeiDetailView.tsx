@@ -261,6 +261,14 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
         } else if (searchQuery) {
           setSearchQuery('');
         }
+      } else if (e.key === ' ' || e.key === 'Spacebar') {
+        // Item 89: Suporte a teclado físico em tablets (Magic Keyboard) e desktop
+        e.preventDefault();
+        window.scrollBy({ top: e.shiftKey ? -window.innerHeight * 0.7 : window.innerHeight * 0.7, behavior: 'smooth' });
+      } else if (e.key === 'j' || e.key === 'J') {
+        window.scrollBy({ top: 220, behavior: 'smooth' });
+      } else if (e.key === 'k' || e.key === 'K') {
+        window.scrollBy({ top: -220, behavior: 'smooth' });
       }
     };
     window.addEventListener('keydown', handleKeyDown);
