@@ -51,7 +51,7 @@ const HomeActionShortcuts = () => {
             )}
 
             <Icon
-              className="w-5.5 h-5.5 sm:w-6 sm:h-6 shrink-0"
+              className="w-6 h-6 shrink-0"
               style={{ color: item.color, filter: 'saturate(1.3) drop-shadow(0 2px 6px rgba(0,0,0,0.6))' }}
               strokeWidth={1.6}
             />

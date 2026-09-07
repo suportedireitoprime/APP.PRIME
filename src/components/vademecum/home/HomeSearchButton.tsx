@@ -33,9 +33,9 @@ const HomeSearchButton = ({ onOpenSearch }: HomeSearchButtonProps) => {
       role="button"
       aria-haspopup="dialog"
       aria-label={isOffline ? "Pesquisar leis e artigos no catálogo offline do Vade Mecum" : "Pesquisar leis, códigos e artigos no Vade Mecum"}
-      className="mt-auto relative w-full flex items-center h-15 sm:h-16 pl-11 sm:pl-13 pr-[94px] sm:pr-[102px] rounded-2xl bg-black/75 backdrop-blur-sm border border-primary/40 shadow-lg shadow-black/30 active:scale-[0.99] transition search-bar-shine cursor-pointer"
+      className="mt-auto relative w-full flex items-center h-[60px] sm:h-16 pl-11 sm:pl-14 pr-[94px] sm:pr-[102px] rounded-2xl bg-black/75 backdrop-blur-sm border border-primary/40 shadow-lg shadow-black/30 active:scale-[0.99] transition search-bar-shine cursor-pointer"
     >
-      <Search className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 w-5 h-5 sm:w-6 sm:h-6 text-primary shrink-0 pointer-events-none" strokeWidth={2.2} />
+      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 sm:w-6 sm:h-6 text-primary shrink-0 pointer-events-none" strokeWidth={2.2} />
       
       <div className="flex items-center gap-1.5 min-w-0 flex-1 text-left overflow-hidden">
         {isOffline && (
