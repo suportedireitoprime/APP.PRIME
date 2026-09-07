@@ -2,6 +2,8 @@ import { useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight, Film, Star, Tv, Video } from 'lucide-react';
 import { PrimeImage } from '@/components/ui/PrimeImage';
+import { useCarouselPrefetch } from '@/hooks/useCarouselPrefetch';
+import { prefetchImage } from '@/lib/cdnImg';
 import type { Obra } from './ObraDetailSheet';
 
 interface Props {
@@ -14,11 +16,10 @@ interface Props {
   onVerTodos?: () => void;
 }
 
-
 const SIZES = {
-  sm: { w: 'w-[120px]', h: 'h-[180px]' },
-  md: { w: 'w-[140px]', h: 'h-[210px]' },
-  lg: { w: 'w-[160px]', h: 'h-[240px]' },
+  sm: { w: 'w-[120px]', h: 'h-[180px]', pxWidth: 120 },
+  md: { w: 'w-[140px]', h: 'h-[210px]', pxWidth: 140 },
+  lg: { w: 'w-[160px]', h: 'h-[240px]', pxWidth: 160 },
 };
 
 const IconeTipo = ({ tipo }: { tipo?: string }) => {
@@ -28,9 +29,13 @@ const IconeTipo = ({ tipo }: { tipo?: string }) => {
 };
 
 const ObrasCarousel = ({ titulo, eyebrow, subtitulo, obras, onAbrir, cardSize = 'md', onVerTodos }: Props) => {
-  const scrollerRef = useRef<HTMLDivElement>(null);
+  const { w, h, pxWidth } = SIZES[cardSize];
+  const { scrollerRef, onScroll: onPrefetchScroll } = useCarouselPrefetch(
+    obras,
+    (o) => o.poster_url,
+    { itemWidth: pxWidth, lookahead: 4, targetWidth: 300 }
+  );
   const drag = useRef<{ startX: number; startScroll: number; moved: number } | null>(null);
-  const { w, h } = SIZES[cardSize];
 
   // Mouse-only drag-to-scroll (desktop). No pointer capture, no touch interference.
   const onMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
@@ -99,6 +104,7 @@ const ObrasCarousel = ({ titulo, eyebrow, subtitulo, obras, onAbrir, cardSize = 
 
       <div
         ref={scrollerRef}
+        onScroll={onPrefetchScroll}
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={endDrag}
@@ -114,6 +120,8 @@ const ObrasCarousel = ({ titulo, eyebrow, subtitulo, obras, onAbrir, cardSize = 
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: Math.min(i * 0.03, 0.4) }}
             onClick={onCardClick(obra)}
+            onMouseEnter={() => prefetchImage(obra.poster_url, 600)}
+            onTouchStart={() => prefetchImage(obra.poster_url, 600)}
             className={`group relative shrink-0 ${w} ${h} rounded-xl overflow-hidden bg-card border border-border/50 text-left`}
           >
 

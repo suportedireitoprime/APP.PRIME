@@ -6,6 +6,7 @@ import { readLeituraProgress, formatDuration } from '@/lib/leituraProgress';
 import { directImg, prefetchImage } from '@/lib/cdnImg';
 import { pullLeituraProgress } from '@/lib/leituraProgressSync';
 import { useBibliotecaCapa } from '@/hooks/useBibliotecaAsset';
+import { useCarouselPrefetch } from '@/hooks/useCarouselPrefetch';
 import { PrimeImage } from '@/components/ui/PrimeImage';
 
 interface Props {
@@ -32,10 +33,11 @@ const ContinuarLeituraCarousel = ({ onAbrirLivro }: Props) => {
   }, []);
   const itens = useMemo(() => readLeituraProgress(tick).slice(0, 12), [tick]);
 
-  useEffect(() => {
-    // Pré-carrega as capas dos primeiros itens para navegação instantânea (0ms)
-    itens.slice(0, 4).forEach(item => prefetchImage(item.snap.capa));
-  }, [itens]);
+  const { scrollerRef, onScroll } = useCarouselPrefetch(
+    itens,
+    (item) => item.snap.capa,
+    { itemWidth: 200, lookahead: 4, targetWidth: 300 }
+  );
 
   if (itens.length === 0) return null;
 
@@ -53,7 +55,7 @@ const ContinuarLeituraCarousel = ({ onAbrirLivro }: Props) => {
         </div>
       </div>
 
-      <div className="overflow-x-auto no-scrollbar snap-x snap-mandatory">
+      <div ref={scrollerRef} onScroll={onScroll} className="overflow-x-auto no-scrollbar snap-x snap-mandatory">
         <div className="flex gap-4 px-4 pb-3">
           {itens.map((item) => (
             <ContinueCard key={`${item.snap.colecaoId}:${item.snap.id}`} item={item} onAbrirLivro={onAbrirLivro} />

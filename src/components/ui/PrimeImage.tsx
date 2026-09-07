@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { directImg } from '@/lib/cdnImg';
+import { directImg, generateResponsiveSrcSet } from '@/lib/cdnImg';
 import fallbackCover from '@/assets/covers/fundamentos-da-lei.webp';
 import { BookOpen, Maximize2 } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
@@ -17,6 +17,8 @@ export interface PrimeImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageE
   aspectRatio?: '2/3' | '16/9' | '1/1' | '3/4' | '4/3' | 'auto' | string;
   /** Largura máxima esperada para otimização de redimensionamento dinâmico (default: 400px) */
   targetWidth?: number;
+  /** Se true, gera automaticamente srcset responsivo para telas Retina (1x, 1.5x, 2x) (Fase 22) */
+  responsive?: boolean;
   /** Se true, marca como imagem principal above-the-fold (LCP) com loading eager e alta prioridade */
   priority?: boolean;
   /** Imagem alternativa caso a principal falhe ou seja nula */
@@ -64,6 +66,7 @@ export const PrimeImage = React.memo(function PrimeImage({
   alt,
   aspectRatio = '2/3',
   targetWidth = 400,
+  responsive = true,
   priority = false,
   fallbackSrc = fallbackCover,
   fallbackIcon,
@@ -200,6 +203,11 @@ export const PrimeImage = React.memo(function PrimeImage({
     onClick?.(e as unknown as React.MouseEvent<HTMLImageElement>);
   };
 
+  // Fase 22: Geração de srcset responsivo para telas Retina (1x, 1.5x, 2x)
+  const responsiveAttrs = responsive && attemptLevel === 'optimized' && activeSrc && !rest.srcSet
+    ? generateResponsiveSrcSet(cleanSrc || activeSrc, targetWidth)
+    : {};
+
   return (
     <>
       <div
@@ -235,6 +243,8 @@ export const PrimeImage = React.memo(function PrimeImage({
       {activeSrc ? (
         <img
           src={activeSrc}
+          srcSet={rest.srcSet || responsiveAttrs.srcSet}
+          sizes={rest.sizes || responsiveAttrs.sizes}
           alt={decorative ? "" : (alt || "")}
           aria-hidden={decorative ? "true" : undefined}
           loading={priority ? "eager" : "lazy"}

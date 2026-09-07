@@ -54,8 +54,31 @@ export const getAdaptiveQuality = (baseQuality = 80): number => {
  */
 const resolve = (url: string) => assetUrl(url) || url;
 
-const proxied = (url: string, w: number) =>
-  `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${w}&q=${getAdaptiveQuality(80)}&output=webp`;
+let _avifSupported: boolean | null = null;
+/**
+ * Detecta em runtime se o navegador cliente decodifica AVIF nativamente.
+ * Memoriza o resultado para custo 0ms em chamadas subsequentes.
+ */
+export const isAvifSupported = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  if (_avifSupported !== null) return _avifSupported;
+  try {
+    const canvas = document.createElement('canvas');
+    if (canvas.getContext && canvas.getContext('2d')) {
+      _avifSupported = canvas.toDataURL('image/avif').indexOf('data:image/avif') === 0;
+      return _avifSupported;
+    }
+  } catch {
+    // Fallback defensivo
+  }
+  _avifSupported = false;
+  return false;
+};
+
+const proxied = (url: string, w: number) => {
+  const format = isAvifSupported() ? 'avif' : 'webp';
+  return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${w}&q=${getAdaptiveQuality(80)}&output=${format}`;
+};
 
 /**
  * Transforma uma URL pública do Supabase Storage no endpoint de Image Transformation:
@@ -237,3 +260,41 @@ export function prefetchImages(urls: (string | null | undefined)[], width = 400)
 export function cancelAllPrefetches(): void {
   prefetchQueue.cancelAll();
 }
+
+/**
+ * Fase 22 — Geração de srcset responsivo para telas Retina (1x, 2x e 3x)
+ * Permite que telas de alta densidade (iPhones, MacBooks, AMOLEDs) exibam
+ * capas com máxima nitidez sem distorção, enquanto dispositivos comuns não desperdiçam dados.
+ */
+export const generateResponsiveSrcSet = (
+  url: string | null | undefined,
+  baseWidth = 400
+): { srcSet?: string; sizes?: string } => {
+  if (!url || typeof url !== 'string' || !url.trim()) return {};
+
+  const clean = url.trim();
+  // Não gera srcset para SVGs, base64 ou blob URLs
+  if (clean.startsWith('data:') || clean.startsWith('blob:') || clean.toLowerCase().endsWith('.svg')) {
+    return {};
+  }
+
+  // Apenas gera se a URL puder ser transformada via CDN / Storage
+  const isTransformable = clean.includes('/storage/v1/') || clean.includes('image.tmdb.org') || /^https?:\/\//i.test(clean);
+  if (!isTransformable) return {};
+
+  const w1x = Math.round(baseWidth);
+  const w2x = Math.round(baseWidth * 1.5);
+  const w3x = Math.min(Math.round(baseWidth * 2.25), 1400);
+
+  const url1x = directImg(clean, w1x);
+  const url2x = directImg(clean, w2x);
+  const url3x = directImg(clean, w3x);
+
+  if (!url1x || url1x === clean) return {};
+
+  return {
+    srcSet: `${url1x} 1x, ${url2x} 1.5x, ${url3x} 2x`,
+    sizes: `(max-width: 640px) 100vw, ${baseWidth}px`,
+  };
+};
+

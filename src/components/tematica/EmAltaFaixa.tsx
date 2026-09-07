@@ -3,6 +3,7 @@ import { Flame, Star, Film } from "lucide-react";
 import type { Obra } from "@/components/tematica/ObraDetailSheet";
 import { cn } from "@/lib/utils";
 import { PrimeImage } from "@/components/ui/PrimeImage";
+import { useCarouselPrefetch } from "@/hooks/useCarouselPrefetch";
 
 interface Props {
   obras: Obra[];
@@ -14,8 +15,14 @@ interface Props {
  * Renderizada no topo da página para dar destaque ao ranking dos últimos 7 dias.
  */
 export default function EmAltaFaixa({ obras, onAbrir }: Props) {
-  if (!obras.length) return null;
   const lista = obras.slice(0, 12);
+  const { scrollerRef, onScroll } = useCarouselPrefetch(
+    lista,
+    (o) => o.poster_url,
+    { itemWidth: 110, lookahead: 4, targetWidth: 220 }
+  );
+
+  if (!obras.length) return null;
 
   return (
     <section className="mt-4 mb-2">
@@ -32,7 +39,7 @@ export default function EmAltaFaixa({ obras, onAbrir }: Props) {
         </div>
       </div>
 
-      <div className="overflow-x-auto scrollbar-none">
+      <div ref={scrollerRef} onScroll={onScroll} className="overflow-x-auto scrollbar-none">
         <div className="flex gap-3 px-4 pb-2">
           {lista.map((obra, i) => (
             <motion.button
