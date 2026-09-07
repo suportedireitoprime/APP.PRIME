@@ -207,7 +207,7 @@ export const toSupabaseRenderUrl = (
 /**
  * Regra centralizada de otimização de imagens do APP.PRIME.
  */
-const otimizar = (url: string, w: number): string => {
+const otimizar = (url: string, w: number, quality?: number): string => {
   if (!url || typeof url !== 'string') return '';
   
   // URLs de instâncias legadas/desativadas do Supabase descartadas para prevenir broken images
@@ -215,7 +215,7 @@ const otimizar = (url: string, w: number): string => {
   const resolved = resolve(url);
   if (resolved.includes('izspjvegxdfgkgibpyst.supabase.co')) return '';
 
-  const effectiveQuality = getAdaptiveQuality(getQualityForWidth(w));
+  const effectiveQuality = quality ?? getAdaptiveQuality(getQualityForWidth(w));
 
   // 1. Supabase Storage: utiliza o endpoint nativo de Image Transformation
   if (resolved.includes('.supabase.co/storage/')) {
@@ -250,17 +250,17 @@ const otimizar = (url: string, w: number): string => {
   return proxied(resolved, w, effectiveQuality);
 };
 
-/** Imagem grande (hero, leitor, detalhe) */
-export const cdnImg = (url: string, w = 800) => otimizar(url, w);
+/** Imagem grande (hero, leitor, detalhe - qualidade padrão 85) */
+export const cdnImg = (url: string, w = 800, quality?: number) => otimizar(url, w, quality);
 
-/** Imagem média/pequena (capas, listas, decks, carrosséis) */
-export const directImg = (url: string, w = 400) => otimizar(url, w);
+/** Imagem média/pequena (capas, listas, decks, carrosséis - qualidade padrão 80) */
+export const directImg = (url: string, w = 400, quality?: number) => otimizar(url, w, quality);
 
-/** Fase 41: Miniatura calibrada para thumbnails de 40-160px (elimina download de resolução original) */
-export const thumbImg = (url: string, size = 160) => otimizar(url, size);
+/** Fase 41/43: Miniatura calibrada para thumbnails de 40-160px (qualidade padrão 75) */
+export const thumbImg = (url: string, size = 160, quality?: number) => otimizar(url, size, quality);
 
 /** Imagem de notícias e cards horizontais */
-export const newsImg = (url: string, w = 640) => otimizar(url, w);
+export const newsImg = (url: string, w = 640, quality?: number) => otimizar(url, w, quality);
 
 /** Avatar de usuário com máscara circular */
 export const avatarImg = (url: string, size = 128) => {

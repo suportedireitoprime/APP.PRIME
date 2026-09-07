@@ -18,6 +18,8 @@ export interface PrimeImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageE
   aspectRatio?: '2/3' | '16/9' | '1/1' | '3/4' | '4/3' | 'auto' | string;
   /** Largura máxima esperada para otimização de redimensionamento dinâmico (default: 400px) */
   targetWidth?: number;
+  /** Qualidade adaptativa ou customizada de compressão (0 a 100). Default: proporcional à resolução (75-85) (Fase 43) */
+  quality?: number;
   /** Se true, gera automaticamente srcset responsivo para telas Retina (1x, 1.5x, 2x) (Fase 22) */
   responsive?: boolean;
   /** Se true, marca como imagem principal above-the-fold (LCP) com loading eager e alta prioridade */
@@ -180,6 +182,7 @@ export function PrimeImageBase({
   alt,
   aspectRatio = '2/3',
   targetWidth = 400,
+  quality,
   responsive = true,
   priority = false,
   lqip,
@@ -210,7 +213,7 @@ export function PrimeImageBase({
     // @ts-expect-error NetworkInformation API experimental
     Boolean(navigator.connection?.saveData === true);
   const effectiveTargetWidth = isSaveData ? Math.min(targetWidth, 200) : targetWidth;
-  const optimizedSrc = cleanSrc ? directImg(cleanSrc, effectiveTargetWidth) : null;
+  const optimizedSrc = cleanSrc ? directImg(cleanSrc, effectiveTargetWidth, quality) : null;
 
   let activeSrc: string | null = null;
   if (attemptLevel === 'optimized') {
@@ -486,6 +489,7 @@ function areEqualPrimeImage(prev: PrimeImageProps, next: PrimeImageProps): boole
     prev.alt === next.alt &&
     prev.aspectRatio === next.aspectRatio &&
     prev.targetWidth === next.targetWidth &&
+    prev.quality === next.quality &&
     prev.responsive === next.responsive &&
     prev.priority === next.priority &&
     prev.lqip === next.lqip &&
