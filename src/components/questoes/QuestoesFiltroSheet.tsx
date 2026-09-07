@@ -223,7 +223,12 @@ const QuestoesFiltroSheet = ({
     } catch {
       /* noop */
     }
-    onAplicar(f);
+    
+    // Animação do PrimeBottomSheet dura ~300ms
+    onFechar();
+    setTimeout(() => {
+      onAplicar(f);
+    }, 300);
   };
 
   if (typeof document === 'undefined') return null;

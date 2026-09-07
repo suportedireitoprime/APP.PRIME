@@ -35,29 +35,52 @@ export type Cargo = {
 const db = supabase as any;
 
 export function useQuestoesCargos() {
+  const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 horas
+
   const [cargos, setCargos] = useState<Cargo[]>(() => {
     try {
       const cached = localStorage.getItem('questoes_cargos_cache');
-      return cached ? JSON.parse(cached) : [];
+      const timestamp = localStorage.getItem('questoes_cargos_cache_ts');
+      
+      if (cached && timestamp) {
+        const isFresh = Date.now() - parseInt(timestamp, 10) < CACHE_TTL_MS;
+        if (isFresh) {
+          return JSON.parse(cached);
+        }
+      }
     } catch {
-      return [];
+      /* noop */
     }
+    return [];
   });
   const [loading, setLoading] = useState(() => cargos.length === 0);
 
   useEffect(() => {
     let isMounted = true;
+    
+    const timestamp = localStorage.getItem('questoes_cargos_cache_ts');
+    const hasFreshCache = timestamp && Date.now() - parseInt(timestamp, 10) < CACHE_TTL_MS;
+    
+    // Se o cache está fresco e já temos os dados, pula a request
+    if (hasFreshCache && cargos.length > 0) {
+      setLoading(false);
+      return;
+    }
+
     db.from('questoes_cargos').select('*').eq('ativo', true).order('ordem')
       .then(({ data }: { data: Cargo[] | null }) => {
         if (!isMounted) return;
         if (data && data.length > 0) {
           setCargos(data);
-          try { localStorage.setItem('questoes_cargos_cache', JSON.stringify(data)); } catch {}
+          try { 
+            localStorage.setItem('questoes_cargos_cache', JSON.stringify(data)); 
+            localStorage.setItem('questoes_cargos_cache_ts', Date.now().toString());
+          } catch {}
         }
         setLoading(false);
       });
     return () => { isMounted = false; };
-  }, []);
+  }, [cargos.length]);
   return { cargos, loading };
 }
 import { bundle, withBundleFallback } from '@/services/offlineBundle';

@@ -69,14 +69,13 @@ const Questoes = () => {
           </div>
 
           {/* ── 4 Cards (Cadernos, Revisão, Desempenho, Histórico) ── */}
-          <motion.div 
-            className="grid grid-cols-4 gap-2.5"
-            initial="hidden"
-            animate="show"
+          <motion.div
             variants={{
               hidden: { opacity: 0 },
-              show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+              show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
             }}
+            initial="hidden" animate="show"
+            className="grid grid-cols-4 max-w-2xl mx-auto gap-2 lg:gap-4"
           >
             {ATALHOS_4.map((a) => {
               const Icon = a.icon;

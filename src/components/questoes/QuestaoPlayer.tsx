@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from 'react';
+import { useEffect, useMemo, useState, useRef, memo } from 'react';
 import { CheckCircle2, XCircle, ChevronRight, Sparkles, Loader2, Trophy, RotateCw, Heart } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -8,6 +8,25 @@ import { haptic } from '@/lib/nativeHaptics';
 import { toast } from 'sonner';
 import { useQuestoesFavoritosStore } from '@/stores/useQuestoesFavoritosStore';
 import { Network } from '@capacitor/network';
+
+const ComentarioIAView = memo(({ gerando, texto }: { gerando: boolean; texto?: string | null }) => {
+  return (
+    <div className="rounded-xl border border-border bg-card p-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+      <p className="mb-2 flex items-center gap-2 text-[13px] font-bold uppercase tracking-wide text-primary">
+        <Sparkles className="h-4 w-4" /> Comentário
+      </p>
+      {gerando && !texto ? (
+        <p className="flex items-center gap-2 text-[14px] text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" /> Gerando o comentário…
+        </p>
+      ) : (
+        <p className="whitespace-pre-line text-[15px] leading-[1.7] text-foreground/90">
+          {texto ?? 'Comentário indisponível.'}
+        </p>
+      )}
+    </div>
+  );
+});
 
 const db = supabase as any;
 
@@ -213,20 +232,10 @@ const QuestaoPlayer = ({ questoes, loading, contexto = 'pratica', onRegistrar, o
       </div>
 
       {resp && (
-        <div className="rounded-xl border border-border bg-card p-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
-          <p className="mb-2 flex items-center gap-2 text-[13px] font-bold uppercase tracking-wide text-primary">
-            <Sparkles className="h-4 w-4" /> Comentário
-          </p>
-          {gerando && !comentarios[atual.id] ? (
-            <p className="flex items-center gap-2 text-[14px] text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" /> Gerando o comentário…
-            </p>
-          ) : (
-            <p className="whitespace-pre-line text-[15px] leading-[1.7] text-foreground/90">
-              {comentarios[atual.id] ?? atual.comentario_ia ?? atual.gabarito_comentado ?? 'Comentário indisponível.'}
-            </p>
-          )}
-        </div>
+        <ComentarioIAView 
+          gerando={gerando} 
+          texto={comentarios[atual.id] ?? atual.comentario_ia ?? atual.gabarito_comentado} 
+        />
       )}
 
       <div className="flex items-center justify-end gap-2 pt-1">
