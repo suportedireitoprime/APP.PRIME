@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { directImg, generateResponsiveSrcSet } from '@/lib/cdnImg';
+import { directImg, generateResponsiveSrcSet, safeStorageUrl } from '@/lib/cdnImg';
 import fallbackCover from '@/assets/covers/fundamentos-da-lei.webp';
 import { BookOpen, Maximize2 } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
@@ -202,8 +202,8 @@ export function PrimeImageBase({
   const [attemptLevel, setAttemptLevel] = useState<'optimized' | 'raw' | 'offline' | 'fallback'>('optimized');
   const [offlineCandidateSrc, setOfflineCandidateSrc] = useState<string | null>(null);
 
-  // Sanitização de URL: evita requisições GET /undefined quando src é inválido
-  const cleanSrc = src && typeof src === 'string' && src.trim().length > 0 ? src.trim() : null;
+  // Sanitização de URL: evita requisições GET /undefined quando src é inválido e normaliza storage (Fase 44)
+  const cleanSrc = src && typeof src === 'string' && src.trim().length > 0 ? safeStorageUrl(src.trim()) : null;
 
   // Fase 35: Suporte a Save-Data (Item 36) - Reduz resolução para teto de 200px se economia de dados estiver ativa
   const isSaveData = typeof navigator !== 'undefined' &&
@@ -320,16 +320,9 @@ export function PrimeImageBase({
       }
     }
 
-    // 3. Auto-retry resiliente com backoff de 1.2s antes de cair no fallback final
-    if (!hasRetriedRef.current && cleanSrc) {
-      hasRetriedRef.current = true;
-      setTimeout(() => {
-        setAttemptLevel('raw');
-      }, 1200);
-      return;
-    }
-
+    // 3. Fase 48: Falha definitiva interceptada (403/404) - transição imediata para fallback editorial
     if (attemptLevel !== 'fallback') {
+      setIsLoaded(false);
       setAttemptLevel('fallback');
       onError?.(e);
     }

@@ -23,11 +23,23 @@ export const getSafeDpr = (): number => {
 };
 
 /**
- * Fase 16 — Qualidade Adaptativa de Rede (Item 43 + Item 36 do Relatório Master).
- * Detecta `navigator.connection.effectiveType` e retorna a qualidade ideal:
+ * Fase 43: Retorna a qualidade base ideal calibrada para a dimensão solicitada em tela:
+ * - Thumbnails (w <= 160): 75
+ * - Cards médios (w <= 450): 80
+ * - Banners e Hero (w > 450): 85
+ */
+export const getQualityForWidth = (w: number): number => {
+  if (w <= 160) return 75;
+  if (w <= 450) return 80;
+  return 85;
+};
+
+/**
+ * Fase 16 e 43 — Qualidade Adaptativa de Rede e Resolução (Item 43 + Item 36).
+ * Detecta `navigator.connection.effectiveType` e ajusta a qualidade:
  * - `slow-2g` / `2g`: 40 (placeholders mínimos, economia extrema de dados)
  * - `3g`: 60 (qualidade razoável, balanceia performance e visual)
- * - `4g` / Wi-Fi / default: 80 (qualidade premium)
+ * - `4g` / Wi-Fi / default: qualidade proporcional ao tamanho (75-85)
  * Respeita saveData automaticamente reduzindo para 40.
  */
 export const getAdaptiveQuality = (baseQuality = 80): number => {
@@ -49,10 +61,54 @@ export const getAdaptiveQuality = (baseQuality = 80): number => {
 };
 
 /**
- * Resolve caminhos relativos do CDN Lovable (`/__l5e/...`) ou pointers de asset
- * para uma URL absoluta/local antes de passar por qualquer redimensionador.
+ * Fase 45: Converte links do Google Drive para stream direto de imagem, contornando bloqueios de CORS/HTML (Item 45).
  */
-const resolve = (url: string) => assetUrl(url) || url;
+export const convertGoogleDriveUrl = (url: string): string => {
+  if (!url || typeof url !== 'string' || !url.includes('drive.google.com')) return url;
+
+  // Formato 1: drive.google.com/file/d/<FILE_ID>/view
+  const fileIdMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (fileIdMatch && fileIdMatch[1]) {
+    return `https://drive.google.com/thumbnail?id=${fileIdMatch[1]}&sz=w1200`;
+  }
+
+  // Formato 2: drive.google.com/open?id=<FILE_ID> ou uc?id=<FILE_ID>
+  const idParamMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (idParamMatch && idParamMatch[1]) {
+    return `https://drive.google.com/thumbnail?id=${idParamMatch[1]}&sz=w1200`;
+  }
+
+  return url;
+};
+
+/**
+ * Fase 44: Sanitiza e valida caminhos de armazenamento do Supabase, evitando 404 por URLs malformadas (Item 44).
+ */
+export const safeStorageUrl = (url: string | null | undefined): string | null => {
+  if (!url || typeof url !== 'string') return null;
+  const trimmed = url.trim();
+  if (!trimmed || trimmed.startsWith('javascript:')) return null;
+
+  // Corrige barras duplicadas acidentais após o protocolo
+  const sanitized = trimmed.replace(/([^:]\/)\/+/g, '$1');
+
+  // Converte caminhos relativos conhecidos do bucket (ex: 'covers/minha-capa.webp')
+  if (!sanitized.startsWith('http') && !sanitized.startsWith('/') && !sanitized.startsWith('data:')) {
+    return `https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/${sanitized}`;
+  }
+
+  return sanitized;
+};
+
+/**
+ * Resolve caminhos relativos do CDN Lovable (`/__l5e/...`) ou pointers de asset
+ * e converte URLs do Google Drive para stream direto.
+ */
+const resolve = (url: string) => {
+  const normalized = safeStorageUrl(url) || url;
+  const directDrive = convertGoogleDriveUrl(normalized);
+  return assetUrl(directDrive) || directDrive;
+};
 
 let _avifSupported: boolean | null = null;
 /**
@@ -75,9 +131,10 @@ export const isAvifSupported = (): boolean => {
   return false;
 };
 
-const proxied = (url: string, w: number) => {
+const proxied = (url: string, w: number, quality?: number) => {
   const format = isAvifSupported() ? 'avif' : 'webp';
-  return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${w}&q=${getAdaptiveQuality(80)}&output=${format}`;
+  const effectiveQ = quality ?? getAdaptiveQuality(getQualityForWidth(w));
+  return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${w}&q=${effectiveQ}&output=${format}`;
 };
 
 export interface SupabaseRenderOptions {
@@ -158,9 +215,11 @@ const otimizar = (url: string, w: number): string => {
   const resolved = resolve(url);
   if (resolved.includes('izspjvegxdfgkgibpyst.supabase.co')) return '';
 
+  const effectiveQuality = getAdaptiveQuality(getQualityForWidth(w));
+
   // 1. Supabase Storage: utiliza o endpoint nativo de Image Transformation
   if (resolved.includes('.supabase.co/storage/')) {
-    return toSupabaseRenderUrl(resolved, w);
+    return toSupabaseRenderUrl(resolved, { width: w, quality: effectiveQuality });
   }
 
   // 2. TMDB (Filmes e Séries da Temática Jurídica) possui CDN global Cloudflare com tiers de tamanho
@@ -188,7 +247,7 @@ const otimizar = (url: string, w: number): string => {
 
   // 5. Demais URLs web externas: proxy WebP via wsrv.nl
   if (!/^https?:\/\//i.test(resolved)) return resolved;
-  return proxied(resolved, w);
+  return proxied(resolved, w, effectiveQuality);
 };
 
 /** Imagem grande (hero, leitor, detalhe) */

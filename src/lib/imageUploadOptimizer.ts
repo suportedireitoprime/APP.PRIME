@@ -25,6 +25,42 @@ export interface OptimizedImageResult {
   compressionRatio: string;
 }
 
+/**
+ * Fase 50: Validação estrita de Magic Bytes para prevenir uploads de arquivos corrompidos ou maliciosos.
+ */
+export async function validateImageMagicBytes(file: File): Promise<boolean> {
+  if (!file || file.size < 4) return false;
+  try {
+    const buffer = await file.slice(0, 12).arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+
+    // JPEG: FF D8 FF
+    if (bytes[0] === 0xFF && bytes[1] === 0xD8 && bytes[2] === 0xFF) return true;
+
+    // PNG: 89 50 4E 47
+    if (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47) return true;
+
+    // WebP: RIFF....WEBP (52 49 46 46 .... 57 45 42 50)
+    if (
+      bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46 &&
+      bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50
+    ) {
+      return true;
+    }
+
+    // GIF: GIF87a / GIF89a (47 49 46 38)
+    if (bytes[0] === 0x47 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x38) return true;
+
+    // AVIF: ....ftypavif (bytes 4-11 contém 'ftypavif')
+    const textHeader = String.fromCharCode(...bytes.slice(4, 12));
+    if (textHeader.includes('ftyp') || textHeader.includes('avif')) return true;
+
+    return false;
+  } catch {
+    return false;
+  }
+}
+
 export async function validateAndCompressImage(
   file: File,
   options: ImageOptimizationOptions = {}
@@ -47,6 +83,13 @@ export async function validateAndCompressImage(
       didCompress: false,
       compressionRatio: '0%',
     };
+  }
+
+  // Fase 50: Verificação de integridade física dos Magic Bytes
+  const isValidSignature = await validateImageMagicBytes(file);
+  if (!isValidSignature) {
+    toast.error('Arquivo corrompido ou formato não suportado.');
+    throw new Error('Assinatura de imagem inválida ou arquivo corrompido.');
   }
 
   // Alerta prévio se a imagem for muito pesada
@@ -160,3 +203,21 @@ export async function validateAndCompressImage(
     img.src = objectUrl;
   });
 }
+
+/**
+ * Fase 46: Gera automaticamente miniatura compacta (180px) em WebP para acompanhamento da capa principal (Item 46).
+ */
+export async function generateThumbnailFile(file: File, targetSize = 180): Promise<File | null> {
+  try {
+    const { file: thumbFile } = await validateAndCompressImage(file, {
+      maxWidth: targetSize,
+      maxHeight: targetSize,
+      quality: 0.75,
+    });
+    const baseName = file.name.replace(/\.[^/.]+$/, '');
+    return new File([thumbFile], `${baseName}_thumb.webp`, { type: 'image/webp' });
+  } catch {
+    return null;
+  }
+}
+
