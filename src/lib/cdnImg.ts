@@ -306,6 +306,29 @@ export const directImg = (url: string, w = 400, quality?: number) => otimizar(ur
 /** Fase 41/43: Miniatura calibrada para thumbnails de 40-160px (qualidade padrão 75) */
 export const thumbImg = (url: string, size = 160, quality?: number) => otimizar(url, size, quality);
 
+/**
+ * Fase 46: Resolução inteligente de miniatura de alta performance (Item 46).
+ * Se o asset já possuir versão `_thumb.webp`, utiliza diretamente;
+ * Caso contrário, requisita redimensionamento dinâmico otimizado proporcional a `targetSize`.
+ */
+export const getThumbnailUrl = (url: string | null | undefined, targetSize = 160): string => {
+  if (!url || typeof url !== 'string') return '';
+  const trimmed = url.trim();
+  if (!trimmed) return '';
+
+  // Se já for uma miniatura pré-gerada com sufixo _thumb.webp
+  if (trimmed.includes('_thumb.webp')) {
+    return safeStorageUrl(trimmed) || trimmed;
+  }
+
+  // Se for asset do Supabase, o endpoint nativo de transformação entrega targetSize a 75%
+  if (trimmed.includes('.supabase.co/storage/v1/')) {
+    return toSupabaseRenderUrl(trimmed, { width: targetSize, quality: 75, resize: 'contain' });
+  }
+
+  return thumbImg(trimmed, targetSize, 75);
+};
+
 /** Imagem de notícias e cards horizontais */
 export const newsImg = (url: string, w = 640, quality?: number) => otimizar(url, w, quality);
 

@@ -221,3 +221,16 @@ export async function generateThumbnailFile(file: File, targetSize = 180): Promi
   }
 }
 
+/**
+ * Fase 46: Gera automaticamente blob de miniatura ultra compacta em WebP a partir de Blob genérico.
+ */
+export async function generateThumbnailBlob(blob: Blob, targetSize = 180): Promise<Blob | null> {
+  try {
+    const dummyFile = new File([blob], 'image.webp', { type: blob.type || 'image/webp' });
+    const thumbFile = await generateThumbnailFile(dummyFile, targetSize);
+    return thumbFile;
+  } catch {
+    return null;
+  }
+}
+

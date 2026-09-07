@@ -3,7 +3,7 @@ import { Settings, CalendarClock, CheckCircle2, ChevronRight } from 'lucide-reac
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { validateAndCompressImage } from '@/lib/imageUploadOptimizer';
+import { validateAndCompressImage, generateThumbnailFile } from '@/lib/imageUploadOptimizer';
 import { useGoBack } from '@/hooks/useGoBack';
 import {
   Tema,
@@ -314,14 +314,27 @@ export default function AdminBlogEdicao() {
         quality: 0.82,
       });
       const ext = optimizedFile.name.split('.').pop() || 'webp';
-      const fileName = `${editingPost.id}-${Date.now()}.${ext}`;
+      const fileTimestamp = Date.now();
+      const fileName = `${editingPost.id}-${fileTimestamp}.${ext}`;
       const { error: uploadError } = await supabase.storage.from('blog-capas').upload(fileName, optimizedFile);
       if (uploadError) throw uploadError;
+
+      // Fase 46: Gera automaticamente miniatura compacta (180px) em WebP no client e envia ao storage (Item 46)
+      try {
+        const thumbFile = await generateThumbnailFile(rawFile, 240);
+        if (thumbFile) {
+          const thumbFileName = `${editingPost.id}-${fileTimestamp}_thumb.webp`;
+          await supabase.storage.from('blog-capas').upload(thumbFileName, thumbFile, { upsert: true });
+        }
+      } catch {
+        // Fallback defensivo: se falhar o thumb, a capa principal já está salva
+      }
+
       const {
         data: { publicUrl },
       } = supabase.storage.from('blog-capas').getPublicUrl(fileName);
       setEditingPost({ ...editingPost, imagem_url: publicUrl, imagem_path: fileName });
-      toast.success('Imagem carregada!', { id: 'upload-capa' });
+      toast.success('Imagem e miniatura carregadas!', { id: 'upload-capa' });
     } catch (err: any) {
       toast.error('Erro ao enviar: ' + err.message, { id: 'upload-capa' });
     }
