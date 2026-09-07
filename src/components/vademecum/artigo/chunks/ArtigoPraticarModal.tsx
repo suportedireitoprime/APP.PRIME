@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Target, Layers, ChevronRight, X } from 'lucide-react';
+import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 
 interface ArtigoPraticarModalProps {
   showPraticarSheet: boolean;
@@ -25,6 +26,8 @@ export const ArtigoPraticarModal = memo(function ArtigoPraticarModal({
   setShowQuestoesPanel,
   navigate,
 }: ArtigoPraticarModalProps) {
+  useBodyScrollLock(showPraticarSheet, 'artigo-praticar-modal');
+
   return (
     <AnimatePresence>
       {showPraticarSheet && (

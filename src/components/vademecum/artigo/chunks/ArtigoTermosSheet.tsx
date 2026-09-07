@@ -9,6 +9,7 @@ import {
   AccordionContent,
 } from '@/components/ui/accordion';
 import { splitSections } from '../artigoTextUtils';
+import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 
 interface ArtigoTermosSheetProps {
   open: boolean;
@@ -25,6 +26,7 @@ export const ArtigoTermosSheet = memo(function ArtigoTermosSheet({
   content,
   fontSize,
 }: ArtigoTermosSheetProps) {
+  useBodyScrollLock(open, 'artigo-termos-sheet');
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent

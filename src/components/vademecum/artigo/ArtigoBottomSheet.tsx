@@ -92,6 +92,9 @@ const ArtigoBottomSheet = ({
     if (forceShowRedacao !== undefined) setShowRedacao(forceShowRedacao);
   }, [forceShowRedacao, artigo?.id]);
 
+  // Item 2: Scroll lock resiliente para modais aninhados e proteção do fundo
+  useBodyScrollLock(Boolean(artigo), 'artigo-bottom-sheet');
+
   // GA4 - Item 1: Protegido contra disparos rápidos e race conditions
   useEffect(() => {
     if (!artigo?.numero) return;
@@ -786,6 +789,7 @@ const ArtigoBottomSheet = ({
         }}
       >
         <SheetContent
+          data-artigo-sheet={artigo ? 'open' : undefined}
           ref={(node: HTMLDivElement | null) => {
             sheetContentRef.current = node;
             setSheetNode(node);

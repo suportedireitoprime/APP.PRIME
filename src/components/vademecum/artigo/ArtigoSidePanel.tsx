@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useIsDesktop } from '@/hooks/use-desktop';
+import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 
 interface ArtigoSidePanelProps {
   open: boolean;
@@ -21,6 +22,7 @@ interface ArtigoSidePanelProps {
  */
 const ArtigoSidePanel = ({ open, onClose, title, subtitle, children, widthClass = 'w-[min(30rem,92vw)]' }: ArtigoSidePanelProps) => {
   const isDesktop = useIsDesktop();
+  useBodyScrollLock(open, 'artigo-side-panel');
   if (typeof document === 'undefined') return null;
 
   return createPortal(

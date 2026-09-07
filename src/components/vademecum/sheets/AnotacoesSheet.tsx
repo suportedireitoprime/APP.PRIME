@@ -6,6 +6,7 @@ import { ArrowLeft, Plus, Sparkles, Loader2, Trash2, Mic, Square, Play, Pause, F
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useKeyboardHeight } from '@/hooks/useKeyboardListeners';
+import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 import { supabase } from '@/integrations/supabase/client';
 import { voiceRecorder } from '@/lib/nativeVoiceRecorder';
 import { haptic } from '@/lib/nativeHaptics';
@@ -138,6 +139,7 @@ function fmtDuration(ms: number | null) {
 
 const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, onCountChange }: AnotacoesSheetProps) => {
   const isDesktop = useIsDesktop();
+  useBodyScrollLock(open, 'anotacoes-sheet');
   const [notas, setNotas] = useState<Anotacao[]>([]);
   const [novaTexto, setNovaTexto] = useState('');
   const [loading, setLoading] = useState(false);

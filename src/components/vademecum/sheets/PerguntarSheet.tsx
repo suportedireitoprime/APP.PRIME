@@ -4,6 +4,7 @@ import { X, Send, Loader2, Sparkles } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import ReactMarkdown from 'react-markdown';
 import { supabase } from '@/integrations/supabase/client';
+import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -19,6 +20,7 @@ interface PerguntarSheetProps {
 }
 
 const PerguntarSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto }: PerguntarSheetProps) => {
+  useBodyScrollLock(open, 'perguntar-sheet');
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
