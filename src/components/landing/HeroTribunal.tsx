@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
-import heroTribunal from '@/assets/landing-tribunal/hero-tribunal.jpg';
+import heroTribunal from '@/assets/landing-tribunal/hero-tribunal.webp';
 import laurel from '@/assets/landing-tribunal/laurel-leaf.webp';
 import scales from '@/assets/landing-tribunal/scales.webp';
 import FuncoesCarousel from './FuncoesCarousel';

@@ -21,6 +21,7 @@ import {
   FileText,
   type LucideIcon,
 } from "lucide-react";
+import { directImg } from "@/lib/cdnImg";
 
 export type AreaRow = { area: string; total: number; temas: string[] };
 export type TemaRow = { tema: string; ordem_tema: number | null; total: number };
@@ -66,4 +67,4 @@ export function styleForArea(area: string): { icon: LucideIcon; color: string } 
 }
 
 export const CAPA_PADRAO_RESUMOS =
-  "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg";
+  directImg("https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg", 300);

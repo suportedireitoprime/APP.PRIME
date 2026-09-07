@@ -16,7 +16,7 @@ export interface PillGalleryItem {
 export const CODIGOS_ITEMS: PillGalleryItem[] = [
   {
     id: 'cp',
-    image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg'),
+    image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg', 400),
     text: 'CP',
     fullName: 'Código Penal',
     descricao: 'Artigos fundamentais comentados em áudios rápidos',
@@ -79,9 +79,9 @@ export const MINISTROS_ITEMS: PillGalleryItem[] = [
  * Usado em PilulasHome.
  */
 export const CLASSICOS_ITEMS: PillGalleryItem[] = [
-  { id: 'ihering', image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_luta_pelo_direito_manual.jpg'), text: 'A Luta pelo\nDireito', fullName: 'Rudolf von Ihering', descricao: 'A luta pelo direito como dever ético do cidadão', borderColor: '#F97316' },
-  { id: 'mill', image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/sobre_a_liberdade_manual.jpg'), text: 'Sobre a\nLiberdade', fullName: 'John Stuart Mill', descricao: 'A liberdade individual e os limites da sociedade', borderColor: '#38BDF8' },
-  { id: 'suntzu', image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_arte_da_guerra_manual.jpg'), text: 'A Arte da\nGuerra', fullName: 'Sun Tzu', descricao: 'Tratado clássico de estratégia e resolução de conflitos', borderColor: '#E11D48' },
-  { id: 'montesquieu', image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.jpg'), text: 'O Espírito\ndas Leis', fullName: 'Montesquieu', descricao: 'A separação dos poderes e a estrutura das leis', borderColor: '#A855F7' },
-  { id: 'sagan', image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_mundo_assombrado_pelos_demonios_manual.jpg'), text: 'O Mundo Assombrado\npelos Demônios', fullName: 'Carl Sagan', descricao: 'Ciência, razão e pensamento crítico', borderColor: '#10B981' },
+  { id: 'ihering', image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_luta_pelo_direito_manual.jpg', 400), text: 'A Luta pelo\nDireito', fullName: 'Rudolf von Ihering', descricao: 'A luta pelo direito como dever ético do cidadão', borderColor: '#F97316' },
+  { id: 'mill', image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/sobre_a_liberdade_manual.jpg', 400), text: 'Sobre a\nLiberdade', fullName: 'John Stuart Mill', descricao: 'A liberdade individual e os limites da sociedade', borderColor: '#38BDF8' },
+  { id: 'suntzu', image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_arte_da_guerra_manual.jpg', 400), text: 'A Arte da\nGuerra', fullName: 'Sun Tzu', descricao: 'Tratado clássico de estratégia e resolução de conflitos', borderColor: '#E11D48' },
+  { id: 'montesquieu', image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.jpg', 400), text: 'O Espírito\ndas Leis', fullName: 'Montesquieu', descricao: 'A separação dos poderes e a estrutura das leis', borderColor: '#A855F7' },
+  { id: 'sagan', image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_mundo_assombrado_pelos_demonios_manual.jpg', 400), text: 'O Mundo Assombrado\npelos Demônios', fullName: 'Carl Sagan', descricao: 'Ciência, razão e pensamento crítico', borderColor: '#10B981' },
 ];

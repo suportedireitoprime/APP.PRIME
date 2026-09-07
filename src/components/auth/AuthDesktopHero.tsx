@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import DesktopQrLogin from '@/components/auth/DesktopQrLogin';
-import authJudgeScene from '@/assets/auth-judge-scene.jpeg';
+import authJudgeScene from '@/assets/auth-judge-scene.webp';
 import themisAuthYellow from '@/assets/themis-auth-yellow.webp';
 
 export const AuthDesktopHero: React.FC = () => {

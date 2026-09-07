@@ -4,7 +4,7 @@ import { Capacitor } from '@capacitor/core';
 import { useNavigate } from 'react-router-dom';
 import { HelpCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import authJudgeScene from '@/assets/auth-judge-scene.jpeg';
+import authJudgeScene from '@/assets/auth-judge-scene.webp';
 import type { AuthMode } from './AuthDrawer';
 
 interface AuthMobileHeroProps {

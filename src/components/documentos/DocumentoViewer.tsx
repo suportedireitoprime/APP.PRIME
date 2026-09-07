@@ -196,7 +196,7 @@ const DocumentoViewer = ({ blob, nome, mime, onClose, onBaixar, baixando }: Prop
         )}
 
         {estado.tipo === 'imagem' && (
-          <img src={estado.url} alt={nome} className="mx-auto w-full rounded-xl object-contain" />
+          <img src={estado.url} alt={nome} loading="lazy" decoding="async" onError={(e) => (e.currentTarget.style.display = 'none')} className="mx-auto w-full rounded-xl object-contain" />
         )}
 
         {estado.tipo === 'pdf' && (

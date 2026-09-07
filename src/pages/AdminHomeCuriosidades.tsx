@@ -163,7 +163,7 @@ export default function AdminHomeCuriosidades() {
             </div>
             {gen?.imagem_url && (
               <div className="rounded-xl overflow-hidden border bg-black">
-                <img src={gen.imagem_url} alt="preview" className="w-full h-40 object-contain" />
+                <img src={gen.imagem_url} alt="preview" loading="lazy" decoding="async" onError={(e) => (e.currentTarget.style.display = 'none')} className="w-full h-40 object-contain" />
               </div>
             )}
           </div>
@@ -189,7 +189,7 @@ export default function AdminHomeCuriosidades() {
                 <div key={it.id} className={`rounded-2xl border bg-card p-3 space-y-2 ${!it.ativo ? 'opacity-60' : ''}`}>
                   <div className="relative rounded-xl overflow-hidden bg-black h-32">
                     {it.imagem_url ? (
-                      <img src={it.imagem_url} alt="" className="w-full h-full object-contain" />
+                      <img src={it.imagem_url} alt={`Curiosidade: ${it.texto.substring(0, 30)}`} loading="lazy" decoding="async" onError={(e) => (e.currentTarget.style.display = 'none')} className="w-full h-full object-contain" />
                     ) : (
                       <div className="flex items-center justify-center h-full">
                         <Lightbulb className="w-8 h-8 text-muted-foreground/40" />

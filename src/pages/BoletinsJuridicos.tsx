@@ -314,7 +314,7 @@ export default function BoletinsJuridicos({ tipo = 'juridico' }: Props) {
             >
               <div className="flex items-stretch gap-0">
                 <div className="relative w-32 shrink-0 aspect-square">
-                  {cover && <img src={cover} alt="" className="absolute inset-0 w-full h-full object-cover" />}
+                  {cover && <img src={cover} alt={`Capa do boletim ${b.titulo}`} loading="lazy" decoding="async" onError={(e) => (e.currentTarget.style.display = 'none')} className="absolute inset-0 w-full h-full object-cover" />}
                   <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${cor}55, transparent 60%)` }} />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition">

@@ -147,7 +147,7 @@ const TimelineView = ({
                 }`}>
                   <div className="w-full h-24 mb-2 bg-muted rounded-xl overflow-hidden relative">
                     {livro.capa ? (
-                      <img src={livro.capa} className="w-full h-full object-cover" />
+                      <img src={livro.capa} alt={livro.titulo} loading="lazy" decoding="async" onError={(e) => (e.currentTarget.style.display = 'none')} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center"><BookOpen className="w-6 h-6 text-muted-foreground/30" /></div>
                     )}
