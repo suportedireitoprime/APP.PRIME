@@ -37,6 +37,18 @@ class ImageLruMemoryCache {
     } else {
       this.maxEntries = isMobile ? 60 : 120;
     }
+
+    // Fase 58: Tratamento preventivo de Low Memory e minimização em background no Android/iOS
+    if (typeof window !== 'undefined') {
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+          this.trimMemory(15);
+        }
+      });
+      window.addEventListener('lowmemory' as any, () => {
+        this.trimMemory(5);
+      });
+    }
   }
 
   /**

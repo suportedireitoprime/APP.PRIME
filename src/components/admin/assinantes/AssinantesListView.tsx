@@ -1,6 +1,7 @@
 import React from 'react';
 import { Search, FlaskConical } from 'lucide-react';
 import { Row, STATUS_LABEL } from './assinantesTypes';
+import { avatarImg } from '@/lib/cdnImg';
 
 interface AssinantesListViewProps {
   q: string;
@@ -111,7 +112,16 @@ export const AssinantesListView: React.FC<AssinantesListViewProps> = ({
           return (
             <div key={r.id} className="flex items-center gap-3 p-3 border-b border-border last:border-0 hover:bg-muted/50 transition-colors">
               {r.avatar_url ? (
-                <img src={r.avatar_url} alt="" className="w-9 h-9 rounded-full object-cover bg-muted border border-border/50" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                <img
+                  src={avatarImg(r.avatar_url, 72)}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  width={36}
+                  height={36}
+                  className="w-9 h-9 rounded-full object-cover bg-muted border border-border/50"
+                  onError={(e) => (e.currentTarget.style.display = 'none')}
+                />
               ) : (
                 <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-sm font-semibold uppercase border border-border/50 shrink-0">
                   {displayName.slice(0, 1)}

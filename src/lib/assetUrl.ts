@@ -47,21 +47,23 @@ type AssetJson = { url?: string; original_filename?: string };
 /** Devolve a versão nativa (bundled) quando disponível; senão, cai no CDN. */
 function resolveBundled(nameOrUrl: string | undefined | null): string | undefined {
   if (!nameOrUrl) return undefined;
-  const name = nameOrUrl.split('/').pop();
+  const normalized = nameOrUrl.replace(/\\/g, '/');
+  const name = normalized.split('/').pop();
   return name ? bundledMap[name] : undefined;
 }
 
 export function assetUrl(url: string | undefined | null): string {
   if (!url) return '';
-  if (/^https?:\/\//i.test(url)) return url;
-  if (url.startsWith('/__l5e/')) {
+  const normalized = url.replace(/\\/g, '/');
+  if (/^https?:\/\//i.test(normalized)) return normalized;
+  if (normalized.startsWith('/__l5e/')) {
     // Sempre priorize o binário embutido — evita depender do CDN e
     // garante que a imagem apareça offline (native) ou instantaneamente (web).
-    const bundled = resolveBundled(url);
+    const bundled = resolveBundled(normalized);
     if (bundled) return bundled;
-    return `${CDN_HOST}${url}`;
+    return `${CDN_HOST}${normalized}`;
   }
-  return url;
+  return normalized;
 }
 
 /**
