@@ -778,6 +778,77 @@ const ArtigoBottomSheet = ({
     showGrafo ||
     showGrifoFoto;
 
+  // Item 6: Atalhos de teclado no Desktop com cleanup estrito contra memory leak
+  const desktopKeyHandlerRef = useRef({
+    iaFull,
+    activeActionMenu,
+    showFontControls,
+    showSharePanel,
+    anyPanelOpen,
+    handleSheetClose,
+    setIaFull,
+    setActiveTab,
+    setActiveActionMenu,
+    setShowFontControls,
+    setShowSharePanel,
+  });
+
+  desktopKeyHandlerRef.current = {
+    iaFull,
+    activeActionMenu,
+    showFontControls,
+    showSharePanel,
+    anyPanelOpen,
+    handleSheetClose,
+    setIaFull,
+    setActiveTab,
+    setActiveActionMenu,
+    setShowFontControls,
+    setShowSharePanel,
+  };
+
+  useEffect(() => {
+    if (!isDesktop || !artigo) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignora atalhos se o usuário estiver digitando em campo de texto
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable ||
+          target.closest('input, textarea, [contenteditable="true"]'))
+      ) {
+        return;
+      }
+
+      const state = desktopKeyHandlerRef.current;
+
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+        if (state.iaFull) {
+          state.setIaFull(null);
+          state.setActiveTab('artigo');
+        } else if (state.activeActionMenu) {
+          state.setActiveActionMenu(null);
+        } else if (state.showFontControls) {
+          state.setShowFontControls(false);
+        } else if (state.showSharePanel) {
+          state.setShowSharePanel(false);
+        } else if (!state.anyPanelOpen) {
+          state.handleSheetClose();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isDesktop, artigo?.id]);
+
   if (!artigo) return null;
 
   return (
