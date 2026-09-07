@@ -1,7 +1,8 @@
 import React from "react";
 import { ChevronRight } from "lucide-react";
 import { haptic } from "@/lib/nativeHaptics";
-import { CAPA_PADRAO_RESUMOS, type AreaRow } from "../resumosStyles";
+import { capaDaArea } from "@/lib/audioaulasHelper";
+import { type AreaRow } from "../resumosStyles";
 
 interface ResumosAreaCardProps {
   areaRow: AreaRow;
@@ -21,8 +22,8 @@ export const ResumosAreaCard: React.FC<ResumosAreaCardProps> = ({ areaRow, onCli
     >
       <div className="w-16 h-[88px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
         <img
-          src={CAPA_PADRAO_RESUMOS}
-          alt="Capa"
+          src={capaDaArea(areaRow.area)}
+          alt={displayArea}
           className="w-full h-full object-cover"
           loading="lazy"
         />
