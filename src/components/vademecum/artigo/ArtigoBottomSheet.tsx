@@ -251,29 +251,6 @@ const ArtigoBottomSheet = ({
     };
   }, [isDesktop, artigo?.id, activeTab]);
 
-  // Item 8: Dessincronização de Grifos Táteis ao Alternar Abas
-  useEffect(() => {
-    if (activeTab !== 'artigo') {
-      setMagicTooltip(null);
-      setTooltipData(null);
-      setSelectionPill(null);
-      setFocusedSegment(null);
-    } else {
-      let rafId1: number | null = null;
-      let rafId2: number | null = null;
-      rafId1 = requestAnimationFrame(() => {
-        rafId2 = requestAnimationFrame(() => {
-          if (scrollContainerRef.current) {
-            void scrollContainerRef.current.scrollTop;
-          }
-        });
-      });
-      return () => {
-        if (rafId1 !== null) cancelAnimationFrame(rafId1);
-        if (rafId2 !== null) cancelAnimationFrame(rafId2);
-      };
-    }
-  }, [activeTab, setMagicTooltip]);
 
   useEffect(() => {
     if (activeActionMenu === 'funcoes') {
@@ -401,6 +378,30 @@ const ArtigoBottomSheet = ({
     onAnotacoesRefresh: () => setAnotacoesRefreshTick((t) => t + 1),
     activeTab,
   });
+
+  // Item 8: Dessincronização de Grifos Táteis ao Alternar Abas (executado após declaração de setMagicTooltip)
+  useEffect(() => {
+    if (activeTab !== 'artigo') {
+      setMagicTooltip(null);
+      setTooltipData(null);
+      setSelectionPill(null);
+      setFocusedSegment(null);
+    } else {
+      let rafId1: number | null = null;
+      let rafId2: number | null = null;
+      rafId1 = requestAnimationFrame(() => {
+        rafId2 = requestAnimationFrame(() => {
+          if (scrollContainerRef.current) {
+            void scrollContainerRef.current.scrollTop;
+          }
+        });
+      });
+      return () => {
+        if (rafId1 !== null) cancelAnimationFrame(rafId1);
+        if (rafId2 !== null) cancelAnimationFrame(rafId2);
+      };
+    }
+  }, [activeTab, setMagicTooltip]);
 
   const [showEraseSheet, setShowEraseSheet] = useState(false);
   const [showVoiceSheet, setShowVoiceSheet] = useState(false);
