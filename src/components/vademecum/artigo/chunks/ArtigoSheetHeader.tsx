@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Heart,
@@ -14,22 +14,13 @@ import {
 import HighlightColorBar from '@/components/vademecum/grifos_ocr/HighlightColorBar';
 import ShareButtons from '@/components/vademecum/navigation/ShareButtons';
 import { MAGIC_COLORS } from '../artigoConstants';
+import { BreadcrumbData, toTitleCase } from '../artigoBreadcrumbs';
 
 interface ArtigoData {
   numero: string | number;
   titulo?: string | null;
   capitulo?: string | null;
   caput?: string;
-}
-
-interface BreadcrumbData {
-  parte?: string;
-  livro?: string;
-  titulo?: string;
-  tituloDesc?: string;
-  capitulo?: string;
-  capituloDesc?: string;
-  secao?: string;
 }
 
 interface ArtigoSheetHeaderProps {
@@ -85,6 +76,50 @@ export const ArtigoSheetHeader = memo(function ArtigoSheetHeader({
   magicMode,
   magicHighlights,
 }: ArtigoSheetHeaderProps) {
+  const timelineItems = useMemo(() => {
+    const items: Array<{ label: string; isLast?: boolean }> = [];
+
+    if (breadcrumb?.parte) {
+      items.push({ label: toTitleCase(breadcrumb.parte) });
+    }
+    if (breadcrumb?.livro) {
+      items.push({ label: toTitleCase(breadcrumb.livro) });
+    }
+    if (breadcrumb?.titulo) {
+      const tit = toTitleCase(breadcrumb.titulo);
+      const desc = breadcrumb.tituloDesc ? toTitleCase(breadcrumb.tituloDesc) : '';
+      items.push({ label: desc ? `${tit} (${desc})` : tit });
+    } else if (!breadcrumb && artigo.titulo && /^(T[IÍ]TULO|PARTE|LIVRO)\b/i.test(artigo.titulo)) {
+      items.push({ label: toTitleCase(artigo.titulo) });
+    }
+
+    if (breadcrumb?.capitulo) {
+      const cap = toTitleCase(breadcrumb.capitulo);
+      const desc = breadcrumb.capituloDesc ? toTitleCase(breadcrumb.capituloDesc) : '';
+      items.push({ label: desc ? `${cap} (${desc})` : cap });
+    } else if (!breadcrumb && artigo.capitulo && /^CAP[ÍI]TULO\b/i.test(artigo.capitulo)) {
+      items.push({ label: toTitleCase(artigo.capitulo) });
+    }
+
+    if (breadcrumb?.secao) {
+      items.push({ label: toTitleCase(breadcrumb.secao) });
+    }
+    if (breadcrumb?.subsecao) {
+      items.push({ label: toTitleCase(breadcrumb.subsecao) });
+    }
+
+    // Se nenhum nível pai for detectado e temos nome da tabela/lei
+    if (items.length === 0 && tabelaNome && !/^resenha_/i.test(tabelaNome)) {
+      items.push({ label: toTitleCase(tabelaNome.replace(/_/g, ' ')) });
+    }
+
+    // O último nó da linha do tempo é o próprio artigo
+    const artLabel = /^\d/.test(String(artigo.numero)) ? `Art. ${artigo.numero}` : String(artigo.numero);
+    items.push({ label: artLabel, isLast: true });
+
+    return items;
+  }, [breadcrumb, artigo.numero, artigo.titulo, artigo.capitulo, tabelaNome]);
+
   return (
     <>
       {/* Top bar: heart/eye (left) + online count + close (right) */}
@@ -223,24 +258,8 @@ export const ArtigoSheetHeader = memo(function ArtigoSheetHeader({
         )}
       </AnimatePresence>
 
-      {/* Breadcrumb: PARTE > TÍTULO / descrição */}
-      {(breadcrumb?.parte || breadcrumb?.titulo) && (
-        <div className="px-5 pb-1">
-          <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-            {breadcrumb?.parte && <span>{breadcrumb.parte}</span>}
-            {breadcrumb?.parte && breadcrumb?.titulo && <ChevronRight className="w-3 h-3" />}
-            {breadcrumb?.titulo && <span>{breadcrumb.titulo}</span>}
-          </div>
-          {breadcrumb?.tituloDesc && (
-            <p className="text-[11px] uppercase tracking-wide text-foreground/70 font-body leading-snug mt-0.5">
-              {breadcrumb.tituloDesc}
-            </p>
-          )}
-        </div>
-      )}
-
       {/* Big Art. Nº + Ver no Planalto */}
-      <div className="px-5 pt-1 pb-3 flex items-center justify-between gap-3">
+      <div className="px-5 pt-1 pb-1.5 flex items-center justify-between gap-3">
         <h3 className="font-display text-3xl font-bold text-foreground">
           {/^\d/.test(String(artigo.numero)) ? `Art. ${artigo.numero}` : artigo.numero}
         </h3>
@@ -276,49 +295,25 @@ export const ArtigoSheetHeader = memo(function ArtigoSheetHeader({
         )}
       </AnimatePresence>
 
-      {/* Título (fallback if no breadcrumb prop) */}
-      {!breadcrumb &&
-        artigo.titulo &&
-        (() => {
-          const parts = artigo.titulo.match(/^(T[IÍ]TULO\s+[IVXLC\d]+)\s*[-–]?\s*(.*)/i);
-          if (parts) {
-            return (
-              <div className="px-5 pb-1">
-                <p className="text-[11px] text-foreground/70 font-body uppercase tracking-wide">
-                  {parts[1]}
-                </p>
-                <p className="text-[11px] text-foreground font-body leading-snug">{parts[2]}</p>
-              </div>
-            );
-          }
-          return (
-            <div className="px-5 pb-1">
-              <p className="text-[11px] text-foreground font-body leading-snug">{artigo.titulo}</p>
-            </div>
-          );
-        })()}
-
-      {/* Capítulo (fallback if no breadcrumb prop) */}
-      {!breadcrumb &&
-        artigo.capitulo &&
-        (() => {
-          const parts = artigo.capitulo.match(/^(CAP[IÍ]TULO\s+[IVXLC\d]+)\s*[-–]?\s*(.*)/i);
-          if (parts) {
-            return (
-              <div className="px-5 pb-2">
-                <p className="text-[11px] text-foreground/70 font-body uppercase tracking-wide">
-                  {parts[1]}
-                </p>
-                <p className="text-[11px] text-foreground font-body leading-snug">{parts[2]}</p>
-              </div>
-            );
-          }
-          return (
-            <div className="px-5 pb-2">
-              <p className="text-[11px] text-foreground font-body leading-snug">{artigo.capitulo}</p>
-            </div>
-          );
-        })()}
+      {/* Linha do tempo hierárquica cronológica (Parte > Livro > Título > Capítulo > Seção > Artigo) */}
+      <div className="px-5 pb-3 flex items-center flex-wrap gap-1.5 text-[11px] font-medium leading-relaxed">
+        {timelineItems.map((item, idx) => (
+          <React.Fragment key={idx}>
+            {idx > 0 && (
+              <ChevronRight className="w-3.5 h-3.5 text-zinc-500/80 shrink-0" strokeWidth={2.2} />
+            )}
+            <span
+              className={
+                item.isLast
+                  ? 'text-primary font-bold tracking-wide'
+                  : 'text-zinc-300 font-medium tracking-wide'
+              }
+            >
+              {item.label}
+            </span>
+          </React.Fragment>
+        ))}
+      </div>
 
       <AnimatePresence>
         {(highlightMode || voiceGrifoActive) && (

@@ -85,8 +85,13 @@ const ArtigoBottomSheet = ({
     if (!rawBreadcrumb) return undefined;
     return {
       parte: rawBreadcrumb.parte ? fixMojibake(rawBreadcrumb.parte) : undefined,
+      livro: rawBreadcrumb.livro ? fixMojibake(rawBreadcrumb.livro) : undefined,
       titulo: rawBreadcrumb.titulo ? fixMojibake(rawBreadcrumb.titulo) : undefined,
       tituloDesc: rawBreadcrumb.tituloDesc ? fixMojibake(rawBreadcrumb.tituloDesc) : undefined,
+      capitulo: rawBreadcrumb.capitulo ? fixMojibake(rawBreadcrumb.capitulo) : undefined,
+      capituloDesc: rawBreadcrumb.capituloDesc ? fixMojibake(rawBreadcrumb.capituloDesc) : undefined,
+      secao: rawBreadcrumb.secao ? fixMojibake(rawBreadcrumb.secao) : undefined,
+      subsecao: rawBreadcrumb.subsecao ? fixMojibake(rawBreadcrumb.subsecao) : undefined,
     };
   }, [rawBreadcrumb]);
   const [showRedacao, setShowRedacao] = useState(forceShowRedacao ?? false);

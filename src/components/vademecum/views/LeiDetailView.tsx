@@ -17,6 +17,7 @@ import { getLeiColor } from '@/lib/leiTheme';
 import { prefetchRadarData } from '@/components/vademecum/outros/RadarLegislacaoContent';
 import type { ArtigoLei } from '@/data/mockData';
 import ArtigoBottomSheet from '@/components/vademecum/artigo/ArtigoBottomSheet';
+import { buildArtigoBreadcrumbsMap } from '@/components/vademecum/artigo/artigoBreadcrumbs';
 import OcrScanner from '@/components/vademecum/grifos_ocr/OcrScanner';
 import GrafoOverlay from '@/components/vademecum/overlays/GrafoOverlay';
 import NovidadesPanel from '@/components/vademecum/panels/NovidadesPanel';
@@ -106,6 +107,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
 
   // Hooks do domínio
   const { artigos, loadingArtigos, loadedKey } = useLeiArtigos(selectedLeiId, selectedTabelaNome);
+  const artigoBreadcrumbsMap = useMemo(() => buildArtigoBreadcrumbsMap(artigos), [artigos]);
   const { selectedLeiEmenta, dbAlteracoes, loadingDbAlteracoes, playlistNarracoes, loadingPlaylist } = useLeiData(selectedLeiId, selectedTabelaNome, overlayPanel);
   const { grifadoNumeros, anotadoNumeros, favArtigoNumeros, leiFavToggle, setLeiFavToggle, setFavArtigoNumeros } = useLeiUserTags(selectedTabelaNome);
 
@@ -832,6 +834,11 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           leiInfo={{ id: selectedLeiId, nome: selectedLeiNome, tipo: tipo || '', cor: leiAccent }}
           modInfo={openModInfo}
           showTimelineFirst={openFromNovidades}
+          breadcrumb={
+            artigoBreadcrumbsMap.get(String(openArtigo.id)) ||
+            artigoBreadcrumbsMap.get(String(openArtigo.numero).trim()) ||
+            artigoBreadcrumbsMap.get(String(openArtigo.numero).replace(/^art\.\s*/i, '').trim())
+          }
         />
       )}
 

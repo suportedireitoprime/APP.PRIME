@@ -71,7 +71,7 @@ export const ArtigoBottomBar = memo(function ArtigoBottomBar({
       className={
         hasFlutuante
           ? "shrink-0 relative z-[55] bg-zinc-900/95 backdrop-blur-md border-t border-zinc-800/80 rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.6)] transition-[padding] duration-200 pb-[calc(4rem+var(--miniplayer-height,0px)+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]"
-          : "shrink-0 relative z-[55] bg-zinc-900/95 backdrop-blur-md border-t border-zinc-800/80 rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.6)] transition-[padding] duration-200 pb-[max(1.75rem,calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px))))]"
+          : "shrink-0 relative z-[55] bg-zinc-900/95 backdrop-blur-md border-t border-zinc-800/80 rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.6)] transition-[padding] duration-200 pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))]"
       }
     >
       <div className="relative grid grid-cols-5 items-end px-2 py-1 max-w-lg mx-auto">

@@ -11,6 +11,9 @@ export interface ModificationInfo {
   linhasModificadas: number[]; // indices of modified lines
 }
 
+import type { BreadcrumbData } from './artigoBreadcrumbs';
+export type { BreadcrumbData };
+
 export interface ArtigoBottomSheetProps {
   artigo: import('@/data/mockData').ArtigoLei | null;
   onClose: () => void;
@@ -21,7 +24,7 @@ export interface ArtigoBottomSheetProps {
   tabela_nome?: string;
   forceShowRedacao?: boolean;
   modificationInfo?: ModificationInfo | null;
-  breadcrumb?: { parte?: string; titulo?: string; tituloDesc?: string } | null;
+  breadcrumb?: BreadcrumbData | null;
   [key: string]: any;
 }
 
