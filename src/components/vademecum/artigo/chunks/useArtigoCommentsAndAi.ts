@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { invalidateCache, anotacoesKey } from '@/lib/artigoFuncoesPrefetch';
@@ -35,6 +35,10 @@ export function useArtigoCommentsAndAi({
   setAnotacoesCount,
   setAnotacoesRefreshTick,
 }: UseArtigoCommentsAndAiProps) {
+  // Item 1: Prevenção de Race Condition na troca rápida de artigos via navegação/gesto
+  const activeArtigoIdRef = useRef<string | null>(artigo?.id ?? null);
+  const activeAbortCtrlRef = useRef<AbortController | null>(null);
+
   const [isGeneratingAiNote, setIsGeneratingAiNote] = useState(false);
   const [aiContent, setAiContent] = useState<Record<string, string>>({});
   const [aiLoading, setAiLoading] = useState<Record<string, boolean>>({});
@@ -146,8 +150,17 @@ export function useArtigoCommentsAndAi({
     ]
   );
 
-  // Pre-load all cached AI content when artigo changes
+  // Pre-load all cached AI content when artigo changes (Item 1: Protegido contra race conditions)
   useEffect(() => {
+    const currentId = artigo?.id;
+    activeArtigoIdRef.current = currentId ?? null;
+
+    // Aborta requisições de IA anteriores em andamento
+    if (activeAbortCtrlRef.current) {
+      activeAbortCtrlRef.current.abort();
+    }
+    activeAbortCtrlRef.current = new AbortController();
+
     setAiContent({});
     setAiLoading({});
     setActiveTab('artigo');
@@ -157,12 +170,15 @@ export function useArtigoCommentsAndAi({
     const modes = ['explicacao', 'exemplo', 'termos'];
     (async () => {
       const { getLocalAiCache } = await import('@/lib/aiCacheLocal');
+      if (activeArtigoIdRef.current !== currentId) return;
       const local: Record<string, string> = {};
       for (const m of modes) {
         const v = getLocalAiCache(tabelaNome, artigo.numero, m);
         if (v) local[m] = v;
       }
-      if (Object.keys(local).length) setAiContent((prev) => ({ ...local, ...prev }));
+      if (activeArtigoIdRef.current === currentId && Object.keys(local).length) {
+        setAiContent((prev) => ({ ...local, ...prev }));
+      }
     })();
 
     if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
@@ -173,9 +189,11 @@ export function useArtigoCommentsAndAi({
       .eq('numero_artigo', artigo.numero)
       .in('tipo', modes)
       .then(({ data }) => {
+        if (activeArtigoIdRef.current !== currentId) return;
         if (data && data.length > 0) {
           const cached: Record<string, string> = {};
           import('@/lib/aiCacheLocal').then(({ setLocalAiCache }) => {
+            if (activeArtigoIdRef.current !== currentId) return;
             data.forEach((row: any) => {
               cached[row.tipo] = row.conteudo;
               setLocalAiCache(tabelaNome, artigo.numero, row.tipo, row.conteudo);
@@ -184,31 +202,43 @@ export function useArtigoCommentsAndAi({
           });
         }
       });
+
+    return () => {
+      if (activeAbortCtrlRef.current) {
+        activeAbortCtrlRef.current.abort();
+      }
+    };
   }, [artigo?.id]);
 
-  // Fetch AI content on activeTab
+  // Fetch AI content on activeTab (Item 1: Protegido contra race conditions)
   useEffect(() => {
     if (activeTab === 'artigo' || !artigo) return;
     if (!isPremium) return;
     if (aiContent[activeTab] || aiLoading[activeTab]) return;
     if (modificationInfo && activeTab !== 'explicacao') return;
 
+    const currentId = artigo.id;
     const cacheKey = { tabela: tabelaNome || 'unknown', numero: artigo.numero, modo: activeTab };
     setAiLoading((prev) => ({ ...prev, [activeTab]: true }));
 
     import('@/lib/aiCacheLocal').then(({ getLocalAiCache, setLocalAiCache }) => {
+      if (activeArtigoIdRef.current !== currentId) return;
       const localVal = getLocalAiCache(cacheKey.tabela, cacheKey.numero, cacheKey.modo);
       if (localVal) {
-        setAiContent((prev) => ({ ...prev, [activeTab]: localVal }));
-        setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
+        if (activeArtigoIdRef.current === currentId) {
+          setAiContent((prev) => ({ ...prev, [activeTab]: localVal }));
+          setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
+        }
         return;
       }
       if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-        setAiContent((prev) => ({
-          ...prev,
-          [activeTab]: 'Sem internet — este conteúdo ainda não foi gerado. Conecte-se para gerar.',
-        }));
-        setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
+        if (activeArtigoIdRef.current === currentId) {
+          setAiContent((prev) => ({
+            ...prev,
+            [activeTab]: 'Sem internet — este conteúdo ainda não foi gerado. Conecte-se para gerar.',
+          }));
+          setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
+        }
         return;
       }
 
@@ -220,6 +250,7 @@ export function useArtigoCommentsAndAi({
         .eq('tipo', cacheKey.modo)
         .maybeSingle()
         .then(({ data: cached }) => {
+          if (activeArtigoIdRef.current !== currentId) return;
           if (cached?.conteudo) {
             setLocalAiCache(cacheKey.tabela, cacheKey.numero, cacheKey.modo, cached.conteudo as string);
             setAiContent((prev) => ({ ...prev, [activeTab]: cached.conteudo as string }));
@@ -231,6 +262,10 @@ export function useArtigoCommentsAndAi({
           setAiGeneratingMode(mode);
           setAiGeneratingStep(0);
           const stepInterval = setInterval(() => {
+            if (activeArtigoIdRef.current !== currentId) {
+              clearInterval(stepInterval);
+              return;
+            }
             setAiGeneratingStep((prev) => (prev < 2 ? prev + 1 : prev));
           }, 1800);
 
@@ -245,6 +280,7 @@ export function useArtigoCommentsAndAi({
             })
             .then(({ data, error }) => {
               clearInterval(stepInterval);
+              if (activeArtigoIdRef.current !== currentId) return;
               if (!error && data?.reply) {
                 setAiGeneratingStep(3);
                 setAiContent((prev) => ({ ...prev, [activeTab]: data.reply }));
@@ -268,29 +304,46 @@ export function useArtigoCommentsAndAi({
                 }));
               }
               setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
-              setTimeout(() => setAiGeneratingMode(null), 500);
+              setTimeout(() => {
+                if (activeArtigoIdRef.current === currentId) {
+                  setAiGeneratingMode(null);
+                }
+              }, 500);
+            })
+            .catch(() => {
+              clearInterval(stepInterval);
+              if (activeArtigoIdRef.current === currentId) {
+                setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
+                setAiGeneratingMode(null);
+              }
             });
         });
     });
   }, [activeTab, artigo?.id]);
 
-  // Fetch termos
+  // Fetch termos (Item 1: Protegido contra race conditions)
   useEffect(() => {
     if (!showTermosSheet || !artigo) return;
     if (aiContent.termos || aiLoading.termos) return;
+    const currentId = artigo.id;
     const cacheKey = { tabela: tabelaNome || 'unknown', numero: artigo.numero };
     setAiLoading((prev) => ({ ...prev, termos: true }));
 
     import('@/lib/aiCacheLocal').then(({ getLocalAiCache, setLocalAiCache }) => {
+      if (activeArtigoIdRef.current !== currentId) return;
       const localVal = getLocalAiCache(cacheKey.tabela, cacheKey.numero, 'termos');
       if (localVal) {
-        setAiContent((prev) => ({ ...prev, termos: localVal }));
-        setAiLoading((prev) => ({ ...prev, termos: false }));
+        if (activeArtigoIdRef.current === currentId) {
+          setAiContent((prev) => ({ ...prev, termos: localVal }));
+          setAiLoading((prev) => ({ ...prev, termos: false }));
+        }
         return;
       }
       if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-        setAiContent((prev) => ({ ...prev, termos: 'Sem internet — termos ainda não gerados.' }));
-        setAiLoading((prev) => ({ ...prev, termos: false }));
+        if (activeArtigoIdRef.current === currentId) {
+          setAiContent((prev) => ({ ...prev, termos: 'Sem internet — termos ainda não gerados.' }));
+          setAiLoading((prev) => ({ ...prev, termos: false }));
+        }
         return;
       }
       supabase
@@ -301,6 +354,7 @@ export function useArtigoCommentsAndAi({
         .eq('tipo', 'termos')
         .maybeSingle()
         .then(({ data: cached }) => {
+          if (activeArtigoIdRef.current !== currentId) return;
           if (cached?.conteudo) {
             setLocalAiCache(cacheKey.tabela, cacheKey.numero, 'termos', cached.conteudo as string);
             setAiContent((prev) => ({ ...prev, termos: cached.conteudo as string }));
@@ -310,6 +364,10 @@ export function useArtigoCommentsAndAi({
           setAiGeneratingMode('termos');
           setAiGeneratingStep(0);
           const stepInterval = setInterval(() => {
+            if (activeArtigoIdRef.current !== currentId) {
+              clearInterval(stepInterval);
+              return;
+            }
             setAiGeneratingStep((prev) => (prev < 2 ? prev + 1 : prev));
           }, 1800);
           supabase.functions
@@ -323,6 +381,7 @@ export function useArtigoCommentsAndAi({
             })
             .then(({ data, error }) => {
               clearInterval(stepInterval);
+              if (activeArtigoIdRef.current !== currentId) return;
               if (!error && data?.reply) {
                 setAiGeneratingStep(3);
                 setAiContent((prev) => ({ ...prev, termos: data.reply }));
@@ -346,7 +405,18 @@ export function useArtigoCommentsAndAi({
                 }));
               }
               setAiLoading((prev) => ({ ...prev, termos: false }));
-              setTimeout(() => setAiGeneratingMode(null), 500);
+              setTimeout(() => {
+                if (activeArtigoIdRef.current === currentId) {
+                  setAiGeneratingMode(null);
+                }
+              }, 500);
+            })
+            .catch(() => {
+              clearInterval(stepInterval);
+              if (activeArtigoIdRef.current === currentId) {
+                setAiLoading((prev) => ({ ...prev, termos: false }));
+                setAiGeneratingMode(null);
+              }
             });
         });
     });

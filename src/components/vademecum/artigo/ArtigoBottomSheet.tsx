@@ -92,14 +92,24 @@ const ArtigoBottomSheet = ({
     if (forceShowRedacao !== undefined) setShowRedacao(forceShowRedacao);
   }, [forceShowRedacao, artigo?.id]);
 
-  // GA4
+  // GA4 - Item 1: Protegido contra disparos rápidos e race conditions
   useEffect(() => {
     if (!artigo?.numero) return;
-    import('@/lib/appEvents')
-      .then(({ appEvents }) =>
-        appEvents.viewArtigo({ tabela: tabelaNome, numero: artigo.numero })
-      )
-      .catch(() => {});
+    let cancelado = false;
+    const t = setTimeout(() => {
+      if (cancelado) return;
+      import('@/lib/appEvents')
+        .then(({ appEvents }) => {
+          if (!cancelado) {
+            appEvents.viewArtigo({ tabela: tabelaNome, numero: artigo.numero });
+          }
+        })
+        .catch(() => {});
+    }, 150);
+    return () => {
+      cancelado = true;
+      clearTimeout(t);
+    };
   }, [artigo?.id, artigo?.numero, tabelaNome]);
 
   // Prefetch de jurisprudência
