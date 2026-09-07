@@ -367,7 +367,7 @@ const AdminAprender = lazy(() => import("./pages/AdminAprender.tsx"));
 const AdminAvaliacaoLoja = lazy(() => import("./pages/AdminAvaliacaoLoja.tsx"));
 const AdminAprenderArea = lazy(() => import("./pages/AdminAprenderArea.tsx"));
 const AdminJurisprudencia = lazy(() => import("./pages/AdminJurisprudencia.tsx"));
-const TribunalSimulado = lazy(() => import("./pages/TribunalSimulado.tsx"));
+
 const AdminHorus = lazy(() => import('./pages/AdminHorus'));
 const AdminHorusTemplate = lazy(() => import('./pages/AdminHorusTemplate'));
 const AdminTriagem = lazy(() => import('./pages/AdminTriagem'));
@@ -999,7 +999,7 @@ function AnimatedRoutes() {
           <Route path="/praticar/area/:areaSlug" element={<ProtectedRoute><PageTransition><PraticarArea /></PageTransition></ProtectedRoute>} />
           <Route path="/praticar/:leiSlug" element={<ProtectedRoute><PageTransition><PraticarLei /></PageTransition></ProtectedRoute>} />
           <Route path="/praticar/:leiSlug/sessao" element={<ProtectedRoute><PageTransition><PraticarSessao /></PageTransition></ProtectedRoute>} />
-          <Route path="/tribunal-simulado" element={<ProtectedRoute><PageTransition><TribunalSimulado /></PageTransition></ProtectedRoute>} />
+
           <Route path="/compartilhado" element={<ProtectedRoute><PageTransition><Compartilhado /></PageTransition></ProtectedRoute>} />
           <Route path="/estudos" element={<ProtectedRoute><PageTransition><EstudosRouter /></PageTransition></ProtectedRoute>} />
           <Route path="/vade-mecum" element={<ProtectedRoute><PageTransition instant><VadeMecum /></PageTransition></ProtectedRoute>} />
