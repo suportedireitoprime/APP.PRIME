@@ -244,6 +244,29 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
     setPendingArtigoNumero(null);
   }, [artigos, pendingArtigoNumero]);
 
+  // Item 65: Atalhos de teclado no Desktop / iPad
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement)?.isContentEditable) {
+        return;
+      }
+      if (e.key === '/') {
+        e.preventDefault();
+        const inputEl = document.querySelector('input[placeholder*="Pesquisar artigo"]') as HTMLInputElement | null;
+        inputEl?.focus();
+      } else if (e.key === 'Escape') {
+        if (openArtigo) {
+          setOpenArtigo(null);
+        } else if (searchQuery) {
+          setSearchQuery('');
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [openArtigo, searchQuery]);
+
   const showTitulos = useMemo(() => artigos.length > 0 && artigos.some(a => a.titulo && a.titulo.trim() !== ''), [artigos]);
 
   const capituloGroups = useMemo(() => {
@@ -361,6 +384,13 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
 
   return (
     <div className="theme-vademecum min-h-dvh bg-background pb-28 lg:pb-0">
+      {/* Item 75: Skip to Content para acessibilidade WCAG AAA */}
+      <a
+        href="#lei-conteudo"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-xl focus:shadow-xl focus:ring-2 focus:ring-ring font-semibold text-sm transition"
+      >
+        Pular para o conteúdo principal
+      </a>
       <PremiumGate 
         isOpen={showPremiumGate} 
         onClose={() => setShowPremiumGate(false)} 

@@ -135,6 +135,7 @@ const ArtigoCard = ({ artigo, index, onClick, highlightText, isHighlighted, with
       
       <button
         id={`artigo-${artigo.id}`}
+        aria-label={`Abrir ${artLabel}: ${previewText.slice(0, 90)}`}
         onClick={() => {
           try {
             const key = 'artigos_vistos';
@@ -149,7 +150,7 @@ const ArtigoCard = ({ artigo, index, onClick, highlightText, isHighlighted, with
           } catch {}
           onClick();
         }}
-        className={`group w-full min-h-[84px] text-left px-3 py-2.5 rounded-2xl bg-card/70 border transition-colors active:scale-[0.997] relative overflow-hidden flex items-stretch gap-3 ${
+        className={`group w-full min-h-[84px] text-left px-3 py-2.5 rounded-2xl bg-card/70 border transition-colors active:scale-[0.997] relative overflow-hidden flex items-stretch gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
           isHighlighted
             ? 'border-primary ring-2 ring-primary shadow-[0_0_20px_4px_hsl(var(--primary)/0.3)]'
             : isADCT
@@ -194,11 +195,13 @@ const ArtigoCard = ({ artigo, index, onClick, highlightText, isHighlighted, with
               ADCT · Disposições Transitórias
             </span>
           )}
-          <p className={`text-[12.5px] leading-snug line-clamp-2 ${isRevogado ? 'text-purple-300 italic' : 'text-muted-foreground'}`}>
+          {/* Item 66 (max-w-prose), Item 73 (text-zinc-300 contraste), Item 74 (sr-only aviso revogado) */}
+          <p className={`text-[12.5px] leading-snug line-clamp-2 max-w-prose ${isRevogado ? 'text-purple-300/90 italic' : 'text-zinc-300'}`}>
+            {isRevogado && <span className="sr-only">Trecho revogado: </span>}
             {!isRevogado && (
               <>
                 <span className="font-bold text-foreground">{artLabel}</span>
-                <span className="mx-1.5 text-muted-foreground/60">—</span>
+                <span className="mx-1.5 text-zinc-400/60">—</span>
               </>
             )}
             {renderCaput}
