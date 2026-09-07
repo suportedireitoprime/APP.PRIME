@@ -82,22 +82,44 @@ export const convertGoogleDriveUrl = (url: string): string => {
 };
 
 /**
- * Fase 44: Sanitiza e valida caminhos de armazenamento do Supabase, evitando 404 por URLs malformadas (Item 44).
+ * Fase 44: Sanitiza e valida caminhos de armazenamento do Supabase, evitando 404 por URLs malformadas ou projetos legados (Item 44).
  */
 export const safeStorageUrl = (url: string | null | undefined): string | null => {
   if (!url || typeof url !== 'string') return null;
   const trimmed = url.trim();
   if (!trimmed || trimmed.startsWith('javascript:')) return null;
 
-  // Corrige barras duplicadas acidentais após o protocolo
-  const sanitized = trimmed.replace(/([^:]\/)\/+/g, '$1');
+  // Corrige barras invertidas do Windows no path
+  let sanitized = trimmed.replace(/\\/g, '/');
 
-  // Converte caminhos relativos conhecidos do bucket (ex: 'covers/minha-capa.webp')
-  if (!sanitized.startsWith('http') && !sanitized.startsWith('/') && !sanitized.startsWith('data:')) {
+  // Corrige barras duplicadas acidentais após o protocolo (ex: https://dominio//storage//v1)
+  sanitized = sanitized.replace(/([^:]\/)\/+/g, '$1');
+
+  // Remapeia projeto Supabase legado desativado para o projeto oficial ativo
+  if (sanitized.includes('izspjvegxdfgkgibpyst.supabase.co')) {
+    sanitized = sanitized.replace('izspjvegxdfgkgibpyst.supabase.co', 'dnjrgpldcwcpoywamorr.supabase.co');
+  }
+
+  // Converte caminhos relativos conhecidos do bucket (ex: 'covers/minha-capa.webp' ou 'biblioteca-obras/...')
+  if (!sanitized.startsWith('http://') && !sanitized.startsWith('https://') && !sanitized.startsWith('/') && !sanitized.startsWith('data:') && !sanitized.startsWith('blob:')) {
     return `https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/${sanitized}`;
   }
 
+  // Se for caminho absoluto sem domínio (ex: '/storage/v1/object/public/...')
+  if (sanitized.startsWith('/storage/v1/')) {
+    return `https://dnjrgpldcwcpoywamorr.supabase.co${sanitized}`;
+  }
+
   return sanitized;
+};
+
+/**
+ * Fase 44: Construtor canônico de URLs de Storage públicas com sanitização estrita.
+ */
+export const getStoragePublicUrl = (bucket: string, path: string): string => {
+  const cleanBucket = (bucket || '').replace(/^\/+|\/+$/g, '');
+  const cleanPath = (path || '').replace(/^\/+|\/+$/g, '').replace(/\\/g, '/');
+  return `https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/${cleanBucket}/${cleanPath}`;
 };
 
 /**
