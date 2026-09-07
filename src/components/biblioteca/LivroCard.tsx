@@ -1,3 +1,4 @@
+import React, { memo } from 'react';
 import { PrimeImage } from '@/components/ui/PrimeImage';
 import { useBibliotecaCapa } from '@/hooks/useBibliotecaAsset';
 import { useIsPdfCached } from '@/hooks/useIsPdfCached';
@@ -22,7 +23,7 @@ interface LivroCardProps {
   priority?: boolean;
 }
 
-const LivroCard = ({ livro, onClick, priority }: LivroCardProps) => {
+const LivroCard = memo(function LivroCard({ livro, onClick, priority }: LivroCardProps) {
   const capaUrl = useBibliotecaCapa(livro.capa, 300);
   const isDownloaded = useIsPdfCached(livro.download);
   // Cálculo de estimativa de tempo (fallback pseudo-realista até termos dados do backend)

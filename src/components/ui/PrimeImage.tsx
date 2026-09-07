@@ -411,8 +411,8 @@ export function PrimeImageBase({
           onLoad={handleLoad}
           onError={handleError}
           className={cn(
-            "w-full h-full object-cover transition-opacity duration-300 ease-out relative z-10 transform-gpu will-change-transform",
-            !isLoaded && !hasFailed ? "opacity-0" : "opacity-100",
+            "w-full h-full object-cover transition-opacity duration-300 ease-out relative z-10",
+            !isLoaded && !hasFailed ? "opacity-0 will-change-opacity" : "opacity-100 will-change-auto",
             className
           )}
           crossOrigin="anonymous"

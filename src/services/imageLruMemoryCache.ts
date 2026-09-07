@@ -29,7 +29,25 @@ class ImageLruMemoryCache {
   constructor() {
     // Mobile opera com teto mais restrito para proteção de VRAM (Item 54 do relatório)
     const isMobile = typeof window !== 'undefined' && (Capacitor.isNativePlatform() || window.innerWidth < 768);
-    this.maxEntries = isMobile ? 60 : 120;
+    // @ts-expect-error deviceMemory API experimental
+    const deviceMem = typeof navigator !== 'undefined' ? (navigator as any).deviceMemory : undefined;
+    // Em dispositivos modestos (ex: <= 4GB RAM no Android), limita a 40 slots para prevenir crash OOM
+    if (deviceMem && deviceMem <= 4) {
+      this.maxEntries = 40;
+    } else {
+      this.maxEntries = isMobile ? 60 : 120;
+    }
+  }
+
+  /**
+   * Fase 39: Reduz agressivamente a memória em situações de baixa memória do sistema ou rota pesada
+   */
+  trimMemory(targetCount = 20): void {
+    while (this.cache.size > targetCount) {
+      const oldestKey = this.cache.keys().next().value;
+      if (!oldestKey) break;
+      this.delete(oldestKey);
+    }
   }
 
   get(key: string): CacheEntry | undefined {

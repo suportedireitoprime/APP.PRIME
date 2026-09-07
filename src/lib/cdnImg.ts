@@ -80,15 +80,33 @@ const proxied = (url: string, w: number) => {
   return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${w}&q=${getAdaptiveQuality(80)}&output=${format}`;
 };
 
+export interface SupabaseRenderOptions {
+  width?: number;
+  quality?: number;
+  format?: 'origin' | 'webp' | 'avif';
+  resize?: 'contain' | 'cover' | 'fill';
+}
+
 /**
- * Transforma uma URL pública do Supabase Storage no endpoint de Image Transformation:
- * `/storage/v1/object/public/<bucket>/<path>` -> `/storage/v1/render/image/public/<bucket>/<path>?width=<w>&quality=<q>&resize=contain`
- * 
- * Benefício: Reduz o download de imagens de 1.5MB-3MB para 25KB-50KB em WebP dinâmico direto da infraestrutura Supabase,
- * operando sem proxy de terceiros (funciona perfeitamente em Web, Desktop e Native Capacitor).
+ * Fase 42: Transforma uma URL do Supabase Storage no endpoint de Image Transformation:
+ * `/storage/v1/object/public/<bucket>/<path>` -> `/storage/v1/render/image/public/<bucket>/<path>?width=<w>&quality=<q>&resize=contain&format=webp`
+ * Suporta também URLs assinadas (/object/sign/) e preserva SVGs intactos.
+ * Benefício: Compressão e redimensionamento dinâmico no Edge do Supabase em tempo real.
  */
-export const toSupabaseRenderUrl = (url: string, w: number, quality?: number): string => {
-  const effectiveQuality = quality ?? getAdaptiveQuality(80);
+export const toSupabaseRenderUrl = (
+  url: string,
+  optionsOrWidth: number | SupabaseRenderOptions = 400,
+  legacyQuality?: number
+): string => {
+  const opts: SupabaseRenderOptions = typeof optionsOrWidth === 'number'
+    ? { width: optionsOrWidth, quality: legacyQuality }
+    : (optionsOrWidth || {});
+
+  const requestedWidth = opts.width ?? 400;
+  const effectiveQuality = opts.quality ?? getAdaptiveQuality(80);
+  const preferredFormat = opts.format ?? (isAvifSupported() ? 'avif' : 'webp');
+  const resizeMode = opts.resize ?? 'contain';
+
   try {
     if (!url || typeof url !== 'string') return '';
     // Normalização de barras invertidas para compatibilidade total com Android WebView (Item 55)
@@ -96,13 +114,31 @@ export const toSupabaseRenderUrl = (url: string, w: number, quality?: number): s
     // Preserva SVGs intactos (vetores não devem ser rasterizados)
     if (normalized.toLowerCase().endsWith('.svg')) return normalized;
 
+    // 1. URLs públicas do Supabase Storage
     if (normalized.includes('/storage/v1/object/public/')) {
       const renderBase = normalized.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/');
       const parsed = new URL(renderBase);
-      const safeWidth = Math.round(w * getSafeDpr());
+      const safeWidth = Math.round(requestedWidth * getSafeDpr());
       parsed.searchParams.set('width', String(Math.min(Math.max(safeWidth, 100), 1600)));
       parsed.searchParams.set('quality', String(effectiveQuality));
-      parsed.searchParams.set('resize', 'contain');
+      parsed.searchParams.set('resize', resizeMode);
+      if (preferredFormat && preferredFormat !== 'origin') {
+        parsed.searchParams.set('format', preferredFormat);
+      }
+      return parsed.toString();
+    }
+
+    // 2. URLs assinadas do Supabase Storage
+    if (normalized.includes('/storage/v1/object/sign/')) {
+      const renderBase = normalized.replace('/storage/v1/object/sign/', '/storage/v1/render/image/sign/');
+      const parsed = new URL(renderBase);
+      const safeWidth = Math.round(requestedWidth * getSafeDpr());
+      parsed.searchParams.set('width', String(Math.min(Math.max(safeWidth, 100), 1600)));
+      parsed.searchParams.set('quality', String(effectiveQuality));
+      parsed.searchParams.set('resize', resizeMode);
+      if (preferredFormat && preferredFormat !== 'origin') {
+        parsed.searchParams.set('format', preferredFormat);
+      }
       return parsed.toString();
     }
   } catch {

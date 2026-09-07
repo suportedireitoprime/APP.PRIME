@@ -1,3 +1,4 @@
+import React, { memo } from 'react';
 import { motion, type Variants } from 'framer-motion';
 import { Headphones, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
@@ -11,7 +12,7 @@ interface PilulaClassicoItemProps {
   navigate: (path: string) => void;
 }
 
-export function PilulaClassicoItem({ livro, itemVariants, navigate }: PilulaClassicoItemProps) {
+export const PilulaClassicoItem = memo(function PilulaClassicoItem({ livro, itemVariants, navigate }: PilulaClassicoItemProps) {
   const temAudio = Boolean(livro.audioResumoUrl);
   
   const wordCount = (livro.analiseDetalhada || livro.sobre || '').split(/\s+/).length;

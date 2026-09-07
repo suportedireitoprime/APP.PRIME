@@ -1,3 +1,4 @@
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 import { Headphones, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
@@ -19,7 +20,7 @@ interface PilulaLeiSecaItemProps {
   config: LeiConfig;
 }
 
-export function PilulaLeiSecaItem({ artigo, navigate, config }: PilulaLeiSecaItemProps) {
+export const PilulaLeiSecaItem = memo(function PilulaLeiSecaItem({ artigo, navigate, config }: PilulaLeiSecaItemProps) {
   const temAudio = Boolean(artigo.audio_pilula_url);
   
   const wordCount = (artigo.texto || '').split(/\s+/).length;

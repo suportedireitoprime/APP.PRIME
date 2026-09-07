@@ -2,7 +2,6 @@ import React from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Send } from 'lucide-react';
 import { PrimeImage } from '@/components/ui/PrimeImage';
-import { toSupabaseRenderUrl } from '@/lib/cdnImg';
 
 export type ApresentacaoModaisProps = {
   abrirComentarios: boolean;
@@ -64,13 +63,10 @@ export const ApresentacaoModais: React.FC<ApresentacaoModaisProps> = ({
               >
                 {s.imagem_url ? (
                   <PrimeImage
-                    src={toSupabaseRenderUrl(s.imagem_url, { width: 320, quality: 75, format: 'origin' })}
+                    src={s.imagem_url}
                     alt={`Slide ${i + 1}`}
                     aspectRatio="16/9"
-                    width={320}
-                    height={180}
-                    loading="lazy"
-                    decoding="async"
+                    targetWidth={320}
                     className="w-full aspect-video object-cover"
                   />
                 ) : (
