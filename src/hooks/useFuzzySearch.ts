@@ -8,7 +8,10 @@ interface FuzzySearchOptions<T> {
 }
 
 const normalizeStr = (str: any): string => {
-  if (typeof str !== 'string') return '';
+  if (str === null || str === undefined) return '';
+  if (typeof str !== 'string') {
+    str = String(str);
+  }
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 };
 
@@ -25,6 +28,10 @@ export function useFuzzySearch<T>(items: T[], query: string, options: FuzzySearc
         const path = fieldName.split('.');
         for (const key of path) {
           value = value?.[key];
+        }
+        // Retorna o ID bruto para evitar que normalizeStr converta números em string vazia
+        if (fieldName === 'id') {
+          return value;
         }
         if (Array.isArray(value)) {
           return value.map(v => normalizeStr(v)).join(' ');
