@@ -1,5 +1,6 @@
 import { Sparkles, ArrowUpRight } from 'lucide-react';
 import type { SugestaoBusca } from '@/hooks/useSugestoesBusca';
+import { PrimeImage } from '@/components/ui/PrimeImage';
 
 interface Props {
   sugestoes: SugestaoBusca[];
@@ -24,7 +25,15 @@ export default function SugestoesAprendidas({ sugestoes, onClick }: Props) {
             className="w-full flex items-center gap-3 p-2.5 rounded-xl bg-muted/50 hover:bg-muted transition-colors text-left"
           >
             {s.top_thumb_url ? (
-              <img src={s.top_thumb_url} alt="" className="w-10 h-10 rounded-lg object-cover shrink-0" loading="lazy" />
+              <PrimeImage 
+                src={s.top_thumb_url} 
+                alt="" 
+                targetWidth={80} 
+                aspectRatio="1/1" 
+                className="w-10 h-10 rounded-lg object-cover" 
+                containerClassName="w-10 h-10 shrink-0" 
+                decorative 
+              />
             ) : (
               <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                 <Sparkles className="w-4 h-4 text-primary" />

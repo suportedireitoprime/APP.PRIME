@@ -16,6 +16,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { COLECOES, normalizeLivro, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
 import { useGoBack } from '@/hooks/useGoBack';
+import { PrimeImage } from '@/components/ui/PrimeImage';
 
 type Row = Record<string, any>;
 type Step = 'colecoes' | 'livros';
@@ -361,7 +362,15 @@ const BibliotecaEditar = () => {
               {(() => {
                 const capaThumb = colecao ? form[colecao.capaField] : null;
                 return capaThumb ? (
-                  <img src={capaThumb} alt="" className="w-12 h-16 rounded-md object-cover bg-secondary flex-shrink-0" />
+                  <PrimeImage 
+                    src={capaThumb} 
+                    alt="" 
+                    targetWidth={120} 
+                    aspectRatio="2/3" 
+                    className="w-12 h-16 rounded-md object-cover bg-secondary" 
+                    containerClassName="w-12 h-16 shrink-0" 
+                    decorative 
+                  />
                 ) : (
                   <div className="w-12 h-16 rounded-md bg-secondary flex items-center justify-center flex-shrink-0">
                     <BookOpen className="w-4 h-4 text-muted-foreground" />

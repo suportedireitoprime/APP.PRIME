@@ -4,6 +4,7 @@ import {
   BookMarked, Scale, Gavel, ListChecks, Stamp, Search,
 } from 'lucide-react';
 import type { ConteudoResultado, ConteudoTipo } from '@/hooks/useBuscaConteudo';
+import { PrimeImage } from '@/components/ui/PrimeImage';
 
 const ICONS: Record<ConteudoTipo, React.ComponentType<{ className?: string }>> = {
   videoaula: Play,
@@ -90,7 +91,15 @@ const ResultadoConteudoCard = memo(function ResultadoConteudoCard({
     >
       <div className="w-12 flex items-center justify-center shrink-0">
         {item.thumb_url ? (
-          <img src={item.thumb_url} alt="" className="w-10 h-10 object-cover rounded-md" loading="lazy" />
+          <PrimeImage 
+            src={item.thumb_url} 
+            alt="" 
+            targetWidth={80} 
+            aspectRatio="1/1" 
+            className="w-10 h-10 object-cover rounded-md" 
+            containerClassName="w-10 h-10 shrink-0" 
+            decorative 
+          />
         ) : (
           <Icon className="w-6 h-6" style={{ color }} strokeWidth={1.5} />
         )}

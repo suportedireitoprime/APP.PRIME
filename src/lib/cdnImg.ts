@@ -256,6 +256,9 @@ export const cdnImg = (url: string, w = 800) => otimizar(url, w);
 /** Imagem média/pequena (capas, listas, decks, carrosséis) */
 export const directImg = (url: string, w = 400) => otimizar(url, w);
 
+/** Fase 41: Miniatura calibrada para thumbnails de 40-160px (elimina download de resolução original) */
+export const thumbImg = (url: string, size = 160) => otimizar(url, size);
+
 /** Imagem de notícias e cards horizontais */
 export const newsImg = (url: string, w = 640) => otimizar(url, w);
 
