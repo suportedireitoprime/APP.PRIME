@@ -238,3 +238,13 @@ export async function clearImageCache(): Promise<void> {
     console.warn('[imageOfflineStore] Erro ao limpar cache de imagens:', err);
   }
 }
+
+/**
+ * Checa se uma imagem já reside no armazenamento offline (memória ou IndexedDB).
+ */
+export async function hasImageOffline(remoteUrl: string | null | undefined): Promise<boolean> {
+  if (!remoteUrl) return false;
+  const url = await getImageOfflineUrl(remoteUrl);
+  return Boolean(url);
+}
+

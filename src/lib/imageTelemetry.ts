@@ -89,3 +89,49 @@ export function subscribeImageLcp(listener: (metric: ImageLcpMetric) => void): (
   lcpListeners.add(listener);
   return () => lcpListeners.delete(listener);
 }
+
+export interface ImageLoadMetric {
+  url: string;
+  durationMs: number;
+  pathname: string;
+  timestamp: number;
+}
+
+const slowImagesLog: ImageLoadMetric[] = [];
+const MAX_SLOW_LOG = 30;
+
+/**
+ * Registra o tempo de carregamento de uma imagem renderizada pelo PrimeImage.
+ * Se a duração for superior a 2.500ms, registra no buffer de slow images e dispara telemetria.
+ */
+export function recordImageLoadMetric(url: string, durationMs: number): void {
+  if (typeof window === 'undefined' || !url) return;
+
+  if (durationMs > 2500) {
+    const metric: ImageLoadMetric = {
+      url,
+      durationMs,
+      pathname: window.location.pathname,
+      timestamp: Date.now(),
+    };
+
+    if (slowImagesLog.length >= MAX_SLOW_LOG) {
+      slowImagesLog.shift();
+    }
+    slowImagesLog.push(metric);
+
+    window.dispatchEvent(new CustomEvent('prime:image-slow-load', { detail: metric }));
+
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(`[imageTelemetry] ⚠️ Imagem lenta detectada (${durationMs}ms):`, url);
+    }
+  }
+}
+
+/**
+ * Retorna o histórico de imagens lentas registradas na sessão.
+ */
+export function getSlowImagesLog(): readonly ImageLoadMetric[] {
+  return slowImagesLog;
+}
+

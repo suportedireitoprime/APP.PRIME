@@ -8,6 +8,7 @@ import { getImageOfflineUrl, fetchAndCacheImageOffline } from '@/services/imageO
 import { getOfflineCover } from '@/hooks/useBibliotecaAsset';
 import { ImageLightboxModal } from './ImageLightboxModal';
 import { haptic } from '@/lib/nativeHaptics';
+import { recordImageLoadMetric } from '@/lib/imageTelemetry';
 
 export interface PrimeImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src'> {
   src?: string | null;
@@ -82,6 +83,9 @@ export const PrimeImage = React.memo(function PrimeImage({
   const [offlineCandidateSrc, setOfflineCandidateSrc] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const mountTimeRef = useRef<number>(Date.now());
+  const hasRetriedRef = useRef<boolean>(false);
+  const activeSrcRef = useRef<string | null>(null);
 
   // Sanitização de URL: evita requisições GET /undefined quando src é inválido
   const cleanSrc = src && typeof src === 'string' && src.trim().length > 0 ? src.trim() : null;
@@ -104,10 +108,32 @@ export const PrimeImage = React.memo(function PrimeImage({
     setIsLoaded(false);
     setAttemptLevel('optimized');
     setOfflineCandidateSrc(null);
+    mountTimeRef.current = Date.now();
+    hasRetriedRef.current = false;
   }, [src]);
+
+  // Fase 18: Revogação de Object URLs retidas no unmount (Item 33 — zero memory leak)
+  useEffect(() => {
+    return () => {
+      // Revoga apenas object URLs geradas localmente (blob: ou data:)
+      const lastSrc = activeSrcRef.current;
+      if (lastSrc && lastSrc.startsWith('blob:')) {
+        try { URL.revokeObjectURL(lastSrc); } catch {}
+      }
+    };
+  }, []);
+
+  // Mantém referência atualizada do activeSrc para cleanup
+  useEffect(() => {
+    activeSrcRef.current = activeSrc;
+  }, [activeSrc]);
 
   const handleLoad = () => {
     setIsLoaded(true);
+    const durationMs = Date.now() - mountTimeRef.current;
+    if (activeSrc) {
+      recordImageLoadMetric(activeSrc, durationMs);
+    }
     onLoadComplete?.();
 
     // Sincronização offline em background (apenas na Web/PWA e se conectado)
@@ -124,15 +150,15 @@ export const PrimeImage = React.memo(function PrimeImage({
   };
 
   const handleError = async (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    // 1. Tenta a URL bruta caso a transformação da CDN/Supabase retorne erro transitório
     if (attemptLevel === 'optimized' && cleanSrc && optimizedSrc !== cleanSrc) {
-      // Tenta a URL bruta caso a transformação da CDN/Supabase retorne erro transitório
       setAttemptLevel('raw');
       return;
     }
 
+    // 2. Tenta auto-recuperação offline: verifica bundle estático e IndexedDB
     if (attemptLevel === 'raw' || (attemptLevel === 'optimized' && optimizedSrc === cleanSrc)) {
       if (cleanSrc) {
-        // Tenta auto-recuperação offline: verifica bundle estático e IndexedDB
         const bundled = await getOfflineCover(cleanSrc);
         if (bundled) {
           setOfflineCandidateSrc(bundled);
@@ -146,6 +172,15 @@ export const PrimeImage = React.memo(function PrimeImage({
           return;
         }
       }
+    }
+
+    // 3. Auto-retry resiliente com backoff de 1.2s antes de cair no fallback final
+    if (!hasRetriedRef.current && cleanSrc) {
+      hasRetriedRef.current = true;
+      setTimeout(() => {
+        setAttemptLevel('raw');
+      }, 1200);
+      return;
     }
 
     if (attemptLevel !== 'fallback') {
@@ -176,6 +211,7 @@ export const PrimeImage = React.memo(function PrimeImage({
           containerClassName
         )}
         style={customAspectStyle}
+        data-prime-image="true"
       >
         {/* Skeleton de alta precisão calibrado para o tema dark (Zero Flash Branco) */}
         {!isLoaded && !hasFailed && (
@@ -216,12 +252,14 @@ export const PrimeImage = React.memo(function PrimeImage({
           {...rest}
         />
       ) : (
-        /* Fallback de ausência de mídia com brasão jurídico */
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center bg-zinc-900 text-zinc-500 z-10">
-          {fallbackIcon || <BookOpen className="w-8 h-8 mb-2 opacity-40 text-amber-500/70" strokeWidth={1.5} />}
-          {fallbackText && (
-            <span className="text-[11px] font-medium tracking-wider uppercase text-zinc-400 max-w-[90%] truncate">
-              {fallbackText}
+        /* Fallback resiliente com textura editorial e monograma jurídico */
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-900 text-zinc-400 z-10 border border-white/5">
+          <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-2 shadow-inner">
+            {fallbackIcon || <BookOpen className="w-6 h-6 text-amber-400/90" strokeWidth={1.8} />}
+          </div>
+          {(fallbackText || alt) && (
+            <span className="text-[11px] font-semibold tracking-wider uppercase text-zinc-300 max-w-[90%] line-clamp-2 leading-tight">
+              {fallbackText || alt}
             </span>
           )}
         </div>

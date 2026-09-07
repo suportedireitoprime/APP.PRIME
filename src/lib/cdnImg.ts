@@ -14,7 +14,7 @@ const isNativePlatform = () => {
 };
 
 const proxied = (url: string, w: number) =>
-  `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${w}&q=80&output=webp`;
+  `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${w}&q=${getAdaptiveQuality(80)}&output=webp`;
 
 /**
  * Resolve caminhos relativos do CDN Lovable (`/__l5e/...`) ou pointers de asset
@@ -32,13 +32,40 @@ export const getSafeDpr = (): number => {
 };
 
 /**
+ * Fase 16 — Qualidade Adaptativa de Rede (Item 43 + Item 36 do Relatório Master).
+ * Detecta `navigator.connection.effectiveType` e retorna a qualidade ideal:
+ * - `slow-2g` / `2g`: 40 (placeholders mínimos, economia extrema de dados)
+ * - `3g`: 60 (qualidade razoável, balanceia performance e visual)
+ * - `4g` / Wi-Fi / default: 80 (qualidade premium)
+ * Respeita saveData automaticamente reduzindo para 40.
+ */
+export const getAdaptiveQuality = (baseQuality = 80): number => {
+  if (typeof navigator === 'undefined') return baseQuality;
+  const conn = (navigator as unknown as {
+    connection?: { effectiveType?: string; saveData?: boolean };
+  }).connection;
+  if (!conn) return baseQuality;
+  if (conn.saveData) return 40;
+  switch (conn.effectiveType) {
+    case 'slow-2g':
+    case '2g':
+      return 40;
+    case '3g':
+      return 60;
+    default:
+      return baseQuality;
+  }
+};
+
+/**
  * Transforma uma URL pública do Supabase Storage no endpoint de Image Transformation:
  * `/storage/v1/object/public/<bucket>/<path>` -> `/storage/v1/render/image/public/<bucket>/<path>?width=<w>&quality=<q>&resize=contain`
  * 
  * Benefício: Reduz o download de imagens de 1.5MB-3MB para 25KB-50KB em WebP dinâmico direto da infraestrutura Supabase,
  * operando sem proxy de terceiros (funciona perfeitamente em Web, Desktop e Native Capacitor).
  */
-export const toSupabaseRenderUrl = (url: string, w: number, quality = 80): string => {
+export const toSupabaseRenderUrl = (url: string, w: number, quality?: number): string => {
+  const effectiveQuality = quality ?? getAdaptiveQuality(80);
   try {
     if (!url || typeof url !== 'string') return '';
     // Normalização de barras invertidas para compatibilidade total com Android WebView (Item 55)
@@ -51,7 +78,7 @@ export const toSupabaseRenderUrl = (url: string, w: number, quality = 80): strin
       const parsed = new URL(renderBase);
       const safeWidth = Math.round(w * getSafeDpr());
       parsed.searchParams.set('width', String(Math.min(Math.max(safeWidth, 100), 1600)));
-      parsed.searchParams.set('quality', String(quality));
+      parsed.searchParams.set('quality', String(effectiveQuality));
       parsed.searchParams.set('resize', 'contain');
       return parsed.toString();
     }
@@ -74,7 +101,7 @@ const otimizar = (url: string, w: number): string => {
 
   // 1. Supabase Storage: utiliza o endpoint nativo de Image Transformation
   if (resolved.includes('.supabase.co/storage/')) {
-    return toSupabaseRenderUrl(resolved, w, 80);
+    return toSupabaseRenderUrl(resolved, w);
   }
 
   // 2. TMDB (Filmes e Séries da Temática Jurídica) possui CDN global Cloudflare com tiers de tamanho

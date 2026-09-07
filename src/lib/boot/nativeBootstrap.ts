@@ -54,6 +54,8 @@ export function bootstrapIdleNative() {
     });
     // Prefetch de capas do blog (nativo): baixa em background, guarda em Filesystem.
     import('../../services/blogAssetsPrefetch').then(m => void m.prefetchBlogCovers());
+    // Sincronização inteligente de capas offline (Fase 19)
+    import('../offlineCoversSync').then(m => m.scheduleIdleCoversSync(4000)).catch(() => {});
   };
   
   if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {

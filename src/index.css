@@ -205,6 +205,50 @@ input, textarea, [contenteditable], .ProseMirror, .aui-composer-input, [data-aui
     transition-duration: 0.001ms !important;
   }
 }
+
+/* ==========================================================================
+   FASE 17 — ALTO CONTRASTE (prefers-contrast: more) — Item 76 WCAG 2.2
+   Aumenta opacidade, bordas e contorno em imagens, capas e ícones para
+   usuários com visão subnormal que ativam alto contraste no SO.
+   ========================================================================== */
+@media (prefers-contrast: more) {
+  /* Contorno visível em todas as imagens e capas */
+  img,
+  [data-prime-image],
+  .aspect-\\[2\\/3\\],
+  .aspect-video,
+  .aspect-square {
+    outline: 2px solid rgba(255, 255, 255, 0.85) !important;
+    outline-offset: -1px;
+  }
+
+  /* Ícones translúcidos elevados para legibilidade máxima */
+  svg,
+  [role="img"] {
+    opacity: 1 !important;
+    filter: contrast(1.3) !important;
+  }
+
+  /* Badges e selos com borda reforçada */
+  .badge,
+  [data-badge],
+  .selo-verificado {
+    outline: 2px solid rgba(212, 175, 55, 0.9) !important;
+  }
+
+  /* Skeletons com maior contraste de fundo */
+  .animate-pulse {
+    opacity: 0.85 !important;
+    background-color: rgba(63, 63, 70, 0.95) !important;
+  }
+
+  /* Textos sobre imagens com sombra para legibilidade */
+  .bg-gradient-to-t,
+  .bg-gradient-to-b,
+  .bg-gradient-to-br {
+    --tw-gradient-from: rgba(0, 0, 0, 0.95) !important;
+  }
+}
 body {
   background-color: hsl(var(--background));
   box-sizing: border-box;
