@@ -9,6 +9,7 @@ import { resumosLocal } from "@/lib/resumosLocal";
 import ShapeGrid from "@/components/ui/ShapeGrid";
 import { toast } from "@/hooks/use-toast";
 import { useTypewriter } from "@/hooks/useTypewriter";
+import { PrimeImage } from '@/components/ui/PrimeImage';
 
 type Row = { tema: string; ordem_tema: number | null; total: number };
 type Ordem = "crono" | "alpha" | "fav";
@@ -239,11 +240,14 @@ export default function ResumosJuridicosTemas() {
                   className="w-full flex items-center gap-4 px-4 py-4 min-h-[96px] text-left hover:bg-secondary/20 active:scale-[0.98] transition-all rounded-2xl bg-card border border-border hover:border-[#ef4444]/40 shadow-sm group overflow-hidden relative"
                 >
                   <div className="w-16 h-[88px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
-                    <img 
+                    <PrimeImage 
                       src="https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg" 
                       alt="Capa" 
+                      targetWidth={160} 
+                      aspectRatio="2/3" 
                       className="w-full h-full object-cover" 
-                      loading="lazy" 
+                      containerClassName="w-full h-full" 
+                      decorative 
                     />
                   </div>
                   <div className="flex-1 min-w-0">

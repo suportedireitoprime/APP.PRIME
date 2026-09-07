@@ -6,6 +6,7 @@ import {
   CalendarCheck, GraduationCap, PieChart, LayoutGrid, Flame, type LucideIcon
 } from 'lucide-react';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
+import { directImg } from '@/lib/cdnImg';
 
 export interface Cat {
   id: string;
@@ -88,7 +89,7 @@ export const EMALTA_CATS: EmAltaCat[] = [
 ];
 
 export const FAST_PILLS_ITEMS = [
-  { id: 'cp', image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg', text: 'CP', fullName: 'Código Penal' },
+  { id: 'cp', image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg', 300), text: 'CP', fullName: 'Código Penal' },
   { id: 'cf', image: '/pilulas/cf_portrait.jpg', text: 'CF88', fullName: 'Constituição Federal' },
   { id: 'cc', image: '/pilulas/cc_portrait.png', text: 'CC', fullName: 'Código Civil' },
   { id: 'cpp', image: '/pilulas/cpp_portrait.jpg', text: 'CPP', fullName: 'Cód. Proc. Penal' },

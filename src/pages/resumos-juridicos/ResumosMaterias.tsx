@@ -33,6 +33,7 @@ import ShapeGrid from "@/components/ui/ShapeGrid";
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import CircularGallery from "@/components/ui/CircularGallery";
 import { haptic } from "@/lib/nativeHaptics";
+import { directImg } from "@/lib/cdnImg";
 
 type AreaRow = { area: string; total: number };
 
@@ -248,7 +249,7 @@ export default function ResumosMaterias() {
               <div style={{ height: '350px', position: 'relative' }} className="-mx-4 sm:mx-0">
                 <CircularGallery
                   items={filtered.map(r => ({
-                    image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg', // Placeholder for now
+                    image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg', 400),
                     text: r.area.replace(/^DIREITO\s+/i, ""),
                     fullName: `${r.total} resumo${r.total === 1 ? '' : 's'}`,
                     raw: r // store raw row to navigate correctly
