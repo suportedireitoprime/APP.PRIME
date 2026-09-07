@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useDeferredValue } from 'react';
 import { useQueries } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, Search, X, BookOpen, Mic, MicOff, Library } from 'lucide-react';
@@ -64,6 +64,7 @@ const TAB_LABELS: Record<string, string> = {
 const BibliotecaBuscaOverlay = ({ open, onClose, onAbrirLivro }: Props) => {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
+  const deferredQuery = useDeferredValue(query);
   const [modo, setModo] = useState<Modo>('todos');
   const [favoritos, setFavoritos] = useState<LivroSnapshot[]>([]);
   const voice = useVoiceInput((text) => setQuery((prev) => (prev ? prev + ' ' : '') + text));
@@ -122,7 +123,7 @@ const BibliotecaBuscaOverlay = ({ open, onClose, onAbrirLivro }: Props) => {
   );
 
   const buscar = (lista: LivroNormalizado[]) => {
-    const q = norm(query);
+    const q = norm(deferredQuery);
     if (q.length < 2) return lista;
     const tokens = q.split(' ').filter(Boolean);
     const scored: { livro: LivroNormalizado; score: number }[] = [];
@@ -158,20 +159,20 @@ const BibliotecaBuscaOverlay = ({ open, onClose, onAbrirLivro }: Props) => {
   };
 
   const listaTodos = useMemo(() => {
-    const q = norm(query);
+    const q = norm(deferredQuery);
     if (q.length < 2) return todosLivros.slice(0, 40);
     return buscar(todosLivros).slice(0, 60);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query, todosLivros]);
+  }, [deferredQuery, todosLivros]);
 
   const listaFiltrada = useMemo(() => {
     if (modo === 'todos') return listaTodos;
     const daColecao = todosLivros.filter((l) => l.colecaoId === modo);
-    const q = norm(query);
+    const q = norm(deferredQuery);
     if (q.length < 2) return daColecao.slice(0, 100);
     return buscar(daColecao).slice(0, 100);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [modo, query, todosLivros, listaTodos]);
+  }, [modo, deferredQuery, todosLivros, listaTodos]);
 
 
   const colecaoLabel = (id: string) => COLECOES.find((c) => c.id === id)?.label ?? '';

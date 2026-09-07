@@ -133,7 +133,7 @@ export default function MeExplique() {
             const fala = engine.falaParcial || engine.ultimaFala;
             return (
               <motion.div
-                key={engine.falaParcial ? `parcial-${fala.quem}` : `${engine.falas.length}-${fala.texto.slice(0, 12)}`}
+                key={`transcricao-${fala.quem}`}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}

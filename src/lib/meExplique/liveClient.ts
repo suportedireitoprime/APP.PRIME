@@ -59,7 +59,7 @@ const TAXA_SAIDA = 24000;
 
 function base64FromBytes(bytes: Uint8Array): string {
   let binario = "";
-  const bloco = 0x8000;
+  const bloco = 0x1000;
   for (let i = 0; i < bytes.length; i += bloco) {
     binario += String.fromCharCode(...bytes.subarray(i, i + bloco));
   }
@@ -80,7 +80,15 @@ function paraPcm16(amostras: Float32Array, taxaOrigem: number): Uint8Array {
   const buffer = new ArrayBuffer(total * 2);
   const view = new DataView(buffer);
   for (let i = 0; i < total; i += 1) {
-    const amostra = amostras[Math.floor(i * razao)] ?? 0;
+    const idxInicio = Math.floor(i * razao);
+    const idxFim = Math.min(amostras.length, Math.floor((i + 1) * razao));
+    let soma = 0;
+    let count = 0;
+    for (let j = idxInicio; j < idxFim; j++) {
+      soma += amostras[j];
+      count++;
+    }
+    const amostra = count > 0 ? soma / count : 0;
     const limitada = Math.max(-1, Math.min(1, amostra));
     view.setInt16(i * 2, limitada < 0 ? limitada * 0x8000 : limitada * 0x7fff, true);
   }
@@ -91,7 +99,7 @@ export class SessaoMeExplique {
   private ws: WebSocket | null = null;
   private stream: MediaStream | null = null;
   private ctxEntrada: AudioContext | null = null;
-  private processador: ScriptProcessorNode | null = null;
+  private processador: ScriptProcessorNode | AudioWorkletNode | null = null;
   private fonte: MediaStreamAudioSourceNode | null = null;
   private ctxSaida: AudioContext | null = null;
   private proximaFala = 0;
@@ -114,6 +122,7 @@ export class SessaoMeExplique {
 
   async iniciar() {
     this.opcoes.onStatus("conectando");
+    this.garantirSaida(); // Item 7: Acorda o AudioContext sincronicamente no clique
 
     // Nativo (Android/iOS): garante RECORD_AUDIO (e CAMERA, se o preview ainda
     // não abriu) antes do getUserMedia, senão a WebView devolve NotAllowedError.
@@ -142,14 +151,13 @@ export class SessaoMeExplique {
     }
 
     await this.conectar();
-    // Libera o áudio de saída ainda dentro do gesto do usuário (autoplay iOS).
     this.garantirSaida();
-    this.iniciarAudio();
+    await this.iniciarAudio();
     if (this.opcoes.video) this.iniciarFrames();
 
     // Depois de 900ms, pede que o professor comente o que está vendo (ou o que recebeu em texto).
     window.setTimeout(() => {
-      if (this.opcoes.video) {
+      if (this.opcoes.video && this.opcoes.video.videoWidth > 0) {
         this.enviarTexto(ABERTURA, true);
       }
     }, 900);
@@ -284,7 +292,13 @@ export class SessaoMeExplique {
           return;
         }
         if (!this.encerrada) {
-          if (evento.reason?.trim()) this.opcoes.onErro(evento.reason.trim());
+          if (evento.code === 1000 || evento.code === 1001 || evento.code === 1008) {
+            this.opcoes.onErro("Sessão finalizada pela inteligência artificial. Toque em 'Explicar ao vivo' para reconectar.");
+          } else if (evento.reason?.trim()) {
+            this.opcoes.onErro(evento.reason.trim());
+          } else {
+            this.opcoes.onErro(`A conexão caiu de forma inesperada (Código: ${evento.code}).`);
+          }
           this.opcoes.onStatus("encerrado");
         }
       };
@@ -292,6 +306,8 @@ export class SessaoMeExplique {
   }
 
   private async receber(dados: unknown, onSetup?: () => void) {
+    if (this.encerrada) return;
+    
     let texto: string;
     if (typeof dados === "string") texto = dados;
     else if (dados instanceof Blob) texto = await dados.text();
@@ -390,7 +406,7 @@ export class SessaoMeExplique {
 
   // ----- áudio de entrada -----
 
-  private iniciarAudio() {
+  private async iniciarAudio() {
     if (!this.stream) return;
     const Ctx =
       window.AudioContext ||
@@ -398,12 +414,10 @@ export class SessaoMeExplique {
     const ctx = new Ctx();
     this.ctxEntrada = ctx;
     this.fonte = ctx.createMediaStreamSource(this.stream);
-    const processador = ctx.createScriptProcessor(4096, 1, 1);
-    this.processador = processador;
 
-    processador.onaudioprocess = (evento) => {
+    const onAudioData = (amostras: Float32Array) => {
       if (!this.pronto || !this.micAtivo || this.ws?.readyState !== WebSocket.OPEN) return;
-      const pcm = paraPcm16(evento.inputBuffer.getChannelData(0), ctx.sampleRate);
+      const pcm = paraPcm16(amostras, ctx.sampleRate);
       this.ws.send(
         JSON.stringify({
           realtimeInput: {
@@ -413,6 +427,37 @@ export class SessaoMeExplique {
       );
     };
 
+    if (ctx.audioWorklet) {
+      try {
+        const code = `
+          class MeExpliqueProcessor extends AudioWorkletProcessor {
+            process(inputs) {
+              const input = inputs[0];
+              if (input && input[0]) {
+                this.port.postMessage(input[0]);
+              }
+              return true;
+            }
+          }
+          registerProcessor('me-explique-processor', MeExpliqueProcessor);
+        `;
+        const blob = new Blob([code], { type: "application/javascript" });
+        const url = URL.createObjectURL(blob);
+        await ctx.audioWorklet.addModule(url);
+        const processador = new AudioWorkletNode(ctx, 'me-explique-processor');
+        this.processador = processador;
+        processador.port.onmessage = (e) => onAudioData(e.data);
+        this.fonte.connect(processador);
+        processador.connect(ctx.destination);
+        return;
+      } catch (e) {
+        console.warn("AudioWorklet falhou, usando fallback", e);
+      }
+    }
+
+    const processador = ctx.createScriptProcessor(4096, 1, 1);
+    this.processador = processador;
+    processador.onaudioprocess = (evento) => onAudioData(evento.inputBuffer.getChannelData(0));
     this.fonte.connect(processador);
     processador.connect(ctx.destination);
   }
@@ -424,6 +469,7 @@ export class SessaoMeExplique {
     // metade o custo de vídeo da Live API.
     const fps = this.opcoes.fps ?? 0.5;
     const intervalo = Math.max(500, Math.round(1000 / fps));
+    if (this.timerFrames) window.clearInterval(this.timerFrames);
     this.timerFrames = window.setInterval(() => this.enviarFrame(), intervalo);
     // primeiro frame quase imediato para o modelo já reconhecer o material
     window.setTimeout(() => this.enviarFrame(), 400);
@@ -447,8 +493,8 @@ export class SessaoMeExplique {
     if (!ctx) return;
     ctx.imageSmoothingQuality = "high";
     ctx.drawImage(video, 0, 0, largura, altura);
-    // Qualidade 1.0 (100%) para não borrar texto!
-    const dataUrl = this.canvas.toDataURL("image/jpeg", 1.0);
+    // Qualidade 0.8 para reduzir absurdamente o I/O sem comprometer o OCR!
+    const dataUrl = this.canvas.toDataURL("image/jpeg", 0.8);
     const base64 = dataUrl.split(",")[1];
     if (!base64) return;
 
@@ -489,13 +535,18 @@ export class SessaoMeExplique {
     this.pronto = false;
     if (this.timerFrames) window.clearInterval(this.timerFrames);
     this.timerFrames = null;
-    if (this.processador) this.processador.onaudioprocess = null;
-    this.processador?.disconnect();
+    if (this.processador) {
+      if ('onaudioprocess' in this.processador) this.processador.onaudioprocess = null;
+      else this.processador.port.onmessage = null;
+      this.processador.disconnect();
+    }
     this.fonte?.disconnect();
     if (this.ctxEntrada) void this.ctxEntrada.close().catch(() => undefined);
     this.ctxEntrada = null;
     this.pararFala();
-    this.stream?.getTracks().forEach((t) => t.stop());
+    this.stream?.getTracks().forEach((t) => {
+      if (t.kind === 'audio' || this.streamProprio) t.stop();
+    });
     this.stream = null;
     // Só desligamos o preview quando a câmera foi aberta por esta sessão e há um elemento de vídeo.
     if (this.streamProprio && this.opcoes.video?.srcObject) this.opcoes.video.srcObject = null;

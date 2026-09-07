@@ -19,7 +19,7 @@ export function GlobalResumoMiniPlayer() {
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 80, opacity: 0 }}
         transition={{ type: 'spring', damping: 22, stiffness: 260 }}
-        className="fixed left-0 right-0 z-[80] px-3 pointer-events-none"
+        className="fixed left-0 right-0 z-[90] px-3 mb-16 lg:mb-0 pointer-events-none"
         style={{
           // Sobe mais acima da bottom nav (botão central elevado "Ferramentas")
           bottom: `calc(9.5rem + var(--sai-bottom))`,

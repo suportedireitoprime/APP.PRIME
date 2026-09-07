@@ -10,7 +10,9 @@ import {
   Paperclip,
   ChevronRight,
   Check,
+  Copy,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import { haptic } from '@/lib/nativeHaptics';
 import {
@@ -148,6 +150,19 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
                 className="mt-3 pt-3 border-t border-border/60 flex flex-wrap items-center gap-1.5"
               >
                 <ActionBtn
+                  icon={Copy}
+                  label="Copiar"
+                  colorClass="text-zinc-400 group-hover:text-zinc-300"
+                  hoverClass="hover:border-zinc-500/40 hover:bg-zinc-500/10"
+                  onClick={() => {
+                    const txt = stripCitations(msg.content);
+                    navigator.clipboard.writeText(txt).then(() => {
+                      toast.success('Mensagem copiada!');
+                      haptic.selection();
+                    });
+                  }}
+                />
+                <ActionBtn
                   icon={FileDown}
                   label="PDF"
                   colorClass="text-rose-500 group-hover:text-rose-400"
@@ -193,14 +208,14 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
                   <ChatFeedback
                     messageId={msg.id}
                     sessionId={sessionId}
-                    pergunta={
-                      [...allMessages]
-                        .reverse()
-                        .find((m, i, arr) => {
-                          const idx = arr.length - 1 - i;
-                          return m.role === 'user' && idx < allMessages.findIndex((x) => x.id === msg.id);
-                        })?.content || ''
-                    }
+                    pergunta={(() => {
+                      const msgIdx = allMessages.findIndex((x) => x.id === msg.id);
+                      if (msgIdx <= 0) return '';
+                      for (let i = msgIdx - 1; i >= 0; i--) {
+                        if (allMessages[i].role === 'user') return allMessages[i].content;
+                      }
+                      return '';
+                    })()}
                     resposta={msg.content}
                     webSearch={!!msg.webSearch}
                     sources={msg.sources}

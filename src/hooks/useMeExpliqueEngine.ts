@@ -15,6 +15,16 @@ export function useMeExpliqueEngine(videoRef: RefObject<HTMLVideoElement>) {
   const sessaoRef = useRef<SessaoMeExplique | null>(null);
   const cameraRef = useRef<CameraMeExplique>(new CameraMeExplique());
   const pinchRef = useRef<{ distancia: number; zoom: number } | null>(null);
+  const isMounted = useRef(true);
+  const aberturaPendente = useRef(false);
+  const focoTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+      if (focoTimerRef.current) window.clearTimeout(focoTimerRef.current);
+    };
+  }, []);
 
   const [status, setStatus] = useState<StatusLive>('inativo');
   const [erro, setErro] = useState<string | null>(null);
@@ -37,11 +47,15 @@ export function useMeExpliqueEngine(videoRef: RefObject<HTMLVideoElement>) {
 
   const [limiteModal, setLimiteModal] = useState(false);
   const hojeKey = new Date().toISOString().slice(0, 10);
-  const storageKey = `me_explique_uso_${hojeKey}`;
+  const storageKey = btoa(`me_explique_uso_${hojeKey}`);
   
   const [tempoUsadoHoje, setTempoUsadoHoje] = useState<number>(() => {
     const val = localStorage.getItem(storageKey);
-    return val ? parseInt(val, 10) : 0;
+    try {
+      return val ? parseInt(atob(val), 10) : 0;
+    } catch {
+      return 0;
+    }
   });
 
   const limiteSegundos = isPremium ? LIMITE_PREMIUM_SEG : LIMITE_FREE_SEG;
@@ -83,12 +97,30 @@ export function useMeExpliqueEngine(videoRef: RefObject<HTMLVideoElement>) {
     };
   }, [ativo]);
 
+  const encerrar = useCallback(() => {
+    sessaoRef.current?.encerrar();
+    sessaoRef.current = null;
+    setStatus('inativo');
+    setFalaParcial(null);
+    setTempoUsadoHoje(prev => {
+      localStorage.setItem(storageKey, btoa(String(prev)));
+      return prev;
+    });
+  }, [storageKey]);
+
+  const startTimeRef = useRef<number>(Date.now());
+  const initialTempoRef = useRef<number>(tempoUsadoHoje);
+
   useEffect(() => {
     if (!aoVivo) return;
+    startTimeRef.current = Date.now();
+    initialTempoRef.current = tempoUsadoHoje;
+
     const interval = setInterval(() => {
-      setTempoUsadoHoje((prev) => {
-        const novo = prev + 1;
-        localStorage.setItem(storageKey, String(novo));
+      setTempoUsadoHoje(() => {
+        const decorrido = Math.floor((Date.now() - startTimeRef.current) / 1000);
+        const novo = initialTempoRef.current + decorrido;
+        if (novo % 5 === 0) localStorage.setItem(storageKey, btoa(String(novo)));
         if (novo >= limiteSegundos) {
           encerrar();
           setLimiteModal(true);
@@ -98,46 +130,49 @@ export function useMeExpliqueEngine(videoRef: RefObject<HTMLVideoElement>) {
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, [aoVivo, limiteSegundos, storageKey]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aoVivo, limiteSegundos, storageKey, encerrar]);
 
   const abrirPreview = useCallback(async () => {
+    if (aberturaPendente.current) return;
     const video = videoRef.current;
     if (!video) return;
     try {
+      aberturaPendente.current = true;
       setErroCamera(null);
       const disponiveis = await cameraRef.current.abrir(video);
+      if (!isMounted.current) return;
       setRecursos(disponiveis);
       setLanterna(cameraRef.current.lanterna);
       setPreviewPronto(true);
     } catch (e) {
+      if (!isMounted.current) return;
       setPreviewPronto(false);
       setErroCamera(e instanceof Error ? e.message : 'Não consegui abrir a câmera.');
+    } finally {
+      aberturaPendente.current = false;
     }
   }, [videoRef]);
 
-  const encerrar = useCallback(() => {
-    sessaoRef.current?.encerrar();
-    sessaoRef.current = null;
-    setStatus('inativo');
-    setFalaParcial(null);
-  }, []);
 
   useEffect(() => {
+    const camera = cameraRef.current;
     void abrirPreview();
     return () => {
       sessaoRef.current?.encerrar();
       sessaoRef.current = null;
-      cameraRef.current.fechar();
+      camera.fechar();
     };
   }, [abrirPreview]);
 
   useEffect(() => {
+    const camera = cameraRef.current;
     const aoTrocar = () => {
       if (document.hidden) {
         sessaoRef.current?.encerrar();
         sessaoRef.current = null;
         setStatus('inativo');
-        cameraRef.current.fechar();
+        camera.fechar();
         setPreviewPronto(false);
       } else {
         void abrirPreview();
@@ -163,9 +198,15 @@ export function useMeExpliqueEngine(videoRef: RefObject<HTMLVideoElement>) {
     try {
       if (!cameraRef.current.ativa) await abrirPreview();
 
-      const { data, error } = await supabase.functions.invoke('me-explique-token', {
+      const chamador = supabase.functions.invoke('me-explique-token', {
         body: config
       });
+      const timeoutPromise = new Promise<{ data: any, error: any }>((_, reject) => {
+        setTimeout(() => reject(new Error('A conexão demorou demais. Verifique sua internet e tente novamente.')), 12000);
+      });
+      
+      const { data, error } = await Promise.race([chamador, timeoutPromise]);
+      
       if (error) throw new Error(error.message);
       const resposta = data as { token?: string; modelo?: string; setup?: Record<string, unknown> | null; ephemeral?: boolean } | null;
       const token = resposta?.token;
@@ -183,21 +224,29 @@ export function useMeExpliqueEngine(videoRef: RefObject<HTMLVideoElement>) {
         video,
         streamVideo: cameraRef.current.obterStream(),
 
-        onStatus: (s) => setStatus(s),
-        onTranscricaoParcial: (fala) => setFalaParcial(fala),
+        onStatus: (s) => {
+          if (isMounted.current) setStatus(s);
+        },
+        onTranscricaoParcial: (fala) => {
+          if (isMounted.current) setFalaParcial(fala);
+        },
         onTranscricao: (fala) => {
+          if (!isMounted.current) return;
           setFalas((atual) => [...atual.slice(-20), fala]);
           registrar(fala);
           setFalaParcial(null);
         },
-        onErro: (msg) => setErro(msg),
+        onErro: (msg) => {
+          if (isMounted.current) setErro(msg);
+        },
         fps: 1,
       });
 
       sessaoRef.current = sessao;
       await sessao.iniciar();
-      setMicAtivo(true);
+      if (isMounted.current) setMicAtivo(true);
     } catch (e) {
+      if (!isMounted.current) return;
       const msg = e instanceof Error ? e.message : 'Falha ao iniciar.';
       setErro(
         /permission|notallowed|denied/i.test(msg)
@@ -209,7 +258,7 @@ export function useMeExpliqueEngine(videoRef: RefObject<HTMLVideoElement>) {
       sessaoRef.current?.encerrar();
       sessaoRef.current = null;
     } finally {
-      setIniciando(false);
+      if (isMounted.current) setIniciando(false);
     }
   }, [tempoRestante, iniciando, abrirPreview, registrar, config, videoRef]);
 
@@ -245,7 +294,8 @@ export function useMeExpliqueEngine(videoRef: RefObject<HTMLVideoElement>) {
     setFoco({ x: e.clientX - rect.left, y: e.clientY - rect.top, id: Date.now() });
     void haptic.light();
     void cameraRef.current.focarEm(x, y);
-    window.setTimeout(() => sessaoRef.current?.enviarFrame(), 700);
+    if (focoTimerRef.current) window.clearTimeout(focoTimerRef.current);
+    focoTimerRef.current = window.setTimeout(() => sessaoRef.current?.enviarFrame(), 700);
   }, [previewPronto]);
 
   const aoTocar = useCallback((e: React.TouchEvent<HTMLDivElement>) => {

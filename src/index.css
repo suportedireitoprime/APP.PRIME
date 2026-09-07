@@ -438,7 +438,14 @@ body {
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Bebas Neue', 'Barlow Condensed', system-ui, sans-serif;
     font-weight: 400;
-    letter-spacing: 0.11em;
+    --animation-delay: 0s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse {
+    animation: none !important;
+    opacity: 0.8 !important;
   }
 }
 

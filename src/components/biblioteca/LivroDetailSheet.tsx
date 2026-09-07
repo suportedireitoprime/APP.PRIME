@@ -14,11 +14,12 @@ import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { useResumoLivroPlayer } from '@/contexts/ResumoLivroPlayerContext';
 import { getLocalPdfUrl, isPdfCached, downloadPdf } from '@/services/bibliotecaPdfCache';
-import { isFavorito, toggleFavorito, pushRecente, subscribeTracking } from '@/lib/bibliotecaTracking';
+import { pushRecente, subscribeTracking } from '@/lib/bibliotecaTracking';
 import { copiarTexto } from '@/lib/nativo/copiar';
 import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar';
 import { haptic } from '@/lib/nativeHaptics';
 import { setDynamicOgImage, setDynamicJsonLdBook, removeDynamicJsonLdBook } from '@/lib/seoImageMeta';
+import { useBibliotecaFav } from '@/hooks/useBibliotecaFav';
 
 import { PrimeBottomSheet } from '@/components/vademecum/overlays/PrimeBottomSheet';
 import { Network } from '@capacitor/network';
@@ -73,10 +74,11 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
 
   const currentLivro = livro || cachedLivro;
 
+  const { fav, handleToggleFav } = useBibliotecaFav(currentLivro);
+
   const [pdfCached, setPdfCached] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState<null | number>(null);
   const [pdfUrlForReader, setPdfUrlForReader] = useState<string | null>(null);
-  const [fav, setFav] = useState(false);
   const [gateOpen, setGateOpen] = useState(false);
   const [lembreteOpen, setLembreteOpen] = useState(false);
   const { canUse, register, config } = useFeatureLimit('biblioteca_ler', {
@@ -120,7 +122,6 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
   useEffect(() => {
     if (!livro || !open) return;
     haptic.light();
-    setFav(isFavorito(livro));
     pushRecente(livro);
     setDynamicOgImage(capaUrl || livro.capa, livro.titulo);
     setDynamicJsonLdBook({
@@ -130,9 +131,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
       description: livro.sobre,
       isbn: (livro as any).isbn || null,
     });
-    const unsub = subscribeTracking(() => setFav(isFavorito(livro)));
     return () => {
-      unsub();
       removeDynamicJsonLdBook();
     };
   }, [livro, open, capaUrl]);
@@ -240,12 +239,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
           >
             <LivroFloatingActions
               fav={fav}
-              onToggleFav={() => {
-                haptic.selection();
-                const now = toggleFavorito(currentLivro);
-                setFav(now);
-                toast.success(now ? 'Adicionado aos favoritos' : 'Removido dos favoritos');
-              }}
+              onToggleFav={handleToggleFav}
               onOpenLembrete={() => setLembreteOpen(true)}
               onClose={handleCloseSafe}
               inline={inline}
@@ -302,12 +296,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
         >
           <LivroFloatingActions
             fav={fav}
-            onToggleFav={() => {
-              haptic.selection();
-              const now = toggleFavorito(currentLivro);
-              setFav(now);
-              toast.success(now ? 'Adicionado aos favoritos' : 'Removido dos favoritos');
-            }}
+            onToggleFav={handleToggleFav}
             onOpenLembrete={() => setLembreteOpen(true)}
             onClose={handleCloseSafe}
             inline={inline}

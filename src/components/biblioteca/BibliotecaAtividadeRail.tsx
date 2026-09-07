@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { ChevronRight, Bookmark, Clock, BookOpen, FileUp, Lock, Heart } from 'lucide-react';
 import { track } from '@/lib/analyticsEvents';
 // FilePicker carregado via dynamic import no handleUploadPdf
@@ -65,7 +66,6 @@ const BibliotecaAtividadeRail = ({ onAbrirLivro }: Props) => {
         const { FilePicker } = await import('@capawesome/capacitor-file-picker');
         const result = await FilePicker.pickFiles({
           types: ['application/pdf'],
-          multiple: false,
           readData: true,
         });
         const file = result.files[0];
@@ -102,6 +102,14 @@ const BibliotecaAtividadeRail = ({ onAbrirLivro }: Props) => {
     prefetchImages(urls);
   }, [lista]);
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const rowVirtualizer = useVirtualizer({
+    count: lista.length,
+    getScrollElement: () => scrollRef.current,
+    estimateSize: () => 64, // 64px is the approximate height of each item
+    overscan: 5,
+  });
+
   return (
     <>
     <div className="sticky top-4 rounded-3xl border border-border/50 bg-card overflow-hidden">
@@ -117,7 +125,12 @@ const BibliotecaAtividadeRail = ({ onAbrirLivro }: Props) => {
               <button
                 key={a.id}
                 type="button"
-                onClick={() => setAba(a.id)}
+                onClick={() => {
+                  if (!ativa) {
+                    import('@/lib/nativeHaptics').then(m => m.haptic.selection());
+                    setAba(a.id);
+                  }
+                }}
                 className={`flex items-center justify-center gap-1.5 h-8 rounded-lg text-[11px] font-semibold transition-colors ${
                   ativa
                     ? 'bg-primary text-primary-foreground'
@@ -132,7 +145,7 @@ const BibliotecaAtividadeRail = ({ onAbrirLivro }: Props) => {
         </div>
       </div>
 
-      <div className="mt-3 max-h-[50vh] overflow-y-auto pb-2">
+      <div className="mt-3 max-h-[50vh] overflow-y-auto pb-2" ref={scrollRef}>
         {lista.length === 0 ? (
           <p className="px-4 py-8 text-xs text-muted-foreground text-center leading-relaxed">
             {aba === 'lendo'
@@ -142,13 +155,32 @@ const BibliotecaAtividadeRail = ({ onAbrirLivro }: Props) => {
                 : 'Os livros que você abrir aparecem aqui.'}
           </p>
         ) : (
-          lista.map(({ snap, percent, legenda }) => (
-            <button
-              key={`${snap.colecaoId}:${snap.id}`}
-              type="button"
-              onClick={() => onAbrirLivro(snapToNormalizado(snap))}
-              className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-secondary/50 transition-colors group"
-            >
+          <div
+            style={{
+              height: `${rowVirtualizer.getTotalSize()}px`,
+              width: '100%',
+              position: 'relative',
+            }}
+          >
+            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+              const { snap, percent, legenda } = lista[virtualRow.index];
+              return (
+                <div
+                  key={virtualRow.key}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: `${virtualRow.size}px`,
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => onAbrirLivro(snapToNormalizado(snap))}
+                    className="w-full h-full flex items-center gap-3 px-3 text-left hover:bg-secondary/50 transition-colors group"
+                  >
               <span className="w-9 h-12 rounded-md overflow-hidden shrink-0 bg-muted border border-border/50">
                 {snap.capa ? (
                   <img src={snap.capa} alt="" loading="eager" fetchPriority="high" decoding="async" className="w-full h-full object-cover" />
@@ -180,8 +212,11 @@ const BibliotecaAtividadeRail = ({ onAbrirLivro }: Props) => {
                   </span>
                 )}
               </span>
-            </button>
-          ))
+                  </button>
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
 

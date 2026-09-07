@@ -80,7 +80,7 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId, capaUrl }: Props) => {
 
   useEffect(() => {
     if (isNative && !isDesktop) {
-      ScreenOrientation.lock({ type: 'portrait' }).catch(() => {});
+      ScreenOrientation.lock({ orientation: 'portrait' }).catch(() => {});
     }
     return () => {
       if (isNative && !isDesktop) {
@@ -218,7 +218,7 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId, capaUrl }: Props) => {
       host.innerHTML = '';
       host.appendChild(canvas);
     } catch (e) {
-      console.warn('[PdfScrollReader] render page', idx, e);
+      console.error('[PdfScrollReader] render page', idx, e);
       renderedRef.current.delete(idx);
       logPdfEvent({
         url, event: 'render_error', livroId, livroTitulo: titulo,

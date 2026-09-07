@@ -102,7 +102,7 @@ const InAppWebView = ({ url, titulo, onClose, autoFallback = false }: InAppWebVi
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
-        className="fixed inset-0 z-[1400] bg-background flex flex-col"
+        className="fixed inset-0 z-[1400] bg-[#0a0a0a] flex flex-col"
         style={{
           paddingTop: 'var(--sai-top)',
           paddingBottom: 'var(--sai-bottom)',

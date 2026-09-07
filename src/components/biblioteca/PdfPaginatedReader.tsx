@@ -127,7 +127,7 @@ const PdfPaginatedReader = ({ url, titulo, onClose, livroId }: Props) => {
           let source: any;
           if (isNativeNow && !isLocalMem) {
             const bytes = await fetchPdfBytes(sourceUrl);
-            const blob = new Blob([bytes.buffer], { type: 'application/pdf' });
+            const blob = new Blob([bytes.buffer as ArrayBuffer], { type: 'application/pdf' });
             localBlobUrl = URL.createObjectURL(blob);
             source = { url: localBlobUrl, withCredentials: false };
           } else {
@@ -349,7 +349,7 @@ const PdfPaginatedReader = ({ url, titulo, onClose, livroId }: Props) => {
               <button 
                 onClick={goPrev} 
                 disabled={currentPage <= 1}
-                className="p-2 text-white/70 hover:text-white disabled:opacity-30"
+                className="w-11 h-11 flex items-center justify-center text-white/70 hover:text-white disabled:opacity-30"
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>
@@ -359,7 +359,7 @@ const PdfPaginatedReader = ({ url, titulo, onClose, livroId }: Props) => {
               <button 
                 onClick={goNext} 
                 disabled={currentPage >= totalPages}
-                className="p-2 text-white/70 hover:text-white disabled:opacity-30"
+                className="w-11 h-11 flex items-center justify-center text-white/70 hover:text-white disabled:opacity-30"
               >
                 <ChevronRight className="w-6 h-6" />
               </button>
@@ -432,7 +432,14 @@ const PdfPage = ({
         if (!cancelled) setRendered(true);
       } catch (e: any) {
         if (e?.name !== 'RenderingCancelledException' && !cancelled) {
-          console.warn('[PdfPage] render error:', e);
+          console.error('[PdfPage] render error:', e);
+          import('@/lib/pdfTelemetry').then(({ logPdfEvent }) => {
+            logPdfEvent({
+              url: 'page-render', 
+              event: 'load_error', 
+              errorMessage: `Page ${pageNumber}: ${e?.message || e}`
+            });
+          });
         }
       } finally {
         renderTasksRef.current.delete(pageNumber);

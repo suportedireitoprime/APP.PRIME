@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Check } from 'lucide-react';
+import { Loader2, Check, Square } from 'lucide-react';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -43,6 +43,12 @@ import { AssistentePowersSheet } from './assistente/AssistentePowersSheet';
 import { AssistenteHistoryDrawer } from './assistente/AssistenteHistoryDrawer';
 import { AssistenteArtifactModals } from './assistente/AssistenteArtifactModals';
 
+const generateId = () => {
+  return typeof crypto !== 'undefined' && crypto.randomUUID
+    ? crypto.randomUUID()
+    : Math.random().toString(36).substring(2, 15);
+};
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -61,7 +67,23 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [attachment, setAttachment] = useState<Attachment | null>(null);
 
-  const [sessionId, setSessionId] = useState<string>(() => crypto.randomUUID());
+  const abortCtrlRef = useRef<AbortController | null>(null);
+
+  const abortStream = () => {
+    if (abortCtrlRef.current) {
+      abortCtrlRef.current.abort();
+      abortCtrlRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    if (!open) {
+      abortStream();
+      setLoading(false);
+    }
+  }, [open]);
+
+  const [sessionId, setSessionId] = useState<string>(() => generateId());
   const [sessions, setSessions] = useState<Session[]>([]);
   const [genOverlay, setGenOverlay] = useState<null | {
     kind: 'pdf' | 'flashcards' | 'questoes' | 'mapa' | 'termos';
@@ -98,8 +120,10 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
     if (voice.listening) {
       const base = baseInputRef.current;
       setInput((base ? base + ' ' : '') + (voice.partial || ''));
+    } else {
+      baseInputRef.current = input;
     }
-  }, [voice.partial, voice.listening]);
+  }, [voice.partial, voice.listening, input]);
 
   const toggleMic = () => {
     if (!voice.listening) baseInputRef.current = input;
@@ -109,28 +133,38 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
   // Persistir sessão atual
   useEffect(() => {
     if (!messages.length) return;
-    const first = messages[0];
-    const title = first.content.slice(0, 60) || 'Nova conversa';
-    const now = Date.now();
-    const session: Session = {
-      id: sessionId,
-      date: new Date(now).toISOString().slice(0, 10),
-      title,
-      messages,
-      artifacts,
-      updatedAt: now,
-    };
-    setSessions((prev) => {
-      const filtered = prev.filter((s) => s.id !== sessionId);
-      const next = [session, ...filtered];
-      saveSessions(next);
-      return next;
-    });
+    const tId = setTimeout(() => {
+      const first = messages[0];
+      const title = first.content.slice(0, 60) || 'Nova conversa';
+      const now = Date.now();
+      // toLocaleDateString('en-CA') = YYYY-MM-DD usando o fuso local do aparelho (corrige bug da data errada à noite)
+      const dateLocal = new Date(now).toLocaleDateString('en-CA');
+      
+      const session: Session = {
+        id: sessionId,
+        date: dateLocal,
+        title,
+        messages,
+        artifacts,
+        updatedAt: now,
+      };
+      setSessions((prev) => {
+        const filtered = prev.filter((s) => s.id !== sessionId);
+        const next = [session, ...filtered];
+        saveSessions(next);
+        return next;
+      });
+    }, 1200);
+    return () => clearTimeout(tId);
   }, [messages, sessionId, artifacts]);
 
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 150;
+      if (isNearBottom || messages[messages.length - 1]?.role === 'user') {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      }
     }
   }, [messages, loading]);
 
@@ -148,8 +182,10 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
   }, [loading]);
 
   const newSession = () => {
+    abortStream();
+    setLoading(false);
     setMessages([]);
-    setSessionId(crypto.randomUUID());
+    setSessionId(generateId());
     setInput('');
     setAttachment(null);
     setArtifacts([]);
@@ -200,19 +236,40 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
   };
 
   const handleFile = async (file: File) => {
-    if (file.size > 8 * 1024 * 1024) {
-      toast.error('Arquivo maior que 8MB');
+    if (!file.type.startsWith('image/')) {
+      toast.error('Apenas imagens são suportadas');
       return;
     }
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64String = (reader.result as string).split(',')[1];
-      setAttachment({ mime: file.type || 'image/jpeg', data: base64String, name: file.name });
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const maxW = 1200;
+      const maxH = 1200;
+      let { width, height } = img;
+      if (width > maxW || height > maxH) {
+        if (width > height) {
+          height = Math.round((height * maxW) / width);
+          width = maxW;
+        } else {
+          width = Math.round((width * maxH) / height);
+          height = maxH;
+        }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.drawImage(img, 0, 0, width, height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+      const base64String = dataUrl.split(',')[1];
+      setAttachment({ mime: 'image/jpeg', data: base64String, name: file.name });
       setAttachOpen(false);
       toast.success('Foto anexada com sucesso');
     };
-    reader.onerror = () => toast.error('Erro ao processar arquivo');
-    reader.readAsDataURL(file);
+    img.onerror = () => toast.error('Erro ao ler a imagem');
+    img.src = url;
   };
 
   const abrirAnexos = () => {
@@ -248,7 +305,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
       message_length: text.length,
     });
     const userMsg: Message = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       role: 'user',
       content: text || (attachment ? `📎 ${attachment.name}` : ''),
       attachment: attachment || undefined,
@@ -260,7 +317,9 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
     setAttachment(null);
     setLoading(true);
     const startTime = Date.now();
-    const asMsgId = crypto.randomUUID();
+    const asMsgId = generateId();
+
+    let isRateLimit = false;
 
     try {
       const { data: sessionData } = await supabase.auth.getSession();
@@ -287,11 +346,16 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
 
       let res: Response | null = null;
       let streamOk = false;
+      let networkError = false;
+      
+      abortStream();
+      abortCtrlRef.current = new AbortController();
 
       try {
         res = await fetch(endpoint, {
           method: 'POST',
           headers,
+          signal: abortCtrlRef.current.signal,
           body: JSON.stringify({
             messages: payloadMessages,
             webSearch,
@@ -300,14 +364,22 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
         });
         if (res.ok) {
           streamOk = true;
+        } else if (res.status === 429) {
+          isRateLimit = true;
         }
-      } catch (streamErr) {
+      } catch (streamErr: any) {
+        if (streamErr.name === 'AbortError') return;
+        networkError = true;
         console.warn('[Chat] Fetch stream error, will fallback to invoke:', streamErr);
       }
 
       const elapsed = Math.round((Date.now() - startTime) / 1000);
 
-      if (!streamOk || !res || !res.ok) {
+      if (!streamOk) {
+        if (!networkError && res && !res.ok) {
+           throw new Error(`API Error: ${res.status}`);
+        }
+        
         const { data, error: invokeErr } = await supabase.functions.invoke('assistente-juridica', {
           body: {
             messages: payloadMessages,
@@ -388,8 +460,12 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
 
       while (true) {
         const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
+        if (value) {
+          buffer += decoder.decode(value, { stream: true });
+        }
+        if (done && buffer) {
+          buffer += '\n'; // Force last flush
+        }
         const lines = buffer.split('\n');
         buffer = lines.pop() || '';
 
@@ -425,6 +501,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
             }
           }
         }
+        if (done) break;
       }
 
       // Post-process para estatutos
@@ -440,41 +517,50 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
             : m
         )
       );
-    } catch (err) {
+    } catch (err: any) {
+      if (err.name === 'AbortError') return;
       console.error('[Chat] Erro ao processar:', err);
-      try {
-        const { data: fallbackData } = await supabase.functions.invoke('assistente-juridica', {
-          body: {
-            messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
-            webSearch: false,
-          },
-        });
-        if (fallbackData?.reply) {
-          const { text: enrichedReply } = extractStatuteSources(fallbackData.reply, 1);
-          setMessages((prev) => {
-            const hasTemp = prev.some((m) => m.id === asMsgId);
-            if (hasTemp) {
-              return prev.map((m) => (m.id === asMsgId ? { ...m, content: enrichedReply } : m));
-            }
-            return [
-              ...prev,
-              { id: asMsgId, role: 'assistant', content: enrichedReply, createdAt: Date.now() },
-            ];
+      
+      if (!isRateLimit) {
+        try {
+          const { data: fallbackData } = await supabase.functions.invoke('assistente-juridica', {
+            body: {
+              messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
+              webSearch: false,
+            },
           });
-          return;
+          if (fallbackData?.reply) {
+            const { text: enrichedReply } = extractStatuteSources(fallbackData.reply, 1);
+            setMessages((prev) => {
+              const hasTemp = prev.some((m) => m.id === asMsgId);
+              if (hasTemp) {
+                return prev.map((m) => (m.id === asMsgId ? { ...m, content: enrichedReply } : m));
+              }
+              return [
+                ...prev,
+                { id: asMsgId, role: 'assistant', content: enrichedReply, createdAt: Date.now() },
+              ];
+            });
+            return;
+          }
+        } catch (fallbackErr) {
+          console.error('[Chat] Fallback secundario falhou:', fallbackErr);
         }
-      } catch (fallbackErr) {
-        console.error('[Chat] Fallback secundario falhou:', fallbackErr);
       }
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: crypto.randomUUID(),
-          role: 'assistant',
-          content: '⚠️ Erro ao processar. Tente novamente.',
-          createdAt: Date.now(),
-        },
-      ]);
+      
+      setMessages((prev) => {
+        // Se a mensagem já existe (SSE falhou no meio), não empilha outra mensagem de erro separada,
+        // apenas avisa. Ou pode adicionar a mensagem de erro.
+        return [
+          ...prev,
+          {
+            id: generateId(),
+            role: 'assistant',
+            content: isRateLimit ? '⚠️ Limite de uso atingido. Tente novamente mais tarde.' : '⚠️ Erro de rede ou servidor ao processar. Tente novamente.',
+            createdAt: Date.now(),
+          },
+        ];
+      });
     } finally {
       setLoading(false);
     }
@@ -548,11 +634,15 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
         body: { mode, conteudo: msg.content },
       });
       if (error) throw error;
-      const parsed = JSON.parse(data?.reply || '{}');
+      
+      const rawStr = data?.reply || '{}';
+      const match = rawStr.match(/[[{][\s\S]*[\]}]/);
+      const cleanJson = match ? match[0] : '{}';
+      const parsed = JSON.parse(cleanJson);
       const title =
         kind === 'mapa' ? parsed?.titulo || 'Mapa mental' : msg.content.slice(0, 60);
       const art: Artifact = {
-        id: crypto.randomUUID(),
+        id: generateId(),
         kind,
         data: parsed,
         sourceId: msg.id,
@@ -706,6 +796,22 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                 )}
               </div>
             </div>
+
+            {/* Stop button */}
+            {loading && (
+              <div className="absolute bottom-[100px] left-1/2 -translate-x-1/2 z-[60]">
+                <button
+                  onClick={() => {
+                    abortStream();
+                    setLoading(false);
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-zinc-800 dark:bg-zinc-700 hover:bg-zinc-700 dark:hover:bg-zinc-600 active:scale-95 transition-all rounded-full text-white text-[13px] font-body shadow-lg"
+                >
+                  <Square className="w-3.5 h-3.5 fill-current" />
+                  Parar
+                </button>
+              </div>
+            )}
 
             {/* Input area */}
             <AssistenteInputBar

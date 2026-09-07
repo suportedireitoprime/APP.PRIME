@@ -8,6 +8,7 @@ import {
   Loader2,
   Mic,
   Camera,
+  ImageIcon,
 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { Attachment } from './assistenteTypes';
@@ -91,11 +92,15 @@ export const AssistenteInputBar: React.FC<AssistenteInputBarProps> = ({
             <textarea
               ref={textareaRef}
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => {
+                setInput(e.target.value);
+                e.target.style.height = 'auto';
+                e.target.style.height = `${e.target.scrollHeight}px`;
+              }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
-                  onSendMessage();
+                  if (!loading) onSendMessage();
                 }
               }}
               rows={1}
@@ -186,9 +191,25 @@ export const AssistenteInputBar: React.FC<AssistenteInputBarProps> = ({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 12, scale: 0.9 }}
               transition={{ type: 'spring', damping: 22, stiffness: 320 }}
-              className="fixed left-3 z-[69] bg-card border border-border rounded-2xl shadow-2xl p-2 flex flex-col gap-1 min-w-[200px]"
-              style={{ bottom: 'calc(9.5rem + var(--sai-bottom, 0px))' }}
+              className="absolute bottom-[100%] mb-4 left-4 z-[69] bg-card border border-border rounded-2xl shadow-2xl p-2 flex flex-col gap-1 min-w-[200px]"
             >
+              <button
+                onClick={() => {
+                  haptic.light();
+                  setAttachOpen(false);
+                  fileInputRef.current?.click();
+                }}
+                className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-colors text-left"
+              >
+                <ImageIcon className="w-[26px] h-[26px] text-emerald-400" strokeWidth={1.5} />
+                <span className="flex-1">
+                  <span className="block text-[15px] font-body font-semibold text-foreground tracking-tight">
+                    Galeria
+                  </span>
+                  <span className="block text-[11px] text-muted-foreground/70">Escolher foto</span>
+                </span>
+              </button>
+              
               <button
                 onClick={() => {
                   haptic.light();

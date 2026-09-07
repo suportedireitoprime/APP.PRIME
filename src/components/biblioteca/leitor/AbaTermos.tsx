@@ -172,6 +172,7 @@ export default function AbaTermos({ paginaMd, livroTitulo, capituloTitulo, pagin
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
+                    transition={{ type: 'tween', duration: 0.2 }}
                     className="mt-2 pt-2 border-t space-y-2"
                     style={{ borderColor: tema.border }}
                   >
