@@ -23,7 +23,10 @@ jobs:
           bun-version: latest
 
       - name: Install Dependencies
-        run: bun install
+        run: bun install --ignore-scripts
+
+      - name: Postinstall
+        run: bun run postinstall
 
       - name: Typecheck
         run: bun run tsc --noEmit
