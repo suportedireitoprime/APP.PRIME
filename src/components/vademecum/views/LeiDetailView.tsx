@@ -476,7 +476,8 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           )}
         </AnimatePresence>
 
-        <div className={`flex ${isDesktop ? 'gap-6 items-start' : 'flex-col'}`}>
+        {/* Item 61: Layout Master-Detail adaptativo para Tablets (iPad/Android) e Desktop */}
+        <div className={`flex ${isMasterDetail ? 'md:gap-6 md:items-start' : 'flex-col'}`}>
           <div className="flex-1 min-w-0 w-full relative">
             {activeTab === 'art' ? (
               <LeiArtigosVirtualList
@@ -577,7 +578,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           </div>
 
           {isMasterDetail && (
-            <div className="w-[320px] xl:w-[360px] shrink-0 sticky top-28 hidden lg:block">
+            <div className="w-[280px] lg:w-[320px] xl:w-[360px] shrink-0 sticky top-28 hidden md:block">
               <div className="bg-secondary/40 border border-border/60 rounded-3xl p-4 flex flex-col gap-3 backdrop-blur-xl h-[calc(100vh-140px)]">
                 <h3 className="font-display font-bold text-lg px-2 text-foreground">Menu Rápido</h3>
                 <div className="flex-1 overflow-y-auto pr-2 space-y-2 custom-scrollbar pb-6">
