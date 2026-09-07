@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, ArrowRight, X } from 'lucide-react';
@@ -21,6 +22,18 @@ const NarracaoMiniPlayer = () => {
   const close = useNarracaoFlutuante((s) => s.close);
 
   const visible = !!audio && !!artigo;
+
+  // Item 10: Injeta variável CSS --miniplayer-height no root para adaptação de padding no leitor
+  useEffect(() => {
+    if (visible && artigo) {
+      document.documentElement.style.setProperty('--miniplayer-height', '4rem');
+      return () => {
+        document.documentElement.style.removeProperty('--miniplayer-height');
+      };
+    } else {
+      document.documentElement.style.removeProperty('--miniplayer-height');
+    }
+  }, [visible, artigo]);
 
   const handleReopen = () => {
     if (!returnPath || !artigo) return;
@@ -50,7 +63,7 @@ const NarracaoMiniPlayer = () => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 80, opacity: 0 }}
           transition={{ type: 'spring', damping: 22, stiffness: 260 }}
-          className="fixed left-0 right-0 z-[80] px-3 pointer-events-none"
+          className="fixed left-0 right-0 z-[10000] px-3 pointer-events-none"
           style={{
             // Sobe mais acima da bottom nav (botão central elevado "Ferramentas")
             bottom: `calc(9.5rem + var(--sai-bottom))`,
