@@ -13,15 +13,6 @@ const isNativePlatform = () => {
   }
 };
 
-const proxied = (url: string, w: number) =>
-  `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${w}&q=${getAdaptiveQuality(80)}&output=webp`;
-
-/**
- * Resolve caminhos relativos do CDN Lovable (`/__l5e/...`) ou pointers de asset
- * para uma URL absoluta/local antes de passar por qualquer redimensionador.
- */
-const resolve = (url: string) => assetUrl(url) || url;
-
 /**
  * Retorna o multiplicador de densidade de tela (DPR) seguro (clamped entre 1x e 2x).
  * Em telas ultra high-DPI (3.5x a 4x no Android/Samsung), evita alocação de texturas gigantescas na VRAM (Item 54).
@@ -56,6 +47,15 @@ export const getAdaptiveQuality = (baseQuality = 80): number => {
       return baseQuality;
   }
 };
+
+/**
+ * Resolve caminhos relativos do CDN Lovable (`/__l5e/...`) ou pointers de asset
+ * para uma URL absoluta/local antes de passar por qualquer redimensionador.
+ */
+const resolve = (url: string) => assetUrl(url) || url;
+
+const proxied = (url: string, w: number) =>
+  `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${w}&q=${getAdaptiveQuality(80)}&output=webp`;
 
 /**
  * Transforma uma URL pública do Supabase Storage no endpoint de Image Transformation:
