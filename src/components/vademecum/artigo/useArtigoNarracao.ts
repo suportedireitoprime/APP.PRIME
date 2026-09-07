@@ -303,7 +303,26 @@ export function useArtigoNarracao({
     };
 
     audio.onended = clearAudioState;
+
+    // Item 13: Exponential backoff retry for transient audio loading failures
+    let retryCount = 0;
+    const MAX_RETRIES = 3;
+    const BASE_DELAY_MS = 1000; // 1s, 2s, 4s with jitter
     audio.onerror = () => {
+      if (retryCount < MAX_RETRIES) {
+        retryCount++;
+        const delay = BASE_DELAY_MS * Math.pow(2, retryCount - 1) + Math.random() * 500;
+        console.warn(`[useArtigoNarracao] Erro de áudio transitório. Retentativa ${retryCount}/${MAX_RETRIES} em ${Math.round(delay)}ms...`);
+        setTimeout(() => {
+          // Reload the audio source for retry
+          audio.load();
+          audio.play().catch(() => {
+            // If play() also fails, the onerror handler will fire again
+          });
+        }, delay);
+        return;
+      }
+      // All retries exhausted
       clearAudioState();
       setNarracaoUrl(null);
       if (options?.onRecover) {
