@@ -197,7 +197,7 @@ const IndexMobile = () => {
             <MobileHomeSections onTabChange={setHomeTab} onNewsOpenChange={setNewsOpen} />
           </main>
         </div>
-        {location.pathname === '/' && !bottomNavHidden && <BottomNav />}
+        {location.pathname === '/' && <BottomNav />}
         <Suspense fallback={null}>
           {menuOpen && (
             <SideMenu

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowLeft, Search, Scale, BookOpen, Clock, Gavel, Mic, MicOff, X, Loader2, Heart,
@@ -240,7 +241,7 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
     };
   };
 
-  return (
+  const overlayContent = (
     <AnimatePresence>
       {open && (
         <>
@@ -468,6 +469,8 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
       )}
     </AnimatePresence>
   );
+
+  return typeof document !== 'undefined' ? createPortal(overlayContent, document.body) : overlayContent;
 };
 
 export default SearchOverlay;
