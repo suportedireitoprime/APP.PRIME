@@ -1,7 +1,6 @@
 import { memo } from 'react';
 import { Search } from 'lucide-react';
-import { Capacitor } from '@capacitor/core';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { haptic } from '@/lib/nativeHaptics';
 import TypingHint from './TypingHint';
 
 interface HomeSearchButtonProps {
@@ -10,9 +9,7 @@ interface HomeSearchButtonProps {
 
 const HomeSearchButton = ({ onOpenSearch }: HomeSearchButtonProps) => {
   const handleClick = () => {
-    if (Capacitor.isNativePlatform()) {
-      Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
-    }
+    haptic.light();
     onOpenSearch();
   };
 

@@ -2,8 +2,6 @@ import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GraduationCap, ListChecks, Camera } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
-import { Capacitor } from '@capacitor/core';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { useShortcutBadges } from '@/hooks/useShortcutBadges';
 import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
 import { haptic } from '@/lib/nativeHaptics';
@@ -34,9 +32,6 @@ const HomeActionShortcuts = () => {
             onClick={() => {
               try {
                 haptic.selection();
-                if (Capacitor.isNativePlatform()) {
-                  void Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
-                }
                 if (item.badgeKey) shortcutBadges.markSeen(item.badgeKey);
               } catch (err) {
                 console.warn('[HomeActionShortcuts] Feedback error:', err);

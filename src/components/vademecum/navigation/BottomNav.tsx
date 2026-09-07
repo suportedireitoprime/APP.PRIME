@@ -106,11 +106,25 @@ const BottomNav = () => {
     return () => window.removeEventListener('direitoprime:abrir-chat', handleOpenChat);
   }, []);
 
+  const [explicitHidden, setExplicitHidden] = useState(false);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { hidden?: boolean } | undefined;
+      if (detail && typeof detail.hidden === 'boolean') {
+        setExplicitHidden(detail.hidden);
+      }
+    };
+    window.addEventListener('direitoprime:bottom-nav-visibility', handler as EventListener);
+    return () => window.removeEventListener('direitoprime:bottom-nav-visibility', handler as EventListener);
+  }, []);
+
   // Qualquer troca de rota reabilita a nav (evita ficar escondida se um menu
   // externo desmontou sem emitir o evento de fechamento).
   useEffect(() => {
     setExternalMenuOpen(false);
     setSideMenuOpen(false);
+    setExplicitHidden(false);
   }, [path]);
 
   // Pré-carrega os chunks das abas principais do BottomNav assim que o app fica ocioso
@@ -136,7 +150,7 @@ const BottomNav = () => {
   };
 
   const keyboardHeight = useKeyboardHeight();
-  const hideNav = sideMenuOpen || externalMenuOpen || keyboardHeight > 0;
+  const hideNav = sideMenuOpen || externalMenuOpen || explicitHidden || keyboardHeight > 0;
 
   const isEstudos = path.startsWith('/estudos') || path.startsWith('/resumos-juridicos') || path.startsWith('/biblioteca');
 

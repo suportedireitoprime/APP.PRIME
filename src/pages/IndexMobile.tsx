@@ -31,6 +31,7 @@ import { warmCoverCache } from '@/lib/coverLoader';
 import { track } from '@/lib/analyticsEvents';
 
 import { useHideSplashScreen } from '@/hooks/useHideSplashScreen';
+import { Capacitor } from '@capacitor/core';
 
 import { useProfileSummary } from '@/hooks/useProfileSummary';
 import { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
@@ -40,10 +41,10 @@ const HERO_CONFIG = { radar: camaraHero, legislacao: heroImage, noticias: senado
 type Tab = 'legislacao' | 'noticias' | 'ferramentas';
 
 const IndexMobile = () => {
-  useHideSplashScreen(400); // Give React more time to paint heavy UI before dropping native splash
   const navigate = useNavigate();
   const { data: profileSummary } = useProfileSummary();
   const unreadCount = useUnreadNotifCount();
+  useHideSplashScreen(250, Boolean(profileSummary !== undefined || !Capacitor.isNativePlatform()));
 
   // Invocação Híbrida: Se estiver rodando no Nativo puro (iOS/Android Capacitor), tenta
   // exibir a View Swift/Compose por cima. A UI React continua montando atrás.
@@ -51,7 +52,7 @@ const IndexMobile = () => {
     let active = true;
     const handles: Array<{ remove: () => Promise<void> }> = [];
 
-    if (typeof window !== 'undefined' && (window as any).Capacitor?.isNativePlatform()) {
+    if (typeof window !== 'undefined' && Capacitor.isNativePlatform()) {
       import('@/plugins/NativeHomePlugin').then(async ({ NativeHome }) => {
         if (!active) return;
         NativeHome.showHome({
@@ -68,7 +69,14 @@ const IndexMobile = () => {
               { id: 'livro_4', titulo: 'O Caso dos Exploradores de Cavernas', autor: 'Lon L. Fuller', ano: 1949 },
             ]
           }
-        }).catch(e => console.warn('NativeHome not bound, fallback to React', e));
+        })
+          .then(() => {
+            if (active) {
+              setBottomNavHidden(true);
+              window.dispatchEvent(new CustomEvent('direitoprime:bottom-nav-visibility', { detail: { hidden: true } }));
+            }
+          })
+          .catch(e => console.warn('NativeHome not bound, fallback to React', e));
 
         try {
           const h1 = await NativeHome.addListener('onNavigate', (info) => {
@@ -96,8 +104,10 @@ const IndexMobile = () => {
     return () => {
       active = false;
       handles.forEach(h => { void h.remove().catch(() => {}); });
-      if (typeof window !== 'undefined' && (window as any).Capacitor?.isNativePlatform()) {
+      if (typeof window !== 'undefined' && Capacitor.isNativePlatform()) {
         import('@/plugins/NativeHomePlugin').then(({ NativeHome }) => NativeHome.hideHome().catch(() => {}));
+        setBottomNavHidden(false);
+        window.dispatchEvent(new CustomEvent('direitoprime:bottom-nav-visibility', { detail: { hidden: false } }));
       }
     };
   }, [navigate, profileSummary?.displayName, profileSummary?.avatarUrl, unreadCount]);

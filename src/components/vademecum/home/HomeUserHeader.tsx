@@ -1,7 +1,6 @@
 import { memo, useState, useEffect } from 'react';
 import { Bell, Menu as MenuIcon, User as UserIcon } from 'lucide-react';
-import { Capacitor } from '@capacitor/core';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { haptic } from '@/lib/nativeHaptics';
 
 interface HomeUserHeaderProps {
   nome: string;
@@ -29,17 +28,17 @@ const HomeUserHeader = ({
   }, [avatarUrl]);
 
   const handleNotifClick = () => {
-    if (Capacitor.isNativePlatform()) Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
+    haptic.light();
     onOpenNotif();
   };
 
   const handleMenuClick = () => {
-    if (Capacitor.isNativePlatform()) Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
+    haptic.light();
     onOpenMenu();
   };
 
   return (
-    <header className="relative px-3 pt-[calc(0.75rem+var(--sai-top))] md:px-6 md:pt-[calc(1.5rem+var(--sai-top,0px))] lg:px-8 lg:pt-8 flex items-center gap-2 md:gap-4">
+    <header className="relative px-3 pt-3 md:px-6 md:pt-4 lg:px-8 lg:pt-6 flex items-center gap-2 md:gap-4">
       <div className="flex items-center gap-3 md:gap-4 min-w-0 flex-1 pr-3 pl-1">
         <div className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full overflow-hidden border-2 border-white bg-black/40 flex items-center justify-center shrink-0 shadow-lg shadow-black/50">
           {avatarUrl && !imgError ? (
