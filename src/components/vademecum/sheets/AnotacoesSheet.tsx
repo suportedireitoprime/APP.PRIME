@@ -418,12 +418,21 @@ const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, 
                   <FileText className="w-4 h-4 text-primary" />
                   <h3 className="font-body text-sm font-semibold text-foreground">Nova anotação</h3>
                 </div>
-                <Textarea
-                  value={novaTexto}
-                  onChange={e => setNovaTexto(e.target.value)}
-                  placeholder="Escreva sua anotação sobre este artigo..."
-                  className="min-h-[108px] rounded-lg bg-secondary/30 border-border text-sm resize-none focus:border-primary/50 placeholder:text-muted-foreground"
-                />
+                {/* Item 47: Contador visual de caracteres com alerta âmbar a 90% */}
+                <div className="relative">
+                  <Textarea
+                    value={novaTexto}
+                    maxLength={5000}
+                    onChange={e => setNovaTexto(e.target.value)}
+                    placeholder="Escreva sua anotação sobre este artigo..."
+                    className="min-h-[108px] rounded-lg bg-secondary/30 border-border text-sm resize-none focus:border-primary/50 placeholder:text-muted-foreground pb-7"
+                  />
+                  <div className={`absolute bottom-2 right-2 text-[11px] font-mono pointer-events-none transition-colors ${
+                    novaTexto.length >= 4500 ? 'text-amber-400 font-bold' : 'text-muted-foreground/60'
+                  }`}>
+                    {novaTexto.length.toLocaleString()} / 5.000
+                  </div>
+                </div>
                 <div className="grid grid-cols-2 gap-2">
                   <Button variant="secondary" onClick={recording ? stopRecording : startRecording} disabled={uploading}>
                     {uploading ? <Loader2 className="animate-spin" /> : recording ? <Square /> : <Mic />}

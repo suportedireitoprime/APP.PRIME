@@ -71,7 +71,14 @@ export default function GrifoFotoSheet({ open, onClose }: Props) {
         body: { imageBase64: photo.base64, mimeType: `image/${photo.format ?? 'jpeg'}` },
       });
       if (fnErr) throw fnErr;
-      setTexto(data?.texto ?? '');
+      const rawTexto = data?.texto ?? '';
+      // Item 45: Sanitizador pós-OCR para remover hifenizações de final de linha e normalizar quebras
+      const cleanTexto = rawTexto
+        .replace(/(\p{L}+)-\s*[\r\n]+\s*(\p{L}+)/gu, '$1$2')
+        .replace(/[ \t]*[\r\n]+[ \t]*/g, ' ')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+      setTexto(cleanTexto);
       setHighlights(Array.isArray(data?.highlights) ? data.highlights : []);
       haptic.success();
     } catch (e: any) {

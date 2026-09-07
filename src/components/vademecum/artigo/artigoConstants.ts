@@ -32,12 +32,13 @@ export interface MagicGrifo {
 
 // ─── Constantes ───
 
+// Item 44: Paleta calibrada para dark mode (luminância e contraste harmônico sobre fundo escuro)
 export const MAGIC_COLORS: Record<string, string> = {
-  amarelo: 'rgba(220,38,38, 0.55)',
-  verde: 'rgba(34, 197, 94, 0.55)',
-  azul: 'rgba(59, 130, 246, 0.55)',
-  rosa: 'rgba(236, 72, 153, 0.55)',
-  laranja: 'rgba(220,38,38, 0.55)',
+  amarelo: 'rgba(245, 158, 11, 0.35)',
+  verde: 'rgba(16, 185, 129, 0.35)',
+  azul: 'rgba(56, 189, 248, 0.35)',
+  rosa: 'rgba(244, 63, 94, 0.35)',
+  laranja: 'rgba(249, 115, 22, 0.35)',
 };
 
 export const MAGIC_LABELS: Record<string, string> = {

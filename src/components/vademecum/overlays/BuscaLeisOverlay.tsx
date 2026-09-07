@@ -473,7 +473,7 @@ const BuscaLeisOverlay = ({ open, onClose, onSelectLei }: Props) => {
                           onClose();
                         }}
                         grupo="conteudo"
-                        categoria="leis"
+                        categoria="artigo"
                       />
                     </div>
                   ) : (
