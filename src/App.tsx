@@ -75,6 +75,7 @@ const HorusTakeoverNoticeDialog = lazy(() => import("@/components/horus/HorusTak
 const ForceUpdateScreen = lazy(() => import("@/components/ForceUpdateScreen"));
 import { useAppUpdateStore } from "@/lib/appUpdateStore";
 import { scheduleAppWarmup } from "@/services/appWarmupService";
+import { scheduleBackgroundImageWarmup } from "@/services/imageBackgroundSync";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -148,6 +149,7 @@ function AppWarmupInitializer() {
   const qc = useQueryClient();
   useEffect(() => {
     scheduleAppWarmup(qc);
+    scheduleBackgroundImageWarmup();
   }, [qc]);
   return null;
 }
