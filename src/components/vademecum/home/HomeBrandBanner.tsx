@@ -42,6 +42,9 @@ const HomeBrandBanner = ({ perfilLabel }: HomeBrandBannerProps) => {
   }, [subtitles]);
 
   useEffect(() => {
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
     const timer = setInterval(() => {
       setSubtitleIndex((prev) => (prev + 1) % subtitles.length);
     }, 4000);
@@ -68,15 +71,15 @@ const HomeBrandBanner = ({ perfilLabel }: HomeBrandBannerProps) => {
       <h1 className="font-serif italic text-white text-[24px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)]">
         Estudos Jurídicos
       </h1>
-      <div className="relative h-[16px] overflow-hidden">
+      <div className="relative h-[22px] min-h-[22px] overflow-hidden flex items-center justify-center">
         <AnimatePresence mode="wait">
           <motion.p
             key={subtitleIndex}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
-            className="font-body text-white text-[12.5px] font-bold tracking-wide uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] whitespace-nowrap"
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.45, ease: 'easeOut' }}
+            className="font-body text-white/95 text-[12.5px] font-bold tracking-wider uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] whitespace-nowrap leading-tight"
           >
             {subtitles[subtitleIndex]}
           </motion.p>

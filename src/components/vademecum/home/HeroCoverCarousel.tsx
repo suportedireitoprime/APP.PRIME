@@ -1,7 +1,7 @@
 import { useState, useEffect, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const COVER_POSITIONS = ['right', 'left', 'center', 'right', 'left'] as const;
+const COVER_POSITIONS = ['right', 'left', 'right', 'left'] as const;
 
 interface HeroCoverCarouselProps {
   covers: { url: string; preset?: string }[];
@@ -12,6 +12,12 @@ const HeroCoverCarousel = ({ covers }: HeroCoverCarouselProps) => {
     const len = covers?.length || 0;
     return len > 0 ? Math.floor(Math.random() * len) : 0;
   });
+
+  // Mantém o índice válido sem flicker se o número de capas mudar (ex: após carregar do Supabase)
+  useEffect(() => {
+    if (!covers || covers.length === 0) return;
+    setCoverIndex((curr) => curr % covers.length);
+  }, [covers]);
 
   // Preload caching logic for smooth transitions
   useEffect(() => {
@@ -56,17 +62,15 @@ const HeroCoverCarousel = ({ covers }: HeroCoverCarouselProps) => {
           const pos = COVER_POSITIONS[coverIndex % COVER_POSITIONS.length];
           const posClass =
             pos === 'right'
-              ? 'right-[4%] left-auto origin-bottom-right'
-              : pos === 'left'
-              ? 'left-[4%] right-auto origin-bottom-left'
-              : 'left-1/2 -translate-x-1/2 origin-bottom';
+              ? 'right-[2%] sm:right-[4%] left-auto origin-bottom-right'
+              : 'left-[2%] sm:left-[4%] right-auto origin-bottom-left';
 
-          // Fade-in com um leve zoom.
+          // Fade-in com um leve zoom
           const preset = {
             initial: { opacity: 0 },
             animate: { opacity: 1 },
             exit: { opacity: 0 },
-            transition: { duration: 1.6, ease: [0.22, 1, 0.36, 1] as const },
+            transition: { duration: 1.4, ease: [0.22, 1, 0.36, 1] as const },
           };
           
           const kenBurnsAnim = (coverIndex % 2 === 0)
@@ -92,8 +96,13 @@ const HeroCoverCarousel = ({ covers }: HeroCoverCarouselProps) => {
               animate={preset.animate}
               exit={preset.exit}
               transition={preset.transition}
-              style={{ animation: kenBurnsAnim, willChange: 'transform' }}
-              className={`absolute bottom-0 h-[88%] w-auto max-w-[70%] md:max-w-[55%] md:h-[92%] landscape:max-w-[45%] landscape:h-[94%] object-contain object-bottom drop-shadow-[0_10px_28px_rgba(0,0,0,0.35)] ${posClass}`}
+              style={{
+                animation: kenBurnsAnim,
+                willChange: 'transform',
+                maskImage: 'linear-gradient(to bottom, black 0%, black 72%, transparent 98%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 72%, transparent 98%)',
+              }}
+              className={`absolute bottom-0 h-[68%] sm:h-[75%] md:h-[85%] w-auto max-w-[56%] sm:max-w-[48%] md:max-w-[40%] landscape:max-w-[34%] landscape:h-[88%] object-contain object-bottom drop-shadow-[0_8px_24px_rgba(0,0,0,0.4)] opacity-80 sm:opacity-90 ${posClass}`}
             />
           );
         })()}

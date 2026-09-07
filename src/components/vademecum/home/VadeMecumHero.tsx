@@ -31,15 +31,11 @@ const VadeMecumHero: React.FC<Props> = ({ onBuscar }) => {
     >
       {/* Blindagem de overscroll superior contra vazamento do fundo */}
       <div
-        className="pointer-events-none absolute -top-[500px] left-0 right-0 h-[500px] z-0"
+        className="pointer-events-none absolute -top-[1200px] left-0 right-0 h-[1200px] z-0"
         style={{ backgroundColor: '#881337' }}
         aria-hidden="true"
       />
 
-      {/* ── Cabeçalho Transparente Vade Mecum ───────────────── */}
-      <VadeMecumHeroHeader />
-
-      <div className="pointer-events-none absolute inset-0 bg-hero-panel z-0" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
@@ -47,7 +43,10 @@ const VadeMecumHero: React.FC<Props> = ({ onBuscar }) => {
       <HeroMotifs />
       <HeroCoverCarousel covers={HERO_COVERS} />
 
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent z-[1]" />
+
+      {/* ── Cabeçalho Transparente Vade Mecum ───────────────── */}
+      <VadeMecumHeroHeader />
 
       <div className="relative px-4 pt-1 pb-5 flex flex-col gap-4">
         {/* Centered brand block */}
