@@ -39,7 +39,26 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
   const [artigosListOffset, setArtigosListOffset] = useState(0);
   const listKey = loadedKey || selectedTabelaNome || 'artigos-vade-mecum';
 
-  const highlightText = (text: string) => text; // Implement real highlighting if needed, or pass it from parent
+  // Item 22: Real highlight implementation for search terms in article cards
+  const highlightText = (text: string) => {
+    if (!searchQuery || !searchQuery.trim()) return text;
+    try {
+      const escaped = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`(${escaped})`, 'gi');
+      const parts = text.split(regex);
+      if (parts.length <= 1) return text;
+      return parts.map((part, i) =>
+        regex.test(part)
+          ? React.createElement('mark', {
+              key: i,
+              className: 'bg-amber-400/30 text-amber-200 rounded-sm px-0.5',
+            }, part)
+          : part
+      );
+    } catch {
+      return text;
+    }
+  };
 
   useLayoutEffect(() => {
     if (!shouldVirtualizeArtigos) return;
@@ -68,7 +87,16 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
 
   const artigosVirtualizer = useWindowVirtualizer({
     count: shouldVirtualizeArtigos ? visibleArtigos.length : 0,
-    estimateSize: () => 116,
+    // Item 21: Dynamic estimateSize based on article text length for smoother scrollbar
+    estimateSize: (index) => {
+      const artigo = visibleArtigos[index];
+      if (!artigo) return 116;
+      const caputLen = (artigo.caput || '').length;
+      const paragrafosLen = (artigo.paragrafos || []).reduce((acc, p) => acc + p.length, 0);
+      const incisosLen = (artigo.incisos || []).reduce((acc, inc) => acc + inc.length, 0);
+      const totalLen = caputLen + paragrafosLen + incisosLen;
+      return Math.max(64, Math.min(600, Math.round(totalLen / 3)));
+    },
     overscan: 20,
     scrollMargin: artigosListOffset,
     initialOffset: () => virtualOffsetCache.get(listKey) ?? (typeof window !== 'undefined' ? window.scrollY : 0),
@@ -112,6 +140,8 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
                   width: '100%',
                   transform: `translateY(${virtualItem.start - artigosVirtualizer.options.scrollMargin}px)`,
                   paddingBottom: '0.5rem',
+                  // Item 26: CSS containment for layout isolation in virtualized items
+                  contain: 'layout style paint',
                 }}
               >
                 <ArtigoCard
