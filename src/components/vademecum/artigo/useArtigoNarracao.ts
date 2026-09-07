@@ -112,6 +112,8 @@ export function useArtigoNarracao({
   const narrarPressGuardRef = useRef(0);
   const narrarActionInFlightRef = useRef(false);
   const narracaoAdoptedRef = useRef(false);
+  // Item 12: Guard against concurrent audio generation (double-click flooding)
+  const isGeneratingAudioRef = useRef(false);
 
   // ─── Floating mini-player integration ───
   const location = useLocation();
@@ -182,6 +184,35 @@ export function useArtigoNarracao({
       }
     })();
   }, [tabelaNome, artigo?.id, artigo?.numero]);
+
+  // ─── Item 11: Auto-adopt audio into floating miniplayer on unmount/route change ───
+  useEffect(() => {
+    return () => {
+      const currentAudio = narracaoAudioRef.current;
+      if (currentAudio && !currentAudio.paused && !currentAudio.ended && !narracaoAdoptedRef.current) {
+        // The component is being unmounted (likely by route navigation)
+        // Adopt the audio into the floating miniplayer so it continues playing
+        const currentArtigo = artigo;
+        if (currentArtigo) {
+          narracaoAdoptedRef.current = true;
+          stopProgressTracking();
+          adoptNarracao({
+            audio: currentAudio,
+            artigo: currentArtigo,
+            tabelaNome,
+            leiNome: tabelaNome,
+            returnPath: location.pathname + location.search,
+          });
+        } else {
+          // No artigo context available — just pause to prevent background leak
+          try { currentAudio.pause(); } catch {}
+          narracaoAudioRef.current = null;
+          clearMediaSession();
+        }
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ─── Progress tracking ───
   const startProgressTracking = useCallback((audio: HTMLAudioElement) => {
@@ -313,6 +344,13 @@ export function useArtigoNarracao({
   // ─── gerarNarracao ───
   const gerarNarracao = useCallback(async (options?: { autoplay?: boolean; silent?: boolean; forceRegenerate?: boolean }) => {
     if (!artigo || !tabelaNome) return;
+
+    // Item 12: Prevent concurrent audio generation (double-click flooding)
+    if (isGeneratingAudioRef.current) {
+      console.warn('[useArtigoNarracao] Geração de áudio já em andamento. Ignorando clique duplicado.');
+      return;
+    }
+    isGeneratingAudioRef.current = true;
 
     const autoplay = options?.autoplay ?? true;
     const silent = options?.silent ?? false;
@@ -474,6 +512,8 @@ export function useArtigoNarracao({
         }
       }
       if (!silent) toast.error('Não consegui gerar a narração agora. Tente novamente.');
+    } finally {
+      isGeneratingAudioRef.current = false;
     }
     if (!silent) setNarracaoLoading(false);
   }, [artigo, tabelaNome, breadcrumb?.tituloDesc, breadcrumb?.titulo, playNarracao, openPremiumGate, isPremium]);
