@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { ChevronDown, Play, Pause, FastForward, Rewind, Headphones } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { PrimeBottomSheet } from '@/components/vademecum/overlays/PrimeBottomSheet';
 import { useResumoLivroPlayer } from '@/contexts/ResumoLivroPlayerContext';
 import { useBibliotecaCapa } from '@/hooks/useBibliotecaAsset';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
@@ -49,16 +49,13 @@ export default function ResumoLivroAudioSheet() {
 
   if (!livroAtual) return null;
 
-  return createPortal((
-    <AnimatePresence>
-      {aberto && (
-        <motion.div
-          initial={{ y: '100%' }}
-          animate={{ y: 0 }}
-          exit={{ y: '100%', pointerEvents: 'none' }}
-          transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-          className="fixed inset-0 z-[2000] bg-background flex flex-col"
-        >
+  return (
+    <PrimeBottomSheet
+      open={aberto}
+      onClose={() => setAberto(false)}
+      zIndex={2000}
+      className="!bg-background"
+    >
           {/* Background blurred */}
           <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
             {capaBlurUrl && (
@@ -190,8 +187,6 @@ export default function ResumoLivroAudioSheet() {
               </div>
             </div>
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  ), document.body);
+    </PrimeBottomSheet>
+  );
 }

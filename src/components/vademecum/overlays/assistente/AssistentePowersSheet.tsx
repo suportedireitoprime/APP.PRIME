@@ -1,6 +1,7 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useDragControls, useReducedMotion } from 'framer-motion';
 import { Globe } from 'lucide-react';
+import { PrimeBottomSheet } from '../PrimeBottomSheet';
 
 interface AssistentePowersSheetProps {
   powersOpen: boolean;
@@ -15,24 +16,26 @@ export const AssistentePowersSheet: React.FC<AssistentePowersSheetProps> = ({
   webSearch,
   toggleWebSearch,
 }) => {
+  const dragControls = useDragControls();
+  const shouldReduceMotion = useReducedMotion();
   return (
-    <AnimatePresence>
-      {powersOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[70] bg-black/50 flex items-end"
-          onClick={() => setPowersOpen(false)}
-        >
-          <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            className="w-full bg-card rounded-t-3xl p-5 pb-8"
+    <PrimeBottomSheet
+      open={powersOpen}
+      onClose={() => setPowersOpen(false)}
+      dragControls={dragControls}
+      zIndex={70}
+      className="flex justify-end lg:top-[30%] lg:h-[70vh] lg:max-w-[800px] lg:mx-auto"
+    >
+          <div
+            className="w-full bg-card rounded-t-3xl p-5 pb-8 overscroll-none h-auto mt-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="w-10 h-1 bg-muted rounded-full mx-auto mb-4" />
+            <div 
+              className="flex items-center justify-center w-full h-8 cursor-grab active:cursor-grabbing mb-2 -mt-2 touch-none"
+              onPointerDown={(e) => dragControls.start(e)}
+            >
+              <div className="w-12 h-1.5 bg-muted rounded-full" />
+            </div>
             <h3 className="font-display text-lg font-bold text-foreground mb-1">Poderes</h3>
             <p className="text-xs font-body text-muted-foreground mb-4">
               Ative superpoderes para respostas ainda melhores.
@@ -58,9 +61,7 @@ export const AssistentePowersSheet: React.FC<AssistentePowersSheetProps> = ({
                 <div className="w-5 h-5 rounded-full bg-background" />
               </div>
             </button>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          </div>
+    </PrimeBottomSheet>
   );
 };

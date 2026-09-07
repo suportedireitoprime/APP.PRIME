@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useDragControls, useReducedMotion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { X, Send, Mic, MicOff, ChevronRight, Newspaper, BookOpen, Paperclip, FileText, Image as ImageIcon, Camera, ArrowLeft, History, Plus, MessageSquare, Trash2 } from "lucide-react";
+import { PrimeBottomSheet } from './PrimeBottomSheet';
 import ReactMarkdown from "react-markdown";
 import { supabase } from "@/integrations/supabase/client";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
@@ -9,7 +10,7 @@ import { haptic } from "@/lib/nativeHaptics";
 import { pickAsset, srcOf } from "@/lib/assetUrl";
 import primeLogoAsset from "@/assets/logo-direitoprime-v2.png.asset.json";
 import primeLogoBundled from "@/assets/bundled/logo-direitoprime-v2.webp";
-import { confirmar } from '@/lib/nativo';
+import { confirmar, avisar } from '@/lib/nativo';
 
 const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 
@@ -52,6 +53,8 @@ const normalizeMarkdown = (raw: string) => {
 
 const MentorOverlay = ({ open, onClose }: MentorOverlayProps) => {
   const navigate = useNavigate();
+  const dragControls = useDragControls();
+  const shouldReduceMotion = useReducedMotion();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -217,17 +220,22 @@ const MentorOverlay = ({ open, onClose }: MentorOverlayProps) => {
   };
 
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ y: "100%" }}
-          animate={{ y: 0 }}
-          exit={{ y: "100%" }}
-          transition={{ type: "spring", damping: 30, stiffness: 280 }}
-          className="fixed inset-0 z-[70] bg-background flex flex-col pt-safe pb-safe"
-        >
+    <PrimeBottomSheet
+      open={open}
+      onClose={onClose}
+      dragControls={dragControls}
+      zIndex={60}
+      className="lg:top-[5%] lg:bottom-auto lg:h-[90vh] lg:max-w-[1000px] lg:mx-auto lg:rounded-2xl lg:shadow-2xl border-white/5"
+    >
+      <div className="flex flex-col h-full bg-background pt-safe pb-safe overscroll-none">
           {/* Header */}
-          <div className="flex items-center gap-3 px-4 py-3 border-b border-border bg-card/95 backdrop-blur-md">
+          <div 
+            className="flex items-center justify-center w-full h-6 cursor-grab active:cursor-grabbing shrink-0 touch-none absolute top-0 left-0 right-0 z-10"
+            onPointerDown={(e) => dragControls.start(e)}
+          >
+            <div className="w-12 h-1.5 rounded-full bg-border" />
+          </div>
+          <div className="flex items-center gap-3 px-4 py-3 pt-6 border-b border-border bg-card/95 backdrop-blur-md">
             <button
               onClick={onClose}
               className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center"
@@ -704,9 +712,8 @@ const MentorOverlay = ({ open, onClose }: MentorOverlayProps) => {
             </div>
 
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      </div>
+    </PrimeBottomSheet>
   );
 };
 

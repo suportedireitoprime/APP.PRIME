@@ -1,16 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useQueries } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  ChevronDown,
-  Search,
-  X,
-  BookOpen,
-  Mic,
-  MicOff,
-  Library,
-} from 'lucide-react';
+import { ChevronDown, Search, X, BookOpen, Mic, MicOff, Library } from 'lucide-react';
+import { PrimeBottomSheet } from '@/components/vademecum/overlays/PrimeBottomSheet';
 import { withBundleFallback, bundle } from '@/services/offlineBundle';
 import { supabase } from '@/integrations/supabase/client';
 import { COLECOES, normalizeLivro, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
@@ -217,24 +209,13 @@ const BibliotecaBuscaOverlay = ({ open, onClose, onAbrirLivro }: Props) => {
   );
 
   return (
-    <AnimatePresence>
-      {open && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 z-[59] bg-black/50 backdrop-blur-sm"
-          />
-          <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed z-[60] inset-x-0 bottom-0 top-[10vh] bg-background flex flex-col rounded-t-3xl lg:top-[10%] lg:max-w-[800px] lg:mx-auto lg:rounded-t-2xl lg:shadow-2xl"
-          >
-            <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-border">
+    <PrimeBottomSheet
+      open={open}
+      onClose={onClose}
+      zIndex={60}
+      className="!top-[10vh] lg:!top-[10%] rounded-t-3xl lg:max-w-[800px] lg:mx-auto lg:rounded-t-2xl lg:shadow-2xl"
+    >
+      <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-border">
               <button
                 onClick={onClose}
                 className="w-12 h-12 rounded-full bg-muted flex items-center justify-center shrink-0"
@@ -332,10 +313,7 @@ const BibliotecaBuscaOverlay = ({ open, onClose, onAbrirLivro }: Props) => {
                 <LivroItem key={`${l.colecaoId}-${l.id}`} livro={l} />
               ))}
             </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+    </PrimeBottomSheet>
   );
 };
 

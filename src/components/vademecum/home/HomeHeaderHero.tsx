@@ -34,6 +34,7 @@ import HomeBrandBanner from './HomeBrandBanner';
 import HomeSearchButton from './HomeSearchButton';
 import HomeActionShortcuts from './HomeActionShortcuts';
 import { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 
 const SideMenu = lazyWithRetry(() => import('@/components/vademecum/navigation/SideMenu'));
 const NotificationsSheet = lazyWithRetry(() => import('@/components/vademecum/outros/NotificationsSheet'));
@@ -153,6 +154,18 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           aria-hidden="true"
         />
 
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.15]">
+          <ShapeGrid 
+            speed={0.5} 
+            squareSize={40}
+            direction='diagonal'
+            borderColor='rgba(255, 255, 255, 0.4)'
+            hoverFillColor='rgba(255, 255, 255, 0.6)'
+            shape='square'
+            hoverTrailAmount={5}
+          />
+        </div>
+
         {/* Overlays radiais idênticos ao painel do Vade Mecum */}
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
@@ -193,7 +206,7 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
       <Suspense fallback={null}>
         {!onOpenMenu && menuOpen && <SideMenu open={menuOpen} onClose={() => setMenuOpen(false)} />}
         {notifOpen && <NotificationsSheet open={notifOpen} onClose={() => setNotifOpen(false)} />}
-        {!onOpenSearch && searchOpen && (
+        {!onOpenSearch && (
           <SearchOverlay
             open={searchOpen}
             onClose={() => setSearchOpen(false)}
@@ -206,17 +219,15 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
             }}
           />
         )}
-        {recentesOpen && (
-          <RecentesOverlay
-            open={recentesOpen}
-            onClose={() => setRecentesOpen(false)}
-            onSelectLei={(lei) => {
-              setRecentesOpen(false);
-              pushRecente(lei);
-              navigate(`/legislacao/${tipoToSlug(lei.tipo)}/${leiToSlug({ id: lei.leiId, nome: lei.nome })}`);
-            }}
-          />
-        )}
+        <RecentesOverlay
+          open={recentesOpen}
+          onClose={() => setRecentesOpen(false)}
+          onSelectLei={(lei) => {
+            setRecentesOpen(false);
+            pushRecente(lei);
+            navigate(`/legislacao/${tipoToSlug(lei.tipo)}/${leiToSlug({ id: lei.leiId, nome: lei.nome })}`);
+          }}
+        />
       </Suspense>
     </>
   );

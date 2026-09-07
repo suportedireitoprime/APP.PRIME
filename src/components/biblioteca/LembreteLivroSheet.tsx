@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { PrimeBottomSheet } from '@/components/vademecum/overlays/PrimeBottomSheet';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -192,19 +192,23 @@ export default function LembreteLivroSheet({
   if (!livro) return null;
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="h-[90vh] p-0 rounded-t-3xl border-border/60 bg-background flex flex-col">
-        <SheetHeader className="px-5 pt-5 pb-3 text-left">
-          <SheetTitle className="flex items-center gap-2 text-xl">
-            <Bell className="w-5 h-5 text-primary" />
-            Lembrete de leitura
-          </SheetTitle>
-          <SheetDescription className="text-sm">
-            Programe lembretes para não perder o ritmo neste livro.
-          </SheetDescription>
-        </SheetHeader>
+    <PrimeBottomSheet
+      open={open}
+      onClose={() => onOpenChange(false)}
+      zIndex={70}
+      className="!mt-auto !h-[90vh] p-0 rounded-t-3xl border-t border-border/60 bg-background shadow-2xl flex flex-col"
+    >
+      <div className="px-5 pt-5 pb-3 text-left">
+        <h2 className="flex items-center gap-2 text-xl font-semibold text-foreground">
+          <Bell className="w-5 h-5 text-primary" />
+          Lembrete de leitura
+        </h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Programe lembretes para não perder o ritmo neste livro.
+        </p>
+      </div>
 
-        <div className="flex-1 overflow-y-auto px-5 pb-[calc(1.5rem+var(--sai-bottom))] space-y-5">
+      <div className="flex-1 overflow-y-auto px-5 pb-[calc(1.5rem+var(--sai-bottom))] space-y-5">
           {/* Cabeçalho do livro */}
           <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-br from-card via-card to-primary/5 p-4">
             <div className="flex items-center gap-4">
@@ -357,7 +361,6 @@ export default function LembreteLivroSheet({
             </Button>
           </motion.div>
         </div>
-      </SheetContent>
-    </Sheet>
+    </PrimeBottomSheet>
   );
 }

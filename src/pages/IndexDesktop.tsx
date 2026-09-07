@@ -255,12 +255,8 @@ const IndexDesktop = () => {
           </div>
 
           <Suspense fallback={null}>
-            {searchOpen && (
-              <SearchOverlay open={searchOpen} onClose={handleSearchClose} onSelectLei={handleSearchSelectLei} />
-            )}
-            {assistenteOpen && (
-              <AssistenteOverlay open={assistenteOpen} onClose={handleAssistenteClose} />
-            )}
+            <SearchOverlay open={searchOpen} onClose={handleSearchClose} onSelectLei={handleSearchSelectLei} />
+            <AssistenteOverlay open={assistenteOpen} onClose={handleAssistenteClose} />
           </Suspense>
         </div>
       </div>

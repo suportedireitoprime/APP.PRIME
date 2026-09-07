@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useDragControls, useReducedMotion } from 'framer-motion';
 import { 
   ArrowLeft, Search, Scale, BookOpen, Clock, Gavel, Mic, MicOff, X, Loader2, Heart,
   Play, PenLine, FileText, Newspaper, Film, BookMarked, Stamp, ListChecks, ChevronDown
 } from 'lucide-react';
+import { PrimeBottomSheet } from './PrimeBottomSheet';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -99,6 +100,8 @@ const identificarLeiPorTexto = (text: string) => {
 
 const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
   const [query, setQuery] = useState('');
+  const dragControls = useDragControls();
+  const shouldReduceMotion = useReducedMotion();
   const debouncedQuery = useDebounce(query, 100);
   const [activeTab, setActiveTab] = useState<UnifiedTab>('tudo');
   
@@ -242,27 +245,20 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
   };
 
   const overlayContent = (
-    <AnimatePresence>
-      {open && (
-        <>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-          className="fixed inset-0 z-[90] bg-black/50 backdrop-blur-sm"
-        />
-        <motion.div
-          initial={{ y: '100%' }}
-          animate={{ y: 0 }}
-          exit={{ y: '100%' }}
-          transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-          className="fixed z-[100] inset-0 bg-background flex flex-col lg:top-[10%] lg:bottom-auto lg:h-[80vh] lg:max-w-[800px] lg:mx-auto lg:rounded-2xl lg:shadow-2xl"
-        >
+    <PrimeBottomSheet
+      open={open}
+      onClose={onClose}
+      dragControls={dragControls}
+      zIndex={100}
+      className="lg:top-[10%] lg:bottom-auto lg:h-[80vh] lg:max-w-[800px] lg:mx-auto lg:rounded-2xl lg:shadow-2xl"
+    >
           {/* Header estilizado seguindo o padrão da tela de Resumos */}
           <div className="bg-hero-panel px-4 pb-4 pt-[calc(0.5rem+var(--sai-top))] shrink-0 shadow-md">
-            <div className="flex items-center justify-center pb-2">
-              <div className="w-10 h-1 rounded-full bg-white/30" />
+            <div 
+              className="flex items-center justify-center w-full h-8 cursor-grab active:cursor-grabbing touch-none"
+              onPointerDown={(e) => dragControls.start(e)}
+            >
+              <div className="w-12 h-1.5 rounded-full bg-white/30" />
             </div>
             <div className="flex items-center gap-2.5">
               <button
@@ -463,11 +459,7 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
 
           </div>
 
-        </motion.div>
-
-        </>
-      )}
-    </AnimatePresence>
+    </PrimeBottomSheet>
   );
 
   return typeof document !== 'undefined' ? createPortal(overlayContent, document.body) : overlayContent;

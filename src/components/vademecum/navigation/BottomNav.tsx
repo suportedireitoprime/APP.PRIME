@@ -807,7 +807,7 @@ const BottomNav = () => {
 
 
     {/* Side Menu (Perfil, Estudar, Legislação, Configurações) */}
-    <Suspense fallback={null}>{sideMenuOpen && <SideMenu open={sideMenuOpen} onClose={() => setSideMenuOpen(false)} />}</Suspense>
+    <Suspense fallback={null}><SideMenu open={sideMenuOpen} onClose={() => setSideMenuOpen(false)} /></Suspense>
 
     {/* Search Overlay (80% bottom sheet) */}
     <SearchOverlay

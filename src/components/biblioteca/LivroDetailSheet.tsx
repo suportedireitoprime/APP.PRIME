@@ -20,6 +20,9 @@ import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar'
 import { haptic } from '@/lib/nativeHaptics';
 import { setDynamicOgImage, setDynamicJsonLdBook, removeDynamicJsonLdBook } from '@/lib/seoImageMeta';
 
+import { PrimeBottomSheet } from '@/components/vademecum/overlays/PrimeBottomSheet';
+import { Network } from '@capacitor/network';
+
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import PremiumGate from '@/components/PremiumGate';
 import LembreteSheet from '@/components/lembretes/LembreteSheet';
@@ -134,7 +137,19 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
     };
   }, [livro, open, capaUrl]);
 
-  // Trava scroll do fundo enquanto a folha estiver aberta, exceto se for renderizado inline
+  // Monitoramento offline para o leitor de PDF
+  useEffect(() => {
+    if (readerMode === 'pdf') {
+      const listener = Network.addListener('networkStatusChange', status => {
+        if (!status.connected && !pdfCached) {
+          toast.warning('Conexão perdida', { description: 'Sem internet, o livro pode falhar ao carregar novas páginas. Considere baixar o PDF offline.' });
+        }
+      });
+      return () => { listener.then(l => l.remove()).catch(() => {}); };
+    }
+  }, [readerMode, pdfCached]);
+
+  // Trava scroll do fundo enquanto a folha estiver aberta, exceto se for renderizado inline (já feito no PrimeBottomSheet, mantendo apenas para inline se aplicável)
   useBodyScrollLock(open && !inline);
 
   // Reset síncrono do scroll no mount/troca de livro.
@@ -213,39 +228,16 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
 
   const renderContent = () => (
     <>
-      <AnimatePresence>
-        {open && !inline && (
-          <motion.div
-            key="backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, pointerEvents: 'none' }}
-            transition={{ duration: 0.2 }}
-            onClick={handleCloseSafe}
-            onTouchMove={(e) => e.preventDefault()}
-            onWheel={(e) => e.preventDefault()}
-            style={{ touchAction: 'none' }}
-            className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm"
-          />
-        )}
-      </AnimatePresence>
-      <AnimatePresence mode="wait">
-        {open && (
+      {inline ? (
+        open && (
           <motion.div
             key="sheet"
-            initial={inline ? { opacity: 0, scale: 0.98 } : (isDesktop ? { opacity: 0, scale: 0.95 } : { y: '100%' })}
-            animate={inline ? { opacity: 1, scale: 1 } : (isDesktop ? { opacity: 1, scale: 1 } : { y: 0 })}
-            exit={inline ? { opacity: 0, scale: 0.98 } : (isDesktop ? { opacity: 0, scale: 0.95 } : { y: '100%', pointerEvents: 'none' })}
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
             transition={{ type: 'spring', stiffness: 400, damping: 35 }}
-            className={
-              inline
-                ? "relative w-full h-full flex flex-col overflow-hidden rounded-3xl bg-card border border-border/50 shadow-xl"
-                : isDesktop
-                  ? "fixed inset-0 m-auto z-[1001] w-full max-w-[720px] h-[85dvh] bg-background flex flex-col overflow-hidden rounded-3xl border border-border shadow-2xl"
-                  : "fixed inset-x-0 bottom-0 z-[1001] h-[90dvh] w-full bg-background flex flex-col overflow-hidden rounded-t-3xl shadow-[0_-8px_32px_-8px_rgba(0,0,0,0.5)]"
-            }
+            className="relative w-full h-full flex flex-col overflow-hidden rounded-3xl bg-card border border-border/50 shadow-xl"
           >
-            {/* Header flutuante — botões fechar, lembrete e favoritar */}
             <LivroFloatingActions
               fav={fav}
               onToggleFav={() => {
@@ -259,8 +251,6 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
               inline={inline}
               isDesktop={isDesktop}
             />
-
-            {/* Content scroll */}
             <div key={String(currentLivro.id)} ref={contentRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
               <LivroHeaderBackdrop
                 capaHorizontalUrl={capaHorizontalUrl}
@@ -270,9 +260,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
                 area={currentLivro.area}
                 contentRef={contentRef}
               />
-
-              <div className="px-5 pb-[calc(18px+var(--sai-bottom,0px))] space-y-4 max-w-2xl mx-auto pt-4">
-                {/* Botões de Ação: Ler agora & Ouvir resumo */}
+              <div className="px-5 pb-[calc(1.5rem+var(--sai-bottom,0px))] space-y-4 max-w-2xl mx-auto pt-4">
                 <LivroAcoesSection
                   hasPdf={hasPdf}
                   hasOnline={hasOnline}
@@ -287,16 +275,12 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
                     abrirPlayerResumo(true);
                   }}
                 />
-
-                {/* Ficha técnica rápida — páginas, tempo médio, ano */}
                 <LivroFichaTecnica
                   numPages={numPages}
                   minutosLeitura={minutosLeitura}
                   anoLancamento={currentLivro.anoLancamento}
                   hasDownload={!!currentLivro.download}
                 />
-
-                {/* Tabs Sobre / Análise técnica */}
                 <LivroTabsContent
                   sobreMarkdown={sobreMarkdown}
                   temAnaliseTecnica={temAnaliseTecnica}
@@ -308,8 +292,69 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
               </div>
             </div>
           </motion.div>
-        )}
-      </AnimatePresence>
+        )
+      ) : (
+        <PrimeBottomSheet 
+          open={open} 
+          onClose={handleCloseSafe} 
+          zIndex={1001} 
+          className={isDesktop ? "m-auto !inset-auto top-[7.5dvh] !h-[85dvh] max-w-[720px] rounded-3xl border border-border shadow-2xl" : "mt-[10dvh] !h-[90dvh] rounded-t-3xl shadow-[0_-8px_32px_-8px_rgba(0,0,0,0.5)]"}
+        >
+          <LivroFloatingActions
+            fav={fav}
+            onToggleFav={() => {
+              haptic.selection();
+              const now = toggleFavorito(currentLivro);
+              setFav(now);
+              toast.success(now ? 'Adicionado aos favoritos' : 'Removido dos favoritos');
+            }}
+            onOpenLembrete={() => setLembreteOpen(true)}
+            onClose={handleCloseSafe}
+            inline={inline}
+            isDesktop={isDesktop}
+          />
+          <div key={String(currentLivro.id)} ref={contentRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
+            <LivroHeaderBackdrop
+              capaHorizontalUrl={capaHorizontalUrl}
+              capaUrl={capaUrl}
+              titulo={currentLivro.titulo}
+              autor={currentLivro.autor}
+              area={currentLivro.area}
+              contentRef={contentRef}
+            />
+            <div className="px-5 pb-[calc(1.5rem+var(--sai-bottom,0px))] space-y-4 max-w-2xl mx-auto pt-4">
+              <LivroAcoesSection
+                hasPdf={hasPdf}
+                hasOnline={hasOnline}
+                audioResumoUrl={currentLivro.audioResumoUrl}
+                onLerAgora={() => {
+                  if (!canUse) { setGateOpen(true); return; }
+                  setLerDialog(true);
+                }}
+                onOuvirResumo={() => {
+                  haptic.selection();
+                  tocarResumo(currentLivro);
+                  abrirPlayerResumo(true);
+                }}
+              />
+              <LivroFichaTecnica
+                numPages={numPages}
+                minutosLeitura={minutosLeitura}
+                anoLancamento={currentLivro.anoLancamento}
+                hasDownload={!!currentLivro.download}
+              />
+              <LivroTabsContent
+                sobreMarkdown={sobreMarkdown}
+                temAnaliseTecnica={temAnaliseTecnica}
+                anoLancamento={currentLivro.anoLancamento}
+                editora={currentLivro.editora}
+                curiosidades={currentLivro.curiosidades}
+                analiseDetalhadaTexto={analiseDetalhadaTexto}
+              />
+            </div>
+          </div>
+        </PrimeBottomSheet>
+      )}
 
       {/* Diálogo de escolha de modo */}
       <LerAgoraDialog

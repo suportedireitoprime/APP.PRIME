@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useDragControls, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, Search, Scale, Heart, X, BookOpen, Gavel, Sparkles, TrendingUp, Clock, Lightbulb, Tag } from 'lucide-react';
+import { PrimeBottomSheet } from './PrimeBottomSheet';
 import { LEIS_CATALOG, type LeiCatalogItem } from '@/data/leisCatalog';
 import { LEI_ICON_MAP, LEI_ICON_DEFAULT_COLOR } from '@/lib/leiIcons';
 import { isFavorito, toggleFavorito } from '@/lib/leisFavoritos';
@@ -106,6 +107,8 @@ const RAMOS_FILTRO: Array<{ id: RamoJuridico; label: string }> = [
 
 const BuscaLeisOverlay = ({ open, onClose, onSelectLei }: Props) => {
   const [query, setQuery] = useState('');
+  const dragControls = useDragControls();
+  const shouldReduceMotion = useReducedMotion();
   const debouncedQuery = useDebounce(query, 120);
   const [modo, setModo] = useState<ModoVadeMecum>('artigos');
   const [ramoAtivo, setRamoAtivo] = useState<RamoJuridico>('todos');
@@ -340,28 +343,21 @@ const BuscaLeisOverlay = ({ open, onClose, onSelectLei }: Props) => {
   ];
 
   return (
-    <AnimatePresence>
-      {open && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 z-[49] bg-black/60 backdrop-blur-sm"
-          />
-
-          {/* Painel Principal de Busca do Vade Mecum */}
-          <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed z-50 inset-0 bg-background flex flex-col lg:top-[8%] lg:bottom-auto lg:h-[84vh] lg:max-w-[850px] lg:mx-auto lg:rounded-2xl lg:shadow-2xl border border-white/10 overflow-hidden"
-          >
+    <PrimeBottomSheet
+      open={open}
+      onClose={onClose}
+      dragControls={dragControls}
+      zIndex={50}
+      className="lg:top-[8%] lg:bottom-auto lg:h-[84vh] lg:max-w-[850px] lg:mx-auto lg:rounded-2xl lg:shadow-2xl border border-white/10 overflow-hidden"
+    >
             {/* Cabeçalho */}
-            <div className="bg-hero-panel px-4 pb-3 pt-[calc(0.75rem+var(--sai-top))] shrink-0 shadow-md">
+            <div className="bg-hero-panel px-4 pb-3 pt-[calc(0.5rem+var(--sai-top))] shrink-0 shadow-md">
+              <div 
+                className="flex items-center justify-center w-full h-8 cursor-grab active:cursor-grabbing mb-1 touch-none"
+                onPointerDown={(e) => dragControls.start(e)}
+              >
+                <div className="w-12 h-1.5 rounded-full bg-white/30" />
+              </div>
               <div className="flex items-center justify-between gap-3 mb-3">
                 <button
                   onClick={onClose}
@@ -731,10 +727,7 @@ const BuscaLeisOverlay = ({ open, onClose, onSelectLei }: Props) => {
                 </div>
               )}
             </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+    </PrimeBottomSheet>
   );
 };
 

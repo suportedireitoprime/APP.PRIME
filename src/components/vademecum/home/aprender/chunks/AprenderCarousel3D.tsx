@@ -98,12 +98,20 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
 
   const pathD = useMemo(() => getCardPath(cardDims.w, cardDims.h, 16), [cardDims]);
 
-  // Avanço automático perfeitamente sincronizado com o término do ciclo da luzinha (quando a volta se completa)
+  // Avanço automático perfeitamente sincronizado com o timer
   const handleTimerComplete = useCallback(() => {
     if (total <= 1 || prefersReducedMotion) return;
     if (document.querySelector('[role="dialog"],[data-state="open"][data-radix-dialog-content]')) return;
     setAtivo((i) => (i + 1) % total);
   }, [total, prefersReducedMotion]);
+
+  useEffect(() => {
+    if (paused || prefersReducedMotion || total <= 1) return;
+    const interval = setInterval(() => {
+      handleTimerComplete();
+    }, 5500);
+    return () => clearInterval(interval);
+  }, [paused, prefersReducedMotion, total, handleTimerComplete]);
 
   const handlePrev = useCallback(() => {
     setPaused(true);
@@ -318,65 +326,19 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
                   </div>
                 </div>
 
-                {/* Linha fina com luzinha animada que vai percorrendo o contorno até completar a volta do próximo card */}
+                {/* Contorno fino estático e suave na capa em destaque */}
                 {frente && (
                   <svg
                     key={`beam-svg-${ativo}`}
                     className="absolute inset-0 w-full h-full pointer-events-none z-30 overflow-visible"
                     style={{ width: cardDims.w, height: cardDims.h }}
                   >
-                    <style>{`
-                      @keyframes aprenderBorderProgress {
-                        0% { stroke-dashoffset: 1000; }
-                        100% { stroke-dashoffset: 0; }
-                      }
-                      @keyframes aprenderBorderGlow {
-                        0% { stroke-dashoffset: 0; }
-                        100% { stroke-dashoffset: -1000; }
-                      }
-                    `}</style>
-
-                    {/* Linha base fina contornando a capa com a cor predominante */}
                     <path
                       d={pathD}
-                      pathLength="1000"
                       fill="none"
                       stroke={activeBorderColor}
-                      strokeWidth="1.5"
-                      strokeOpacity="0.28"
-                    />
-
-                    {/* Linha fina que vai aparecendo progressivamente ao longo do contorno (+2s de demora: 5.5s) */}
-                    <path
-                      d={pathD}
-                      pathLength="1000"
-                      fill="none"
-                      stroke={activeBorderColor}
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                      style={{
-                        strokeDasharray: '1000 1000',
-                        animation: 'aprenderBorderProgress 5.5s linear forwards',
-                        animationPlayState: paused ? 'paused' : 'running',
-                        filter: `drop-shadow(0 0 3px ${activeBorderColor})`,
-                      }}
-                      onAnimationEnd={handleTimerComplete}
-                    />
-
-                    {/* Luzinha brilhante que vai percorrendo na ponta da linha em sentido único sem voltar */}
-                    <path
-                      d={pathD}
-                      pathLength="1000"
-                      fill="none"
-                      stroke="#FFFFFF"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      style={{
-                        strokeDasharray: '70 930',
-                        animation: 'aprenderBorderGlow 5.5s linear forwards',
-                        animationPlayState: paused ? 'paused' : 'running',
-                        filter: `drop-shadow(0 0 4px #FFFFFF) drop-shadow(0 0 8px ${activeBorderColor})`,
-                      }}
+                      strokeWidth="1.0"
+                      strokeOpacity="0.4"
                     />
                   </svg>
                 )}

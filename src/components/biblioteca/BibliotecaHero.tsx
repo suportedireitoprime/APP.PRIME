@@ -37,10 +37,9 @@ const FILOSOFOS: Filosofo[] = [
   { nome: 'Hans Kelsen', epoca: 'Contemporâneo · séc. XX', frase: 'A norma fundamental é o pressuposto lógico de toda ordem jurídica.', img: kelsen },
 ];
 
-// Pré-carrega todas as imagens
-if (typeof window !== 'undefined') {
-  FILOSOFOS.forEach((f) => { const im = new Image(); im.src = f.img; });
-}
+// Pré-carregamento global removido para otimizar TTI
+
+import { App } from '@capacitor/app';
 
 interface Props {
   onBuscar?: () => void;
@@ -52,8 +51,34 @@ const BibliotecaHero = ({ children }: Props) => {
   const [idx, setIdx] = useState(0);
 
   useEffect(() => {
-    const id = setInterval(() => setIdx((i) => (i + 1) % FILOSOFOS.length), 5000);
-    return () => clearInterval(id);
+    let id: ReturnType<typeof setInterval>;
+    let isAppActive = true;
+
+    const startTimer = () => {
+      clearInterval(id);
+      id = setInterval(() => {
+        if (isAppActive) {
+          setIdx((i) => {
+            const next = (i + 1) % FILOSOFOS.length;
+            // Pré-carrega a PRÓXIMA imagem
+            const nextImg = new Image();
+            nextImg.src = FILOSOFOS[(next + 1) % FILOSOFOS.length].img;
+            return next;
+          });
+        }
+      }, 5000);
+    };
+
+    startTimer();
+
+    const listener = App.addListener('appStateChange', ({ isActive }) => {
+      isAppActive = isActive;
+    });
+
+    return () => {
+      clearInterval(id);
+      listener.then(l => l.remove()).catch(() => {});
+    };
   }, []);
 
   const atual = FILOSOFOS[idx];
