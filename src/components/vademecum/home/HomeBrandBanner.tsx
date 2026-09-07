@@ -1,25 +1,52 @@
-import { useState, useEffect, memo } from 'react';
+import { useState, useEffect, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const SUBTITLES = [
-  'Uso Profissional',
+interface HomeBrandBannerProps {
+  perfilLabel?: string;
+}
+
+const DEFAULT_SUBTITLES = [
+  'Para Concurseiros',
   'Para Estudantes',
   'Para Advogados',
-  'Para Concurseiros',
+  'Uso Profissional',
   'Para Professores',
   'Para Servidores',
   'Para Magistrados',
 ];
 
-const HomeBrandBanner = () => {
+const formatPerfilSubtitle = (label?: string): string | null => {
+  if (!label) return null;
+  const l = label.trim();
+  if (/oab/i.test(l)) return 'Estudos para OAB';
+  if (/concurs/i.test(l)) return 'Para Concurseiros';
+  if (/advogad/i.test(l)) return 'Para Advogados';
+  if (/faculdade|estudante/i.test(l)) return 'Para Estudantes de Direito';
+  if (/magistrad|juiz/i.test(l)) return 'Para Magistrados';
+  if (/servidor/i.test(l)) return 'Para Servidores';
+  if (l.length <= 25) return l.startsWith('Para ') ? l : `Para ${l}`;
+  return null;
+};
+
+const HomeBrandBanner = ({ perfilLabel }: HomeBrandBannerProps) => {
+  const subtitles = useMemo(() => {
+    const custom = formatPerfilSubtitle(perfilLabel);
+    if (!custom) return DEFAULT_SUBTITLES;
+    return [custom, ...DEFAULT_SUBTITLES.filter((s) => s.toLowerCase() !== custom.toLowerCase())];
+  }, [perfilLabel]);
+
   const [subtitleIndex, setSubtitleIndex] = useState(0);
 
   useEffect(() => {
+    setSubtitleIndex(0);
+  }, [subtitles]);
+
+  useEffect(() => {
     const timer = setInterval(() => {
-      setSubtitleIndex((prev) => (prev + 1) % SUBTITLES.length);
+      setSubtitleIndex((prev) => (prev + 1) % subtitles.length);
     }, 4000);
     return () => clearInterval(timer);
-  }, []);
+  }, [subtitles.length]);
 
   return (
     <div className="flex flex-col items-center text-center gap-2 pt-1">
@@ -49,9 +76,9 @@ const HomeBrandBanner = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
-            className="font-body text-white/85 text-[12.5px] font-medium tracking-wide uppercase drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)] whitespace-nowrap"
+            className="font-body text-white text-[12.5px] font-bold tracking-wide uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] whitespace-nowrap"
           >
-            {SUBTITLES[subtitleIndex]}
+            {subtitles[subtitleIndex]}
           </motion.p>
         </AnimatePresence>
       </div>

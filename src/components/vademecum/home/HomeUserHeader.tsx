@@ -1,4 +1,4 @@
-import { memo, useState } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { Bell, Menu as MenuIcon, User as UserIcon } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -24,6 +24,10 @@ const HomeUserHeader = ({
 }: HomeUserHeaderProps) => {
   const [imgError, setImgError] = useState(false);
 
+  useEffect(() => {
+    setImgError(false);
+  }, [avatarUrl]);
+
   const handleNotifClick = () => {
     if (Capacitor.isNativePlatform()) Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
     onOpenNotif();
@@ -43,7 +47,6 @@ const HomeUserHeader = ({
               src={avatarUrl}
               alt={nome}
               referrerPolicy="no-referrer"
-              crossOrigin="anonymous"
               onError={() => setImgError(true)}
               className="w-full h-full object-cover"
             />

@@ -49,8 +49,11 @@ const IndexMobile = () => {
   // exibir a View Swift/Compose por cima. A UI React continua montando atrás.
   useEffect(() => {
     let active = true;
+    const handles: Array<{ remove: () => Promise<void> }> = [];
+
     if (typeof window !== 'undefined' && (window as any).Capacitor?.isNativePlatform()) {
-      import('@/plugins/NativeHomePlugin').then(({ NativeHome }) => {
+      import('@/plugins/NativeHomePlugin').then(async ({ NativeHome }) => {
+        if (!active) return;
         NativeHome.showHome({
           data: {
             nome: profileSummary?.displayName || 'Usuário',
@@ -67,25 +70,37 @@ const IndexMobile = () => {
           }
         }).catch(e => console.warn('NativeHome not bound, fallback to React', e));
 
-        if (!active) return;
-        NativeHome.addListener('onNavigate', (info) => {
-          navigate(info.route);
-        });
-        NativeHome.addListener('onSearch', () => {
-          setSearchOpen(true);
-        });
-        NativeHome.addListener('onOpenSidebar', () => {
-          setMenuOpen(true);
-        });
+        try {
+          const h1 = await NativeHome.addListener('onNavigate', (info) => {
+            navigate(info.route);
+          });
+          const h2 = await NativeHome.addListener('onSearch', () => {
+            setSearchOpen(true);
+          });
+          const h3 = await NativeHome.addListener('onOpenSidebar', () => {
+            setMenuOpen(true);
+          });
+
+          if (!active) {
+            void h1.remove();
+            void h2.remove();
+            void h3.remove();
+          } else {
+            handles.push(h1, h2, h3);
+          }
+        } catch (err) {
+          console.warn('[IndexMobile] NativeHome listeners error:', err);
+        }
       });
     }
     return () => {
       active = false;
+      handles.forEach(h => { void h.remove().catch(() => {}); });
       if (typeof window !== 'undefined' && (window as any).Capacitor?.isNativePlatform()) {
         import('@/plugins/NativeHomePlugin').then(({ NativeHome }) => NativeHome.hideHome().catch(() => {}));
       }
     };
-  }, [navigate]);
+  }, [navigate, profileSummary?.displayName, profileSummary?.avatarUrl, unreadCount]);
 
   const location = useLocation();
   const [, setActiveTab] = useState<Tab>('legislacao');
@@ -155,7 +170,11 @@ const IndexMobile = () => {
         />
       </div>
       <div className="relative z-10">
-        <HomeHeaderHero onSearchOpenChange={setHeroSearchOpen} />
+        <HomeHeaderHero
+          onOpenMenu={() => setMenuOpen(true)}
+          onOpenSearch={() => setSearchOpen(true)}
+          onSearchOpenChange={setHeroSearchOpen}
+        />
         <div>
           <main ref={contentRef} className="max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-2">
             <img src={primeLogo} alt="" aria-hidden="true" loading="eager" decoding="sync" fetchPriority="high" className="absolute w-0 h-0 opacity-0 pointer-events-none" />

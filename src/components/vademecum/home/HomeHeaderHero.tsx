@@ -55,7 +55,13 @@ const FALLBACK_COVERS = [
   { url: pickAsset(cover10Bundled, srcOf(cover10Asset)), preset: 'ken-burns' },
 ];
 
-const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: boolean) => void } = {}) => {
+interface HomeHeaderHeroProps {
+  onSearchOpenChange?: (open: boolean) => void;
+  onOpenMenu?: () => void;
+  onOpenSearch?: () => void;
+}
+
+const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHeaderHeroProps = {}) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data: profileSummary } = useProfileSummary();
@@ -171,15 +177,15 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
           iniciais={iniciais}
           unreadCount={unreadCount}
           onOpenNotif={() => setNotifOpen(true)}
-          onOpenMenu={() => setMenuOpen(true)}
+          onOpenMenu={onOpenMenu || (() => setMenuOpen(true))}
         />
 
         <div className="relative px-4 pt-5 pb-5 min-h-[240px] flex flex-col gap-4">
           {/* Logo e subtítulo dinâmico */}
-          <HomeBrandBanner />
+          <HomeBrandBanner perfilLabel={perfilLabel} />
 
           {/* Barra de Pesquisa Animada */}
-          <HomeSearchButton onOpenSearch={() => setSearchOpen(true)} />
+          <HomeSearchButton onOpenSearch={onOpenSearch || (() => setSearchOpen(true))} />
 
           {/* Atalhos Rápidos */}
           <HomeActionShortcuts />
@@ -187,9 +193,9 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
       </div>
 
       <Suspense fallback={null}>
-        {menuOpen && <SideMenu open={menuOpen} onClose={() => setMenuOpen(false)} />}
+        {!onOpenMenu && menuOpen && <SideMenu open={menuOpen} onClose={() => setMenuOpen(false)} />}
         {notifOpen && <NotificationsSheet open={notifOpen} onClose={() => setNotifOpen(false)} />}
-        {searchOpen && (
+        {!onOpenSearch && searchOpen && (
           <SearchOverlay
             open={searchOpen}
             onClose={() => setSearchOpen(false)}
