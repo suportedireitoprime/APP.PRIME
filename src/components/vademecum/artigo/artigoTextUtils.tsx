@@ -184,10 +184,73 @@ export function normalizeLegalLineBreaks(text: string): string {
   return merged.join('\n');
 }
 
-/** Highlight legal tokens (Art., §, incisos, alíneas) with colored spans. */
-export function highlightTermos(text: string, showRedacao?: boolean): React.ReactNode[] {
+/** Escape all regular expression special characters to avoid SyntaxError in dynamic RegExp. */
+export function escapeRegex(text: string): string {
+  if (!text) return '';
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/** Safely highlights search terms across React nodes without regex crashes. */
+export function highlightSearchInNodes(nodes: React.ReactNode[], termoBusca?: string): React.ReactNode[] {
+  if (!termoBusca || !termoBusca.trim()) return nodes;
+  const safeTerm = escapeRegex(termoBusca.trim());
+  let regex: RegExp;
+  try {
+    regex = new RegExp(`(${safeTerm})`, 'gi');
+  } catch {
+    return nodes;
+  }
+
+  const highlightText = (text: string, keyPrefix: string): React.ReactNode[] => {
+    const parts = text.split(regex);
+    if (parts.length <= 1) return [text];
+    return parts.map((part, idx) => {
+      if (part.toLowerCase() === termoBusca.trim().toLowerCase()) {
+        return (
+          <mark
+            key={`${keyPrefix}-match-${idx}`}
+            className="bg-yellow-400/25 text-foreground rounded px-0.5 font-semibold"
+          >
+            {part}
+          </mark>
+        );
+      }
+      return part;
+    });
+  };
+
+  const traverseNode = (node: React.ReactNode, key: number | string): React.ReactNode => {
+    if (typeof node === 'string') {
+      return highlightText(node, String(key));
+    }
+    if (React.isValidElement(node)) {
+      const children = (node.props as any)?.children;
+      if (typeof children === 'string') {
+        return React.cloneElement(node, {
+          ...(node.props as any),
+          key: node.key ?? key,
+          children: highlightText(children, `${key}-ch`),
+        });
+      }
+      if (Array.isArray(children)) {
+        return React.cloneElement(node, {
+          ...(node.props as any),
+          key: node.key ?? key,
+          children: children.map((c, i) => traverseNode(c, `${key}-${i}`)),
+        });
+      }
+    }
+    return node;
+  };
+
+  return nodes.flatMap((node, idx) => traverseNode(node, idx));
+}
+
+/** Highlight legal tokens (Art., §, incisos, alíneas) and optional search terms with colored spans. */
+export function highlightTermos(text: string, showRedacao?: boolean, termoBusca?: string): React.ReactNode[] {
   const redacaoPattern = /\((?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Revogado|Vetado)[^)]*\)/gi;
 
+  let baseNodes: React.ReactNode[] = [];
   if (showRedacao) {
     const parts: React.ReactNode[] = [];
     let lastIndex = 0;
@@ -203,9 +266,16 @@ export function highlightTermos(text: string, showRedacao?: boolean): React.Reac
       lastIndex = m.index + m[0].length;
     }
     if (lastIndex < text.length) parts.push(...highlightTermosOnly(text.slice(lastIndex)));
-    return parts.length > 0 ? parts : highlightTermosOnly(text);
+    baseNodes = parts.length > 0 ? parts : highlightTermosOnly(text);
+  } else {
+    baseNodes = highlightTermosOnly(text);
   }
-  return highlightTermosOnly(text);
+
+  if (termoBusca && termoBusca.trim()) {
+    return highlightSearchInNodes(baseNodes, termoBusca);
+  }
+
+  return baseNodes;
 }
 
 /** Highlight only legal structure tokens (Art., §, Roman numerals, alíneas). */
