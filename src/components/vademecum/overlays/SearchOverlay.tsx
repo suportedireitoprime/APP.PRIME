@@ -114,8 +114,14 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
 
   useEffect(() => {
     if (open) {
+      document.body.style.overflow = 'hidden';
       setQuery('');
+    } else {
+      document.body.style.overflow = '';
     }
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [open]);
 
   useEffect(() => {
@@ -269,6 +275,13 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
                   autoFocus
                   value={voice.listening && voice.partial ? voice.partial : query}
                   onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'ArrowDown') {
+                      e.preventDefault();
+                      const firstResult = document.querySelector('.search-result-btn') as HTMLElement;
+                      firstResult?.focus();
+                    }
+                  }}
                   placeholder={placeholder}
                   className="w-full h-12 pl-11 pr-10 rounded-2xl bg-black/40 border border-white/25 text-white placeholder:text-white/50 outline-none focus:border-white/40 transition-colors"
                 />
@@ -317,7 +330,7 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
           </div>
 
           {/* Results */}
-          <div className="flex-1 overflow-y-auto px-2 pb-[calc(3.5rem+var(--sai-bottom))] relative border-t border-border/50 pt-2">
+          <div className="flex-1 overflow-y-auto px-2 pb-[45vh] relative border-t border-border/50 pt-2">
             
             {/* Conteúdo dinâmico da busca do Supabase (Videoaulas, Livros, Jurisprudência, etc) */}
             {activeTab !== 'leis' && (
@@ -347,40 +360,63 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
                 )}
                 {temTextoSemNumero && (
                   <>
-                    {leisPorTexto.length > 0 && (
-                      <p className="text-xs uppercase tracking-wider text-muted-foreground py-2 px-3 font-semibold mt-2">
-                        Leis encontradas
-                      </p>
-                    )}
-                    {leisPorTexto.map((lei) => {
-                      const fav = isFavorito(lei.id);
-                      return (
-                      <div
-                        key={lei.id + ':' + favVersion}
-                        className="w-full flex items-center gap-3 p-3.5 rounded-xl bg-card border border-border hover:border-primary/40 transition-all"
-                      >
-                        <button
-                          onClick={() => emitSelect(lei)}
-                          className="flex items-center gap-4 flex-1 min-w-0 text-left"
-                        >
-                          <div className="w-12 h-12 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0">
-                            <span className="text-xs font-bold text-red-500">{lei.sigla}</span>
+                    {leisPorTexto.length > 0 ? (
+                      <>
+                        <p className="text-xs uppercase tracking-wider text-muted-foreground py-2 px-3 font-semibold mt-2">
+                          {activeTab === 'tudo' ? 'Leis Populares e Resultados Locais' : 'Leis encontradas'}
+                        </p>
+                        {leisPorTexto.map((lei) => {
+                          const fav = isFavorito(lei.id);
+                          return (
+                          <div
+                            key={lei.id + ':' + favVersion}
+                            className="w-full flex items-center gap-3 p-3.5 rounded-xl bg-card border border-border hover:border-primary/40 transition-all"
+                          >
+                            <button
+                              onClick={() => emitSelect(lei)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'ArrowDown') {
+                                  e.preventDefault();
+                                  const next = e.currentTarget.parentElement?.nextElementSibling?.querySelector('.search-result-btn') as HTMLElement;
+                                  next?.focus();
+                                } else if (e.key === 'ArrowUp') {
+                                  e.preventDefault();
+                                  const prev = e.currentTarget.parentElement?.previousElementSibling?.querySelector('.search-result-btn') as HTMLElement;
+                                  if (prev) prev.focus();
+                                  else inputRef.current?.focus();
+                                }
+                              }}
+                              className="search-result-btn flex items-center gap-4 flex-1 min-w-0 text-left outline-none focus:ring-2 focus:ring-primary rounded-lg"
+                            >
+                              <div className="w-12 h-12 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0">
+                                <span className="text-xs font-bold text-red-500">{lei.sigla}</span>
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-base font-semibold text-foreground truncate">{lei.nome}</p>
+                                <p className="text-sm text-muted-foreground truncate">{lei.descricao}</p>
+                              </div>
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); toggleFavorito({ tipo: lei.tipo, leiId: lei.id, nome: lei.nome, descricao: lei.descricao, tabela_nome: lei.tabela_nome }); }}
+                              aria-label={fav ? 'Remover dos favoritos' : 'Favoritar lei'}
+                              className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-transform ${fav ? 'text-primary' : 'text-muted-foreground'}`}
+                            >
+                              <Heart className={`w-6 h-6 ${fav ? 'fill-current' : ''}`} />
+                            </button>
                           </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-base font-semibold text-foreground truncate">{lei.nome}</p>
-                            <p className="text-sm text-muted-foreground truncate">{lei.descricao}</p>
-                          </div>
-                        </button>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); toggleFavorito({ tipo: lei.tipo, leiId: lei.id, nome: lei.nome, descricao: lei.descricao, tabela_nome: lei.tabela_nome }); }}
-                          aria-label={fav ? 'Remover dos favoritos' : 'Favoritar lei'}
-                          className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-transform ${fav ? 'text-primary' : 'text-muted-foreground'}`}
-                        >
-                          <Heart className={`w-6 h-6 ${fav ? 'fill-current' : ''}`} />
-                        </button>
+                          );
+                        })}
+                      </>
+                    ) : activeTab === 'leis' ? (
+                      <div className="px-4 py-12 text-center space-y-3">
+                        <div className="w-14 h-14 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
+                          <Search className="w-7 h-7 text-primary/60" />
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Nenhuma lei encontrada para "{query}".
+                        </p>
                       </div>
-                      );
-                    })}
+                    ) : null}
                   </>
                 )}
                 {artigoQueryDigits && (
