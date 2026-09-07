@@ -1593,6 +1593,31 @@ html.light .bg-\[\#212121\]\/95 { background-color: hsl(var(--card) / 0.95) !imp
   .lp-fall, .lp-float, .lp-glow { animation: none; }
 }
 
+/* Fase 28: Contenção Geométrica Estrita de Cards e Flashcards (Itens 28, 29, 30) */
+.lp-fall, .lp-float {
+  contain: layout paint;
+  will-change: transform;
+}
+
+[data-flashcard="true"] {
+  contain: layout;
+  transform-style: preserve-3d;
+}
+
+/* Limita qualquer ilustração ou imagem embutida em flashcards para evitar saltos verticais */
+[data-flashcard="true"] img:not(.lp-fall):not(.lp-float),
+.flashcard-content img {
+  max-height: 12rem;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: 0.75rem;
+  margin-left: auto;
+  margin-right: auto;
+  contain: paint;
+  transition: opacity 0.3s ease-out;
+}
+
 /* ── Reflexo único (landing hero): passa uma vez no título, depois no botão ── */
 @keyframes lpSheenSweep {
   0%   { transform: translateX(-130%) skewX(-18deg); opacity: 0; }

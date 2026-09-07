@@ -455,7 +455,8 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
             </motion.div>
 
             <motion.div
-              className="absolute inset-0 w-full h-full"
+              data-flashcard="true"
+              className="absolute inset-0 w-full h-full contain-layout"
               animate={{ rotateY: flipped ? 180 : 0 }}
               transition={{ duration: 0.42, ease: [0.32, 0.72, 0, 1] }}
               style={{
@@ -493,10 +494,15 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
                       src={laurel}
                       alt=""
                       aria-hidden="true"
+                      loading="lazy"
+                      decoding="async"
+                      width={20}
+                      height={20}
                       className="absolute -top-10 lp-fall"
                       style={{
                         left: `${(i * 18 + 5) % 100}%`,
                         width: `${14 + (i % 3) * 6}px`,
+                        height: 'auto',
                         animationDuration: `${12 + (i % 4) * 3}s`,
                         animationDelay: `${i * 1.5}s`,
                         opacity: 0.15,
@@ -508,14 +514,22 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
                     src={scales}
                     alt=""
                     aria-hidden="true"
-                    className="pointer-events-none absolute right-[8%] top-[25%] w-10 lp-float"
+                    loading="lazy"
+                    decoding="async"
+                    width={40}
+                    height={40}
+                    className="pointer-events-none absolute right-[8%] top-[25%] w-10 h-auto lp-float"
                     style={{ animationDirection: 'reverse', opacity: 0.1, filter: `drop-shadow(0 0 12px ${accent}60)` }}
                   />
                   <img
                     src={laurel}
                     alt=""
                     aria-hidden="true"
-                    className="pointer-events-none absolute left-[12%] bottom-[25%] w-8 lp-float"
+                    loading="lazy"
+                    decoding="async"
+                    width={32}
+                    height={32}
+                    className="pointer-events-none absolute left-[12%] bottom-[25%] w-8 h-auto lp-float"
                     style={{ animationDelay: '2s', opacity: 0.1 }}
                   />
                 </div>
@@ -716,10 +730,15 @@ function FrenteCard({
             src={laurel}
             alt=""
             aria-hidden="true"
+            loading="lazy"
+            decoding="async"
+            width={20}
+            height={20}
             className="absolute -top-10 lp-fall"
             style={{
               left: `${(i * 18 + 5) % 100}%`,
               width: `${14 + (i % 3) * 6}px`,
+              height: 'auto',
               animationDuration: `${12 + (i % 4) * 3}s`,
               animationDelay: `${i * 1.5}s`,
               opacity: 0.5,
@@ -731,14 +750,22 @@ function FrenteCard({
           src={scales}
           alt=""
           aria-hidden="true"
-          className="pointer-events-none absolute right-[8%] top-[25%] w-10 lp-float"
+          loading="lazy"
+          decoding="async"
+          width={40}
+          height={40}
+          className="pointer-events-none absolute right-[8%] top-[25%] w-10 h-auto lp-float"
           style={{ animationDirection: 'reverse', opacity: 0.45, filter: `drop-shadow(0 0 12px ${accent}60)` }}
         />
         <img
           src={laurel}
           alt=""
           aria-hidden="true"
-          className="pointer-events-none absolute left-[12%] bottom-[25%] w-8 lp-float"
+          loading="lazy"
+          decoding="async"
+          width={32}
+          height={32}
+          className="pointer-events-none absolute left-[12%] bottom-[25%] w-8 h-auto lp-float"
           style={{ animationDelay: '2s', opacity: 0.35 }}
         />
       </div>

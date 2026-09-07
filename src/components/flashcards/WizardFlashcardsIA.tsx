@@ -402,7 +402,13 @@ Descrição: ${desc.substring(0, 1500)}`;
                     ) : (
                       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                         <div className="bg-card border border-border/80 rounded-2xl overflow-hidden relative shadow-lg">
-                          <img src={youtubePreview.image} className="aspect-video w-full object-cover opacity-70" />
+                          <img
+                            src={youtubePreview.image}
+                            alt={youtubePreview.title || "Preview do vídeo"}
+                            loading="lazy"
+                            decoding="async"
+                            className="aspect-video w-full object-cover opacity-70"
+                          />
                           <div className="p-4 bg-zinc-950">
                             <h4 className="font-bold text-sm line-clamp-2 text-zinc-100">{youtubePreview.title}</h4>
                             <p className="text-xs text-zinc-500 mt-2">{youtubePreview.author || 'Canal'}</p>

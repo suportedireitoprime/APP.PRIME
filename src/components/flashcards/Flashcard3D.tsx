@@ -125,7 +125,8 @@ const Flashcard3D = memo(function Flashcard3D({
           >
             <div
               ref={cardContainerRef}
-              className="relative h-full w-full transition-transform duration-[800ms] [transform-style:preserve-3d]"
+              data-flashcard="true"
+              className="relative h-full w-full transition-transform duration-[800ms] [transform-style:preserve-3d] contain-layout"
               style={{
                 transform: virado ? 'rotateY(180deg)' : 'rotateY(0deg)',
                 transitionTimingFunction: 'cubic-bezier(0.34, 1.25, 0.64, 1)',
@@ -161,10 +162,49 @@ const Flashcard3D = memo(function Flashcard3D({
                 {/* Floating Elements from Landing Page */}
                 <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[32px]">
                   {Array.from({ length: 6 }).map((_, i) => (
-                    <img key={i} src={laurel} alt="" aria-hidden="true" className="absolute -top-10 lp-fall" style={{ left: `${(i * 18 + 5) % 100}%`, width: `${14 + (i % 3) * 6}px`, animationDuration: `${12 + (i % 4) * 3}s`, animationDelay: `${i * 1.5}s`, opacity: 0.5, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />
+                    <img
+                      key={i}
+                      src={laurel}
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                      decoding="async"
+                      width={20}
+                      height={20}
+                      className="absolute -top-10 lp-fall"
+                      style={{
+                        left: `${(i * 18 + 5) % 100}%`,
+                        width: `${14 + (i % 3) * 6}px`,
+                        height: 'auto',
+                        animationDuration: `${12 + (i % 4) * 3}s`,
+                        animationDelay: `${i * 1.5}s`,
+                        opacity: 0.5,
+                        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))',
+                      }}
+                    />
                   ))}
-                  <img src={scales} alt="" aria-hidden="true" className="pointer-events-none absolute right-[8%] top-[25%] w-10 lp-float" style={{ animationDirection: 'reverse', opacity: 0.45, filter: `drop-shadow(0 0 12px ${accent}60)` }} />
-                  <img src={laurel} alt="" aria-hidden="true" className="pointer-events-none absolute left-[12%] bottom-[25%] w-8 lp-float" style={{ animationDelay: '2s', opacity: 0.35 }} />
+                  <img
+                    src={scales}
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                    width={40}
+                    height={40}
+                    className="pointer-events-none absolute right-[8%] top-[25%] w-10 h-auto lp-float"
+                    style={{ animationDirection: 'reverse', opacity: 0.45, filter: `drop-shadow(0 0 12px ${accent}60)` }}
+                  />
+                  <img
+                    src={laurel}
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                    width={32}
+                    height={32}
+                    className="pointer-events-none absolute left-[12%] bottom-[25%] w-8 h-auto lp-float"
+                    style={{ animationDelay: '2s', opacity: 0.35 }}
+                  />
                 </div>
 
                 <div className="relative z-10 mb-4 flex items-start justify-between gap-2">
@@ -206,10 +246,49 @@ const Flashcard3D = memo(function Flashcard3D({
                 {/* Floating Elements (Verso) */}
                 <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[32px]">
                   {Array.from({ length: 6 }).map((_, i) => (
-                    <img key={i} src={laurel} alt="" aria-hidden="true" className="absolute -top-10 lp-fall" style={{ left: `${(i * 18 + 5) % 100}%`, width: `${14 + (i % 3) * 6}px`, animationDuration: `${12 + (i % 4) * 3}s`, animationDelay: `${i * 1.5}s`, opacity: 0.15, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />
+                    <img
+                      key={i}
+                      src={laurel}
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                      decoding="async"
+                      width={20}
+                      height={20}
+                      className="absolute -top-10 lp-fall"
+                      style={{
+                        left: `${(i * 18 + 5) % 100}%`,
+                        width: `${14 + (i % 3) * 6}px`,
+                        height: 'auto',
+                        animationDuration: `${12 + (i % 4) * 3}s`,
+                        animationDelay: `${i * 1.5}s`,
+                        opacity: 0.15,
+                        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))',
+                      }}
+                    />
                   ))}
-                  <img src={scales} alt="" aria-hidden="true" className="pointer-events-none absolute right-[8%] top-[25%] w-10 lp-float" style={{ animationDirection: 'reverse', opacity: 0.1, filter: `drop-shadow(0 0 12px ${accent}60)` }} />
-                  <img src={laurel} alt="" aria-hidden="true" className="pointer-events-none absolute left-[12%] bottom-[25%] w-8 lp-float" style={{ animationDelay: '2s', opacity: 0.1 }} />
+                  <img
+                    src={scales}
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                    width={40}
+                    height={40}
+                    className="pointer-events-none absolute right-[8%] top-[25%] w-10 h-auto lp-float"
+                    style={{ animationDirection: 'reverse', opacity: 0.1, filter: `drop-shadow(0 0 12px ${accent}60)` }}
+                  />
+                  <img
+                    src={laurel}
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                    width={32}
+                    height={32}
+                    className="pointer-events-none absolute left-[12%] bottom-[25%] w-8 h-auto lp-float"
+                    style={{ animationDelay: '2s', opacity: 0.1 }}
+                  />
                 </div>
 
                 <div className="relative z-10 flex-1 flex flex-col">
