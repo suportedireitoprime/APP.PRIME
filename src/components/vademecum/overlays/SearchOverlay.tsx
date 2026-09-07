@@ -116,11 +116,14 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
     if (open) {
       document.body.style.overflow = 'hidden';
       setQuery('');
+      window.dispatchEvent(new CustomEvent('direitoprime:bottom-nav-visibility', { detail: { hidden: true } }));
     } else {
       document.body.style.overflow = '';
+      window.dispatchEvent(new CustomEvent('direitoprime:bottom-nav-visibility', { detail: { hidden: false } }));
     }
     return () => {
       document.body.style.overflow = '';
+      window.dispatchEvent(new CustomEvent('direitoprime:bottom-nav-visibility', { detail: { hidden: false } }));
     };
   }, [open]);
 

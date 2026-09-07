@@ -156,7 +156,6 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
         {/* Overlays radiais idênticos ao painel do Vade Mecum */}
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
 
         {/* Decorative legal motifs isolados */}
         <HeroMotifs />
@@ -164,8 +163,7 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
         {/* Cover art — isolado */}
         <HeroCoverCarousel covers={HERO_COVERS} />
 
-        {/* Bottom-up gradient for text legibility */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent z-[1]" />
+        {/* Decorative legal motifs isolados */}
 
         {/* Header com Avatar, Perfil, Notificações e Menu */}
         <HomeUserHeader
