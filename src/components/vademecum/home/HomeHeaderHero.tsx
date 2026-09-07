@@ -148,7 +148,7 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
       >
         {/* Blindagem de overscroll superior contra vazamento do fundo */}
         <div
-          className="pointer-events-none absolute -top-[500px] left-0 right-0 h-[500px] z-0"
+          className="pointer-events-none absolute -top-[1200px] left-0 right-0 h-[1200px] z-0"
           style={{ backgroundColor: '#881337' }}
           aria-hidden="true"
         />

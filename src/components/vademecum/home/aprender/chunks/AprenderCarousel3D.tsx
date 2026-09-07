@@ -63,11 +63,24 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
   });
 
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
     const handleResize = () => {
-      setCardDims(window.innerWidth >= 640 ? { w: 152, h: 208 } : { w: 140, h: 192 });
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        const isSm = window.innerWidth >= 640;
+        setCardDims((prev) => {
+          const nextW = isSm ? 152 : 140;
+          const nextH = isSm ? 208 : 192;
+          if (prev.w === nextW && prev.h === nextH) return prev;
+          return { w: nextW, h: nextH };
+        });
+      }, 150);
     };
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   const pathD = useMemo(() => getCardPath(cardDims.w, cardDims.h, 16), [cardDims]);
@@ -261,7 +274,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
                     setTimeout(() => setPaused(false), 2500);
                   }
                 }}
-                className="absolute w-[140px] sm:w-[152px] h-[192px] sm:h-[208px] shrink-0 cursor-pointer will-change-transform"
+                className="absolute w-[140px] sm:w-[152px] h-[192px] sm:h-[208px] shrink-0 cursor-pointer will-change-transform touch-pan-y"
               >
                 {/* Card principal com contorno refinado e fino */}
                 <div

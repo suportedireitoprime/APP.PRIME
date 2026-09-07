@@ -18,7 +18,7 @@ const HomeSearchButton = ({ onOpenSearch }: HomeSearchButtonProps) => {
       type="button"
       onClick={handleClick}
       aria-label="Pesquisar artigos e leis"
-      className="mt-auto relative w-full flex items-center h-16 pl-14 pr-[112px] rounded-2xl bg-black/45 backdrop-blur-md border border-primary/40 shadow-lg shadow-black/30 active:scale-[0.99] transition search-bar-shine"
+      className="mt-auto relative w-full flex items-center h-16 pl-14 pr-[112px] rounded-2xl bg-black/75 backdrop-blur-sm border border-primary/40 shadow-lg shadow-black/30 active:scale-[0.99] transition search-bar-shine"
     >
       <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-primary shrink-0" strokeWidth={2.2} />
       <span className="relative z-[2] font-body text-white/70 text-[15px] font-medium truncate text-left">

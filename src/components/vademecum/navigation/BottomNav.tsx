@@ -236,7 +236,7 @@ const BottomNav = () => {
         onTouchStart={handleNavWarmup}
         className="relative z-10 bg-nav-panel border-t border-white/10 rounded-t-2xl md:border-t-0 md:rounded-none md:h-full md:bg-black/95 shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)] md:shadow-none pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] md:pb-0"
       >
-        <div className="max-w-2xl mx-auto px-2 py-1.5 md:py-8 md:h-full md:flex md:flex-col md:justify-center md:gap-6">
+        <div className="max-w-2xl mx-auto px-1 xs:px-2 py-1.5 md:py-8 md:h-full md:flex md:flex-col md:justify-center md:gap-6">
         <div className="grid grid-cols-5 md:grid-cols-1 items-stretch md:gap-6">
           {/* Slot 1: Blog */}
           <motion.button
@@ -252,8 +252,8 @@ const BottomNav = () => {
             }`}
             aria-label="Blog"
           >
-            <ScrollText className={`w-8 h-8 md:w-7 md:h-7 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/blog') ? 'scale-110' : ''}`} strokeWidth={1.2} />
-            <span className="font-body text-[12px] md:text-[11px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Blog</span>
+            <ScrollText className={`w-7 h-7 xs:w-8 xs:h-8 md:w-7 md:h-7 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/blog') ? 'scale-110' : ''}`} strokeWidth={1.2} />
+            <span className="font-body text-[10.5px] xs:text-[11.5px] md:text-[11px] font-medium leading-tight text-center text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Blog</span>
           </motion.button>
 
           {/* Slot 2: Chat Jurídico */}
@@ -268,8 +268,8 @@ const BottomNav = () => {
             }`}
             aria-label="Chat Jurídico"
           >
-            <MessageCircle className={`w-8 h-8 md:w-7 md:h-7 transition-transform text-white/90 drop-shadow-md ${chatOpen ? 'scale-110' : ''}`} strokeWidth={1.2} />
-            <span className="font-body text-[12px] md:text-[11px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Chat</span>
+            <MessageCircle className={`w-7 h-7 xs:w-8 xs:h-8 md:w-7 md:h-7 transition-transform text-white/90 drop-shadow-md ${chatOpen ? 'scale-110' : ''}`} strokeWidth={1.2} />
+            <span className="font-body text-[10.5px] xs:text-[11.5px] md:text-[11px] font-medium leading-tight text-center text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Chat</span>
           </motion.button>
 
           {/* Slot 3: Vade Mecum (destaque flutuante central no mobile, normal no tablet) */}
@@ -285,11 +285,11 @@ const BottomNav = () => {
             aria-label="Vade Mecum"
           >
             <span
-              className={`absolute -top-9 left-1/2 -translate-x-1/2 w-[72px] h-[72px] md:relative md:top-0 md:left-0 md:translate-x-0 md:w-auto md:h-auto md:bg-transparent md:shadow-none rounded-full flex items-center justify-center overflow-hidden bg-hero-panel shadow-[0_10px_26px_rgba(0,0,0,0.6)] transition-transform ${
+              className={`absolute -top-9 left-1/2 -translate-x-1/2 w-[68px] h-[68px] xs:w-[72px] xs:h-[72px] md:relative md:top-0 md:left-0 md:translate-x-0 md:w-auto md:h-auto md:bg-transparent md:shadow-none rounded-full flex items-center justify-center overflow-hidden bg-hero-panel shadow-[0_10px_26px_rgba(0,0,0,0.6)] transition-transform ${
                 path.startsWith('/vade-mecum') ? 'scale-110 md:bg-white/15 md:ring-1 md:ring-white/25' : ''
               }`}
             >
-              <Scale className="relative w-9 h-9 md:w-7 md:h-7 text-white md:text-white/90 drop-shadow-lg" aria-hidden="true" strokeWidth={1.2} />
+              <Scale className="relative w-8 h-8 xs:w-9 xs:h-9 md:w-7 md:h-7 text-white md:text-white/90 drop-shadow-lg" aria-hidden="true" strokeWidth={1.2} />
               {/* Reflexo brilhante que passa periodicamente no mobile */}
               <span
                 aria-hidden
@@ -297,8 +297,8 @@ const BottomNav = () => {
               />
             </span>
             {/* Spacer invisível ocupando o mesmo espaço do ícone dos outros slots no mobile */}
-            <span aria-hidden className="w-8 h-8 md:hidden" />
-            <span className="font-body text-[12px] md:text-[11px] font-medium leading-tight text-center text-white md:text-white/90 drop-shadow-sm">Vade Mecum</span>
+            <span aria-hidden className="w-7 h-7 xs:w-8 xs:h-8 md:hidden" />
+            <span className="font-body text-[10.5px] xs:text-[11.5px] md:text-[11px] font-medium leading-tight text-center text-white md:text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Vade Mecum</span>
           </motion.button>
 
           {/* Slot 4: Ferramentas */}
@@ -318,8 +318,8 @@ const BottomNav = () => {
             }`}
             aria-label="Ferramentas"
           >
-            <Gavel className={`w-8 h-8 md:w-7 md:h-7 transition-transform text-white/90 drop-shadow-md ${location.pathname.startsWith('/ferramentas') ? 'scale-110' : ''}`} strokeWidth={1.2} />
-            <span className="font-body text-[12px] md:text-[11px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Ferramentas</span>
+            <Gavel className={`w-7 h-7 xs:w-8 xs:h-8 md:w-7 md:h-7 transition-transform text-white/90 drop-shadow-md ${location.pathname.startsWith('/ferramentas') ? 'scale-110' : ''}`} strokeWidth={1.2} />
+            <span className="font-body text-[10.5px] xs:text-[11.5px] md:text-[11px] font-medium leading-tight text-center text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Ferramentas</span>
           </motion.button>
 
           {/* Slot 5: Pílulas */}
@@ -336,8 +336,8 @@ const BottomNav = () => {
             }`}
             aria-label="Pílulas"
           >
-            <Pill className={`w-8 h-8 md:w-7 md:h-7 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/pilulas') ? 'scale-110' : ''}`} strokeWidth={1.2} />
-            <span className="font-body text-[12px] md:text-[11px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Pílulas</span>
+            <Pill className={`w-7 h-7 xs:w-8 xs:h-8 md:w-7 md:h-7 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/pilulas') ? 'scale-110' : ''}`} strokeWidth={1.2} />
+            <span className="font-body text-[10.5px] xs:text-[11.5px] md:text-[11px] font-medium leading-tight text-center text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Pílulas</span>
           </motion.button>
         </div>
       </div>

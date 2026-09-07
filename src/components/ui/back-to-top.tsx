@@ -101,7 +101,7 @@ export default function BackToTop() {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.8, y: 20 }}
           onClick={scrollToTop}
-          className="fixed bottom-[90px] right-4 z-50 p-3 rounded-full bg-primary text-primary-foreground shadow-lg shadow-black/40 backdrop-blur-md active:scale-95 transition-all md:bottom-8 md:right-8"
+          className="fixed bottom-[calc(5.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] right-4 z-50 p-3 rounded-full bg-primary text-primary-foreground shadow-lg shadow-black/40 backdrop-blur-md active:scale-95 transition-all md:bottom-8 md:right-8"
           aria-label="Voltar ao topo"
         >
           <ArrowUp className="w-5 h-5" strokeWidth={2.5} />

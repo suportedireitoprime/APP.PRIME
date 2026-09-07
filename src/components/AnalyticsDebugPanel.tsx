@@ -19,7 +19,7 @@ export default function AnalyticsDebugPanel() {
   if (!enabled) return null;
 
   return (
-    <div className="fixed bottom-20 right-3 z-[9999] max-w-[92vw]">
+    <div className="fixed bottom-[calc(5.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] right-3 z-[9999] max-w-[92vw]">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}

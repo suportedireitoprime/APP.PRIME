@@ -39,7 +39,7 @@ const HomeActionShortcuts = () => {
               navigate(item.to);
             }}
             style={{ '--shimmer-delay': `${index * 150}ms` } as React.CSSProperties}
-            className="group relative flex flex-col items-center justify-center gap-1 h-[72px] rounded-2xl bg-black/45 backdrop-blur-md border border-white/15 shadow-lg shadow-black/30 active:scale-[0.96] transition-all duration-[80ms] shortcut-button-shine cursor-pointer"
+            className="group relative flex flex-col items-center justify-center gap-1 h-[72px] rounded-2xl bg-black/75 backdrop-blur-sm border border-white/15 shadow-lg shadow-black/30 active:scale-[0.96] transition-all duration-[80ms] shortcut-button-shine cursor-pointer"
           >
             {badgeCount > 0 && item.badgeColor && (
               <span

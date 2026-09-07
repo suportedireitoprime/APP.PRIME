@@ -140,7 +140,12 @@ const IndexMobile = () => {
     document.title = 'Direito Prime - Vade Mecum, Leis & Estudos Jurídicos';
   }, []);
 
-  useEffect(() => { warmCoverCache(); }, []);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      warmCoverCache();
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Usa o hook de warmup centralizado para a Home Mobile
   useHomeWarmup([primeLogo, ...Object.values(HERO_CONFIG)], undefined, false);
@@ -168,7 +173,7 @@ const IndexMobile = () => {
 
   return (
     <div className="min-h-dvh bg-zinc-950 pb-[calc(5rem+var(--sai-bottom))] md:pb-0 md:pl-[90px] transition-all relative overflow-hidden">
-      <div className="absolute inset-0 z-0 opacity-60">
+      <div className="absolute top-0 left-0 right-0 h-[100vh] pointer-events-none z-0 opacity-60">
         <ShapeGrid 
           speed={0.5} 
           squareSize={40}

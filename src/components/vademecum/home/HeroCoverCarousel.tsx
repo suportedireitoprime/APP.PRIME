@@ -8,27 +8,29 @@ interface HeroCoverCarouselProps {
 }
 
 const HeroCoverCarousel = ({ covers }: HeroCoverCarouselProps) => {
-  const [coverIndex, setCoverIndex] = useState(() => Math.floor(Math.random() * Math.max(1, covers.length)));
+  const [coverIndex, setCoverIndex] = useState(() => {
+    const len = covers?.length || 0;
+    return len > 0 ? Math.floor(Math.random() * len) : 0;
+  });
 
   // Preload caching logic for smooth transitions
   useEffect(() => {
-    if (covers.length <= 1) return;
+    if (!covers || covers.length <= 1) return;
     const next = covers[(coverIndex + 1) % covers.length];
     if (!next?.url) return;
-    const w: any = window;
-    const idle = w.requestIdleCallback || ((cb: any) => setTimeout(cb, 400));
-    const cancel = w.cancelIdleCallback || clearTimeout;
+    const idle = (window as Window & { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback || ((cb: () => void) => setTimeout(cb, 400));
+    const cancel = (window as Window & { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback || clearTimeout;
     const handle = idle(() => {
       const img = new Image();
       img.decoding = 'async';
       img.src = next.url;
     });
-    return () => cancel(handle);
+    return () => cancel(handle as number);
   }, [coverIndex, covers]);
 
   // Interval driver isolated here
   useEffect(() => {
-    if (covers.length <= 1) return;
+    if (!covers || covers.length <= 1) return;
     let id: ReturnType<typeof setInterval> | null = null;
     const start = () => {
       if (id) return;
@@ -39,13 +41,17 @@ const HeroCoverCarousel = ({ covers }: HeroCoverCarouselProps) => {
     const onVis = () => (document.hidden ? stop() : start());
     document.addEventListener('visibilitychange', onVis);
     return () => { stop(); document.removeEventListener('visibilitychange', onVis); };
-  }, [covers.length]);
+  }, [covers]);
+
+  if (!covers || covers.length === 0) return null;
 
   return (
     <div className="pointer-events-none absolute inset-0 select-none overflow-hidden">
       <AnimatePresence initial={false}>
         {(() => {
-          const current = covers[coverIndex % covers.length];
+          const safeLen = covers.length;
+          if (safeLen === 0) return null;
+          const current = covers[coverIndex % safeLen];
           if (!current) return null;
           const pos = COVER_POSITIONS[coverIndex % COVER_POSITIONS.length];
           const posClass =
@@ -87,7 +93,7 @@ const HeroCoverCarousel = ({ covers }: HeroCoverCarouselProps) => {
               exit={preset.exit}
               transition={preset.transition}
               style={{ animation: kenBurnsAnim, willChange: 'transform' }}
-              className={`absolute bottom-0 h-[88%] w-auto max-w-[70%] object-contain object-bottom drop-shadow-[0_10px_28px_rgba(0,0,0,0.35)] ${posClass}`}
+              className={`absolute bottom-0 h-[88%] w-auto max-w-[70%] md:max-w-[55%] md:h-[92%] landscape:max-w-[45%] landscape:h-[94%] object-contain object-bottom drop-shadow-[0_10px_28px_rgba(0,0,0,0.35)] ${posClass}`}
             />
           );
         })()}
