@@ -224,7 +224,13 @@ export const ArtigoOverlays = memo(function ArtigoOverlays({
             onClose={() => setShowVideoaulasListSheet(false)}
             tabelaNome={tabelaNome || ''}
             artigoNumero={artigo?.numero || ''}
-            leiNome={tabelaNome}
+            leiNome={
+              tabelaNome?.toLowerCase().includes('penal')
+                ? 'Código Penal'
+                : tabelaNome?.toLowerCase().includes('cf') || tabelaNome?.toLowerCase().includes('const')
+                ? 'Constituição Federal'
+                : tabelaNome?.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) || ''
+            }
             onSelectVideo={(v: VideoaulaItem) => {
               setVideoaula({
                 titulo: v.titulo,

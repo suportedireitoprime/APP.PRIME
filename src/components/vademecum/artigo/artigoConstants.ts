@@ -18,9 +18,11 @@ export interface ArtigoBottomSheetProps {
   onToggleFavorito?: () => void;
   showNomenJuris?: boolean;
   tabelaNome?: string;
+  tabela_nome?: string;
   forceShowRedacao?: boolean;
   modificationInfo?: ModificationInfo | null;
   breadcrumb?: { parte?: string; titulo?: string; tituloDesc?: string } | null;
+  [key: string]: any;
 }
 
 export interface MagicGrifo {

@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
+import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 import { autoPip } from '@/lib/nativo/pip';
 import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { protegerTela, desprotegerTela } from '@/lib/nativo/protecaoTela';
@@ -26,6 +28,17 @@ interface VideoaulaSheetProps {
 interface Comentario { id: string; user_id: string; autor_nome: string | null; texto: string; created_at: string; }
 
 const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigoTexto }: VideoaulaSheetProps) => {
+  useBodyScrollLock(open);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
+
   const [activeTab, setActiveTab] = useState<'resumo' | 'artigo' | 'comentarios'>('resumo');
 
   // Content
@@ -336,15 +349,32 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
     return new Date(iso).toLocaleDateString('pt-BR');
   };
 
-  return (
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
     <AnimatePresence>
       {open && (
-        <>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/60 z-[10040]" onClick={onClose} />
+        <div className="fixed inset-0 z-[10050] pointer-events-auto flex items-stretch justify-center">
           <motion.div
-            initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
+            key="videoaula-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/75 backdrop-blur-sm z-[10050] pointer-events-auto touch-none"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
+          />
+          <motion.div
+            key="videoaula-sheet"
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-            className="fixed inset-0 z-[10041] bg-background flex flex-col items-center md:left-auto md:right-0 md:w-[min(46rem,96vw)] md:border-l md:border-border md:shadow-2xl"
+            data-artigo-menu
+            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-[10051] bg-background flex flex-col items-center md:left-auto md:right-0 md:w-[min(46rem,96vw)] md:border-l md:border-border md:shadow-2xl pointer-events-auto"
           >
             <div className="w-full max-w-3xl h-full flex flex-col min-h-0 relative">
               {/* Header */}
@@ -657,9 +687,10 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
               )}
             </AnimatePresence>
           </motion.div>
-        </>
+        </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 

@@ -450,7 +450,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
         Pular para o conteúdo principal
       </a>
       <PremiumGate 
-        isOpen={showPremiumGate} 
+        open={showPremiumGate} 
         onClose={() => setShowPremiumGate(false)} 
         feature={premiumGateFeature} 
         description={premiumGateDesc} 
@@ -825,6 +825,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
       {openArtigo && (
         <ArtigoBottomSheet
           artigo={openArtigo}
+          tabelaNome={selectedTabelaNome || ''}
           tabela_nome={selectedTabelaNome || ''}
           lei_id={selectedLeiId}
           onClose={() => { setOpenArtigo(null); setOpenFromNovidades(false); setOpenModInfo(null); }}
@@ -834,8 +835,8 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
         />
       )}
 
-      {selectedTabelaNome && <OcrScanner open={ocrOpen} onOpenChange={setOcrOpen} tabelaNome={selectedTabelaNome} leis={leis} />}
-      <GrafoOverlay open={showGrafo} onOpenChange={setShowGrafo} leiNome={selectedLeiNome} artigoFocus={openArtigo?.numero} />
+      {selectedTabelaNome && <OcrScanner open={ocrOpen} onClose={() => setOcrOpen(false)} leiNome={selectedLeiNome} leiSlug={selectedTabelaNome} />}
+      <GrafoOverlay open={showGrafo} onClose={() => setShowGrafo(false)} tabelaNome={selectedTabelaNome || ''} leiNome={selectedLeiNome} artigoNumero={openArtigo?.numero} />
 
       <AnimatePresence>
         {showScrollTop && (

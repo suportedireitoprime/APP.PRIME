@@ -193,25 +193,25 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
     <div ref={artigosListRef} className={shouldVirtualizeArtigos ? 'pb-8' : 'space-y-2 pb-8'}>
       {/* Item 30: Banner discreto para continuar leitura anterior */}
       {lastReadArtigo && !dismissedLastRead && !searchQuery && (
-        <div className="mb-4 flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-sm backdrop-blur-md">
+        <div className="mb-4 flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl bg-primary/10 border border-primary/25 text-foreground text-sm backdrop-blur-md">
           <div className="flex items-center gap-2 min-w-0">
-            <Bookmark className="w-4 h-4 shrink-0 text-amber-400" />
-            <span className="truncate">
-              Continuar leitura do <strong className="font-semibold text-amber-200">Art. {lastReadArtigo.numero}</strong>
+            <Bookmark className="w-4 h-4 shrink-0 text-primary" />
+            <span className="truncate text-foreground/90">
+              Continuar leitura do <strong className="font-bold text-foreground">Art. {lastReadArtigo.numero}</strong>
             </span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={handleResumeLastRead}
-              className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-amber-500 text-zinc-950 hover:bg-amber-400 transition-colors"
+              className="px-3 py-1.5 text-xs font-bold rounded-lg bg-primary text-white hover:bg-primary/90 active:scale-95 transition-all shadow-sm"
             >
               Ir para artigo
             </button>
             <button
               type="button"
               onClick={() => setDismissedLastRead(true)}
-              className="p-1 text-amber-400/60 hover:text-amber-300 rounded-md transition-colors"
+              className="p-1 text-muted-foreground hover:text-foreground rounded-md transition-colors"
               aria-label="Fechar"
             >
               <XCloseIcon className="w-4 h-4" />

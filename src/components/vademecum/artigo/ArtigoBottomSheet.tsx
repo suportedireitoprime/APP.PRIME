@@ -72,11 +72,14 @@ const ArtigoBottomSheet = ({
   isFavorito,
   onToggleFavorito,
   showNomenJuris = false,
-  tabelaNome,
+  tabelaNome: propTabelaNome,
+  tabela_nome,
   forceShowRedacao,
   modificationInfo,
   breadcrumb: rawBreadcrumb,
+  ...rest
 }: ArtigoBottomSheetProps) => {
+  const tabelaNome = propTabelaNome || tabela_nome || rest.tabela_nome || rest.tabelaNome || '';
   const artigo = useMemo(() => sanitizeArtigo(rawArtigo), [rawArtigo]);
   const breadcrumb = useMemo(() => {
     if (!rawBreadcrumb) return undefined;

@@ -427,7 +427,22 @@ export function useArtigoNarracao({
 
   // ─── gerarNarracao ───
   const gerarNarracao = useCallback(async (options?: { autoplay?: boolean; silent?: boolean; forceRegenerate?: boolean }) => {
-    if (!artigo || !tabelaNome) return;
+    if (!artigo) return;
+
+    if (!tabelaNome) {
+      console.warn('[useArtigoNarracao] tabelaNome ausente. Acionando síntese de voz nativa...');
+      const textoFormatadoFallback = formatTextoArtigoParaNarracao(artigo, breadcrumb);
+      const ok = await speakNative(textoFormatadoFallback);
+      setNarracaoLoading(false);
+      setNarracaoStepIdx(0);
+      if (ok) {
+        setNarracaoPlaying(true);
+        toast.success('Reproduzindo narração nativa do artigo.');
+      } else if (!options?.silent) {
+        toast.error('Não consegui gerar a narração agora. Tente novamente.');
+      }
+      return;
+    }
 
     // Item 12: Prevent concurrent audio generation (double-click flooding)
     if (isGeneratingAudioRef.current) {
@@ -618,7 +633,7 @@ export function useArtigoNarracao({
 
   // ─── handleNarrar ───
   const handleNarrar = async () => {
-    if (!artigo || !tabelaNome) {
+    if (!artigo) {
       toast.error('Não encontrei os dados deste artigo para narrar.');
       return;
     }
