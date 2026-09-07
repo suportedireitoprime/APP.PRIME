@@ -54,6 +54,27 @@ export function useArtigoGrifoMagico({
     }
   }, []);
 
+  // Item 7: Prevenção de Layout Thrashing na medição de posicionamento de grifos em Resize/Orientation
+  useEffect(() => {
+    if (!magicTooltip) return;
+
+    let rafId: number | null = null;
+    const handleResizeOrScroll = () => {
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        setMagicTooltip(null);
+      });
+    };
+
+    window.addEventListener('resize', handleResizeOrScroll, { passive: true });
+    window.addEventListener('orientationchange', handleResizeOrScroll, { passive: true });
+    return () => {
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', handleResizeOrScroll);
+      window.removeEventListener('orientationchange', handleResizeOrScroll);
+    };
+  }, [magicTooltip]);
+
   // Persiste grifos IA em `artigos_grifos` (1 linha/artigo) e cria uma
   // anotação por grifo em `artigos_anotacoes`, com dedupe por texto.
   // Chamado tanto quando o usuário clica em "Grifo mágico" quanto quando

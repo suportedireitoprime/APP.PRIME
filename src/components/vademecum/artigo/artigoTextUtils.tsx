@@ -379,13 +379,19 @@ export function applyHighlightsToText(
           } : (e) => {
             if (onTapHighlight) {
               e.stopPropagation();
-              const rect = (e.target as HTMLElement).getBoundingClientRect();
-              onTapHighlight(seg.id!, rect);
+              const target = e.currentTarget as HTMLElement;
+              requestAnimationFrame(() => {
+                const rect = target.getBoundingClientRect();
+                onTapHighlight(seg.id!, rect);
+              });
             }
           }}
           onMouseEnter={!highlightMode && seg.hasComment && onHoverHighlight ? (e) => {
-            const rect = (e.target as HTMLElement).getBoundingClientRect();
-            onHoverHighlight(seg.id!, rect);
+            const target = e.currentTarget as HTMLElement;
+            requestAnimationFrame(() => {
+              const rect = target.getBoundingClientRect();
+              onHoverHighlight(seg.id!, rect);
+            });
           } : undefined}
           onMouseLeave={!highlightMode && onHoverHighlight ? () => onHoverHighlight(null) : undefined}
           title={highlightMode ? 'Toque para apagar este grifo' : undefined}

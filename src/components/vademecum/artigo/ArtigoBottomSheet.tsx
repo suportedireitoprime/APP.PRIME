@@ -220,27 +220,34 @@ const ArtigoBottomSheet = ({
       setSelectionPill(null);
       return;
     }
+    let rafId: number | null = null;
     const handler = () => {
-      const sel = window.getSelection();
-      if (!sel || sel.isCollapsed || sel.rangeCount === 0) {
-        setSelectionPill(null);
-        return;
-      }
-      const range = sel.getRangeAt(0);
-      const container = scrollContainerRef.current;
-      if (!container || !container.contains(range.commonAncestorContainer)) {
-        setSelectionPill(null);
-        return;
-      }
-      const rect = range.getBoundingClientRect();
-      if (!rect.width && !rect.height) {
-        setSelectionPill(null);
-        return;
-      }
-      setSelectionPill({ x: rect.left + rect.width / 2, y: rect.top });
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const sel = window.getSelection();
+        if (!sel || sel.isCollapsed || sel.rangeCount === 0) {
+          setSelectionPill(null);
+          return;
+        }
+        const range = sel.getRangeAt(0);
+        const container = scrollContainerRef.current;
+        if (!container || !container.contains(range.commonAncestorContainer)) {
+          setSelectionPill(null);
+          return;
+        }
+        const rect = range.getBoundingClientRect();
+        if (!rect.width && !rect.height) {
+          setSelectionPill(null);
+          return;
+        }
+        setSelectionPill({ x: rect.left + rect.width / 2, y: rect.top });
+      });
     };
     document.addEventListener('selectionchange', handler);
-    return () => document.removeEventListener('selectionchange', handler);
+    return () => {
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      document.removeEventListener('selectionchange', handler);
+    };
   }, [isDesktop, artigo?.numero]);
 
   useEffect(() => {

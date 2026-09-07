@@ -156,8 +156,11 @@ const ArtigoLineRendererComponent = ({
                 if (highlightMode) {
                   handleRemoveSingleMagicHighlight(m.grifo);
                 } else {
-                  const rect = (e.target as HTMLElement).getBoundingClientRect();
-                  setMagicTooltip(prev => prev?.grifo.trechoExato === m.grifo.trechoExato ? null : { grifo: m.grifo, rect });
+                  const targetEl = e.currentTarget as HTMLElement;
+                  requestAnimationFrame(() => {
+                    const rect = targetEl.getBoundingClientRect();
+                    setMagicTooltip(prev => prev?.grifo.trechoExato === m.grifo.trechoExato ? null : { grifo: m.grifo, rect });
+                  });
                 }
               }}
             >
