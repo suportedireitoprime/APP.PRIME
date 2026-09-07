@@ -23,14 +23,11 @@ async function saveGeneratedAudioToSupabase(
   let finalAudioUrl = audioUrlOrData;
   try {
     if (audioUrlOrData.startsWith('data:audio/')) {
-      const base64Data = audioUrlOrData.split(',')[1];
-      if (base64Data) {
-        const binaryStr = atob(base64Data);
-        const bytes = new Uint8Array(binaryStr.length);
-        for (let i = 0; i < binaryStr.length; i++) {
-          bytes[i] = binaryStr.charCodeAt(i);
-        }
-        const blob = new Blob([bytes], { type: 'audio/wav' });
+      // Item 17: Use fetch() to convert data URI to Blob efficiently
+      // This avoids the expensive atob() + charCodeAt loop that caused 50-80MB memory spikes
+      try {
+        const response = await fetch(audioUrlOrData);
+        const blob = await response.blob();
         const safeNum = String(artigoNumero).replace(/[^a-zA-Z0-9]/g, '_');
         const filePath = `narracoes/${tabelaNome}/${safeNum}.wav`;
 
@@ -48,6 +45,8 @@ async function saveGeneratedAudioToSupabase(
         } else {
           console.warn('[useArtigoNarracao] Upload de áudio para Supabase falhou:', uploadErr);
         }
+      } catch (fetchErr) {
+        console.warn('[useArtigoNarracao] Falha ao converter data URI para Blob via fetch:', fetchErr);
       }
     }
 
@@ -337,8 +336,14 @@ export function useArtigoNarracao({
     setNarracaoPlaying(true);
     try {
       await audio.play();
+      // Item 16: Format MediaSession title for compact display on lockscreen/notification
+      const sigla = (tabelaNome || '').replace(/_\d{4}$/, '').replace(/_/g, ' ').toUpperCase();
+      const artigoNum = artigo?.numero || '';
+      const mediaTitle = sigla
+        ? `${sigla} Art. ${artigoNum}`.slice(0, 60)
+        : `Art. ${artigoNum}`;
       setupMediaSession({
-        title: `Art. ${artigo?.numero || ''}`,
+        title: mediaTitle,
         album: tabelaNome || '',
         audio,
       });
