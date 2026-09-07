@@ -240,14 +240,14 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="fixed inset-0 z-[49] bg-black/50 backdrop-blur-sm"
+          className="fixed inset-0 z-[90] bg-black/50 backdrop-blur-sm"
         />
         <motion.div
           initial={{ y: '100%' }}
           animate={{ y: 0 }}
           exit={{ y: '100%' }}
           transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-          className="fixed z-50 inset-0 bg-background flex flex-col lg:top-[10%] lg:bottom-auto lg:h-[80vh] lg:max-w-[800px] lg:mx-auto lg:rounded-2xl lg:shadow-2xl"
+          className="fixed z-[100] inset-0 bg-background flex flex-col lg:top-[10%] lg:bottom-auto lg:h-[80vh] lg:max-w-[800px] lg:mx-auto lg:rounded-2xl lg:shadow-2xl"
         >
           {/* Header estilizado seguindo o padrão da tela de Resumos */}
           <div className="bg-hero-panel px-4 pb-4 pt-[calc(0.5rem+var(--sai-top))] shrink-0 shadow-md">
