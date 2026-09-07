@@ -107,7 +107,27 @@ const QuestaoPlayer = ({ questoes, loading, contexto = 'pratica', onRegistrar, o
   };
 
   if (loading) {
-    return <div className="h-[420px] animate-pulse rounded-2xl bg-muted" />;
+    return (
+      <div className="flex flex-col gap-5 pt-2">
+        <div className="flex items-center justify-between">
+          <div className="h-4 w-24 rounded-md bg-muted motion-safe:animate-pulse" />
+          <div className="flex gap-3">
+            <div className="h-4 w-16 rounded-md bg-muted motion-safe:animate-pulse" />
+            <div className="h-5 w-5 rounded-md bg-muted motion-safe:animate-pulse" />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <div className="h-4 w-full rounded-md bg-muted motion-safe:animate-pulse" />
+          <div className="h-4 w-[90%] rounded-md bg-muted motion-safe:animate-pulse" />
+          <div className="h-4 w-[85%] rounded-md bg-muted motion-safe:animate-pulse" />
+        </div>
+        <div className="mt-4 flex flex-col gap-3">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="h-14 w-full rounded-xl bg-muted motion-safe:animate-pulse" />
+          ))}
+        </div>
+      </div>
+    );
   }
 
   if (!questoes.length) {
@@ -128,7 +148,7 @@ const QuestaoPlayer = ({ questoes, loading, contexto = 'pratica', onRegistrar, o
   }
 
   return (
-    <div className="flex flex-col gap-4 pb-[calc(7rem+var(--sai-bottom))]">
+    <div className="flex flex-col gap-4 pb-[calc(7rem+var(--sai-bottom))] lg:pb-8">
       <div className="flex items-center justify-between px-1">
         <span className="text-[12px] font-semibold uppercase tracking-wider text-primary">
           Questão {idx + 1} / {questoes.length}
@@ -148,7 +168,7 @@ const QuestaoPlayer = ({ questoes, loading, contexto = 'pratica', onRegistrar, o
       )}
 
       {atual.texto_associado && (
-        <div className="max-h-52 overflow-y-auto rounded-xl bg-muted/50 p-3 text-[14px] leading-relaxed text-muted-foreground">
+        <div className="max-h-52 overflow-y-auto overscroll-contain touch-pan-y break-words rounded-xl bg-muted/50 p-3 text-[14px] leading-relaxed text-muted-foreground">
           {atual.texto_associado}
         </div>
       )}
@@ -157,7 +177,7 @@ const QuestaoPlayer = ({ questoes, loading, contexto = 'pratica', onRegistrar, o
         <img src={atual.imagem_url} alt="Imagem da questão" loading="lazy" className="w-full rounded-xl border border-border" />
       )}
 
-      <h2 className="text-[17px] font-normal leading-snug text-foreground">{atual.enunciado}</h2>
+      <h2 className="text-[17px] break-words font-normal leading-snug text-foreground">{atual.enunciado}</h2>
 
       <div className="space-y-2">
         {alternativas.map((op) => {
@@ -168,17 +188,20 @@ const QuestaoPlayer = ({ questoes, loading, contexto = 'pratica', onRegistrar, o
           return (
             <button
               key={op.letra}
+              role="radio"
+              aria-checked={escolhida}
+              tabIndex={0}
               disabled={!!resp}
               onClick={() => responder(op.letra)}
-              className={`flex min-h-12 w-full items-start gap-3 rounded-xl border p-4 text-left text-[15px] leading-relaxed transition-all active:scale-[0.98] ${
+              className={`flex min-h-[52px] w-full items-start gap-3 rounded-xl border p-4 text-left text-[15px] break-words leading-relaxed transition-all active:scale-[0.98] ${
                 acertou || revela
                   ? 'border-green-500/60 bg-green-500/10'
                   : errou
-                  ? 'border-red-500/60 bg-red-500/10'
+                  ? 'border-red-500/60 bg-red-500/10 text-red-400'
                   : 'border-border hover:border-primary/50 hover:bg-accent'
               }`}
             >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border text-sm font-bold">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border text-sm font-bold" aria-hidden="true">
                 {op.letra}
               </span>
               <span className="flex-1">{op.texto}</span>
