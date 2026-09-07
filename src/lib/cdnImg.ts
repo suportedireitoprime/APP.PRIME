@@ -1,6 +1,8 @@
 import { Capacitor } from '@capacitor/core';
 import { assetUrl } from './assetUrl';
 
+export * from './storageBuckets';
+
 /**
  * No app nativo (Android/iOS) o Origin é `https://localhost`, o que faz
  * proxies externos como wsrv.nl responderem 403 em muitos casos.
