@@ -48,7 +48,7 @@ const VadeMecumHero: React.FC<Props> = ({ onBuscar }) => {
       {/* ── Cabeçalho Transparente Vade Mecum ───────────────── */}
       <VadeMecumHeroHeader />
 
-      <div className="relative px-4 pt-1 pb-5 flex flex-col gap-4">
+      <div className="relative z-10 px-4 pt-1 pb-5 flex flex-col gap-4">
         {/* Centered brand block */}
         <VadeMecumHeroBrand />
 

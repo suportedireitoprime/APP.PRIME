@@ -180,7 +180,7 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           onOpenMenu={onOpenMenu || (() => setMenuOpen(true))}
         />
 
-        <div className="relative px-4 pt-5 pb-5 min-h-[240px] flex flex-col gap-4">
+        <div className="relative z-10 px-4 pt-5 pb-5 min-h-[240px] flex flex-col gap-4">
           {/* Logo e subtítulo dinâmico */}
           <HomeBrandBanner perfilLabel={perfilLabel} />
 

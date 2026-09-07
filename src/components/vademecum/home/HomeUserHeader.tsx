@@ -42,7 +42,7 @@ const HomeUserHeader = ({
   };
 
   return (
-    <header className="relative px-3 pt-3 md:px-6 md:pt-4 lg:px-8 lg:pt-6 flex items-center gap-2 md:gap-4">
+    <header className="relative z-10 px-3 pt-3 md:px-6 md:pt-4 lg:px-8 lg:pt-6 flex items-center gap-2 md:gap-4">
       <div 
         onClick={!isLogged ? onLogin : undefined}
         className={`flex items-center gap-3 md:gap-4 min-w-0 flex-1 pr-3 pl-1 ${!isLogged ? 'cursor-pointer active:opacity-80 transition-opacity' : ''}`}
