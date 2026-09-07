@@ -34,13 +34,18 @@ export function useCarouselPrefetch<T>(
   const lastScrollLeft = useRef(0);
   const prefetchedIndices = useRef<Set<number>>(new Set());
   const idleHandleRef = useRef<number | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  if (!abortControllerRef.current) {
+    abortControllerRef.current = new AbortController();
+  }
 
   const prefetchIndex = useCallback((idx: number) => {
     if (idx < 0 || idx >= items.length || prefetchedIndices.current.has(idx)) return;
     const url = getImageUrl(items[idx]);
     if (url) {
       prefetchedIndices.current.add(idx);
-      prefetchImage(url, targetWidth);
+      prefetchImage(url, targetWidth, abortControllerRef.current?.signal);
     }
   }, [items, getImageUrl, targetWidth]);
 
@@ -111,6 +116,7 @@ export function useCarouselPrefetch<T>(
         }
       }
       prefetchedIndices.current.clear();
+      abortControllerRef.current?.abort();
     };
   }, []);
 

@@ -6,6 +6,7 @@ import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import { styleForArea } from '@/lib/bibliotecaIcons';
 import { useBibliotecaCapa } from '@/hooks/useBibliotecaAsset';
 import { useIsPdfCached } from '@/hooks/useIsPdfCached';
+import { PrimeImage } from '@/components/ui/PrimeImage';
 
 const VirtualLivroItem = memo(function VirtualLivroItem({
   virtualRow,
@@ -37,13 +38,18 @@ const VirtualLivroItem = memo(function VirtualLivroItem({
       >
         <div className="w-[56px] h-[76px] shrink-0 rounded-lg overflow-hidden bg-muted border border-border relative">
           {isDownloaded && (
-            <div className="absolute top-1 right-1 z-10 bg-black/60 backdrop-blur-sm p-0.5 rounded-full border border-white/10 shadow-sm">
+            <div className="absolute top-1 right-1 z-20 bg-black/60 backdrop-blur-sm p-0.5 rounded-full border border-white/10 shadow-sm">
               <CheckCircle2 className="w-3 h-3 text-green-400" />
             </div>
           )}
-          {capaUrl && (
-            <img src={capaUrl} alt="" loading="lazy" className="w-full h-full object-cover" />
-          )}
+          <PrimeImage
+            src={capaUrl}
+            alt={l.titulo}
+            targetWidth={160}
+            aspectRatio="auto"
+            containerClassName="w-full h-full"
+            className="w-full h-full object-cover"
+          />
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-foreground leading-snug line-clamp-2">{l.titulo}</p>
@@ -61,7 +67,7 @@ interface BibliotecaMateriaSheetProps {
   materiaAberta: string | null;
   onClose: () => void;
   livrosAreas: LivroNormalizado[];
-  onAbrirLivro: (livro: LivroNormalizado) => void;
+  onAbrirLivro: (l: LivroNormalizado) => void;
 }
 
 export default function BibliotecaMateriaSheet({
@@ -80,7 +86,7 @@ export default function BibliotecaMateriaSheet({
   const rowVirtualizer = useVirtualizer({
     count: livrosDaMateria.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 100, // altura aproximada do card (76px imagem + paddings + gap)
+    estimateSize: () => 92, // Fase 29: Altura calibrada estritamente (76px imagem + 8px padding + 8px gap) eliminando trepidação
     overscan: 5,
   });
 

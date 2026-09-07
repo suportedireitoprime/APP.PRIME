@@ -176,15 +176,24 @@ export const avatarImg = (url: string, size = 128) => {
  * Fila inteligente de Pré-Aquecimento (Prefetch) com controle de concorrência,
  * prevenção de saturação de rede (Item 31 do relatório) e descarte seguro de memória (Item 33).
  */
+interface QueueItem {
+  url: string;
+  signal?: AbortSignal;
+}
+
+/**
+ * Fila inteligente de Pré-Aquecimento (Prefetch) com controle de concorrência (Fase 31 — máx 3 downloads),
+ * prevenção de saturação de rede (Item 31) e cancelamento seguro via AbortSignal (Fase 32 — Item 32 e 33).
+ */
 class ImagePrefetchQueue {
-  private queue: string[] = [];
+  private queue: QueueItem[] = [];
   private activeCount = 0;
   private readonly maxConcurrency = 3;
   private readonly fetched = new Set<string>();
-  private readonly activeImages = new Set<HTMLImageElement>();
+  private readonly activeImages = new Map<HTMLImageElement, { url: string; cleanupSignal?: () => void }>();
 
-  add(url: string | null | undefined, width = 400): void {
-    if (!url || typeof window === 'undefined') return;
+  add(url: string | null | undefined, width = 400, signal?: AbortSignal): void {
+    if (!url || typeof window === 'undefined' || signal?.aborted) return;
 
     // Respeito à economia de dados do usuário (Item 36)
     const conn = (navigator as unknown as { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
@@ -193,7 +202,7 @@ class ImagePrefetchQueue {
     }
 
     const optimized = directImg(url, width);
-    if (!optimized || this.fetched.has(optimized) || this.queue.includes(optimized)) {
+    if (!optimized || this.fetched.has(optimized) || this.queue.some(item => item.url === optimized)) {
       return;
     }
 
@@ -202,42 +211,75 @@ class ImagePrefetchQueue {
       this.queue.shift();
     }
 
-    this.queue.push(optimized);
+    const item: QueueItem = { url: optimized, signal };
+    this.queue.push(item);
+
+    // Se o signal abortar enquanto ainda está na fila, remove sem executar
+    if (signal) {
+      const onAbort = () => {
+        this.queue = this.queue.filter(q => q !== item);
+        signal.removeEventListener('abort', onAbort);
+      };
+      signal.addEventListener('abort', onAbort, { once: true });
+    }
+
     this.process();
   }
 
   private process(): void {
     while (this.activeCount < this.maxConcurrency && this.queue.length > 0) {
-      const nextUrl = this.queue.shift();
-      if (!nextUrl) break;
+      const next = this.queue.shift();
+      if (!next) break;
+
+      if (next.signal?.aborted) {
+        continue;
+      }
 
       this.activeCount++;
-      this.fetched.add(nextUrl);
+      this.fetched.add(next.url);
 
       const img = new Image();
       img.decoding = 'async';
-      this.activeImages.add(img);
 
       const cleanup = () => {
         img.onload = null;
         img.onerror = null;
+        const entry = this.activeImages.get(img);
+        entry?.cleanupSignal?.();
         this.activeImages.delete(img);
         this.activeCount--;
         this.process();
       };
 
+      let cleanupSignal: (() => void) | undefined;
+      if (next.signal) {
+        const onAbort = () => {
+          img.onload = null;
+          img.onerror = null;
+          img.src = '';
+          this.activeImages.delete(img);
+          this.activeCount--;
+          this.process();
+        };
+        next.signal.addEventListener('abort', onAbort, { once: true });
+        cleanupSignal = () => next.signal?.removeEventListener('abort', onAbort);
+      }
+
+      this.activeImages.set(img, { url: next.url, cleanupSignal });
+
       img.onload = cleanup;
       img.onerror = cleanup;
-      img.src = nextUrl;
+      img.src = next.url;
     }
   }
 
   cancelAll(): void {
     this.queue = [];
-    this.activeImages.forEach((img) => {
+    this.activeImages.forEach((val, img) => {
       img.onload = null;
       img.onerror = null;
       img.src = '';
+      val.cleanupSignal?.();
     });
     this.activeImages.clear();
     this.activeCount = 0;
@@ -246,17 +288,17 @@ class ImagePrefetchQueue {
 
 const prefetchQueue = new ImagePrefetchQueue();
 
-/** Pré-carrega uma única imagem de forma concorrente e segura */
-export function prefetchImage(url: string | null | undefined, width = 400): void {
-  prefetchQueue.add(url, width);
+/** Fase 31/32: Pré-carrega uma única imagem de forma concorrente e segura com AbortSignal opcional */
+export function prefetchImage(url: string | null | undefined, width = 400, signal?: AbortSignal): void {
+  prefetchQueue.add(url, width, signal);
 }
 
-/** Pré-carrega uma lista de imagens através da fila de prioridade */
-export function prefetchImages(urls: (string | null | undefined)[], width = 400): void {
-  urls.forEach((u) => prefetchQueue.add(u, width));
+/** Fase 31/32: Pré-carrega uma lista de imagens através da fila com suporte a cancelamento */
+export function prefetchImages(urls: (string | null | undefined)[], width = 400, signal?: AbortSignal): void {
+  urls.forEach((u) => prefetchQueue.add(u, width, signal));
 }
 
-/** Cancela downloads de prefetch pendentes ao trocar de tela */
+/** Cancela downloads de prefetch pendentes ao trocar de tela (Fase 32) */
 export function cancelAllPrefetches(): void {
   prefetchQueue.cancelAll();
 }

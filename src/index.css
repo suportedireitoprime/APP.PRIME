@@ -1618,6 +1618,13 @@ html.light .bg-\[\#212121\]\/95 { background-color: hsl(var(--card) / 0.95) !imp
   transition: opacity 0.3s ease-out;
 }
 
+/* Fase 30: Curva Óptica Suave para Fade-In de Imagens (Item 30) */
+[data-prime-image] img,
+.prime-image-fade {
+  transition: opacity 350ms cubic-bezier(0.16, 1, 0.3, 1), transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
 /* ── Reflexo único (landing hero): passa uma vez no título, depois no botão ── */
 @keyframes lpSheenSweep {
   0%   { transform: translateX(-130%) skewX(-18deg); opacity: 0; }
