@@ -175,7 +175,7 @@ function getMonogram(text?: string): string {
  * 7. Cache LRU em memória RAM para re-renderizações a 0ms (Fase 24).
  * 8. Micro-blur óptico suave com LQIP (Fase 23) e monograma jurídico editorial (Fase 27).
  */
-export const PrimeImage = React.memo(function PrimeImage({
+export function PrimeImageBase({
   src,
   alt,
   aspectRatio = '2/3',
@@ -204,7 +204,13 @@ export const PrimeImage = React.memo(function PrimeImage({
 
   // Sanitização de URL: evita requisições GET /undefined quando src é inválido
   const cleanSrc = src && typeof src === 'string' && src.trim().length > 0 ? src.trim() : null;
-  const optimizedSrc = cleanSrc ? directImg(cleanSrc, targetWidth) : null;
+
+  // Fase 35: Suporte a Save-Data (Item 36) - Reduz resolução para teto de 200px se economia de dados estiver ativa
+  const isSaveData = typeof navigator !== 'undefined' &&
+    // @ts-expect-error NetworkInformation API experimental
+    Boolean(navigator.connection?.saveData === true);
+  const effectiveTargetWidth = isSaveData ? Math.min(targetWidth, 200) : targetWidth;
+  const optimizedSrc = cleanSrc ? directImg(cleanSrc, effectiveTargetWidth) : null;
 
   let activeSrc: string | null = null;
   if (attemptLevel === 'optimized') {
@@ -341,8 +347,9 @@ export const PrimeImage = React.memo(function PrimeImage({
   };
 
   // Fase 22: Geração de srcset responsivo para telas Retina (1x, 1.5x, 2x)
-  const responsiveAttrs = responsive && attemptLevel === 'optimized' && activeSrc && !rest.srcSet
-    ? generateResponsiveSrcSet(cleanSrc || activeSrc, targetWidth)
+  // Fase 35: Se Save-Data estiver ativo, dispensa srcset de alta densidade
+  const responsiveAttrs = responsive && attemptLevel === 'optimized' && activeSrc && !rest.srcSet && !isSaveData
+    ? generateResponsiveSrcSet(cleanSrc || activeSrc, effectiveTargetWidth)
     : {};
 
   return (
@@ -473,6 +480,36 @@ export const PrimeImage = React.memo(function PrimeImage({
       )}
     </>
   );
-});
+}
 
+/**
+ * Fase 37: Comparador Estrito para React.memo.
+ * Evita re-renderizações parasitas causadas por novos objetos literais no componente pai
+ * ou em listas virtuais extensas onde os atributos visuais da imagem permanecem imutáveis.
+ */
+function areEqualPrimeImage(prev: PrimeImageProps, next: PrimeImageProps): boolean {
+  return (
+    prev.src === next.src &&
+    prev.alt === next.alt &&
+    prev.aspectRatio === next.aspectRatio &&
+    prev.targetWidth === next.targetWidth &&
+    prev.responsive === next.responsive &&
+    prev.priority === next.priority &&
+    prev.lqip === next.lqip &&
+    prev.blurHash === next.blurHash &&
+    prev.category === next.category &&
+    prev.fallbackSrc === next.fallbackSrc &&
+    prev.fallbackText === next.fallbackText &&
+    prev.className === next.className &&
+    prev.containerClassName === next.containerClassName &&
+    prev.decorative === next.decorative &&
+    prev.zoomable === next.zoomable &&
+    prev.zoomTitle === next.zoomTitle &&
+    prev.zoomSubtitle === next.zoomSubtitle &&
+    prev.onClick === next.onClick
+  );
+}
+
+export const PrimeImage = React.memo(PrimeImageBase, areEqualPrimeImage);
 export default PrimeImage;
+

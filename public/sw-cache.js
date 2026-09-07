@@ -38,6 +38,8 @@ self.addEventListener('activate', (e) => {
   })());
 });
 
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
 async function trimCache(cacheName, maxItems) {
   const cache = await caches.open(cacheName);
   const keys = await cache.keys();
@@ -48,11 +50,38 @@ async function trimCache(cacheName, maxItems) {
 async function cacheFirst(req, cacheName, limit, isImg = false) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(req);
-  if (cached) return cached;
+  if (cached) {
+    // Fase 33: Checagem de expiração de 30 dias para renovação suave de cache de imagem
+    const dateHeader = cached.headers.get('sw-cached-date') || cached.headers.get('date');
+    if (dateHeader) {
+      const age = Date.now() - new Date(dateHeader).getTime();
+      if (age > THIRTY_DAYS_MS) {
+        cache.delete(req).catch(() => {});
+      } else {
+        return cached;
+      }
+    } else {
+      return cached;
+    }
+  }
+
   try {
     const res = await fetch(req);
     if (res && res.ok) {
-      cache.put(req, res.clone()).then(() => limit && trimCache(cacheName, limit));
+      // Fase 36: Enriquece headers com Cache-Control: immutable e timestamp para zero revalidação
+      let responseToCache = res.clone();
+      if (isImg) {
+        const headers = new Headers(responseToCache.headers);
+        headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+        headers.set('sw-cached-date', new Date().toUTCString());
+        const blob = await responseToCache.blob();
+        responseToCache = new Response(blob, {
+          status: responseToCache.status,
+          statusText: responseToCache.statusText,
+          headers,
+        });
+      }
+      cache.put(req, responseToCache).then(() => limit && trimCache(cacheName, limit));
     }
     return res;
   } catch (err) {

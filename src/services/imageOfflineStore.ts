@@ -248,3 +248,48 @@ export async function hasImageOffline(remoteUrl: string | null | undefined): Pro
   return Boolean(url);
 }
 
+/**
+ * Fase 34: Sincroniza uma lista de capas essenciais no IndexedDB em lotes ordenados.
+ * Processa em lotes de 3 itens intercalados com requestIdleCallback para manter a thread UI a 120fps.
+ * Respeita estado de conectividade e Save-Data. Retorna a contagem de capas armazenadas com sucesso.
+ */
+export async function syncEssentialCoversOffline(urls: string[]): Promise<number> {
+  if (!urls || urls.length === 0 || typeof window === 'undefined') return 0;
+  if (typeof navigator !== 'undefined') {
+    if (!navigator.onLine) return 0;
+    // @ts-expect-error NetworkInformation API experimental
+    if (navigator.connection?.saveData === true) return 0;
+  }
+
+  const uniqueUrls = Array.from(new Set(urls.filter((u) => u && typeof u === 'string' && u.startsWith('http'))));
+  let cachedCount = 0;
+  const BATCH_SIZE = 3;
+
+  for (let i = 0; i < uniqueUrls.length; i += BATCH_SIZE) {
+    const batch = uniqueUrls.slice(i, i + BATCH_SIZE);
+
+    // Concede tempo para o event loop e renderização da UI
+    await new Promise<void>((resolve) => {
+      if ('requestIdleCallback' in window) {
+        // @ts-expect-error requestIdleCallback compat
+        window.requestIdleCallback(() => resolve(), { timeout: 150 });
+      } else {
+        setTimeout(resolve, 50);
+      }
+    });
+
+    const results = await Promise.allSettled(
+      batch.map((url) => fetchAndCacheImageOffline(url))
+    );
+
+    for (const res of results) {
+      if (res.status === 'fulfilled' && res.value) {
+        cachedCount++;
+      }
+    }
+  }
+
+  return cachedCount;
+}
+
+
