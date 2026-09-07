@@ -57,9 +57,9 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
   // Dimensões responsivas do card para traçado exato do contorno
   const [cardDims, setCardDims] = useState(() => {
     if (typeof window !== 'undefined' && window.innerWidth >= 640) {
-      return { w: 152, h: 208 };
+      return { w: 168, h: 232 };
     }
-    return { w: 140, h: 192 };
+    return { w: 156, h: 216 };
   });
 
   useEffect(() => {
@@ -69,8 +69,8 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
       timer = setTimeout(() => {
         const isSm = window.innerWidth >= 640;
         setCardDims((prev) => {
-          const nextW = isSm ? 152 : 140;
-          const nextH = isSm ? 208 : 192;
+          const nextW = isSm ? 168 : 156;
+          const nextH = isSm ? 232 : 216;
           if (prev.w === nextW && prev.h === nextH) return prev;
           return { w: nextW, h: nextH };
         });
@@ -117,56 +117,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
     setTimeout(() => setPaused(false), 400);
   }, [total]);
 
-  // Touch handlers nativos e infalíveis para celular / tablet
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (e.touches.length === 1) {
-      touchStartRef.current = {
-        x: e.touches[0].clientX,
-        y: e.touches[0].clientY,
-        time: Date.now(),
-      };
-      isSwipingRef.current = false;
-      setPaused(true);
-    }
-  }, []);
-
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!touchStartRef.current || e.touches.length !== 1) return;
-    const deltaX = e.touches[0].clientX - touchStartRef.current.x;
-    const deltaY = e.touches[0].clientY - touchStartRef.current.y;
-
-    // Se o movimento for predominantemente horizontal, marca como swipe
-    if (Math.abs(deltaX) > 8 && Math.abs(deltaX) > Math.abs(deltaY)) {
-      isSwipingRef.current = true;
-    }
-  }, []);
-
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    if (!touchStartRef.current) return;
-    const deltaX = (e.changedTouches[0]?.clientX || 0) - touchStartRef.current.x;
-    const deltaY = (e.changedTouches[0]?.clientY || 0) - touchStartRef.current.y;
-    const deltaTime = Date.now() - touchStartRef.current.time;
-    touchStartRef.current = null;
-
-    if (isSwipingRef.current || (Math.abs(deltaX) > 24 && Math.abs(deltaX) > Math.abs(deltaY))) {
-      const velocityX = deltaX / Math.max(deltaTime, 1);
-      const isFar = Math.abs(deltaX) > 110;
-      const isFast = Math.abs(velocityX) > 0.7;
-      const step = (isFar && isFast) ? 2 : 1;
-
-      if (deltaX < -22 || velocityX < -0.28) {
-        setAtivo((i) => (i + step) % total);
-      } else if (deltaX > 22 || velocityX > 0.28) {
-        setAtivo((i) => (i - step + total) % total);
-      }
-
-      setIsDragging(true);
-      setTimeout(() => setIsDragging(false), 120);
-    } else {
-      setIsDragging(false);
-    }
-    setTimeout(() => setPaused(false), 400);
-  }, [total]);
+  // Touch handlers nativos removidos em favor do onPan do Framer Motion para maior reatividade
 
   // Suporte a scroll com mouse / trackpad no Desktop
   const handleWheel = useCallback((e: React.WheelEvent) => {
@@ -203,9 +154,9 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
           type="button"
           onClick={handlePrev}
           aria-label="Área anterior"
-          className="absolute -left-1 sm:left-1 z-[75] w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:scale-95"
+          className="absolute bottom-1 sm:bottom-3 left-2 sm:left-4 z-[75] w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:scale-95"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="w-5 h-5" />
         </button>
 
         {/* Botão de navegação próximo */}
@@ -213,35 +164,42 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
           type="button"
           onClick={handleNext}
           aria-label="Próxima área"
-          className="absolute -right-1 sm:right-1 z-[75] w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:scale-95"
+          className="absolute bottom-1 sm:bottom-3 right-2 sm:right-4 z-[75] w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:scale-95"
         >
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-5 h-5" />
         </button>
 
-        {/* Deck interativo com suporte a swipe horizontal com o dedo e drag */}
+        {/* Deck interativo com suporte a swipe horizontal pan reativo */}
         <motion.div
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.2}
-          onDragStart={() => {
+          onPanStart={(e, info) => {
             setIsDragging(true);
             setPaused(true);
+            touchStartRef.current = { x: info.point.x, y: info.point.y, time: Date.now(), startIndex: ativo } as any;
           }}
-          onDragEnd={(_, info) => {
-            setTimeout(() => setIsDragging(false), 120);
-            const isFar = Math.abs(info.offset.x) > 110;
-            const isFast = Math.abs(info.velocity.x) > 550;
-            const step = (isFar && isFast) ? 2 : 1;
-
-            if (info.offset.x < -24 || info.velocity.x < -180) {
-              setAtivo((i) => (i + step) % total);
-            } else if (info.offset.x > 24 || info.velocity.x > 180) {
-              setAtivo((i) => (i - step + total) % total);
-            }
+          onPan={(e, info) => {
+             const offset = info.offset.x;
+             const steps = Math.round(offset / 70); // Ajuste sensibilidade: a cada 70px ele passa uma capa
+             if (touchStartRef.current && 'startIndex' in touchStartRef.current) {
+               const start = (touchStartRef.current as any).startIndex;
+               const newAtivo = (start - steps + total * 10) % total;
+               if (newAtivo !== ativo) setAtivo(newAtivo);
+             }
           }}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
+          onPanEnd={(e, info) => {
+             setIsDragging(false);
+             setTimeout(() => setPaused(false), 400);
+             const offset = info.offset.x;
+             const velocity = info.velocity.x;
+             const steps = Math.round(offset / 70);
+             let extraStep = 0;
+             if (velocity < -300) extraStep = 1;
+             else if (velocity > 300) extraStep = -1;
+             
+             if (touchStartRef.current && 'startIndex' in touchStartRef.current) {
+               const start = (touchStartRef.current as any).startIndex;
+               setAtivo((start - steps + extraStep + total * 10) % total);
+             }
+          }}
           onWheel={handleWheel}
           className="relative flex items-center justify-center w-full h-full cursor-grab active:cursor-grabbing touch-pan-y"
         >
@@ -269,7 +227,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
                   scale: slot.scale,
                   opacity: slot.opacity,
                 }}
-                transition={{ duration: prefersReducedMotion ? 0.05 : 0.48, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: isDragging ? 0.15 : (prefersReducedMotion ? 0.05 : 0.45), ease: 'easeOut' }}
                 style={{
                   zIndex: slot.z,
                 }}
@@ -287,7 +245,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
                     setTimeout(() => setPaused(false), 2500);
                   }
                 }}
-                className="absolute w-[140px] sm:w-[152px] h-[192px] sm:h-[208px] shrink-0 cursor-pointer will-change-transform touch-pan-y"
+                className="absolute w-[156px] sm:w-[168px] h-[216px] sm:h-[232px] shrink-0 cursor-pointer will-change-transform touch-pan-y"
               >
                 {/* Card principal com contorno refinado e fino */}
                 <div
@@ -440,7 +398,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
                       src={item.image}
                       alt=""
                       aria-hidden="true"
-                      className="w-full h-[192px] sm:h-[208px] object-cover block origin-top"
+                      className="w-full h-[216px] sm:h-[232px] object-cover block origin-top"
                       style={{
                         transform: 'scaleY(-1)',
                       }}

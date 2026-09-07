@@ -184,11 +184,11 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           {/* Logo e subtítulo dinâmico */}
           <HomeBrandBanner perfilLabel={perfilLabel} />
 
-          {/* Barra de Pesquisa Animada */}
-          <HomeSearchButton onOpenSearch={onOpenSearch || (() => setSearchOpen(true))} />
-
           {/* Atalhos Rápidos */}
           <HomeActionShortcuts />
+
+          {/* Barra de Pesquisa Animada */}
+          <HomeSearchButton onOpenSearch={onOpenSearch || (() => setSearchOpen(true))} />
         </div>
       </div>
 
