@@ -1,7 +1,7 @@
-import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check, X as XIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { haptic } from '@/lib/nativeHaptics';
+import { PrimeBottomSheet } from '../vademecum/overlays/PrimeBottomSheet';
 import { CartaoRespostaGrid } from './CartaoRespostaGrid';
 
 type Props = {
@@ -24,24 +24,8 @@ export const CartaoRespostaSheet = ({
   onSelect
 }: Props) => {
   return (
-    <AnimatePresence>
-      {aberto && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
-            onClick={onClose}
-          />
-          <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: "spring", stiffness: 350, damping: 30 }}
-            className="fixed inset-x-0 bottom-0 z-50 rounded-t-[32px] border-t border-border/50 bg-background pb-safe-nav pt-2 shadow-2xl"
-          >
-            <div className="mx-auto flex w-full max-w-3xl flex-col">
+    <PrimeBottomSheet open={aberto} onClose={onClose} zIndex={50} className="pb-safe-nav">
+      <div className="mx-auto flex w-full max-w-3xl flex-col">
               {/* Handle */}
               <div className="flex justify-center py-3">
                 <div className="h-1.5 w-12 rounded-full bg-border/60" />
@@ -71,10 +55,7 @@ export const CartaoRespostaSheet = ({
                   }}
                 />
               </div>
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+      </div>
+    </PrimeBottomSheet>
   );
 };

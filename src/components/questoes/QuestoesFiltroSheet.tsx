@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
+import { PrimeBottomSheet } from '../vademecum/overlays/PrimeBottomSheet';
 import { ChevronLeft, Filter, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -228,26 +228,11 @@ const QuestoesFiltroSheet = ({
 
   if (typeof document === 'undefined') return null;
 
-  return createPortal(
-    <AnimatePresence>
-      {aberto && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, pointerEvents: 'none' }}
-            onClick={onFechar}
-            className="fixed inset-0 z-[70] bg-black/75 backdrop-blur-sm"
-          />
-          <motion.div
-            initial={{ y: 40, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 40, opacity: 0, pointerEvents: 'none' }}
-            transition={{ type: 'tween', ease: 'easeOut', duration: 0.2 }}
-            className="theme-questoes fixed inset-0 z-[71] flex flex-col overflow-hidden bg-zinc-950 text-foreground md:inset-y-0 md:left-auto md:right-0 md:w-full md:max-w-md md:border-l md:border-zinc-800/80 md:shadow-2xl"
-          >
-            <div className="flex items-center gap-3 px-4 pb-4 pt-safe-header border-b border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md">
-              <button
+  return (
+    <PrimeBottomSheet open={aberto} onClose={onFechar} zIndex={70} className="md:inset-y-0 md:left-auto md:right-0 md:w-full md:max-w-md md:rounded-none md:border-l md:border-t-0 md:border-zinc-800/80 md:shadow-2xl">
+      <div className="theme-questoes flex h-full max-h-[90vh] md:max-h-screen flex-col overflow-hidden bg-zinc-950 text-foreground">
+        <div className="flex items-center gap-3 px-4 pb-4 pt-safe-header border-b border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md">
+          <button
                 onClick={onFechar}
                 aria-label="Voltar"
                 className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 transition-colors active:scale-95"
@@ -487,11 +472,8 @@ const QuestoesFiltroSheet = ({
                 />
               )}
             </AnimatePresence>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>,
-    document.body,
+      </div>
+    </PrimeBottomSheet>
   );
 };
 

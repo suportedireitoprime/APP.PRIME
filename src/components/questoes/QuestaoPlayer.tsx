@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { CheckCircle2, XCircle, ChevronRight, Sparkles, Loader2, Trophy, RotateCw, Heart } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -6,6 +6,8 @@ import { comentarioIA, type Questao } from '@/hooks/useQuestoes';
 import { letraGabarito } from '@/lib/questoesVisual';
 import { haptic } from '@/lib/nativeHaptics';
 import { toast } from 'sonner';
+import { useQuestoesFavoritosStore } from '@/stores/useQuestoesFavoritosStore';
+import { Network } from '@capacitor/network';
 
 const db = supabase as any;
 
@@ -25,7 +27,24 @@ const QuestaoPlayer = ({ questoes, loading, contexto = 'pratica', onRegistrar, o
   const [respostas, setRespostas] = useState<Record<string, { escolha: string; acertou: boolean }>>({});
   const [comentarios, setComentarios] = useState<Record<string, string>>({});
   const [gerando, setGerando] = useState(false);
-  const [favoritos, setFavoritos] = useState<Set<string>>(new Set());
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const isMounted = useRef(true);
+
+  const { adicionar, remover, isFavorito, inicializado, setFavoritosIniciais } = useQuestoesFavoritosStore();
+  const loadingFavs = useRef(false);
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => { isMounted.current = false; };
+  }, []);
+
+  useEffect(() => {
+    if (!user || inicializado || loadingFavs.current) return;
+    loadingFavs.current = true;
+    db.from('questoes_favoritos').select('questao_id').eq('user_id', user.id).then(({ data }: any) => {
+      if (data && isMounted.current) setFavoritosIniciais(data.map((d: any) => d.questao_id));
+    });
+  }, [user, inicializado, setFavoritosIniciais]);
 
   useEffect(() => { setIdx(0); setRespostas({}); setComentarios({}); }, [questoes]);
 
@@ -43,24 +62,48 @@ const QuestaoPlayer = ({ questoes, loading, contexto = 'pratica', onRegistrar, o
   const acertos = Object.values(respostas).filter((r) => r.acertou).length;
 
   const responder = async (letra: string) => {
-    if (!atual || resp) return;
+    if (!atual || resp || isSubmitting) return;
+    setIsSubmitting(true);
+    const questaoAtualId = atual.id;
     const acertou = letra === correta;
-    haptic[acertou ? 'success' : 'warning']?.();
-    setRespostas((p) => ({ ...p, [atual.id]: { escolha: letra, acertou } }));
-    onRegistrar(atual.id, letra, acertou, contexto);
+    
+    try { haptic[acertou ? 'success' : 'warning']?.(); } catch {}
+    
+    setRespostas((p) => ({ ...p, [questaoAtualId]: { escolha: letra, acertou } }));
+    onRegistrar(questaoAtualId, letra, acertou, contexto);
+
+    const status = await Network.getStatus();
+    if (!status.connected) {
+      if (isMounted.current) {
+        toast.error('Você está offline. O comentário da IA requer conexão.');
+        setIsSubmitting(false);
+      }
+      return;
+    }
 
     setGerando(true);
     const c = await comentarioIA(atual);
+    if (!isMounted.current) return;
+    
     setGerando(false);
-    if (c) setComentarios((p) => ({ ...p, [atual.id]: c }));
+    setIsSubmitting(false);
+    if (c) setComentarios((p) => ({ ...p, [questaoAtualId]: c }));
   };
 
   const favoritar = async () => {
     if (!atual || !user) { toast.error('Entre na sua conta para salvar'); return; }
-    const ja = favoritos.has(atual.id);
-    setFavoritos((p) => { const n = new Set(p); ja ? n.delete(atual.id) : n.add(atual.id); return n; });
-    if (ja) await db.from('questoes_favoritos').delete().eq('user_id', user.id).eq('questao_id', atual.id);
-    else await db.from('questoes_favoritos').insert({ user_id: user.id, questao_id: atual.id });
+    const qid = atual.id;
+    const ja = isFavorito(qid);
+    
+    if (ja) remover(qid); else adicionar(qid);
+    
+    try {
+      if (ja) await db.from('questoes_favoritos').delete().eq('user_id', user.id).eq('questao_id', qid);
+      else await db.from('questoes_favoritos').insert({ user_id: user.id, questao_id: qid });
+    } catch {
+      if (ja) adicionar(qid); else remover(qid);
+      toast.error('Erro ao atualizar favorito.');
+    }
   };
 
   if (loading) {
@@ -93,7 +136,7 @@ const QuestaoPlayer = ({ questoes, loading, contexto = 'pratica', onRegistrar, o
         <div className="flex items-center gap-3">
           <span className="text-[12px] tabular-nums text-muted-foreground">{acertos} acertos</span>
           <button onClick={favoritar} aria-label="Favoritar questão" className="text-muted-foreground hover:text-primary transition-transform active:scale-90">
-            <Heart className={`h-5 w-5 ${atual && favoritos.has(atual.id) ? 'fill-primary text-primary' : ''}`} />
+            <Heart className={`h-5 w-5 ${atual && isFavorito(atual.id) ? 'fill-primary text-primary' : ''}`} />
           </button>
         </div>
       </div>
