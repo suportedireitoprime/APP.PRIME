@@ -7,8 +7,7 @@ import { Search, Scale, ArrowLeft, Sparkles } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { haptic } from '@/lib/nativeHaptics';
 import { resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
+
 
 import {
   TemaRow,
@@ -237,18 +236,7 @@ export default function FlashcardsLeis() {
     return list.filter((t) => t.tema.toLowerCase().includes(q) || (t.area && t.area.toLowerCase().includes(q)));
   }, [todasLeis, busca, categoriaSelecionada]);
 
-  useGSAP(
-    () => {
-      if (listaFiltrada.length > 0) {
-        gsap.fromTo(
-          '.lei-card',
-          { y: 30, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.4, stagger: 0.05, ease: 'back.out(1.2)' }
-        );
-      }
-    },
-    { dependencies: [listaFiltrada], scope: container }
-  );
+
 
   const groupedByCategoria = useMemo(() => {
     const groups: Record<string, TemaRow[]> = {};

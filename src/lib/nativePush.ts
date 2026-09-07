@@ -222,10 +222,13 @@ export async function ensureNativePushListeners() {
             // Salva globalmente para caso o App.tsx ainda não tenha montado (Cold Start)
             (window as any)._pendingPushUrl = path;
             
-            // Dispara evento — App.tsx escuta e usa react-router `navigate()`
-            // para evitar reload completo quando o app já está aberto.
-            window.dispatchEvent(new CustomEvent('direitoprime:push-navigate', { detail: { path } }));
-            // Fallback: se ninguém tratar em 250ms, faz navegação hard.
+            // Adiciona pequeno atraso para a UI estabilizar ao voltar do background
+            window.setTimeout(() => {
+              // Dispara evento — App.tsx escuta e usa react-router `navigate()`
+              window.dispatchEvent(new CustomEvent('direitoprime:push-navigate', { detail: { path } }));
+            }, 400);
+
+            // Fallback: se ninguém tratar em 1500ms, faz navegação hard.
             window.setTimeout(() => {
               const currentPathWithSearch = window.location.pathname + window.location.search;
               if (currentPathWithSearch !== path && (window as any)._pendingPushUrl) {

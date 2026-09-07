@@ -2,8 +2,7 @@ import { useEffect, useMemo, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { motion, AnimatePresence } from 'framer-motion';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
+
 import { ChevronLeft, ChevronRight, Check, Filter, Lock, Search, X, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -340,17 +339,7 @@ const FlashcardsFiltroSheet = ({
   const [f, setF] = useState<FlashcardsFiltro>(() => lerFiltroFlashcardsSalvo() ?? FILTRO_FLASHCARDS_VAZIO);
   const [passo, setPasso] = useState<null | 'disciplinas' | 'assuntos' | 'status' | 'quantidade'>(null);
   
-  const stepsRef = useRef<HTMLDivElement>(null);
-  
-  useGSAP(() => {
-    if (aberto && stepsRef.current) {
-      gsap.fromTo(
-        stepsRef.current.children,
-        { opacity: 0, y: 15, scale: 0.95 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.4, stagger: 0.08, ease: 'back.out(1.2)' }
-      );
-    }
-  }, [aberto]);
+
 
   const { data: areasData } = useFlashcardsResumoAreas();
   const disciplinas = useMemo(() => (areasData || []).map(a => a.area).sort((a, b) => a.localeCompare(b, 'pt-BR')), [areasData]);
@@ -456,7 +445,7 @@ const FlashcardsFiltroSheet = ({
               </button>
             </div>
 
-            <div ref={stepsRef} className="flex-1 space-y-2.5 overflow-y-auto px-4 pb-4 pt-2">
+            <div className="flex-1 space-y-2.5 overflow-y-auto px-4 pb-4 pt-2">
               <StepRow
                 step={1} label="Disciplina"
                 hint={f.disciplinas.length ? f.disciplinas[0] : 'Escolha a matéria'}
@@ -536,7 +525,7 @@ const FlashcardsFiltroSheet = ({
               {passo === 'quantidade' && (
                 <QuantidadeSheet
                   key="qtd"
-                  quantidadeSel={f.quantidade}
+                  quantidadeSel={f.quantidade === null ? 'todos' : f.quantidade}
                   totalCount={0}
                   onFechar={() => setPasso(null)}
                   onConfirmar={(qtd) => {

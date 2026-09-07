@@ -500,9 +500,26 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
     setInitialCheckDone(false);
     (async () => {
       try {
+        let done = false;
+        if (cacheKey) {
+          try {
+            const { get } = await import('idb-keyval');
+            const val = await get(cacheKey);
+            if (val === '1' || val === true) done = true;
+          } catch {}
+        }
+        
+        if (done) {
+          if (!cancelled) {
+            setNeedsOnboarding(false);
+            setInitialCheckDone(true);
+            try { localStorage.setItem(cacheKey, '1'); } catch {}
+          }
+          return;
+        }
+
         // Perfil pode estar sendo criado pelo trigger (e-mail, Google, Apple).
         // Tenta algumas vezes antes de decidir, para não liberar o app por engano.
-        let done = false;
         let ok = false;
         for (let i = 0; i < 3; i++) {
           const { data, error } = await supabase
@@ -525,6 +542,7 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
           if (done && cacheKey) {
             try {
               localStorage.setItem(cacheKey, '1');
+              import('idb-keyval').then(({ set }) => set(cacheKey, '1')).catch(() => {});
               window.dispatchEvent(new Event('onboarding_checked'));
             } catch {}
             try { window.sessionStorage.removeItem('just_signed_up'); } catch {}

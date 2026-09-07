@@ -37,10 +37,21 @@ function tick(now: number) {
   rafHandle = requestAnimationFrame(tick);
 }
 
-async function flush() {
+async function flush(isClosing = false) {
   const clicks = pendingClicks + readNum(LS_CLICKS);
   const seconds = Math.floor(pendingSeconds + readNum(LS_SECONDS));
   if (clicks <= 0 && seconds <= 0) return;
+
+  // Em hibernação (pagehide/visibility hidden), transações async e fetch
+  // são abortadas pelo WebKit. Salva síncrono no localStorage para envio futuro.
+  if (isClosing) {
+    writeNum(LS_CLICKS, clicks);
+    writeNum(LS_SECONDS, seconds);
+    pendingClicks = 0;
+    pendingSeconds = 0;
+    return;
+  }
+
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     writeNum(LS_CLICKS, clicks);
@@ -73,14 +84,15 @@ export function startAppMetrics() {
   const onVisibility = () => {
     if (document.visibilityState === 'hidden') {
       lastTick = 0;
-      void flush();
+      flush(true); // synchronously save to localStorage
     } else {
       lastTick = performance.now();
+      void flush(); // dispatch what was saved while we were hidden
     }
   };
   document.addEventListener('visibilitychange', onVisibility);
 
-  window.addEventListener('pagehide', () => { void flush(); });
+  window.addEventListener('pagehide', () => { flush(true); });
 
   lastTick = performance.now();
   rafHandle = requestAnimationFrame(tick);

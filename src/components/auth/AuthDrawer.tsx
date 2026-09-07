@@ -75,8 +75,13 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
     try {
       const { error } = await signInWithGoogle();
       if (error) throw error;
-    } catch (err: any) {
-      toastErroAuth(err.message || 'Não consegui entrar com o Google.');
+    } catch (err: unknown) {
+      const msg = (err as Error)?.message || '';
+      if (msg.toLowerCase().includes('cancel') || (err as {code?: string})?.code === 'ERR_CANCELED') {
+        setGoogleLoading(false);
+        return;
+      }
+      toastErroAuth(msg || 'Não consegui entrar com o Google.');
       setGoogleLoading(false);
     }
   };
@@ -86,8 +91,13 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
     try {
       const { error } = await signInWithApple();
       if (error) throw error;
-    } catch (err: any) {
-      toastErroAuth(err.message || 'Não consegui entrar com a Apple.');
+    } catch (err: unknown) {
+      const msg = (err as Error)?.message || '';
+      if (msg.toLowerCase().includes('cancel') || (err as {code?: string})?.code === 'ERR_CANCELED') {
+        setAppleLoading(false);
+        return;
+      }
+      toastErroAuth(msg || 'Não consegui entrar com a Apple.');
       setAppleLoading(false);
     }
   };
@@ -121,17 +131,7 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
           if (updateError) throw updateError;
           toast.success('Senha atualizada com sucesso! Entrando...');
           track('password_reset_success', { email_domain: email.split('@')[1] ?? 'unknown' });
-          let sessao = null as Awaited<ReturnType<typeof supabase.auth.getSession>>['data']['session'];
-          for (let i = 0; i < 6 && !sessao; i++) {
-            const { data: sess } = await supabase.auth.getSession();
-            sessao = sess.session;
-            if (!sessao) await new Promise((r) => setTimeout(r, 250));
-          }
-          if (sessao) {
-            startTransition(() => {
-              navigateForm('/', { replace: true });
-            });
-          }
+          // O hook global de sessão no Auth.tsx detectará o login e fará o redirect automaticamente.
         }
       } else if (mode === 'login') {
         const { error } = await signIn(email, password);
@@ -150,21 +150,12 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
           (await import('@/lib/analytics')).grantConsent();
         } catch {}
         toast.success('Conta criada! Verifique seu email para confirmar.');
-        let sessao = null as Awaited<ReturnType<typeof supabase.auth.getSession>>['data']['session'];
-        for (let i = 0; i < 6 && !sessao; i++) {
-          const { data: sess } = await supabase.auth.getSession();
-          sessao = sess.session;
-          if (!sessao) await new Promise((r) => setTimeout(r, 250));
-        }
-        if (sessao) {
-          startTransition(() => {
-            navigateForm('/onboarding', { replace: true });
-          });
-        }
+        // Se autoconfirmado, o hook global no Auth.tsx detectará o login e fará o redirect automaticamente.
       }
-    } catch (err: any) {
-      track(`${mode}_failed`, { erro: err.message ?? 'unknown' });
-      toastErroAuth(err.message);
+    } catch (err: unknown) {
+      const errorMsg = (err as Error).message ?? 'unknown';
+      track(`${mode}_failed`, { erro: errorMsg });
+      toastErroAuth(errorMsg);
     } finally {
       setSubmitting(false);
     }
@@ -173,40 +164,43 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
   const inputCls =
     'w-full pl-5 pr-14 py-4 bg-white/[0.04] border border-white/10 rounded-2xl text-base font-body text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary/60 focus:border-primary/40 transition-all';
 
-  if (!mode) return null;
-
   return (
     <>
-      {/* Backdrop */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
-      />
-
-      <motion.div
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
-        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className={`fixed left-0 right-0 z-50 bg-[#0d0f12] border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col transition-all duration-300 ${
-          showEmailForm || googleLoading || appleLoading
-            ? 'top-0 bottom-0 rounded-none max-h-screen'
-            : 'bottom-0 rounded-t-[32px] max-h-[90vh]'
-        }`}
-      >
-        {/* Handle bar */}
-        <div
-          className={`w-full pb-2 flex justify-center shrink-0 cursor-grab active:cursor-grabbing transition-all ${
-            showEmailForm || googleLoading || appleLoading
-              ? 'pt-[calc(var(--sai-top,0px)+1.5rem)]'
-              : 'pt-4'
-          }`}
+      <AnimatePresence>
+      {mode && (
+        <motion.div
+          key="backdrop"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0, transition: { delay: 0.15, duration: 0.25 } }}
           onClick={onClose}
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+        />
+      )}
+
+      {mode && (
+        <motion.div
+          key="drawer"
+          initial={{ y: '100%' }}
+          animate={{ y: 0 }}
+          exit={{ y: '100%' }}
+          transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+          className={`fixed left-0 right-0 z-50 bg-[#0d0f12] border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col transition-all duration-300 ${
+            showEmailForm || googleLoading || appleLoading
+              ? 'top-0 bottom-0 rounded-none max-h-screen'
+              : 'bottom-0 rounded-t-[32px] max-h-[90vh]'
+          }`}
         >
-          <div className="w-12 h-1.5 rounded-full bg-white/20" />
+          {/* Handle bar */}
+          <div
+            className={`w-full pb-2 flex justify-center shrink-0 cursor-grab active:cursor-grabbing transition-all ${
+              showEmailForm || googleLoading || appleLoading
+                ? 'pt-[calc(var(--sai-top,0px)+1.5rem)]'
+                : 'pt-4'
+            }`}
+            onClick={onClose}
+          >
+            <div className="w-12 h-1.5 rounded-full bg-white/20" />
         </div>
 
         <div className="px-6 flex-1 pb-[calc(var(--sai-bottom,0px)+2rem)] overflow-y-auto no-scrollbar">
@@ -383,6 +377,7 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
                       className={inputCls}
+                      autoFocus={mode === 'signup'}
                     />
                     <User className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   </div>
@@ -402,6 +397,7 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       className={inputCls}
+                      autoFocus={mode !== 'signup'}
                     />
                     <Mail className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   </div>
@@ -572,6 +568,8 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
           </AnimatePresence>
         </div>
       </motion.div>
+      )}
+      </AnimatePresence>
 
       <LegalSheet
         open={legalOpen !== null}

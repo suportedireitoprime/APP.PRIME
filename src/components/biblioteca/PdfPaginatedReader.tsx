@@ -246,7 +246,7 @@ const PdfPaginatedReader = ({ url, titulo, onClose, livroId }: Props) => {
   return (
     <div className="fixed inset-0 z-[1000] bg-zinc-950 flex flex-col theme-vademecum">
       <div className="h-14 border-b border-white/10 bg-zinc-900/50 flex items-center px-4 shrink-0">
-        <button onClick={onClose} className="p-2 -ml-2 text-white/70 hover:text-white transition-colors">
+        <button onClick={onClose} className="w-11 h-11 flex items-center justify-center -ml-2 text-white/70 hover:text-white transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex-1 min-w-0 ml-3">
@@ -255,7 +255,7 @@ const PdfPaginatedReader = ({ url, titulo, onClose, livroId }: Props) => {
         <div className="flex items-center space-x-2 ml-4">
           <button
             onClick={() => setDualPage(!dualPage)}
-            className="p-2 text-white/70 hover:text-white transition-colors rounded-lg hover:bg-white/10"
+            className="w-11 h-11 flex items-center justify-center text-white/70 hover:text-white transition-colors rounded-lg hover:bg-white/10"
             title={dualPage ? 'Uma página' : 'Duas páginas'}
           >
             {dualPage ? <Square className="w-5 h-5" /> : <Columns className="w-5 h-5" />}
@@ -273,7 +273,7 @@ const PdfPaginatedReader = ({ url, titulo, onClose, livroId }: Props) => {
                 toast.success('Página marcada');
               }
             }}
-            className={`p-2 transition-colors rounded-lg hover:bg-white/10 ${bookmark === currentPage ? 'text-primary' : 'text-white/70 hover:text-white'}`}
+            className={`w-11 h-11 flex items-center justify-center transition-colors rounded-lg hover:bg-white/10 ${bookmark === currentPage ? 'text-primary' : 'text-white/70 hover:text-white'}`}
           >
             {bookmark === currentPage ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
           </button>

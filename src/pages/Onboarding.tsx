@@ -21,19 +21,14 @@ const Onboarding = () => {
     document.title = 'Personalizar Perfil | Direito Prime';
   }, []);
 
-  const finalizar = (r: CadastroResult) => {
+  const finalizar = async (r: CadastroResult) => {
     if (!user) {
       navigate('/', { replace: true });
       return;
     }
-    // Libera o app na hora: nada de esperar a rede pra sair do onboarding.
-    try { localStorage.setItem(`onboarding_completed:${user.id}`, '1'); } catch {}
-    try { window.sessionStorage.removeItem('just_signed_up'); } catch {}
-    setPedirNotificacoes(true);
     setSaving(true);
 
-    // Salvamento em segundo plano — o usuário não fica travado esperando.
-    supabase
+    const { error } = await supabase
       .from('profiles')
       .update({
         status_perfil: r.persona,
@@ -47,12 +42,18 @@ const Onboarding = () => {
         whatsapp_number: r.whatsapp || null,
         onboarding_completed_at: new Date().toISOString(),
       } as any)
-      .eq('id', user.id)
-      .then(({ error }) => {
-        if (error) toast.error('Salvei seu acesso, mas o perfil não gravou. Ajuste depois em Perfil.');
-      })
-      .then(undefined, () => {})
-      .then(() => setSaving(false));
+      .eq('id', user.id);
+
+    setSaving(false);
+
+    if (error) {
+      toast.error('Salvei seu acesso, mas o perfil não gravou. Ajuste depois em Perfil.');
+    }
+
+    try { localStorage.setItem(`onboarding_completed:${user.id}`, '1'); } catch {}
+    import('idb-keyval').then(({ set }) => set(`onboarding_completed:${user.id}`, '1')).catch(() => {});
+    try { window.sessionStorage.removeItem('just_signed_up'); } catch {}
+    setPedirNotificacoes(true);
   };
 
 

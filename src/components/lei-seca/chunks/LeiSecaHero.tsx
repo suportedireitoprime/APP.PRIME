@@ -46,6 +46,7 @@ export function LeiSecaHero({
   onBack,
 }: LeiSecaHeroProps) {
   const navigate = useNavigate();
+  const ringGradId = React.useId();
 
   const handleBack = () => {
     haptic.selection();

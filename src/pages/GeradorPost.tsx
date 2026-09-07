@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import html2canvas from 'html2canvas';
+import { toBlob } from 'html-to-image';
 import logoImgAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
 import logoImgBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 const logoImg = pickAsset(logoImgBundled, srcOf(logoImgAsset));
@@ -429,11 +429,9 @@ const GeradorPost = () => {
     const el = slidesRef.current[index];
     if (!el) return;
     // Already at 1080×1350, export at scale 1
-    const canvas = await html2canvas(el, { scale: 1, useCORS: true, backgroundColor: null });
-    canvas.toBlob((blob) => {
-      if (!blob) return;
-      void baixarBlob(blob, `slide-${index + 1}.png`, { titulo: `Slide ${index + 1}` });
-    }, 'image/png');
+    const blob = await toBlob(el, { pixelRatio: 1, backgroundColor: 'transparent' });
+    if (!blob) return;
+    void baixarBlob(blob, `slide-${index + 1}.png`, { titulo: `Slide ${index + 1}` });
   };
 
   const downloadAll = async () => {

@@ -31,7 +31,6 @@ const extensao = (nome: string) => (nome.split('.').pop() || '').toLowerCase();
  */
 const DocumentoViewer = ({ blob, nome, mime, onClose, onBaixar, baixando }: Props) => {
   const [estado, setEstado] = useState<Estado>({ tipo: 'carregando' });
-  const pdfRef = useRef<HTMLDivElement>(null);
 
   const ext = useMemo(() => extensao(nome), [nome]);
 
@@ -50,7 +49,11 @@ const DocumentoViewer = ({ blob, nome, mime, onClose, onBaixar, baixando }: Prop
         }
 
         if (mime === 'application/pdf' || ext === 'pdf') {
-          if (!cancelado) setEstado({ tipo: 'pdf' });
+          if (!cancelado)
+            setEstado({
+              tipo: 'indisponivel',
+              motivo: 'Não é possível pré-visualizar PDFs nativamente aqui. Baixe o arquivo para abri-lo.',
+            });
           return;
         }
 
@@ -58,10 +61,11 @@ const DocumentoViewer = ({ blob, nome, mime, onClose, onBaixar, baixando }: Prop
           ext === 'docx' ||
           mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         ) {
-          const mammoth: any = await import('mammoth/mammoth.browser');
-          const buf = await blob.arrayBuffer();
-          const { value } = await (mammoth.default ?? mammoth).convertToHtml({ arrayBuffer: buf });
-          if (!cancelado) setEstado({ tipo: 'html', html: value });
+          if (!cancelado)
+            setEstado({
+              tipo: 'indisponivel',
+              motivo: 'Não é possível pré-visualizar este formato. Baixe o arquivo para abri-lo nativamente.',
+            });
           return;
         }
 
@@ -109,54 +113,7 @@ const DocumentoViewer = ({ blob, nome, mime, onClose, onBaixar, baixando }: Prop
     };
   }, [blob, mime, ext]);
 
-  // Renderização do PDF em canvas
-  useEffect(() => {
-    if (estado.tipo !== 'pdf') return;
-    let cancelado = false;
 
-    (async () => {
-      try {
-        const { pdfjsLib, configurarPdfWorker, getPdfDocumentParams } = await import('@/lib/pdfWorkerConfig');
-        configurarPdfWorker(pdfjsLib);
-        
-        const data = new Uint8Array(await blob.arrayBuffer());
-        const pdf = await pdfjsLib.getDocument(getPdfDocumentParams(data)).promise;
-        const alvo = pdfRef.current;
-        if (!alvo || cancelado) return;
-        alvo.innerHTML = '';
-        const largura = Math.min(alvo.clientWidth || 360, 900);
-
-        for (let n = 1; n <= pdf.numPages; n++) {
-          if (cancelado) return;
-          const page = await pdf.getPage(n);
-          const base = page.getViewport({ scale: 1 });
-          const escala = (largura / base.width) * Math.min(window.devicePixelRatio || 1, 2);
-          const viewport = page.getViewport({ scale: escala });
-          const canvas = document.createElement('canvas');
-          canvas.width = viewport.width;
-          canvas.height = viewport.height;
-          canvas.style.width = '100%';
-          canvas.style.height = 'auto';
-          canvas.className = 'mb-3 rounded-xl bg-white shadow-sm';
-          const ctx = canvas.getContext('2d')!;
-          await page.render({ canvasContext: ctx, viewport, canvas } as any).promise;
-          if (cancelado) return;
-          alvo.appendChild(canvas);
-        }
-      } catch (e) {
-        console.error('preview pdf:', e);
-        if (!cancelado)
-          setEstado({
-            tipo: 'indisponivel',
-            motivo: 'Não consegui abrir este PDF aqui. Baixe o arquivo para lê-lo.',
-          });
-      }
-    })();
-
-    return () => {
-      cancelado = true;
-    };
-  }, [estado.tipo, blob]);
 
   return createPortal(
     <div className="fixed inset-0 z-[95] flex flex-col bg-background">
@@ -197,15 +154,6 @@ const DocumentoViewer = ({ blob, nome, mime, onClose, onBaixar, baixando }: Prop
 
         {estado.tipo === 'imagem' && (
           <img src={estado.url} alt={nome} loading="lazy" decoding="async" onError={(e) => (e.currentTarget.style.display = 'none')} className="mx-auto w-full rounded-xl object-contain" />
-        )}
-
-        {estado.tipo === 'pdf' && (
-          <div ref={pdfRef} className="mx-auto w-full max-w-[900px]">
-            <div className="flex items-center justify-center gap-2 py-20 text-muted-foreground">
-              <Loader2 className="h-5 w-5 animate-spin" />
-              <span className="font-body text-sm">Renderizando páginas…</span>
-            </div>
-          </div>
         )}
 
         {estado.tipo === 'html' && (

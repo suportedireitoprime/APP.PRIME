@@ -1,4 +1,4 @@
-import html2canvas from 'html2canvas';
+import { toBlob } from 'html-to-image';
 import brasaoUrl from '@/assets/brasao-republica.webp';
 import type { ArtigoPdfInput, ArtigoPdfModo } from './artigoPdf';
 import { baixarBlob } from '@/lib/nativo';
@@ -150,14 +150,9 @@ export async function gerarArtigoImage(data: ArtigoImageInput) {
   );
 
   try {
-    const canvas = await html2canvas(host.firstElementChild as HTMLElement, {
+    const blob = await toBlob(host.firstElementChild as HTMLElement, {
       backgroundColor: '#EBECF0',
-      scale: 2,
-      useCORS: true,
-      logging: false,
-    });
-    const blob = await new Promise<Blob | null>((resolve) => {
-      canvas.toBlob((b) => resolve(b), 'image/png');
+      pixelRatio: 2,
     });
     if (blob) {
       await baixarBlob(blob, `${slug(data.leiLabel)}-art-${slug(data.numero)}-${data.modo}.png`, {

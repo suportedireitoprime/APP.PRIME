@@ -275,7 +275,15 @@ function syncOverlay(r: GeofenceReminder, dist: number, inside: boolean) {
   }
 }
 
+let checkTimer: number | null = null;
 function checkPosition(lat: number, lng: number, accuracy?: number) {
+  if (checkTimer) window.clearTimeout(checkTimer);
+  checkTimer = window.setTimeout(() => {
+    _checkPosition(lat, lng, accuracy);
+  }, 250);
+}
+
+function _checkPosition(lat: number, lng: number, accuracy?: number) {
   let changed = false;
   let nearestDist = Infinity;
   for (const r of reminders) {

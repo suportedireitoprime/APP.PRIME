@@ -8,11 +8,54 @@ import { marcarPedido, marcarResultado } from '@/lib/pushPermission';
 import { supabase } from '@/integrations/supabase/client';
 import horusBellAsset from '@/assets/horus/horus-bell.webp';
 import { useAuth } from '@/hooks/useAuth';
+import { haptic } from '@/lib/nativeHaptics';
 
 function setBottomNavHidden(hidden: boolean) {
   try {
     window.dispatchEvent(new CustomEvent('direitoprime:bottom-nav-visibility', { detail: { hidden } }));
   } catch {}
+}
+
+function TypewriterTextWithAudio({ text }: { text: string }) {
+  const [out, setOut] = useState('');
+  const [isComplete, setIsComplete] = useState(false);
+
+  useEffect(() => {
+    let i = 0;
+    let timer: ReturnType<typeof setTimeout>;
+    const audio = new Audio('/sounds/teclado.mp3');
+    audio.loop = true;
+    audio.volume = 0.35;
+    
+    const start = setTimeout(() => {
+      audio.play().catch(() => {});
+      const tick = () => {
+        i++;
+        setOut(text.slice(0, i));
+        if (i < text.length) {
+          timer = setTimeout(tick, 28);
+        } else {
+          audio.pause();
+          setIsComplete(true);
+        }
+      };
+      tick();
+    }, 650);
+
+    return () => { 
+      clearTimeout(start);
+      clearTimeout(timer!);
+      audio.pause();
+      audio.src = '';
+    };
+  }, [text]);
+
+  return (
+    <>
+      {out}
+      {!isComplete && <span className="inline-block w-[2px] h-4 align-[-2px] ml-0.5 bg-neutral-900 animate-pulse" />}
+    </>
+  );
 }
 
 const BENEFICIOS = [
@@ -42,42 +85,14 @@ export default function NotificacoesPermissaoStep({
   const rawText = `Ei [Nome]! Ativa as notificações ${platformText} pra eu te avisar rapidão quando sair lei nova ou tiver novidade importante. Bora?`;
   const personalizedGuideText = rawText.replace('[Nome]!', firstName ? `${firstName}!` : '!');
 
-  const [out, setOut] = useState('');
-  const [isComplete, setIsComplete] = useState(false);
-
   useEffect(() => {
     marcarPedido();
     setBottomNavHidden(true);
     
-    // Typewriter effect
-    let i = 0;
-    let timer: ReturnType<typeof setTimeout>;
-    const audio = new Audio('/sounds/teclado.mp3');
-    audio.loop = true;
-    audio.volume = 0.35;
-    
-    const start = setTimeout(() => {
-      audio.play().catch(() => {});
-      const tick = () => {
-        i++;
-        setOut(personalizedGuideText.slice(0, i));
-        if (i < personalizedGuideText.length) {
-          timer = setTimeout(tick, 28);
-        } else {
-          audio.pause();
-          setIsComplete(true);
-        }
-      };
-      tick();
-    }, 650);
-
     return () => { 
       setBottomNavHidden(false); 
-      clearTimeout(start);
-      clearTimeout(timer!);
-      audio.pause();
     };
-  }, [personalizedGuideText]);
+  }, []);
 
   /** Push de boas-vindas: confirma na hora que está funcionando de verdade. */
   const enviarBoasVindas = async () => {
@@ -100,6 +115,7 @@ export default function NotificacoesPermissaoStep({
   };
 
   const ativar = async () => {
+    haptic.selection();
     setLoading(true);
     let granted = false;
     try {
@@ -127,14 +143,16 @@ export default function NotificacoesPermissaoStep({
       marcarResultado(granted);
       if (granted) {
         // Aguarda o token chegar ao banco antes de disparar o teste.
-        window.setTimeout(() => { enviarBoasVindas(); }, 2500);
+        window.setTimeout(() => { void enviarBoasVindas(); }, 2500);
       }
-      onDone(granted);
+      import('react').then(({ startTransition }) => {
+        startTransition(() => onDone(granted));
+      });
     }
   };
 
   return (
-    <div className="fixed inset-0 z-[130] flex flex-col items-center justify-center overflow-y-auto bg-background/95 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-[130] flex flex-col items-center justify-center overflow-y-auto bg-neutral-900/60 backdrop-blur-md p-4">
       <div className="relative mx-auto w-full max-w-md pt-28">
         
         {/* Horus mascote animado */}
@@ -148,8 +166,9 @@ export default function NotificacoesPermissaoStep({
           }}
           transition={{ duration: 0.7, times: [0, 0.55, 0.8, 1], ease: ['easeIn','easeOut','easeOut','easeOut'] }}
           className="absolute top-0 -left-4 z-20 w-40 h-40 drop-shadow-[0_18px_20px_rgba(0,0,0,0.55)] pointer-events-none"
+          style={{ willChange: 'transform, opacity' }}
         >
-          <img src={horusBellAsset} alt="Horus" className="w-full h-full object-contain" />
+          <img src={horusBellAsset} alt="Horus" draggable={false} className="w-full h-full object-contain pointer-events-none" />
         </motion.div>
 
         {/* Balão de fala */}
@@ -159,11 +178,11 @@ export default function NotificacoesPermissaoStep({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ type: 'spring', stiffness: 380, damping: 22, delay: 0.6 }}
             className="absolute top-[-20px] left-32 z-20 max-w-[240px] bg-white text-neutral-900 rounded-2xl px-4 py-3 shadow-xl border-2 border-neutral-900"
-            style={{ transformOrigin: 'bottom left' }}
+            style={{ transformOrigin: 'bottom left', willChange: 'transform, opacity' }}
+            aria-live="polite"
           >
             <p className="text-[15px] font-semibold leading-snug">
-              {out}
-              {!isComplete && <span className="inline-block w-[2px] h-4 align-[-2px] ml-0.5 bg-neutral-900 animate-pulse" />}
+              <TypewriterTextWithAudio text={personalizedGuideText} />
             </p>
             <span
               className="absolute -bottom-2 left-6 w-0 h-0 pointer-events-none"

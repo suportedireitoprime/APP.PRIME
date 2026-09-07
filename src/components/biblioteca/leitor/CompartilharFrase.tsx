@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, Pencil, Download, Share2, Copy, RefreshCw, Check, Palette, BookOpen, FileText, Library } from 'lucide-react';
-import html2canvas from 'html2canvas';
+import { toBlob } from 'html-to-image';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { baixarBlob } from '@/lib/nativo';
@@ -233,13 +233,10 @@ export default function CompartilharFrase({
     if (!cardRef.current) return null;
     setExportando(true);
     try {
-      const canvas = await html2canvas(cardRef.current, {
-        backgroundColor: null,
-        scale: 2,
-        useCORS: true,
-        logging: false,
+      return await toBlob(cardRef.current, {
+        backgroundColor: 'transparent',
+        pixelRatio: 2,
       });
-      return await new Promise<Blob | null>((resolve) => canvas.toBlob((b) => resolve(b), 'image/png', 0.95));
     } finally {
       setExportando(false);
     }

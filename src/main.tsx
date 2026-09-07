@@ -20,10 +20,6 @@ function preloadImage(url: string) {
   link.type = "image/webp";
   link.fetchPriority = "high";
   document.head.appendChild(link);
-  // Aquece também o cache de decode do browser
-  const img = new Image();
-  img.decoding = "async";
-  img.src = url;
 }
 preloadImage(primeLogoUrl);
 preloadImage(horusOwlUrl);

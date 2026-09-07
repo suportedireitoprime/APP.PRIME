@@ -39,7 +39,7 @@ export const AuthMobileHero: React.FC<AuthMobileHeroProps> = ({
             console.warn('[Auth] Erro ao restaurar sessão nativa:', e);
           }
         }
-        if (!res?.success && !res?.cancelled) {
+        if (!res?.success && !(res as unknown as Record<string, unknown>)?.cancelled) {
           onOpenDrawer(mode);
         }
       } catch (err) {
@@ -78,22 +78,22 @@ export const AuthMobileHero: React.FC<AuthMobileHeroProps> = ({
             <img
               src="/logo-prime.png"
               alt="Logo Direito Prime"
-              className="w-24 h-24 xl:w-32 xl:h-32 object-contain drop-shadow-2xl relative z-10"
+              className="w-24 h-24 xl:w-32 xl:h-32 object-contain relative z-10"
             />
 
             <div className="flex flex-col items-center justify-center gap-1 mt-1 w-full">
-              <h1 className="font-serif italic font-bold text-[28px] text-white tracking-tight leading-none drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)] whitespace-nowrap">
+              <h1 className="font-serif italic font-bold text-[28px] text-white tracking-tight leading-none [text-shadow:0_4px_10px_rgba(0,0,0,0.8)] whitespace-nowrap">
                 Estudos Jurídicos
               </h1>
-              <span className="font-sans font-medium text-white/90 text-[10px] tracking-[0.3em] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] whitespace-nowrap">
+              <span className="font-sans font-medium text-white/90 text-[10px] tracking-[0.3em] uppercase [text-shadow:0_2px_4px_rgba(0,0,0,0.6)] whitespace-nowrap">
                 Estudo Profissional
               </span>
             </div>
           </div>
 
-          <p className="font-body text-white/95 text-base leading-snug font-medium max-w-[300px] drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] mt-2 bg-black/30 backdrop-blur-sm px-4 py-3 rounded-2xl border border-white/10">
+          <p className="font-body text-white/95 text-base leading-snug font-medium max-w-[300px] shadow-lg mt-2 bg-black/30 backdrop-blur-sm px-4 py-3 rounded-2xl border border-white/10">
             Todo o conhecimento jurídico que você precisa reunido em{' '}
-            <span className="text-primary font-bold drop-shadow-md">uma única plataforma.</span>
+            <span className="text-primary font-bold">uma única plataforma.</span>
           </p>
         </motion.div>
 

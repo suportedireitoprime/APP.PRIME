@@ -103,6 +103,17 @@ function useTypewriter(text: string, enabled: boolean, speed = 28, startDelay = 
   return out;
 }
 
+function TypewriterText({ text, enabled, speed = 28, startDelay = 650 }: { text: string, enabled: boolean, speed?: number, startDelay?: number }) {
+  const out = useTypewriter(text, enabled, speed, startDelay);
+  const isComplete = out.length === text.length && text.length > 0;
+  return (
+    <>
+      {out}
+      {!isComplete && <span className="inline-block w-[2px] h-4 align-[-2px] ml-0.5 bg-neutral-900 animate-pulse" />}
+    </>
+  );
+}
+
 export default function NovidadesRadarOverlay() {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<OverlayItem[]>([]);
@@ -122,12 +133,16 @@ export default function NovidadesRadarOverlay() {
   useEffect(() => {
     if (location.pathname.startsWith('/radar-360')) return;
 
+    let isMounted = true;
     const check = async () => {
+      if (!isMounted) return;
+      
       const lastSeen = (() => {
         try { return localStorage.getItem(LS_KEY) || new Date(Date.now() - 24 * 3600 * 1000).toISOString(); }
         catch { return new Date(Date.now() - 24 * 3600 * 1000).toISOString(); }
       })();
       
+      await new Promise(r => setTimeout(r, 0)); // yield thread to avoid blocking main thread on startup
       const seen = new Set(readSeenIds());
       const seenTopics = user?.id ? readSeenTopics(user.id) : new Set<string>();
       const now = new Date();
@@ -219,9 +234,11 @@ export default function NovidadesRadarOverlay() {
         }
       }
 
-      if (list.length > 0) {
+      if (list.length > 0 && isMounted) {
         setItems(list);
         setOpen(true);
+        // Fallback in case animation event doesn't fire
+        setTimeout(() => { if (isMounted) setLanded(true); }, 1000);
       }
     };
     check();
@@ -230,8 +247,20 @@ export default function NovidadesRadarOverlay() {
       if (document.visibilityState === 'visible') check();
     };
     document.addEventListener('visibilitychange', onVisible);
-    return () => document.removeEventListener('visibilitychange', onVisible);
-  }, [location.pathname]);
+    return () => {
+      isMounted = false;
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [location.pathname, user?.id]);
+
+  useEffect(() => {
+    return () => {
+      if (tecladoRef.current) {
+        tecladoRef.current.pause();
+        tecladoRef.current.src = '';
+      }
+    };
+  }, []);
 
   const markSeen = () => {
     try { localStorage.setItem(LS_KEY, new Date().toISOString()); } catch { /* ignore */ }
@@ -258,7 +287,13 @@ export default function NovidadesRadarOverlay() {
   };
   const first = items[0];
   const goTo = async () => {
+    haptic.impact();
     const isBoletim = first?.origem === 'boletim_noticia' || first?.origem === 'boletim_juridico';
+
+    if (!navigator.onLine) {
+      toast.error('Sem conexão com a internet no momento.');
+      return;
+    }
 
     if (isBoletim) {
       // Buscar roteiro completo e abrir player inline
@@ -286,20 +321,28 @@ export default function NovidadesRadarOverlay() {
         markSeen();
         setOpen(false);
         setLanded(false);
-        if (first?.url) navigate(first.url);
+        if (first?.url) {
+          import('react').then(({ startTransition }) => {
+            startTransition(() => navigate(first.url));
+          });
+        }
       } finally {
         setLoadingBoletim(false);
       }
       return;
     }
 
-    markSeen(); 
-    setOpen(false); 
-    setLanded(false); 
+    markSeen();
+    setOpen(false);
+    setLanded(false);
     if (first?.url) {
-      navigate(first.url);
+      import('react').then(({ startTransition }) => {
+        startTransition(() => navigate(first.url));
+      });
     } else {
-      navigate('/radar-360');
+      import('react').then(({ startTransition }) => {
+        startTransition(() => navigate('/radar-360'));
+      });
     }
   };
 
@@ -333,7 +376,7 @@ export default function NovidadesRadarOverlay() {
     }
   }, [items, first, firstName]);
 
-  const typed = useTypewriter(speech, open && landed);
+  // Removed useTypewriter from here to avoid global re-renders
 
   if (!open && !boletimAtivo) return null;
 
@@ -378,8 +421,9 @@ export default function NovidadesRadarOverlay() {
               } catch { /* ignore on web fallback */ }
             }}
             className="absolute -top-24 -left-4 z-20 w-32 h-32 sm:w-36 sm:h-36 drop-shadow-[0_18px_20px_rgba(0,0,0,0.55)]"
+            style={{ willChange: 'transform, opacity' }}
           >
-            <img src={horusAsset} alt="Horus" className="w-full h-full object-contain" />
+            <img src={horusAsset} alt="Horus" draggable={false} className="w-full h-full object-contain pointer-events-none" />
           </motion.div>
 
           {/* Balão de fala estilo gibi */}
@@ -391,11 +435,11 @@ export default function NovidadesRadarOverlay() {
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ type: 'spring', stiffness: 380, damping: 22 }}
                 className="absolute -top-20 left-28 sm:left-32 z-20 max-w-[250px] bg-white text-neutral-900 rounded-2xl px-4 py-3 shadow-xl border-2 border-neutral-900"
-                style={{ transformOrigin: 'bottom left' }}
+                style={{ transformOrigin: 'bottom left', willChange: 'transform, opacity' }}
+                aria-live="polite"
               >
                 <p className="text-[15px] font-semibold leading-snug">
-                  {typed}
-                  <span className="inline-block w-[2px] h-4 align-[-2px] ml-0.5 bg-neutral-900 animate-pulse" />
+                  <TypewriterText text={speech} enabled={open && landed} />
                 </p>
                 {/* Rabinho do balão */}
                 <span
@@ -434,7 +478,8 @@ export default function NovidadesRadarOverlay() {
               <img
                 src={brasaoAsset}
                 alt=""
-                className="absolute -right-8 -top-4 w-40 h-40 opacity-20 mix-blend-luminosity"
+                draggable={false}
+                className="absolute -right-8 -top-4 w-40 h-40 opacity-20 mix-blend-luminosity pointer-events-none"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[hsl(340_55%_12%)] via-transparent to-transparent" />
               <div className="relative p-4 flex items-center justify-end">
@@ -442,9 +487,10 @@ export default function NovidadesRadarOverlay() {
                 <button
                   onClick={dismiss}
                   aria-label="Fechar"
-                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/80"
+                  className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/80"
+                  style={{ marginTop: 'calc(var(--sai-top, env(safe-area-inset-top, 0px)))' }}
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-6 h-6" />
                 </button>
               </div>
               <div className="absolute bottom-2 left-4 right-4">

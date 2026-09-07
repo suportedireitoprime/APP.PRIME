@@ -441,6 +441,7 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
                     return;
                   }
                   if (frente) {
+                    import('@/lib/nativeHaptics').then(m => m.haptic.selection());
                     openBook(item);
                   } else {
                     setPaused(true);

@@ -167,8 +167,10 @@ export function useMeExpliqueEngine(videoRef: RefObject<HTMLVideoElement>) {
 
   useEffect(() => {
     const camera = cameraRef.current;
-    const aoTrocar = () => {
-      if (document.hidden) {
+    let appListener: any;
+
+    const aoTrocar = (hidden: boolean) => {
+      if (hidden) {
         sessaoRef.current?.encerrar();
         sessaoRef.current = null;
         setStatus('inativo');
@@ -178,8 +180,20 @@ export function useMeExpliqueEngine(videoRef: RefObject<HTMLVideoElement>) {
         void abrirPreview();
       }
     };
-    document.addEventListener('visibilitychange', aoTrocar);
-    return () => document.removeEventListener('visibilitychange', aoTrocar);
+
+    const handleVis = () => aoTrocar(document.hidden);
+    document.addEventListener('visibilitychange', handleVis);
+
+    import('@capacitor/app').then(({ App }) => {
+      App.addListener('appStateChange', ({ isActive }) => {
+        aoTrocar(!isActive);
+      }).then(l => { appListener = l; }).catch(() => {});
+    });
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVis);
+      if (appListener) appListener.remove();
+    };
   }, [abrirPreview]);
 
   const iniciar = useCallback(async () => {

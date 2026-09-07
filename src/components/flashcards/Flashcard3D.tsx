@@ -1,6 +1,5 @@
 import { memo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import gsap from 'gsap';
 import { ChevronRight, Scale, RotateCcw, CheckCircle2, Lightbulb, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FlashcardCard } from '@/lib/flashcardsQueries';
@@ -91,10 +90,12 @@ const Flashcard3D = memo(function Flashcard3D({
   const handleResponder = (status: 'compreendido' | 'revisar') => {
     onResponder(status, () => {
       if (cardContainerRef.current) {
-        gsap.fromTo(
-          cardContainerRef.current,
-          { x: -8 },
-          { x: 8, clearProps: "x", repeat: 5, yoyo: true, duration: 0.05, ease: 'sine.inOut' }
+        cardContainerRef.current.animate(
+          [
+            { transform: 'translateX(-8px)' },
+            { transform: 'translateX(8px)' }
+          ],
+          { duration: 50, iterations: 6, direction: 'alternate', easing: 'ease-in-out' }
         );
       }
     });

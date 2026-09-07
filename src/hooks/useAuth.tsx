@@ -66,11 +66,9 @@ const AuthContext = createContext<AuthContextType>({
 const readCachedSession = (): Session | null => {
   if (typeof window === 'undefined') return null;
   try {
-    for (let i = 0; i < window.localStorage.length; i++) {
-      const key = window.localStorage.key(i);
-      if (!key?.startsWith('sb-') || !key.endsWith('-auth-token')) continue;
-      const raw = window.localStorage.getItem(key);
-      if (!raw) continue;
+    // Acesso direto em O(1) evita bloquear a Main Thread iterando sobre todo o localStorage
+    const raw = window.localStorage.getItem('sb-dnjrgpldcwcpoywamorr-auth-token');
+    if (raw) {
       const parsed = JSON.parse(raw);
       const session = (parsed?.currentSession ?? parsed) as Session | null;
       if (session?.access_token && session?.user) return session;
@@ -114,13 +112,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       import('@/lib/appEvents').then(({ appEvents, identifyUser }) => {
         const provider = (session?.user?.app_metadata as Record<string, unknown>)?.provider || 'email';
         if (_event === 'SIGNED_IN') {
-          identifyUser({
-            id: session?.user?.id,
-            email: session?.user?.email,
-            phone: (session?.user?.user_metadata as Record<string, unknown>)?.telefone as string ?? null,
-          });
-          appEvents.login(provider as string);
-        } else if (_event === 'SIGNED_OUT') appEvents.logout();
+          const sent = typeof window !== 'undefined' ? window.sessionStorage.getItem('ga_login_sent') : '1';
+          if (sent !== '1') {
+            identifyUser({
+              id: session?.user?.id,
+              email: session?.user?.email,
+              phone: (session?.user?.user_metadata as Record<string, unknown>)?.telefone as string ?? null,
+            });
+            appEvents.login(provider as string);
+            try { window.sessionStorage.setItem('ga_login_sent', '1'); } catch {}
+          }
+        } else if (_event === 'SIGNED_OUT') {
+          appEvents.logout();
+          try { window.sessionStorage.removeItem('ga_login_sent'); } catch {}
+        }
       }).catch(() => {});
     });
 
@@ -144,16 +149,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
     // Handle OAuth deep link on native (<appId>://auth-callback?code=...)
+    let appStateListener: { remove: () => void } | null = null;
     if (Capacitor.isNativePlatform()) {
+      CapacitorApp.addListener('appStateChange', async (state) => {
+        if (state.isActive) {
+          // Força refresh da sessão caso o JWT tenha expirado em background
+          try { await supabase.auth.getSession(); } catch {}
+        }
+      }).then((l) => {
+        if (isMounted) appStateListener = l;
+        else l.remove();
+      });
+
       CapacitorApp.addListener('appUrlOpen', async ({ url }) => {
         const aceito =
           !!url &&
           (url.startsWith(`${NATIVE_PACKAGE}://`) ||
             LEGACY_DEEP_LINK_SCHEMES.some((s) => url.startsWith(s)));
         if (!aceito) return;
+        let isOAuthCallback = false;
         try {
           const parsed = new URL(url);
           const code = parsed.searchParams.get('code');
+          isOAuthCallback = !!code || !!parsed.hash?.includes('access_token');
           if (code) {
             await supabase.auth.exchangeCodeForSession(code);
           } else if (parsed.hash?.includes('access_token')) {
@@ -168,7 +186,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } catch (e) {
           console.error('Deep link auth error', e);
         } finally {
-          try { await Browser.close(); } catch {}
+          if (isOAuthCallback) {
+            try { await Browser.close(); } catch {}
+          }
         }
       }).then((l) => { 
         if (isMounted) {
@@ -184,6 +204,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isMounted = false;
       subscription.unsubscribe();
       appListener?.remove();
+      appStateListener?.remove();
     };
   }, []);
 

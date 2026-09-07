@@ -1,8 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
 import { ChevronRight, X, Sparkles, FileText } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { haptic } from '@/lib/nativeHaptics';
@@ -112,17 +110,7 @@ export function FlashcardsTermosFiltro({
     return () => { isMounted = false; };
   }, [open, tipo, filtro.areas, areasRaw]);
 
-  // GSAP animation for steps
-  const stepsRef = useRef<HTMLDivElement>(null);
-  useGSAP(() => {
-    if (open && passo === 'root' && stepsRef.current) {
-      gsap.fromTo(
-        stepsRef.current.children,
-        { opacity: 0, y: 15, scale: 0.98 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.4, stagger: 0.05, ease: 'back.out(1.2)' }
-      );
-    }
-  }, [open, passo]);
+
 
   const handleStart = () => {
     haptic.selection?.();
@@ -191,7 +179,7 @@ export function FlashcardsTermosFiltro({
 
         <div className="relative flex-1 overflow-hidden">
           <div className="absolute inset-0 overflow-y-auto overflow-x-hidden p-6 pt-2 pb-24">
-            <div ref={stepsRef} className="space-y-4">
+            <div className="space-y-4">
               <StepRow
                 step={1}
                 label="Áreas"
@@ -299,8 +287,9 @@ export function FlashcardsTermosFiltro({
 
             {passo === 'quantidade' && (
               <QuantidadeSheet
-                selecionado={filtro.quantidade}
-                onConfirmar={(v) => { setFiltro(p => ({ ...p, quantidade: v })); setPasso('root'); }}
+                quantidadeSel={filtro.quantidade === null ? 'todos' : filtro.quantidade}
+                totalCount={9999}
+                onConfirmar={(v) => { setFiltro(p => ({ ...p, quantidade: v === 'todos' ? null : (v as number) })); setPasso('root'); }}
                 onFechar={() => setPasso('root')}
               />
             )}

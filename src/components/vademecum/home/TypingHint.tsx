@@ -27,12 +27,23 @@ const TypingHint = () => {
     const handleMotionChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
     mediaQuery.addEventListener?.('change', handleMotionChange);
 
-    const handleVisibility = () => setIsVisible(!document.hidden);
-    document.addEventListener('visibilitychange', handleVisibility);
+    const handleVisibility = (hidden?: boolean) => {
+      setIsVisible(hidden === true ? false : (hidden === false ? true : !document.hidden));
+    };
+    const handleVis = () => handleVisibility(document.hidden);
+    document.addEventListener('visibilitychange', handleVis);
+
+    let appListener: any;
+    import('@capacitor/app').then(({ App }) => {
+      App.addListener('appStateChange', ({ isActive }) => {
+        handleVisibility(!isActive);
+      }).then(l => { appListener = l; }).catch(() => {});
+    });
 
     return () => {
       mediaQuery.removeEventListener?.('change', handleMotionChange);
-      document.removeEventListener('visibilitychange', handleVisibility);
+      document.removeEventListener('visibilitychange', handleVis);
+      if (appListener) appListener.remove();
     };
   }, []);
 

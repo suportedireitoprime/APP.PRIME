@@ -73,7 +73,10 @@ const ContinueCard = memo(({ item, onAbrirLivro }: { item: any, onAbrirLivro: (l
 
   return (
     <button
-      onClick={() => onAbrirLivro(snapToNormalizado(snap))}
+      onClick={() => {
+        import('@/lib/nativeHaptics').then(m => m.haptic.selection());
+        onAbrirLivro(snapToNormalizado(snap));
+      }}
       aria-label={`Continuar leitura do livro ${snap.titulo}`}
       className="snap-start shrink-0 w-[300px] sm:w-[340px] flex gap-4 items-stretch rounded-2xl border border-border/60 bg-card shadow-lg shadow-black/30 overflow-hidden text-left active:scale-[0.985] transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/80"
     >

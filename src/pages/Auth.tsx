@@ -22,16 +22,36 @@ const Auth = () => {
   // Redireciona usuário autenticado via startTransition
   useEffect(() => {
     if (!loading && user) {
-      startTransition(() => {
-        navigate('/', { replace: true });
-      });
+      const cacheKey = `onboarding_completed:${user.id}`;
+      const isCompleted = localStorage.getItem(cacheKey) === '1';
+      
+      if (isCompleted) {
+        startTransition(() => navigate('/', { replace: true }));
+      } else {
+        import('idb-keyval').then(({ get }) => {
+          get(cacheKey).then((val) => {
+             if (val === '1' || val === true) {
+               try { localStorage.setItem(cacheKey, '1'); } catch {}
+               startTransition(() => navigate('/', { replace: true }));
+             } else {
+               startTransition(() => navigate('/onboarding', { replace: true }));
+             }
+          }).catch(() => {
+             startTransition(() => navigate('/onboarding', { replace: true }));
+          });
+        }).catch(() => {
+           startTransition(() => navigate('/onboarding', { replace: true }));
+        });
+      }
     }
   }, [loading, user, navigate]);
 
   // Se for nativo (Android/iOS), registra listener para sucesso de autenticação nativa
   useEffect(() => {
     if (Capacitor.isNativePlatform() && !user) {
-      let handle: any;
+      let isSubscribed = true;
+      let authHandle: { remove: () => void } | null = null;
+      
       import('@/plugins/NativeAuthPlugin').then(({ NativeAuth }) => {
         NativeAuth.addListener('onAuthSuccess', async (data) => {
           if (data?.session) {
@@ -47,10 +67,16 @@ const Auth = () => {
             } catch (e) {
               console.warn('[Auth] Erro ao restaurar sessão nativa:', e);
             }
-            navigate('/', { replace: true });
+            startTransition(() => {
+              navigate('/', { replace: true });
+            });
           }
         }).then((h) => {
-          handle = h;
+          if (!isSubscribed) {
+            h?.remove?.();
+          } else {
+            authHandle = h;
+          }
         });
 
         NativeAuth.openAuth({ mode: 'login' }).then(async (res) => {
@@ -67,35 +93,37 @@ const Auth = () => {
             } catch (e) {
               console.warn('[Auth] Erro ao restaurar sessão nativa:', e);
             }
-            navigate('/', { replace: true });
+            startTransition(() => {
+              navigate('/', { replace: true });
+            });
           }
         }).catch(() => {});
       }).catch(() => {});
 
       return () => {
-        handle?.remove?.();
+        isSubscribed = false;
+        authHandle?.remove?.();
       };
     }
   }, [navigate, user]);
 
-  // Pré-aquece a Home/Dashboard assim que o usuário entra na tela de Auth
+  // Pré-aquece a Home/Dashboard apenas após o pico inicial de carregamento e Splash
   useEffect(() => {
-    const ric: (cb: () => void) => number = (window as any).requestIdleCallback
-      ? (cb) => (window as any).requestIdleCallback(cb, { timeout: 2000 })
-      : (cb) => window.setTimeout(cb, 500);
+    const timer = setTimeout(() => {
+      const w = window as unknown as { requestIdleCallback?: (cb: () => void, options?: { timeout: number }) => number };
+      const ric: (cb: () => void) => number = w.requestIdleCallback
+        ? (cb) => w.requestIdleCallback!(cb, { timeout: 2000 })
+        : (cb) => setTimeout(cb, 500) as unknown as number;
 
-    const id = ric(() => {
-      import('@/pages/Index').catch(() => {});
-      import('@/pages/IndexMobile').catch(() => {});
-      import('@/components/vademecum/home/HomeHeaderHero').catch(() => {});
-      import('@/components/vademecum/home/MobileHomeSections').catch(() => {});
-    });
+      ric(() => {
+        import('@/pages/Index').catch(() => {});
+        import('@/pages/IndexMobile').catch(() => {});
+        import('@/components/vademecum/home/HomeHeaderHero').catch(() => {});
+        import('@/components/vademecum/home/MobileHomeSections').catch(() => {});
+      });
+    }, 4500);
 
-    return () => {
-      const cic = (window as any).cancelIdleCallback;
-      if (cic) cic(id);
-      else window.clearTimeout(id);
-    };
+    return () => clearTimeout(timer);
   }, []);
 
   if (loading) {
@@ -130,15 +158,11 @@ const Auth = () => {
         <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
       </button>
 
-      <AnimatePresence>
-        {drawerMode && (
-          <AuthDrawer
-            mode={drawerMode}
-            setMode={setDrawerMode}
-            onClose={() => setDrawerMode(null)}
-          />
-        )}
-      </AnimatePresence>
+      <AuthDrawer
+        mode={drawerMode}
+        setMode={setDrawerMode}
+        onClose={() => setDrawerMode(null)}
+      />
 
       <AuthAjudaSheet open={ajudaOpen} onClose={() => setAjudaOpen(false)} />
     </main>

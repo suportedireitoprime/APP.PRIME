@@ -1,4 +1,4 @@
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
 import { toast } from 'sonner';
 
@@ -10,16 +10,13 @@ export async function exportMindMapPdf(
   const toastId = toast.loading('Gerando PDF...');
 
   try {
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
+    const imgData = await toPng(element, {
+      pixelRatio: 2,
       backgroundColor: '#030712',
-      logging: false,
     });
 
-    const imgData = canvas.toDataURL('image/png');
-    const imgW = canvas.width;
-    const imgH = canvas.height;
+    const imgW = element.offsetWidth * 2;
+    const imgH = element.offsetHeight * 2;
 
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     const pageW = pdf.internal.pageSize.getWidth();
@@ -61,6 +58,10 @@ export async function exportMindMapPdf(
       const sliceHeightPx = (contentH / ratio) * 2; // in canvas pixels
       const totalPages = Math.ceil(imgH / sliceHeightPx);
 
+      const img = new Image();
+      img.src = imgData;
+      await new Promise((resolve) => { img.onload = resolve; });
+
       for (let i = 0; i < totalPages; i++) {
         if (i > 0) pdf.addPage();
 
@@ -73,7 +74,7 @@ export async function exportMindMapPdf(
         sliceCanvas.width = imgW;
         sliceCanvas.height = srcH;
         const ctx = sliceCanvas.getContext('2d')!;
-        ctx.drawImage(canvas, 0, srcY, imgW, srcH, 0, 0, imgW, srcH);
+        ctx.drawImage(img, 0, srcY, imgW, srcH, 0, 0, imgW, srcH);
 
         const sliceData = sliceCanvas.toDataURL('image/png');
         addHeaderFooter(i + 1, totalPages);

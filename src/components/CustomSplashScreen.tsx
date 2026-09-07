@@ -12,11 +12,15 @@ export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
       onComplete();
     };
 
-    // Permanece na tela por 3 segundos para carregamento dos recursos iniciais
+    // Escuta evento nativo ou do framework de pronto
+    window.addEventListener('app:ready', finish);
+
+    // Fallback de segurança de 3 segundos
     const splashTimeout = setTimeout(finish, 3000);
 
     return () => {
       clearTimeout(splashTimeout);
+      window.removeEventListener('app:ready', finish);
     };
   }, [onComplete]);
 
@@ -36,30 +40,7 @@ export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(0,0,0,0.8),transparent_70%)]" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
 
-      {/* Estilos CSS puros para animação acelerada via GPU Compositor Thread (120fps constante) */}
-      <style>{`
-        @keyframes splash-logo-anim {
-          0% { transform: scale(0.65); opacity: 0; }
-          60% { transform: scale(1.02); opacity: 1; }
-          100% { transform: scale(1); opacity: 1; }
-        }
-        @keyframes splash-content-anim {
-          0% { transform: translateY(16px); opacity: 0; }
-          100% { transform: translateY(0); opacity: 1; }
-        }
-        .anim-splash-logo-gpu {
-          animation: splash-logo-anim 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-          will-change: transform, opacity;
-          transform: translateZ(0);
-        }
-        .anim-splash-content-gpu {
-          opacity: 0;
-          animation: splash-content-anim 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-          animation-delay: 0.25s;
-          will-change: transform, opacity;
-          transform: translateZ(0);
-        }
-      `}</style>
+
 
       {/* Logo Central com aceleração de hardware */}
       <div className="mb-6 relative z-10 flex flex-col items-center anim-splash-logo-gpu">

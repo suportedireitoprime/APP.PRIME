@@ -39,7 +39,7 @@ const OcrProgressOverlay = ({ etapa, progresso, total, totalPaginas, titulo }: P
   const etaTxt = etaMatch ? etaMatch[1] : null;
 
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center px-6 overflow-hidden bg-[#0f0b08] text-[#f2ead7] z-20">
+    <div className="absolute inset-0 flex flex-col items-center justify-center px-6 overflow-hidden bg-[#0f0b08] text-[#f2ead7] z-10">
       {/* Fundo decorativo animado */}
       <motion.div
         aria-hidden

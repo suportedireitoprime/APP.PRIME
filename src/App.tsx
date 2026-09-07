@@ -164,8 +164,21 @@ const LazyMediaPlayers = () => (
   </>
 );
 
+import { MotionConfig } from "framer-motion";
+const VisibilityMotionConfig = ({ children }: { children: React.ReactNode }) => {
+  const [isVisible, setIsVisible] = useState(typeof document !== 'undefined' ? document.visibilityState === 'visible' : true);
+  useEffect(() => {
+    const handleVis = () => setIsVisible(document.visibilityState === 'visible');
+    document.addEventListener('visibilitychange', handleVis);
+    return () => document.removeEventListener('visibilitychange', handleVis);
+  }, []);
+  // Evita Layout Shift grosseiro quando o app é resumido do background.
+  return <MotionConfig reducedMotion={isVisible ? "user" : "always"}>{children}</MotionConfig>;
+};
+
 const App = () => (
   <ErrorBoundary>
+    <VisibilityMotionConfig>
     <PersistQueryClientProvider
       client={queryClient}
       persistOptions={{
@@ -240,6 +253,7 @@ const App = () => (
         </AuthProvider>
       </Router>
     </PersistQueryClientProvider>
+    </VisibilityMotionConfig>
   </ErrorBoundary>
 );
 

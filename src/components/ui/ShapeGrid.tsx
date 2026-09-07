@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react';
+import { App } from '@capacitor/app';
 import './ShapeGrid.css';
 
 interface ShapeGridProps {
@@ -499,8 +500,8 @@ const ShapeGrid = ({
       hoveredSquare.current = null;
     };
 
-    const onVisibility = () => {
-      isPageVisible = !document.hidden;
+    const onVisibility = (forceHidden?: boolean) => {
+      isPageVisible = forceHidden === true ? false : (forceHidden === false ? true : !document.hidden);
       if (isPageVisible && active) {
         tryStart();
       } else {
@@ -539,7 +540,13 @@ const ShapeGrid = ({
     );
     io.observe(canvas);
 
-    document.addEventListener('visibilitychange', onVisibility);
+    const handleVis = () => onVisibility();
+    document.addEventListener('visibilitychange', handleVis);
+    
+    let appListener: any;
+    App.addListener('appStateChange', ({ isActive }) => {
+      onVisibility(!isActive);
+    }).then(listener => { appListener = listener; }).catch(() => {});
 
     const resizeObserver = new ResizeObserver((entries) => {
       const entry = entries[0];
@@ -569,7 +576,8 @@ const ShapeGrid = ({
       resizeObserver.disconnect();
       tryStop();
       io.disconnect();
-      document.removeEventListener('visibilitychange', onVisibility);
+      document.removeEventListener('visibilitychange', handleVis);
+      if (appListener) appListener.remove();
       if (motionQuery) {
         motionQuery.removeEventListener('change', handleMotionChange);
       }

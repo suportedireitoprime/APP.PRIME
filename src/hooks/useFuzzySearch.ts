@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import Fuse from 'fuse.js';
+import MiniSearch from 'minisearch';
 
 interface FuzzySearchOptions<T> {
   keys: (keyof T | string)[];
@@ -14,38 +14,42 @@ const normalizeStr = (str: any): string => {
 
 export function useFuzzySearch<T>(items: T[], query: string, options: FuzzySearchOptions<T>) {
   const keysKey = options.keys.join(',');
-  const fuse = useMemo(() => {
-    return new Fuse(items, {
-      keys: options.keys as string[],
-      threshold: options.threshold ?? 0.3,
-      includeScore: true,
-      ignoreLocation: true,
-      minMatchCharLength: 2,
-      getFn: (obj, path) => {
-        // Fallback para getFn padrão se path for complexo (mas funciona pra strings rasas)
-        let value: any = obj;
-        if (typeof path === 'string') {
-          value = (obj as any)[path];
-        } else if (Array.isArray(path)) {
-          for (const key of path) {
-            value = value?.[key];
-          }
+  
+  const miniSearchData = useMemo(() => {
+    const searcher = new MiniSearch({
+      fields: options.keys as string[],
+      storeFields: [],
+      idField: 'id',
+      extractField: (doc: any, fieldName: string) => {
+        let value: any = doc;
+        const path = fieldName.split('.');
+        for (const key of path) {
+          value = value?.[key];
         }
-        
         if (Array.isArray(value)) {
-          return value.map(v => normalizeStr(v));
+          return value.map(v => normalizeStr(v)).join(' ');
         }
         return normalizeStr(value);
+      },
+      searchOptions: {
+        fuzzy: options.threshold ?? 0.2,
+        prefix: true,
       }
     });
+
+    const itemsWithId = items.map((item, idx) => ({ ...item, id: idx }));
+    searcher.addAll(itemsWithId);
+    return { searcher, itemsWithId };
   }, [items, keysKey, options.threshold]);
 
   const results = useMemo(() => {
     if (!query || query.length < 2) return items;
     const normalizedQuery = normalizeStr(query);
-    const fuseResults = fuse.search(normalizedQuery, { limit: options.limit ?? 50 });
-    return fuseResults.map(r => r.item);
-  }, [fuse, query, items, options.limit]);
+    const searchResults = miniSearchData.searcher.search(normalizedQuery, { combineWith: 'AND' });
+    const limit = options.limit ?? 50;
+    const limited = searchResults.slice(0, limit);
+    return limited.map(r => miniSearchData.itemsWithId[r.id]);
+  }, [miniSearchData, query, items, options.limit]);
 
-  return results;
+  return results as T[];
 }

@@ -140,7 +140,7 @@ const InAppWebView = ({ url, titulo, onClose, autoFallback = false }: InAppWebVi
         </div>
 
         {/* Conteúdo */}
-        <div className="relative flex-1 bg-background">
+        <div className="relative flex-1 bg-[#0a0a0a]">
           {loading && !blocked && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 pointer-events-none">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />

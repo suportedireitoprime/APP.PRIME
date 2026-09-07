@@ -300,6 +300,12 @@ const LeitorNativo = ({
       setSpeaking(false);
       toast.error('Não foi possível tocar a narração.');
     };
+    a.onpause = () => {
+      setSpeaking(false);
+    };
+    a.onplay = () => {
+      setSpeaking(true);
+    };
     setSpeaking(true);
     a.play().catch(() => {
       setSpeaking(false);

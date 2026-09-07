@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
+import { animate } from 'framer-motion';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
 import AreaTemasSheet from '@/components/flashcards/AreaTemasSheet';
@@ -21,21 +20,22 @@ import { useFlashcardsEngine } from '@/hooks/useFlashcardsEngine';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { Capacitor } from '@capacitor/core';
 import { NativeFlashcards } from '@/plugins/NativeFlashcardsPlugin';
+import { supabase } from '@/integrations/supabase/client';
 
 function AnimatedNumber({ value }: { value: number }) {
   const numRef = useRef<HTMLSpanElement>(null);
   
-  useGSAP(() => {
+  useEffect(() => {
     if (numRef.current) {
-      const target = { val: parseFloat(numRef.current.innerText) || 0 };
-      gsap.to(target, {
-        val: value,
+      const prev = parseFloat(numRef.current.innerText) || 0;
+      const controls = animate(prev, value, {
         duration: 0.4,
-        ease: 'power2.out',
-        onUpdate: () => {
-          if (numRef.current) numRef.current.innerText = Math.round(target.val).toString();
+        ease: 'easeOut',
+        onUpdate: (latest) => {
+          if (numRef.current) numRef.current.innerText = Math.round(latest).toString();
         }
       });
+      return () => controls.stop();
     }
   }, [value]);
 
@@ -151,6 +151,7 @@ const FlashcardsEstudo = () => {
         subClose.then(h => h.remove()).catch(() => {});
       };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [escolhendo, cards.length]);
 
   return (
