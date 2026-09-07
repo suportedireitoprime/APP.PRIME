@@ -231,11 +231,13 @@ export function useUnreadNotifCount() {
     };
     document.addEventListener('visibilitychange', onVisible);
     window.addEventListener('storage', onStorage);
+    window.addEventListener('online', recompute);
     window.addEventListener('notifications-changed', recompute as any);
     return () => {
       clearInterval(id);
       document.removeEventListener('visibilitychange', onVisible);
       window.removeEventListener('storage', onStorage);
+      window.removeEventListener('online', recompute);
       window.removeEventListener('notifications-changed', recompute as any);
     };
   }, [recompute]);

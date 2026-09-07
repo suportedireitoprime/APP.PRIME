@@ -171,6 +171,15 @@ export default {
           "100%": { opacity: "1", transform: "translateY(0) scale(1)" },
         },
       },
+      transitionDuration: {
+        '80': '80ms',
+        '360': '360ms',
+        '800': '800ms',
+        '900': '900ms',
+        '1200': '1200ms',
+        '1400': '1400ms',
+        '2000': '2000ms',
+      },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",

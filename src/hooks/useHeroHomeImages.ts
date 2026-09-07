@@ -28,20 +28,37 @@ export function useHeroHomeImages() {
 
   useEffect(() => {
     let mounted = true;
-    (async () => {
-      const { data, error } = await (supabase as any)
-        .from('hero_home_images')
-        .select('id, imagem_url, animation_preset')
-        .eq('ativo', true)
-        .order('ordem', { ascending: true });
-      if (!mounted) return;
-      if (!error && Array.isArray(data)) {
-        setImages(data as HeroHomeImage[]);
-        try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch { /* ignore */ }
+
+    const fetchImages = async () => {
+      try {
+        const { data, error } = await (supabase as any)
+          .from('hero_home_images')
+          .select('id, imagem_url, animation_preset')
+          .eq('ativo', true)
+          .order('ordem', { ascending: true });
+        if (!mounted) return;
+        if (!error && Array.isArray(data)) {
+          setImages(data as HeroHomeImage[]);
+          try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch { /* ignore */ }
+        }
+      } catch {
+        /* fallback to cache */
+      } finally {
+        if (mounted) setLoaded(true);
       }
-      setLoaded(true);
-    })();
-    return () => { mounted = false; };
+    };
+
+    fetchImages();
+
+    const onOnline = () => {
+      fetchImages();
+    };
+    window.addEventListener('online', onOnline);
+
+    return () => {
+      mounted = false;
+      window.removeEventListener('online', onOnline);
+    };
   }, []);
 
   return { images, loaded };

@@ -18,7 +18,7 @@ const HomeActionShortcuts = () => {
   const shortcutBadges = useShortcutBadges();
 
   return (
-    <div className="grid grid-cols-4 gap-2 mt-1">
+    <div className="grid grid-cols-4 gap-2 sm:gap-3 mt-1">
       {SHORTCUT_ITEMS.map((item, index) => {
         const Icon = item.icon;
         const badgeCount = item.badgeKey ? shortcutBadges.counts[item.badgeKey] : 0;
@@ -39,7 +39,7 @@ const HomeActionShortcuts = () => {
               navigate(item.to);
             }}
             style={{ '--shimmer-delay': `${index * 150}ms` } as React.CSSProperties}
-            className="group relative flex flex-col items-center justify-center gap-1 h-[72px] rounded-2xl bg-black/75 backdrop-blur-sm border border-white/15 shadow-lg shadow-black/30 active:scale-[0.96] transition-all duration-[80ms] shortcut-button-shine cursor-pointer"
+            className="group relative flex flex-col items-center justify-center gap-1 min-h-[52px] h-[72px] rounded-2xl bg-black/75 backdrop-blur-sm border border-white/15 shadow-lg shadow-black/30 active:scale-[0.96] transition-all duration-75 touch-manipulation shortcut-button-shine cursor-pointer select-none"
           >
             {badgeCount > 0 && item.badgeColor && (
               <span

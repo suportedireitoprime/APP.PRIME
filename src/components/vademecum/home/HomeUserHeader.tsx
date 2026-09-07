@@ -8,6 +8,8 @@ interface HomeUserHeaderProps {
   avatarUrl?: string;
   iniciais: string;
   unreadCount: number;
+  isLogged?: boolean;
+  onLogin?: () => void;
   onOpenNotif: () => void;
   onOpenMenu: () => void;
 }
@@ -18,6 +20,8 @@ const HomeUserHeader = ({
   avatarUrl,
   iniciais,
   unreadCount,
+  isLogged = true,
+  onLogin,
   onOpenNotif,
   onOpenMenu,
 }: HomeUserHeaderProps) => {
@@ -39,7 +43,10 @@ const HomeUserHeader = ({
 
   return (
     <header className="relative px-3 pt-3 md:px-6 md:pt-4 lg:px-8 lg:pt-6 flex items-center gap-2 md:gap-4">
-      <div className="flex items-center gap-3 md:gap-4 min-w-0 flex-1 pr-3 pl-1">
+      <div 
+        onClick={!isLogged ? onLogin : undefined}
+        className={`flex items-center gap-3 md:gap-4 min-w-0 flex-1 pr-3 pl-1 ${!isLogged ? 'cursor-pointer active:opacity-80 transition-opacity' : ''}`}
+      >
         <div className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full overflow-hidden border-2 border-white bg-black/40 flex items-center justify-center shrink-0 shadow-lg shadow-black/50">
           {avatarUrl && !imgError ? (
             <img
@@ -59,11 +66,15 @@ const HomeUserHeader = ({
           <p className="font-display text-white text-[17px] md:text-[19px] lg:text-[21px] font-bold leading-[1.15] truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]">
             {nome}
           </p>
-          {perfilLabel && (
+          {!isLogged ? (
+            <p className="font-body text-amber-300 text-[12.5px] md:text-[13.5px] font-bold leading-tight truncate mt-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+              Toque para fazer login &rarr;
+            </p>
+          ) : perfilLabel ? (
             <p className="font-body text-white/95 text-[13.5px] md:text-[15px] lg:text-[16px] font-medium leading-tight truncate mt-0.5 md:mt-1 drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]">
               {perfilLabel}
             </p>
-          )}
+          ) : null}
         </div>
       </div>
 

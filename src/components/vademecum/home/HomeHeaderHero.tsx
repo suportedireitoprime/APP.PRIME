@@ -176,6 +176,8 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           avatarUrl={avatarUrl}
           iniciais={iniciais}
           unreadCount={unreadCount}
+          isLogged={Boolean(user)}
+          onLogin={() => navigate('/auth')}
           onOpenNotif={() => setNotifOpen(true)}
           onOpenMenu={onOpenMenu || (() => setMenuOpen(true))}
         />

@@ -83,14 +83,27 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
     };
   }, []);
 
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const onChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+    media.addEventListener?.('change', onChange);
+    return () => media.removeEventListener?.('change', onChange);
+  }, []);
+
   const pathD = useMemo(() => getCardPath(cardDims.w, cardDims.h, 16), [cardDims]);
 
   // Avanço automático perfeitamente sincronizado com o término do ciclo da luzinha (quando a volta se completa)
   const handleTimerComplete = useCallback(() => {
-    if (total <= 1) return;
+    if (total <= 1 || prefersReducedMotion) return;
     if (document.querySelector('[role="dialog"],[data-state="open"][data-radix-dialog-content]')) return;
     setAtivo((i) => (i + 1) % total);
-  }, [total]);
+  }, [total, prefersReducedMotion]);
 
   const handlePrev = useCallback(() => {
     setPaused(true);
@@ -256,7 +269,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
                   scale: slot.scale,
                   opacity: slot.opacity,
                 }}
-                transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: prefersReducedMotion ? 0.05 : 0.48, ease: [0.22, 1, 0.36, 1] }}
                 style={{
                   zIndex: slot.z,
                 }}
