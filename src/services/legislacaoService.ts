@@ -583,10 +583,22 @@ export function buildPlanaltoArticleUrl(tabelaNome: string, artigoNumero: string
   if (!baseUrl) return null;
   // Portais estaduais/municipais não usam #artN — devolve só a URL base.
   if (!/planalto\.gov\.br/i.test(baseUrl)) return baseUrl;
-  const match = artigoNumero.match(/Art\.\s*(\d+)[º°]?(?:-([A-Z]))?/i);
-  if (!match) return baseUrl;
-  const num = match[1];
+
+  const cleanBaseUrl = baseUrl.split('#')[0];
+  if (!artigoNumero) return cleanBaseUrl;
+  const raw = artigoNumero.trim();
+
+  // Item 9: Caso especial: Artigo Único
+  if (/(?:art(?:igo)?\.?\s*)?[úu]nico\b/i.test(raw)) {
+    return `${cleanBaseUrl}#artunico`;
+  }
+
+  // Item 9: Tratamento de numeração com sufixos alfanuméricos (ex: Art. 149-A, Art. 310-B, Art. 1.200, Artigo 5º)
+  const match = raw.match(/(?:art(?:igo)?\.?\s*)?(\d+(?:\.\d+)?)[º°ª]?(?:-?([a-z]+|\d+))?/i);
+  if (!match) return cleanBaseUrl;
+
+  const num = match[1].replace(/\./g, '');
   const suffix = match[2] ? match[2].toLowerCase() : '';
-  return `${baseUrl}#art${num}${suffix}`;
+  return `${cleanBaseUrl}#art${num}${suffix}`;
 }
 
