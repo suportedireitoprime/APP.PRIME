@@ -45,13 +45,12 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
     </div>
     
     <div className="flex items-center gap-2.5 w-full min-w-0 z-10">
-      <div className="relative overflow-hidden rounded-xl shrink-0 flex items-center justify-center">
+      <div className="relative shrink-0 flex items-center justify-center p-1">
         <Icon
           className={`relative transition-transform duration-300 group-hover:scale-110 group-active:scale-95 group-active:-translate-y-1 ${iconClassName || 'w-7 h-7 xs:w-8 xs:h-8'}`}
           style={{ color: color }}
           strokeWidth={solidColor ? 1.6 : 1.25}
         />
-        <span aria-hidden className="pointer-events-none absolute inset-0 icon-shine" />
       </div>
       
       <div className="flex-1 min-w-0 flex flex-col justify-center">
