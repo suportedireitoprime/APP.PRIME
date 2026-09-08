@@ -168,16 +168,16 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           className="absolute inset-0 w-full h-full object-cover object-center z-0"
         />
 
-        {/* Overlay vermelho com corte diagonal — cobre apenas a área preta da imagem */}
+        {/* Overlay vermelho com corte diagonal — cobre a área preta esquerda da imagem */}
         <div 
           className="absolute inset-0 z-[1] pointer-events-none"
           style={{
             background: 'linear-gradient(135deg, hsl(350 68% 32%) 0%, hsl(350 74% 42%) 80%, hsl(348 80% 50%) 100%)',
-            clipPath: 'polygon(0 0, 48% 0, 18% 100%, 0% 100%)'
+            clipPath: 'polygon(0 0, 38% 0, 32% 100%, 0% 100%)'
           }}
         />
 
-        <div className="absolute inset-0 z-[1] pointer-events-none opacity-[0.15]" style={{ clipPath: 'polygon(0 0, 48% 0, 18% 100%, 0% 100%)' }}>
+        <div className="absolute inset-0 z-[1] pointer-events-none opacity-[0.15]" style={{ clipPath: 'polygon(0 0, 38% 0, 32% 100%, 0% 100%)' }}>
           <ShapeGrid 
             speed={0.5} 
             squareSize={40}
@@ -190,10 +190,10 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
         </div>
 
         {/* Overlays radiais */}
-        <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" style={{ clipPath: 'polygon(0 0, 48% 0, 18% 100%, 0% 100%)' }} />
-        <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" style={{ clipPath: 'polygon(0 0, 48% 0, 18% 100%, 0% 100%)' }} />
+        <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" style={{ clipPath: 'polygon(0 0, 38% 0, 32% 100%, 0% 100%)' }} />
+        <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" style={{ clipPath: 'polygon(0 0, 38% 0, 32% 100%, 0% 100%)' }} />
 
-        {/* Botões de Notificação e Menu (sem avatar/nome) */}
+        {/* Botões de Notificação e Menu */}
         <header className="relative z-10 px-3 pt-3 md:px-6 md:pt-4 lg:px-8 lg:pt-6 flex items-center justify-end gap-2 md:gap-3">
           <button
             onClick={() => { haptic.light(); setNotifOpen(true); }}
@@ -217,11 +217,13 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           </button>
         </header>
 
-        <div className="relative z-10 pt-2 pb-5 flex flex-col gap-4 flex-1 justify-end">
-          {/* Logo e subtítulo */}
+        {/* Conteúdo: Logo à esquerda + espaço */}
+        <div className="relative z-10 pt-2 flex-1 flex flex-col justify-end">
           <HomeBrandBanner />
+        </div>
 
-          {/* Atalhos Rápidos */}
+        {/* Atalhos Rápidos: APRENDER, FLASHCARDS, QUESTÕES, ME EXPLIQUE */}
+        <div className="relative z-10 px-3 sm:px-5 pb-4">
           <HomeActionShortcuts />
         </div>
       </div>
