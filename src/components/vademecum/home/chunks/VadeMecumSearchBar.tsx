@@ -18,7 +18,7 @@ const VadeMecumSearchBar: React.FC<Props> = ({ onBuscar }) => {
       role="button"
       aria-haspopup="dialog"
       aria-label="Pesquisar artigos e leis no Vade Mecum"
-      className="mt-auto relative w-full flex items-center h-16 pl-14 pr-[112px] rounded-2xl bg-black/45 backdrop-blur-md border border-primary/40 shadow-lg shadow-black/30 active:scale-[0.99] transition search-bar-shine cursor-pointer"
+      className="mt-auto relative w-full flex items-center h-16 pl-14 pr-[112px] rounded-2xl bg-black/75 backdrop-blur-sm border border-white/15 shadow-lg shadow-black/30 active:scale-[0.99] transition search-bar-shine cursor-pointer"
     >
       <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 sm:w-6 sm:h-6 text-primary shrink-0 pointer-events-none" strokeWidth={2.2} />
       <span className="relative z-[2] font-body text-white/75 text-[14px] sm:text-[15px] font-medium truncate pointer-events-none">

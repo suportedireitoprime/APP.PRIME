@@ -68,7 +68,7 @@ export default function BibliotecaSearchBar({ onAbrirLivro }: Props) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Pesquisar na biblioteca"
-        className="relative w-full flex items-center h-16 pl-14 pr-[112px] rounded-2xl bg-black/45 backdrop-blur-md border border-primary/40 shadow-lg shadow-black/30 active:scale-[0.99] transition search-bar-shine"
+        className="relative w-full flex items-center h-16 pl-14 pr-[112px] rounded-2xl bg-black/75 backdrop-blur-sm border border-white/15 shadow-lg shadow-black/30 active:scale-[0.99] transition search-bar-shine"
       >
         <Search
           className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-white shrink-0"
