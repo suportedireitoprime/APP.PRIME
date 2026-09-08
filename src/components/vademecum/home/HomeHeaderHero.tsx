@@ -167,21 +167,16 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           className="absolute inset-0 w-full h-full object-cover object-center z-0"
         />
 
-        {/* Overlay vermelho — cobre toda a área preta esquerda da imagem, sem transparência/grid */}
+        {/* Overlay vermelho com gradiente estilo menu e sombra (drop-shadow real na divisória diagonal) */}
         <div 
-          className="absolute inset-0 z-[1] pointer-events-none shadow-[15px_0_30px_rgba(0,0,0,0.8)]"
-          style={{
-            background: 'linear-gradient(135deg, hsl(350 68% 32%) 0%, hsl(350 74% 42%) 80%, hsl(348 80% 50%) 100%)',
-            clipPath: 'polygon(0 0, 46% 0, 36% 100%, 0% 100%)'
-          }}
-        />
-
-        {/* Overlays radiais sobre a área toda (ajudam no contraste geral) */}
-        <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" style={{ clipPath: 'polygon(0 0, 46% 0, 36% 100%, 0% 100%)' }} />
-        <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" style={{ clipPath: 'polygon(0 0, 46% 0, 36% 100%, 0% 100%)' }} />
-
-        {/* Gradient escuro na parte inferior para os botões ficarem legíveis */}
-        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-[120px] z-[2] bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+          className="absolute inset-0 z-[1] pointer-events-none"
+          style={{ filter: 'drop-shadow(15px 0 25px rgba(0,0,0,0.85))' }}
+        >
+          <div 
+            className="absolute inset-0 bg-gradient-to-br from-[#E11D48] via-[#9b111e] to-[#5a050d]"
+            style={{ clipPath: 'polygon(0 0, 47% 0, 36% 100%, 0% 100%)' }}
+          />
+        </div>
 
         {/* Botões de Notificação e Menu */}
         <header className="absolute top-0 right-0 left-0 z-20 px-3 pt-3 md:px-6 md:pt-4 lg:px-8 lg:pt-6 flex items-center justify-end gap-2 md:gap-3 pointer-events-none">
