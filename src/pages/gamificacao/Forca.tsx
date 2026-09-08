@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { JogoForca } from '@/components/gamificacao/JogoForca';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { BookOpenText, ChevronRight, Loader2, Star } from 'lucide-react';
+import { BookOpenText, ChevronRight, Loader2 } from 'lucide-react';
 import { gamificacaoService } from '@/services/gamificacaoService';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 
 const ForcaPage = () => {
   const navigate = useNavigate();
@@ -51,15 +52,20 @@ const ForcaPage = () => {
 
   return (
     <DesktopPageLayout>
-      {!selectedArtigo && (
-        <PageHeader 
-          title="JOGO DA FORCA" 
-          subtitle="Trilha de Aprendizado"
-          onBack={handleBack}
-        />
-      )}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <ShapeGrid />
+      </div>
       
-      <div className={selectedArtigo ? "pt-4 pb-20" : "max-w-[700px] mx-auto px-4 md:px-0 pb-20 pt-4"}>
+      <div className="relative z-10">
+        {!selectedArtigo && (
+          <PageHeader 
+            title="JOGO DA FORCA" 
+            subtitle="Trilha de Aprendizado"
+            onBack={handleBack}
+          />
+        )}
+        
+        <div className={selectedArtigo ? "pt-4 pb-20" : "max-w-[700px] mx-auto px-4 md:px-0 pb-20 pt-4"}>
         <AnimatePresence mode="wait">
           {!selectedDisciplina ? (
             <motion.div
@@ -153,6 +159,7 @@ const ForcaPage = () => {
             </motion.div>
           )}
         </AnimatePresence>
+      </div>
       </div>
     </DesktopPageLayout>
   );

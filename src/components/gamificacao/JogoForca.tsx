@@ -4,7 +4,7 @@ import { GamificacaoJogo, JogoForcaState } from '@/types/gamificacao';
 import { gamificacaoService } from '@/services/gamificacaoService';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Play, Trophy, XCircle, ChevronRight } from 'lucide-react';
+import { RefreshCw, Play, Trophy, XCircle, ArrowLeft } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface JogoForcaProps {
@@ -14,6 +14,39 @@ interface JogoForcaProps {
 }
 
 const MAX_CHANCES = 6;
+
+const playBeep = (type: 'success' | 'error') => {
+  try {
+    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    
+    osc.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    
+    if (type === 'success') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(600, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.1);
+      gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.1);
+    } else {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(200, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.2);
+      gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.2);
+    }
+  } catch (e) {
+    // ignora se o navegador não suportar ou bloquear autoplay (normalmente exige interação antes, que é o click)
+  }
+};
 
 export function JogoForca({ disciplina = 'Código Penal', artigo, onBack }: JogoForcaProps) {
   const [jogoAtual, setJogoAtual] = useState<GamificacaoJogo | null>(null);
@@ -64,6 +97,9 @@ export function JogoForca({ disciplina = 'Código Penal', artigo, onBack }: Jogo
 
     const palavra = state.palavraOculta;
     const isCorreta = palavra.includes(l);
+    
+    // Toca som baseado no acerto/erro
+    playBeep(isCorreta ? 'success' : 'error');
 
     setState(prev => {
       const novasCorretas = isCorreta ? [...prev.letrasCorretas, l] : prev.letrasCorretas;
@@ -237,20 +273,21 @@ export function JogoForca({ disciplina = 'Código Penal', artigo, onBack }: Jogo
 
   return (
     <div className="flex flex-col items-center w-full max-w-3xl mx-auto p-4 animate-in fade-in zoom-in duration-300">
-      <div className="flex justify-between items-center w-full mb-6">
+      <div className="flex justify-between items-center w-full mb-6 relative">
         {onBack && (
-          <Button variant="ghost" size="icon" onClick={onBack} className="w-12 h-12 rounded-full hover:bg-zinc-800">
-            <ChevronRight className="w-6 h-6 rotate-180" />
-          </Button>
+          <div className="absolute left-0">
+            <Button variant="ghost" size="icon" onClick={onBack} className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full hover:bg-zinc-800">
+              <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
+            </Button>
+          </div>
         )}
-        <div className="text-center flex-1">
+        <div className="text-center w-full">
           <h2 className="text-2xl font-black tracking-wider text-white">JOGO DA FORCA</h2>
           <div className="text-zinc-400 text-sm mt-1 uppercase tracking-widest">{jogoAtual?.disciplina || 'CARREGANDO...'}</div>
         </div>
-        <div className="w-12" /> {/* Espaçador para centralizar */}
       </div>
 
-      <div className="w-full bg-[#0d0f12] border border-zinc-800/50 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden backdrop-blur-md">
+      <div className="w-full rounded-3xl p-4 sm:p-8 relative z-10">
         {loading ? (
           <div className="space-y-4">
             <Skeleton className="h-6 w-3/4 mx-auto bg-zinc-800" />
