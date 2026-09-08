@@ -15,18 +15,18 @@ const PODERES = [
     color: 'rgba(225, 29, 72, 0.45)', // Rose-600 / Red brand
   },
   {
-    id: 'camara',
-    titulo: 'Câmara dos Deputados',
-    sigla: 'Câmara',
-    img: camaraImg,
-    color: 'rgba(14, 165, 233, 0.45)', // Sky-500
-  },
-  {
     id: 'senado',
     titulo: 'Senado Federal',
     sigla: 'Senado',
     img: senadoImg,
     color: 'rgba(16, 185, 129, 0.45)', // Emerald-500
+  },
+  {
+    id: 'camara',
+    titulo: 'Câmara dos Deputados',
+    sigla: 'Câmara',
+    img: camaraImg,
+    color: 'rgba(14, 165, 233, 0.45)', // Sky-500
   },
 ];
 
@@ -48,7 +48,7 @@ const HomeTresPoderes = () => {
       </div>
 
       <div className="w-full px-4">
-        <div className="flex flex-col rounded-2xl overflow-hidden shadow-lg border border-white/5">
+        <div className="flex flex-col rounded-2xl overflow-hidden shadow-lg border border-white/5 bg-black">
           {PODERES.map((poder, i) => (
             <button
               key={poder.id}
@@ -56,8 +56,8 @@ const HomeTresPoderes = () => {
                 haptic.selection();
                 navigate(`/tres-poderes/${poder.id}`);
               }}
-              className={`group relative w-full h-[90px] flex items-center justify-between px-4 transition-all active:scale-[0.98] ${
-                i !== PODERES.length - 1 ? 'border-b border-white/10' : ''
+              className={`group relative w-full h-[120px] flex items-center justify-between px-5 transition-all active:scale-[0.98] ${
+                i !== PODERES.length - 1 ? 'border-b border-white/30 shadow-[0_1px_2px_rgba(255,255,255,0.1)]' : ''
               }`}
             >
               {/* Imagem de Fundo Completa */}
@@ -68,8 +68,12 @@ const HomeTresPoderes = () => {
                 decoding="async"
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
+              {/* Degradê sutil para ligar uma imagem à outra (nas bordas) e escurecer a esquerda para o texto */}
               <div 
-                className="absolute inset-0 bg-black/60" 
+                className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/20 to-transparent" 
+              />
+              <div 
+                className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60" 
               />
               <div 
                 className="absolute inset-0 mix-blend-overlay transition-opacity"
@@ -77,11 +81,11 @@ const HomeTresPoderes = () => {
               />
               
               {/* Conteúdo Textual (Esquerda) */}
-              <div className="relative z-10 flex flex-col text-left">
-                <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest mb-0.5 drop-shadow-md">
+              <div className="relative z-10 flex flex-col text-left max-w-[80%]">
+                <span className="text-[11px] font-bold text-white/80 uppercase tracking-widest mb-1 drop-shadow-md">
                   {poder.sigla}
                 </span>
-                <h4 className="text-white font-bold text-[14px] leading-tight drop-shadow-lg">
+                <h4 className="text-white font-extrabold text-[15px] sm:text-[16px] uppercase tracking-wider leading-snug drop-shadow-lg">
                   {poder.titulo}
                 </h4>
               </div>
