@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { JogoCacaPalavras } from '@/components/gamificacao/JogoCacaPalavras';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { BookOpenText, ChevronRight, Loader2, Star, Sparkles, Lock, Play, ArrowUpRight } from 'lucide-react';
+import { BookOpenText, ChevronRight, Loader2, Star, Sparkles, Lock, ArrowUpRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { gamificacaoService } from '@/services/gamificacaoService';
 import ShapeGrid from '@/components/ui/ShapeGrid';
@@ -581,34 +581,17 @@ const CacaPalavrasPage = () => {
                                   : 'bg-gradient-to-br from-zinc-900/95 via-[#181116] to-[#120e14] border border-zinc-800/80 shadow-md cursor-not-allowed opacity-75 hover:opacity-85'}
                               `}
                             >
-                              {/* SVGs jurídicos decorativos em marca d'água ao fundo (Padrão Recomendação de Livro) */}
-                              <svg
+                              {/* Imagem vazada de Direito Penal (marca d'água de alta definição alinhada à direita) */}
+                              <img
+                                src="/images/gamificacao/direito_penal_vazado.webp"
+                                alt=""
                                 aria-hidden="true"
-                                viewBox="0 0 200 200"
-                                className="pointer-events-none absolute -right-3 -bottom-3 w-[95px] h-[95px] text-white/10"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                              >
-                                <path d="M100 30 V170 M70 170 H130 M100 55 L55 95 M100 55 L145 95" strokeLinecap="round" />
-                                <path d="M35 95 Q55 135 75 95 Z" />
-                                <path d="M125 95 Q145 135 165 95 Z" />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                viewBox="0 0 100 100"
-                                className="pointer-events-none absolute top-1 right-1 w-[38px] h-[38px] text-white/10"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="3"
-                                strokeLinecap="round"
-                              >
-                                <path d="M18 78 L58 38" />
-                                <rect x="52" y="20" width="30" height="14" rx="2" transform="rotate(45 67 27)" />
-                                <path d="M10 88 H50" />
-                              </svg>
+                                loading="eager"
+                                decoding="async"
+                                className="pointer-events-none absolute -right-3 -bottom-2 w-[115px] sm:w-[130px] h-[115px] sm:h-[130px] object-contain opacity-25 group-hover:opacity-35 transition-opacity duration-300 z-0 select-none"
+                              />
 
-                              {/* Cabeçalho da Capa: Etapa e Ícone de Ação */}
+                              {/* Cabeçalho da Capa: Etapa e Status */}
                               <div className="flex items-center justify-between gap-1 z-[1] w-full">
                                 <span className={`flex items-center gap-1 text-[9px] sm:text-[10px] font-normal px-2 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-md ${
                                   tema.disponivel 
@@ -618,17 +601,11 @@ const CacaPalavrasPage = () => {
                                   Etapa {tema.numero}
                                 </span>
 
-                                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 backdrop-blur-md ${
-                                  tema.disponivel 
-                                    ? 'bg-white/20 border border-white/30 text-white shadow-sm group-hover:scale-110 transition-transform' 
-                                    : 'bg-zinc-800/80 border border-zinc-700/60 text-zinc-500'
-                                }`}>
-                                  {tema.disponivel ? (
-                                    <Play className="w-2.5 h-2.5 fill-white text-white translate-x-0.5" />
-                                  ) : (
+                                {!tema.disponivel && (
+                                  <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 backdrop-blur-md bg-zinc-800/80 border border-zinc-700/60 text-zinc-500">
                                     <Lock className="w-2.5 h-2.5" />
-                                  )}
-                                </div>
+                                  </div>
+                                )}
                               </div>
 
                               {/* Centro da Capa: Título do Tema Sem Negrito e Sem Abreviações */}
