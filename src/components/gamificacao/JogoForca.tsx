@@ -11,6 +11,8 @@ interface JogoForcaProps {
   disciplina?: string;
   artigo?: string;
   onBack?: () => void;
+  onNextArticle?: () => void;
+  onGameEnd?: (venceu: boolean, erros: number) => void;
 }
 
 const MAX_CHANCES = 6;
@@ -44,11 +46,11 @@ const playBeep = (type: 'success' | 'error') => {
       osc.stop(ctx.currentTime + 0.2);
     }
   } catch (e) {
-    // ignora se o navegador não suportar ou bloquear autoplay (normalmente exige interação antes, que é o click)
+    // ignora se o navegador não suportar ou bloquear autoplay
   }
 };
 
-export function JogoForca({ disciplina = 'Código Penal', artigo, onBack }: JogoForcaProps) {
+export function JogoForca({ disciplina = 'Código Penal', artigo, onBack, onNextArticle, onGameEnd }: JogoForcaProps) {
   const [jogoAtual, setJogoAtual] = useState<GamificacaoJogo | null>(null);
   const [loading, setLoading] = useState(true);
   const [state, setState] = useState<JogoForcaState>({
@@ -113,14 +115,12 @@ export function JogoForca({ disciplina = 'Código Penal', artigo, onBack }: Jogo
 
       const novoStatus = venceu ? 'venceu' : perdeu ? 'perdeu' : 'jogando';
       
-      if (venceu) {
-        // Reproduz haptic se possível
+      if (venceu || perdeu) {
         if (typeof window !== 'undefined' && (window as any).navigator?.vibrate) {
-          navigator.vibrate([100, 50, 100]);
+          navigator.vibrate(venceu ? [100, 50, 100] : 200);
         }
-      } else if (perdeu) {
-        if (typeof window !== 'undefined' && (window as any).navigator?.vibrate) {
-          navigator.vibrate(200);
+        if (onGameEnd) {
+          onGameEnd(venceu, novasErradas.length);
         }
       }
 
@@ -374,34 +374,60 @@ export function JogoForca({ disciplina = 'Código Penal', artigo, onBack }: Jogo
                   key="resultado"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="flex flex-col items-center justify-center p-8 bg-zinc-900/50 rounded-2xl border border-zinc-800 mt-8"
+                  className="flex flex-col items-center justify-center p-8 bg-zinc-900/40 backdrop-blur-xl rounded-[2rem] border border-white/5 mt-8 relative overflow-hidden"
                 >
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20 pointer-events-none" />
+                  
                   {state.status === 'venceu' ? (
                     <>
-                      <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-4">
-                        <Trophy className="w-10 h-10 text-green-400" />
-                      </div>
-                      <h3 className="text-2xl font-bold text-green-400 mb-2">Excelente!</h3>
-                      <p className="text-zinc-400 mb-6">Você memorizou esse termo perfeitamente.</p>
+                      <motion.div 
+                        initial={{ scale: 0 }} 
+                        animate={{ scale: 1 }} 
+                        className="w-24 h-24 bg-green-500/20 rounded-full flex items-center justify-center mb-4 relative z-10"
+                      >
+                        <Trophy className="w-12 h-12 text-green-400" />
+                        <div className="absolute inset-0 bg-green-500/20 blur-2xl rounded-full" />
+                      </motion.div>
+                      <h3 className="text-3xl font-black text-green-400 mb-2 font-display uppercase tracking-wider relative z-10">MUITO BEM!</h3>
+                      <p className="text-zinc-400 mb-8 text-center max-w-sm relative z-10">Você gabaritou esse termo da lei.</p>
                     </>
                   ) : (
                     <>
-                      <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mb-4">
-                        <XCircle className="w-10 h-10 text-red-400" />
-                      </div>
-                      <h3 className="text-2xl font-bold text-red-400 mb-2">Fim de Jogo</h3>
-                      <p className="text-zinc-400 mb-6">A palavra correta era: <span className="font-bold text-white">{state.palavraOculta}</span></p>
+                      <motion.div 
+                        initial={{ scale: 0 }} 
+                        animate={{ scale: 1 }} 
+                        className="w-24 h-24 bg-red-500/20 rounded-full flex items-center justify-center mb-4 relative z-10"
+                      >
+                        <XCircle className="w-12 h-12 text-red-400" />
+                        <div className="absolute inset-0 bg-red-500/20 blur-2xl rounded-full" />
+                      </motion.div>
+                      <h3 className="text-3xl font-black text-red-400 mb-2 font-display uppercase tracking-wider relative z-10">FIM DE JOGO</h3>
+                      <p className="text-zinc-400 mb-8 text-center max-w-sm relative z-10">A palavra correta era: <br/><span className="font-bold text-white text-xl uppercase tracking-widest mt-2 block">{state.palavraOculta}</span></p>
                     </>
                   )}
                   
-                  <Button 
-                    size="lg" 
-                    className="w-full sm:w-auto px-8 py-6 rounded-full text-lg font-bold"
-                    onClick={carregarNovoJogo}
-                  >
-                    <RefreshCw className="w-5 h-5 mr-2" />
-                    Jogar Novamente
-                  </Button>
+                  <div className="flex flex-col sm:flex-row gap-4 w-full relative z-10">
+                    <Button 
+                      variant="outline"
+                      size="lg" 
+                      className="flex-1 px-6 py-6 rounded-2xl text-base font-bold bg-zinc-900 border-zinc-800 hover:bg-zinc-800"
+                      onClick={carregarNovoJogo}
+                    >
+                      <RefreshCw className="w-5 h-5 mr-2" />
+                      Tentar Novamente
+                    </Button>
+
+                    {onNextArticle && (
+                      <Button 
+                        size="lg" 
+                        className="flex-1 px-6 py-6 rounded-2xl text-base font-bold shadow-lg shadow-primary/20"
+                        onClick={onNextArticle}
+                      >
+                        Próximo Artigo
+                        <ChevronRight className="w-5 h-5 ml-2" />
+                      </Button>
+                    )}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>

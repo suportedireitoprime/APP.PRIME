@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { JogoForca } from '@/components/gamificacao/JogoForca';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { BookOpenText, ChevronRight, Loader2 } from 'lucide-react';
+import { BookOpenText, ChevronRight, Loader2, Star, Footprints } from 'lucide-react';
 import { gamificacaoService } from '@/services/gamificacaoService';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 
@@ -17,19 +17,42 @@ const ForcaPage = () => {
   const [artigos, setArtigos] = useState<string[]>([]);
   const [selectedArtigo, setSelectedArtigo] = useState<string | null>(null);
   
+  const [progresso, setProgresso] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     document.title = "Jogo da Forca | Direito Prime";
-    
-    // Buscar disciplinas disponíveis (hardcoded por enquanto ou buscar distinct)
-    // No momento temos apenas Código Penal
     setDisciplinas(['Código Penal']);
     setLoading(false);
   }, []);
 
+  const loadProgresso = (disciplina: string) => {
+    try {
+      const saved = localStorage.getItem(`forca_progresso_${disciplina}`);
+      if (saved) {
+        setProgresso(JSON.parse(saved));
+      } else {
+        setProgresso({});
+      }
+    } catch (e) {
+      setProgresso({});
+    }
+  };
+
+  const saveProgresso = (artigo: string, estrelas: number) => {
+    if (!selectedDisciplina) return;
+    setProgresso(prev => {
+      const current = prev[artigo] || 0;
+      if (estrelas <= current) return prev; // Mantém a melhor pontuação
+      const updated = { ...prev, [artigo]: estrelas };
+      localStorage.setItem(`forca_progresso_${selectedDisciplina}`, JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   const handleDisciplinaSelect = async (disciplina: string) => {
     setSelectedDisciplina(disciplina);
+    loadProgresso(disciplina);
     setLoading(true);
     const trilha = await gamificacaoService.getTrilha('forca', disciplina);
     setArtigos(trilha);
@@ -50,13 +73,36 @@ const ForcaPage = () => {
     }
   };
 
+  const handleNextArticle = () => {
+    if (!selectedArtigo) return;
+    const currentIndex = artigos.indexOf(selectedArtigo);
+    if (currentIndex >= 0 && currentIndex < artigos.length - 1) {
+      setSelectedArtigo(artigos[currentIndex + 1]);
+    } else {
+      setSelectedArtigo(null);
+    }
+  };
+
+  const handleGameEnd = (venceu: boolean, erros: number) => {
+    if (venceu && selectedArtigo) {
+      let stars = 3;
+      if (erros > 0 && erros <= 2) stars = 2;
+      if (erros > 2) stars = 1;
+      saveProgresso(selectedArtigo, stars);
+    }
+  };
+
+  const formatAbrev = (text: string) => {
+    return text.replace(/Artigo/i, 'Art.');
+  };
+
   return (
     <DesktopPageLayout>
-      <div className="fixed inset-0 pointer-events-none z-0">
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-40">
         <ShapeGrid />
       </div>
       
-      <div className="relative z-10">
+      <div className="relative z-10 min-h-screen">
         {!selectedArtigo && (
           <PageHeader 
             title="JOGO DA FORCA" 
@@ -70,96 +116,126 @@ const ForcaPage = () => {
           {!selectedDisciplina ? (
             <motion.div
               key="disciplinas"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
               className="space-y-4"
             >
-              <h2 className="text-xl font-display font-black text-foreground uppercase tracking-wide">ÁREA DO DIREITO</h2>
-              <div className="grid gap-3">
-                {loading && (
-                   <div className="py-10 flex justify-center"><Loader2 className="w-8 h-8 animate-spin text-muted-foreground" /></div>
-                )}
-                {disciplinas.map(disc => (
-                  <button
-                    key={disc}
-                    onClick={() => handleDisciplinaSelect(disc)}
-                    className="flex items-center justify-between p-4 bg-card rounded-2xl border border-border/40 hover:border-primary/50 transition-all text-left group"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                        <BookOpenText className="w-5 h-5 text-primary" />
-                      </div>
-                      <span className="font-display font-bold text-lg leading-tight">{disc === 'Código Penal' ? 'Direito Penal' : disc}</span>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary shrink-0" />
-                  </button>
-                ))}
-              </div>
+              {loading ? (
+                <div className="flex justify-center p-12">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center gap-3 mb-6">
+                    <BookOpenText className="w-6 h-6 text-primary" />
+                    <h2 className="text-xl font-bold uppercase tracking-wider text-white">Selecione a Disciplina</h2>
+                  </div>
+                  <div className="grid gap-3">
+                    {disciplinas.map(disc => (
+                      <button
+                        key={disc}
+                        onClick={() => handleDisciplinaSelect(disc)}
+                        className="flex items-center justify-between w-full p-6 text-left bg-zinc-900 border border-zinc-800 rounded-2xl hover:bg-zinc-800 hover:border-zinc-700 transition-all group"
+                      >
+                        <span className="text-lg font-bold text-zinc-100 uppercase tracking-wide">{disc}</span>
+                        <ChevronRight className="w-5 h-5 text-zinc-500 group-hover:text-primary transition-colors" />
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
             </motion.div>
           ) : !selectedArtigo ? (
             <motion.div
               key="artigos"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className="space-y-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
             >
-              <h2 className="text-xl font-display font-black text-foreground uppercase tracking-wide">
-                {selectedDisciplina === 'Código Penal' ? 'Direito Penal' : selectedDisciplina}
-              </h2>
-              <p className="text-sm text-muted-foreground mb-4">Selecione o artigo para jogar a forca!</p>
-              
-              <div className="pr-2 pb-6">
-                {loading && (
-                   <div className="py-10 flex flex-col items-center justify-center gap-3">
-                     <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-                     <span className="text-sm text-muted-foreground">Carregando trilha...</span>
-                   </div>
-                )}
-                <div className="space-y-12">
-                  <div className="relative">
-                    <div className="relative bg-[#0D0D0D] py-4 border-b border-primary/20 mb-8 rounded-b-3xl mx-2">
-                      <h3 className="font-display font-black text-lg text-primary text-center px-4 leading-tight">Artigos Disponíveis</h3>
+              <div className="mb-10 text-center">
+                <h2 className="text-2xl font-black uppercase tracking-widest text-white">{selectedDisciplina}</h2>
+                <p className="text-zinc-400 mt-2">Selecione o artigo para jogar a forca!</p>
+              </div>
+
+              {loading ? (
+                <div className="flex justify-center p-12">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                </div>
+              ) : artigos.length === 0 ? (
+                <div className="text-center p-12 bg-zinc-900/50 rounded-3xl border border-zinc-800">
+                  <p className="text-zinc-400">Nenhum artigo encontrado com jogos da forca para esta disciplina.</p>
+                </div>
+              ) : (
+                <div className="relative py-10 flex flex-col items-center">
+                  <div className="w-full max-w-sm mb-12 py-4 bg-zinc-900/80 border-y border-zinc-800 backdrop-blur text-center">
+                    <span className="font-bold text-primary uppercase tracking-widest">Artigos Disponíveis</span>
+                  </div>
+
+                  <div className="absolute top-[200px] bottom-10 left-1/2 w-1 -translate-x-1/2 bg-zinc-800/50 z-0">
+                    <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[15deg] opacity-20">
+                      <Footprints className="w-8 h-8 text-white" />
                     </div>
-                    <div className="flex flex-col items-center gap-8 py-2">
-                      {artigos.map((artigo, i) => {
-                         // Zig-zag pattern
-                         const offset = i % 4 === 0 ? '-translate-x-12' : i % 4 === 1 ? 'translate-x-0' : i % 4 === 2 ? 'translate-x-12' : 'translate-x-0';
-                         
-                         return (
-                           <div key={artigo} className={`relative flex justify-center ${offset} transition-all duration-300`}>
-                             <button
-                               onClick={() => handleArtigoSelect(artigo)}
-                               className="relative flex flex-col items-center justify-center w-[72px] h-[72px] rounded-full border-4 shadow-xl hover:scale-105 active:scale-95 transition-transform z-10 bg-card border-border hover:border-primary/50"
-                             >
-                                <span className="font-display font-black text-lg leading-none text-foreground text-center">
-                                  {artigo.replace('Artigo ', '')}
-                                </span>
-                             </button>
-                           </div>
-                         )
-                      })}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] opacity-20">
+                      <Footprints className="w-8 h-8 text-white" />
+                    </div>
+                    <div className="absolute top-3/4 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[15deg] opacity-20">
+                      <Footprints className="w-8 h-8 text-white" />
                     </div>
                   </div>
+
+                  <div className="flex flex-col gap-16 relative z-10 w-full max-w-md">
+                    {artigos.map((artigo, idx) => {
+                      const pos = idx % 2 === 0 ? 'items-start' : 'items-end';
+                      const estrelas = progresso[artigo] || 0;
+                      const hasCompleted = estrelas > 0;
+                      
+                      return (
+                        <div key={idx} className={`w-full flex flex-col ${pos} relative group cursor-pointer`} onClick={() => handleArtigoSelect(artigo)}>
+                          <div className={`flex gap-1 mb-2 ${idx % 2 === 0 ? 'ml-4' : 'mr-4'} ${hasCompleted ? 'opacity-100' : 'opacity-30'}`}>
+                            {[1, 2, 3].map(s => (
+                              <Star 
+                                key={s} 
+                                className={`w-4 h-4 ${s <= estrelas ? 'fill-yellow-400 text-yellow-400' : 'text-zinc-600'}`} 
+                              />
+                            ))}
+                          </div>
+                          
+                          <div className={`
+                            w-24 h-24 rounded-full flex items-center justify-center 
+                            border-4 transition-all duration-300 shadow-xl
+                            ${hasCompleted 
+                              ? 'bg-primary/20 border-primary text-white shadow-primary/20 scale-105' 
+                              : 'bg-zinc-900 border-zinc-800 text-zinc-400 group-hover:border-zinc-600 group-hover:bg-zinc-800'}
+                          `}>
+                            <span className="font-black text-sm tracking-widest uppercase">{formatAbrev(artigo)}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
             </motion.div>
           ) : (
             <motion.div
-              key="game"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              key="jogo"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="w-full"
             >
               <JogoForca 
                 disciplina={selectedDisciplina} 
                 artigo={selectedArtigo} 
                 onBack={handleBack} 
+                onNextArticle={handleNextArticle}
+                onGameEnd={handleGameEnd}
               />
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+        </div>
       </div>
     </DesktopPageLayout>
   );
