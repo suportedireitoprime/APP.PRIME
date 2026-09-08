@@ -575,7 +575,7 @@ const CacaPalavrasPage = () => {
                                 }
                               }}
                               className={`
-                                relative w-[45%] max-w-[210px] min-h-[165px] sm:min-h-[185px] p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden select-none box-border transition-all duration-300 z-10
+                                relative w-[46%] sm:w-[45%] max-w-[225px] min-h-[175px] sm:min-h-[195px] h-auto p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden select-none box-border transition-all duration-300 z-10
                                 ${tema.disponivel 
                                   ? 'bg-brand-gradient border border-white/25 shadow-[0_12px_28px_-6px_rgba(225,29,72,0.4)] hover:shadow-[0_16px_32px_-6px_rgba(225,29,72,0.55)] cursor-pointer active:scale-[0.97] group' 
                                   : 'bg-gradient-to-br from-zinc-900/95 via-[#181116] to-[#120e14] border border-zinc-800/80 shadow-md cursor-not-allowed opacity-75 hover:opacity-85'}
@@ -610,7 +610,7 @@ const CacaPalavrasPage = () => {
 
                               {/* Cabeçalho da Capa: Etapa e Ícone de Ação */}
                               <div className="flex items-center justify-between gap-1 z-[1] w-full">
-                                <span className={`flex items-center gap-1 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-md ${
+                                <span className={`flex items-center gap-1 text-[9px] sm:text-[10px] font-normal px-2 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-md ${
                                   tema.disponivel 
                                     ? 'bg-black/40 text-white border border-white/15' 
                                     : 'bg-zinc-800/80 text-zinc-400 border border-zinc-700/60'
@@ -631,9 +631,9 @@ const CacaPalavrasPage = () => {
                                 </div>
                               </div>
 
-                              {/* Centro da Capa: Título do Tema */}
-                              <div className="my-auto py-2 z-[1]">
-                                <h3 className={`font-sans font-bold text-[13.5px] sm:text-[15px] leading-snug line-clamp-3 ${
+                              {/* Centro da Capa: Título do Tema Sem Negrito e Sem Abreviações */}
+                              <div className="my-auto py-2 z-[1] w-full">
+                                <h3 className={`font-sans font-normal text-[12.5px] sm:text-[14px] leading-snug break-words ${
                                   tema.disponivel ? 'text-white drop-shadow-sm' : 'text-zinc-300'
                                 }`}>
                                   {tema.nome}
@@ -644,9 +644,9 @@ const CacaPalavrasPage = () => {
                               <div className="z-[1] pt-1.5 border-t border-white/15 w-full">
                                 {tema.disponivel ? (
                                   <div>
-                                    <div className="flex items-center justify-between text-[10px] font-medium text-white/90 mb-1">
-                                      <span>{prog.concluidos > 0 ? `${prog.concluidos}/${prog.total} conc.` : 'Iniciar'}</span>
-                                      <span className="font-bold font-sans">{prog.percent}%</span>
+                                    <div className="flex items-center justify-between text-[10px] font-normal text-white/90 mb-1">
+                                      <span>{prog.concluidos > 0 ? `${prog.concluidos}/${prog.total} concluídos` : 'Iniciar'}</span>
+                                      <span className="font-normal font-sans">{prog.percent}%</span>
                                     </div>
                                     <div className="w-full bg-black/35 h-1.5 rounded-full overflow-hidden border border-white/20">
                                       <div 
@@ -656,9 +656,9 @@ const CacaPalavrasPage = () => {
                                     </div>
                                   </div>
                                 ) : (
-                                  <div className="flex items-center justify-between text-[9.5px] text-zinc-400 font-medium">
+                                  <div className="flex items-center justify-between text-[9.5px] text-zinc-400 font-normal">
                                     <span>Bloqueado</span>
-                                    <span className="uppercase text-[8.5px] font-bold tracking-wider px-1.5 py-0.5 rounded bg-zinc-800/90 border border-zinc-700/60 text-zinc-400">
+                                    <span className="uppercase text-[8.5px] font-normal tracking-wider px-1.5 py-0.5 rounded bg-zinc-800/90 border border-zinc-700/60 text-zinc-400">
                                       Em breve
                                     </span>
                                   </div>
@@ -681,8 +681,8 @@ const CacaPalavrasPage = () => {
               exit={{ opacity: 0, scale: 0.95 }}
             >
               <div className="mb-10 text-center">
-                <h2 className="text-2xl font-black uppercase tracking-widest text-white">{selectedDisciplina}</h2>
-                <p className="text-zinc-400 mt-2">Encontre as palavras ocultas e decifre os conceitos!</p>
+                <h2 className="text-xl sm:text-2xl font-normal uppercase tracking-widest text-white">{selectedDisciplina}</h2>
+                <p className="text-zinc-400 mt-2 font-normal">Encontre as palavras ocultas e decifre os conceitos!</p>
               </div>
 
               {loading ? (
@@ -728,7 +728,7 @@ const CacaPalavrasPage = () => {
                                 ? 'bg-primary/20 border-primary text-white shadow-primary/20 scale-105' 
                                 : 'bg-zinc-900 border-zinc-800 text-zinc-400 group-hover:border-zinc-600 group-hover:bg-zinc-800'}
                             `}>
-                              <span className="font-black text-sm tracking-widest uppercase">{nivelItem.nivel.replace('Nível ', 'NV ')}</span>
+                              <span className="font-normal text-xs tracking-wider uppercase">{nivelItem.nivel}</span>
                             </div>
                           </div>
 
