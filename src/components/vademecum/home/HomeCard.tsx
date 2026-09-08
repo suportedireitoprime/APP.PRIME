@@ -59,7 +59,7 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
       </div>
       
       <div className="flex-1 min-w-0 flex flex-col justify-center">
-        <p className={`whitespace-nowrap font-display text-[12.5px] xs:text-[14px] sm:text-[15px] font-bold leading-tight tracking-tighter ${solidColor ? 'text-foreground' : 'text-foreground'}`}>
+        <p className={`whitespace-nowrap font-display text-[13.5px] xs:text-[15px] sm:text-[16px] font-bold leading-tight tracking-tighter ${solidColor ? 'text-foreground' : 'text-foreground'}`}>
           {label}
         </p>
         {!solidColor && sublabel && (
