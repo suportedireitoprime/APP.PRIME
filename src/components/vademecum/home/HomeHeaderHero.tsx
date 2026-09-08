@@ -34,7 +34,6 @@ import HomeUserHeader from './HomeUserHeader';
 import HomeBrandBanner from './HomeBrandBanner';
 import HomeSearchButton from './HomeSearchButton';
 import HomeActionShortcuts from './HomeActionShortcuts';
-import { FallingLeaves } from './FallingMotifs';
 import { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { Bell, Menu as MenuIcon } from 'lucide-react';
@@ -167,9 +166,6 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           decoding="async"
           className="absolute inset-0 w-full h-full object-cover object-[65%_center] md:object-center z-0"
         />
-
-        {/* Animação caindo apenas sobre a imagem (por trás do painel vermelho) */}
-        <FallingLeaves />
 
         {/* Overlay vermelho com gradiente estilo menu e sombra (drop-shadow real na divisória diagonal) */}
         <div 

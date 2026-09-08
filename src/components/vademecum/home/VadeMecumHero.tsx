@@ -1,6 +1,5 @@
 import React, { memo } from 'react';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import { FallingLeaves } from '@/components/vademecum/home/FallingMotifs';
 import vademecumHeroImg from '@/assets/covers/vademecum-judge.jpg';
 
 import VadeMecumHeroHeader from './chunks/VadeMecumHeroHeader';
@@ -41,9 +40,6 @@ const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onOpenSearch 
           decoding="async"
           className="absolute inset-0 w-full h-full object-cover object-center z-0"
         />
-
-        {/* Animação caindo apenas sobre a imagem (por trás do painel vermelho) */}
-        <FallingLeaves />
 
         {/* Overlay vermelho com gradiente estilo menu e sombra */}
         <div 
