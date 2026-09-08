@@ -167,28 +167,16 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           className="absolute inset-0 w-full h-full object-cover object-center z-0"
         />
 
-        {/* Overlay vermelho — cobre toda a área preta esquerda da imagem */}
+        {/* Overlay vermelho — cobre toda a área preta esquerda da imagem, sem transparência/grid */}
         <div 
-          className="absolute inset-0 z-[1] pointer-events-none"
+          className="absolute inset-0 z-[1] pointer-events-none shadow-[15px_0_30px_rgba(0,0,0,0.8)]"
           style={{
             background: 'linear-gradient(135deg, hsl(350 68% 32%) 0%, hsl(350 74% 42%) 80%, hsl(348 80% 50%) 100%)',
             clipPath: 'polygon(0 0, 46% 0, 36% 100%, 0% 100%)'
           }}
         />
 
-        <div className="absolute inset-0 z-[1] pointer-events-none opacity-[0.15]" style={{ clipPath: 'polygon(0 0, 46% 0, 36% 100%, 0% 100%)' }}>
-          <ShapeGrid 
-            speed={0.5} 
-            squareSize={40}
-            direction='diagonal'
-            borderColor='rgba(255, 255, 255, 0.4)'
-            hoverFillColor='rgba(255, 255, 255, 0.6)'
-            shape='square'
-            hoverTrailAmount={5}
-          />
-        </div>
-
-        {/* Overlays radiais */}
+        {/* Overlays radiais sobre a área toda (ajudam no contraste geral) */}
         <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" style={{ clipPath: 'polygon(0 0, 46% 0, 36% 100%, 0% 100%)' }} />
         <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" style={{ clipPath: 'polygon(0 0, 46% 0, 36% 100%, 0% 100%)' }} />
 
@@ -196,31 +184,33 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
         <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-[120px] z-[2] bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
         {/* Botões de Notificação e Menu */}
-        <header className="relative z-10 px-3 pt-3 md:px-6 md:pt-4 lg:px-8 lg:pt-6 flex items-center justify-end gap-2 md:gap-3">
-          <button
-            onClick={() => { haptic.light(); setNotifOpen(true); }}
-            aria-label={`Abrir notificações${unreadCount > 0 ? ` (${unreadCount} não lidas)` : ''}`}
-            className="relative w-11 h-11 md:w-12 md:h-12 rounded-full bg-black/75 hover:bg-black/90 border border-primary/40 backdrop-blur-sm shadow-lg shadow-black/30 flex items-center justify-center active:scale-95 transition"
-          >
-            <Bell className="w-5 h-5 md:w-[22px] md:h-[22px] text-white" />
-            {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-none flex items-center justify-center border border-neutral-900 shadow">
-                {unreadCount > 99 ? '99+' : unreadCount}
-              </span>
-            )}
-          </button>
-          <button
-            onPointerDown={() => { import('@/components/vademecum/navigation/SideMenu').catch(() => {}); }}
-            onClick={() => { haptic.light(); (onOpenMenu || (() => setMenuOpen(true)))(); }}
-            aria-label="Abrir menu"
-            className="w-11 h-11 md:w-12 md:h-12 rounded-full bg-black/75 hover:bg-black/90 border border-primary/40 backdrop-blur-sm shadow-lg shadow-black/30 flex items-center justify-center active:scale-95 transition"
-          >
-            <MenuIcon className="w-5 h-5 md:w-[22px] md:h-[22px] text-white" />
-          </button>
+        <header className="absolute top-0 right-0 left-0 z-20 px-3 pt-3 md:px-6 md:pt-4 lg:px-8 lg:pt-6 flex items-center justify-end gap-2 md:gap-3 pointer-events-none">
+          <div className="pointer-events-auto flex items-center justify-end gap-2 md:gap-3">
+            <button
+              onClick={() => { haptic.light(); setNotifOpen(true); }}
+              aria-label={`Abrir notificações${unreadCount > 0 ? ` (${unreadCount} não lidas)` : ''}`}
+              className="relative w-11 h-11 md:w-12 md:h-12 rounded-full bg-black/75 hover:bg-black/90 border border-primary/40 backdrop-blur-sm shadow-lg shadow-black/30 flex items-center justify-center active:scale-95 transition"
+            >
+              <Bell className="w-5 h-5 md:w-[22px] md:h-[22px] text-white" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-none flex items-center justify-center border border-neutral-900 shadow">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
+            </button>
+            <button
+              onPointerDown={() => { import('@/components/vademecum/navigation/SideMenu').catch(() => {}); }}
+              onClick={() => { haptic.light(); (onOpenMenu || (() => setMenuOpen(true)))(); }}
+              aria-label="Abrir menu"
+              className="w-11 h-11 md:w-12 md:h-12 rounded-full bg-black/75 hover:bg-black/90 border border-primary/40 backdrop-blur-sm shadow-lg shadow-black/30 flex items-center justify-center active:scale-95 transition"
+            >
+              <MenuIcon className="w-5 h-5 md:w-[22px] md:h-[22px] text-white" />
+            </button>
+          </div>
         </header>
 
         {/* Conteúdo: Logo à esquerda — centralizado na área vermelha */}
-        <div className="relative z-10 pt-1 flex-1 flex flex-col justify-center">
+        <div className="relative z-10 pt-10 flex-1 flex flex-col justify-start min-h-[220px]">
           <HomeBrandBanner />
         </div>
 
