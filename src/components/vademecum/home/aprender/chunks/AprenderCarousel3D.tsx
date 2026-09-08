@@ -26,7 +26,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
         transition={{
           repeat: Infinity,
           ease: "linear",
-          duration: items.length * 3.5, // Velocidade: ~3.5s por item
+          duration: items.length * 6.5, // Velocidade reduzida: ~6.5s por item
         }}
       >
         {duplicatedItems.map((item, idx) => (
