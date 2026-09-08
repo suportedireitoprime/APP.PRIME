@@ -168,6 +168,9 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           className="absolute inset-0 w-full h-full object-cover object-center z-0"
         />
 
+        {/* Animação caindo apenas sobre a imagem (por trás do painel vermelho) */}
+        <FallingLeaves />
+
         {/* Overlay vermelho com gradiente estilo menu e sombra (drop-shadow real na divisória diagonal) */}
         <div 
           className="absolute inset-0 z-[1] pointer-events-none"
@@ -186,9 +189,6 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
             <FloatingSVGs />
           </div>
         </div>
-        
-        {/* Animação caindo sobre todo o painel (imagem + área vermelha) */}
-        <FallingLeaves />
 
         {/* Botões de Notificação e Menu */}
         <header className="absolute top-0 right-0 left-0 z-20 px-3 pt-3 md:px-6 md:pt-4 lg:px-8 lg:pt-6 flex items-center justify-end gap-2 md:gap-3 pointer-events-none">

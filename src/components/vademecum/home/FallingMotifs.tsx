@@ -58,14 +58,14 @@ export const FloatingSVGs = memo(() => {
   const [svgs, setSvgs] = useState<any[]>([]);
 
   useEffect(() => {
-    const newSvgs = Array.from({ length: 7 }).map((_, i) => ({
+    const newSvgs = Array.from({ length: 12 }).map((_, i) => ({
       id: `svg-${i}`,
       Icon: SVGS[i % SVGS.length],
-      left: 10 + Math.random() * 80,
-      top: 10 + Math.random() * 80,
-      duration: 8 + Math.random() * 10, // Animação mais suave (vai e volta)
+      left: Math.random() * 90,
+      top: Math.random() * 90,
+      duration: 10 + Math.random() * 15, // Animação mais suave (vai e volta)
       delay: Math.random() * 5,
-      size: 32 + Math.random() * 40,
+      size: 40 + Math.random() * 40,
       rotationInitial: Math.random() * 60 - 30,
     }));
     setSvgs(newSvgs);
@@ -80,9 +80,9 @@ export const FloatingSVGs = memo(() => {
             key={m.id}
             initial={{ opacity: 0 }}
             animate={{ 
-              opacity: 0.15, // Pretos e levemente transparentes
-              x: [0, 15, -10, 0],
-              y: [0, -15, 10, 0],
+              opacity: 0.4, // Mais visível
+              x: [0, 20, -15, 0],
+              y: [0, -20, 15, 0],
               rotate: [m.rotationInitial, m.rotationInitial + 20, m.rotationInitial - 20, m.rotationInitial] 
             }}
             transition={{
