@@ -30,7 +30,7 @@ export function PageHeader({
 
   return (
     <header
-      className={`flex items-center gap-3 py-3.5 shrink-0 ${baseBg} border-b ${borderColor} ${className}`}
+      className={`relative z-20 flex items-center gap-3 py-3.5 shrink-0 ${baseBg} border-b ${borderColor} ${className}`}
       style={{
         paddingTop: 'calc(var(--sai-top) + 1.25rem)',
         // Notch/curvatura em landscape: respeita insets laterais além dos 16px base.

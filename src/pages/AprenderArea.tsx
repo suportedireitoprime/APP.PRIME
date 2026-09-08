@@ -161,14 +161,14 @@ const AprenderArea = () => {
       subtitle={area?.descricao ?? 'Trilhas de estudo'}
       mobileHeader={mobileHeader}
     >
-      {/* Fundo ShapeGrid (padrão oficial do app / igual Pílulas) */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
+      {/* Fundo ShapeGrid (padrão oficial do app / início do aplicativo) */}
+      <div className="fixed inset-0 z-0 pointer-events-none bg-[#0D0D0D]">
         <ShapeGrid
           speed={0.5}
           squareSize={40}
           direction="diagonal"
-          borderColor="rgba(255, 255, 255, 0.05)"
-          hoverFillColor="rgba(255, 255, 255, 0.1)"
+          borderColor="rgba(255, 255, 255, 0.04)"
+          hoverFillColor="rgba(255, 255, 255, 0.08)"
           shape="square"
           hoverTrailAmount={5}
         />
@@ -186,11 +186,11 @@ const AprenderArea = () => {
           </div>
         ) : isDireitoPenal ? (
           <>
-            {/* Top Bar Selecione a Etapa (Padrão Caça-Palavras) */}
+            {/* Top Bar Selecione o Módulo (Padrão Caça-Palavras) */}
             <div className="flex items-center justify-between mb-4 w-full min-w-0">
               <div className="flex items-center gap-2 min-w-0">
                 <BookOpenText className="w-5 h-5 text-primary shrink-0" />
-                <h2 className="text-xs sm:text-sm font-normal font-sans uppercase tracking-widest text-white truncate">Selecione a Etapa</h2>
+                <h2 className="text-xs sm:text-sm font-normal font-sans uppercase tracking-widest text-white truncate">Selecione o Módulo</h2>
               </div>
               <span className="text-[10px] sm:text-xs font-normal font-sans text-zinc-400 uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 shrink-0">
                 Direito Penal
@@ -244,7 +244,7 @@ const AprenderArea = () => {
                       >
                         {/* Imagem vazada de Direito Penal (marca d'água de alta definição alinhada à direita) */}
                         <img
-                          src="/images/gamificacao/direito_penal_vazado.webp"
+                          src="/images/gamificacao/direito_penal_prisao_vazado.webp"
                           alt=""
                           aria-hidden="true"
                           loading="lazy"
@@ -252,10 +252,10 @@ const AprenderArea = () => {
                           className="pointer-events-none absolute -right-3 -bottom-2 w-[115px] sm:w-[130px] h-[115px] sm:h-[130px] object-contain opacity-25 group-hover:opacity-35 transition-opacity duration-300 z-0 select-none"
                         />
 
-                        {/* Cabeçalho da Capa: Etapa */}
+                        {/* Cabeçalho da Capa: Módulo */}
                         <div className="flex items-center justify-between gap-1 z-[1] w-full">
                           <span className="flex items-center gap-1 text-[9px] sm:text-[10px] font-normal px-2 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-md bg-black/40 text-white border border-white/15">
-                            Etapa {numStr}
+                            Módulo {numStr}
                           </span>
                         </div>
 

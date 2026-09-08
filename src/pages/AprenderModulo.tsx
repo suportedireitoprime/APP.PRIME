@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Home, Play, Sparkles } from 'lucide-react';
+import { ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Home, Sparkles } from 'lucide-react';
 import { shortenAreaName } from '@/lib/areaNameShortener';
 import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
 import { cn } from '@/lib/utils';
@@ -204,14 +204,14 @@ const AprenderModulo = () => {
 
   return (
     <DesktopPageLayout activeId="aprender" mobileHeader={mobileHeader} title={modulo?.titulo ?? 'Trilha do Tópico'}>
-      {/* Fundo ShapeGrid (padrão oficial do app / igual Pílulas) */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
+      {/* Fundo ShapeGrid (padrão oficial do app / início do aplicativo) */}
+      <div className="fixed inset-0 z-0 pointer-events-none bg-[#0D0D0D]">
         <ShapeGrid
           speed={0.5}
           squareSize={40}
           direction="diagonal"
-          borderColor="rgba(255, 255, 255, 0.05)"
-          hoverFillColor="rgba(255, 255, 255, 0.1)"
+          borderColor="rgba(255, 255, 255, 0.04)"
+          hoverFillColor="rgba(255, 255, 255, 0.08)"
           shape="square"
           hoverTrailAmount={5}
         />
@@ -261,7 +261,7 @@ const AprenderModulo = () => {
             >
               {modulo.areaSlug === 'direito-penal' && (
                 <img
-                  src="/images/gamificacao/direito_penal_vazado.webp"
+                  src="/images/gamificacao/direito_penal_prisao_vazado.webp"
                   alt=""
                   aria-hidden="true"
                   loading="eager"
@@ -372,37 +372,21 @@ const AprenderModulo = () => {
                               : 'border-border/50 bg-card/40 hover:border-primary/30'
                           )}
                         >
-                          <div className="flex items-center gap-3.5 min-w-0">
-                            <div
-                              className={cn(
-                                'w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors',
-                                isNext
-                                  ? 'bg-primary text-primary-foreground'
-                                  : 'bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground'
-                              )}
-                            >
-                              <Play className="w-4.5 h-4.5 fill-current ml-0.5" />
-                            </div>
-                            <div className="min-w-0 space-y-1">
-                              <p className="text-sm sm:text-base font-normal text-foreground break-words group-hover:text-primary transition-colors">
-                                {aula.titulo}
-                              </p>
-                              <p className="text-xs text-muted-foreground line-clamp-2">
-                                {aula.objetivo || `${aula.duracaoMin} min de aula interativa`}
-                              </p>
-                            </div>
+                          <div className="min-w-0 flex-1 space-y-1.5 py-0.5">
+                            <span className="inline-flex items-center text-[10px] sm:text-[11px] font-medium font-sans uppercase tracking-wider text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-md">
+                              Aula {idx + 1}
+                            </span>
+                            <h3 className="text-sm sm:text-base font-normal font-sans text-foreground break-words leading-snug group-hover:text-primary transition-colors">
+                              {aula.titulo}
+                            </h3>
                           </div>
 
-                          <div className="flex items-center gap-2 shrink-0 ml-2">
-                            {aula.concluida ? (
-                              <span className="text-[11px] font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
+                          <div className="flex items-center gap-2 shrink-0 ml-3">
+                            {aula.concluida && (
+                              <span className="text-[10px] sm:text-[11px] font-normal text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
                                 Concluída
                               </span>
-                            ) : isNext ? (
-                              <span className="text-[11px] font-bold text-primary-foreground bg-primary px-2.5 py-1 rounded-full shadow-sm">
-                                Iniciar agora
-                              </span>
-                            ) : null}
+                            )}
                             <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
                           </div>
                         </button>
