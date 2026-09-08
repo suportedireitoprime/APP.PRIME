@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import VadeMecumHero from '@/components/vademecum/home/VadeMecumHero';
 import MobileHomeSections from '@/components/vademecum/home/MobileHomeSections';
 import VadeMecumBottomNav from '@/components/vademecum/navigation/VadeMecumBottomNav';
+import VadeMecumSearchBar from '@/components/vademecum/home/chunks/VadeMecumSearchBar';
 import VadeMecumFavoritos from './VadeMecumFavoritos';
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 import { pushRecente } from '@/lib/leisRecentes';
@@ -67,11 +68,16 @@ const VadeMecum = () => {
     <>
       {activeTab === 'emalta' && (
         <div className={isDesktop ? "-mx-8 -mt-6 2xl:-mx-14" : ""}>
-          <VadeMecumHero onBuscar={() => setBuscaOpen(true)} />
+          <VadeMecumHero />
         </div>
       )}
 
       <main className={`relative ${isDesktop ? 'mt-8' : 'max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-2'}`}>
+        {activeTab === 'emalta' && (
+          <div className="pt-4 pb-2 z-30 relative">
+            <VadeMecumSearchBar onBuscar={() => setBuscaOpen(true)} />
+          </div>
+        )}
         <AnimatePresence mode="wait">
           {activeTab === 'favoritos' ? (
             <motion.div

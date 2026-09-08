@@ -1,64 +1,78 @@
 import React, { memo } from 'react';
-import { useHeroHomeImages } from '@/hooks/useHeroHomeImages';
-import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
-import HeroCoverCarousel from '@/components/vademecum/home/HeroCoverCarousel';
+import ShapeGrid from '@/components/ui/ShapeGrid';
+import { FallingLeaves } from '@/components/vademecum/home/FallingMotifs';
+import vademecumHeroImg from '@/assets/covers/vademecum-judge.jpg';
 
-import { FALLBACK_COVERS, toOptimized } from './chunks/VadeMecumHeroCovers';
 import VadeMecumHeroHeader from './chunks/VadeMecumHeroHeader';
 import VadeMecumHeroBrand from './chunks/VadeMecumHeroBrand';
 import VadeMecumQuickActions from './chunks/VadeMecumQuickActions';
-import VadeMecumSearchBar from './chunks/VadeMecumSearchBar';
 
-interface Props {
-  onBuscar: () => void;
-}
-
-const VadeMecumHero: React.FC<Props> = ({ onBuscar }) => {
-  const { images: dbImages } = useHeroHomeImages();
-
-  const HERO_COVERS = dbImages.length > 0
-    ? dbImages.map((i) => ({ url: toOptimized(i.imagem_url), preset: i.animation_preset }))
-    : FALLBACK_COVERS;
-
+const VadeMecumHero: React.FC = () => {
   return (
-    <div
-      className="bg-hero-panel relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20"
-      style={{
-        transform: 'translateZ(0)',
-        backgroundColor: '#881337',
-        background: 'linear-gradient(135deg, hsl(350 68% 32%) 0%, hsl(350 74% 42%) 50%, hsl(348 80% 50%) 100%)',
-      }}
-    >
-      {/* Blindagem de overscroll superior contra vazamento do fundo */}
+    <>
+      {/* Shell sólido, opaco e com blindagem contra culling e overscroll */}
       <div
-        className="pointer-events-none absolute -top-[1200px] left-0 right-0 h-[1200px] z-0"
-        style={{ backgroundColor: '#881337' }}
-        aria-hidden="true"
-      />
+        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20"
+        style={{
+          transform: 'translateZ(0)',
+          backgroundColor: '#050505',
+        }}
+      >
+        {/* Blindagem de overscroll superior contra vazamento do fundo */}
+        <div
+          className="pointer-events-none absolute -top-[1200px] left-0 right-0 h-[1200px] z-0"
+          style={{ backgroundColor: '#050505' }}
+          aria-hidden="true"
+        />
 
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
+        {/* Imagem de Fundo */}
+        <img
+          src={vademecumHeroImg}
+          alt=""
+          aria-hidden="true"
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+          className="absolute inset-0 w-full h-full object-cover object-center z-0"
+        />
 
-      <HeroMotifs />
-      <HeroCoverCarousel covers={HERO_COVERS} />
+        {/* Animação caindo apenas sobre a imagem (por trás do painel vermelho) */}
+        <FallingLeaves />
 
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent z-[1]" />
+        {/* Overlay vermelho com gradiente estilo menu e sombra */}
+        <div 
+          className="absolute inset-0 z-[1] pointer-events-none"
+          style={{ filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.95))' }}
+        >
+          <div 
+            className="absolute inset-0 overflow-hidden"
+            style={{ clipPath: 'polygon(0 0, 47% 0, 36% 100%, 0% 100%)' }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#1a0004] via-[#5a050d] to-[#9b111e]" />
+            <div className="absolute inset-0 opacity-15 mix-blend-overlay">
+              <ShapeGrid />
+            </div>
+          </div>
+        </div>
 
-      {/* ── Cabeçalho Transparente Vade Mecum ───────────────── */}
-      <VadeMecumHeroHeader />
+        {/* Cabeçalho Transparente Vade Mecum (Absolute position like HomeHeaderHero) */}
+        <header className="absolute top-0 right-0 left-0 z-20 pt-3 md:pt-4 lg:pt-6 pointer-events-none">
+          <div className="pointer-events-auto">
+            <VadeMecumHeroHeader />
+          </div>
+        </header>
 
-      <div className="relative z-10 px-4 pt-1 pb-5 flex flex-col gap-4">
-        {/* Centered brand block */}
-        <VadeMecumHeroBrand />
+        {/* Conteúdo: Logo à esquerda — centralizado na área vermelha */}
+        <div className="relative z-10 pt-16 sm:pt-20 flex-1 flex flex-col justify-start min-h-[180px]">
+          <VadeMecumHeroBrand />
+        </div>
 
         {/* ── 4 Botões de Ação Rápida ────────────────── */}
-        <VadeMecumQuickActions />
-
-        {/* Search bar */}
-        <VadeMecumSearchBar onBuscar={onBuscar} />
+        <div className="relative z-10 px-3 sm:px-5 pb-5 pt-3">
+          <VadeMecumQuickActions />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
