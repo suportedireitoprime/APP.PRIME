@@ -83,7 +83,7 @@ const HomeTabEstudos = ({
                 icon={c.icon}
                 label={c.label}
                 sublabel={c.sublabel}
-                color="#F87171"
+                color="#E11D48"
                 delay={i * 0.05}
                 className="!bg-none !bg-black/75 !backdrop-blur-sm !border !border-white/15 !shadow-lg !shadow-black/30 hover:!bg-black/90 hover:!shadow-xl transition-all"
                 iconClassName={c.id === 'ea-mapas' ? 'w-6 h-6' : ''}
