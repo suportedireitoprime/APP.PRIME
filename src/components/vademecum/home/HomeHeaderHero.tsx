@@ -170,12 +170,17 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
         {/* Overlay vermelho com gradiente estilo menu e sombra (drop-shadow real na divisória diagonal) */}
         <div 
           className="absolute inset-0 z-[1] pointer-events-none"
-          style={{ filter: 'drop-shadow(15px 0 25px rgba(0,0,0,0.85))' }}
+          style={{ filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.95))' }}
         >
           <div 
-            className="absolute inset-0 bg-gradient-to-br from-[#E11D48] via-[#9b111e] to-[#5a050d]"
+            className="absolute inset-0 overflow-hidden"
             style={{ clipPath: 'polygon(0 0, 47% 0, 36% 100%, 0% 100%)' }}
-          />
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-[#E11D48] via-[#9b111e] to-[#5a050d]" />
+            <div className="absolute inset-0 opacity-15 mix-blend-overlay">
+              <ShapeGrid />
+            </div>
+          </div>
         </div>
 
         {/* Botões de Notificação e Menu */}
