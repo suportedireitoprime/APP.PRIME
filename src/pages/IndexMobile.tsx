@@ -195,7 +195,7 @@ const IndexMobile = () => {
           <main ref={contentRef} className="max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-2">
             <img src={primeLogo} alt="" aria-hidden="true" loading="eager" decoding="sync" fetchPriority="high" className="absolute w-0 h-0 opacity-0 pointer-events-none" />
             
-            <div className="py-2 -mt-4 z-30 relative">
+            <div className="pt-4 pb-2 z-30 relative">
               <HomeSearchButton onOpenSearch={() => setSearchOpen(true)} />
             </div>
             
