@@ -80,21 +80,9 @@ export function LeiSecaHero({
       <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-purple-400/20 blur-3xl pointer-events-none" />
       <div className="absolute -bottom-16 -left-16 w-56 h-56 rounded-full bg-fuchsia-400/15 blur-3xl pointer-events-none" />
 
-      {/* Header com botão voltar se fornecido */}
+      {/* Header */}
       <div className="relative z-10 flex items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-3">
-          {onBack && (
-            <button
-              onClick={() => {
-                haptic.selection();
-                onBack();
-              }}
-              className="w-10 h-10 -ml-1 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center transition-all"
-              aria-label="Voltar"
-            >
-              <ArrowLeft className="w-5 h-5 text-white" />
-            </button>
-          )}
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm text-xs font-semibold tracking-wide text-purple-100">
             <Sparkles className="h-3.5 w-3.5 text-amber-300" />
             Trilhas da Lei Seca

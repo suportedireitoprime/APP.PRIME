@@ -1086,13 +1086,13 @@ function AnimatedRoutes() {
           <Route path="/pilulas/clt" element={<ProtectedRoute><PageTransition instant><PilulasLeiSeca slug="clt" /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/:id" element={<ProtectedRoute><PageTransition instant><PilulasPlayer /></PageTransition></ProtectedRoute>} />
           {/* Lei Seca */}
-          <Route path="/lei-seca" element={<ProtectedRoute><PageTransition instant><LeiSecaIndex /></PageTransition></ProtectedRoute>} />
-          <Route path="/lei-seca/favoritos" element={<ProtectedRoute><PageTransition instant><LeiSecaIndex modo="favoritos" /></PageTransition></ProtectedRoute>} />
-          <Route path="/lei-seca/recentes" element={<ProtectedRoute><PageTransition instant><LeiSecaIndex modo="recentes" /></PageTransition></ProtectedRoute>} />
-          <Route path="/lei-seca/lembretes" element={<ProtectedRoute><PageTransition instant><LeiSecaLembretes /></PageTransition></ProtectedRoute>} />
-          <Route path="/lei-seca/:slug" element={<ProtectedRoute><PageTransition instant><LeiSecaTrilhaRoute /></PageTransition></ProtectedRoute>} />
-          <Route path="/lei-seca/:slug/:parte" element={<ProtectedRoute><PageTransition instant><LeiSecaParteRoute /></PageTransition></ProtectedRoute>} />
-          <Route path="/lei-seca/:slug/:parte/licao/:id" element={<ProtectedRoute><PageTransition instant><LeiSecaPlayer /></PageTransition></ProtectedRoute>} />
+          <Route path="/lei-seca" element={<ErrorBoundary><ProtectedRoute><PageTransition instant><LeiSecaIndex /></PageTransition></ProtectedRoute></ErrorBoundary>} />
+          <Route path="/lei-seca/favoritos" element={<ErrorBoundary><ProtectedRoute><PageTransition instant><LeiSecaIndex modo="favoritos" /></PageTransition></ProtectedRoute></ErrorBoundary>} />
+          <Route path="/lei-seca/recentes" element={<ErrorBoundary><ProtectedRoute><PageTransition instant><LeiSecaIndex modo="recentes" /></PageTransition></ProtectedRoute></ErrorBoundary>} />
+          <Route path="/lei-seca/lembretes" element={<ErrorBoundary><ProtectedRoute><PageTransition instant><LeiSecaLembretes /></PageTransition></ProtectedRoute></ErrorBoundary>} />
+          <Route path="/lei-seca/:slug" element={<ErrorBoundary><ProtectedRoute><PageTransition instant><LeiSecaTrilhaRoute /></PageTransition></ProtectedRoute></ErrorBoundary>} />
+          <Route path="/lei-seca/:slug/:parte" element={<ErrorBoundary><ProtectedRoute><PageTransition instant><LeiSecaParteRoute /></PageTransition></ProtectedRoute></ErrorBoundary>} />
+          <Route path="/lei-seca/:slug/:parte/licao/:id" element={<ErrorBoundary><ProtectedRoute><PageTransition instant><LeiSecaPlayer /></PageTransition></ProtectedRoute></ErrorBoundary>} />
           <Route path="/resumos" element={<Navigate to="/resumos-juridicos" replace />} />
 
           <Route path="/resumos-juridicos" element={<ProtectedRoute><ResumosJuridicosRouteWrapper><PageTransition instant><ResumosJuridicosAreas /></PageTransition></ResumosJuridicosRouteWrapper></ProtectedRoute>} />

@@ -178,9 +178,9 @@ export const PilulasDeck3D = memo(({ items, onItemClick, defaultBorderColor = '#
           type="button"
           onClick={handlePrev}
           aria-label="Item anterior"
-          className="absolute -left-1 sm:left-1 z-[75] w-8 h-8 rounded-full bg-black/50 hover:bg-black/80 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:scale-95"
+          className="absolute bottom-1 sm:bottom-3 left-2 sm:left-4 z-[75] w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:scale-95"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="w-5 h-5" />
         </button>
 
         {/* Botão próximo */}
@@ -188,9 +188,9 @@ export const PilulasDeck3D = memo(({ items, onItemClick, defaultBorderColor = '#
           type="button"
           onClick={handleNext}
           aria-label="Próximo item"
-          className="absolute -right-1 sm:right-1 z-[75] w-8 h-8 rounded-full bg-black/50 hover:bg-black/80 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:scale-95"
+          className="absolute bottom-1 sm:bottom-3 right-2 sm:right-4 z-[75] w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:scale-95"
         >
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-5 h-5" />
         </button>
 
         {/* Deck interativo com drag e touch swipe */}

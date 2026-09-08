@@ -151,7 +151,7 @@ export default function LeiSecaParte() {
   const proxIdx = licoes.findIndex((l, i) => isDesbloqueada(i) && !progressoQ.data?.get(l.id)?.concluida);
 
   return (
-    <div className="min-h-screen bg-background animate-ls-enter">
+    <div className="min-h-screen bg-background animate-ls-enter" style={{ backgroundColor: '#0D0D0D' }}>
       {/* Chunk 6: Hero da Parte com Progresso e Paleta Temática */}
       <LeiSecaParteHero
         slug={slug}

@@ -4,6 +4,7 @@ import { useMemo, useState, useEffect } from "react";
 import { listarTrilhas } from "@/lib/leiSeca";
 import { persistedInitial, savePersisted } from "@/lib/queryPersist";
 import { prefetchHandlers, prefetchTrilha } from "@/lib/leiSecaPrefetch";
+import { prefetchImages } from '@/lib/coverLoader';
 import { BookOpen, Clock, Heart } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLeiSecaResumoGlobal } from "@/hooks/useLeiSecaResumoGlobal";
@@ -36,6 +37,10 @@ export default function LeiSecaIndex({ modo = "todos" }: { modo?: LeiSecaFiltro 
   useEffect(() => {
     if (trilhas) savePersisted("lei-seca-trilhas", trilhas);
   }, [trilhas]);
+
+  useEffect(() => {
+    prefetchImages(LEI_SECA_MATERIAS.map(m => m.capa));
+  }, []);
 
   const { data: resumo } = useLeiSecaResumoGlobal();
   const { favoritos, isFav, toggle } = useLeiSecaFavoritos();
@@ -81,7 +86,7 @@ export default function LeiSecaIndex({ modo = "todos" }: { modo?: LeiSecaFiltro 
   };
 
   return (
-    <div className="min-h-screen bg-background animate-ls-enter">
+    <div className="min-h-screen bg-background animate-ls-enter" style={{ backgroundColor: '#0D0D0D' }}>
       {/* Chunk 1: Hero com Progresso e Estatísticas */}
       <LeiSecaHero
         pctGlobal={pctGlobal}
@@ -213,9 +218,6 @@ export default function LeiSecaIndex({ modo = "todos" }: { modo?: LeiSecaFiltro 
         trilhas={trilhas ?? []}
         resumo={resumo}
       />
-
-      {/* Menu de rodapé dedicado de Lei Seca */}
-      <LeiSecaBottomNav />
     </div>
   );
 }

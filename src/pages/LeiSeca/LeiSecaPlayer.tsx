@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Heart, X, BookOpen, Loader2, Trophy, Star, RotateCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GeracaoAnimacaoOverlay from '@/components/vademecum/overlays/GeracaoAnimacaoOverlay';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
 import { Progress } from "@/components/ui/progress";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -47,6 +48,17 @@ function playLeiSecaAcerto() {
 }
 
 export default function LeiSecaPlayer() {
+  const { data: profile } = useProfileSummary();
+
+  const parentRef = useRef<HTMLDivElement>(null);
+  const artigosList = artigosQ.data ?? [];
+  const virtualizer = useVirtualizer({
+    count: artigosList.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 150,
+  });
+
+  const dispatch = useSyncStore((s) => s.dispatch); goBack = useGoBack();
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const goBack = useGoBack();
@@ -160,7 +172,7 @@ export default function LeiSecaPlayer() {
 
   if (gateLeiSeca.blocked) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background pb-[calc(7rem+var(--sai-bottom))]" style={{ backgroundColor: '#0D0D0D' }}>
         {gateLeiSeca.gateNode}
       </div>
     );
@@ -262,7 +274,7 @@ export default function LeiSecaPlayer() {
   const artigoAtualTexto = atual ? artigoMap.get(String((atual as any).artigo)) ?? "" : "";
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#1a0612] via-brand-burgundy-deep to-[#120410]">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#1a0612] via-brand-burgundy-deep to-[#120410]" style={{ backgroundColor: '#120410' }}>
       {/* Header imersivo: X + progresso + vidas */}
       <div className="sticky top-0 z-30 bg-[#160510]/85 backdrop-blur-md border-b border-white/5 pt-[calc(0.5rem+var(--sai-top))]">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
@@ -340,17 +352,40 @@ export default function LeiSecaPlayer() {
       </AlertDialog>
 
       <Sheet open={verArtigo} onOpenChange={setVerArtigo}>
-        <SheetContent side="bottom" className="h-[75vh] overflow-y-auto pb-[calc(2rem+var(--sai-bottom))]">
-          <SheetHeader>
+        <SheetContent side="bottom" className="h-[75vh] pb-[calc(2rem+var(--sai-bottom))] flex flex-col">
+          <SheetHeader className="flex-none">
             <SheetTitle>{trilhaQ.data?.nome}</SheetTitle>
           </SheetHeader>
-          <div className="mt-4 space-y-4">
-            {artigosQ.data?.map((a) => (
-              <div key={a.num} className="border-l-4 border-pink-500 pl-4">
-                <div className="text-xs font-bold text-pink-400 mb-1">Art. {a.num}</div>
-                <p className="text-sm whitespace-pre-wrap leading-relaxed text-foreground">{a.texto}</p>
-              </div>
-            ))}
+          <div ref={parentRef} className="mt-4 flex-1 overflow-y-auto">
+            <div
+              style={{
+                height: `${virtualizer.getTotalSize()}px`,
+                width: '100%',
+                position: 'relative',
+              }}
+            >
+              {virtualizer.getVirtualItems().map((virtualRow) => {
+                const a = artigosList[virtualRow.index];
+                return (
+                  <div
+                    key={virtualRow.index}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      transform: `translateY(${virtualRow.start}px)`,
+                    }}
+                    ref={virtualizer.measureElement}
+                    data-index={virtualRow.index}
+                    className="border-l-4 border-pink-500 pl-4 mb-4"
+                  >
+                    <div className="text-xs font-bold text-pink-400 mb-1">Art. {a.num}</div>
+                    <p className="text-sm whitespace-pre-wrap leading-relaxed text-foreground">{a.texto}</p>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </SheetContent>
       </Sheet>

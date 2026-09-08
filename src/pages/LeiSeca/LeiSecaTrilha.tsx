@@ -32,7 +32,7 @@ export default function LeiSecaTrilha() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen grid place-items-center bg-background animate-fade-in-fast">
+      <div className="min-h-screen grid place-items-center bg-background animate-fade-in-fast" style={{ backgroundColor: '#0D0D0D' }}>
         <Loader2 className="h-7 w-7 animate-spin text-muted-foreground" />
       </div>
     );
