@@ -84,11 +84,13 @@ const HomeTabEstudos = ({
                 icon={c.icon}
                 label={c.label}
                 sublabel={c.sublabel}
-                color="#E11D48"
+                color="#FFFFFF"
+                iconStyle={{ filter: 'drop-shadow(0 0 4px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 10px rgba(255, 255, 255, 0.45))' }}
+                iconStrokeWidth={1.5}
                 delay={i * 0.05}
                 className="transition-all"
                 style={{
-                  backgroundImage: 'linear-gradient(135deg, #27272a 0%, #18181b 55%, #0f0f12 100%)',
+                  backgroundImage: 'linear-gradient(90deg, #0e0e11 0%, #17171b 45%, #2a2a30 100%)',
                   border: '1px solid rgba(255, 255, 255, 0.08)',
                   boxShadow: 'inset 0 1px 1px rgba(255, 255, 255, 0.12), 0 4px 14px rgba(0, 0, 0, 0.5)',
                 }}

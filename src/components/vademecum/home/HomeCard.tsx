@@ -18,13 +18,15 @@ interface HomeCardProps {
   'data-track-section'?: string;
   solidColor?: boolean;
   style?: React.CSSProperties;
+  iconStyle?: React.CSSProperties;
+  iconStrokeWidth?: number;
 }
 
 /**
  * Card padrão usado em Categorias, Em Alta e Áreas.
  * Garante proporção, ícone, tipografia e espaçamento idênticos.
  */
-const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, className = '', iconClassName = '', badge, 'data-track': dataTrack, 'data-track-name': dataTrackName, 'data-track-section': dataTrackSection, solidColor = false, style }: HomeCardProps) => (
+const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, className = '', iconClassName = '', badge, 'data-track': dataTrack, 'data-track-name': dataTrackName, 'data-track-section': dataTrackSection, solidColor = false, style, iconStyle, iconStrokeWidth }: HomeCardProps) => (
   <button
     onClick={() => {
       haptic.selection();
@@ -50,8 +52,8 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
       <div className="relative shrink-0 flex items-center justify-center p-1">
         <Icon
           className={`relative transition-transform duration-300 group-hover:scale-110 group-active:scale-95 group-active:-translate-y-1 ${iconClassName || 'w-7 h-7 xs:w-8 xs:h-8'}`}
-          style={{ color: color }}
-          strokeWidth={solidColor ? 1.6 : 1.25}
+          style={{ color: color, ...iconStyle }}
+          strokeWidth={iconStrokeWidth ?? (solidColor ? 1.6 : 1.25)}
         />
       </div>
       
