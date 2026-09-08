@@ -237,23 +237,63 @@ export const JogoCacaPalavras: React.FC<JogoCacaPalavrasProps> = ({ nivelData, o
     setSelectedCells(new Set());
   };
 
+  const cols = grid.length > 0 ? grid[0].length : 8;
+
+  const getCellSizeStyles = (colCount: number) => {
+    if (colCount <= 8) {
+      return {
+        gap: 'gap-1.5 sm:gap-2 md:gap-2.5',
+        font: 'text-xl sm:text-2xl md:text-3xl',
+        radius: 'rounded-xl sm:rounded-2xl',
+      };
+    }
+    if (colCount <= 10) {
+      return {
+        gap: 'gap-1 sm:gap-1.5 md:gap-2',
+        font: 'text-base sm:text-xl md:text-2xl',
+        radius: 'rounded-lg sm:rounded-xl',
+      };
+    }
+    if (colCount <= 12) {
+      return {
+        gap: 'gap-[3px] sm:gap-1 md:gap-1.5',
+        font: 'text-xs sm:text-base md:text-lg',
+        radius: 'rounded-md sm:rounded-lg',
+      };
+    }
+    if (colCount <= 14) {
+      return {
+        gap: 'gap-[2px] sm:gap-[2.5px] md:gap-1',
+        font: 'text-[11px] sm:text-sm md:text-base',
+        radius: 'rounded-[4px] sm:rounded-md',
+      };
+    }
+    return {
+      gap: 'gap-[1.5px] sm:gap-[2px] md:gap-1',
+      font: 'text-[10px] sm:text-xs md:text-sm',
+      radius: 'rounded-[3px] sm:rounded',
+    };
+  };
+
+  const styleConfig = getCellSizeStyles(cols);
+
   return (
-    <div className="flex flex-col items-center w-full max-w-5xl mx-auto px-4 pb-12 select-none touch-none">
-      <div className="flex flex-col gap-6 w-full items-center">
+    <div className="flex flex-col items-center w-full max-w-4xl mx-auto px-1 sm:px-4 pb-12 select-none touch-none">
+      <div className="flex flex-col gap-4 sm:gap-6 w-full items-center">
         
         {/* Palavras a encontrar (Tags) */}
-        <div className="w-full bg-zinc-900/40 border border-zinc-800 p-4 md:p-6 rounded-3xl">
-          <h3 className="text-white font-bold mb-4 flex items-center justify-center gap-2 uppercase tracking-wide text-sm md:text-base">
+        <div className="w-full bg-zinc-900/40 border border-zinc-800 p-3 sm:p-5 rounded-2xl sm:rounded-3xl">
+          <h3 className="text-white font-bold mb-3 flex items-center justify-center gap-2 uppercase tracking-wide text-xs sm:text-sm md:text-base">
             <Info className="w-4 h-4 md:w-5 md:h-5 text-primary" />
             Palavras ({foundWords.length}/{wordsToFind.length})
           </h3>
-          <div className="flex flex-wrap justify-center gap-2 md:gap-3">
+          <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2 md:gap-3">
             {wordsToFind.map((word, i) => {
               const found = foundWords.includes(word);
               return (
                 <div 
                   key={i} 
-                  className={`px-3 py-1.5 md:px-4 md:py-2 rounded-xl border text-xs md:text-sm font-black tracking-widest transition-all duration-300 ${
+                  className={`px-2.5 py-1 sm:px-3.5 sm:py-1.5 md:px-4 md:py-2 rounded-lg sm:rounded-xl border text-[11px] sm:text-xs md:text-sm font-black tracking-wider sm:tracking-widest transition-all duration-300 ${
                     found 
                       ? 'bg-primary/20 border-primary/40 text-primary line-through' 
                       : 'bg-zinc-800/50 border-zinc-700 text-zinc-300'
@@ -267,12 +307,12 @@ export const JogoCacaPalavras: React.FC<JogoCacaPalavrasProps> = ({ nivelData, o
         </div>
 
         {/* Grid do Caça-Palavras */}
-        <div className="w-full max-w-[95vw] md:max-w-3xl flex justify-center bg-zinc-900/50 p-2 sm:p-4 md:p-8 rounded-3xl border border-zinc-800 shadow-2xl backdrop-blur-sm relative overflow-hidden">
+        <div className="w-full max-w-[100vw] sm:max-w-xl md:max-w-2xl lg:max-w-3xl flex justify-center bg-zinc-900/60 p-1.5 sm:p-3 md:p-6 rounded-2xl sm:rounded-3xl border border-zinc-800 shadow-2xl backdrop-blur-sm relative overflow-hidden">
           <div 
             ref={gridRef}
-            className="grid gap-[2px] sm:gap-1 md:gap-2 w-full aspect-square max-w-[100%] mx-auto"
+            className={`grid ${styleConfig.gap} w-full aspect-square max-w-[100%] mx-auto`}
             style={{ 
-              gridTemplateColumns: `repeat(${grid.length > 0 ? grid[0].length : 10}, minmax(0, 1fr))`
+              gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`
             }}
             onTouchStart={handlePointerDown}
             onTouchMove={handlePointerMove}
@@ -295,10 +335,10 @@ export const JogoCacaPalavras: React.FC<JogoCacaPalavrasProps> = ({ nivelData, o
                     data-c={c}
                     className={`
                       w-full h-full flex items-center justify-center 
-                      text-[min(4vw,14px)] sm:text-base md:text-xl font-black rounded cursor-pointer transition-colors duration-150 select-none
-                      ${isSelected ? 'bg-primary text-white scale-110 shadow-lg shadow-primary/40 z-10 rounded-md' : 
+                      ${styleConfig.font} font-black ${styleConfig.radius} cursor-pointer transition-all duration-150 select-none
+                      ${isSelected ? 'bg-primary text-white scale-105 sm:scale-110 shadow-lg shadow-primary/40 z-10' : 
                         isPermanent ? 'bg-primary/30 text-white border border-primary/50' : 
-                        'bg-zinc-800/80 text-zinc-300 hover:bg-zinc-700'}
+                        'bg-zinc-800/90 text-zinc-200 hover:bg-zinc-700 active:bg-zinc-600'}
                     `}
                   >
                     {cell.letter}

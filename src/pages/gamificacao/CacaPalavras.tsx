@@ -99,7 +99,7 @@ const CacaPalavrasPage = () => {
           onBack={handleBack}
         />
         
-        <div className={selectedNivel ? "pt-4 pb-20" : "max-w-[700px] mx-auto px-4 md:px-0 pb-20 pt-4"}>
+        <div className={selectedNivel ? "pt-2 pb-16 px-1 sm:px-4 w-full" : "max-w-[700px] mx-auto px-4 md:px-0 pb-20 pt-4"}>
         <AnimatePresence mode="wait">
           {!selectedDisciplina ? (
             <motion.div
