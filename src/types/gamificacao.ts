@@ -19,3 +19,16 @@ export interface JogoForcaState {
   chancesRestantes: number;
   status: 'jogando' | 'venceu' | 'perdeu';
 }
+
+export interface GamificacaoCacaPalavras {
+  id: string;
+  materia: string;
+  nivel: string;
+  titulo_nivel: string;
+  qtd_palavras: number;
+  dimensoes_grade: string;
+  foco_tematico: string | null;
+  palavras: string[];
+  dicas: Record<string, string>;
+  created_at: string;
+}

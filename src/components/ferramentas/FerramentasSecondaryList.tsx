@@ -19,7 +19,7 @@ export const FerramentasSecondaryList: React.FC<FerramentasSecondaryListProps> =
       <div className="space-y-3">
         {secondaryTools.map((tool, i) => {
           const Icon = tool.icon;
-          const isMuted = tool.id === 'caca-palavras' || tool.id === 'palavras-cruzadas';
+          const isMuted = tool.id === 'palavras-cruzadas';
           return (
             <motion.button
               key={tool.id}

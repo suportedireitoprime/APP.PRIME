@@ -43,6 +43,9 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   reset = () => {
+    try {
+      sessionStorage.removeItem('chunk_reload');
+    } catch {}
     if (this.isChunkError(this.state.error?.message || '')) {
       window.location.reload();
     } else {
@@ -56,7 +59,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.props.fallback) return this.props.fallback(error, this.reset);
 
     // Item 53: Intercepta navegação em rota não cacheada durante ausência de internet
-    const isOffline = typeof navigator !== 'undefined' && (!navigator.onLine || /NetworkError|Failed to fetch|offline/i.test(error.message));
+    const isOffline = typeof navigator !== 'undefined' && (!navigator.onLine || (/NetworkError|offline/i.test(error.message) || (/Failed to fetch/i.test(error.message) && !this.isChunkError(error.message))));
 
     if (isOffline) {
       return (

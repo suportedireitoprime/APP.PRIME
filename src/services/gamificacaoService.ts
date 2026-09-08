@@ -1,5 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
-import type { GamificacaoJogo, NivelDificuldade, TipoJogo } from '@/types/gamificacao';
+import type { GamificacaoJogo, NivelDificuldade, TipoJogo, GamificacaoCacaPalavras } from '@/types/gamificacao';
 
 export const gamificacaoService = {
   /**
@@ -69,5 +69,42 @@ export const gamificacaoService = {
     // Seleciona um aleatório
     const randomIndex = Math.floor(Math.random() * jogos.length);
     return jogos[randomIndex];
+  },
+
+  /**
+   * Busca a trilha de níveis para o Caça-Palavras
+   */
+  async getTrilhaCacaPalavras(materia: string): Promise<GamificacaoCacaPalavras[]> {
+    const { data, error } = await supabase
+      .from('gamificacao_caca_palavras')
+      .select('*')
+      .eq('materia', materia)
+      .order('nivel', { ascending: true });
+
+    if (error) {
+      console.error('Erro ao buscar trilha caça-palavras:', error);
+      return [];
+    }
+
+    return (data || []) as GamificacaoCacaPalavras[];
+  },
+
+  /**
+   * Busca um nível específico do Caça-Palavras
+   */
+  async getCacaPalavrasNivel(materia: string, nivel: string): Promise<GamificacaoCacaPalavras | null> {
+    const { data, error } = await supabase
+      .from('gamificacao_caca_palavras')
+      .select('*')
+      .eq('materia', materia)
+      .eq('nivel', nivel)
+      .single();
+
+    if (error) {
+      console.error('Erro ao buscar nível caça-palavras:', error);
+      return null;
+    }
+
+    return data as GamificacaoCacaPalavras;
   }
 };

@@ -67,6 +67,7 @@ export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
     hint: 'Gamificação e memorização',
     tools: [
       { id: 'forca', label: 'Jogo da Forca', desc: 'Memorize termos jurídicos brincando', icon: Gamepad2, route: '/gamificacao/forca', color: '#8B5CF6' },
+      { id: 'caca-palavras', label: 'Caça-Palavras', desc: 'Encontre conceitos chave na grade', icon: Gamepad2, route: '/gamificacao/caca-palavras', color: '#10B981' },
     ],
   },
   {
