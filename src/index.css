@@ -206,6 +206,12 @@ input, textarea, [contenteditable], .ProseMirror, .aui-composer-input, [data-aui
   }
 }
 
+@layer utilities {
+  .bg-brand-gradient {
+    background-image: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--brand-burgundy-mid)) 60%, hsl(var(--brand-burgundy-deep)) 100%);
+  }
+}
+
 /* ==========================================================================
    FASE 17 — ALTO CONTRASTE (prefers-contrast: more) — Item 76 WCAG 2.2
    Aumenta opacidade, bordas e contorno em imagens, capas e ícones para
@@ -1767,5 +1773,4 @@ html[data-route-transitioning="true"] * {
   will-change: transform, opacity;
   transform: translateZ(0);
 }
-@ l a y e r   u t i l i t i e s   {   . b g - b r a n d - g r a d i e n t   {   b a c k g r o u n d - i m a g e :   l i n e a r - g r a d i e n t ( 1 3 5 d e g ,   h s l ( v a r ( - - p r i m a r y ) )   0 % ,   h s l ( v a r ( - - b r a n d - b u r g u n d y - m i d ) )   6 0 % ,   h s l ( v a r ( - - b r a n d - b u r g u n d y - d e e p ) )   1 0 0 % ) ;   }   }  
- 
+@layer utilities { .bg-brand-gradient { background-image: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--brand-burgundy-mid)) 60%, hsl(var(--brand-burgundy-deep)) 100%); } }
