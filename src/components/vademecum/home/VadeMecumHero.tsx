@@ -6,8 +6,14 @@ import vademecumHeroImg from '@/assets/covers/vademecum-judge.jpg';
 import VadeMecumHeroHeader from './chunks/VadeMecumHeroHeader';
 import VadeMecumHeroBrand from './chunks/VadeMecumHeroBrand';
 import VadeMecumQuickActions from './chunks/VadeMecumQuickActions';
+import VadeMecumSearchBar from './chunks/VadeMecumSearchBar';
 
-const VadeMecumHero: React.FC = () => {
+interface VadeMecumHeroProps {
+  onOpenMenu?: () => void;
+  onOpenSearch?: () => void;
+}
+
+const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onOpenSearch }) => {
   return (
     <>
       {/* Shell sólido, opaco e com blindagem contra culling e overscroll */}
@@ -63,12 +69,17 @@ const VadeMecumHero: React.FC = () => {
         </header>
 
         {/* Conteúdo: Logo à esquerda — centralizado na área vermelha */}
-        <div className="relative z-10 pt-16 sm:pt-20 flex-1 flex flex-col justify-start min-h-[180px]">
+        <div className="relative z-10 pt-16 sm:pt-20 flex-1 flex flex-col justify-start min-h-[120px]">
           <VadeMecumHeroBrand />
         </div>
 
+        {/* Barra de Pesquisa */}
+        <div className="relative z-10 px-4 sm:px-6 w-full mb-2">
+          <VadeMecumSearchBar onBuscar={onOpenSearch || (() => {})} />
+        </div>
+
         {/* ── 4 Botões de Ação Rápida ────────────────── */}
-        <div className="relative z-10 px-3 sm:px-5 pb-5 pt-3">
+        <div className="relative z-10 px-3 sm:px-5 pb-5 pt-2">
           <VadeMecumQuickActions />
         </div>
       </div>

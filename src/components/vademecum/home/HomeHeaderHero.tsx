@@ -214,12 +214,20 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
         </header>
 
         {/* Conteúdo: Logo à esquerda — centralizado na área vermelha */}
-        <div className="relative z-10 pt-10 flex-1 flex flex-col justify-start min-h-[220px]">
+        <div className="relative z-10 pt-10 flex-1 flex flex-col justify-start min-h-[150px]">
           <HomeBrandBanner />
         </div>
 
+        {/* Barra de Pesquisa */}
+        <div className="relative z-10 px-4 sm:px-6 w-full mb-2">
+          <HomeSearchButton onOpenSearch={() => {
+            if (onOpenSearch) onOpenSearch();
+            else setSearchOpen(true);
+          }} />
+        </div>
+
         {/* Atalhos Rápidos: APRENDER, FLASHCARDS, QUESTÕES, ME EXPLIQUE — dentro do painel */}
-        <div className="relative z-10 px-3 sm:px-5 pb-5 pt-3">
+        <div className="relative z-10 px-3 sm:px-5 pb-5 pt-2">
           <HomeActionShortcuts />
         </div>
       </div>
