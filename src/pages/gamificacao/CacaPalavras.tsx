@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { JogoCacaPalavras } from '@/components/gamificacao/JogoCacaPalavras';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { BookOpenText, ChevronRight, Loader2, Star, Sparkles } from 'lucide-react';
+import { BookOpenText, ChevronRight, Loader2, Star, Sparkles, Lock, Play, ArrowUpRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { gamificacaoService } from '@/services/gamificacaoService';
 import ShapeGrid from '@/components/ui/ShapeGrid';
@@ -224,82 +224,150 @@ const CacaPalavrasPage = () => {
                     </span>
                   </div>
 
-                  <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
-                    {TEMAS_DIREITO_PENAL.map(tema => {
-                      const prog = getProgressoTema(tema.nome, tema.totalNiveis);
-                      return (
-                        <div
-                          key={tema.id}
-                          onClick={() => {
-                            if (tema.disponivel) {
-                              handleDisciplinaSelect(tema.nome);
-                            } else {
-                              toast.info("Tema em elaboração", {
-                                description: `Os níveis de "${tema.nome}" serão disponibilizados em breve!`
-                              });
-                            }
-                          }}
-                          className={`
-                            flex flex-col w-full min-w-0 max-w-full p-4 sm:p-5 text-left rounded-2xl border transition-all select-none box-border overflow-hidden
-                            ${tema.disponivel 
-                              ? 'bg-zinc-900/90 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 cursor-pointer shadow-lg active:scale-[0.99] group' 
-                              : 'bg-zinc-900/40 border-zinc-800/60 opacity-60 cursor-not-allowed hover:opacity-75'}
-                          `}
-                        >
-                          <div className="flex items-center justify-between gap-3 w-full min-w-0">
-                            <div className="flex items-center gap-3 min-w-0 flex-1">
-                              {/* Número no lado esquerdo */}
-                              <div className={`
-                                w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center font-bold font-sans text-sm sm:text-base shrink-0 border
-                                ${tema.disponivel 
-                                  ? 'bg-primary/15 border-primary/40 text-primary group-hover:bg-primary group-hover:text-white transition-colors' 
-                                  : 'bg-zinc-800/80 border-zinc-700 text-zinc-500'}
-                              `}>
+                  {/* Trilha em Linha do Tempo Elegante (Alternando Esquerda/Direita) */}
+                  <div className="relative py-6 w-full min-w-0 max-w-full overflow-hidden">
+                    {/* Linha vertical central luminosa */}
+                    <div className="absolute left-1/2 top-6 bottom-6 w-[2px] -translate-x-1/2 bg-gradient-to-b from-primary via-primary/40 to-zinc-800/80 rounded-full z-0 pointer-events-none" />
+
+                    <div className="space-y-6 sm:space-y-8 w-full min-w-0">
+                      {TEMAS_DIREITO_PENAL.map((tema, i) => {
+                        const isLeft = i % 2 === 0;
+                        const prog = getProgressoTema(tema.nome, tema.totalNiveis);
+
+                        return (
+                          <div
+                            key={tema.id}
+                            className={`relative z-10 flex w-full items-center ${isLeft ? 'justify-start' : 'justify-end'}`}
+                          >
+                            {/* Linha conectando o nó central ao card */}
+                            <div 
+                              className={`absolute top-1/2 w-[calc(50%-1.25rem)] h-[1.5px] border-b-2 border-dashed -translate-y-1/2 z-0 pointer-events-none ${
+                                tema.disponivel ? 'border-primary/60' : 'border-zinc-800'
+                              } ${isLeft ? 'left-1/2' : 'right-1/2'}`} 
+                            />
+
+                            {/* Nó Central (Milestone da Linha do Tempo) */}
+                            <div
+                              className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full font-bold transition-transform ${
+                                tema.disponivel
+                                  ? 'w-8 h-8 sm:w-9 sm:h-9 bg-primary border-4 border-[#0D0D0D] text-white shadow-[0_0_16px_rgba(225,29,72,0.85)] scale-105'
+                                  : 'w-7 h-7 sm:w-8 sm:h-8 bg-zinc-900 border-4 border-[#0D0D0D] text-zinc-500 text-xs'
+                              }`}
+                            >
+                              <span className="text-[11px] sm:text-xs font-bold font-sans">
                                 {tema.numero}
+                              </span>
+                              {tema.disponivel && (
+                                <span className="absolute inset-0 rounded-full bg-primary/40 animate-ping -z-10 pointer-events-none" />
+                              )}
+                            </div>
+
+                            {/* Card no formato de Capa de Livro (com fundo da recomendação de livros) */}
+                            <div
+                              onClick={() => {
+                                if (tema.disponivel) {
+                                  handleDisciplinaSelect(tema.nome);
+                                } else {
+                                  toast.info("Tema em elaboração", {
+                                    description: `Os níveis de "${tema.nome}" serão disponibilizados em breve!`
+                                  });
+                                }
+                              }}
+                              className={`
+                                relative w-[45%] max-w-[210px] min-h-[165px] sm:min-h-[185px] p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden select-none box-border transition-all duration-300 z-10
+                                ${tema.disponivel 
+                                  ? 'bg-brand-gradient border border-white/25 shadow-[0_12px_28px_-6px_rgba(225,29,72,0.4)] hover:shadow-[0_16px_32px_-6px_rgba(225,29,72,0.55)] cursor-pointer active:scale-[0.97] group' 
+                                  : 'bg-gradient-to-br from-zinc-900/95 via-[#181116] to-[#120e14] border border-zinc-800/80 shadow-md cursor-not-allowed opacity-75 hover:opacity-85'}
+                              `}
+                            >
+                              {/* SVGs jurídicos decorativos em marca d'água ao fundo (Padrão Recomendação de Livro) */}
+                              <svg
+                                aria-hidden="true"
+                                viewBox="0 0 200 200"
+                                className="pointer-events-none absolute -right-3 -bottom-3 w-[95px] h-[95px] text-white/10"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                              >
+                                <path d="M100 30 V170 M70 170 H130 M100 55 L55 95 M100 55 L145 95" strokeLinecap="round" />
+                                <path d="M35 95 Q55 135 75 95 Z" />
+                                <path d="M125 95 Q145 135 165 95 Z" />
+                              </svg>
+                              <svg
+                                aria-hidden="true"
+                                viewBox="0 0 100 100"
+                                className="pointer-events-none absolute top-1 right-1 w-[38px] h-[38px] text-white/10"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                              >
+                                <path d="M18 78 L58 38" />
+                                <rect x="52" y="20" width="30" height="14" rx="2" transform="rotate(45 67 27)" />
+                                <path d="M10 88 H50" />
+                              </svg>
+
+                              {/* Cabeçalho da Capa: Etapa e Ícone de Ação */}
+                              <div className="flex items-center justify-between gap-1 z-[1] w-full">
+                                <span className={`flex items-center gap-1 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-md ${
+                                  tema.disponivel 
+                                    ? 'bg-black/40 text-white border border-white/15' 
+                                    : 'bg-zinc-800/80 text-zinc-400 border border-zinc-700/60'
+                                }`}>
+                                  Etapa {tema.numero}
+                                </span>
+
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 backdrop-blur-md ${
+                                  tema.disponivel 
+                                    ? 'bg-white/20 border border-white/30 text-white shadow-sm group-hover:scale-110 transition-transform' 
+                                    : 'bg-zinc-800/80 border border-zinc-700/60 text-zinc-500'
+                                }`}>
+                                  {tema.disponivel ? (
+                                    <Play className="w-2.5 h-2.5 fill-white text-white translate-x-0.5" />
+                                  ) : (
+                                    <Lock className="w-2.5 h-2.5" />
+                                  )}
+                                </div>
                               </div>
 
-                              {/* Título Maior com tipografia font-sans limpa e legível */}
-                              <div className="min-w-0 flex-1">
-                                <h3 className={`text-lg sm:text-xl font-bold font-sans tracking-tight leading-snug line-clamp-2 ${tema.disponivel ? 'text-zinc-100 group-hover:text-primary transition-colors' : 'text-zinc-400'}`}>
+                              {/* Centro da Capa: Título do Tema */}
+                              <div className="my-auto py-2 z-[1]">
+                                <h3 className={`font-sans font-bold text-[13.5px] sm:text-[15px] leading-snug line-clamp-3 ${
+                                  tema.disponivel ? 'text-white drop-shadow-sm' : 'text-zinc-300'
+                                }`}>
                                   {tema.nome}
                                 </h3>
                               </div>
-                            </div>
 
-                            {/* Badge ou Seta */}
-                            <div className="shrink-0 flex items-center ml-2">
-                              {tema.disponivel ? (
-                                <ChevronRight className="w-5 h-5 text-zinc-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
-                              ) : (
-                                <span className="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold font-sans uppercase tracking-wider bg-zinc-800 text-zinc-400 border border-zinc-700 whitespace-nowrap">
-                                  Em breve
-                                </span>
-                              )}
+                              {/* Rodapé da Capa: Progresso ou Status */}
+                              <div className="z-[1] pt-1.5 border-t border-white/15 w-full">
+                                {tema.disponivel ? (
+                                  <div>
+                                    <div className="flex items-center justify-between text-[10px] font-medium text-white/90 mb-1">
+                                      <span>{prog.concluidos > 0 ? `${prog.concluidos}/${prog.total} conc.` : 'Iniciar'}</span>
+                                      <span className="font-bold font-sans">{prog.percent}%</span>
+                                    </div>
+                                    <div className="w-full bg-black/35 h-1.5 rounded-full overflow-hidden border border-white/20">
+                                      <div 
+                                        className="h-full bg-white rounded-full transition-all duration-500 shadow-sm"
+                                        style={{ width: `${Math.max(prog.percent, 8)}%` }}
+                                      />
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center justify-between text-[9.5px] text-zinc-400 font-medium">
+                                    <span>Bloqueado</span>
+                                    <span className="uppercase text-[8.5px] font-bold tracking-wider px-1.5 py-0.5 rounded bg-zinc-800/90 border border-zinc-700/60 text-zinc-400">
+                                      Em breve
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
-
-                          {/* Barra de Progresso onde a pessoa parou */}
-                          <div className="mt-3.5 pt-3 border-t border-zinc-800/70 w-full min-w-0">
-                            <div className="flex items-center justify-between text-xs font-medium font-sans mb-1.5 w-full min-w-0">
-                              <span className="text-zinc-400 truncate pr-2">
-                                {tema.disponivel 
-                                  ? (prog.concluidos > 0 ? `${prog.concluidos}/${prog.total} níveis concluídos` : 'Não iniciado') 
-                                  : 'Disponível em breve'}
-                              </span>
-                              <span className={`shrink-0 ${prog.percent > 0 ? "text-primary font-bold font-sans" : "text-zinc-500 font-sans"}`}>
-                                {prog.percent}%
-                              </span>
-                            </div>
-                            <div className="w-full bg-zinc-800/90 h-2 rounded-full overflow-hidden border border-zinc-700/40">
-                              <div 
-                                className={`h-full rounded-full transition-all duration-500 ${prog.percent > 0 ? 'bg-primary shadow-sm shadow-primary/40' : 'bg-transparent'}`}
-                                style={{ width: `${prog.percent}%` }}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
                 </>
               )}
