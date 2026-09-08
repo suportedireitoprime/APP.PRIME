@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Info, ArrowLeft } from 'lucide-react';
+import { Info } from 'lucide-react';
 import type { GamificacaoCacaPalavras } from '@/types/gamificacao';
 
 interface JogoCacaPalavrasProps {
   nivelData: GamificacaoCacaPalavras;
   onVenceu: () => void;
-  onBack: () => void;
+  onBack?: () => void;
 }
 
 type Direction = [number, number];
@@ -238,22 +238,7 @@ export const JogoCacaPalavras: React.FC<JogoCacaPalavrasProps> = ({ nivelData, o
   };
 
   return (
-    <div className="flex flex-col items-center w-full max-w-5xl mx-auto p-4 select-none touch-none">
-      {/* Botão de Voltar */}
-      <div className="w-full flex items-center justify-between mb-6">
-        <button 
-          onClick={onBack}
-          className="w-12 h-12 flex items-center justify-center rounded-2xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 transition-colors"
-        >
-          <ArrowLeft className="w-6 h-6 text-zinc-400" />
-        </button>
-        <div className="flex-1 flex flex-col items-center">
-          <h2 className="text-xl font-bold text-white uppercase tracking-widest">{nivelData.materia}</h2>
-          <span className="text-sm text-zinc-400 uppercase tracking-widest">{nivelData.nivel} - {nivelData.titulo_nivel}</span>
-        </div>
-        <div className="w-12 h-12" /> {/* Spacer */}
-      </div>
-
+    <div className="flex flex-col items-center w-full max-w-5xl mx-auto px-4 pb-12 select-none touch-none">
       <div className="flex flex-col gap-6 w-full items-center">
         
         {/* Palavras a encontrar (Tags) */}

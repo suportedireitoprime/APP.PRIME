@@ -93,13 +93,11 @@ const CacaPalavrasPage = () => {
       </div>
       
       <div className="relative z-10 min-h-screen">
-        {!selectedNivel && (
-          <PageHeader 
-            title="CAÇA-PALAVRAS" 
-            subtitle="Trilha de Aprendizado"
-            onBack={handleBack}
-          />
-        )}
+        <PageHeader 
+          title={selectedNivel ? selectedNivel.materia : "CAÇA-PALAVRAS"} 
+          subtitle={selectedNivel ? `${selectedNivel.nivel} - ${selectedNivel.titulo_nivel}` : (selectedDisciplina || "Trilha de Aprendizado")}
+          onBack={handleBack}
+        />
         
         <div className={selectedNivel ? "pt-4 pb-20" : "max-w-[700px] mx-auto px-4 md:px-0 pb-20 pt-4"}>
         <AnimatePresence mode="wait">
