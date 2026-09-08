@@ -24,6 +24,7 @@ import {
   Trophy,
   Bot,
   CalendarDays,
+  Gamepad2,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -61,6 +62,14 @@ export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
     ],
   },
   {
+    id: 'aprendizado',
+    label: 'Aprendizado e Jogos',
+    hint: 'Gamificação e memorização',
+    tools: [
+      { id: 'forca', label: 'Jogo da Forca', desc: 'Memorize termos jurídicos brincando', icon: Gamepad2, route: '/gamificacao/forca', color: '#8B5CF6' },
+    ],
+  },
+  {
     id: 'utilitarios',
     label: 'Utilitários',
     hint: 'Recursos adicionais do aplicativo',
@@ -68,7 +77,6 @@ export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
       { id: 'locais', label: 'Locais Jurídicos', desc: 'Fóruns, cartórios e delegacias', icon: MapPin, route: '/ferramentas/locais', color: '#EAB308' },
     ],
   },
-
 ];
 
 export const DESKTOP_TOOLS_FLAT: DesktopTool[] = DESKTOP_TOOL_GROUPS.flatMap((g) => g.tools);
