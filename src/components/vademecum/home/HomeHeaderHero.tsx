@@ -217,15 +217,15 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           </button>
         </header>
 
-        {/* Conteúdo: Logo à esquerda + espaço */}
-        <div className="relative z-10 pt-2 flex-1 flex flex-col justify-end">
+        {/* Conteúdo: Logo à esquerda */}
+        <div className="relative z-10 pt-2 flex-1 flex flex-col justify-end pb-14">
           <HomeBrandBanner />
         </div>
+      </div>
 
-        {/* Atalhos Rápidos: APRENDER, FLASHCARDS, QUESTÕES, ME EXPLIQUE */}
-        <div className="relative z-10 px-3 sm:px-5 pb-4">
-          <HomeActionShortcuts />
-        </div>
+      {/* Atalhos Rápidos: APRENDER, FLASHCARDS, QUESTÕES, ME EXPLIQUE — fora do overflow-hidden, sobrepostos na borda inferior */}
+      <div className="relative z-30 px-3 sm:px-5 -mt-[46px]">
+        <HomeActionShortcuts />
       </div>
 
       <Suspense fallback={null}>
