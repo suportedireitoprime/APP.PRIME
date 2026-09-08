@@ -83,10 +83,10 @@ const HomeTabEstudos = ({
                 icon={c.icon}
                 label={c.label}
                 sublabel={c.sublabel}
-                color="#ffffff"
+                color="#F87171"
                 delay={i * 0.05}
-                className="!bg-black/75 !from-transparent !via-transparent !to-transparent backdrop-blur-sm !border !border-white/15 !shadow-lg !shadow-black/30 hover:!bg-black/90 hover:!shadow-xl transition-all"
-                iconClassName={c.id === 'ea-mapas' ? 'w-6 h-6 text-white' : 'text-white'}
+                className="!bg-black/75 !from-transparent !via-transparent !to-transparent !backdrop-blur-sm !border !border-white/15 !shadow-lg !shadow-black/30 hover:!bg-black/90 hover:!shadow-xl transition-all"
+                iconClassName={c.id === 'ea-mapas' ? 'w-6 h-6' : ''}
                 badge={c.emBreve ? 'Em breve' : undefined}
                 onClick={() => {
                   if (c.emBreve) {
