@@ -4,10 +4,96 @@ import { useNavigate } from 'react-router-dom';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { JogoCacaPalavras } from '@/components/gamificacao/JogoCacaPalavras';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { BookOpenText, ChevronRight, Loader2, Star } from 'lucide-react';
+import { BookOpenText, ChevronRight, Loader2, Star, Sparkles } from 'lucide-react';
+import { toast } from 'sonner';
 import { gamificacaoService } from '@/services/gamificacaoService';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import type { GamificacaoCacaPalavras } from '@/types/gamificacao';
+
+interface TemaPenal {
+  id: string;
+  numero: string;
+  nome: string;
+  subtitulo: string;
+  artigos: string;
+  disponivel: boolean;
+  totalNiveis: number;
+}
+
+const TEMAS_DIREITO_PENAL: TemaPenal[] = [
+  {
+    id: 'crimes-familia',
+    numero: '01',
+    nome: 'Crimes Contra a Família',
+    subtitulo: 'Casamento, Filiação, Assistência e Pátrio Poder',
+    artigos: 'Arts. 235 a 249',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'crimes-pessoa',
+    numero: '02',
+    nome: 'Crimes Contra a Pessoa',
+    subtitulo: 'Homicídio, Lesão Corporal e Honra',
+    artigos: 'Arts. 121 a 154',
+    disponivel: false,
+    totalNiveis: 5,
+  },
+  {
+    id: 'crimes-patrimonio',
+    numero: '03',
+    nome: 'Crimes Contra o Patrimônio',
+    subtitulo: 'Furto, Roubo, Extorsão e Estelionato',
+    artigos: 'Arts. 155 a 183',
+    disponivel: false,
+    totalNiveis: 5,
+  },
+  {
+    id: 'crimes-dignidade-sexual',
+    numero: '04',
+    nome: 'Crimes Contra a Dignidade Sexual',
+    subtitulo: 'Estupro, Violação e Assédio Sexual',
+    artigos: 'Arts. 213 a 234',
+    disponivel: false,
+    totalNiveis: 5,
+  },
+  {
+    id: 'crimes-incolumidade',
+    numero: '05',
+    nome: 'Crimes Contra a Incolumidade Pública',
+    subtitulo: 'Perigo Comum e Saúde Pública',
+    artigos: 'Arts. 250 a 285',
+    disponivel: false,
+    totalNiveis: 5,
+  },
+  {
+    id: 'crimes-paz-publica',
+    numero: '06',
+    nome: 'Crimes Contra a Paz Pública',
+    subtitulo: 'Incitação, Associação Criminosa e Milícia',
+    artigos: 'Arts. 286 a 288',
+    disponivel: false,
+    totalNiveis: 5,
+  },
+  {
+    id: 'crimes-fe-publica',
+    numero: '07',
+    nome: 'Crimes Contra a Fé Pública',
+    subtitulo: 'Moeda Falsa e Falsidade Documental',
+    artigos: 'Arts. 289 a 311',
+    disponivel: false,
+    totalNiveis: 5,
+  },
+  {
+    id: 'crimes-administracao',
+    numero: '08',
+    nome: 'Crimes Contra a Administração Pública',
+    subtitulo: 'Peculato, Concussão e Corrupção',
+    artigos: 'Arts. 312 a 359',
+    disponivel: false,
+    totalNiveis: 5,
+  },
+];
 
 const CacaPalavrasPage = () => {
   const navigate = useNavigate();
@@ -26,6 +112,19 @@ const CacaPalavrasPage = () => {
     setDisciplinas(['Crimes Contra a Família']); // Poderia ser dinâmico buscando disciplinas únicas
     setLoading(false);
   }, []);
+
+  const getProgressoTema = (nomeTema: string, totalNiveis: number = 5) => {
+    try {
+      const saved = localStorage.getItem(`caca_palavras_progresso_${nomeTema}`);
+      if (!saved) return { concluidos: 0, total: totalNiveis, percent: 0 };
+      const parsed = JSON.parse(saved);
+      const concluidos = Object.values(parsed).filter((s: any) => Number(s) > 0).length;
+      const percent = Math.min(100, Math.round((concluidos / totalNiveis) * 100));
+      return { concluidos, total: totalNiveis, percent };
+    } catch {
+      return { concluidos: 0, total: totalNiveis, percent: 0 };
+    }
+  };
 
   const loadProgresso = (disciplina: string) => {
     try {
@@ -115,21 +214,93 @@ const CacaPalavrasPage = () => {
                 </div>
               ) : (
                 <>
-                  <div className="flex items-center gap-3 mb-6">
-                    <BookOpenText className="w-6 h-6 text-primary" />
-                    <h2 className="text-xl font-bold uppercase tracking-wider text-white">Selecione a Disciplina</h2>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <BookOpenText className="w-5 h-5 text-primary" />
+                      <h2 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-white">Selecione a Disciplina</h2>
+                    </div>
+                    <span className="text-[10px] sm:text-xs font-semibold text-zinc-400 uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-800">
+                      Direito Penal
+                    </span>
                   </div>
+
                   <div className="grid gap-3">
-                    {disciplinas.map(disc => (
-                      <button
-                        key={disc}
-                        onClick={() => handleDisciplinaSelect(disc)}
-                        className="flex items-center justify-between w-full p-6 text-left bg-zinc-900 border border-zinc-800 rounded-2xl hover:bg-zinc-800 hover:border-zinc-700 transition-all group"
-                      >
-                        <span className="text-lg font-bold text-zinc-100 uppercase tracking-wide">{disc}</span>
-                        <ChevronRight className="w-5 h-5 text-zinc-500 group-hover:text-primary transition-colors" />
-                      </button>
-                    ))}
+                    {TEMAS_DIREITO_PENAL.map(tema => {
+                      const prog = getProgressoTema(tema.nome, tema.totalNiveis);
+                      return (
+                        <div
+                          key={tema.id}
+                          onClick={() => {
+                            if (tema.disponivel) {
+                              handleDisciplinaSelect(tema.nome);
+                            } else {
+                              toast.info("Tema em elaboração", {
+                                description: `Os níveis de "${tema.nome}" serão disponibilizados em breve!`
+                              });
+                            }
+                          }}
+                          className={`
+                            flex flex-col w-full p-4 sm:p-5 text-left rounded-2xl border transition-all select-none
+                            ${tema.disponivel 
+                              ? 'bg-zinc-900/90 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 cursor-pointer shadow-lg active:scale-[0.99] group' 
+                              : 'bg-zinc-900/40 border-zinc-800/60 opacity-60 cursor-not-allowed hover:opacity-75'}
+                          `}
+                        >
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-3 min-w-0">
+                              {/* Número no lado esquerdo */}
+                              <div className={`
+                                w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-black text-xs sm:text-sm shrink-0 border
+                                ${tema.disponivel 
+                                  ? 'bg-primary/10 border-primary/30 text-primary group-hover:bg-primary group-hover:text-white transition-colors' 
+                                  : 'bg-zinc-800 border-zinc-700 text-zinc-500'}
+                              `}>
+                                {tema.numero}
+                              </div>
+
+                              {/* Título Menor e Subtítulo */}
+                              <div className="min-w-0">
+                                <h3 className={`text-xs sm:text-sm font-bold uppercase tracking-wider truncate ${tema.disponivel ? 'text-zinc-100 group-hover:text-primary transition-colors' : 'text-zinc-400'}`}>
+                                  {tema.nome}
+                                </h3>
+                                <p className="text-[11px] text-zinc-400 mt-0.5 truncate">
+                                  {tema.subtitulo} • <span className="text-zinc-500 font-medium">{tema.artigos}</span>
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Badge ou Seta */}
+                            {tema.disponivel ? (
+                              <ChevronRight className="w-5 h-5 text-zinc-500 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
+                            ) : (
+                              <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-zinc-800/90 text-zinc-400 border border-zinc-700 shrink-0">
+                                Em breve
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Barra de Progresso onde a pessoa parou */}
+                          <div className="mt-3.5 pt-3 border-t border-zinc-800/60 w-full">
+                            <div className="flex items-center justify-between text-[11px] font-semibold mb-1.5">
+                              <span className="text-zinc-400">
+                                {tema.disponivel 
+                                  ? (prog.concluidos > 0 ? `${prog.concluidos}/${prog.total} níveis concluídos` : 'Não iniciado') 
+                                  : 'Disponível em breve'}
+                              </span>
+                              <span className={prog.percent > 0 ? "text-primary font-bold" : "text-zinc-500"}>
+                                {prog.percent}%
+                              </span>
+                            </div>
+                            <div className="w-full bg-zinc-800/80 h-1.5 sm:h-2 rounded-full overflow-hidden border border-zinc-700/30">
+                              <div 
+                                className={`h-full rounded-full transition-all duration-500 ${prog.percent > 0 ? 'bg-primary shadow-sm shadow-primary/40' : 'bg-transparent'}`}
+                                style={{ width: `${prog.percent}%` }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </>
               )}
