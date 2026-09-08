@@ -8,12 +8,14 @@ import { RefreshCw, Play, Trophy, XCircle, ChevronRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface JogoForcaProps {
+  disciplina?: string;
+  artigo?: string;
   onBack?: () => void;
 }
 
 const MAX_CHANCES = 6;
 
-export function JogoForca({ onBack }: JogoForcaProps) {
+export function JogoForca({ disciplina = 'Código Penal', artigo, onBack }: JogoForcaProps) {
   const [jogoAtual, setJogoAtual] = useState<GamificacaoJogo | null>(null);
   const [loading, setLoading] = useState(true);
   const [state, setState] = useState<JogoForcaState>({
@@ -27,7 +29,7 @@ export function JogoForca({ onBack }: JogoForcaProps) {
   const carregarNovoJogo = useCallback(async () => {
     setLoading(true);
     try {
-      const novoJogo = await gamificacaoService.getRandomForca('Código Penal');
+      const novoJogo = await gamificacaoService.getRandomForca(disciplina, undefined, artigo);
       if (novoJogo) {
         setJogoAtual(novoJogo);
         setState({
@@ -46,7 +48,7 @@ export function JogoForca({ onBack }: JogoForcaProps) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [disciplina, artigo]);
 
   useEffect(() => {
     carregarNovoJogo();
