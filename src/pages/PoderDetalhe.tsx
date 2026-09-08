@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Rss, Globe, Headphones, PlaySquare } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
+import { useGoBack } from '@/hooks/useGoBack';
 
 import stfImg from '@/assets/poderes/stf.jpg';
 import camaraImg from '@/assets/poderes/camara.jpg';
@@ -44,6 +45,7 @@ const CARDS = [
 const PoderDetalhe = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const goBack = useGoBack();
   
   const poder = id ? PODERES_DATA[id] : null;
 
@@ -51,12 +53,13 @@ const PoderDetalhe = () => {
     return (
       <div className="flex-1 flex flex-col items-center justify-center min-h-screen bg-background">
         <p className="text-muted-foreground mb-4">Poder não encontrado.</p>
-        <button onClick={() => navigate(-1)} className="px-4 py-2 bg-primary text-primary-foreground rounded-lg">
+        <button onClick={() => goBack()} className="px-4 py-2 bg-primary text-primary-foreground rounded-lg">
           Voltar
         </button>
       </div>
     );
   }
+
 
   return (
     <div className="flex-1 flex flex-col min-h-screen bg-background pb-safe">
@@ -80,7 +83,7 @@ const PoderDetalhe = () => {
         {/* Botão de Voltar */}
         <header className="relative z-20 px-3 md:px-6 pt-2 flex items-center justify-start">
           <button
-             onClick={() => { haptic.selection(); navigate(-1); }}
+             onClick={() => { haptic.selection(); goBack(); }}
              className="w-11 h-11 md:w-12 md:h-12 rounded-full bg-black/60 hover:bg-black/80 border border-white/20 backdrop-blur-md shadow-lg shadow-black/30 flex items-center justify-center active:scale-95 transition"
              aria-label="Voltar"
           >
