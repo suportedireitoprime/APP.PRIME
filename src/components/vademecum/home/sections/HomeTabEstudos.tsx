@@ -85,7 +85,7 @@ const HomeTabEstudos = ({
                 sublabel={c.sublabel}
                 color="#ffffff"
                 delay={i * 0.05}
-                className="!bg-none !bg-gradient-to-tr !from-[#1a0004] !via-[#5a050d] !to-[#9b111e] hover:!from-[#2a000a] hover:!via-[#6a0c18] hover:!to-[#ab1828] !border-white/10 !shadow-[0_4px_12px_rgba(0,0,0,0.6)]"
+                className="!bg-gradient-to-tr !from-[#1a0004] !via-[#5a050d] !to-[#9b111e] hover:!from-[#2a000a] hover:!via-[#6a0c18] hover:!to-[#ab1828] !border-white/10 !shadow-[0_4px_12px_rgba(0,0,0,0.6)]"
                 iconClassName={c.id === 'ea-mapas' ? 'w-6 h-6 drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]' : 'drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]'}
                 badge={c.emBreve ? 'Em breve' : undefined}
                 onClick={() => {
