@@ -208,7 +208,7 @@ input, textarea, [contenteditable], .ProseMirror, .aui-composer-input, [data-aui
 
 @layer utilities {
   .bg-brand-gradient {
-    background-image: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--brand-burgundy-mid)) 60%, hsl(var(--brand-burgundy-deep)) 100%);
+    background-image: linear-gradient(135deg, hsl(var(--brand-burgundy-deep)) 0%, hsl(var(--brand-burgundy-mid)) 40%, hsl(var(--primary)) 100%);
   }
 }
 

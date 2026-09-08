@@ -25,13 +25,9 @@ const CarouselLivroCard = ({ item, isActive, index, onOpen }: CarouselLivroCardP
       className="snap-center shrink-0 w-[85%] md:w-[46%] lg:w-[31%] active:scale-[0.99] text-left"
     >
       <div
-        className={`relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 flex transform-gpu will-change-transform ${
+        className={`relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 flex transform-gpu will-change-transform bg-brand-gradient ${
           isActive ? 'opacity-100 scale-100 shadow-lg' : 'opacity-85 scale-[0.98]'
         }`}
-        style={{
-          background:
-            'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--brand-burgundy-mid)) 60%, hsl(var(--brand-burgundy-deep)) 100%)',
-        }}
       >
         {/* SVGs jurídicos decorativos ao fundo */}
         <svg
