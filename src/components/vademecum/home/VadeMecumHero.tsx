@@ -48,7 +48,7 @@ const VadeMecumHero: React.FC = () => {
             className="absolute inset-0 overflow-hidden"
             style={{ clipPath: 'polygon(0 0, 47% 0, 36% 100%, 0% 100%)' }}
           >
-            <div className="absolute inset-0 bg-gradient-to-tr from-[#1a0004] via-[#5a050d] to-[#9b111e]" />
+            <div className="absolute inset-0 bg-brand-gradient" />
             <div className="absolute inset-0 opacity-15 mix-blend-overlay">
               <ShapeGrid />
             </div>

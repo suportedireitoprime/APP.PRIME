@@ -234,7 +234,7 @@ const BottomNav = () => {
       <div 
         onPointerDown={handleNavWarmup}
         onTouchStart={handleNavWarmup}
-        className="relative z-10 bg-gradient-to-tr from-[#1a0004] via-[#5a050d] to-[#9b111e] border-t border-white/10 rounded-t-2xl md:border-t-0 md:rounded-none md:h-full md:bg-none md:bg-black/95 shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)] md:shadow-none pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] md:pb-0"
+        className="relative z-10 bg-brand-gradient border-t border-white/10 rounded-t-2xl md:border-t-0 md:rounded-none md:h-full md:bg-none md:bg-black/95 shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)] md:shadow-none pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] md:pb-0"
       >
         <div className="max-w-2xl mx-auto px-1 xs:px-2 py-1.5 md:py-8 md:h-full md:flex md:flex-col md:justify-center md:gap-6">
         <div className="grid grid-cols-5 md:grid-cols-1 items-stretch md:gap-6">
@@ -285,7 +285,7 @@ const BottomNav = () => {
             aria-label="Vade Mecum"
           >
             <span
-              className={`absolute -top-9 left-1/2 -translate-x-1/2 w-[76px] h-[76px] xs:w-[80px] xs:h-[80px] md:relative md:top-0 md:left-0 md:translate-x-0 md:w-auto md:h-auto md:bg-transparent md:shadow-none rounded-full flex items-center justify-center overflow-hidden bg-gradient-to-tr from-[#1a0004] via-[#5a050d] to-[#9b111e] shadow-[0_10px_26px_rgba(0,0,0,0.6)] transition-transform ${
+              className={`absolute -top-9 left-1/2 -translate-x-1/2 w-[76px] h-[76px] xs:w-[80px] xs:h-[80px] md:relative md:top-0 md:left-0 md:translate-x-0 md:w-auto md:h-auto md:bg-transparent md:shadow-none rounded-full flex items-center justify-center overflow-hidden bg-brand-gradient shadow-[0_10px_26px_rgba(0,0,0,0.6)] transition-transform ${
                 path.startsWith('/vade-mecum') ? 'scale-110 md:bg-white/15 md:ring-1 md:ring-white/25' : ''
               }`}
             >
