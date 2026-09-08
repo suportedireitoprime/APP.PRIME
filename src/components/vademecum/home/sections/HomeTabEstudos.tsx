@@ -90,7 +90,7 @@ const HomeTabEstudos = ({
                 delay={i * 0.05}
                 className="transition-all"
                 style={{
-                  backgroundImage: 'linear-gradient(90deg, #0e0e11 0%, #17171b 45%, #2a2a30 100%)',
+                  backgroundImage: 'linear-gradient(to top right, #0e0e11 0%, #16161a 45%, #2a2a30 100%)',
                   border: '1px solid rgba(255, 255, 255, 0.08)',
                   boxShadow: 'inset 0 1px 1px rgba(255, 255, 255, 0.12), 0 4px 14px rgba(0, 0, 0, 0.5)',
                 }}

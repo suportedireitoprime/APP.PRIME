@@ -26,7 +26,7 @@ import { useHeroHomeImages } from '@/hooks/useHeroHomeImages';
 import { prefetchHeroRoutesIdle } from '@/lib/routePrefetch';
 import { pushRecente } from '@/lib/leisRecentes';
 import { leiToSlug, tipoToSlug } from '@/lib/legislacaoSlugs';
-import heroEstudanteImg from '@/assets/covers/hero-estudante.jpg';
+import heroEstudanteImg from '@/assets/covers/hero-estudante.webp';
 
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
 import HeroCoverCarousel from '@/components/vademecum/home/HeroCoverCarousel';
