@@ -43,7 +43,7 @@ export const SocialButtons: React.FC<SocialButtonsProps> = ({
       <button
         onClick={onApple}
         disabled={appleLoading || googleLoading}
-        className="w-full flex items-center justify-center gap-3 h-14 bg-black text-white border border-white/10 rounded-2xl font-bold transition-all hover:bg-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-center gap-3 h-14 bg-white text-zinc-900 rounded-2xl font-bold transition-all hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {appleLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <AppleIcon />}
         <span className="text-sm font-semibold tracking-wide">Entrar com Apple</span>
