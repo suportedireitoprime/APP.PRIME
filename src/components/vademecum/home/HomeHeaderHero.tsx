@@ -165,7 +165,7 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           loading="eager"
           fetchPriority="high"
           decoding="async"
-          className="absolute inset-0 w-full h-full object-cover object-center z-0"
+          className="absolute inset-0 w-full h-full object-cover object-[65%_center] md:object-center z-0"
         />
 
         {/* Animação caindo apenas sobre a imagem (por trás do painel vermelho) */}

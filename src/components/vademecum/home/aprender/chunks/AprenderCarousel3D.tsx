@@ -1,5 +1,5 @@
 import { memo, useRef, useEffect, useCallback } from 'react';
-import { Play } from 'lucide-react';
+import { Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { AprenderItem } from './aprenderCarouselTypes';
 
 interface AprenderCarousel3DProps {
@@ -138,8 +138,33 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
     endMouseDrag();
   }, [endMouseDrag]);
 
+  const scrollByAmount = useCallback((direction: 'left' | 'right') => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    isInteracting.current = true;
+    const amount = el.clientWidth * 0.75;
+    el.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' });
+    pauseInteraction(3000);
+  }, [pauseInteraction]);
+
   return (
-    <div className="relative w-full pt-1 pb-4 overflow-hidden">
+    <div className="group relative w-full pt-1 pb-4 overflow-hidden">
+      {/* Botões de Navegação Desktop */}
+      <button
+        onClick={(e) => { e.preventDefault(); scrollByAmount('left'); }}
+        className="absolute left-2 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/60 border border-white/20 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex hover:bg-black/80 shadow-lg backdrop-blur-sm"
+        aria-label="Rolar para esquerda"
+      >
+        <ChevronLeft className="w-6 h-6 md:w-7 md:h-7" strokeWidth={2.5} />
+      </button>
+      <button
+        onClick={(e) => { e.preventDefault(); scrollByAmount('right'); }}
+        className="absolute right-2 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/60 border border-white/20 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex hover:bg-black/80 shadow-lg backdrop-blur-sm"
+        aria-label="Rolar para direita"
+      >
+        <ChevronRight className="w-6 h-6 md:w-7 md:h-7" strokeWidth={2.5} />
+      </button>
+
       {/* Máscaras de gradiente para suavizar as bordas (fade-out) */}
       <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none" />
       <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none" />
