@@ -257,38 +257,49 @@ const AprenderModulo = () => {
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/35 via-primary/15 to-background border border-primary/30 p-6 sm:p-8 text-white shadow-xl space-y-4"
+              className="relative overflow-hidden rounded-3xl bg-brand-gradient border border-white/25 shadow-[0_12px_28px_-6px_rgba(225,29,72,0.4)] p-6 sm:p-8 text-white space-y-4"
             >
-              <div className="flex items-center justify-between gap-3">
-                <span className="px-3 py-1 rounded-full bg-white/15 border border-white/20 text-xs font-extrabold uppercase tracking-wider">
+              {modulo.areaSlug === 'direito-penal' && (
+                <img
+                  src="/images/gamificacao/direito_penal_vazado.webp"
+                  alt=""
+                  aria-hidden="true"
+                  loading="eager"
+                  decoding="async"
+                  className="pointer-events-none absolute -right-4 -bottom-4 w-[160px] sm:w-[200px] h-[160px] sm:h-[200px] object-contain opacity-25 select-none z-0"
+                />
+              )}
+
+              <div className="flex items-center justify-between gap-3 relative z-10">
+                <span className="px-3 py-1 rounded-full bg-black/40 border border-white/20 text-xs font-normal uppercase tracking-wider">
                   {areaCurta}
                 </span>
-                <span className="text-xs font-extrabold bg-black/30 px-3 py-1 rounded-full border border-white/10">
+                <span className="text-xs font-normal bg-black/40 px-3 py-1 rounded-full border border-white/10">
                   {totalAulas} {totalAulas === 1 ? 'aula' : 'aulas'} na trilha
                 </span>
               </div>
 
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold font-display tracking-tight text-white leading-tight">
+              <div className="relative z-10">
+                <h1 className="text-2xl sm:text-3xl font-normal font-sans tracking-tight text-white leading-tight">
                   {modulo.titulo}
                 </h1>
                 {modulo.resumo && (
-                  <p className="text-xs sm:text-sm text-white/80 mt-1.5 line-clamp-2 max-w-2xl font-medium">
+                  <p className="text-xs sm:text-sm text-white/80 mt-1.5 line-clamp-2 max-w-2xl font-normal">
                     {modulo.resumo}
                   </p>
                 )}
               </div>
 
               {/* Barra de Progresso do Tópico */}
-              <div className="space-y-1.5 pt-2">
-                <div className="flex items-center justify-between text-xs font-bold">
+              <div className="space-y-1.5 pt-2 relative z-10">
+                <div className="flex items-center justify-between text-xs font-normal">
                   <span className="text-white/90">Progresso no Tópico</span>
-                  <span className="text-white">{pctConcluido}% concluído</span>
+                  <span className="text-white">{concluidasCount} de {totalAulas} concluídas ({pctConcluido}%)</span>
                 </div>
-                <div className="h-2.5 w-full rounded-full bg-black/40 overflow-hidden p-0.5 border border-white/10">
+                <div className="h-2.5 w-full rounded-full bg-black/40 overflow-hidden p-0.5 border border-white/20">
                   <div
                     className="h-full rounded-full bg-white transition-all duration-500 shadow-sm"
-                    style={{ width: `${pctConcluido}%` }}
+                    style={{ width: `${Math.max(pctConcluido, totalAulas > 0 ? 6 : 0)}%` }}
                   />
                 </div>
               </div>
@@ -373,10 +384,10 @@ const AprenderModulo = () => {
                               <Play className="w-4.5 h-4.5 fill-current ml-0.5" />
                             </div>
                             <div className="min-w-0 space-y-1">
-                              <p className="text-sm sm:text-base font-bold text-foreground truncate group-hover:text-primary transition-colors">
+                              <p className="text-sm sm:text-base font-normal text-foreground break-words group-hover:text-primary transition-colors">
                                 {aula.titulo}
                               </p>
-                              <p className="text-xs text-muted-foreground line-clamp-1">
+                              <p className="text-xs text-muted-foreground line-clamp-2">
                                 {aula.objetivo || `${aula.duracaoMin} min de aula interativa`}
                               </p>
                             </div>
