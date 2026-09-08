@@ -147,6 +147,94 @@ export function JogoForca({ disciplina = 'Código Penal', artigo, onBack }: Jogo
     return texto.replace(regex, `<span class="text-primary font-bold bg-primary/10 px-1 rounded">${state.palavraOculta}</span>`);
   };
 
+  const renderHangman = () => {
+    const mistakes = state.letrasErradas.length;
+    const strokeColor = mistakes >= MAX_CHANCES ? '#ef4444' : '#e2e8f0'; 
+    const gallowsColor = '#334155';
+    const ropeColor = '#8b5cf6';
+    
+    return (
+      <div className="flex justify-center mb-8 relative">
+        {mistakes >= MAX_CHANCES && (
+          <div className="absolute inset-0 bg-red-900/20 blur-xl rounded-full" />
+        )}
+        <svg width="200" height="220" viewBox="0 0 200 220" className="scale-[0.85] md:scale-100 origin-center z-10 drop-shadow-md">
+          {/* Base */}
+          <line x1="20" y1="200" x2="180" y2="200" stroke={gallowsColor} strokeWidth="6" strokeLinecap="round" />
+          {/* Main pillar */}
+          <line x1="60" y1="200" x2="60" y2="20" stroke={gallowsColor} strokeWidth="6" strokeLinecap="round" />
+          {/* Top bar */}
+          <line x1="57" y1="20" x2="140" y2="20" stroke={gallowsColor} strokeWidth="6" strokeLinecap="round" />
+          {/* Rope */}
+          <line x1="140" y1="20" x2="140" y2="42" stroke={ropeColor} strokeWidth="3" strokeDasharray="4 2" />
+
+          {/* Head - Grim Skull */}
+          {mistakes > 0 && (
+            <motion.g
+              initial={{ opacity: 0, scale: 0.5, y: -10 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+              stroke={strokeColor} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"
+            >
+              <circle cx="140" cy="56" r="14" />
+              <path d="M 133 66 L 133 72 M 140 66 L 140 72 M 147 66 L 147 72 M 129 66 L 151 66" />
+              <circle cx="134" cy="54" r="2" fill={strokeColor} />
+              <circle cx="146" cy="54" r="2" fill={strokeColor} />
+              <path d="M 140 59 L 140 61" strokeWidth="1.5" />
+            </motion.g>
+          )}
+
+          {/* Spine & Ribcage */}
+          {mistakes > 1 && (
+            <motion.g
+              stroke={strokeColor} strokeWidth="3" strokeLinecap="round"
+              initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+            >
+              <line x1="140" y1="74" x2="140" y2="120" />
+              <line x1="130" y1="84" x2="150" y2="84" strokeWidth="2.5" />
+              <line x1="132" y1="94" x2="148" y2="94" strokeWidth="2.5" />
+              <line x1="134" y1="104" x2="146" y2="104" strokeWidth="2.5" />
+            </motion.g>
+          )}
+
+          {/* Left Arm */}
+          {mistakes > 2 && (
+            <motion.path
+              d="M 140 84 Q 120 95 115 115"
+              stroke={strokeColor} strokeWidth="3" strokeLinecap="round" fill="none"
+              initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+            />
+          )}
+
+          {/* Right Arm */}
+          {mistakes > 3 && (
+            <motion.path
+              d="M 140 84 Q 160 95 165 115"
+              stroke={strokeColor} strokeWidth="3" strokeLinecap="round" fill="none"
+              initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+            />
+          )}
+
+          {/* Left Leg */}
+          {mistakes > 4 && (
+            <motion.path
+              d="M 140 120 Q 130 140 120 165"
+              stroke={strokeColor} strokeWidth="3" strokeLinecap="round" fill="none"
+              initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+            />
+          )}
+
+          {/* Right Leg */}
+          {mistakes > 5 && (
+            <motion.path
+              d="M 140 120 Q 150 140 160 165"
+              stroke={strokeColor} strokeWidth="3" strokeLinecap="round" fill="none"
+              initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+            />
+          )}
+        </svg>
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col items-center w-full max-w-3xl mx-auto p-4 animate-in fade-in zoom-in duration-300">
       <div className="flex justify-between items-center w-full mb-6">
@@ -207,6 +295,9 @@ export function JogoForca({ disciplina = 'Código Penal', artigo, onBack }: Jogo
                 dangerouslySetInnerHTML={{ __html: processTextoPergunta(jogoAtual.pergunta) }}
               />
             </div>
+
+            {/* Boneco da Forca */}
+            {renderHangman()}
 
             {/* Palavra a ser adivinhada */}
             {renderPalavraOculta()}
