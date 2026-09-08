@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { RefreshCw, ChevronRight, TrendingUp } from 'lucide-react';
+import { RefreshCw, ChevronRight, TrendingUp, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -98,11 +98,17 @@ const RadarEmAlta = () => {
   return (
     <div className="space-y-4 pt-4 px-4 pb-[120px] max-w-lg mx-auto min-h-screen">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center">
+        <button 
+          onClick={() => navigate(-1)}
+          className="w-12 h-12 rounded-full bg-zinc-800/50 flex items-center justify-center text-zinc-300 hover:text-white transition-colors flex-shrink-0"
+        >
+          <ArrowLeft className="w-6 h-6" strokeWidth={2.4} />
+        </button>
+        <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center flex-shrink-0">
           <TrendingUp className="w-5 h-5 text-red-500" />
         </div>
         <div>
-          <h2 className="text-xl font-display font-bold text-foreground leading-tight">Em Alta</h2>
+          <h2 className="text-xl font-display font-bold text-foreground leading-tight uppercase">Em Alta</h2>
           <p className="text-[13px] text-muted-foreground">Leis mais alteradas recentemente</p>
         </div>
       </div>
@@ -143,13 +149,13 @@ const RadarEmAlta = () => {
                 <CardContent className="p-3.5 flex items-start gap-3">
                   <AuthorAvatar proposicaoId={id} />
                   <div className="flex-1 min-w-0 pt-0.5">
-                    <p className="text-[13.5px] font-bold text-primary mb-1">{plLabel(p)}</p>
+                    <p className="text-[13.5px] font-bold text-red-400 mb-0.5">{plLabel(p)}</p>
                     {tags.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mb-2">
                         {tags.map((tag) => (
-                          <Badge key={tag} variant="secondary" className="bg-red-500/10 text-red-500 hover:bg-red-500/20 text-[10px] px-1.5 py-0 border-red-500/20">
+                          <span key={tag} className="text-[11px] font-medium text-red-400/90">
                             {tag}
-                          </Badge>
+                          </span>
                         ))}
                       </div>
                     )}

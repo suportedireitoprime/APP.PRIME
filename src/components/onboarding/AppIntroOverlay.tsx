@@ -116,24 +116,23 @@ export default function AppIntroOverlay({
         </button>
 
         {/* Player container */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-full h-full max-w-[520px] mx-auto">
-            <Player
-              ref={playerRef}
-              component={AppIntroVideo}
-              inputProps={inputProps}
-              durationInFrames={APP_INTRO_DURATION}
-              fps={APP_INTRO_FPS}
-              compositionWidth={APP_INTRO_WIDTH}
-              compositionHeight={APP_INTRO_HEIGHT}
-              style={{ width: '100%', height: '100%' }}
-              controls={false}
-              clickToPlay={false}
-              doubleClickToFullscreen={false}
-              autoPlay={false}
-              loop={false}
-            />
-          </div>
+        <div className="absolute inset-0 overflow-hidden bg-black flex items-center justify-center">
+          <Player
+            ref={playerRef}
+            component={AppIntroVideo}
+            inputProps={inputProps}
+            durationInFrames={APP_INTRO_DURATION}
+            fps={APP_INTRO_FPS}
+            compositionWidth={APP_INTRO_WIDTH}
+            compositionHeight={APP_INTRO_HEIGHT}
+            style={{ width: '100%', height: '100%' }}
+            className="w-full h-full object-cover [&>div]:!object-cover [&_video]:!object-cover"
+            controls={false}
+            clickToPlay={false}
+            doubleClickToFullscreen={false}
+            autoPlay={false}
+            loop={false}
+          />
         </div>
 
         {/* Fallback Play Button Se Autoplay Falhar */}

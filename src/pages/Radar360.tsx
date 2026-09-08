@@ -27,7 +27,7 @@ const TIPO_COLORS: Record<string, { badge: string; border: string; card: string 
   'Outro': { badge: 'bg-muted text-muted-foreground border-border', border: 'border-l-muted-foreground', card: 'from-muted/10 to-transparent' },
 };
 
-const TIPO_FILTERS = ['Últimas 24h', 'Todos', 'Lei', 'Lei Complementar', 'Decreto', 'Medida Provisória'];
+const TIPO_FILTERS = ['Todos', 'Lei', 'Lei Complementar', 'Decreto', 'Medida Provisória'];
 const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
 const MONTHS = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
 
@@ -176,10 +176,6 @@ export default function Radar360() {
   }, [availableDates]);
 
   const filtered = useMemo(() => {
-    if (tipoFiltro === 'Últimas 24h') {
-      const vinteEQuatroHorasAtras = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
-      return items.filter(i => i.created_at && i.created_at >= vinteEQuatroHorasAtras);
-    }
     const dk = toDateKey(selectedDate);
     let r = items.filter(i => (i.data_dou || i.data_publicacao || '').slice(0, 10) === dk);
     if (tipoFiltro !== 'Todos') r = r.filter(i => i.tipo_ato === tipoFiltro);
@@ -383,7 +379,7 @@ export default function Radar360() {
         <div className="flex items-center gap-2 px-5 pb-1">
           <Calendar className="w-4 h-4 text-primary" />
           <span className="text-sm font-display text-primary">
-            {tipoFiltro === 'Últimas 24h' ? 'Últimas 24h (Todos os dias)' : formatFullDate(selectedDate)}
+            {formatFullDate(selectedDate)}
           </span>
         </div>
         <div className="px-5 pb-2">
@@ -402,15 +398,10 @@ export default function Radar360() {
                 onClick={() => setTipoFiltro(t)}
                 className={`whitespace-nowrap flex items-center gap-1.5 text-sm font-body px-4 py-2.5 min-h-[40px] rounded-full transition-colors ${
                   tipoFiltro === t 
-                    ? t === 'Últimas 24h' 
-                      ? 'bg-amber-500/20 text-amber-500 font-bold border border-amber-500/30' 
-                      : 'bg-primary text-primary-foreground font-semibold' 
-                    : t === 'Últimas 24h'
-                      ? 'bg-amber-500/10 text-amber-500/80 hover:bg-amber-500/20 border border-amber-500/20'
-                      : 'bg-secondary text-foreground hover:bg-secondary/80'
+                    ? 'bg-primary text-primary-foreground font-semibold' 
+                    : 'bg-secondary text-foreground hover:bg-secondary/80'
                 }`}
               >
-                {t === 'Últimas 24h' && <Flame className="w-4 h-4" />}
                 {t}
               </button>
             ))}

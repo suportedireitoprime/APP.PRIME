@@ -390,11 +390,26 @@ const LeiOrdinariaDetail = ({ lei, onBack }: LeiOrdinariaDetailProps) => {
                 </div>
               </div>
             ) : (
-              /* Fallback: show ementa only */
-              <div className="rounded-2xl bg-card p-6">
-                <p className="text-foreground font-body text-sm leading-relaxed">
-                  {lei.ementa}
-                </p>
+              /* Fallback: show ementa only + loading state */
+              <div className="space-y-4">
+                <div className="rounded-2xl bg-card p-6 border border-border/50 shadow-sm">
+                  <p className="text-foreground font-body text-[15px] font-semibold leading-relaxed text-center">
+                    {lei.ementa}
+                  </p>
+                </div>
+                
+                <div className="rounded-2xl bg-card/40 p-8 flex flex-col items-center justify-center space-y-4 border border-border/30 border-dashed">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse"></div>
+                    <div className="w-12 h-12 rounded-2xl bg-card border border-border flex items-center justify-center relative z-10">
+                      <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                    </div>
+                  </div>
+                  <div className="text-center space-y-1">
+                    <p className="text-sm font-semibold text-foreground font-display">Buscando texto oficial...</p>
+                    <p className="text-xs text-muted-foreground font-body">Conectando ao Diário Oficial da União</p>
+                  </div>
+                </div>
               </div>
             )}
 

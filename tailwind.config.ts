@@ -55,7 +55,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['"Bebas Neue"', '"Barlow Condensed"', 'system-ui', 'sans-serif'],
+        display: ['"Barlow"', 'system-ui', 'sans-serif'],
         body: ['"Barlow"', 'system-ui', 'sans-serif'],
         legal: ['"Barlow"', 'Georgia', 'serif'],
       },

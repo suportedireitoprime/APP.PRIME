@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useInView } from 'framer-motion';
 import { Presentation, Loader2, PlayCircle } from 'lucide-react';
+import { toast } from 'sonner';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { PrimeImage } from '@/components/ui/PrimeImage';
 import { supabase } from '@/integrations/supabase/client';
@@ -22,21 +24,70 @@ const Apresentacoes = () => {
   const navigate = useNavigate();
   const [itens, setItens] = useState<Apres[]>([]);
   const [carregando, setCarregando] = useState(true);
-  const [area, setArea] = useState<string>('');
+  const [carregandoMais, setCarregandoMais] = useState(false);
+  const [area, setArea] = useState<string>(() => sessionStorage.getItem('apres_filtro_area') || '');
   const [aberta, setAberta] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const [temMais, setTemMais] = useState(true);
+  
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const isBottomVisible = useInView(bottomRef, { margin: "200px" });
 
   const gate = useGatedFeature('apresentacao_ver', 'default', { scope: aberta });
 
-  useEffect(() => {
-    (async () => {
-      const { data } = await (supabase.from('apresentacoes_narradas') as any)
+  const buscarItens = useCallback(async (paginaAtual: number, sinal?: AbortSignal) => {
+    try {
+      const { data, error } = await supabase
+        .from('apresentacoes_narradas')
         .select('id, titulo, descricao, capa_url, total_slides, origem, area, tema, subtema')
         .eq('publicada', true)
-        .order('created_at', { ascending: false });
-      setItens((data as Apres[]) ?? []);
-      setCarregando(false);
-    })();
+        .order('created_at', { ascending: false })
+        .range(paginaAtual * 20, (paginaAtual + 1) * 20 - 1)
+        .abortSignal(sinal);
+        
+      if (error) {
+        if (error.name !== 'AbortError') throw error;
+        return;
+      }
+      
+      if (!sinal?.aborted) {
+        if (data) {
+          setItens(prev => paginaAtual === 0 ? (data as Apres[]) : [...prev, ...(data as Apres[])]);
+          setTemMais(data.length === 20);
+        }
+      }
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        console.error(err);
+        toast.error('Não foi possível carregar as apresentações.');
+      }
+    }
   }, []);
+
+  useEffect(() => {
+    const abort = new AbortController();
+    (async () => {
+      setCarregando(true);
+      await buscarItens(0, abort.signal);
+      if (!abort.signal.aborted) setCarregando(false);
+    })();
+    return () => abort.abort();
+  }, [buscarItens]);
+
+  useEffect(() => {
+    if (isBottomVisible && temMais && !carregando && !carregandoMais) {
+      setCarregandoMais(true);
+      buscarItens(page + 1).then(() => {
+        setPage(p => p + 1);
+        setCarregandoMais(false);
+      });
+    }
+  }, [isBottomVisible, temMais, carregando, carregandoMais, page, buscarItens]);
+
+  const handleSetArea = (novaArea: string) => {
+    setArea(novaArea);
+    sessionStorage.setItem('apres_filtro_area', novaArea);
+  };
 
   const areas = useMemo(
     () => Array.from(new Set(itens.map((i) => i.area).filter(Boolean) as string[])).sort((a, b) => a.localeCompare(b, 'pt-BR')),
@@ -60,7 +111,7 @@ const Apresentacoes = () => {
             {[{ id: '', label: 'Todas' }, ...areas.map((a) => ({ id: a, label: a }))].map((c) => (
               <button
                 key={c.id || 'todas'}
-                onClick={() => setArea(c.id)}
+                onClick={() => handleSetArea(c.id)}
                 className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold font-body border transition ${area === c.id ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground'}`}
               >
                 {c.label}
@@ -91,7 +142,7 @@ const Apresentacoes = () => {
                     src={a.capa_url}
                     alt={a.titulo}
                     aspectRatio="16/9"
-                    targetWidth={500}
+                    targetWidth={200}
                     priority={filtrados.indexOf(a) < 2}
                     containerClassName="w-full h-full"
                     className="transition-transform duration-500 group-hover:scale-105"
@@ -119,6 +170,10 @@ const Apresentacoes = () => {
             ))}
           </div>
         )}
+        
+        {/* Infinite Scroll trigger */}
+        {filtrados.length > 0 && <div ref={bottomRef} className="h-4" />}
+        {carregandoMais && <div className="flex justify-center py-4"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>}
       </div>
 
       {gate.gateNode}

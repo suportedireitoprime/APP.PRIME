@@ -38,6 +38,7 @@ export type PersonaId = 'faculdade' | 'oab' | 'estudante_oab' | 'concurso' | 'ad
 export type TriagemResult = {
   persona: PersonaId | null;
   personaLabel: string | null;
+  foco: string | null;
   faixa: string | null;
   nome: string;
   areas: string[];
@@ -92,6 +93,7 @@ export const FAIXAS = ['18 a 24', '25 a 30', '31 a 40', '41 a 50', '51 ou mais']
 export const emptyResult = (): TriagemResult => ({
   persona: null,
   personaLabel: null,
+  foco: null,
   faixa: null,
   nome: '',
   areas: [],

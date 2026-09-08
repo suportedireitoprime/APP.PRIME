@@ -291,6 +291,7 @@ Deno.serve(async (req) => {
                 allProps.push(...dados.map((d: any) => ({
                   id_externo: String(d.id), fonte: 'camara', sigla_tipo: d.siglaTipo,
                   numero: d.numero, ano: d.ano, ementa: d.ementa, dados_json: d,
+                  data_apresentacao: d.dataApresentacao || new Date().toISOString(),
                   atualizado_em: new Date().toISOString(),
                 })))
                 if (dados.length < 100) break
@@ -314,6 +315,7 @@ Deno.serve(async (req) => {
               allProps.push(...dados.map((d: any) => ({
                 id_externo: String(d.id), fonte: 'camara', sigla_tipo: d.siglaTipo,
                 numero: d.numero, ano: d.ano, ementa: d.ementa, dados_json: d,
+                data_apresentacao: d.dataApresentacao || new Date().toISOString(),
                 atualizado_em: new Date().toISOString(),
               })))
               if (dados.length < 100) break

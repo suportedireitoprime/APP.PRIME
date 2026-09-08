@@ -8,6 +8,7 @@ import CadastroOnboardingOverlay, {
   type CadastroResult,
 } from '@/components/onboarding/CadastroOnboardingOverlay';
 import NotificacoesPermissaoStep from '@/components/onboarding/NotificacoesPermissaoStep';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const Onboarding = () => {
   useHideSplashScreen(100);
@@ -21,6 +22,16 @@ const Onboarding = () => {
     document.title = 'Personalizar Perfil | Direito Prime';
   }, []);
 
+  // Prevenir Loop Infinito
+  useEffect(() => {
+    if (user) {
+      const alreadyDone = localStorage.getItem(`onboarding_completed:${user.id}`);
+      if (alreadyDone === '1') {
+        navigate('/', { replace: true });
+      }
+    }
+  }, [user, navigate]);
+
   const finalizar = async (r: CadastroResult) => {
     if (!user) {
       navigate('/', { replace: true });
@@ -28,7 +39,11 @@ const Onboarding = () => {
     }
     setSaving(true);
 
-    const { error } = await supabase
+    const timeoutPromise = new Promise<{ error: Error }>((resolve) => 
+      setTimeout(() => resolve({ error: new Error('Timeout de rede') }), 10000)
+    );
+
+    const savePromise = supabase
       .from('profiles')
       .update({
         status_perfil: r.persona,
@@ -44,10 +59,16 @@ const Onboarding = () => {
       } as any)
       .eq('id', user.id);
 
+    const { error } = await Promise.race([savePromise, timeoutPromise]);
+
     setSaving(false);
 
     if (error) {
-      toast.error('Salvei seu acesso, mas o perfil não gravou. Ajuste depois em Perfil.');
+      if (error.message === 'Timeout de rede') {
+        toast.error('A conexão está lenta. Salvando offline, ajustaremos depois.');
+      } else {
+        toast.error('Erro ao salvar no banco. Ajuste depois em Perfil.');
+      }
     }
 
     try { localStorage.setItem(`onboarding_completed:${user.id}`, '1'); } catch {}
@@ -65,10 +86,21 @@ const Onboarding = () => {
     });
   };
 
+  const initialName = user?.user_metadata?.full_name || '';
+
   return (
     <main className="min-h-dvh bg-black">
-      {!pedirNotificacoes && <CadastroOnboardingOverlay open onFinished={finalizar} />}
-      {pedirNotificacoes && <NotificacoesPermissaoStep onDone={concluirNotificacoes} />}
+      <AnimatePresence mode="wait">
+        {!pedirNotificacoes ? (
+          <motion.div key="onboarding-flow" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
+            <CadastroOnboardingOverlay open onFinished={finalizar} initialName={initialName} />
+          </motion.div>
+        ) : (
+          <motion.div key="notificacoes-step" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
+            <NotificacoesPermissaoStep onDone={concluirNotificacoes} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 };

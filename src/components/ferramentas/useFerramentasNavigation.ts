@@ -5,8 +5,6 @@ export function useFerramentasNavigation() {
   const navigate = useNavigate();
   const [dicionarioOpen, setDicionarioOpen] = useState(false);
   const [rankingOpen, setRankingOpen] = useState(false);
-  const [boletinsSheetOpen, setBoletinsSheetOpen] = useState(false);
-
   const handleToolClick = useCallback((id: string, route?: string) => {
     if (id === 'ranking') {
       setRankingOpen(true);
@@ -14,7 +12,7 @@ export function useFerramentasNavigation() {
     }
 
     if (id === 'boletins') {
-      setBoletinsSheetOpen(true);
+      navigate('/boletins');
       return;
     }
 
@@ -57,8 +55,6 @@ export function useFerramentasNavigation() {
     setDicionarioOpen,
     rankingOpen,
     setRankingOpen,
-    boletinsSheetOpen,
-    setBoletinsSheetOpen,
     handleToolClick,
   };
 }

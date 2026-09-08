@@ -1,7 +1,10 @@
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight, Check, ChevronRight, Volume2, VolumeX, X } from 'lucide-react';
+import { App } from '@capacitor/app';
+import { ArrowRight, Check, ChevronRight, Volume2, VolumeX, X, Sparkles } from 'lucide-react';
+import { haptic } from '@/lib/nativeHaptics';
+import { toast } from 'sonner';
 import {
   DORES,
   FILOSOFOS,
@@ -17,10 +20,10 @@ type Props = {
   open: boolean;
   onFinished: (r: TriagemResult) => void;
   previewMode?: boolean;
+  initialName?: string;
 };
 
-type Step = 'abertura' | 'intro1' | 'intro2' | 'persona' | 'interesses' | 'dores' | 'nome' | 'whatsapp';
-const CONTENT_STEPS: Step[] = ['intro1', 'intro2', 'persona', 'interesses', 'dores', 'nome', 'whatsapp'];
+type Step = 'abertura' | 'intro1' | 'intro2' | 'persona' | 'foco' | 'interesses' | 'dores' | 'nome' | 'whatsapp' | 'resumo';
 
 // Paleta editorial — mesma linguagem da abertura "O Direito pensado por quem o
 // construiu": marrom profundo, tipografia serifada e detalhe dourado.
@@ -42,6 +45,11 @@ const CARD_BG: Record<Exclude<Step, 'abertura' | 'features'>, { grad: string; ac
     accent: '#F3E7D6',
     label: 'PERFIL',
   },
+  foco: {
+    grad: 'radial-gradient(ellipse at 50% 0%, #301F1A 0%, #1A0D08 55%, #0B0503 100%)',
+    accent: '#F5E4DA',
+    label: 'ESPECIALIDADE',
+  },
   interesses: {
     grad: 'radial-gradient(ellipse at 50% 0%, #3F2A1A 0%, #241811 55%, #100907 100%)',
     accent: '#F3E7D6',
@@ -62,17 +70,80 @@ const CARD_BG: Record<Exclude<Step, 'abertura' | 'features'>, { grad: string; ac
     accent: '#F3E7D6',
     label: 'CONTATO',
   },
+  resumo: {
+    grad: 'radial-gradient(ellipse at 50% 0%, #4A2A18 0%, #2A1810 55%, #120906 100%)',
+    accent: '#F3E7D6',
+    label: 'PRONTO',
+  },
 };
 
 const GOLD = '#C94C4C';
 
-export default function TriagemVersaoC({ open, onFinished, previewMode }: Props) {
-  const [step, setStep] = useState<Step>('abertura');
-  const [data, setData] = useState<TriagemResult>(emptyResult());
+class TriagemErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) { console.error('TriagemErrorBoundary:', error, errorInfo); }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center p-6 bg-[#0A0A0A] text-white">
+          <h2 className="text-2xl font-bold text-[#C94C4C] mb-2">Ops, algo deu errado</h2>
+          <p className="text-center opacity-70 mb-6">Ocorreu um problema ao carregar a triagem.</p>
+          <button onClick={() => { sessionStorage.removeItem('triagem_step'); window.location.reload(); }} className="h-12 px-6 rounded-xl bg-white/10 active:scale-95 transition">Tentar novamente</button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+export default function TriagemForm(props: Props) {
+  return (
+    <TriagemErrorBoundary>
+      <TriagemVersaoCInner {...props} />
+    </TriagemErrorBoundary>
+  );
+}
+
+function TriagemVersaoCInner({ open, onFinished, previewMode, initialName }: Props) {
+  const [step, setStep] = useState<Step>(() => {
+    const saved = sessionStorage.getItem('triagem_step');
+    return (saved as Step) || 'abertura';
+  });
+  const [data, setData] = useState<TriagemResult>(() => {
+    const saved = sessionStorage.getItem('triagem_data');
+    const base = saved ? JSON.parse(saved) : emptyResult();
+    if (initialName && !base.nome) base.nome = initialName;
+    return base;
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { muted, toggleMute, playSfx } = useTriagemAudio(open);
 
+  const skipTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const startSkipTimer = () => {
+    if (skipTimerRef.current) clearTimeout(skipTimerRef.current);
+    skipTimerRef.current = setTimeout(() => {
+      haptic.impact();
+      toast.success('Atalho secreto! Pulando triagem...', { icon: <Sparkles className="w-4 h-4" /> });
+      const patch = { nome: data.nome || initialName || 'Convidado Prime', persona: 'estudante_oab' as PersonaId };
+      setData(prev => ({ ...prev, ...patch }));
+      setStep('resumo');
+    }, 1500);
+  };
+
+  const cancelSkipTimer = () => {
+    if (skipTimerRef.current) {
+      clearTimeout(skipTimerRef.current);
+      skipTimerRef.current = null;
+    }
+  };
+
   useEffect(() => {
-    if (open) {
+    if (open && !sessionStorage.getItem('triagem_step')) {
       setStep('abertura');
       setData(emptyResult());
       // Pré-carrega as silhuetas usadas na abertura — evita a travada quando
@@ -85,24 +156,62 @@ export default function TriagemVersaoC({ open, onFinished, previewMode }: Props)
     }
   }, [open]);
 
+  const contentSteps = useMemo(() => {
+    const base: Step[] = ['intro1', 'intro2', 'persona'];
+    if (data.persona === 'estudante_oab' || data.persona === 'concurso') base.push('foco');
+    base.push('interesses', 'dores');
+    if (!initialName) base.push('nome');
+    base.push('whatsapp', 'resumo');
+    return base;
+  }, [data.persona, initialName]);
+
+  useEffect(() => {
+    if (!open) return;
+    const backListener = App.addListener('backButton', () => {
+      setStep((prev) => {
+        if (prev === 'abertura') return prev;
+        const idx = contentSteps.indexOf(prev);
+        if (idx > 0) {
+          const prevStep = contentSteps[idx - 1];
+          sessionStorage.setItem('triagem_step', prevStep);
+          return prevStep;
+        } else if (idx === 0) {
+          sessionStorage.setItem('triagem_step', 'abertura');
+          return 'abertura';
+        }
+        return prev;
+      });
+    });
+    return () => { backListener.then(l => l.remove()); };
+  }, [open, contentSteps]);
+
   const stepIndex =
-    step === 'abertura' ? -1 : step === 'features' ? CONTENT_STEPS.length - 1 : CONTENT_STEPS.indexOf(step);
-  const bg = step === 'abertura' || step === 'features' ? CARD_BG.persona : CARD_BG[step];
+    step === 'abertura' ? -1 : contentSteps.indexOf(step);
+  const bg = step === 'abertura' ? CARD_BG.persona : CARD_BG[step] || CARD_BG.persona;
 
   const advance = (patch: Partial<TriagemResult>) => {
+    if (isSubmitting) return;
     playSfx('whoosh');
     const next = { ...data, ...patch };
     setData(next);
+    sessionStorage.setItem('triagem_data', JSON.stringify(next));
+
     if (step === 'abertura') {
       setStep('intro1');
+      sessionStorage.setItem('triagem_step', 'intro1');
       return;
     }
-    const nx = CONTENT_STEPS[stepIndex + 1];
-    if (nx) setStep(nx);
-    else {
+    const nx = contentSteps[stepIndex + 1];
+    if (nx) {
+      setStep(nx);
+      sessionStorage.setItem('triagem_step', nx);
+    } else {
       // Última pergunta respondida – finaliza a coleta de dados
       playSfx('ding');
+      setIsSubmitting(true);
       onFinished(next);
+      sessionStorage.removeItem('triagem_step');
+      sessionStorage.removeItem('triagem_data');
     }
   };
 
@@ -115,36 +224,49 @@ export default function TriagemVersaoC({ open, onFinished, previewMode }: Props)
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[100] flex flex-col overflow-hidden bg-[#0A0A0A]"
     >
-      {/* Top bar — só aparece após abertura */}
+      {/* Top bar — Stepper Gamificado */}
       {step !== 'abertura' && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative z-20 flex items-center justify-between px-4 pt-4"
+          className="relative z-20 flex items-center justify-between px-4 pt-4 md:px-12 md:pt-8"
           style={{ paddingTop: 'calc(var(--sai-top) + 28px)' }}
         >
           <button
             onClick={toggleMute}
-            className="w-10 h-10 rounded-full bg-white/15 backdrop-blur-md text-white flex items-center justify-center active:scale-95"
+            className="w-10 h-10 rounded-full bg-white/15 backdrop-blur-md text-white flex items-center justify-center active:scale-95 hover:bg-white/20 transition-colors"
           >
             {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
-          <div className="flex-1 flex items-center gap-1.5 ml-3">
-            {CONTENT_STEPS.map((s, i) => (
-              <div key={s} className="flex-1 h-1 rounded-full bg-white/20 overflow-hidden">
-                <motion.div
-                  className="h-full bg-white"
-                  initial={false}
-                  animate={{ width: i <= stepIndex ? '100%' : '0%' }}
-                  transition={{ duration: 0.5 }}
-                />
-              </div>
-            ))}
+          <div 
+            className="flex-1 flex flex-col items-center justify-center gap-1.5 ml-3 cursor-pointer select-none"
+            onPointerDown={startSkipTimer}
+            onPointerUp={cancelSkipTimer}
+            onPointerLeave={cancelSkipTimer}
+          >
+            <div className="flex items-center gap-1.5">
+              {contentSteps.map((s, i) => (
+                <div key={s} className="relative flex items-center justify-center">
+                  <motion.div
+                    className={`h-2 rounded-full transition-all duration-500 ${i <= stepIndex ? 'bg-[#C94C4C] shadow-[0_0_8px_#C94C4C]' : 'bg-white/20'}`}
+                    initial={false}
+                    animate={{ width: i === stepIndex ? 24 : 8 }}
+                  />
+                </div>
+              ))}
+            </div>
+            <motion.div 
+              key={stepIndex}
+              initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}
+              className="text-[10px] uppercase tracking-widest text-[#C94C4C] font-bold"
+            >
+              {stepIndex === contentSteps.length - 1 ? 'Quase lá' : `Passo ${stepIndex + 1}`}
+            </motion.div>
           </div>
           {previewMode && (
             <button
               onClick={() => onFinished(data)}
-              className="w-10 h-10 rounded-full bg-white/15 backdrop-blur-md text-white flex items-center justify-center active:scale-95 ml-3"
+              className="w-10 h-10 rounded-full bg-white/15 backdrop-blur-md text-white flex items-center justify-center active:scale-95 ml-3 hover:bg-white/20 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -152,9 +274,9 @@ export default function TriagemVersaoC({ open, onFinished, previewMode }: Props)
         </motion.div>
       )}
 
-      {/* Stack */}
+      {/* Stack Master-Detail */}
       <div
-        className="relative flex-1 min-h-0 flex items-stretch justify-center px-3 pt-6 sm:pt-8"
+        className="relative flex-1 min-h-0 flex md:flex-row flex-col items-center justify-center px-3 pt-6 sm:pt-8 md:p-0"
         style={{
           paddingBottom: 'calc(var(--sai-bottom) + 36px)',
         }}
@@ -170,27 +292,49 @@ export default function TriagemVersaoC({ open, onFinished, previewMode }: Props)
               onClose={() => onFinished(data)}
             />
           ) : (
-            <motion.div
-              key={step}
-              initial={{ x: 120, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -120, opacity: 0 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="relative w-full max-w-lg rounded-[36px] overflow-hidden flex flex-col shadow-2xl border border-[#C94C4C]/25"
-              style={{ background: bg.grad, color: bg.accent, minHeight: 0, maxHeight: '100%', willChange: 'transform, opacity' }}
-            >
-              {/* Textura de filósofos suave no card */}
-              <FilosofosTextura seed={stepIndex + 1} />
-
-              <div className="relative z-10 px-6 pt-6 flex items-center justify-between">
-                <span className="text-[10px] font-black tracking-[0.45em]" style={{ color: GOLD }}>{bg.label}</span>
-                <span className="text-[10px] font-bold tracking-[0.2em] opacity-60">
-                  {stepIndex + 1}/{CONTENT_STEPS.length}
-                </span>
+            <div key="master-detail" className="w-full h-full md:flex md:flex-row md:items-center md:justify-center md:gap-12 md:max-w-6xl md:mx-auto">
+              
+              {/* Left Side: Desktop ambient */}
+              <div className="hidden md:flex flex-col items-center justify-center flex-1">
+                 <img src={FILOSOFOS[1].src} className="w-72 h-72 object-contain opacity-20 drop-shadow-2xl mix-blend-screen animate-pulse" alt="Prime" />
+                 <h2 className="text-4xl font-serif text-[#C94C4C] mt-8 tracking-[0.25em] text-center">DIREITO PRIME</h2>
+                 <p className="text-white/60 text-center max-w-sm mt-4 text-lg leading-relaxed">Personalize seu ambiente para receber materiais de alta precisão baseados no seu foco atual.</p>
               </div>
 
-              <CardContent step={step as Exclude<Step, 'abertura' | 'features'>} data={data} setData={setData} advance={advance} playSfx={playSfx} bg={bg} />
-            </motion.div>
+              {/* Right Side: Card Morphing */}
+              <motion.div
+                key="onboarding-card"
+                initial={{ x: 120, opacity: 0 }}
+                animate={{ x: 0, opacity: 1, background: bg.grad, color: bg.accent }}
+                exit={{ x: -120, opacity: 0 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                className="relative w-full max-w-lg md:max-w-[420px] md:shrink-0 rounded-[36px] overflow-hidden flex flex-col shadow-2xl border border-[#C94C4C]/25 md:h-[650px] h-full"
+                style={{ minHeight: 0, maxHeight: '100%', willChange: 'transform, opacity, background' }}
+              >
+                {/* Textura de filósofos suave no card */}
+                <FilosofosTextura seed={stepIndex + 1} />
+
+                <div className="relative z-10 px-6 pt-6 flex items-center justify-between">
+                  <span className="text-[10px] font-black tracking-[0.45em]" style={{ color: GOLD }}>{bg.label}</span>
+                  <span className="text-[10px] font-bold tracking-[0.2em] opacity-60">
+                    {stepIndex + 1}/{contentSteps.length}
+                  </span>
+                </div>
+
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={step}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.25 }}
+                    className="relative z-10 flex-1 min-h-0 flex flex-col"
+                  >
+                    <CardContent step={step as Exclude<Step, 'abertura' | 'features'>} data={data} setData={setData} advance={advance} playSfx={playSfx} bg={bg} isSubmitting={isSubmitting} />
+                  </motion.div>
+                </AnimatePresence>
+              </motion.div>
+            </div>
           )}
         </AnimatePresence>
       </div>
@@ -434,6 +578,7 @@ function CardContent({
   advance,
   playSfx,
   bg,
+  isSubmitting,
 }: {
   step: Exclude<Step, 'abertura' | 'features'>;
   data: TriagemResult;
@@ -441,12 +586,13 @@ function CardContent({
   advance: (patch: Partial<TriagemResult>) => void;
   playSfx: (k: 'tap' | 'whoosh' | 'ding') => void;
   bg: { grad: string; accent: string; label: string };
+  isSubmitting?: boolean;
 }) {
   const nome1 = data.nome.trim().split(' ')[0];
 
   return (
     <div
-      className="relative z-10 flex-1 min-h-0 flex flex-col px-6 pt-4 overflow-hidden"
+      className="relative z-10 flex-1 min-h-0 flex flex-col px-6 pt-4 overflow-y-auto overscroll-contain touch-pan-y"
       style={{ paddingBottom: 'calc(var(--sai-bottom) + 24px)' }}
     >
       {step === 'intro1' && (
@@ -461,7 +607,7 @@ function CardContent({
             A forma como você estuda e consome conteúdo jurídico também precisa evoluir. Chega de materiais espalhados e desatualizados.
           </motion.p>
           <div className="flex-1" />
-          <ContinueBtn disabled={false} onClick={() => advance({})} />
+          <ContinueBtn disabled={false} isSubmitting={isSubmitting} onClick={() => advance({})} />
         </>
       )}
 
@@ -477,7 +623,7 @@ function CardContent({
             O Direito Prime foi construído para se adaptar à sua rotina. Vamos configurar sua experiência em poucos passos.
           </motion.p>
           <div className="flex-1" />
-          <ContinueBtn disabled={false} onClick={() => advance({})} />
+          <ContinueBtn disabled={false} isSubmitting={isSubmitting} onClick={() => advance({})} />
         </>
       )}
 
@@ -503,8 +649,10 @@ function CardContent({
                   transition={{ delay: i * 0.1, duration: 0.4 }}
                   whileTap={{ scale: 0.96 }}
                   onClick={() => {
+                    haptic.selection();
                     playSfx('tap');
-                    advance({ persona: p.id as PersonaId, personaLabel: p.label });
+                    setData((prev) => ({ ...prev, persona: p.id as PersonaId, personaLabel: p.label }));
+                    setTimeout(() => advance({ persona: p.id as PersonaId, personaLabel: p.label }), 400);
                   }}
                   className="relative w-full rounded-2xl px-5 py-4 flex items-center text-left transition-colors border border-white/5 bg-white/[0.04] hover:bg-white/[0.08]"
                 >
@@ -513,7 +661,48 @@ function CardContent({
                     <div className="font-bold text-[16px] leading-tight" style={{ fontFamily: SERIF }}>{p.label}</div>
                     <div className="text-[12px] opacity-70 mt-1">{p.desc}</div>
                   </div>
-                  <ChevronRight className="w-5 h-5 opacity-40 shrink-0" />
+                </motion.button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {step === 'foco' && (
+        <>
+          <motion.h2 
+            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.4 }}
+            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-6" style={{ fontFamily: SERIF }}
+          >
+            Qual é o seu <span className="italic">objetivo principal</span>?
+          </motion.h2>
+          <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y flex flex-col pb-4">
+            <div className="relative pl-3 border-l-2 border-white/10 space-y-5 ml-2 mt-2">
+              {[
+                { id: '1fase', label: '1ª Fase da OAB', desc: 'Foco em questões e lei seca' },
+                { id: '2fase', label: '2ª Fase da OAB', desc: 'Peças práticas e doutrina' },
+                { id: 'magistratura', label: 'Magistratura / MP', desc: 'Carreiras jurídicas de alto desempenho' },
+                { id: 'policial', label: 'Carreiras Policiais', desc: 'Delegado, Investigador, etc' },
+              ].map((f, i) => (
+                <motion.button
+                  key={f.id}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1, duration: 0.4 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => {
+                    haptic.selection();
+                    playSfx('tap');
+                    setData((prev) => ({ ...prev, foco: f.id }));
+                    setTimeout(() => advance({ foco: f.id }), 400);
+                  }}
+                  className="relative w-full rounded-2xl px-5 py-4 flex items-center text-left transition-colors border border-white/5 bg-white/[0.04] hover:bg-white/[0.08]"
+                >
+                  <div className="absolute top-[22px] -left-[18px] w-2.5 h-2.5 rounded-full bg-[#C94C4C] shadow-[0_0_8px_#C94C4C]" />
+                  <div className="flex-1 min-w-0 pr-3">
+                    <div className="font-bold text-[16px] leading-tight" style={{ fontFamily: SERIF }}>{f.label}</div>
+                    <div className="text-[12px] opacity-70 mt-1">{f.desc}</div>
+                  </div>
                 </motion.button>
               ))}
             </div>
@@ -532,7 +721,7 @@ function CardContent({
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.4 }} className="text-sm opacity-70 mb-3">
             Marque as funções que mais te interessam
           </motion.p>
-          <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y [-webkit-overflow-scrolling:touch] space-y-2 pb-2 -mx-1 px-1">
+          <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y [-webkit-overflow-scrolling:touch] pb-2 -mx-1 px-1 grid grid-cols-2 gap-2 place-content-start">
             {INTERESSES.map((it) => {
               const Icon = it.icon;
               const on = data.interesses.includes(it.id);
@@ -541,6 +730,7 @@ function CardContent({
                   key={it.id}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => {
+                    haptic.selection();
                     playSfx('tap');
                     setData((d) => ({
                       ...d,
@@ -549,23 +739,21 @@ function CardContent({
                         : [...d.interesses, it.id],
                     }));
                   }}
-                  className={`w-full rounded-2xl px-4 py-3 flex items-center gap-3 border transition text-left ${
+                  className={`w-full h-full rounded-2xl p-4 flex flex-col items-center justify-center gap-2 border transition text-center ${
                     on
                       ? 'bg-[#C94C4C] text-[#150C05] border-[#C94C4C]'
                       : 'bg-white/[0.06] backdrop-blur border-white/15'
                   }`}
                 >
-                  <Icon className="w-5 h-5 shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <div className="font-bold text-[14px] leading-tight" style={{ fontFamily: SERIF }}>{it.label}</div>
-                    <div className="text-[11px] opacity-70 leading-snug">{it.desc}</div>
+                  <div className="flex-1 flex flex-col items-center justify-center min-w-0">
+                    <Icon className={`w-6 h-6 shrink-0 mb-2 ${on ? 'text-[#150C05]' : 'text-[#C94C4C]'}`} />
+                    <div className="font-bold text-[13px] leading-tight" style={{ fontFamily: SERIF }}>{it.label}</div>
                   </div>
-                  {on && <Check className="w-4 h-4 shrink-0" />}
+                  {on && <div className="absolute top-2 right-2"><Check className="w-4 h-4 shrink-0" /></div>}
                 </motion.button>
               );
             })}
           </div>
-          <ContinueBtn disabled={data.interesses.length === 0} onClick={() => advance({})} />
         </>
       )}
 
@@ -589,7 +777,14 @@ function CardContent({
                   key={d.id}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => {
+                    haptic.selection();
                     playSfx('tap');
+                    
+                    const isAdding = !data.dores.includes(d.id);
+                    if (isAdding) {
+                      toast.success('Temos materiais sob medida pra isso!', { icon: <Sparkles className="w-4 h-4" /> });
+                    }
+
                     setData((prev) => ({
                       ...prev,
                       dores: prev.dores.includes(d.id)
@@ -597,23 +792,21 @@ function CardContent({
                         : [...prev.dores, d.id],
                     }));
                   }}
-                  className={`w-full rounded-2xl px-4 py-3 flex items-center gap-3 border transition text-left ${
+                  className={`relative w-full h-full rounded-2xl p-4 flex flex-col items-center justify-center gap-2 border transition text-center ${
                     on
                       ? 'bg-[#C94C4C] text-[#150C05] border-[#C94C4C]'
                       : 'bg-white/[0.06] backdrop-blur border-white/15'
                   }`}
                 >
-                  <Icon className="w-5 h-5 shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <div className="font-bold text-[14px] leading-tight" style={{ fontFamily: SERIF }}>{d.label}</div>
-                    <div className="text-[11px] opacity-70 leading-snug">{d.desc}</div>
+                  <div className="flex-1 flex flex-col items-center justify-center min-w-0">
+                    <Icon className={`w-6 h-6 shrink-0 mb-2 ${on ? 'text-[#150C05]' : 'text-[#C94C4C]'}`} />
+                    <div className="font-bold text-[13px] leading-tight" style={{ fontFamily: SERIF }}>{d.label}</div>
                   </div>
-                  {on && <Check className="w-4 h-4 shrink-0" />}
+                  {on && <div className="absolute top-2 right-2"><Check className="w-4 h-4 shrink-0" /></div>}
                 </motion.button>
               );
             })}
           </div>
-          <ContinueBtn disabled={data.dores.length === 0} onClick={() => advance({})} />
         </>
       )}
 
@@ -638,7 +831,6 @@ function CardContent({
             style={{ color: bg.accent }}
           />
           <div className="flex-1" />
-          <ContinueBtn disabled={!data.nome.trim()} onClick={() => advance({})} />
         </>
       )}
 
@@ -651,48 +843,74 @@ function CardContent({
             Acelere com o <span className="italic">Hórus</span>.
           </motion.h2>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.4 }} className="text-base opacity-80 mb-6 leading-relaxed">
-            Coloque seu WhatsApp para liberar a nossa Inteligência Artificial direto no seu bolso, além de alertas rápidos de novas leis (opcional).
+            Opcional: Informe seu número para desbloquear testes gratuitos e alertas de legislações importantes.
           </motion.p>
           <input
+            type="tel"
             value={data.whatsapp || ''}
-            onChange={(e) =>
-              setData((d) => ({
-                ...d,
-                whatsapp: e.target.value.replace(/[^\d+\s()-]/g, '').slice(0, 20),
-              }))
-            }
-            placeholder="(11) 98765-4321"
+            onChange={(e) => setData((d) => ({ ...d, whatsapp: e.target.value.slice(0, 20) }))}
+            onKeyDown={(e) => e.key === 'Enter' && advance({})}
+            placeholder="(11) 99999-9999"
             className="w-full h-14 px-5 rounded-2xl bg-white/[0.07] backdrop-blur border border-white/20 text-lg font-semibold outline-none focus:border-[#C94C4C] placeholder-white/35"
             style={{ color: bg.accent }}
           />
           <div className="flex-1" />
-          <div className="flex gap-2 shrink-0">
-            <button
-              disabled={!data.whatsapp || data.whatsapp.replace(/\D/g, '').length < 10}
-              onClick={() =>
-                advance({
-                  whatsapp: data.whatsapp!
-                })
-              }
-              className="w-full h-14 rounded-2xl bg-[#C94C4C] text-[#150C05] font-bold flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 disabled:scale-100"
-            >
-              Finalizar <ArrowRight className="w-5 h-5" />
-            </button>
-          </div>
         </>
+      )}
+
+      {step === 'resumo' && (
+         <div className="flex flex-col items-center justify-center flex-1 py-8 text-center">
+            {isSubmitting ? (
+              <div className="animate-pulse space-y-4">
+                 <Sparkles className="w-12 h-12 text-[#C94C4C] mx-auto" />
+                 <h2 className="text-2xl font-serif">Ajustando Inteligência Artificial...</h2>
+                 <p className="text-white/60 text-sm">Separando os melhores resumos pro seu perfil.</p>
+              </div>
+            ) : (
+              <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center w-full max-w-sm">
+                 <div className="w-20 h-20 rounded-full bg-[#C94C4C]/20 border border-[#C94C4C]/50 flex items-center justify-center mb-6 shadow-[0_0_24px_rgba(201,76,76,0.2)]">
+                    <Check className="w-10 h-10 text-[#C94C4C]" />
+                 </div>
+                 <h2 className="text-3xl font-serif mb-2">Tudo Pronto!</h2>
+                 <p className="text-white/70 mb-8 leading-relaxed">Seu ambiente <strong className="text-[#C94C4C]">Direito Prime</strong> foi configurado com sucesso com base nas suas preferências.</p>
+                 <ContinueBtn isSubmitting={isSubmitting} onClick={() => { haptic.impact(); advance({}); }} icon={<Check className="w-5 h-5" />} />
+              </motion.div>
+            )}
+         </div>
+      )}
+
+      {/* Thumb-Zone Fixed Button */}
+      {!['persona', 'foco', 'resumo'].includes(step) && (
+        <div className="absolute bottom-0 left-0 w-full p-6 pt-12 pointer-events-none flex justify-end z-20" style={{ background: 'linear-gradient(to top, rgba(10,10,10,1) 0%, rgba(10,10,10,0.8) 40%, transparent 100%)' }}>
+          <div className="pointer-events-auto w-full">
+            <ContinueBtn 
+              disabled={
+                step === 'interesses' ? data.interesses.length === 0 :
+                step === 'dores' ? data.dores.length === 0 :
+                step === 'nome' ? !data.nome.trim() : false
+              } 
+              isSubmitting={isSubmitting} 
+              onClick={() => {
+                haptic.impact();
+                advance({});
+              }} 
+              icon={step === 'whatsapp' ? <Check className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
+            />
+          </div>
+        </div>
       )}
     </div>
   );
 }
 
-function ContinueBtn({ disabled, onClick }: { disabled: boolean; onClick: () => void }) {
+function ContinueBtn({ disabled, onClick, isSubmitting, icon }: { disabled?: boolean; onClick: () => void; isSubmitting?: boolean; icon?: React.ReactNode }) {
   return (
     <button
-      disabled={disabled}
+      disabled={disabled || isSubmitting}
       onClick={onClick}
-      className="mt-3 shrink-0 h-14 rounded-2xl bg-[#C94C4C] text-[#150C05] font-black flex items-center justify-center gap-2 active:scale-95 disabled:opacity-30"
+      className="mt-3 shrink-0 h-14 w-full rounded-2xl bg-[#C94C4C] text-[#150C05] font-black flex items-center justify-center gap-2 active:scale-95 disabled:opacity-30"
     >
-      Continuar <ArrowRight className="w-5 h-5" strokeWidth={2.5} />
+      {isSubmitting ? 'Aguarde...' : 'Continuar'} {icon || <ArrowRight className="w-5 h-5" strokeWidth={2.5} />}
     </button>
   );
 }

@@ -14,8 +14,6 @@ const Ferramentas = () => {
     setDicionarioOpen,
     rankingOpen,
     setRankingOpen,
-    boletinsSheetOpen,
-    setBoletinsSheetOpen,
     handleToolClick,
   } = useFerramentasNavigation();
 
@@ -47,8 +45,6 @@ const Ferramentas = () => {
         onCloseDicionario={() => setDicionarioOpen(false)}
         rankingOpen={rankingOpen}
         onCloseRanking={() => setRankingOpen(false)}
-        boletinsSheetOpen={boletinsSheetOpen}
-        onCloseBoletins={() => setBoletinsSheetOpen(false)}
       />
     </DesktopPageLayout>
   );

@@ -70,6 +70,11 @@ export default function AdminBoletins() {
       noticias_voz_id: cfg.noticias_voz_id,
       noticias_max_itens: cfg.noticias_max_itens,
       noticias_prompt_tts_extra: cfg.noticias_prompt_tts_extra,
+      legislativo_ativo: cfg.legislativo_ativo,
+      legislativo_horario: cfg.legislativo_horario,
+      legislativo_voz_id: cfg.legislativo_voz_id,
+      legislativo_max_itens: cfg.legislativo_max_itens,
+      legislativo_prompt_tts_extra: cfg.legislativo_prompt_tts_extra,
     }).eq('id', 1);
 
     if (error) {
@@ -84,6 +89,7 @@ export default function AdminBoletins() {
       body: {
         juridico_cron: cfg.horario_geracao,
         noticias_cron: cfg.noticias_horario,
+        legislativo_cron: cfg.legislativo_horario,
       }
     });
     
@@ -116,6 +122,17 @@ export default function AdminBoletins() {
     load();
   };
 
+  const [gerandoLegislativo, setGerandoLegislativo] = useState(false);
+  const gerarLegislativo = async () => {
+    setGerandoLegislativo(true);
+    toast.info('Gerando boletim legislativo… ~1 min');
+    const { data, error } = await supabase.functions.invoke('boletim-legislativo-gerar', { body: {} });
+    setGerandoLegislativo(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success(`Boletim legislativo gerado (${data.cenas} cenas, ${data.duracao_s}s)`);
+    load();
+  };
+
 
   const header = <PageHeader title="Boletins Jurídicos" subtitle="Configuração e geração" onBack={() => navigate('/admin-funcoes')} />;
 
@@ -135,6 +152,53 @@ export default function AdminBoletins() {
           </div>
           <Button onClick={gerarAgora} disabled={gerando} size="lg" className="w-full">
             {gerando ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Gerando…</> : 'Gerar agora'}
+          </Button>
+        </div>
+
+        {/* Boletim Legislativo */}
+        <div className="rounded-2xl p-5 bg-gradient-to-br from-red-800/15 to-red-800/5 border border-red-800/30 space-y-4">
+          <div className="flex items-center gap-3">
+            <Sparkles className="w-6 h-6 text-red-600 dark:text-red-500" />
+            <div>
+              <p className="font-display font-bold text-lg text-red-700 dark:text-red-400">Boletim Legislativo</p>
+              <p className="text-xs text-muted-foreground">
+                Resumo das últimas propostas (PLs) geradas usando IA · gera às {String(cfg.legislativo_horario || '10:00:00').slice(0, 5)}
+              </p>
+            </div>
+          </div>
+          <Button onClick={gerarLegislativo} disabled={gerandoLegislativo} size="lg" className="w-full bg-red-700 hover:bg-red-800 text-white">
+            {gerandoLegislativo ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Gerando…</> : 'Gerar legislativo de hoje'}
+          </Button>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Voz (legislativo)</Label>
+              <Select value={cfg.legislativo_voz_id || 'Kore'} onValueChange={(v) => setCfg({ ...cfg, legislativo_voz_id: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {VOZES.map(v => <SelectItem key={v.id} value={v.id}>{v.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Horário</Label>
+              <Input type="time" value={String(cfg.legislativo_horario || '10:00:00').slice(0, 5)} onChange={(e) => setCfg({ ...cfg, legislativo_horario: e.target.value + ':00' })} />
+            </div>
+          </div>
+          <div>
+            <Label>Máximo de Projetos de Lei (PLs)</Label>
+            <Input type="number" min={1} max={10} value={cfg.legislativo_max_itens || 5} onChange={(e) => setCfg({ ...cfg, legislativo_max_itens: parseInt(e.target.value) || 5 })} />
+          </div>
+          <div>
+            <Label>Prompt extra (TTS)</Label>
+            <Textarea rows={2} value={cfg.legislativo_prompt_tts_extra || ''} onChange={(e) => setCfg({ ...cfg, legislativo_prompt_tts_extra: e.target.value })} />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label>Ativo (gera todo dia automaticamente)</Label>
+            <Switch checked={!!cfg.legislativo_ativo} onCheckedChange={(v) => setCfg({ ...cfg, legislativo_ativo: v })} />
+          </div>
+          <Button onClick={salvar} disabled={saving} className="w-full">
+            {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Salvando…</> : 'Salvar & Fazer Deploy dos Horários'}
           </Button>
         </div>
 
@@ -253,8 +317,12 @@ export default function AdminBoletins() {
                   {/* Cabeçalho: título + tags */}
                   <div className="flex flex-col gap-1.5">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded ${isNoticias ? 'bg-blue-500/15 text-blue-500' : 'bg-primary/15 text-primary'}`}>
-                        {isNoticias ? 'Notícias' : 'Jurídico'}
+                      <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded ${
+                        b.tipo === 'legislativo' ? 'bg-red-500/15 text-red-500' :
+                        isNoticias ? 'bg-blue-500/15 text-blue-500' : 
+                        'bg-primary/15 text-primary'
+                      }`}>
+                        {b.tipo === 'legislativo' ? 'Legislativo' : isNoticias ? 'Notícias' : 'Jurídico'}
                       </span>
                       <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded ${statusColor}`}>
                         {statusLabel}

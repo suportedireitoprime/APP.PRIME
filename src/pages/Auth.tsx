@@ -11,6 +11,7 @@ import { AuthDecorations } from '@/components/auth/AuthDecorations';
 import { AuthDrawer, type AuthMode } from '@/components/auth/AuthDrawer';
 import { AuthDesktopHero } from '@/components/auth/AuthDesktopHero';
 import { AuthMobileHero } from '@/components/auth/AuthMobileHero';
+import { GoogleOneTap } from '@/components/auth/GoogleOneTap';
 
 const Auth = () => {
   const { user, loading } = useAuth();
@@ -165,6 +166,8 @@ const Auth = () => {
       />
 
       <AuthAjudaSheet open={ajudaOpen} onClose={() => setAjudaOpen(false)} />
+
+      {!Capacitor.isNativePlatform() && <GoogleOneTap />}
     </main>
   );
 };

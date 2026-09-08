@@ -10,6 +10,8 @@ import { srcOf } from '@/lib/assetUrl';
 import { useGoBack } from '@/hooks/useGoBack';
 import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar';
 import { copiarTexto } from '@/lib/nativo/copiar';
+import { Capacitor } from '@capacitor/core';
+import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { PrimeImage } from '@/components/ui/PrimeImage';
@@ -18,7 +20,11 @@ type Slide = { slide_index: number; imagem_url: string | null; audio_url: string
 type Apres = { id: string; titulo: string; descricao: string | null; total_slides: number; livro_tabela: string; livro_id: string };
 
 
-const playHaptic = () => Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
+const playHaptic = () => {
+  if (Capacitor.isNativePlatform()) {
+    Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
+  }
+};
 
 
 
@@ -46,6 +52,7 @@ const ApresentacaoPlayer = () => {
   const [deitado, setDeitado] = useState(false);
   const [midiaPronta, setMidiaPronta] = useState(false);
   const [direcao, setDirecao] = useState<1 | -1>(1);
+  const [feedbackSeek, setFeedbackSeek] = useState<'esq' | 'dir' | null>(null);
   const [curtido, setCurtido] = useState(false);
   const [favorito, setFavorito] = useState(false);
   const [likes, setLikes] = useState(0);
@@ -59,48 +66,79 @@ const ApresentacaoPlayer = () => {
   const timeoutControlesRef = useRef<NodeJS.Timeout | null>(null);
   const [abrirSumario, setAbrirSumario] = useState(false);
   const [abrirRoteiro, setAbrirRoteiro] = useState(false);
+
+  const handleVoltar = useCallback(() => {
+    if (window.history.length > 2) {
+      goBack();
+    } else {
+      navigate('/', { replace: true });
+    }
+  }, [goBack, navigate]);
+
+  // Velocidade Inicial
   const [velocidade, setVelocidade] = useState(1); // 1x, 1.5x, 2x
 
   const elAtivo = useCallback(() => (usaARef.current ? audioARef.current : audioBRef.current), []);
   const elReserva = useCallback(() => (usaARef.current ? audioBRef.current : audioARef.current), []);
 
   useEffect(() => {
+    const abort = new AbortController();
     (async () => {
       if (!id) return;
       const { data: { user } } = await supabase.auth.getUser();
+      if (abort.signal.aborted) return;
       setUserId(user?.id ?? null);
-      const [{ data: a }, { data: s }, { count }, { data: cs }] = await Promise.all([
-        supabase.from('apresentacoes_narradas').select('id, titulo, descricao, total_slides, livro_tabela, livro_id').eq('id', id).maybeSingle(),
-        supabase.from('apresentacao_slides').select('slide_index, imagem_url, audio_url, roteiro').eq('apresentacao_id', id).order('slide_index'),
-        supabase.from('apresentacao_likes').select('id', { count: 'exact', head: true }).eq('apresentacao_id', id),
-        supabase.from('apresentacao_comentarios').select('id, texto, created_at').eq('apresentacao_id', id).order('created_at', { ascending: false }),
-      ]);
-      setApres(a as Apres | null);
       
-      const resSlides = (s ?? []) as Slide[];
-      setSlides(resSlides);
-      setLikes(count ?? 0);
-      setComentarios((cs ?? []) as { id: string; texto: string; created_at: string }[]);
-      
-      if (user) {
-        const [{ data: l }, { data: f }] = await Promise.all([
-          supabase.from('apresentacao_likes').select('id').eq('apresentacao_id', id).eq('user_id', user.id).maybeSingle(),
-          supabase.from('apresentacao_favoritos').select('id').eq('apresentacao_id', id).eq('user_id', user.id).maybeSingle(),
+      try {
+        const [{ data: a }, { data: s }, { count }, { data: cs }] = await Promise.all([
+          supabase.from('apresentacoes_narradas').select('id, titulo, descricao, total_slides, livro_tabela, livro_id').eq('id', id).abortSignal(abort.signal).maybeSingle(),
+          supabase.from('apresentacao_slides').select('slide_index, imagem_url, audio_url, roteiro').eq('apresentacao_id', id).order('slide_index').abortSignal(abort.signal),
+          supabase.from('apresentacao_likes').select('id', { count: 'exact', head: true }).eq('apresentacao_id', id).abortSignal(abort.signal),
+          supabase.from('apresentacao_comentarios').select('id, texto, created_at').eq('apresentacao_id', id).order('created_at', { ascending: false }).abortSignal(abort.signal),
         ]);
-        setCurtido(!!l); setFavorito(!!f);
-      }
+        
+        if (abort.signal.aborted) return;
+        setApres(a as Apres | null);
+        
+        const resSlides = (s ?? []) as Slide[];
+        setSlides(resSlides);
+        setLikes(count ?? 0);
+        setComentarios((cs ?? []) as { id: string; texto: string; created_at: string }[]);
+        
+        if (user) {
+          const [{ data: l }, { data: f }] = await Promise.all([
+            supabase.from('apresentacao_likes').select('id').eq('apresentacao_id', id).eq('user_id', user.id).abortSignal(abort.signal).maybeSingle(),
+            supabase.from('apresentacao_favoritos').select('id').eq('apresentacao_id', id).eq('user_id', user.id).abortSignal(abort.signal).maybeSingle(),
+          ]);
+          if (!abort.signal.aborted) {
+            setCurtido(!!l); setFavorito(!!f);
+          }
+        }
 
-      // Resume Capability
-      const lastIdxStr = localStorage.getItem(`apresentacao_resume_${id}`);
-      if (lastIdxStr) {
-        const lastIdx = parseInt(lastIdxStr, 10);
-        if (!isNaN(lastIdx) && lastIdx >= 0 && lastIdx < resSlides.length) {
-          setIdx(lastIdx);
+        if (!abort.signal.aborted) {
+          const lastIdxStr = localStorage.getItem(`apresentacao_resume_${id}`);
+          if (lastIdxStr) {
+            const lastIdx = parseInt(lastIdxStr, 10);
+            if (!isNaN(lastIdx) && lastIdx >= 0 && lastIdx < resSlides.length) {
+              setIdx(lastIdx);
+            }
+          }
+          setCarregando(false);
+        }
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          console.error(err);
+          toast.error('Erro ao carregar a apresentação.');
         }
       }
-
-      setCarregando(false);
     })();
+
+    return () => {
+      abort.abort();
+      if (Capacitor.isNativePlatform()) {
+        ScreenOrientation.unlock().catch(() => {});
+      }
+    };
   }, [id]);
 
   const slide = slides[idx];
@@ -186,26 +224,37 @@ const ApresentacaoPlayer = () => {
 
     // MediaSession do navegador/sistema
     if ('mediaSession' in navigator && apres) {
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: `Slide ${idx + 1}`,
-        artist: apres.titulo,
-        artwork: slide?.imagem_url ? [{ src: slide.imagem_url, sizes: '512x512', type: 'image/png' }] : [],
-      });
+      const expectedTitle = `Slide ${idx + 1}`;
+      if (navigator.mediaSession.metadata?.title !== expectedTitle) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: expectedTitle,
+          artist: apres.titulo,
+          artwork: slide?.imagem_url ? [{ src: slide.imagem_url, sizes: '512x512', type: 'image/png' }] : [],
+        });
+      }
     }
   }, [idx, midiaPronta, slides, elAtivo, elReserva, apres, slide, velocidade]);
 
   const carregarDuracoes = useCallback(async () => {
     if (!slides.length) return;
-    const map = new Map<number, number>();
-    await Promise.all(
-      slides.map((s, i) => new Promise<void>((resolve) => {
-        if (!s.audio_url) { map.set(i, 0); resolve(); return; }
-        const a = new Audio(srcOf(s.audio_url));
-        a.onloadedmetadata = () => { map.set(i, a.duration || 0); resolve(); };
-        a.onerror = () => { map.set(i, 0); resolve(); };
-      }))
-    );
-    const arr = slides.map((_, i) => map.get(i) || 0);
+    const arr: number[] = [];
+    const tempAudio = new Audio();
+    tempAudio.preload = 'metadata';
+    
+    for (let i = 0; i < slides.length; i++) {
+      const s = slides[i];
+      if (!s.audio_url) {
+        arr.push(0);
+        continue;
+      }
+      
+      await new Promise<void>((resolve) => {
+        tempAudio.onloadedmetadata = () => { arr.push(tempAudio.duration || 0); resolve(); };
+        tempAudio.onerror = () => { arr.push(0); resolve(); };
+        tempAudio.src = srcOf(s.audio_url!);
+      });
+    }
+    
     setDuracoes(arr);
   }, [slides]);
 
@@ -218,7 +267,7 @@ const ApresentacaoPlayer = () => {
     if (novoIdx >= slides.length) {
       // Tela de fim de aula
       toast.success('Apresentação concluída!');
-      goBack();
+      handleVoltar();
       return;
     }
     playHaptic();
@@ -267,15 +316,26 @@ const ApresentacaoPlayer = () => {
     
     if (targetIdx !== idx) {
       await irPara(targetIdx);
-      setTimeout(() => {
-        const a = usaA ? audioARef.current : audioBRef.current; // The new active is usaA? Wait, irPara toggles it.
-        // Actually, just wait a bit and set the time.
-        const nextA = usaARef.current ? audioARef.current : audioBRef.current;
-        if (nextA) nextA.currentTime = timeInTargetSlide;
-      }, 50);
+      // Wait for React to mount the new audio src, then seek
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          const nextA = usaARef.current ? audioARef.current : audioBRef.current;
+          if (nextA) {
+            try {
+              nextA.currentTime = timeInTargetSlide;
+            } catch (e) {
+              // Ignores if readyState is 0
+            }
+          }
+        }, 100);
+      });
     } else {
       const a = elAtivo();
-      if (a) a.currentTime = timeInTargetSlide;
+      if (a) {
+        try {
+          a.currentTime = timeInTargetSlide;
+        } catch (e) {}
+      }
     }
   };
 
@@ -308,6 +368,25 @@ const ApresentacaoPlayer = () => {
     const novo = a.currentTime + (lado === 'dir' ? 10 : -10);
     a.currentTime = Math.max(0, Math.min(novo, a.duration || 0));
     resetarOcultacao();
+    
+    setFeedbackSeek(lado);
+    setTimeout(() => setFeedbackSeek(null), 500);
+  };
+
+  const alternarDeitado = async () => {
+    const novoDeitado = !deitado;
+    setDeitado(novoDeitado);
+    if (Capacitor.isNativePlatform()) {
+      try {
+        if (novoDeitado) {
+          await ScreenOrientation.lock({ orientation: 'landscape' });
+        } else {
+          await ScreenOrientation.lock({ orientation: 'portrait' });
+        }
+      } catch (e) {
+        console.warn('ScreenOrientation fallback', e);
+      }
+    }
   };
 
   const toggleVelocidade = () => {
@@ -318,24 +397,47 @@ const ApresentacaoPlayer = () => {
   const curtir = async () => {
     if (!userId || !id) return;
     playHaptic();
-    setCurtido((v) => !v);
-    setLikes((l) => (curtido ? l - 1 : l + 1));
-    if (curtido) {
-      await supabase.from('apresentacao_likes').delete().eq('apresentacao_id', id).eq('user_id', userId);
-    } else {
-      await supabase.from('apresentacao_likes').insert({ apresentacao_id: id, user_id: userId });
+    
+    const eraCurtido = curtido;
+    setCurtido(!eraCurtido);
+    setLikes((l) => (eraCurtido ? l - 1 : l + 1));
+    
+    try {
+      if (eraCurtido) {
+        const { error } = await supabase.from('apresentacao_likes').delete().eq('apresentacao_id', id).eq('user_id', userId);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('apresentacao_likes').insert({ apresentacao_id: id, user_id: userId });
+        if (error) throw error;
+      }
+    } catch (e) {
+      console.error(e);
+      setCurtido(eraCurtido);
+      setLikes((l) => (eraCurtido ? l + 1 : l - 1));
+      toast.error('Erro ao curtir. Verifique sua conexão.');
     }
   };
 
   const favoritar = async () => {
     if (!userId || !id) return;
     playHaptic();
-    setFavorito((v) => !v);
-    toast.success(favorito ? 'Removido dos salvos' : 'Salvo na sua coleção!');
-    if (favorito) {
-      await supabase.from('apresentacao_favoritos').delete().eq('apresentacao_id', id).eq('user_id', userId);
-    } else {
-      await supabase.from('apresentacao_favoritos').insert({ apresentacao_id: id, user_id: userId });
+    
+    const eraFavorito = favorito;
+    setFavorito(!eraFavorito);
+    toast.success(!eraFavorito ? 'Salvo na sua coleção!' : 'Removido dos salvos');
+    
+    try {
+      if (eraFavorito) {
+        const { error } = await supabase.from('apresentacao_favoritos').delete().eq('apresentacao_id', id).eq('user_id', userId);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('apresentacao_favoritos').insert({ apresentacao_id: id, user_id: userId });
+        if (error) throw error;
+      }
+    } catch (e) {
+      console.error(e);
+      setFavorito(eraFavorito);
+      toast.error('Erro ao favoritar. Tente novamente.');
     }
   };
 
@@ -344,9 +446,17 @@ const ApresentacaoPlayer = () => {
     playHaptic();
     const txt = novoComentario.trim();
     setNovoComentario('');
-    const resp = await supabase.from('apresentacao_comentarios').insert({ apresentacao_id: id, user_id: userId, texto: txt }).select('id, texto, created_at').single();
-    if (resp.data) {
-      setComentarios((c) => [resp.data as { id: string; texto: string; created_at: string }, ...c]);
+    
+    try {
+      const resp = await supabase.from('apresentacao_comentarios').insert({ apresentacao_id: id, user_id: userId, texto: txt }).select('id, texto, created_at').single();
+      if (resp.error) throw resp.error;
+      if (resp.data) {
+        setComentarios((c) => [resp.data as { id: string; texto: string; created_at: string }, ...c]);
+      }
+    } catch (e) {
+      console.error(e);
+      setNovoComentario(txt);
+      toast.error('Não foi possível enviar o comentário.');
     }
   };
 
@@ -373,7 +483,7 @@ const ApresentacaoPlayer = () => {
         <div className="absolute inset-0 z-0 bg-black/60 pointer-events-none" />
         
         <header className="relative z-10 px-4 pb-4 pt-[calc(2.5rem+var(--sai-top))] flex gap-3">
-           <button onClick={() => goBack()} className="w-12 h-12 sm:w-[52px] sm:h-[52px] flex items-center justify-center"><ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} /></button>
+           <button onClick={handleVoltar} className="w-12 h-12 sm:w-[52px] sm:h-[52px] flex items-center justify-center"><ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} /></button>
            <div className="flex-1"><p className="font-heading font-bold text-sm truncate">{stateTitulo || 'Carregando...'}</p></div>
         </header>
 
@@ -393,7 +503,7 @@ const ApresentacaoPlayer = () => {
     return (
       <div className="min-h-dvh bg-[#0D0D0D] text-white flex flex-col items-center justify-center p-6 text-center">
         <p className="font-body text-white/80">Apresentação indisponível.</p>
-        <button onClick={() => goBack()} className="mt-4 rounded-xl bg-white/10 px-6 py-3 text-sm">Voltar</button>
+        <button onClick={handleVoltar} className="mt-4 rounded-xl bg-white/10 px-6 py-3 text-sm">Voltar</button>
       </div>
     );
   }
@@ -419,8 +529,22 @@ const ApresentacaoPlayer = () => {
       
       <div className="absolute inset-0 z-0 bg-black/60 pointer-events-none" />
 
-      <audio ref={audioARef} onEnded={() => { if (usaA) continuarProximo(); }} onPlay={() => { if (usaA) setTocando(true); }} preload="auto" className="hidden" />
-      <audio ref={audioBRef} onEnded={() => { if (!usaA) continuarProximo(); }} onPlay={() => { if (!usaA) setTocando(true); }} preload="auto" className="hidden" />
+      <audio 
+        ref={audioARef} 
+        onEnded={() => { if (usaA) continuarProximo(); }} 
+        onPlay={(e) => { e.currentTarget.playbackRate = velocidade; if (usaA) setTocando(true); }} 
+        onLoadedMetadata={(e) => { e.currentTarget.playbackRate = velocidade; }} 
+        preload="auto" 
+        className="hidden" 
+      />
+      <audio 
+        ref={audioBRef} 
+        onEnded={() => { if (!usaA) continuarProximo(); }} 
+        onPlay={(e) => { e.currentTarget.playbackRate = velocidade; if (!usaA) setTocando(true); }} 
+        onLoadedMetadata={(e) => { e.currentTarget.playbackRate = velocidade; }} 
+        preload="auto" 
+        className="hidden" 
+      />
 
       {/* Header com Instagram-style bars e Immersive Mode */}
       <AnimatePresence>
@@ -441,7 +565,7 @@ const ApresentacaoPlayer = () => {
             </div>
 
             <div className="flex items-center gap-3">
-              <button onClick={() => goBack()} className="w-12 h-12 sm:w-[52px] sm:h-[52px] flex items-center justify-center active:scale-95"><ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} /></button>
+              <button onClick={handleVoltar} className="w-12 h-12 sm:w-[52px] sm:h-[52px] flex items-center justify-center active:scale-95"><ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} /></button>
               <div className="min-w-0 flex-1">
                 <p className="font-heading font-bold text-sm truncate">{apres.titulo}</p>
                 <p className="text-[11px] text-white/60 font-body truncate">
@@ -449,7 +573,7 @@ const ApresentacaoPlayer = () => {
                   {duracoes.length > 0 && duracoes.reduce((a, b) => a + b, 0) > 0 && ` · Total: ${formatarTempo(duracoes.reduce((a, b) => a + b, 0))}`}
                 </p>
               </div>
-              <button onClick={() => setDeitado((v) => !v)} className="w-10 h-10 flex items-center justify-center bg-black/20 rounded-full" aria-label="Girar tela">
+              <button onClick={alternarDeitado} className="w-10 h-10 flex items-center justify-center bg-black/20 rounded-full" aria-label="Girar tela">
                 <RotateCw className="w-5 h-5" />
               </button>
             </div>
@@ -460,9 +584,27 @@ const ApresentacaoPlayer = () => {
       {/* Slide Central com Swipe e Double Tap */}
       <div className="flex-1 relative z-10 flex flex-col items-center justify-center overflow-hidden w-full pb-8">
         {/* Lado esquerdo Double Tap */}
-        <div className="absolute left-0 top-0 bottom-0 w-1/3 z-20" onDoubleClick={() => doubleTapSeek('esq')} />
+        <div className="absolute left-0 top-0 bottom-0 w-1/3 z-20" onDoubleClick={() => doubleTapSeek('esq')}>
+          <AnimatePresence>
+            {feedbackSeek === 'esq' && (
+              <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.2 }} className="absolute inset-0 flex flex-col items-center justify-center bg-black/20 rounded-r-[100%]">
+                <div className="flex -space-x-1"><ChevronLeft className="w-8 h-8 text-white" /><ChevronLeft className="w-8 h-8 text-white opacity-50" /></div>
+                <span className="text-white font-bold mt-2">-10s</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
         {/* Lado direito Double Tap */}
-        <div className="absolute right-0 top-0 bottom-0 w-1/3 z-20" onDoubleClick={() => doubleTapSeek('dir')} />
+        <div className="absolute right-0 top-0 bottom-0 w-1/3 z-20" onDoubleClick={() => doubleTapSeek('dir')}>
+          <AnimatePresence>
+            {feedbackSeek === 'dir' && (
+              <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.2 }} className="absolute inset-0 flex flex-col items-center justify-center bg-black/20 rounded-l-[100%]">
+                <div className="flex -space-x-1"><ChevronRight className="w-8 h-8 text-white opacity-50" /><ChevronRight className="w-8 h-8 text-white" /></div>
+                <span className="text-white font-bold mt-2">+10s</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
         
         <div className={`transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] flex items-center justify-center ${
           deitado 
@@ -477,7 +619,7 @@ const ApresentacaoPlayer = () => {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: direcao * -50 }}
               transition={{ type: "tween", ease: "easeInOut", duration: 0.4 }}
-              drag="x"
+              drag={preparando ? false : "x"}
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.2}
               onDragEnd={(e, { offset, velocity }) => {

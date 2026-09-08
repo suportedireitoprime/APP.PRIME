@@ -339,18 +339,26 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
           >
             {/* Image Capa */}
             <div className="relative w-full aspect-[4/3] sm:aspect-video bg-neutral-900 overflow-hidden shrink-0">
-               {scene.kind === 'norma' && (
+               {scene.kind === 'norma' && scene.tipo !== 'legislativo' && (
                  <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
                )}
+               {scene.tipo === 'legislativo' && (
+                 <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-red-950/60 to-transparent pointer-events-none" />
+               )}
+               
                <motion.img
                   key={`img-${idx}`}
-                  src={scene.imagem_url}
+                  src={scene.imagem_url || "https://legis.senado.leg.br/dadosabertos/senador/lista/atual.json"} // fallback se estiver vazio
                   alt=""
                   initial={{ scale: 1 }}
-                  animate={{ scale: 1.15 }}
+                  animate={{ scale: scene.tipo === 'legislativo' ? 1.05 : 1.15 }}
                   transition={{ duration: scene.duracao_s || 8, ease: 'linear' }}
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className={`absolute inset-0 w-full h-full ${scene.tipo === 'legislativo' ? 'object-contain object-bottom scale-110 drop-shadow-2xl opacity-90 mix-blend-luminosity' : 'object-cover'}`}
                />
+               
+               {scene.tipo === 'legislativo' && (
+                 <div className="absolute inset-0 z-0 bg-red-900/40 mix-blend-multiply" />
+               )}
                
                {/* Intro special styling over image */}
                {scene.kind === 'intro' && (
@@ -391,6 +399,14 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
               ) : (
                 <div className="flex-1 max-w-3xl mx-auto w-full">
                   <h1 className="font-display text-2xl md:text-4xl font-bold text-white leading-[1.2] mb-4">{scene.titulo}</h1>
+                  {scene.autor_nome && (
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="w-6 h-6 rounded-full bg-red-500/20 flex items-center justify-center border border-red-500/30">
+                        <User className="w-3 h-3 text-red-400" />
+                      </div>
+                      <span className="text-sm font-semibold text-red-400/90 tracking-wide uppercase">{scene.autor_nome}</span>
+                    </div>
+                  )}
                   <p className="text-[17px] md:text-lg text-white/80 leading-relaxed font-body whitespace-pre-wrap">{scene.texto}</p>
 
                   {/* Actions */}

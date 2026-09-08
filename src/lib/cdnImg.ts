@@ -204,6 +204,11 @@ export const toSupabaseRenderUrl = (
   optionsOrWidth: number | SupabaseRenderOptions = 400,
   legacyQuality?: number
 ): string => {
+  // ATENÇÃO: As transformações de imagem do Supabase foram DESATIVADAS
+  // por limitação do plano gratuito (100 transformações/mês).
+  // Retornamos a URL original para evitar cobranças excedentes ou quebra de imagens.
+  return url;
+
   const opts: SupabaseRenderOptions = typeof optionsOrWidth === 'number'
     ? { width: optionsOrWidth, quality: legacyQuality }
     : (optionsOrWidth || {});
