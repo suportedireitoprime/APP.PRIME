@@ -1,6 +1,5 @@
 import React from 'react';
 import { Loader2 } from 'lucide-react';
-import { Capacitor } from '@capacitor/core';
 
 interface SocialButtonsProps {
   onGoogle: () => void;
@@ -30,8 +29,6 @@ export const SocialButtons: React.FC<SocialButtonsProps> = ({
   googleLoading,
   appleLoading,
 }) => {
-  const isAppleDevice = Capacitor.getPlatform() === 'ios' || (typeof navigator !== 'undefined' && /Mac|iPhone|iPod|iPad/.test(navigator.userAgent));
-
   return (
     <div className="flex flex-col gap-3 w-full">
       <button
@@ -43,16 +40,14 @@ export const SocialButtons: React.FC<SocialButtonsProps> = ({
         <span className="text-sm font-semibold tracking-wide">Entrar com Google</span>
       </button>
 
-      {isAppleDevice && (
-        <button
-          onClick={onApple}
-          disabled={appleLoading || googleLoading}
-          className="w-full flex items-center justify-center gap-3 h-14 bg-black text-white border border-white/10 rounded-2xl font-bold transition-all hover:bg-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {appleLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <AppleIcon />}
-          <span className="text-sm font-semibold tracking-wide">Entrar com Apple</span>
-        </button>
-      )}
+      <button
+        onClick={onApple}
+        disabled={appleLoading || googleLoading}
+        className="w-full flex items-center justify-center gap-3 h-14 bg-black text-white border border-white/10 rounded-2xl font-bold transition-all hover:bg-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {appleLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <AppleIcon />}
+        <span className="text-sm font-semibold tracking-wide">Entrar com Apple</span>
+      </button>
     </div>
   );
 };
