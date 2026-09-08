@@ -188,14 +188,14 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
         </div>
 
         {/* Botões de Notificação e Menu */}
-        <header className="absolute top-0 right-0 left-0 z-20 px-3 pt-3 md:px-6 md:pt-4 lg:px-8 lg:pt-6 flex items-center justify-end gap-2 md:gap-3 pointer-events-none">
-          <div className="pointer-events-auto flex items-center justify-end gap-2 md:gap-3">
+        <header className="relative z-20 px-4 pt-2 pb-2 flex items-center justify-end gap-2 md:gap-3 pointer-events-none">
+          <div className="pointer-events-auto flex items-center justify-end gap-2 sm:gap-3">
             <button
               onClick={() => { haptic.light(); setNotifOpen(true); }}
               aria-label={`Abrir notificações${unreadCount > 0 ? ` (${unreadCount} não lidas)` : ''}`}
-              className="relative w-11 h-11 md:w-12 md:h-12 rounded-full bg-black/75 hover:bg-black/90 border border-primary/40 backdrop-blur-sm shadow-lg shadow-black/30 flex items-center justify-center active:scale-95 transition"
+              className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:scale-95"
             >
-              <Bell className="w-5 h-5 md:w-[22px] md:h-[22px] text-white" />
+              <Bell className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-none flex items-center justify-center border border-neutral-900 shadow">
                   {unreadCount > 99 ? '99+' : unreadCount}
@@ -206,15 +206,15 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
               onPointerDown={() => { import('@/components/vademecum/navigation/SideMenu').catch(() => {}); }}
               onClick={() => { haptic.light(); (onOpenMenu || (() => setMenuOpen(true)))(); }}
               aria-label="Abrir menu"
-              className="w-11 h-11 md:w-12 md:h-12 rounded-full bg-black/75 hover:bg-black/90 border border-primary/40 backdrop-blur-sm shadow-lg shadow-black/30 flex items-center justify-center active:scale-95 transition"
+              className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:scale-95"
             >
-              <MenuIcon className="w-5 h-5 md:w-[22px] md:h-[22px] text-white" />
+              <MenuIcon className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
             </button>
           </div>
         </header>
 
         {/* Conteúdo: Logo à esquerda — centralizado na área vermelha */}
-        <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[100px]">
+        <div className="relative z-10 pt-0 sm:pt-2 flex-1 flex flex-col justify-start min-h-[100px]">
           <HomeBrandBanner />
         </div>
 
