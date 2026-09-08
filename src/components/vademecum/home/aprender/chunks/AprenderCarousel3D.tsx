@@ -1,5 +1,4 @@
-import { memo } from 'react';
-import { motion } from 'framer-motion';
+import { memo, useRef, useEffect, useCallback } from 'react';
 import { Play } from 'lucide-react';
 import { AprenderItem } from './aprenderCarouselTypes';
 
@@ -9,10 +8,135 @@ interface AprenderCarousel3DProps {
 }
 
 export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel3DProps) => {
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const isInteracting = useRef(false);
+  const isHovered = useRef(false);
+  const pauseTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const dragRef = useRef<{ startX: number; startScroll: number; moved: number; isDragging: boolean } | null>(null);
+
   if (!items || items.length === 0) return null;
 
-  // Triplica os items para criar o efeito infinito perfeito com -33.333% de translação
+  // Triplica os items para criar o efeito infinito perfeito
   const duplicatedItems = [...items, ...items, ...items];
+
+  const pauseInteraction = useCallback((durationMs = 3000) => {
+    isInteracting.current = true;
+    if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+    pauseTimerRef.current = setTimeout(() => {
+      if (!dragRef.current?.isDragging && !isHovered.current) {
+        isInteracting.current = false;
+      }
+    }, durationMs);
+  }, []);
+
+  // Inicializa a posição de scroll no meio para permitir drag em ambas as direções
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const initMiddle = () => {
+      const oneSetWidth = el.scrollWidth / 3;
+      if (oneSetWidth > 0 && el.scrollLeft === 0) {
+        el.scrollLeft = oneSetWidth;
+      }
+    };
+    const timer = setTimeout(initMiddle, 50);
+    return () => clearTimeout(timer);
+  }, [items.length]);
+
+  // Wrap-around contínuo durante scroll manual (touch ou drag)
+  const handleScroll = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const oneSetWidth = el.scrollWidth / 3;
+    if (oneSetWidth <= 0) return;
+
+    if (el.scrollLeft < oneSetWidth * 0.25) {
+      el.scrollLeft += oneSetWidth;
+    } else if (el.scrollLeft > oneSetWidth * 2.25) {
+      el.scrollLeft -= oneSetWidth;
+    }
+  }, []);
+
+  // Auto-scroll suave com requestAnimationFrame quando não estiver interagindo
+  useEffect(() => {
+    let animId: number;
+    let lastTime = performance.now();
+
+    const step = (time: number) => {
+      const delta = time - lastTime;
+      lastTime = time;
+
+      const el = scrollerRef.current;
+      if (el && !isInteracting.current && !isHovered.current && delta < 100) {
+        el.scrollLeft += delta * 0.035; // ~35px por segundo para leitura suave e elegante
+
+        const oneSetWidth = el.scrollWidth / 3;
+        if (oneSetWidth > 0 && el.scrollLeft >= oneSetWidth * 2.25) {
+          el.scrollLeft -= oneSetWidth;
+        }
+      }
+
+      animId = requestAnimationFrame(step);
+    };
+
+    animId = requestAnimationFrame(step);
+    return () => {
+      cancelAnimationFrame(animId);
+      if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+    };
+  }, []);
+
+  // Mouse Drag (Desktop)
+  const onMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return;
+    const el = scrollerRef.current;
+    if (!el) return;
+    isInteracting.current = true;
+    dragRef.current = {
+      startX: e.clientX,
+      startScroll: el.scrollLeft,
+      moved: 0,
+      isDragging: true,
+    };
+  }, []);
+
+  const onMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const d = dragRef.current;
+    const el = scrollerRef.current;
+    if (!d || !d.isDragging || !el) return;
+    const dx = e.clientX - d.startX;
+    d.moved = Math.max(d.moved, Math.abs(dx));
+    if (d.moved > 3) {
+      el.scrollLeft = d.startScroll - dx;
+    }
+  }, []);
+
+  const endMouseDrag = useCallback(() => {
+    if (dragRef.current) {
+      setTimeout(() => {
+        dragRef.current = null;
+      }, 50);
+      pauseInteraction(2500);
+    }
+  }, [pauseInteraction]);
+
+  // Touch Handlers (Mobile)
+  const onTouchStart = useCallback(() => {
+    isInteracting.current = true;
+  }, []);
+
+  const onTouchEnd = useCallback(() => {
+    pauseInteraction(3000);
+  }, [pauseInteraction]);
+
+  const onMouseEnter = useCallback(() => {
+    isHovered.current = true;
+  }, []);
+
+  const onMouseLeave = useCallback(() => {
+    isHovered.current = false;
+    endMouseDrag();
+  }, [endMouseDrag]);
 
   return (
     <div className="relative w-full pt-1 pb-4 overflow-hidden">
@@ -20,27 +144,38 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
       <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none" />
       <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none" />
 
-      <motion.div
-        className="flex gap-3 w-max px-2"
-        animate={{ x: ["0%", "-33.333333%"] }}
-        transition={{
-          repeat: Infinity,
-          ease: "linear",
-          duration: items.length * 6.5, // Velocidade reduzida: ~6.5s por item
-        }}
+      <div
+        ref={scrollerRef}
+        onScroll={handleScroll}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={endMouseDrag}
+        onMouseLeave={onMouseLeave}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+        onMouseEnter={onMouseEnter}
+        className="flex gap-3 overflow-x-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden px-3 py-1 cursor-grab active:cursor-grabbing select-none"
+        style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {duplicatedItems.map((item, idx) => (
           <button
             key={`${item.id}-${idx}`}
             type="button"
-            onClick={() => onItemClick(item)}
-            className="group relative shrink-0 w-32 h-44 sm:w-40 sm:h-56 rounded-2xl overflow-hidden shadow-lg border border-white/10 active:scale-[0.98] transition-all focus:outline-none hover:shadow-xl hover:border-white/20"
+            onClick={(e) => {
+              if (dragRef.current && dragRef.current.moved > 6) {
+                e.preventDefault();
+                return;
+              }
+              onItemClick(item);
+            }}
+            className="group relative shrink-0 w-32 h-44 sm:w-40 sm:h-56 rounded-2xl overflow-hidden shadow-lg border border-white/10 active:scale-[0.98] transition-all focus:outline-none hover:shadow-xl hover:border-white/20 select-none"
           >
             <img
               src={item.image}
               alt={item.fullName}
               loading="lazy"
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              draggable={false}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 pointer-events-none select-none"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none transition-opacity duration-300 group-hover:opacity-80" />
             
@@ -58,7 +193,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
             </div>
           </button>
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 });
