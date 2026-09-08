@@ -88,11 +88,9 @@ const HomeTabEstudos = ({
                 className="transition-all"
                 style={{
                   backgroundImage: 'none',
-                  backgroundColor: 'rgba(0, 0, 0, 0.45)',
-                  backdropFilter: 'blur(12px)',
-                  WebkitBackdropFilter: 'blur(12px)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3)',
+                  backgroundColor: '#18181b', // zinc-900 solid
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
                 }}
                 iconClassName={c.id === 'ea-mapas' ? 'w-6 h-6' : ''}
                 badge={c.emBreve ? 'Em breve' : undefined}

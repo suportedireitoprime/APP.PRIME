@@ -69,7 +69,7 @@ const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onOpenSearch 
         </header>
 
         {/* Conteúdo: Logo à esquerda — centralizado na área vermelha */}
-        <div className="relative z-10 pt-16 sm:pt-20 flex-1 flex flex-col justify-start min-h-[110px]">
+        <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[100px]">
           <VadeMecumHeroBrand />
         </div>
 

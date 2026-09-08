@@ -214,7 +214,7 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
         </header>
 
         {/* Conteúdo: Logo à esquerda — centralizado na área vermelha */}
-        <div className="relative z-10 pt-10 flex-1 flex flex-col justify-start min-h-[140px]">
+        <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[100px]">
           <HomeBrandBanner />
         </div>
 
