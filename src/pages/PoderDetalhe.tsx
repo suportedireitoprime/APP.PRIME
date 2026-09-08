@@ -1,10 +1,11 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, BookOpen, ScrollText, Library, FileText, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Rss, Globe, Headphones, PlaySquare } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 import stfImg from '@/assets/poderes/stf.jpg';
 import camaraImg from '@/assets/poderes/camara.jpg';
 import senadoImg from '@/assets/poderes/senado.jpg';
+import { toast } from '@/hooks/use-toast';
 
 const PODERES_DATA: Record<string, any> = {
   stf: {
@@ -12,26 +13,33 @@ const PODERES_DATA: Record<string, any> = {
     sigla: 'STF',
     img: stfImg,
     color: 'rgba(225, 29, 72, 0.45)', // Rose-600
-    theme: 'rose',
+    solidColor: '#E11D48',
     description: 'A mais alta instância do poder judiciário brasileiro.',
-  },
-  camara: {
-    titulo: 'Câmara dos Deputados',
-    sigla: 'Câmara',
-    img: camaraImg,
-    color: 'rgba(14, 165, 233, 0.45)', // Sky-500
-    theme: 'sky',
-    description: 'A casa do povo e representação direta dos cidadãos.',
   },
   senado: {
     titulo: 'Senado Federal',
     sigla: 'Senado',
     img: senadoImg,
     color: 'rgba(16, 185, 129, 0.45)', // Emerald-500
-    theme: 'emerald',
+    solidColor: '#10B981',
     description: 'A câmara alta do legislativo e representante dos estados.',
   },
+  camara: {
+    titulo: 'Câmara dos Deputados',
+    sigla: 'Câmara',
+    img: camaraImg,
+    color: 'rgba(14, 165, 233, 0.45)', // Sky-500
+    solidColor: '#0EA5E9',
+    description: 'A casa do povo e representação direta dos cidadãos.',
+  },
 };
+
+const CARDS = [
+  { id: 'blog', label: 'Blog', icon: Rss, color: '#FACC15' },
+  { id: 'portais', label: 'Portais', icon: Globe, color: '#34D399' },
+  { id: 'audio', label: 'Áudio Aulas', icon: Headphones, color: '#F87171' },
+  { id: 'video', label: 'Vídeo Aulas', icon: PlaySquare, color: '#A78BFA' },
+];
 
 const PoderDetalhe = () => {
   const { id } = useParams<{ id: string }>();
@@ -52,79 +60,85 @@ const PoderDetalhe = () => {
 
   return (
     <div className="flex-1 flex flex-col min-h-screen bg-background pb-safe">
-      {/* Hero Header */}
-      <div className="relative h-[240px] md:h-[300px] w-full shrink-0">
+      {/* Hero Header (Igual ao HomeHeaderHero) */}
+      <div
+        className="relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] flex flex-col z-20 pb-6"
+        style={{ transform: 'translateZ(0)', backgroundColor: '#050505' }}
+      >
+        {/* Imagem e Degradês */}
         <img
           src={poder.img}
           alt={poder.titulo}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/95 z-0" />
         <div 
-          className="absolute inset-0 mix-blend-overlay"
+          className="absolute inset-0 mix-blend-overlay z-0"
           style={{ backgroundColor: poder.color }}
         />
-        
-        {/* Navigation Bar */}
-        <div className="absolute top-0 inset-x-0 p-4 pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] flex items-center justify-between z-10">
+
+        {/* Botão de Voltar */}
+        <header className="relative z-20 px-3 md:px-6 pt-2 flex items-center justify-start">
           <button
-            onClick={() => { haptic.selection(); navigate(-1); }}
-            className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10 text-white"
+             onClick={() => { haptic.selection(); navigate(-1); }}
+             className="w-11 h-11 md:w-12 md:h-12 rounded-full bg-black/60 hover:bg-black/80 border border-white/20 backdrop-blur-md shadow-lg shadow-black/30 flex items-center justify-center active:scale-95 transition"
+             aria-label="Voltar"
           >
-            <ArrowLeft className="w-6 h-6" />
+            <ArrowLeft className="w-5 h-5 text-white" />
           </button>
+        </header>
+
+        {/* Título Principal com a Cor Predominante */}
+        <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[100px] ml-4 sm:ml-6 mb-4">
+           <div className="flex items-center gap-3">
+              {/* Linha vertical (substitui o fundo vermelho padrão) */}
+              <div className="w-[3px] h-10 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]" style={{ backgroundColor: poder.solidColor }} />
+              <div className="flex flex-col">
+                 <p className="font-body text-white/90 text-[10px] sm:text-[11px] font-bold tracking-[0.2em] uppercase drop-shadow-md mb-0.5">
+                   {poder.sigla}
+                 </p>
+                 <h1 className="font-serif italic text-white text-[20px] sm:text-[24px] leading-none font-semibold tracking-tight drop-shadow-lg">
+                   {poder.titulo}
+                 </h1>
+              </div>
+           </div>
         </div>
 
-        {/* Hero Title */}
-        <div className="absolute bottom-6 px-5 z-10">
-          <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest mb-1 block drop-shadow-md">
-            {poder.sigla}
-          </span>
-          <h1 className="text-2xl md:text-3xl font-display font-bold text-white drop-shadow-lg leading-tight">
-            {poder.titulo}
-          </h1>
-          <p className="text-white/80 text-sm mt-1 max-w-sm drop-shadow-md">
-            {poder.description}
-          </p>
+        {/* Cards de Atalhos Customizados */}
+        <div className="relative z-10 px-3 sm:px-5 pt-2">
+           <div className="grid grid-cols-4 gap-2 sm:gap-3">
+              {CARDS.map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      haptic.selection();
+                      toast({ title: 'Em breve', description: `O módulo de ${item.label} está em desenvolvimento.` });
+                    }}
+                    style={{ '--shimmer-delay': `${index * 150}ms` } as React.CSSProperties}
+                    className="group relative flex flex-col items-center justify-center gap-2 py-3 px-1 min-h-[48px] rounded-2xl bg-black/75 backdrop-blur-sm border border-white/15 shadow-lg shadow-black/30 active:scale-[0.96] transition-all duration-75 touch-manipulation hover:bg-black/90"
+                  >
+                    <Icon
+                      className="w-5 h-5 shrink-0 transition-all group-hover:scale-110"
+                      style={{ color: item.color, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
+                      strokeWidth={2}
+                    />
+                    <span className="w-full text-center px-0.5 text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] truncate">
+                      {item.label}
+                    </span>
+                  </button>
+                );
+              })}
+           </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 px-4 py-6 space-y-6">
-        
-        <section>
-          <h2 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
-            <ScrollText className="w-5 h-5 text-primary" />
-            Biografia e Membros
-          </h2>
-          <div className="bg-card border border-border rounded-xl p-5 text-center text-muted-foreground flex flex-col items-center justify-center min-h-[120px]">
-            <BookOpen className="w-8 h-8 mb-2 opacity-50" />
-            <p className="text-sm">Área em desenvolvimento.</p>
-            <p className="text-xs mt-1">As biografias e informações detalhadas serão adicionadas em breve.</p>
-          </div>
-        </section>
-
-        <section>
-          <h2 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-primary" />
-            Notícias & Blog
-          </h2>
-          <div className="bg-card border border-border rounded-xl p-5 text-center text-muted-foreground flex flex-col items-center justify-center min-h-[120px]">
-            <Library className="w-8 h-8 mb-2 opacity-50" />
-            <p className="text-sm">Feeds e notícias relacionadas a este poder serão exibidos aqui.</p>
-          </div>
-        </section>
-
-        <section>
-          <h2 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
-            <ExternalLink className="w-5 h-5 text-primary" />
-            Portais
-          </h2>
-          <div className="bg-card border border-border rounded-xl p-5 text-center text-muted-foreground flex flex-col items-center justify-center min-h-[80px]">
-            <p className="text-sm">Links externos serão organizados nesta seção.</p>
-          </div>
-        </section>
-
+      {/* Área de Conteúdo abaixo do Hero (Vazio por enquanto conforme solicitado, mas pronto para scroll) */}
+      <div className="flex-1 px-4 py-8">
+        <div className="flex flex-col items-center justify-center h-40 text-center opacity-60">
+          <p className="text-sm font-medium">Selecione uma opção acima para carregar o conteúdo.</p>
+        </div>
       </div>
     </div>
   );
