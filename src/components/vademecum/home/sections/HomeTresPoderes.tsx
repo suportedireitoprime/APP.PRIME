@@ -56,10 +56,13 @@ const HomeTresPoderes = () => {
                 haptic.selection();
                 navigate(`/tres-poderes/${poder.id}`);
               }}
-              className={`group relative w-full h-[120px] flex items-center justify-between px-5 transition-all active:scale-[0.98] ${
-                i !== PODERES.length - 1 ? 'border-b border-white/30 shadow-[0_1px_2px_rgba(255,255,255,0.1)]' : ''
-              }`}
+              className="group relative w-full h-[120px] flex items-center justify-between px-5 transition-all active:scale-[0.98]"
             >
+              {/* Divisória brilhante (exceto no último) */}
+              {i !== PODERES.length - 1 && (
+                <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-white/60 z-30 shadow-[0_0_6px_rgba(255,255,255,0.8)]" />
+              )}
+              
               {/* Imagem de Fundo Completa */}
               <img
                 src={poder.img}
