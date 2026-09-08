@@ -104,9 +104,42 @@ export function enableMouseDragScroll() {
     moved = false;
   };
 
+  let hoveredElement: HTMLElement | null = null;
+  const onMouseOver = (e: MouseEvent) => {
+    hoveredElement = e.target as HTMLElement;
+  };
+
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    
+    // Ignore if typing in an input
+    const active = document.activeElement;
+    if (active && ['INPUT', 'TEXTAREA', 'SELECT'].includes(active.tagName.toUpperCase())) return;
+    if (active && active.getAttribute('contenteditable') === 'true') return;
+
+    // Use hovered element or focused element as starting point
+    const start = hoveredElement || active;
+    if (!start) return;
+
+    const scroller = findScrollTarget(start);
+    if (!scroller) return;
+
+    // Found a carousel, scroll it!
+    const amount = scroller.clientWidth * 0.75; // Scroll 75% of the visible width
+    if (e.key === 'ArrowLeft') {
+      scroller.scrollBy({ left: -amount, behavior: 'smooth' });
+      e.preventDefault();
+    } else if (e.key === 'ArrowRight') {
+      scroller.scrollBy({ left: amount, behavior: 'smooth' });
+      e.preventDefault();
+    }
+  };
+
   window.addEventListener('mousedown', onMouseDown, { passive: true });
   window.addEventListener('mousemove', onMouseMove, { passive: false });
   window.addEventListener('mouseup', endDrag);
   window.addEventListener('mouseleave', endDrag);
+  window.addEventListener('mouseover', onMouseOver, { passive: true });
+  window.addEventListener('keydown', onKeyDown, { passive: false });
   window.addEventListener('blur', cancelMouseDragScroll);
 }

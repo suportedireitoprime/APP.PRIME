@@ -210,6 +210,12 @@ const Flashcard3D = memo(function Flashcard3D({
 
                 <div className="relative z-10 mb-4 flex items-start justify-between gap-2">
                   <div className="flex flex-wrap items-center gap-x-1 gap-y-0.5 min-w-0 flex-1">
+                    {atual.area === 'Termos Jurídicos' && (
+                      <span className="mr-1.5 flex items-center gap-1 rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-400 border border-emerald-500/30">
+                        <BookOpen className="h-2.5 w-2.5" />
+                        Glossário
+                      </span>
+                    )}
                     {formatTemaBreadcrumb(atual.tema ?? atual.area ?? 'Flashcard').map((part, i, arr) => (
                       <span key={i} className="flex items-center gap-1">
                         <span className="text-[11px] md:text-xs font-medium leading-snug" style={{ color: `color-mix(in oklab, ${accent} 60%, white)`, textShadow: '0 1px 8px rgba(0,0,0,0.5)' }}>
@@ -293,6 +299,14 @@ const Flashcard3D = memo(function Flashcard3D({
                 </div>
 
                 <div className="relative z-10 flex-1 flex flex-col">
+                  {atual.area === 'Termos Jurídicos' && (
+                    <div className="flex justify-center mb-1">
+                      <span className="flex items-center gap-1 rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-400 border border-emerald-500/30">
+                        <BookOpen className="h-2.5 w-2.5" />
+                        Glossário
+                      </span>
+                    </div>
+                  )}
                   <p className="text-[10px] uppercase tracking-[0.2em] font-semibold mb-3 text-center" style={{ color: accent }}>
                     Resposta Explicada
                   </p>

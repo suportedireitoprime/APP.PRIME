@@ -58,11 +58,28 @@ export const useFlashcardsResumoAreas = () => {
       const onlineFn = async () => {
         const { data, error } = await supabase.rpc('flashcards_resumo_areas');
         if (error) throw error;
-        const rows = (data || []) as unknown as FlashcardsAreaRow[];
-        if (rows && rows.length > 0) {
-          void saveOfflinePackage('flashcards-resumo-areas', 'Flashcards Áreas', rows);
+        
+        const result = [...(data || [])] as FlashcardsAreaRow[];
+        const hasTermos = result.find(r => r.area === 'Termos Jurídicos');
+        
+        if (!hasTermos) {
+          const { count } = await supabase.from('flashcards_cards').select('*', { count: 'exact', head: true }).eq('area', 'Termos Jurídicos');
+          if (count && count > 0) {
+            result.push({
+              area: 'Termos Jurídicos',
+              slug: 'termos-juridicos',
+              ordem: 99,
+              total_cards: count,
+              compreendidos: 0,
+              a_revisar: 0
+            });
+          }
         }
-        return rows;
+        
+        if (result && result.length > 0) {
+          void saveOfflinePackage('flashcards-resumo-areas', 'Flashcards Áreas', result);
+        }
+        return result;
       };
       return withBundleFallback(onlineFn(), () => bundle.flashcardsResumoAreas<FlashcardsAreaRow>());
     },

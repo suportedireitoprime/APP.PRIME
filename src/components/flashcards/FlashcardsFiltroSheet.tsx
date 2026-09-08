@@ -13,6 +13,7 @@ import { useFlashcardsResumoAreas } from '@/lib/flashcardsQueries';
 import { QuantidadeSheet } from '@/components/flashcards/QuantidadeSheet';
 
 export type FlashcardsFiltro = {
+  objetivo?: 'disciplina' | 'termos_juridicos';
   disciplinas: string[];
   assuntos: string[];
   status: string[];
@@ -22,7 +23,7 @@ export type FlashcardsFiltro = {
 export const FILTRO_FLASHCARDS_KEY = 'flashcards:filtro';
 
 export const FILTRO_FLASHCARDS_VAZIO: FlashcardsFiltro = {
-  disciplinas: [], assuntos: [], status: [], quantidade: null,
+  objetivo: undefined, disciplinas: [], assuntos: [], status: [], quantidade: null,
 };
 
 export function lerFiltroFlashcardsSalvo(): FlashcardsFiltro | null {
@@ -337,12 +338,15 @@ const FlashcardsFiltroSheet = ({
   onAplicar: (f: FlashcardsFiltro) => void;
 }) => {
   const [f, setF] = useState<FlashcardsFiltro>(() => lerFiltroFlashcardsSalvo() ?? FILTRO_FLASHCARDS_VAZIO);
-  const [passo, setPasso] = useState<null | 'disciplinas' | 'assuntos' | 'status' | 'quantidade'>(null);
+  const [passo, setPasso] = useState<null | 'objetivo' | 'disciplinas' | 'assuntos' | 'status' | 'quantidade'>(null);
   
 
 
   const { data: areasData } = useFlashcardsResumoAreas();
-  const disciplinas = useMemo(() => (areasData || []).map(a => a.area).sort((a, b) => a.localeCompare(b, 'pt-BR')), [areasData]);
+  const disciplinas = useMemo(() => (areasData || [])
+    .map(a => a.area)
+    .filter(a => a !== 'Termos Jurídicos')
+    .sort((a, b) => a.localeCompare(b, 'pt-BR')), [areasData]);
   
   const [assuntosCache, setAssuntosCache] = useState<Record<string, string[]>>({});
   const [carregandoAssuntos, setCarregandoAssuntos] = useState(false);
@@ -389,8 +393,9 @@ const FlashcardsFiltroSheet = ({
     return Array.from(list).sort((a, b) => a.localeCompare(b, 'pt-BR'));
   }, [f.disciplinas, assuntosCache]);
 
-  const proximo = !f.disciplinas.length ? 'disciplinas'
-    : !f.assuntos.length ? 'assuntos'
+  const proximo = !f.objetivo ? 'objetivo'
+    : (f.objetivo === 'disciplina' && !f.disciplinas.length) ? 'disciplinas'
+    : (f.objetivo === 'disciplina' && !f.assuntos.length) ? 'assuntos'
     : null;
 
   const selecionados =
@@ -398,12 +403,23 @@ const FlashcardsFiltroSheet = ({
     (f.status?.length > 0 ? 1 : 0) +
     (f.quantidade ? 1 : 0);
 
+  const totalCountCalc = useMemo(() => {
+    if (!areasData) return 0;
+    if (f.objetivo === 'termos_juridicos') {
+      return areasData.find(a => a.area === 'Termos Jurídicos')?.total_cards || 0;
+    }
+    if (f.disciplinas.length > 0) {
+      return f.disciplinas.reduce((acc, d) => acc + (areasData.find(a => a.area === d)?.total_cards || 0), 0);
+    }
+    return 0;
+  }, [f.objetivo, f.disciplinas, areasData]);
+
   const limpar = () => setF({ ...FILTRO_FLASHCARDS_VAZIO });
 
   const aplicar = () => {
-    if (!f.disciplinas.length) {
+    if (!f.objetivo || (f.objetivo === 'disciplina' && !f.disciplinas.length)) {
       haptic.error();
-      toast('Escolha a matéria primeiro', { description: 'A matéria é obrigatória para aplicar filtros.' });
+      toast('Escolha o objetivo e a matéria', { description: 'Esses campos são obrigatórios para aplicar filtros.' });
       return;
     }
 
@@ -447,32 +463,46 @@ const FlashcardsFiltroSheet = ({
 
             <div className="flex-1 space-y-2.5 overflow-y-auto px-4 pb-4 pt-2">
               <StepRow
-                step={1} label="Disciplina"
-                hint={f.disciplinas.length ? f.disciplinas[0] : 'Escolha a matéria'}
-                active={proximo === 'disciplinas'} done={!!f.disciplinas.length}
-                badge={f.disciplinas.length ? 1 : undefined}
-                onClick={() => setPasso('disciplinas')}
+                step={1} label="Objetivo"
+                hint={f.objetivo === 'termos_juridicos' ? 'Termos Jurídicos' : f.objetivo === 'disciplina' ? 'Matérias e Assuntos' : 'O que você quer estudar?'}
+                active={proximo === 'objetivo'} done={!!f.objetivo}
+                badge={f.objetivo ? 1 : undefined}
+                onClick={() => setPasso('objetivo')}
               />
+              
+              {f.objetivo !== 'termos_juridicos' && (
+                <>
+                  <StepRow
+                    step={2} label="Disciplina"
+                    hint={f.disciplinas.length ? f.disciplinas[0] : 'Escolha a matéria'}
+                    locked={!f.objetivo} active={proximo === 'disciplinas'} done={!!f.disciplinas.length}
+                    badge={f.disciplinas.length ? 1 : undefined}
+                    lockedMessage="Escolha o objetivo primeiro."
+                    onClick={() => setPasso('disciplinas')}
+                  />
+                  <StepRow
+                    step={3} label="Assuntos"
+                    hint={f.assuntos.length ? `${f.assuntos.length} selecionado(s)` : (carregandoAssuntos ? 'Carregando temas...' : 'Todos os assuntos')}
+                    locked={!f.disciplinas.length} active={proximo === 'assuntos'} done={!!f.assuntos.length}
+                    badge={f.assuntos.length || undefined}
+                    lockedMessage="Escolha a disciplina primeiro."
+                    onClick={() => setPasso('assuntos')}
+                  />
+                </>
+              )}
+
               <StepRow
-                step={2} label="Assuntos"
-                hint={f.assuntos.length ? `${f.assuntos.length} selecionado(s)` : (carregandoAssuntos ? 'Carregando temas...' : 'Todos os assuntos')}
-                locked={!f.disciplinas.length} active={proximo === 'assuntos'} done={!!f.assuntos.length}
-                badge={f.assuntos.length || undefined}
-                lockedMessage="Escolha a disciplina primeiro."
-                onClick={() => setPasso('assuntos')}
-              />
-              <StepRow
-                step={3} label="Status"
+                step={f.objetivo === 'termos_juridicos' ? 2 : 4} label="Status"
                 hint={f.status.length ? `${f.status.length} selecionado(s)` : 'Todos os status'}
-                locked={!f.disciplinas.length} done={!!f.status.length}
+                locked={f.objetivo !== 'termos_juridicos' && !f.disciplinas.length} done={!!f.status.length}
                 badge={f.status.length || undefined}
                 lockedMessage="Escolha a disciplina primeiro."
                 onClick={() => setPasso('status')}
               />
               <StepRow
-                step={4} label="Quantidade"
+                step={f.objetivo === 'termos_juridicos' ? 3 : 5} label="Quantidade"
                 hint={f.quantidade ? `${f.quantidade} flashcards` : 'Todos os cards do filtro'}
-                done={!!f.quantidade}
+                done={f.quantidade !== undefined}
                 onClick={() => setPasso('quantidade')}
               />
             </div>
@@ -493,6 +523,23 @@ const FlashcardsFiltroSheet = ({
             </div>
 
             <AnimatePresence>
+              {passo === 'objetivo' && (
+                <SelecaoSheet
+                  key="obj" titulo="Objetivo" single
+                  opcoes={['Matérias e Assuntos', 'Termos Jurídicos']}
+                  selecionado={f.objetivo === 'termos_juridicos' ? ['Termos Jurídicos'] : f.objetivo === 'disciplina' ? ['Matérias e Assuntos'] : []}
+                  onFechar={() => setPasso(null)}
+                  onConfirmar={(v) => {
+                    const isTermos = v[0] === 'Termos Jurídicos';
+                    setF(p => ({ 
+                      ...p, 
+                      objetivo: isTermos ? 'termos_juridicos' : 'disciplina',
+                      disciplinas: isTermos ? [] : p.disciplinas,
+                      assuntos: isTermos ? [] : p.assuntos
+                    }));
+                  }}
+                />
+              )}
               {passo === 'disciplinas' && (
                 <SelecaoSheet
                   key="disc" titulo="Disciplina" buscavel single
@@ -520,13 +567,35 @@ const FlashcardsFiltroSheet = ({
                   selecionado={f.status.map(id => STATUS.find(s => s.id === id)?.label ?? id)}
                   onFechar={() => setPasso(null)}
                   onConfirmar={(v) => setF((p) => ({ ...p, status: v.map(label => STATUS.find(s => s.label === label)?.id ?? label) }))}
+                  renderOpcao={(o) => {
+                    if (o === 'Todos os cards') {
+                      return (
+                        <div className="flex flex-col w-full pr-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[15px] font-bold text-zinc-100 group-hover:text-white">
+                              Todos os cards
+                            </span>
+                            {totalCountCalc > 0 && (
+                              <span className="text-[12px] font-semibold text-zinc-300 bg-zinc-800/90 border border-zinc-700/60 px-2.5 py-0.5 rounded-full whitespace-nowrap">
+                                {totalCountCalc} {totalCountCalc === 1 ? 'card' : 'cards'}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-[12px] font-medium text-zinc-400 mt-0.5">
+                            Estudar sem filtro de status
+                          </span>
+                        </div>
+                      );
+                    }
+                    return o;
+                  }}
                 />
               )}
               {passo === 'quantidade' && (
                 <QuantidadeSheet
                   key="qtd"
                   quantidadeSel={f.quantidade === null ? 'todos' : f.quantidade}
-                  totalCount={0}
+                  totalCount={totalCountCalc}
                   onFechar={() => setPasso(null)}
                   onConfirmar={(qtd) => {
                     setF(p => ({ ...p, quantidade: qtd === 'todos' ? null : qtd as number }));

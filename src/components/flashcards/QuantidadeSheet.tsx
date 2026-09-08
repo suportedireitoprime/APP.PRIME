@@ -86,46 +86,34 @@ export function QuantidadeSheet({
           </div>
         </button>
 
-        {/* Animated collapse / expand for fixed quantities */}
-        <AnimatePresence>
-          {!isTodos ? (
-            <motion.div
-              key="fixed-options"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.25, ease: 'easeInOut' }}
-              className="overflow-hidden space-y-2.5 pt-1"
-            >
-              {opcoesFixas.map(qtd => {
-                const checked = localQtd === qtd;
-                return (
-                  <button
-                    key={qtd}
-                    type="button"
-                    onClick={() => handleSelectFixa(qtd)}
-                    className={`flex w-full items-center justify-between p-4 rounded-xl border transition-all text-left group ${
-                      checked
-                        ? 'bg-emerald-500/10 border-emerald-500/40 shadow-sm shadow-emerald-500/10'
-                        : 'bg-zinc-900/40 border-zinc-800/80 hover:bg-zinc-900/80'
-                    }`}
-                  >
-                    <span className="text-[15px] font-bold text-zinc-100 group-hover:text-white">
-                      {qtd} flashcards
-                    </span>
-                    <span className={`grid h-6 w-6 place-items-center rounded-md border-2 transition-all ${
-                      checked
-                        ? 'border-[#36AF85] bg-[#36AF85] text-white shadow-md shadow-[#36AF85]/25'
-                        : 'border-zinc-700 bg-zinc-900/50 group-hover:border-zinc-500'
-                    }`}>
-                      {checked && <Check className="h-3.5 w-3.5 drop-shadow-md" strokeWidth={3} />}
-                    </span>
-                  </button>
-                );
-              })}
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
+        <div className="space-y-2.5 pt-1">
+          {opcoesFixas.map(qtd => {
+            const checked = localQtd === qtd;
+            return (
+              <button
+                key={qtd}
+                type="button"
+                onClick={() => handleSelectFixa(qtd)}
+                className={`flex w-full items-center justify-between p-4 rounded-xl border transition-all text-left group ${
+                  checked
+                    ? 'bg-emerald-500/10 border-emerald-500/40 shadow-sm shadow-emerald-500/10'
+                    : 'bg-zinc-900/40 border-zinc-800/80 hover:bg-zinc-900/80'
+                }`}
+              >
+                <span className="text-[15px] font-bold text-zinc-100 group-hover:text-white">
+                  {qtd} flashcards
+                </span>
+                <span className={`grid h-6 w-6 place-items-center rounded-md border-2 transition-all ${
+                  checked
+                    ? 'border-[#36AF85] bg-[#36AF85] text-white shadow-md shadow-[#36AF85]/25'
+                    : 'border-zinc-700 bg-zinc-900/50 group-hover:border-zinc-500'
+                }`}>
+                  {checked && <Check className="h-3.5 w-3.5 drop-shadow-md" strokeWidth={3} />}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div className="border-t border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md px-5 pb-safe-nav pt-4">
