@@ -34,6 +34,7 @@ import HomeUserHeader from './HomeUserHeader';
 import HomeBrandBanner from './HomeBrandBanner';
 import HomeSearchButton from './HomeSearchButton';
 import HomeActionShortcuts from './HomeActionShortcuts';
+import FallingMotifs from './FallingMotifs';
 import { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { Bell, Menu as MenuIcon } from 'lucide-react';
@@ -180,6 +181,7 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
             <div className="absolute inset-0 opacity-15 mix-blend-overlay">
               <ShapeGrid />
             </div>
+            <FallingMotifs />
           </div>
         </div>
 
