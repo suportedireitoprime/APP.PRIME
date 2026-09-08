@@ -14,91 +14,381 @@ interface TemaPenal {
   id: string;
   numero: string;
   nome: string;
-  subtitulo: string;
-  artigos: string;
+  rawMateria: string;
+  subtitulo?: string;
+  artigos?: string;
   disponivel: boolean;
   totalNiveis: number;
 }
 
 const TEMAS_DIREITO_PENAL: TemaPenal[] = [
   {
-    id: 'crimes-familia',
+    id: 'tema-01-crimes-contra-a-familia',
     numero: '01',
     nome: 'Crimes Contra a Família',
-    subtitulo: 'Casamento, Filiação, Assistência e Pátrio Poder',
-    artigos: 'Arts. 235 a 249',
+    rawMateria: '01. Crimes Contra a Família',
     disponivel: true,
     totalNiveis: 5,
   },
   {
-    id: 'crimes-pessoa',
+    id: 'tema-02-criminologia',
     numero: '02',
-    nome: 'Crimes Contra a Pessoa',
-    subtitulo: 'Homicídio, Lesão Corporal e Honra',
-    artigos: 'Arts. 121 a 154',
-    disponivel: false,
+    nome: 'Criminologia',
+    rawMateria: '02. Criminologia',
+    disponivel: true,
     totalNiveis: 5,
   },
   {
-    id: 'crimes-patrimonio',
+    id: 'tema-03-direito-penal-do-inimigo',
     numero: '03',
-    nome: 'Crimes Contra o Patrimônio',
-    subtitulo: 'Furto, Roubo, Extorsão e Estelionato',
-    artigos: 'Arts. 155 a 183',
-    disponivel: false,
+    nome: 'Direito Penal do Inimigo',
+    rawMateria: '03. Direito Penal do Inimigo',
+    disponivel: true,
     totalNiveis: 5,
   },
   {
-    id: 'crimes-dignidade-sexual',
+    id: 'tema-04-critica-ao-direito-penal-do-inimigo',
     numero: '04',
-    nome: 'Crimes Contra a Dignidade Sexual',
-    subtitulo: 'Estupro, Violação e Assédio Sexual',
-    artigos: 'Arts. 213 a 234',
-    disponivel: false,
+    nome: 'Crítica ao Direito Penal do Inimigo',
+    rawMateria: '04. Crítica ao Direito Penal do Inimigo',
+    disponivel: true,
     totalNiveis: 5,
   },
   {
-    id: 'crimes-incolumidade',
+    id: 'tema-05-escolas-penais',
     numero: '05',
-    nome: 'Crimes Contra a Incolumidade Pública',
-    subtitulo: 'Perigo Comum e Saúde Pública',
-    artigos: 'Arts. 250 a 285',
-    disponivel: false,
+    nome: 'Escolas Penais',
+    rawMateria: '05. Escolas Penais',
+    disponivel: true,
     totalNiveis: 5,
   },
   {
-    id: 'crimes-paz-publica',
+    id: 'tema-06-nocoes-gerais-de-direito-penal',
     numero: '06',
-    nome: 'Crimes Contra a Paz Pública',
-    subtitulo: 'Incitação, Associação Criminosa e Milícia',
-    artigos: 'Arts. 286 a 288',
-    disponivel: false,
+    nome: 'Noções Gerais de Direito Penal',
+    rawMateria: '06. Noções Gerais de Direito Penal',
+    disponivel: true,
     totalNiveis: 5,
   },
   {
-    id: 'crimes-fe-publica',
+    id: 'tema-07-principios-penais',
     numero: '07',
-    nome: 'Crimes Contra a Fé Pública',
-    subtitulo: 'Moeda Falsa e Falsidade Documental',
-    artigos: 'Arts. 289 a 311',
-    disponivel: false,
+    nome: 'Princípios Penais',
+    rawMateria: '07. Princípios Penais',
+    disponivel: true,
     totalNiveis: 5,
   },
   {
-    id: 'crimes-administracao',
+    id: 'tema-08-interpretacao-e-integracao-da-lei-penal',
     numero: '08',
-    nome: 'Crimes Contra a Administração Pública',
-    subtitulo: 'Peculato, Concussão e Corrupção',
-    artigos: 'Arts. 312 a 359',
-    disponivel: false,
+    nome: 'Interpretação e Integração da Lei Penal',
+    rawMateria: '08. Interpretação e Integração da Lei Penal',
+    disponivel: true,
     totalNiveis: 5,
   },
+  {
+    id: 'tema-09-lei-penal-no-espaco-e-no-tempo',
+    numero: '09',
+    nome: 'Lei Penal no Espaço e no Tempo',
+    rawMateria: '09. Lei Penal no Espaço e no Tempo',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-10-teoria-geral-do-delito',
+    numero: '10',
+    nome: 'Teoria Geral do Delito',
+    rawMateria: '10. Teoria Geral do Delito',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-11-iter-criminis',
+    numero: '11',
+    nome: 'Iter Criminis',
+    rawMateria: '11. Iter Criminis',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-12-principio-da-insignificancia',
+    numero: '12',
+    nome: 'Princípio da Insignificância',
+    rawMateria: '12. Princípio da Insignificância',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-13-teoria-do-erro',
+    numero: '13',
+    nome: 'Teoria do Erro',
+    rawMateria: '13. Teoria do Erro',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-14-imputabilidade-e-concurso-de-pessoas',
+    numero: '14',
+    nome: 'Imputabilidade e Concurso de Pessoas',
+    rawMateria: '14. Imputabilidade e Concurso de Pessoas',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-15-imputabilidade-e-concurso-de-pessoas',
+    numero: '15',
+    nome: 'Imputabilidade e Concurso de Pessoas',
+    rawMateria: '15. Imputabilidade e Concurso de Pessoas',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-16-concurso-de-pessoas-e-autoria-imediata',
+    numero: '16',
+    nome: 'Concurso de Pessoas e Autoria Imediata',
+    rawMateria: '16. Concurso de Pessoas e Autoria Imediata',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-17-teoria-da-pena',
+    numero: '17',
+    nome: 'Teoria da Pena',
+    rawMateria: '17. Teoria da Pena',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-18-funcoes-da-pena',
+    numero: '18',
+    nome: 'Funções da Pena',
+    rawMateria: '18. Funções da Pena',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-19-concurso-de-crimes',
+    numero: '19',
+    nome: 'Concurso de Crimes',
+    rawMateria: '19. Concurso de Crimes',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-20-dosimetria-da-pena',
+    numero: '20',
+    nome: 'Dosimetria da Pena',
+    rawMateria: '20. Dosimetria da Pena',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-21-suspensao-condicional-da-pena-e-livramento-condicional',
+    numero: '21',
+    nome: 'Suspensão Condicional da Pena e Livramento Condicional',
+    rawMateria: '21. Suspensão Condicional da Pena e Livramento Condicional',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-22-efeitos-da-condenacao-e-reabilitacao',
+    numero: '22',
+    nome: 'Efeitos da Condenação e Reabilitação',
+    rawMateria: '22. Efeitos da Condenação e Reabilitação',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-23-medidas-de-seguranca',
+    numero: '23',
+    nome: 'Medidas de Segurança',
+    rawMateria: '23. Medidas de Segurança',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-24-extincao-da-punibilidade-e-prescricao',
+    numero: '24',
+    nome: 'Extinção da Punibilidade e Prescrição',
+    rawMateria: '24. Extinção da Punibilidade e Prescrição',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-25-prescricao-penal',
+    numero: '25',
+    nome: 'Prescrição Penal',
+    rawMateria: '25. Prescrição Penal',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-26-crimes-contra-a-pessoa',
+    numero: '26',
+    nome: 'Crimes Contra a Pessoa',
+    rawMateria: '26. Crimes Contra a Pessoa',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-27-crimes-contra-a-vida',
+    numero: '27',
+    nome: 'Crimes Contra a Vida',
+    rawMateria: '27. Crimes Contra a Vida',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-28-crimes-contra-a-honra',
+    numero: '28',
+    nome: 'Crimes Contra a Honra',
+    rawMateria: '28. Crimes Contra a Honra',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-29-crimes-contra-o-patrimonio',
+    numero: '29',
+    nome: 'Crimes contra o Patrimônio',
+    rawMateria: '29. Crimes contra o Patrimônio',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-30-crimes-contra-a-dignidade-sexual',
+    numero: '30',
+    nome: 'Crimes contra a Dignidade Sexual',
+    rawMateria: '30. Crimes contra a Dignidade Sexual',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos',
+    numero: '31',
+    nome: 'Direito Penal Sexual - Teoria Geral e Reflexos Típicos',
+    rawMateria: '31. Direito Penal Sexual - Teoria Geral e Reflexos Típicos',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-32-crimes-contra-a-organizacao-do-trabalho',
+    numero: '32',
+    nome: 'Crimes Contra a Organização do Trabalho',
+    rawMateria: '32. Crimes Contra a Organização do Trabalho',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-33-crimes-contra-a-propriedade-imaterial',
+    numero: '33',
+    nome: 'Crimes Contra a Propriedade Imaterial',
+    rawMateria: '33. Crimes Contra a Propriedade Imaterial',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-34-crimes-praticados-por-funcionario-publico-contra-a-administracao',
+    numero: '34',
+    nome: 'Crimes praticados por Funcionário Público contra a Administração',
+    rawMateria: '34. Crimes praticados por Funcionário Público contra a Administração',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira',
+    numero: '35',
+    nome: 'Crimes Praticados por Particular Contra a Administração em Geral e Estrangeira',
+    rawMateria: '35. Crimes Praticados por Particular Contra a Administração em Geral e Estrangeira',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-36-crimes-contra-o-sentimento-religioso',
+    numero: '36',
+    nome: 'Crimes Contra o Sentimento Religioso',
+    rawMateria: '36. Crimes Contra o Sentimento Religioso',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-37-crimes-praticados-em-licitacoes-e-contratos-administrativos',
+    numero: '37',
+    nome: 'Crimes Praticados em Licitações e Contratos Administrativos',
+    rawMateria: '37. Crimes Praticados em Licitações e Contratos Administrativos',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-38-crimes-contra-a-fe-publica',
+    numero: '38',
+    nome: 'Crimes Contra a Fé Pública',
+    rawMateria: '38. Crimes Contra a Fé Pública',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-39-crimes-contra-a-administracao-da-justica',
+    numero: '39',
+    nome: 'Crimes Contra a Administração da Justiça',
+    rawMateria: '39. Crimes Contra a Administração da Justiça',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-40-lei-de-drogas',
+    numero: '40',
+    nome: 'Lei de Drogas',
+    rawMateria: '40. Lei de Drogas',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-41-estatuto-do-desarmamento',
+    numero: '41',
+    nome: 'Estatuto do Desarmamento',
+    rawMateria: '41. Estatuto do Desarmamento',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-42-legislacao-penal-extravagante',
+    numero: '42',
+    nome: 'Legislação Penal Extravagante',
+    rawMateria: '42. Legislação Penal Extravagante',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-43-responsabilidade-penal-da-pessoa-juridica',
+    numero: '43',
+    nome: 'Responsabilidade Penal da Pessoa Jurídica',
+    rawMateria: '43. Responsabilidade Penal da Pessoa Jurídica',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-44-classificacao-e-especie-das-infracoes-penais',
+    numero: '44',
+    nome: 'Classificação e espécie das infrações penais',
+    rawMateria: '44. Classificação e espécie das infrações penais',
+    disponivel: true,
+    totalNiveis: 5,
+  },
+  {
+    id: 'tema-51-preambulo-constitucional-e-principios-fundamentais',
+    numero: '51',
+    nome: 'Preâmbulo Constitucional e Princípios Fundamentais',
+    rawMateria: '51. Preâmbulo Constitucional e Princípios Fundamentais',
+    disponivel: true,
+    totalNiveis: 5,
+  }
 ];
 
 const CacaPalavrasPage = () => {
   const navigate = useNavigate();
 
   const [disciplinas, setDisciplinas] = useState<string[]>([]);
+  const [selectedTema, setSelectedTema] = useState<TemaPenal | null>(null);
   const [selectedDisciplina, setSelectedDisciplina] = useState<string | null>(null);
   
   const [niveis, setNiveis] = useState<GamificacaoCacaPalavras[]>([]);
@@ -109,26 +399,30 @@ const CacaPalavrasPage = () => {
 
   useEffect(() => {
     document.title = "Caça-Palavras | Direito Prime";
-    setDisciplinas(['Crimes Contra a Família']); // Poderia ser dinâmico buscando disciplinas únicas
+    setDisciplinas(TEMAS_DIREITO_PENAL.map(t => t.nome));
     setLoading(false);
   }, []);
 
-  const getProgressoTema = (nomeTema: string, totalNiveis: number = 5) => {
+  const getProgressoTema = (tema: TemaPenal) => {
     try {
-      const saved = localStorage.getItem(`caca_palavras_progresso_${nomeTema}`);
-      if (!saved) return { concluidos: 0, total: totalNiveis, percent: 0 };
+      const saved = localStorage.getItem(`caca_palavras_progresso_${tema.rawMateria}`)
+                 || localStorage.getItem(`caca_palavras_progresso_${tema.nome}`)
+                 || localStorage.getItem(`caca_palavras_progresso_${tema.id}`);
+      if (!saved) return { concluidos: 0, total: tema.totalNiveis, percent: 0 };
       const parsed = JSON.parse(saved);
       const concluidos = Object.values(parsed).filter((s: any) => Number(s) > 0).length;
-      const percent = Math.min(100, Math.round((concluidos / totalNiveis) * 100));
-      return { concluidos, total: totalNiveis, percent };
+      const percent = Math.min(100, Math.round((concluidos / tema.totalNiveis) * 100));
+      return { concluidos, total: tema.totalNiveis, percent };
     } catch {
-      return { concluidos: 0, total: totalNiveis, percent: 0 };
+      return { concluidos: 0, total: tema.totalNiveis, percent: 0 };
     }
   };
 
-  const loadProgresso = (disciplina: string) => {
+  const loadProgresso = (tema: TemaPenal) => {
     try {
-      const saved = localStorage.getItem(`caca_palavras_progresso_${disciplina}`);
+      const saved = localStorage.getItem(`caca_palavras_progresso_${tema.rawMateria}`)
+                 || localStorage.getItem(`caca_palavras_progresso_${tema.nome}`)
+                 || localStorage.getItem(`caca_palavras_progresso_${tema.id}`);
       if (saved) {
         setProgresso(JSON.parse(saved));
       } else {
@@ -140,21 +434,27 @@ const CacaPalavrasPage = () => {
   };
 
   const saveProgresso = (nivel: string, estrelas: number) => {
-    if (!selectedDisciplina) return;
+    if (!selectedTema && !selectedDisciplina) return;
+    const key = selectedTema ? selectedTema.rawMateria : selectedDisciplina!;
     setProgresso(prev => {
       const current = prev[nivel] || 0;
       if (estrelas <= current) return prev; // Mantém a melhor pontuação
       const updated = { ...prev, [nivel]: estrelas };
-      localStorage.setItem(`caca_palavras_progresso_${selectedDisciplina}`, JSON.stringify(updated));
+      localStorage.setItem(`caca_palavras_progresso_${key}`, JSON.stringify(updated));
       return updated;
     });
   };
 
-  const handleDisciplinaSelect = async (disciplina: string) => {
-    setSelectedDisciplina(disciplina);
-    loadProgresso(disciplina);
+  const handleDisciplinaSelect = async (tema: TemaPenal) => {
+    setSelectedTema(tema);
+    setSelectedDisciplina(tema.nome);
+    loadProgresso(tema);
     setLoading(true);
-    const trilha = await gamificacaoService.getTrilhaCacaPalavras(disciplina);
+    // Busca por rawMateria ("01. Crimes Contra a Família") e se necessário por nome limpo
+    let trilha = await gamificacaoService.getTrilhaCacaPalavras(tema.rawMateria);
+    if (!trilha || trilha.length === 0) {
+      trilha = await gamificacaoService.getTrilhaCacaPalavras(tema.nome);
+    }
     setNiveis(trilha);
     setLoading(false);
   };
@@ -166,8 +466,9 @@ const CacaPalavrasPage = () => {
   const handleBack = () => {
     if (selectedNivel) {
       setSelectedNivel(null);
-    } else if (selectedDisciplina) {
+    } else if (selectedDisciplina || selectedTema) {
       setSelectedDisciplina(null);
+      setSelectedTema(null);
     } else {
       navigate('/ferramentas');
     }
@@ -232,7 +533,7 @@ const CacaPalavrasPage = () => {
                     <div className="space-y-6 sm:space-y-8 w-full min-w-0">
                       {TEMAS_DIREITO_PENAL.map((tema, i) => {
                         const isLeft = i % 2 === 0;
-                        const prog = getProgressoTema(tema.nome, tema.totalNiveis);
+                        const prog = getProgressoTema(tema);
 
                         return (
                           <div
@@ -266,7 +567,7 @@ const CacaPalavrasPage = () => {
                             <div
                               onClick={() => {
                                 if (tema.disponivel) {
-                                  handleDisciplinaSelect(tema.nome);
+                                  handleDisciplinaSelect(tema);
                                 } else {
                                   toast.info("Tema em elaboração", {
                                     description: `Os níveis de "${tema.nome}" serão disponibilizados em breve!`
