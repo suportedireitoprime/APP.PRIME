@@ -58,7 +58,7 @@ export default function LeiSecaPlayer() {
     estimateSize: () => 150,
   });
 
-  const dispatch = useSyncStore((s) => s.dispatch); goBack = useGoBack();
+  const dispatch = useSyncStore((s) => s.dispatch);
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const goBack = useGoBack();

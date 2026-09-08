@@ -139,7 +139,6 @@ const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const Configuracoes = lazy(() => import("./pages/Configuracoes.tsx"));
 const RadarDeputados = lazy(() => import("./pages/RadarDeputados.tsx"));
 const RadarVotacoes = lazy(() => import("./pages/RadarVotacoes.tsx"));
-const RadarSenadores = lazy(() => import("./pages/RadarSenadores.tsx"));
 const PoderDetalhe = lazy(() => import("./pages/PoderDetalhe.tsx"));
 const RadarRankings = lazy(() => import("./pages/RadarRankings.tsx"));
 const RadarProposicoes = lazy(() => import("./pages/RadarProposicoes.tsx"));
