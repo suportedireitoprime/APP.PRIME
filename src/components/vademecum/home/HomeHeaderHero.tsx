@@ -174,7 +174,7 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
         {/* Overlay vermelho com gradiente estilo menu e sombra (drop-shadow real na divisória diagonal) */}
         <div 
           className="absolute inset-0 z-[1] pointer-events-none"
-          style={{ filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.95))' }}
+          style={{ filter: 'drop-shadow(15px 0 15px rgba(0,0,0,0.4))' }}
         >
           <div 
             className="absolute inset-0 overflow-hidden"
@@ -214,21 +214,21 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
         </header>
 
         {/* Conteúdo: Logo à esquerda — centralizado na área vermelha */}
-        <div className="relative z-10 pt-10 flex-1 flex flex-col justify-start min-h-[150px]">
+        <div className="relative z-10 pt-10 flex-1 flex flex-col justify-start min-h-[140px]">
           <HomeBrandBanner />
         </div>
 
+        {/* Atalhos Rápidos: APRENDER, FLASHCARDS, QUESTÕES, ME EXPLIQUE — dentro do painel */}
+        <div className="relative z-10 px-3 sm:px-5 pt-2 pb-2">
+          <HomeActionShortcuts />
+        </div>
+
         {/* Barra de Pesquisa */}
-        <div className="relative z-10 px-4 sm:px-6 w-full mb-2">
+        <div className="relative z-10 px-4 sm:px-6 w-full pb-5">
           <HomeSearchButton onOpenSearch={() => {
             if (onOpenSearch) onOpenSearch();
             else setSearchOpen(true);
           }} />
-        </div>
-
-        {/* Atalhos Rápidos: APRENDER, FLASHCARDS, QUESTÕES, ME EXPLIQUE — dentro do painel */}
-        <div className="relative z-10 px-3 sm:px-5 pb-5 pt-2">
-          <HomeActionShortcuts />
         </div>
       </div>
 

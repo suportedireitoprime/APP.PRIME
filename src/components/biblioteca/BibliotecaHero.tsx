@@ -245,8 +245,6 @@ const BibliotecaHero = ({ children }: Props) => {
           </div>
         </div>
 
-        {children && <div className="relative mt-2">{children}</div>}
-
         <div className="grid grid-cols-4 gap-2 mx-1 mt-1">
           {ACTIONS.map((a) => {
             const Icon = a.icon;
@@ -262,6 +260,8 @@ const BibliotecaHero = ({ children }: Props) => {
             );
           })}
         </div>
+
+        {children && <div className="relative mt-2">{children}</div>}
       </div>
     </div>
   );

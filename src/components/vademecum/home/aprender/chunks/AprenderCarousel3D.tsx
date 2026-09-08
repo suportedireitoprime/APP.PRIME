@@ -34,7 +34,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
             key={`${item.id}-${idx}`}
             type="button"
             onClick={() => onItemClick(item)}
-            className="group relative shrink-0 w-32 h-32 sm:w-40 sm:h-40 rounded-2xl overflow-hidden shadow-lg border border-white/10 active:scale-[0.98] transition-all focus:outline-none hover:shadow-xl hover:border-white/20"
+            className="group relative shrink-0 w-32 h-44 sm:w-40 sm:h-56 rounded-2xl overflow-hidden shadow-lg border border-white/10 active:scale-[0.98] transition-all focus:outline-none hover:shadow-xl hover:border-white/20"
           >
             <img
               src={item.image}

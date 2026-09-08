@@ -48,7 +48,7 @@ const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onOpenSearch 
         {/* Overlay vermelho com gradiente estilo menu e sombra */}
         <div 
           className="absolute inset-0 z-[1] pointer-events-none"
-          style={{ filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.95))' }}
+          style={{ filter: 'drop-shadow(15px 0 15px rgba(0,0,0,0.4))' }}
         >
           <div 
             className="absolute inset-0 overflow-hidden"
@@ -69,18 +69,18 @@ const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onOpenSearch 
         </header>
 
         {/* Conteúdo: Logo à esquerda — centralizado na área vermelha */}
-        <div className="relative z-10 pt-16 sm:pt-20 flex-1 flex flex-col justify-start min-h-[120px]">
+        <div className="relative z-10 pt-16 sm:pt-20 flex-1 flex flex-col justify-start min-h-[110px]">
           <VadeMecumHeroBrand />
         </div>
 
-        {/* Barra de Pesquisa */}
-        <div className="relative z-10 px-4 sm:px-6 w-full mb-2">
-          <VadeMecumSearchBar onBuscar={onOpenSearch || (() => {})} />
+        {/* ── 4 Botões de Ação Rápida ────────────────── */}
+        <div className="relative z-10 px-3 sm:px-5 pt-2 pb-2">
+          <VadeMecumQuickActions />
         </div>
 
-        {/* ── 4 Botões de Ação Rápida ────────────────── */}
-        <div className="relative z-10 px-3 sm:px-5 pb-5 pt-2">
-          <VadeMecumQuickActions />
+        {/* Barra de Pesquisa */}
+        <div className="relative z-10 px-4 sm:px-6 w-full pb-5">
+          <VadeMecumSearchBar onBuscar={onOpenSearch || (() => {})} />
         </div>
       </div>
     </>
