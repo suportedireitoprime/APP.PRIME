@@ -252,8 +252,8 @@ const BottomNav = () => {
             }`}
             aria-label="Blog"
           >
-            <ScrollText className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/blog') ? 'scale-110' : ''}`} strokeWidth={1.2} />
-            <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Blog</span>
+            <ScrollText className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform text-[#FACC15] drop-shadow-md ${path.startsWith('/blog') ? 'scale-110' : ''}`} strokeWidth={1.2} />
+            <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-[#FACC15] drop-shadow-sm truncate max-w-full px-0.5">Blog</span>
           </motion.button>
 
           {/* Slot 2: Chat Jurídico */}
@@ -268,8 +268,8 @@ const BottomNav = () => {
             }`}
             aria-label="Chat Jurídico"
           >
-            <MessageCircle className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform text-white/90 drop-shadow-md ${chatOpen ? 'scale-110' : ''}`} strokeWidth={1.2} />
-            <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Chat</span>
+            <MessageCircle className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform text-[#34D399] drop-shadow-md ${chatOpen ? 'scale-110' : ''}`} strokeWidth={1.2} />
+            <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-[#34D399] drop-shadow-sm truncate max-w-full px-0.5">Chat</span>
           </motion.button>
 
           {/* Slot 3: Vade Mecum (destaque flutuante central no mobile, normal no tablet) */}
@@ -318,8 +318,8 @@ const BottomNav = () => {
             }`}
             aria-label="Ferramentas"
           >
-            <Gavel className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform text-white/90 drop-shadow-md ${location.pathname.startsWith('/ferramentas') ? 'scale-110' : ''}`} strokeWidth={1.2} />
-            <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Ferramentas</span>
+            <Gavel className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform text-[#F87171] drop-shadow-md ${location.pathname.startsWith('/ferramentas') ? 'scale-110' : ''}`} strokeWidth={1.2} />
+            <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-[#F87171] drop-shadow-sm truncate max-w-full px-0.5">Ferramentas</span>
           </motion.button>
 
           {/* Slot 5: Pílulas */}
@@ -336,8 +336,8 @@ const BottomNav = () => {
             }`}
             aria-label="Pílulas"
           >
-            <Pill className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/pilulas') ? 'scale-110' : ''}`} strokeWidth={1.2} />
-            <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Pílulas</span>
+            <Pill className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform text-[#F97316] drop-shadow-md ${path.startsWith('/pilulas') ? 'scale-110' : ''}`} strokeWidth={1.2} />
+            <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-[#F97316] drop-shadow-sm truncate max-w-full px-0.5">Pílulas</span>
           </motion.button>
         </div>
       </div>
