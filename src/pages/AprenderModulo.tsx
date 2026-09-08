@@ -319,7 +319,7 @@ const AprenderModulo = () => {
                   Aulas deste tópico em breve!
                 </div>
               ) : (
-                <div className="relative pl-6 sm:pl-8 space-y-4 border-l-2 border-primary/30 ml-3 sm:ml-4">
+                <div className="relative space-y-4 ml-3 sm:ml-4">
                   {aulas.map((aula, idx) => {
                     const isNext = !aula.concluida && (idx === 0 || aulas[idx - 1]?.concluida);
 
@@ -329,12 +329,12 @@ const AprenderModulo = () => {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: idx * 0.05 }}
-                        className="relative"
+                        className="flex items-center gap-3 sm:gap-4"
                       >
-                        {/* Indicador de Nó na Linha do Tempo — centralizado verticalmente com o card */}
+                        {/* Nó da Linha do Tempo — alinhado com flex */}
                         <div
                           className={cn(
-                            'absolute -left-[31px] sm:-left-[39px] top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 flex items-center justify-center text-xs font-extrabold transition-all shadow-md',
+                            'w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 flex items-center justify-center text-xs font-extrabold shrink-0 transition-all shadow-md',
                             aula.concluida
                               ? 'bg-primary text-primary-foreground border-primary'
                               : isNext
@@ -349,7 +349,7 @@ const AprenderModulo = () => {
                           )}
                         </div>
 
-                        {/* Card da Aula na Trilha */}
+                        {/* Card da Aula */}
                         <button
                           type="button"
                           onClick={() => {
@@ -364,7 +364,7 @@ const AprenderModulo = () => {
                           }}
                           onPointerEnter={() => prefetchAprenderAula(aula.id)}
                           className={cn(
-                            'w-full flex items-center justify-between p-4 sm:p-5 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none overflow-hidden relative',
+                            'flex-1 min-w-0 flex items-center gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
                             isNext
                               ? 'border-primary/60 bg-card hover:border-primary shadow-primary/5'
                               : aula.concluida
@@ -372,30 +372,27 @@ const AprenderModulo = () => {
                               : 'border-border/50 bg-card/40 hover:border-primary/30'
                           )}
                         >
-                          {/* Ícone vazado da imagem de Direito Penal */}
+                          {/* Ícone vazado — circular e maior */}
                           {modulo?.areaSlug === 'direito-penal' && (
-                            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 mr-3 bg-primary/8 border border-primary/15 overflow-hidden">
+                            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shrink-0 bg-primary/10 border border-primary/20 overflow-hidden">
                               <img
                                 src="/images/gamificacao/direito_penal_prisao_vazado.webp"
                                 alt=""
                                 aria-hidden="true"
                                 loading="lazy"
                                 decoding="async"
-                                className="w-9 h-9 sm:w-10 sm:h-10 object-contain opacity-60 group-hover:opacity-80 transition-opacity select-none pointer-events-none"
+                                className="w-11 h-11 sm:w-12 sm:h-12 object-contain opacity-55 group-hover:opacity-80 transition-opacity select-none pointer-events-none"
                               />
                             </div>
                           )}
 
-                          <div className="min-w-0 flex-1 space-y-1.5 py-0.5">
-                            <span className="inline-flex items-center text-[10px] sm:text-[11px] font-medium font-sans uppercase tracking-wider text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-md">
-                              Aula {idx + 1}
-                            </span>
+                          <div className="min-w-0 flex-1 py-0.5">
                             <h3 className="text-sm sm:text-base font-normal font-sans text-foreground break-words leading-snug group-hover:text-primary transition-colors">
                               {aula.titulo}
                             </h3>
                           </div>
 
-                          <div className="flex items-center gap-2 shrink-0 ml-3">
+                          <div className="flex items-center gap-2 shrink-0 ml-1">
                             {aula.concluida && (
                               <span className="text-[10px] sm:text-[11px] font-normal text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
                                 Concluída
