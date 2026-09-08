@@ -34,7 +34,7 @@ import HomeUserHeader from './HomeUserHeader';
 import HomeBrandBanner from './HomeBrandBanner';
 import HomeSearchButton from './HomeSearchButton';
 import HomeActionShortcuts from './HomeActionShortcuts';
-import FallingMotifs from './FallingMotifs';
+import { FallingLeaves, FloatingSVGs } from './FallingMotifs';
 import { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { Bell, Menu as MenuIcon } from 'lucide-react';
@@ -181,11 +181,14 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
             <div className="absolute inset-0 opacity-15 mix-blend-overlay">
               <ShapeGrid />
             </div>
+            
+            {/* Ícones jurídicos pretos flutuando levemente apenas na área vermelha */}
+            <FloatingSVGs />
           </div>
         </div>
         
         {/* Animação caindo sobre todo o painel (imagem + área vermelha) */}
-        <FallingMotifs />
+        <FallingLeaves />
 
         {/* Botões de Notificação e Menu */}
         <header className="absolute top-0 right-0 left-0 z-20 px-3 pt-3 md:px-6 md:pt-4 lg:px-8 lg:pt-6 flex items-center justify-end gap-2 md:gap-3 pointer-events-none">

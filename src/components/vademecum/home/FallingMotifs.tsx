@@ -5,40 +5,24 @@ import laurel from '@/assets/landing-tribunal/laurel-leaf.webp';
 
 const SVGS = [Scale, Gavel, BookOpen];
 
-const FallingMotifs = () => {
+export const FallingLeaves = memo(() => {
   const [leaves, setLeaves] = useState<any[]>([]);
-  const [svgs, setSvgs] = useState<any[]>([]);
 
   useEffect(() => {
-    // Generate leaves (folhas caindo)
     const newLeaves = Array.from({ length: 12 }).map((_, i) => ({
       id: `leaf-${i}`,
       left: Math.random() * 100,
-      duration: 10 + Math.random() * 15, // 10s a 25s
+      duration: 10 + Math.random() * 15,
       delay: Math.random() * 10,
-      size: 16 + Math.random() * 24, // 16px a 40px
+      size: 16 + Math.random() * 24,
       rotationInitial: Math.random() * 360,
       rotationFinal: (Math.random() > 0.5 ? 1 : -1) * (360 + Math.random() * 360),
     }));
     setLeaves(newLeaves);
-
-    // Generate SVGs (Balança, Martelo, Livro flutuando/caindo)
-    const newSvgs = Array.from({ length: 6 }).map((_, i) => ({
-      id: `svg-${i}`,
-      Icon: SVGS[i % SVGS.length],
-      left: 10 + Math.random() * 80,
-      duration: 15 + Math.random() * 20,
-      delay: Math.random() * 12,
-      size: 32 + Math.random() * 32,
-      rotationInitial: Math.random() * 60 - 30,
-      rotationFinal: Math.random() * 60 - 30 + (Math.random() > 0.5 ? 360 : -360),
-    }));
-    setSvgs(newSvgs);
   }, []);
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-[2]">
-      {/* Folhas caindo */}
       {leaves.map((m) => (
         <motion.img
           key={m.id}
@@ -66,38 +50,59 @@ const FallingMotifs = () => {
           }}
         />
       ))}
+    </div>
+  );
+});
 
-      {/* Ícones jurídicos flutuando/caindo levemente transparentes */}
+export const FloatingSVGs = memo(() => {
+  const [svgs, setSvgs] = useState<any[]>([]);
+
+  useEffect(() => {
+    const newSvgs = Array.from({ length: 7 }).map((_, i) => ({
+      id: `svg-${i}`,
+      Icon: SVGS[i % SVGS.length],
+      left: 10 + Math.random() * 80,
+      top: 10 + Math.random() * 80,
+      duration: 8 + Math.random() * 10, // Animação mais suave (vai e volta)
+      delay: Math.random() * 5,
+      size: 32 + Math.random() * 40,
+      rotationInitial: Math.random() * 60 - 30,
+    }));
+    setSvgs(newSvgs);
+  }, []);
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-[1]">
       {svgs.map((m) => {
         const { Icon } = m;
         return (
           <motion.div
             key={m.id}
-            initial={{ y: -80, opacity: 0, rotate: m.rotationInitial }}
+            initial={{ opacity: 0 }}
             animate={{ 
-              y: [null, 250, 550, 900], 
-              opacity: [0, 0.3, 0.3, 0], 
-              rotate: m.rotationFinal 
+              opacity: 0.15, // Pretos e levemente transparentes
+              x: [0, 15, -10, 0],
+              y: [0, -15, 10, 0],
+              rotate: [m.rotationInitial, m.rotationInitial + 20, m.rotationInitial - 20, m.rotationInitial] 
             }}
             transition={{
               duration: m.duration,
               delay: m.delay,
               repeat: Infinity,
-              ease: "linear"
+              ease: "easeInOut"
             }}
-            className="absolute text-white/50"
+            className="absolute text-black"
             style={{ 
               left: `${m.left}%`, 
+              top: `${m.top}%`,
               width: m.size, 
               height: m.size 
             }}
           >
-            <Icon className="w-full h-full drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]" strokeWidth={1.2} />
+            <Icon className="w-full h-full drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]" strokeWidth={1.5} />
           </motion.div>
         );
       })}
     </div>
   );
-};
-
-export default memo(FallingMotifs);
+});
