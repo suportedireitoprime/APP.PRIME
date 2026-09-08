@@ -198,7 +198,7 @@ const CacaPalavrasPage = () => {
           onBack={handleBack}
         />
         
-        <div className={selectedNivel ? "pt-2 pb-16 px-1 sm:px-4 w-full max-w-full overflow-x-hidden" : "w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-20 pt-4 overflow-x-hidden"}>
+        <div className={selectedNivel ? "pt-2 pb-16 px-1 sm:px-4 w-full max-w-full min-w-0 overflow-x-hidden box-border" : "w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-20 pt-4 min-w-0 overflow-x-hidden box-border"}>
         <AnimatePresence mode="wait">
           {!selectedDisciplina ? (
             <motion.div
@@ -206,7 +206,7 @@ const CacaPalavrasPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="space-y-4 w-full"
+              className="space-y-4 w-full min-w-0 max-w-full"
             >
               {loading ? (
                 <div className="flex justify-center p-12">
@@ -214,17 +214,17 @@ const CacaPalavrasPage = () => {
                 </div>
               ) : (
                 <>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <BookOpenText className="w-5 h-5 text-primary" />
-                      <h2 className="text-xs sm:text-sm font-bold font-sans uppercase tracking-widest text-white">Selecione a Disciplina</h2>
+                  <div className="flex items-center justify-between mb-4 w-full min-w-0">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <BookOpenText className="w-5 h-5 text-primary shrink-0" />
+                      <h2 className="text-xs sm:text-sm font-bold font-sans uppercase tracking-widest text-white truncate">Selecione a Disciplina</h2>
                     </div>
-                    <span className="text-[10px] sm:text-xs font-semibold font-sans text-zinc-400 uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-800">
+                    <span className="text-[10px] sm:text-xs font-semibold font-sans text-zinc-400 uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 shrink-0">
                       Direito Penal
                     </span>
                   </div>
 
-                  <div className="grid gap-3 w-full">
+                  <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
                     {TEMAS_DIREITO_PENAL.map(tema => {
                       const prog = getProgressoTema(tema.nome, tema.totalNiveis);
                       return (
@@ -240,13 +240,13 @@ const CacaPalavrasPage = () => {
                             }
                           }}
                           className={`
-                            flex flex-col w-full p-4 sm:p-5 text-left rounded-2xl border transition-all select-none box-border
+                            flex flex-col w-full min-w-0 max-w-full p-4 sm:p-5 text-left rounded-2xl border transition-all select-none box-border overflow-hidden
                             ${tema.disponivel 
                               ? 'bg-zinc-900/90 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 cursor-pointer shadow-lg active:scale-[0.99] group' 
                               : 'bg-zinc-900/40 border-zinc-800/60 opacity-60 cursor-not-allowed hover:opacity-75'}
                           `}
                         >
-                          <div className="flex items-center justify-between gap-3 w-full">
+                          <div className="flex items-center justify-between gap-3 w-full min-w-0">
                             <div className="flex items-center gap-3 min-w-0 flex-1">
                               {/* Número no lado esquerdo */}
                               <div className={`
@@ -260,7 +260,7 @@ const CacaPalavrasPage = () => {
 
                               {/* Título Maior com tipografia font-sans limpa e legível */}
                               <div className="min-w-0 flex-1">
-                                <h3 className={`text-base sm:text-lg font-bold font-sans tracking-tight truncate ${tema.disponivel ? 'text-zinc-100 group-hover:text-primary transition-colors' : 'text-zinc-400'}`}>
+                                <h3 className={`text-lg sm:text-xl font-bold font-sans tracking-tight leading-snug line-clamp-2 ${tema.disponivel ? 'text-zinc-100 group-hover:text-primary transition-colors' : 'text-zinc-400'}`}>
                                   {tema.nome}
                                 </h3>
                               </div>
@@ -271,7 +271,7 @@ const CacaPalavrasPage = () => {
                               {tema.disponivel ? (
                                 <ChevronRight className="w-5 h-5 text-zinc-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
                               ) : (
-                                <span className="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold font-sans uppercase tracking-wider bg-zinc-800 text-zinc-400 border border-zinc-700">
+                                <span className="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold font-sans uppercase tracking-wider bg-zinc-800 text-zinc-400 border border-zinc-700 whitespace-nowrap">
                                   Em breve
                                 </span>
                               )}
@@ -279,14 +279,14 @@ const CacaPalavrasPage = () => {
                           </div>
 
                           {/* Barra de Progresso onde a pessoa parou */}
-                          <div className="mt-3.5 pt-3 border-t border-zinc-800/70 w-full">
-                            <div className="flex items-center justify-between text-xs font-medium font-sans mb-1.5">
-                              <span className="text-zinc-400">
+                          <div className="mt-3.5 pt-3 border-t border-zinc-800/70 w-full min-w-0">
+                            <div className="flex items-center justify-between text-xs font-medium font-sans mb-1.5 w-full min-w-0">
+                              <span className="text-zinc-400 truncate pr-2">
                                 {tema.disponivel 
                                   ? (prog.concluidos > 0 ? `${prog.concluidos}/${prog.total} níveis concluídos` : 'Não iniciado') 
                                   : 'Disponível em breve'}
                               </span>
-                              <span className={prog.percent > 0 ? "text-primary font-bold font-sans" : "text-zinc-500 font-sans"}>
+                              <span className={`shrink-0 ${prog.percent > 0 ? "text-primary font-bold font-sans" : "text-zinc-500 font-sans"}`}>
                                 {prog.percent}%
                               </span>
                             </div>
