@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import HomeCard from '@/components/vademecum/home/HomeCard';
+import HomeTresPoderes from './HomeTresPoderes';
 import { toast } from '@/hooks/use-toast';
 const HomeNoticiasCarousel = lazyWithRetry(() => import('@/components/vademecum/home/HomeNoticiasCarousel'));
 import { GRID_CATS, EMALTA_CATS, Cat } from './homeSectionsData';
@@ -126,6 +127,11 @@ const HomeTabEstudos = ({
           </Suspense>
         </div>
       )}
+
+      {/* Seção Três Poderes */}
+      <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
+        <HomeTresPoderes />
+      </div>
 
       {/* Espaço de segurança para garantir que o último elemento não fique atrás do BottomNav */}
       <div className="h-28 w-full shrink-0 pointer-events-none" />
