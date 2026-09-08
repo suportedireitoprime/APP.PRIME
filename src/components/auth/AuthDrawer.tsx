@@ -20,6 +20,7 @@ import { toast } from 'sonner';
 import { LegalSheet } from '@/components/auth/LegalSheet';
 import { track } from '@/lib/analyticsEvents';
 import { toastErroAuth } from './authUtils';
+import { SocialButtons } from './SocialButtons';
 
 export type AuthMode = 'login' | 'signup' | 'forgot' | null;
 
