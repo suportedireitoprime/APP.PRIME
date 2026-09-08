@@ -17,13 +17,14 @@ interface HomeCardProps {
   'data-track-name'?: string;
   'data-track-section'?: string;
   solidColor?: boolean;
+  style?: React.CSSProperties;
 }
 
 /**
  * Card padrão usado em Categorias, Em Alta e Áreas.
  * Garante proporção, ícone, tipografia e espaçamento idênticos.
  */
-const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, className = '', iconClassName = '', badge, 'data-track': dataTrack, 'data-track-name': dataTrackName, 'data-track-section': dataTrackSection, solidColor = false }: HomeCardProps) => (
+const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, className = '', iconClassName = '', badge, 'data-track': dataTrack, 'data-track-name': dataTrackName, 'data-track-section': dataTrackSection, solidColor = false, style }: HomeCardProps) => (
   <button
     onClick={() => {
       haptic.selection();
@@ -33,6 +34,7 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
     data-track-name={dataTrackName}
     data-track-section={dataTrackSection}
     className={`group relative flex h-[100px] min-h-[100px] w-full min-w-0 flex-row items-center justify-between overflow-hidden p-3.5 pr-8 rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.5)] transition-all focus-visible:outline-none text-left active:scale-[0.97] border border-white/10 bg-gradient-to-b from-zinc-700 via-zinc-800 to-zinc-900 hover:from-zinc-600 hover:via-zinc-700 hover:to-zinc-800 ${className}`}
+    style={style}
   >
     <div className="absolute top-1/2 -translate-y-1/2 right-2.5">
       {badge ? (

@@ -85,7 +85,15 @@ const HomeTabEstudos = ({
                 sublabel={c.sublabel}
                 color="#E11D48"
                 delay={i * 0.05}
-                className="!bg-none !bg-black/75 !backdrop-blur-sm !border !border-white/15 !shadow-lg !shadow-black/30 hover:!bg-black/90 hover:!shadow-xl transition-all"
+                className="transition-all"
+                style={{
+                  backgroundImage: 'none',
+                  backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                  backdropFilter: 'blur(4px)',
+                  WebkitBackdropFilter: 'blur(4px)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3)',
+                }}
                 iconClassName={c.id === 'ea-mapas' ? 'w-6 h-6' : ''}
                 badge={c.emBreve ? 'Em breve' : undefined}
                 onClick={() => {
