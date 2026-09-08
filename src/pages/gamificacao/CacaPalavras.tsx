@@ -198,7 +198,7 @@ const CacaPalavrasPage = () => {
           onBack={handleBack}
         />
         
-        <div className={selectedNivel ? "pt-2 pb-16 px-1 sm:px-4 w-full" : "max-w-[700px] mx-auto px-4 md:px-0 pb-20 pt-4"}>
+        <div className={selectedNivel ? "pt-2 pb-16 px-1 sm:px-4 w-full max-w-full overflow-x-hidden" : "w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-20 pt-4 overflow-x-hidden"}>
         <AnimatePresence mode="wait">
           {!selectedDisciplina ? (
             <motion.div
@@ -206,7 +206,7 @@ const CacaPalavrasPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="space-y-4"
+              className="space-y-4 w-full"
             >
               {loading ? (
                 <div className="flex justify-center p-12">
@@ -217,14 +217,14 @@ const CacaPalavrasPage = () => {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <BookOpenText className="w-5 h-5 text-primary" />
-                      <h2 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-white">Selecione a Disciplina</h2>
+                      <h2 className="text-xs sm:text-sm font-bold font-sans uppercase tracking-widest text-white">Selecione a Disciplina</h2>
                     </div>
-                    <span className="text-[10px] sm:text-xs font-semibold text-zinc-400 uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-800">
+                    <span className="text-[10px] sm:text-xs font-semibold font-sans text-zinc-400 uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-800">
                       Direito Penal
                     </span>
                   </div>
 
-                  <div className="grid gap-3">
+                  <div className="grid gap-3 w-full">
                     {TEMAS_DIREITO_PENAL.map(tema => {
                       const prog = getProgressoTema(tema.nome, tema.totalNiveis);
                       return (
@@ -240,58 +240,57 @@ const CacaPalavrasPage = () => {
                             }
                           }}
                           className={`
-                            flex flex-col w-full p-4 sm:p-5 text-left rounded-2xl border transition-all select-none
+                            flex flex-col w-full p-4 sm:p-5 text-left rounded-2xl border transition-all select-none box-border
                             ${tema.disponivel 
                               ? 'bg-zinc-900/90 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 cursor-pointer shadow-lg active:scale-[0.99] group' 
                               : 'bg-zinc-900/40 border-zinc-800/60 opacity-60 cursor-not-allowed hover:opacity-75'}
                           `}
                         >
-                          <div className="flex items-center justify-between gap-3">
-                            <div className="flex items-center gap-3 min-w-0">
+                          <div className="flex items-center justify-between gap-3 w-full">
+                            <div className="flex items-center gap-3 min-w-0 flex-1">
                               {/* Número no lado esquerdo */}
                               <div className={`
-                                w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-black text-xs sm:text-sm shrink-0 border
+                                w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center font-bold font-sans text-sm sm:text-base shrink-0 border
                                 ${tema.disponivel 
-                                  ? 'bg-primary/10 border-primary/30 text-primary group-hover:bg-primary group-hover:text-white transition-colors' 
-                                  : 'bg-zinc-800 border-zinc-700 text-zinc-500'}
+                                  ? 'bg-primary/15 border-primary/40 text-primary group-hover:bg-primary group-hover:text-white transition-colors' 
+                                  : 'bg-zinc-800/80 border-zinc-700 text-zinc-500'}
                               `}>
                                 {tema.numero}
                               </div>
 
-                              {/* Título Menor e Subtítulo */}
-                              <div className="min-w-0">
-                                <h3 className={`text-xs sm:text-sm font-bold uppercase tracking-wider truncate ${tema.disponivel ? 'text-zinc-100 group-hover:text-primary transition-colors' : 'text-zinc-400'}`}>
+                              {/* Título Maior com tipografia font-sans limpa e legível */}
+                              <div className="min-w-0 flex-1">
+                                <h3 className={`text-base sm:text-lg font-bold font-sans tracking-tight truncate ${tema.disponivel ? 'text-zinc-100 group-hover:text-primary transition-colors' : 'text-zinc-400'}`}>
                                   {tema.nome}
                                 </h3>
-                                <p className="text-[11px] text-zinc-400 mt-0.5 truncate">
-                                  {tema.subtitulo} • <span className="text-zinc-500 font-medium">{tema.artigos}</span>
-                                </p>
                               </div>
                             </div>
 
                             {/* Badge ou Seta */}
-                            {tema.disponivel ? (
-                              <ChevronRight className="w-5 h-5 text-zinc-500 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
-                            ) : (
-                              <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-zinc-800/90 text-zinc-400 border border-zinc-700 shrink-0">
-                                Em breve
-                              </span>
-                            )}
+                            <div className="shrink-0 flex items-center ml-2">
+                              {tema.disponivel ? (
+                                <ChevronRight className="w-5 h-5 text-zinc-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                              ) : (
+                                <span className="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold font-sans uppercase tracking-wider bg-zinc-800 text-zinc-400 border border-zinc-700">
+                                  Em breve
+                                </span>
+                              )}
+                            </div>
                           </div>
 
                           {/* Barra de Progresso onde a pessoa parou */}
-                          <div className="mt-3.5 pt-3 border-t border-zinc-800/60 w-full">
-                            <div className="flex items-center justify-between text-[11px] font-semibold mb-1.5">
+                          <div className="mt-3.5 pt-3 border-t border-zinc-800/70 w-full">
+                            <div className="flex items-center justify-between text-xs font-medium font-sans mb-1.5">
                               <span className="text-zinc-400">
                                 {tema.disponivel 
                                   ? (prog.concluidos > 0 ? `${prog.concluidos}/${prog.total} níveis concluídos` : 'Não iniciado') 
                                   : 'Disponível em breve'}
                               </span>
-                              <span className={prog.percent > 0 ? "text-primary font-bold" : "text-zinc-500"}>
+                              <span className={prog.percent > 0 ? "text-primary font-bold font-sans" : "text-zinc-500 font-sans"}>
                                 {prog.percent}%
                               </span>
                             </div>
-                            <div className="w-full bg-zinc-800/80 h-1.5 sm:h-2 rounded-full overflow-hidden border border-zinc-700/30">
+                            <div className="w-full bg-zinc-800/90 h-2 rounded-full overflow-hidden border border-zinc-700/40">
                               <div 
                                 className={`h-full rounded-full transition-all duration-500 ${prog.percent > 0 ? 'bg-primary shadow-sm shadow-primary/40' : 'bg-transparent'}`}
                                 style={{ width: `${prog.percent}%` }}
