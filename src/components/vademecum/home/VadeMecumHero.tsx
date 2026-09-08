@@ -56,7 +56,7 @@ const VadeMecumHero: React.FC = () => {
         </div>
 
         {/* Cabeçalho Transparente Vade Mecum (Absolute position like HomeHeaderHero) */}
-        <header className="absolute top-0 right-0 left-0 z-20 pt-3 md:pt-4 lg:pt-6 pointer-events-none">
+        <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
           <div className="pointer-events-auto">
             <VadeMecumHeroHeader />
           </div>
