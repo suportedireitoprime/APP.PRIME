@@ -48,7 +48,7 @@ const FallingMotifs = () => {
           initial={{ y: -60, opacity: 0, rotate: m.rotationInitial }}
           animate={{ 
             y: [null, 200, 500, 800], 
-            opacity: [0, 0.4, 0.4, 0], 
+            opacity: [0, 1, 1, 0], 
             rotate: m.rotationFinal 
           }}
           transition={{
@@ -76,7 +76,7 @@ const FallingMotifs = () => {
             initial={{ y: -80, opacity: 0, rotate: m.rotationInitial }}
             animate={{ 
               y: [null, 250, 550, 900], 
-              opacity: [0, 0.15, 0.15, 0], 
+              opacity: [0, 0.3, 0.3, 0], 
               rotate: m.rotationFinal 
             }}
             transition={{
@@ -85,7 +85,7 @@ const FallingMotifs = () => {
               repeat: Infinity,
               ease: "linear"
             }}
-            className="absolute text-white/40"
+            className="absolute text-white/50"
             style={{ 
               left: `${m.left}%`, 
               width: m.size, 

@@ -181,9 +181,11 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
             <div className="absolute inset-0 opacity-15 mix-blend-overlay">
               <ShapeGrid />
             </div>
-            <FallingMotifs />
           </div>
         </div>
+        
+        {/* Animação caindo sobre todo o painel (imagem + área vermelha) */}
+        <FallingMotifs />
 
         {/* Botões de Notificação e Menu */}
         <header className="absolute top-0 right-0 left-0 z-20 px-3 pt-3 md:px-6 md:pt-4 lg:px-8 lg:pt-6 flex items-center justify-end gap-2 md:gap-3 pointer-events-none">
