@@ -48,10 +48,10 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
       )}
     </div>
     
-    <div className="flex items-center gap-3.5 w-full min-w-0 z-10">
+    <div className="flex items-center gap-2.5 w-full min-w-0 z-10">
       <div className="relative overflow-hidden rounded-xl shrink-0 flex items-center justify-center">
         <Icon
-          className={`relative transition-transform duration-300 group-hover:scale-110 group-active:scale-95 group-active:-translate-y-1 ${iconClassName || 'w-8 h-8'}`}
+          className={`relative transition-transform duration-300 group-hover:scale-110 group-active:scale-95 group-active:-translate-y-1 ${iconClassName || 'w-7 h-7 xs:w-8 xs:h-8'}`}
           style={{ color: color }}
           strokeWidth={solidColor ? 1.6 : 1.25}
         />
@@ -59,11 +59,11 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
       </div>
       
       <div className="flex-1 min-w-0 flex flex-col justify-center">
-        <p className={`line-clamp-2 font-display text-[16px] font-bold leading-tight tracking-tight ${solidColor ? 'text-foreground' : 'text-foreground'}`}>
+        <p className={`whitespace-nowrap font-display text-[12.5px] xs:text-[14px] sm:text-[15px] font-bold leading-tight tracking-tighter ${solidColor ? 'text-foreground' : 'text-foreground'}`}>
           {label}
         </p>
         {!solidColor && sublabel && (
-          <p className="font-body text-[11.5px] leading-snug mt-0.5 line-clamp-1 text-muted-foreground">
+          <p className="font-body text-[11px] xs:text-[11.5px] leading-snug mt-0.5 line-clamp-1 text-muted-foreground">
             {sublabel}
           </p>
         )}
