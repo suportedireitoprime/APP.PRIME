@@ -40,28 +40,44 @@ const HomeTabEstudos = ({
       className="space-y-6"
     >
       {/* Em Alta — leis (Vade Mecum) ou funções de estudo (home) */}
-      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 md:gap-4">
-        {emAltaLeis
-          ? GRID_CATS.map((c, i) => (
-              <HomeCard
-                key={c.id}
-                icon={c.icon}
-                label={c.label}
-                color={c.color}
-                delay={i * 0.05}
-                onClick={() => {
-                  if (c.id === 'jurisprudencia') {
-                    navigate('/jurisprudencia');
-                  } else {
-                    onOpenCategory(c);
-                  }
-                }}
-                data-track="home_card_click"
-                data-track-name={c.label}
-                data-track-section="estudos"
-              />
-            ))
-          : EMALTA_CATS.map((c, i) => (
+      {emAltaLeis ? (
+        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 md:gap-4">
+          {GRID_CATS.map((c, i) => (
+            <HomeCard
+              key={c.id}
+              icon={c.icon}
+              label={c.label}
+              color={c.color}
+              delay={i * 0.05}
+              onClick={() => {
+                if (c.id === 'jurisprudencia') {
+                  navigate('/jurisprudencia');
+                } else {
+                  onOpenCategory(c);
+                }
+              }}
+              data-track="home_card_click"
+              data-track-name={c.label}
+              data-track-section="estudos"
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3 pt-2">
+          <div className="mb-1 relative z-10 flex items-start justify-between gap-3">
+            <div>
+              <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 uppercase tracking-widest">
+                <span className="w-1 h-5 rounded-full bg-[#E11D48]" />
+                Estudos
+              </h3>
+              <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3">
+                Ferramentas complementares para seus estudos
+              </p>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2 md:gap-4">
+            {EMALTA_CATS.map((c, i) => (
               <HomeCard
                 key={c.id}
                 icon={c.icon}
@@ -90,7 +106,9 @@ const HomeTabEstudos = ({
                 data-track-section="estudos"
               />
             ))}
-      </div>
+          </div>
+        </div>
+      )}
 
       {/* Carrossel de notícias movido para o final */}
       {!hideNoticias && (
