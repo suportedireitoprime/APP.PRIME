@@ -147,7 +147,6 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
         style={{
           transform: 'translateZ(0)',
           backgroundColor: '#050505',
-          aspectRatio: '1024 / 764',
         }}
       >
         {/* Blindagem de overscroll superior contra vazamento do fundo */}
@@ -157,7 +156,7 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           aria-hidden="true"
         />
 
-        {/* Imagem de Fundo (Professor e Aluna) — altura do painel segue a proporção original da imagem */}
+        {/* Imagem de Fundo (Professor e Aluna) */}
         <img
           src={heroEstudanteImg}
           alt=""
@@ -168,16 +167,16 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           className="absolute inset-0 w-full h-full object-cover object-center z-0"
         />
 
-        {/* Overlay vermelho com corte diagonal — cobre a área preta esquerda da imagem */}
+        {/* Overlay vermelho — cobre toda a área preta esquerda da imagem */}
         <div 
           className="absolute inset-0 z-[1] pointer-events-none"
           style={{
             background: 'linear-gradient(135deg, hsl(350 68% 32%) 0%, hsl(350 74% 42%) 80%, hsl(348 80% 50%) 100%)',
-            clipPath: 'polygon(0 0, 38% 0, 32% 100%, 0% 100%)'
+            clipPath: 'polygon(0 0, 46% 0, 36% 100%, 0% 100%)'
           }}
         />
 
-        <div className="absolute inset-0 z-[1] pointer-events-none opacity-[0.15]" style={{ clipPath: 'polygon(0 0, 38% 0, 32% 100%, 0% 100%)' }}>
+        <div className="absolute inset-0 z-[1] pointer-events-none opacity-[0.15]" style={{ clipPath: 'polygon(0 0, 46% 0, 36% 100%, 0% 100%)' }}>
           <ShapeGrid 
             speed={0.5} 
             squareSize={40}
@@ -190,8 +189,11 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
         </div>
 
         {/* Overlays radiais */}
-        <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" style={{ clipPath: 'polygon(0 0, 38% 0, 32% 100%, 0% 100%)' }} />
-        <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" style={{ clipPath: 'polygon(0 0, 38% 0, 32% 100%, 0% 100%)' }} />
+        <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" style={{ clipPath: 'polygon(0 0, 46% 0, 36% 100%, 0% 100%)' }} />
+        <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" style={{ clipPath: 'polygon(0 0, 46% 0, 36% 100%, 0% 100%)' }} />
+
+        {/* Gradient escuro na parte inferior para os botões ficarem legíveis */}
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-[120px] z-[2] bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
         {/* Botões de Notificação e Menu */}
         <header className="relative z-10 px-3 pt-3 md:px-6 md:pt-4 lg:px-8 lg:pt-6 flex items-center justify-end gap-2 md:gap-3">
@@ -218,14 +220,14 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
         </header>
 
         {/* Conteúdo: Logo à esquerda */}
-        <div className="relative z-10 pt-2 flex-1 flex flex-col justify-end pb-14">
+        <div className="relative z-10 pt-2 flex-1 flex flex-col justify-end min-h-[200px]">
           <HomeBrandBanner />
         </div>
-      </div>
 
-      {/* Atalhos Rápidos: APRENDER, FLASHCARDS, QUESTÕES, ME EXPLIQUE — fora do overflow-hidden, sobrepostos na borda inferior */}
-      <div className="relative z-30 px-3 sm:px-5 -mt-[46px]">
-        <HomeActionShortcuts />
+        {/* Atalhos Rápidos: APRENDER, FLASHCARDS, QUESTÕES, ME EXPLIQUE — dentro do painel */}
+        <div className="relative z-10 px-3 sm:px-5 pb-5 pt-3">
+          <HomeActionShortcuts />
+        </div>
       </div>
 
       <Suspense fallback={null}>
