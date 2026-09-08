@@ -32,7 +32,7 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
     data-track={dataTrack}
     data-track-name={dataTrackName}
     data-track-section={dataTrackSection}
-    className={`group relative flex h-[118px] min-h-[118px] w-full min-w-0 flex-col items-start justify-between overflow-hidden p-4 rounded-2xl border shadow-sm transition-all focus-visible:outline-none text-left active:scale-[0.97] ${
+    className={`group relative flex h-[100px] min-h-[100px] w-full min-w-0 flex-col items-start justify-between overflow-hidden p-3.5 rounded-2xl border shadow-sm transition-all focus-visible:outline-none text-left active:scale-[0.97] ${
       solidColor 
         ? 'bg-secondary border-border/40 hover:bg-secondary/80' 
         : 'bg-secondary border-white/5 hover:bg-secondary/80'
