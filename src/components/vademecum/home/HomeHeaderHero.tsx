@@ -26,6 +26,7 @@ import { useHeroHomeImages } from '@/hooks/useHeroHomeImages';
 import { prefetchHeroRoutesIdle } from '@/lib/routePrefetch';
 import { pushRecente } from '@/lib/leisRecentes';
 import { leiToSlug, tipoToSlug } from '@/lib/legislacaoSlugs';
+import heroEstudanteImg from '@/assets/covers/hero-estudante.png';
 
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
 import HeroCoverCarousel from '@/components/vademecum/home/HeroCoverCarousel';
@@ -153,10 +154,10 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           aria-hidden="true"
         />
 
-        {/* Imagem de Fundo (Professor e Aluna) */}
+        {/* Imagem de Fundo (Professor e Aluna) — import estático */}
         <div 
           className="absolute inset-0 z-0 bg-cover bg-center sm:bg-right bg-no-repeat"
-          style={{ backgroundImage: `url(${toOptimized(HERO_COVERS[0].url)})` }}
+          style={{ backgroundImage: `url(${heroEstudanteImg})` }}
         />
 
         {/* Overlay vermelho com corte diagonal */}
