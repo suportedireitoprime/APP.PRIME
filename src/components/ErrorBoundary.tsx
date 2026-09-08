@@ -102,12 +102,22 @@ export class ErrorBoundary extends Component<Props, State> {
         <pre className="text-xs bg-muted p-3 rounded max-w-full overflow-auto max-h-40">
           {error.message}
         </pre>
-        <button
-          onClick={this.reset}
-          className="px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm"
-        >
-          Tentar novamente
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={this.reset}
+            className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 active:scale-95 transition-all"
+          >
+            Tentar novamente
+          </button>
+          <button
+            type="button"
+            onClick={() => { window.location.href = '/'; }}
+            className="px-5 py-2.5 rounded-xl bg-white/10 text-white font-medium text-sm hover:bg-white/15 active:scale-95 transition-all"
+          >
+            Ir para o Início
+          </button>
+        </div>
       </div>
     );
   }

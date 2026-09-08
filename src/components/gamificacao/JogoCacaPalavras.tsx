@@ -37,7 +37,7 @@ export const JogoCacaPalavras: React.FC<JogoCacaPalavrasProps> = ({ nivelData, o
   }, [nivelData]);
 
   const initGame = () => {
-    const dimMatch = nivelData.dimensoes_grade.match(/(\d+)x(\d+)/i);
+    const dimMatch = (nivelData?.dimensoes_grade || '10x10').match(/(\d+)x(\d+)/i);
     let rows = 10;
     let cols = 10;
     if (dimMatch) {
@@ -45,7 +45,18 @@ export const JogoCacaPalavras: React.FC<JogoCacaPalavrasProps> = ({ nivelData, o
       cols = parseInt(dimMatch[2], 10);
     }
 
-    const words = nivelData.palavras.map(w => w.toUpperCase().replace(/\s/g, ''));
+    let rawWords: string[] = [];
+    if (Array.isArray(nivelData?.palavras)) {
+      rawWords = nivelData.palavras;
+    } else if (typeof nivelData?.palavras === 'string') {
+      try {
+        rawWords = JSON.parse(nivelData.palavras);
+      } catch {
+        rawWords = [];
+      }
+    }
+
+    const words = rawWords.map((w: string) => String(w).toUpperCase().replace(/\s/g, ''));
     setWordsToFind(words);
     setFoundWords([]);
     setPermanentlyHighlighted(new Set());
