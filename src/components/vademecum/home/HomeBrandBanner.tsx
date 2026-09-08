@@ -56,7 +56,7 @@ const HomeBrandBanner = () => {
       <div className="mt-3 flex items-center text-left gap-2 w-full justify-center">
         <div className="w-[2px] h-7 bg-white/40 rounded-full" />
         <p className="font-serif italic text-white/80 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-          Domine as leis,<br/>alcance seus objetivos.
+          Domine as leis,<br/>imponha respeito.
         </p>
       </div>
     </div>
