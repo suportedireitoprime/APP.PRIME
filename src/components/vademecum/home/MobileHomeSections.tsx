@@ -182,15 +182,6 @@ const MobileHomeSections = ({
         </Suspense>
       )}
 
-      {/* Alternância de Abas Segmentadas */}
-      {!hideTabs && (
-        <HomeSegmentedTabs
-          currentTab={currentTab}
-          activeTabs={activeTabs}
-          onSelectTab={(newTab) => setTab(newTab)}
-        />
-      )}
-
       <AnimatePresence mode="wait" initial={false}>
         {currentTab === 'categorias' && (
           <HomeTabCategorias

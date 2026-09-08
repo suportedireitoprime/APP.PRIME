@@ -140,21 +140,35 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
     <>
       {/* Shell sólido, opaco e com blindagem contra culling e overscroll */}
       <div
-        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20"
+        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20 min-h-[360px]"
         style={{
           transform: 'translateZ(0)',
-          backgroundColor: '#881337',
-          background: 'linear-gradient(135deg, hsl(350 68% 32%) 0%, hsl(350 74% 42%) 50%, hsl(348 80% 50%) 100%)',
+          backgroundColor: '#050505',
         }}
       >
         {/* Blindagem de overscroll superior contra vazamento do fundo */}
         <div
           className="pointer-events-none absolute -top-[1200px] left-0 right-0 h-[1200px] z-0"
-          style={{ backgroundColor: '#881337' }}
+          style={{ backgroundColor: '#050505' }}
           aria-hidden="true"
         />
 
-        <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.15]">
+        {/* Imagem de Fundo (Professor e Aluna) */}
+        <div 
+          className="absolute inset-0 z-0 bg-cover bg-center sm:bg-right bg-no-repeat"
+          style={{ backgroundImage: `url(${toOptimized(HERO_COVERS[0].url)})` }}
+        />
+
+        {/* Overlay vermelho com corte diagonal */}
+        <div 
+          className="absolute inset-0 z-[1] pointer-events-none"
+          style={{
+            background: 'linear-gradient(135deg, hsl(350 68% 32%) 0%, hsl(350 74% 42%) 80%, hsl(348 80% 50%) 100%)',
+            clipPath: 'polygon(0 0, 75% 0, 45% 100%, 0% 100%)'
+          }}
+        />
+
+        <div className="absolute inset-0 z-[1] pointer-events-none opacity-[0.15]" style={{ clipPath: 'polygon(0 0, 75% 0, 45% 100%, 0% 100%)' }}>
           <ShapeGrid 
             speed={0.5} 
             squareSize={40}
@@ -167,16 +181,8 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
         </div>
 
         {/* Overlays radiais idênticos ao painel do Vade Mecum */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" />
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
-
-        {/* Decorative legal motifs isolados */}
-        <HeroMotifs />
-
-        {/* Cover art — isolado */}
-        <HeroCoverCarousel covers={HERO_COVERS} />
-
-        {/* Decorative legal motifs isolados */}
+        <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" style={{ clipPath: 'polygon(0 0, 75% 0, 45% 100%, 0% 100%)' }} />
+        <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" style={{ clipPath: 'polygon(0 0, 75% 0, 45% 100%, 0% 100%)' }} />
 
         {/* Header com Avatar, Perfil, Notificações e Menu */}
         <HomeUserHeader
@@ -191,15 +197,12 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           onOpenMenu={onOpenMenu || (() => setMenuOpen(true))}
         />
 
-        <div className="relative z-10 px-4 pt-5 pb-5 min-h-[240px] flex flex-col gap-4">
+        <div className="relative z-10 pt-5 pb-5 flex flex-col gap-4">
           {/* Logo e subtítulo dinâmico */}
-          <HomeBrandBanner perfilLabel={perfilLabel} />
+          <HomeBrandBanner />
 
           {/* Atalhos Rápidos */}
           <HomeActionShortcuts />
-
-          {/* Barra de Pesquisa Animada */}
-          <HomeSearchButton onOpenSearch={onOpenSearch || (() => setSearchOpen(true))} />
         </div>
       </div>
 

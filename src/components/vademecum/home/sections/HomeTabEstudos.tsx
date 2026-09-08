@@ -40,14 +40,13 @@ const HomeTabEstudos = ({
       className="space-y-6"
     >
       {/* Em Alta — leis (Vade Mecum) ou funções de estudo (home) */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 md:gap-4">
         {emAltaLeis
           ? GRID_CATS.map((c, i) => (
               <HomeCard
                 key={c.id}
                 icon={c.icon}
                 label={c.label}
-                sublabel={c.sublabel}
                 color={c.color}
                 delay={i * 0.05}
                 onClick={() => {
@@ -67,7 +66,6 @@ const HomeTabEstudos = ({
                 key={c.id}
                 icon={c.icon}
                 label={c.label}
-                sublabel={c.sublabel}
                 color={c.color}
                 delay={i * 0.05}
                 iconClassName={c.id === 'ea-mapas' ? 'w-6 h-6' : undefined}

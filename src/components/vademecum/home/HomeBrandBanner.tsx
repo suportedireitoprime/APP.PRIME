@@ -28,32 +28,10 @@ const formatPerfilSubtitle = (label?: string): string | null => {
   return null;
 };
 
-const HomeBrandBanner = ({ perfilLabel }: HomeBrandBannerProps) => {
-  const subtitles = useMemo(() => {
-    const custom = formatPerfilSubtitle(perfilLabel);
-    if (!custom) return DEFAULT_SUBTITLES;
-    return [custom, ...DEFAULT_SUBTITLES.filter((s) => s.toLowerCase() !== custom.toLowerCase())];
-  }, [perfilLabel]);
-
-  const [subtitleIndex, setSubtitleIndex] = useState(0);
-
-  useEffect(() => {
-    setSubtitleIndex(0);
-  }, [subtitles]);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      return;
-    }
-    const timer = setInterval(() => {
-      setSubtitleIndex((prev) => (prev + 1) % subtitles.length);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, [subtitles.length]);
-
+const HomeBrandBanner = () => {
   return (
-    <div className="flex flex-col items-center text-center gap-2 pt-1">
-      <div className="relative h-24 mb-2 flex items-center justify-center">
+    <div className="flex flex-col items-start text-left gap-2 pt-1 z-[10] relative w-3/5 pl-2 sm:pl-6">
+      <div className="relative h-[110px] mb-2">
         <picture>
           <source srcSet="/logo-prime.webp" type="image/webp" />
           <img
@@ -61,29 +39,25 @@ const HomeBrandBanner = ({ perfilLabel }: HomeBrandBannerProps) => {
             alt="Direito Prime"
             loading="eager"
             decoding="async"
-            width={96}
-            height={96}
+            width={110}
+            height={110}
             fetchPriority="high"
-            className="w-auto h-24 object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]"
+            className="w-auto h-[110px] object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]"
           />
         </picture>
       </div>
-      <h1 className="font-serif italic text-white text-[24px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)]">
+      <h1 className="font-serif italic text-white text-[28px] sm:text-[32px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)]">
         Estudos Jurídicos
       </h1>
-      <div className="relative h-[22px] min-h-[22px] overflow-hidden flex items-center justify-center">
-        <AnimatePresence mode="wait">
-          <motion.p
-            key={subtitleIndex}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.45, ease: 'easeOut' }}
-            className="font-body text-white/95 text-[12.5px] font-bold tracking-wider uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] whitespace-nowrap leading-tight"
-          >
-            {subtitles[subtitleIndex]}
-          </motion.p>
-        </AnimatePresence>
+      <p className="font-body text-white/95 text-[12px] font-bold tracking-[0.25em] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+        PARA ESTUDANTES
+      </p>
+      
+      <div className="mt-4 flex items-center gap-3">
+        <div className="w-[3px] h-10 bg-[#e11d48]" />
+        <p className="font-serif italic text-white/90 text-[15px] leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] max-w-[150px]">
+          Disciplina hoje,<br/>liberdade amanhã.
+        </p>
       </div>
     </div>
   );
