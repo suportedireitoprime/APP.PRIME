@@ -26,7 +26,7 @@ import { useHeroHomeImages } from '@/hooks/useHeroHomeImages';
 import { prefetchHeroRoutesIdle } from '@/lib/routePrefetch';
 import { pushRecente } from '@/lib/leisRecentes';
 import { leiToSlug, tipoToSlug } from '@/lib/legislacaoSlugs';
-import heroEstudanteImg from '@/assets/covers/hero-estudante.png';
+import heroEstudanteImg from '@/assets/covers/hero-estudante.jpg';
 
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
 import HeroCoverCarousel from '@/components/vademecum/home/HeroCoverCarousel';
@@ -141,10 +141,11 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
     <>
       {/* Shell sólido, opaco e com blindagem contra culling e overscroll */}
       <div
-        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20 min-h-[360px]"
+        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20"
         style={{
           transform: 'translateZ(0)',
           backgroundColor: '#050505',
+          aspectRatio: '1024 / 764',
         }}
       >
         {/* Blindagem de overscroll superior contra vazamento do fundo */}
@@ -154,10 +155,15 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           aria-hidden="true"
         />
 
-        {/* Imagem de Fundo (Professor e Aluna) — import estático */}
-        <div 
-          className="absolute inset-0 z-0 bg-cover bg-center sm:bg-right bg-no-repeat"
-          style={{ backgroundImage: `url(${heroEstudanteImg})` }}
+        {/* Imagem de Fundo (Professor e Aluna) — altura do painel segue a proporção original da imagem */}
+        <img
+          src={heroEstudanteImg}
+          alt=""
+          aria-hidden="true"
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+          className="absolute inset-0 w-full h-full object-cover object-center z-0"
         />
 
         {/* Overlay vermelho com corte diagonal */}
