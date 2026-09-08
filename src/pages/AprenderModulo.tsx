@@ -331,10 +331,10 @@ const AprenderModulo = () => {
                         transition={{ delay: idx * 0.05 }}
                         className="relative"
                       >
-                        {/* Indicador de Nó na Linha do Tempo */}
+                        {/* Indicador de Nó na Linha do Tempo — centralizado verticalmente com o card */}
                         <div
                           className={cn(
-                            'absolute -left-[31px] sm:-left-[39px] top-4 w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 flex items-center justify-center text-xs font-extrabold transition-all shadow-md',
+                            'absolute -left-[31px] sm:-left-[39px] top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 flex items-center justify-center text-xs font-extrabold transition-all shadow-md',
                             aula.concluida
                               ? 'bg-primary text-primary-foreground border-primary'
                               : isNext
@@ -364,7 +364,7 @@ const AprenderModulo = () => {
                           }}
                           onPointerEnter={() => prefetchAprenderAula(aula.id)}
                           className={cn(
-                            'w-full flex items-center justify-between p-4 sm:p-5 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
+                            'w-full flex items-center justify-between p-4 sm:p-5 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none overflow-hidden relative',
                             isNext
                               ? 'border-primary/60 bg-card hover:border-primary shadow-primary/5'
                               : aula.concluida
@@ -372,6 +372,20 @@ const AprenderModulo = () => {
                               : 'border-border/50 bg-card/40 hover:border-primary/30'
                           )}
                         >
+                          {/* Ícone vazado da imagem de Direito Penal */}
+                          {modulo?.areaSlug === 'direito-penal' && (
+                            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 mr-3 bg-primary/8 border border-primary/15 overflow-hidden">
+                              <img
+                                src="/images/gamificacao/direito_penal_prisao_vazado.webp"
+                                alt=""
+                                aria-hidden="true"
+                                loading="lazy"
+                                decoding="async"
+                                className="w-9 h-9 sm:w-10 sm:h-10 object-contain opacity-60 group-hover:opacity-80 transition-opacity select-none pointer-events-none"
+                              />
+                            </div>
+                          )}
+
                           <div className="min-w-0 flex-1 space-y-1.5 py-0.5">
                             <span className="inline-flex items-center text-[10px] sm:text-[11px] font-medium font-sans uppercase tracking-wider text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-md">
                               Aula {idx + 1}
