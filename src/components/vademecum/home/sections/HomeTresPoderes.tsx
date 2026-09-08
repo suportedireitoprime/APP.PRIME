@@ -47,17 +47,20 @@ const HomeTresPoderes = () => {
         </div>
       </div>
 
-      <div className="w-full overflow-x-auto scrollbar-hide px-4">
-        <div className="flex items-center gap-2.5 pb-4">
-          {PODERES.map((poder) => (
+      <div className="w-full px-4">
+        <div className="flex flex-col rounded-2xl overflow-hidden shadow-lg border border-white/5">
+          {PODERES.map((poder, i) => (
             <button
               key={poder.id}
               onClick={() => {
                 haptic.selection();
                 navigate(`/tres-poderes/${poder.id}`);
               }}
-              className="group relative flex-shrink-0 w-[140px] sm:w-[160px] h-[180px] rounded-2xl overflow-hidden shadow-lg transition-all active:scale-[0.97]"
+              className={`group relative w-full h-[90px] flex items-center justify-between px-4 transition-all active:scale-[0.98] ${
+                i !== PODERES.length - 1 ? 'border-b border-white/10' : ''
+              }`}
             >
+              {/* Imagem de Fundo Completa */}
               <img
                 src={poder.img}
                 alt={poder.titulo}
@@ -66,18 +69,19 @@ const HomeTresPoderes = () => {
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
               <div 
-                className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" 
+                className="absolute inset-0 bg-black/60" 
               />
               <div 
                 className="absolute inset-0 mix-blend-overlay transition-opacity"
                 style={{ backgroundColor: poder.color }}
               />
               
-              <div className="absolute inset-x-0 bottom-0 p-3 flex flex-col justify-end text-left">
+              {/* Conteúdo Textual (Esquerda) */}
+              <div className="relative z-10 flex flex-col text-left">
                 <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest mb-0.5 drop-shadow-md">
                   {poder.sigla}
                 </span>
-                <h4 className="text-white font-bold text-[13px] leading-tight drop-shadow-lg">
+                <h4 className="text-white font-bold text-[14px] leading-tight drop-shadow-lg">
                   {poder.titulo}
                 </h4>
               </div>
