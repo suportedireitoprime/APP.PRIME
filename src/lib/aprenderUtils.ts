@@ -97,6 +97,11 @@ export const atoDoBloco = (b: { payload?: any }) => {
 };
 
 export const interleaveBlocos = (blocos: Bloco[]) => {
+  // Se os blocos já possuem ordem didática explícita definida na estrutura curricular, preservar rigorosamente
+  if (blocos.length > 0 && blocos.some(b => b.ordem != null)) {
+    return [...blocos].sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0));
+  }
+
   const normalBlocos = blocos.filter(b => b.tipo !== 'pergunta' && b.tipo !== 'flashcard');
   const questionBlocos = blocos.filter(b => b.tipo === 'pergunta' || b.tipo === 'flashcard');
   

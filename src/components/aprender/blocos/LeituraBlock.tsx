@@ -31,13 +31,15 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
 
   // Parser de termos de glossário (Item 5)
   const termosGlossario = useMemo(() => {
-    const isGlossario = titulo?.toLowerCase().includes('glossário');
-    if (!isGlossario && !textoPrincipal.includes('• ')) return [];
+    const isGlossario = titulo?.toLowerCase().includes('glossário') ||
+      titulo?.toLowerCase().includes('dicionário') ||
+      titulo?.toLowerCase().includes('vocabulário');
+    if (!isGlossario && !textoPrincipal.includes('• ') && !textoPrincipal.includes('- **')) return [];
     const linhas = textoPrincipal.split('\n');
     const termos: { termo: string; definicao: string }[] = [];
     for (const l of linhas) {
-      const m = l.match(/^[•\-*]\s*([^:]+):\s*(.+)$/);
-      if (m) {
+      const m = l.match(/^[•\-*]\s*(?:\*\*)?([^*:\n]+)(?:\*\*)?:\s*(.+)$/);
+      if (m && m[1].trim().length > 1 && !m[1].toLowerCase().includes('aqui estão')) {
         termos.push({ termo: m[1].trim(), definicao: m[2].trim() });
       }
     }
@@ -88,35 +90,41 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
         </header>
       )}
 
-      {/* Renderização Especial de Glossário em Chips Expansíveis (Item 5) */}
+      {/* Se for um slide de Glossário/Dicionário com termos detectados (Item 5) */}
       {termosGlossario.length > 0 ? (
-        <div className="space-y-3.5 mb-8">
-          <p className="text-xs font-semibold text-white/60 mb-2 uppercase tracking-wider flex items-center gap-2">
-            <BookOpen className="w-4 h-4 text-primary" /> Toque no termo para explorar a definição jurídica:
-          </p>
-          <div className="grid gap-3">
+        <div className="space-y-4 my-6">
+          <div className="flex items-center justify-between px-1 mb-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-primary" />
+              Toque no termo para expandir a definição
+            </span>
+            <span className="text-xs font-mono font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+              {termosGlossario.length} termos
+            </span>
+          </div>
+          <div className="grid grid-cols-1 gap-3">
             {termosGlossario.map(({ termo, definicao }) => {
               const isOpen = !!expandedTermos[termo];
               return (
                 <div
                   key={termo}
-                  className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+                  className={`rounded-2xl border transition-all duration-200 backdrop-blur-sm overflow-hidden ${
                     isOpen
-                      ? 'border-primary/50 bg-primary/[0.08] shadow-lg shadow-primary/10'
-                      : 'border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]'
+                      ? 'border-primary/40 bg-[#191c28] shadow-md shadow-primary/10'
+                      : 'border-white/[0.08] bg-[#141620] hover:border-white/20 hover:bg-[#181a26]'
                   }`}
                 >
                   <button
                     type="button"
                     onClick={() => toggleTermo(termo)}
                     className="w-full flex items-center justify-between p-4 sm:p-5 text-left cursor-pointer select-none"
+                    aria-expanded={isOpen}
                   >
-                    <span className="font-bold text-white text-[16px] sm:text-[17px] tracking-wide flex items-center gap-2.5">
-                      <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
+                    <span className="font-display font-extrabold text-[16px] sm:text-[17px] text-white tracking-wide">
                       {termo}
                     </span>
                     <ChevronDown
-                      className={`w-5 h-5 text-neutral-400 transition-transform duration-300 ${
+                      className={`w-5 h-5 text-neutral-400 transition-transform duration-300 shrink-0 ml-3 ${
                         isOpen ? 'rotate-180 text-primary' : ''
                       }`}
                     />
@@ -164,6 +172,40 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
                 <blockquote className="border-l-4 border-primary bg-primary/[0.06] border-y border-r border-white/[0.04] text-neutral-100 py-3.5 px-5 rounded-r-2xl my-6 not-italic font-medium shadow-sm backdrop-blur-sm">
                   {children}
                 </blockquote>
+              ),
+              pre: ({ children }) => (
+                <div className="my-5 overflow-x-auto rounded-2xl border border-white/10 bg-[#10121a] p-4 sm:p-5 shadow-inner">
+                  <pre className="font-mono text-xs sm:text-sm leading-relaxed text-emerald-300/95 whitespace-pre">
+                    {children}
+                  </pre>
+                </div>
+              ),
+              code: ({ children, className }) => {
+                const isInline = !className;
+                return isInline ? (
+                  <code className="rounded-md bg-white/10 px-1.5 py-0.5 text-xs sm:text-sm font-mono font-semibold text-primary">
+                    {children}
+                  </code>
+                ) : (
+                  <code>{children}</code>
+                );
+              },
+              table: ({ children }) => (
+                <div className="my-6 overflow-x-auto rounded-2xl border border-white/10 bg-[#12141d] shadow-md">
+                  <table className="w-full text-left text-sm text-neutral-200 border-collapse">
+                    {children}
+                  </table>
+                </div>
+              ),
+              th: ({ children }) => (
+                <th className="border-b border-white/10 bg-white/[0.04] px-4 py-3 text-xs font-bold uppercase tracking-wider text-primary">
+                  {children}
+                </th>
+              ),
+              td: ({ children }) => (
+                <td className="border-b border-white/5 px-4 py-3 text-neutral-200 leading-relaxed">
+                  {children}
+                </td>
               ),
             }}
           >
