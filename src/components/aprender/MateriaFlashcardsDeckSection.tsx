@@ -381,7 +381,13 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
             )}
           </div>
           <div className="min-w-0">
-            <h3 className="text-base sm:text-lg font-black text-white truncate tracking-tight uppercase group-hover:text-emerald-400 transition-colors">
+            <h3 
+              className="text-base sm:text-[17px] font-bold text-white truncate transition-colors group-hover:text-emerald-400"
+              style={{
+                fontFamily: "'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                letterSpacing: '0.025em',
+              }}
+            >
               {area.nome}
             </h3>
             <p className="text-xs text-muted-foreground">
