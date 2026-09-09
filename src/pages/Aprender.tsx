@@ -19,6 +19,7 @@ import AprenderBottomNav from '@/components/aprender/AprenderBottomNav';
 import AprenderLembretesSheet from '@/components/aprender/AprenderLembretesSheet';
 import MateriaRow from '@/components/aprender/MateriaRow';
 import MateriaCard from '@/components/aprender/MateriaCard';
+import MateriaFlashcardsDeckSection from '@/components/aprender/MateriaFlashcardsDeckSection';
 import AulaCarouselCard from '@/components/aprender/AulaCarouselCard';
 import { useAprenderAreaModulesMap } from '@/hooks/useAprenderAreaModulesMap';
 import { shortenAreaName } from '@/lib/areaNameShortener';
@@ -114,6 +115,7 @@ const Aprender = () => {
   const { modulesMap } = useAprenderAreaModulesMap();
   const [selectedAreaSlug, setSelectedAreaSlug] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'aulas' | 'flashcards' | 'questoes'>('aulas');
+  const [flashcardsViewMode, setFlashcardsViewMode] = useState<'decks' | 'lista'>('decks');
   const { data: flashDash } = useFlashcardsDashboard();
   const { data: flashAreas } = useFlashcardsResumoAreas();
 
@@ -611,26 +613,66 @@ const Aprender = () => {
 
             {/* Lista de Matérias */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Matérias ({areasOrdenadas.length})</p>
-                {emAndamentoCount > 0 && (
-                  <div className="flex items-center gap-1 rounded-full bg-card border border-border p-0.5 lg:hidden shadow-sm">
-                    {(['todas', 'andamento'] as const).map((f) => (
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  {isFlashcards && (
+                    <div className="flex items-center gap-1 rounded-full bg-card border border-border p-0.5 shadow-sm">
                       <button
-                        key={f}
-                        onClick={() => setFiltro(f)}
-                        className={[
-                          'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors',
-                          filtro === f
-                            ? 'bg-primary text-primary-foreground shadow-md'
-                            : 'text-muted-foreground hover:text-foreground hover:text-foreground',
-                        ].join(' ')}
+                        type="button"
+                        onClick={() => {
+                          try { haptic.selection(); } catch {}
+                          setFlashcardsViewMode('decks');
+                        }}
+                        className={cn(
+                          'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors flex items-center gap-1 cursor-pointer',
+                          flashcardsViewMode === 'decks'
+                            ? 'bg-emerald-500 text-white shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                        )}
+                        title="Visualização em Decks 3D"
                       >
-                        {f === 'todas' ? 'Todas' : `Andamento (${emAndamentoCount})`}
+                        <Layers className="w-3 h-3" />
+                        <span>Decks</span>
                       </button>
-                    ))}
-                  </div>
-                )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          try { haptic.selection(); } catch {}
+                          setFlashcardsViewMode('lista');
+                        }}
+                        className={cn(
+                          'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors flex items-center gap-1 cursor-pointer',
+                          flashcardsViewMode === 'lista'
+                            ? 'bg-emerald-500 text-white shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                        )}
+                        title="Visualização em Lista"
+                      >
+                        <span>Lista</span>
+                      </button>
+                    </div>
+                  )}
+
+                  {emAndamentoCount > 0 && (
+                    <div className="flex items-center gap-1 rounded-full bg-card border border-border p-0.5 lg:hidden shadow-sm">
+                      {(['todas', 'andamento'] as const).map((f) => (
+                        <button
+                          key={f}
+                          onClick={() => setFiltro(f)}
+                          className={[
+                            'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors',
+                            filtro === f
+                              ? 'bg-primary text-primary-foreground shadow-md'
+                              : 'text-muted-foreground hover:text-foreground',
+                          ].join(' ')}
+                        >
+                          {f === 'todas' ? 'Todas' : `Andamento (${emAndamentoCount})`}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {loading && !data.areas.length ? (
@@ -641,6 +683,38 @@ const Aprender = () => {
                   {filtro === 'andamento'
                     ? 'Você ainda não começou nenhuma matéria.'
                     : 'Nenhuma matéria disponível ainda.'}
+                </div>
+              ) : isFlashcards && flashcardsViewMode === 'decks' ? (
+                <div className="space-y-4 sm:space-y-5">
+                  {areasOrdenadas.map((area) => {
+                    let overrideTotal = 0;
+                    let overrideConcluidas = 0;
+                    let overridePct = 0;
+
+                    if (flashAreas) {
+                      const flashStats = flashAreas.find((f) => f.slug === area.slug);
+                      if (flashStats) {
+                        overrideTotal = flashStats.total_cards;
+                        overrideConcluidas = flashStats.compreendidos;
+                        overridePct = overrideTotal > 0 ? Math.round((overrideConcluidas / overrideTotal) * 100) : 0;
+                      }
+                    }
+
+                    const areaModulos = modulesMap.get(area.id) || [];
+
+                    return (
+                      <MateriaFlashcardsDeckSection
+                        key={area.id}
+                        area={area}
+                        modulos={areaModulos}
+                        overrideTotal={overrideTotal}
+                        overrideConcluidas={overrideConcluidas}
+                        overridePct={overridePct}
+                        onOpenArea={() => navigate(`/aprender/area/${area.slug}?tab=flashcards`)}
+                        onOpenModulo={(mod) => navigate(`/aprender/area/${area.slug}?tab=flashcards&moduloId=${mod.id}`)}
+                      />
+                    );
+                  })}
                 </div>
               ) : (
                 <motion.div 
