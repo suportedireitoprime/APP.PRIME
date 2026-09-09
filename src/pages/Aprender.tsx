@@ -354,7 +354,8 @@ const Aprender = () => {
             </div>
           </aside>
 
-          {/* ── Coluna Cen          <div className="lg:col-span-6 space-y-5">
+          {/* ── Coluna Central Widescreen: Trilha Hero & Matérias ─────── */}
+          <div className="lg:col-span-6 space-y-5">
             {/* Hero trilhas em cinza elevado */}
             <section
               className="bg-card relative isolate overflow-hidden -mx-3 sm:mx-0 rounded-none sm:rounded-2xl border-b border-border sm:border shadow-xl"
