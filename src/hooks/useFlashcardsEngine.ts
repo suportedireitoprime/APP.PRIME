@@ -14,6 +14,7 @@ export function useFlashcardsEngine() {
   const areaParam = params.get('area');
   const areasParam = params.get('areas');
   const temasParam = params.get('temas') || params.get('tema');
+  const subtemaParam = params.get('subtema') || params.get('subtemas');
   const deckId = params.get('deck');
   const modo = params.get('modo') || 'todos';
   const ordemParam = params.get('ordem') || 'embaralhado';
@@ -63,6 +64,10 @@ export function useFlashcardsEngine() {
         });
       }
       
+      if (subtemaParam) {
+        finalCards = finalCards.filter(c => c.subtema && c.subtema.trim().toLowerCase() === subtemaParam.trim().toLowerCase());
+      }
+
       if (ordemParam === 'sequencial') {
         finalCards.sort((a,b) => (a.artigo_numero || '').localeCompare(b.artigo_numero || '', undefined, {numeric: true}));
       }
@@ -78,7 +83,7 @@ export function useFlashcardsEngine() {
       setIdx(0);
       setVirado(false);
     }
-  }, [cardsRaw, ordemParam, artigosParam, quantidadeParam]);
+  }, [cardsRaw, ordemParam, artigosParam, quantidadeParam, subtemaParam]);
 
   // Ponto de Retomada
   const sessionKey = `flashcards_pos_${areaParam || areasParam || deckId || 'geral'}_${temasParam || 'todos'}`;

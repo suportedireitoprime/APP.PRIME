@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
@@ -10,17 +12,31 @@ import {
   hydrateAprenderAreaCache,
   loadAprenderArea,
 } from '@/lib/aprenderAreaLoader';
-import { BookOpenText } from 'lucide-react';
+import { BookOpenText, GraduationCap } from 'lucide-react';
+import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
 import { haptic } from '@/lib/nativeHaptics';
+import { cn } from '@/lib/utils';
 
 const AprenderArea = () => {
   useTrackArea("aprender_area_aberta");
   const navigate = useNavigate();
+  const location = useLocation();
   const goBack = () => navigate('/aprender');
   const { slug } = useParams<{ slug: string }>();
   const { user } = useAuth();
+
+  const [searchParams] = useSearchParams();
+  const moduloIdParam = searchParams.get('moduloId');
+  const tabParam = searchParams.get('tab') || (location.state as any)?.tab;
+  const [activeTab, setActiveTab] = useState<'aulas' | 'flashcards'>(tabParam === 'flashcards' ? 'flashcards' : 'aulas');
+
+  useEffect(() => {
+    if (tabParam === 'flashcards') {
+      setActiveTab('flashcards');
+    }
+  }, [tabParam]);
 
   const initial = slug ? getCachedAprenderArea(slug, user?.id ?? null) : undefined;
   const [data, setData] = useState<AprenderAreaData | null>(initial ?? null);
@@ -79,6 +95,18 @@ const AprenderArea = () => {
     return [...modulos].sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
   }, [modulos]);
 
+  // Busca temas e cards de flashcards desta área no Supabase
+  const { data: temasFlashcards } = useQuery({
+    queryKey: ['area_flashcards_temas', area?.nome],
+    queryFn: async () => {
+      if (!area?.nome) return [];
+      const { data: res } = await supabase.rpc('flashcards_temas', { _area: area.nome });
+      return (res || []) as Array<{ tema: string; total: number; compreendidos: number; a_revisar: number }>;
+    },
+    enabled: !!area?.nome,
+    staleTime: 5 * 60 * 1000,
+  });
+
   const areaVisual = useMemo(() => areaIconFor(slug || area?.slug || area?.nome), [slug, area]);
   const AreaIconComp = areaVisual?.Icon;
   const palette = useMemo(() => getAreaThemePalette(slug || area?.slug || area?.nome), [slug, area]);
@@ -86,7 +114,7 @@ const AprenderArea = () => {
   const mobileHeader = (
     <PageHeader 
       title={area?.nome ?? 'Aprender'} 
-      subtitle="Trilha de Aprendizado" 
+      subtitle={activeTab === 'flashcards' ? 'Trilha de Flashcards' : 'Trilha de Aprendizado'} 
       onBack={goBack} 
     />
   );
@@ -96,7 +124,7 @@ const AprenderArea = () => {
       wide
       activeId="aprender"
       title={area?.nome ?? 'Aprender'}
-      subtitle="Trilha de Aprendizado"
+      subtitle={activeTab === 'flashcards' ? 'Trilha de Flashcards' : 'Trilha de Aprendizado'}
       mobileHeader={mobileHeader}
     >
       {/* Fundo ShapeGrid (padrão oficial do app / início do aplicativo) */}
@@ -124,11 +152,43 @@ const AprenderArea = () => {
           </div>
         ) : (
           <>
+            {/* Seletor de Modo Aulas vs Flashcards */}
+            <div className="flex bg-card/60 backdrop-blur-md p-1 rounded-2xl border border-white/10 w-full mb-4 shadow-sm">
+              <button
+                type="button"
+                onClick={() => { haptic.selection(); setActiveTab('aulas'); }}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer",
+                  activeTab === 'aulas'
+                    ? "bg-primary/20 text-primary border border-primary/30 shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent"
+                )}
+              >
+                <GraduationCap className="w-4 h-4 shrink-0" />
+                <span>Aulas</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => { haptic.selection(); setActiveTab('flashcards'); }}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer",
+                  activeTab === 'flashcards'
+                    ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent"
+                )}
+              >
+                <FlashcardsIcon className="w-4 h-4 shrink-0" />
+                <span>Flashcards</span>
+              </button>
+            </div>
+
             {/* Top Bar Selecione o Módulo */}
             <div className="flex items-center justify-between mb-4 w-full min-w-0">
               <div className="flex items-center gap-2 min-w-0">
                 <BookOpenText className="w-5 h-5 shrink-0" style={{ color: palette.primary }} />
-                <h2 className="text-xs sm:text-sm font-normal font-sans uppercase tracking-widest text-white truncate">Selecione o Módulo</h2>
+                <h2 className="text-xs sm:text-sm font-normal font-sans uppercase tracking-widest text-white truncate">
+                  {activeTab === 'flashcards' ? 'Selecione o Tópico' : 'Selecione o Módulo'}
+                </h2>
               </div>
               <span 
                 className="text-[10px] sm:text-xs font-normal font-sans uppercase tracking-wider px-2.5 py-0.5 rounded-full border shrink-0"
@@ -160,6 +220,7 @@ const AprenderArea = () => {
                 <div className="space-y-6 sm:space-y-8 w-full min-w-0">
                   {modulosOrdenados.map((m, i) => {
                     const isLeft = i % 2 === 0;
+                    const isFlash = activeTab === 'flashcards';
                     const list = aulas.filter((a) => a.modulo_id === m.id);
                     const total = list.length;
                     const concluidas = list.filter((a) => progresso[a.id]?.concluida).length;
@@ -169,6 +230,23 @@ const AprenderArea = () => {
                     );
                     const pct = total ? Math.round(somaPct / total) : 0;
                     const numStr = String(m.ordem || i + 1).padStart(2, '0');
+
+                    // Match de flashcards por tema correspondente ao título do módulo
+                    const temaMatch = temasFlashcards?.find(t => 
+                      t.tema.toLowerCase() === m.titulo.toLowerCase() ||
+                      t.tema.toLowerCase().includes(m.titulo.toLowerCase()) ||
+                      m.titulo.toLowerCase().includes(t.tema.toLowerCase())
+                    );
+                    const totalCards = temaMatch?.total ?? 0;
+                    const concluidasCards = temaMatch?.compreendidos ?? 0;
+                    const pctCards = totalCards > 0 ? Math.round((concluidasCards / totalCards) * 100) : 0;
+
+                    const displayConcluidas = isFlash ? concluidasCards : concluidas;
+                    const displayTotal = isFlash ? totalCards : total;
+                    const displayLabel = isFlash 
+                      ? (totalCards === 1 ? 'flashcard' : 'flashcards')
+                      : (total === 1 ? 'aula' : 'aulas');
+                    const displayPct = isFlash ? pctCards : pct;
 
                     return (
                       <div
@@ -204,7 +282,10 @@ const AprenderArea = () => {
                         <div
                           onClick={() => {
                             try { haptic.light(); } catch {}
-                            navigate(`/aprender/modulo/${m.id}`, { state: { modulo: m, area: data?.area } });
+                            const destTab = isFlash ? '?tab=flashcards' : '';
+                            navigate(`/aprender/modulo/${m.id}${destTab}`, { 
+                              state: { modulo: m, area: data?.area, tab: activeTab } 
+                            });
                           }}
                           className="relative w-[46%] sm:w-[45%] max-w-[225px] min-h-[175px] sm:min-h-[195px] h-auto p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden select-none box-border transition-all duration-300 z-10 border border-white/25 cursor-pointer active:scale-[0.97] group"
                           style={{
@@ -239,7 +320,7 @@ const AprenderArea = () => {
                           {/* Cabeçalho da Capa: Módulo */}
                           <div className="flex items-center justify-between gap-1 z-[1] w-full">
                             <span className="flex items-center gap-1 text-[9px] sm:text-[10px] font-normal px-2 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-md bg-black/40 text-white border border-white/15">
-                              Módulo {numStr}
+                              {isFlash ? `Tópico ${numStr}` : `Módulo ${numStr}`}
                             </span>
                           </div>
 
@@ -254,13 +335,13 @@ const AprenderArea = () => {
                           <div className="z-[1] pt-1.5 border-t border-white/15 w-full">
                             <div>
                               <div className="flex items-center justify-between text-[10px] font-normal text-white/90 mb-1">
-                                <span>{concluidas > 0 ? `${concluidas}/${total} concluídas` : `${total} ${total === 1 ? 'aula' : 'aulas'}`}</span>
-                                <span className="font-normal font-sans">{pct}%</span>
+                                <span>{displayConcluidas > 0 ? `${displayConcluidas}/${displayTotal} concluídos` : `${displayTotal} ${displayLabel}`}</span>
+                                <span className="font-normal font-sans">{displayPct}%</span>
                               </div>
                               <div className="w-full bg-black/35 h-1.5 rounded-full overflow-hidden border border-white/20">
                                 <div 
                                   className="h-full bg-white rounded-full transition-all duration-500 shadow-sm"
-                                  style={{ width: `${Math.max(pct, total > 0 ? 8 : 0)}%` }}
+                                  style={{ width: `${Math.max(displayPct, displayTotal > 0 ? 8 : 0)}%` }}
                                 />
                               </div>
                             </div>
