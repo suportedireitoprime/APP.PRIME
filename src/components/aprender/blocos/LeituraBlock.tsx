@@ -5,6 +5,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, Sparkles, AlertTriangle, ChevronDown, BookOpen, Eye, EyeOff } from 'lucide-react';
 import { normalizarMarkdown } from '@/lib/markdown';
 import { haptic } from '@/lib/nativeHaptics';
+import { LinhaDoTempoAnimada, isTimelineBlock } from './LinhaDoTempoAnimada';
+import { ComparativoBlocos, isComparativeBlock } from './ComparativoBlocos';
+
+function extractTextFromChildren(node: any): string {
+  if (!node) return '';
+  if (typeof node === 'string') return node;
+  if (typeof node === 'number') return String(node);
+  if (Array.isArray(node)) return node.map(extractTextFromChildren).join('');
+  if (node?.props?.children) return extractTextFromChildren(node.props.children);
+  return '';
+}
 
 export type LeituraPayload = {
   titulo?: string;
@@ -197,13 +208,22 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
                   {children}
                 </blockquote>
               ),
-              pre: ({ children }) => (
-                <div className="my-5 overflow-x-auto rounded-2xl border border-white/10 bg-[#10121a] p-4 sm:p-5 shadow-inner">
-                  <pre className="font-mono text-xs sm:text-sm leading-relaxed text-emerald-300/95 whitespace-pre">
-                    {children}
-                  </pre>
-                </div>
-              ),
+              pre: ({ children }) => {
+                const rawText = extractTextFromChildren(children);
+                if (isTimelineBlock(rawText)) {
+                  return <LinhaDoTempoAnimada raw={rawText} />;
+                }
+                if (isComparativeBlock(rawText)) {
+                  return <ComparativoBlocos raw={rawText} />;
+                }
+                return (
+                  <div className="my-5 overflow-x-auto rounded-2xl border border-white/10 bg-[#10121a] p-4 sm:p-5 shadow-inner">
+                    <pre className="font-mono text-xs sm:text-sm leading-relaxed text-emerald-300/95 whitespace-pre">
+                      {children}
+                    </pre>
+                  </div>
+                );
+              },
               code: ({ children, className }) => {
                 const isInline = !className;
                 return isInline ? (

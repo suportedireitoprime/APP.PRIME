@@ -35,5 +35,11 @@ export function normalizarMarkdown(md: string): string {
   // Garante que listas com negrito mantenham o espaço: * **word** → * **word**
   text = text.replace(/^(\*\s+)\*\*([^:\n]+?):\*\*/gm, '$1**$2:**');
 
+  // Garante que blocos de código com crases ímpares sejam devidamente fechados
+  const backtickMatches = text.match(/```/g);
+  if (backtickMatches && backtickMatches.length % 2 !== 0) {
+    text = text.trimEnd() + '\n```';
+  }
+
   return text;
 }
