@@ -22,7 +22,8 @@ export function useFlashcardsEngine() {
   const artigosParam = params.get('artigos');
 
   const escolhendo = !areaParam && !areasParam && !temasParam && !deckId && modo !== 'edital';
-  const limitParam = parseInt(params.get('limite') || '30', 10);
+  const rawLimit = parseInt(params.get('limite') || '30', 10);
+  const limitParam = subtemaParam ? Math.max(rawLimit, 1000) : rawLimit;
   const listaAreas = areasParam ? areasParam.split('|').filter(Boolean) : areaParam ? [areaParam] : null;
   const temasList = temasParam ? temasParam.split('|').filter(Boolean) : null;
   

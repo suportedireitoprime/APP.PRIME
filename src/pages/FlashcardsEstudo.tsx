@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { animate } from 'framer-motion';
+import { areaIconFor } from '@/lib/areasDireitoIcons';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
 import AreaTemasSheet from '@/components/flashcards/AreaTemasSheet';
@@ -78,6 +79,18 @@ function formatTemaBreadcrumb(raw: string): string[] {
 
 const FlashcardsEstudo = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const fromPath = (location.state as any)?.from;
+
+  const handleBack = () => {
+    if (fromPath) {
+      navigate(fromPath);
+    } else if (window.history.length > 2) {
+      navigate(-1);
+    } else {
+      navigate('/flashcards');
+    }
+  };
 
   // Engine Hook que concentra lógica
   const {
@@ -91,6 +104,10 @@ const FlashcardsEstudo = () => {
     gateFlashcards, refetchCards,
     areaParam, temasParam, setFeitos
   } = useFlashcardsEngine();
+
+  const corParam = params.get('cor');
+  const areaNome = atual?.area || areaParam || (cards[0]?.area ?? null);
+  const cardAccent = corParam || (areaNome ? areaIconFor(areaNome).color : '#10b981');
 
   const { data: areasRaw } = useFlashcardsResumoAreas();
   const areas = areasRaw || [];
@@ -139,7 +156,7 @@ const FlashcardsEstudo = () => {
       });
 
       const subClose = NativeFlashcards.addListener('onClose', () => {
-        navigate('/flashcards');
+        handleBack();
       });
 
       NativeFlashcards.openSession(sessionData).catch((err) => {
@@ -176,7 +193,7 @@ const FlashcardsEstudo = () => {
       <div className="relative z-10 mx-auto w-full max-w-3xl px-3.5 sm:px-6">
         <PageHeader
           title={escolhendo ? 'Categorias de Flashcards' : ''}
-          onBack={() => navigate('/flashcards')}
+          onBack={handleBack}
           rightAction={
             !escolhendo && (
               <Sheet>
@@ -343,7 +360,16 @@ const FlashcardsEstudo = () => {
             )}
 
             <div className="flex items-center gap-3">
-              <Progress value={cards.length ? ((idx + 1) / cards.length) * 100 : 0} className="h-2 flex-1 [&>div]:bg-emerald-500" />
+              <div className="relative h-2 flex-1 rounded-full bg-zinc-800/60 overflow-hidden">
+                <div 
+                  className="h-full rounded-full transition-all duration-300"
+                  style={{
+                    width: `${cards.length ? ((idx + 1) / cards.length) * 100 : 0}%`,
+                    backgroundColor: cardAccent,
+                    boxShadow: `0 0 10px ${cardAccent}60`,
+                  }}
+                />
+              </div>
               <span className="text-xs font-black tabular-nums text-muted-foreground">
                 <AnimatedNumber value={idx + 1} />/<AnimatedNumber value={cards.length} />
               </span>
@@ -351,8 +377,11 @@ const FlashcardsEstudo = () => {
 
             {loading && !emContagem && (
               <div className="relative w-full min-h-[380px] sm:min-h-[440px] h-[54dvh] max-h-[540px] rounded-[32px] border border-border/80 bg-card p-6 md:p-8 flex items-center justify-center shadow-lg animate-pulse">
-                <div className="flex flex-col items-center gap-4 text-emerald-500/60">
-                  <div className="h-10 w-10 animate-spin rounded-full border-4 border-current border-t-transparent" />
+                <div className="flex flex-col items-center gap-4">
+                  <div 
+                    className="h-10 w-10 animate-spin rounded-full border-4 border-t-transparent"
+                    style={{ borderColor: cardAccent, borderTopColor: 'transparent' }}
+                  />
                 </div>
               </div>
             )}
@@ -360,16 +389,23 @@ const FlashcardsEstudo = () => {
             {!loading && cards.length === 0 && (
               <div className="rounded-3xl border border-border bg-card p-10 text-center">
                 <p className="text-base font-extrabold text-foreground">Nenhum card encontrado neste filtro.</p>
-                <Button className="mt-4 rounded-xl" onClick={() => navigate('/flashcards')}>Voltar para Flashcards</Button>
+                <Button className="mt-4 rounded-xl" onClick={handleBack}>Voltar</Button>
               </div>
             )}
 
             {!loading && cards.length > 0 && !atual && (
               <div className="rounded-3xl border border-border bg-card p-10 text-center">
-                <CheckCircle2 className="mx-auto mb-3 h-12 w-12 text-emerald-500" />
+                <CheckCircle2 className="mx-auto mb-3 h-12 w-12" style={{ color: cardAccent }} />
                 <h3 className="text-xl font-black text-foreground">Sessão Concluída!</h3>
                 <p className="mt-1 text-sm text-muted-foreground">{feitos} flashcards estudados com sucesso.</p>
-                <Button className="mt-5 rounded-2xl px-6 font-bold" onClick={() => { setFeitos(0); refetchCards(); }}>Nova sessão</Button>
+                <div className="mt-5 flex items-center justify-center gap-3">
+                  <Button variant="outline" className="rounded-2xl px-5 font-bold" onClick={handleBack}>
+                    Voltar para a Trilha
+                  </Button>
+                  <Button className="rounded-2xl px-6 font-bold" style={{ backgroundColor: cardAccent }} onClick={() => { setFeitos(0); refetchCards(); }}>
+                    Nova sessão
+                  </Button>
+                </div>
               </div>
             )}
 
@@ -378,24 +414,26 @@ const FlashcardsEstudo = () => {
                 {/* Efeito de pilha (cards no fundo) */}
                 {cards[idx + 2] && (
                   <div 
-                    className="absolute inset-0 rounded-[32px] border border-emerald-500/20 bg-card/60 backdrop-blur-sm pointer-events-none transition-all duration-300"
+                    className="absolute inset-0 rounded-[32px] border bg-card/60 backdrop-blur-sm pointer-events-none transition-all duration-300"
                     style={{
+                      borderColor: `${cardAccent}33`,
                       transform: 'translateY(18px) scale(0.91)',
                       opacity: 0.35,
                       zIndex: 1,
-                      background: 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(13,15,18,0.95) 100%)',
+                      background: `linear-gradient(135deg, ${cardAccent}1f 0%, rgba(13,15,18,0.95) 100%)`,
                       boxShadow: '0 10px 30px -15px rgba(0,0,0,0.8)'
                     }}
                   />
                 )}
                 {cards[idx + 1] && (
                   <div 
-                    className="absolute inset-0 rounded-[32px] border border-emerald-500/30 bg-card/80 backdrop-blur-md pointer-events-none transition-all duration-300"
+                    className="absolute inset-0 rounded-[32px] border bg-card/80 backdrop-blur-md pointer-events-none transition-all duration-300"
                     style={{
+                      borderColor: `${cardAccent}4d`,
                       transform: 'translateY(9px) scale(0.95)',
                       opacity: 0.65,
                       zIndex: 2,
-                      background: 'linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(13,15,18,0.98) 100%)',
+                      background: `linear-gradient(135deg, ${cardAccent}26 0%, rgba(13,15,18,0.98) 100%)`,
                       boxShadow: '0 15px 40px -20px rgba(0,0,0,0.8)'
                     }}
                   />
@@ -408,7 +446,7 @@ const FlashcardsEstudo = () => {
                   onVirar={virar}
                   onResponder={responder}
                   exitDirection={exitDirection}
-                  accent={params.get('cor') || "#10b981"}
+                  accent={cardAccent}
                 />
               </div>
             )}

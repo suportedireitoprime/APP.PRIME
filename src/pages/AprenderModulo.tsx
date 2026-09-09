@@ -517,7 +517,7 @@ const AprenderModulo = () => {
                             onClick={() => {
                               try { haptic.light(); } catch {}
                               navigate(
-                                `/flashcards/estudar?area=${encodeURIComponent(modulo.areaNome)}&temas=${encodeURIComponent(flashcardsData?.matchedTema || modulo.titulo)}&subtema=${encodeURIComponent(subtema.nome)}&limite=${Math.max(subtema.total, 100)}`,
+                                `/flashcards/estudar?area=${encodeURIComponent(modulo.areaNome)}&temas=${encodeURIComponent(flashcardsData?.matchedTema || modulo.titulo)}&subtema=${encodeURIComponent(subtema.nome)}&limite=1000&cor=${encodeURIComponent(palette.primary)}`,
                                 {
                                   state: {
                                     from: `/aprender/modulo/${modulo.id}?tab=flashcards`,

@@ -216,16 +216,23 @@ const Flashcard3D = memo(function Flashcard3D({
                         Glossário
                       </span>
                     )}
-                    {formatTemaBreadcrumb(atual.tema ?? atual.area ?? 'Flashcard').map((part, i, arr) => (
-                      <span key={i} className="flex items-center gap-1">
-                        <span className="text-[11px] md:text-xs font-medium leading-snug" style={{ color: `color-mix(in oklab, ${accent} 60%, white)`, textShadow: '0 1px 8px rgba(0,0,0,0.5)' }}>
-                          {part}
+                    {(() => {
+                      const baseTema = atual.tema ?? atual.area ?? 'Flashcard';
+                      const parts = formatTemaBreadcrumb(baseTema);
+                      if (atual.subtema && !parts.some(p => p.toLowerCase() === atual.subtema?.toLowerCase())) {
+                        parts.push(toSentence(atual.subtema));
+                      }
+                      return parts.map((part, i, arr) => (
+                        <span key={i} className="flex items-center gap-1">
+                          <span className="text-[11px] md:text-xs font-medium leading-snug" style={{ color: `color-mix(in oklab, ${accent} 60%, white)`, textShadow: '0 1px 8px rgba(0,0,0,0.5)' }}>
+                            {part}
+                          </span>
+                          {i < arr.length - 1 && (
+                            <ChevronRight className="h-2.5 w-2.5 shrink-0 opacity-50" style={{ color: `color-mix(in oklab, ${accent} 50%, white)` }} />
+                          )}
                         </span>
-                        {i < arr.length - 1 && (
-                          <ChevronRight className="h-2.5 w-2.5 shrink-0 opacity-50" style={{ color: `color-mix(in oklab, ${accent} 50%, white)` }} />
-                        )}
-                      </span>
-                    ))}
+                      ));
+                    })()}
                   </div>
                   <Scale className="h-4 w-4 shrink-0 mt-0.5" style={{ color: `${accent}`, opacity: 0.6 }} aria-hidden />
                 </div>
