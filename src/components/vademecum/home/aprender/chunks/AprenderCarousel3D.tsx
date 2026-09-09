@@ -61,13 +61,14 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
   useEffect(() => {
     let animId: number;
     let lastTime = performance.now();
+    let isVisible = true;
 
     const step = (time: number) => {
       const delta = time - lastTime;
       lastTime = time;
 
       const el = scrollerRef.current;
-      if (el && !isInteracting.current && !isHovered.current && delta < 100) {
+      if (el && isVisible && !isInteracting.current && !isHovered.current && delta < 100) {
         el.scrollLeft += delta * 0.035; // ~35px por segundo para leitura suave e elegante
 
         const oneSetWidth = el.scrollWidth / 3;
@@ -80,8 +81,28 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
     };
 
     animId = requestAnimationFrame(step);
+
+    // Intersection Observer para pausar animação fora da tela (economia de CPU/Bateria)
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          isVisible = entry.isIntersecting;
+          // Reseta o tempo ao voltar para a tela para evitar saltos bruscos
+          if (isVisible) {
+            lastTime = performance.now();
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    if (scrollerRef.current) {
+      observer.observe(scrollerRef.current);
+    }
+
     return () => {
       cancelAnimationFrame(animId);
+      observer.disconnect();
       if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
     };
   }, []);
