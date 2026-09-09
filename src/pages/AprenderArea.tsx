@@ -12,7 +12,7 @@ import {
   hydrateAprenderAreaCache,
   loadAprenderArea,
 } from '@/lib/aprenderAreaLoader';
-import { BookOpenText, GraduationCap, ListChecks } from 'lucide-react';
+import { BookOpenText, GraduationCap, ListChecks, Layers, ArrowRight, Play } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
@@ -91,21 +91,161 @@ const AprenderArea = () => {
   const aulas = data?.aulas ?? [];
   const progresso = data?.progresso ?? {};
 
+  const effectiveAreaName = useMemo(() => {
+    if (area?.nome) return area.nome;
+    if (!slug) return '';
+    const map: Record<string, string> = {
+      'direito-civil': 'Direito Civil',
+      'direito-penal': 'Direito Penal',
+      'direito-constitucional': 'Direito Constitucional',
+      'direito-administrativo': 'Direito Administrativo',
+      'direito-tributario': 'Direito Tributário',
+      'direito-do-trabalho': 'Direito do Trabalho',
+      'direito-processual-civil': 'Direito Processual Civil',
+      'direito-processual-penal': 'Direito Processual Penal',
+      'direito-empresarial': 'Direito Empresarial',
+      'direito-ambiental': 'Direito Ambiental',
+      'direitos-humanos': 'Direitos Humanos',
+      'direito-previdenciario': 'Direito Previdenciário',
+      'direito-financeiro': 'Direito Financeiro',
+      'direito-desportivo': 'Direito Desportivo',
+      'direito-processual-do-trabalho': 'Direito Processual do Trabalho',
+      'direito-concorrencial': 'Direito Concorrencial',
+      'direito-urbanistico': 'Direito Urbanístico',
+      'direito-internacional-publico': 'Direito Internacional Público',
+      'direito-internacional-privado': 'Direito Internacional Privado',
+      'lei-penal-especial': 'Lei Penal Especial',
+      'direito-eleitoral': 'Direito Eleitoral',
+      'formacao-complementar': 'Formação Complementar',
+      'politicas-publicas': 'Políticas Públicas',
+      'pratica-profissional': 'Prática Profissional',
+      'portugues': 'Português',
+      'revisao-oab': 'Revisão OAB',
+      'filosofia-do-direito': 'Filosofia do Direito',
+      'teoria-e-filosofia-do-direito': 'Filosofia do Direito',
+      'pesquisa-cientifica': 'Pesquisa Científica',
+    };
+    if (map[slug]) return map[slug];
+    return slug
+      .split('-')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ');
+  }, [area?.nome, slug]);
+
   const modulosOrdenados = useMemo(() => {
     return [...modulos].sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
   }, [modulos]);
 
   // Busca temas e cards de flashcards desta área no Supabase
-  const { data: temasFlashcards } = useQuery({
-    queryKey: ['area_flashcards_temas', area?.nome],
+  const { data: temasFlashcards, isLoading: loadingFlashcards } = useQuery({
+    queryKey: ['area_flashcards_temas', effectiveAreaName],
     queryFn: async () => {
-      if (!area?.nome) return [];
-      const { data: res } = await supabase.rpc('flashcards_temas', { _area: area.nome });
+      if (!effectiveAreaName) return [];
+      let { data: res } = await supabase.rpc('flashcards_temas', { _area: effectiveAreaName });
+      if (!res || res.length === 0) {
+        const alt = effectiveAreaName.startsWith('Direito ')
+          ? effectiveAreaName.replace('Direito ', '')
+          : `Direito ${effectiveAreaName}`;
+        const { data: altRes } = await supabase.rpc('flashcards_temas', { _area: alt });
+        if (altRes && altRes.length > 0) res = altRes;
+      }
       return (res || []) as Array<{ tema: string; total: number; compreendidos: number; a_revisar: number }>;
     },
-    enabled: !!area?.nome,
+    enabled: !!effectiveAreaName,
     staleTime: 5 * 60 * 1000,
   });
+
+  const totalFlashcardsArea = useMemo(() => {
+    return (temasFlashcards || []).reduce((acc, t) => acc + (t.total || 0), 0);
+  }, [temasFlashcards]);
+
+  const isFlash = activeTab === 'flashcards';
+
+  // Itens unificados para a trilha (temas reais de flashcards na aba flashcards, ou módulos de aulas/questões)
+  const itemsToRender = useMemo(() => {
+    if (isFlash && temasFlashcards && temasFlashcards.length > 0) {
+      return temasFlashcards.map((t, idx) => ({
+        key: `tema-${t.tema}-${idx}`,
+        titulo: t.tema,
+        ordemStr: String(idx + 1).padStart(2, '0'),
+        badgeLabel: `Tópico ${String(idx + 1).padStart(2, '0')}`,
+        displayTotal: t.total,
+        displayConcluidas: t.compreendidos,
+        displayLabel: t.total === 1 ? 'flashcard' : 'flashcards',
+        displayPct: t.total > 0 ? Math.round((t.compreendidos / t.total) * 100) : 0,
+        onClick: () => {
+          try { haptic.light(); } catch {}
+          navigate(`/flashcards/estudar?area=${encodeURIComponent(area?.nome || effectiveAreaName)}&temas=${encodeURIComponent(t.tema)}`, {
+            state: { from: `/aprender/area/${slug}?tab=flashcards` }
+          });
+        },
+      }));
+    }
+
+    return modulosOrdenados.map((m, idx) => {
+      const list = aulas.filter((a) => a.modulo_id === m.id);
+      const total = list.length;
+      const concluidas = list.filter((a) => progresso[a.id]?.concluida).length;
+      const somaPct = list.reduce(
+        (s, a) => s + (progresso[a.id]?.concluida ? 100 : progresso[a.id]?.pct || 0),
+        0,
+      );
+      const pct = total ? Math.round(somaPct / total) : 0;
+      const numStr = String(m.ordem || idx + 1).padStart(2, '0');
+
+      if (isFlash && temasFlashcards) {
+        const temaMatch = temasFlashcards.find((t) =>
+          t.tema.toLowerCase() === m.titulo.toLowerCase() ||
+          t.tema.toLowerCase().includes(m.titulo.toLowerCase()) ||
+          m.titulo.toLowerCase().includes(t.tema.toLowerCase())
+        );
+        const totalCards = temaMatch?.total ?? 0;
+        const concluidasCards = temaMatch?.compreendidos ?? 0;
+        const pctCards = totalCards > 0 ? Math.round((concluidasCards / totalCards) * 100) : 0;
+
+        return {
+          key: m.id,
+          titulo: m.titulo,
+          ordemStr: numStr,
+          badgeLabel: `Tópico ${numStr}`,
+          displayTotal: totalCards,
+          displayConcluidas: concluidasCards,
+          displayLabel: totalCards === 1 ? 'flashcard' : 'flashcards',
+          displayPct: pctCards,
+          onClick: () => {
+            try { haptic.light(); } catch {}
+            if (temaMatch) {
+              navigate(`/flashcards/estudar?area=${encodeURIComponent(area?.nome || effectiveAreaName)}&temas=${encodeURIComponent(temaMatch.tema)}`, {
+                state: { from: `/aprender/area/${slug}?tab=flashcards` }
+              });
+            } else {
+              navigate(`/aprender/modulo/${m.id}?tab=flashcards`, {
+                state: { modulo: m, area: data?.area, tab: 'flashcards' }
+              });
+            }
+          },
+        };
+      }
+
+      return {
+        key: m.id,
+        titulo: m.titulo,
+        ordemStr: numStr,
+        badgeLabel: activeTab === 'questoes' ? `Questões ${numStr}` : `Módulo ${numStr}`,
+        displayTotal: total,
+        displayConcluidas: concluidas,
+        displayLabel: total === 1 ? 'aula' : 'aulas',
+        displayPct: pct,
+        onClick: () => {
+          try { haptic.light(); } catch {}
+          const destTab = activeTab === 'questoes' ? '?tab=questoes' : '';
+          navigate(`/aprender/modulo/${m.id}${destTab}`, {
+            state: { modulo: m, area: data?.area, tab: activeTab }
+          });
+        },
+      };
+    });
+  }, [isFlash, temasFlashcards, modulosOrdenados, aulas, progresso, activeTab, area?.nome, effectiveAreaName, slug, navigate, data?.area]);
 
   const areaVisual = useMemo(() => areaIconFor(slug || area?.slug || area?.nome), [slug, area]);
   const AreaIconComp = areaVisual?.Icon;
@@ -113,7 +253,7 @@ const AprenderArea = () => {
 
   const mobileHeader = (
     <PageHeader 
-      title={area?.nome ?? 'Aprender'} 
+      title={area?.nome ?? effectiveAreaName} 
       subtitle={activeTab === 'flashcards' ? 'Trilha de Flashcards' : 'Trilha de Aprendizado'} 
       onBack={goBack} 
     />
@@ -123,7 +263,7 @@ const AprenderArea = () => {
     <DesktopPageLayout
       wide
       activeId="aprender"
-      title={area?.nome ?? 'Aprender'}
+      title={area?.nome ?? effectiveAreaName}
       subtitle={activeTab === 'flashcards' ? 'Trilha de Flashcards' : 'Trilha de Aprendizado'}
       mobileHeader={mobileHeader}
     >
@@ -141,12 +281,12 @@ const AprenderArea = () => {
       </div>
 
       <div className="relative z-10 w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-20 pt-4 min-w-0 overflow-x-hidden box-border">
-        {loading && !data ? (
+        {loading && !data && !effectiveAreaName ? (
           <div className="space-y-4 px-4 py-5 sm:px-6">
             <div className="h-44 rounded-2xl bg-muted animate-pulse" />
             {[...Array(4)].map((_, i) => <div key={i} className="h-20 rounded-2xl bg-muted animate-pulse" />)}
           </div>
-        ) : !area ? (
+        ) : !area && !effectiveAreaName ? (
           <div className="mx-4 my-6 rounded-2xl border border-border bg-card p-8 text-center text-muted-foreground">
             Área não encontrada.
           </div>
@@ -195,12 +335,12 @@ const AprenderArea = () => {
               </button>
             </div>
 
-            {/* Top Bar Selecione o Módulo */}
+            {/* Top Bar Selecione o Módulo / Tópico */}
             <div className="flex items-center justify-between mb-4 w-full min-w-0">
               <div className="flex items-center gap-2 min-w-0">
                 <BookOpenText className="w-5 h-5 shrink-0" style={{ color: palette.primary }} />
                 <h2 className="text-xs sm:text-sm font-normal font-sans uppercase tracking-widest text-white truncate">
-                  {activeTab === 'flashcards' ? 'Selecione o Tópico' : activeTab === 'questoes' ? 'Praticar por Tópico' : 'Selecione o Módulo'}
+                  {isFlash ? `Tópicos (${itemsToRender.length})` : activeTab === 'questoes' ? 'Praticar por Tópico' : 'Selecione o Módulo'}
                 </h2>
               </div>
               <span 
@@ -211,15 +351,62 @@ const AprenderArea = () => {
                   color: palette.primary,
                 }}
               >
-                {area.nome}
+                {area?.nome || effectiveAreaName}
               </span>
             </div>
 
-            {modulosOrdenados.length === 0 ? (
+            {/* Banner de Estudo Rápido de Todos os Flashcards da Área */}
+            {isFlash && totalFlashcardsArea > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  try { haptic.selection(); } catch {}
+                  navigate(`/flashcards/estudar?area=${encodeURIComponent(area?.nome || effectiveAreaName)}`, {
+                    state: { from: `/aprender/area/${slug}?tab=flashcards` }
+                  });
+                }}
+                className="w-full mb-5 p-3.5 sm:p-4 rounded-2xl border border-white/15 bg-card/70 hover:bg-card/90 backdrop-blur-md flex items-center justify-between transition-all group cursor-pointer shadow-md active:scale-[0.98]"
+              >
+                <div className="flex items-center gap-3">
+                  <div 
+                    className="w-10 h-10 rounded-xl flex items-center justify-center border border-white/20 shadow-sm"
+                    style={{ backgroundColor: `${palette.primary}25` }}
+                  >
+                    <Play className="w-4 h-4 fill-current ml-0.5" style={{ color: palette.primary }} />
+                  </div>
+                  <div className="text-left min-w-0">
+                    <p className="text-xs sm:text-sm font-bold text-white group-hover:text-emerald-400 transition-colors">
+                      Estudar Todos os Flashcards de {area?.nome || effectiveAreaName}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {totalFlashcardsArea.toLocaleString('pt-BR')} flashcards distribuídos em {itemsToRender.length} tópicos
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 text-xs font-bold shrink-0 ml-2" style={{ color: palette.primary }}>
+                  <span className="hidden sm:inline">Iniciar Trilha</span>
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+              </button>
+            )}
+
+            {isFlash && loadingFlashcards && itemsToRender.length === 0 ? (
+              <div className="space-y-4 py-6">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="h-24 rounded-2xl bg-muted/40 animate-pulse border border-white/5" />
+                ))}
+              </div>
+            ) : itemsToRender.length === 0 ? (
               <div className="mx-auto max-w-md my-12 rounded-2xl border border-border bg-card p-8 text-center text-muted-foreground">
                 <BookOpenText className="w-8 h-8 mx-auto mb-3 text-muted-foreground/60" />
-                <p className="text-sm font-semibold text-foreground mb-1">Nenhum módulo publicado ainda</p>
-                <p className="text-xs text-muted-foreground">Os módulos de {area.nome} estarão disponíveis em breve.</p>
+                <p className="text-sm font-semibold text-foreground mb-1">
+                  {isFlash ? 'Nenhum tópico de flashcard encontrado' : 'Nenhum módulo publicado ainda'}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {isFlash 
+                    ? `Os flashcards de ${area?.nome || effectiveAreaName} estarão disponíveis em breve.`
+                    : `Os módulos de ${area?.nome || effectiveAreaName} estarão disponíveis em breve.`}
+                </p>
               </div>
             ) : (
               /* Trilha em Linha do Tempo Elegante (Alternando Esquerda/Direita) */
@@ -231,39 +418,12 @@ const AprenderArea = () => {
                 />
 
                 <div className="space-y-6 sm:space-y-8 w-full min-w-0">
-                  {modulosOrdenados.map((m, i) => {
+                  {itemsToRender.map((item, i) => {
                     const isLeft = i % 2 === 0;
-                    const isFlash = activeTab === 'flashcards';
-                    const list = aulas.filter((a) => a.modulo_id === m.id);
-                    const total = list.length;
-                    const concluidas = list.filter((a) => progresso[a.id]?.concluida).length;
-                    const somaPct = list.reduce(
-                      (s, a) => s + (progresso[a.id]?.concluida ? 100 : progresso[a.id]?.pct || 0),
-                      0,
-                    );
-                    const pct = total ? Math.round(somaPct / total) : 0;
-                    const numStr = String(m.ordem || i + 1).padStart(2, '0');
-
-                    // Match de flashcards por tema correspondente ao título do módulo
-                    const temaMatch = temasFlashcards?.find(t => 
-                      t.tema.toLowerCase() === m.titulo.toLowerCase() ||
-                      t.tema.toLowerCase().includes(m.titulo.toLowerCase()) ||
-                      m.titulo.toLowerCase().includes(t.tema.toLowerCase())
-                    );
-                    const totalCards = temaMatch?.total ?? 0;
-                    const concluidasCards = temaMatch?.compreendidos ?? 0;
-                    const pctCards = totalCards > 0 ? Math.round((concluidasCards / totalCards) * 100) : 0;
-
-                    const displayConcluidas = isFlash ? concluidasCards : concluidas;
-                    const displayTotal = isFlash ? totalCards : total;
-                    const displayLabel = isFlash 
-                      ? (totalCards === 1 ? 'flashcard' : 'flashcards')
-                      : (total === 1 ? 'aula' : 'aulas');
-                    const displayPct = isFlash ? pctCards : pct;
 
                     return (
                       <div
-                        key={m.id}
+                        key={item.key}
                         className={`relative z-10 flex w-full items-center ${isLeft ? 'justify-start' : 'justify-end'}`}
                       >
                         {/* Linha conectando o nó central ao card */}
@@ -283,7 +443,7 @@ const AprenderArea = () => {
                           }}
                         >
                           <span className="text-[11px] sm:text-xs font-semibold font-sans">
-                            {numStr}
+                            {item.ordemStr}
                           </span>
                           <span 
                             className="absolute inset-0 rounded-full animate-ping -z-10 pointer-events-none"
@@ -293,13 +453,7 @@ const AprenderArea = () => {
 
                         {/* Card no formato de Capa de Livro */}
                         <div
-                          onClick={() => {
-                            try { haptic.light(); } catch {}
-                            const destTab = activeTab === 'flashcards' ? '?tab=flashcards' : activeTab === 'questoes' ? '?tab=questoes' : '';
-                            navigate(`/aprender/modulo/${m.id}${destTab}`, { 
-                              state: { modulo: m, area: data?.area, tab: activeTab } 
-                            });
-                          }}
+                          onClick={item.onClick}
                           className="relative w-[46%] sm:w-[45%] max-w-[225px] min-h-[175px] sm:min-h-[195px] h-auto p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden select-none box-border transition-all duration-300 z-10 border border-white/25 cursor-pointer active:scale-[0.97] group"
                           style={{
                             background: palette.cardGradient,
@@ -330,17 +484,17 @@ const AprenderArea = () => {
                             />
                           ) : null}
 
-                          {/* Cabeçalho da Capa: Módulo */}
+                          {/* Cabeçalho da Capa: Módulo / Tópico */}
                           <div className="flex items-center justify-between gap-1 z-[1] w-full">
                             <span className="flex items-center gap-1 text-[9px] sm:text-[10px] font-normal px-2 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-md bg-black/40 text-white border border-white/15">
-                              {activeTab === 'flashcards' ? `Tópico ${numStr}` : activeTab === 'questoes' ? `Questões ${numStr}` : `Módulo ${numStr}`}
+                              {item.badgeLabel}
                             </span>
                           </div>
 
                           {/* Centro da Capa: Título do Tema Sem Negrito e Sem Abreviações */}
                           <div className="my-auto py-2 z-[1] w-full">
                             <h3 className="font-sans font-normal text-[12.5px] sm:text-[14px] leading-snug break-words text-white drop-shadow-sm">
-                              {m.titulo}
+                              {item.titulo}
                             </h3>
                           </div>
 
@@ -348,13 +502,13 @@ const AprenderArea = () => {
                           <div className="z-[1] pt-1.5 border-t border-white/15 w-full">
                             <div>
                               <div className="flex items-center justify-between text-[10px] font-normal text-white/90 mb-1">
-                                <span>{displayConcluidas > 0 ? `${displayConcluidas}/${displayTotal} concluídos` : `${displayTotal} ${displayLabel}`}</span>
-                                <span className="font-normal font-sans">{displayPct}%</span>
+                                <span>{item.displayConcluidas > 0 ? `${item.displayConcluidas}/${item.displayTotal} concluídos` : `${item.displayTotal} ${item.displayLabel}`}</span>
+                                <span className="font-normal font-sans">{item.displayPct}%</span>
                               </div>
                               <div className="w-full bg-black/35 h-1.5 rounded-full overflow-hidden border border-white/20">
                                 <div 
                                   className="h-full bg-white rounded-full transition-all duration-500 shadow-sm"
-                                  style={{ width: `${Math.max(displayPct, displayTotal > 0 ? 8 : 0)}%` }}
+                                  style={{ width: `${Math.max(item.displayPct, item.displayTotal > 0 ? 8 : 0)}%` }}
                                 />
                               </div>
                             </div>
