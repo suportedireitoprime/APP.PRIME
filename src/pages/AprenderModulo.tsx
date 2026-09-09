@@ -340,7 +340,7 @@ const AprenderModulo = () => {
                           className={cn(
                             'w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 flex items-center justify-center text-xs font-extrabold shrink-0 transition-all shadow-md',
                             aula.concluida
-                              ? 'bg-primary text-primary-foreground border-primary'
+                              ? 'bg-emerald-500 text-white border-emerald-500'
                               : isNext
                               ? 'bg-primary/20 text-primary border-primary animate-pulse'
                               : 'bg-card text-muted-foreground border-border/80'
@@ -353,7 +353,6 @@ const AprenderModulo = () => {
                           )}
                         </div>
 
-                        {/* Card da Aula */}
                         <button
                           type="button"
                           onClick={() => {
@@ -370,7 +369,7 @@ const AprenderModulo = () => {
                           }}
                           onPointerEnter={() => prefetchAprenderAula(aula.id)}
                           className={cn(
-                            'flex-1 min-w-0 flex items-center gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
+                            'relative h-[120px] sm:h-[136px] overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
                             isNext
                               ? 'border-primary/60 bg-card hover:border-primary shadow-primary/5'
                               : aula.concluida
@@ -378,33 +377,45 @@ const AprenderModulo = () => {
                               : 'border-border/50 bg-card/40 hover:border-primary/30'
                           )}
                         >
-                          {/* Ícone vazado — circular e maior */}
-                          {modulo?.areaSlug === 'direito-penal' && (
-                            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shrink-0 bg-white/5 border border-white/10 overflow-hidden">
-                              <img
-                                src="/images/gamificacao/direito_penal_prisao_vazado.webp"
-                                alt=""
-                                aria-hidden="true"
-                                loading="lazy"
-                                decoding="async"
-                                className="w-11 h-11 sm:w-12 sm:h-12 object-contain opacity-75 group-hover:opacity-90 transition-opacity select-none pointer-events-none"
-                              />
-                            </div>
-                          )}
+                          {/* Ícone e Status agrupados à esquerda */}
+                          <div className="flex flex-col items-center justify-center gap-2 shrink-0 w-[64px] sm:w-[72px]">
+                            {modulo?.areaSlug === 'direito-penal' && (
+                              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center bg-white/5 border border-white/10 overflow-hidden shadow-inner shrink-0">
+                                <img
+                                  src="/images/gamificacao/direito_penal_prisao_vazado.webp"
+                                  alt=""
+                                  aria-hidden="true"
+                                  loading="lazy"
+                                  decoding="async"
+                                  className="w-9 h-9 sm:w-10 sm:h-10 object-contain opacity-75 group-hover:opacity-90 transition-opacity select-none pointer-events-none"
+                                />
+                              </div>
+                            )}
+                            {aula.concluida && (
+                              <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded text-center leading-none border border-emerald-500/20">
+                                Concluída
+                              </span>
+                            )}
+                          </div>
 
-                          <div className="min-w-0 flex-1 py-0.5">
-                            <h3 className="text-sm sm:text-base font-normal font-sans text-foreground break-words leading-snug group-hover:text-primary transition-colors">
+                          <div className="min-w-0 flex-1 flex flex-col justify-center h-full py-0.5">
+                            <h3 className="text-sm sm:text-base font-normal font-sans text-foreground break-words leading-snug line-clamp-4 group-hover:text-primary transition-colors">
                               {aula.titulo}
                             </h3>
                           </div>
 
-                          <div className="flex items-center gap-2 shrink-0 ml-1">
-                            {aula.concluida && (
-                              <span className="text-[10px] sm:text-[11px] font-normal text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
-                                Concluída
-                              </span>
-                            )}
+                          <div className="flex items-center justify-center shrink-0 ml-1 h-full">
                             <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
+                          </div>
+
+                          {/* Barra de Progresso do Card na base */}
+                          <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/5">
+                            <div 
+                              className={cn(
+                                "h-full transition-all duration-500",
+                                aula.concluida ? "w-full bg-emerald-500" : "w-0 bg-emerald-500"
+                              )} 
+                            />
                           </div>
                         </button>
                       </motion.div>
