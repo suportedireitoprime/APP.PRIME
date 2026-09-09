@@ -12,7 +12,7 @@ import {
   hydrateAprenderAreaCache,
   loadAprenderArea,
 } from '@/lib/aprenderAreaLoader';
-import { BookOpenText, GraduationCap } from 'lucide-react';
+import { BookOpenText, GraduationCap, ListChecks } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
@@ -30,20 +30,20 @@ const AprenderArea = () => {
   const [searchParams] = useSearchParams();
   const moduloIdParam = searchParams.get('moduloId');
   const tabParam = searchParams.get('tab') || (location.state as any)?.tab;
-  const [activeTab, setActiveTab] = useState<'aulas' | 'flashcards'>(tabParam === 'flashcards' ? 'flashcards' : 'aulas');
+  const [activeTab, setActiveTab] = useState<'aulas' | 'flashcards' | 'questoes'>(() => {
+    if (tabParam === 'flashcards' || tabParam === 'questoes') return tabParam;
+    return 'aulas';
+  });
 
   useEffect(() => {
-    if (tabParam === 'flashcards') {
-      setActiveTab('flashcards');
+    if (tabParam === 'flashcards' || tabParam === 'questoes' || tabParam === 'aulas') {
+      setActiveTab(tabParam);
     }
   }, [tabParam]);
 
   const initial = slug ? getCachedAprenderArea(slug, user?.id ?? null) : undefined;
   const [data, setData] = useState<AprenderAreaData | null>(initial ?? null);
   const [loading, setLoading] = useState(!initial);
-
-  const [searchParams] = useSearchParams();
-  const moduloIdParam = searchParams.get('moduloId');
 
   useEffect(() => {
     if (!data || !moduloIdParam) return;
@@ -152,15 +152,15 @@ const AprenderArea = () => {
           </div>
         ) : (
           <>
-            {/* Seletor de Modo Aulas vs Flashcards */}
-            <div className="flex bg-card/60 backdrop-blur-md p-1 rounded-2xl border border-white/10 w-full mb-4 shadow-sm">
+            {/* Seletor de Modo Aulas vs Flashcards vs Questões */}
+            <div className="flex bg-card/60 backdrop-blur-md p-1.5 rounded-2xl border border-white/10 w-full mb-4 shadow-sm gap-1.5">
               <button
                 type="button"
                 onClick={() => { haptic.selection(); setActiveTab('aulas'); }}
                 className={cn(
-                  "flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer",
+                  "flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2 px-2 sm:px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer",
                   activeTab === 'aulas'
-                    ? "bg-primary/20 text-primary border border-primary/30 shadow-sm"
+                    ? "bg-rose-500 text-white border border-rose-400/30 shadow-md shadow-rose-500/20"
                     : "text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent"
                 )}
               >
@@ -171,14 +171,27 @@ const AprenderArea = () => {
                 type="button"
                 onClick={() => { haptic.selection(); setActiveTab('flashcards'); }}
                 className={cn(
-                  "flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer",
+                  "flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2 px-2 sm:px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer",
                   activeTab === 'flashcards'
-                    ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-sm"
+                    ? "bg-emerald-500 text-white border border-emerald-400/30 shadow-md shadow-emerald-500/20"
                     : "text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent"
                 )}
               >
                 <FlashcardsIcon className="w-4 h-4 shrink-0" />
                 <span>Flashcards</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => { haptic.selection(); setActiveTab('questoes'); }}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2 px-2 sm:px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer",
+                  activeTab === 'questoes'
+                    ? "bg-sky-500 text-white border border-sky-400/30 shadow-md shadow-sky-500/20"
+                    : "text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent"
+                )}
+              >
+                <ListChecks className="w-4 h-4 shrink-0" />
+                <span>Questões</span>
               </button>
             </div>
 
@@ -187,7 +200,7 @@ const AprenderArea = () => {
               <div className="flex items-center gap-2 min-w-0">
                 <BookOpenText className="w-5 h-5 shrink-0" style={{ color: palette.primary }} />
                 <h2 className="text-xs sm:text-sm font-normal font-sans uppercase tracking-widest text-white truncate">
-                  {activeTab === 'flashcards' ? 'Selecione o Tópico' : 'Selecione o Módulo'}
+                  {activeTab === 'flashcards' ? 'Selecione o Tópico' : activeTab === 'questoes' ? 'Praticar por Tópico' : 'Selecione o Módulo'}
                 </h2>
               </div>
               <span 
@@ -282,7 +295,7 @@ const AprenderArea = () => {
                         <div
                           onClick={() => {
                             try { haptic.light(); } catch {}
-                            const destTab = isFlash ? '?tab=flashcards' : '';
+                            const destTab = activeTab === 'flashcards' ? '?tab=flashcards' : activeTab === 'questoes' ? '?tab=questoes' : '';
                             navigate(`/aprender/modulo/${m.id}${destTab}`, { 
                               state: { modulo: m, area: data?.area, tab: activeTab } 
                             });
@@ -320,7 +333,7 @@ const AprenderArea = () => {
                           {/* Cabeçalho da Capa: Módulo */}
                           <div className="flex items-center justify-between gap-1 z-[1] w-full">
                             <span className="flex items-center gap-1 text-[9px] sm:text-[10px] font-normal px-2 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-md bg-black/40 text-white border border-white/15">
-                              {isFlash ? `Tópico ${numStr}` : `Módulo ${numStr}`}
+                              {activeTab === 'flashcards' ? `Tópico ${numStr}` : activeTab === 'questoes' ? `Questões ${numStr}` : `Módulo ${numStr}`}
                             </span>
                           </div>
 

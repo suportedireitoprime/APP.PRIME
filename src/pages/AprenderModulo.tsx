@@ -7,7 +7,7 @@ import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import {
   ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Footprints, Home,
-  GraduationCap, Play, Layers, Sparkles, ChevronDown, ChevronUp
+  GraduationCap, Play, Layers, Sparkles, ChevronDown, ChevronUp, ListChecks
 } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { shortenAreaName } from '@/lib/areaNameShortener';
@@ -49,13 +49,16 @@ const AprenderModulo = () => {
   const uid = user?.id ?? null;
 
   const tabParam = searchParams.get('tab') || (location.state as any)?.tab;
-  const [activeTab, setActiveTab] = useState<'aulas' | 'flashcards'>(tabParam === 'flashcards' ? 'flashcards' : 'aulas');
+  const [activeTab, setActiveTab] = useState<'aulas' | 'flashcards' | 'questoes'>(() => {
+    if (tabParam === 'flashcards' || tabParam === 'questoes') return tabParam;
+    return 'aulas';
+  });
   const [expandedSubtema, setExpandedSubtema] = useState<string | null>(null);
 
   const routeState = location.state as {
     modulo?: { id: string; titulo: string; resumo: string | null; ordem: number; area_id?: string };
     area?: { id: string; nome: string; slug: string };
-    tab?: 'aulas' | 'flashcards';
+    tab?: 'aulas' | 'flashcards' | 'questoes';
   } | undefined;
 
   const [modulo, setModulo] = useState<ModuloDetalhe | null>(() => {
@@ -254,11 +257,11 @@ const AprenderModulo = () => {
     staleTime: 60 * 1000,
   });
 
-  // Alterna automaticamente para flashcards se veio com ?tab=flashcards OU se não houver aulas mas houver flashcards
+  // Alterna automaticamente para flashcards ou questoes se veio na URL
   useEffect(() => {
-    if (tabParam === 'flashcards') {
-      setActiveTab('flashcards');
-    } else if (!loading && aulas.length === 0 && (flashcardsData?.totalCards ?? 0) > 0) {
+    if (tabParam === 'flashcards' || tabParam === 'questoes') {
+      setActiveTab(tabParam);
+    } else if (!loading && aulas.length === 0 && (flashcardsData?.totalCards ?? 0) > 0 && !tabParam) {
       setActiveTab('flashcards');
     }
   }, [tabParam, loading, aulas.length, flashcardsData?.totalCards]);
@@ -270,7 +273,9 @@ const AprenderModulo = () => {
   const totalFlashcards = flashcardsData?.totalCards || flashcardsData?.cards.length || 0;
   const concluidasFlashcards = userCardsProgress?.size || 0;
   const pctFlashcards = totalFlashcards > 0 ? Math.round((concluidasFlashcards / totalFlashcards) * 100) : 0;
+  const isAulas = activeTab === 'aulas';
   const isFlashcards = activeTab === 'flashcards';
+  const isQuestoes = activeTab === 'questoes';
 
   const areaCurta = modulo ? shortenAreaName(modulo.areaNome) : 'Matéria';
   const areaVisual = modulo ? areaIconFor(modulo.areaSlug) : null;
@@ -394,11 +399,13 @@ const AprenderModulo = () => {
 
               <div className="flex items-center justify-between gap-3 relative z-10">
                 <span className="px-3 py-1 rounded-full bg-black/40 border border-white/20 text-xs font-normal uppercase tracking-wider">
-                  {isFlashcards ? `FLASHCARDS · ${areaCurta}` : areaCurta}
+                  {isFlashcards ? `FLASHCARDS · ${areaCurta}` : isQuestoes ? `QUESTÕES · ${areaCurta}` : areaCurta}
                 </span>
                 <span className="text-xs font-normal bg-black/40 px-3 py-1 rounded-full border border-white/10">
                   {isFlashcards
                     ? `${totalFlashcards} ${totalFlashcards === 1 ? 'flashcard' : 'flashcards'} na trilha`
+                    : isQuestoes
+                    ? `Questões Comentadas`
                     : `${totalAulas} ${totalAulas === 1 ? 'aula' : 'aulas'} na trilha`}
                 </span>
               </div>
@@ -418,11 +425,13 @@ const AprenderModulo = () => {
               <div className="space-y-1.5 pt-2 relative z-10">
                 <div className="flex items-center justify-between text-xs font-normal">
                   <span className="text-white/90">
-                    {isFlashcards ? 'Progresso nos Flashcards' : 'Progresso no Tópico'}
+                    {isFlashcards ? 'Progresso nos Flashcards' : isQuestoes ? 'Prática de Questões' : 'Progresso no Tópico'}
                   </span>
                   <span className="text-white">
                     {isFlashcards
                       ? `${concluidasFlashcards} de ${totalFlashcards} memorizados (${pctFlashcards}%)`
+                      : isQuestoes
+                      ? 'Concursos & OAB'
                       : `${concluidasCount} de ${totalAulas} concluídas (${pctConcluido}%)`}
                   </span>
                 </div>
@@ -431,8 +440,8 @@ const AprenderModulo = () => {
                     className="h-full rounded-full bg-white transition-all duration-500 shadow-sm"
                     style={{
                       width: `${Math.max(
-                        isFlashcards ? pctFlashcards : pctConcluido,
-                        (isFlashcards ? totalFlashcards : totalAulas) > 0 ? 6 : 0
+                        isFlashcards ? pctFlashcards : isQuestoes ? 100 : pctConcluido,
+                        6
                       )}%`,
                     }}
                   />
@@ -440,8 +449,8 @@ const AprenderModulo = () => {
               </div>
             </motion.div>
 
-            {/* Seletor de Modo: Aulas vs Flashcards */}
-            <div className="flex items-center gap-2 p-1 bg-card/60 border border-border/80 rounded-2xl backdrop-blur-md">
+            {/* Seletor de Modo: Aulas vs Flashcards vs Questões */}
+            <div className="flex items-center gap-1.5 p-1 bg-card/60 border border-border/80 rounded-2xl backdrop-blur-md">
               <button
                 type="button"
                 onClick={() => {
@@ -449,13 +458,13 @@ const AprenderModulo = () => {
                   setActiveTab('aulas');
                 }}
                 className={cn(
-                  'flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer select-none',
+                  'flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider transition-all cursor-pointer select-none',
                   activeTab === 'aulas'
-                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    ? 'bg-rose-500 text-white shadow-md shadow-rose-500/25 border border-rose-400/30'
                     : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
                 )}
               >
-                <GraduationCap className="w-4 h-4" />
+                <GraduationCap className="w-4 h-4 shrink-0" />
                 <span>Aulas ({totalAulas})</span>
               </button>
 
@@ -466,14 +475,31 @@ const AprenderModulo = () => {
                   setActiveTab('flashcards');
                 }}
                 className={cn(
-                  'flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer select-none',
+                  'flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider transition-all cursor-pointer select-none',
                   activeTab === 'flashcards'
-                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25 border border-emerald-400/30'
                     : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
                 )}
               >
-                <FlashcardsIcon className="w-4 h-4" />
+                <FlashcardsIcon className="w-4 h-4 shrink-0" />
                 <span>Flashcards ({totalFlashcards})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  try { haptic.selection(); } catch {}
+                  setActiveTab('questoes');
+                }}
+                className={cn(
+                  'flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider transition-all cursor-pointer select-none',
+                  activeTab === 'questoes'
+                    ? 'bg-sky-500 text-white shadow-md shadow-sky-500/25 border border-sky-400/30'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+                )}
+              >
+                <ListChecks className="w-4 h-4 shrink-0" />
+                <span>Questões</span>
               </button>
             </div>
 
@@ -652,6 +678,50 @@ const AprenderModulo = () => {
                     })}
                   </div>
                 )}
+              </div>
+            ) : isQuestoes ? (
+              <div className="space-y-4 pt-1">
+                <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-br from-sky-500/15 via-blue-500/10 to-transparent border border-sky-500/30 shadow-lg space-y-4">
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-12 h-12 rounded-2xl bg-sky-500/20 border border-sky-500/30 flex items-center justify-center shrink-0">
+                      <ListChecks className="w-6 h-6 text-sky-400" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-base font-bold text-foreground">
+                        Questões de {modulo.titulo}
+                      </h3>
+                      <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                        Pratique questões oficiais de concursos públicos e da OAB de {modulo.areaNome} com foco direcionado neste tópico.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        try { haptic.impact(); } catch {}
+                        navigate(`/questoes/praticar?area=${encodeURIComponent(modulo.areaNome)}&tema=${encodeURIComponent(modulo.titulo)}`);
+                      }}
+                      className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-sky-500 hover:bg-sky-600 text-white text-xs sm:text-sm font-bold shadow-lg shadow-sky-500/25 active:scale-95 transition-all cursor-pointer"
+                    >
+                      <Play className="w-4 h-4 fill-current" />
+                      <span>Iniciar Questões deste Tópico</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        try { haptic.light(); } catch {}
+                        navigate(`/questoes/praticar?area=${encodeURIComponent(modulo.areaNome)}&quantidade=10`);
+                      }}
+                      className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-card border border-sky-500/30 hover:bg-white/5 text-sky-400 text-xs sm:text-sm font-bold shadow-sm active:scale-95 transition-all cursor-pointer"
+                    >
+                      <ListChecks className="w-4 h-4" />
+                      <span>Simulado Rápido (10 Questões)</span>
+                    </button>
+                  </div>
+                </div>
               </div>
             ) : (
               /* 📍 Trilha em Linha do Tempo (Timeline Trail) */

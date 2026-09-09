@@ -579,11 +579,11 @@ const Aprender = () => {
             <div className="flex bg-card p-1.5 rounded-2xl border border-border/80 w-full shadow-sm relative z-20 mt-8 mb-4">
               {(['aulas', 'flashcards', 'questoes'] as const).map((tab) => {
                 const isActive = activeTab === tab;
-                let activeClass = 'bg-rose-500/15 text-rose-300 border-rose-500/30 shadow-[0_0_12px_rgba(244,63,94,0.18)]';
+                let activeClass = 'bg-rose-500 text-white border-rose-400/30 shadow-md shadow-rose-500/25';
                 if (tab === 'flashcards') {
-                  activeClass = 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30 shadow-[0_0_12px_rgba(52,211,153,0.18)]';
+                  activeClass = 'bg-emerald-500 text-white border-emerald-400/30 shadow-md shadow-emerald-500/25';
                 } else if (tab === 'questoes') {
-                  activeClass = 'bg-sky-500/15 text-sky-400 border-sky-500/30 shadow-[0_0_12px_rgba(56,189,248,0.18)]';
+                  activeClass = 'bg-sky-500 text-white border-sky-400/30 shadow-md shadow-sky-500/25';
                 }
 
                 return (
@@ -594,7 +594,7 @@ const Aprender = () => {
                       setActiveTab(tab);
                     }}
                     className={cn(
-                      "flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2.5 rounded-xl text-xs sm:text-[13px] font-bold uppercase tracking-wider transition-all",
+                      "flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2.5 rounded-xl text-xs sm:text-[13px] font-bold uppercase tracking-wider transition-all cursor-pointer",
                       isActive
                         ? activeClass
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
