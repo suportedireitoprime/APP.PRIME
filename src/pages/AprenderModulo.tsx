@@ -6,14 +6,13 @@ import { supabase } from '@/integrations/supabase/client';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import {
-  ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Footprints, Home,
-  GraduationCap, Play, Layers, Sparkles, ChevronDown, ChevronUp, ListChecks
+  ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Footprints, Home
 } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { shortenAreaName } from '@/lib/areaNameShortener';
 import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { haptic } from '@/lib/nativeHaptics';
 import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
@@ -53,7 +52,6 @@ const AprenderModulo = () => {
     if (tabParam === 'flashcards' || tabParam === 'questoes') return tabParam;
     return 'aulas';
   });
-  const [expandedSubtema, setExpandedSubtema] = useState<string | null>(null);
 
   const routeState = location.state as {
     modulo?: { id: string; titulo: string; resumo: string | null; ordem: number; area_id?: string };
@@ -449,95 +447,13 @@ const AprenderModulo = () => {
               </div>
             </motion.div>
 
-            {/* Seletor de Modo: Aulas vs Flashcards vs Questões */}
-            <div className="flex items-center gap-1.5 p-1 bg-card/60 border border-border/80 rounded-2xl backdrop-blur-md">
-              <button
-                type="button"
-                onClick={() => {
-                  try { haptic.selection(); } catch {}
-                  setActiveTab('aulas');
-                }}
-                className={cn(
-                  'flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider transition-all cursor-pointer select-none',
-                  activeTab === 'aulas'
-                    ? 'bg-rose-500 text-white shadow-md shadow-rose-500/25 border border-rose-400/30'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
-                )}
-              >
-                <GraduationCap className="w-4 h-4 shrink-0" />
-                <span>Aulas ({totalAulas})</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  try { haptic.selection(); } catch {}
-                  setActiveTab('flashcards');
-                }}
-                className={cn(
-                  'flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider transition-all cursor-pointer select-none',
-                  activeTab === 'flashcards'
-                    ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25 border border-emerald-400/30'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
-                )}
-              >
-                <FlashcardsIcon className="w-4 h-4 shrink-0" />
-                <span>Flashcards ({totalFlashcards})</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  try { haptic.selection(); } catch {}
-                  setActiveTab('questoes');
-                }}
-                className={cn(
-                  'flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider transition-all cursor-pointer select-none',
-                  activeTab === 'questoes'
-                    ? 'bg-sky-500 text-white shadow-md shadow-sky-500/25 border border-sky-400/30'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
-                )}
-              >
-                <ListChecks className="w-4 h-4 shrink-0" />
-                <span>Questões</span>
-              </button>
-            </div>
-
-            {/* Conteúdo: Flashcards vs Aulas */}
+            {/* 📍 Trilha em Linha do Tempo (Flashcards vs Aulas) */}
             {isFlashcards ? (
-              <div className="space-y-4 pt-1">
-                {/* Ação rápida para praticar todo o módulo */}
-                {totalFlashcards > 0 && (
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-transparent border border-amber-500/30 shadow-sm">
-                    <div className="min-w-0">
-                      <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-amber-400" />
-                        <span>Praticar Baralho Completo</span>
-                      </h3>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        Revise todos os {totalFlashcards} cards deste módulo em sequência
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        try { haptic.impact(); } catch {}
-                        navigate(
-                          `/flashcards/estudar?area=${encodeURIComponent(modulo.areaNome)}&temas=${encodeURIComponent(flashcardsData?.matchedTema || modulo.titulo)}&limite=${Math.max(totalFlashcards, 500)}`
-                        );
-                      }}
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold shadow-lg shadow-orange-500/20 active:scale-95 transition-all cursor-pointer"
-                    >
-                      <Play className="w-4 h-4 fill-current" />
-                      <span>Praticar Todos ({totalFlashcards})</span>
-                    </button>
-                  </div>
-                )}
-
+              <div className="space-y-4 pt-2">
                 <div className="flex items-center justify-between px-1">
                   <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                    <Layers className="w-4 h-4 text-primary" />
-                    <span>Listas de Flashcards ({flashcardsData?.subtemas.length || 0})</span>
+                    <Footprints className="w-4 h-4 text-emerald-400" />
+                    <span>Flashcards em Trilha ({flashcardsData?.subtemas.length || 0})</span>
                   </h2>
                   {flashcardsData?.subtemas && flashcardsData.subtemas.length > 0 && (
                     <span className="text-[11px] text-muted-foreground font-medium">
@@ -547,185 +463,127 @@ const AprenderModulo = () => {
                 </div>
 
                 {loadingFlashcards ? (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <div className="h-24 rounded-2xl bg-muted animate-pulse" />
                     <div className="h-24 rounded-2xl bg-muted animate-pulse" />
                   </div>
                 ) : !flashcardsData?.subtemas || flashcardsData.subtemas.length === 0 ? (
-                  <div className="p-8 rounded-2xl border border-border bg-card/60 text-center text-muted-foreground text-xs">
-                    Nenhum flashcard cadastrado para este módulo no momento.
+                  <div className="p-6 rounded-2xl border border-border bg-card/60 text-center text-muted-foreground text-xs">
+                    Flashcards deste tópico em breve!
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="relative space-y-4 ml-3 sm:ml-4">
                     {flashcardsData.subtemas.map((subtema, idx) => {
                       const memorizadosDoSubtema = subtema.cards.filter((c) => userCardsProgress?.has(c.id)).length;
                       const pctSubtema = subtema.total > 0 ? Math.round((memorizadosDoSubtema / subtema.total) * 100) : 0;
                       const isCompleted = subtema.total > 0 && memorizadosDoSubtema === subtema.total;
-                      const isExpanded = expandedSubtema === subtema.id;
+                      const isNext = !isCompleted && (idx === 0 || flashcardsData.subtemas[idx - 1]?.cards.every(c => userCardsProgress?.has(c.id)));
 
                       return (
                         <motion.div
                           key={subtema.id}
-                          initial={{ opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: idx * 0.04 }}
-                          className={cn(
-                            'overflow-hidden rounded-2xl border transition-all text-left group shadow-sm bg-card/70 hover:border-primary/50',
-                            isCompleted ? 'border-emerald-500/30' : 'border-border/60'
-                          )}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: idx * 0.05 }}
+                          className="flex items-center gap-3 sm:gap-4"
                         >
-                          <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div className="min-w-0 flex-1 space-y-2">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-white/10 text-muted-foreground border border-white/5">
-                                  Lista {String(idx + 1).padStart(2, '0')}
-                                </span>
-                                <span className="text-[10px] font-semibold text-muted-foreground">
-                                  {subtema.total} {subtema.total === 1 ? 'card' : 'cards'}
-                                </span>
-                                {isCompleted && (
-                                  <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                                    <CheckCircle2 className="w-3 h-3" />
-                                    Concluída
-                                  </span>
-                                )}
-                              </div>
-
-                              <h3 className="text-sm sm:text-base font-semibold text-foreground leading-snug">
-                                {subtema.nome}
-                              </h3>
-
-                              {/* Progresso do Subtema */}
-                              <div className="flex items-center gap-2 text-xs text-muted-foreground pt-0.5">
-                                <div className="h-1.5 flex-1 max-w-[140px] rounded-full bg-white/10 overflow-hidden">
-                                  <div
-                                    className="h-full rounded-full bg-emerald-500 transition-all duration-500"
-                                    style={{ width: `${pctSubtema}%` }}
-                                  />
-                                </div>
-                                <span className="text-[11px]">
-                                  {memorizadosDoSubtema}/{subtema.total} ({pctSubtema}%)
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  try { haptic.light(); } catch {}
-                                  setExpandedSubtema(isExpanded ? null : subtema.id);
-                                }}
-                                className="px-3 py-2 rounded-xl text-xs font-semibold text-muted-foreground hover:text-foreground bg-white/5 hover:bg-white/10 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
-                                title="Ver perguntas da lista"
-                              >
-                                <span>{isExpanded ? 'Ocultar' : 'Perguntas'}</span>
-                                {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                              </button>
-
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  try { haptic.impact(); } catch {}
-                                  navigate(
-                                    `/flashcards/estudar?area=${encodeURIComponent(modulo.areaNome)}&temas=${encodeURIComponent(flashcardsData?.matchedTema || modulo.titulo)}&subtema=${encodeURIComponent(subtema.nome)}&limite=${Math.max(subtema.total, 100)}`
-                                  );
-                                }}
-                                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold shadow-md hover:bg-primary/90 active:scale-95 transition-all cursor-pointer"
-                              >
-                                <Play className="w-3.5 h-3.5 fill-current" />
-                                <span>Praticar</span>
-                              </button>
-                            </div>
+                          {/* Nó da Linha do Tempo — alinhado com flex */}
+                          <div
+                            className={cn(
+                              'w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 flex items-center justify-center text-xs font-extrabold shrink-0 transition-all shadow-md',
+                              isCompleted
+                                ? 'bg-emerald-500 text-white border-emerald-500'
+                                : isNext
+                                ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500 animate-pulse'
+                                : 'bg-card text-muted-foreground border-border/80'
+                            )}
+                          >
+                            {isCompleted ? (
+                              <CheckCircle2 className="w-4 h-4" />
+                            ) : (
+                              <span>{idx + 1}</span>
+                            )}
                           </div>
 
-                          {/* Dropdown de Perguntas (Preview dos cards) */}
-                          <AnimatePresence>
-                            {isExpanded && (
-                              <motion.div
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: 'auto', opacity: 1 }}
-                                exit={{ height: 0, opacity: 0 }}
-                                transition={{ duration: 0.2 }}
-                                className="border-t border-border/40 bg-card/40 px-4 py-3 sm:px-5 space-y-2"
-                              >
-                                <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                                  Cards nesta lista ({subtema.cards.length}):
-                                </p>
-                                <div className="divide-y divide-border/30 max-h-60 overflow-y-auto pr-1">
-                                  {subtema.cards.map((c, cIdx) => {
-                                    const isMem = userCardsProgress?.has(c.id);
-                                    return (
-                                      <div key={c.id} className="py-2 flex items-start gap-2 text-xs">
-                                        <span className="text-[10px] text-muted-foreground shrink-0 mt-0.5 w-5">
-                                          #{cIdx + 1}
-                                        </span>
-                                        <div className="flex-1 text-foreground/90 font-medium">
-                                          {c.frente}
-                                        </div>
-                                        {isMem && (
-                                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
-                                        )}
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              </motion.div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              try { haptic.light(); } catch {}
+                              navigate(
+                                `/flashcards/estudar?area=${encodeURIComponent(modulo.areaNome)}&temas=${encodeURIComponent(flashcardsData?.matchedTema || modulo.titulo)}&subtema=${encodeURIComponent(subtema.nome)}&limite=${Math.max(subtema.total, 100)}`
+                              );
+                            }}
+                            className={cn(
+                              'relative h-[120px] sm:h-[136px] overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
+                              isNext
+                                ? 'border-emerald-500/60 bg-card hover:border-emerald-500 shadow-emerald-500/5'
+                                : isCompleted
+                                ? 'border-border/60 bg-card/70 hover:border-emerald-500/40'
+                                : 'border-border/50 bg-card/40 hover:border-emerald-500/30'
                             )}
-                          </AnimatePresence>
+                          >
+                            <div className="flex flex-col items-center justify-center gap-2 shrink-0 w-[64px] sm:w-[72px]">
+                              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center bg-white/5 border border-white/10 overflow-hidden shadow-inner shrink-0">
+                                {modulo?.areaSlug === 'direito-penal' ? (
+                                  <img
+                                    src="/images/gamificacao/direito_penal_prisao_vazado.webp"
+                                    alt=""
+                                    aria-hidden="true"
+                                    loading="lazy"
+                                    decoding="async"
+                                    className="w-9 h-9 sm:w-10 sm:h-10 object-contain opacity-75 group-hover:opacity-90 transition-opacity select-none pointer-events-none"
+                                  />
+                                ) : AreaIconComp ? (
+                                  <AreaIconComp
+                                    className="w-6 h-6 sm:w-7 sm:h-7 text-white/80 group-hover:text-emerald-400 transition-colors select-none"
+                                    strokeWidth={1.8}
+                                    aria-hidden="true"
+                                  />
+                                ) : (
+                                  <FlashcardsIcon className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-400/90 group-hover:text-emerald-400 transition-colors select-none" />
+                                )}
+                              </div>
+                              {isCompleted ? (
+                                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded text-center leading-none border border-emerald-500/20">
+                                  Concluída
+                                </span>
+                              ) : (
+                                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-white/5 px-1.5 py-0.5 rounded text-center leading-none border border-white/10">
+                                  {subtema.total} cards
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="min-w-0 flex-1 flex flex-col justify-center h-full py-0.5">
+                              <h3 className="text-sm sm:text-base font-normal font-sans text-foreground break-words leading-snug line-clamp-4 group-hover:text-emerald-400 transition-colors">
+                                {subtema.nome}
+                              </h3>
+                            </div>
+
+                            <div className="flex items-center justify-center shrink-0 ml-1 h-full">
+                              <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-emerald-400 transition-transform group-hover:translate-x-0.5" />
+                            </div>
+
+                            {/* Barra de Progresso do Card na base */}
+                            <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/5">
+                              <div 
+                                className={cn(
+                                  "h-full transition-all duration-500",
+                                  isCompleted ? "w-full bg-emerald-500" : pctSubtema > 0 ? "bg-emerald-500" : "w-0 bg-emerald-500"
+                                )}
+                                style={{ width: `${pctSubtema}%` }} 
+                              />
+                            </div>
+                          </button>
                         </motion.div>
                       );
                     })}
                   </div>
                 )}
               </div>
-            ) : isQuestoes ? (
-              <div className="space-y-4 pt-1">
-                <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-br from-sky-500/15 via-blue-500/10 to-transparent border border-sky-500/30 shadow-lg space-y-4">
-                  <div className="flex items-start gap-3.5">
-                    <div className="w-12 h-12 rounded-2xl bg-sky-500/20 border border-sky-500/30 flex items-center justify-center shrink-0">
-                      <ListChecks className="w-6 h-6 text-sky-400" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="text-base font-bold text-foreground">
-                        Questões de {modulo.titulo}
-                      </h3>
-                      <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                        Pratique questões oficiais de concursos públicos e da OAB de {modulo.areaNome} com foco direcionado neste tópico.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        try { haptic.impact(); } catch {}
-                        navigate(`/questoes/praticar?area=${encodeURIComponent(modulo.areaNome)}&tema=${encodeURIComponent(modulo.titulo)}`);
-                      }}
-                      className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-sky-500 hover:bg-sky-600 text-white text-xs sm:text-sm font-bold shadow-lg shadow-sky-500/25 active:scale-95 transition-all cursor-pointer"
-                    >
-                      <Play className="w-4 h-4 fill-current" />
-                      <span>Iniciar Questões deste Tópico</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        try { haptic.light(); } catch {}
-                        navigate(`/questoes/praticar?area=${encodeURIComponent(modulo.areaNome)}&quantidade=10`);
-                      }}
-                      className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-card border border-sky-500/30 hover:bg-white/5 text-sky-400 text-xs sm:text-sm font-bold shadow-sm active:scale-95 transition-all cursor-pointer"
-                    >
-                      <ListChecks className="w-4 h-4" />
-                      <span>Simulado Rápido (10 Questões)</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
             ) : (
-              /* 📍 Trilha em Linha do Tempo (Timeline Trail) */
-              <div className="space-y-4 pt-1">
+              /* 📍 Trilha em Linha do Tempo (Aulas) */
+              <div className="space-y-4 pt-2">
                 <div className="flex items-center justify-between px-1">
                   <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                     <Footprints className="w-4 h-4 text-primary" />
