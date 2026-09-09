@@ -12,7 +12,7 @@ type Filtro = 'todos' | 'favoritos' | 'recentes';
 
 /** Lista única dos resumos do usuário: favoritados e abertos recentemente. */
 export default function MeusResumos() {
-  const voltar = useGoBack('/inicio');
+  const voltar = useGoBack('/meu-espaco');
   const [filtro, setFiltro] = useState<Filtro>('todos');
   const [favs, setFavs] = useState<ResumoRef[]>(() => resumosLocal.favoritos());
   const [recentes, setRecentes] = useState<ResumoRef[]>(() => resumosLocal.recentes());

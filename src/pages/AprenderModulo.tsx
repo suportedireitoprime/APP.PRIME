@@ -358,7 +358,9 @@ const AprenderModulo = () => {
                               state: {
                                 aulaTitulo: aula.titulo,
                                 moduloTitulo: modulo?.titulo,
+                                moduloId: modulo?.id,
                                 areaSlug: modulo?.areaSlug,
+                                from: `/aprender/modulo/${modulo?.id}`,
                               },
                             });
                           }}

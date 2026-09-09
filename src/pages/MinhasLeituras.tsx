@@ -25,7 +25,7 @@ const paraLivro = (s: LivroSnapshot): LivroNormalizado => ({
 
 /** Lista de todas as leituras em andamento do usuário. */
 export default function MinhasLeituras() {
-  const voltar = useGoBack('/inicio');
+  const voltar = useGoBack('/meu-espaco');
   const [tick, setTick] = useState(0);
   const [livroAberto, setLivroAberto] = useState<LivroNormalizado | null>(null);
 

@@ -25,7 +25,7 @@ const ROTULOS: Record<AudioOffline['categoria'], string> = {
 };
 
 export default function MeusDownloads() {
-  const voltar = useGoBack('/inicio');
+  const voltar = useGoBack('/meu-espaco');
   const [itens, setItens] = useState<AudioOffline[]>([]);
   const [total, setTotal] = useState(0);
   const [carregando, setCarregando] = useState(true);

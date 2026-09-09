@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import {
   ArrowLeft,
   CheckCircle2,
@@ -13,7 +13,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { useAuth } from '@/hooks/useAuth';
 import { useTrackArea } from "@/hooks/useTrackArea";
-import { useGoBack } from '@/hooks/useGoBack';
 
 import { iconePorTipo, rotuloPorTipo } from '@/lib/aprenderUtils';
 import { useAprenderAula } from '@/hooks/domain/useAprenderAula';
@@ -26,7 +25,7 @@ import { haptic } from '@/lib/nativeHaptics';
 const AprenderAula = () => {
   useTrackArea("aprender_aula_iniciada");
   const navigate = useNavigate();
-  const goBack = useGoBack();
+  const location = useLocation();
   const { aulaId } = useParams<{ aulaId: string }>();
   const { user } = useAuth();
 
@@ -40,6 +39,44 @@ const AprenderAula = () => {
     avaliarFlashcard, responderPergunta, concluirAula, salvarBloco,
     refazerAula, comecarAula, continuarAula,
   } = useAprenderAula(aulaId, user);
+
+  // Voltar inteligente com resolução contextual de módulo, trilha e histórico
+  const handleVoltar = useCallback(() => {
+    haptic.impact('light');
+
+    // 1. Rota de origem informada explicitamente no state
+    const state = location.state as { from?: string; moduloId?: string; areaSlug?: string } | null;
+    if (state?.from && typeof state.from === 'string') {
+      navigate(state.from);
+      return;
+    }
+
+    // 2. Módulo pai da aula (prioridade de hierarquia pedagógica)
+    if (aula?.modulo_id) {
+      navigate(`/aprender/modulo/${aula.modulo_id}`);
+      return;
+    }
+    if (state?.moduloId) {
+      navigate(`/aprender/modulo/${state.moduloId}`);
+      return;
+    }
+
+    // 3. Área temática
+    if (state?.areaSlug) {
+      navigate(`/aprender/area/${state.areaSlug}`);
+      return;
+    }
+
+    // 4. Histórico da sessão
+    const idx = typeof window !== 'undefined' ? (window.history.state as { idx?: number } | null)?.idx : undefined;
+    if (typeof idx === 'number' && idx > 0) {
+      navigate(-1);
+      return;
+    }
+
+    // 5. Fallback padrão seguro para o Aprender (nunca ejetar para a raiz '/')
+    navigate('/aprender', { replace: true });
+  }, [navigate, location, aula]);
 
   const [sumarioOpen, setSumarioOpen] = useState(false);
   const [highestVisible, setHighestVisible] = useState(0);
@@ -191,7 +228,7 @@ const AprenderAula = () => {
         previa={previaFallback}
         progressoPct={pctProgresso}
         podeContinuar={continuarDe > 0 && pctProgresso < 100}
-        onVoltar={() => goBack()}
+        onVoltar={handleVoltar}
         onComecar={comecarAula}
         onContinuar={() => continuarAula(continuarDe)}
       />
@@ -263,12 +300,10 @@ const AprenderAula = () => {
           }}
         >
           <button
-            onClick={() => {
-              haptic.impact('light');
-              goBack();
-            }}
-            aria-label="Voltar"
-            className="flex w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 items-center justify-center rounded-2xl bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.1] active:scale-95 transition-all text-white/80 hover:text-white"
+            type="button"
+            onClick={handleVoltar}
+            aria-label="Voltar para o módulo de aulas"
+            className="flex w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 items-center justify-center rounded-2xl bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.1] active:scale-95 transition-all text-white/80 hover:text-white cursor-pointer z-30"
           >
             <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           </button>

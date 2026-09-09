@@ -28,7 +28,7 @@ function rotaDaAula(r: Item) {
 /** Lista das videoaulas do usuário: em andamento e favoritas. */
 export default function MinhasVideoaulas() {
   const navigate = useNavigate();
-  const voltar = useGoBack('/inicio');
+  const voltar = useGoBack('/meu-espaco');
   const [filtro, setFiltro] = useState<Filtro>('andamento');
   const [progresso, setProgresso] = useState<Item[]>([]);
   const [favoritos, setFavoritos] = useState<Item[]>([]);

@@ -1,18 +1,26 @@
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 /**
- * Voltar seguro: usa o histórico interno quando existe; caso contrário
- * navega para uma rota de fallback (padrão: início do app).
- *
- * Necessário porque `navigate(-1)` não faz nada quando a tela foi aberta
- * direto (deep link, notificação, URL do preview) ou depois de um
- * `navigate(..., { replace: true })` — nesses casos o índice do histórico é 0.
+ * Voltar seguro e inteligente:
+ * 1. Se houver `location.state.from`, respeita a rota de origem informada.
+ * 2. Se houver histórico do React Router (`idx > 0`), navega -1.
+ * 3. Se houver histórico nativo do navegador (`window.history.length > 2`), navega -1.
+ * 4. Caso contrário (aberto via deep link, iframe preview ou refresh), navega para a rota de fallback segura.
  */
 export function useGoBack(fallback: string = '/') {
   const navigate = useNavigate();
+  const location = useLocation();
 
   return useCallback(() => {
+    // 1. Prioriza rota de origem passada explicitamente no state
+    const state = location.state as { from?: string } | null;
+    if (state?.from && typeof state.from === 'string') {
+      navigate(state.from);
+      return;
+    }
+
+    // 2. Verifica se o React Router possui histórico de sessão
     const idx =
       typeof window !== 'undefined'
         ? (window.history.state as { idx?: number } | null)?.idx
@@ -22,8 +30,17 @@ export function useGoBack(fallback: string = '/') {
       navigate(-1);
       return;
     }
+
+    // 3. Fallback para histórico do browser em iframes ou webviews
+    if (typeof window !== 'undefined' && window.history.length > 2) {
+      navigate(-1);
+      return;
+    }
+
+    // 4. Fallback padrão seguro (evita quebrar ou ficar travado na tela)
     navigate(fallback, { replace: true });
-  }, [navigate, fallback]);
+  }, [navigate, location, fallback]);
 }
 
 export default useGoBack;
+
