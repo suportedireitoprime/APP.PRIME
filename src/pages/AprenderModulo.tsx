@@ -395,11 +395,11 @@ const AprenderModulo = () => {
                 />
               ) : null}
 
-              <div className="flex items-center justify-between gap-3 relative z-10">
-                <span className="px-3 py-1 rounded-full bg-black/40 border border-white/20 text-xs font-normal uppercase tracking-wider">
+              <div className="flex items-center justify-between gap-2 relative z-10 w-full overflow-hidden">
+                <span className="px-2.5 sm:px-3 py-1 rounded-full bg-black/40 border border-white/20 text-[10px] sm:text-xs font-normal uppercase tracking-wider whitespace-nowrap shrink-0">
                   {isFlashcards ? `FLASHCARDS · ${areaCurta}` : isQuestoes ? `QUESTÕES · ${areaCurta}` : areaCurta}
                 </span>
-                <span className="text-xs font-normal bg-black/40 px-3 py-1 rounded-full border border-white/10">
+                <span className="text-[10px] sm:text-xs font-normal bg-black/40 px-2.5 sm:px-3 py-1 rounded-full border border-white/10 whitespace-nowrap shrink-0">
                   {isFlashcards
                     ? `${totalFlashcards} ${totalFlashcards === 1 ? 'flashcard' : 'flashcards'} na trilha`
                     : isQuestoes
@@ -437,10 +437,17 @@ const AprenderModulo = () => {
                   <div
                     className="h-full rounded-full bg-white transition-all duration-500 shadow-sm"
                     style={{
-                      width: `${Math.max(
-                        isFlashcards ? pctFlashcards : isQuestoes ? 100 : pctConcluido,
-                        6
-                      )}%`,
+                      width: `${
+                        isFlashcards
+                          ? concluidasFlashcards > 0
+                            ? Math.max(pctFlashcards, 5)
+                            : 0
+                          : isQuestoes
+                          ? 100
+                          : concluidasCount > 0
+                          ? Math.max(pctConcluido, 5)
+                          : 0
+                      }%`,
                     }}
                   />
                 </div>
@@ -452,7 +459,7 @@ const AprenderModulo = () => {
               <div className="space-y-4 pt-2">
                 <div className="flex items-center justify-between px-1">
                   <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                    <Footprints className="w-4 h-4 text-emerald-400" />
+                    <FlashcardsIcon className="w-4 h-4 text-emerald-400" />
                     <span>Flashcards em Trilha ({flashcardsData?.subtemas.length || 0})</span>
                   </h2>
                   {flashcardsData?.subtemas && flashcardsData.subtemas.length > 0 && (
@@ -510,11 +517,18 @@ const AprenderModulo = () => {
                             onClick={() => {
                               try { haptic.light(); } catch {}
                               navigate(
-                                `/flashcards/estudar?area=${encodeURIComponent(modulo.areaNome)}&temas=${encodeURIComponent(flashcardsData?.matchedTema || modulo.titulo)}&subtema=${encodeURIComponent(subtema.nome)}&limite=${Math.max(subtema.total, 100)}`
+                                `/flashcards/estudar?area=${encodeURIComponent(modulo.areaNome)}&temas=${encodeURIComponent(flashcardsData?.matchedTema || modulo.titulo)}&subtema=${encodeURIComponent(subtema.nome)}&limite=${Math.max(subtema.total, 100)}`,
+                                {
+                                  state: {
+                                    from: `/aprender/modulo/${modulo.id}?tab=flashcards`,
+                                    moduloTitulo: modulo.titulo,
+                                    subtemaNome: subtema.nome,
+                                  },
+                                }
                               );
                             }}
                             className={cn(
-                              'relative h-[120px] sm:h-[136px] overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
+                              'relative min-h-[120px] sm:min-h-[136px] h-auto overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
                               isNext
                                 ? 'border-emerald-500/60 bg-card hover:border-emerald-500 shadow-emerald-500/5'
                                 : isCompleted
@@ -554,10 +568,37 @@ const AprenderModulo = () => {
                               )}
                             </div>
 
-                            <div className="min-w-0 flex-1 flex flex-col justify-center h-full py-0.5">
-                              <h3 className="text-sm sm:text-base font-normal font-sans text-foreground break-words leading-snug line-clamp-4 group-hover:text-emerald-400 transition-colors">
+                            <div className="min-w-0 flex-1 flex flex-col justify-center h-full py-1">
+                              <h3 className="text-sm sm:text-base font-normal font-sans text-foreground break-words leading-snug line-clamp-3 group-hover:text-emerald-400 transition-colors">
                                 {subtema.nome}
                               </h3>
+
+                              {/* Barra de Progresso do Subtema */}
+                              <div className="mt-2.5 space-y-1.5 w-full">
+                                <div className="flex items-center justify-between text-[11px] sm:text-xs text-muted-foreground font-normal">
+                                  <span>
+                                    {memorizadosDoSubtema > 0
+                                      ? `${memorizadosDoSubtema} de ${subtema.total} memorizados`
+                                      : `0 de ${subtema.total} memorizados`}
+                                  </span>
+                                  <span className={cn('font-semibold', isCompleted ? 'text-emerald-400 font-bold' : 'text-foreground/80')}>
+                                    {pctSubtema}%
+                                  </span>
+                                </div>
+                                <div className="h-1.5 w-full rounded-full bg-white/10 overflow-hidden border border-white/5">
+                                  <div
+                                    className={cn(
+                                      'h-full rounded-full transition-all duration-500',
+                                      isCompleted
+                                        ? 'bg-emerald-400 shadow-sm shadow-emerald-400/50'
+                                        : pctSubtema > 0
+                                        ? 'bg-emerald-500'
+                                        : 'bg-transparent'
+                                    )}
+                                    style={{ width: `${Math.max(pctSubtema, memorizadosDoSubtema > 0 ? 6 : 0)}%` }}
+                                  />
+                                </div>
+                              </div>
                             </div>
 
                             <div className="flex items-center justify-center shrink-0 ml-1 h-full">
