@@ -258,15 +258,37 @@ export function BlocoView({
   if (bloco.tipo === 'linha_tempo') {
     const { titulo, eventos = [] } = bloco.payload || {};
     return (
-      <article>
-        {titulo && <h3 className="mb-3 font-display text-lg font-bold text-foreground">{titulo}</h3>}
-        <ol className="relative border-l-2 border-primary/40 pl-4 space-y-4">
+      <article className="max-w-[70ch] lg:max-w-[76ch] mx-auto py-3 px-1 sm:px-2">
+        <header className="mb-6 sm:mb-8">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-primary mb-2 bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
+            Linha Estrutural
+          </span>
+          {titulo && (
+            <h2 className="font-sans text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-snug">
+              {titulo}
+            </h2>
+          )}
+        </header>
+
+        <ol className="relative border-l-2 border-primary/30 pl-5 sm:pl-8 space-y-6 sm:space-y-8 my-4">
           {eventos.map((ev: any, i: number) => (
-            <li key={i} className="relative">
-              <span className="absolute -left-[22px] top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary" />
-              <p className="text-xs font-bold uppercase text-primary">{ev.marco}</p>
-              <p className="font-semibold text-foreground">{ev.titulo}</p>
-              {ev.descricao && <p className="text-sm text-muted-foreground">{ev.descricao}</p>}
+            <li key={i} className="relative group">
+              <span className="absolute -left-[27px] sm:-left-[39px] top-1.5 flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-primary text-black font-black text-[11px] shadow-[0_0_12px_hsl(var(--primary)/0.6)]">
+                {i + 1}
+              </span>
+              <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4 sm:p-5 backdrop-blur-sm shadow-md transition-all group-hover:border-primary/40 group-hover:bg-white/[0.05]">
+                <span className="inline-block text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-primary mb-1">
+                  {ev.marco}
+                </span>
+                <p className="font-sans text-lg sm:text-xl font-bold text-white leading-snug mb-2">
+                  {ev.titulo}
+                </p>
+                {ev.descricao && (
+                  <p className="text-[15px] sm:text-[16px] leading-relaxed text-neutral-200">
+                    {ev.descricao}
+                  </p>
+                )}
+              </div>
             </li>
           ))}
         </ol>
@@ -276,17 +298,46 @@ export function BlocoView({
 
   if (bloco.tipo === 'destaque') {
     const { tom = 'info', titulo, texto } = bloco.payload || {};
-    let style = { bg: 'bg-blue-500/10', br: 'border-blue-500/40', tx: 'text-blue-700 dark:text-blue-300', Icon: Sparkles };
-    if (tom === 'alerta') style = { bg: 'bg-red-500/10', br: 'border-red-500/40', tx: 'text-red-700 dark:text-red-300', Icon: Sparkles };
-    if (tom === 'dica') style = { bg: 'bg-yellow-500/10', br: 'border-yellow-500/40', tx: 'text-yellow-700 dark:text-yellow-300', Icon: Lightbulb };
+    let style = {
+      bg: 'bg-primary/[0.08]',
+      br: 'border-primary/30',
+      tx: 'text-primary',
+      glow: 'shadow-[0_0_24px_hsl(var(--primary)/0.1)]',
+      Icon: Sparkles,
+    };
+    if (tom === 'alerta') {
+      style = {
+        bg: 'bg-rose-500/[0.08]',
+        br: 'border-rose-500/30',
+        tx: 'text-rose-400',
+        glow: 'shadow-[0_0_24px_rgba(244,63,94,0.1)]',
+        Icon: Sparkles,
+      };
+    }
+    if (tom === 'dica') {
+      style = {
+        bg: 'bg-amber-500/[0.08]',
+        br: 'border-amber-500/30',
+        tx: 'text-amber-400',
+        glow: 'shadow-[0_0_24px_rgba(245,158,11,0.1)]',
+        Icon: Lightbulb,
+      };
+    }
     return (
-      <article>
-        <div className={`rounded-xl border ${style.br} ${style.bg} p-4`}>
-          <div className={`mb-2 flex items-center gap-2 text-xs font-bold uppercase ${style.tx}`}>
-            <style.Icon className="h-4 w-4" />
-            {titulo || (tom === 'alerta' ? 'Atenção' : tom === 'dica' ? 'Dica' : 'Importante')}
+      <article className="max-w-[70ch] lg:max-w-[76ch] mx-auto py-3 px-1 sm:px-2">
+        <div className={`rounded-3xl border ${style.br} ${style.bg} p-6 sm:p-8 backdrop-blur-md shadow-xl ${style.glow}`}>
+          <div className={`mb-4 inline-flex items-center gap-2 text-[11px] sm:text-[12px] font-extrabold uppercase tracking-widest ${style.tx} bg-white/5 px-3 py-1 rounded-full border border-white/10`}>
+            <style.Icon className="h-4 w-4" strokeWidth={2} />
+            {tom === 'alerta' ? 'Atenção Crucial' : tom === 'dica' ? 'Dica Estratégica' : 'Ponto Fundamental'}
           </div>
-          <p className="text-[15px] leading-relaxed text-foreground">{texto}</p>
+          {titulo && (
+            <h2 className="mb-4 font-sans text-2xl sm:text-3xl font-black tracking-tight text-white leading-snug">
+              {titulo}
+            </h2>
+          )}
+          <p className="text-[16px] sm:text-[17px] md:text-[18px] leading-[1.8] text-neutral-200 whitespace-pre-line font-normal">
+            {texto}
+          </p>
         </div>
       </article>
     );

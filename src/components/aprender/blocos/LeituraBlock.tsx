@@ -49,14 +49,19 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
   };
 
   return (
-    <article className="max-w-[70ch] lg:max-w-[76ch] mx-auto py-2">
+    <article className="max-w-[70ch] lg:max-w-[76ch] mx-auto py-3 px-1 sm:px-2">
       {titulo && (
-        <h2 className="mb-8 font-sans text-2xl font-extrabold tracking-tight text-white md:text-3xl lg:text-4xl leading-snug">
-          {titulo}
-        </h2>
+        <header className="mb-6 sm:mb-8">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-primary mb-2 bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
+            Leitura Essencial
+          </span>
+          <h2 className="font-sans text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white leading-tight sm:leading-snug">
+            {titulo}
+          </h2>
+        </header>
       )}
 
-      <div className="prose prose-lg md:prose-xl max-w-none prose-invert prose-headings:font-sans prose-h2:text-[22px] md:prose-h2:text-[26px] prose-h3:text-[19px] md:prose-h3:text-[21px] prose-p:leading-[1.8] prose-p:text-neutral-300 md:prose-p:text-[19px] prose-li:leading-[1.8] prose-li:text-neutral-300 md:prose-li:text-[19px] prose-strong:text-white prose-blockquote:border-l-primary/50 prose-blockquote:text-neutral-400 prose-blockquote:bg-white/[0.02] prose-blockquote:py-1 prose-blockquote:pr-4 prose-blockquote:rounded-r-lg">
+      <div className="prose prose-base sm:prose-lg md:prose-xl max-w-none prose-invert prose-headings:font-sans prose-h2:text-xl sm:prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:font-bold prose-h2:text-white prose-h2:mt-8 prose-h2:mb-4 prose-h3:text-lg sm:prose-h3:text-xl md:prose-h3:text-2xl prose-h3:font-semibold prose-h3:text-white prose-p:text-[16px] sm:prose-p:text-[17px] md:prose-p:text-[18px] prose-p:leading-[1.75] sm:prose-p:leading-[1.85] prose-p:text-neutral-200 prose-p:mb-5 prose-li:text-[16px] sm:prose-li:text-[17px] md:prose-li:text-[18px] prose-li:leading-[1.75] prose-li:text-neutral-200 prose-strong:text-white prose-strong:font-bold prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-white/[0.04] prose-blockquote:text-neutral-100 prose-blockquote:py-3 prose-blockquote:px-5 prose-blockquote:rounded-r-2xl prose-blockquote:my-6 prose-blockquote:not-italic prose-blockquote:font-medium">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
           {normalizarMarkdown(String(conteudo ?? texto ?? ''))}
         </ReactMarkdown>
@@ -64,7 +69,7 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
 
       {camadas.length > 0 && (
         <motion.div
-          className="mt-12 flex flex-col gap-10"
+          className="mt-10 sm:mt-12 flex flex-col gap-6"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -72,17 +77,25 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
         >
           {camadas.map(({ chave, rotulo, Icon, texto }) => {
             const isAlert = chave === 'pegadinha';
+            const isExemplo = chave === 'exemplo';
+
+            const cardTheme = isAlert
+              ? 'bg-rose-500/[0.08] border-rose-500/25 text-rose-300'
+              : isExemplo
+              ? 'bg-amber-500/[0.08] border-amber-500/25 text-amber-300'
+              : 'bg-primary/[0.08] border-primary/25 text-primary';
+
             return (
               <motion.div
                 key={chave}
                 variants={itemVariants}
-                className="relative"
+                className={`rounded-2xl border p-4 sm:p-6 backdrop-blur-sm shadow-lg ${cardTheme}`}
               >
-                <div className="mb-3 flex items-center gap-2 font-bold uppercase tracking-[0.15em] text-[11px] md:text-[12px] text-primary">
-                  <Icon className="h-[18px] w-[18px] md:h-5 md:w-5" strokeWidth={1.5} />
-                  {rotulo}
+                <div className="mb-2.5 flex items-center gap-2 font-bold uppercase tracking-wider text-[11px] sm:text-[12px]">
+                  <Icon className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" strokeWidth={2} />
+                  <span>{rotulo}</span>
                 </div>
-                <div className="pl-5 border-l-2 border-primary/40 prose prose-base md:prose-lg max-w-none prose-invert prose-p:my-0 prose-p:leading-relaxed prose-p:text-neutral-300 prose-strong:text-white">
+                <div className="text-[15px] sm:text-[16px] md:text-[17px] leading-relaxed text-neutral-100 font-normal">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
                     {normalizarMarkdown(texto)}
                   </ReactMarkdown>

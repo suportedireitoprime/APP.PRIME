@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -46,6 +46,14 @@ const AprenderAula = () => {
   const [direction, setDirection] = useState(1);
   const cardScrollRef = useRef<HTMLDivElement>(null);
 
+  // Referências para detecção de gestos (Swipe Touch + Drag Mouse)
+  const touchStartX = useRef<number>(0);
+  const touchStartY = useRef<number>(0);
+  const mouseStartX = useRef<number>(0);
+  const mouseStartY = useRef<number>(0);
+  const isMouseDown = useRef<boolean>(false);
+  const hasMouseDragged = useRef<boolean>(false);
+
   const goToPage = useCallback((newIdx: number) => {
     haptic.selection();
     const clamped = Math.max(0, Math.min(total - 1, newIdx));
@@ -56,6 +64,93 @@ const AprenderAula = () => {
       cardScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [total, currentIdx, setCurrentIdx]);
+
+  // Gestos Touch (Mobile / Tablet)
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (e.changedTouches.length === 0) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    const dx = touchStartX.current - touchEndX;
+    const dy = touchStartY.current - touchEndY;
+
+    // Apenas dispara se o deslize horizontal for preponderante (evita conflito com scroll vertical)
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+      if (dx > 0 && currentIdx < total - 1) {
+        goToPage(currentIdx + 1);
+      } else if (dx < 0 && currentIdx > 0) {
+        goToPage(currentIdx - 1);
+      }
+    }
+  };
+
+  // Gestos Mouse (Desktop / Laptop)
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+    const target = e.target as HTMLElement;
+    if (target.closest('button, a, input, textarea, select')) {
+      return;
+    }
+    isMouseDown.current = true;
+    hasMouseDragged.current = false;
+    mouseStartX.current = e.clientX;
+    mouseStartY.current = e.clientY;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isMouseDown.current) return;
+    const dx = e.clientX - mouseStartX.current;
+    if (Math.abs(dx) > 8) {
+      hasMouseDragged.current = true;
+    }
+  };
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    if (!isMouseDown.current) return;
+    isMouseDown.current = false;
+    if (hasMouseDragged.current) {
+      const dx = mouseStartX.current - e.clientX;
+      const dy = mouseStartY.current - e.clientY;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx > 0 && currentIdx < total - 1) {
+          goToPage(currentIdx + 1);
+        } else if (dx < 0 && currentIdx > 0) {
+          goToPage(currentIdx - 1);
+        }
+      }
+    }
+    hasMouseDragged.current = false;
+  };
+
+  const handleMouseLeave = () => {
+    isMouseDown.current = false;
+    hasMouseDragged.current = false;
+  };
+
+  // Navegação por teclado (Setas Esquerda e Direita)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (feedbackPergunta || sumarioOpen) return;
+      const target = e.target as HTMLElement;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+        return;
+      }
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+        e.preventDefault();
+        if (currentIdx < total - 1) goToPage(currentIdx + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        if (currentIdx > 0) goToPage(currentIdx - 1);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentIdx, total, goToPage, feedbackPergunta, sumarioOpen]);
 
   if (loading) {
     return (
@@ -192,8 +287,37 @@ const AprenderAula = () => {
       </header>
 
       {/* ── Corpo da aula paginado — estética editorial tipo blog ── */}
-      <main className="flex-1 flex flex-col justify-center px-4 sm:px-6 md:px-8 py-4 sm:py-6 overflow-hidden max-w-4xl w-full mx-auto pb-24">
-        <div className="w-full flex-1 flex flex-col bg-[#161822] border border-white/[0.08] rounded-3xl p-5 sm:p-8 md:p-10 shadow-2xl shadow-black/40 overflow-hidden relative">
+      <main className="flex-1 flex flex-col justify-center px-4 sm:px-6 md:px-8 py-4 sm:py-6 overflow-hidden max-w-4xl w-full mx-auto pb-24 relative">
+        {/* Setas Flutuantes Laterais para Navegação Rápida em Telas Maiores */}
+        {currentIdx > 0 && (
+          <button
+            onClick={() => goToPage(currentIdx - 1)}
+            aria-label="Página anterior"
+            className="hidden lg:flex absolute -left-5 xl:-left-7 top-1/2 -translate-y-1/2 z-20 w-11 h-11 items-center justify-center rounded-full bg-[#181a26] border border-white/10 text-white/70 hover:text-white hover:bg-[#222536] hover:scale-110 shadow-xl transition-all cursor-pointer"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+        )}
+
+        {currentIdx < total - 1 && (
+          <button
+            onClick={() => goToPage(currentIdx + 1)}
+            aria-label="Próxima página"
+            className="hidden lg:flex absolute -right-5 xl:-right-7 top-1/2 -translate-y-1/2 z-20 w-11 h-11 items-center justify-center rounded-full bg-[#181a26] border border-white/10 text-white/70 hover:text-white hover:bg-[#222536] hover:scale-110 shadow-xl transition-all cursor-pointer"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+        )}
+
+        <div
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+          className="w-full flex-1 flex flex-col bg-[#161822] border border-white/[0.08] rounded-3xl p-5 sm:p-8 md:p-10 shadow-2xl shadow-black/40 overflow-hidden relative select-none md:cursor-grab md:active:cursor-grabbing"
+        >
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={blocoAtual.id}
@@ -202,7 +326,7 @@ const AprenderAula = () => {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -direction * 35 }}
               transition={{ duration: 0.28, ease: [0.25, 1, 0.5, 1] }}
-              className="flex-1 flex flex-col overflow-hidden"
+              className="flex-1 flex flex-col overflow-hidden select-text"
             >
               {/* Conteúdo com scroll interno delimitado à página atual */}
               <div
@@ -232,6 +356,13 @@ const AprenderAula = () => {
               </div>
             </motion.div>
           </AnimatePresence>
+        </div>
+
+        {/* Dica sutil de navegação por gesto */}
+        <div className="flex items-center justify-center gap-1.5 text-[11px] text-neutral-400 select-none pt-2">
+          <span>Deslize</span>
+          <span className="inline-flex items-center text-primary font-bold">← →</span>
+          <span>para navegar</span>
         </div>
       </main>
 
