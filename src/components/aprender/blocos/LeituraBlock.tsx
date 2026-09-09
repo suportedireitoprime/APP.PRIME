@@ -29,6 +29,30 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
   const { titulo, conteudo, texto } = payload || {};
   const textoPrincipal = String(conteudo ?? texto ?? '');
 
+  // Evita a duplicação do título na área de leitura quando ele já está renderizado no <header>
+  const textoLimpo = useMemo(() => {
+    let t = textoPrincipal.trim();
+    if (!t) return '';
+
+    if (titulo) {
+      // Remove o primeiro heading (# ou ##) no início do texto que duplica o título do slide
+      const m = t.match(/^#{1,2}\s*(?:\d+[\.\-\)]\s*)?([^\n]+)\n*/);
+      if (m) {
+        const headingRaw = m[1].trim().toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+        const tituloNorm = titulo.trim().toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+        if (
+          !headingRaw ||
+          headingRaw === tituloNorm ||
+          headingRaw.includes(tituloNorm) ||
+          tituloNorm.includes(headingRaw)
+        ) {
+          t = t.slice(m[0].length).trim();
+        }
+      }
+    }
+    return t;
+  }, [textoPrincipal, titulo]);
+
   // Parser de termos de glossário (Item 5)
   const termosGlossario = useMemo(() => {
     const isGlossario = titulo?.toLowerCase().includes('glossário') ||
@@ -209,7 +233,7 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
               ),
             }}
           >
-            {normalizarMarkdown(textoPrincipal)}
+            {normalizarMarkdown(textoLimpo)}
           </ReactMarkdown>
         </div>
       )}
