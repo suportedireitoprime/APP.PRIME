@@ -5,8 +5,10 @@ import {
   Home, Bell, Landmark, Building2, Gavel, ShieldCheck, Briefcase, DollarSign, Scale, FileText,
   HeartPulse, Users, Globe, Leaf, Trophy, Hammer, Coins, Swords, Building, Globe2, AlertTriangle,
   GraduationCap, Microscope, BookText, ClipboardList, Award, Lightbulb, Sparkles, ChevronRight, BookOpen,
-  Layers, FileQuestion
+  Layers, FileQuestion, ListChecks
 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { isAdminEmail } from '@/lib/adminEmails';
@@ -114,6 +116,22 @@ const Aprender = () => {
   const [activeTab, setActiveTab] = useState<'aulas' | 'flashcards' | 'questoes'>('aulas');
   const { data: flashDash } = useFlashcardsDashboard();
   const { data: flashAreas } = useFlashcardsResumoAreas();
+
+  // Contagem direta de flashcards concluídos pelo usuário
+  const { data: userFlashcardsProgressoCount } = useQuery({
+    queryKey: ['user_flashcards_progresso_count', uid],
+    queryFn: async () => {
+      if (!uid) return 0;
+      const { count, error } = await supabase
+        .from('flashcards_progresso')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', uid);
+      if (error) return 0;
+      return count ?? 0;
+    },
+    enabled: !!uid,
+    staleTime: 60 * 1000,
+  });
 
   // Timer Countdown logic
   const targetDate = useMemo(() => new Date('2026-08-25T00:00:00-03:00').getTime(), []);
@@ -254,24 +272,108 @@ const Aprender = () => {
     return areasOrdenadas[0];
   }, [areasOrdenadas, selectedAreaSlug]);
 
-  const pct = data.pctGeral ?? 0;
+  const isAulas = activeTab === 'aulas';
+  const isFlashcards = activeTab === 'flashcards';
+  const isQuestoes = activeTab === 'questoes';
+
+  // Métricas robustas de flashcards com fallback para áreas e banco
+  const flashAreasTotalCards = useMemo(() => {
+    if (!flashAreas || !flashAreas.length) return 0;
+    return flashAreas.reduce((acc, a) => acc + (a.total_cards || 0), 0);
+  }, [flashAreas]);
+
+  const flashAreasTotalConcluidas = useMemo(() => {
+    if (!flashAreas || !flashAreas.length) return 0;
+    return flashAreas.reduce((acc, a) => acc + (a.compreendidos || 0), 0);
+  }, [flashAreas]);
+
+  const totalFlashcards = useMemo(() => {
+    if (flashDash?.total_cards && flashDash.total_cards > 0) return flashDash.total_cards;
+    if (flashAreasTotalCards > 0) return flashAreasTotalCards;
+    return 78077;
+  }, [flashDash?.total_cards, flashAreasTotalCards]);
+
+  const totalConcluidasFlashcards = useMemo(() => {
+    return Math.max(
+      userFlashcardsProgressoCount ?? 0,
+      flashDash?.compreendidos ?? 0,
+      flashDash?.estudados ?? 0,
+      flashAreasTotalConcluidas ?? 0
+    );
+  }, [userFlashcardsProgressoCount, flashDash?.compreendidos, flashDash?.estudados, flashAreasTotalConcluidas]);
+
+  const pct = useMemo(() => {
+    if (isAulas) return data.pctGeral ?? 0;
+    if (isFlashcards) {
+      if (!totalFlashcards) return 0;
+      return Math.min(100, Math.round((totalConcluidasFlashcards / totalFlashcards) * 100));
+    }
+    return 0;
+  }, [isAulas, isFlashcards, data.pctGeral, totalFlashcards, totalConcluidasFlashcards]);
+
+  // Tema visual dinâmico do painel Hero e Pills por aba selecionada
+  const tabTheme = useMemo(() => {
+    if (isFlashcards) {
+      return {
+        heroBg: 'linear-gradient(135deg, #0d2218 0%, #071710 55%, #050d09 100%)',
+        heroBorder: 'rgba(52, 211, 153, 0.28)',
+        glow: 'linear-gradient(135deg, rgba(52, 211, 153, 0.45) 0%, transparent 100%)',
+        accent: '#34D399',
+        accentMuted: 'rgba(52, 211, 153, 0.2)',
+        badgeText: 'text-emerald-300',
+        fadeBg: '#0d2218',
+        activePill: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30 shadow-[0_0_12px_rgba(52,211,153,0.18)]',
+      };
+    }
+    if (isQuestoes) {
+      return {
+        heroBg: 'linear-gradient(135deg, #0c1c2e 0%, #071220 55%, #050c14 100%)',
+        heroBorder: 'rgba(56, 189, 248, 0.28)',
+        glow: 'linear-gradient(135deg, rgba(56, 189, 248, 0.45) 0%, transparent 100%)',
+        accent: '#38BDF8',
+        accentMuted: 'rgba(56, 189, 248, 0.2)',
+        badgeText: 'text-sky-300',
+        fadeBg: '#0c1c2e',
+        activePill: 'bg-sky-500/15 text-sky-400 border-sky-500/30 shadow-[0_0_12px_rgba(56,189,248,0.18)]',
+      };
+    }
+    return {
+      heroBg: 'linear-gradient(135deg, #1f1215 0%, #150d10 55%, #0d0d0f 100%)',
+      heroBorder: 'rgba(244, 63, 94, 0.25)',
+      glow: 'linear-gradient(135deg, rgba(225, 29, 72, 0.45) 0%, transparent 100%)',
+      accent: 'hsl(var(--primary))',
+      accentMuted: 'rgba(255, 255, 255, 0.2)',
+      badgeText: 'text-rose-300/90',
+      fadeBg: '#1f1215',
+      activePill: 'bg-primary/10 text-primary border-primary/20 shadow-sm',
+    };
+  }, [isFlashcards, isQuestoes]);
+
   const size = 72;
   const stroke = 7;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const dash = c - (pct / 100) * c;
 
-  const isAulas = activeTab === 'aulas';
-  const isFlashcards = activeTab === 'flashcards';
-  const isQuestoes = activeTab === 'questoes';
-
   let metricLabel1 = 'Matérias';
-  let metricVal1 = data.areas.length;
+  let metricVal1 = isFlashcards && flashAreas?.length ? flashAreas.length : data.areas.length;
   let metricLabel2 = isAulas ? 'Aulas' : isFlashcards ? 'Flashcards' : 'Questões';
-  let metricVal2Display: React.ReactNode = isAulas ? data.totalAulas : isFlashcards ? (flashDash?.total_cards ?? 0) : 'Em breve';
+  let metricVal2Display: React.ReactNode = isAulas 
+    ? data.totalAulas 
+    : isFlashcards 
+    ? totalFlashcards.toLocaleString('pt-BR') 
+    : 'Em breve';
   let metricLabel3 = 'Concluídas';
-  let metricVal3 = isAulas ? data.totalConcluidas : isFlashcards ? (flashDash?.estudados ?? 0) : 0;
-  let metricVal3Total = isAulas ? data.totalAulas : isFlashcards ? (flashDash?.total_cards ?? 0) : 0;
+  let metricVal3 = isAulas 
+    ? data.totalConcluidas 
+    : isFlashcards 
+    ? totalConcluidasFlashcards.toLocaleString('pt-BR') 
+    : 0;
+  let metricVal3Total = isAulas 
+    ? data.totalAulas 
+    : isFlashcards 
+    ? totalFlashcards.toLocaleString('pt-BR') 
+    : 0;
 
   const mobileHeader = (
     <PageHeader
@@ -356,9 +458,13 @@ const Aprender = () => {
 
           {/* ── Coluna Central Widescreen: Trilha Hero & Matérias ─────── */}
           <div className="lg:col-span-6 space-y-5">
-            {/* Hero trilhas em cinza elevado */}
+            {/* Hero trilhas com cor dinâmica por aba */}
             <section
-              className="bg-card relative isolate overflow-hidden -mx-3 sm:mx-0 rounded-none sm:rounded-2xl border-b border-border sm:border shadow-xl"
+              className="relative isolate overflow-hidden -mx-3 sm:mx-0 rounded-none sm:rounded-2xl border-b sm:border shadow-xl transition-all duration-500 ease-in-out"
+              style={{
+                background: tabTheme.heroBg,
+                borderColor: tabTheme.heroBorder,
+              }}
               aria-label="Seu progresso em trilhas"
             >
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.08),transparent_60%)]" />
@@ -381,13 +487,18 @@ const Aprender = () => {
                 ))}
                 {/* Subtle glow behind the illustration */}
                 <div
-                  className="absolute inset-0 opacity-60 mix-blend-overlay"
+                  className="absolute inset-0 opacity-60 mix-blend-overlay transition-all duration-500"
                   style={{
-                    background: 'linear-gradient(135deg, hsl(var(--primary)/0.6) 0%, transparent 100%)',
+                    background: tabTheme.glow,
                   }}
                 />
                 {/* Fade left edge to blend with background */}
-                <div className="absolute inset-y-0 left-0 w-2/3 bg-gradient-to-r from-card via-card/70 to-transparent" />
+                <div 
+                  className="absolute inset-y-0 left-0 w-2/3 transition-all duration-500"
+                  style={{
+                    background: `linear-gradient(to right, ${tabTheme.fadeBg}, transparent)`,
+                  }}
+                />
               </div>
 
               <div className="relative p-4 sm:p-5">
@@ -395,18 +506,18 @@ const Aprender = () => {
                   {/* Anel de progresso */}
                   <div className="relative shrink-0" style={{ width: size, height: size }}>
                     <svg width={size} height={size} className="-rotate-90">
-                      <circle cx={size / 2} cy={size / 2} r={r} stroke="rgba(255,255,255,0.2)" strokeWidth={stroke} fill="none" />
+                      <circle cx={size / 2} cy={size / 2} r={r} stroke="rgba(255,255,255,0.15)" strokeWidth={stroke} fill="none" />
                       <circle
                         cx={size / 2}
                         cy={size / 2}
                         r={r}
-                        stroke="#ffffff"
+                        stroke={tabTheme.accent}
                         strokeWidth={stroke}
                         strokeLinecap="round"
                         fill="none"
                         strokeDasharray={c}
                         strokeDashoffset={dash}
-                        style={{ transition: 'stroke-dashoffset 600ms ease' }}
+                        style={{ transition: 'stroke-dashoffset 600ms ease, stroke 500ms ease' }}
                       />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -421,7 +532,7 @@ const Aprender = () => {
                     <p className="text-[10px] font-bold uppercase tracking-wider text-white/90">Sua trilha de aprendizado</p>
                     <h1 className="mt-0.5 font-display text-[22px] font-black leading-tight text-white sm:text-[26px]">
                       {isAulas ? 'AULAS' : isFlashcards ? 'FLASHCARDS' : 'QUESTÕES'}
-                      <span className="ml-2 font-display text-[15px] font-semibold italic text-white/90 sm:text-[18px]">
+                      <span className={cn("ml-2 font-display text-[15px] font-semibold italic sm:text-[18px]", tabTheme.badgeText)}>
                         EM TRILHAS
                       </span>
                     </h1>
@@ -435,7 +546,7 @@ const Aprender = () => {
                 </div>
 
                 {/* Barra única com as 3 métricas */}
-                <div className="relative mt-3 rounded-xl bg-background/80 text-foreground border border-border/80 shadow-md">
+                <div className="relative mt-3 rounded-xl bg-background/85 backdrop-blur-md text-foreground border border-border/80 shadow-md">
                   <div className="grid grid-cols-3 divide-x divide-border/60">
                     <div className="flex flex-col items-center justify-center px-2 py-2">
                       <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{metricLabel1}</span>
@@ -447,11 +558,14 @@ const Aprender = () => {
                     </div>
                     <div className="flex flex-col items-center justify-center px-2 py-2">
                       <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{metricLabel3}</span>
-                      <span className="mt-0.5 font-display text-base font-black leading-none text-primary">
+                      <span 
+                        className="mt-0.5 font-display text-base font-black leading-none"
+                        style={{ color: tabTheme.accent }}
+                      >
                         {isQuestoes ? 'Em breve' : (
                           <>
                             {metricVal3}
-                            <span className="text-muted-foreground/60">/{metricVal3Total}</span>
+                            <span className="text-muted-foreground/60 font-medium">/{metricVal3Total}</span>
                           </>
                         )}
                       </span>
@@ -463,26 +577,36 @@ const Aprender = () => {
 
             {/* Menu de Alternância Global */}
             <div className="flex bg-card p-1.5 rounded-2xl border border-border/80 w-full shadow-sm relative z-20 mt-8 mb-4">
-              {(['aulas', 'flashcards', 'questoes'] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => {
-                    try { haptic.selection(); } catch (e) {}
-                    setActiveTab(tab);
-                  }}
-                  className={cn(
-                    "flex-1 flex items-center justify-center gap-2 px-2 sm:px-4 py-2.5 rounded-xl text-xs sm:text-[13px] font-bold uppercase tracking-wider transition-all",
-                    activeTab === tab
-                      ? "bg-primary/10 text-primary shadow-sm border border-primary/20"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
-                  )}
-                >
-                  {tab === 'aulas' && <BookOpen className="w-4 h-4 hidden sm:block" />}
-                  {tab === 'flashcards' && <Layers className="w-4 h-4 hidden sm:block" />}
-                  {tab === 'questoes' && <FileQuestion className="w-4 h-4 hidden sm:block" />}
-                  {tab}
-                </button>
-              ))}
+              {(['aulas', 'flashcards', 'questoes'] as const).map((tab) => {
+                const isActive = activeTab === tab;
+                let activeClass = 'bg-rose-500/15 text-rose-300 border-rose-500/30 shadow-[0_0_12px_rgba(244,63,94,0.18)]';
+                if (tab === 'flashcards') {
+                  activeClass = 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30 shadow-[0_0_12px_rgba(52,211,153,0.18)]';
+                } else if (tab === 'questoes') {
+                  activeClass = 'bg-sky-500/15 text-sky-400 border-sky-500/30 shadow-[0_0_12px_rgba(56,189,248,0.18)]';
+                }
+
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => {
+                      try { haptic.selection(); } catch (e) {}
+                      setActiveTab(tab);
+                    }}
+                    className={cn(
+                      "flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2.5 rounded-xl text-xs sm:text-[13px] font-bold uppercase tracking-wider transition-all",
+                      isActive
+                        ? activeClass
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
+                    )}
+                  >
+                    {tab === 'aulas' && <GraduationCap className="w-4 h-4 shrink-0" />}
+                    {tab === 'flashcards' && <FlashcardsIcon className="w-4 h-4 shrink-0" />}
+                    {tab === 'questoes' && <ListChecks className="w-4 h-4 shrink-0" />}
+                    <span>{tab}</span>
+                  </button>
+                );
+              })}
             </div>
 
             {/* Lista de Matérias */}
@@ -576,19 +700,27 @@ const Aprender = () => {
 
           {/* ── Sidebar Direita Desktop: Estatísticas & Ferramentas de Apoio ────── */}
           <aside className="hidden lg:block lg:col-span-3 space-y-4 bg-card/40 border border-border/60 rounded-2xl p-4 shadow-sm">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-border/60 pb-2.5">
+            <h2 
+              className="text-xs font-bold uppercase tracking-wider border-b border-border/60 pb-2.5 transition-colors duration-500"
+              style={{ color: tabTheme.accent }}
+            >
               Seu Desempenho
             </h2>
 
             <div className="rounded-xl border border-border/80 bg-card p-3.5 space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground font-medium">Meta de Estudo</span>
-                <span className="font-bold text-primary">{pct}% atingido</span>
+                <span 
+                  className="font-bold transition-colors duration-500"
+                  style={{ color: tabTheme.accent }}
+                >
+                  {pct}% atingido
+                </span>
               </div>
               <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-primary transition-all duration-500"
-                  style={{ width: `${pct}%` }}
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${pct}%`, backgroundColor: tabTheme.accent }}
                 />
               </div>
             </div>
