@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import vademecumHeroImg from '@/assets/covers/vademecum-judge.jpg';
+import vademecumHeroImg from '@/assets/covers/vademecum-judge.webp';
 
 import VadeMecumHeroHeader from './chunks/VadeMecumHeroHeader';
 import VadeMecumHeroBrand from './chunks/VadeMecumHeroBrand';

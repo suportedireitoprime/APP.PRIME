@@ -218,7 +218,7 @@ const Scene1Intro: React.FC<{ version: number }> = ({ version }) => {
 
   return (
     <AbsoluteFill style={{ backgroundColor: '#000' }}>
-      <Img src="/biografias/socrates-capa.jpg" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: version === 3 ? 0.1 : 0.4, transform: `scale(${imgScale})`, transformOrigin: 'top center' }} />
+      <Img src="/biografias/socrates-capa.webp" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: version === 3 ? 0.1 : 0.4, transform: `scale(${imgScale})`, transformOrigin: 'top center' }} />
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 100%)' }} />
       
       {version === 1 && (
@@ -374,20 +374,20 @@ const SceneGeneric: React.FC<{ imgSrc: string, eyebrow: string, title: string, d
 
 const SOCRATES_SCENES = [
   { type: 'intro' }, // Cena 1
-  { type: 'generic', img: '/biografias/scene-sofistas.jpg', eyebrow: 'O Ponto de Virada', title: 'A Revolução', d1: 'Imagine o homem que mudou o mundo...', d2: 'sem nunca ter escrito uma única palavra.', icon1: BookOpen, icon2: Eye },
-  { type: 'generic', img: '/biografias/scene-atenas.jpg', eyebrow: 'A Ferramenta', title: 'A Ironia', d1: 'Nas ruas de Atenas, ele usava a ironia...', d2: 'para expor a ignorância dos poderosos.', icon1: MessageCircle, icon2: Flame },
-  { type: 'generic', img: '/biografias/scene-atenas.jpg', eyebrow: 'O Método', title: 'Maiêutica', d1: 'O parto das ideias.', d2: 'Ele fazia os outros pensarem por si mesmos.', icon1: ArrowRight, icon2: SparklesIcon },
-  { type: 'generic', img: '/biografias/scene-sofistas.jpg', eyebrow: 'O Incômodo', title: 'A Verdade', d1: 'Sua sabedoria era perigosa.', d2: 'Ele não aceitava respostas prontas.', icon1: Eye, icon2: Compass },
+  { type: 'generic', img: '/biografias/scene-sofistas.webp', eyebrow: 'O Ponto de Virada', title: 'A Revolução', d1: 'Imagine o homem que mudou o mundo...', d2: 'sem nunca ter escrito uma única palavra.', icon1: BookOpen, icon2: Eye },
+  { type: 'generic', img: '/biografias/scene-atenas.webp', eyebrow: 'A Ferramenta', title: 'A Ironia', d1: 'Nas ruas de Atenas, ele usava a ironia...', d2: 'para expor a ignorância dos poderosos.', icon1: MessageCircle, icon2: Flame },
+  { type: 'generic', img: '/biografias/scene-atenas.webp', eyebrow: 'O Método', title: 'Maiêutica', d1: 'O parto das ideias.', d2: 'Ele fazia os outros pensarem por si mesmos.', icon1: ArrowRight, icon2: SparklesIcon },
+  { type: 'generic', img: '/biografias/scene-sofistas.webp', eyebrow: 'O Incômodo', title: 'A Verdade', d1: 'Sua sabedoria era perigosa.', d2: 'Ele não aceitava respostas prontas.', icon1: Eye, icon2: Compass },
   { type: 'timeline', year: 470, event: 'Nascimento de Sócrates' }, // Cena 6
   { type: 'generic', img: '/biografias/scene-julgamento.jpg', eyebrow: 'O Limite', title: 'O Julgamento', d1: 'Mas em 399 a.C.,', d2: 'Atenas não aguentou mais.', icon1: Scale, icon2: Flame },
   { type: 'generic', img: '/biografias/scene-julgamento.jpg', eyebrow: 'A Acusação', title: 'O Tribunal', d1: 'Acusado de corromper a juventude', d2: 'e ofender os deuses.', icon1: Landmark, icon2: Scale },
   { type: 'generic', img: '/biografias/scene-julgamento.jpg', eyebrow: 'A Escolha', title: 'O Desafio', d1: 'Ele poderia ter pedido perdão.', d2: 'Poderia ter fugido.', icon1: ArrowRight, icon2: BookOpen },
   { type: 'generic', img: '/biografias/scene-julgamento.jpg', eyebrow: 'O Deboche', title: 'A Coragem', d1: 'Mas preferiu debochar', d2: 'dos seus próprios juízes!', icon1: Flame, icon2: Eye },
   { type: 'timeline', year: 399, event: 'A Condenação' }, // Cena 11
-  { type: 'generic', img: '/biografias/scene-cicuta.jpg', eyebrow: 'O Veneno', title: 'A Cicuta', d1: 'A pena foi severa:', d2: 'Beber cicuta mortal.', icon1: Skull, icon2: ArrowRight },
-  { type: 'generic', img: '/biografias/scene-cicuta.jpg', eyebrow: 'Os Momentos Finais', title: 'A Serenidade', d1: 'Na prisão, aguardou o fim.', d2: 'Ensinando seus discípulos até o último suspiro.', icon1: Compass, icon2: SparklesIcon },
+  { type: 'generic', img: '/biografias/scene-cicuta.webp', eyebrow: 'O Veneno', title: 'A Cicuta', d1: 'A pena foi severa:', d2: 'Beber cicuta mortal.', icon1: Skull, icon2: ArrowRight },
+  { type: 'generic', img: '/biografias/scene-cicuta.webp', eyebrow: 'Os Momentos Finais', title: 'A Serenidade', d1: 'Na prisão, aguardou o fim.', d2: 'Ensinando seus discípulos até o último suspiro.', icon1: Compass, icon2: SparklesIcon },
   { type: 'timeline', year: 399, event: 'A Execução' }, // Cena 14
-  { type: 'generic', img: '/biografias/socrates-capa.jpg', eyebrow: 'A Lição Maior', title: 'A Justiça', d1: 'Tomou o veneno, respeitando as leis.', d2: 'Melhor sofrer injustiça do que cometê-la.', icon1: Scale, icon2: Flame },
+  { type: 'generic', img: '/biografias/socrates-capa.webp', eyebrow: 'A Lição Maior', title: 'A Justiça', d1: 'Tomou o veneno, respeitando as leis.', d2: 'Melhor sofrer injustiça do que cometê-la.', icon1: Scale, icon2: Flame },
 ];
 
 export const SocratesVideo: React.FC<{ customAudioUrl?: string, version?: number, roteiro?: Array<{frame: number, text: string, duration: number}> }> = ({ customAudioUrl, version = 1, roteiro }) => {

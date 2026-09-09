@@ -5,7 +5,7 @@ export const kantData: BiografiaData = {
   categoriaId: 'filosofos',
   nome: 'Immanuel Kant',
   subtitulo: 'O expoente do Iluminismo, criador do Imperativo Categórico e divisor de águas da Filosofia Moderna.',
-  imagemUrl: '/biografias/kant-capa.jpg',
+  imagemUrl: '/biografias/kant-capa.webp',
   epoca: 'Iluminismo',
   ordemEpoca: 5,
   datasVida: '(1724 – 1804)',

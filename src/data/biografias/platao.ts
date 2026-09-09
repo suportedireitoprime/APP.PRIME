@@ -5,7 +5,7 @@ export const plataoData: BiografiaData = {
   categoriaId: 'filosofos',
   nome: 'Platão',
   subtitulo: 'O arquiteto do Mundo das Ideias e o pai da filosofia política do Ocidente.',
-  imagemUrl: '/biografias/platao-capa.jpg',
+  imagemUrl: '/biografias/platao-capa.webp',
   epoca: 'Antiguidade Clássica',
   ordemEpoca: 2,
   datasVida: '(428 a.C. – 348 a.C.)',

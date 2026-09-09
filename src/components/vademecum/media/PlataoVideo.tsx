@@ -214,7 +214,7 @@ const Scene1Intro: React.FC<{ version: number }> = ({ version }) => {
 
   return (
     <AbsoluteFill style={{ backgroundColor: '#000' }}>
-      <Img src="/biografias/platao-capa.jpg" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: version === 3 ? 0.1 : 0.4, transform: `scale(${imgScale})`, transformOrigin: 'top center' }} />
+      <Img src="/biografias/platao-capa.webp" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: version === 3 ? 0.1 : 0.4, transform: `scale(${imgScale})`, transformOrigin: 'top center' }} />
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 100%)' }} />
       
       {version === 1 && (
@@ -365,12 +365,12 @@ const SceneGeneric: React.FC<{ imgSrc: string, eyebrow: string, title: string, d
 
 const PLATAO_SCENES = [
   { type: 'intro' }, // Cena 1
-  { type: 'generic', img: '/biografias/scene-atenas.jpg', eyebrow: 'O Destinado', title: 'Atenas', d1: 'O aristocrata destinado a governar...', d2: 'que mudou tudo ao conhecer Sócrates.', icon1: Landmark, icon2: BookOpen },
+  { type: 'generic', img: '/biografias/scene-atenas.webp', eyebrow: 'O Destinado', title: 'Atenas', d1: 'O aristocrata destinado a governar...', d2: 'que mudou tudo ao conhecer Sócrates.', icon1: Landmark, icon2: BookOpen },
   { type: 'generic', img: '/biografias/scene-julgamento.jpg', eyebrow: 'A Revolta', title: 'A Queda', d1: 'A morte do seu mestre', d2: 'o revoltou profundamente.', icon1: Scale, icon2: Flame },
   { type: 'generic', img: '/biografias/scene-academia.jpg', eyebrow: 'O Exílio', title: 'A Jornada', d1: 'Ele fugiu de Atenas,', d2: 'e viajou pelo mundo antigo.', icon1: Compass, icon2: ArrowRight },
   { type: 'generic', img: '/biografias/scene-academia.jpg', eyebrow: 'A Primeira Faculdade', title: 'Academia', d1: 'Voltando, fundou a Academia.', d2: 'A primeira universidade da história.', icon1: BookOpen, icon2: Landmark },
   { type: 'timeline', year: 387, event: 'Fundação da Academia' }, // Cena 6
-  { type: 'generic', img: '/biografias/platao-capa.jpg', eyebrow: 'A Essência', title: 'O Pensamento', d1: 'Ali, ele esculpiu todo', d2: 'o pensamento do ocidente.', icon1: Eye, icon2: SparklesIcon },
+  { type: 'generic', img: '/biografias/platao-capa.webp', eyebrow: 'A Essência', title: 'O Pensamento', d1: 'Ali, ele esculpiu todo', d2: 'o pensamento do ocidente.', icon1: Eye, icon2: SparklesIcon },
   { type: 'generic', img: '/biografias/scene-caverna.jpg', eyebrow: 'A Alegoria', title: 'Mito da Caverna', d1: 'Um aviso poderoso:', d2: 'Vivemos acorrentados em sombras ilusórias.', icon1: Flame, icon2: Eye },
   { type: 'generic', img: '/biografias/scene-caverna.jpg', eyebrow: 'O Dever', title: 'A Luz', d1: 'O dever do verdadeiro jurista', d2: 'é sempre buscar a luz.', icon1: Sun, icon2: Scale },
   { type: 'generic', img: '/biografias/scene-republica.jpg', eyebrow: 'O Best-Seller', title: 'A República', d1: 'Em 375, publicou A República.', d2: 'Sua maior obra política.', icon1: BookOpen, icon2: Landmark },

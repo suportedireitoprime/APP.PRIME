@@ -179,7 +179,7 @@ export default function PushCronogramaTab() {
         regra: c.status === "scheduled" ? "Campanha agendada manualmente" : "Disparo manual finalizado",
         titulo_exemplo: c.title,
         corpo_exemplo: c.body,
-        capa_default: c.image_url || "/assets/push/capa-noticias-juridicas.jpg",
+        capa_default: c.image_url || "/assets/push/capa-noticias-juridicas.webp",
         tags_persuasao: ["Campanha Manual", "Disparo Direto"],
         gatilho_mental: "Comunicação Direta",
         label: padHora(d.getHours(), d.getMinutes()),
@@ -190,7 +190,7 @@ export default function PushCronogramaTab() {
         opened_count: c.opened_count ?? 0,
         realTitle: c.title,
         realBody: c.body,
-        realImage: c.image_url || "/assets/push/capa-noticias-juridicas.jpg",
+        realImage: c.image_url || "/assets/push/capa-noticias-juridicas.webp",
         campaignId: c.id,
       });
     }

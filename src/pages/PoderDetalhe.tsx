@@ -3,9 +3,9 @@ import { ArrowLeft, Rss, Globe, Headphones, PlaySquare } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { useGoBack } from '@/hooks/useGoBack';
 
-import stfImg from '@/assets/poderes/stf.jpg';
-import camaraImg from '@/assets/poderes/camara.jpg';
-import senadoImg from '@/assets/poderes/senado.jpg';
+import stfImg from '@/assets/poderes/stf.webp';
+import camaraImg from '@/assets/poderes/camara.webp';
+import senadoImg from '@/assets/poderes/senado.webp';
 import { toast } from '@/hooks/use-toast';
 
 const PODERES_DATA: Record<string, any> = {

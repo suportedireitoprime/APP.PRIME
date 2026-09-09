@@ -378,19 +378,19 @@ const SceneGeneric: React.FC<{ imgSrc: string, eyebrow: string, title: string, d
 const ARISTOTELES_SCENES = [
   { type: 'intro' }, // Cena 1
   { type: 'generic', img: '/biografias/scene-academia.jpg', eyebrow: 'O Aluno', title: 'O Prodígio', d1: 'Aristóteles foi o aluno', d2: 'mais brilhante de Platão.', icon1: Library, icon2: BookOpen },
-  { type: 'generic', img: '/biografias/scene-atenas.jpg', eyebrow: 'A Divergência', title: 'O Realista', d1: 'Enquanto Platão olhava', d2: 'para os céus ideais...', icon1: Eye, icon2: BrainCircuit },
-  { type: 'generic', img: '/biografias/scene-atenas.jpg', eyebrow: 'O Chão', title: 'A Matéria', d1: 'Aristóteles apontou', d2: 'suas mãos para a terra.', icon1: ArrowRight, icon2: Scale },
-  { type: 'generic', img: '/biografias/scene-sofistas.jpg', eyebrow: 'O Tutor', title: 'O Império', d1: 'Foi tutor de ninguém menos', d2: 'que Alexandre, o Grande.', icon1: Compass, icon2: Landmark },
+  { type: 'generic', img: '/biografias/scene-atenas.webp', eyebrow: 'A Divergência', title: 'O Realista', d1: 'Enquanto Platão olhava', d2: 'para os céus ideais...', icon1: Eye, icon2: BrainCircuit },
+  { type: 'generic', img: '/biografias/scene-atenas.webp', eyebrow: 'O Chão', title: 'A Matéria', d1: 'Aristóteles apontou', d2: 'suas mãos para a terra.', icon1: ArrowRight, icon2: Scale },
+  { type: 'generic', img: '/biografias/scene-sofistas.webp', eyebrow: 'O Tutor', title: 'O Império', d1: 'Foi tutor de ninguém menos', d2: 'que Alexandre, o Grande.', icon1: Compass, icon2: Landmark },
   { type: 'timeline', year: 384, event: 'Nascimento de Aristóteles' }, // Cena 6
   { type: 'generic', img: '/biografias/scene-academia.jpg', eyebrow: 'A Própria Escola', title: 'O Liceu', d1: 'Fundou o Liceu e ensinava', d2: 'caminhando com seus alunos.', icon1: Library, icon2: BookOpen },
-  { type: 'generic', img: '/biografias/scene-sofistas.jpg', eyebrow: 'O Legado Lógico', title: 'O Silogismo', d1: 'Ele inventou a Lógica.', d2: 'A base do pensamento racional.', icon1: BrainCircuit, icon2: Eye },
+  { type: 'generic', img: '/biografias/scene-sofistas.webp', eyebrow: 'O Legado Lógico', title: 'O Silogismo', d1: 'Ele inventou a Lógica.', d2: 'A base do pensamento racional.', icon1: BrainCircuit, icon2: Eye },
   { type: 'generic', img: '/biografias/scene-republica.jpg', eyebrow: 'A Justiça', title: 'Equidade', d1: 'Justiça é tratar os desiguais', d2: 'na medida de suas desigualdades.', icon1: Scale, icon2: Compass },
   { type: 'generic', img: '/biografias/scene-leis.jpg', eyebrow: 'A Ética', title: 'O Meio-Termo', d1: 'A virtude não está nos extremos.', d2: 'A virtude é a justa medida.', icon1: Compass, icon2: Scale },
   { type: 'timeline', year: 335, event: 'Fundação do Liceu' }, // Cena 11
   { type: 'generic', img: '/biografias/scene-republica.jpg', eyebrow: 'A Política', title: 'O Animal Político', d1: 'Definiu que o ser humano', d2: 'só é pleno vivendo em sociedade.', icon1: Landmark, icon2: ArrowRight },
   { type: 'generic', img: '/biografias/scene-leis.jpg', eyebrow: 'O Direito Natural', title: 'A Ordem', d1: 'A lei deve buscar sempre', d2: 'o bem comum da Pólis.', icon1: Scale, icon2: BookOpen },
   { type: 'timeline', year: 322, event: 'Morte no Exílio' }, // Cena 14
-  { type: 'generic', img: '/biografias/aristoteles-capa.jpg', eyebrow: 'O Eterno Mestre', title: 'A Razão', d1: 'Sua mente organizou', d2: 'praticamente tudo o que sabemos.', icon1: BrainCircuit, icon2: SparklesIcon },
+  { type: 'generic', img: '/biografias/aristoteles-capa.webp', eyebrow: 'O Eterno Mestre', title: 'A Razão', d1: 'Sua mente organizou', d2: 'praticamente tudo o que sabemos.', icon1: BrainCircuit, icon2: SparklesIcon },
 ];
 
 export const AristotelesVideo: React.FC<{ customAudioUrl?: string, version?: number, roteiro?: Array<{frame: number, text: string, duration: number}> }> = ({ customAudioUrl, version = 1, roteiro }) => {
