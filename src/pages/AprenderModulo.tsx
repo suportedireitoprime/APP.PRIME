@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Home, Sparkles } from 'lucide-react';
+import { ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Footprints, Home } from 'lucide-react';
 import { shortenAreaName } from '@/lib/areaNameShortener';
 import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
 import { cn } from '@/lib/utils';
@@ -309,8 +309,8 @@ const AprenderModulo = () => {
             <div className="space-y-4 pt-2">
               <div className="flex items-center justify-between px-1">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-primary" />
-                  <span>Trilha de Aprendizado ({totalAulas} Aulas)</span>
+                  <Footprints className="w-4 h-4 text-primary" />
+                  <span>Aulas em Trilha ({totalAulas})</span>
                 </h2>
               </div>
 
@@ -374,14 +374,14 @@ const AprenderModulo = () => {
                         >
                           {/* Ícone vazado — circular e maior */}
                           {modulo?.areaSlug === 'direito-penal' && (
-                            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shrink-0 bg-primary/10 border border-primary/20 overflow-hidden">
+                            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shrink-0 bg-white/5 border border-white/10 overflow-hidden">
                               <img
                                 src="/images/gamificacao/direito_penal_prisao_vazado.webp"
                                 alt=""
                                 aria-hidden="true"
                                 loading="lazy"
                                 decoding="async"
-                                className="w-11 h-11 sm:w-12 sm:h-12 object-contain opacity-55 group-hover:opacity-80 transition-opacity select-none pointer-events-none"
+                                className="w-11 h-11 sm:w-12 sm:h-12 object-contain opacity-75 group-hover:opacity-90 transition-opacity select-none pointer-events-none"
                               />
                             </div>
                           )}
