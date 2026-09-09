@@ -518,6 +518,20 @@ const AprenderAula = () => {
                 onMouseLeave={handleMouseLeave}
                 className="w-full flex-1 flex flex-col bg-[#131316]/95 backdrop-blur-md border border-white/[0.08] rounded-3xl p-5 sm:p-8 md:p-10 shadow-2xl shadow-black/40 overflow-hidden relative select-none md:cursor-grab md:active:cursor-grabbing min-h-[500px]"
               >
+                {/* ── Marca d'água ilustrada vazada no fundo do card (Direito Penal) ── */}
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -bottom-10 -right-10 sm:-bottom-14 sm:-right-14 select-none z-0 overflow-hidden opacity-[0.07] sm:opacity-[0.09] transition-opacity duration-500"
+                >
+                  <img
+                    src="/images/gamificacao/direito_penal_prisao_vazado.webp"
+                    alt=""
+                    loading="eager"
+                    decoding="async"
+                    className="w-72 h-72 sm:w-96 sm:h-96 md:w-[440px] md:h-[440px] object-contain"
+                  />
+                </div>
+
                 <AnimatePresence mode="wait" custom={direction}>
                   <motion.div
                     key={blocoAtual.id}
@@ -526,7 +540,7 @@ const AprenderAula = () => {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -direction * 35 }}
                     transition={{ duration: 0.28, ease: [0.25, 1, 0.5, 1] }}
-                    className="flex-1 flex flex-col overflow-hidden select-text"
+                    className="flex-1 flex flex-col overflow-hidden select-text relative z-10"
                   >
                     {/* Conteúdo com scroll interno delimitado à página atual */}
                     <div
