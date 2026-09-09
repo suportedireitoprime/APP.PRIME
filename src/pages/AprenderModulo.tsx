@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { haptic } from '@/lib/nativeHaptics';
+import { areaIconFor } from '@/lib/areasDireitoIcons';
 
 export type ModuloDetalhe = {
   id: string;
@@ -168,6 +169,8 @@ const AprenderModulo = () => {
   const concluidasCount = aulas.filter((a) => a.concluida).length;
   const pctConcluido = totalAulas > 0 ? Math.round((concluidasCount / totalAulas) * 100) : 0;
   const areaCurta = modulo ? shortenAreaName(modulo.areaNome) : 'Matéria';
+  const areaVisual = modulo ? areaIconFor(modulo.areaSlug) : null;
+  const AreaIconComp = areaVisual?.Icon;
 
   const handleVoltar = () => {
     haptic.light();
@@ -263,7 +266,7 @@ const AprenderModulo = () => {
               animate={{ opacity: 1, y: 0 }}
               className="relative overflow-hidden rounded-3xl bg-brand-gradient border border-white/25 shadow-[0_12px_28px_-6px_rgba(225,29,72,0.4)] p-6 sm:p-8 text-white space-y-4"
             >
-              {modulo.areaSlug === 'direito-penal' && (
+              {modulo.areaSlug === 'direito-penal' ? (
                 <img
                   src="/images/gamificacao/direito_penal_prisao_vazado.webp"
                   alt=""
@@ -272,7 +275,13 @@ const AprenderModulo = () => {
                   decoding="async"
                   className="pointer-events-none absolute -right-4 -bottom-4 w-[160px] sm:w-[200px] h-[160px] sm:h-[200px] object-contain opacity-25 select-none z-0"
                 />
-              )}
+              ) : AreaIconComp ? (
+                <AreaIconComp
+                  className="pointer-events-none absolute -right-4 -bottom-4 w-[140px] sm:w-[180px] h-[140px] sm:h-[180px] opacity-20 select-none z-0 text-white"
+                  strokeWidth={1.2}
+                  aria-hidden="true"
+                />
+              ) : null}
 
               <div className="flex items-center justify-between gap-3 relative z-10">
                 <span className="px-3 py-1 rounded-full bg-black/40 border border-white/20 text-xs font-normal uppercase tracking-wider">
@@ -377,10 +386,9 @@ const AprenderModulo = () => {
                               : 'border-border/50 bg-card/40 hover:border-primary/30'
                           )}
                         >
-                          {/* Ícone e Status agrupados à esquerda */}
                           <div className="flex flex-col items-center justify-center gap-2 shrink-0 w-[64px] sm:w-[72px]">
-                            {modulo?.areaSlug === 'direito-penal' && (
-                              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center bg-white/5 border border-white/10 overflow-hidden shadow-inner shrink-0">
+                            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center bg-white/5 border border-white/10 overflow-hidden shadow-inner shrink-0">
+                              {modulo?.areaSlug === 'direito-penal' ? (
                                 <img
                                   src="/images/gamificacao/direito_penal_prisao_vazado.webp"
                                   alt=""
@@ -389,8 +397,16 @@ const AprenderModulo = () => {
                                   decoding="async"
                                   className="w-9 h-9 sm:w-10 sm:h-10 object-contain opacity-75 group-hover:opacity-90 transition-opacity select-none pointer-events-none"
                                 />
-                              </div>
-                            )}
+                              ) : AreaIconComp ? (
+                                <AreaIconComp
+                                  className="w-6 h-6 sm:w-7 sm:h-7 text-white/80 group-hover:text-white transition-colors select-none"
+                                  strokeWidth={1.8}
+                                  aria-hidden="true"
+                                />
+                              ) : (
+                                <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-white/80" strokeWidth={1.8} />
+                              )}
+                            </div>
                             {aula.concluida && (
                               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded text-center leading-none border border-emerald-500/20">
                                 Concluída
