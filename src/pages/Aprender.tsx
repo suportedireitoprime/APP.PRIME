@@ -5,6 +5,7 @@ import {
   Home, Bell, Landmark, Building2, Gavel, ShieldCheck, Briefcase, DollarSign, Scale, FileText,
   HeartPulse, Users, Globe, Leaf, Trophy, Hammer, Coins, Swords, Building, Globe2, AlertTriangle,
   GraduationCap, Microscope, BookText, ClipboardList, Award, Lightbulb, Sparkles, ChevronRight, BookOpen,
+  Layers, FileQuestion
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
@@ -41,6 +42,9 @@ import horusOwl from '@/assets/horus/horus-owl.webp';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { srcOf } from '@/lib/assetUrl';
 import { cn } from '@/lib/utils';
+import { useFlashcardsDashboard } from '@/lib/flashcardsQueries';
+import { haptic } from '@/lib/nativeHaptics';
+import { toast } from 'sonner';
 
 const HERO_ILLUSTRATIONS = [srcOf(hero1), srcOf(hero2), srcOf(hero3), srcOf(hero4), srcOf(hero5), srcOf(hero6)];
 
@@ -108,6 +112,8 @@ const Aprender = () => {
   const isAdmin = isAdminEmail(user?.email);
   const { modulesMap } = useAprenderAreaModulesMap();
   const [selectedAreaSlug, setSelectedAreaSlug] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'aulas' | 'flashcards' | 'questoes'>('aulas');
+  const { data: flashDash } = useFlashcardsDashboard();
 
   // Timer Countdown logic
   const targetDate = useMemo(() => new Date('2026-08-25T00:00:00-03:00').getTime(), []);
@@ -255,6 +261,18 @@ const Aprender = () => {
   const c = 2 * Math.PI * r;
   const dash = c - (pct / 100) * c;
 
+  const isAulas = activeTab === 'aulas';
+  const isFlashcards = activeTab === 'flashcards';
+  const isQuestoes = activeTab === 'questoes';
+
+  let metricLabel1 = 'Matérias';
+  let metricVal1 = data.areas.length;
+  let metricLabel2 = isAulas ? 'Aulas' : isFlashcards ? 'Flashcards' : 'Questões';
+  let metricVal2Display: React.ReactNode = isAulas ? data.totalAulas : isFlashcards ? (flashDash?.total_cards ?? 0) : 'Em breve';
+  let metricLabel3 = 'Concluídas';
+  let metricVal3 = isAulas ? data.totalConcluidas : isFlashcards ? (flashDash?.estudados ?? 0) : 0;
+  let metricVal3Total = isAulas ? data.totalAulas : isFlashcards ? (flashDash?.total_cards ?? 0) : 0;
+
   const mobileHeader = (
     <PageHeader
       title={<span className="font-display font-black text-[22px] sm:text-[24px] uppercase tracking-wide">APRENDER</span>}
@@ -338,6 +356,30 @@ const Aprender = () => {
 
           {/* ── Coluna Central Widescreen: Trilha Hero, Continuar & Matérias ─────── */}
           <div className="lg:col-span-6 space-y-5">
+            {/* Menu de Alternância Global */}
+            <div className="flex bg-card p-1.5 rounded-2xl border border-border/80 w-full sm:w-fit mx-auto sm:mx-0 shadow-sm relative z-20">
+              {(['aulas', 'flashcards', 'questoes'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => {
+                    try { haptic.selection(); } catch (e) {}
+                    setActiveTab(tab);
+                  }}
+                  className={cn(
+                    "flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-[13px] font-bold uppercase tracking-wider transition-all",
+                    activeTab === tab
+                      ? "bg-primary/10 text-primary shadow-sm border border-primary/20"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
+                  )}
+                >
+                  {tab === 'aulas' && <BookOpen className="w-4 h-4" />}
+                  {tab === 'flashcards' && <Layers className="w-4 h-4" />}
+                  {tab === 'questoes' && <FileQuestion className="w-4 h-4" />}
+                  {tab}
+                </button>
+              ))}
+            </div>
+
             {/* Hero trilhas em cinza elevado */}
             <section
               className="bg-card relative isolate overflow-hidden -mx-3 sm:mx-0 rounded-none sm:rounded-2xl border-b border-border sm:border shadow-xl"
@@ -402,7 +444,7 @@ const Aprender = () => {
                   <div className="min-w-0 max-w-[58%] lg:max-w-[70%]">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-white/90">Sua trilha de aprendizado</p>
                     <h1 className="mt-0.5 font-display text-[22px] font-black leading-tight text-white sm:text-[26px]">
-                      AULAS
+                      {isAulas ? 'AULAS' : isFlashcards ? 'FLASHCARDS' : 'QUESTÕES'}
                       <span className="ml-2 font-display text-[15px] font-semibold italic text-white/90 sm:text-[18px]">
                         EM TRILHAS
                       </span>
@@ -411,7 +453,7 @@ const Aprender = () => {
                       className="mt-0.5 text-[12px] leading-snug text-white/85 sm:text-[13px]"
                       style={{ fontFamily: "'Barlow', system-ui, sans-serif" }}
                     >
-                      Slides, flashcards e questões por matéria.
+                      {isAulas ? 'Slides, flashcards e questões por matéria.' : isFlashcards ? 'Revise usando repetição espaçada ativa.' : 'Pratique com foco na banca (em breve).'}
                     </p>
                   </div>
                 </div>
@@ -420,18 +462,22 @@ const Aprender = () => {
                 <div className="relative mt-3 rounded-xl bg-background/80 text-foreground border border-border/80 shadow-md">
                   <div className="grid grid-cols-3 divide-x divide-border/60">
                     <div className="flex flex-col items-center justify-center px-2 py-2">
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Matérias</span>
-                      <span className="mt-0.5 font-display text-base font-black leading-none text-foreground">{data.areas.length}</span>
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{metricLabel1}</span>
+                      <span className="mt-0.5 font-display text-base font-black leading-none text-foreground">{metricVal1}</span>
                     </div>
                     <div className="flex flex-col items-center justify-center px-2 py-2">
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Aulas</span>
-                      <span className="mt-0.5 font-display text-base font-black leading-none text-foreground">{data.totalAulas}</span>
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{metricLabel2}</span>
+                      <span className="mt-0.5 font-display text-base font-black leading-none text-foreground">{metricVal2Display}</span>
                     </div>
                     <div className="flex flex-col items-center justify-center px-2 py-2">
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Concluídas</span>
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{metricLabel3}</span>
                       <span className="mt-0.5 font-display text-base font-black leading-none text-primary">
-                        {data.totalConcluidas}
-                        <span className="text-muted-foreground/60">/{data.totalAulas}</span>
+                        {isQuestoes ? 'Em breve' : (
+                          <>
+                            {metricVal3}
+                            <span className="text-muted-foreground/60">/{metricVal3Total}</span>
+                          </>
+                        )}
                       </span>
                     </div>
                   </div>
@@ -499,7 +545,15 @@ const Aprender = () => {
                         key={area.id}
                         area={area}
                         icon={icon}
-                        onOpen={() => navigate(`/aprender/area/${area.slug}`)}
+                        onOpen={() => {
+                          if (isAulas) {
+                            navigate(`/aprender/area/${area.slug}`);
+                          } else if (isFlashcards) {
+                            navigate(`/aprender/area/${area.slug}?tab=flashcards`);
+                          } else {
+                            toast.info('Questões por trilha estarão disponíveis em breve!');
+                          }
+                        }}
                         onPrefetch={() => prefetchAprenderArea(area.slug, uid)}
                       />
                     );
