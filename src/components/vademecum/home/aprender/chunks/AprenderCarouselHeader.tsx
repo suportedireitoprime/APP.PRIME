@@ -25,7 +25,7 @@ export const AprenderCarouselHeader = memo(({ onNavigateAll }: AprenderCarouselH
           Aprender
         </h3>
         <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3 pointer-events-auto">
-          Aulas de Direito passo a passo e detalhado
+          Aulas de Direito passo a passo e detalhadas
         </p>
       </div>
       <button

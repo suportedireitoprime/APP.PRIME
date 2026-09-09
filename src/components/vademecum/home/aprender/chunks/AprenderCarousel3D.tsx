@@ -182,10 +182,14 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
         className="flex gap-3 overflow-x-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden px-3 py-1 cursor-grab active:cursor-grabbing select-none"
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
-        {duplicatedItems.map((item, idx) => (
+        {duplicatedItems.map((item, idx) => {
+          const isClone = idx < items.length || idx >= items.length * 2;
+          return (
           <button
             key={`${item.id}-${idx}`}
             type="button"
+            aria-hidden={isClone}
+            tabIndex={isClone ? -1 : 0}
             onClick={(e) => {
               if (dragRef.current && dragRef.current.moved > 6) {
                 e.preventDefault();
@@ -193,12 +197,14 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
               }
               onItemClick(item);
             }}
-            className="group relative shrink-0 w-32 h-44 sm:w-40 sm:h-56 rounded-2xl overflow-hidden shadow-lg border border-white/10 active:scale-[0.98] transition-all focus:outline-none hover:shadow-xl hover:border-white/20 select-none"
+            className="group relative shrink-0 w-32 h-44 sm:w-40 sm:h-56 rounded-2xl overflow-hidden shadow-lg border border-white/10 active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 hover:shadow-xl hover:border-white/20 select-none"
           >
             <img
               src={item.image}
               alt={item.fullName}
-              loading="lazy"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
               draggable={false}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 pointer-events-none select-none"
             />
@@ -206,7 +212,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
             
             {/* Play Button (Glassmorphism) */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 transition-transform duration-300 group-hover:scale-110">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.3)]">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/10 backdrop-blur-md border border-white/40 flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.4)]">
                 <Play className="w-4 h-4 sm:w-5 sm:h-5 text-white ml-0.5" fill="currentColor" />
               </div>
             </div>
@@ -217,7 +223,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
               </span>
             </div>
           </button>
-        ))}
+        )})}
       </div>
     </div>
   );
