@@ -569,6 +569,7 @@ const Aprender = () => {
                       />
                     );
                   })}
+                  </div>
                 </motion.div>
               )}
             </div>
