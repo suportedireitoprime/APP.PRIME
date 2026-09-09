@@ -145,7 +145,7 @@ export function BlocoView({
         {/* Raiz do Mapa */}
         <div className="relative z-10 rounded-2xl border border-primary/40 bg-black/50 backdrop-blur-md p-6 text-center shadow-[0_0_24px_rgba(0,0,0,0.5)] ring-1 ring-white/10">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent opacity-60 rounded-2xl pointer-events-none" />
-          <p className="relative z-10 font-display text-[24px] sm:text-[28px] font-black text-white leading-tight tracking-wide drop-shadow-md">{raiz}</p>
+          <p className="relative z-10 font-sans text-[22px] sm:text-[26px] font-black text-white leading-tight tracking-tight drop-shadow-md">{raiz}</p>
           {definicao_raiz && (
             <p className="relative z-10 mt-2 text-[13px] sm:text-sm text-white/80 leading-relaxed font-medium max-w-lg mx-auto">{definicao_raiz}</p>
           )}
@@ -188,7 +188,7 @@ export function BlocoView({
                       className="w-full flex items-center justify-between text-left cursor-pointer select-none"
                     >
                       <div>
-                        <p className="font-display text-[17px] font-black text-white tracking-wide">{r.titulo}</p>
+                        <p className="font-sans text-[16px] sm:text-[17px] font-bold text-white tracking-normal">{r.titulo}</p>
                         {r.definicao && (
                           <p className="mt-1 text-[13px] text-white/70 italic leading-relaxed font-medium">{r.definicao}</p>
                         )}
@@ -253,7 +253,7 @@ export function BlocoView({
     return (
       <article>
         <p className="mb-3 text-xs font-semibold uppercase text-primary">Fluxograma</p>
-        {titulo && <h3 className="mb-4 font-display text-lg font-bold text-foreground">{titulo}</h3>}
+        {titulo && <h3 className="mb-4 font-sans text-lg font-bold text-foreground">{titulo}</h3>}
         <ol className="space-y-2">
           {etapas.map((et: any, i: number) => {
             const s = stepStyle(et.tipo);
@@ -269,7 +269,7 @@ export function BlocoView({
                       <div className="flex items-center gap-2 mb-1">
                         <span className={`text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded ${s.badge}`}>{s.label}</span>
                       </div>
-                      <p className="font-display text-base font-bold text-foreground leading-tight">{et.titulo}</p>
+                      <p className="font-sans text-base font-bold text-foreground leading-tight">{et.titulo}</p>
                       {et.descricao && (
                         <p className="mt-1 text-[14px] text-muted-foreground leading-relaxed">{et.descricao}</p>
                       )}
@@ -385,11 +385,11 @@ export function BlocoView({
     const { titulo, itens = [] } = bloco.payload || {};
     return (
       <article>
-        {titulo && <h3 className="mb-3 font-display text-lg font-bold text-foreground">{titulo}</h3>}
+        {titulo && <h3 className="mb-3 font-sans text-lg font-bold text-foreground">{titulo}</h3>}
         <div className="grid gap-3 sm:grid-cols-2">
           {itens.map((it: any, i: number) => (
             <div key={i} className="rounded-xl border border-border bg-gradient-to-br from-primary/5 to-transparent p-4">
-              {it.numero && <p className="font-display text-3xl font-bold text-primary">{it.numero}</p>}
+              {it.numero && <p className="font-sans text-3xl font-extrabold text-primary">{it.numero}</p>}
               <p className="mt-1 font-semibold text-foreground">{it.titulo}</p>
               {it.descricao && <p className="mt-1 text-sm text-muted-foreground">{it.descricao}</p>}
             </div>
@@ -418,7 +418,7 @@ export function BlocoView({
           </div>
 
           <div className="p-6 sm:p-7 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-md shadow-xl mb-6">
-            <p className="font-display text-[18px] sm:text-[21px] leading-[1.8] text-white font-medium">
+            <p className="font-sans text-[17px] sm:text-[19px] leading-[1.8] text-white font-normal">
               {parts[0]}
               <span className={`inline-block mx-1.5 px-3 py-1 rounded-xl font-black transition-all border-2 ${
                 chosenWord
@@ -510,7 +510,7 @@ export function BlocoView({
           <Sparkles className="h-3.5 w-3.5" />
           <span>Desafio de Fixação</span>
         </div>
-        <h2 className="mb-6 font-display text-[19px] md:text-[22px] font-bold leading-relaxed text-foreground tracking-tight">
+        <h2 className="mb-6 font-sans text-[18px] md:text-[21px] font-bold leading-relaxed text-foreground tracking-tight">
           {enunciado}
         </h2>
         <div className="space-y-3 pb-24">

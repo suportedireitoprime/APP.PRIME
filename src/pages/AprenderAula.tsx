@@ -8,7 +8,6 @@ import {
   ChevronLeft,
   ChevronRight,
   BookOpen,
-  Sparkles,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -381,7 +380,7 @@ const AprenderAula = () => {
               <span className={`inline-flex items-center text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full border mb-1 ${atoInfo.badgeBg} ${atoInfo.cor}`}>
                 {atoInfo.nome}
               </span>
-              <p className="text-[13px] sm:text-[15px] font-bold text-white truncate max-w-[240px] sm:max-w-none leading-tight font-display">
+              <p className="text-[13px] sm:text-[14px] md:text-[15px] font-bold text-white truncate max-w-[280px] sm:max-w-none leading-tight font-sans tracking-tight">
                 {aula.titulo}
               </p>
               <p className="text-[10px] sm:text-[11px] font-semibold text-primary uppercase tracking-wider mt-0.5">

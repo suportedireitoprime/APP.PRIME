@@ -38,7 +38,7 @@ export function OrdenacaoBlock({ payload }: { payload: any }) {
 
   return (
     <article>
-      <h3 className="mb-1 font-display text-lg font-bold text-foreground">{titulo}</h3>
+      <h3 className="mb-1 font-sans text-lg font-bold text-foreground">{titulo}</h3>
       {instrucao && <p className="mb-3 text-sm text-muted-foreground">{instrucao}</p>}
       <ol className="space-y-2">
         {ordem.map((it, i) => {

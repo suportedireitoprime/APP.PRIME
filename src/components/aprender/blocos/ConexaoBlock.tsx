@@ -77,7 +77,7 @@ export function ConexaoBlock({ pares, onCompleto }: Props) {
       <p className="mb-1 flex items-center gap-1.5 text-[13px] font-semibold uppercase tracking-wide text-primary">
         <Link2 className="h-4 w-4" /> Ligue os termos
       </p>
-      <h2 className="mb-2 font-display text-xl font-bold leading-snug text-foreground sm:text-2xl">
+      <h2 className="mb-2 font-sans text-xl font-bold leading-snug text-foreground sm:text-2xl">
         Cada termo tem um significado. Encontre o par.
       </h2>
       <p className="mb-4 text-[15px] leading-relaxed text-muted-foreground">

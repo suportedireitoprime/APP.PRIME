@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, Sparkles, AlertTriangle, ChevronDown, BookOpen, Eye, EyeOff } from 'lucide-react';
+import { MessageSquare, Sparkles, AlertTriangle, ChevronDown, BookOpen, Eye, EyeOff, Scale } from 'lucide-react';
 import { normalizarMarkdown } from '@/lib/markdown';
 import { haptic } from '@/lib/nativeHaptics';
 import { LinhaDoTempoAnimada, isTimelineBlock } from './LinhaDoTempoAnimada';
@@ -81,6 +81,32 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
     return termos;
   }, [titulo, textoPrincipal]);
 
+  // Identificação de Caso Prático para diferenciação visual de título e badge
+  const isCasoPratico = useMemo(() => {
+    const t = (titulo || '').toLowerCase();
+    return (
+      t.includes('caso prático') ||
+      t.includes('caso pratico') ||
+      t.includes('caso concreto') ||
+      t.startsWith('caso ')
+    );
+  }, [titulo]);
+
+  // Formatação do título: destaca "Caso Prático 1:" com a cor primária (vermelho/rose do tema e enredo)
+  const tituloFormatado = useMemo(() => {
+    if (!titulo) return null;
+    const match = titulo.match(/^((?:Caso\s+Pr[áa]tico|Caso\s+Concreto|Caso)(?:\s+\d+)?(?:\s*[:\-])?)\s*(.*)$/i);
+    if (match && match[1]) {
+      return (
+        <>
+          <span className="text-primary font-black">{match[1]}</span>
+          {match[2] ? ` ${match[2]}` : ''}
+        </>
+      );
+    }
+    return titulo;
+  }, [titulo]);
+
   const [expandedTermos, setExpandedTermos] = useState<Record<string, boolean>>({});
   const toggleTermo = (t: string) => {
     haptic.selection();
@@ -116,11 +142,26 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
     <article className="max-w-[70ch] lg:max-w-[76ch] mx-auto py-3 px-1 sm:px-2">
       {titulo && (
         <header className="mb-6 sm:mb-8">
-          <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-primary mb-2 bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
-            {termosGlossario.length > 0 ? 'Vocabulário Especial' : 'Leitura Essencial'}
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-primary mb-2.5 bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20 shadow-sm">
+            {isCasoPratico ? (
+              <>
+                <Scale className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span>Caso Prático</span>
+              </>
+            ) : termosGlossario.length > 0 ? (
+              <>
+                <BookOpen className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span>Vocabulário Especial</span>
+              </>
+            ) : (
+              <>
+                <BookOpen className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span>Leitura Essencial</span>
+              </>
+            )}
           </span>
           <h2 className="font-sans text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white leading-tight sm:leading-snug">
-            {titulo}
+            {tituloFormatado}
           </h2>
         </header>
       )}
@@ -203,6 +244,12 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
                   <span>{children}</span>
                 </h3>
               ),
+              h4: ({ children }) => (
+                <h4 className="mt-5 mb-2.5 text-base sm:text-lg font-bold tracking-tight text-primary flex items-center gap-2">
+                  <span className="w-1.5 h-4 rounded-full bg-primary inline-block shrink-0 shadow-[0_0_6px_hsl(var(--primary)/0.6)]" />
+                  <span>{children}</span>
+                </h4>
+              ),
               blockquote: ({ children }) => (
                 <blockquote className="border-l-4 border-primary bg-primary/[0.06] border-y border-r border-white/[0.04] text-neutral-100 py-3.5 px-5 rounded-r-2xl my-6 not-italic font-medium shadow-sm backdrop-blur-sm">
                   {children}
@@ -270,10 +317,12 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
           {camadas.map(({ chave, rotulo, Icon, texto: camadaTexto }) => {
             const isAlert = chave === 'pegadinha';
             const isExemplo = chave === 'exemplo';
-            const isCasoPratico = isExemplo && (camadaTexto.includes('Solução Jurídica') || titulo?.toLowerCase().includes('caso prático'));
+            const isCaso = isExemplo && (camadaTexto.includes('Solução Jurídica') || isCasoPratico);
 
             const cardTheme = isAlert
               ? 'bg-rose-500/[0.08] border-rose-500/25 text-rose-300'
+              : isCaso
+              ? 'bg-[#18181b]/95 border-primary/35 text-neutral-100 shadow-xl'
               : isExemplo
               ? 'bg-amber-500/[0.08] border-amber-500/25 text-amber-300'
               : 'bg-primary/[0.08] border-primary/25 text-primary';
@@ -287,9 +336,9 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
                 <div className="mb-2.5 flex items-center justify-between">
                   <div className="flex items-center gap-2 font-bold uppercase tracking-wider text-[11px] sm:text-[12px]">
                     <Icon className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" strokeWidth={2} />
-                    <span>{isCasoPratico ? 'Resolução & Análise Prática' : rotulo}</span>
+                    <span>{isCaso ? 'Resolução & Análise Prática' : rotulo}</span>
                   </div>
-                  {isCasoPratico && (
+                  {isCaso && (
                     <button
                       type="button"
                       onClick={() => {
@@ -303,7 +352,7 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
                   )}
                 </div>
 
-                {isCasoPratico && !solucaoRevelada ? (
+                {isCaso && !solucaoRevelada ? (
                   <div className="pt-2">
                     <button
                       type="button"
@@ -311,9 +360,9 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
                         haptic.impact('medium');
                         setSolucaoRevelada(true);
                       }}
-                      className="w-full flex items-center justify-center gap-2.5 py-3.5 px-5 rounded-xl bg-primary/20 border border-primary/40 hover:bg-primary/30 active:scale-[0.99] transition-all text-white font-bold text-sm shadow-md"
+                      className="w-full flex items-center justify-center gap-2.5 py-3.5 px-5 rounded-xl bg-primary hover:bg-primary/90 active:scale-[0.99] transition-all text-white font-bold text-sm shadow-lg shadow-primary/25 min-h-[48px] cursor-pointer"
                     >
-                      <Eye className="w-4 h-4 text-primary" />
+                      <Eye className="w-4 h-4 text-white" />
                       <span>Analisar Hipótese & Revelar Solução Jurídica</span>
                     </button>
                   </div>

@@ -74,7 +74,7 @@ export function MapaConceitualBlock({ payload }: { payload: any }) {
   return (
     <article className="max-w-[68ch] lg:max-w-none">
       {titulo && (
-        <h3 className="mb-4 font-display text-[20px] sm:text-[24px] font-bold text-foreground">
+        <h3 className="mb-4 font-sans text-[20px] sm:text-[24px] font-bold text-foreground">
           {titulo}
         </h3>
       )}

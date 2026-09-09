@@ -17,7 +17,7 @@ export function RecapBlock({ payload }: { payload: RecapPayload }) {
         <Sparkles className="h-4 w-4" /> Recapitulando
       </p>
 
-      <h3 className="mb-4 font-display text-[24px] font-bold leading-tight text-foreground">
+      <h3 className="mb-4 font-sans text-[24px] font-bold leading-tight text-foreground">
         {titulo || 'O que fica desta aula'}
       </h3>
 
@@ -43,7 +43,7 @@ export function RecapBlock({ payload }: { payload: RecapPayload }) {
           <p className="mb-1 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-primary">
             <Flag className="h-4 w-4" /> Regra de ouro
           </p>
-          <p className="font-display text-[18px] leading-snug text-foreground">{regra_de_ouro}</p>
+          <p className="font-sans text-[18px] leading-snug text-foreground">{regra_de_ouro}</p>
         </div>
       )}
     </article>
