@@ -24,6 +24,7 @@ const MateriaRow = ({ area, icon, onOpen, onPrefetch, overrideLabel, overrideTot
   
   const iniciada = pct > 0;
   const displayName = shortenAreaName(area.nome);
+  const accentColor = icon?.color || '#fb7185';
 
   return (
     <motion.button
@@ -37,7 +38,8 @@ const MateriaRow = ({ area, icon, onOpen, onPrefetch, overrideLabel, overrideTot
       onPointerEnter={onPrefetch}
       onFocus={onPrefetch}
       onTouchStart={onPrefetch}
-      className="group flex w-full items-center gap-3 rounded-2xl border border-border/80 bg-card p-3.5 text-left transition-all hover:bg-muted/70 hover:border-primary/50 hover:shadow-lg focus-visible:outline-none sm:p-4"
+      style={{ '--area-accent': accentColor } as React.CSSProperties}
+      className="group flex w-full items-center gap-3 rounded-2xl border border-border/80 bg-card p-3.5 text-left transition-all hover:bg-muted/70 hover:shadow-lg focus-visible:outline-none sm:p-4"
     >
       {icon ? (
         <div className="relative flex h-12 w-12 shrink-0 items-center justify-center sm:h-14 sm:w-14">
@@ -75,18 +77,18 @@ const MateriaRow = ({ area, icon, onOpen, onPrefetch, overrideLabel, overrideTot
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <p
-            className="min-w-0 flex-1 truncate text-base font-bold text-foreground sm:text-[17px] group-hover:text-primary transition-colors font-display"
+            className="min-w-0 flex-1 truncate text-base font-bold text-foreground sm:text-[17px] group-hover:text-[var(--area-accent)] transition-colors font-display"
             style={{ fontFamily: "'Barlow', system-ui, sans-serif", letterSpacing: '-0.005em' }}
           >
             {displayName}
           </p>
           <span
-            className={[
-              'shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums',
+            className="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums border"
+            style={
               iniciada
-                ? 'bg-primary/20 text-primary border border-primary/30'
-                : 'bg-muted text-muted-foreground border border-border/60',
-            ].join(' ')}
+                ? { backgroundColor: `${accentColor}25`, borderColor: `${accentColor}40`, color: accentColor }
+                : { backgroundColor: 'hsl(var(--muted))', borderColor: 'hsl(var(--border))', color: 'hsl(var(--muted-foreground))' }
+            }
           >
             {pct}%
           </span>
@@ -97,8 +99,8 @@ const MateriaRow = ({ area, icon, onOpen, onPrefetch, overrideLabel, overrideTot
         </p>
         <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-muted">
           <div
-            className="h-full rounded-full bg-[hsl(var(--aprender-accent))] transition-all"
-            style={{ width: `${pct}%` }}
+            className="h-full rounded-full transition-all duration-500"
+            style={{ width: `${Math.max(pct, iniciada ? 6 : 0)}%`, backgroundColor: accentColor }}
           />
         </div>
       </div>

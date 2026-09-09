@@ -12,7 +12,7 @@ import {
 } from '@/lib/aprenderAreaLoader';
 import { BookOpenText } from 'lucide-react';
 import { useTrackArea } from "@/hooks/useTrackArea";
-import { areaIconFor } from '@/lib/areasDireitoIcons';
+import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
 import { haptic } from '@/lib/nativeHaptics';
 
 const AprenderArea = () => {
@@ -81,6 +81,7 @@ const AprenderArea = () => {
 
   const areaVisual = useMemo(() => areaIconFor(slug || area?.slug || area?.nome), [slug, area]);
   const AreaIconComp = areaVisual?.Icon;
+  const palette = useMemo(() => getAreaThemePalette(slug || area?.slug || area?.nome), [slug, area]);
 
   const mobileHeader = (
     <PageHeader 
@@ -126,10 +127,17 @@ const AprenderArea = () => {
             {/* Top Bar Selecione o Módulo */}
             <div className="flex items-center justify-between mb-4 w-full min-w-0">
               <div className="flex items-center gap-2 min-w-0">
-                <BookOpenText className="w-5 h-5 text-primary shrink-0" />
+                <BookOpenText className="w-5 h-5 shrink-0" style={{ color: palette.primary }} />
                 <h2 className="text-xs sm:text-sm font-normal font-sans uppercase tracking-widest text-white truncate">Selecione o Módulo</h2>
               </div>
-              <span className="text-[10px] sm:text-xs font-normal font-sans text-zinc-400 uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 shrink-0">
+              <span 
+                className="text-[10px] sm:text-xs font-normal font-sans uppercase tracking-wider px-2.5 py-0.5 rounded-full border shrink-0"
+                style={{
+                  backgroundColor: palette.badgeBg,
+                  borderColor: palette.badgeBorder,
+                  color: palette.primary,
+                }}
+              >
                 {area.nome}
               </span>
             </div>
@@ -144,7 +152,10 @@ const AprenderArea = () => {
               /* Trilha em Linha do Tempo Elegante (Alternando Esquerda/Direita) */
               <div className="relative py-6 w-full min-w-0 max-w-full overflow-hidden">
                 {/* Linha vertical central luminosa */}
-                <div className="absolute left-1/2 top-6 bottom-6 w-[2px] -translate-x-1/2 bg-gradient-to-b from-primary via-primary/40 to-zinc-800/80 rounded-full z-0 pointer-events-none" />
+                <div 
+                  className="absolute left-1/2 top-6 bottom-6 w-[2px] -translate-x-1/2 rounded-full z-0 pointer-events-none"
+                  style={{ background: palette.lineGradient }}
+                />
 
                 <div className="space-y-6 sm:space-y-8 w-full min-w-0">
                   {modulosOrdenados.map((m, i) => {
@@ -166,17 +177,27 @@ const AprenderArea = () => {
                       >
                         {/* Linha conectando o nó central ao card */}
                         <div 
-                          className={`absolute top-1/2 w-[calc(50%-1.25rem)] h-[1.5px] border-b-2 border-dashed -translate-y-1/2 z-0 pointer-events-none border-primary/60 ${
+                          className={`absolute top-1/2 w-[calc(50%-1.25rem)] h-[1.5px] border-b-2 border-dashed -translate-y-1/2 z-0 pointer-events-none ${
                             isLeft ? 'left-1/2' : 'right-1/2'
                           }`} 
+                          style={{ borderColor: palette.dashedBorder }}
                         />
 
                         {/* Nó Central (Milestone da Linha do Tempo) */}
-                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full transition-transform w-8 h-8 sm:w-9 sm:h-9 bg-primary border-4 border-[#0D0D0D] text-white shadow-[0_0_16px_rgba(225,29,72,0.85)] scale-105">
+                        <div 
+                          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full transition-transform w-8 h-8 sm:w-9 sm:h-9 border-4 border-[#0D0D0D] text-white scale-105"
+                          style={{
+                            backgroundColor: palette.primary,
+                            boxShadow: palette.nodeBoxShadow,
+                          }}
+                        >
                           <span className="text-[11px] sm:text-xs font-semibold font-sans">
                             {numStr}
                           </span>
-                          <span className="absolute inset-0 rounded-full bg-primary/40 animate-ping -z-10 pointer-events-none" />
+                          <span 
+                            className="absolute inset-0 rounded-full animate-ping -z-10 pointer-events-none"
+                            style={{ backgroundColor: palette.pingBg }}
+                          />
                         </div>
 
                         {/* Card no formato de Capa de Livro */}
@@ -185,7 +206,17 @@ const AprenderArea = () => {
                             try { haptic.light(); } catch {}
                             navigate(`/aprender/modulo/${m.id}`, { state: { modulo: m, area: data?.area } });
                           }}
-                          className="relative w-[46%] sm:w-[45%] max-w-[225px] min-h-[175px] sm:min-h-[195px] h-auto p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden select-none box-border transition-all duration-300 z-10 bg-brand-gradient border border-white/25 shadow-[0_12px_28px_-6px_rgba(225,29,72,0.4)] hover:shadow-[0_16px_32px_-6px_rgba(225,29,72,0.55)] cursor-pointer active:scale-[0.97] group"
+                          className="relative w-[46%] sm:w-[45%] max-w-[225px] min-h-[175px] sm:min-h-[195px] h-auto p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden select-none box-border transition-all duration-300 z-10 border border-white/25 cursor-pointer active:scale-[0.97] group"
+                          style={{
+                            background: palette.cardGradient,
+                            boxShadow: palette.shadow,
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.boxShadow = palette.hoverShadow;
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.boxShadow = palette.shadow;
+                          }}
                         >
                           {/* Marca d'água de fundo */}
                           {slug === 'direito-penal' ? (

@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { haptic } from '@/lib/nativeHaptics';
-import { areaIconFor } from '@/lib/areasDireitoIcons';
+import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
 
 export type ModuloDetalhe = {
   id: string;
@@ -171,6 +171,7 @@ const AprenderModulo = () => {
   const areaCurta = modulo ? shortenAreaName(modulo.areaNome) : 'Matéria';
   const areaVisual = modulo ? areaIconFor(modulo.areaSlug) : null;
   const AreaIconComp = areaVisual?.Icon;
+  const palette = useMemo(() => getAreaThemePalette(modulo?.areaSlug || modulo?.areaNome), [modulo]);
 
   const handleVoltar = () => {
     haptic.light();
@@ -264,7 +265,11 @@ const AprenderModulo = () => {
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              className="relative overflow-hidden rounded-3xl bg-brand-gradient border border-white/25 shadow-[0_12px_28px_-6px_rgba(225,29,72,0.4)] p-6 sm:p-8 text-white space-y-4"
+              className="relative overflow-hidden rounded-3xl border border-white/25 p-6 sm:p-8 text-white space-y-4"
+              style={{
+                background: palette.cardGradient,
+                boxShadow: palette.shadow,
+              }}
             >
               {modulo.areaSlug === 'direito-penal' ? (
                 <img
