@@ -229,7 +229,7 @@ const AprenderAula = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0f1115] p-6">
+      <div className="min-h-screen bg-[#0D0D0D] p-6">
         <div className="mx-auto max-w-2xl space-y-6 pt-20">
           <div className="h-6 w-48 rounded bg-white/5 animate-pulse" />
           <div className="h-3 w-full rounded bg-white/5 animate-pulse" />
@@ -243,7 +243,7 @@ const AprenderAula = () => {
 
   if (!aula || total === 0) {
     return (
-      <div className="min-h-screen bg-[#0f1115] p-6 text-center flex items-center justify-center flex-col gap-4">
+      <div className="min-h-screen bg-[#0D0D0D] p-6 text-center flex items-center justify-center flex-col gap-4">
         <BookOpen className="w-12 h-12 text-white/20" />
         <p className="text-neutral-400 text-lg">Aula não encontrada ou sem conteúdo.</p>
         <button onClick={() => navigate('/aprender')} className="text-primary underline text-sm">
@@ -308,7 +308,7 @@ const AprenderAula = () => {
       <div className="relative z-10 flex min-h-dvh flex-col">
         {/* ── Header editorial com Linha do Tempo no topo ── */}
         <header
-          className="sticky top-0 z-30 bg-[#14161f]/95 backdrop-blur-xl border-b border-white/[0.08]"
+          className="sticky top-0 z-30 bg-[#121214]/95 backdrop-blur-xl border-b border-white/[0.08]"
           style={{ paddingTop: 'calc(var(--sai-top) + 0.25rem)' }}
         >
           {/* ── Linha do Tempo na parte superior (Timeline de Páginas - Item 1) ── */}
@@ -389,12 +389,8 @@ const AprenderAula = () => {
               </p>
             </div>
 
-            <div className="flex items-center justify-end w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0">
-              <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold shadow-sm">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span className="tabular-nums font-mono">{acertos * 15} XP</span>
-              </div>
-            </div>
+            {/* Espaçador para balanceamento visual e centralização perfeita do título */}
+            <div className="w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0" />
           </div>
         </header>
 
@@ -402,7 +398,7 @@ const AprenderAula = () => {
         <main className="flex-1 flex flex-col justify-center px-3 sm:px-6 md:px-8 py-4 sm:py-6 max-w-7xl w-full mx-auto pb-24 relative">
           <div className="flex-1 flex gap-6 items-stretch w-full">
             {/* Painel Lateral Esquerdo (Two-Pane Master Detail) para telas grandes (lg: / xl: - Item 18) */}
-            <aside className="hidden lg:flex flex-col w-72 shrink-0 bg-[#161822]/90 backdrop-blur-md border border-white/[0.08] rounded-3xl p-4 shadow-xl select-none max-h-[calc(100vh-160px)] overflow-hidden">
+            <aside className="hidden lg:flex flex-col w-72 shrink-0 bg-[#141416]/90 backdrop-blur-md border border-white/[0.08] rounded-3xl p-4 shadow-xl select-none max-h-[calc(100vh-160px)] overflow-hidden">
               <div className="flex items-center justify-between pb-3 mb-2 border-b border-white/[0.06]">
                 <span className="text-xs font-bold text-white/90 flex items-center gap-2">
                   <List className="w-4 h-4 text-primary" />
@@ -498,7 +494,7 @@ const AprenderAula = () => {
                 <button
                   onClick={() => goToPage(currentIdx - 1)}
                   aria-label="Página anterior"
-                  className="hidden lg:flex absolute -left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full bg-[#181a26]/90 border border-white/10 text-white/70 hover:text-white hover:bg-[#222536] hover:scale-110 shadow-xl transition-all cursor-pointer"
+                  className="hidden lg:flex absolute -left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full bg-[#18181b]/90 border border-white/10 text-white/70 hover:text-white hover:bg-[#27272a] hover:scale-110 shadow-xl transition-all cursor-pointer"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
@@ -508,7 +504,7 @@ const AprenderAula = () => {
                 <button
                   onClick={() => goToPage(currentIdx + 1)}
                   aria-label="Próxima página"
-                  className="hidden lg:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full bg-[#181a26]/90 border border-white/10 text-white/70 hover:text-white hover:bg-[#222536] hover:scale-110 shadow-xl transition-all cursor-pointer"
+                  className="hidden lg:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full bg-[#18181b]/90 border border-white/10 text-white/70 hover:text-white hover:bg-[#27272a] hover:scale-110 shadow-xl transition-all cursor-pointer"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
@@ -521,7 +517,7 @@ const AprenderAula = () => {
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseLeave}
-                className="w-full flex-1 flex flex-col bg-[#161822]/95 backdrop-blur-md border border-white/[0.08] rounded-3xl p-5 sm:p-8 md:p-10 shadow-2xl shadow-black/40 overflow-hidden relative select-none md:cursor-grab md:active:cursor-grabbing min-h-[500px]"
+                className="w-full flex-1 flex flex-col bg-[#131316]/95 backdrop-blur-md border border-white/[0.08] rounded-3xl p-5 sm:p-8 md:p-10 shadow-2xl shadow-black/40 overflow-hidden relative select-none md:cursor-grab md:active:cursor-grabbing min-h-[500px]"
               >
                 <AnimatePresence mode="wait" custom={direction}>
                   <motion.div
@@ -576,7 +572,7 @@ const AprenderAula = () => {
         {/* ── Barra inferior: APENAS sumário + quantas páginas tem + navegação ── */}
         <nav
           aria-label="Navegação da aula"
-          className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.08] bg-[#14161f]/95 backdrop-blur-xl flex items-center justify-between"
+          className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.08] bg-[#141417]/95 backdrop-blur-xl flex items-center justify-between"
           style={{
             paddingBottom: 'calc(0.75rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))',
             paddingLeft: 'calc(1.25rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
@@ -654,7 +650,7 @@ const AprenderAula = () => {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-              className="relative z-10 w-full max-h-[85vh] rounded-t-[2.5rem] border-t border-white/10 bg-[#161822] p-6 sm:p-8 pb-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl flex flex-col text-neutral-100"
+              className="relative z-10 w-full max-h-[85vh] rounded-t-[2.5rem] border-t border-white/10 bg-[#18181b] p-6 sm:p-8 pb-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl flex flex-col text-neutral-100"
             >
               <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-white/20" />
               <div className="flex items-center justify-between mb-5">
@@ -688,7 +684,7 @@ const AprenderAula = () => {
 
               <div className="overflow-y-auto pr-2 pb-6 flex-1">
                 <p className="text-[11px] font-extrabold uppercase tracking-widest text-primary mb-2">Comentário do Professor</p>
-                <div className="rounded-2xl border border-white/10 bg-[#12141c] p-5 text-[15px] leading-relaxed text-neutral-100 whitespace-pre-wrap shadow-inner">
+                <div className="rounded-2xl border border-white/10 bg-[#121214] p-5 text-[15px] leading-relaxed text-neutral-100 whitespace-pre-wrap shadow-inner">
                   {feedbackPergunta.explicacao || 'Nenhum comentário disponível para esta questão.'}
                 </div>
               </div>
@@ -715,7 +711,7 @@ const AprenderAula = () => {
 
       {/* ── Sheet do Sumário da aula organizado por Atos Pedagógicos (Item 12) ── */}
       <Sheet open={sumarioOpen} onOpenChange={setSumarioOpen}>
-        <SheetContent side="bottom" className="h-[78vh] rounded-t-[2rem] p-0 bg-[#161822] border-t border-white/10 text-white">
+        <SheetContent side="bottom" className="h-[78vh] rounded-t-[2rem] p-0 bg-[#18181b] border-t border-white/10 text-white">
           <SheetHeader className="border-b border-white/5 p-5">
             <SheetTitle className="text-left text-lg font-bold text-white flex items-center justify-between">
               <span className="flex items-center gap-2.5">

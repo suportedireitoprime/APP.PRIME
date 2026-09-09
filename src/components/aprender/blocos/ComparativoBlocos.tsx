@@ -69,7 +69,7 @@ export function ComparativoBlocos({ raw }: { raw: string }) {
   if (!data.col1.itens.length && !data.col2.itens.length) return null;
 
   return (
-    <div className="my-8 rounded-3xl border border-white/[0.08] bg-gradient-to-b from-[#12141f] to-[#0c0e16] p-4 sm:p-6 shadow-2xl overflow-hidden">
+    <div className="my-8 rounded-3xl border border-white/[0.08] bg-gradient-to-b from-[#18181b] to-[#121214] p-4 sm:p-6 shadow-2xl overflow-hidden">
       {data.titulo && (
         <div className="flex items-center gap-2 mb-6 pb-3 border-b border-white/[0.06]">
           <Scale className="w-5 h-5 text-primary" />
@@ -86,11 +86,11 @@ export function ComparativoBlocos({ raw }: { raw: string }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.35 }}
-          className="rounded-2xl border border-primary/30 bg-[#161828]/90 p-4 sm:p-5 shadow-lg flex flex-col"
+          className="rounded-2xl border border-primary/30 bg-[#1c1c20]/90 p-4 sm:p-5 shadow-lg flex flex-col"
         >
           <div className="flex items-center gap-2 mb-4 pb-2 border-b border-white/[0.08]">
             <span className="w-2.5 h-2.5 rounded-full bg-primary" />
-            <h5 className="font-display font-extrabold text-white text-base sm:text-lg tracking-wide">
+            <h5 className="font-sans font-bold text-white text-base sm:text-lg leading-snug">
               {data.col1.titulo}
             </h5>
           </div>
@@ -114,11 +114,11 @@ export function ComparativoBlocos({ raw }: { raw: string }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.35, delay: 0.1 }}
-          className="rounded-2xl border border-amber-400/30 bg-[#171a25]/90 p-4 sm:p-5 shadow-lg flex flex-col"
+          className="rounded-2xl border border-amber-400/30 bg-[#1c1c20]/90 p-4 sm:p-5 shadow-lg flex flex-col"
         >
           <div className="flex items-center gap-2 mb-4 pb-2 border-b border-white/[0.08]">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-            <h5 className="font-display font-extrabold text-white text-base sm:text-lg tracking-wide">
+            <h5 className="font-sans font-bold text-white text-base sm:text-lg leading-snug">
               {data.col2.titulo}
             </h5>
           </div>

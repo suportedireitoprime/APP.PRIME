@@ -128,12 +128,12 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
       {/* Se for um slide de Glossário/Dicionário com termos detectados (Item 5) */}
       {termosGlossario.length > 0 ? (
         <div className="space-y-4 my-6">
-          <div className="flex items-center justify-between px-1 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-primary" />
-              Toque no termo para expandir a definição
+          <div className="flex items-center justify-between gap-2 px-1 mb-2.5">
+            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5 min-w-0">
+              <BookOpen className="w-3.5 h-3.5 text-primary shrink-0" />
+              <span className="truncate">Toque no termo para expandir a definição</span>
             </span>
-            <span className="text-xs font-mono font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+            <span className="shrink-0 whitespace-nowrap inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold text-primary bg-primary/10 border border-primary/20">
               {termosGlossario.length} termos
             </span>
           </div>
@@ -145,21 +145,21 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
                   key={termo}
                   className={`rounded-2xl border transition-all duration-200 backdrop-blur-sm overflow-hidden ${
                     isOpen
-                      ? 'border-primary/40 bg-[#191c28] shadow-md shadow-primary/10'
-                      : 'border-white/[0.08] bg-[#141620] hover:border-white/20 hover:bg-[#181a26]'
+                      ? 'border-primary/40 bg-[#1d1d22] shadow-md shadow-primary/10'
+                      : 'border-white/[0.08] bg-[#141417] hover:border-white/20 hover:bg-[#19191e]'
                   }`}
                 >
                   <button
                     type="button"
                     onClick={() => toggleTermo(termo)}
-                    className="w-full flex items-center justify-between p-4 sm:p-5 text-left cursor-pointer select-none"
+                    className="w-full flex items-center justify-between p-3.5 sm:p-4 text-left cursor-pointer select-none gap-3"
                     aria-expanded={isOpen}
                   >
-                    <span className="font-display font-extrabold text-[16px] sm:text-[17px] text-white tracking-wide">
+                    <span className="font-sans font-bold text-[14px] sm:text-[15px] md:text-[16px] text-neutral-100 tracking-normal leading-snug">
                       {termo}
                     </span>
                     <ChevronDown
-                      className={`w-5 h-5 text-neutral-400 transition-transform duration-300 shrink-0 ml-3 ${
+                      className={`w-4 h-4 sm:w-5 sm:h-5 text-neutral-400 transition-transform duration-300 shrink-0 ${
                         isOpen ? 'rotate-180 text-primary' : ''
                       }`}
                     />
@@ -217,7 +217,7 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
                   return <ComparativoBlocos raw={rawText} />;
                 }
                 return (
-                  <div className="my-5 overflow-x-auto rounded-2xl border border-white/10 bg-[#10121a] p-4 sm:p-5 shadow-inner">
+                  <div className="my-5 overflow-x-auto rounded-2xl border border-white/10 bg-[#121214] p-4 sm:p-5 shadow-inner">
                     <pre className="font-mono text-xs sm:text-sm leading-relaxed text-emerald-300/95 whitespace-pre">
                       {children}
                     </pre>
@@ -235,7 +235,7 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
                 );
               },
               table: ({ children }) => (
-                <div className="my-6 overflow-x-auto rounded-2xl border border-white/10 bg-[#12141d] shadow-md">
+                <div className="my-6 overflow-x-auto rounded-2xl border border-white/10 bg-[#141417] shadow-md">
                   <table className="w-full text-left text-sm text-neutral-200 border-collapse">
                     {children}
                   </table>

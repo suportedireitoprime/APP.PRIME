@@ -73,7 +73,7 @@ export function LinhaDoTempoAnimada({ raw }: { raw: string }) {
   if (!steps.length) return null;
 
   return (
-    <div className="my-5 sm:my-7 rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#11131c] to-[#0b0d14] p-3 sm:p-5 shadow-xl">
+    <div className="my-5 sm:my-7 rounded-2xl border border-white/[0.08] bg-gradient-to-b from-[#18181b] to-[#121214] p-3 sm:p-5 shadow-xl">
       {/* Header do Container: Totalmente Responsivo no Mobile */}
       <div className="flex items-center justify-between gap-2.5 mb-4 pb-3 border-b border-white/[0.06]">
         <div className="flex items-center gap-2 min-w-0">
@@ -121,7 +121,7 @@ export function LinhaDoTempoAnimada({ raw }: { raw: string }) {
                       ? 'bg-rose-500 text-white border-2 border-rose-300 shadow-rose-500/30 animate-pulse'
                       : isLast
                       ? 'bg-emerald-500 text-white border-2 border-emerald-300 shadow-emerald-500/20'
-                      : 'bg-[#151724] text-white border-2 border-primary shadow-primary/20'
+                      : 'bg-[#18181b] text-white border-2 border-primary shadow-primary/20'
                   }`}
                 >
                   {isConsumacao ? (
@@ -147,10 +147,10 @@ export function LinhaDoTempoAnimada({ raw }: { raw: string }) {
                 onClick={() => haptic.selection()}
                 className={`flex-1 min-w-0 rounded-xl sm:rounded-2xl border transition-all duration-200 p-3 sm:p-4 backdrop-blur-sm shadow-md ${
                   isConsumacao
-                    ? 'border-rose-500/35 bg-gradient-to-br from-rose-950/25 via-[#16121b] to-[#10121a]'
+                    ? 'border-rose-500/35 bg-gradient-to-br from-rose-950/25 via-[#18181b] to-[#121214]'
                     : isLast
-                    ? 'border-emerald-500/30 bg-gradient-to-br from-emerald-950/20 via-[#11171a] to-[#10121a]'
-                    : 'border-white/[0.08] bg-[#141624]/90 hover:border-white/20 hover:bg-[#171928]'
+                    ? 'border-emerald-500/30 bg-gradient-to-br from-emerald-950/20 via-[#18181b] to-[#121214]'
+                    : 'border-white/[0.08] bg-[#18181b]/90 hover:border-white/20 hover:bg-[#222226]'
                 }`}
               >
                 {/* Badges do Passo */}
