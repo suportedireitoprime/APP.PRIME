@@ -226,7 +226,12 @@ export function useAprenderAula(aulaId: string | undefined, user: any) {
 
   const responderPergunta = async (bloco: Bloco, escolha: string) => {
     if (respostas[bloco.id]) return;
-    const correta = String(bloco.resposta_correta?.id_correto || '').toLowerCase() === escolha.toLowerCase();
+    const correctId = String(
+      bloco.resposta_correta?.id_correto ??
+      bloco.resposta_correta ??
+      ''
+    ).toLowerCase();
+    const correta = correctId === escolha.toLowerCase();
     setRespostas((r) => ({ ...r, [bloco.id]: { correta, escolha } }));
     await salvarBloco(bloco, { escolha }, correta);
     if (correta) {
@@ -239,7 +244,10 @@ export function useAprenderAula(aulaId: string | undefined, user: any) {
     setFeedbackPergunta({
       correta,
       escolha,
-      explicacao: bloco.resposta_correta?.explicacao || 'Revise o conceito aprendido nesta etapa e siga em frente!',
+      explicacao:
+        bloco.resposta_correta?.explicacao ||
+        bloco.payload?.explicacao ||
+        'Revise o conceito aprendido nesta etapa e siga em frente!',
     });
   };
 

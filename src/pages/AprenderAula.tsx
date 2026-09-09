@@ -384,7 +384,7 @@ const AprenderAula = () => {
                 {aula.titulo}
               </p>
               <p className="text-[10px] sm:text-[11px] font-semibold text-primary uppercase tracking-wider mt-0.5">
-                Página {currentIdx + 1} de {total} • {rotuloPorTipo(blocoAtual.tipo)}
+                Página {currentIdx + 1} de {total} • {rotuloPorTipo(blocoAtual.tipo, blocoAtual.payload?.subtipo)}
               </p>
             </div>
 
@@ -447,7 +447,7 @@ const AprenderAula = () => {
                         const Icon = iconePorTipo(b.tipo);
                         const isCurrent = i === currentIdx;
                         const isPassed = i <= highestVisible;
-                        const titulo = b.payload?.titulo || b.payload?.enunciado || b.payload?.frente || rotuloPorTipo(b.tipo);
+                        const titulo = b.payload?.titulo || b.payload?.enunciado || b.payload?.frente || rotuloPorTipo(b.tipo, b.payload?.subtipo);
 
                         return (
                           <button

@@ -57,7 +57,12 @@ export const iconePorTipo = (tipo: TipoBloco) => {
   }
 };
 
-export const rotuloPorTipo = (tipo: TipoBloco) => {
+export const rotuloPorTipo = (tipo: TipoBloco, subtipo?: string) => {
+  if (subtipo === 'complete_lacuna') return 'Complete a Frase';
+  if (subtipo === 'certo_errado') return 'Certo ou Errado';
+  if (subtipo === 'multipla_escolha') return 'Questão OAB';
+  if (subtipo === 'caso_pratico') return 'Caso Prático';
+
   switch (tipo) {
     case 'intro': return 'Introdução';
     case 'conceito': return 'Conceito';
