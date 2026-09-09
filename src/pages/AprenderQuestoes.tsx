@@ -5,13 +5,15 @@ import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import AprenderBottomNav from '@/components/aprender/AprenderBottomNav';
 import AreaEscolhaLista from '@/components/aprender/AreaEscolhaLista';
 import { useAprenderAreasResumo } from '@/hooks/useAprenderAreasResumo';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const AprenderQuestoes = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack('/aprender');
   const { areas, loading } = useAprenderAreasResumo();
 
   const mobileHeader = (
-    <PageHeader title="Questões" subtitle="Prática comentada" onBack={() => navigate('/aprender')} />
+    <PageHeader title="Questões" subtitle="Prática comentada" onBack={goBack} />
   );
 
   return (

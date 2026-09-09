@@ -14,10 +14,13 @@ import { usePeticaoInicial } from '@/hooks/domain/usePeticaoInicial';
 import { STEPS, Peticao } from '@/types/peticao';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
+import { useGoBack } from '@/hooks/useGoBack';
+import { haptic } from '@/lib/nativeHaptics';
 
 export default function PeticaoInicialEditor() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const goBack = useGoBack('/ferramentas/peticao-inicial');
   const { pet, loading, saving, patch, canUse, register } = usePeticaoInicial(id);
 
   if (loading || !pet) {
@@ -49,14 +52,20 @@ export default function PeticaoInicialEditor() {
       <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
         <div className="px-4 pb-4 flex items-center justify-between">
           <button
+            type="button"
             onClick={() => {
+              haptic.light();
+              if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
+                document.activeElement.blur();
+              }
               if (pet.etapa === 7) navigate('/ferramentas/peticao-inicial');
               else if (pet.etapa > 1) goStep(pet.etapa - 1);
-              else navigate(-1);
+              else goBack();
             }}
-            className="w-10 h-10 -ml-2 rounded-full grid place-items-center hover:bg-muted"
+            aria-label="Voltar etapa"
+            className="w-12 h-12 sm:w-[52px] sm:h-[52px] -ml-2 rounded-full grid place-items-center hover:bg-muted active:scale-95 transition-transform"
           >
-            <ArrowLeft className="w-6 h-6" strokeWidth={2.5} />
+            <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           </button>
 
           <div className="flex-1 px-4">

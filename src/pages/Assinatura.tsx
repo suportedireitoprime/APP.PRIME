@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useNavigate, useSearchParams, Navigate } from "react-router-dom";
+import { useNavigate, useSearchParams, Navigate, useLocation } from "react-router-dom";
 import { supabase } from '@/integrations/supabase/client';
 import { motion } from "framer-motion";
 import { Capacitor } from '@capacitor/core';
@@ -25,6 +25,7 @@ import PaywallImageStack from '@/components/planos/PaywallImageStack';
 export default function Assinatura() {
   useTrackArea("assinatura_aberta");
   const navigate = useNavigate();
+  const location = useLocation();
   const goBack = useGoBack();
   const { session } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -117,18 +118,31 @@ export default function Assinatura() {
   const [devSheetOpen, setDevSheetOpen] = useState(false);
   const [trialSheetPlan, setTrialSheetPlan] = useState<TrialPlan | null>(null);
   const isIOS = (platformOverride ?? nativePlatform) === 'ios' || (typeof navigator !== 'undefined' && /iphone|ipad|ipod/i.test(navigator.userAgent));
-  // Voltar: no modo prévia de admin, volta direto pro painel do plano ativo.
-  // Fora disso usa o histórico interno e, se não houver, vai pro início.
+  // Voltar: fecha modais pendentes se abertos; no modo prévia de admin, volta pro painel do plano ativo.
+  // Respeita location.state.from (ex: artigo ou livro que disparou o paywall) ou histórico com fallback para '/'.
   const handleBack = () => {
-    setDevSheetOpen(false);
-    setTrialSheetPlan(null);
+    if (showWelcome) {
+      closeWelcome();
+      return;
+    }
+    if (devSheetOpen) {
+      setDevSheetOpen(false);
+      return;
+    }
+    if (trialSheetPlan) {
+      setTrialSheetPlan(null);
+      return;
+    }
     if (searchParams.get('preview') === 'plans') {
       navigate('/planos/ativos', { replace: true });
       return;
     }
-    const hasHistory = typeof window !== 'undefined' && window.history.state?.idx > 0;
-    if (hasHistory) goBack();
-    else navigate('/', { replace: true });
+    const stateFrom = (location.state as { from?: string } | undefined)?.from;
+    if (stateFrom) {
+      navigate(stateFrom, { replace: true });
+      return;
+    }
+    goBack('/');
   };
   // Radix às vezes deixa `pointer-events: none` no body depois de fechar o sheet,
   // o que travava todos os cliques da tela (inclusive o botão de voltar).

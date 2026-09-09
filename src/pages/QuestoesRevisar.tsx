@@ -3,14 +3,16 @@ import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import QuestoesBottomNav from '@/components/questoes/QuestoesBottomNav';
 import ResolverPadrao from '@/components/questoes/ResolverPadrao';
 import { useQuestoesSessao } from '@/hooks/useQuestoes';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const QuestoesRevisar = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack('/questoes');
   const { questoes, loading, recarregar, registrar } = useQuestoesSessao({ modo: 'revisar', limite: 10 });
 
   return (
     <div className="theme-questoes min-h-screen bg-background pb-32">
-      <PageHeader title="Revisar" subtitle="O que você errou volta aqui" onBack={() => navigate('/questoes')} />
+      <PageHeader title="Revisar" subtitle="O que você errou volta aqui" onBack={goBack} />
       <div className="mx-auto w-full max-w-3xl px-4 py-5">
         <ResolverPadrao
           questoes={questoes}

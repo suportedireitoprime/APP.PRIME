@@ -8,6 +8,7 @@ import histCoverAsset from '@/assets/covers/historia-da-legislacao.webp';
 const histCover = histCoverAsset;
 import estCoverAsset from '@/assets/covers/estrutura-do-estado.webp';
 import { useGoBack } from '@/hooks/useGoBack';
+import { haptic } from '@/lib/nativeHaptics';
 const estCover = estCoverAsset;
 
 const COVER_MAP: Record<string, string> = {
@@ -19,7 +20,7 @@ const COVER_MAP: Record<string, string> = {
 const CategoriaAprender = () => {
   const { categoriaId } = useParams<{ categoriaId: string }>();
   const navigate = useNavigate();
-  const goBack = useGoBack();
+  const goBack = useGoBack('/aprender');
 
   const categoria = CATEGORIAS_EDUCACIONAIS.find(c => c.id === categoriaId);
   if (!categoria) {
@@ -46,10 +47,15 @@ const CategoriaAprender = () => {
 
         {/* Back button */}
         <button
-          onClick={() => goBack()}
-          className="absolute top-4 left-4 z-20 w-9 h-9 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center"
+          type="button"
+          onClick={() => {
+            haptic.light();
+            goBack();
+          }}
+          aria-label="Voltar para Aprender"
+          className="absolute top-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] left-[calc(1rem+var(--sai-left,env(safe-area-inset-left,0px)))] z-20 w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-black/50 backdrop-blur-md border border-white/10 flex items-center justify-center active:scale-95 transition-transform"
         >
-          <ArrowLeft className="w-5 h-5 text-white" />
+          <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
         </button>
 
         {/* Title overlay */}

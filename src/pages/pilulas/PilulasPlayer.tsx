@@ -12,6 +12,8 @@ import { PilulaArtwork } from './components/PilulaArtwork';
 import { PilulaControls } from './components/PilulaControls';
 import { PilulaExtraActions } from './components/PilulaExtraActions';
 import { motion } from 'framer-motion';
+import { useGoBack } from '@/hooks/useGoBack';
+import { haptic } from '@/lib/nativeHaptics';
 
 
 export default function PilulasPlayer() {
@@ -38,6 +40,20 @@ export default function PilulasPlayer() {
 
   const { fechar: fecharPlayerGlobal } = useResumoLivroPlayer();
   const featurePilulas = useGatedFeature('pilulas', 'pilulas', { scope: id, refKey: id });
+
+  const goBack = useGoBack('/pilulas');
+  const handleVoltar = () => {
+    haptic.light();
+    if (isGraphOpen) {
+      setIsGraphOpen(false);
+      return;
+    }
+    if (isTextOpen) {
+      setIsTextOpen(false);
+      return;
+    }
+    goBack();
+  };
 
 
 
@@ -107,7 +123,8 @@ export default function PilulasPlayer() {
       {/* Header Fixo */}
       <div className="relative z-10 pt-[calc(1.25rem+var(--sai-top))] px-4 pb-4 shrink-0 flex items-center">
         <button
-          onClick={() => navigate(-1)}
+          onClick={handleVoltar}
+          aria-label="Voltar para acervo de pílulas"
           className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/5 backdrop-blur-md flex items-center justify-center border border-white/10 active:scale-95 transition-transform"
         >
           <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white/70" strokeWidth={2.4} />

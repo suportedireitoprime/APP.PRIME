@@ -55,6 +55,7 @@ import { useSessionTracker } from "@/hooks/useSessionTracker";
 import { useDesktopSessionGuard } from "@/hooks/useDesktopSessionGuard";
 import { useProfileSummary } from "@/hooks/useProfileSummary";
 import { resetBodyScrollLock } from "@/hooks/useBodyScrollLock";
+import { useHardwareBackButton } from "@/hooks/useHardwareBackButton";
 import brasaoImgAsset from '@/assets/brasao-republica.webp';
 const brasaoImg = brasaoImgAsset;
 import { Analytics } from "@vercel/analytics/react";
@@ -816,6 +817,9 @@ function AnimatedRoutes() {
 
   // Screen tracking unificado (page_view + screen_view + scroll + screen_exit).
   useScreenTracking();
+
+  // Interceptador global do botão físico/gestual de voltar do Android (Capacitor)
+  useHardwareBackButton();
 
   // GA4: pageview em cada route change (mantido para compatibilidade).
   useEffect(() => {

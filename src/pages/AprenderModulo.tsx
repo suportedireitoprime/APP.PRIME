@@ -171,6 +171,10 @@ const AprenderModulo = () => {
 
   const handleVoltar = () => {
     haptic.light();
+    if (location.state?.from) {
+      navigate(location.state.from);
+      return;
+    }
     if (modulo?.areaSlug) {
       navigate(`/aprender/area/${modulo.areaSlug}`);
     } else {

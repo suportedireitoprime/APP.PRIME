@@ -104,6 +104,8 @@ const AprenderAula = () => {
 
   // Gestos Touch (Mobile / Tablet)
   const handleTouchStart = (e: React.TouchEvent) => {
+    // Deadzone de 24px na borda esquerda: preserva o gesto nativo de voltar do iOS e Android
+    if (e.touches[0].clientX < 24) return;
     touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;
   };

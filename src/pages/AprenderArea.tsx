@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
+import { useGoBack } from '@/hooks/useGoBack';
 import AreaHeroPanel from '@/components/aprender/AreaHeroPanel';
 import TemaRow from '@/components/aprender/TemaRow';
 import {
@@ -38,6 +39,7 @@ type Flashcard = {
 const AprenderArea = () => {
   useTrackArea("aprender_area_aberta");
   const navigate = useNavigate();
+  const goBack = useGoBack('/aprender');
   const { slug } = useParams<{ slug: string }>();
   const { user } = useAuth();
 
@@ -149,7 +151,7 @@ const AprenderArea = () => {
     <PageHeader 
       title={area?.nome ?? 'Aprender'} 
       subtitle={isDireitoPenal ? "Trilha de Aprendizado" : (area?.descricao ?? 'Trilhas de estudo')} 
-      onBack={() => navigate('/aprender')} 
+      onBack={goBack} 
     />
   );
 

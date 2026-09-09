@@ -53,8 +53,15 @@ const NotFound = () => {
             Retornar ao início
           </Link>
           <button
-            onClick={() => goBack()}
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-secondary/60 px-5 py-3 font-body text-sm text-foreground/80 hover:bg-secondary hover:text-foreground transition-colors w-full sm:w-auto"
+            type="button"
+            onClick={() => {
+              if (typeof window !== 'undefined' && window.history.length > 2) {
+                navigate(-1);
+              } else {
+                navigate('/', { replace: true });
+              }
+            }}
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-secondary/60 px-5 py-3 font-body text-sm text-foreground/80 hover:bg-secondary hover:text-foreground transition-colors w-full sm:w-auto cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
             Voltar

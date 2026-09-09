@@ -68,12 +68,30 @@ const ApresentacaoPlayer = () => {
   const [abrirRoteiro, setAbrirRoteiro] = useState(false);
 
   const handleVoltar = useCallback(() => {
+    playHaptic();
+    if (abrirComentarios) {
+      setAbrirComentarios(false);
+      return;
+    }
+    if (abrirSumario) {
+      setAbrirSumario(false);
+      return;
+    }
+    if (abrirRoteiro) {
+      setAbrirRoteiro(false);
+      return;
+    }
+    const stateFrom = (location.state as { from?: string } | undefined)?.from;
+    if (stateFrom) {
+      navigate(stateFrom, { replace: true });
+      return;
+    }
     if (window.history.length > 2) {
       goBack();
     } else {
-      navigate('/', { replace: true });
+      navigate('/biografias', { replace: true });
     }
-  }, [goBack, navigate]);
+  }, [abrirComentarios, abrirSumario, abrirRoteiro, location.state, goBack, navigate]);
 
   // Velocidade Inicial
   const [velocidade, setVelocidade] = useState(1); // 1x, 1.5x, 2x

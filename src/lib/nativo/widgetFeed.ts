@@ -42,7 +42,7 @@ export async function atualizarWidgetDoDia(forcar = false): Promise<void> {
       etiqueta: 'Curiosidade do dia',
       titulo: item.titulo?.trim() || 'Estudos Jurídicos',
       texto: (item.texto ?? '').trim().slice(0, 160),
-      rota: '/inicio',
+      rota: '/meu-espaco',
     });
     await Preferences.set({ key: CHAVE_DIA, value: hoje() });
   } catch (e) {

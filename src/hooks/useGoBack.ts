@@ -13,6 +13,11 @@ export function useGoBack(fallback: string = '/') {
   const location = useLocation();
 
   return useCallback(() => {
+    // 0. Dispensa o teclado virtual mobile e remove foco de inputs ativos
+    if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
     // 1. Prioriza rota de origem passada explicitamente no state
     const state = location.state as { from?: string } | null;
     if (state?.from && typeof state.from === 'string') {

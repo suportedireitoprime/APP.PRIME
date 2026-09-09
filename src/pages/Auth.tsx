@@ -152,9 +152,20 @@ const Auth = () => {
 
       {/* Botão de voltar */}
       <button
-        onClick={() => navigate('/landing')}
+        type="button"
+        onClick={() => {
+          if (ajudaOpen) {
+            setAjudaOpen(false);
+            return;
+          }
+          if (drawerMode) {
+            setDrawerMode(null);
+            return;
+          }
+          navigate('/landing', { replace: true });
+        }}
         aria-label="Voltar"
-        className="absolute top-[calc(var(--sai-top,0px)+1.25rem)] left-[calc(var(--sai-left,0px)+1rem)] z-20 w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition active:scale-95 touch-manipulation"
+        className="absolute top-[calc(var(--sai-top,0px)+1.25rem)] left-[calc(var(--sai-left,0px)+1rem)] z-20 w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition active:scale-95 touch-manipulation cursor-pointer"
       >
         <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
       </button>
