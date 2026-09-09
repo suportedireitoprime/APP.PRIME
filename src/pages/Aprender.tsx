@@ -15,7 +15,6 @@ import ShapeGrid from '@/components/ui/ShapeGrid';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import AprenderBottomNav from '@/components/aprender/AprenderBottomNav';
 import AprenderLembretesSheet from '@/components/aprender/AprenderLembretesSheet';
-import ContinueCarousel from '@/components/aprender/ContinueCarousel';
 import MateriaRow from '@/components/aprender/MateriaRow';
 import MateriaCard from '@/components/aprender/MateriaCard';
 import AulaCarouselCard from '@/components/aprender/AulaCarouselCard';
@@ -42,7 +41,7 @@ import horusOwl from '@/assets/horus/horus-owl.webp';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { srcOf } from '@/lib/assetUrl';
 import { cn } from '@/lib/utils';
-import { useFlashcardsDashboard } from '@/lib/flashcardsQueries';
+import { useFlashcardsDashboard, useFlashcardsResumoAreas } from '@/lib/flashcardsQueries';
 import { haptic } from '@/lib/nativeHaptics';
 import { toast } from 'sonner';
 
@@ -114,6 +113,7 @@ const Aprender = () => {
   const [selectedAreaSlug, setSelectedAreaSlug] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'aulas' | 'flashcards' | 'questoes'>('aulas');
   const { data: flashDash } = useFlashcardsDashboard();
+  const { data: flashAreas } = useFlashcardsResumoAreas();
 
   // Timer Countdown logic
   const targetDate = useMemo(() => new Date('2026-08-25T00:00:00-03:00').getTime(), []);
@@ -354,35 +354,12 @@ const Aprender = () => {
             </div>
           </aside>
 
-          {/* ── Coluna Central Widescreen: Trilha Hero, Continuar & Matérias ─────── */}
-          <div className="lg:col-span-6 space-y-5">
-            {/* Menu de Alternância Global */}
-            <div className="flex bg-card p-1.5 rounded-2xl border border-border/80 w-full sm:w-fit mx-auto sm:mx-0 shadow-sm relative z-20">
-              {(['aulas', 'flashcards', 'questoes'] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => {
-                    try { haptic.selection(); } catch (e) {}
-                    setActiveTab(tab);
-                  }}
-                  className={cn(
-                    "flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-[13px] font-bold uppercase tracking-wider transition-all",
-                    activeTab === tab
-                      ? "bg-primary/10 text-primary shadow-sm border border-primary/20"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
-                  )}
-                >
-                  {tab === 'aulas' && <BookOpen className="w-4 h-4" />}
-                  {tab === 'flashcards' && <Layers className="w-4 h-4" />}
-                  {tab === 'questoes' && <FileQuestion className="w-4 h-4" />}
-                  {tab}
-                </button>
-              ))}
-            </div>
-
+          {/* ── Coluna Cen          <div className="lg:col-span-6 space-y-5">
             {/* Hero trilhas em cinza elevado */}
             <section
               className="bg-card relative isolate overflow-hidden -mx-3 sm:mx-0 rounded-none sm:rounded-2xl border-b border-border sm:border shadow-xl"
+              aria-label="Seu progresso em trilhas"
+            >r shadow-xl"
               aria-label="Seu progresso em trilhas"
             >
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.08),transparent_60%)]" />
@@ -485,17 +462,31 @@ const Aprender = () => {
               </div>
             </section>
 
-            {/* Continue de onde parou — dinâmico */}
-            {continuar.length > 0 ? (
-              <ContinueCarousel
-                aulas={continuar}
-                onOpen={(id) => navigate(`/aprender/aula/${id}`)}
-              />
-            ) : loading ? (
-              <div className="h-[104px] rounded-2xl bg-muted animate-pulse" />
-            ) : null}
+            {/* Menu de Alternância Global */}
+            <div className="flex bg-card p-1.5 rounded-2xl border border-border/80 w-full shadow-sm relative z-20 mt-8 mb-4">
+              {(['aulas', 'flashcards', 'questoes'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => {
+                    try { haptic.selection(); } catch (e) {}
+                    setActiveTab(tab);
+                  }}
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-2 px-2 sm:px-4 py-2.5 rounded-xl text-xs sm:text-[13px] font-bold uppercase tracking-wider transition-all",
+                    activeTab === tab
+                      ? "bg-primary/10 text-primary shadow-sm border border-primary/20"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
+                  )}
+                >
+                  {tab === 'aulas' && <BookOpen className="w-4 h-4 hidden sm:block" />}
+                  {tab === 'flashcards' && <Layers className="w-4 h-4 hidden sm:block" />}
+                  {tab === 'questoes' && <FileQuestion className="w-4 h-4 hidden sm:block" />}
+                  {tab}
+                </button>
+              ))}
+            </div>
 
-            {/* Menu de Alternância de Matérias + Lista de Subtópicos */}
+            {/* Lista de Matérias */}
             <div className="space-y-4">
               <div className="flex items-center justify-between gap-2">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Matérias ({areasOrdenadas.length})</p>
@@ -509,7 +500,7 @@ const Aprender = () => {
                           'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors',
                           filtro === f
                             ? 'bg-primary text-primary-foreground shadow-md'
-                            : 'text-muted-foreground hover:text-foreground',
+                            : 'text-muted-foreground hover:text-foreground hover:text-foreground',
                         ].join(' ')}
                       >
                         {f === 'todas' ? 'Todas' : `Andamento (${emAndamentoCount})`}
@@ -538,14 +529,34 @@ const Aprender = () => {
                     show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
                   }}
                 >
-                  {areasOrdenadas.map((area) => {
-                    const icon = areaIconFor(area.slug);
-                    return (
-                      <MateriaRow
-                        key={area.id}
-                        area={area}
-                        icon={icon}
-                        onOpen={() => {
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-3 sm:gap-4">
+                {areasOrdenadas.map((area) => {
+                  const icon = areaIconFor(area.slug);
+                  
+                  let overrideLabel = isAulas ? 'aulas' : isFlashcards ? 'flashcards' : 'questões';
+                  let overrideTotal = isAulas ? area.totalAulas : 0;
+                  let overrideConcluidas = isAulas ? area.concluidas : 0;
+                  let overridePct = isAulas ? (area.pct ?? 0) : 0;
+
+                  if (isFlashcards && flashAreas) {
+                    const flashStats = flashAreas.find(f => f.slug === area.slug);
+                    if (flashStats) {
+                      overrideTotal = flashStats.total_cards;
+                      overrideConcluidas = flashStats.compreendidos;
+                      overridePct = overrideTotal > 0 ? Math.round((overrideConcluidas / overrideTotal) * 100) : 0;
+                    }
+                  }
+
+                  return (
+                    <MateriaRow
+                      key={area.id}
+                      area={area}
+                      icon={icon}
+                      overrideLabel={overrideLabel}
+                      overrideTotal={overrideTotal}
+                      overrideConcluidas={overrideConcluidas}
+                      overridePct={overridePct}
+                      onOpen={() => {
                           if (isAulas) {
                             navigate(`/aprender/area/${area.slug}`);
                           } else if (isFlashcards) {

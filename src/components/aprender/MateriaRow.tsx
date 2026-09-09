@@ -9,11 +9,19 @@ type Props = {
   icon?: { Icon: LucideIcon; color: string } | null;
   onOpen: () => void;
   onPrefetch: () => void;
+  overrideLabel?: string;
+  overrideTotal?: number;
+  overrideConcluidas?: number;
+  overridePct?: number;
 };
 
-const MateriaRow = ({ area, icon, onOpen, onPrefetch }: Props) => {
+const MateriaRow = ({ area, icon, onOpen, onPrefetch, overrideLabel, overrideTotal, overrideConcluidas, overridePct }: Props) => {
   const cover = getAreaCover(area.nome);
-  const pct = area.pct ?? 0;
+  const total = overrideTotal ?? area.totalAulas;
+  const concluidas = overrideConcluidas ?? area.concluidas;
+  const pct = overridePct ?? area.pct ?? 0;
+  const label = overrideLabel ?? (total === 1 ? 'aula' : 'aulas');
+  
   const iniciada = pct > 0;
   const displayName = shortenAreaName(area.nome);
 
@@ -84,8 +92,8 @@ const MateriaRow = ({ area, icon, onOpen, onPrefetch }: Props) => {
           </span>
         </div>
         <p className="mt-0.5 text-[12px] text-muted-foreground sm:text-[13px]">
-          {area.totalAulas} {area.totalAulas === 1 ? 'aula' : 'aulas'}
-          {area.concluidas > 0 && ` · ${area.concluidas} concluída${area.concluidas === 1 ? '' : 's'}`}
+          {total} {label}
+          {concluidas > 0 && ` • ${concluidas} concluída${concluidas === 1 ? '' : 's'}`}
         </p>
         <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-muted">
           <div
