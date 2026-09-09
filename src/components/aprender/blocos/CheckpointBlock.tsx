@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 type CheckpointPayload = {
   titulo?: string;
   aprendeu?: string[];
+  mensagem?: string;
+  texto?: string;
   pergunta_reflexiva?: string;
   proximo?: string;
 };
@@ -13,7 +15,12 @@ type CheckpointPayload = {
  * Redesenhado para visual premium (Apple HIG / Design Editorial).
  */
 export function CheckpointBlock({ payload }: { payload: CheckpointPayload }) {
-  const { titulo, aprendeu = [], pergunta_reflexiva, proximo } = payload || {};
+  const { titulo, aprendeu = [], mensagem, texto, pergunta_reflexiva, proximo } = payload || {};
+  const itensAprendeu = aprendeu.length > 0
+    ? aprendeu
+    : (mensagem || texto)
+      ? [mensagem || texto!]
+      : [];
 
   return (
     <article className="max-w-[70ch] mx-auto py-8">
@@ -35,7 +42,7 @@ export function CheckpointBlock({ payload }: { payload: CheckpointPayload }) {
         </div>
 
         <ul className="space-y-6 px-8 py-10 relative z-10">
-          {aprendeu.map((item, i) => (
+          {itensAprendeu.map((item, i) => (
             <motion.li
               key={i}
               initial={{ opacity: 0, y: 15 }}

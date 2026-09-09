@@ -5,8 +5,7 @@ import {
   CheckCircle2,
   XCircle,
   List,
-  MessageCircle,
-  Settings2,
+  ChevronLeft,
   ChevronRight,
   BookOpen,
 } from 'lucide-react';
@@ -16,13 +15,11 @@ import { useAuth } from '@/hooks/useAuth';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { useGoBack } from '@/hooks/useGoBack';
 
-import { iconePorTipo, isBlocoTexto, rotuloPorTipo, type Bloco } from '@/lib/aprenderUtils';
+import { iconePorTipo, rotuloPorTipo, type Bloco } from '@/lib/aprenderUtils';
 import { useAprenderAula } from '@/hooks/domain/useAprenderAula';
 import { BlocoView } from '@/components/aprender/BlocoView';
 import { AulaConcluidaScreen } from '@/components/aprender/AulaConcluidaScreen';
-import { HorusContextualSheet } from '@/components/aprender/HorusContextualSheet';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { AulaSettingsSheet } from '@/components/aprender/AulaSettingsSheet';
 import { AulaPreviaScreen, type PreviaAula } from '@/components/aprender/AulaPreviaScreen';
 import { haptic } from '@/lib/nativeHaptics';
 
@@ -63,6 +60,7 @@ function ScrollRevealBloco({
   return (
     <motion.div
       ref={ref}
+      id={`bloco-${index}`}
       initial={{ opacity: 0, y: 30 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
       transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
@@ -121,14 +119,12 @@ const AprenderAula = () => {
   } = useAprenderAula(aulaId, user);
 
   const [sumarioOpen, setSumarioOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [mentorOpen, setMentorOpen] = useState(false);
   const [highestVisible, setHighestVisible] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
 
   const mainRef = useRef<HTMLDivElement>(null);
 
-  // Barra de progresso por scroll
+  // Scroll e detecção da página/bloco ativo para a Linha do Tempo
   useEffect(() => {
     const el = mainRef.current;
     if (!el) return;
@@ -136,15 +132,41 @@ const AprenderAula = () => {
       const scrollTop = el.scrollTop;
       const scrollHeight = el.scrollHeight - el.clientHeight;
       if (scrollHeight > 0) setScrollProgress(Math.min(scrollTop / scrollHeight, 1));
+
+      const containerTop = el.getBoundingClientRect().top;
+      const triggerY = containerTop + 140;
+
+      let active = 0;
+      for (let i = 0; i < total; i++) {
+        const item = document.getElementById(`bloco-${i}`);
+        if (item) {
+          const rect = item.getBoundingClientRect();
+          if (rect.top <= triggerY) {
+            active = i;
+          }
+        }
+      }
+      setCurrentIdx(active);
+      setHighestVisible(prev => Math.max(prev, active));
     };
     el.addEventListener('scroll', onScroll, { passive: true });
     return () => el.removeEventListener('scroll', onScroll);
-  }, [loading, mostrarPrevia, finalizada]);
+  }, [loading, mostrarPrevia, finalizada, total, setCurrentIdx]);
+
+  const scrollToBloco = useCallback((idx: number) => {
+    haptic.selection();
+    const targetIdx = Math.max(0, Math.min(total - 1, idx));
+    const item = document.getElementById(`bloco-${targetIdx}`);
+    if (item) {
+      item.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setCurrentIdx(targetIdx);
+      setHighestVisible(prev => Math.max(prev, targetIdx));
+    }
+  }, [total, setCurrentIdx]);
 
   const handleBlocoVisible = useCallback((idx: number) => {
     setHighestVisible(prev => Math.max(prev, idx));
-    setCurrentIdx(idx);
-  }, [setCurrentIdx]);
+  }, []);
 
   if (loading) {
     return (
@@ -205,55 +227,77 @@ const AprenderAula = () => {
     );
   }
 
-  const atual = blocos[currentIdx] || blocos[0];
   const canFinish = highestVisible >= total - 1;
 
   return (
     <div className="flex min-h-dvh flex-col bg-[#0D0D0D]">
-      {/* ── Header minimalista fixo ── */}
+      {/* ── Header fixo com Linha do Tempo no topo ── */}
       <header
-        className="sticky top-0 z-30 bg-[#0D0D0D]/95 backdrop-blur-xl border-b border-white/[0.04]"
+        className="sticky top-0 z-30 bg-[#0D0D0D]/95 backdrop-blur-xl border-b border-white/[0.06]"
         style={{ paddingTop: 'calc(var(--sai-top) + 0.25rem)' }}
       >
+        {/* ── Linha do Tempo na parte superior (Timeline de Páginas) ── */}
         <div
-          className="flex items-center justify-between py-2.5 max-w-4xl mx-auto"
+          className="max-w-4xl mx-auto px-4 pt-2.5 pb-1"
+          role="navigation"
+          aria-label="Linha do tempo das páginas da aula"
+        >
+          <div className="flex items-center gap-1 sm:gap-1.5 w-full">
+            {blocos.map((b, i) => {
+              const isPast = i < currentIdx;
+              const isCurrent = i === currentIdx;
+              return (
+                <button
+                  key={b.id}
+                  onClick={() => scrollToBloco(i)}
+                  className="group relative flex-1 py-1.5 -my-1.5 cursor-pointer focus:outline-none"
+                  aria-label={`Ir para página ${i + 1} de ${total}: ${rotuloPorTipo(b.tipo)}`}
+                  title={`Página ${i + 1} de ${total} • ${rotuloPorTipo(b.tipo)}`}
+                >
+                  <div
+                    className={`h-[3px] sm:h-1 rounded-full transition-all duration-300 ${
+                      isPast
+                        ? 'bg-primary'
+                        : isCurrent
+                        ? 'bg-primary shadow-[0_0_10px_hsl(var(--primary))] scale-y-125'
+                        : 'bg-white/10 group-hover:bg-white/20'
+                    }`}
+                  />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Linha de navegação e título */}
+        <div
+          className="flex items-center justify-between py-2 max-w-4xl mx-auto"
           style={{
             paddingLeft: 'calc(1rem + var(--sai-left))',
             paddingRight: 'calc(1rem + var(--sai-right))',
           }}
         >
           <button
-            onClick={() => goBack()}
+            onClick={() => {
+              haptic.impact('light');
+              goBack();
+            }}
             aria-label="Voltar"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.08] active:scale-95 transition-all text-white/70 hover:text-white"
+            className="flex w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 items-center justify-center rounded-2xl bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.08] active:scale-95 transition-all text-white/80 hover:text-white"
           >
-            <ArrowLeft className="h-[18px] w-[18px]" strokeWidth={2} />
+            <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           </button>
 
           <div className="flex flex-col items-center text-center flex-1 min-w-0 px-4">
-            <p className="text-[13px] font-semibold text-white/90 truncate max-w-[240px] sm:max-w-none leading-tight">
+            <p className="text-[14px] font-bold text-white/95 truncate max-w-[260px] sm:max-w-none leading-tight">
               {aula.titulo}
+            </p>
+            <p className="text-[11px] font-semibold text-primary uppercase tracking-wider mt-0.5">
+              Página {currentIdx + 1} de {total} • {rotuloPorTipo(blocos[currentIdx]?.tipo || 'leitura')}
             </p>
           </div>
 
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={() => setSumarioOpen(true)}
-              aria-label="Sumário"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.08] active:scale-95 transition-all text-white/50 hover:text-white"
-            >
-              <List className="h-[18px] w-[18px]" />
-            </button>
-          </div>
-        </div>
-
-        {/* Barra de progresso suave por scroll */}
-        <div className="h-[2px] w-full bg-white/[0.03]">
-          <motion.div
-            className="h-full bg-gradient-to-r from-primary/80 to-primary"
-            animate={{ width: `${scrollProgress * 100}%` }}
-            transition={{ duration: 0.15, ease: 'linear' }}
-          />
+          <div className="w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0" />
         </div>
       </header>
 
@@ -350,49 +394,67 @@ const AprenderAula = () => {
           )}
         </div>
       </main>
-
-      {/* ── Barra inferior com ações ── */}
-      <div
-        className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.04] bg-[#0D0D0D]/95 backdrop-blur-xl flex items-center justify-between"
+      {/* ── Barra inferior: APENAS sumário + quantas páginas tem ── */}
+      <nav
+        aria-label="Navegação da aula"
+        className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.06] bg-[#0D0D0D]/95 backdrop-blur-xl flex items-center justify-between"
         style={{
-          paddingBottom: 'calc(0.5rem + var(--sai-bottom))',
-          paddingLeft: 'calc(1rem + var(--sai-left))',
-          paddingRight: 'calc(1rem + var(--sai-right))',
-          paddingTop: '0.5rem',
+          paddingBottom: 'calc(0.75rem + var(--sai-bottom))',
+          paddingLeft: 'calc(1.25rem + var(--sai-left))',
+          paddingRight: 'calc(1.25rem + var(--sai-right))',
+          paddingTop: '0.75rem',
         }}
       >
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => setSettingsOpen(true)}
-            className="flex items-center justify-center h-10 w-10 rounded-full text-neutral-500 hover:text-white hover:bg-white/5 transition-colors"
-            aria-label="Configurações"
-          >
-            <Settings2 className="h-[18px] w-[18px]" />
-          </button>
-          <button
-            onClick={() => setMentorOpen(true)}
-            className="flex items-center justify-center h-10 w-10 rounded-full text-neutral-500 hover:text-white hover:bg-white/5 transition-colors"
-            aria-label="Mentor IA"
-          >
-            <MessageCircle className="h-[18px] w-[18px]" />
-          </button>
-        </div>
+        <button
+          onClick={() => {
+            haptic.selection();
+            setSumarioOpen(true);
+          }}
+          className="flex items-center gap-2.5 h-11 px-4 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white/90 hover:text-white hover:bg-white/10 active:scale-95 transition-all shadow-sm"
+          aria-label="Abrir sumário da aula"
+        >
+          <List className="h-5 w-5 text-primary" />
+          <span className="text-[14px] font-semibold tracking-wide">Sumário</span>
+        </button>
 
-        <span className="text-[12px] font-medium tabular-nums text-neutral-500">
-          {Math.round(scrollProgress * 100)}% lido
-        </span>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center rounded-xl bg-white/[0.04] border border-white/[0.06] p-0.5">
+            <button
+              onClick={() => scrollToBloco(currentIdx - 1)}
+              disabled={currentIdx <= 0}
+              aria-label="Página anterior"
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
 
-        <div className="flex items-center gap-2">
+            <span className="text-[13px] font-semibold tabular-nums text-neutral-300 px-3 min-w-[90px] text-center select-none">
+              {currentIdx + 1} de {total}
+            </span>
+
+            <button
+              onClick={() => scrollToBloco(currentIdx + 1)}
+              disabled={currentIdx >= total - 1}
+              aria-label="Próxima página"
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+
           {canFinish && (
             <button
-              onClick={concluirAula}
-              className="flex h-9 items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-4 text-[13px] font-bold hover:bg-primary/90 active:scale-95 transition-all"
+              onClick={() => {
+                haptic.impact('medium');
+                concluirAula();
+              }}
+              className="flex h-10 items-center gap-1.5 rounded-xl bg-primary text-primary-foreground px-4 text-[13px] font-bold hover:bg-primary/90 active:scale-95 transition-all shadow-md shadow-primary/25"
             >
-              Concluir <ChevronRight className="h-4 w-4" />
+              Concluir <CheckCircle2 className="h-4 w-4" />
             </button>
           )}
         </div>
-      </div>
+      </nav>
 
       {/* Modal de Feedback de Questão */}
       <AnimatePresence>
@@ -464,36 +526,43 @@ const AprenderAula = () => {
         )}
       </AnimatePresence>
 
+      {/* ── Sheet do Sumário da aula ── */}
       <Sheet open={sumarioOpen} onOpenChange={setSumarioOpen}>
-        <SheetContent side="bottom" className="h-[75vh] rounded-t-2xl p-0">
-          <SheetHeader className="border-b border-border p-4">
-            <SheetTitle className="text-left">Sumário da aula</SheetTitle>
+        <SheetContent side="bottom" className="h-[75vh] rounded-t-[2rem] p-0 bg-[#121418] border-t border-white/10 text-white">
+          <SheetHeader className="border-b border-white/5 p-5">
+            <SheetTitle className="text-left text-lg font-bold text-white flex items-center gap-2.5">
+              <List className="w-5 h-5 text-primary" />
+              Sumário da aula
+            </SheetTitle>
           </SheetHeader>
-          <div className="overflow-y-auto p-3">
+          <div className="overflow-y-auto p-4 space-y-1.5 max-h-[calc(75vh-80px)]">
             {blocos.map((b, i) => {
               const Icon = iconePorTipo(b.tipo);
               const titulo = b.payload?.titulo || b.payload?.enunciado || b.payload?.frente || rotuloPorTipo(b.tipo);
+              const isPassed = i <= highestVisible;
               return (
                 <button
                   key={b.id}
                   onClick={() => {
+                    haptic.selection();
                     setSumarioOpen(false);
                     const el = document.getElementById(`bloco-${i}`);
-                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
                   }}
-                  className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-sm transition-colors hover:bg-accent/60"
+                  className="flex w-full items-center gap-3.5 rounded-xl p-3 text-left transition-all hover:bg-white/[0.05] active:scale-[0.99]"
                 >
                   <span
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white"
-                    style={{ background: i <= highestVisible ? 'hsl(var(--primary))' : 'hsl(var(--muted))' }}
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors ${
+                      isPassed ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/20' : 'bg-white/5 text-neutral-400 border border-white/5'
+                    }`}
                   >
-                    <Icon className="h-4 w-4" />
+                    <Icon className="h-5 w-5" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                      {i + 1}. {rotuloPorTipo(b.tipo)}
+                    <p className="text-[11px] uppercase tracking-wider text-neutral-400 font-medium">
+                      Página {i + 1} de {total} • {rotuloPorTipo(b.tipo)}
                     </p>
-                    <p className="truncate font-medium text-foreground">{titulo}</p>
+                    <p className="truncate font-semibold text-white/95 text-[14px]">{titulo}</p>
                   </div>
                 </button>
               );
@@ -501,85 +570,6 @@ const AprenderAula = () => {
           </div>
         </SheetContent>
       </Sheet>
-
-      <AulaSettingsSheet
-        open={settingsOpen}
-        onOpenChange={setSettingsOpen}
-        blocoKey={atual.id}
-        onAbrirSumario={() => setSumarioOpen(true)}
-        textoBlocoAtual={(() => {
-          const p = atual.payload || {};
-          const flip = !!flipped[atual.id];
-          switch (atual.tipo) {
-            case 'intro':
-            case 'conceito':
-            case 'exemplo':
-            case 'conclusao':
-            case 'leitura':
-            case 'texto':
-              return `${p.titulo ? p.titulo + '.\n\n' : ''}${p.conteudo || p.texto || ''}`;
-            case 'citacao':
-              return `Citação. ${p.texto || ''}${p.fonte ? `. Fonte: ${p.fonte}.` : ''}`;
-            case 'artigo_lei':
-              return `${p.lei || 'Artigo de lei'}${p.numero ? `, artigo ${p.numero}` : ''}.\n\n${p.texto || ''}`;
-            case 'destaque':
-              return `${p.titulo || 'Destaque'}. ${p.texto || ''}`;
-            case 'pergunta': {
-              const opcs = (p.opcoes || []).map((o: any) => `Alternativa ${String(o.id).toUpperCase()}: ${o.texto}.`).join(' ');
-              return `Pergunta. ${p.enunciado || ''}\n\n${opcs}`;
-            }
-            case 'flashcard':
-              return flip
-                ? `Resposta. ${p.verso || ''}. ${p.explicacao || ''}. Exemplo prático: ${p.exemplo || ''}. Aplicando: ${p.aplicando || ''}.`
-                : `Pergunta do flashcard. ${p.frente || ''}`;
-            case 'conexao': {
-              const pares = (p.pares || []).map((par: any) => `${par.termo}: ${par.definicao}.`).join('\n');
-              return `Associe cada termo à sua definição.\n\n${pares}`;
-            }
-            case 'tabela':
-              return `${p.titulo || 'Tabela'}. Colunas: ${(p.colunas || []).join(', ')}.`;
-            case 'mapa_mental':
-              return `Mapa mental. ${p.raiz || ''}. ${p.definicao_raiz || ''}. ${(p.ramos || [])
-                .map((r: any) => `${r.titulo}: ${(r.itens || [])
-                  .map((it: any) => typeof it === 'string' ? it : `${it.termo}, ${it.definicao}`)
-                  .join(', ')}.`)
-                .join(' ')}`;
-            case 'fluxograma':
-              return `Fluxograma. ${p.titulo || ''}. ${(p.etapas || []).map((et: any) => `Etapa ${et.n}: ${et.titulo}. ${et.descricao || ''}`).join(' ')}`;
-            case 'mapa_conceitual':
-              return `Mapa conceitual. ${(p.nos || []).map((n: any) => `${n.rotulo}${n.definicao ? ': ' + n.definicao : ''}`).join('. ')}. Relações: ${(p.arestas || []).map((a: any) => `${a.de} ${a.relacao} ${a.para}`).join('; ')}.`;
-            case 'ordenacao':
-              return `${p.titulo || 'Coloque em ordem'}. ${p.instrucao || ''}. Itens: ${(p.itens || []).map((it: any) => it.texto).join('; ')}.`;
-            case 'cena_animada':
-              return `${p.titulo || 'Cena animada'}. ${(p.cenas || []).map((c: any) => `Cena ${c.n}: ${c.titulo}. ${c.narracao}`).join(' ')}. ${p.moral ? 'Regra: ' + p.moral : ''}`;
-            case 'linha_tempo':
-              return `${p.titulo || 'Linha do tempo'}. ${(p.eventos || []).map((e: any) => `${e.marco}, ${e.titulo}. ${e.descricao || ''}`).join(' ')}`;
-            case 'infografico':
-              return `${p.titulo || 'Infográfico'}. ${(p.itens || []).map((it: any) => `${it.numero || ''} ${it.titulo}. ${it.descricao || ''}`).join(' ')}`;
-            default:
-              return p.titulo || p.texto || rotuloPorTipo(atual.tipo);
-          }
-        })()}
-      />
-
-      <HorusContextualSheet
-        hideFab
-        open={mentorOpen}
-        onOpenChange={setMentorOpen}
-        contexto={{
-          aula_titulo: aula.titulo,
-          bloco_tipo: atual.tipo,
-          bloco_texto: (() => {
-            const p = atual.payload || {};
-            if (isBlocoTexto(atual.tipo)) return `${p.titulo || ''}\n\n${p.conteudo || ''}`;
-            if (atual.tipo === 'pergunta') return `${p.enunciado || ''}\n\nOpções: ${JSON.stringify(p.opcoes || [])}`;
-            if (atual.tipo === 'flashcard') return `${p.frente || ''} → ${p.verso || ''}`;
-            if (atual.tipo === 'conexao') return `Pares: ${JSON.stringify(p.pares || [])}`;
-            return JSON.stringify(p);
-          })(),
-          termos: atual.payload?.termos || [],
-        }}
-      />
     </div>
   );
 };
