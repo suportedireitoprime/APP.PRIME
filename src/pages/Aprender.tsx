@@ -360,8 +360,6 @@ const Aprender = () => {
             <section
               className="bg-card relative isolate overflow-hidden -mx-3 sm:mx-0 rounded-none sm:rounded-2xl border-b border-border sm:border shadow-xl"
               aria-label="Seu progresso em trilhas"
-            >r shadow-xl"
-              aria-label="Seu progresso em trilhas"
             >
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.08),transparent_60%)]" />
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.25),transparent_65%)]" />
