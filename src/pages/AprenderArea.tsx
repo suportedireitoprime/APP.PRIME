@@ -39,7 +39,7 @@ type Flashcard = {
 const AprenderArea = () => {
   useTrackArea("aprender_area_aberta");
   const navigate = useNavigate();
-  const goBack = useGoBack('/aprender');
+  const goBack = () => navigate('/aprender');
   const { slug } = useParams<{ slug: string }>();
   const { user } = useAuth();
 

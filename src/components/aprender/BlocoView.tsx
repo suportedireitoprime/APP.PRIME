@@ -297,7 +297,7 @@ export function BlocoView({
             Linha Estrutural
           </span>
           {titulo && (
-            <h2 className="font-sans text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-snug">
+            <h2 className="font-sans text-xl sm:text-2xl font-extrabold tracking-tight text-white leading-snug">
               {titulo}
             </h2>
           )}
@@ -364,7 +364,7 @@ export function BlocoView({
             {tom === 'alerta' ? 'Atenção Crucial' : tom === 'dica' ? 'Dica Estratégica' : 'Ponto Fundamental'}
           </div>
           {titulo && (
-            <h2 className="mb-4 font-sans text-2xl sm:text-3xl font-black tracking-tight text-white leading-snug">
+            <h2 className="mb-4 font-sans text-xl sm:text-2xl font-black tracking-tight text-white leading-snug">
               {titulo}
             </h2>
           )}
@@ -444,10 +444,10 @@ export function BlocoView({
             <span>Complete o Tipo Penal</span>
           </div>
 
-          <div className="p-6 sm:p-7 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-md shadow-xl mb-6">
-            <p className="font-sans text-[17px] sm:text-[19px] leading-[1.8] text-white font-normal">
+          <div className="p-5 sm:p-7 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-md shadow-xl mb-6">
+            <p className="font-sans text-[15px] sm:text-[18px] leading-[1.8] text-white font-normal break-words">
               {parts[0]}
-              <span className={`inline-block mx-1.5 px-3.5 py-1 rounded-xl font-bold transition-all border-2 ${
+              <span className={`inline-block align-middle text-[13px] sm:text-[15px] mx-1 sm:mx-1.5 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl font-bold transition-all border-2 ${
                 chosenWord
                   ? resposta?.correta
                     ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.3)]'

@@ -99,7 +99,7 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
     if (match && match[1]) {
       return (
         <>
-          <span className="text-primary font-black">{match[1]}</span>
+          <span className="text-rose-400 font-black">{match[1]}</span>
           {match[2] ? ` ${match[2]}` : ''}
         </>
       );
@@ -142,10 +142,10 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
     <article className="max-w-[70ch] lg:max-w-[76ch] mx-auto py-3 px-1 sm:px-2">
       {titulo && (
         <header className="mb-6 sm:mb-8">
-          <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-primary mb-2.5 bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20 shadow-sm">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-rose-400 mb-2.5 bg-rose-400/10 px-2.5 py-1 rounded-full border border-rose-400/20 shadow-sm">
             {isCasoPratico ? (
               <>
-                <Scale className="w-3.5 h-3.5 text-primary shrink-0" />
+                <Scale className="w-3.5 h-3.5 text-rose-400 shrink-0" />
                 <span>Caso Prático</span>
               </>
             ) : termosGlossario.length > 0 ? (
@@ -160,7 +160,7 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
               </>
             )}
           </span>
-          <h2 className="font-sans text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white leading-tight sm:leading-snug">
+          <h2 className="font-sans text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-white leading-tight sm:leading-snug">
             {tituloFormatado}
           </h2>
         </header>
