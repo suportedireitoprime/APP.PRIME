@@ -22,6 +22,7 @@ import { AulaConcluidaScreen } from '@/components/aprender/AulaConcluidaScreen';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { AulaPreviaScreen, type PreviaAula } from '@/components/aprender/AulaPreviaScreen';
 import { haptic } from '@/lib/nativeHaptics';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 
 export const getAtoInfo = (idx: number, totalSlides: number) => {
   const lim1 = Math.max(1, Math.round(totalSlides * 0.33));
@@ -290,224 +291,352 @@ const AprenderAula = () => {
   const atoInfo = getAtoInfo(currentIdx, total);
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[#0f1115] text-neutral-100 selection:bg-primary/30">
-      {/* ── Header editorial com Linha do Tempo no topo ── */}
-      <header
-        className="sticky top-0 z-30 bg-[#14161f]/95 backdrop-blur-xl border-b border-white/[0.08]"
-        style={{ paddingTop: 'calc(var(--sai-top) + 0.25rem)' }}
-      >
-        {/* ── Linha do Tempo na parte superior (Timeline de Páginas) ── */}
-        <div
-          className="max-w-4xl mx-auto px-4 pt-2.5 pb-1"
-          role="navigation"
-          aria-label="Linha do tempo das páginas da aula"
+    <div className="flex min-h-dvh flex-col bg-[#0D0D0D] text-neutral-100 selection:bg-primary/30 relative overflow-x-hidden">
+      {/* Background ShapeGrid oficial idêntico ao de Pílulas e restante do APP.PRIME (Item 3) */}
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
+        <ShapeGrid
+          speed={0.5}
+          squareSize={40}
+          direction="diagonal"
+          borderColor="rgba(255, 255, 255, 0.04)"
+          hoverFillColor="rgba(255, 255, 255, 0.08)"
+          shape="square"
+          hoverTrailAmount={5}
+        />
+      </div>
+
+      <div className="relative z-10 flex min-h-dvh flex-col">
+        {/* ── Header editorial com Linha do Tempo no topo ── */}
+        <header
+          className="sticky top-0 z-30 bg-[#14161f]/95 backdrop-blur-xl border-b border-white/[0.08]"
+          style={{ paddingTop: 'calc(var(--sai-top) + 0.25rem)' }}
         >
-          <div className="flex items-center gap-1 sm:gap-1.5 w-full">
-            {blocos.map((b, i) => {
-              const isPast = i < currentIdx;
-              const isCurrent = i === currentIdx;
-              return (
-                <button
-                  key={b.id}
-                  onClick={() => goToPage(i)}
-                  className="group relative flex-1 py-2 -my-2 cursor-pointer focus:outline-none"
-                  aria-label={`Ir para página ${i + 1} de ${total}: ${rotuloPorTipo(b.tipo)}`}
-                  title={`Página ${i + 1} de ${total} • ${rotuloPorTipo(b.tipo)}`}
-                >
-                  <div
-                    className={`h-[3.5px] sm:h-1 rounded-full transition-all duration-300 ${
-                      isPast
-                        ? 'bg-primary shadow-[0_0_6px_hsl(var(--primary)/0.6)]'
-                        : isCurrent
-                        ? 'bg-primary shadow-[0_0_12px_hsl(var(--primary))] scale-y-125'
-                        : 'bg-white/15 group-hover:bg-white/25'
-                    }`}
-                  />
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Linha de navegação e título */}
-        <div
-          className="flex items-center justify-between py-2 max-w-4xl mx-auto"
-          style={{
-            paddingLeft: 'calc(1rem + var(--sai-left))',
-            paddingRight: 'calc(1rem + var(--sai-right))',
-          }}
-        >
-          <button
-            type="button"
-            onClick={handleVoltar}
-            aria-label="Voltar para o módulo de aulas"
-            className="flex w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 items-center justify-center rounded-2xl bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.1] active:scale-95 transition-all text-white/80 hover:text-white cursor-pointer z-30"
+          {/* ── Linha do Tempo na parte superior (Timeline de Páginas - Item 1) ── */}
+          <div
+            className="max-w-7xl mx-auto px-4 pt-2.5 pb-1 w-full"
+            role="navigation"
+            aria-label="Linha do tempo das páginas da aula"
           >
-            <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
-          </button>
-
-          <div className="flex flex-col items-center text-center flex-1 min-w-0 px-2 sm:px-4">
-            <span className={`inline-flex items-center text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full border mb-1 ${atoInfo.badgeBg} ${atoInfo.cor}`}>
-              {atoInfo.nome}
-            </span>
-            <p className="text-[13px] sm:text-[15px] font-bold text-white truncate max-w-[240px] sm:max-w-none leading-tight font-display">
-              {aula.titulo}
-            </p>
-            <p className="text-[10px] sm:text-[11px] font-semibold text-primary uppercase tracking-wider mt-0.5">
-              Página {currentIdx + 1} de {total} • {rotuloPorTipo(blocoAtual.tipo)}
-            </p>
-          </div>
-
-          <div className="flex items-center justify-end w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0">
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold shadow-sm">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span className="tabular-nums font-mono">{acertos * 15} XP</span>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* ── Corpo da aula paginado — estética editorial tipo blog ── */}
-      <main className="flex-1 flex flex-col justify-center px-4 sm:px-6 md:px-8 py-4 sm:py-6 overflow-hidden max-w-4xl w-full mx-auto pb-24 relative">
-        {/* Setas Flutuantes Laterais para Navegação Rápida em Telas Maiores */}
-        {currentIdx > 0 && (
-          <button
-            onClick={() => goToPage(currentIdx - 1)}
-            aria-label="Página anterior"
-            className="hidden lg:flex absolute -left-5 xl:-left-7 top-1/2 -translate-y-1/2 z-20 w-11 h-11 items-center justify-center rounded-full bg-[#181a26] border border-white/10 text-white/70 hover:text-white hover:bg-[#222536] hover:scale-110 shadow-xl transition-all cursor-pointer"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-        )}
-
-        {currentIdx < total - 1 && (
-          <button
-            onClick={() => goToPage(currentIdx + 1)}
-            aria-label="Próxima página"
-            className="hidden lg:flex absolute -right-5 xl:-right-7 top-1/2 -translate-y-1/2 z-20 w-11 h-11 items-center justify-center rounded-full bg-[#181a26] border border-white/10 text-white/70 hover:text-white hover:bg-[#222536] hover:scale-110 shadow-xl transition-all cursor-pointer"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
-        )}
-
-        <div
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseLeave}
-          className="w-full flex-1 flex flex-col bg-[#161822] border border-white/[0.08] rounded-3xl p-5 sm:p-8 md:p-10 shadow-2xl shadow-black/40 overflow-hidden relative select-none md:cursor-grab md:active:cursor-grabbing"
-        >
-          <AnimatePresence mode="wait" custom={direction}>
-            <motion.div
-              key={blocoAtual.id}
-              custom={direction}
-              initial={{ opacity: 0, x: direction * 35 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -direction * 35 }}
-              transition={{ duration: 0.28, ease: [0.25, 1, 0.5, 1] }}
-              className="flex-1 flex flex-col overflow-hidden select-text"
-            >
-              {/* Conteúdo com scroll interno delimitado à página atual */}
-              <div
-                ref={cardScrollRef}
-                className="flex-1 overflow-y-auto pr-1 sm:pr-2 space-y-4"
-              >
-                <BlocoView
-                  bloco={blocoAtual}
-                  resposta={respostas[blocoAtual.id]}
-                  onResponder={(escolha) => responderPergunta(blocoAtual, escolha)}
-                  flipped={!!flipped[blocoAtual.id]}
-                  onFlip={() => {
-                    playFlipSound();
-                    setFlipped((f) => ({ ...f, [blocoAtual.id]: !f[blocoAtual.id] }));
-                  }}
-                  onAvaliarFlash={(nivel) => avaliarFlashcard(blocoAtual, nivel)}
-                  conexao={conexoes[blocoAtual.id]}
-                  onConexao={async (map, done) => {
-                    setConexoes((c) => ({ ...c, [blocoAtual.id]: map }));
-                    if (done) {
-                      const pares = blocoAtual.payload?.pares || [];
-                      const acertou = pares.every((_: any, i: number) => map[i] === i);
-                      await salvarBloco(blocoAtual, { map }, acertou);
-                    }
-                  }}
+            {/* Mobile (<640px): Barra de progresso contínua e fluida (Item 1) */}
+            <div className="flex sm:hidden items-center gap-2.5 w-full">
+              <div className="relative flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full bg-gradient-to-r from-primary via-emerald-400 to-sky-400 shadow-[0_0_8px_hsl(var(--primary)/0.5)]"
+                  initial={false}
+                  animate={{ width: `${Math.min(100, Math.max(4, ((currentIdx + 1) / total) * 100))}%` }}
+                  transition={{ duration: 0.3, ease: 'easeOut' }}
                 />
               </div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
+              <span className="text-[11px] font-mono font-bold text-neutral-400 tabular-nums shrink-0">
+                {currentIdx + 1}/{total}
+              </span>
+            </div>
 
-        {/* Dica sutil de navegação por gesto */}
-        <div className="flex items-center justify-center gap-1.5 text-[11px] text-neutral-400 select-none pt-2">
-          <span>Deslize</span>
-          <span className="inline-flex items-center text-primary font-bold">← →</span>
-          <span>para navegar</span>
-        </div>
-      </main>
-
-      {/* ── Barra inferior: APENAS sumário + quantas páginas tem + navegação ── */}
-      <nav
-        aria-label="Navegação da aula"
-        className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.08] bg-[#14161f]/95 backdrop-blur-xl flex items-center justify-between"
-        style={{
-          paddingBottom: 'calc(0.75rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))',
-          paddingLeft: 'calc(1.25rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
-          paddingRight: 'calc(1.25rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
-          paddingTop: '0.75rem',
-        }}
-      >
-        <button
-          onClick={() => {
-            haptic.selection();
-            setSumarioOpen(true);
-          }}
-          className="flex items-center gap-2.5 h-11 px-4 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white/90 hover:text-white hover:bg-white/10 active:scale-95 transition-all shadow-sm min-h-[44px]"
-          aria-label="Abrir sumário da aula"
-        >
-          <List className="h-5 w-5 text-primary" />
-          <span className="text-[14px] font-semibold tracking-wide">Sumário</span>
-        </button>
-
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="flex items-center rounded-xl bg-white/[0.05] border border-white/[0.08] p-0.5">
-            <button
-              onClick={() => goToPage(currentIdx - 1)}
-              disabled={currentIdx <= 0}
-              aria-label="Página anterior"
-              className="flex h-10 w-10 sm:h-9 sm:w-9 items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all min-h-[40px] min-w-[40px]"
-            >
-              <ChevronLeft className="h-5 w-5 sm:h-4 sm:w-4" />
-            </button>
-
-            <span className="text-[13px] font-semibold tabular-nums text-neutral-300 px-3 min-w-[90px] text-center select-none">
-              {currentIdx + 1} de {total}
-            </span>
-
-            <button
-              onClick={() => goToPage(currentIdx + 1)}
-              disabled={currentIdx >= total - 1}
-              aria-label="Próxima página"
-              className="flex h-10 w-10 sm:h-9 sm:w-9 items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all min-h-[40px] min-w-[40px]"
-            >
-              <ChevronRight className="h-5 w-5 sm:h-4 sm:w-4" />
-            </button>
+            {/* Desktop/Tablet (>=640px): Linha do tempo segmentada interativa */}
+            <div className="hidden sm:flex items-center gap-1 sm:gap-1.5 w-full">
+              {blocos.map((b, i) => {
+                const isPast = i < currentIdx;
+                const isCurrent = i === currentIdx;
+                return (
+                  <button
+                    key={b.id}
+                    onClick={() => goToPage(i)}
+                    className="group relative flex-1 py-2 -my-2 cursor-pointer focus:outline-none"
+                    aria-label={`Ir para página ${i + 1} de ${total}: ${rotuloPorTipo(b.tipo)}`}
+                    title={`Página ${i + 1} de ${total} • ${rotuloPorTipo(b.tipo)}`}
+                  >
+                    <div
+                      className={`h-[3.5px] sm:h-1 rounded-full transition-all duration-300 ${
+                        isPast
+                          ? 'bg-primary shadow-[0_0_6px_hsl(var(--primary)/0.6)]'
+                          : isCurrent
+                          ? 'bg-primary shadow-[0_0_12px_hsl(var(--primary))] scale-y-125'
+                          : 'bg-white/15 group-hover:bg-white/25'
+                      }`}
+                    />
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {canFinish && (
+          {/* Linha de navegação e título */}
+          <div
+            className="flex items-center justify-between py-2 max-w-7xl mx-auto"
+            style={{
+              paddingLeft: 'calc(1rem + var(--sai-left))',
+              paddingRight: 'calc(1rem + var(--sai-right))',
+            }}
+          >
+            <button
+              type="button"
+              onClick={handleVoltar}
+              aria-label="Voltar para o módulo de aulas"
+              className="flex w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 items-center justify-center rounded-2xl bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.1] active:scale-95 transition-all text-white/80 hover:text-white cursor-pointer z-30"
+            >
+              <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
+            </button>
+
+            <div className="flex flex-col items-center text-center flex-1 min-w-0 px-2 sm:px-4">
+              <span className={`inline-flex items-center text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full border mb-1 ${atoInfo.badgeBg} ${atoInfo.cor}`}>
+                {atoInfo.nome}
+              </span>
+              <p className="text-[13px] sm:text-[15px] font-bold text-white truncate max-w-[240px] sm:max-w-none leading-tight font-display">
+                {aula.titulo}
+              </p>
+              <p className="text-[10px] sm:text-[11px] font-semibold text-primary uppercase tracking-wider mt-0.5">
+                Página {currentIdx + 1} de {total} • {rotuloPorTipo(blocoAtual.tipo)}
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0">
+              <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold shadow-sm">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span className="tabular-nums font-mono">{acertos * 15} XP</span>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* ── Corpo da aula adaptativo: 2 Painéis no Desktop/Tablet Landscape (Item 18) ── */}
+        <main className="flex-1 flex flex-col justify-center px-3 sm:px-6 md:px-8 py-4 sm:py-6 max-w-7xl w-full mx-auto pb-24 relative">
+          <div className="flex-1 flex gap-6 items-stretch w-full">
+            {/* Painel Lateral Esquerdo (Two-Pane Master Detail) para telas grandes (lg: / xl: - Item 18) */}
+            <aside className="hidden lg:flex flex-col w-72 shrink-0 bg-[#161822]/90 backdrop-blur-md border border-white/[0.08] rounded-3xl p-4 shadow-xl select-none max-h-[calc(100vh-160px)] overflow-hidden">
+              <div className="flex items-center justify-between pb-3 mb-2 border-b border-white/[0.06]">
+                <span className="text-xs font-bold text-white/90 flex items-center gap-2">
+                  <List className="w-4 h-4 text-primary" />
+                  Roteiro da Aula
+                </span>
+                <span className="text-[10px] font-mono font-semibold text-neutral-400 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
+                  {total} págs
+                </span>
+              </div>
+
+              <div className="flex-1 overflow-y-auto space-y-4 pr-1.5 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                {[
+                  {
+                    ato: 1,
+                    titulo: 'Ato I · Fundamentos',
+                    cor: 'text-sky-400',
+                    badgeBg: 'bg-sky-500/10 border-sky-500/20',
+                    items: blocos.slice(0, Math.max(1, Math.round(total * 0.33))),
+                    offset: 0,
+                  },
+                  {
+                    ato: 2,
+                    titulo: 'Ato II · Doutrina & Casos',
+                    cor: 'text-amber-400',
+                    badgeBg: 'bg-amber-500/10 border-amber-500/20',
+                    items: blocos.slice(Math.max(1, Math.round(total * 0.33)), Math.max(2, Math.round(total * 0.68))),
+                    offset: Math.max(1, Math.round(total * 0.33)),
+                  },
+                  {
+                    ato: 3,
+                    titulo: 'Ato III · Fixação Ativa',
+                    cor: 'text-emerald-400',
+                    badgeBg: 'bg-emerald-500/10 border-emerald-500/20',
+                    items: blocos.slice(Math.max(2, Math.round(total * 0.68))),
+                    offset: Math.max(2, Math.round(total * 0.68)),
+                  },
+                ].map((secao) => (
+                  <div key={secao.ato} className="space-y-1">
+                    <div className="flex items-center gap-1.5 px-1 py-1">
+                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${secao.badgeBg} ${secao.cor}`}>
+                        {secao.titulo}
+                      </span>
+                    </div>
+                    <div className="space-y-0.5">
+                      {secao.items.map((b, localIdx) => {
+                        const i = secao.offset + localIdx;
+                        const Icon = iconePorTipo(b.tipo);
+                        const isCurrent = i === currentIdx;
+                        const isPassed = i <= highestVisible;
+                        const titulo = b.payload?.titulo || b.payload?.enunciado || b.payload?.frente || rotuloPorTipo(b.tipo);
+
+                        return (
+                          <button
+                            key={b.id}
+                            onClick={() => goToPage(i)}
+                            className={`flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left transition-all cursor-pointer ${
+                              isCurrent
+                                ? 'bg-primary/15 border border-primary/40 text-white shadow-sm'
+                                : isPassed
+                                ? 'hover:bg-white/[0.06] text-neutral-300'
+                                : 'text-neutral-500 hover:bg-white/[0.03]'
+                            }`}
+                          >
+                            <span
+                              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-xs ${
+                                isCurrent
+                                  ? 'bg-primary text-primary-foreground font-bold'
+                                  : isPassed
+                                  ? 'bg-white/10 text-primary'
+                                  : 'bg-white/5 text-neutral-500'
+                              }`}
+                            >
+                              <Icon className="h-3.5 w-3.5" />
+                            </span>
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-xs font-medium leading-tight">
+                                {i + 1}. {titulo}
+                              </p>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </aside>
+
+            {/* Painel Central / Direito: Cartão da Aula */}
+            <div className="flex-1 flex flex-col min-w-0 relative">
+              {/* Setas Flutuantes Laterais para Navegação Rápida em Telas Maiores */}
+              {currentIdx > 0 && (
+                <button
+                  onClick={() => goToPage(currentIdx - 1)}
+                  aria-label="Página anterior"
+                  className="hidden lg:flex absolute -left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full bg-[#181a26]/90 border border-white/10 text-white/70 hover:text-white hover:bg-[#222536] hover:scale-110 shadow-xl transition-all cursor-pointer"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+              )}
+
+              {currentIdx < total - 1 && (
+                <button
+                  onClick={() => goToPage(currentIdx + 1)}
+                  aria-label="Próxima página"
+                  className="hidden lg:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full bg-[#181a26]/90 border border-white/10 text-white/70 hover:text-white hover:bg-[#222536] hover:scale-110 shadow-xl transition-all cursor-pointer"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              )}
+
+              <div
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseLeave}
+                className="w-full flex-1 flex flex-col bg-[#161822]/95 backdrop-blur-md border border-white/[0.08] rounded-3xl p-5 sm:p-8 md:p-10 shadow-2xl shadow-black/40 overflow-hidden relative select-none md:cursor-grab md:active:cursor-grabbing min-h-[500px]"
+              >
+                <AnimatePresence mode="wait" custom={direction}>
+                  <motion.div
+                    key={blocoAtual.id}
+                    custom={direction}
+                    initial={{ opacity: 0, x: direction * 35 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -direction * 35 }}
+                    transition={{ duration: 0.28, ease: [0.25, 1, 0.5, 1] }}
+                    className="flex-1 flex flex-col overflow-hidden select-text"
+                  >
+                    {/* Conteúdo com scroll interno delimitado à página atual */}
+                    <div
+                      ref={cardScrollRef}
+                      className="flex-1 overflow-y-auto pr-1 sm:pr-2 space-y-4"
+                    >
+                      <BlocoView
+                        bloco={blocoAtual}
+                        resposta={respostas[blocoAtual.id]}
+                        onResponder={(escolha) => responderPergunta(blocoAtual, escolha)}
+                        flipped={!!flipped[blocoAtual.id]}
+                        onFlip={() => {
+                          playFlipSound();
+                          setFlipped((f) => ({ ...f, [blocoAtual.id]: !f[blocoAtual.id] }));
+                        }}
+                        onAvaliarFlash={(nivel) => avaliarFlashcard(blocoAtual, nivel)}
+                        conexao={conexoes[blocoAtual.id]}
+                        onConexao={async (map, done) => {
+                          setConexoes((c) => ({ ...c, [blocoAtual.id]: map }));
+                          if (done) {
+                            const pares = blocoAtual.payload?.pares || [];
+                            const acertou = pares.every((_: any, i: number) => map[i] === i);
+                            await salvarBloco(blocoAtual, { map }, acertou);
+                          }
+                        }}
+                      />
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* Dica sutil de navegação por gesto */}
+              <div className="flex items-center justify-center gap-1.5 text-[11px] text-neutral-400 select-none pt-2">
+                <span>Deslize</span>
+                <span className="inline-flex items-center text-primary font-bold">← →</span>
+                <span>para navegar</span>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        {/* ── Barra inferior: APENAS sumário + quantas páginas tem + navegação ── */}
+        <nav
+          aria-label="Navegação da aula"
+          className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.08] bg-[#14161f]/95 backdrop-blur-xl flex items-center justify-between"
+          style={{
+            paddingBottom: 'calc(0.75rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))',
+            paddingLeft: 'calc(1.25rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
+            paddingRight: 'calc(1.25rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
+            paddingTop: '0.75rem',
+          }}
+        >
+          <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
             <button
               onClick={() => {
-                haptic.impact('medium');
-                concluirAula();
+                haptic.selection();
+                setSumarioOpen(true);
               }}
-              className="flex h-10 items-center gap-1.5 rounded-xl bg-primary text-primary-foreground px-4 text-[13px] font-bold hover:bg-primary/90 active:scale-95 transition-all shadow-md shadow-primary/25 min-h-[44px]"
+              className="flex items-center gap-2.5 h-11 px-4 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white/90 hover:text-white hover:bg-white/10 active:scale-95 transition-all shadow-sm min-h-[44px]"
+              aria-label="Abrir sumário da aula"
             >
-              Concluir <CheckCircle2 className="h-4 w-4" />
+              <List className="h-5 w-5 text-primary" />
+              <span className="text-[14px] font-semibold tracking-wide">Sumário</span>
             </button>
-          )}
-        </div>
-      </nav>
+
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="flex items-center rounded-xl bg-white/[0.05] border border-white/[0.08] p-0.5">
+                <button
+                  onClick={() => goToPage(currentIdx - 1)}
+                  disabled={currentIdx <= 0}
+                  aria-label="Página anterior"
+                  className="flex h-10 w-10 sm:h-9 sm:w-9 items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all min-h-[40px] min-w-[40px]"
+                >
+                  <ChevronLeft className="h-5 w-5 sm:h-4 sm:w-4" />
+                </button>
+
+                <span className="text-[13px] font-semibold tabular-nums text-neutral-300 px-3 min-w-[90px] text-center select-none">
+                  {currentIdx + 1} de {total}
+                </span>
+
+                <button
+                  onClick={() => goToPage(currentIdx + 1)}
+                  disabled={currentIdx >= total - 1}
+                  aria-label="Próxima página"
+                  className="flex h-10 w-10 sm:h-9 sm:w-9 items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all min-h-[40px] min-w-[40px]"
+                >
+                  <ChevronRight className="h-5 w-5 sm:h-4 sm:w-4" />
+                </button>
+              </div>
+
+              {canFinish && (
+                <button
+                  onClick={() => {
+                    haptic.impact('medium');
+                    concluirAula();
+                  }}
+                  className="flex h-10 items-center gap-1.5 rounded-xl bg-primary text-primary-foreground px-4 text-[13px] font-bold hover:bg-primary/90 active:scale-95 transition-all shadow-md shadow-primary/25 min-h-[44px]"
+                >
+                  Concluir <CheckCircle2 className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          </div>
+        </nav>
+      </div>
 
       {/* Modal de Feedback de Questão */}
       <AnimatePresence>

@@ -6,6 +6,7 @@ import { Aula, Bloco, interleaveBlocos } from '@/lib/aprenderUtils';
 import flipSoundAsset from '@/assets/flipcard.mp3.asset.json';
 import { srcOf } from '@/lib/assetUrl';
 import { haptic } from '@/lib/nativeHaptics';
+import { get as idbGet, set as idbSet } from 'idb-keyval';
 
 export function useAprenderAula(aulaId: string | undefined, user: any) {
   const [aula, setAula] = useState<Aula | null>(null);
@@ -59,35 +60,69 @@ export function useAprenderAula(aulaId: string | undefined, user: any) {
 
   useEffect(() => {
     if (!aulaId) return;
+    let isMounted = true;
     (async () => {
-      const [{ data: a }, { data: bs }] = await Promise.all([
-        supabase.from('aprender_aulas').select('id, titulo, objetivo, duracao_est_min, previa, modulo_id, ordem').eq('id', aulaId).maybeSingle(),
-        supabase.from('aprender_blocos').select('id, ordem, tipo, payload, resposta_correta').eq('aula_id', aulaId).order('ordem'),
-      ]);
-      setAula(a as Aula | null);
-      
-      const loadedBlocos = (bs ?? []) as Bloco[];
-      setBlocos(interleaveBlocos(loadedBlocos));
-      
-      startedAt.current = Date.now();
-      setLoading(false);
+      const cacheKey = `aprender_aula_cache_${aulaId}`;
+      try {
+        const cached = await idbGet<{ aula: Aula; blocos: Bloco[]; proximaAula: any; proximasAulas: any }>(cacheKey);
+        if (cached && isMounted) {
+          setAula(cached.aula);
+          setBlocos(cached.blocos);
+          setProximaAula(cached.proximaAula);
+          setProximasAulas(cached.proximasAulas || []);
+          setLoading(false);
+        }
+      } catch (err) {
+        console.warn('Erro ao carregar cache offline da aula:', err);
+      }
 
-      if (a?.modulo_id != null) {
-        const { data: prox } = await supabase
-          .from('aprender_aulas')
-          .select('id, titulo, ordem')
-          .eq('modulo_id', a.modulo_id)
-          .gt('ordem', a.ordem ?? 0)
-          .order('ordem')
-          .limit(8);
-        const lista = (prox ?? []).map((p: any) => ({ id: p.id, titulo: p.titulo }));
-        setProximasAulas(lista);
-        setProximaAula(lista[0] ?? null);
-      } else {
-        setProximaAula(null);
-        setProximasAulas([]);
+      try {
+        const [{ data: a }, { data: bs }] = await Promise.all([
+          supabase.from('aprender_aulas').select('id, titulo, objetivo, duracao_est_min, previa, modulo_id, ordem').eq('id', aulaId).maybeSingle(),
+          supabase.from('aprender_blocos').select('id, ordem, tipo, payload, resposta_correta').eq('aula_id', aulaId).order('ordem'),
+        ]);
+        if (!isMounted) return;
+
+        if (a) {
+          setAula(a as Aula | null);
+          const loadedBlocos = (bs ?? []) as Bloco[];
+          const finalBlocos = interleaveBlocos(loadedBlocos);
+          setBlocos(finalBlocos);
+          startedAt.current = Date.now();
+          setLoading(false);
+
+          let proxLista: any[] = [];
+          let proxItem: any = null;
+          if (a?.modulo_id != null) {
+            const { data: prox } = await supabase
+              .from('aprender_aulas')
+              .select('id, titulo, ordem')
+              .eq('modulo_id', a.modulo_id)
+              .gt('ordem', a.ordem ?? 0)
+              .order('ordem')
+              .limit(8);
+            proxLista = (prox ?? []).map((p: any) => ({ id: p.id, titulo: p.titulo }));
+            proxItem = proxLista[0] ?? null;
+            setProximasAulas(proxLista);
+            setProximaAula(proxItem);
+          } else {
+            setProximaAula(null);
+            setProximasAulas([]);
+          }
+
+          // Grava em IndexedDB para acesso 100% offline (Item 19)
+          void idbSet(cacheKey, {
+            aula: a,
+            blocos: finalBlocos,
+            proximaAula: proxItem,
+            proximasAulas: proxLista,
+          }).catch(() => {});
+        }
+      } catch (networkErr) {
+        console.warn('Rede indisponível, utilizando dados offline:', networkErr);
       }
     })();
+    return () => { isMounted = false; };
   }, [aulaId]);
 
   useEffect(() => {

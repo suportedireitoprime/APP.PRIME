@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Quote, Scale, Sparkles, Check, XCircle, RotateCw, CheckCircle2, ArrowRight, Lightbulb, Flag } from 'lucide-react';
+import { Quote, Scale, Sparkles, Check, XCircle, RotateCw, CheckCircle2, ArrowRight, Lightbulb, Flag, ChevronDown } from 'lucide-react';
 import { Bloco, iconePorTipo, isBlocoTexto, rotuloPorTipo } from '@/lib/aprenderUtils';
 import { LeituraBlock } from '@/components/aprender/blocos/LeituraBlock';
 import { CheckpointBlock } from '@/components/aprender/blocos/CheckpointBlock';
@@ -10,6 +10,7 @@ import { OrdenacaoBlock } from '@/components/aprender/blocos/OrdenacaoBlock';
 import { CenaAnimadaBlock } from '@/components/aprender/blocos/CenaAnimadaBlock';
 import { ConexaoBlock } from '@/components/aprender/blocos/ConexaoBlock';
 import { type NivelFlashcard } from '@/lib/spacedRepetition';
+import { haptic } from '@/lib/nativeHaptics';
 
 export interface BlocoViewProps {
   bloco: Bloco;
@@ -125,21 +126,28 @@ export function BlocoView({
     );
   }
 
+  const [collapsedRamos, setCollapsedRamos] = useState<Record<number, boolean>>({});
+
   if (bloco.tipo === 'mapa_mental') {
     const { raiz, definicao_raiz, ramos = [] } = bloco.payload || {};
     return (
       <article className="mt-4 mb-8">
-        <div className="flex items-center gap-2 mb-4">
-          <span className="w-1.5 h-4 bg-primary rounded-full animate-pulse" />
-          <p className="text-[11px] font-black uppercase tracking-widest text-primary">Mapa mental</p>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-4 bg-primary rounded-full animate-pulse" />
+            <p className="text-[11px] font-black uppercase tracking-widest text-primary">Mapa mental sintético</p>
+          </div>
+          <span className="text-xs text-neutral-400 font-semibold">
+            {ramos.length} ramificações
+          </span>
         </div>
         
         {/* Raiz do Mapa */}
-        <div className="relative z-10 rounded-2xl border border-primary/40 bg-black/40 backdrop-blur-md p-6 text-center shadow-[0_0_20px_rgba(0,0,0,0.5)] ring-1 ring-white/5">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent opacity-50 rounded-2xl pointer-events-none" />
-          <p className="relative z-10 font-display text-[26px] sm:text-[30px] font-black text-white leading-tight tracking-wide drop-shadow-md">{raiz}</p>
+        <div className="relative z-10 rounded-2xl border border-primary/40 bg-black/50 backdrop-blur-md p-6 text-center shadow-[0_0_24px_rgba(0,0,0,0.5)] ring-1 ring-white/10">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent opacity-60 rounded-2xl pointer-events-none" />
+          <p className="relative z-10 font-display text-[24px] sm:text-[28px] font-black text-white leading-tight tracking-wide drop-shadow-md">{raiz}</p>
           {definicao_raiz && (
-            <p className="relative z-10 mt-2 text-[13px] sm:text-sm text-white/70 leading-relaxed font-medium max-w-lg mx-auto">{definicao_raiz}</p>
+            <p className="relative z-10 mt-2 text-[13px] sm:text-sm text-white/80 leading-relaxed font-medium max-w-lg mx-auto">{definicao_raiz}</p>
           )}
         </div>
 
@@ -151,7 +159,6 @@ export function BlocoView({
         )}
 
         <div className="relative pl-6 sm:pl-8">
-          {/* Linha da Esquerda */}
           {ramos.length > 0 && (
             <span
               aria-hidden
@@ -160,46 +167,73 @@ export function BlocoView({
           )}
           
           <div className="space-y-5">
-            {ramos.map((r: any, i: number) => (
-              <div key={i} className="relative group">
-                {/* Conector Horizontal */}
-                <span aria-hidden className="absolute -left-4 sm:-left-[22px] top-[26px] h-[2px] w-4 sm:w-5 bg-primary/40 group-hover:bg-primary/80 transition-colors" />
-                <span
-                  aria-hidden
-                  className="absolute -left-[20px] sm:-left-[26px] top-[22px] h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full border-[2px] border-primary bg-black shadow-[0_0_8px_rgba(var(--primary-rgb),0.6)]"
-                />
-                
-                {/* Card do Ramo */}
-                <div className="rounded-xl border border-white/5 bg-card/40 backdrop-blur-sm p-4 sm:p-5 shadow-lg transition-colors group-hover:border-primary/30 group-hover:bg-card/60">
-                  <p className="font-display text-[17px] font-black text-white tracking-wide">{r.titulo}</p>
-                  {r.definicao && (
-                    <p className="mt-1 mb-4 text-[13px] text-white/60 italic leading-relaxed font-medium">{r.definicao}</p>
-                  )}
+            {ramos.map((r: any, i: number) => {
+              const isCollapsed = !!collapsedRamos[i];
+              return (
+                <div key={i} className="relative group">
+                  <span aria-hidden className="absolute -left-4 sm:-left-[22px] top-[26px] h-[2px] w-4 sm:w-5 bg-primary/40 group-hover:bg-primary/80 transition-colors" />
+                  <span
+                    aria-hidden
+                    className="absolute -left-[20px] sm:-left-[26px] top-[22px] h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full border-[2px] border-primary bg-black shadow-[0_0_8px_rgba(var(--primary-rgb),0.6)]"
+                  />
                   
-                  {/* Itens do Ramo */}
-                  <ul className="relative space-y-2.5 text-[14px] pl-3">
-                    <span aria-hidden className="absolute left-0 top-1 bottom-1 w-[1px] bg-white/10" />
-                    {(r.itens || []).map((it: any, j: number) => {
-                      const isObj = it && typeof it === 'object';
-                      const termo = isObj ? it.termo : String(it);
-                      const definicao = isObj ? it.definicao : '';
-                      return (
-                        <li key={j} className="relative flex gap-3 items-start">
-                          <span aria-hidden className="absolute -left-3 top-[10px] h-[1px] w-2.5 bg-white/10" />
-                          <span className="mt-[7px] inline-block w-1.5 h-1.5 rounded-full bg-primary/80 flex-shrink-0 shadow-[0_0_5px_rgba(255,255,255,0.3)]" />
-                          <span className="flex-1 leading-snug">
-                            <span className="font-bold text-white/90">{termo}</span>
-                            {definicao && (
-                              <span className="text-white/60"> <span className="text-primary/60">—</span> {definicao}</span>
-                            )}
-                          </span>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                  {/* Card do Ramo */}
+                  <div className="rounded-xl border border-white/10 bg-card/60 backdrop-blur-sm p-4 sm:p-5 shadow-lg transition-all group-hover:border-primary/40 group-hover:bg-card/80">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        haptic.selection();
+                        setCollapsedRamos((c) => ({ ...c, [i]: !c[i] }));
+                      }}
+                      className="w-full flex items-center justify-between text-left cursor-pointer select-none"
+                    >
+                      <div>
+                        <p className="font-display text-[17px] font-black text-white tracking-wide">{r.titulo}</p>
+                        {r.definicao && (
+                          <p className="mt-1 text-[13px] text-white/70 italic leading-relaxed font-medium">{r.definicao}</p>
+                        )}
+                      </div>
+                      <span className="flex items-center gap-1 text-xs text-primary font-bold ml-3 shrink-0">
+                        <span>{r.itens?.length || 0} itens</span>
+                        <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isCollapsed ? '-rotate-90' : ''}`} />
+                      </span>
+                    </button>
+                    
+                    {/* Itens do Ramo com AnimatePresence */}
+                    <AnimatePresence initial={false}>
+                      {!isCollapsed && (
+                        <motion.ul
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.25 }}
+                          className="relative space-y-2.5 text-[14px] pl-3 mt-4 overflow-hidden border-t border-white/5 pt-3"
+                        >
+                          <span aria-hidden className="absolute left-0 top-1 bottom-1 w-[1px] bg-white/10" />
+                          {(r.itens || []).map((it: any, j: number) => {
+                            const isObj = it && typeof it === 'object';
+                            const termo = isObj ? it.termo : String(it);
+                            const definicao = isObj ? it.definicao : '';
+                            return (
+                              <li key={j} className="relative flex gap-3 items-start">
+                                <span aria-hidden className="absolute -left-3 top-[10px] h-[1px] w-2.5 bg-white/10" />
+                                <span className="mt-[7px] inline-block w-1.5 h-1.5 rounded-full bg-primary/80 flex-shrink-0 shadow-[0_0_5px_rgba(255,255,255,0.3)]" />
+                                <span className="flex-1 leading-snug">
+                                  <span className="font-bold text-white/95">{termo}</span>
+                                  {definicao && (
+                                    <span className="text-white/70"> <span className="text-primary/60">—</span> {definicao}</span>
+                                  )}
+                                </span>
+                              </li>
+                            );
+                          })}
+                        </motion.ul>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </article>
@@ -368,6 +402,108 @@ export function BlocoView({
   if (bloco.tipo === 'pergunta') {
     const { enunciado, opcoes } = bloco.payload || {};
     const correta = String(bloco.resposta_correta?.id_correto || '').toLowerCase();
+    const isLacuna = String(enunciado || '').toLowerCase().includes('complete a lacuna') || String(enunciado || '').includes('[_____]');
+
+    if (isLacuna) {
+      const activeChoiceId = resposta ? resposta.escolha?.toLowerCase() : selectedOpcao;
+      const selectedOptionObj = (opcoes || []).find((op: any) => String(op.id).toLowerCase() === activeChoiceId);
+      const chosenWord = selectedOptionObj ? selectedOptionObj.texto : null;
+      const parts = String(enunciado || '').split(/\[_{2,}\]/);
+
+      return (
+        <article className="max-w-[70ch] mx-auto py-2">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-amber-400">
+            <Sparkles className="h-3.5 w-3.5" />
+            <span>Complete o Tipo Penal</span>
+          </div>
+
+          <div className="p-6 sm:p-7 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-md shadow-xl mb-6">
+            <p className="font-display text-[18px] sm:text-[21px] leading-[1.8] text-white font-medium">
+              {parts[0]}
+              <span className={`inline-block mx-1.5 px-3 py-1 rounded-xl font-black transition-all border-2 ${
+                chosenWord
+                  ? resposta?.correta
+                    ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.3)]'
+                    : resposta && !resposta.correta
+                    ? 'border-rose-500 bg-rose-500/20 text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.3)]'
+                    : 'border-primary bg-primary/20 text-primary-light shadow-[0_0_12px_hsl(var(--primary)/0.4)]'
+                  : 'border-dashed border-amber-400/60 bg-amber-400/10 text-amber-300 animate-pulse'
+              }`}>
+                {chosenWord || '··· selecione o termo abaixo ···'}
+              </span>
+              {parts[1] || ''}
+            </p>
+          </div>
+
+          <p className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-3">
+            Banco de Termos Legais:
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-24">
+            {(opcoes || []).map((op: any) => {
+              const id = String(op.id).toLowerCase();
+              const escolhida = activeChoiceId === id;
+              const acertou = resposta?.correta && escolhida;
+              const errou = resposta && escolhida && !resposta.correta;
+              const revelaCerta = resposta && id === correta;
+
+              let btnStyle = 'border-white/10 bg-card/60 hover:bg-card hover:border-white/20 text-neutral-200';
+              if (acertou || revelaCerta) {
+                btnStyle = 'border-emerald-500/60 bg-emerald-500/20 text-white ring-1 ring-emerald-500';
+              } else if (errou) {
+                btnStyle = 'border-rose-500/60 bg-rose-500/20 text-white ring-1 ring-rose-500';
+              } else if (escolhida) {
+                btnStyle = 'border-primary bg-primary/25 text-white ring-2 ring-primary';
+              }
+
+              return (
+                <button
+                  key={op.id}
+                  disabled={!!resposta}
+                  onClick={() => {
+                    if (!resposta) {
+                      haptic.selection();
+                      setSelectedOpcao(id);
+                    }
+                  }}
+                  className={`flex items-center justify-between p-4 rounded-2xl border font-bold text-[15px] sm:text-[16px] transition-all active:scale-[0.98] ${btnStyle}`}
+                >
+                  <span>{op.texto}</span>
+                  <span className="text-xs font-black uppercase text-neutral-500 px-2 py-0.5 rounded bg-white/5 border border-white/10">
+                    {op.id}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <AnimatePresence>
+            {!resposta && selectedOpcao && (
+              <motion.div
+                initial={{ y: 80, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 80, opacity: 0 }}
+                transition={{ type: 'spring', damping: 28, stiffness: 350 }}
+                className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/[0.08] bg-background/90 backdrop-blur-xl px-4 py-3.5 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl"
+              >
+                <div className="mx-auto max-w-3xl flex items-center justify-between gap-4">
+                  <div className="hidden sm:flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                    <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                    Termo selecionado
+                  </div>
+                  <button
+                    onClick={() => onResponder(selectedOpcao)}
+                    className="w-full sm:w-auto sm:min-w-[200px] ml-auto flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-primary/25 hover:bg-primary-light active:scale-[0.98] transition-all"
+                  >
+                    Confirmar Encaixe <ArrowRight className="h-4 w-4 text-white" strokeWidth={2.5} />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </article>
+      );
+    }
+
     return (
       <article className="max-w-[70ch] mx-auto py-2">
         <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
@@ -432,7 +568,7 @@ export function BlocoView({
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 80, opacity: 0 }}
               transition={{ type: 'spring', damping: 28, stiffness: 350 }}
-              className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/[0.08] bg-background/90 backdrop-blur-xl px-4 py-3.5 pb-[calc(1rem+var(--sai-bottom))] shadow-2xl"
+              className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/[0.08] bg-background/90 backdrop-blur-xl px-4 py-3.5 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl"
             >
               <div className="mx-auto max-w-3xl lg:max-w-[74ch] xl:max-w-[80ch] flex items-center justify-between gap-4">
                 <div className="hidden sm:flex items-center gap-2 text-xs font-medium text-muted-foreground">
