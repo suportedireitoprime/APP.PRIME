@@ -5,8 +5,8 @@
 @tailwind utilities;
 
 /* ==========================================================================
-   OCULTAR BARRA DE ROLAGEM NA RAIZ (Mobile Native & Web)
-   Remove totalmente a barra de rolagem branca/translúcida no Android WebView,
+   OCULTAR BARRA DE ROLAGEM UNIVERSAL (Mobile Native & Web)
+   Remove totalmente qualquer barra de rolagem branca/translúcida no Android WebView,
    iOS WKWebView e Web, preservando o scroll fluido por toque e mouse.
    ========================================================================== */
 *,
@@ -14,7 +14,18 @@
 *::after,
 html,
 body,
-#root {
+#root,
+div,
+main,
+section,
+article,
+aside,
+nav,
+ul,
+ol,
+p,
+pre,
+span {
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
 }
@@ -23,7 +34,16 @@ body,
 *::-webkit-scrollbar,
 html::-webkit-scrollbar,
 body::-webkit-scrollbar,
-#root::-webkit-scrollbar {
+#root::-webkit-scrollbar,
+div::-webkit-scrollbar,
+main::-webkit-scrollbar,
+section::-webkit-scrollbar,
+article::-webkit-scrollbar,
+aside::-webkit-scrollbar,
+nav::-webkit-scrollbar,
+ul::-webkit-scrollbar,
+ol::-webkit-scrollbar,
+span::-webkit-scrollbar {
   display: none !important;
   width: 0 !important;
   height: 0 !important;
@@ -39,7 +59,9 @@ body::-webkit-scrollbar,
 *::-webkit-scrollbar-thumb,
 html::-webkit-scrollbar-thumb,
 body::-webkit-scrollbar-thumb,
-#root::-webkit-scrollbar-thumb {
+#root::-webkit-scrollbar-thumb,
+div::-webkit-scrollbar-thumb,
+main::-webkit-scrollbar-thumb {
   display: none !important;
   width: 0 !important;
   height: 0 !important;
@@ -53,7 +75,9 @@ body::-webkit-scrollbar-thumb,
 *::-webkit-scrollbar-track,
 html::-webkit-scrollbar-track,
 body::-webkit-scrollbar-track,
-#root::-webkit-scrollbar-track {
+#root::-webkit-scrollbar-track,
+div::-webkit-scrollbar-track,
+main::-webkit-scrollbar-track {
   display: none !important;
   width: 0 !important;
   height: 0 !important;
@@ -108,8 +132,8 @@ body {
 html {
   background-color: #0D0D0D !important;
   
-  /* Evita layout shift de 15px na barra de rolagem e conflito de barras no desktop (Item 26) */
-  scrollbar-gutter: stable;
+  /* Garante calha limpa sem faixas brancas no mobile */
+  scrollbar-gutter: auto;
 
   /* Garante margem de respiro para que o header fixo não cubra âncoras e títulos (Item 36) */
   scroll-padding-top: calc(4.5rem + var(--sai-top, 0px));
@@ -1544,8 +1568,27 @@ html.light .bg-\[\#212121\]\/95 { background-color: hsl(var(--card) / 0.95) !imp
   animation: shimmerSlide 4s ease-in-out infinite;
 }
 
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar,
+.hide-scrollbar,
+.scrollbar-none,
+.scrollbar-hide,
+.custom-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+.no-scrollbar::-webkit-scrollbar,
+.hide-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar,
+.custom-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  -webkit-appearance: none !important;
+}
 
 /* Ficha editorial (resumos/mapas): tema "papel" escopado, para que os
    componentes que usam tokens semânticos fiquem legíveis sobre o creme. */

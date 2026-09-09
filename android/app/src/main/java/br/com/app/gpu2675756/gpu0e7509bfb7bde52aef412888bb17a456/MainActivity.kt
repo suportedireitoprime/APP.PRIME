@@ -117,14 +117,40 @@ class MainActivity : BridgeActivity() {
         disableWebviewScrollbars()
     }
 
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            disableWebviewScrollbars()
+        }
+    }
+
     private fun disableWebviewScrollbars() {
-        bridge?.webView?.apply {
-            isVerticalScrollBarEnabled = false
-            isHorizontalScrollBarEnabled = false
-            overScrollMode = View.OVER_SCROLL_NEVER
-            scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY
-            isVerticalFadingEdgeEnabled = false
-            isHorizontalFadingEdgeEnabled = false
+        val wv = bridge?.webView ?: return
+        val applyScrollDisable: () -> Unit = {
+            wv.isVerticalScrollBarEnabled = false
+            wv.isHorizontalScrollBarEnabled = false
+            wv.overScrollMode = View.OVER_SCROLL_NEVER
+            wv.scrollBarSize = 0
+            wv.isVerticalFadingEdgeEnabled = false
+            wv.isHorizontalFadingEdgeEnabled = false
+            wv.isScrollBarFadingEnabled = false
+            wv.scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY
+        }
+        
+        wv.post { applyScrollDisable() }
+        wv.postDelayed({ applyScrollDisable() }, 500)
+        wv.postDelayed({ applyScrollDisable() }, 1500)
+        wv.postDelayed({ applyScrollDisable() }, 3000)
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            wv.setOnScrollChangeListener { _, _, _, _, _ ->
+                if (wv.isVerticalScrollBarEnabled) {
+                    wv.isVerticalScrollBarEnabled = false
+                }
+                if (wv.isHorizontalScrollBarEnabled) {
+                    wv.isHorizontalScrollBarEnabled = false
+                }
+            }
         }
     }
 }

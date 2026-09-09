@@ -408,7 +408,7 @@ const AprenderAula = () => {
                 </span>
               </div>
 
-              <div className="flex-1 overflow-y-auto space-y-4 pr-1.5 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+              <div className="flex-1 overflow-y-auto space-y-4 pr-1.5 no-scrollbar">
                 {[
                   {
                     ato: 1,

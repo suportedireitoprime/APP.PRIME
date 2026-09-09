@@ -107,12 +107,12 @@
 
     <style>
       #lovable-badge { display: none !important; }
-      /* Desativar barra de rolagem na raiz (WebView nativo Android/iOS e Web) */
-      *, *::before, *::after, html, body, #root {
+      /* Desativar barra de rolagem universal (WebView nativo Android/iOS e Web) */
+      *, *::before, *::after, html, body, #root, div, main, section, article, aside, nav, ul, ol, p, pre, span {
         scrollbar-width: none !important;
         -ms-overflow-style: none !important;
       }
-      ::-webkit-scrollbar, *::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar, #root::-webkit-scrollbar {
+      ::-webkit-scrollbar, *::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar, #root::-webkit-scrollbar, div::-webkit-scrollbar, main::-webkit-scrollbar {
         display: none !important;
         width: 0 !important;
         height: 0 !important;
@@ -123,7 +123,7 @@
         visibility: hidden !important;
         -webkit-appearance: none !important;
       }
-      ::-webkit-scrollbar-thumb, *::-webkit-scrollbar-thumb, html::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb, #root::-webkit-scrollbar-thumb {
+      ::-webkit-scrollbar-thumb, *::-webkit-scrollbar-thumb, html::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb, #root::-webkit-scrollbar-thumb, div::-webkit-scrollbar-thumb, main::-webkit-scrollbar-thumb {
         display: none !important;
         width: 0 !important;
         height: 0 !important;
@@ -132,7 +132,7 @@
         visibility: hidden !important;
         -webkit-appearance: none !important;
       }
-      ::-webkit-scrollbar-track, *::-webkit-scrollbar-track, html::-webkit-scrollbar-track, body::-webkit-scrollbar-track, #root::-webkit-scrollbar-track {
+      ::-webkit-scrollbar-track, *::-webkit-scrollbar-track, html::-webkit-scrollbar-track, body::-webkit-scrollbar-track, #root::-webkit-scrollbar-track, div::-webkit-scrollbar-track, main::-webkit-scrollbar-track {
         display: none !important;
         width: 0 !important;
         height: 0 !important;
