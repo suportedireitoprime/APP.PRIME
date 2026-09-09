@@ -5,6 +5,7 @@ import { proximaRevisao, rotuloIntervalo, type NivelFlashcard } from '@/lib/spac
 import { Aula, Bloco, interleaveBlocos } from '@/lib/aprenderUtils';
 import flipSoundAsset from '@/assets/flipcard.mp3.asset.json';
 import { srcOf } from '@/lib/assetUrl';
+import { haptic } from '@/lib/nativeHaptics';
 
 export function useAprenderAula(aulaId: string | undefined, user: any) {
   const [aula, setAula] = useState<Aula | null>(null);
@@ -173,6 +174,7 @@ export function useAprenderAula(aulaId: string | undefined, user: any) {
   };
 
   const avaliarFlashcard = async (bloco: Bloco, nivel: NivelFlashcard) => {
+    haptic.selection();
     const { data: anterior } = user
       ? await supabase
           .from('aprender_progresso_bloco')
@@ -192,7 +194,12 @@ export function useAprenderAula(aulaId: string | undefined, user: any) {
     const correta = String(bloco.resposta_correta?.id_correto || '').toLowerCase() === escolha.toLowerCase();
     setRespostas((r) => ({ ...r, [bloco.id]: { correta, escolha } }));
     await salvarBloco(bloco, { escolha }, correta);
-    if (correta) playSwooshSound();
+    if (correta) {
+      playSwooshSound();
+      haptic.notification('success');
+    } else {
+      haptic.notification('error');
+    }
 
     setFeedbackPergunta({
       correta,

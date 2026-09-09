@@ -61,8 +61,31 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
         </header>
       )}
 
-      <div className="prose prose-base sm:prose-lg md:prose-xl max-w-none prose-invert prose-headings:font-sans prose-h2:text-xl sm:prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:font-bold prose-h2:text-white prose-h2:mt-8 prose-h2:mb-4 prose-h3:text-lg sm:prose-h3:text-xl md:prose-h3:text-2xl prose-h3:font-semibold prose-h3:text-white prose-p:text-[16px] sm:prose-p:text-[17px] md:prose-p:text-[18px] prose-p:leading-[1.75] sm:prose-p:leading-[1.85] prose-p:text-neutral-200 prose-p:mb-5 prose-li:text-[16px] sm:prose-li:text-[17px] md:prose-li:text-[18px] prose-li:leading-[1.75] prose-li:text-neutral-200 prose-strong:text-white prose-strong:font-bold prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-white/[0.04] prose-blockquote:text-neutral-100 prose-blockquote:py-3 prose-blockquote:px-5 prose-blockquote:rounded-r-2xl prose-blockquote:my-6 prose-blockquote:not-italic prose-blockquote:font-medium">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+      <div className="prose prose-base sm:prose-lg md:prose-xl max-w-none prose-invert prose-headings:font-sans prose-p:text-[16px] sm:prose-p:text-[17px] md:prose-p:text-[18px] prose-p:leading-[1.75] sm:prose-p:leading-[1.85] prose-p:text-neutral-200 prose-p:mb-5 prose-li:text-[16px] sm:prose-li:text-[17px] md:prose-li:text-[18px] prose-li:leading-[1.75] prose-li:text-neutral-200 prose-strong:text-white prose-strong:font-bold">
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          components={{
+            h2: ({ children }) => (
+              <div className="mt-8 mb-4 pt-3 border-t border-white/[0.08]">
+                <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2.5">
+                  <span className="w-1.5 h-5 rounded-full bg-primary inline-block shrink-0 shadow-[0_0_8px_hsl(var(--primary)/0.6)]" />
+                  <span>{children}</span>
+                </h2>
+              </div>
+            ),
+            h3: ({ children }) => (
+              <h3 className="mt-6 mb-3 text-lg sm:text-xl font-bold tracking-tight text-amber-300/90 flex items-center gap-2">
+                <span className="w-1 h-3.5 rounded-full bg-amber-400/80 inline-block shrink-0" />
+                <span>{children}</span>
+              </h3>
+            ),
+            blockquote: ({ children }) => (
+              <blockquote className="border-l-4 border-primary bg-primary/[0.06] border-y border-r border-white/[0.04] text-neutral-100 py-3.5 px-5 rounded-r-2xl my-6 not-italic font-medium shadow-sm backdrop-blur-sm">
+                {children}
+              </blockquote>
+            ),
+          }}
+        >
           {normalizarMarkdown(String(conteudo ?? texto ?? ''))}
         </ReactMarkdown>
       </div>

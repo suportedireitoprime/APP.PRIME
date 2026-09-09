@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
   BookOpen,
+  Sparkles,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -21,6 +22,18 @@ import { AulaConcluidaScreen } from '@/components/aprender/AulaConcluidaScreen';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { AulaPreviaScreen, type PreviaAula } from '@/components/aprender/AulaPreviaScreen';
 import { haptic } from '@/lib/nativeHaptics';
+
+export const getAtoInfo = (idx: number, totalSlides: number) => {
+  const lim1 = Math.max(1, Math.round(totalSlides * 0.33));
+  const lim2 = Math.max(lim1 + 1, Math.round(totalSlides * 0.68));
+  if (idx < lim1) {
+    return { numero: 1, nome: 'Ato I · Fundamentos', cor: 'text-sky-400', badgeBg: 'bg-sky-500/10 border-sky-500/20' };
+  }
+  if (idx < lim2) {
+    return { numero: 2, nome: 'Ato II · Aprofundamento', cor: 'text-amber-400', badgeBg: 'bg-amber-500/10 border-amber-500/20' };
+  }
+  return { numero: 3, nome: 'Ato III · Fixação Ativa', cor: 'text-emerald-400', badgeBg: 'bg-emerald-500/10 border-emerald-500/20' };
+};
 
 const AprenderAula = () => {
   useTrackArea("aprender_aula_iniciada");
@@ -98,14 +111,21 @@ const AprenderAula = () => {
     setCurrentIdx(clamped);
     setHighestVisible((prev) => Math.max(prev, clamped));
     if (cardScrollRef.current) {
-      cardScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+      cardScrollRef.current.scrollTop = 0;
     }
   }, [total, currentIdx, setCurrentIdx]);
 
+  // Garante scroll no topo imediatamente a cada mudança de bloco (Item 17)
+  useEffect(() => {
+    if (cardScrollRef.current) {
+      cardScrollRef.current.scrollTop = 0;
+    }
+  }, [currentIdx]);
+
   // Gestos Touch (Mobile / Tablet)
   const handleTouchStart = (e: React.TouchEvent) => {
-    // Deadzone de 24px na borda esquerda: preserva o gesto nativo de voltar do iOS e Android
-    if (e.touches[0].clientX < 24) return;
+    // Deadzone de 36px na borda esquerda: protege o gesto nativo de voltar do iOS e Android (Item 20)
+    if (e.touches[0].clientX < 36) return;
     touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;
   };
@@ -170,7 +190,7 @@ const AprenderAula = () => {
     hasMouseDragged.current = false;
   };
 
-  // Navegação por teclado (Setas Esquerda e Direita)
+  // Navegação e atalhos por teclado no Desktop (Item 14)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (feedbackPergunta || sumarioOpen) return;
@@ -184,12 +204,27 @@ const AprenderAula = () => {
       } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
         e.preventDefault();
         if (currentIdx > 0) goToPage(currentIdx - 1);
+      } else if (e.code === 'Space') {
+        const bloco = blocos[currentIdx];
+        if (bloco && bloco.tipo === 'flashcard') {
+          e.preventDefault();
+          playFlipSound();
+          setFlipped((f) => ({ ...f, [bloco.id]: !f[bloco.id] }));
+        }
+      } else if (e.key === '1' || e.key === '2' || e.key === '3') {
+        const bloco = blocos[currentIdx];
+        if (bloco && bloco.tipo === 'flashcard' && flipped[bloco.id]) {
+          e.preventDefault();
+          const nivel = e.key === '1' ? 'nao_sabia' : e.key === '2' ? 'duvida' : 'sabia';
+          avaliarFlashcard(bloco, nivel);
+          if (currentIdx < total - 1) goToPage(currentIdx + 1);
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIdx, total, goToPage, feedbackPergunta, sumarioOpen]);
+  }, [currentIdx, total, goToPage, feedbackPergunta, sumarioOpen, blocos, flipped, playFlipSound, setFlipped, avaliarFlashcard]);
 
   if (loading) {
     return (
@@ -252,6 +287,7 @@ const AprenderAula = () => {
 
   const blocoAtual = blocos[currentIdx] || blocos[0];
   const canFinish = currentIdx >= total - 1 || highestVisible >= total - 1;
+  const atoInfo = getAtoInfo(currentIdx, total);
 
   return (
     <div className="flex min-h-dvh flex-col bg-[#0f1115] text-neutral-100 selection:bg-primary/30">
@@ -310,16 +346,24 @@ const AprenderAula = () => {
             <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           </button>
 
-          <div className="flex flex-col items-center text-center flex-1 min-w-0 px-4">
-            <p className="text-[14px] sm:text-[15px] font-bold text-white truncate max-w-[280px] sm:max-w-none leading-tight font-display">
+          <div className="flex flex-col items-center text-center flex-1 min-w-0 px-2 sm:px-4">
+            <span className={`inline-flex items-center text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full border mb-1 ${atoInfo.badgeBg} ${atoInfo.cor}`}>
+              {atoInfo.nome}
+            </span>
+            <p className="text-[13px] sm:text-[15px] font-bold text-white truncate max-w-[240px] sm:max-w-none leading-tight font-display">
               {aula.titulo}
             </p>
-            <p className="text-[11px] font-semibold text-primary uppercase tracking-wider mt-0.5">
+            <p className="text-[10px] sm:text-[11px] font-semibold text-primary uppercase tracking-wider mt-0.5">
               Página {currentIdx + 1} de {total} • {rotuloPorTipo(blocoAtual.tipo)}
             </p>
           </div>
 
-          <div className="w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0" />
+          <div className="flex items-center justify-end w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0">
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold shadow-sm">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span className="tabular-nums font-mono">{acertos * 15} XP</span>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -408,9 +452,9 @@ const AprenderAula = () => {
         aria-label="Navegação da aula"
         className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.08] bg-[#14161f]/95 backdrop-blur-xl flex items-center justify-between"
         style={{
-          paddingBottom: 'calc(0.75rem + var(--sai-bottom))',
-          paddingLeft: 'calc(1.25rem + var(--sai-left))',
-          paddingRight: 'calc(1.25rem + var(--sai-right))',
+          paddingBottom: 'calc(0.75rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))',
+          paddingLeft: 'calc(1.25rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
+          paddingRight: 'calc(1.25rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
           paddingTop: '0.75rem',
         }}
       >
@@ -419,7 +463,7 @@ const AprenderAula = () => {
             haptic.selection();
             setSumarioOpen(true);
           }}
-          className="flex items-center gap-2.5 h-11 px-4 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white/90 hover:text-white hover:bg-white/10 active:scale-95 transition-all shadow-sm"
+          className="flex items-center gap-2.5 h-11 px-4 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white/90 hover:text-white hover:bg-white/10 active:scale-95 transition-all shadow-sm min-h-[44px]"
           aria-label="Abrir sumário da aula"
         >
           <List className="h-5 w-5 text-primary" />
@@ -432,9 +476,9 @@ const AprenderAula = () => {
               onClick={() => goToPage(currentIdx - 1)}
               disabled={currentIdx <= 0}
               aria-label="Página anterior"
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all"
+              className="flex h-10 w-10 sm:h-9 sm:w-9 items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all min-h-[40px] min-w-[40px]"
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-5 w-5 sm:h-4 sm:w-4" />
             </button>
 
             <span className="text-[13px] font-semibold tabular-nums text-neutral-300 px-3 min-w-[90px] text-center select-none">
@@ -445,9 +489,9 @@ const AprenderAula = () => {
               onClick={() => goToPage(currentIdx + 1)}
               disabled={currentIdx >= total - 1}
               aria-label="Próxima página"
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all"
+              className="flex h-10 w-10 sm:h-9 sm:w-9 items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all min-h-[40px] min-w-[40px]"
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-5 w-5 sm:h-4 sm:w-4" />
             </button>
           </div>
 
@@ -457,7 +501,7 @@ const AprenderAula = () => {
                 haptic.impact('medium');
                 concluirAula();
               }}
-              className="flex h-10 items-center gap-1.5 rounded-xl bg-primary text-primary-foreground px-4 text-[13px] font-bold hover:bg-primary/90 active:scale-95 transition-all shadow-md shadow-primary/25"
+              className="flex h-10 items-center gap-1.5 rounded-xl bg-primary text-primary-foreground px-4 text-[13px] font-bold hover:bg-primary/90 active:scale-95 transition-all shadow-md shadow-primary/25 min-h-[44px]"
             >
               Concluir <CheckCircle2 className="h-4 w-4" />
             </button>
@@ -481,7 +525,7 @@ const AprenderAula = () => {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-              className="relative z-10 w-full max-h-[85vh] rounded-t-[2.5rem] border-t border-white/10 bg-[#161822] p-6 sm:p-8 pb-[calc(2rem+var(--sai-bottom))] shadow-2xl flex flex-col text-neutral-100"
+              className="relative z-10 w-full max-h-[85vh] rounded-t-[2.5rem] border-t border-white/10 bg-[#161822] p-6 sm:p-8 pb-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl flex flex-col text-neutral-100"
             >
               <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-white/20" />
               <div className="flex items-center justify-between mb-5">
@@ -540,52 +584,92 @@ const AprenderAula = () => {
         )}
       </AnimatePresence>
 
-      {/* ── Sheet do Sumário da aula ── */}
+      {/* ── Sheet do Sumário da aula organizado por Atos Pedagógicos (Item 12) ── */}
       <Sheet open={sumarioOpen} onOpenChange={setSumarioOpen}>
-        <SheetContent side="bottom" className="h-[75vh] rounded-t-[2rem] p-0 bg-[#161822] border-t border-white/10 text-white">
+        <SheetContent side="bottom" className="h-[78vh] rounded-t-[2rem] p-0 bg-[#161822] border-t border-white/10 text-white">
           <SheetHeader className="border-b border-white/5 p-5">
-            <SheetTitle className="text-left text-lg font-bold text-white flex items-center gap-2.5">
-              <List className="w-5 h-5 text-primary" />
-              Sumário da aula
+            <SheetTitle className="text-left text-lg font-bold text-white flex items-center justify-between">
+              <span className="flex items-center gap-2.5">
+                <List className="w-5 h-5 text-primary" />
+                Sumário da aula
+              </span>
+              <span className="text-xs font-semibold text-neutral-400 bg-white/5 px-2.5 py-1 rounded-lg border border-white/10">
+                {total} páginas
+              </span>
             </SheetTitle>
           </SheetHeader>
-          <div className="overflow-y-auto p-4 space-y-1.5 max-h-[calc(75vh-80px)]">
-            {blocos.map((b, i) => {
-              const Icon = iconePorTipo(b.tipo);
-              const titulo = b.payload?.titulo || b.payload?.enunciado || b.payload?.frente || rotuloPorTipo(b.tipo);
-              const isCurrent = i === currentIdx;
-              const isPassed = i <= highestVisible;
-              return (
-                <button
-                  key={b.id}
-                  onClick={() => {
-                    setSumarioOpen(false);
-                    goToPage(i);
-                  }}
-                  className={`flex w-full items-center gap-3.5 rounded-xl p-3 text-left transition-all active:scale-[0.99] ${
-                    isCurrent ? 'bg-white/10 border border-primary/40' : 'hover:bg-white/[0.05]'
-                  }`}
-                >
-                  <span
-                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors ${
-                      isCurrent
-                        ? 'bg-primary text-primary-foreground shadow-md shadow-primary/30'
-                        : isPassed
-                        ? 'bg-primary/30 text-primary-foreground'
-                        : 'bg-white/5 text-neutral-400 border border-white/5'
-                    }`}
-                  >
-                    <Icon className="h-5 w-5" />
+          <div className="overflow-y-auto p-4 space-y-4 max-h-[calc(78vh-80px)]">
+            {[
+              {
+                ato: 1,
+                titulo: 'Ato I · Fundamentos & Letra da Lei',
+                cor: 'text-sky-400',
+                badgeBg: 'bg-sky-500/10 border-sky-500/20',
+                items: blocos.slice(0, Math.max(1, Math.round(total * 0.33))),
+                offset: 0,
+              },
+              {
+                ato: 2,
+                titulo: 'Ato II · Aprofundamento & Casos Práticos',
+                cor: 'text-amber-400',
+                badgeBg: 'bg-amber-500/10 border-amber-500/20',
+                items: blocos.slice(Math.max(1, Math.round(total * 0.33)), Math.max(2, Math.round(total * 0.68))),
+                offset: Math.max(1, Math.round(total * 0.33)),
+              },
+              {
+                ato: 3,
+                titulo: 'Ato III · Fixação Ativa & Síntese',
+                cor: 'text-emerald-400',
+                badgeBg: 'bg-emerald-500/10 border-emerald-500/20',
+                items: blocos.slice(Math.max(2, Math.round(total * 0.68))),
+                offset: Math.max(2, Math.round(total * 0.68)),
+              },
+            ].map((secao) => (
+              <div key={secao.ato} className="space-y-1.5">
+                <div className="flex items-center gap-2 px-2 pt-2 pb-1">
+                  <span className={`text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded border ${secao.badgeBg} ${secao.cor}`}>
+                    {secao.titulo}
                   </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[11px] uppercase tracking-wider text-neutral-400 font-medium">
-                      Página {i + 1} de {total} • {rotuloPorTipo(b.tipo)}
-                    </p>
-                    <p className="truncate font-semibold text-white/95 text-[14px]">{titulo}</p>
-                  </div>
-                </button>
-              );
-            })}
+                </div>
+                {secao.items.map((b, localIdx) => {
+                  const i = secao.offset + localIdx;
+                  const Icon = iconePorTipo(b.tipo);
+                  const titulo = b.payload?.titulo || b.payload?.enunciado || b.payload?.frente || rotuloPorTipo(b.tipo);
+                  const isCurrent = i === currentIdx;
+                  const isPassed = i <= highestVisible;
+                  return (
+                    <button
+                      key={b.id}
+                      onClick={() => {
+                        setSumarioOpen(false);
+                        goToPage(i);
+                      }}
+                      className={`flex w-full items-center gap-3.5 rounded-xl p-3 text-left transition-all active:scale-[0.99] ${
+                        isCurrent ? 'bg-white/10 border border-primary/40' : 'hover:bg-white/[0.05]'
+                      }`}
+                    >
+                      <span
+                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors ${
+                          isCurrent
+                            ? 'bg-primary text-primary-foreground shadow-md shadow-primary/30'
+                            : isPassed
+                            ? 'bg-primary/30 text-primary-foreground'
+                            : 'bg-white/5 text-neutral-400 border border-white/5'
+                        }`}
+                      >
+                        <Icon className="h-5 w-5" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11px] uppercase tracking-wider text-neutral-400 font-medium">
+                          Página {i + 1} de {total} • {rotuloPorTipo(b.tipo)}
+                        </p>
+                        <p className="truncate font-semibold text-white/95 text-[14px]">{titulo}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
           </div>
         </SheetContent>
       </Sheet>
