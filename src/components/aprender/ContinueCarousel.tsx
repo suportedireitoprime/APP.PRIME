@@ -37,7 +37,7 @@ function AulaCard({ aula, onOpen, wide }: { aula: AprenderHomeAula; onOpen: (id:
             src={cover.cover}
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-cover opacity-25 group-hover:scale-105 transition-transform duration-500"
+            className="absolute inset-0 h-full w-full object-cover scale-110 sm:scale-125 opacity-25 group-hover:scale-[1.15] sm:group-hover:scale-[1.3] transition-transform duration-500"
             loading="eager"
             decoding="async"
           />

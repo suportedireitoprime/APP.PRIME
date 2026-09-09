@@ -22,6 +22,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { AulaPreviaScreen, type PreviaAula } from '@/components/aprender/AulaPreviaScreen';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+import pageTurnSound from '@/assets/page-turn.mp3';
 
 export const getAtoInfo = (idx: number, totalSlides: number) => {
   const lim1 = Math.max(1, Math.round(totalSlides * 0.33));
@@ -104,8 +105,17 @@ const AprenderAula = () => {
   const isMouseDown = useRef<boolean>(false);
   const hasMouseDragged = useRef<boolean>(false);
 
+  const playPageTurnSound = useCallback(() => {
+    try {
+      const audio = new Audio(pageTurnSound);
+      audio.volume = 0.35;
+      audio.play().catch(() => {});
+    } catch (e) {}
+  }, []);
+
   const goToPage = useCallback((newIdx: number) => {
     haptic.selection();
+    playPageTurnSound();
     const clamped = Math.max(0, Math.min(total - 1, newIdx));
     setDirection(clamped >= currentIdx ? 1 : -1);
     setCurrentIdx(clamped);
@@ -607,27 +617,32 @@ const AprenderAula = () => {
             </button>
 
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="flex items-center rounded-xl bg-white/[0.05] border border-white/[0.08] p-0.5">
+              <div className="flex items-center rounded-2xl bg-white/[0.03] border border-white/[0.08] p-1 backdrop-blur-md shadow-inner">
                 <button
                   onClick={() => goToPage(currentIdx - 1)}
                   disabled={currentIdx <= 0}
                   aria-label="Página anterior"
-                  className="flex h-10 w-10 sm:h-9 sm:w-9 items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all min-h-[40px] min-w-[40px]"
+                  className="flex h-11 w-12 sm:w-14 items-center justify-center rounded-xl bg-white/5 text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all shadow-sm"
                 >
-                  <ChevronLeft className="h-5 w-5 sm:h-4 sm:w-4" />
+                  <ChevronLeft className="h-6 w-6" />
                 </button>
 
-                <span className="text-[13px] font-semibold tabular-nums text-neutral-300 px-3 min-w-[90px] text-center select-none">
-                  {currentIdx + 1} de {total}
-                </span>
+                <div className="flex flex-col items-center justify-center px-4 sm:px-6 min-w-[90px] sm:min-w-[100px] select-none">
+                  <span className="text-[14px] font-black tabular-nums text-white leading-none">
+                    {currentIdx + 1} de {total}
+                  </span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-neutral-400 mt-1 leading-none">
+                    Páginas
+                  </span>
+                </div>
 
                 <button
                   onClick={() => goToPage(currentIdx + 1)}
                   disabled={currentIdx >= total - 1}
                   aria-label="Próxima página"
-                  className="flex h-10 w-10 sm:h-9 sm:w-9 items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all min-h-[40px] min-w-[40px]"
+                  className="flex h-11 w-12 sm:w-14 items-center justify-center rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all shadow-lg shadow-primary/25"
                 >
-                  <ChevronRight className="h-5 w-5 sm:h-4 sm:w-4" />
+                  <ChevronRight className="h-6 w-6" />
                 </button>
               </div>
 
