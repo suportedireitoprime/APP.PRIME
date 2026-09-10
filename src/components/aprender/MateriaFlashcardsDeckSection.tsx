@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useRef, memo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef, memo } from 'react';
 import { motion } from 'framer-motion';
 import { Layers, ArrowRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
@@ -254,6 +254,7 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
 }) => {
   const [ativo, setAtivo] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const isSwipingRef = useRef(false);
 
@@ -308,6 +309,17 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
 
   const total = deckCards.length;
 
+  // Carrossel com sequência animada automática de cards (um por um)
+  useEffect(() => {
+    if (isDragging || isHovered || total <= 1) return;
+
+    const interval = setInterval(() => {
+      setAtivo((prev) => (prev + 1) % total);
+    }, 3800);
+
+    return () => clearInterval(interval);
+  }, [isDragging, isHovered, total]);
+
   const handlePrev = useCallback(() => {
     try { haptic.selection(); } catch {}
     setAtivo((i) => (i - 1 + total) % total);
@@ -361,7 +373,11 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
   const activeCard = deckCards[ativo] || deckCards[0];
 
   return (
-    <div className="w-full space-y-2.5 sm:space-y-3 relative py-2 border-b border-white/[0.08] last:border-b-0">
+    <div 
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="w-full space-y-2.5 sm:space-y-3 relative py-2 border-b border-white/[0.08] last:border-b-0"
+    >
       {/* Cabeçalho da Matéria (clicar vai direto para a lista) */}
       <div 
         onClick={() => {
@@ -396,19 +412,6 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
             </p>
           </div>
         </div>
-
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            try { haptic.selection(); } catch {}
-            onOpenArea();
-          }}
-          className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-white/90 hover:text-white transition-all cursor-pointer active:scale-95"
-        >
-          <span>Ver tópicos</span>
-          <ArrowRight className="w-3.5 h-3.5" />
-        </button>
       </div>
 
       {/* ── 3D Fanned Deck de Flashcards (sem setas, sem fundo de card) ── */}
@@ -503,13 +506,10 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
                       className="pointer-events-none absolute -right-2 -bottom-2 w-[105px] sm:w-[125px] h-[120px] sm:h-[140px] object-contain opacity-35 select-none filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.65)] z-0"
                     />
 
-                    {/* Topo do Flashcard: Tag & Ordem */}
-                    <div className="flex items-center justify-between w-full relative z-10">
-                      <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full backdrop-blur-md bg-black/45 text-white/95 border border-white/20 shadow-sm truncate max-w-[75%]">
+                    {/* Topo do Flashcard: Nome Completo da Matéria (sem abreviação e sem número/hashtag) */}
+                    <div className="flex items-center justify-center w-full relative z-10">
+                      <span className="text-[9px] sm:text-[9.5px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full backdrop-blur-md bg-black/50 text-white/95 border border-white/20 shadow-sm text-center leading-tight max-w-full">
                         {area.nome}
-                      </span>
-                      <span className="text-[10px] font-bold text-white/70">
-                        #{String(card.ordem).padStart(2, '0')}
                       </span>
                     </div>
 
@@ -523,19 +523,17 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
                       </h4>
                     </div>
 
-                    {/* Rodapé do Flashcard: CTA para entrar na lista */}
-                    <div className="relative z-10 pt-1.5 border-t border-white/20 flex items-center justify-between w-full">
-                      <span className="text-[9px] font-medium text-white/80 flex items-center gap-1">
-                        <Layers className="w-2.5 h-2.5 text-white/90" />
-                        <span>Flashcard</span>
-                      </span>
-                      {frente && (
-                        <span 
-                          className="text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors text-white hover:text-amber-200"
+                    {/* Rodapé do Flashcard: Botão Sólido e Destacado "ENTRAR" */}
+                    <div className="relative z-10 pt-1.5 border-t border-white/20 flex items-center justify-center w-full">
+                      {frente ? (
+                        <div
+                          className="w-full py-1.5 px-3 rounded-xl flex items-center justify-center gap-1.5 bg-white text-zinc-950 font-black text-[11px] sm:text-xs uppercase tracking-wider shadow-[0_4px_14px_rgba(0,0,0,0.45)] hover:bg-amber-300 hover:text-black active:scale-95 transition-all cursor-pointer"
                         >
                           <span>Entrar</span>
-                          <ArrowRight className="w-2.5 h-2.5" />
-                        </span>
+                          <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                        </div>
+                      ) : (
+                        <div className="h-6 w-full" />
                       )}
                     </div>
                   </div>
