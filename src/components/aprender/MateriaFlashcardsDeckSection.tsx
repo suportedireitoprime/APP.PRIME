@@ -15,6 +15,7 @@ interface MateriaFlashcardsDeckSectionProps {
   overridePct: number;
   onOpenArea: () => void;
   onOpenModulo?: (modulo: ModuloItem | { id: string; titulo: string }) => void;
+  triggerAdvance?: number;
 }
 
 /** Tópicos curriculares canônicos para garantir que toda matéria tenha um deck completo (6 a 7 cards em leque) */
@@ -251,6 +252,7 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
   overrideConcluidas,
   overridePct,
   onOpenArea,
+  triggerAdvance,
 }) => {
   const [ativo, setAtivo] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -331,16 +333,11 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
 
   const total = deckCards.length;
 
-  // Carrossel com sequência animada automática de cards (um por um)
+  // Rotação sequencial em cascata: avança quando acionado pela matéria ativa no fluxo de cima para baixo
   useEffect(() => {
-    if (isDragging || isHovered || total <= 1) return;
-
-    const interval = setInterval(() => {
-      setAtivo((prev) => (prev + 1) % total);
-    }, 3800);
-
-    return () => clearInterval(interval);
-  }, [isDragging, isHovered, total]);
+    if (!triggerAdvance || isDragging || isHovered || total <= 1) return;
+    setAtivo((prev) => (prev + 1) % total);
+  }, [triggerAdvance, isDragging, isHovered, total]);
 
   const handlePrev = useCallback(() => {
     try { haptic.selection(); } catch {}

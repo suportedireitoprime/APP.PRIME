@@ -313,6 +313,35 @@ const Aprender = () => {
     return 0;
   }, [isAulas, isFlashcards, data.pctGeral, totalFlashcards, totalConcluidasFlashcards]);
 
+  // Cascata sequencial de rotação dos decks: move primeiro a matéria de cima, vai descendo e reinicia no topo
+  const [areaTriggerCounts, setAreaTriggerCounts] = useState<Record<string, number>>({});
+  const currentCascadeIndexRef = useRef(0);
+
+  useEffect(() => {
+    if (!isFlashcards || flashcardsViewMode !== 'decks' || !areasOrdenadas.length) return;
+
+    currentCascadeIndexRef.current = 0;
+
+    const interval = setInterval(() => {
+      const count = areasOrdenadas.length;
+      if (count === 0) return;
+
+      const idx = currentCascadeIndexRef.current % count;
+      const targetArea = areasOrdenadas[idx];
+
+      if (targetArea) {
+        setAreaTriggerCounts((prev) => ({
+          ...prev,
+          [targetArea.id]: (prev[targetArea.id] || 0) + 1,
+        }));
+      }
+
+      currentCascadeIndexRef.current = (idx + 1) % count;
+    }, 2400);
+
+    return () => clearInterval(interval);
+  }, [isFlashcards, flashcardsViewMode, areasOrdenadas]);
+
   // Tema visual dinâmico do painel Hero e Pills por aba selecionada
   const tabTheme = useMemo(() => {
     if (isFlashcards) {
@@ -731,6 +760,7 @@ const Aprender = () => {
                         overridePct={overridePct}
                         onOpenArea={() => navigate(`/aprender/area/${area.slug}?tab=flashcards`)}
                         onOpenModulo={(mod) => navigate(`/aprender/area/${area.slug}?tab=flashcards&moduloId=${mod.id}`)}
+                        triggerAdvance={areaTriggerCounts[area.id] || 0}
                       />
                     );
                   })}
