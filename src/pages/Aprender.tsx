@@ -12,7 +12,6 @@ import { useAprenderAreaModulesMap } from '@/hooks/useAprenderAreaModulesMap';
 import {
   useAprenderHome,
   AprenderHeroProgress,
-  AprenderTabSwitcher,
   AprenderHeaderToolbar,
   AprenderMateriasContent,
   AprenderLeftSidebar,
@@ -28,8 +27,7 @@ const Aprender = () => {
   const isAdmin = isAdminEmail(user?.email);
 
   const { modulesMap } = useAprenderAreaModulesMap();
-  const [activeTab, setActiveTab] = useState<'aulas' | 'flashcards' | 'questoes'>('aulas');
-  const [flashcardsViewMode, setFlashcardsViewMode] = useState<'decks' | 'lista'>('decks');
+  const activeTab = 'aulas';
   const [aulasViewMode, setAulasViewMode] = useState<'decks' | 'lista'>('decks');
   const [lembretesOpen, setLembretesOpen] = useState(false);
 
@@ -47,30 +45,18 @@ const Aprender = () => {
     pct,
   } = useAprenderHome(uid, activeTab);
 
-  const isAulas = activeTab === 'aulas';
-  const isFlashcards = activeTab === 'flashcards';
+  const isAulas = true;
+  const isFlashcards = false;
 
-  const accentColor = isFlashcards ? '#34D399' : activeTab === 'questoes' ? '#38BDF8' : '#fb7185';
+  const accentColor = '#fb7185';
 
   const metricLabel1 = 'Matérias';
-  const metricVal1 = isFlashcards && flashAreas?.length ? flashAreas.length : data.areas.length;
-  const metricLabel2 = isAulas ? 'Aulas' : isFlashcards ? 'Flashcards' : 'Questões';
-  const metricVal2Display = isAulas 
-    ? data.totalAulas 
-    : isFlashcards 
-    ? totalFlashcards.toLocaleString('pt-BR') 
-    : 'Em breve';
+  const metricVal1 = data.areas.length;
+  const metricLabel2 = 'Aulas';
+  const metricVal2Display = data.totalAulas;
   const metricLabel3 = 'Concluídas';
-  const metricVal3 = isAulas 
-    ? data.totalConcluidas 
-    : isFlashcards 
-    ? totalConcluidasFlashcards.toLocaleString('pt-BR') 
-    : 0;
-  const metricVal3Total = isAulas 
-    ? data.totalAulas 
-    : isFlashcards 
-    ? totalFlashcards.toLocaleString('pt-BR') 
-    : 0;
+  const metricVal3 = data.totalConcluidas;
+  const metricVal3Total = data.totalAulas;
 
   const mobileHeader = (
     <PageHeader
@@ -126,22 +112,16 @@ const Aprender = () => {
               metricVal3Total={metricVal3Total}
             />
 
-            {/* Menu de Alternância Global (Aulas, Flashcards, Questões) */}
-            <AprenderTabSwitcher
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-            />
-
             {/* Lista e Decks de Matérias */}
             <div className="space-y-4">
               <AprenderHeaderToolbar
                 totalAreas={areasOrdenadas.length}
-                isAulas={isAulas}
-                isFlashcards={isFlashcards}
+                isAulas={true}
+                isFlashcards={false}
                 aulasViewMode={aulasViewMode}
-                flashcardsViewMode={flashcardsViewMode}
+                flashcardsViewMode="decks"
                 onAulasViewModeChange={setAulasViewMode}
-                onFlashcardsViewModeChange={setFlashcardsViewMode}
+                onFlashcardsViewModeChange={() => {}}
                 filtro={filtro}
                 onFiltroChange={setFiltro}
                 emAndamentoCount={emAndamentoCount}
@@ -152,10 +132,10 @@ const Aprender = () => {
                 areas={data.areas}
                 areasOrdenadas={areasOrdenadas}
                 filtro={filtro}
-                isAulas={isAulas}
-                isFlashcards={isFlashcards}
+                isAulas={true}
+                isFlashcards={false}
                 aulasViewMode={aulasViewMode}
-                flashcardsViewMode={flashcardsViewMode}
+                flashcardsViewMode="decks"
                 flashAreas={flashAreas}
                 modulesMap={modulesMap}
                 uid={uid}

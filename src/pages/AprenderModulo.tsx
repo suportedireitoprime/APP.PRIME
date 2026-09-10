@@ -11,6 +11,11 @@ import {
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { shortenAreaName } from '@/lib/areaNameShortener';
 import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
+import {
+  getCachedModuloData,
+  setCachedModuloData,
+  hydrateModuloCache,
+} from '@/lib/aprenderAreaLoader';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import ShapeGrid from '@/components/ui/ShapeGrid';
@@ -56,8 +61,12 @@ const AprenderModulo = () => {
   const routeState = location.state as {
     modulo?: { id: string; titulo: string; resumo: string | null; ordem: number; area_id?: string };
     area?: { id: string; nome: string; slug: string };
+    aulas?: AulaItem[];
     tab?: 'aulas' | 'flashcards' | 'questoes';
   } | undefined;
+
+  // Busca síncrona instantânea em cache (0ms)
+  const cachedData = moduloId ? getCachedModuloData(moduloId, uid) : undefined;
 
   const [modulo, setModulo] = useState<ModuloDetalhe | null>(() => {
     if (routeState?.modulo) {
@@ -71,10 +80,27 @@ const AprenderModulo = () => {
         areaSlug: routeState.area?.slug ?? 'geral',
       };
     }
+    if (cachedData?.modulo) {
+      return cachedData.modulo;
+    }
     return null;
   });
-  const [aulas, setAulas] = useState<AulaItem[]>([]);
-  const [loading, setLoading] = useState(!routeState?.modulo);
+
+  const [aulas, setAulas] = useState<AulaItem[]>(() => {
+    if (routeState?.aulas && routeState.aulas.length > 0) {
+      return routeState.aulas;
+    }
+    if (cachedData?.aulas && cachedData.aulas.length > 0) {
+      return cachedData.aulas;
+    }
+    return [];
+  });
+
+  const [loading, setLoading] = useState(() => {
+    if (routeState?.aulas && routeState.aulas.length > 0) return false;
+    if (cachedData?.aulas && cachedData.aulas.length > 0) return false;
+    return true;
+  });
 
   useEffect(() => {
     if (!moduloId) return;
@@ -82,66 +108,55 @@ const AprenderModulo = () => {
 
     (async () => {
       try {
-        if (!modulo) setLoading(true);
+        // Se ainda não temos aulas em memória (ex: link direto sem cache), tenta recuperar do IndexedDB (0ms/10ms)
+        if (aulas.length === 0) {
+          const persisted = await hydrateModuloCache(moduloId, uid);
+          if (persisted && !cancelled && persisted.aulas.length > 0) {
+            setModulo((prev) => prev ?? persisted.modulo);
+            setAulas(persisted.aulas);
+            setLoading(false);
+          }
+        }
 
-        // 1. Fetch modulo + area info com fallback robusto
-        let rawMod: any = null;
-        let areaData: any = null;
-
-        const { data: joinData } = await supabase
-          .from('aprender_modulos')
-          .select('id, titulo, resumo, ordem, area_id, aprender_areas(id, nome, slug)')
-          .eq('id', moduloId)
-          .maybeSingle();
-
-        if (joinData) {
-          rawMod = joinData;
-          const relArea = (joinData as any).aprender_areas;
-          areaData = Array.isArray(relArea) ? relArea[0] : relArea;
-        } else {
-          const { data: simpleMod } = await supabase
+        // Revalidação em paralelo (sem cascata de 3 awaits sequenciais)
+        const [joinRes, rawAulasRes] = await Promise.all([
+          supabase
             .from('aprender_modulos')
-            .select('id, titulo, resumo, ordem, area_id')
+            .select('id, titulo, resumo, ordem, area_id, aprender_areas(id, nome, slug)')
             .eq('id', moduloId)
-            .maybeSingle();
-          if (simpleMod) rawMod = simpleMod;
-        }
-
-        if (!areaData && rawMod?.area_id) {
-          const { data: a } = await supabase
-            .from('aprender_areas')
-            .select('id, nome, slug')
-            .eq('id', rawMod.area_id)
-            .maybeSingle();
-          if (a) areaData = a;
-        }
+            .maybeSingle(),
+          supabase
+            .from('aprender_aulas')
+            .select('id, titulo, objetivo, duracao_est_min, ordem, status')
+            .eq('modulo_id', moduloId)
+            .eq('status', 'published')
+            .order('ordem'),
+        ]);
 
         if (cancelled) return;
 
+        let rawMod: any = joinRes.data;
+        let areaData: any = null;
         if (rawMod) {
-          const modInfo: ModuloDetalhe = {
-            id: rawMod.id,
-            titulo: rawMod.titulo,
-            resumo: rawMod.resumo,
-            ordem: rawMod.ordem,
-            areaId: rawMod.area_id,
-            areaNome: areaData?.nome ?? routeState?.area?.nome ?? 'Direito',
-            areaSlug: areaData?.slug ?? routeState?.area?.slug ?? 'geral',
-          };
-          setModulo(modInfo);
+          const relArea = (rawMod as any).aprender_areas;
+          areaData = Array.isArray(relArea) ? relArea[0] : relArea;
         }
 
-        // 2. Fetch aulas for this modulo
-        const { data: rawAulas } = await supabase
-          .from('aprender_aulas')
-          .select('id, titulo, objetivo, duracao_est_min, ordem, status')
-          .eq('modulo_id', moduloId)
-          .eq('status', 'published')
-          .order('ordem');
+        const modInfo: ModuloDetalhe = {
+          id: rawMod?.id ?? moduloId,
+          titulo: rawMod?.titulo ?? modulo?.titulo ?? '',
+          resumo: rawMod?.resumo ?? modulo?.resumo ?? null,
+          ordem: rawMod?.ordem ?? modulo?.ordem ?? 1,
+          areaId: rawMod?.area_id ?? modulo?.areaId ?? '',
+          areaNome: areaData?.nome ?? routeState?.area?.nome ?? modulo?.areaNome ?? 'Direito',
+          areaSlug: areaData?.slug ?? routeState?.area?.slug ?? modulo?.areaSlug ?? 'geral',
+        };
+        setModulo(modInfo);
 
-        // 3. Fetch progress for current user if logged in
+        const rawAulas = rawAulasRes.data ?? [];
         const concluidasSet = new Set<string>();
-        if (uid && rawAulas?.length) {
+
+        if (uid && rawAulas.length > 0) {
           const aulaIds = rawAulas.map((a) => a.id);
           const { data: progData } = await supabase
             .from('aprender_progresso_aula')
@@ -154,7 +169,9 @@ const AprenderModulo = () => {
           });
         }
 
-        const aulasMapeadas: AulaItem[] = (rawAulas ?? []).map((a) => ({
+        if (cancelled) return;
+
+        const aulasMapeadas: AulaItem[] = rawAulas.map((a) => ({
           id: a.id,
           titulo: a.titulo,
           objetivo: a.objetivo,
@@ -164,11 +181,15 @@ const AprenderModulo = () => {
           concluida: concluidasSet.has(a.id),
         }));
 
-        if (!cancelled) {
-          setAulas(aulasMapeadas);
-          setLoading(false);
-        }
-      } catch {
+        setAulas(aulasMapeadas);
+        setLoading(false);
+
+        // Atualiza cache em memória e IndexedDB
+        setCachedModuloData(moduloId, uid, {
+          modulo: modInfo,
+          aulas: aulasMapeadas,
+        });
+      } catch (err) {
         if (!cancelled) setLoading(false);
       }
     })();
@@ -356,7 +377,7 @@ const AprenderModulo = () => {
           </button>
         </div>
 
-        {loading ? (
+        {loading && aulas.length === 0 ? (
           <div className="space-y-4">
             <div className="h-44 rounded-3xl bg-muted animate-pulse" />
             <div className="h-20 rounded-2xl bg-muted animate-pulse" />
@@ -661,7 +682,7 @@ const AprenderModulo = () => {
                           key={aula.id}
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: idx * 0.05 }}
+                          transition={{ delay: Math.min(idx * 0.02, 0.15) }}
                           className="flex items-center gap-3 sm:gap-4"
                         >
                           {/* Nó da Linha do Tempo — alinhado com flex */}

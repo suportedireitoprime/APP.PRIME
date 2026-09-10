@@ -10,6 +10,7 @@ import FlashcardsCargoHero from '@/components/flashcards/FlashcardsCargoHero';
 import { useFlashcardsDashboard, useFlashcardsResumoAreas, FlashcardsAreaRow, FlashcardsDash } from '@/lib/flashcardsQueries';
 import FlashcardsFiltroSheet, { FlashcardsFiltro } from '@/components/flashcards/FlashcardsFiltroSheet';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+import FlashcardsMasterDeck from '@/components/flashcards/FlashcardsMasterDeck';
 
 
 const ATALHOS_FLASHCARDS_4 = [
@@ -131,42 +132,19 @@ const Flashcards = () => {
             })}
           </motion.div>
 
-          {/* ── Recursos (Trilhas e Desafios um do lado do outro) ───────────────────── */}
-          <section className="space-y-3 pt-2">
-            <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-              Recursos
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.96 }}
-                onClick={() => { haptic.selection(); navigate('/flashcards/trilhas'); }}
-                className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-all focus-visible:outline-none text-center"
-              >
-                <div className="flex items-center justify-center text-[#36AF85] group-hover:scale-110 transition-transform">
-                  <Route className="h-8 w-8" strokeWidth={1.5} />
-                </div>
-                <div className="flex flex-col items-center">
-                  <span className="text-sm font-bold text-foreground">Trilhas</span>
-                  <span className="text-[10px] text-muted-foreground mt-0.5 hidden sm:block">Guiadas passo a passo</span>
-                </div>
-              </motion.button>
 
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.96 }}
-                onClick={() => { haptic.selection(); navigate('/flashcards/desafios'); }}
-                className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-all focus-visible:outline-none text-center"
-              >
-                <div className="flex items-center justify-center text-[#36AF85] group-hover:scale-110 transition-transform">
-                  <Trophy className="h-8 w-8" strokeWidth={1.5} />
-                </div>
-                <div className="flex flex-col items-center">
-                  <span className="text-sm font-bold text-foreground">Desafios</span>
-                  <span className="text-[10px] text-muted-foreground mt-0.5 hidden sm:block">Em linha do tempo</span>
-                </div>
-              </motion.button>
+
+          {/* ── Decks de Flashcards (Master Deck) ───────────────────── */}
+          <section className="pt-2">
+             <div className="flex items-center gap-2 mb-2">
+              <span className="h-4 w-1 rounded-full bg-[#36AF85]" />
+              <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                Matérias
+              </p>
             </div>
+            {areasRaw && areasRaw.length > 0 && (
+              <FlashcardsMasterDeck areas={areasRaw} />
+            )}
           </section>
 
           {/* ── Atividade Recente (Heatmap SRS) ───────────────────── */}

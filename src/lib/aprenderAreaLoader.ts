@@ -232,6 +232,7 @@ export function prefetchAprenderArea(slug: string, uid: string | null) {
 export function invalidateAprenderArea(slug?: string, uid?: string | null) {
   if (!slug) {
     memCache.clear();
+    moduloMemCache.clear();
     return;
   }
   if (uid !== undefined) {
@@ -244,3 +245,191 @@ export function invalidateAprenderArea(slug?: string, uid?: string | null) {
     }
   }
 }
+
+// ─────────────────────────────────────────────────────────────
+// 🚀 Cache Dedicado de Módulo & Aulas (Carregamento Instantâneo / 0ms)
+// ─────────────────────────────────────────────────────────────
+
+export type ModuloCachedData = {
+  modulo: {
+    id: string;
+    titulo: string;
+    resumo: string | null;
+    ordem: number;
+    areaId: string;
+    areaNome: string;
+    areaSlug: string;
+  };
+  aulas: {
+    id: string;
+    titulo: string;
+    objetivo: string | null;
+    duracaoMin: number;
+    ordem: number;
+    status: string;
+    concluida?: boolean;
+    pct?: number;
+  }[];
+};
+
+const moduloMemCache = new Map<string, { data: ModuloCachedData; timestamp: number }>();
+const moduloInflight = new Map<string, Promise<ModuloCachedData>>();
+
+export function setCachedModuloData(moduloId: string, uid: string | null, data: ModuloCachedData) {
+  const key = `modulo:${moduloId}:${uid ?? 'anon'}`;
+  moduloMemCache.set(key, { data, timestamp: Date.now() });
+  void setAprenderCache(key, 'modulo', data).catch(() => {});
+}
+
+export function getCachedModuloData(moduloId: string, uid: string | null): ModuloCachedData | undefined {
+  const key = `modulo:${moduloId}:${uid ?? 'anon'}`;
+  const direct = moduloMemCache.get(key);
+  if (direct && Date.now() - direct.timestamp <= CACHE_TTL_MS) {
+    return direct.data;
+  }
+
+  // Busca em todas as áreas já carregadas em memCache
+  for (const entry of memCache.values()) {
+    const mod = entry.data.modulos?.find((m) => m.id === moduloId);
+    if (mod) {
+      const areaAulas = entry.data.aulas?.filter((a) => a.modulo_id === moduloId) ?? [];
+      const moduloAulas = areaAulas.map((a) => ({
+        id: a.id,
+        titulo: a.titulo,
+        objetivo: a.objetivo,
+        duracaoMin: a.duracao_est_min || 15,
+        ordem: a.ordem,
+        status: a.status || 'published',
+        concluida: !!entry.data.progresso[a.id]?.concluida,
+        pct: entry.data.progresso[a.id]?.pct || 0,
+      }));
+
+      const assembled: ModuloCachedData = {
+        modulo: {
+          id: mod.id,
+          titulo: mod.titulo,
+          resumo: mod.resumo,
+          ordem: mod.ordem,
+          areaId: entry.data.area?.id ?? '',
+          areaNome: entry.data.area?.nome ?? 'Direito',
+          areaSlug: entry.data.area?.slug ?? 'geral',
+        },
+        aulas: moduloAulas,
+      };
+
+      setCachedModuloData(moduloId, uid, assembled);
+      return assembled;
+    }
+  }
+
+  return undefined;
+}
+
+export async function hydrateModuloCache(moduloId: string, uid: string | null): Promise<ModuloCachedData | null> {
+  const key = `modulo:${moduloId}:${uid ?? 'anon'}`;
+  const hit = getCachedModuloData(moduloId, uid);
+  if (hit) return hit;
+  const persisted = await getAprenderCache<ModuloCachedData>(key);
+  if (persisted) {
+    moduloMemCache.set(key, { data: persisted, timestamp: Date.now() });
+    return persisted;
+  }
+  return null;
+}
+
+export async function fetchAprenderModuloFromNetwork(
+  moduloId: string,
+  uid: string | null,
+): Promise<ModuloCachedData> {
+  const [modRes, aulasRes] = await Promise.all([
+    supabase
+      .from('aprender_modulos')
+      .select('id, titulo, resumo, ordem, area_id, aprender_areas(id, nome, slug)')
+      .eq('id', moduloId)
+      .maybeSingle(),
+    supabase
+      .from('aprender_aulas')
+      .select('id, titulo, objetivo, duracao_est_min, ordem, status')
+      .eq('modulo_id', moduloId)
+      .eq('status', 'published')
+      .order('ordem'),
+  ]);
+
+  const rawMod = modRes.data;
+  const relArea = rawMod ? (rawMod as any).aprender_areas : null;
+  const areaData = Array.isArray(relArea) ? relArea[0] : relArea;
+
+  const rawAulas = aulasRes.data ?? [];
+  const concluidasSet = new Set<string>();
+
+  if (uid && rawAulas.length > 0) {
+    const aulaIds = rawAulas.map((a) => a.id);
+    const { data: progData } = await supabase
+      .from('aprender_progresso_aula')
+      .select('aula_id, concluida_em')
+      .eq('user_id', uid)
+      .in('aula_id', aulaIds);
+
+    ((progData as any[]) ?? []).forEach((p) => {
+      if (p.concluida_em) concluidasSet.add(p.aula_id);
+    });
+  }
+
+  const aulas = rawAulas.map((a) => ({
+    id: a.id,
+    titulo: a.titulo,
+    objetivo: a.objetivo,
+    duracaoMin: a.duracao_est_min || 15,
+    ordem: a.ordem,
+    status: a.status,
+    concluida: concluidasSet.has(a.id),
+  }));
+
+  return {
+    modulo: {
+      id: rawMod?.id ?? moduloId,
+      titulo: rawMod?.titulo ?? '',
+      resumo: rawMod?.resumo ?? null,
+      ordem: rawMod?.ordem ?? 1,
+      areaId: rawMod?.area_id ?? areaData?.id ?? '',
+      areaNome: areaData?.nome ?? 'Direito',
+      areaSlug: areaData?.slug ?? 'geral',
+    },
+    aulas,
+  };
+}
+
+export async function loadAprenderModulo(moduloId: string, uid: string | null): Promise<ModuloCachedData> {
+  const key = `modulo:${moduloId}:${uid ?? 'anon'}`;
+  const hit = getCachedModuloData(moduloId, uid);
+  if (hit && hit.aulas.length > 0) {
+    void fetchAprenderModuloFromNetwork(moduloId, uid)
+      .then((fresh) => setCachedModuloData(moduloId, uid, fresh))
+      .catch(() => {});
+    return hit;
+  }
+
+  const persisted = await hydrateModuloCache(moduloId, uid);
+  if (persisted && persisted.aulas.length > 0) {
+    void fetchAprenderModuloFromNetwork(moduloId, uid)
+      .then((fresh) => setCachedModuloData(moduloId, uid, fresh))
+      .catch(() => {});
+    return persisted;
+  }
+
+  const flying = moduloInflight.get(key);
+  if (flying) return flying;
+
+  const p = fetchAprenderModuloFromNetwork(moduloId, uid)
+    .then((fresh) => {
+      setCachedModuloData(moduloId, uid, fresh);
+      return fresh;
+    })
+    .finally(() => {
+      moduloInflight.delete(key);
+    });
+
+  moduloInflight.set(key, p);
+  return p;
+}
+

@@ -45,23 +45,17 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
     let t = textoPrincipal.trim();
     if (!t) return '';
 
-    if (titulo) {
-      // Remove o primeiro heading (# ou ##) no início do texto que duplica o título do slide
-      const m = t.match(/^#{1,2}\s*(?:\d+[\.\-\)]\s*)?([^\n]+)\n*/);
-      if (m) {
-        const headingRaw = m[1].trim().toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
-        const tituloNorm = titulo.trim().toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
-        if (
-          !headingRaw ||
-          headingRaw === tituloNorm ||
-          headingRaw.includes(tituloNorm) ||
-          tituloNorm.includes(headingRaw)
-        ) {
-          t = t.slice(m[0].length).trim();
-        }
-      }
+    // Remove always the first heading (# ou ##) no início do texto, pois o ReactMarkdown com prose-xl deixa gigante
+    // e o título já é exibido no <header> da interface.
+    const m = t.match(/^#{1,3}\s*([^\n]+)\n*/);
+    if (m) {
+      t = t.slice(m[0].length).trim();
     }
-    return t;
+
+    // Remover tags de instrução visual (ex: [Animação Visual: ...], [Transição de Tela: ...])
+    t = t.replace(/\[(Animação Visual|Animação|Transição de Tela|Transição|Efeito de Revelação|Efeito|Áudio|Locução|Destaque Visual|Visual|Ação)[^\]]*\]\s*/gi, '');
+
+    return t.trim();
   }, [textoPrincipal, titulo]);
 
   // Parser de termos de glossário (Item 5)
@@ -139,7 +133,7 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
   };
 
   return (
-    <article className="max-w-[70ch] lg:max-w-[76ch] mx-auto py-3 px-1 sm:px-2">
+    <article className="max-w-[70ch] lg:max-w-[76ch] mx-auto py-3 px-1 sm:px-2 pb-4">
       {titulo && (
         <header className="mb-6 sm:mb-8">
           <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-rose-400 mb-2.5 bg-rose-400/10 px-2.5 py-1 rounded-full border border-rose-400/20 shadow-sm">
@@ -226,7 +220,7 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
           </div>
         </div>
       ) : (
-        <div className="prose prose-base sm:prose-lg md:prose-xl max-w-none prose-invert prose-headings:font-sans prose-p:text-[16px] sm:prose-p:text-[17px] md:prose-p:text-[18px] prose-p:leading-[1.75] sm:prose-p:leading-[1.85] prose-p:text-neutral-200 prose-p:mb-5 prose-li:text-[16px] sm:prose-li:text-[17px] md:prose-li:text-[18px] prose-li:leading-[1.75] prose-li:text-neutral-200 prose-strong:text-white prose-strong:font-bold">
+        <div className="prose prose-base sm:prose-lg md:prose-xl max-w-none prose-invert prose-headings:font-sans prose-p:text-[16px] sm:prose-p:text-[17px] md:prose-p:text-[18px] prose-p:leading-[1.75] sm:prose-p:leading-[1.85] prose-p:text-neutral-200 prose-p:mb-6 prose-li:text-[16px] sm:prose-li:text-[17px] md:prose-li:text-[18px] prose-li:leading-[1.75] prose-li:text-neutral-200 prose-strong:text-white prose-strong:font-bold">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={{

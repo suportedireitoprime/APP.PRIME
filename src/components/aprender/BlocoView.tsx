@@ -11,6 +11,8 @@ import { CenaAnimadaBlock } from '@/components/aprender/blocos/CenaAnimadaBlock'
 import { ConexaoBlock } from '@/components/aprender/blocos/ConexaoBlock';
 import { type NivelFlashcard } from '@/lib/spacedRepetition';
 import { haptic } from '@/lib/nativeHaptics';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export interface BlocoViewProps {
   bloco: Bloco;
@@ -330,7 +332,10 @@ export function BlocoView({
   }
 
   if (bloco.tipo === 'destaque') {
-    const { tom = 'info', titulo, texto } = bloco.payload || {};
+    const { tom = 'info', titulo, texto: textoRaw } = bloco.payload || {};
+    let texto = String(textoRaw || '').replace(/\[(Animação Visual|Animação|Transição de Tela|Transição|Efeito de Revelação|Efeito|Áudio|Locução|Destaque Visual|Visual|Ação)[^\]]*\]\s*/gi, '');
+    texto = texto.replace(/^#{1,3}\s*([^\n]+)\n*/, '').trim();
+
     let style = {
       bg: 'bg-primary/[0.08]',
       br: 'border-primary/30',
@@ -368,9 +373,11 @@ export function BlocoView({
               {titulo}
             </h2>
           )}
-          <p className="text-[16px] sm:text-[17px] md:text-[18px] leading-[1.8] text-neutral-200 whitespace-pre-line font-normal">
-            {texto}
-          </p>
+          <div className="prose prose-invert prose-p:text-[16px] sm:prose-p:text-[17px] md:prose-p:text-[18px] prose-p:leading-[1.8] prose-p:text-neutral-200 prose-p:mb-5 prose-li:text-[16px] sm:prose-li:text-[17px] md:prose-li:text-[18px] prose-li:leading-[1.75] prose-li:text-neutral-200 prose-strong:text-white prose-strong:font-bold max-w-none">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {texto}
+            </ReactMarkdown>
+          </div>
         </div>
       </article>
     );
@@ -404,13 +411,40 @@ export function BlocoView({
   }
 
   if (bloco.tipo === 'pergunta' || (bloco.tipo === 'ordenacao' && (bloco.payload?.subtipo?.includes('complete_lacuna') || bloco.payload?.textoComLacunas))) {
-    const rawEnunciado = bloco.payload?.enunciado || bloco.payload?.pergunta || bloco.payload?.textoComLacunas || '';
-    const enunciado = rawEnunciado
+    let rawEnunciado = bloco.payload?.enunciado || bloco.payload?.pergunta || bloco.payload?.textoComLacunas || bloco.payload?.texto || '';
+    let rawOpcoes = Array.isArray(bloco.payload?.opcoes) ? bloco.payload.opcoes : [];
+
+    if (rawOpcoes.length === 0 && rawEnunciado) {
+       rawEnunciado = String(rawEnunciado).replace(/\[(Animação Visual|Animação|Transição de Tela|Transição|Efeito de Revelação|Efeito)[^\]]*\]\s*/gi, '');
+       if (bloco.payload?.subtipo === 'certo_errado') {
+           rawOpcoes = ["Certo", "Errado"];
+       } else {
+           const lines = String(rawEnunciado).split('\n');
+           const ops = [];
+           const enunLines = [];
+           let parsingOpcoes = false;
+           for(const l of lines) {
+               if (l.match(/^[a-eA-E][)\-]\s/)) {
+                   parsingOpcoes = true;
+                   ops.push(l.replace(/^[a-eA-E][)\-]\s/, '').trim());
+               } else if (parsingOpcoes && l.trim() && !l.startsWith('#')) {
+                   ops[ops.length-1] += " " + l.trim();
+               } else {
+                   enunLines.push(l);
+               }
+           }
+           if (ops.length > 0) {
+               rawOpcoes = ops;
+               rawEnunciado = enunLines.join('\n').trim();
+           }
+       }
+    }
+
+    const enunciado = String(rawEnunciado)
       .replace(/^#{1,3}\s*(?:\d+[-.)]\s*)?[^\n]+\n*/i, '')
       .replace(/^###\s*(?:Enunciado|Julgue[^\n]*):\s*/i, '')
       .trim();
 
-    const rawOpcoes = Array.isArray(bloco.payload?.opcoes) ? bloco.payload.opcoes : [];
     const opcoes = rawOpcoes.map((op: any, i: number) => {
       if (typeof op === 'string') {
         const id = op.toLowerCase() === 'certo' ? 'certo' : op.toLowerCase() === 'errado' ? 'errado' : String.fromCharCode(97 + i);
@@ -660,8 +694,11 @@ export function BlocoView({
   if (bloco.tipo === 'flashcard') {
     const { frente, verso, explicacao, exemplo, aplicando, dica } = bloco.payload || {};
     let displayFrente = frente || '';
-    let displayVerso = explicacao || verso || '';
+    let displayVerso = explicacao || verso || bloco.payload?.texto || '';
     let displayTitulo = bloco.payload?.titulo || '';
+
+    displayFrente = String(displayFrente).replace(/\[(Animação Visual|Animação|Transição de Tela|Transição|Efeito de Revelação|Efeito)[^\]]*\]\s*/gi, '');
+    displayVerso = String(displayVerso).replace(/\[(Animação Visual|Animação|Transição de Tela|Transição|Efeito de Revelação|Efeito)[^\]]*\]\s*/gi, '');
 
     // Auto-extração inteligente de payload bruto legado
     if (displayVerso.includes('### FRENTE DO CARTÃO') || displayVerso.includes('Pergunta para reflexão')) {
@@ -797,7 +834,16 @@ export function BlocoView({
   }
 
   if (bloco.tipo === 'conexao') {
-    const pares = Array.isArray(bloco.payload?.pares) ? bloco.payload.pares : [];
+    let pares = Array.isArray(bloco.payload?.pares) ? bloco.payload.pares : [];
+    if (pares.length === 0 && typeof bloco.payload?.texto === 'string') {
+      const linhas = bloco.payload.texto.split('\n');
+      pares = linhas.map((l: string) => {
+        const m = l.match(/^[•\-*]\s*(?:\*\*)?([^*:\n]+)(?:\*\*)?:\s*(.+)$/);
+        if (m) return { termo: m[1].trim(), definicao: m[2].trim() };
+        return null;
+      }).filter(Boolean);
+    }
+    
     return (
       <ConexaoBlock
         key={bloco.id}

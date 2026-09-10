@@ -127,24 +127,7 @@ export const AprenderHeaderToolbar: React.FC<AprenderHeaderToolbarProps> = memo(
           </div>
         )}
 
-        {emAndamentoCount > 0 && (
-          <div className="flex items-center gap-1 rounded-full bg-card border border-border p-0.5 lg:hidden shadow-sm">
-            {(['todas', 'andamento'] as const).map((f) => (
-              <button
-                key={f}
-                onClick={() => onFiltroChange(f)}
-                className={cn(
-                  'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors',
-                  filtro === f
-                    ? 'bg-primary text-primary-foreground shadow-md'
-                    : 'text-muted-foreground hover:text-foreground'
-                )}
-              >
-                {f === 'todas' ? 'Todas' : `Andamento (${emAndamentoCount})`}
-              </button>
-            ))}
-          </div>
-        )}
+
       </div>
     </div>
   );

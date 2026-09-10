@@ -53,8 +53,8 @@ export interface OfflineCategoryEntry {
 }
 
 export interface AprenderCacheEntry {
-  key: string;         // ex: area:direito-administrativo:<uid>, aula:<id>, home:<uid>
-  kind: 'area' | 'aula' | 'home';
+  key: string;         // ex: area:direito-administrativo:<uid>, aula:<id>, home:<uid>, modulo:<id>:<uid>
+  kind: 'area' | 'aula' | 'home' | 'modulo';
   payload: string;     // JSON stringified
   updatedAt: number;
 }
@@ -255,7 +255,7 @@ export async function getAprenderCacheEntry<T = any>(
 }
 
 
-export async function setAprenderCache(key: string, kind: 'area' | 'aula' | 'home', payload: any): Promise<void> {
+export async function setAprenderCache(key: string, kind: 'area' | 'aula' | 'home' | 'modulo', payload: any): Promise<void> {
   try {
     await db.aprenderCache.put({
       key,

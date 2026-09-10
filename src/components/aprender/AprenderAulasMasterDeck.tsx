@@ -295,7 +295,7 @@ export const AprenderAulasMasterDeck: React.FC<AprenderAulasMasterDeckProps> = m
                       prefetchAprenderArea(area.slug, null);
                     }
                   }}
-                  className="absolute cursor-pointer will-change-transform"
+                  className="absolute cursor-pointer will-change-transform group"
                 >
                   {/* Card em Formato Imponente (tamanho maior de capa) */}
                   <div
@@ -307,9 +307,6 @@ export const AprenderAulasMasterDeck: React.FC<AprenderAulasMasterDeckProps> = m
                     )}
                     style={{
                       backgroundColor: '#111',
-                      boxShadow: frente
-                        ? `${palette.shadow}, 0 24px 50px -10px rgba(0,0,0,0.85)`
-                        : '0 12px 28px -5px rgba(0,0,0,0.70)',
                       filter: frente ? 'none' : 'brightness(0.65)',
                     }}
                   >
@@ -324,8 +321,11 @@ export const AprenderAulasMasterDeck: React.FC<AprenderAulasMasterDeckProps> = m
                       />
                     )}
 
-                    {/* Escurecimento superior e inferior para garantir leitura do texto */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/60 pointer-events-none z-0" />
+                    {/* Escurecimento apenas na base para o texto, deixando o topo claro */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent pointer-events-none z-0" />
+
+                    {/* Efeito de Reflexo (Shine) no Hover */}
+                    <div className="absolute inset-0 -translate-x-[150%] group-hover:translate-x-[150%] bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-[-25deg] transition-transform duration-1000 ease-in-out pointer-events-none z-10" />
 
                     {/* Moldura Interna Chanfrada de Luxo */}
                     <div className="absolute inset-1.5 rounded-[18px] border border-white/20 pointer-events-none z-10" />

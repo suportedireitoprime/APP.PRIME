@@ -11,7 +11,9 @@ import {
   getCachedAprenderArea,
   hydrateAprenderAreaCache,
   loadAprenderArea,
+  setCachedModuloData,
 } from '@/lib/aprenderAreaLoader';
+import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
 import { BookOpenText, GraduationCap, ListChecks, Layers, ArrowRight, Play } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { useTrackArea } from "@/hooks/useTrackArea";
@@ -51,12 +53,37 @@ const AprenderArea = () => {
     if (!data || !moduloIdParam) return;
     const found = data.modulos.find((m) => m.id === moduloIdParam);
     if (found) {
+      const list = data.aulas.filter((a) => a.modulo_id === found.id);
+      const moduloAulas = list.map((a) => ({
+        id: a.id,
+        titulo: a.titulo,
+        objetivo: a.objetivo,
+        duracaoMin: a.duracao_est_min || 15,
+        ordem: a.ordem,
+        status: a.status || 'published',
+        concluida: !!data.progresso[a.id]?.concluida,
+        pct: data.progresso[a.id]?.pct || 0,
+      }));
+
+      setCachedModuloData(found.id, user?.id ?? null, {
+        modulo: {
+          id: found.id,
+          titulo: found.titulo,
+          resumo: found.resumo,
+          ordem: found.ordem,
+          areaId: data.area?.id ?? '',
+          areaNome: data.area?.nome ?? 'Direito',
+          areaSlug: data.area?.slug ?? slug ?? 'geral',
+        },
+        aulas: moduloAulas,
+      });
+
       navigate(`/aprender/modulo/${moduloIdParam}?tab=${activeTab}`, {
         replace: true,
-        state: { modulo: found, area: data.area, tab: activeTab },
+        state: { modulo: found, area: data.area, aulas: moduloAulas, tab: activeTab },
       });
     }
-  }, [data, moduloIdParam, activeTab, navigate]);
+  }, [data, moduloIdParam, activeTab, navigate, user?.id, slug]);
 
   useEffect(() => {
     if (!slug) return;
@@ -288,6 +315,35 @@ const AprenderArea = () => {
       const pct = total ? Math.round(somaPct / total) : 0;
       const numStr = String(m.ordem || idx + 1).padStart(2, '0');
 
+      const moduloAulas = list.map((a) => ({
+        id: a.id,
+        titulo: a.titulo,
+        objetivo: a.objetivo,
+        duracaoMin: a.duracao_est_min || 15,
+        ordem: a.ordem,
+        status: a.status || 'published',
+        concluida: !!progresso[a.id]?.concluida,
+        pct: progresso[a.id]?.pct || 0,
+      }));
+
+      const warmModulo = () => {
+        setCachedModuloData(m.id, user?.id ?? null, {
+          modulo: {
+            id: m.id,
+            titulo: m.titulo,
+            resumo: m.resumo,
+            ordem: m.ordem,
+            areaId: data?.area?.id ?? '',
+            areaNome: data?.area?.nome ?? 'Direito',
+            areaSlug: data?.area?.slug ?? slug ?? 'geral',
+          },
+          aulas: moduloAulas,
+        });
+        if (list[0]?.id) {
+          prefetchAprenderAula(list[0].id);
+        }
+      };
+
       return {
         key: m.id,
         titulo: m.titulo,
@@ -297,16 +353,23 @@ const AprenderArea = () => {
         displayConcluidas: concluidas,
         displayLabel: total === 1 ? 'aula' : 'aulas',
         displayPct: pct,
+        onPrefetch: warmModulo,
         onClick: () => {
           try { haptic.light(); } catch {}
+          warmModulo();
           const destTab = activeTab === 'questoes' ? '?tab=questoes' : '';
           navigate(`/aprender/modulo/${m.id}${destTab}`, {
-            state: { modulo: m, area: data?.area, tab: activeTab }
+            state: {
+              modulo: m,
+              area: data?.area,
+              aulas: moduloAulas,
+              tab: activeTab,
+            }
           });
         },
       };
     });
-  }, [isFlash, temasFlashcards, modulosOrdenados, aulas, progresso, activeTab, area?.nome, officialFlashcardArea, effectiveAreaName, slug, navigate, data?.area, totalFlashcardsArea]);
+  }, [isFlash, temasFlashcards, modulosOrdenados, aulas, progresso, activeTab, area?.nome, officialFlashcardArea, effectiveAreaName, slug, navigate, data?.area, totalFlashcardsArea, user?.id]);
 
   const areaVisual = useMemo(() => areaIconFor(slug || area?.slug || area?.nome), [slug, area]);
   const AreaIconComp = areaVisual?.Icon;
@@ -425,6 +488,8 @@ const AprenderArea = () => {
                           {/* ── CONJUNTO DE 3 CARTAS EM FORMATO DE DECK ABERTO EM LEQUE COM ALTURA NIVELADA ── */}
                           <div
                             onClick={item.onClick}
+                            onPointerEnter={(item as any).onPrefetch}
+                            onTouchStart={(item as any).onPrefetch}
                             className="relative w-[165px] sm:w-[190px] md:w-[215px] h-[245px] sm:h-[275px] md:h-[295px] cursor-pointer group select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
                           >
                             {/* Medalhão de Milestone / Nó da Trilha Centralizado no Topo (Estável e Elegante) */}

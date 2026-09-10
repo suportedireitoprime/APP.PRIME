@@ -408,7 +408,7 @@ const AprenderAula = () => {
         </header>
 
         {/* ── Corpo da aula adaptativo: 2 Painéis no Desktop/Tablet Landscape (Item 18) ── */}
-        <main className="flex-1 flex flex-col justify-center px-3 sm:px-6 md:px-8 py-4 sm:py-6 max-w-7xl w-full mx-auto pb-24 relative">
+        <main className="flex-1 flex flex-col justify-center px-0 sm:px-6 md:px-8 py-0 sm:py-6 max-w-7xl w-full mx-auto pb-24 relative">
           <div className="flex-1 flex gap-6 items-stretch w-full">
             {/* Painel Lateral Esquerdo (Two-Pane Master Detail) para telas grandes (lg: / xl: - Item 18) */}
             <aside className="hidden lg:flex flex-col w-72 shrink-0 bg-[#141416]/90 backdrop-blur-md border border-white/[0.08] rounded-3xl p-4 shadow-xl select-none max-h-[calc(100vh-160px)] overflow-hidden">
@@ -530,7 +530,7 @@ const AprenderAula = () => {
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseLeave}
-                className="w-full flex-1 flex flex-col bg-[#131316]/95 backdrop-blur-md border border-white/[0.08] rounded-3xl p-5 sm:p-8 md:p-10 shadow-2xl shadow-black/40 overflow-hidden relative select-none md:cursor-grab md:active:cursor-grabbing min-h-[500px]"
+                className="w-full flex-1 flex flex-col bg-[#131316]/95 backdrop-blur-md border-y sm:border border-white/[0.08] rounded-none sm:rounded-3xl px-4 py-5 sm:p-8 md:p-10 shadow-2xl shadow-black/40 overflow-hidden relative select-none md:cursor-grab md:active:cursor-grabbing min-h-[500px]"
               >
                 {/* ── Marca d'água ilustrada vazada no fundo do card (Direito Penal) ── */}
                 <div
@@ -559,7 +559,7 @@ const AprenderAula = () => {
                     {/* Conteúdo com scroll interno delimitado à página atual */}
                     <div
                       ref={cardScrollRef}
-                      className="flex-1 overflow-y-auto pr-1 sm:pr-2 space-y-4"
+                      className="flex-1 overflow-y-auto pr-1 sm:pr-2 pb-8 space-y-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                     >
                       <BlocoView
                         bloco={blocoAtual}

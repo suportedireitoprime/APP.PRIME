@@ -9,6 +9,7 @@ import QuestoesHero from '@/components/questoes/QuestoesHero';
 import QuestoesFiltroSheet from '@/components/questoes/QuestoesFiltroSheet';
 import { haptic } from '@/lib/nativeHaptics';
 import { useQuestoesCargos, useQuestoesDesempenho } from '@/hooks/useQuestoes';
+import QuestoesMasterDeck from '@/components/questoes/QuestoesMasterDeck';
 
 const ATALHOS_4 = [
   { id: 'historico', label: 'Histórico', desc: 'Sessões salvas', icon: History, route: '/questoes/historico' },
@@ -145,6 +146,19 @@ const Questoes = () => {
                 </div>
               </motion.button>
             </div>
+          </section>
+
+          {/* ── Decks de Questões (Master Deck) ───────────────────── */}
+          <section className="pt-2">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="h-4 w-1 rounded-full bg-primary" />
+              <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                Cadernos / Matérias
+              </p>
+            </div>
+            {cargos && cargos.length > 0 && (
+              <QuestoesMasterDeck cargos={cargos} />
+            )}
           </section>
           </div>
         </div>
