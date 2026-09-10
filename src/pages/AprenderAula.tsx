@@ -18,6 +18,7 @@ import { iconePorTipo, rotuloPorTipo } from '@/lib/aprenderUtils';
 import { useAprenderAula } from '@/hooks/domain/useAprenderAula';
 import { BlocoView } from '@/components/aprender/BlocoView';
 import { AulaConcluidaScreen } from '@/components/aprender/AulaConcluidaScreen';
+import { RetomarAulaModal } from '@/components/aprender/RetomarAulaModal';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { AulaPreviaScreen, type PreviaAula } from '@/components/aprender/AulaPreviaScreen';
 import { haptic } from '@/lib/nativeHaptics';
@@ -52,6 +53,7 @@ const AprenderAula = () => {
     playFlipSound,
     avaliarFlashcard, responderPergunta, concluirAula, salvarBloco,
     refazerAula, comecarAula, continuarAula,
+    modalRetomarOpen, savedPosition, confirmarRetomada, recomecarDoZero, salvarProgresso,
   } = useAprenderAula(aulaId, user);
 
   // Voltar inteligente com resolução contextual de módulo, trilha e histórico
@@ -127,7 +129,9 @@ const AprenderAula = () => {
     if (cardScrollRef.current) {
       cardScrollRef.current.scrollTop = 0;
     }
-  }, [total, currentIdx, setCurrentIdx]);
+    // Salva progresso imediatamente
+    void salvarProgresso(clamped >= total - 1, clamped);
+  }, [total, currentIdx, setCurrentIdx, salvarProgresso, playPageTurnSound]);
 
   // Garante scroll no topo imediatamente a cada mudança de bloco (Item 17)
   useEffect(() => {
@@ -830,6 +834,17 @@ const AprenderAula = () => {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Card Flutuante Responsivo de Retomada de Aula */}
+      <RetomarAulaModal
+        open={modalRetomarOpen}
+        aulaTitulo={aula?.titulo || ''}
+        paginaSalva={savedPosition?.page || 1}
+        totalPaginas={total || 10}
+        pctConcluido={savedPosition?.pct || 0}
+        onContinuar={confirmarRetomada}
+        onRecomecar={recomecarDoZero}
+      />
     </div>
   );
 };

@@ -22,6 +22,7 @@ import ShapeGrid from '@/components/ui/ShapeGrid';
 import { haptic } from '@/lib/nativeHaptics';
 import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
 import type { FlashcardCard } from '@/lib/flashcardsQueries';
+import { getLocalAulaProgress } from '@/lib/aprenderProgressoStorage';
 
 export type ModuloDetalhe = {
   id: string;
@@ -42,6 +43,8 @@ export type AulaItem = {
   status: string;
   concluida?: boolean;
   pct?: number;
+  totalBlocos?: number;
+  blocosConcluidos?: number;
 };
 
 const AprenderModulo = () => {
@@ -154,32 +157,62 @@ const AprenderModulo = () => {
         setModulo(modInfo);
 
         const rawAulas = rawAulasRes.data ?? [];
-        const concluidasSet = new Set<string>();
+        const aulaIds = rawAulas.map((a) => a.id);
 
-        if (uid && rawAulas.length > 0) {
-          const aulaIds = rawAulas.map((a) => a.id);
-          const { data: progData } = await supabase
-            .from('aprender_progresso_aula')
-            .select('aula_id, concluida_em')
-            .eq('user_id', uid)
-            .in('aula_id', aulaIds);
+        let progData: any[] = [];
+        const blocosCountMap = new Map<string, number>();
 
-          ((progData as any[]) ?? []).forEach((p) => {
-            if (p.concluida_em) concluidasSet.add(p.aula_id);
+        if (aulaIds.length > 0) {
+          const [progRes, blocosRes] = await Promise.all([
+            uid
+              ? supabase
+                  .from('aprender_progresso_aula')
+                  .select('aula_id, concluida_em, blocos_concluidos')
+                  .eq('user_id', uid)
+                  .in('aula_id', aulaIds)
+              : Promise.resolve({ data: [] }),
+            supabase
+              .from('aprender_blocos')
+              .select('aula_id')
+              .in('aula_id', aulaIds),
+          ]);
+
+          progData = (progRes.data as any[]) ?? [];
+          ((blocosRes.data as any[]) ?? []).forEach((b: any) => {
+            blocosCountMap.set(b.aula_id, (blocosCountMap.get(b.aula_id) || 0) + 1);
           });
         }
 
         if (cancelled) return;
 
-        const aulasMapeadas: AulaItem[] = rawAulas.map((a) => ({
-          id: a.id,
-          titulo: a.titulo,
-          objetivo: a.objetivo,
-          duracaoMin: a.duracao_est_min || 15,
-          ordem: a.ordem,
-          status: a.status,
-          concluida: concluidasSet.has(a.id),
-        }));
+        const progMap = new Map<string, any>();
+        progData.forEach((p) => progMap.set(p.aula_id, p));
+
+        const aulasMapeadas: AulaItem[] = rawAulas.map((a) => {
+          const p = progMap.get(a.id);
+          const local = getLocalAulaProgress(a.id);
+          const totalBlocos = blocosCountMap.get(a.id) || (local?.total ?? 10);
+          const blocosConcluidos = Math.max(p?.blocos_concluidos ?? 0, local?.blocosConcluidos ?? 0);
+          const isConcluida = !!p?.concluida_em || !!local?.concluida || (totalBlocos > 0 && blocosConcluidos >= totalBlocos);
+          const pct = isConcluida
+            ? 100
+            : totalBlocos > 0
+            ? Math.min(100, Math.round((blocosConcluidos / totalBlocos) * 100))
+            : 0;
+
+          return {
+            id: a.id,
+            titulo: a.titulo,
+            objetivo: a.objetivo,
+            duracaoMin: a.duracao_est_min || 15,
+            ordem: a.ordem,
+            status: a.status,
+            concluida: isConcluida,
+            pct,
+            totalBlocos,
+            blocosConcluidos,
+          };
+        });
 
         setAulas(aulasMapeadas);
         setLoading(false);
@@ -719,11 +752,13 @@ const AprenderModulo = () => {
                             }}
                             onPointerEnter={() => prefetchAprenderAula(aula.id)}
                             className={cn(
-                              'relative h-[120px] sm:h-[136px] overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
+                              'relative min-h-[120px] sm:min-h-[136px] py-3.5 sm:py-4 px-3.5 sm:px-4 overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
                               isNext
                                 ? 'border-primary/60 bg-card hover:border-primary shadow-primary/5'
                                 : aula.concluida
-                                ? 'border-border/60 bg-card/70 hover:border-primary/40'
+                                ? 'border-emerald-500/40 bg-card/70 hover:border-emerald-500/60'
+                                : (aula.pct || 0) > 0
+                                ? 'border-primary/40 bg-card/60 hover:border-primary/60'
                                 : 'border-border/50 bg-card/40 hover:border-primary/30'
                             )}
                           >
@@ -748,17 +783,63 @@ const AprenderModulo = () => {
                                   <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-white/80" strokeWidth={1.8} />
                                 )}
                               </div>
-                              {aula.concluida && (
+                              {aula.concluida ? (
                                 <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded text-center leading-none border border-emerald-500/20">
                                   Concluída
                                 </span>
-                              )}
+                              ) : (aula.pct || 0) > 0 ? (
+                                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-1.5 py-0.5 rounded text-center leading-none border border-primary/20">
+                                  {aula.pct}%
+                                </span>
+                              ) : null}
                             </div>
 
                             <div className="min-w-0 flex-1 flex flex-col justify-center h-full py-0.5">
-                              <h3 className="text-sm sm:text-base font-normal font-sans text-foreground break-words leading-snug line-clamp-4 group-hover:text-primary transition-colors">
+                              <h3 className="text-sm sm:text-base font-normal font-sans text-foreground break-words leading-snug line-clamp-2 group-hover:text-primary transition-colors">
                                 {aula.titulo}
                               </h3>
+
+                              {/* Barra de Progresso da Aula na Lista */}
+                              <div className="mt-2.5 space-y-1.5 w-full">
+                                <div className="flex items-center justify-between text-[11px] sm:text-xs font-normal">
+                                  <span className={cn(
+                                    aula.concluida
+                                      ? 'text-emerald-400 font-bold'
+                                      : (aula.pct || 0) > 0
+                                      ? 'text-primary font-semibold'
+                                      : 'text-muted-foreground'
+                                  )}>
+                                    {aula.concluida
+                                      ? 'Aula Concluída'
+                                      : (aula.pct || 0) > 0
+                                      ? `${aula.blocosConcluidos || 0} de ${aula.totalBlocos || 0} páginas`
+                                      : `0 de ${aula.totalBlocos || 0} páginas`}
+                                  </span>
+                                  <span className={cn(
+                                    'font-bold tabular-nums',
+                                    aula.concluida
+                                      ? 'text-emerald-400'
+                                      : (aula.pct || 0) > 0
+                                      ? 'text-primary'
+                                      : 'text-muted-foreground'
+                                  )}>
+                                    {aula.pct || 0}%
+                                  </span>
+                                </div>
+                                <div className="h-1.5 w-full rounded-full bg-white/10 overflow-hidden border border-white/5">
+                                  <div
+                                    className={cn(
+                                      'h-full rounded-full transition-all duration-500',
+                                      aula.concluida
+                                        ? 'bg-emerald-400 shadow-sm shadow-emerald-400/50'
+                                        : (aula.pct || 0) > 0
+                                        ? 'bg-gradient-to-r from-primary to-primary-light shadow-sm shadow-primary/30'
+                                        : 'bg-transparent'
+                                    )}
+                                    style={{ width: `${Math.max(aula.pct || 0, (aula.pct || 0) > 0 ? 6 : 0)}%` }}
+                                  />
+                                </div>
+                              </div>
                             </div>
 
                             <div className="flex items-center justify-center shrink-0 ml-1 h-full">
@@ -770,8 +851,13 @@ const AprenderModulo = () => {
                               <div 
                                 className={cn(
                                   "h-full transition-all duration-500",
-                                  aula.concluida ? "w-full bg-emerald-500" : "w-0 bg-emerald-500"
+                                  aula.concluida
+                                    ? "w-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+                                    : (aula.pct || 0) > 0
+                                    ? "bg-primary shadow-[0_0_8px_hsl(var(--primary)/0.5)]"
+                                    : "w-0 bg-transparent"
                                 )} 
+                                style={{ width: `${aula.pct || 0}%` }}
                               />
                             </div>
                           </button>
