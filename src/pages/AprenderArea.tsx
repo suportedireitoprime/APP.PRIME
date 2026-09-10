@@ -468,129 +468,33 @@ const AprenderArea = () => {
                   <div key={i} className="h-28 rounded-2xl bg-muted/40 animate-pulse border border-white/5" />
                 ))}
               </div>
-            ) : itemsToRender.length === 0 ? (
-              <div className="mx-auto max-w-md my-12 rounded-2xl border border-border bg-card p-8 text-center text-muted-foreground">
-                <BookOpenText className="w-8 h-8 mx-auto mb-3 text-muted-foreground/60" />
-                <p className="text-sm font-semibold text-foreground mb-1">
-                  {isFlash ? 'Nenhum deck de flashcard encontrado' : 'Nenhum módulo publicado ainda'}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {isFlash 
-                    ? `Os decks de ${officialFlashcardArea || area?.nome || effectiveAreaName} estarão disponíveis em breve.`
-                    : `Os módulos de ${area?.nome || effectiveAreaName} estarão disponíveis em breve.`}
-                </p>
-              </div>
-            ) : isFlash ? (
-              /* ── GRADE DE DECKS DE FLASHCARDS (Card Stacks 3D Colecionáveis) ── */
-              <div className="py-2 w-full min-w-0">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 w-full">
-                  {itemsToRender.map((deck) => (
-                    <div
-                      key={deck.key}
-                      onClick={deck.onClick}
-                      className="group relative cursor-pointer select-none transition-all duration-300 active:scale-[0.98] pt-2"
-                    >
-                      {/* Camada 2 de trás da Pilha (Efeito Baralho Físico) */}
-                      <div 
-                        className="absolute inset-x-4 top-0 h-[92%] rounded-2xl border border-white/10 bg-zinc-900/60 transition-all duration-300 group-hover:-translate-y-1.5 opacity-50 z-0 pointer-events-none" 
-                      />
-                      {/* Camada 1 de trás da Pilha */}
-                      <div 
-                        className="absolute inset-x-2 top-1 h-[95%] rounded-2xl border border-white/15 bg-zinc-900/85 transition-all duration-300 group-hover:-translate-y-1 opacity-75 z-[1] pointer-events-none" 
-                      />
-
-                      {/* Carta Frontal do Deck */}
-                      <div
-                        className="relative z-10 rounded-2xl border border-white/20 p-4 sm:p-5 flex flex-col justify-between min-h-[175px] sm:min-h-[195px] overflow-hidden backdrop-blur-md transition-all duration-300 group-hover:border-white/40 shadow-xl"
-                        style={{
-                          background: palette.cardGradient || 'linear-gradient(135deg, #1f1f23 0%, #121215 100%)',
-                          boxShadow: palette.shadow,
-                        }}
-                      >
-                        {/* Brilho radial no topo */}
-                        <div 
-                          className="pointer-events-none absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-20 group-hover:opacity-35 transition-opacity"
-                          style={{ background: palette.primary }}
-                          aria-hidden
-                        />
-
-                        {/* Marca d'água de fundo */}
-                        {AreaIconComp && (
-                          <AreaIconComp
-                            className="pointer-events-none absolute -right-3 -bottom-3 w-28 h-28 opacity-10 group-hover:opacity-20 transition-opacity text-white select-none"
-                            strokeWidth={1.2}
-                            aria-hidden
-                          />
-                        )}
-
-                        {/* Topo do Deck: Badge DECK XX + Chip de Flashcards */}
-                        <div className="flex items-center justify-between gap-2 z-10 w-full mb-2.5">
-                          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-wider backdrop-blur-md bg-black/40 text-white border border-white/15 shadow-sm">
-                            <Layers className="w-3.5 h-3.5" style={{ color: palette.primary }} />
-                            <span>{deck.badgeLabel}</span>
-                          </span>
-
-                          <span className="text-[11px] font-semibold font-sans px-2.5 py-0.5 rounded-full border border-white/15 bg-white/5 text-white/90">
-                            {deck.displayTotal} {deck.displayLabel}
-                          </span>
-                        </div>
-
-                        {/* Centro do Deck: Título do Tópico / Baralho */}
-                        <div className="my-auto py-2 z-10 w-full">
-                          <h3 className="font-sans font-bold text-[14.5px] sm:text-[16px] leading-snug break-words text-white group-hover:text-emerald-400 transition-colors drop-shadow-sm">
-                            {deck.titulo}
-                          </h3>
-                        </div>
-
-                        {/* Rodapé do Deck: Progresso & Botão Estudar */}
-                        <div className="z-10 pt-3 border-t border-white/15 w-full flex items-center justify-between gap-3">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between text-[10px] text-white/80 mb-1 font-medium">
-                              <span className="truncate">
-                                {deck.displayConcluidas > 0 
-                                  ? `${deck.displayConcluidas}/${deck.displayTotal} dominados` 
-                                  : 'Não iniciado'}
-                              </span>
-                              <span className="font-bold font-sans ml-1">{deck.displayPct}%</span>
-                            </div>
-                            <div className="w-full bg-black/40 h-1.5 rounded-full overflow-hidden border border-white/15">
-                              <div 
-                                className="h-full rounded-full transition-all duration-500 shadow-sm"
-                                style={{ 
-                                  width: `${Math.max(deck.displayPct, deck.displayTotal > 0 ? 6 : 0)}%`,
-                                  backgroundColor: palette.primary,
-                                }}
-                              />
-                            </div>
-                          </div>
-
-                          <div 
-                            className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold shrink-0 transition-all group-hover:scale-105 active:scale-95 shadow-sm"
-                            style={{ 
-                              backgroundColor: `${palette.primary}25`,
-                              color: palette.primary,
-                              border: `1px solid ${palette.primary}40`,
-                            }}
-                          >
-                            <span>Estudar</span>
-                            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
             ) : (
-              /* Trilha em Linha do Tempo Elegante (Alternando Esquerda/Direita) */
-              <div className="relative py-6 w-full min-w-0 max-w-full overflow-hidden">
+              /* Trilha em Zigue-Zague com Linha do Tempo Central e Deusa Têmis Vazada de Fundo */
+              <div className="relative py-8 w-full min-w-0 max-w-full overflow-hidden">
+                {/* ── Imagem Majestosa da Deusa Têmis Vazada e Impactante de Fundo ── */}
+                <div className="pointer-events-none fixed inset-0 flex items-center justify-center overflow-hidden z-0 select-none">
+                  <img
+                    src="/images/gamificacao/deusa_temis_vazada.webp"
+                    alt=""
+                    aria-hidden="true"
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
+                    className="w-[280px] sm:w-[380px] md:w-[440px] max-w-[85vw] h-auto object-contain opacity-20 filter drop-shadow-[0_0_45px_rgba(234,179,8,0.25)] pointer-events-none"
+                    style={{
+                      maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
+                      WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
+                    }}
+                  />
+                </div>
+
                 {/* Linha vertical central luminosa */}
                 <div 
-                  className="absolute left-1/2 top-6 bottom-6 w-[2px] -translate-x-1/2 rounded-full z-0 pointer-events-none"
+                  className="absolute left-1/2 top-6 bottom-6 w-[2px] -translate-x-1/2 rounded-full z-[1] pointer-events-none"
                   style={{ background: palette.lineGradient }}
                 />
 
-                <div className="space-y-6 sm:space-y-8 w-full min-w-0">
+                <div className="space-y-6 sm:space-y-8 w-full min-w-0 relative z-[2]">
                   {itemsToRender.map((item, i) => {
                     const isLeft = i % 2 === 0;
 
@@ -609,7 +513,7 @@ const AprenderArea = () => {
 
                         {/* Nó Central (Milestone da Linha do Tempo) */}
                         <div 
-                          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full transition-transform w-8 h-8 sm:w-9 sm:h-9 border-4 border-[#0D0D0D] text-white scale-105"
+                          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full transition-transform w-8 h-8 sm:w-9 sm:h-9 border-4 border-[#0D0D0D] text-white scale-105 shadow-md"
                           style={{
                             backgroundColor: palette.primary,
                             boxShadow: palette.nodeBoxShadow,
@@ -624,10 +528,10 @@ const AprenderArea = () => {
                           />
                         </div>
 
-                        {/* Card no formato de Capa de Livro */}
+                        {/* Card no formato de Deck / Capa de Livro em Zigue-Zague */}
                         <div
                           onClick={item.onClick}
-                          className="relative w-[46%] sm:w-[45%] max-w-[225px] min-h-[175px] sm:min-h-[195px] h-auto p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden select-none box-border transition-all duration-300 z-10 border border-white/25 cursor-pointer active:scale-[0.97] group"
+                          className="relative w-[46%] sm:w-[45%] max-w-[225px] min-h-[175px] sm:min-h-[195px] h-auto p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden select-none box-border transition-all duration-300 z-10 border border-white/25 cursor-pointer active:scale-[0.97] group shadow-xl"
                           style={{
                             background: palette.cardGradient,
                             boxShadow: palette.shadow,
@@ -639,34 +543,32 @@ const AprenderArea = () => {
                             e.currentTarget.style.boxShadow = palette.shadow;
                           }}
                         >
-                          {/* Marca d'água de fundo */}
-                          {slug === 'direito-penal' ? (
-                            <img
-                              src="/images/gamificacao/direito_penal_prisao_vazado.webp"
-                              alt=""
-                              aria-hidden="true"
-                              loading="lazy"
-                              decoding="async"
-                              className="pointer-events-none absolute -right-3 -bottom-2 w-[115px] sm:w-[130px] h-[115px] sm:h-[130px] object-contain opacity-25 group-hover:opacity-35 transition-opacity duration-300 z-0 select-none"
-                            />
-                          ) : AreaIconComp ? (
-                            <AreaIconComp
-                              className="pointer-events-none absolute -right-3 -bottom-2 w-[115px] sm:w-[130px] h-[115px] sm:h-[130px] opacity-15 group-hover:opacity-25 transition-opacity duration-300 z-0 select-none text-white"
-                              strokeWidth={1.2}
-                              aria-hidden="true"
-                            />
-                          ) : null}
+                          {/* Marca d'água de fundo: Deusa Têmis vazada e impactante */}
+                          <img
+                            src="/images/gamificacao/deusa_temis_vazada.webp"
+                            alt=""
+                            aria-hidden="true"
+                            loading="lazy"
+                            decoding="async"
+                            className="pointer-events-none absolute -right-3 -bottom-2 w-[115px] sm:w-[130px] h-[115px] sm:h-[130px] object-contain opacity-25 group-hover:opacity-40 transition-opacity duration-300 z-0 select-none"
+                          />
 
-                          {/* Cabeçalho da Capa: Módulo / Tópico */}
+                          {/* Cabeçalho da Capa: Tag Deck / Módulo + Contagem */}
                           <div className="flex items-center justify-between gap-1 z-[1] w-full">
-                            <span className="flex items-center gap-1 text-[9px] sm:text-[10px] font-normal px-2 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-md bg-black/40 text-white border border-white/15">
-                              {item.badgeLabel}
+                            <span className="flex items-center gap-1 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-md bg-black/50 text-white border border-white/15">
+                              {isFlash ? <Layers className="w-2.5 h-2.5" style={{ color: palette.primary }} /> : null}
+                              <span>{item.badgeLabel}</span>
                             </span>
+                            {isFlash && (
+                              <span className="text-[9px] font-semibold text-white/90 px-1.5 py-0.5 rounded-md bg-white/10 border border-white/10">
+                                {item.displayTotal} {item.displayLabel}
+                              </span>
+                            )}
                           </div>
 
                           {/* Centro da Capa: Título do Tema Sem Negrito e Sem Abreviações */}
                           <div className="my-auto py-2 z-[1] w-full">
-                            <h3 className="font-sans font-normal text-[12.5px] sm:text-[14px] leading-snug break-words text-white drop-shadow-sm">
+                            <h3 className="font-sans font-normal text-[12.5px] sm:text-[14px] leading-snug break-words text-white drop-shadow-sm group-hover:text-emerald-300 transition-colors">
                               {item.titulo}
                             </h3>
                           </div>
@@ -678,10 +580,13 @@ const AprenderArea = () => {
                                 <span>{item.displayConcluidas > 0 ? `${item.displayConcluidas}/${item.displayTotal} concluídos` : `${item.displayTotal} ${item.displayLabel}`}</span>
                                 <span className="font-normal font-sans">{item.displayPct}%</span>
                               </div>
-                              <div className="w-full bg-black/35 h-1.5 rounded-full overflow-hidden border border-white/20">
+                              <div className="w-full bg-black/40 h-1.5 rounded-full overflow-hidden border border-white/20">
                                 <div 
-                                  className="h-full bg-white rounded-full transition-all duration-500 shadow-sm"
-                                  style={{ width: `${Math.max(item.displayPct, item.displayTotal > 0 ? 8 : 0)}%` }}
+                                  className="h-full rounded-full transition-all duration-500 shadow-sm"
+                                  style={{ 
+                                    width: `${Math.max(item.displayPct, item.displayTotal > 0 ? 8 : 0)}%`,
+                                    backgroundColor: palette.primary,
+                                  }}
                                 />
                               </div>
                             </div>
