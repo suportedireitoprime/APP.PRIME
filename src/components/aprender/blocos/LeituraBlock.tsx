@@ -280,19 +280,19 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
                 );
               },
               table: ({ children }) => (
-                <div className="my-6 overflow-x-auto rounded-2xl border border-white/10 bg-[#141417] shadow-md">
+                <div className="my-4 overflow-x-auto rounded-2xl border border-white/10 bg-[#141417] shadow-md">
                   <table className="w-full text-left text-sm text-neutral-200 border-collapse">
                     {children}
                   </table>
                 </div>
               ),
               th: ({ children }) => (
-                <th className="border-b border-white/10 bg-white/[0.04] px-4 py-3 text-xs font-bold uppercase tracking-wider text-primary">
+                <th className="border-b border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-bold uppercase tracking-wider text-primary">
                   {children}
                 </th>
               ),
               td: ({ children }) => (
-                <td className="border-b border-white/5 px-4 py-3 text-neutral-200 leading-relaxed">
+                <td className="border-b border-white/5 px-3 py-2.5 text-neutral-200 leading-relaxed">
                   {children}
                 </td>
               ),
