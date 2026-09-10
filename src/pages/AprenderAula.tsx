@@ -667,59 +667,84 @@ const AprenderAula = () => {
           </div>
         </main>
 
-        {/* ── Barra Flutuante de Confirmação de Resposta — Posicionada logo EM CIMA do menu de rodapé ── */}
+        {/* ── Barra de Confirmação de Resposta — Ocupa o rodapé quando uma opção é selecionada ── */}
         <AnimatePresence>
           {isPergunta && !respostas[blocoAtual?.id || ''] && selectedOpcao && (
-            <motion.div
-              initial={{ y: 70, opacity: 0 }}
+            <motion.aside
+              aria-label="Confirmar resposta selecionada"
+              initial={{ y: '100%', opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 70, opacity: 0 }}
-              transition={{ type: 'spring', damping: 26, stiffness: 320 }}
-              className="fixed left-0 right-0 z-50 px-4 pointer-events-auto"
+              exit={{ y: '100%', opacity: 0 }}
+              transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+              className="fixed bottom-0 left-0 right-0 z-50 border-t border-primary/30 bg-[#141417]/98 backdrop-blur-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.85)] pointer-events-auto"
               style={{
-                bottom: 'calc(4.75rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))',
+                paddingBottom: 'calc(0.75rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))',
+                paddingLeft: 'calc(1.25rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
+                paddingRight: 'calc(1.25rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
+                paddingTop: '0.75rem',
               }}
             >
-              <div className="mx-auto max-w-2xl sm:max-w-3xl flex items-center justify-between gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-2xl border border-primary/40 bg-[#16161a]/95 backdrop-blur-2xl shadow-[0_10px_35px_rgba(0,0,0,0.85),0_0_20px_rgba(225,29,72,0.25)]">
-                <div className="flex items-center gap-2.5 pl-2">
-                  <span className="flex h-3 w-3 relative">
+              <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span className="flex h-2.5 w-2.5 relative shrink-0">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-primary" />
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary" />
                   </span>
-                  <span className="text-xs sm:text-sm font-bold text-white tracking-wide">
+                  <span className="text-xs sm:text-sm font-bold text-white tracking-wide truncate">
                     {['certo', 'errado', 'verdadeiro', 'falso'].includes(selectedOpcao.toLowerCase())
                       ? `Opção ${selectedOpcao.toUpperCase()} selecionada`
                       : `Alternativa ${selectedOpcao.toUpperCase()} selecionada`}
                   </span>
                 </div>
 
-                <button
-                  onClick={() => {
-                    haptic.impact('medium');
-                    if (blocoAtual) {
-                      responderPergunta(blocoAtual, selectedOpcao);
-                    }
-                    setSelectedOpcao(null);
-                  }}
-                  className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-rose-600 px-5 sm:px-7 py-3 text-sm sm:text-[15px] font-black text-white shadow-lg shadow-primary/30 hover:brightness-110 active:scale-[0.97] transition-all cursor-pointer min-h-[46px]"
-                >
-                  <span>Confirmar Resposta</span>
-                  <ArrowRight className="h-4 w-4 text-white" strokeWidth={2.5} />
-                </button>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      haptic.selection();
+                      setSelectedOpcao(null);
+                    }}
+                    className="h-11 px-3 sm:px-4 rounded-xl bg-white/5 border border-white/10 text-neutral-400 hover:text-white hover:bg-white/10 active:scale-95 text-xs sm:text-sm font-semibold transition-all min-h-[44px]"
+                  >
+                    Trocar
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      haptic.impact('medium');
+                      if (blocoAtual) {
+                        responderPergunta(blocoAtual, selectedOpcao);
+                      }
+                      setSelectedOpcao(null);
+                    }}
+                    className="flex items-center justify-center gap-2 h-11 rounded-xl bg-gradient-to-r from-primary to-rose-600 px-4 sm:px-6 text-xs sm:text-sm font-black text-white shadow-md shadow-primary/30 hover:brightness-110 active:scale-[0.97] transition-all cursor-pointer min-h-[44px]"
+                  >
+                    <span>Confirmar Resposta</span>
+                    <ArrowRight className="h-4 w-4 text-white" strokeWidth={2.5} />
+                  </button>
+                </div>
               </div>
-            </motion.div>
+            </motion.aside>
           )}
         </AnimatePresence>
 
-        {/* ── Barra inferior: APENAS sumário + quantas páginas tem + navegação ── */}
-        <nav
+        {/* ── Barra inferior: APENAS sumário + quantas páginas tem + navegação (desce quando confirmar está visível) ── */}
+        <motion.nav
           aria-label="Navegação da aula"
+          initial={false}
+          animate={{
+            y: (isPergunta && !respostas[blocoAtual?.id || ''] && selectedOpcao) ? '110%' : 0,
+            opacity: (isPergunta && !respostas[blocoAtual?.id || ''] && selectedOpcao) ? 0 : 1,
+          }}
+          transition={{ type: 'spring', damping: 28, stiffness: 300 }}
           className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.08] bg-[#141417]/95 backdrop-blur-xl flex items-center justify-between"
           style={{
             paddingBottom: 'calc(0.75rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))',
             paddingLeft: 'calc(1.25rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
             paddingRight: 'calc(1.25rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
             paddingTop: '0.75rem',
+            pointerEvents: (isPergunta && !respostas[blocoAtual?.id || ''] && selectedOpcao) ? 'none' : 'auto',
           }}
         >
           <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
@@ -782,7 +807,8 @@ const AprenderAula = () => {
               )}
             </div>
           </div>
-        </nav>
+        </motion.nav>
+
       </div>
 
       {/* Modal de Feedback de Questão */}
