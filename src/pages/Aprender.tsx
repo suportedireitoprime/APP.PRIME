@@ -614,20 +614,26 @@ const Aprender = () => {
                   aulas: {
                     label: 'Aulas',
                     icon: GraduationCap,
-                    activeClass: 'bg-primary/15 text-primary border-primary/30 shadow-sm font-bold',
-                    iconColor: 'currentColor',
+                    bg: 'rgba(244, 63, 94, 0.15)',
+                    border: 'rgba(244, 63, 94, 0.4)',
+                    color: '#fb7185',
+                    glow: '0 0 14px rgba(244, 63, 94, 0.22)',
                   },
                   flashcards: {
                     label: 'Flashcards',
                     icon: FlashcardsIcon,
-                    activeClass: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/35 shadow-[0_0_14px_rgba(52,211,153,0.18)] font-bold',
-                    iconColor: '#34D399',
+                    bg: 'rgba(16, 185, 129, 0.16)',
+                    border: 'rgba(52, 211, 153, 0.42)',
+                    color: '#34D399',
+                    glow: '0 0 14px rgba(16, 185, 129, 0.22)',
                   },
                   questoes: {
                     label: 'Questões',
                     icon: ListChecks,
-                    activeClass: 'bg-sky-500/15 text-sky-400 border-sky-500/35 shadow-[0_0_14px_rgba(56,189,248,0.18)] font-bold',
-                    iconColor: '#38BDF8',
+                    bg: 'rgba(14, 165, 233, 0.16)',
+                    border: 'rgba(56, 189, 248, 0.42)',
+                    color: '#38BDF8',
+                    glow: '0 0 14px rgba(14, 165, 233, 0.22)',
                   },
                 }[tab];
 
@@ -640,18 +646,28 @@ const Aprender = () => {
                       try { haptic.selection(); } catch (e) {}
                       setActiveTab(tab);
                     }}
+                    style={
+                      isActive
+                        ? {
+                            backgroundColor: tabConfig.bg,
+                            borderColor: tabConfig.border,
+                            color: tabConfig.color,
+                            boxShadow: tabConfig.glow,
+                          }
+                        : undefined
+                    }
                     className={cn(
                       "flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2.5 rounded-xl text-xs sm:text-[13px] uppercase tracking-wider transition-all duration-200 cursor-pointer border",
                       isActive
-                        ? tabConfig.activeClass
+                        ? "font-bold shadow-sm"
                         : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/40 font-semibold"
                     )}
                   >
                     <IconComponent
                       className="w-4 h-4 shrink-0 transition-colors"
-                      style={isActive ? { color: tabConfig.iconColor } : undefined}
+                      style={{ color: isActive ? tabConfig.color : undefined }}
                     />
-                    <span>
+                    <span style={{ color: isActive ? tabConfig.color : undefined }}>
                       {tabConfig.label}
                     </span>
                   </button>
