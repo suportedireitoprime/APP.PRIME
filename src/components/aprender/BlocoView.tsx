@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Quote, Scale, Sparkles, Check, XCircle, RotateCw, CheckCircle2, ArrowRight, Lightbulb, Flag, ChevronDown } from 'lucide-react';
+import { Quote, Scale, Sparkles, Check, XCircle, RotateCw, CheckCircle2, ArrowRight, Lightbulb, Flag, ChevronDown, AlertTriangle, BookMarked } from 'lucide-react';
 import { Bloco, iconePorTipo, isBlocoTexto, rotuloPorTipo } from '@/lib/aprenderUtils';
 import { LeituraBlock } from '@/components/aprender/blocos/LeituraBlock';
 import { CheckpointBlock } from '@/components/aprender/blocos/CheckpointBlock';
@@ -341,15 +341,15 @@ export function BlocoView({
       br: 'border-primary/30',
       tx: 'text-primary',
       glow: 'shadow-[0_0_24px_hsl(var(--primary)/0.1)]',
-      Icon: Sparkles,
+      Icon: BookMarked,
     };
     if (tom === 'alerta') {
       style = {
-        bg: 'bg-rose-500/[0.08]',
-        br: 'border-rose-500/30',
-        tx: 'text-rose-400',
-        glow: 'shadow-[0_0_24px_rgba(244,63,94,0.1)]',
-        Icon: Sparkles,
+        bg: 'bg-amber-500/[0.06]',
+        br: 'border-amber-500/25',
+        tx: 'text-amber-400',
+        glow: 'shadow-[0_0_24px_rgba(245,158,11,0.08)]',
+        Icon: AlertTriangle,
       };
     }
     if (tom === 'dica') {
