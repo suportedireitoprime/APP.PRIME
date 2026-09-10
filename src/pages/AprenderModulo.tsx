@@ -174,7 +174,8 @@ const AprenderModulo = () => {
             supabase
               .from('aprender_blocos')
               .select('aula_id')
-              .in('aula_id', aulaIds),
+              .in('aula_id', aulaIds)
+              .limit(2000),
           ]);
 
           progData = (progRes.data as any[]) ?? [];

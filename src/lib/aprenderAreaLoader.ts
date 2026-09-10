@@ -89,7 +89,8 @@ async function fetchAprenderAreaFromNetwork(
       .from('aprender_aulas')
       .select('id, modulo_id, titulo, objetivo, duracao_est_min, ordem, status')
       .in('modulo_id', modIds)
-      .order('ordem');
+      .order('ordem')
+      .limit(3000);
     publicadas = ((ausTodas ?? []).filter((x: any) => x.status === 'published') as AulaRow[]);
     (ausTodas ?? []).forEach((x: any) => {
       if (x.status !== 'published') preparo[x.modulo_id] = (preparo[x.modulo_id] || 0) + 1;
@@ -102,8 +103,9 @@ async function fetchAprenderAreaFromNetwork(
           .from('aprender_progresso_aula')
           .select('aula_id, concluida_em, blocos_concluidos')
           .eq('user_id', uid)
-          .in('aula_id', ids),
-        supabase.from('aprender_blocos').select('aula_id').in('aula_id', ids),
+          .in('aula_id', ids)
+          .limit(3000),
+        supabase.from('aprender_blocos').select('aula_id').in('aula_id', ids).limit(25000),
       ]);
       const totals: Record<string, number> = {};
       (blocoRes.data ?? []).forEach((b: any) => {

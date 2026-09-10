@@ -60,8 +60,10 @@ export const iconePorTipo = (tipo: TipoBloco) => {
 export const rotuloPorTipo = (tipo: TipoBloco, subtipo?: string) => {
   if (subtipo === 'complete_lacuna') return 'Complete a Frase';
   if (subtipo === 'certo_errado') return 'Certo ou Errado';
-  if (subtipo === 'multipla_escolha') return 'Questão OAB';
+  if (subtipo === 'multipla_escolha') return 'Questão Comentada';
   if (subtipo === 'caso_pratico') return 'Caso Prático';
+  if (subtipo === 'grafo_decisao') return 'Grafo Decisório';
+  if (subtipo === 'audio_dica') return 'Dica em Áudio';
 
   switch (tipo) {
     case 'intro': return 'Introdução';
