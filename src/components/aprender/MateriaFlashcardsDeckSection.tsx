@@ -18,7 +18,7 @@ interface MateriaFlashcardsDeckSectionProps {
 }
 
 /** Tópicos curriculares canônicos para garantir que toda matéria tenha um deck completo (6 a 7 cards em leque) */
-const CANONICAL_AREA_TOPICS: Record<string, string[]> = {
+export const CANONICAL_AREA_TOPICS: Record<string, string[]> = {
   'direito-ambiental': [
     'Direito dos Desastres',
     'Unidades de Conservação',
