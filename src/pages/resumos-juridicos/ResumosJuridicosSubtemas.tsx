@@ -50,11 +50,24 @@ export default function ResumosJuridicosSubtemas() {
         .limit(5000);
       let list = (data || []) as ResumoRow[];
       if (list.length === 0) {
-        const { bundle } = await import("@/services/offlineBundle");
-        const all = await bundle.resumos<ResumoRow>();
-        list = all
-          .filter((r) => r.area === decodedArea && r.tema === decodedTema)
-          .sort((a, b) => (a.ordem_subtema ?? 9999) - (b.ordem_subtema ?? 9999));
+        try {
+          const { getResumosCatalog } = await import("@/services/resumosCatalog");
+          const catalog = await getResumosCatalog();
+          const areaObj = catalog.find((c) => c.area === decodedArea);
+          const temaObj = areaObj?.temas.find((t) => t.tema === decodedTema);
+          if (temaObj?.subtemas && temaObj.subtemas.length > 0) {
+            list = temaObj.subtemas.map((s) => ({
+              id: s.id,
+              area: decodedArea,
+              tema: decodedTema,
+              subtema: s.subtema,
+              ordem_subtema: s.ordem ?? 1,
+              markdown: s.markdown || '',
+              exemplos: s.exemplos || '',
+              termos: s.termos || '',
+            }));
+          }
+        } catch {}
       }
       if (cancelled) return;
       setRows(list);

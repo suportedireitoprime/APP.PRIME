@@ -141,12 +141,14 @@ export default function ResumosMaterias() {
         }
 
         if (!gotAny) {
-          const { bundle } = await import("@/services/offlineBundle");
-          const rows = await bundle.resumos<{ area: string }>();
-          for (const r of rows) {
-            if (!r.area) continue;
-            map.set(r.area, (map.get(r.area) || 0) + 1);
-          }
+          try {
+            const { getResumosCatalog } = await import("@/services/resumosCatalog");
+            const catalog = await getResumosCatalog();
+            for (const c of catalog) {
+              if (!c.area) continue;
+              map.set(c.area, (map.get(c.area) || 0) + (c.total || 0));
+            }
+          } catch {}
         }
 
         list = Array.from(map.entries())

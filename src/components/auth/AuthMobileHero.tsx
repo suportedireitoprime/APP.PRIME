@@ -76,7 +76,7 @@ export const AuthMobileHero: React.FC<AuthMobileHeroProps> = ({
           {/* Logo e Tipografia */}
           <div className="flex flex-col items-center justify-center gap-4">
             <img
-              src="/logo-prime.png"
+              src="/logo-prime.webp"
               alt="Logo Direito Prime"
               className="w-24 h-24 xl:w-32 xl:h-32 object-contain relative z-10"
             />

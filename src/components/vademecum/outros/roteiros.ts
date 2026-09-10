@@ -64,27 +64,3 @@ export const PLATAO_ROTEIROS: Record<number, RoteiroItem[]> = {
   ]),
 };
 
-export const ARISTOTELES_ROTEIROS: Record<number, RoteiroItem[]> = {
-  1: buildDynamicRoteiro([
-    "Você com certeza já ouviu falar dele, o jovem mais obstinado e incrivelmente genial que a Academia de Platão já produziu.",
-    "Apesar de venerar o grande mestre, ele teve a audácia brutal de discordar de toda a teoria sobre a matriz do mundo!",
-    "Enquanto o idealista Platão sonhava perdidamente olhando para o céu, Aristóteles fincou fortemente os dois pés na poeira bruta do chão.",
-    "O cara era tão absurdamente gigante que a família real o chamou para ser o tutor militar de Alexandre, O Grande.",
-    "Com o dinheiro do império nas mãos, ele abriu a própria escola e fundou o badalado Liceu, para ensinar seus alunos caminhando livremente.",
-    "Ele estudou absolutamente todas as coisas existentes. Ele não apenas usava a razão, ele literalmente criou e inventou a ciência da Lógica.",
-    "Em um de seus livros estrondosos sobre ética e caráter moral, ele lançou as verdadeiras bases cruciais do direito para a humanidade.",
-    "Esqueça a igualdade rasa e simplista. Para ele, a verdadeira justiça distributiva é pura e simplesmente uma igualdade de proporção geométrica.",
-    "Significa tratar os desiguais cirurgicamente na exata medida das suas profundas desigualdades para finalmente encontrar e restabelecer o equilíbrio perfeito.",
-    "O conceito mudou o mundo jurídico para sempre. As coisas devem ser analisadas empiricamente, não de forma abstrata ou viajante.",
-    "Além de organizar a biologia e catalogar os animais, ele observou minuciosamente como as cidades se organizavam e sobreviviam naquele caos antigo.",
-    "Cravou de forma incontestável a frase monumental de que todos nós somos, por natureza cega, seres dependentes e puros animais políticos.",
-    "A virtude humana nunca se esconde nos perigosos excessos exagerados, e também não habita de jeito nenhum nas covardes faltas absolutas.",
-    "O grande segredo da excelência humana está escondido pacientemente no meio-termo, na balança equilibrada, fugindo sempre dos polos radicais.",
-    "E assim se fez a mente mais colossal do período clássico, que sistematicamente fragmentou, codificou e organizou quase tudo o que nós sabemos.",
-  ]),
-  2: buildDynamicRoteiro([
-  ]),
-  3: buildDynamicRoteiro([
-  ]),
-};
-

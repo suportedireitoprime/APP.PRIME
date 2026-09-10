@@ -20,58 +20,78 @@ export function scheduleAppWarmup(qc: QueryClient): void {
   if (appWarmupStarted || typeof window === 'undefined') return;
   appWarmupStarted = true;
 
+  // 1. Respeita economia de dados (Save-Data) e redes móveis lentas
+  if (typeof navigator !== 'undefined') {
+    if (!navigator.onLine) return;
+    // @ts-expect-error NetworkInformation experimental
+    if (navigator.connection?.saveData === true) return;
+    // @ts-expect-error NetworkInformation experimental
+    const connType = navigator.connection?.effectiveType;
+    if (connType === 'slow-2g' || connType === '2g') return;
+  }
+
   const runWarmup = () => {
     try {
-      // 1. Aquece Biblioteca (IndexedDB + QueryClient + capas)
-      scheduleWarmBiblioteca(qc, 50);
-
-      // 2. Aquece Resumos Jurídicos (localStorage + offlineBundle + rede em background)
-      void warmResumosCache();
-
-      // 3. Aquece Videoaulas (IndexedDB + catálogos + progresso + agregador síncrono)
-      warmVideoaulasStartup();
-
-      // 4. Aquece Questões (cargos + desempenho + estatísticas)
-      warmQuestoesStartup();
-
-      // 5. Aquece Vade Mecum (favoritos, recentes e imagem do brasão)
+      // 1. Aquece Vade Mecum (favoritos e recentes em cache local síncrono)
       prewarmFavoritosERecentesIdle();
       try {
         const img = new Image();
         img.decoding = 'async';
-        (img as any).fetchPriority = 'high';
+        (img as any).fetchPriority = 'low';
         img.src = brasaoImg;
       } catch {
         /* noop */
       }
 
-      // 6. Pre-carrega os chunks das rotas prioritárias no cache de módulos do navegador
-      const prefetchKeyRoutes = () => {
-        try { routePrefetch.vadeMecum(); } catch {}
-        try { routePrefetch.biblioteca(); } catch {}
-        try { routePrefetch.resumosJuridicos(); } catch {}
-        try { routePrefetch.videoaulas(); } catch {}
-        try { routePrefetch.questoes(); } catch {}
-        try { routePrefetch.flashcards(); } catch {}
-        try { routePrefetch.aprender(); } catch {}
+      // 2. Aquece Resumos Jurídicos de forma leve (usa catálogo estruturado de 470KB)
+      void warmResumosCache();
+
+      // 3. Aquece Biblioteca com limite controlado em segundo plano
+      scheduleWarmBiblioteca(qc, 12);
+
+      // 4. Aquece Videoaulas e Questões
+      warmVideoaulasStartup();
+      warmQuestoesStartup();
+
+      // 5. Pré-carregamento cirúrgico de rotas em etapas (Staggered Prefetch)
+      // Evita baixar 7 páginas pesadas de uma só vez na rede móvel
+      const routes = [
+        () => routePrefetch.vadeMecum(),
+        () => routePrefetch.biblioteca(),
+        () => routePrefetch.aprender(),
+      ];
+
+      let idx = 0;
+      const stepPrefetch = () => {
+        if (idx < routes.length) {
+          try {
+            routes[idx]();
+          } catch {}
+          idx++;
+          if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+            (window as any).requestIdleCallback(stepPrefetch, { timeout: 3000 });
+          } else {
+            setTimeout(stepPrefetch, 1500);
+          }
+        }
       };
 
-      const ric = (window as any).requestIdleCallback;
-      if (ric) {
-        ric(prefetchKeyRoutes, { timeout: 2000 });
+      if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(stepPrefetch, { timeout: 2500 });
       } else {
-        setTimeout(prefetchKeyRoutes, 800);
+        setTimeout(stepPrefetch, 1200);
       }
     } catch (e) {
       console.debug('[appWarmup] Falha não crítica durante aquecimento:', e);
     }
   };
 
-  // Executa o warmup assim que a CPU estiver ociosa ou logo após o primeiro render
-  const ric = (window as any).requestIdleCallback;
-  if (ric) {
-    ric(runWarmup, { timeout: 1500 });
-  } else {
-    setTimeout(runWarmup, 300);
-  }
+  // Aguarda 3.5s após a montagem da tela para garantir First Meaningful Paint suave a 120fps
+  setTimeout(() => {
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(runWarmup, { timeout: 3000 });
+    } else {
+      setTimeout(runWarmup, 1000);
+    }
+  }, 3500);
 }

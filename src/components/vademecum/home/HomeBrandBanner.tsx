@@ -35,7 +35,7 @@ const HomeBrandBanner = () => {
         <picture>
           <source srcSet="/logo-prime.webp" type="image/webp" />
           <img
-            src="/logo-prime.png"
+            src="/logo-prime.webp"
             alt="Direito Prime"
             loading="eager"
             decoding="async"

@@ -102,16 +102,19 @@ export default function ResumosJuridicosTemas() {
           from += step;
         }
         if (!gotAny) {
-          const { bundle } = await import("@/services/offlineBundle");
-          const rows = await bundle.resumos<{ area: string; tema: string; ordem_tema: number | null }>();
-          for (const r of rows) {
-            if (r.area !== decodedArea) continue;
-            const prev = map.get(r.tema);
-            map.set(r.tema, {
-              ordem: prev?.ordem ?? r.ordem_tema,
-              total: (prev?.total || 0) + 1,
-            });
-          }
+          try {
+            const { getResumosCatalog } = await import("@/services/resumosCatalog");
+            const catalog = await getResumosCatalog();
+            const areaObj = catalog.find((c) => c.area === decodedArea);
+            if (areaObj) {
+              for (const t of areaObj.temas) {
+                map.set(t.tema, {
+                  ordem: null,
+                  total: t.total || (t.subtemas?.length || 1),
+                });
+              }
+            }
+          } catch {}
         }
         list = Array.from(map.entries())
           .map(([tema, v]) => ({ tema, ordem_tema: v.ordem, total: v.total }))

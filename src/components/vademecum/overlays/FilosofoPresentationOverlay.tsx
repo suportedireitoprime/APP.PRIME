@@ -22,14 +22,6 @@ import {
   PLATAO_WIDTH,
 } from '@/components/vademecum/media/PlataoVideo';
 
-import {
-  AristotelesVideo,
-  ARISTOTELES_DURATION_FRAMES,
-  ARISTOTELES_FPS,
-  ARISTOTELES_HEIGHT,
-  ARISTOTELES_WIDTH,
-} from '@/components/vademecum/media/AristotelesVideo';
-
 type Props = {
   open: boolean;
   personagemId?: string;
@@ -38,7 +30,7 @@ type Props = {
   onFinished: () => void;
 };
 
-import { SOCRATES_ROTEIROS, PLATAO_ROTEIROS, ARISTOTELES_ROTEIROS } from '@/components/vademecum/outros/roteiros';
+import { SOCRATES_ROTEIROS, PLATAO_ROTEIROS } from '@/components/vademecum/outros/roteiros';
 
 const VIDEO_CONFIGS: Record<string, { component: React.FC; durationInFrames: number; fps: number; width: number; height: number; getRoteiro: (v: number) => Array<{frame: number; text: string}> }> = {
   socrates: {
@@ -56,14 +48,6 @@ const VIDEO_CONFIGS: Record<string, { component: React.FC; durationInFrames: num
     width: PLATAO_WIDTH,
     height: PLATAO_HEIGHT,
     getRoteiro: (v) => PLATAO_ROTEIROS[v] || PLATAO_ROTEIROS[1],
-  },
-  aristoteles: {
-    component: AristotelesVideo,
-    durationInFrames: ARISTOTELES_DURATION_FRAMES,
-    fps: ARISTOTELES_FPS,
-    width: ARISTOTELES_WIDTH,
-    height: ARISTOTELES_HEIGHT,
-    getRoteiro: (v) => ARISTOTELES_ROTEIROS[v] || ARISTOTELES_ROTEIROS[1],
   }
 };
 

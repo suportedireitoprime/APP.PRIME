@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Copy, Upload, Check, Volume2, Mic } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
-import { SOCRATES_ROTEIROS, PLATAO_ROTEIROS, ARISTOTELES_ROTEIROS, RoteiroItem } from '@/components/vademecum/outros/roteiros';
+import { SOCRATES_ROTEIROS, PLATAO_ROTEIROS, RoteiroItem } from '@/components/vademecum/outros/roteiros';
 
 type Props = {
   open: boolean;
@@ -20,7 +20,6 @@ type Props = {
 const ROTEIROS_MAP: Record<string, Record<number, RoteiroItem[]>> = {
   socrates: SOCRATES_ROTEIROS,
   platao: PLATAO_ROTEIROS,
-  aristoteles: ARISTOTELES_ROTEIROS,
 };
 
 export const DocumentarioSettingsModal: React.FC<Props> = ({

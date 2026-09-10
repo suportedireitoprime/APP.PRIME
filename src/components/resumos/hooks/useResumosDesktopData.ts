@@ -72,13 +72,15 @@ export function useResumosDesktopData() {
 
       if (!gotAny) {
         try {
-          const { bundle } = await import("@/services/offlineBundle");
-          const rows = await bundle.resumos<{ area: string; tema: string }>();
-          for (const r of rows) {
-            if (!r.area) continue;
-            if (!map.has(r.area)) map.set(r.area, new Set());
-            if (r.tema) map.get(r.area)!.add(r.tema);
-            totalMap.set(r.area, (totalMap.get(r.area) || 0) + 1);
+          const { getResumosCatalog } = await import("@/services/resumosCatalog");
+          const catalog = await getResumosCatalog();
+          for (const c of catalog) {
+            if (!c.area) continue;
+            if (!map.has(c.area)) map.set(c.area, new Set());
+            for (const t of c.temas) {
+              if (t.tema) map.get(c.area)!.add(t.tema);
+            }
+            totalMap.set(c.area, (totalMap.get(c.area) || 0) + (c.total || 0));
           }
         } catch {}
       }
@@ -178,16 +180,19 @@ export function useResumosDesktopData() {
           from += step;
         }
         if (!gotAny) {
-          const { bundle } = await import("@/services/offlineBundle");
-          const bundleRows = await bundle.resumos<{ area: string; tema: string; ordem_tema: number | null }>();
-          for (const r of bundleRows) {
-            if (r.area !== decodedArea) continue;
-            const prev = map.get(r.tema);
-            map.set(r.tema, {
-              ordem: prev?.ordem ?? r.ordem_tema,
-              total: (prev?.total || 0) + 1,
-            });
-          }
+          try {
+            const { getResumosCatalog } = await import("@/services/resumosCatalog");
+            const catalog = await getResumosCatalog();
+            const areaObj = catalog.find((c) => c.area === decodedArea);
+            if (areaObj) {
+              for (const t of areaObj.temas) {
+                map.set(t.tema, {
+                  ordem: null,
+                  total: t.total || (t.subtemas?.length || 1),
+                });
+              }
+            }
+          } catch {}
         }
         list = Array.from(map.entries())
           .map(([t, v]) => ({ tema: t, ordem_tema: v.ordem, total: v.total }))

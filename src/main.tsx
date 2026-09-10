@@ -3,14 +3,14 @@ import App from "./App.tsx";
 import "./index.css";
 import { bootstrapCriticalNative, bootstrapIdleNative } from "./lib/boot/nativeBootstrap";
 
-bootstrapCriticalNative();
-
 // Preload síncrono das duas imagens críticas de marca (aparecem no primeiro paint).
 // Import estático com ?url faz o Vite empacotar a URL com hash já resolvida no bundle
 // inicial — o <link rel="preload"> é injetado ANTES do createRoot, garantindo download
 // paralelo ao parse do JS. Sem isso, a webp só começa a baixar depois do primeiro render.
 import horusOwlUrl from "./assets/horus/horus-owl.webp?url";
 import primeLogoUrl from "./assets/bundled/logo-direitoprime-v2.webp?url";
+
+bootstrapCriticalNative();
 
 function preloadImage(url: string) {
   const link = document.createElement("link");

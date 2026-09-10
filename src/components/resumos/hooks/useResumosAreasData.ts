@@ -79,13 +79,15 @@ export function useResumosAreasData() {
 
       if (!gotAny) {
         try {
-          const { bundle } = await import("@/services/offlineBundle");
-          const bundleRows = await bundle.resumos<{ area: string; tema: string }>();
-          for (const r of bundleRows) {
-            if (!r.area) continue;
-            if (!map.has(r.area)) map.set(r.area, new Set());
-            if (r.tema) map.get(r.area)!.add(r.tema);
-            totalMap.set(r.area, (totalMap.get(r.area) || 0) + 1);
+          const { getResumosCatalog } = await import("@/services/resumosCatalog");
+          const catalog = await getResumosCatalog();
+          for (const c of catalog) {
+            if (!c.area) continue;
+            if (!map.has(c.area)) map.set(c.area, new Set());
+            for (const t of c.temas) {
+              if (t.tema) map.get(c.area)!.add(t.tema);
+            }
+            totalMap.set(c.area, (totalMap.get(c.area) || 0) + (c.total || 0));
           }
         } catch {}
       }

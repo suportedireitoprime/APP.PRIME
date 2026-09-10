@@ -52,7 +52,12 @@ async function fetchBundle<T>(name: string): Promise<T[]> {
 }
 
 export const bundle = {
-  resumos: <T = any>() => fetchBundle<T>('resumos'),
+  resumos: async <T = any>(): Promise<T[]> => {
+    // Prioriza resumos salvos localmente pelo usuário no IndexedDB (leve e cirúrgico)
+    const local = await getOfflinePackage<T>('resumos');
+    if (local && local.length > 0) return local;
+    return [];
+  },
   blogPosts: <T = any>() => fetchBundle<T>('blog-posts'),
   noticias: <T = any>() => fetchBundle<T>('noticias'),
   tematicaObras: <T = any>() => fetchBundle<T>('tematica-obras'),

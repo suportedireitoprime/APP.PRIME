@@ -34,9 +34,29 @@ async function lerResumos<T extends Record<string, unknown>>(
   }
   if (!out.length) {
     try {
-      const { bundle } = await import('@/services/offlineBundle');
-      const rows = await bundle.resumos<T>();
-      return rows || [];
+      const { getResumosCatalog } = await import('@/services/resumosCatalog');
+      const catalog = await getResumosCatalog();
+      const rows: any[] = [];
+      for (const c of catalog) {
+        for (const t of c.temas) {
+          if (t.subtemas && t.subtemas.length > 0) {
+            for (const s of t.subtemas) {
+              rows.push({
+                area: c.area,
+                tema: t.tema,
+                subtema: s.subtema,
+                ordem_subtema: s.ordem ?? 1,
+              });
+            }
+          } else {
+            rows.push({
+              area: c.area,
+              tema: t.tema,
+            });
+          }
+        }
+      }
+      return rows as T[];
     } catch {
       return [];
     }

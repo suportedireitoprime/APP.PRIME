@@ -27,27 +27,17 @@ export async function warmResumosCache(): Promise<void> {
       }
     }
 
-    // 2) Se não há cache válido, tenta carregar do bundle offline nativo primeiro (0ms)
+    // 2) Se não há cache válido, usa o catálogo estruturado leve (resumosCatalog: 470KB em vez de 48MB)
     if (!hasValidCache) {
       try {
-        const { bundle } = await import('@/services/offlineBundle');
-        const bundleRows = await bundle.resumos<{ area: string; tema: string }>();
-        if (bundleRows && bundleRows.length > 0) {
-          const map = new Map<string, Set<string>>();
-          const totalMap = new Map<string, number>();
-
-          for (const r of bundleRows) {
-            if (!r.area) continue;
-            if (!map.has(r.area)) map.set(r.area, new Set());
-            if (r.tema) map.get(r.area)!.add(r.tema);
-            totalMap.set(r.area, (totalMap.get(r.area) || 0) + 1);
-          }
-
-          const list: AreaRow[] = Array.from(map.entries())
-            .map(([area, temasSet]) => ({
-              area,
-              total: totalMap.get(area) || 0,
-              temas: Array.from(temasSet).sort((a, b) => a.localeCompare(b)),
+        const { getResumosCatalog } = await import('@/services/resumosCatalog');
+        const catalog = await getResumosCatalog();
+        if (catalog && catalog.length > 0) {
+          const list: AreaRow[] = catalog
+            .map((c) => ({
+              area: c.area,
+              total: c.total,
+              temas: c.temas.map((t) => t.tema).sort((a, b) => a.localeCompare(b)),
             }))
             .sort((a, b) => a.area.localeCompare(b.area));
 
