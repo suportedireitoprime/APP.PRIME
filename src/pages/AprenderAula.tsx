@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import {
   ArrowLeft,
+  ArrowRight,
   CheckCircle2,
   XCircle,
   List,
@@ -94,6 +95,20 @@ const AprenderAula = () => {
     navigate('/aprender', { replace: true });
   }, [navigate, location, aula]);
 
+  const blocoAtual = (blocos && blocos[currentIdx]) ? blocos[currentIdx] : ((blocos && blocos[0]) ? blocos[0] : null);
+  const isPergunta = blocoAtual?.tipo === 'pergunta';
+  const isFlashcard = blocoAtual?.tipo === 'flashcard';
+  const questaoRespondida = blocoAtual ? !!respostas[blocoAtual.id] : true;
+  const flashcardVirado = blocoAtual ? !!flipped[blocoAtual.id] : true;
+  const podeAvancar = (!isPergunta || questaoRespondida) && (!isFlashcard || flashcardVirado);
+
+  const [selectedOpcao, setSelectedOpcao] = useState<string | null>(null);
+
+  // Limpa opção selecionada ao mudar de página
+  useEffect(() => {
+    setSelectedOpcao(null);
+  }, [currentIdx]);
+
   const [sumarioOpen, setSumarioOpen] = useState(false);
   const [highestVisible, setHighestVisible] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -120,6 +135,10 @@ const AprenderAula = () => {
   }, []);
 
   const goToPage = useCallback((newIdx: number) => {
+    if (newIdx > currentIdx && !podeAvancar) {
+      haptic.notification('warning');
+      return;
+    }
     haptic.selection();
     playPageTurnSound();
     const clamped = Math.max(0, Math.min(total - 1, newIdx));
@@ -131,7 +150,7 @@ const AprenderAula = () => {
     }
     // Salva progresso imediatamente
     void salvarProgresso(clamped >= total - 1, clamped);
-  }, [total, currentIdx, setCurrentIdx, salvarProgresso, playPageTurnSound]);
+  }, [total, currentIdx, podeAvancar, setCurrentIdx, salvarProgresso, playPageTurnSound]);
 
   // Garante scroll no topo imediatamente a cada mudança de bloco (Item 17)
   useEffect(() => {
@@ -158,7 +177,7 @@ const AprenderAula = () => {
     // Apenas dispara se o deslize horizontal for preponderante (evita conflito com scroll vertical)
     if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.2) {
       if (dx > 0 && currentIdx < total - 1) {
-        goToPage(currentIdx + 1);
+        if (podeAvancar) goToPage(currentIdx + 1);
       } else if (dx < 0 && currentIdx > 0) {
         goToPage(currentIdx - 1);
       }
@@ -194,7 +213,7 @@ const AprenderAula = () => {
       const dy = mouseStartY.current - e.clientY;
       if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
         if (dx > 0 && currentIdx < total - 1) {
-          goToPage(currentIdx + 1);
+          if (podeAvancar) goToPage(currentIdx + 1);
         } else if (dx < 0 && currentIdx > 0) {
           goToPage(currentIdx - 1);
         }
@@ -218,7 +237,7 @@ const AprenderAula = () => {
       }
       if (e.key === 'ArrowRight' || e.key === 'PageDown') {
         e.preventDefault();
-        if (currentIdx < total - 1) goToPage(currentIdx + 1);
+        if (currentIdx < total - 1 && podeAvancar) goToPage(currentIdx + 1);
       } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
         e.preventDefault();
         if (currentIdx > 0) goToPage(currentIdx - 1);
@@ -242,7 +261,7 @@ const AprenderAula = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIdx, total, goToPage, feedbackPergunta, sumarioOpen, blocos, flipped, playFlipSound, setFlipped, avaliarFlashcard]);
+  }, [currentIdx, total, podeAvancar, goToPage, feedbackPergunta, sumarioOpen, blocos, flipped, playFlipSound, setFlipped, avaliarFlashcard]);
 
   if (loading) {
     return (
@@ -303,7 +322,6 @@ const AprenderAula = () => {
     );
   }
 
-  const blocoAtual = blocos[currentIdx] || blocos[0];
   const canFinish = currentIdx >= total - 1 || highestVisible >= total - 1;
   const atoInfo = getAtoInfo(currentIdx, total);
 
@@ -329,53 +347,60 @@ const AprenderAula = () => {
           style={{ paddingTop: 'calc(var(--sai-top) + 0.25rem)' }}
         >
           {/* ── Linha do Tempo na parte superior (Timeline de Páginas - Item 1) ── */}
-          <div
-            className="max-w-7xl mx-auto px-4 pt-2.5 pb-1 w-full"
-            role="navigation"
-            aria-label="Linha do tempo das páginas da aula"
-          >
-            {/* Mobile (<640px): Barra de progresso contínua e fluida (Item 1) */}
-            <div className="flex sm:hidden items-center gap-2.5 w-full">
-              <div className="relative flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
-                <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-primary via-emerald-400 to-sky-400 shadow-[0_0_8px_hsl(var(--primary)/0.5)]"
-                  initial={false}
-                  animate={{ width: `${Math.min(100, Math.max(4, ((currentIdx + 1) / total) * 100))}%` }}
-                  transition={{ duration: 0.3, ease: 'easeOut' }}
-                />
+          {/* Oculta no topo se a questão ainda não foi respondida ou o flashcard não foi virado */}
+          {podeAvancar && (
+            <div
+              className="max-w-7xl mx-auto px-4 pt-2.5 pb-1 w-full"
+              role="navigation"
+              aria-label="Linha do tempo das páginas da aula"
+            >
+              {/* Mobile (<640px): Barra de progresso contínua e fluida (Item 1) */}
+              <div className="flex sm:hidden items-center gap-2.5 w-full">
+                <div className="relative flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
+                  <motion.div
+                    className="h-full rounded-full bg-gradient-to-r from-primary via-emerald-400 to-sky-400 shadow-[0_0_8px_hsl(var(--primary)/0.5)]"
+                    initial={false}
+                    animate={{ width: `${Math.min(100, Math.max(4, ((currentIdx + 1) / total) * 100))}%` }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                  />
+                </div>
+                <span className="text-[11px] font-mono font-bold text-neutral-400 tabular-nums shrink-0">
+                  {currentIdx + 1}/{total}
+                </span>
               </div>
-              <span className="text-[11px] font-mono font-bold text-neutral-400 tabular-nums shrink-0">
-                {currentIdx + 1}/{total}
-              </span>
-            </div>
 
-            {/* Desktop/Tablet (>=640px): Linha do tempo segmentada interativa */}
-            <div className="hidden sm:flex items-center gap-1 sm:gap-1.5 w-full">
-              {blocos.map((b, i) => {
-                const isPast = i < currentIdx;
-                const isCurrent = i === currentIdx;
-                return (
-                  <button
-                    key={b.id}
-                    onClick={() => goToPage(i)}
-                    className="group relative flex-1 py-2 -my-2 cursor-pointer focus:outline-none"
-                    aria-label={`Ir para página ${i + 1} de ${total}: ${rotuloPorTipo(b.tipo)}`}
-                    title={`Página ${i + 1} de ${total} • ${rotuloPorTipo(b.tipo)}`}
-                  >
-                    <div
-                      className={`h-[3.5px] sm:h-1 rounded-full transition-all duration-300 ${
-                        isPast
-                          ? 'bg-primary shadow-[0_0_6px_hsl(var(--primary)/0.6)]'
-                          : isCurrent
-                          ? 'bg-primary shadow-[0_0_12px_hsl(var(--primary))] scale-y-125'
-                          : 'bg-white/15 group-hover:bg-white/25'
-                      }`}
-                    />
-                  </button>
-                );
-              })}
+              {/* Desktop/Tablet (>=640px): Linha do tempo segmentada interativa */}
+              <div className="hidden sm:flex items-center gap-1 sm:gap-1.5 w-full">
+                {blocos.map((b, i) => {
+                  const isPast = i < currentIdx;
+                  const isCurrent = i === currentIdx;
+                  const canJump = i <= currentIdx || podeAvancar;
+                  return (
+                    <button
+                      key={b.id}
+                      disabled={!canJump}
+                      onClick={() => {
+                        if (canJump) goToPage(i);
+                      }}
+                      className={`group relative flex-1 py-2 -my-2 focus:outline-none ${canJump ? 'cursor-pointer' : 'cursor-not-allowed opacity-40'}`}
+                      aria-label={`Ir para página ${i + 1} de ${total}: ${rotuloPorTipo(b.tipo)}`}
+                      title={`Página ${i + 1} de ${total} • ${rotuloPorTipo(b.tipo)}`}
+                    >
+                      <div
+                        className={`h-[3.5px] sm:h-1 rounded-full transition-all duration-300 ${
+                          isPast
+                            ? 'bg-primary shadow-[0_0_6px_hsl(var(--primary)/0.6)]'
+                            : isCurrent
+                            ? 'bg-primary shadow-[0_0_12px_hsl(var(--primary))] scale-y-125'
+                            : 'bg-white/15 group-hover:bg-white/25'
+                        }`}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Linha de navegação e título */}
           <div
@@ -401,9 +426,15 @@ const AprenderAula = () => {
               <p className="text-[13px] sm:text-[14px] md:text-[15px] font-bold text-white truncate max-w-[280px] sm:max-w-none leading-tight font-sans tracking-tight">
                 {aula.titulo}
               </p>
-              <p className="text-[10px] sm:text-[11px] font-semibold text-primary uppercase tracking-wider mt-0.5">
-                Página {currentIdx + 1} de {total} • {rotuloPorTipo(blocoAtual.tipo, blocoAtual.payload?.subtipo)}
-              </p>
+              {!podeAvancar ? (
+                <p className={`text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mt-0.5 animate-pulse ${isPergunta ? 'text-amber-400' : 'text-sky-400'}`}>
+                  {isPergunta ? 'Responda à questão para avançar' : 'Toque no cartão para virar e avançar'}
+                </p>
+              ) : (
+                <p className="text-[10px] sm:text-[11px] font-semibold text-primary uppercase tracking-wider mt-0.5">
+                  Página {currentIdx + 1} de {total} • {blocoAtual ? rotuloPorTipo(blocoAtual.tipo, blocoAtual.payload?.subtipo) : ''}
+                </p>
+              )}
             </div>
 
             {/* Espaçador para balanceamento visual e centralização perfeita do título */}
@@ -465,13 +496,19 @@ const AprenderAula = () => {
                         const Icon = iconePorTipo(b.tipo);
                         const isCurrent = i === currentIdx;
                         const isPassed = i <= highestVisible;
+                        const canClick = i <= currentIdx || podeAvancar;
                         const titulo = b.payload?.titulo || b.payload?.enunciado || b.payload?.frente || rotuloPorTipo(b.tipo, b.payload?.subtipo);
 
                         return (
                           <button
                             key={b.id}
-                            onClick={() => goToPage(i)}
-                            className={`flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left transition-all cursor-pointer ${
+                            disabled={!canClick}
+                            onClick={() => {
+                              if (canClick) goToPage(i);
+                            }}
+                            className={`flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left transition-all ${
+                              !canClick ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'
+                            } ${
                               isCurrent
                                 ? 'bg-primary/15 border border-primary/40 text-white shadow-sm'
                                 : isPassed
@@ -517,7 +554,7 @@ const AprenderAula = () => {
                 </button>
               )}
 
-              {currentIdx < total - 1 && (
+              {currentIdx < total - 1 && podeAvancar && (
                 <button
                   onClick={() => goToPage(currentIdx + 1)}
                   aria-label="Próxima página"
@@ -534,8 +571,28 @@ const AprenderAula = () => {
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseLeave}
-                className="w-full flex-1 flex flex-col bg-[#131316]/95 backdrop-blur-md border-y sm:border border-white/[0.08] rounded-none sm:rounded-3xl px-4 py-5 sm:p-8 md:p-10 shadow-2xl shadow-black/40 overflow-hidden relative select-none md:cursor-grab md:active:cursor-grabbing min-h-[500px]"
+                className={`w-full flex-1 flex flex-col ${
+                  isPergunta
+                    ? 'bg-[#0f0f13]/85 backdrop-blur-xl border border-primary/25 shadow-primary/10'
+                    : 'bg-[#131316]/95 backdrop-blur-md border border-white/[0.08]'
+                } border-y sm:border rounded-none sm:rounded-3xl px-4 py-5 sm:p-8 md:p-10 shadow-2xl shadow-black/40 overflow-hidden relative select-none md:cursor-grab md:active:cursor-grabbing min-h-[500px]`}
               >
+                {/* ── Fundo animado de quadrados ShapeGrid específico para questões (Item solicitado) ── */}
+                {isPergunta && (
+                  <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-none sm:rounded-3xl opacity-55">
+                    <ShapeGrid
+                      speed={0.6}
+                      squareSize={38}
+                      direction="diagonal"
+                      borderColor="rgba(255, 255, 255, 0.08)"
+                      hoverFillColor="rgba(255, 255, 255, 0.16)"
+                      shape="square"
+                      hoverTrailAmount={6}
+                    />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#131316]/40 via-transparent to-[#131316]/80" />
+                  </div>
+                )}
+
                 {/* ── Marca d'água ilustrada vazada no fundo do card (Direito Penal) ── */}
                 <div
                   aria-hidden="true"
@@ -552,7 +609,7 @@ const AprenderAula = () => {
 
                 <AnimatePresence mode="wait" custom={direction}>
                   <motion.div
-                    key={blocoAtual.id}
+                    key={blocoAtual?.id || currentIdx}
                     custom={direction}
                     initial={{ opacity: 0, x: direction * 35 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -565,26 +622,36 @@ const AprenderAula = () => {
                       ref={cardScrollRef}
                       className="flex-1 overflow-y-auto pr-1 sm:pr-2 pb-8 space-y-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                     >
-                      <BlocoView
-                        bloco={blocoAtual}
-                        resposta={respostas[blocoAtual.id]}
-                        onResponder={(escolha) => responderPergunta(blocoAtual, escolha)}
-                        flipped={!!flipped[blocoAtual.id]}
-                        onFlip={() => {
-                          playFlipSound();
-                          setFlipped((f) => ({ ...f, [blocoAtual.id]: !f[blocoAtual.id] }));
-                        }}
-                        onAvaliarFlash={(nivel) => avaliarFlashcard(blocoAtual, nivel)}
-                        conexao={conexoes[blocoAtual.id]}
-                        onConexao={async (map, done) => {
-                          setConexoes((c) => ({ ...c, [blocoAtual.id]: map }));
-                          if (done) {
-                            const pares = blocoAtual.payload?.pares || [];
-                            const acertou = pares.every((_: any, i: number) => map[i] === i);
-                            await salvarBloco(blocoAtual, { map }, acertou);
-                          }
-                        }}
-                      />
+                      {blocoAtual && (
+                        <BlocoView
+                          bloco={blocoAtual}
+                          resposta={respostas[blocoAtual.id]}
+                          selectedOpcao={selectedOpcao}
+                          onSelectOpcao={(opcao) => {
+                            haptic.selection();
+                            setSelectedOpcao(opcao);
+                          }}
+                          onResponder={(escolha) => {
+                            responderPergunta(blocoAtual, escolha);
+                            setSelectedOpcao(null);
+                          }}
+                          flipped={!!flipped[blocoAtual.id]}
+                          onFlip={() => {
+                            playFlipSound();
+                            setFlipped((f) => ({ ...f, [blocoAtual.id]: !f[blocoAtual.id] }));
+                          }}
+                          onAvaliarFlash={(nivel) => avaliarFlashcard(blocoAtual, nivel)}
+                          conexao={conexoes[blocoAtual.id]}
+                          onConexao={async (map, done) => {
+                            setConexoes((c) => ({ ...c, [blocoAtual.id]: map }));
+                            if (done) {
+                              const pares = blocoAtual.payload?.pares || [];
+                              const acertou = pares.every((_: any, i: number) => map[i] === i);
+                              await salvarBloco(blocoAtual, { map }, acertou);
+                            }
+                          }}
+                        />
+                      )}
                     </div>
                   </motion.div>
                 </AnimatePresence>
@@ -599,6 +666,50 @@ const AprenderAula = () => {
             </div>
           </div>
         </main>
+
+        {/* ── Barra Flutuante de Confirmação de Resposta — Posicionada logo EM CIMA do menu de rodapé ── */}
+        <AnimatePresence>
+          {isPergunta && !respostas[blocoAtual?.id || ''] && selectedOpcao && (
+            <motion.div
+              initial={{ y: 70, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 70, opacity: 0 }}
+              transition={{ type: 'spring', damping: 26, stiffness: 320 }}
+              className="fixed left-0 right-0 z-50 px-4 pointer-events-auto"
+              style={{
+                bottom: 'calc(4.75rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))',
+              }}
+            >
+              <div className="mx-auto max-w-2xl sm:max-w-3xl flex items-center justify-between gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-2xl border border-primary/40 bg-[#16161a]/95 backdrop-blur-2xl shadow-[0_10px_35px_rgba(0,0,0,0.85),0_0_20px_rgba(225,29,72,0.25)]">
+                <div className="flex items-center gap-2.5 pl-2">
+                  <span className="flex h-3 w-3 relative">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-primary" />
+                  </span>
+                  <span className="text-xs sm:text-sm font-bold text-white tracking-wide">
+                    {['certo', 'errado', 'verdadeiro', 'falso'].includes(selectedOpcao.toLowerCase())
+                      ? `Opção ${selectedOpcao.toUpperCase()} selecionada`
+                      : `Alternativa ${selectedOpcao.toUpperCase()} selecionada`}
+                  </span>
+                </div>
+
+                <button
+                  onClick={() => {
+                    haptic.impact('medium');
+                    if (blocoAtual) {
+                      responderPergunta(blocoAtual, selectedOpcao);
+                    }
+                    setSelectedOpcao(null);
+                  }}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-rose-600 px-5 sm:px-7 py-3 text-sm sm:text-[15px] font-black text-white shadow-lg shadow-primary/30 hover:brightness-110 active:scale-[0.97] transition-all cursor-pointer min-h-[46px]"
+                >
+                  <span>Confirmar Resposta</span>
+                  <ArrowRight className="h-4 w-4 text-white" strokeWidth={2.5} />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* ── Barra inferior: APENAS sumário + quantas páginas tem + navegação ── */}
         <nav
@@ -646,9 +757,13 @@ const AprenderAula = () => {
 
                 <button
                   onClick={() => goToPage(currentIdx + 1)}
-                  disabled={currentIdx >= total - 1}
+                  disabled={currentIdx >= total - 1 || !podeAvancar}
                   aria-label="Próxima página"
-                  className="flex h-11 w-12 sm:w-14 items-center justify-center rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all shadow-lg shadow-primary/25"
+                  className={`flex h-11 w-12 sm:w-14 items-center justify-center rounded-xl transition-all shadow-lg ${
+                    !podeAvancar || currentIdx >= total - 1
+                      ? 'opacity-25 pointer-events-none bg-white/5 text-white/30 shadow-none cursor-not-allowed'
+                      : 'bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 shadow-primary/25 cursor-pointer'
+                  }`}
                 >
                   <ChevronRight className="h-6 w-6" />
                 </button>
@@ -798,14 +913,20 @@ const AprenderAula = () => {
                   const titulo = b.payload?.titulo || b.payload?.enunciado || b.payload?.frente || rotuloPorTipo(b.tipo);
                   const isCurrent = i === currentIdx;
                   const isPassed = i <= highestVisible;
+                  const canClick = i <= currentIdx || podeAvancar;
                   return (
                     <button
                       key={b.id}
+                      disabled={!canClick}
                       onClick={() => {
-                        setSumarioOpen(false);
-                        goToPage(i);
+                        if (canClick) {
+                          setSumarioOpen(false);
+                          goToPage(i);
+                        }
                       }}
-                      className={`flex w-full items-center gap-3.5 rounded-xl p-3 text-left transition-all active:scale-[0.99] ${
+                      className={`flex w-full items-center gap-3.5 rounded-xl p-3 text-left transition-all ${
+                        !canClick ? 'opacity-30 cursor-not-allowed' : 'active:scale-[0.99] cursor-pointer'
+                      } ${
                         isCurrent ? 'bg-white/10 border border-primary/40' : 'hover:bg-white/[0.05]'
                       }`}
                     >

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Quote, Scale, Check, XCircle, RotateCw, CheckCircle2, ArrowRight, Lightbulb, Flag, ChevronDown, AlertTriangle, BookMarked, HelpCircle, Puzzle, Brain } from 'lucide-react';
+import { Quote, Scale, Check, X, XCircle, RotateCw, CheckCircle2, ArrowRight, Lightbulb, Flag, ChevronDown, AlertTriangle, BookMarked, HelpCircle, Puzzle, Brain } from 'lucide-react';
 import { Bloco, iconePorTipo, isBlocoTexto, rotuloPorTipo } from '@/lib/aprenderUtils';
 import { LeituraBlock } from '@/components/aprender/blocos/LeituraBlock';
 import { CheckpointBlock } from '@/components/aprender/blocos/CheckpointBlock';
@@ -18,6 +18,8 @@ import { normalizarMarkdown, limparTextoInstrucoes, limparMarkdownInline } from 
 export interface BlocoViewProps {
   bloco: Bloco;
   resposta?: { correta: boolean; escolha?: string };
+  selectedOpcao?: string | null;
+  onSelectOpcao?: (opcao: string) => void;
   onResponder: (escolha: string) => void;
   flipped: boolean;
   onFlip: () => void;
@@ -28,13 +30,21 @@ export interface BlocoViewProps {
 }
 
 export function BlocoView({
-  bloco, resposta, onResponder, flipped, onFlip, onAvaliarFlash, onAvancar, conexao, onConexao,
+  bloco, resposta, selectedOpcao: externalSelectedOpcao, onSelectOpcao, onResponder, flipped, onFlip, onAvaliarFlash, onAvancar, conexao, onConexao,
 }: BlocoViewProps) {
-  const [selectedOpcao, setSelectedOpcao] = useState<string | null>(null);
+  const [internalSelectedOpcao, setInternalSelectedOpcao] = useState<string | null>(null);
+  const selectedOpcao = externalSelectedOpcao !== undefined ? externalSelectedOpcao : internalSelectedOpcao;
+  const setSelectedOpcao = (id: string | null) => {
+    if (onSelectOpcao && id !== null) {
+      onSelectOpcao(id);
+    } else {
+      setInternalSelectedOpcao(id);
+    }
+  };
   const [collapsedRamos, setCollapsedRamos] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
-    setSelectedOpcao(null);
+    setInternalSelectedOpcao(null);
   }, [bloco.id]);
 
   if (isBlocoTexto(bloco.tipo)) {
@@ -706,7 +716,22 @@ export function BlocoView({
           <span>{bloco.payload?.titulo ? limparMarkdownInline(bloco.payload.titulo.replace(/^#+\s*/, '').replace(/^\d+[-.)]\s*/, '')) : 'Questão Comentada (Certo ou Errado)'}</span>
         </div>
         <div className="mb-6 font-sans text-[17px] sm:text-[18px] md:text-[20px] font-semibold leading-[1.7] text-foreground tracking-tight">
-          <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ p: ({ children }) => <>{children}</> }}>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              p: ({ children }) => <>{children}</>,
+              strong: ({ children }) => (
+                <strong className="font-bold text-rose-400 drop-shadow-[0_0_8px_rgba(251,113,133,0.35)]">
+                  {children}
+                </strong>
+              ),
+              b: ({ children }) => (
+                <b className="font-bold text-rose-400 drop-shadow-[0_0_8px_rgba(251,113,133,0.35)]">
+                  {children}
+                </b>
+              ),
+            }}
+          >
             {normalizarMarkdown(enunciado)}
           </ReactMarkdown>
         </div>
@@ -733,86 +758,163 @@ export function BlocoView({
           </motion.div>
         )}
 
-        <div className="space-y-3 pb-24">
-          {(opcoes || []).map((op: any) => {
-            const id = String(op.id).toLowerCase();
-            const escolhida = resposta ? (resposta.escolha?.toLowerCase() === id) : (selectedOpcao === id);
-            const acertou = resposta?.correta && (resposta.escolha?.toLowerCase() === id);
-            const errou = resposta && (resposta.escolha?.toLowerCase() === id) && !resposta.correta;
-            const revelaCerta = resposta && id === correta;
+        {(() => {
+          const isCertoErrado =
+            bloco.payload?.subtipo === 'certo_errado' ||
+            (opcoes && opcoes.length === 2 && opcoes.every((op: any) => {
+              const raw = String(op.id || op.texto || '').trim().toLowerCase();
+              return ['certo', 'errado', 'c', 'e', 'verdadeiro', 'falso', 'v', 'f'].includes(raw);
+            }));
 
-            let cardClass = 'border-white/[0.08] bg-card/60 hover:bg-card hover:border-white/20 text-neutral-200 shadow-sm backdrop-blur-sm';
-            let badgeClass = 'border-white/15 bg-white/5 text-neutral-400 group-hover:text-white group-hover:border-white/30';
+          return (
+            <div className={isCertoErrado ? "grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pb-24" : "space-y-3 pb-24"}>
+              {(opcoes || []).map((op: any, opIdx: number) => {
+                const id = String(op.id).toLowerCase();
+                const rawTexto = String(op.texto || '').trim().toLowerCase();
+                const isOpCerto = id === 'certo' || id === 'c' || id === 'verdadeiro' || id === 'v' || rawTexto === 'certo' || rawTexto === 'verdadeiro';
+                const escolhida = resposta ? (resposta.escolha?.toLowerCase() === id) : (selectedOpcao === id);
+                const acertou = resposta?.correta && (resposta.escolha?.toLowerCase() === id);
+                const errou = resposta && (resposta.escolha?.toLowerCase() === id) && !resposta.correta;
+                const revelaCerta = resposta && id === correta;
 
-            if (acertou || revelaCerta) {
-              cardClass = 'border-emerald-500/60 bg-emerald-500/[0.12] text-white ring-1 ring-emerald-500/40 shadow-lg shadow-emerald-500/10';
-              badgeClass = 'border-emerald-500/60 bg-emerald-500/25 text-emerald-400 font-bold';
-            } else if (errou) {
-              cardClass = 'border-rose-500/60 bg-rose-500/[0.12] text-white ring-1 ring-rose-500/40 shadow-lg shadow-rose-500/10';
-              badgeClass = 'border-rose-500/60 bg-rose-500/25 text-rose-400 font-bold';
-            } else if (escolhida) {
-              cardClass = 'border-primary bg-primary/15 text-white ring-2 ring-primary/40 shadow-lg shadow-primary/15';
-              badgeClass = 'border-primary bg-primary text-white font-bold';
-            }
+                if (isCertoErrado) {
+                  const label = isOpCerto ? (op.texto && !['c', 'certo'].includes(rawTexto) ? op.texto : 'Certo') : (op.texto && !['e', 'errado'].includes(rawTexto) ? op.texto : 'Errado');
 
-            return (
-              <motion.button
-                key={op.id}
-                disabled={!!resposta}
-                onClick={() => { if (!resposta) { haptic.selection(); setSelectedOpcao(id); } }}
-                className={`group relative flex w-full items-center gap-3 sm:gap-4 rounded-2xl border p-3.5 sm:p-4 md:p-5 text-left text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed transition-all duration-200 min-h-[3.5rem] sm:min-h-[4rem] active:scale-[0.98] cursor-pointer ${cardClass}`}
-                whileTap={{ scale: resposta ? 1 : 0.97 }}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.05 * (opcoes.indexOf(op)) }}
+                  let cardClass = isOpCerto
+                    ? 'border-white/[0.08] bg-card/60 hover:bg-emerald-500/[0.08] hover:border-emerald-500/30 text-neutral-200 shadow-sm backdrop-blur-sm'
+                    : 'border-white/[0.08] bg-card/60 hover:bg-rose-500/[0.08] hover:border-rose-500/30 text-neutral-200 shadow-sm backdrop-blur-sm';
+
+                  let badgeClass = isOpCerto
+                    ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400 group-hover:border-emerald-500/40 group-hover:bg-emerald-500/20'
+                    : 'border-rose-500/20 bg-rose-500/10 text-rose-400 group-hover:border-rose-500/40 group-hover:bg-rose-500/20';
+
+                  if (acertou || revelaCerta) {
+                    cardClass = 'border-emerald-500/70 bg-emerald-500/[0.18] text-white ring-1 ring-emerald-500/50 shadow-lg shadow-emerald-500/15';
+                    badgeClass = 'border-emerald-500 bg-emerald-500 text-black font-black shadow-md shadow-emerald-500/30';
+                  } else if (errou) {
+                    cardClass = 'border-rose-500/70 bg-rose-500/[0.18] text-white ring-1 ring-rose-500/50 shadow-lg shadow-rose-500/15';
+                    badgeClass = 'border-rose-500 bg-rose-500 text-white font-black shadow-md shadow-rose-500/30';
+                  } else if (escolhida) {
+                    if (isOpCerto) {
+                      cardClass = 'border-emerald-500 bg-emerald-500/20 text-white ring-2 ring-emerald-500/50 shadow-lg shadow-emerald-500/20';
+                      badgeClass = 'border-emerald-500 bg-emerald-500 text-black font-black';
+                    } else {
+                      cardClass = 'border-rose-500 bg-rose-500/20 text-white ring-2 ring-rose-500/50 shadow-lg shadow-rose-500/20';
+                      badgeClass = 'border-rose-500 bg-rose-500 text-white font-black';
+                    }
+                  }
+
+                  return (
+                    <motion.button
+                      key={op.id}
+                      disabled={!!resposta}
+                      onClick={() => { if (!resposta) { haptic.selection(); setSelectedOpcao(id); } }}
+                      className={`group relative flex w-full items-center gap-3.5 sm:gap-4 rounded-2xl border p-4 sm:p-5 text-left transition-all duration-200 min-h-[3.75rem] sm:min-h-[4.25rem] active:scale-[0.98] cursor-pointer ${cardClass}`}
+                      whileTap={{ scale: resposta ? 1 : 0.97 }}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: 0.05 * opIdx }}
+                    >
+                      <span className={`flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border transition-all ${badgeClass}`}>
+                        {isOpCerto ? <Check className="h-5 w-5" strokeWidth={3} /> : <X className="h-5 w-5" strokeWidth={3} />}
+                      </span>
+                      <span className="flex-1 font-bold text-[16px] sm:text-[17px] md:text-[18px] tracking-wide">
+                        {label}
+                      </span>
+                      {(acertou || revelaCerta) && (
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
+                          <Check className="h-4 w-4" strokeWidth={3} />
+                        </span>
+                      )}
+                      {errou && (
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-rose-500/20 text-rose-400">
+                          <XCircle className="h-4 w-4" strokeWidth={2.5} />
+                        </span>
+                      )}
+                    </motion.button>
+                  );
+                }
+
+                // Múltipla Escolha Padrão
+                const letter = String(op.id).length <= 2 ? String(op.id).toUpperCase() : String.fromCharCode(65 + opIdx);
+                let cardClass = 'border-white/[0.08] bg-card/60 hover:bg-card hover:border-white/20 text-neutral-200 shadow-sm backdrop-blur-sm';
+                let badgeClass = 'border-white/15 bg-white/5 text-neutral-400 group-hover:text-white group-hover:border-white/30';
+
+                if (acertou || revelaCerta) {
+                  cardClass = 'border-emerald-500/60 bg-emerald-500/[0.12] text-white ring-1 ring-emerald-500/40 shadow-lg shadow-emerald-500/10';
+                  badgeClass = 'border-emerald-500/60 bg-emerald-500/25 text-emerald-400 font-bold';
+                } else if (errou) {
+                  cardClass = 'border-rose-500/60 bg-rose-500/[0.12] text-white ring-1 ring-rose-500/40 shadow-lg shadow-rose-500/10';
+                  badgeClass = 'border-rose-500/60 bg-rose-500/25 text-rose-400 font-bold';
+                } else if (escolhida) {
+                  cardClass = 'border-primary bg-primary/15 text-white ring-2 ring-primary/40 shadow-lg shadow-primary/15';
+                  badgeClass = 'border-primary bg-primary text-white font-bold';
+                }
+
+                return (
+                  <motion.button
+                    key={op.id}
+                    disabled={!!resposta}
+                    onClick={() => { if (!resposta) { haptic.selection(); setSelectedOpcao(id); } }}
+                    className={`group relative flex w-full items-center gap-3 sm:gap-4 rounded-2xl border p-3.5 sm:p-4 md:p-5 text-left text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed transition-all duration-200 min-h-[3.5rem] sm:min-h-[4rem] active:scale-[0.98] cursor-pointer ${cardClass}`}
+                    whileTap={{ scale: resposta ? 1 : 0.97 }}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.05 * opIdx }}
+                  >
+                    <span className={`flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-xl border text-xs font-bold uppercase transition-colors ${badgeClass}`}>
+                      {letter}
+                    </span>
+                    <span className="flex-1 font-medium">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ p: ({ children }) => <span className="inline">{children}</span> }}>
+                        {normalizarMarkdown(op.texto)}
+                      </ReactMarkdown>
+                    </span>
+                    {(acertou || revelaCerta) && (
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
+                        <Check className="h-4 w-4" strokeWidth={3} />
+                      </span>
+                    )}
+                    {errou && (
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-rose-500/20 text-rose-400">
+                        <XCircle className="h-4 w-4" strokeWidth={2.5} />
+                      </span>
+                    )}
+                  </motion.button>
+                );
+              })}
+            </div>
+          );
+        })()}
+
+        {!onSelectOpcao && (
+          <AnimatePresence>
+            {!resposta && selectedOpcao && (
+              <motion.div
+                initial={{ y: 80, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 80, opacity: 0 }}
+                transition={{ type: 'spring', damping: 28, stiffness: 350 }}
+                className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/[0.08] bg-background/90 backdrop-blur-xl px-4 py-3.5 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl"
               >
-                <span className={`flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-xl border text-xs font-bold uppercase transition-colors ${badgeClass}`}>
-                  {op.id}
-                </span>
-                <span className="flex-1 font-medium">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ p: ({ children }) => <span className="inline">{children}</span> }}>
-                    {normalizarMarkdown(op.texto)}
-                  </ReactMarkdown>
-                </span>
-                {(acertou || revelaCerta) && (
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
-                    <Check className="h-4 w-4" strokeWidth={3} />
-                  </span>
-                )}
-                {errou && (
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-rose-500/20 text-rose-400">
-                    <XCircle className="h-4 w-4" strokeWidth={2.5} />
-                  </span>
-                )}
-              </motion.button>
-            );
-          })}
-        </div>
-
-        <AnimatePresence>
-          {!resposta && selectedOpcao && (
-            <motion.div
-              initial={{ y: 80, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 80, opacity: 0 }}
-              transition={{ type: 'spring', damping: 28, stiffness: 350 }}
-              className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/[0.08] bg-background/90 backdrop-blur-xl px-4 py-3.5 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl"
-            >
-              <div className="mx-auto max-w-3xl lg:max-w-[74ch] xl:max-w-[80ch] flex items-center justify-between gap-4">
-                <div className="hidden sm:flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                  <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-                  Alternativa {selectedOpcao.toUpperCase()} selecionada
+                <div className="mx-auto max-w-3xl lg:max-w-[74ch] xl:max-w-[80ch] flex items-center justify-between gap-4">
+                  <div className="hidden sm:flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                    <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                    {['certo', 'errado', 'verdadeiro', 'falso'].includes(selectedOpcao)
+                      ? `Opção ${selectedOpcao.toUpperCase()} selecionada`
+                      : `Alternativa ${selectedOpcao.toUpperCase()} selecionada`}
+                  </div>
+                  <button
+                    onClick={() => onResponder(selectedOpcao)}
+                    className="w-full sm:w-auto sm:min-w-[200px] ml-auto flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-primary/25 hover:bg-primary-light active:scale-[0.98] transition-all cursor-pointer"
+                  >
+                    Confirmar Resposta <ArrowRight className="h-4 w-4 text-white" strokeWidth={2.5} />
+                  </button>
                 </div>
-                <button
-                  onClick={() => onResponder(selectedOpcao)}
-                  className="w-full sm:w-auto sm:min-w-[200px] ml-auto flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-primary/25 hover:bg-primary-light active:scale-[0.98] transition-all cursor-pointer"
-                >
-                  Confirmar Resposta <ArrowRight className="h-4 w-4 text-white" strokeWidth={2.5} />
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
       </article>
     );
   }
