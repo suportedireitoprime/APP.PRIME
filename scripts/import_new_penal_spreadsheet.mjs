@@ -142,6 +142,20 @@ function parseCertoErrado(content) {
   return { enunciado: assertiva, opcoes, correta, explicacao };
 }
 
+export function limparTextoInstrucoes(raw) {
+  if (!raw) return '';
+  let t = String(raw).trim();
+  t = t.replace(/^#{1,3}\s*(?:\d+[-.)]\s*)?[^\n]+\n*/i, '').trim();
+  const tagRegex = /\[\s*(?:ATO\b|CHECKPOINT\b|FLASHCARD\b|Animação\b|Transição\b|Efeito\b|Áudio\b|Locução\b|Destaque\b|Visual\b|Ação\b|Interatividade\b|Fluxo\s+Visual\b|Voltada\s+a\b)[^\]]*\]\s*/gi;
+  t = t.replace(tagRegex, '').trim();
+  return t;
+}
+
+export function limparMarkdownInline(s) {
+  if (!s) return '';
+  return String(s).replace(/^[*_#\s]+|[*_#\s]+$/g, '').trim();
+}
+
 function parseSingleFlashcard(content) {
   let frente = '';
   let verso = '';
@@ -153,7 +167,7 @@ function parseSingleFlashcard(content) {
 
   const vMatch = content.match(/###\s*VERSO DO CARTÃO[^\n]*\s*([\s\S]*?$)/i);
   if (vMatch) {
-    verso = vMatch[1].replace(/^[>\s*"]+|[>\s*"]+$/gm, '').replace(/^Resposta:\s*/i, '').trim();
+    verso = vMatch[1].replace(/^[>\s*"]+|[>\s*"]+$/gm, '').replace(/^>*\s*\*{0,2}Resposta\*{0,2}:?\s*/i, '').trim();
   }
 
   // Se não encontrar o padrão FRENTE/VERSO (ex: Dilema)
@@ -175,6 +189,9 @@ function parseSingleFlashcard(content) {
     frente = 'Conceito Prático';
     verso = content;
   }
+
+  frente = limparTextoInstrucoes(frente).replace(/^>*\s*\*{0,2}Pergunta[^\n:]*\*{0,2}:?\s*/i, '').trim();
+  verso = limparTextoInstrucoes(verso).replace(/^>*\s*\*{0,2}Resposta\*{0,2}:?\s*/i, '').trim();
 
   return { frente, verso };
 }
@@ -241,9 +258,9 @@ function parseMarkdownTable(content) {
   const lines = content.split('\n');
   const tableLines = lines.filter(l => l.trim().startsWith('|') && l.trim().endsWith('|'));
   if (tableLines.length >= 2) {
-    const colunas = tableLines[0].split('|').slice(1, -1).map(c => c.trim());
+    const colunas = tableLines[0].split('|').slice(1, -1).map(c => limparMarkdownInline(c));
     const dataLines = tableLines.slice(1).filter(l => !l.includes('---'));
-    const linhas = dataLines.map(l => l.split('|').slice(1, -1).map(c => c.trim()));
+    const linhas = dataLines.map(l => l.split('|').slice(1, -1).map((c, i) => i === 0 ? limparMarkdownInline(c) : c.trim()));
     return { colunas, linhas };
   }
   return { colunas: [], linhas: [] };
@@ -315,18 +332,18 @@ export function getSlideConfig(headerKey, rawContent) {
   if (
     lower.includes('slide_08') || lower.includes('flashcard_1') ||
     lower.includes('slide_17') || lower.includes('flashcard_2') ||
-    lower.includes('slide_24') || lower.includes('flashcard_3') ||
+    lower.includes('slide_24') || lower.includes('flashcard_3') || lower.includes('checkpoint_ato_iii') ||
     lower.includes('slide_25') || lower.includes('flashcard_4') ||
-    lower.includes('slide_07') || lower.includes('checkpoint_ato_i') ||
+    lower.includes('slide_07') || lower.includes('checkpoint_ato_i_') || lower.endsWith('checkpoint_ato_i') ||
     lower.includes('slide_16') || lower.includes('checkpoint_ato_ii')
   ) {
     const fc = parseSingleFlashcard(rawContent);
     let titulo = 'Cartão de Memorização Ativa';
-    if (lower.includes('slide_07') || lower.includes('checkpoint_ato_i')) titulo = 'Checkpoint Ato I: Fixação da Base';
+    if (lower.includes('slide_16') || lower.includes('checkpoint_ato_ii')) titulo = 'Checkpoint Ato II: Dilema Prático';
+    else if (lower.includes('slide_24') || lower.includes('flashcard_3') || lower.includes('checkpoint_ato_iii')) titulo = 'Flashcard 3: Prática Forense e Pegadinhas';
+    else if (lower.includes('slide_07') || lower.includes('checkpoint_ato_i_') || lower.endsWith('checkpoint_ato_i')) titulo = 'Checkpoint Ato I: Fixação da Base';
     else if (lower.includes('slide_08') || lower.includes('flashcard_1')) titulo = 'Flashcard 1: Fundamentos';
-    else if (lower.includes('slide_16') || lower.includes('checkpoint_ato_ii')) titulo = 'Checkpoint Ato II: Dilema Prático';
     else if (lower.includes('slide_17') || lower.includes('flashcard_2')) titulo = 'Flashcard 2: Aprofundamento Dogmático';
-    else if (lower.includes('slide_24') || lower.includes('flashcard_3')) titulo = 'Flashcard 3: Prática Forense e Pegadinhas';
     else if (lower.includes('slide_25') || lower.includes('flashcard_4')) titulo = 'Flashcard 4: Jurisprudência dos Tribunais';
 
     return {
@@ -336,10 +353,10 @@ export function getSlideConfig(headerKey, rawContent) {
         frente: fc.frente,
         verso: fc.verso,
         cards: [fc],
-        texto: rawContent
+        texto: limparTextoInstrucoes(rawContent)
       },
       resposta_correta: null,
-      markdown: rawContent
+      markdown: limparTextoInstrucoes(rawContent)
     };
   }
 
@@ -350,10 +367,10 @@ export function getSlideConfig(headerKey, rawContent) {
       payload: {
         titulo: 'Bem Jurídico Tutelado e Princípios',
         tom: 'info',
-        texto: rawContent
+        texto: limparTextoInstrucoes(rawContent)
       },
       resposta_correta: null,
-      markdown: rawContent
+      markdown: limparTextoInstrucoes(rawContent)
     };
   }
 
@@ -363,10 +380,10 @@ export function getSlideConfig(headerKey, rawContent) {
       payload: {
         titulo: 'Fronteiras da Lei: O Que NÃO Configura Crime',
         tom: 'alerta',
-        texto: rawContent
+        texto: limparTextoInstrucoes(rawContent)
       },
       resposta_correta: null,
-      markdown: rawContent
+      markdown: limparTextoInstrucoes(rawContent)
     };
   }
 
@@ -376,10 +393,10 @@ export function getSlideConfig(headerKey, rawContent) {
       payload: {
         titulo: 'Circunstâncias Agravantes, Qualificadoras e Majorantes',
         tom: 'alerta',
-        texto: rawContent
+        texto: limparTextoInstrucoes(rawContent)
       },
       resposta_correta: null,
-      markdown: rawContent
+      markdown: limparTextoInstrucoes(rawContent)
     };
   }
 
@@ -389,10 +406,10 @@ export function getSlideConfig(headerKey, rawContent) {
       payload: {
         titulo: 'Causas de Diminuição de Pena e Privilégios',
         tom: 'info',
-        texto: rawContent
+        texto: limparTextoInstrucoes(rawContent)
       },
       resposta_correta: null,
-      markdown: rawContent
+      markdown: limparTextoInstrucoes(rawContent)
     };
   }
 
@@ -402,10 +419,10 @@ export function getSlideConfig(headerKey, rawContent) {
       payload: {
         titulo: 'As Pegadinhas Mais Ardilosas em Provas e Concursos',
         tom: 'alerta',
-        texto: rawContent
+        texto: limparTextoInstrucoes(rawContent)
       },
       resposta_correta: null,
-      markdown: rawContent
+      markdown: limparTextoInstrucoes(rawContent)
     };
   }
 
@@ -416,10 +433,10 @@ export function getSlideConfig(headerKey, rawContent) {
         titulo: 'A Dica da Professora (Áudio-Guia)',
         tom: 'dica',
         subtipo: 'audio_dica',
-        texto: rawContent
+        texto: limparTextoInstrucoes(rawContent)
       },
       resposta_correta: null,
-      markdown: rawContent
+      markdown: limparTextoInstrucoes(rawContent)
     };
   }
 
@@ -430,10 +447,10 @@ export function getSlideConfig(headerKey, rawContent) {
       payload: {
         titulo: 'Dispositivo Legal ou Tese Jurídica',
         subtipo: 'artigo_lei',
-        texto: rawContent
+        texto: limparTextoInstrucoes(rawContent)
       },
       resposta_correta: null,
-      markdown: rawContent
+      markdown: limparTextoInstrucoes(rawContent)
     };
   }
 
@@ -444,10 +461,10 @@ export function getSlideConfig(headerKey, rawContent) {
       payload: {
         titulo: 'Origem Histórica e Contexto',
         subtipo: 'linha_tempo',
-        texto: rawContent
+        texto: limparTextoInstrucoes(rawContent)
       },
       resposta_correta: null,
-      markdown: rawContent
+      markdown: limparTextoInstrucoes(rawContent)
     };
   }
 
@@ -460,10 +477,10 @@ export function getSlideConfig(headerKey, rawContent) {
         titulo: 'Classificação Doutrinária Analítica',
         colunas: tableData.colunas,
         linhas: tableData.linhas,
-        texto: rawContent
+        texto: limparTextoInstrucoes(rawContent)
       },
       resposta_correta: null,
-      markdown: rawContent
+      markdown: limparTextoInstrucoes(rawContent)
     };
   }
 
@@ -474,10 +491,10 @@ export function getSlideConfig(headerKey, rawContent) {
       payload: {
         titulo: 'Grafo de Conexão e Árvore de Decisão Completa',
         subtipo: 'grafo_decisao',
-        texto: rawContent
+        texto: limparTextoInstrucoes(rawContent)
       },
       resposta_correta: null,
-      markdown: rawContent
+      markdown: limparTextoInstrucoes(rawContent)
     };
   }
 
@@ -501,10 +518,10 @@ export function getSlideConfig(headerKey, rawContent) {
     payload: {
       titulo,
       subtipo,
-      texto: rawContent
+      texto: limparTextoInstrucoes(rawContent)
     },
     resposta_correta: null,
-    markdown: rawContent
+    markdown: limparTextoInstrucoes(rawContent)
   };
 }
 

@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, Lightbulb, AlertTriangle, ChevronDown, BookOpen, Eye, EyeOff, Scale } from 'lucide-react';
-import { normalizarMarkdown } from '@/lib/markdown';
+import { normalizarMarkdown, limparTextoInstrucoes } from '@/lib/markdown';
 import { haptic } from '@/lib/nativeHaptics';
 import { LinhaDoTempoAnimada, isTimelineBlock } from './LinhaDoTempoAnimada';
 import { ComparativoBlocos, isComparativeBlock } from './ComparativoBlocos';
@@ -41,23 +41,10 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
   const { titulo, conteudo, texto } = payload || {};
   const textoPrincipal = String(conteudo ?? texto ?? '');
 
-  // Evita a duplicação do título na área de leitura quando ele já está renderizado no <header>
+  // Evita a duplicação do título e remove metadados [ATO ...], [Animação ...], etc.
   const textoLimpo = useMemo(() => {
-    let t = textoPrincipal.trim();
-    if (!t) return '';
-
-    // Remove always the first heading (# ou ##) no início do texto, pois o ReactMarkdown com prose-xl deixa gigante
-    // e o título já é exibido no <header> da interface.
-    const m = t.match(/^#{1,3}\s*([^\n]+)\n*/);
-    if (m) {
-      t = t.slice(m[0].length).trim();
-    }
-
-    // Remover tags de instrução visual (ex: [Animação Visual: ...], [Transição de Tela: ...])
-    t = t.replace(/\[(Animação Visual|Animação|Transição de Tela|Transição|Efeito de Revelação|Efeito|Áudio|Locução|Destaque Visual|Visual|Ação)[^\]]*\]\s*/gi, '');
-
-    return t.trim();
-  }, [textoPrincipal, titulo]);
+    return limparTextoInstrucoes(textoPrincipal);
+  }, [textoPrincipal]);
 
   // Parser de termos de glossário (Item 5)
   const termosGlossario = useMemo(() => {
@@ -112,9 +99,9 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
   const [solucaoRevelada, setSolucaoRevelada] = useState(false);
 
   const camadas: Camada[] = ([
-    { chave: 'em_portugues_claro', rotulo: 'Em português claro', Icon: MessageSquare, texto: payload?.em_portugues_claro || '' },
-    { chave: 'exemplo', rotulo: 'Exemplo prático', Icon: Lightbulb, texto: payload?.exemplo || '' },
-    { chave: 'pegadinha', rotulo: 'Onde erram (Pegadinha)', Icon: AlertTriangle, texto: payload?.pegadinha || '' },
+    { chave: 'em_portugues_claro', rotulo: 'Em português claro', Icon: MessageSquare, texto: limparTextoInstrucoes(payload?.em_portugues_claro || '') },
+    { chave: 'exemplo', rotulo: 'Exemplo prático', Icon: Lightbulb, texto: limparTextoInstrucoes(payload?.exemplo || '') },
+    { chave: 'pegadinha', rotulo: 'Onde erram (Pegadinha)', Icon: AlertTriangle, texto: limparTextoInstrucoes(payload?.pegadinha || '') },
   ] as Camada[]).filter((c) => c.texto.trim().length > 0);
 
   const containerVariants = {
