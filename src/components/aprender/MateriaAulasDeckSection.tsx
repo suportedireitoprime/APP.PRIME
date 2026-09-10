@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useCallback, useRef, useEffect, memo } from 'react';
+import React, { useState, useMemo, useCallback, memo } from 'react';
 import { motion } from 'framer-motion';
-import { Video, Play } from 'lucide-react';
+import { Video, Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
 import { getAreaCover } from '@/lib/areasDireitoCovers';
@@ -52,16 +52,6 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
   onOpenModulo,
 }) => {
   const [ativo, setAtivo] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
-  const isSwipingRef = useRef(false);
-  const dragTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (dragTimerRef.current) clearTimeout(dragTimerRef.current);
-    };
-  }, []);
 
   const iconInfo = useMemo(() => areaIconFor(area.slug), [area.slug]);
   const AreaIcon = iconInfo?.Icon;
@@ -149,46 +139,6 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
     setAtivo((i) => (i + 1) % total);
   }, [total]);
 
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (e.touches.length === 1) {
-      touchStartRef.current = {
-        x: e.touches[0].clientX,
-        y: e.touches[0].clientY,
-        time: Date.now(),
-      };
-      isSwipingRef.current = false;
-    }
-  }, []);
-
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!touchStartRef.current || e.touches.length !== 1) return;
-    const deltaX = e.touches[0].clientX - touchStartRef.current.x;
-    const deltaY = e.touches[0].clientY - touchStartRef.current.y;
-    if (Math.abs(deltaX) > 8 && Math.abs(deltaX) > Math.abs(deltaY)) {
-      isSwipingRef.current = true;
-    }
-  }, []);
-
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    if (!touchStartRef.current) return;
-    const deltaX = (e.changedTouches[0]?.clientX || 0) - touchStartRef.current.x;
-    const deltaTime = Date.now() - touchStartRef.current.time;
-    touchStartRef.current = null;
-
-    if (isSwipingRef.current || Math.abs(deltaX) > 24) {
-      const velocityX = deltaX / Math.max(deltaTime, 1);
-      if (deltaX < -22 || velocityX < -0.28) {
-        handleNext();
-      } else if (deltaX > 22 || velocityX > 0.28) {
-        handlePrev();
-      }
-      setIsDragging(true);
-      setTimeout(() => setIsDragging(false), 120);
-    } else {
-      setIsDragging(false);
-    }
-  }, [handleNext, handlePrev]);
-
   const activeCard = deckCards[ativo] || deckCards[0];
 
   return (
@@ -232,8 +182,38 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
       {/* ── 3D Fanned Deck de Aulas no Formato 4:3 com Capas Ilustradas Reais ── */}
       <div className="relative w-full -mx-2 sm:mx-0 px-2 sm:px-0 pt-1 pb-1 flex flex-col items-center select-none overflow-visible">
         <div className="relative flex items-center justify-center w-full max-w-full h-[225px] sm:h-[245px] overflow-visible">
+          {/* Botão Anterior (Clique para passar para a esquerda) */}
+          {total > 1 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handlePrev();
+              }}
+              aria-label={`Aula anterior de ${area.nome}`}
+              className="absolute left-1 sm:left-4 z-40 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black/60 hover:bg-black/85 active:scale-95 border border-white/25 text-white shadow-xl backdrop-blur-md flex items-center justify-center transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-rose-400"
+            >
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.4]" />
+            </button>
+          )}
+
+          {/* Botão Próximo (Clique para passar para a direita) */}
+          {total > 1 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleNext();
+              }}
+              aria-label={`Próxima aula de ${area.nome}`}
+              className="absolute right-1 sm:right-4 z-40 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black/60 hover:bg-black/85 active:scale-95 border border-white/25 text-white shadow-xl backdrop-blur-md flex items-center justify-center transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-rose-400"
+            >
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.4]" />
+            </button>
+          )}
+
           {/* Deck de cards interativo */}
-          <motion.div
+          <div
             tabIndex={0}
             role="region"
             aria-label={`Deck de aulas de ${area.nome}. Pressione as setas esquerda e direita para navegar e Enter para abrir.`}
@@ -257,28 +237,7 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
                 }
               }
             }}
-            drag="x"
-            dragDirectionLock
-            dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-            dragElastic={0.2}
-            onDragStart={() => setIsDragging(true)}
-            onDragEnd={(_, info) => {
-              if (dragTimerRef.current) clearTimeout(dragTimerRef.current);
-              dragTimerRef.current = setTimeout(() => setIsDragging(false), 120);
-              const isFar = Math.abs(info.offset.x) > 90;
-              const isFast = Math.abs(info.velocity.x) > 450;
-              const step = isFar && isFast ? 2 : 1;
-
-              if (info.offset.x < -20 || info.velocity.x < -150) {
-                setAtivo((i) => (i + step) % total);
-              } else if (info.offset.x > 20 || info.velocity.x > 150) {
-                setAtivo((i) => (i - step + total) % total);
-              }
-            }}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            className="relative flex items-center justify-center w-full h-full cursor-grab active:cursor-grabbing touch-pan-y outline-none focus-visible:ring-2 focus-visible:ring-rose-500/50 rounded-2xl"
+            className="relative flex items-center justify-center w-full h-full outline-none focus-visible:ring-2 focus-visible:ring-rose-500/50 rounded-2xl"
           >
             {deckCards.map((card, i) => {
               let diff = (i - ativo) % total;
@@ -300,20 +259,23 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
                     scale: slot.scale,
                     opacity: slot.opacity,
                   }}
-                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                   style={{ zIndex: slot.z }}
                   onClick={(e) => {
-                    if (isDragging || isSwipingRef.current) {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      return;
-                    }
-                    try { haptic.impact(); } catch {}
-                    const isSynthetic = !card.moduloRef?.id || String(card.id).includes('topic') || String(card.id).includes('canonical');
-                    if (!isSynthetic && card.moduloRef && onOpenModulo) {
-                      onOpenModulo(card.moduloRef);
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (frente) {
+                      try { haptic.impact(); } catch {}
+                      const isSynthetic = !card.moduloRef?.id || String(card.id).includes('topic') || String(card.id).includes('canonical');
+                      if (!isSynthetic && card.moduloRef && onOpenModulo) {
+                        onOpenModulo(card.moduloRef);
+                      } else {
+                        onOpenArea();
+                      }
                     } else {
-                      onOpenArea();
+                      // Passa para o card clicado ao tocar em qualquer card lateral
+                      try { haptic.selection(); } catch {}
+                      setAtivo(i);
                     }
                   }}
                   className="absolute cursor-pointer will-change-transform"
@@ -391,7 +353,7 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
                 </motion.div>
               );
             })}
-          </motion.div>
+          </div>
         </div>
       </div>
 
