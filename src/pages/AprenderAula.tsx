@@ -98,6 +98,17 @@ const AprenderAula = () => {
   const blocoAtual = (blocos && blocos[currentIdx]) ? blocos[currentIdx] : ((blocos && blocos[0]) ? blocos[0] : null);
   const isPergunta = blocoAtual?.tipo === 'pergunta';
   const isFlashcard = blocoAtual?.tipo === 'flashcard';
+  const isGrafoDecisao =
+    blocoAtual?.payload?.subtipo === 'grafo_decisao' ||
+    (typeof blocoAtual?.payload?.titulo === 'string' && (
+      blocoAtual.payload.titulo.toLowerCase().includes('grafo') ||
+      blocoAtual.payload.titulo.toLowerCase().includes('árvore de decisão')
+    )) ||
+    (typeof blocoAtual?.payload?.conteudo === 'string' && (
+      blocoAtual.payload.conteudo.includes('GRAFO DE DECISÃO') ||
+      (blocoAtual.payload.conteudo.includes('┌') && blocoAtual.payload.conteudo.includes('▼'))
+    )) ||
+    (currentIdx === total - 1 && blocoAtual?.tipo === 'leitura');
   const questaoRespondida = blocoAtual ? !!respostas[blocoAtual.id] : true;
   const flashcardVirado = blocoAtual ? !!flipped[blocoAtual.id] : true;
   const podeAvancar = (!isPergunta || questaoRespondida) && (!isFlashcard || flashcardVirado);
@@ -572,13 +583,13 @@ const AprenderAula = () => {
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseLeave}
                 className={`w-full flex-1 flex flex-col ${
-                  isPergunta
+                  (isPergunta || isGrafoDecisao)
                     ? 'bg-[#0f0f13]/85 backdrop-blur-xl border border-primary/25 shadow-primary/10'
                     : 'bg-[#131316]/95 backdrop-blur-md border border-white/[0.08]'
                 } border-y sm:border rounded-none sm:rounded-3xl px-4 py-5 sm:p-8 md:p-10 shadow-2xl shadow-black/40 overflow-hidden relative select-none md:cursor-grab md:active:cursor-grabbing min-h-[500px]`}
               >
-                {/* ── Fundo animado de quadrados ShapeGrid específico para questões (Item solicitado) ── */}
-                {isPergunta && (
+                {/* ── Fundo animado de quadrados ShapeGrid (Questões e Grafo Decisório) ── */}
+                {(isPergunta || isGrafoDecisao) && (
                   <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-none sm:rounded-3xl opacity-55">
                     <ShapeGrid
                       speed={0.6}

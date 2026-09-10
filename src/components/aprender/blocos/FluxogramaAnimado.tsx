@@ -177,7 +177,7 @@ export function parseAsciiBoxTree(rawText: string): FlowLevel[] {
       const firstLine = filtered[0];
       const descLines = filtered.slice(1);
       const text = cleanNodeText(firstLine.replace(/^\[([^\]]+)\]$/, '$1'));
-      const desc = descLines.join(' ').replace(/\s+/g, ' ').trim();
+      const desc = descLines.join('\n').trim();
       if (text.length > 0 && !isIgnoredNode(text)) {
         nodes.push({ text, desc: desc.length > 0 ? desc : undefined });
       }
@@ -191,12 +191,12 @@ export function parseAsciiBoxTree(rawText: string): FlowLevel[] {
 }
 
 const COLORS = [
-  { bg: 'from-primary/20 to-primary/8', border: 'border-primary/40', glow: 'shadow-[0_0_18px_hsl(var(--primary)/0.2)]', dot: 'bg-primary text-black', text: 'text-primary' },
-  { bg: 'from-sky-500/18 to-sky-500/6', border: 'border-sky-400/35', glow: 'shadow-[0_0_18px_rgba(56,189,248,0.15)]', dot: 'bg-sky-400 text-black', text: 'text-sky-400' },
-  { bg: 'from-violet-500/18 to-violet-500/6', border: 'border-violet-400/35', glow: 'shadow-[0_0_18px_rgba(167,139,250,0.15)]', dot: 'bg-violet-400 text-black', text: 'text-violet-400' },
-  { bg: 'from-amber-500/18 to-amber-500/6', border: 'border-amber-400/35', glow: 'shadow-[0_0_18px_rgba(251,191,36,0.15)]', dot: 'bg-amber-400 text-black', text: 'text-amber-400' },
-  { bg: 'from-emerald-500/18 to-emerald-500/6', border: 'border-emerald-400/35', glow: 'shadow-[0_0_18px_rgba(52,211,153,0.15)]', dot: 'bg-emerald-400 text-black', text: 'text-emerald-400' },
-  { bg: 'from-rose-500/18 to-rose-500/6', border: 'border-rose-400/35', glow: 'shadow-[0_0_18px_rgba(251,113,133,0.15)]', dot: 'bg-rose-400 text-white', text: 'text-rose-400' },
+  { bg: 'from-primary/20 to-primary/8', border: 'border-primary/40', glow: 'shadow-[0_0_16px_hsl(var(--primary)/0.2)]', dot: 'bg-primary text-black', text: 'text-primary' },
+  { bg: 'from-sky-500/18 to-sky-500/6', border: 'border-sky-400/35', glow: 'shadow-[0_0_16px_rgba(56,189,248,0.15)]', dot: 'bg-sky-400 text-black', text: 'text-sky-400' },
+  { bg: 'from-violet-500/18 to-violet-500/6', border: 'border-violet-400/35', glow: 'shadow-[0_0_16px_rgba(167,139,250,0.15)]', dot: 'bg-violet-400 text-black', text: 'text-violet-400' },
+  { bg: 'from-amber-500/18 to-amber-500/6', border: 'border-amber-400/35', glow: 'shadow-[0_0_16px_rgba(251,191,36,0.15)]', dot: 'bg-amber-400 text-black', text: 'text-amber-400' },
+  { bg: 'from-emerald-500/18 to-emerald-500/6', border: 'border-emerald-400/35', glow: 'shadow-[0_0_16px_rgba(52,211,153,0.15)]', dot: 'bg-emerald-400 text-black', text: 'text-emerald-400' },
+  { bg: 'from-rose-500/18 to-rose-500/6', border: 'border-rose-400/35', glow: 'shadow-[0_0_16px_rgba(251,113,133,0.15)]', dot: 'bg-rose-400 text-white', text: 'text-rose-400' },
 ];
 
 function NodeCard({ node, color, index, delay }: { node: FlowNode; color: typeof COLORS[0]; index: number; delay: number }) {
@@ -208,7 +208,7 @@ function NodeCard({ node, color, index, delay }: { node: FlowNode; color: typeof
     ? {
         bg: 'from-emerald-500/25 via-emerald-500/10 to-transparent',
         border: 'border-emerald-400/60',
-        glow: 'shadow-[0_0_20px_rgba(52,211,153,0.25)]',
+        glow: 'shadow-[0_0_16px_rgba(52,211,153,0.25)]',
         dot: 'bg-emerald-400 text-black',
         text: 'text-emerald-300',
       }
@@ -216,7 +216,7 @@ function NodeCard({ node, color, index, delay }: { node: FlowNode; color: typeof
     ? {
         bg: 'from-rose-500/25 via-rose-500/10 to-transparent',
         border: 'border-rose-400/60',
-        glow: 'shadow-[0_0_20px_rgba(251,113,133,0.25)]',
+        glow: 'shadow-[0_0_16px_rgba(251,113,133,0.25)]',
         dot: 'bg-rose-400 text-white',
         text: 'text-rose-300',
       }
@@ -224,38 +224,38 @@ function NodeCard({ node, color, index, delay }: { node: FlowNode; color: typeof
 
   return (
     <motion.div
-      className={`relative z-10 w-full rounded-2xl border ${customColor.border} bg-gradient-to-br ${customColor.bg} backdrop-blur-md ${customColor.glow}`}
-      initial={{ opacity: 0, y: 20, scale: 0.94 }}
+      className={`relative z-10 w-full rounded-xl sm:rounded-2xl border ${customColor.border} bg-gradient-to-br ${customColor.bg} backdrop-blur-md ${customColor.glow} p-2.5 sm:p-3.5`}
+      initial={{ opacity: 0, y: 15, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.45, delay, ease: [0.21, 1.04, 0.58, 1] }}
+      transition={{ duration: 0.35, delay, ease: [0.21, 1.04, 0.58, 1] }}
     >
       {/* Badge numérico ou ícone SIM/NÃO */}
-      <div className="absolute -top-2.5 -left-2">
+      <div className="absolute -top-2 -left-1.5 sm:-left-2">
         <motion.span
-          className={`flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 rounded-full ${customColor.dot} font-black text-[10px] sm:text-xs shadow-lg ring-2 ring-black/30`}
+          className={`flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full ${customColor.dot} font-black text-[10px] sm:text-xs shadow-md ring-1 ring-black/40`}
           initial={{ scale: 0, rotate: -90 }}
           animate={{ scale: 1, rotate: 0 }}
-          transition={{ duration: 0.35, delay: delay + 0.1, type: 'spring', stiffness: 500 }}
+          transition={{ duration: 0.3, delay: delay + 0.08, type: 'spring', stiffness: 500 }}
         >
-          {isSim ? <Check className="w-3.5 h-3.5" strokeWidth={3} /> : isNao ? <X className="w-3.5 h-3.5" strokeWidth={3} /> : index + 1}
+          {isSim ? <Check className="w-3 h-3" strokeWidth={3} /> : isNao ? <X className="w-3 h-3" strokeWidth={3} /> : index + 1}
         </motion.span>
       </div>
 
-      <div className="p-3.5 sm:p-4">
-        <p className="text-[13px] sm:text-[14px] md:text-[15px] font-bold text-neutral-100 leading-snug pl-3.5 sm:pl-4">
+      <div className="pl-2 sm:pl-2.5">
+        <p className="text-[12px] sm:text-[13px] md:text-sm font-extrabold text-neutral-100 leading-tight break-words">
           {node.text}
         </p>
         {node.desc && (
-          <div className={`text-[11px] sm:text-[12px] ${customColor.text} mt-2 pl-3.5 sm:pl-4 font-medium opacity-90 space-y-1`}>
-            {node.desc.includes('•') ? (
-              node.desc.split(/(?=[•\-])/).map((part, pi) => (
-                <p key={pi} className="leading-snug">
-                  {part.trim()}
+          <div className={`text-[11px] sm:text-xs ${customColor.text} mt-1.5 font-normal opacity-95 space-y-0.5 break-words`}>
+            {node.desc.split('\n').map((line, li) => {
+              const trimmed = line.trim();
+              if (!trimmed) return null;
+              return (
+                <p key={li} className="leading-snug break-words">
+                  {trimmed}
                 </p>
-              ))
-            ) : (
-              <p className="leading-snug">{node.desc}</p>
-            )}
+              );
+            })}
           </div>
         )}
       </div>
@@ -266,17 +266,17 @@ function NodeCard({ node, color, index, delay }: { node: FlowNode; color: typeof
 function AnimatedConnector({ delay, branching }: { delay: number; branching?: boolean }) {
   return (
     <motion.div
-      className="flex flex-col items-center py-1"
+      className="flex flex-col items-center py-0.5"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.2, delay }}
     >
-      {/* Linha pulsante */}
+      {/* Linha pulsante compacta */}
       <motion.div
-        className="w-[2px] h-5 rounded-full overflow-hidden relative"
+        className="w-[2px] h-3 sm:h-3.5 rounded-full overflow-hidden relative"
         initial={{ scaleY: 0 }}
         animate={{ scaleY: 1 }}
-        transition={{ duration: 0.25, delay }}
+        transition={{ duration: 0.2, delay }}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-white/5" />
         <motion.div
@@ -289,12 +289,12 @@ function AnimatedConnector({ delay, branching }: { delay: number; branching?: bo
       <motion.div
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.2, delay: delay + 0.15, type: 'spring' }}
+        transition={{ duration: 0.2, delay: delay + 0.1, type: 'spring' }}
       >
         {branching ? (
-          <GitFork className="w-4 h-4 text-primary/70 rotate-180" strokeWidth={2.5} />
+          <GitFork className="w-3.5 h-3.5 text-primary/70 rotate-180" strokeWidth={2.4} />
         ) : (
-          <ArrowDown className="w-3.5 h-3.5 text-primary/60" strokeWidth={2.5} />
+          <ArrowDown className="w-3 h-3 text-primary/60" strokeWidth={2.4} />
         )}
       </motion.div>
     </motion.div>
@@ -306,26 +306,26 @@ function TreeLayout({ levels }: { levels: FlowLevel[] }) {
   let nodeCounter = 0;
 
   return (
-    <div className="my-5 sm:my-7 flex flex-col items-center gap-0 w-full">
+    <div className="my-2.5 sm:my-4 flex flex-col items-center gap-0 w-full">
       {levels.map((level, lIdx) => {
         const isBranch = level.length > 1;
         const prevIsBranch = lIdx > 0 && levels[lIdx - 1].length > 1;
-        const delay = lIdx * 0.18;
+        const delay = lIdx * 0.15;
 
         return (
           <div key={lIdx} className="flex flex-col items-center w-full">
             {lIdx > 0 && (
               prevIsBranch && isBranch && level.length === 2 ? (
-                <div className="grid grid-cols-2 gap-2.5 sm:gap-3 w-full py-0.5" style={{ maxWidth: Math.min(level.length * 280, 600) }}>
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 w-full py-0.5" style={{ maxWidth: Math.min(level.length * 280, 560) }}>
                   <div className="flex justify-center">
-                    <AnimatedConnector delay={delay - 0.08} />
+                    <AnimatedConnector delay={delay - 0.06} />
                   </div>
                   <div className="flex justify-center">
-                    <AnimatedConnector delay={delay - 0.08} />
+                    <AnimatedConnector delay={delay - 0.06} />
                   </div>
                 </div>
               ) : (
-                <AnimatedConnector delay={delay - 0.08} branching={isBranch && !prevIsBranch} />
+                <AnimatedConnector delay={delay - 0.06} branching={isBranch && !prevIsBranch} />
               )
             )}
 
@@ -333,7 +333,7 @@ function TreeLayout({ levels }: { levels: FlowLevel[] }) {
               <div className="w-full">
                 <motion.div
                   className="relative mx-auto flex items-start justify-center"
-                  style={{ maxWidth: Math.min(level.length * 280, 600) }}
+                  style={{ maxWidth: Math.min(level.length * 280, 560) }}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.35, delay }}
@@ -345,24 +345,24 @@ function TreeLayout({ levels }: { levels: FlowLevel[] }) {
                       style={{ left: `${100 / (level.length * 2)}%`, right: `${100 / (level.length * 2)}%` }}
                       initial={{ scaleX: 0 }}
                       animate={{ scaleX: 1 }}
-                      transition={{ duration: 0.4, delay: delay + 0.05 }}
+                      transition={{ duration: 0.35, delay: delay + 0.05 }}
                     />
                   )}
 
-                  <div className={`grid gap-2.5 sm:gap-3 w-full ${!prevIsBranch ? 'pt-3' : 'pt-0'} ${level.length === 2 ? 'grid-cols-2' : level.length === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                  <div className={`grid gap-2 sm:gap-3 w-full ${!prevIsBranch ? 'pt-2.5' : 'pt-0'} ${level.length === 2 ? 'grid-cols-2' : level.length === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
                     {level.map((node, nIdx) => {
                       const color = COLORS[(nodeCounter) % COLORS.length];
                       const card = (
                         <div key={nIdx} className="flex flex-col items-center w-full">
                           {!prevIsBranch && (
                             <motion.div
-                              className="w-[2px] h-3 bg-white/15 rounded-full mb-1"
+                              className="w-[2px] h-2.5 bg-white/15 rounded-full mb-1"
                               initial={{ scaleY: 0 }}
                               animate={{ scaleY: 1 }}
-                              transition={{ duration: 0.2, delay: delay + 0.12 + nIdx * 0.08 }}
+                              transition={{ duration: 0.2, delay: delay + 0.1 + nIdx * 0.06 }}
                             />
                           )}
-                          <NodeCard node={node} color={color} index={nodeCounter} delay={delay + 0.08 + nIdx * 0.12} />
+                          <NodeCard node={node} color={color} index={nodeCounter} delay={delay + 0.06 + nIdx * 0.1} />
                         </div>
                       );
                       nodeCounter++;
@@ -372,7 +372,7 @@ function TreeLayout({ levels }: { levels: FlowLevel[] }) {
                 </motion.div>
               </div>
             ) : (
-              <div className="w-full max-w-[420px] mx-auto">
+              <div className="w-full max-w-[420px] sm:max-w-[460px] mx-auto">
                 {level.map((node, nIdx) => {
                   const color = COLORS[(nodeCounter) % COLORS.length];
                   const card = <NodeCard key={nIdx} node={node} color={color} index={nodeCounter} delay={delay} />;
@@ -391,17 +391,17 @@ function TreeLayout({ levels }: { levels: FlowLevel[] }) {
 /** Layout linear (sem ramificações) */
 function LinearLayout({ nodes }: { nodes: FlowNode[] }) {
   return (
-    <div className="my-5 sm:my-7 flex flex-col items-center gap-0 relative">
+    <div className="my-2.5 sm:my-4 flex flex-col items-center gap-0 relative">
       {nodes.map((node, i) => {
         const color = COLORS[i % COLORS.length];
         const isLast = i === nodes.length - 1;
 
         return (
           <div key={i} className="flex flex-col items-center w-full">
-            <div className="w-full max-w-[420px] mx-auto">
-              <NodeCard node={node} color={color} index={i} delay={i * 0.18} />
+            <div className="w-full max-w-[420px] sm:max-w-[460px] mx-auto">
+              <NodeCard node={node} color={color} index={i} delay={i * 0.15} />
             </div>
-            {!isLast && <AnimatedConnector delay={i * 0.18 + 0.25} />}
+            {!isLast && <AnimatedConnector delay={i * 0.15 + 0.2} />}
           </div>
         );
       })}
