@@ -585,30 +585,25 @@ const AprenderArea = () => {
                                 className="pointer-events-none absolute -right-2 -bottom-2 w-[120px] sm:w-[145px] h-[140px] sm:h-[165px] object-contain opacity-35 group-hover:opacity-55 group-hover:scale-105 transition-all duration-300 z-0 select-none filter drop-shadow-[0_5px_12px_rgba(0,0,0,0.65)]"
                               />
 
-                              {/* Cabeçalho da Carta: Tag Deck + Badge com Total de Flashcards */}
-                              <div className="flex items-center justify-between gap-1.5 z-[1] w-full pt-1">
-                                <span className="flex items-center gap-1 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-md bg-black/60 text-white border border-white/20">
-                                  {isFlash ? <Layers className="w-2.5 h-2.5" style={{ color: palette.primary }} /> : null}
+                              {/* Cabeçalho da Carta: Tag Deck Refinada em Linha Única */}
+                              <div className="flex items-center justify-start z-[1] w-full pt-1">
+                                <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full backdrop-blur-md bg-black/45 text-white/95 border border-white/20 shadow-sm whitespace-nowrap">
+                                  {isFlash ? <Layers className="w-3 h-3 shrink-0" style={{ color: palette.primary }} /> : null}
                                   <span>{item.badgeLabel}</span>
                                 </span>
-                                {isFlash && (
-                                  <span className="text-[9px] font-semibold text-white/95 px-2 py-0.5 rounded-full bg-white/15 border border-white/15 shrink-0 backdrop-blur-sm">
-                                    {item.displayTotal} {item.displayLabel}
-                                  </span>
-                                )}
                               </div>
 
-                              {/* Centro da Carta: Título do Tema em Destaque Harmonioso */}
-                              <div className="my-auto py-2 z-[1] w-full px-1">
-                                <h3 className="font-sans font-semibold text-[13px] sm:text-[14.5px] leading-snug break-words text-white drop-shadow-md group-hover:text-amber-200 transition-colors line-clamp-3">
+                              {/* Centro da Carta: Título do Tema com Fonte Maior e Destaque Imponente */}
+                              <div className="my-auto py-2.5 z-[1] w-full px-1">
+                                <h3 className="font-sans font-bold text-[16px] sm:text-[17.5px] md:text-[18.5px] leading-snug break-words text-white drop-shadow-md group-hover:text-amber-200 transition-colors line-clamp-3">
                                   {item.titulo}
                                 </h3>
                               </div>
 
                               {/* Rodapé da Carta: Progresso e Estatísticas */}
-                              <div className="z-[1] pt-1.5 border-t border-white/20 w-full px-0.5">
+                              <div className="z-[1] pt-2 border-t border-white/20 w-full px-0.5">
                                 <div>
-                                  <div className="flex items-center justify-between text-[10px] font-normal text-white/95 mb-1">
+                                  <div className="flex items-center justify-between text-[10.5px] sm:text-[11px] font-normal text-white/95 mb-1.5">
                                     <span className="truncate">
                                       {item.displayConcluidas > 0
                                         ? `${item.displayConcluidas}/${item.displayTotal} concluídos`
@@ -616,7 +611,7 @@ const AprenderArea = () => {
                                     </span>
                                     <span className="font-semibold font-sans ml-1">{item.displayPct}%</span>
                                   </div>
-                                  <div className="w-full bg-black/50 h-1.5 rounded-full overflow-hidden border border-white/20">
+                                  <div className="w-full bg-black/50 h-2 rounded-full overflow-hidden border border-white/20">
                                     <div
                                       className="h-full rounded-full transition-all duration-500 shadow-sm"
                                       style={{
