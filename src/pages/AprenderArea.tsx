@@ -593,9 +593,9 @@ const AprenderArea = () => {
                                 </span>
                               </div>
 
-                              {/* Centro da Carta: Título do Tema com Fonte Maior e Destaque Imponente */}
+                              {/* Centro da Carta: Título do Tema sem negrito (font-normal) */}
                               <div className="my-auto py-2.5 z-[1] w-full px-1">
-                                <h3 className="font-sans font-bold text-[16px] sm:text-[17.5px] md:text-[18.5px] leading-snug break-words text-white drop-shadow-md group-hover:text-amber-200 transition-colors line-clamp-3">
+                                <h3 className="font-sans font-normal text-[16px] sm:text-[17.5px] md:text-[18.5px] leading-snug break-words text-white drop-shadow-md group-hover:text-amber-200 transition-colors line-clamp-3">
                                   {item.titulo}
                                 </h3>
                               </div>
