@@ -227,7 +227,7 @@ const AprenderArea = () => {
         displayPct: t.total > 0 ? Math.round((t.compreendidos / t.total) * 100) : 0,
         onClick: () => {
           try { haptic.light(); } catch {}
-          navigate(`/flashcards/estudar?area=${encodeURIComponent(officialFlashcardArea || area?.nome || effectiveAreaName)}&temas=${encodeURIComponent(t.tema)}`, {
+          navigate(`/flashcards/estudar?area=${encodeURIComponent(officialFlashcardArea || area?.nome || effectiveAreaName)}&temas=${encodeURIComponent(t.tema)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`, {
             state: { from: `/aprender/area/${slug}?tab=flashcards` }
           });
         },
@@ -249,7 +249,7 @@ const AprenderArea = () => {
           displayPct: 0,
           onClick: () => {
             try { haptic.light(); } catch {}
-            navigate(`/flashcards/estudar?area=${encodeURIComponent(officialFlashcardArea || area?.nome || effectiveAreaName)}&temas=${encodeURIComponent(tema)}`, {
+            navigate(`/flashcards/estudar?area=${encodeURIComponent(officialFlashcardArea || area?.nome || effectiveAreaName)}&temas=${encodeURIComponent(tema)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`, {
               state: { from: `/aprender/area/${slug}?tab=flashcards` }
             });
           },
@@ -269,7 +269,7 @@ const AprenderArea = () => {
           displayPct: 0,
           onClick: () => {
             try { haptic.light(); } catch {}
-            navigate(`/flashcards/estudar?area=${encodeURIComponent(officialFlashcardArea || area?.nome || effectiveAreaName)}&temas=${encodeURIComponent(m.titulo)}`, {
+            navigate(`/flashcards/estudar?area=${encodeURIComponent(officialFlashcardArea || area?.nome || effectiveAreaName)}&temas=${encodeURIComponent(m.titulo)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`, {
               state: { from: `/aprender/area/${slug}?tab=flashcards` }
             });
           },

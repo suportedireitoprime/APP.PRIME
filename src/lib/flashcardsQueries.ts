@@ -137,13 +137,14 @@ export const useFlashcardsSessao = (params: {
       }
       // --- END MOCK INTERCEPT ---
 
+      const effectiveLimit = params.limit && params.limit > 0 ? params.limit : 10000;
       const onlineFn = async () => {
         const { data, error } = await supabase.rpc('flashcards_sessao', {
           _areas: params.areas,
           _temas: params.temas,
           _modo: params.modo,
           _deck_id: params.deckId,
-          _limit: params.limit,
+          _limit: effectiveLimit,
         });
         if (error) throw error;
         const list = (data || []) as unknown as FlashcardCard[];
@@ -175,7 +176,7 @@ export const useFlashcardsSessao = (params: {
         if (params.temas && params.temas.length > 0) {
           allCards = allCards.filter(c => params.temas!.includes(c.tema || ''));
         }
-        return allCards.sort(() => 0.5 - Math.random()).slice(0, params.limit);
+        return allCards.sort(() => 0.5 - Math.random()).slice(0, effectiveLimit);
       };
 
       return withBundleFallback(onlineFn(), offlineFn);

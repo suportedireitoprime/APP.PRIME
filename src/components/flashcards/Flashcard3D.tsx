@@ -1,10 +1,9 @@
-import { memo, useRef } from 'react';
+import { memo, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Scale, RotateCcw, CheckCircle2, Lightbulb, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FlashcardCard } from '@/lib/flashcardsQueries';
-import laurel from '@/assets/landing-tribunal/laurel-leaf.webp';
-import scales from '@/assets/landing-tribunal/scales.webp';
+import { getAreaThemePalette } from '@/lib/areasDireitoIcons';
 
 type Flashcard3DProps = {
   atual: FlashcardCard;
@@ -14,6 +13,7 @@ type Flashcard3DProps = {
   onResponder: (status: 'compreendido' | 'revisar', shakeCallback?: () => void) => void;
   exitDirection: 'left' | 'down';
   accent?: string;
+  areaNome?: string | null;
 };
 
 // Utilities for visual styling
@@ -78,14 +78,13 @@ const Flashcard3D = memo(function Flashcard3D({
   onVirar,
   onResponder,
   exitDirection,
-  accent = '#10b981'
+  accent = '#10b981',
+  areaNome,
 }: Flashcard3DProps) {
   const cardContainerRef = useRef<HTMLDivElement>(null);
 
-  const temaKey = atual.tema ?? atual.area ?? atual.pergunta.slice(0, 32);
-  const h = hashString(temaKey);
-  const angle = h % 360;
-  const pattern = h % 4;
+  const effectiveArea = atual.area || areaNome;
+  const palette = useMemo(() => getAreaThemePalette(effectiveArea || accent), [effectiveArea, accent]);
 
   const handleResponder = (status: 'compreendido' | 'revisar') => {
     onResponder(status, () => {
@@ -133,83 +132,37 @@ const Flashcard3D = memo(function Flashcard3D({
                 transitionTimingFunction: 'cubic-bezier(0.34, 1.25, 0.64, 1)',
               }}
             >
-              {/* Frente */}
+              {/* Frente da Carta — Harmonizada com o Tema e Estilo Editorial de Alta Definição */}
               <div
-                className="absolute inset-0 rounded-[32px] border p-6 md:p-8 flex flex-col overflow-hidden text-white [backface-visibility:hidden] [-webkit-backface-visibility:hidden]"
+                className="absolute inset-0 rounded-[32px] border p-6 md:p-8 flex flex-col justify-between overflow-hidden text-white [backface-visibility:hidden] [-webkit-backface-visibility:hidden] shadow-2xl"
                 style={{
-                  borderColor: `${accent}40`,
-                  boxShadow: `0 20px 60px -30px ${accent}80, inset 0 0 0 1px ${accent}25`,
-                  background: `
-                    radial-gradient(120% 80% at ${20 + (h % 60)}% ${10 + (h % 40)}%, ${accent}55 0%, transparent 55%),
-                    radial-gradient(100% 70% at ${80 - (h % 50)}% ${90 - (h % 30)}%, ${accent}30 0%, transparent 60%),
-                    linear-gradient(${angle}deg, oklch(0.22 0.04 280) 0%, oklch(0.14 0.03 280) 100%)
-                  `,
+                  borderColor: `${palette.primary}55`,
+                  boxShadow: `0 24px 60px -24px ${palette.primary}65, inset 0 0 0 1px rgba(255,255,255,0.15)`,
+                  background: palette.cardGradient,
                 }}
               >
-                <svg className="absolute inset-0 h-full w-full opacity-[0.07] pointer-events-none" aria-hidden viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice">
-                  <defs>
-                    <pattern id={`fcp-${h}`} x="0" y="0" width={pattern === 0 ? 40 : pattern === 1 ? 60 : 80} height={pattern === 0 ? 40 : pattern === 1 ? 60 : 80} patternUnits="userSpaceOnUse" patternTransform={`rotate(${angle / 6})`}>
-                      {pattern === 0 && <circle cx="20" cy="20" r="1.5" fill="currentColor" />}
-                      {pattern === 1 && <path d="M0 30 L60 30" stroke="currentColor" strokeWidth="0.6" />}
-                      {pattern === 2 && <path d="M0 0 L80 80 M80 0 L0 80" stroke="currentColor" strokeWidth="0.5" />}
-                      {pattern === 3 && <rect x="20" y="20" width="40" height="40" fill="none" stroke="currentColor" strokeWidth="0.5" />}
-                    </pattern>
-                  </defs>
-                  <rect width="400" height="400" fill={`url(#fcp-${h})`} />
-                </svg>
+                {/* Vinheta gradiente interna para contraste perfeito de leitura */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/65 pointer-events-none z-[1]" />
 
-                <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full opacity-30 blur-3xl pointer-events-none" style={{ background: accent }} aria-hidden />
+                {/* Moldura Interna Chanfrada de Carta Colecionável */}
+                <div className="absolute inset-2 sm:inset-2.5 rounded-[24px] border border-white/20 pointer-events-none z-[2]" />
 
-                {/* Floating Elements from Landing Page */}
-                <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[32px]">
-                  {Array.from({ length: 6 }).map((_, i) => (
-                    <img
-                      key={i}
-                      src={laurel}
-                      alt=""
-                      aria-hidden="true"
-                      loading="lazy"
-                      decoding="async"
-                      width={20}
-                      height={20}
-                      className="absolute -top-10 lp-fall"
-                      style={{
-                        left: `${(i * 18 + 5) % 100}%`,
-                        width: `${14 + (i % 3) * 6}px`,
-                        height: 'auto',
-                        animationDuration: `${12 + (i % 4) * 3}s`,
-                        animationDelay: `${i * 1.5}s`,
-                        opacity: 0.5,
-                        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))',
-                      }}
-                    />
-                  ))}
-                  <img
-                    src={scales}
-                    alt=""
-                    aria-hidden="true"
-                    loading="lazy"
-                    decoding="async"
-                    width={40}
-                    height={40}
-                    className="pointer-events-none absolute right-[8%] top-[25%] w-10 h-auto lp-float"
-                    style={{ animationDirection: 'reverse', opacity: 0.45, filter: `drop-shadow(0 0 12px ${accent}60)` }}
-                  />
-                  <img
-                    src={laurel}
-                    alt=""
-                    aria-hidden="true"
-                    loading="lazy"
-                    decoding="async"
-                    width={32}
-                    height={32}
-                    className="pointer-events-none absolute left-[12%] bottom-[25%] w-8 h-auto lp-float"
-                    style={{ animationDelay: '2s', opacity: 0.35 }}
-                  />
-                </div>
+                {/* Efeito de Brilho e Acabamento Laminado da Carta */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.03] to-white/[0.12] pointer-events-none z-[2]" />
 
+                {/* Marca d'água / Gravura Majestosa da Deusa Têmis Vazada na Carta */}
+                <img
+                  src="/images/gamificacao/deusa_temis_vazada.webp"
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
+                  className="pointer-events-none absolute -right-3 -bottom-3 w-[150px] sm:w-[190px] md:w-[230px] h-auto object-contain opacity-35 select-none filter drop-shadow-[0_4px_14px_rgba(0,0,0,0.7)] z-0"
+                />
+
+                {/* Cabeçalho do Card: Breadcrumb do Tema / Subtema */}
                 <div className="relative z-10 mb-4 flex items-start justify-between gap-2">
-                  <div className="flex flex-wrap items-center gap-x-1 gap-y-0.5 min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 min-w-0 flex-1">
                     {atual.area === 'Termos Jurídicos' && (
                       <span className="mr-1.5 flex items-center gap-1 rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-400 border border-emerald-500/30">
                         <BookOpen className="h-2.5 w-2.5" />
@@ -224,86 +177,63 @@ const Flashcard3D = memo(function Flashcard3D({
                       }
                       return parts.map((part, i, arr) => (
                         <span key={i} className="flex items-center gap-1">
-                          <span className="text-[11px] md:text-xs font-medium leading-snug" style={{ color: `color-mix(in oklab, ${accent} 60%, white)`, textShadow: '0 1px 8px rgba(0,0,0,0.5)' }}>
+                          <span className="text-[11px] md:text-xs font-semibold leading-snug text-white/95 drop-shadow-sm">
                             {part}
                           </span>
                           {i < arr.length - 1 && (
-                            <ChevronRight className="h-2.5 w-2.5 shrink-0 opacity-50" style={{ color: `color-mix(in oklab, ${accent} 50%, white)` }} />
+                            <ChevronRight className="h-2.5 w-2.5 shrink-0 text-white/50" />
                           )}
                         </span>
                       ));
                     })()}
                   </div>
-                  <Scale className="h-4 w-4 shrink-0 mt-0.5" style={{ color: `${accent}`, opacity: 0.6 }} aria-hidden />
+                  <Scale className="h-4 w-4 shrink-0 mt-0.5 text-white/80 drop-shadow-sm" aria-hidden />
                 </div>
                 
-                <div className="relative z-10 flex-1 flex items-center justify-center text-center">
-                  <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.3 }} className="text-xl md:text-2xl leading-snug font-medium" style={{ fontFamily: "'Merriweather','Georgia',serif", textShadow: "0 2px 16px rgba(0,0,0,0.6)" }}>
+                {/* Pergunta */}
+                <div className="relative z-10 flex-1 flex items-center justify-center text-center px-2 py-3">
+                  <motion.p 
+                    initial={{ opacity: 0, y: 6 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    transition={{ delay: 0.1, duration: 0.3 }} 
+                    className="text-xl md:text-2xl leading-snug font-normal text-white drop-shadow-md" 
+                    style={{ 
+                      fontFamily: "'Merriweather','Georgia',serif", 
+                      textShadow: "0 2px 14px rgba(0,0,0,0.85)" 
+                    }}
+                  >
                     {atual.pergunta}
                   </motion.p>
                 </div>
                 
-                <div className="relative z-10 mt-auto shrink-0 flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] font-normal tracking-wide text-white/60 pt-4">
-                  <RotateCcw className="h-3 w-3 text-white/60" /> Toque ou aperte espaço para virar
+                {/* Rodapé da Frente */}
+                <div className="relative z-10 mt-auto shrink-0 flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] font-normal tracking-wide text-white/75 pt-3">
+                  <RotateCcw className="h-3 w-3 text-white/75" /> Toque ou aperte espaço para virar
                 </div>
               </div>
 
-              {/* Verso */}
+              {/* Verso da Carta — Estilo Obsidian com Tint do Tema e Deusa Têmis */}
               <div
-                className="absolute inset-0 rounded-[32px] border bg-card p-5 md:p-7 overflow-y-auto scrollbar-hide flex flex-col [backface-visibility:hidden] [-webkit-backface-visibility:hidden]"
+                className="absolute inset-0 rounded-[32px] border p-5 md:p-7 overflow-y-auto scrollbar-hide flex flex-col [backface-visibility:hidden] [-webkit-backface-visibility:hidden] shadow-2xl"
                 style={{
                   transform: 'rotateY(180deg)',
-                  borderColor: `${accent}55`,
-                  boxShadow: `0 20px 60px -30px ${accent}60`,
+                  borderColor: `${palette.primary}45`,
+                  boxShadow: `0 24px 60px -24px ${palette.primary}50, inset 0 0 0 1px rgba(255,255,255,0.08)`,
+                  background: `linear-gradient(155deg, rgba(26, 25, 30, 0.98) 0%, rgba(13, 13, 16, 0.99) 100%)`,
                 }}
               >
-                {/* Floating Elements (Verso) */}
-                <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[32px]">
-                  {Array.from({ length: 6 }).map((_, i) => (
-                    <img
-                      key={i}
-                      src={laurel}
-                      alt=""
-                      aria-hidden="true"
-                      loading="lazy"
-                      decoding="async"
-                      width={20}
-                      height={20}
-                      className="absolute -top-10 lp-fall"
-                      style={{
-                        left: `${(i * 18 + 5) % 100}%`,
-                        width: `${14 + (i % 3) * 6}px`,
-                        height: 'auto',
-                        animationDuration: `${12 + (i % 4) * 3}s`,
-                        animationDelay: `${i * 1.5}s`,
-                        opacity: 0.15,
-                        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))',
-                      }}
-                    />
-                  ))}
-                  <img
-                    src={scales}
-                    alt=""
-                    aria-hidden="true"
-                    loading="lazy"
-                    decoding="async"
-                    width={40}
-                    height={40}
-                    className="pointer-events-none absolute right-[8%] top-[25%] w-10 h-auto lp-float"
-                    style={{ animationDirection: 'reverse', opacity: 0.1, filter: `drop-shadow(0 0 12px ${accent}60)` }}
-                  />
-                  <img
-                    src={laurel}
-                    alt=""
-                    aria-hidden="true"
-                    loading="lazy"
-                    decoding="async"
-                    width={32}
-                    height={32}
-                    className="pointer-events-none absolute left-[12%] bottom-[25%] w-8 h-auto lp-float"
-                    style={{ animationDelay: '2s', opacity: 0.1 }}
-                  />
-                </div>
+                {/* Moldura Interna Chanfrada */}
+                <div className="absolute inset-2 sm:inset-2.5 rounded-[24px] border border-white/10 pointer-events-none z-[2]" />
+
+                {/* Marca d'água / Gravura da Deusa Têmis no Verso */}
+                <img
+                  src="/images/gamificacao/deusa_temis_vazada.webp"
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
+                  className="pointer-events-none absolute -right-3 -bottom-3 w-[150px] sm:w-[190px] md:w-[230px] h-auto object-contain opacity-20 select-none filter drop-shadow-[0_4px_14px_rgba(0,0,0,0.7)] z-0"
+                />
 
                 <div className="relative z-10 flex-1 flex flex-col">
                   {atual.area === 'Termos Jurídicos' && (
@@ -314,7 +244,7 @@ const Flashcard3D = memo(function Flashcard3D({
                       </span>
                     </div>
                   )}
-                  <p className="text-[10px] uppercase tracking-[0.2em] font-semibold mb-3 text-center" style={{ color: accent }}>
+                  <p className="text-[10px] uppercase tracking-[0.2em] font-semibold mb-3 text-center" style={{ color: palette.primary }}>
                     Resposta Explicada
                   </p>
                   <div className="flex-1 flex flex-col items-center justify-center space-y-4 pb-4">
@@ -362,7 +292,7 @@ const Flashcard3D = memo(function Flashcard3D({
             </Button>
             <Button
               className="h-14 sm:h-16 rounded-2xl text-base font-black gap-2 active:scale-95 transition-all shadow-md hover:opacity-90"
-              style={{ backgroundColor: '#10b981', color: '#ffffff' }}
+              style={{ backgroundColor: palette.primary, color: '#ffffff' }}
               onClick={() => handleResponder('compreendido')}
             >
               <CheckCircle2 className="h-5 w-5 text-white" />

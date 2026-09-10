@@ -22,8 +22,19 @@ export function useFlashcardsEngine() {
   const artigosParam = params.get('artigos');
 
   const escolhendo = !areaParam && !areasParam && !temasParam && !deckId && modo !== 'edital';
-  const rawLimit = parseInt(params.get('limite') || '30', 10);
-  const limitParam = subtemaParam ? Math.max(rawLimit, 1000) : rawLimit;
+  const rawLimitStr = params.get('limite');
+  let limitParam = 10000;
+  if (rawLimitStr === 'todos' || rawLimitStr === 'all') {
+    limitParam = 10000;
+  } else if (rawLimitStr) {
+    const parsed = parseInt(rawLimitStr, 10);
+    limitParam = isNaN(parsed) || parsed <= 0 ? 10000 : parsed;
+  } else if (temasParam || subtemaParam || deckId) {
+    // Ao estudar um tema, deck ou subtema específico, carrega todos os flashcards
+    limitParam = 10000;
+  } else {
+    limitParam = 50;
+  }
   const listaAreas = areasParam ? areasParam.split('|').filter(Boolean) : areaParam ? [areaParam] : null;
   const temasList = temasParam ? temasParam.split('|').filter(Boolean) : null;
   

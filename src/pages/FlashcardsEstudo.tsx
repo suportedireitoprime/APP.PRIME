@@ -174,17 +174,36 @@ const FlashcardsEstudo = () => {
   return (
     <div className={`min-h-dvh overflow-x-hidden bg-background ${escolhendo ? 'pb-[calc(8rem+var(--sai-bottom))]' : 'pb-[calc(2.5rem+var(--sai-bottom))]'}`}>
       {!escolhendo && (
-        <div className="fixed inset-0 z-0 opacity-80 mix-blend-screen pointer-events-none">
-          <ShapeGrid 
-            speed={0.5} 
-            squareSize={40}
-            direction='diagonal'
-            borderColor='rgba(255, 255, 255, 0.05)'
-            hoverFillColor='rgba(255, 255, 255, 0.1)'
-            shape='square'
-            hoverTrailAmount={5}
-          />
-        </div>
+        <>
+          <div className="fixed inset-0 z-0 opacity-80 mix-blend-screen pointer-events-none">
+            <ShapeGrid 
+              speed={0.5} 
+              squareSize={40}
+              direction='diagonal'
+              borderColor='rgba(255, 255, 255, 0.05)'
+              hoverFillColor='rgba(255, 255, 255, 0.1)'
+              shape='square'
+              hoverTrailAmount={5}
+            />
+          </div>
+
+          {/* Imagem Majestosa da Deusa Têmis Vazada de Fundo Central */}
+          <div className="pointer-events-none fixed inset-0 flex items-center justify-center overflow-hidden z-0 select-none">
+            <img
+              src="/images/gamificacao/deusa_temis_vazada.webp"
+              alt=""
+              aria-hidden="true"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              className="w-[320px] sm:w-[440px] md:w-[520px] max-w-[88vw] h-auto object-contain opacity-25 filter drop-shadow-[0_0_55px_rgba(234,179,8,0.25)] pointer-events-none"
+              style={{
+                maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
+              }}
+            />
+          </div>
+        </>
       )}
       <div className="relative z-10">
         {gateFlashcards.gateNode}
@@ -447,6 +466,7 @@ const FlashcardsEstudo = () => {
                   onResponder={responder}
                   exitDirection={exitDirection}
                   accent={cardAccent}
+                  areaNome={areaNome}
                 />
               </div>
             )}
