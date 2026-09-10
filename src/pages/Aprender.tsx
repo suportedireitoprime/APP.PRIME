@@ -20,6 +20,7 @@ import AprenderLembretesSheet from '@/components/aprender/AprenderLembretesSheet
 import MateriaRow from '@/components/aprender/MateriaRow';
 import MateriaCard from '@/components/aprender/MateriaCard';
 import MateriaFlashcardsDeckSection from '@/components/aprender/MateriaFlashcardsDeckSection';
+import MateriaAulasDeckSection from '@/components/aprender/MateriaAulasDeckSection';
 import AulaCarouselCard from '@/components/aprender/AulaCarouselCard';
 import { useAprenderAreaModulesMap } from '@/hooks/useAprenderAreaModulesMap';
 import { shortenAreaName } from '@/lib/areaNameShortener';
@@ -116,6 +117,7 @@ const Aprender = () => {
   const [selectedAreaSlug, setSelectedAreaSlug] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'aulas' | 'flashcards' | 'questoes'>('aulas');
   const [flashcardsViewMode, setFlashcardsViewMode] = useState<'decks' | 'lista'>('decks');
+  const [aulasViewMode, setAulasViewMode] = useState<'decks' | 'lista'>('decks');
   const { data: flashDash } = useFlashcardsDashboard();
   const { data: flashAreas } = useFlashcardsResumoAreas();
 
@@ -317,8 +319,10 @@ const Aprender = () => {
   const [areaTriggerCounts, setAreaTriggerCounts] = useState<Record<string, number>>({});
   const currentCascadeIndexRef = useRef(0);
 
+  // Efeito de cascata automática: a cada 2.4s faz avançar a próxima matéria em leque (de cima para baixo)
   useEffect(() => {
-    if (!isFlashcards || flashcardsViewMode !== 'decks' || !areasOrdenadas.length) return;
+    const isDecksActive = (isFlashcards && flashcardsViewMode === 'decks') || (isAulas && aulasViewMode === 'decks');
+    if (!isDecksActive || !areasOrdenadas.length) return;
 
     currentCascadeIndexRef.current = 0;
 
@@ -340,7 +344,7 @@ const Aprender = () => {
     }, 2400);
 
     return () => clearInterval(interval);
-  }, [isFlashcards, flashcardsViewMode, areasOrdenadas]);
+  }, [isFlashcards, flashcardsViewMode, isAulas, aulasViewMode, areasOrdenadas]);
 
   // Tema visual dinâmico do painel Hero e Pills por aba selecionada
   const tabTheme = useMemo(() => {
@@ -680,6 +684,44 @@ const Aprender = () => {
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Matérias ({areasOrdenadas.length})</p>
                 <div className="flex items-center gap-1.5 sm:gap-2">
+                  {isAulas && (
+                    <div className="flex items-center gap-1 rounded-full bg-card border border-border p-0.5 shadow-sm">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          try { haptic.selection(); } catch {}
+                          setAulasViewMode('decks');
+                        }}
+                        className={cn(
+                          'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors flex items-center gap-1 cursor-pointer',
+                          aulasViewMode === 'decks'
+                            ? 'bg-rose-500 text-white shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                        )}
+                        title="Visualização em Decks 3D"
+                      >
+                        <Layers className="w-3 h-3" />
+                        <span>Decks</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          try { haptic.selection(); } catch {}
+                          setAulasViewMode('lista');
+                        }}
+                        className={cn(
+                          'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors flex items-center gap-1 cursor-pointer',
+                          aulasViewMode === 'lista'
+                            ? 'bg-rose-500 text-white shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                        )}
+                        title="Visualização em Lista"
+                      >
+                        <span>Lista</span>
+                      </button>
+                    </div>
+                  )}
+
                   {isFlashcards && (
                     <div className="flex items-center gap-1 rounded-full bg-card border border-border p-0.5 shadow-sm">
                       <button
@@ -776,6 +818,25 @@ const Aprender = () => {
                         overridePct={overridePct}
                         onOpenArea={() => navigate(`/aprender/area/${area.slug}?tab=flashcards`)}
                         onOpenModulo={(mod) => navigate(`/aprender/area/${area.slug}?tab=flashcards&moduloId=${mod.id}`)}
+                        triggerAdvance={areaTriggerCounts[area.id] || 0}
+                      />
+                    );
+                  })}
+                </div>
+              ) : isAulas && aulasViewMode === 'decks' ? (
+                <div className="space-y-4 sm:space-y-5">
+                  {areasOrdenadas.map((area) => {
+                    const areaModulos = modulesMap.get(area.id) || [];
+                    return (
+                      <MateriaAulasDeckSection
+                        key={area.id}
+                        area={area}
+                        modulos={areaModulos}
+                        overrideTotal={area.totalAulas}
+                        overrideConcluidas={area.concluidas}
+                        overridePct={area.pct ?? 0}
+                        onOpenArea={() => navigate(`/aprender/area/${area.slug}`)}
+                        onOpenModulo={(mod) => navigate(`/aprender/area/${area.slug}?moduloId=${mod.id}`)}
                         triggerAdvance={areaTriggerCounts[area.id] || 0}
                       />
                     );
