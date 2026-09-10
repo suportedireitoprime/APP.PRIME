@@ -465,13 +465,13 @@ const AprenderArea = () => {
             {isFlash && loadingFlashcards && itemsToRender.length === 0 ? (
               <div className="space-y-4 py-6">
                 {[...Array(5)].map((_, i) => (
-                  <div key={i} className="h-28 rounded-2xl bg-muted/40 animate-pulse border border-white/5" />
+                  <div key={i} className="h-36 rounded-2xl bg-muted/40 animate-pulse border border-white/5" />
                 ))}
               </div>
             ) : (
-              /* Trilha em Zigue-Zague com Linha do Tempo Central e Deusa Têmis Vazada de Fundo */
-              <div className="relative py-8 w-full min-w-0 max-w-full overflow-hidden">
-                {/* ── Imagem Majestosa da Deusa Têmis Vazada e Impactante de Fundo ── */}
+              /* Trilha em Zigue-Zague Fluida com Caminho Serpenteante e Cards em Tamanho de Capa */
+              <div className="relative py-6 sm:py-10 w-full min-w-0 max-w-full overflow-hidden">
+                {/* ── Imagem Majestosa da Deusa Têmis Vazada e Impactante no Fundo Central da Trilha ── */}
                 <div className="pointer-events-none fixed inset-0 flex items-center justify-center overflow-hidden z-0 select-none">
                   <img
                     src="/images/gamificacao/deusa_temis_vazada.webp"
@@ -480,7 +480,7 @@ const AprenderArea = () => {
                     loading="eager"
                     fetchPriority="high"
                     decoding="async"
-                    className="w-[280px] sm:w-[380px] md:w-[440px] max-w-[85vw] h-auto object-contain opacity-20 filter drop-shadow-[0_0_45px_rgba(234,179,8,0.25)] pointer-events-none"
+                    className="w-[320px] sm:w-[440px] md:w-[500px] max-w-[88vw] h-auto object-contain opacity-25 filter drop-shadow-[0_0_55px_rgba(234,179,8,0.28)] pointer-events-none"
                     style={{
                       maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
                       WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
@@ -488,110 +488,226 @@ const AprenderArea = () => {
                   />
                 </div>
 
-                {/* Linha vertical central luminosa */}
-                <div 
-                  className="absolute left-1/2 top-6 bottom-6 w-[2px] -translate-x-1/2 rounded-full z-[1] pointer-events-none"
-                  style={{ background: palette.lineGradient }}
-                />
-
-                <div className="space-y-6 sm:space-y-8 w-full min-w-0 relative z-[2]">
+                <div className="w-full min-w-0 relative z-[2] flex flex-col">
                   {itemsToRender.map((item, i) => {
                     const isLeft = i % 2 === 0;
 
                     return (
-                      <div
-                        key={item.key}
-                        className={`relative z-10 flex w-full items-center ${isLeft ? 'justify-start' : 'justify-end'}`}
-                      >
-                        {/* Linha conectando o nó central ao card */}
-                        <div 
-                          className={`absolute top-1/2 w-[calc(50%-1.25rem)] h-[1.5px] border-b-2 border-dashed -translate-y-1/2 z-0 pointer-events-none ${
-                            isLeft ? 'left-1/2' : 'right-1/2'
-                          }`} 
-                          style={{ borderColor: palette.dashedBorder }}
-                        />
-
-                        {/* Nó Central (Milestone da Linha do Tempo) */}
-                        <div 
-                          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full transition-transform w-8 h-8 sm:w-9 sm:h-9 border-4 border-[#0D0D0D] text-white scale-105 shadow-md"
-                          style={{
-                            backgroundColor: palette.primary,
-                            boxShadow: palette.nodeBoxShadow,
-                          }}
-                        >
-                          <span className="text-[11px] sm:text-xs font-semibold font-sans">
-                            {item.ordemStr}
-                          </span>
-                          <span 
-                            className="absolute inset-0 rounded-full animate-ping -z-10 pointer-events-none"
-                            style={{ backgroundColor: palette.pingBg }}
-                          />
-                        </div>
-
-                        {/* Card no formato de Deck / Capa de Livro em Zigue-Zague */}
+                      <div key={item.key} className="w-full flex flex-col">
+                        {/* Linha do Card em Zigue-Zague (Alternando Esquerda e Direita) */}
                         <div
-                          onClick={item.onClick}
-                          className="relative w-[46%] sm:w-[45%] max-w-[225px] min-h-[175px] sm:min-h-[195px] h-auto p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden select-none box-border transition-all duration-300 z-10 border border-white/25 cursor-pointer active:scale-[0.97] group shadow-xl"
-                          style={{
-                            background: palette.cardGradient,
-                            boxShadow: palette.shadow,
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.boxShadow = palette.hoverShadow;
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.boxShadow = palette.shadow;
-                          }}
+                          className={`relative z-10 flex w-full items-center ${
+                            isLeft ? 'justify-start pl-3 sm:pl-8 md:pl-12' : 'justify-end pr-3 sm:pr-8 md:pr-12'
+                          }`}
                         >
-                          {/* Marca d'água de fundo: Deusa Têmis vazada e impactante */}
-                          <img
-                            src="/images/gamificacao/deusa_temis_vazada.webp"
-                            alt=""
-                            aria-hidden="true"
-                            loading="lazy"
-                            decoding="async"
-                            className="pointer-events-none absolute -right-3 -bottom-2 w-[115px] sm:w-[130px] h-[115px] sm:h-[130px] object-contain opacity-25 group-hover:opacity-40 transition-opacity duration-300 z-0 select-none"
-                          />
-
-                          {/* Cabeçalho da Capa: Tag Deck / Módulo + Contagem */}
-                          <div className="flex items-center justify-between gap-1 z-[1] w-full">
-                            <span className="flex items-center gap-1 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-md bg-black/50 text-white border border-white/15">
-                              {isFlash ? <Layers className="w-2.5 h-2.5" style={{ color: palette.primary }} /> : null}
-                              <span>{item.badgeLabel}</span>
-                            </span>
-                            {isFlash && (
-                              <span className="text-[9px] font-semibold text-white/90 px-1.5 py-0.5 rounded-md bg-white/10 border border-white/10">
-                                {item.displayTotal} {item.displayLabel}
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Centro da Capa: Título do Tema Sem Negrito e Sem Abreviações */}
-                          <div className="my-auto py-2 z-[1] w-full">
-                            <h3 className="font-sans font-normal text-[12.5px] sm:text-[14px] leading-snug break-words text-white drop-shadow-sm group-hover:text-emerald-300 transition-colors">
-                              {item.titulo}
-                            </h3>
-                          </div>
-
-                          {/* Rodapé da Capa: Progresso */}
-                          <div className="z-[1] pt-1.5 border-t border-white/15 w-full">
-                            <div>
-                              <div className="flex items-center justify-between text-[10px] font-normal text-white/90 mb-1">
-                                <span>{item.displayConcluidas > 0 ? `${item.displayConcluidas}/${item.displayTotal} concluídos` : `${item.displayTotal} ${item.displayLabel}`}</span>
-                                <span className="font-normal font-sans">{item.displayPct}%</span>
+                          {/* ── CONJUNTO DE 3 CARTAS EM FORMATO DE DECK ABERTO EM LEQUE ── */}
+                          <div
+                            onClick={item.onClick}
+                            className="relative w-[170px] sm:w-[200px] md:w-[225px] min-h-[255px] sm:min-h-[295px] md:min-h-[325px] cursor-pointer group select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-2"
+                          >
+                            {/* ── CARTA 1 (Traseira Esquerda - Inclinada no Leque) ── */}
+                            <div
+                              className="absolute inset-0 rounded-2xl border border-white/20 transition-all duration-500 origin-bottom-left -rotate-[7deg] sm:-rotate-[8deg] group-hover:-rotate-[13deg] sm:group-hover:-rotate-[14deg] group-hover:-translate-x-3 z-0 shadow-lg overflow-hidden"
+                              style={{
+                                background: `linear-gradient(135deg, rgba(25, 25, 30, 0.96) 0%, rgba(12, 12, 16, 0.98) 100%)`,
+                                boxShadow: `0 12px 28px -6px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.12)`,
+                              }}
+                            >
+                              {/* Verso decorativo nobre de baralho/deck */}
+                              <div className="absolute inset-1.5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden bg-black/50">
+                                <div
+                                  className="w-12 h-12 rounded-full border border-white/15 flex items-center justify-center opacity-40"
+                                  style={{ borderColor: palette.primary }}
+                                >
+                                  <Layers className="w-5 h-5 text-white/60" />
+                                </div>
+                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:8px_8px] pointer-events-none" />
                               </div>
-                              <div className="w-full bg-black/40 h-1.5 rounded-full overflow-hidden border border-white/20">
-                                <div 
-                                  className="h-full rounded-full transition-all duration-500 shadow-sm"
-                                  style={{ 
-                                    width: `${Math.max(item.displayPct, item.displayTotal > 0 ? 8 : 0)}%`,
-                                    backgroundColor: palette.primary,
-                                  }}
+                            </div>
+
+                            {/* ── CARTA 2 (Traseira Direita - Inclinada no Leque) ── */}
+                            <div
+                              className="absolute inset-0 rounded-2xl border border-white/20 transition-all duration-500 origin-bottom-right rotate-[7deg] sm:rotate-[8deg] group-hover:rotate-[13deg] sm:group-hover:rotate-[14deg] group-hover:translate-x-3 z-0 shadow-lg overflow-hidden"
+                              style={{
+                                background: `linear-gradient(225deg, rgba(25, 25, 30, 0.96) 0%, rgba(12, 12, 16, 0.98) 100%)`,
+                                boxShadow: `0 12px 28px -6px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.12)`,
+                              }}
+                            >
+                              {/* Verso decorativo nobre de baralho/deck */}
+                              <div className="absolute inset-1.5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden bg-black/50">
+                                <div
+                                  className="w-12 h-12 rounded-full border border-white/15 flex items-center justify-center opacity-40"
+                                  style={{ borderColor: palette.primary }}
+                                >
+                                  <Layers className="w-5 h-5 text-white/60" />
+                                </div>
+                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:8px_8px] pointer-events-none" />
+                              </div>
+                            </div>
+
+                            {/* ── CARTA 3 (Principal Frontal - Centro do Deck Aberto) ── */}
+                            <div
+                              className="relative w-full h-full min-h-[255px] sm:min-h-[295px] md:min-h-[325px] p-3.5 sm:p-4 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 hover:border-amber-400/60 shadow-[0_16px_36px_rgba(0,0,0,0.75)] transition-all duration-300"
+                              style={{
+                                background: palette.cardGradient,
+                                boxShadow: palette.shadow,
+                              }}
+                            >
+                              {/* Lombada de Livro Clássica na Borda Esquerda */}
+                              <div className="absolute left-0 top-0 bottom-0 w-3 sm:w-3.5 bg-gradient-to-r from-black/65 via-black/30 to-transparent border-r border-white/10 rounded-l-2xl z-20 pointer-events-none flex flex-col justify-between py-4">
+                                <div className="w-full h-0.5 bg-white/25" />
+                                <div className="w-full h-0.5 bg-white/20" />
+                                <div className="w-full h-0.5 bg-white/25" />
+                              </div>
+
+                              {/* Efeito de Luz e Reflexo Angular de Capa Dura Editorial */}
+                              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.04] to-white/[0.14] pointer-events-none z-10" />
+
+                              {/* Marca d'água / Gravura da Deusa Têmis Vazada e Relevo na Capa */}
+                              <img
+                                src="/images/gamificacao/deusa_temis_vazada.webp"
+                                alt=""
+                                aria-hidden="true"
+                                loading="lazy"
+                                decoding="async"
+                                className="pointer-events-none absolute -right-2 -bottom-2 w-[135px] sm:w-[165px] h-[155px] sm:h-[190px] object-contain opacity-35 group-hover:opacity-60 group-hover:scale-105 transition-all duration-300 z-0 select-none filter drop-shadow-[0_6px_14px_rgba(0,0,0,0.7)]"
+                              />
+
+                              {/* Medalhão de Milestone / Nó da Trilha Acoplado ao Card */}
+                              <div
+                                className={`absolute -top-2.5 sm:-top-3 ${
+                                  isLeft ? '-right-2.5 sm:-right-3' : '-left-2.5 sm:-left-3'
+                                } z-30 flex items-center justify-center rounded-full w-8 h-8 sm:w-9 sm:h-9 border-2 border-white/60 text-white font-bold text-xs shadow-xl transition-transform group-hover:scale-110`}
+                                style={{
+                                  backgroundColor: palette.primary,
+                                  boxShadow: palette.nodeBoxShadow,
+                                }}
+                              >
+                                <span className="font-sans font-bold text-[11px] sm:text-xs">
+                                  {item.ordemStr}
+                                </span>
+                                <span
+                                  className="absolute inset-0 rounded-full animate-ping -z-10 pointer-events-none opacity-40"
+                                  style={{ backgroundColor: palette.pingBg }}
                                 />
+                              </div>
+
+                              {/* Cabeçalho da Capa: Tag Deck / Módulo + Selo de Flashcards */}
+                              <div className="flex items-center justify-between gap-1 z-[1] w-full pl-2">
+                                <span className="flex items-center gap-1 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-md bg-black/55 text-white border border-white/20">
+                                  {isFlash ? <Layers className="w-2.5 h-2.5" style={{ color: palette.primary }} /> : null}
+                                  <span>{item.badgeLabel}</span>
+                                </span>
+                                {isFlash && (
+                                  <span className="text-[9px] font-semibold text-white/95 px-1.5 py-0.5 rounded-md bg-white/15 border border-white/15 shrink-0">
+                                    {item.displayTotal}
+                                  </span>
+                                )}
+                              </div>
+
+                              {/* Centro da Capa: Título do Livro / Tema com Tipografia Nobre */}
+                              <div className="my-auto py-3 z-[1] w-full pl-2.5 pr-1">
+                                <h3 className="font-sans font-medium text-[13px] sm:text-[15px] leading-snug break-words text-white drop-shadow-md group-hover:text-amber-200 transition-colors line-clamp-4">
+                                  {item.titulo}
+                                </h3>
+                              </div>
+
+                              {/* Rodapé da Capa: Progresso do Deck */}
+                              <div className="z-[1] pt-2 border-t border-white/20 w-full pl-2">
+                                <div>
+                                  <div className="flex items-center justify-between text-[10px] font-normal text-white/95 mb-1.5">
+                                    <span className="truncate">
+                                      {item.displayConcluidas > 0
+                                        ? `${item.displayConcluidas}/${item.displayTotal} concluídos`
+                                        : `${item.displayTotal} ${item.displayLabel}`}
+                                    </span>
+                                    <span className="font-semibold font-sans ml-1">{item.displayPct}%</span>
+                                  </div>
+                                  <div className="w-full bg-black/50 h-1.5 rounded-full overflow-hidden border border-white/25">
+                                    <div
+                                      className="h-full rounded-full transition-all duration-500 shadow-sm"
+                                      style={{
+                                        width: `${Math.max(item.displayPct, item.displayTotal > 0 ? 8 : 0)}%`,
+                                        backgroundColor: palette.primary,
+                                      }}
+                                    />
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
+
+                        {/* Conector Serpenteante de Trilha em Zigue-Zague Fluido e Sem Deformação */}
+                        {i < itemsToRender.length - 1 && (
+                          <div className="relative w-full h-20 sm:h-24 -my-2 sm:-my-3 pointer-events-none z-[5] overflow-visible">
+                            <svg
+                              className="w-full h-full overflow-visible"
+                              viewBox="0 0 100 100"
+                              preserveAspectRatio="none"
+                            >
+                              <defs>
+                                <filter id={`trail-glow-${i}`} x="-20%" y="-20%" width="140%" height="140%">
+                                  <feGaussianBlur stdDeviation="3" result="blur" />
+                                  <feMerge>
+                                    <feMergeNode in="blur" />
+                                    <feMergeNode in="SourceGraphic" />
+                                  </feMerge>
+                                </filter>
+                              </defs>
+
+                              {/* Leito da Trilha (traço suave e discreto) */}
+                              <path
+                                d={isLeft ? "M 28 0 C 28 65, 72 35, 72 100" : "M 72 0 C 72 65, 28 35, 28 100"}
+                                fill="none"
+                                stroke="rgba(255, 255, 255, 0.08)"
+                                strokeWidth="4"
+                                strokeLinecap="round"
+                                vectorEffect="non-scaling-stroke"
+                              />
+
+                              {/* Linha da Trilha em Zigue-Zague Pontilhada Luminosa */}
+                              <path
+                                d={isLeft ? "M 28 0 C 28 65, 72 35, 72 100" : "M 72 0 C 72 65, 28 35, 28 100"}
+                                fill="none"
+                                stroke={palette.primary}
+                                strokeWidth="2.5"
+                                strokeDasharray="5 7"
+                                strokeLinecap="round"
+                                vectorEffect="non-scaling-stroke"
+                                filter={`url(#trail-glow-${i})`}
+                              />
+                            </svg>
+
+                            {/* Passos / Checkpoints Esféricos Perfeitos (Não deformam) */}
+                            <div
+                              className="absolute w-2 h-2 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none shadow-md animate-pulse"
+                              style={{
+                                left: isLeft ? '36%' : '64%',
+                                top: '28%',
+                                backgroundColor: palette.primary,
+                                boxShadow: `0 0 8px ${palette.primary}`,
+                              }}
+                            />
+                            <div
+                              className="absolute w-3 h-3 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none border border-white/70 bg-white shadow-lg"
+                              style={{
+                                left: '50%',
+                                top: '50%',
+                                boxShadow: `0 0 12px ${palette.primary}`,
+                              }}
+                            />
+                            <div
+                              className="absolute w-2 h-2 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none shadow-md animate-pulse"
+                              style={{
+                                left: isLeft ? '64%' : '36%',
+                                top: '72%',
+                                backgroundColor: palette.primary,
+                                boxShadow: `0 0 8px ${palette.primary}`,
+                              }}
+                            />
+                          </div>
+                        )}
                       </div>
                     );
                   })}
