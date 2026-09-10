@@ -1819,92 +1819,141 @@ html[data-route-transitioning="true"] * {
 @layer utilities { .bg-brand-gradient { background-image: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--brand-burgundy-mid)) 60%, hsl(var(--brand-burgundy-deep)) 100%); } }
 
 /* ==========================================================================
-   ANIMAÇÃO DE CARTAS SENDO EMBARALHADAS (Deck Shuffle Animation 60-120fps GPU)
-   Simula o movimento orgânico de um baralho de flashcards sendo embaralhado
+   ANIMAÇÃO CINEMATOGRÁFICA 3D RIFFLE SHUFFLE (Folheamento Realista a 120fps)
+   Simula o movimento tridimensional de um baralho sendo folheado e embaralhado
    ========================================================================== */
-@keyframes deck-shuffle-left {
+@keyframes deck-riffle-left {
   0%, 100% {
-    transform: translate(-14px, 3px) rotate(-5deg);
+    transform: translate3d(-14px, 3px, -4px) rotateZ(-5deg) rotateY(2deg);
   }
-  20% {
-    transform: translate(-38px, -8px) rotate(-13deg);
+  16% {
+    /* Puxada para fora inicial */
+    transform: translate3d(-28px, -4px, 12px) rotateZ(-11deg) rotateY(6deg);
   }
-  35% {
-    transform: translate(-20px, 5px) rotate(-2deg);
+  28% {
+    /* Abertura máxima do leque para o corte */
+    transform: translate3d(-46px, -12px, 22px) rotateZ(-17deg) rotateY(12deg);
   }
-  50% {
-    transform: translate(-34px, -5px) rotate(-11deg);
+  42% {
+    /* Folheamento rápido (Riffle flick 1) */
+    transform: translate3d(-34px, -2px, 15px) rotateZ(-12deg) rotateY(7deg);
+  }
+  54% {
+    /* Folheamento rápido (Riffle flick 2) */
+    transform: translate3d(-24px, 6px, 8px) rotateZ(-7deg) rotateY(3deg);
   }
   68% {
-    transform: translate(-8px, 1px) rotate(-3deg);
+    /* Encaixe e batida de volta no maço com leve impacto */
+    transform: translate3d(-6px, 1px, 2px) rotateZ(-2deg) rotateY(1deg);
   }
-  82% {
-    transform: translate(-15px, 3px) rotate(-5.5deg);
+  80% {
+    /* Alinhamento de repouso no leque */
+    transform: translate3d(-14px, 3px, -4px) rotateZ(-5deg) rotateY(2deg);
   }
 }
 
-@keyframes deck-shuffle-right {
+@keyframes deck-riffle-right {
   0%, 100% {
-    transform: translate(14px, 3px) rotate(5deg);
+    transform: translate3d(14px, 3px, -4px) rotateZ(5deg) rotateY(-2deg);
   }
-  20% {
-    transform: translate(38px, -8px) rotate(13deg);
+  16% {
+    /* Puxada para fora inicial */
+    transform: translate3d(28px, -4px, 12px) rotateZ(11deg) rotateY(-6deg);
   }
-  35% {
-    transform: translate(20px, 5px) rotate(2deg);
+  28% {
+    /* Abertura máxima do leque para o corte */
+    transform: translate3d(46px, -12px, 22px) rotateZ(17deg) rotateY(-12deg);
   }
-  50% {
-    transform: translate(34px, -5px) rotate(11deg);
+  42% {
+    /* Folheamento rápido (Riffle flick 1) */
+    transform: translate3d(34px, -2px, 15px) rotateZ(12deg) rotateY(-7deg);
+  }
+  54% {
+    /* Folheamento rápido (Riffle flick 2) */
+    transform: translate3d(24px, 6px, 8px) rotateZ(7deg) rotateY(-3deg);
   }
   68% {
-    transform: translate(8px, 1px) rotate(3deg);
+    /* Encaixe e batida de volta no maço com leve impacto */
+    transform: translate3d(6px, 1px, 2px) rotateZ(2deg) rotateY(-1deg);
   }
-  82% {
-    transform: translate(15px, 3px) rotate(5.5deg);
+  80% {
+    /* Alinhamento de repouso no leque */
+    transform: translate3d(14px, 3px, -4px) rotateZ(5deg) rotateY(-2deg);
   }
 }
 
-@keyframes deck-shuffle-front {
+@keyframes deck-riffle-front {
   0%, 100% {
-    transform: translate(0, 0) scale(1);
+    transform: translate3d(0, 0, 15px) scale(1);
   }
-  20% {
-    transform: translate(0, -6px) scale(1.025);
+  16% {
+    transform: translate3d(0, -4px, 20px) scale(1.015);
   }
-  35% {
-    transform: translate(1px, 2px) scale(0.995);
+  28% {
+    /* Corte e elevação da carta de topo */
+    transform: translate3d(0, -12px, 35px) scale(1.04);
   }
-  50% {
-    transform: translate(-1px, -4px) scale(1.018);
+  42% {
+    transform: translate3d(1px, -5px, 24px) scale(1.02);
+  }
+  54% {
+    transform: translate3d(-1px, -2px, 18px) scale(1.01);
   }
   68% {
-    transform: translate(0, 1px) scale(1);
+    /* Assentamento suave com snap elástico no maço */
+    transform: translate3d(0, 3px, 10px) scale(0.995);
+  }
+  80% {
+    transform: translate3d(0, 0, 15px) scale(1);
+  }
+}
+
+/* Brilho holográfico que varre a carta frontal após o encaixe */
+@keyframes deck-holo-glint {
+  0%, 65% {
+    opacity: 0;
+    transform: translateX(-150%) skewX(-25deg);
+  }
+  75% {
+    opacity: 0.45;
+  }
+  88%, 100% {
+    opacity: 0;
+    transform: translateX(200%) skewX(-25deg);
   }
 }
 
 .anim-deck-shuffle-left {
-  animation: deck-shuffle-left 3.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: deck-riffle-left 3.8s cubic-bezier(0.35, 0, 0.25, 1) infinite;
   will-change: transform;
-  transform: translateZ(0);
+  transform-style: preserve-3d;
 }
 
 .anim-deck-shuffle-right {
-  animation: deck-shuffle-right 3.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: deck-riffle-right 3.8s cubic-bezier(0.35, 0, 0.25, 1) infinite;
   will-change: transform;
-  transform: translateZ(0);
+  transform-style: preserve-3d;
 }
 
 .anim-deck-shuffle-front {
-  animation: deck-shuffle-front 3.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: deck-riffle-front 3.8s cubic-bezier(0.35, 0, 0.25, 1) infinite;
   will-change: transform;
-  transform: translateZ(0);
+  transform-style: preserve-3d;
+}
+
+.anim-deck-glint {
+  animation: deck-holo-glint 3.8s ease-in-out infinite;
+  will-change: transform, opacity;
+  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .anim-deck-shuffle-left,
   .anim-deck-shuffle-right,
-  .anim-deck-shuffle-front {
+  .anim-deck-shuffle-front,
+  .anim-deck-glint {
     animation: none !important;
   }
 }
+
 

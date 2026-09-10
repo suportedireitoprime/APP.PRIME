@@ -503,7 +503,7 @@ const AprenderArea = () => {
                           {/* ── CONJUNTO DE 3 CARTAS EM FORMATO DE DECK ABERTO EM LEQUE COM ALTURA NIVELADA ── */}
                           <div
                             onClick={item.onClick}
-                            className="relative w-[165px] sm:w-[190px] md:w-[215px] h-[245px] sm:h-[275px] md:h-[295px] cursor-pointer group select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-2"
+                            className="relative w-[165px] sm:w-[190px] md:w-[215px] h-[245px] sm:h-[275px] md:h-[295px] cursor-pointer group select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-2 [perspective:1200px] [transform-style:preserve-3d]"
                           >
                             {/* Medalhão de Milestone / Nó da Trilha Centralizado no Topo (Sem corte lateral nem sobreposição) */}
                             <div
@@ -573,6 +573,12 @@ const AprenderArea = () => {
                                 animationDelay: `${(i % 4) * 0.4}s`,
                               }}
                             >
+                              {/* Reflexo Holográfico de Luz que corta a carta ao concluir o shuffle */}
+                              <div
+                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent anim-deck-glint z-20 pointer-events-none"
+                                style={{ animationDelay: `${(i % 4) * 0.4}s` }}
+                              />
+
                               {/* Moldura Interna Chanfrada de Carta de Baralho */}
                               <div className="absolute inset-1 rounded-[14px] border border-white/15 pointer-events-none z-10" />
 
