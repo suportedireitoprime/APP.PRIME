@@ -7,6 +7,7 @@ import { normalizarMarkdown } from '@/lib/markdown';
 import { haptic } from '@/lib/nativeHaptics';
 import { LinhaDoTempoAnimada, isTimelineBlock } from './LinhaDoTempoAnimada';
 import { ComparativoBlocos, isComparativeBlock } from './ComparativoBlocos';
+import { FluxogramaAnimado, isFlowchartBlock } from './FluxogramaAnimado';
 
 function extractTextFromChildren(node: any): string {
   if (!node) return '';
@@ -256,6 +257,9 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
                 }
                 if (isComparativeBlock(rawText)) {
                   return <ComparativoBlocos raw={rawText} />;
+                }
+                if (isFlowchartBlock(rawText)) {
+                  return <FluxogramaAnimado raw={rawText} />;
                 }
                 return (
                   <div className="my-5 overflow-x-auto rounded-2xl border border-white/10 bg-[#121214] p-4 sm:p-5 shadow-inner">
