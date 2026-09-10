@@ -31,22 +31,32 @@ export type AprenderAreaData = {
   progresso: ProgressoMap;
 };
 
-const memCache = new Map<string, AprenderAreaData>();
+type CacheEntry = { data: AprenderAreaData; timestamp: number };
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutos de TTL
+
+const memCache = new Map<string, CacheEntry>();
 const inflight = new Map<string, Promise<AprenderAreaData>>();
 
 const keyFor = (slug: string, uid: string | null) => `area:${slug}:${uid ?? 'anon'}`;
 
-export function getCachedAprenderArea(slug: string, uid: string | null) {
-  return memCache.get(keyFor(slug, uid));
+export function getCachedAprenderArea(slug: string, uid: string | null): AprenderAreaData | undefined {
+  const entry = memCache.get(keyFor(slug, uid));
+  if (!entry) return undefined;
+  if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
+    memCache.delete(keyFor(slug, uid));
+    return undefined;
+  }
+  return entry.data;
 }
 
 /** Hidrata memória a partir do IndexedDB (chamar cedo na app). */
 export async function hydrateAprenderAreaCache(slug: string, uid: string | null) {
   const key = keyFor(slug, uid);
-  if (memCache.has(key)) return memCache.get(key)!;
+  const cached = getCachedAprenderArea(slug, uid);
+  if (cached) return cached;
   const persisted = await getAprenderCache<AprenderAreaData>(key);
   if (persisted) {
-    memCache.set(key, persisted);
+    memCache.set(key, { data: persisted, timestamp: Date.now() });
     return persisted;
   }
   return null;
@@ -100,10 +110,14 @@ async function fetchAprenderAreaFromNetwork(
         totals[b.aula_id] = (totals[b.aula_id] || 0) + 1;
       });
       (progRes.data ?? []).forEach((p: any) => {
+        const isConcluida = !!p.concluida_em;
         const total = totals[p.aula_id] || 1;
+        const pctCalculado = isConcluida
+          ? 100
+          : Math.min(100, Math.max(0, Math.round(((p.blocos_concluidos || 0) / total) * 100)));
         progresso[p.aula_id] = {
-          concluida: !!p.concluida_em,
-          pct: Math.min(100, Math.round(((p.blocos_concluidos || 0) / total) * 100)),
+          concluida: isConcluida,
+          pct: pctCalculado,
         };
       });
     }
@@ -142,16 +156,16 @@ export async function loadAprenderArea(slug: string, uid: string | null): Promis
   const key = keyFor(slug, uid);
 
   // 1) memória
-  const mem = memCache.get(key);
-  if (mem) {
+  const cached = getCachedAprenderArea(slug, uid);
+  if (cached) {
     revalidateAprenderArea(slug, uid);
-    return mem;
+    return cached;
   }
 
   // 2) IndexedDB
   const persisted = await getAprenderCache<AprenderAreaData>(key);
   if (persisted) {
-    memCache.set(key, persisted);
+    memCache.set(key, { data: persisted, timestamp: Date.now() });
     revalidateAprenderArea(slug, uid);
     return persisted;
   }
@@ -161,7 +175,7 @@ export async function loadAprenderArea(slug: string, uid: string | null): Promis
   if (flying) return flying;
   const p = (async () => {
     const result = await fetchAprenderAreaFromNetwork(slug, uid);
-    memCache.set(key, result);
+    memCache.set(key, { data: result, timestamp: Date.now() });
     setAprenderCache(key, 'area', result);
     return result;
   })();
@@ -180,7 +194,7 @@ function revalidateAprenderArea(slug: string, uid: string | null) {
   const p = (async () => {
     try {
       const fresh = await fetchAprenderAreaFromNetwork(slug, uid);
-      memCache.set(key, fresh);
+      memCache.set(key, { data: fresh, timestamp: Date.now() });
       await setAprenderCache(key, 'area', fresh);
       return fresh;
     } finally {
@@ -200,7 +214,7 @@ export function prefetchAprenderArea(slug: string, uid: string | null) {
     }
   };
 
-  const cached = memCache.get(key);
+  const cached = getCachedAprenderArea(slug, uid);
   if (cached) {
     warmCover(cached.area?.nome);
     revalidateAprenderArea(slug, uid);
@@ -214,7 +228,19 @@ export function prefetchAprenderArea(slug: string, uid: string | null) {
     .catch(() => {});
 }
 
-/** Descarta o cache da área (usar após gerar uma aula sob demanda). */
-export function invalidateAprenderArea(slug: string, uid: string | null) {
-  memCache.delete(keyFor(slug, uid));
+/** Descarta o cache da área (usar após gerar uma aula sob demanda ou concluir estudo). */
+export function invalidateAprenderArea(slug?: string, uid?: string | null) {
+  if (!slug) {
+    memCache.clear();
+    return;
+  }
+  if (uid !== undefined) {
+    memCache.delete(keyFor(slug, uid));
+  } else {
+    for (const k of memCache.keys()) {
+      if (k.startsWith(`area:${slug}:`)) {
+        memCache.delete(k);
+      }
+    }
+  }
 }

@@ -259,6 +259,13 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
   const [isHovered, setIsHovered] = useState(false);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const isSwipingRef = useRef(false);
+  const dragTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (dragTimerRef.current) clearTimeout(dragTimerRef.current);
+    };
+  }, []);
 
   const iconInfo = useMemo(() => areaIconFor(area.slug), [area.slug]);
   const AreaIcon = iconInfo?.Icon;
@@ -435,11 +442,13 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
           {/* Deck de cards interativo */}
           <motion.div
             drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
+            dragDirectionLock
+            dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
             dragElastic={0.2}
             onDragStart={() => setIsDragging(true)}
             onDragEnd={(_, info) => {
-              setTimeout(() => setIsDragging(false), 120);
+              if (dragTimerRef.current) clearTimeout(dragTimerRef.current);
+              dragTimerRef.current = setTimeout(() => setIsDragging(false), 120);
               const isFar = Math.abs(info.offset.x) > 90;
               const isFast = Math.abs(info.velocity.x) > 450;
               const step = isFar && isFast ? 2 : 1;

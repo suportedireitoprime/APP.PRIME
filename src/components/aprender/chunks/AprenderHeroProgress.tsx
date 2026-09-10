@@ -77,7 +77,8 @@ export const AprenderHeroProgress: React.FC<AprenderHeroProgressProps> = memo(({
   const stroke = 7;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
-  const dash = c - (pct / 100) * c;
+  const safePct = Math.min(100, Math.max(0, isNaN(Number(pct)) ? 0 : Math.round(Number(pct))));
+  const dash = c - (safePct / 100) * c;
 
   return (
     <section
@@ -138,7 +139,7 @@ export const AprenderHeroProgress: React.FC<AprenderHeroProgressProps> = memo(({
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="font-display text-base font-black leading-none text-white">{pct}%</span>
+              <span className="font-display text-base font-black leading-none text-white">{safePct}%</span>
               <span className="mt-0.5 text-[8px] font-bold uppercase tracking-wider text-white/80">
                 Progresso
               </span>

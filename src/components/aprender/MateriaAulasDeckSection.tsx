@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useRef, memo } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect, memo } from 'react';
 import { motion } from 'framer-motion';
 import { Video, Play } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
@@ -55,6 +55,13 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
   const [isDragging, setIsDragging] = useState(false);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const isSwipingRef = useRef(false);
+  const dragTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (dragTimerRef.current) clearTimeout(dragTimerRef.current);
+    };
+  }, []);
 
   const iconInfo = useMemo(() => areaIconFor(area.slug), [area.slug]);
   const AreaIcon = iconInfo?.Icon;
@@ -228,11 +235,13 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
           {/* Deck de cards interativo */}
           <motion.div
             drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
+            dragDirectionLock
+            dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
             dragElastic={0.2}
             onDragStart={() => setIsDragging(true)}
             onDragEnd={(_, info) => {
-              setTimeout(() => setIsDragging(false), 120);
+              if (dragTimerRef.current) clearTimeout(dragTimerRef.current);
+              dragTimerRef.current = setTimeout(() => setIsDragging(false), 120);
               const isFar = Math.abs(info.offset.x) > 90;
               const isFast = Math.abs(info.velocity.x) > 450;
               const step = isFar && isFast ? 2 : 1;
@@ -277,7 +286,8 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
                       return;
                     }
                     try { haptic.impact(); } catch {}
-                    if (card.moduloRef && onOpenModulo) {
+                    const isSynthetic = !card.moduloRef?.id || String(card.id).includes('topic') || String(card.id).includes('canonical');
+                    if (!isSynthetic && card.moduloRef && onOpenModulo) {
                       onOpenModulo(card.moduloRef);
                     } else {
                       onOpenArea();

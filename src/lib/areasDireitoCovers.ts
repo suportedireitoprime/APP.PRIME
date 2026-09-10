@@ -113,3 +113,18 @@ export function getAreaCover(area: string | null | undefined): AreaCover | null 
   const key = norm(area);
   return MAP[key] ?? null;
 }
+
+const prefetchedUrls = new Set<string>();
+
+export function prefetchAreaCovers(areas: Array<{ nome?: string; slug?: string } | string>) {
+  if (typeof Image === 'undefined') return;
+  areas.forEach((item) => {
+    const nameOrSlug = typeof item === 'string' ? item : (item.nome || item.slug);
+    const cover = getAreaCover(nameOrSlug);
+    if (cover?.cover && !prefetchedUrls.has(cover.cover)) {
+      prefetchedUrls.add(cover.cover);
+      const img = new Image();
+      img.src = cover.cover;
+    }
+  });
+}

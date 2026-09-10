@@ -81,14 +81,14 @@ const AprenderAula = () => {
       return;
     }
 
-    // 4. Histórico da sessão
+    // 4. Histórico da sessão (apenas se houver navegação prévia no mesmo app)
     const idx = typeof window !== 'undefined' ? (window.history.state as { idx?: number } | null)?.idx : undefined;
-    if (typeof idx === 'number' && idx > 0) {
+    if (typeof idx === 'number' && idx > 0 && typeof window !== 'undefined' && window.history.length > 1) {
       navigate(-1);
       return;
     }
 
-    // 5. Fallback padrão seguro para o Aprender (nunca ejetar para a raiz '/')
+    // 5. Fallback padrão seguro para o Aprender (nunca ejetar para a raiz '/' e sem loop)
     navigate('/aprender', { replace: true });
   }, [navigate, location, aula]);
 
@@ -96,6 +96,7 @@ const AprenderAula = () => {
   const [highestVisible, setHighestVisible] = useState(0);
   const [direction, setDirection] = useState(1);
   const cardScrollRef = useRef<HTMLDivElement>(null);
+  const pageTurnAudioRef = useRef<HTMLAudioElement | null>(null);
 
   // Referências para detecção de gestos (Swipe Touch + Drag Mouse)
   const touchStartX = useRef<number>(0);
@@ -107,9 +108,12 @@ const AprenderAula = () => {
 
   const playPageTurnSound = useCallback(() => {
     try {
-      const audio = new Audio(pageTurnSound);
-      audio.volume = 0.35;
-      audio.play().catch(() => {});
+      if (!pageTurnAudioRef.current) {
+        pageTurnAudioRef.current = new Audio(pageTurnSound);
+        pageTurnAudioRef.current.volume = 0.35;
+      }
+      pageTurnAudioRef.current.currentTime = 0;
+      pageTurnAudioRef.current.play().catch(() => {});
     } catch (e) {}
   }, []);
 

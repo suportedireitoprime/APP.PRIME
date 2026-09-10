@@ -51,12 +51,12 @@ const AprenderArea = () => {
     if (!data || !moduloIdParam) return;
     const found = data.modulos.find((m) => m.id === moduloIdParam);
     if (found) {
-      navigate(`/aprender/modulo/${moduloIdParam}`, {
+      navigate(`/aprender/modulo/${moduloIdParam}?tab=${activeTab}`, {
         replace: true,
-        state: { modulo: found, area: data.area },
+        state: { modulo: found, area: data.area, tab: activeTab },
       });
     }
-  }, [data, moduloIdParam, navigate]);
+  }, [data, moduloIdParam, activeTab, navigate]);
 
   useEffect(() => {
     if (!slug) return;

@@ -12,18 +12,33 @@ export type ModuloItem = {
 };
 
 let cacheModulesMap: Map<string, ModuloItem[]> | null = null;
+let cacheModulesMapTimestamp = 0;
+const MODULES_MAP_TTL_MS = 5 * 60 * 1000;
+
+export function invalidateAprenderAreaModulesMap() {
+  cacheModulesMap = null;
+  cacheModulesMapTimestamp = 0;
+}
 
 export function useAprenderAreaModulesMap() {
-  const [modulesMap, setModulesMap] = useState<Map<string, ModuloItem[]>>(cacheModulesMap ?? new Map());
-  const [loadingMap, setLoadingMap] = useState(!cacheModulesMap);
+  const isFresh = cacheModulesMap && (Date.now() - cacheModulesMapTimestamp < MODULES_MAP_TTL_MS);
+  const [modulesMap, setModulesMap] = useState<Map<string, ModuloItem[]>>(isFresh ? cacheModulesMap! : new Map());
+  const [loadingMap, setLoadingMap] = useState(!isFresh);
 
   useEffect(() => {
-    if (cacheModulesMap) return;
+    if (cacheModulesMap && (Date.now() - cacheModulesMapTimestamp < MODULES_MAP_TTL_MS)) {
+      setLoadingMap(false);
+      return;
+    }
     let cancelled = false;
 
     (async () => {
       try {
-        const [{ data: rawModulos, error: errMod }, { data: rawAulas }] = await Promise.all([
+        const timeoutPromise = new Promise<{ timeout: true }>((resolve) =>
+          setTimeout(() => resolve({ timeout: true }), 10000)
+        );
+
+        const fetchPromise = Promise.all([
           supabase
             .from('aprender_modulos')
             .select('id, area_id, titulo, resumo, ordem')
@@ -34,6 +49,14 @@ export function useAprenderAreaModulesMap() {
             .eq('status', 'published')
             .order('ordem'),
         ]);
+
+        const raced = await Promise.race([fetchPromise, timeoutPromise]);
+        if ('timeout' in raced) {
+          if (!cancelled) setLoadingMap(false);
+          return;
+        }
+
+        const [{ data: rawModulos, error: errMod }, { data: rawAulas }] = raced;
 
         if (cancelled || errMod || !rawModulos) {
           if (!cancelled) setLoadingMap(false);
@@ -74,6 +97,7 @@ export function useAprenderAreaModulesMap() {
 
         if (!cancelled) {
           cacheModulesMap = map;
+          cacheModulesMapTimestamp = Date.now();
           setModulesMap(map);
           setLoadingMap(false);
         }
