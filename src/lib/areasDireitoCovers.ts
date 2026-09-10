@@ -101,9 +101,15 @@ const MAP: Record<string, AreaCover> = {
 };
 
 const norm = (s: string) =>
-  (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+  (s || '')
+    .toLowerCase()
+    .replace(/[-_]/g, ' ')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
 
 export function getAreaCover(area: string | null | undefined): AreaCover | null {
   if (!area) return null;
-  return MAP[norm(area)] ?? null;
+  const key = norm(area);
+  return MAP[key] ?? null;
 }
