@@ -124,16 +124,6 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
     onSearchOpenChange?.(searchOpen);
   }, [searchOpen, onSearchOpenChange]);
 
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    const v = videoRef.current;
-    if (v) {
-      v.defaultMuted = true;
-      v.muted = true;
-      v.play().catch(() => {});
-    }
-  }, []);
 
   const nome =
     (user?.user_metadata?.display_name as string | undefined) ||
@@ -167,17 +157,13 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           aria-hidden="true"
         />
 
-        {/* Vídeo de Capa do Painel do Início (Professor e Aluna em looping contínuo) */}
-        <video
-          ref={videoRef}
-          src="/video-capa.webm"
-          poster={heroEstudanteImg}
-          autoPlay
-          loop
-          muted
-          playsInline
-          disablePictureInPicture
+        {/* Imagem de Capa do Painel do Início (Substituindo o vídeo anterior) */}
+        <img
+          src={heroEstudanteImg}
+          alt=""
           aria-hidden="true"
+          loading="eager"
+          decoding="async"
           className="absolute inset-0 w-full h-full object-cover object-[65%_center] md:object-center z-0 pointer-events-none"
         />
 

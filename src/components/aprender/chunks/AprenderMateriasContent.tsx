@@ -5,11 +5,12 @@ import { Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import MateriaRow from '@/components/aprender/MateriaRow';
 import MateriaFlashcardsDeckSection from '@/components/aprender/MateriaFlashcardsDeckSection';
-import MateriaAulasDeckSection from '@/components/aprender/MateriaAulasDeckSection';
+import AprenderAulasMasterDeck from '@/components/aprender/AprenderAulasMasterDeck';
 import { prefetchAprenderArea } from '@/lib/aprenderAreaLoader';
 import { areaIconFor } from './aprenderConstants';
 import type { AprenderArea } from '@/types/aprender';
 import type { ModuloItem } from '@/hooks/useAprenderAreaModulesMap';
+import type { AprenderHomeAula } from '@/lib/aprenderHomeSnapshot';
 
 interface AprenderMateriasContentProps {
   loading: boolean;
@@ -23,6 +24,8 @@ interface AprenderMateriasContentProps {
   flashAreas: Array<{ slug: string; total_cards: number; compreendidos: number }> | undefined;
   modulesMap: Map<string, ModuloItem[]>;
   uid: string | null;
+  emAndamento?: AprenderHomeAula[];
+  proxima?: AprenderHomeAula | null;
 }
 
 export const AprenderMateriasContent: React.FC<AprenderMateriasContentProps> = memo(({
@@ -37,6 +40,8 @@ export const AprenderMateriasContent: React.FC<AprenderMateriasContentProps> = m
   flashAreas,
   modulesMap,
   uid,
+  emAndamento = [],
+  proxima = null,
 }) => {
   const navigate = useNavigate();
 
@@ -77,28 +82,17 @@ export const AprenderMateriasContent: React.FC<AprenderMateriasContentProps> = m
     );
   }, [areasOrdenadas, flashAreas, modulesMap, navigate]);
 
-  // Decks de Aulas memoizados
+  // Master Deck 3D de Aulas memoizado (contém todas as matérias em um deck único, com barra de progresso e linha do tempo de recentes)
   const aulasDecksNode = useMemo(() => {
     return (
-      <div className="space-y-4 sm:space-y-5 -mx-2 sm:mx-0">
-        {areasOrdenadas.map((area) => {
-          const areaModulos = modulesMap.get(area.id) || [];
-          return (
-            <MateriaAulasDeckSection
-              key={area.id}
-              area={area}
-              modulos={areaModulos}
-              overrideTotal={area.totalAulas}
-              overrideConcluidas={area.concluidas}
-              overridePct={area.pct ?? 0}
-              onOpenArea={() => navigate(`/aprender/area/${area.slug}`)}
-              onOpenModulo={(mod) => navigate(`/aprender/area/${area.slug}?moduloId=${mod.id}`)}
-            />
-          );
-        })}
-      </div>
+      <AprenderAulasMasterDeck
+        areas={areasOrdenadas}
+        onOpenArea={(area) => navigate(`/aprender/area/${area.slug}`)}
+        emAndamento={emAndamento}
+        proxima={proxima}
+      />
     );
-  }, [areasOrdenadas, modulesMap, navigate]);
+  }, [areasOrdenadas, navigate, emAndamento, proxima]);
 
   if (loading && !areas.length) {
     return <div className="h-28 rounded-2xl bg-muted animate-pulse" />;

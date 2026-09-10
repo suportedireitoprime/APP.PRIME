@@ -159,6 +159,8 @@ const Aprender = () => {
                 flashAreas={flashAreas}
                 modulesMap={modulesMap}
                 uid={uid}
+                emAndamento={data.emAndamento}
+                proxima={data.proxima}
               />
             </div>
           </div>
