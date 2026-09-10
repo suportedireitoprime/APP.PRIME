@@ -226,22 +226,22 @@ export const CANONICAL_AREA_TOPICS: Record<string, string[]> = {
 const getSlot = (diff: number) => {
   switch (diff) {
     case 0:
-      return { x: 0, y: 0, rotate: 0, scale: 1.05, opacity: 1, z: 50 };
+      return { x: 0, y: 0, rotate: 0, scale: 1, opacity: 1, z: 50 };
     case 1:
-      return { x: 68, y: 8, rotate: 8, scale: 0.9, opacity: 0.9, z: 40 };
-    case 2:
-      return { x: 120, y: 18, rotate: 15, scale: 0.76, opacity: 0.65, z: 30 };
-    case 3:
-      return { x: 158, y: 28, rotate: 22, scale: 0.65, opacity: 0.35, z: 20 };
+      return { x: 58, y: 7, rotate: 7, scale: 0.9, opacity: 0.9, z: 40 };
     case -1:
-      return { x: -68, y: 8, rotate: -8, scale: 0.9, opacity: 0.9, z: 40 };
+      return { x: -58, y: 7, rotate: -7, scale: 0.9, opacity: 0.9, z: 40 };
+    case 2:
+      return { x: 108, y: 16, rotate: 14, scale: 0.78, opacity: 0.68, z: 30 };
     case -2:
-      return { x: -120, y: 18, rotate: -15, scale: 0.76, opacity: 0.65, z: 30 };
+      return { x: -108, y: 16, rotate: -14, scale: 0.78, opacity: 0.68, z: 30 };
+    case 3:
+      return { x: 148, y: 24, rotate: 20, scale: 0.66, opacity: 0.40, z: 20 };
     case -3:
-      return { x: -158, y: 28, rotate: -22, scale: 0.65, opacity: 0.35, z: 20 };
+      return { x: -148, y: 24, rotate: -20, scale: 0.66, opacity: 0.40, z: 20 };
     default:
-      if (diff > 0) return { x: 180, y: 35, rotate: 26, scale: 0.55, opacity: 0, z: 10 };
-      return { x: -180, y: 35, rotate: -26, scale: 0.55, opacity: 0, z: 10 };
+      if (diff > 0) return { x: 170, y: 30, rotate: 24, scale: 0.55, opacity: 0, z: 10 };
+      return { x: -170, y: 30, rotate: -24, scale: 0.55, opacity: 0, z: 10 };
   }
 };
 
@@ -333,11 +333,7 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
 
   const total = deckCards.length;
 
-  // Rotação sequencial em cascata: avança quando acionado pela matéria ativa no fluxo de cima para baixo
-  useEffect(() => {
-    if (!triggerAdvance || isDragging || isHovered || total <= 1) return;
-    setAtivo((prev) => (prev + 1) % total);
-  }, [triggerAdvance, isDragging, isHovered, total]);
+  // Animação e navegação ocorrem exclusivamente por interação manual do usuário (clique ou swipe)
 
   const handlePrev = useCallback(() => {
     try { haptic.selection(); } catch {}
@@ -433,9 +429,9 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
         </div>
       </div>
 
-      {/* ── 3D Fanned Deck de Flashcards (sem setas, sem fundo de card) ── */}
-      <div className="relative w-full pt-1 pb-1 flex flex-col items-center select-none overflow-x-hidden">
-        <div className="relative flex items-center justify-center w-full max-w-[340px] sm:max-w-[400px] h-[225px] sm:h-[245px]">
+      {/* ── 3D Fanned Deck de Flashcards (sem corte nas laterais) ── */}
+      <div className="relative w-full -mx-2 sm:mx-0 px-2 sm:px-0 pt-1 pb-1 flex flex-col items-center select-none overflow-visible">
+        <div className="relative flex items-center justify-center w-full max-w-full h-[225px] sm:h-[245px] overflow-visible">
           {/* Deck de cards interativo */}
           <motion.div
             drag="x"

@@ -315,36 +315,7 @@ const Aprender = () => {
     return 0;
   }, [isAulas, isFlashcards, data.pctGeral, totalFlashcards, totalConcluidasFlashcards]);
 
-  // Cascata sequencial de rotação dos decks: move primeiro a matéria de cima, vai descendo e reinicia no topo
-  const [areaTriggerCounts, setAreaTriggerCounts] = useState<Record<string, number>>({});
-  const currentCascadeIndexRef = useRef(0);
 
-  // Efeito de cascata automática: a cada 2.4s faz avançar a próxima matéria em leque (de cima para baixo)
-  useEffect(() => {
-    const isDecksActive = (isFlashcards && flashcardsViewMode === 'decks') || (isAulas && aulasViewMode === 'decks');
-    if (!isDecksActive || !areasOrdenadas.length) return;
-
-    currentCascadeIndexRef.current = 0;
-
-    const interval = setInterval(() => {
-      const count = areasOrdenadas.length;
-      if (count === 0) return;
-
-      const idx = currentCascadeIndexRef.current % count;
-      const targetArea = areasOrdenadas[idx];
-
-      if (targetArea) {
-        setAreaTriggerCounts((prev) => ({
-          ...prev,
-          [targetArea.id]: (prev[targetArea.id] || 0) + 1,
-        }));
-      }
-
-      currentCascadeIndexRef.current = (idx + 1) % count;
-    }, 2400);
-
-    return () => clearInterval(interval);
-  }, [isFlashcards, flashcardsViewMode, isAulas, aulasViewMode, areasOrdenadas]);
 
   // Tema visual dinâmico do painel Hero e Pills por aba selecionada
   const tabTheme = useMemo(() => {
@@ -791,7 +762,7 @@ const Aprender = () => {
                     : 'Nenhuma matéria disponível ainda.'}
                 </div>
               ) : isFlashcards && flashcardsViewMode === 'decks' ? (
-                <div className="space-y-4 sm:space-y-5">
+                <div className="space-y-4 sm:space-y-5 -mx-2 sm:mx-0">
                   {areasOrdenadas.map((area) => {
                     let overrideTotal = 0;
                     let overrideConcluidas = 0;
@@ -818,13 +789,12 @@ const Aprender = () => {
                         overridePct={overridePct}
                         onOpenArea={() => navigate(`/aprender/area/${area.slug}?tab=flashcards`)}
                         onOpenModulo={(mod) => navigate(`/aprender/area/${area.slug}?tab=flashcards&moduloId=${mod.id}`)}
-                        triggerAdvance={areaTriggerCounts[area.id] || 0}
                       />
                     );
                   })}
                 </div>
               ) : isAulas && aulasViewMode === 'decks' ? (
-                <div className="space-y-4 sm:space-y-5">
+                <div className="space-y-4 sm:space-y-5 -mx-2 sm:mx-0">
                   {areasOrdenadas.map((area) => {
                     const areaModulos = modulesMap.get(area.id) || [];
                     return (
@@ -837,7 +807,6 @@ const Aprender = () => {
                         overridePct={area.pct ?? 0}
                         onOpenArea={() => navigate(`/aprender/area/${area.slug}`)}
                         onOpenModulo={(mod) => navigate(`/aprender/area/${area.slug}?moduloId=${mod.id}`)}
-                        triggerAdvance={areaTriggerCounts[area.id] || 0}
                       />
                     );
                   })}

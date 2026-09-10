@@ -26,20 +26,20 @@ const getSlot = (diff: number) => {
     case 0:
       return { x: 0, y: 0, rotate: 0, scale: 1, opacity: 1, z: 50 };
     case 1:
-      return { x: 95, y: 10, rotate: 6, scale: 0.88, opacity: 0.85, z: 40 };
+      return { x: 70, y: 8, rotate: 5, scale: 0.90, opacity: 0.88, z: 40 };
     case -1:
-      return { x: -95, y: 10, rotate: -6, scale: 0.88, opacity: 0.85, z: 40 };
+      return { x: -70, y: 8, rotate: -5, scale: 0.90, opacity: 0.88, z: 40 };
     case 2:
-      return { x: 170, y: 22, rotate: 12, scale: 0.76, opacity: 0.60, z: 30 };
+      return { x: 130, y: 16, rotate: 10, scale: 0.78, opacity: 0.65, z: 30 };
     case -2:
-      return { x: -170, y: 22, rotate: -12, scale: 0.76, opacity: 0.60, z: 30 };
+      return { x: -130, y: 16, rotate: -10, scale: 0.78, opacity: 0.65, z: 30 };
     case 3:
-      return { x: 230, y: 32, rotate: 16, scale: 0.65, opacity: 0.35, z: 20 };
+      return { x: 180, y: 24, rotate: 14, scale: 0.66, opacity: 0.38, z: 20 };
     case -3:
-      return { x: -230, y: 32, rotate: -16, scale: 0.65, opacity: 0.35, z: 20 };
+      return { x: -180, y: 24, rotate: -14, scale: 0.66, opacity: 0.38, z: 20 };
     default:
-      if (diff > 0) return { x: 270, y: 40, rotate: 20, scale: 0.55, opacity: 0, z: 10 };
-      return { x: -270, y: 40, rotate: -20, scale: 0.55, opacity: 0, z: 10 };
+      if (diff > 0) return { x: 210, y: 30, rotate: 18, scale: 0.55, opacity: 0, z: 10 };
+      return { x: -210, y: 30, rotate: -18, scale: 0.55, opacity: 0, z: 10 };
   }
 };
 
@@ -145,11 +145,7 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
 
   const total = deckCards.length;
 
-  // Rotação sequencial em cascata: avança quando acionado pela matéria ativa no fluxo de cima para baixo
-  useEffect(() => {
-    if (!triggerAdvance || isDragging || isHovered || total <= 1) return;
-    setAtivo((prev) => (prev + 1) % total);
-  }, [triggerAdvance, isDragging, isHovered, total]);
+  // Animação e navegação ocorrem exclusivamente por interação manual do usuário (clique ou swipe)
 
   const handlePrev = useCallback(() => {
     try { haptic.selection(); } catch {}
@@ -245,9 +241,9 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
         </div>
       </div>
 
-      {/* ── 3D Fanned Deck de Aulas em formato 16:9 Widescreen (Thumbnail YouTube) ── */}
-      <div className="relative w-full pt-1 pb-1 flex flex-col items-center select-none overflow-x-hidden">
-        <div className="relative flex items-center justify-center w-full max-w-[360px] sm:max-w-[440px] md:max-w-[480px] h-[200px] sm:h-[225px]">
+      {/* ── 3D Fanned Deck de Aulas em formato 16:9 Widescreen (sem corte nas laterais) ── */}
+      <div className="relative w-full -mx-2 sm:mx-0 px-2 sm:px-0 pt-1 pb-1 flex flex-col items-center select-none overflow-visible">
+        <div className="relative flex items-center justify-center w-full max-w-full h-[200px] sm:h-[225px] overflow-visible">
           {/* Deck de cards interativo */}
           <motion.div
             drag="x"
