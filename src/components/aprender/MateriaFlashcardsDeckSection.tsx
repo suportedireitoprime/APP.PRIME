@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef, memo } from '
 import { motion } from 'framer-motion';
 import { Layers, ArrowRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
-import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
+import { areaIconFor, getAreaThemePalette, hexToRgb } from '@/lib/areasDireitoIcons';
 import type { ModuloItem } from '@/hooks/useAprenderAreaModulesMap';
 import type { AprenderArea } from '@/types/aprender';
 import { cn } from '@/lib/utils';
@@ -263,6 +263,28 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
   const accentColor = iconInfo?.color || '#10b981';
   const palette = useMemo(() => getAreaThemePalette(area.slug || area.nome), [area.slug, area.nome]);
 
+  // Nome essencial da matéria para a tag do topo (ex: "Administrativo", "Penal", "Civil")
+  const nomeMateriaTag = useMemo(() => {
+    if (!area?.nome) return '';
+    return area.nome
+      .replace(/^Direito\s+(do\s+|da\s+|de\s+)?/i, '')
+      .replace(/^Direitos\s+/i, '')
+      .trim();
+  }, [area?.nome]);
+
+  const { r, g, b } = useMemo(() => hexToRgb(palette.primary), [palette.primary]);
+
+  // Botão na mesma paleta do fundo do card, em tom um pouco mais escuro para integrar perfeitamente ao design
+  const enterButtonBg = useMemo(() => {
+    const topR = Math.round(r * 0.32);
+    const topG = Math.round(g * 0.32);
+    const topB = Math.round(b * 0.32);
+    const btmR = Math.round(r * 0.14);
+    const btmG = Math.round(g * 0.14);
+    const btmB = Math.round(b * 0.14);
+    return `linear-gradient(180deg, rgba(${topR}, ${topG}, ${topB}, 0.95) 0%, rgba(${btmR}, ${btmG}, ${btmB}, 0.98) 100%)`;
+  }, [r, g, b]);
+
   // Lista de cards/tópicos que compõem o deck desta matéria (garante sempre 6 a 7 cards em leque)
   const deckCards = useMemo(() => {
     const list: Array<{ id: string; titulo: string; resumo?: string | null; ordem: number; moduloRef?: any }> = [];
@@ -506,10 +528,10 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
                       className="pointer-events-none absolute -right-2 -bottom-2 w-[105px] sm:w-[125px] h-[120px] sm:h-[140px] object-contain opacity-35 select-none filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.65)] z-0"
                     />
 
-                    {/* Topo do Flashcard: Nome Completo da Matéria (sem abreviação e sem número/hashtag) */}
+                    {/* Topo do Flashcard: Nome Essencial da Matéria sem 'Direito' (ex: 'Administrativo', 'Penal') */}
                     <div className="flex items-center justify-center w-full relative z-10">
-                      <span className="text-[9px] sm:text-[9.5px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full backdrop-blur-md bg-black/50 text-white/95 border border-white/20 shadow-sm text-center leading-tight max-w-full">
-                        {area.nome}
+                      <span className="text-[9.5px] sm:text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-md bg-black/45 text-white/95 border border-white/20 shadow-sm text-center leading-none">
+                        {nomeMateriaTag}
                       </span>
                     </div>
 
@@ -523,14 +545,19 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
                       </h4>
                     </div>
 
-                    {/* Rodapé do Flashcard: Botão Sólido e Destacado "ENTRAR" */}
-                    <div className="relative z-10 pt-1.5 border-t border-white/20 flex items-center justify-center w-full">
+                    {/* Rodapé do Flashcard: Botão Integrado à Paleta do Fundo em Tom Mais Escuro */}
+                    <div className="relative z-10 pt-1.5 border-t border-white/15 flex items-center justify-center w-full">
                       {frente ? (
                         <div
-                          className="w-full py-1.5 px-3 rounded-xl flex items-center justify-center gap-1.5 bg-white text-zinc-950 font-black text-[11px] sm:text-xs uppercase tracking-wider shadow-[0_4px_14px_rgba(0,0,0,0.45)] hover:bg-amber-300 hover:text-black active:scale-95 transition-all cursor-pointer"
+                          style={{
+                            background: enterButtonBg,
+                            borderColor: 'rgba(255, 255, 255, 0.22)',
+                            boxShadow: `0 6px 16px -2px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.18)`,
+                          }}
+                          className="w-full py-1.5 px-3 rounded-xl flex items-center justify-center gap-1.5 text-white font-black text-[11px] sm:text-xs uppercase tracking-wider border hover:brightness-125 active:scale-95 transition-all cursor-pointer select-none"
                         >
-                          <span>Entrar</span>
-                          <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                          <span className="drop-shadow-sm">Entrar</span>
+                          <ArrowRight className="w-3.5 h-3.5 stroke-[2.5] text-white/95" />
                         </div>
                       ) : (
                         <div className="h-6 w-full" />
