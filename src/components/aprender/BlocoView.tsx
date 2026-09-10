@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Quote, Scale, Sparkles, Check, XCircle, RotateCw, CheckCircle2, ArrowRight, Lightbulb, Flag, ChevronDown, AlertTriangle, BookMarked } from 'lucide-react';
+import { Quote, Scale, Sparkles, Check, XCircle, RotateCw, CheckCircle2, ArrowRight, Lightbulb, Flag, ChevronDown, AlertTriangle, BookMarked, HelpCircle } from 'lucide-react';
 import { Bloco, iconePorTipo, isBlocoTexto, rotuloPorTipo } from '@/lib/aprenderUtils';
 import { LeituraBlock } from '@/components/aprender/blocos/LeituraBlock';
 import { CheckpointBlock } from '@/components/aprender/blocos/CheckpointBlock';
@@ -587,11 +587,11 @@ export function BlocoView({
 
     return (
       <article className="max-w-[70ch] mx-auto py-2">
-        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
-          <Sparkles className="h-3.5 w-3.5" />
-          <span>{bloco.payload?.titulo ? bloco.payload.titulo.replace(/^#+\s*/, '').replace(/^\d+[-.)]\s*/, '') : 'Desafio de Fixação'}</span>
+        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-widest text-primary">
+          <HelpCircle className="h-3.5 w-3.5" />
+          <span>{bloco.payload?.titulo ? bloco.payload.titulo.replace(/^#+\s*/, '').replace(/^\d+[-.)]\s*/, '') : 'Questão Comentada (Certo ou Errado)'}</span>
         </div>
-        <h2 className="mb-6 font-sans text-[18px] md:text-[21px] font-bold leading-relaxed text-foreground tracking-tight">
+        <h2 className="mb-6 font-sans text-[17px] sm:text-[18px] md:text-[20px] font-semibold leading-[1.7] text-foreground tracking-tight">
           {enunciado}
         </h2>
 
@@ -638,13 +638,17 @@ export function BlocoView({
             }
 
             return (
-              <button
+              <motion.button
                 key={op.id}
                 disabled={!!resposta}
-                onClick={() => { if (!resposta) setSelectedOpcao(id); }}
-                className={`group relative flex w-full items-center gap-4 rounded-2xl border p-4 md:p-5 text-left text-[15px] md:text-[16px] leading-relaxed transition-all duration-200 min-h-[4rem] active:scale-[0.99] cursor-pointer ${cardClass}`}
+                onClick={() => { if (!resposta) { haptic.selection(); setSelectedOpcao(id); } }}
+                className={`group relative flex w-full items-center gap-3 sm:gap-4 rounded-2xl border p-3.5 sm:p-4 md:p-5 text-left text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed transition-all duration-200 min-h-[3.5rem] sm:min-h-[4rem] active:scale-[0.98] cursor-pointer ${cardClass}`}
+                whileTap={{ scale: resposta ? 1 : 0.97 }}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.05 * (opcoes.indexOf(op)) }}
               >
-                <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border text-xs font-bold uppercase transition-colors ${badgeClass}`}>
+                <span className={`flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-xl border text-xs font-bold uppercase transition-colors ${badgeClass}`}>
                   {op.id}
                 </span>
                 <span className="flex-1 font-medium">{op.texto}</span>
@@ -658,7 +662,7 @@ export function BlocoView({
                     <XCircle className="h-4 w-4" strokeWidth={2.5} />
                   </span>
                 )}
-              </button>
+              </motion.button>
             );
           })}
         </div>
