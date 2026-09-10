@@ -441,6 +441,21 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
         <div className="relative flex items-center justify-center w-full max-w-full h-[225px] sm:h-[245px] overflow-visible">
           {/* Deck de cards interativo */}
           <motion.div
+            tabIndex={0}
+            role="region"
+            aria-label={`Deck de flashcards de ${area.nome}. Pressione as setas esquerda e direita para navegar e Enter para abrir.`}
+            onKeyDown={(e) => {
+              if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                handleNext();
+              } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                handlePrev();
+              } else if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onOpenArea();
+              }
+            }}
             drag="x"
             dragDirectionLock
             dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
@@ -462,7 +477,7 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            className="relative flex items-center justify-center w-full h-full cursor-grab active:cursor-grabbing touch-pan-y"
+            className="relative flex items-center justify-center w-full h-full cursor-grab active:cursor-grabbing touch-pan-y outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 rounded-2xl"
           >
             {deckCards.map((card, i) => {
               let diff = (i - ativo) % total;

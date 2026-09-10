@@ -111,7 +111,17 @@ const norm = (s: string) =>
 export function getAreaCover(area: string | null | undefined): AreaCover | null {
   if (!area) return null;
   const key = norm(area);
-  return MAP[key] ?? null;
+  if (MAP[key]) return MAP[key];
+
+  // Busca por correspondência parcial de palavras-chave
+  for (const k of Object.keys(MAP)) {
+    if (key.includes(k) || (k.length > 5 && key.includes(k.replace(/^direito\s+/i, '')))) {
+      return MAP[k];
+    }
+  }
+
+  // Fallback artístico padrão caso não haja correspondência direta
+  return { cover: teoria, tint: 'hsla(229, 26%, 26%, 0.92)' };
 }
 
 const prefetchedUrls = new Set<string>();

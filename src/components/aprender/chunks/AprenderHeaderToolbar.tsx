@@ -36,15 +36,18 @@ export const AprenderHeaderToolbar: React.FC<AprenderHeaderToolbarProps> = memo(
 
       <div className="flex items-center gap-1.5 sm:gap-2">
         {isAulas && (
-          <div className="flex items-center gap-1 rounded-full bg-card border border-border p-0.5 shadow-sm">
+          <div role="tablist" aria-label="Modo de exibição de aulas" className="flex items-center gap-1 rounded-full bg-card border border-border p-0.5 shadow-sm">
             <button
               type="button"
+              role="tab"
+              aria-selected={aulasViewMode === 'decks'}
+              aria-label="Visualizar aulas em Decks 3D"
               onClick={() => {
                 try { haptic.selection(); } catch {}
                 onAulasViewModeChange('decks');
               }}
               className={cn(
-                'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors flex items-center gap-1 cursor-pointer',
+                'rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors flex items-center gap-1 cursor-pointer min-h-[34px] relative after:absolute after:-inset-1.5 after:content-[\'\']',
                 aulasViewMode === 'decks'
                   ? 'text-white shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
@@ -57,12 +60,15 @@ export const AprenderHeaderToolbar: React.FC<AprenderHeaderToolbarProps> = memo(
             </button>
             <button
               type="button"
+              role="tab"
+              aria-selected={aulasViewMode === 'lista'}
+              aria-label="Visualizar aulas em Lista"
               onClick={() => {
                 try { haptic.selection(); } catch {}
                 onAulasViewModeChange('lista');
               }}
               className={cn(
-                'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors flex items-center gap-1 cursor-pointer',
+                'rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors flex items-center gap-1 cursor-pointer min-h-[34px] relative after:absolute after:-inset-1.5 after:content-[\'\']',
                 aulasViewMode === 'lista'
                   ? 'text-white shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
@@ -76,15 +82,18 @@ export const AprenderHeaderToolbar: React.FC<AprenderHeaderToolbarProps> = memo(
         )}
 
         {isFlashcards && (
-          <div className="flex items-center gap-1 rounded-full bg-card border border-border p-0.5 shadow-sm">
+          <div role="tablist" aria-label="Modo de exibição de flashcards" className="flex items-center gap-1 rounded-full bg-card border border-border p-0.5 shadow-sm">
             <button
               type="button"
+              role="tab"
+              aria-selected={flashcardsViewMode === 'decks'}
+              aria-label="Visualizar flashcards em Decks 3D"
               onClick={() => {
                 try { haptic.selection(); } catch {}
                 onFlashcardsViewModeChange('decks');
               }}
               className={cn(
-                'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors flex items-center gap-1 cursor-pointer',
+                'rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors flex items-center gap-1 cursor-pointer min-h-[34px] relative after:absolute after:-inset-1.5 after:content-[\'\']',
                 flashcardsViewMode === 'decks'
                   ? 'text-white shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
@@ -97,12 +106,15 @@ export const AprenderHeaderToolbar: React.FC<AprenderHeaderToolbarProps> = memo(
             </button>
             <button
               type="button"
+              role="tab"
+              aria-selected={flashcardsViewMode === 'lista'}
+              aria-label="Visualizar flashcards em Lista"
               onClick={() => {
                 try { haptic.selection(); } catch {}
                 onFlashcardsViewModeChange('lista');
               }}
               className={cn(
-                'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors flex items-center gap-1 cursor-pointer',
+                'rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors flex items-center gap-1 cursor-pointer min-h-[34px] relative after:absolute after:-inset-1.5 after:content-[\'\']',
                 flashcardsViewMode === 'lista'
                   ? 'text-white shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'

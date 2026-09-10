@@ -100,7 +100,7 @@ const Aprender = () => {
         />
       </div>
 
-      <div className="relative z-10 w-full 2xl:max-w-[1750px] mx-auto px-3 sm:px-6 lg:px-8 lg:pt-4 pb-[calc(7rem+var(--sai-bottom))] overflow-x-hidden">
+      <div className="relative z-10 w-full 2xl:max-w-[1750px] mx-auto px-3 sm:px-6 lg:px-8 lg:pt-4 pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,16px)))] overflow-x-hidden">
         <div className="lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
           {/* ── Sidebar Esquerda Desktop: Filtros & Lembretes ───────────── */}
           <AprenderLeftSidebar

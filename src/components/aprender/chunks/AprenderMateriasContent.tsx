@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
@@ -40,23 +40,8 @@ export const AprenderMateriasContent: React.FC<AprenderMateriasContentProps> = m
 }) => {
   const navigate = useNavigate();
 
-  if (loading && !areas.length) {
-    return <div className="h-28 rounded-2xl bg-muted animate-pulse" />;
-  }
-
-  if (areasOrdenadas.length === 0) {
-    return (
-      <div className="w-full rounded-2xl border border-border bg-card p-8 text-center text-muted-foreground">
-        <Sparkles className="mx-auto mb-2 h-6 w-6 text-muted-foreground" />
-        {filtro === 'andamento'
-          ? 'Você ainda não começou nenhuma matéria.'
-          : 'Nenhuma matéria disponível ainda.'}
-      </div>
-    );
-  }
-
-  // Visualização em Decks de Flashcards
-  if (isFlashcards && flashcardsViewMode === 'decks') {
+  // Decks de Flashcards memoizados
+  const flashcardsDecksNode = useMemo(() => {
     return (
       <div className="space-y-4 sm:space-y-5 -mx-2 sm:mx-0">
         {areasOrdenadas.map((area) => {
@@ -90,10 +75,10 @@ export const AprenderMateriasContent: React.FC<AprenderMateriasContentProps> = m
         })}
       </div>
     );
-  }
+  }, [areasOrdenadas, flashAreas, modulesMap, navigate]);
 
-  // Visualização em Decks de Aulas (Formato 4:3 com Capas Ilustradas e Botão Play Glassmorphic)
-  if (isAulas && aulasViewMode === 'decks') {
+  // Decks de Aulas memoizados
+  const aulasDecksNode = useMemo(() => {
     return (
       <div className="space-y-4 sm:space-y-5 -mx-2 sm:mx-0">
         {areasOrdenadas.map((area) => {
@@ -113,6 +98,31 @@ export const AprenderMateriasContent: React.FC<AprenderMateriasContentProps> = m
         })}
       </div>
     );
+  }, [areasOrdenadas, modulesMap, navigate]);
+
+  if (loading && !areas.length) {
+    return <div className="h-28 rounded-2xl bg-muted animate-pulse" />;
+  }
+
+  if (areasOrdenadas.length === 0) {
+    return (
+      <div className="w-full rounded-2xl border border-border bg-card p-8 text-center text-muted-foreground">
+        <Sparkles className="mx-auto mb-2 h-6 w-6 text-muted-foreground" />
+        {filtro === 'andamento'
+          ? 'Você ainda não começou nenhuma matéria.'
+          : 'Nenhuma matéria disponível ainda.'}
+      </div>
+    );
+  }
+
+  // Visualização em Decks de Flashcards
+  if (isFlashcards && flashcardsViewMode === 'decks') {
+    return flashcardsDecksNode;
+  }
+
+  // Visualização em Decks de Aulas (Formato 4:3 com Capas Ilustradas e Botão Play Glassmorphic)
+  if (isAulas && aulasViewMode === 'decks') {
+    return aulasDecksNode;
   }
 
   // Visualização padrão em Lista / Grid

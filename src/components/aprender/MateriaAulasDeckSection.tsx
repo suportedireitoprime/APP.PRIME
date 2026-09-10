@@ -234,6 +234,29 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
         <div className="relative flex items-center justify-center w-full max-w-full h-[225px] sm:h-[245px] overflow-visible">
           {/* Deck de cards interativo */}
           <motion.div
+            tabIndex={0}
+            role="region"
+            aria-label={`Deck de aulas de ${area.nome}. Pressione as setas esquerda e direita para navegar e Enter para abrir.`}
+            onKeyDown={(e) => {
+              if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                handleNext();
+              } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                handlePrev();
+              } else if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                const card = deckCards[ativo];
+                if (card) {
+                  const isSynthetic = !card.moduloRef?.id || String(card.id).includes('topic') || String(card.id).includes('canonical');
+                  if (!isSynthetic && card.moduloRef && onOpenModulo) {
+                    onOpenModulo(card.moduloRef);
+                  } else {
+                    onOpenArea();
+                  }
+                }
+              }
+            }}
             drag="x"
             dragDirectionLock
             dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
@@ -255,7 +278,7 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            className="relative flex items-center justify-center w-full h-full cursor-grab active:cursor-grabbing touch-pan-y"
+            className="relative flex items-center justify-center w-full h-full cursor-grab active:cursor-grabbing touch-pan-y outline-none focus-visible:ring-2 focus-visible:ring-rose-500/50 rounded-2xl"
           >
             {deckCards.map((card, i) => {
               let diff = (i - ativo) % total;
