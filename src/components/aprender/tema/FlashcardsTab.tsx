@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Shuffle, RotateCw, Sparkles, CheckCircle2, Lightbulb, Layers } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Shuffle, RotateCw, Brain, CheckCircle2, Lightbulb, Layers } from 'lucide-react';
 import flipSoundAsset from '@/assets/flipcard.mp3.asset.json';
 import { srcOf } from '@/lib/assetUrl';
 import { playPaperSlideSound } from '@/lib/paperSound';
@@ -136,7 +136,7 @@ const FlashcardsTab = ({ flashcards, loading }: Props) => {
           >
             <div className="mb-4 flex items-center justify-between">
               <span className="text-[11px] font-bold uppercase tracking-widest text-accent">Frente</span>
-              <Sparkles className="h-4 w-4 text-accent/60" />
+              <Brain className="h-4 w-4 text-accent/60" />
             </div>
             <div className="flex flex-1 items-center justify-center text-center">
               <p

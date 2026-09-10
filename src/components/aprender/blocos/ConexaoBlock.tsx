@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Link2, RotateCw, X } from 'lucide-react';
+import { Check, CheckCircle2, GitFork, Link2, RotateCw, X, Zap } from 'lucide-react';
+import { haptic } from '@/lib/nativeHaptics';
 
 export type ParConexao = { termo: string; definicao: string; explicacao?: string };
 
@@ -19,10 +20,53 @@ function embaralhar<T>(arr: T[]): T[] {
   return copia;
 }
 
+const GRAPH_COLORS = [
+  {
+    border: 'border-emerald-500/60',
+    bg: 'bg-emerald-500/10',
+    text: 'text-emerald-300',
+    badge: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40',
+    socket: 'bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.9)]',
+    ring: 'ring-1 ring-emerald-500/40',
+  },
+  {
+    border: 'border-sky-500/60',
+    bg: 'bg-sky-500/10',
+    text: 'text-sky-300',
+    badge: 'bg-sky-500/20 text-sky-400 border-sky-500/40',
+    socket: 'bg-sky-400 shadow-[0_0_10px_rgba(56,189,248,0.9)]',
+    ring: 'ring-1 ring-sky-500/40',
+  },
+  {
+    border: 'border-amber-500/60',
+    bg: 'bg-amber-500/10',
+    text: 'text-amber-300',
+    badge: 'bg-amber-500/20 text-amber-400 border-amber-500/40',
+    socket: 'bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.9)]',
+    ring: 'ring-1 ring-amber-500/40',
+  },
+  {
+    border: 'border-purple-500/60',
+    bg: 'bg-purple-500/10',
+    text: 'text-purple-300',
+    badge: 'bg-purple-500/20 text-purple-400 border-purple-500/40',
+    socket: 'bg-purple-400 shadow-[0_0_10px_rgba(192,132,252,0.9)]',
+    ring: 'ring-1 ring-purple-500/40',
+  },
+  {
+    border: 'border-rose-500/60',
+    bg: 'bg-rose-500/10',
+    text: 'text-rose-300',
+    badge: 'bg-rose-500/20 text-rose-400 border-rose-500/40',
+    socket: 'bg-rose-400 shadow-[0_0_10px_rgba(251,113,133,0.9)]',
+    ring: 'ring-1 ring-rose-500/40',
+  },
+];
+
 /**
- * Dinâmica de ligar termo → definição em DOIS TOQUES (sem arrastar):
- * 1) o aluno toca no termo, 2) toca na definição correspondente.
- * Alvos de toque ≥ 48px (Apple HIG 44pt / Material 3 48dp).
+ * Grafo interativo de conexões conceituais:
+ * Apresenta nós de conceitos à esquerda e nós de definições à direita,
+ * com sockets de conexão visual, feedback háptico e animações fluidas.
  */
 export function ConexaoBlock({ pares, onCompleto }: Props) {
   const lista = useMemo(() => pares.filter((p) => p?.termo && p?.definicao).slice(0, 5), [pares]);
@@ -37,34 +81,39 @@ export function ConexaoBlock({ pares, onCompleto }: Props) {
 
   if (totalPares === 0) return null;
 
-  const vibrar = () => {
-    try { navigator.vibrate?.(60); } catch { /* noop */ }
-  };
-
   const escolherTermo = (i: number) => {
     if (ligados.includes(i)) return;
+    haptic.selection();
     setErro(null);
     setTermoSel((atual) => (atual === i ? null : i));
   };
 
   const escolherDefinicao = (di: number) => {
     if (ligados.includes(di)) return;
-    if (termoSel == null) return;
+    if (termoSel == null) {
+      haptic.selection();
+      return;
+    }
     if (di === termoSel) {
+      haptic.impact('medium');
       const novos = [...ligados, di];
       setLigados(novos);
       setTermoSel(null);
       setErro(null);
-      if (novos.length === totalPares) onCompleto?.();
+      if (novos.length === totalPares) {
+        haptic.notification('success');
+        onCompleto?.();
+      }
     } else {
-      vibrar();
+      haptic.notification('warning');
       setErro({ termo: termoSel, def: di });
       setTermoSel(null);
-      window.setTimeout(() => setErro(null), 900);
+      window.setTimeout(() => setErro(null), 800);
     }
   };
 
   const recomecar = () => {
+    haptic.selection();
     setLigados([]);
     setTermoSel(null);
     setErro(null);
@@ -73,142 +122,234 @@ export function ConexaoBlock({ pares, onCompleto }: Props) {
   };
 
   return (
-    <article>
-      <p className="mb-1 flex items-center gap-1.5 text-[13px] font-semibold uppercase tracking-wide text-primary">
-        <Link2 className="h-4 w-4" /> Ligue os termos
-      </p>
-      <h2 className="mb-2 font-sans text-xl font-bold leading-snug text-foreground sm:text-2xl">
-        Cada termo tem um significado. Encontre o par.
-      </h2>
-      <p className="mb-4 text-[15px] leading-relaxed text-muted-foreground">
-        Toque primeiro em um <strong className="text-foreground">termo</strong> e depois na{' '}
-        <strong className="text-foreground">definição</strong> correspondente. Se errar, é só tentar de novo.
-      </p>
-
-      {/* Progresso */}
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <div className="flex-1">
-          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-            <div
-              className="h-full rounded-full bg-primary transition-all duration-300"
-              style={{ width: `${(ligados.length / totalPares) * 100}%` }}
-            />
-          </div>
-        </div>
-        <span className="shrink-0 text-[13px] font-semibold tabular-nums text-muted-foreground">
-          {ligados.length} de {totalPares}
+    <motion.article
+      className="max-w-[76ch] mx-auto py-3 px-1 sm:px-2"
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="flex items-center justify-between mb-3">
+        <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+          <GitFork className="h-3.5 w-3.5" /> Grafo de Conexões
         </span>
         {ligados.length > 0 && (
           <button
             onClick={recomecar}
-            className="flex h-11 items-center gap-1 rounded-full border border-border px-3 text-[13px] font-medium text-muted-foreground active:scale-95"
+            className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors cursor-pointer py-1 px-2.5 rounded-lg hover:bg-white/5 active:scale-95"
           >
-            <RotateCw className="h-3.5 w-3.5" /> Recomeçar
+            <RotateCw className="h-3 w-3" /> Reiniciar
           </button>
         )}
       </div>
 
-      {/* Termos */}
-      <p className="mb-2 text-[13px] font-bold uppercase tracking-wide text-muted-foreground">Termos</p>
-      <div className="mb-5 flex flex-wrap gap-2">
-        {ordemTermos.map((i) => {
-          const feito = ligados.includes(i);
-          const sel = termoSel === i;
-          const errado = erro?.termo === i;
-          return (
-            <motion.button
-              key={i}
-              onClick={() => escolherTermo(i)}
-              disabled={feito}
-              animate={errado ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
-              transition={{ duration: 0.35 }}
-              className={`min-h-12 rounded-xl border px-4 py-3 text-left text-[15px] font-semibold leading-snug transition-colors ${
-                feito
-                  ? 'border-green-500 bg-green-500/20 text-green-100 line-through'
-                  : errado
-                  ? 'border-red-500/60 bg-red-500/10 text-foreground'
-                  : sel
-                  ? 'border-primary bg-primary text-primary-foreground shadow-md'
-                  : 'border-border bg-card text-foreground active:scale-95'
-              }`}
-            >
-              <span className="inline-flex items-center gap-1.5">
-                {feito && <Check className="h-4 w-4 text-green-400" />}
-                {lista[i].termo}
-              </span>
-            </motion.button>
-          );
-        })}
+      <h2 className="mb-2 font-sans text-lg sm:text-xl font-bold leading-snug text-white">
+        Conecte os conceitos aos seus efeitos e significados
+      </h2>
+      <p className="mb-5 text-[14px] sm:text-[15px] leading-relaxed text-neutral-300">
+        Toque no nó do <strong className="text-white">conceito</strong> e em seguida no nó do seu{' '}
+        <strong className="text-white">significado</strong> para fechar a conexão no grafo.
+      </p>
+
+      {/* Barra de Conexões Ativas */}
+      <div className="mb-6 rounded-2xl border border-white/10 bg-white/[0.02] p-3.5 backdrop-blur-sm shadow-sm">
+        <div className="flex items-center justify-between text-xs font-semibold mb-2">
+          <span className="flex items-center gap-1.5 text-neutral-300">
+            <Zap className="w-3.5 h-3.5 text-primary" /> Conexões estabelecidas
+          </span>
+          <span className="text-primary font-bold tabular-nums">
+            {ligados.length} de {totalPares} nós
+          </span>
+        </div>
+        <div className="h-2 w-full overflow-hidden rounded-full bg-white/5">
+          <motion.div
+            className="h-full rounded-full bg-gradient-to-r from-primary to-primary-light"
+            initial={false}
+            animate={{ width: `${(ligados.length / totalPares) * 100}%` }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          />
+        </div>
       </div>
 
-      {/* Definições */}
-      <p className="mb-2 text-[13px] font-bold uppercase tracking-wide text-muted-foreground">Significados</p>
-      <div className="flex flex-col gap-2">
-        {ordemDefs.map((di) => {
-          const feito = ligados.includes(di);
-          const errado = erro?.def === di;
-          const aguardando = termoSel != null && !feito;
-          return (
-            <motion.button
-              key={di}
-              onClick={() => escolherDefinicao(di)}
-              disabled={feito || termoSel == null}
-              animate={errado ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
-              transition={{ duration: 0.35 }}
-              className={`min-h-12 w-full rounded-xl border px-4 py-3 text-left text-[15px] leading-relaxed transition-colors ${
-                feito
-                  ? 'border-green-500 bg-green-500/15 text-green-50'
-                  : errado
-                  ? 'border-red-500/60 bg-red-500/10 text-foreground'
-                  : aguardando
-                  ? 'border-primary/60 bg-card text-foreground active:bg-primary active:text-primary-foreground'
-                  : 'border-border bg-card/40 text-muted-foreground'
-              }`}
-            >
-              <span className="flex items-start gap-2">
-                {feito ? (
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-400" />
-                ) : errado ? (
-                  <X className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
-                ) : null}
-                <span>{lista[di].definicao}</span>
-              </span>
-            </motion.button>
-          );
-        })}
+      {/* Grid de Nós do Grafo (Lado a Lado em telas médias/grandes) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 relative">
+        {/* Coluna Esquerda: Conceitos */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 mb-1 text-[11px] font-extrabold uppercase tracking-wider text-neutral-400">
+            <span className="w-2 h-2 rounded-full bg-primary" />
+            <span>Nós de Origem (Conceito)</span>
+          </div>
+
+          {ordemTermos.map((i) => {
+            const indexLigado = ligados.indexOf(i);
+            const feito = indexLigado !== -1;
+            const sel = termoSel === i;
+            const errado = erro?.termo === i;
+            const colorTheme = feito ? GRAPH_COLORS[indexLigado % GRAPH_COLORS.length] : null;
+
+            return (
+              <motion.button
+                key={i}
+                type="button"
+                onClick={() => escolherTermo(i)}
+                disabled={feito}
+                animate={errado ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
+                transition={{ duration: 0.35 }}
+                whileTap={{ scale: feito ? 1 : 0.98 }}
+                className={`group relative flex w-full items-center justify-between gap-3 rounded-2xl border p-3.5 sm:p-4 text-left transition-all duration-200 min-h-[52px] cursor-pointer ${
+                  feito && colorTheme
+                    ? `${colorTheme.border} ${colorTheme.bg} ${colorTheme.ring} shadow-md`
+                    : errado
+                    ? 'border-rose-500/60 bg-rose-500/10 text-white'
+                    : sel
+                    ? 'border-primary bg-primary/20 ring-2 ring-primary shadow-[0_0_16px_hsl(var(--primary)/0.25)] text-white'
+                    : 'border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.06] text-neutral-200 backdrop-blur-sm'
+                }`}
+              >
+                <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                  {feito && colorTheme ? (
+                    <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[11px] font-black ${colorTheme.badge}`}>
+                      <Link2 className="h-3 w-3" />
+                    </span>
+                  ) : (
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[11px] font-bold text-neutral-400">
+                      {lista.indexOf(lista[i]) + 1}
+                    </span>
+                  )}
+                  <span className={`font-semibold text-[14px] sm:text-[15px] leading-snug truncate ${feito && colorTheme ? colorTheme.text : 'text-white'}`}>
+                    {lista[i].termo}
+                  </span>
+                </div>
+
+                {/* Socket de Conexão na borda direita */}
+                <div className="relative flex items-center justify-center shrink-0">
+                  <span
+                    className={`h-3.5 w-3.5 rounded-full border-2 transition-all ${
+                      feito && colorTheme
+                        ? colorTheme.socket
+                        : sel
+                        ? 'border-primary bg-primary animate-pulse shadow-[0_0_8px_hsl(var(--primary))]'
+                        : 'border-white/20 bg-neutral-800'
+                    }`}
+                  />
+                  {sel && (
+                    <span className="absolute h-5 w-5 rounded-full border border-primary animate-ping pointer-events-none" />
+                  )}
+                </div>
+              </motion.button>
+            );
+          })}
+        </div>
+
+        {/* Coluna Direita: Significados */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 mb-1 text-[11px] font-extrabold uppercase tracking-wider text-neutral-400">
+            <span className="w-2 h-2 rounded-full bg-neutral-500" />
+            <span>Nós de Destino (Significado)</span>
+          </div>
+
+          {ordemDefs.map((di) => {
+            const indexLigado = ligados.indexOf(di);
+            const feito = indexLigado !== -1;
+            const errado = erro?.def === di;
+            const aguardando = termoSel != null && !feito;
+            const colorTheme = feito ? GRAPH_COLORS[indexLigado % GRAPH_COLORS.length] : null;
+
+            return (
+              <motion.button
+                key={di}
+                type="button"
+                onClick={() => escolherDefinicao(di)}
+                disabled={feito || termoSel == null}
+                animate={errado ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
+                transition={{ duration: 0.35 }}
+                whileTap={{ scale: feito || termoSel == null ? 1 : 0.98 }}
+                className={`group relative flex w-full items-start gap-3 rounded-2xl border p-3.5 sm:p-4 text-left transition-all duration-200 min-h-[52px] ${
+                  feito && colorTheme
+                    ? `${colorTheme.border} ${colorTheme.bg} ${colorTheme.ring} shadow-md`
+                    : errado
+                    ? 'border-rose-500/60 bg-rose-500/10 text-white'
+                    : aguardando
+                    ? 'border-primary/40 bg-white/[0.04] hover:border-primary hover:bg-primary/10 text-white shadow-sm cursor-pointer active:scale-[0.99]'
+                    : 'border-white/10 bg-white/[0.02] text-neutral-400 opacity-60 cursor-not-allowed'
+                }`}
+              >
+                {/* Socket de Conexão na borda esquerda */}
+                <div className="relative flex items-center justify-center shrink-0 mt-1">
+                  <span
+                    className={`h-3.5 w-3.5 rounded-full border-2 transition-all ${
+                      feito && colorTheme
+                        ? colorTheme.socket
+                        : aguardando
+                        ? 'border-primary/60 bg-neutral-900 group-hover:border-primary'
+                        : 'border-white/20 bg-neutral-800'
+                    }`}
+                  />
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <p className={`text-[13px] sm:text-[14px] leading-relaxed ${feito && colorTheme ? colorTheme.text : 'text-neutral-200'}`}>
+                    {lista[di].definicao}
+                  </p>
+                </div>
+
+                {feito && (
+                  <Check className="h-4 w-4 shrink-0 text-emerald-400 mt-1" strokeWidth={2.5} />
+                )}
+                {errado && (
+                  <X className="h-4 w-4 shrink-0 text-rose-400 mt-1" strokeWidth={2.5} />
+                )}
+              </motion.button>
+            );
+          })}
+        </div>
       </div>
 
       {termoSel == null && !concluido && (
-        <p className="mt-3 text-[13px] text-muted-foreground">Comece escolhendo um termo acima.</p>
+        <p className="mt-4 text-center text-[12px] sm:text-[13px] text-neutral-400 italic">
+          💡 Toque em um conceito à esquerda para abrir a porta de conexão.
+        </p>
       )}
-      {erro && <p className="mt-3 text-[14px] font-medium text-red-600">Não é essa. Tente outra vez.</p>}
 
-      {/* Revisão final */}
+      {/* Painel de Celebração e Revisão do Grafo Consolidado */}
       <AnimatePresence>
         {concluido && (
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-6 rounded-2xl border border-green-500/50 bg-green-500/10 p-4"
+            initial={{ opacity: 0, scale: 0.96, y: 15 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: 'easeOut' }}
+            className="mt-6 rounded-3xl border border-emerald-500/40 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent p-5 sm:p-6 shadow-2xl backdrop-blur-md"
           >
-            <p className="mb-3 flex items-center gap-2 text-[15px] font-bold text-green-100">
-              <Check className="h-5 w-5 text-green-400" /> Tudo ligado! Revise os pares:
-            </p>
-            <ul className="space-y-3">
+            <div className="flex items-center gap-2.5 mb-3 text-emerald-400">
+              <CheckCircle2 className="h-5 w-5" />
+              <p className="font-sans text-base sm:text-lg font-black text-white">
+                Grafo Completo! Todas as conexões consolidadas:
+              </p>
+            </div>
+
+            <div className="divide-y divide-white/10 mt-4 space-y-3 pt-1">
               {lista.map((p, i) => (
-                <li key={i} className="border-l-2 border-green-500/50 pl-3">
-                  <p className="text-[15px] font-semibold text-foreground">{p.termo}</p>
-                  <p className="text-[15px] leading-relaxed text-muted-foreground">{p.definicao}</p>
+                <div key={i} className="pt-3 flex flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+                    <span className="font-bold text-[14px] sm:text-[15px] text-white">{p.termo}</span>
+                    <span className="text-neutral-500 text-xs font-semibold">→</span>
+                    <span className="text-emerald-300/90 text-xs font-bold uppercase tracking-wider">Ligado</span>
+                  </div>
+                  <p className="text-[13px] sm:text-[14px] leading-relaxed text-neutral-300 pl-4">
+                    {p.definicao}
+                  </p>
                   {p.explicacao && (
-                    <p className="mt-1 text-[14px] leading-relaxed text-muted-foreground/90 italic">{p.explicacao}</p>
+                    <p className="text-[12px] sm:text-[13px] leading-relaxed text-neutral-400 italic pl-4">
+                      {p.explicacao}
+                    </p>
                   )}
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </article>
+    </motion.article>
   );
 }
 

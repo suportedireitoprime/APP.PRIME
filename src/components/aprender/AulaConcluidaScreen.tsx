@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Trophy, Zap, RotateCw, ArrowRight, Sparkles, X } from 'lucide-react';
+import { Trophy, Zap, RotateCw, ArrowRight, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { haptic } from '@/lib/nativeHaptics';
 
@@ -131,7 +131,7 @@ export function AulaConcluidaScreen({
           >
             <div className="min-w-0">
               <span className="text-[11px] font-black uppercase tracking-wider text-primary flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5" /> Próxima aula em {countdown}s
+                <Zap className="w-3.5 h-3.5" /> Próxima aula em {countdown}s
               </span>
               <p className="font-bold text-white text-sm truncate mt-0.5">{proximaAula.titulo}</p>
             </div>

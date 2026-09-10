@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, Sparkles, AlertTriangle, ChevronDown, BookOpen, Eye, EyeOff, Scale } from 'lucide-react';
+import { MessageSquare, Lightbulb, AlertTriangle, ChevronDown, BookOpen, Eye, EyeOff, Scale } from 'lucide-react';
 import { normalizarMarkdown } from '@/lib/markdown';
 import { haptic } from '@/lib/nativeHaptics';
 import { LinhaDoTempoAnimada, isTimelineBlock } from './LinhaDoTempoAnimada';
@@ -94,7 +94,7 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
     if (match && match[1]) {
       return (
         <>
-          <span className="text-rose-400 font-black">{match[1]}</span>
+          <span className="text-primary font-black">{match[1]}</span>
           {match[2] ? ` ${match[2]}` : ''}
         </>
       );
@@ -113,7 +113,7 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
 
   const camadas: Camada[] = ([
     { chave: 'em_portugues_claro', rotulo: 'Em português claro', Icon: MessageSquare, texto: payload?.em_portugues_claro || '' },
-    { chave: 'exemplo', rotulo: 'Exemplo prático', Icon: Sparkles, texto: payload?.exemplo || '' },
+    { chave: 'exemplo', rotulo: 'Exemplo prático', Icon: Lightbulb, texto: payload?.exemplo || '' },
     { chave: 'pegadinha', rotulo: 'Onde erram (Pegadinha)', Icon: AlertTriangle, texto: payload?.pegadinha || '' },
   ] as Camada[]).filter((c) => c.texto.trim().length > 0);
 
@@ -137,10 +137,10 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
     <article className="max-w-[70ch] lg:max-w-[76ch] mx-auto py-3 px-1 sm:px-2 pb-4">
       {titulo && (
         <header className="mb-6 sm:mb-8">
-          <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-rose-400 mb-2.5 bg-rose-400/10 px-2.5 py-1 rounded-full border border-rose-400/20 shadow-sm">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-primary mb-2.5 bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20 shadow-sm">
             {isCasoPratico ? (
               <>
-                <Scale className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                <Scale className="w-3.5 h-3.5 text-primary shrink-0" />
                 <span>Caso Prático</span>
               </>
             ) : termosGlossario.length > 0 ? (
@@ -318,7 +318,7 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
             const isCaso = isExemplo && (camadaTexto.includes('Solução Jurídica') || isCasoPratico);
 
             const cardTheme = isAlert
-              ? 'bg-rose-500/[0.08] border-rose-500/25 text-rose-300'
+              ? 'bg-amber-500/[0.08] border-amber-500/30 text-amber-300'
               : isCaso
               ? 'bg-[#18181b]/95 border-primary/35 text-neutral-100 shadow-xl'
               : isExemplo

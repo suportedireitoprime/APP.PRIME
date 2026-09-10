@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Quote, Scale, Sparkles, Check, XCircle, RotateCw, CheckCircle2, ArrowRight, Lightbulb, Flag, ChevronDown, AlertTriangle, BookMarked, HelpCircle } from 'lucide-react';
+import { Quote, Scale, Check, XCircle, RotateCw, CheckCircle2, ArrowRight, Lightbulb, Flag, ChevronDown, AlertTriangle, BookMarked, HelpCircle, Puzzle, Brain } from 'lucide-react';
 import { Bloco, iconePorTipo, isBlocoTexto, rotuloPorTipo } from '@/lib/aprenderUtils';
 import { LeituraBlock } from '@/components/aprender/blocos/LeituraBlock';
 import { CheckpointBlock } from '@/components/aprender/blocos/CheckpointBlock';
@@ -46,86 +46,113 @@ export function BlocoView({
   if (bloco.tipo === 'citacao') {
     const { texto, autor, fonte_url } = bloco.payload || {};
     return (
-      <article className="max-w-[70ch] mx-auto py-4">
+      <motion.article
+        className="max-w-[70ch] mx-auto py-4"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <p className="mb-4 flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary/80">
           <Quote className="h-3.5 w-3.5" /> Citação Especial
         </p>
         <blockquote className="relative pl-6 py-2">
-          <div className="absolute left-0 top-0 bottom-0 w-1 rounded-full bg-gradient-to-b from-primary via-primary/50 to-transparent" />
-          <p className="font-sans text-[20px] md:text-[22px] leading-[1.7] italic text-neutral-300">"{texto}"</p>
-          {autor && <footer className="mt-4 text-[15px] font-medium text-neutral-500">— {autor}</footer>}
+          <motion.div
+            className="absolute left-0 top-0 bottom-0 w-1 rounded-full bg-gradient-to-b from-primary via-primary/50 to-transparent"
+            initial={{ scaleY: 0 }}
+            animate={{ scaleY: 1 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
+            style={{ transformOrigin: 'top' }}
+          />
+          <p className="font-sans text-[18px] sm:text-[20px] md:text-[22px] leading-[1.7] italic text-neutral-300">"{texto}"</p>
+          {autor && <footer className="mt-4 text-[14px] sm:text-[15px] font-medium text-neutral-500">— {autor}</footer>}
           {fonte_url && (
             <a href={fonte_url} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block text-[13px] font-semibold text-primary hover:text-primary-light underline underline-offset-4 decoration-primary/30 hover:decoration-primary/80 transition-all">
               Acessar fonte original
             </a>
           )}
         </blockquote>
-      </article>
+      </motion.article>
     );
   }
 
   if (bloco.tipo === 'artigo_lei') {
     const { lei, numero, texto } = bloco.payload || {};
     return (
-      <article className="max-w-[70ch] mx-auto py-4">
+      <motion.article
+        className="max-w-[70ch] mx-auto py-4"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <p className="mb-4 flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary/80">
           <Scale className="h-3.5 w-3.5" /> Texto da Lei
         </p>
-        <div className="relative rounded-2xl border border-white/5 bg-gradient-to-br from-white/[0.04] to-transparent p-6 shadow-xl before:absolute before:inset-0 before:bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] before:opacity-10 before:mix-blend-overlay">
-          <p className="mb-4 text-sm font-bold text-white uppercase tracking-wide">
+        <div className="relative rounded-2xl border border-white/5 bg-gradient-to-br from-white/[0.04] to-transparent p-5 sm:p-6 shadow-xl before:absolute before:inset-0 before:bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] before:opacity-10 before:mix-blend-overlay">
+          <p className="mb-3 text-sm font-bold text-white uppercase tracking-wide">
             {lei} {numero ? <span className="text-primary font-black">— Art. {numero}</span> : ''}
           </p>
-          <p className="whitespace-pre-line text-[17px] md:text-[18px] leading-[1.8] text-neutral-300 relative z-10">{texto}</p>
+          <p className="whitespace-pre-line text-[16px] sm:text-[17px] md:text-[18px] leading-[1.8] text-neutral-300 relative z-10">{texto}</p>
         </div>
-      </article>
+      </motion.article>
     );
   }
 
   if (bloco.tipo === 'tabela') {
     const { titulo, colunas = [], linhas = [] } = bloco.payload || {};
     return (
-      <article className="max-w-[70ch] lg:max-w-none mx-auto py-4">
-        {titulo && <h3 className="mb-6 font-sans text-[20px] font-bold leading-snug text-white">{titulo}</h3>}
-        <div className="space-y-4 sm:hidden">
+      <motion.article
+        className="max-w-[70ch] lg:max-w-none mx-auto py-4"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        {titulo && <h3 className="mb-4 sm:mb-6 font-sans text-[18px] sm:text-[20px] font-bold leading-snug text-white">{titulo}</h3>}
+        <div className="space-y-3 sm:hidden">
           {linhas.map((row: string[], ri: number) => (
-            <div key={ri} className="overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] shadow-lg">
+            <motion.div
+              key={ri}
+              className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-lg"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: ri * 0.07 }}
+            >
               <div className="bg-white/5 px-4 py-3 font-sans text-[15px] font-bold text-white border-b border-white/5">
                 {row[0]}
               </div>
               <dl className="divide-y divide-white/5">
                 {row.slice(1).map((cell, ci) => (
-                  <div key={ci} className="px-4 py-3">
-                    <dt className="text-[10px] font-bold uppercase tracking-wider text-neutral-500 mb-1">
+                  <div key={ci} className="px-4 py-2.5">
+                    <dt className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 mb-1">
                       {colunas[ci + 1]}
                     </dt>
-                    <dd className="text-[15px] leading-relaxed text-neutral-300">{cell}</dd>
+                    <dd className="text-[14px] sm:text-[15px] leading-relaxed text-neutral-200">{cell}</dd>
                   </div>
                 ))}
               </dl>
-            </div>
+            </motion.div>
           ))}
         </div>
-        <div className="hidden overflow-x-auto rounded-2xl border border-white/5 shadow-xl sm:block bg-white/[0.02]">
+        <div className="hidden overflow-x-auto rounded-2xl border border-white/10 shadow-xl sm:block bg-white/[0.02] backdrop-blur-sm">
           <table className="w-full text-[15px]">
             <thead className="bg-white/5">
               <tr>
                 {colunas.map((c: string, i: number) => (
-                  <th key={i} className="px-4 py-4 text-left text-[14px] font-bold text-white uppercase tracking-wider">{c}</th>
+                  <th key={i} className="px-4 py-3.5 text-left text-[13px] sm:text-[14px] font-bold text-white uppercase tracking-wider">{c}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {linhas.map((row: string[], ri: number) => (
-                <tr key={ri} className="border-t border-white/5 odd:bg-white/[0.01]">
+                <tr key={ri} className="border-t border-white/5 odd:bg-white/[0.01] hover:bg-white/[0.04] transition-colors">
                   {row.map((cell, ci) => (
-                    <td key={ci} className="px-4 py-4 align-top leading-relaxed text-neutral-300">{cell}</td>
+                    <td key={ci} className="px-4 py-3.5 align-top leading-relaxed text-neutral-300">{cell}</td>
                   ))}
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </article>
+      </motion.article>
     );
   }
 
@@ -252,37 +279,49 @@ export function BlocoView({
       }
     };
     return (
-      <article>
-        <p className="mb-3 text-xs font-semibold uppercase text-primary">Fluxograma</p>
-        {titulo && <h3 className="mb-4 font-sans text-lg font-bold text-foreground">{titulo}</h3>}
-        <ol className="space-y-2">
+      <article className="max-w-[70ch] lg:max-w-[76ch] mx-auto py-3">
+        <p className="mb-3 text-[11px] font-extrabold uppercase tracking-widest text-primary flex items-center gap-2">
+          <span className="w-1.5 h-4 bg-primary rounded-full" /> Fluxograma
+        </p>
+        {titulo && <h3 className="mb-5 font-sans text-lg sm:text-xl font-bold text-foreground">{titulo}</h3>}
+        <ol className="space-y-1">
           {etapas.map((et: any, i: number) => {
             const s = stepStyle(et.tipo);
             const isDecisao = et.tipo === 'decisao';
             return (
-              <li key={i}>
-                <div className={`rounded-2xl border-2 ${s.border} ${s.bg} p-4 shadow-sm ${isDecisao ? 'transform-gpu' : ''}`}>
+              <motion.li
+                key={i}
+                initial={{ opacity: 0, x: -15 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: i * 0.08 }}
+              >
+                <div className={`rounded-2xl border ${s.border} ${s.bg} p-3.5 sm:p-4 shadow-sm ${isDecisao ? 'transform-gpu' : ''}`}>
                   <div className="flex items-start gap-3">
-                    <div className={`flex-shrink-0 w-9 h-9 rounded-full ${s.badge} flex items-center justify-center font-bold text-sm`}>
+                    <div className={`flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-full ${s.badge} flex items-center justify-center font-bold text-xs sm:text-sm`}>
                       {et.n ?? i + 1}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span className={`text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded ${s.badge}`}>{s.label}</span>
                       </div>
-                      <p className="font-sans text-base font-bold text-foreground leading-tight">{et.titulo}</p>
+                      <p className="font-sans text-[14px] sm:text-base font-bold text-foreground leading-tight">{et.titulo}</p>
                       {et.descricao && (
-                        <p className="mt-1 text-[14px] text-muted-foreground leading-relaxed">{et.descricao}</p>
+                        <p className="mt-1 text-[13px] sm:text-[14px] text-muted-foreground leading-relaxed">{et.descricao}</p>
                       )}
                     </div>
                   </div>
                 </div>
                 {i < etapas.length - 1 && (
-                  <div className="flex justify-center py-1" aria-hidden="true">
-                    <div className="w-0.5 h-4 bg-primary/30" />
+                  <div className="flex justify-center py-0.5" aria-hidden="true">
+                    <motion.div
+                      className="w-0.5 h-4 bg-primary/30"
+                      initial={{ scaleY: 0 }}
+                      animate={{ scaleY: 1 }}
+                      transition={{ duration: 0.2, delay: i * 0.08 + 0.2 }}
+                    />
                   </div>
                 )}
-              </li>
+              </motion.li>
             );
           })}
         </ol>
@@ -305,26 +344,37 @@ export function BlocoView({
           )}
         </header>
 
-        <ol className="relative border-l-2 border-primary/30 pl-5 sm:pl-8 space-y-6 sm:space-y-8 my-4">
+        <ol className="relative border-l-2 border-primary/30 pl-5 sm:pl-8 space-y-5 sm:space-y-7 my-4">
           {eventos.map((ev: any, i: number) => (
-            <li key={i} className="relative group">
-              <span className="absolute -left-[27px] sm:-left-[39px] top-1.5 flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-primary text-black font-black text-[11px] shadow-[0_0_12px_hsl(var(--primary)/0.6)]">
+            <motion.li
+              key={i}
+              className="relative group"
+              initial={{ opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: i * 0.1 }}
+            >
+              <motion.span
+                className="absolute -left-[27px] sm:-left-[39px] top-1.5 flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-primary text-black font-black text-[11px] shadow-[0_0_12px_hsl(var(--primary)/0.6)]"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.3, delay: i * 0.1 + 0.1, type: 'spring', stiffness: 400 }}
+              >
                 {i + 1}
-              </span>
-              <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4 sm:p-5 backdrop-blur-sm shadow-md transition-all group-hover:border-primary/40 group-hover:bg-white/[0.05]">
+              </motion.span>
+              <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-3.5 sm:p-5 backdrop-blur-sm shadow-md transition-all group-hover:border-primary/40 group-hover:bg-white/[0.05]">
                 <span className="inline-block text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-primary mb-1">
                   {ev.marco}
                 </span>
-                <p className="font-sans text-lg sm:text-xl font-bold text-white leading-snug mb-2">
+                <p className="font-sans text-base sm:text-lg font-bold text-white leading-snug mb-1.5">
                   {ev.titulo}
                 </p>
                 {ev.descricao && (
-                  <p className="text-[15px] sm:text-[16px] leading-relaxed text-neutral-200">
+                  <p className="text-[14px] sm:text-[15px] leading-relaxed text-neutral-200">
                     {ev.descricao}
                   </p>
                 )}
               </div>
-            </li>
+            </motion.li>
           ))}
         </ol>
       </article>
@@ -395,15 +445,23 @@ export function BlocoView({
   if (bloco.tipo === 'infografico') {
     const { titulo, itens = [] } = bloco.payload || {};
     return (
-      <article>
-        {titulo && <h3 className="mb-3 font-sans text-lg font-bold text-foreground">{titulo}</h3>}
+      <article className="max-w-[70ch] lg:max-w-[76ch] mx-auto py-3">
+        {titulo && <h3 className="mb-4 font-sans text-lg sm:text-xl font-bold text-foreground">{titulo}</h3>}
         <div className="grid gap-3 sm:grid-cols-2">
           {itens.map((it: any, i: number) => (
-            <div key={i} className="rounded-xl border border-border bg-gradient-to-br from-primary/5 to-transparent p-4">
-              {it.numero && <p className="font-sans text-3xl font-extrabold text-primary">{it.numero}</p>}
-              <p className="mt-1 font-semibold text-foreground">{it.titulo}</p>
-              {it.descricao && <p className="mt-1 text-sm text-muted-foreground">{it.descricao}</p>}
-            </div>
+            <motion.div
+              key={i}
+              className="rounded-2xl border border-white/10 bg-gradient-to-br from-primary/8 to-transparent p-4 sm:p-5 backdrop-blur-sm shadow-md hover:border-primary/30 transition-colors"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: i * 0.08 }}
+            >
+              {it.numero && (
+                <p className="font-sans text-2xl sm:text-3xl font-extrabold text-primary mb-1">{it.numero}</p>
+              )}
+              <p className="font-semibold text-[14px] sm:text-[15px] text-foreground leading-snug">{it.titulo}</p>
+              {it.descricao && <p className="mt-1.5 text-[13px] sm:text-sm text-muted-foreground leading-relaxed">{it.descricao}</p>}
+            </motion.div>
           ))}
         </div>
       </article>
@@ -473,8 +531,8 @@ export function BlocoView({
 
       return (
         <article className="max-w-[70ch] mx-auto py-2">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-amber-400">
-            <Sparkles className="h-3.5 w-3.5" />
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-widest text-amber-400">
+            <Puzzle className="h-3.5 w-3.5" />
             <span>Complete o Tipo Penal</span>
           </div>
 
@@ -754,7 +812,7 @@ export function BlocoView({
                 <span className="text-[10px] uppercase tracking-widest font-extrabold text-white/70">
                   {displayTitulo ? displayTitulo.replace(/^\d+[-.)]\s*/, '') : 'FRENTE'}
                 </span>
-                <Sparkles className="w-4 h-4 text-primary/80" />
+                <Brain className="w-4 h-4 text-primary/80" />
               </div>
               <div className="flex-1 flex items-center justify-center text-center px-2 sm:px-4">
                 <p className="font-sans text-lg sm:text-xl md:text-2xl font-bold leading-relaxed text-white/95 max-w-[50ch]">
@@ -813,24 +871,27 @@ export function BlocoView({
             animate={{ opacity: 1, y: 0 }}
             className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 w-full"
           >
-            <button
-              onClick={(e) => { e.stopPropagation(); onAvaliarFlash('nao_sabia'); onAvancar?.(); }}
-              className="w-full sm:w-auto flex-1 rounded-2xl border border-rose-500/30 bg-rose-500/10 px-5 py-3.5 text-sm font-bold text-rose-400 hover:bg-rose-500/20 active:scale-95 transition-all"
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={(e) => { e.stopPropagation(); haptic.impact('light'); onAvaliarFlash('nao_sabia'); onAvancar?.(); }}
+              className="w-full sm:w-auto flex-1 rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 sm:px-5 py-3 sm:py-3.5 text-sm font-bold text-rose-400 hover:bg-rose-500/20 active:scale-95 transition-all min-h-[48px] cursor-pointer"
             >
               Não lembrei
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); onAvaliarFlash('duvida'); onAvancar?.(); }}
-              className="w-full sm:w-auto flex-1 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-5 py-3.5 text-sm font-bold text-amber-400 hover:bg-amber-500/20 active:scale-95 transition-all"
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={(e) => { e.stopPropagation(); haptic.impact('light'); onAvaliarFlash('duvida'); onAvancar?.(); }}
+              className="w-full sm:w-auto flex-1 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 sm:px-5 py-3 sm:py-3.5 text-sm font-bold text-amber-400 hover:bg-amber-500/20 active:scale-95 transition-all min-h-[48px] cursor-pointer"
             >
               Mais ou menos
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); onAvaliarFlash('sabia'); onAvancar?.(); }}
-              className="w-full sm:w-auto flex-1 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-3.5 text-sm font-bold text-emerald-400 hover:bg-emerald-500/20 active:scale-95 transition-all"
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={(e) => { e.stopPropagation(); haptic.impact('light'); onAvaliarFlash('sabia'); onAvancar?.(); }}
+              className="w-full sm:w-auto flex-1 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 sm:px-5 py-3 sm:py-3.5 text-sm font-bold text-emerald-400 hover:bg-emerald-500/20 active:scale-95 transition-all min-h-[48px] cursor-pointer"
             >
               Lembrei fácil
-            </button>
+            </motion.button>
           </motion.div>
         )}
       </article>

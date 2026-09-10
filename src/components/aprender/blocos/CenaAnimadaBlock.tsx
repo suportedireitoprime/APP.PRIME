@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, SkipForward, RotateCcw, Sparkles } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Clapperboard } from 'lucide-react';
 
 type Personagem = { id: string; nome: string; papel?: string };
 type Elemento = { texto?: string; ator?: string; fala?: string };
@@ -36,7 +36,7 @@ export function CenaAnimadaBlock({ payload }: { payload: any }) {
   return (
     <article>
       <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase text-primary">
-        <Sparkles className="h-3.5 w-3.5" /> Cena animada
+        <Clapperboard className="h-3.5 w-3.5" /> Cena animada
       </div>
       <h3 className="mb-3 font-display text-lg font-bold text-foreground">{titulo}</h3>
 

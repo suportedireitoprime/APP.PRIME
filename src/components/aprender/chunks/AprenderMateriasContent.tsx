@@ -1,7 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import MateriaRow from '@/components/aprender/MateriaRow';
 import MateriaFlashcardsDeckSection from '@/components/aprender/MateriaFlashcardsDeckSection';
@@ -101,7 +101,7 @@ export const AprenderMateriasContent: React.FC<AprenderMateriasContentProps> = m
   if (areasOrdenadas.length === 0) {
     return (
       <div className="w-full rounded-2xl border border-border bg-card p-8 text-center text-muted-foreground">
-        <Sparkles className="mx-auto mb-2 h-6 w-6 text-muted-foreground" />
+        <BookOpen className="mx-auto mb-2 h-6 w-6 text-muted-foreground" />
         {filtro === 'andamento'
           ? 'Você ainda não começou nenhuma matéria.'
           : 'Nenhuma matéria disponível ainda.'}

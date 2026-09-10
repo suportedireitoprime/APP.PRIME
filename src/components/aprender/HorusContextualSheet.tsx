@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { MessageCircle, Send, X, Sparkles } from 'lucide-react';
+import { MessageCircle, Send, X, Brain } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import ReactMarkdown from 'react-markdown';
@@ -85,11 +85,8 @@ export const HorusContextualSheet = ({ contexto, hideFab, open: openProp, onOpen
         <SheetContent side="bottom" className="h-[85vh] rounded-t-2xl p-0 flex flex-col">
           <SheetHeader className="border-b border-border p-4">
             <SheetTitle className="flex items-center gap-2">
-              <div
-                className="flex h-8 w-8 items-center justify-center rounded-full"
-                style={{ background: 'hsl(348 78% 38%)' }}
-              >
-                <Sparkles className="h-4 w-4 text-primary-foreground" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary shadow-md">
+                <Brain className="h-4 w-4 text-primary-foreground" />
               </div>
               <div className="flex-1 min-w-0 text-left">
                 <p className="text-sm font-bold">Mentor</p>

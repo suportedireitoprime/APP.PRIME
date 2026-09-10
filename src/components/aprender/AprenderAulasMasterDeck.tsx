@@ -7,7 +7,6 @@ import {
   Play,
   ArrowRight,
   Clock,
-  Sparkles,
   CheckCircle2,
   BookOpen,
 } from 'lucide-react';
@@ -509,7 +508,7 @@ export const AprenderAulasMasterDeck: React.FC<AprenderAulasMasterDeckProps> = m
         ) : (
           /* Estado Vazio de Linha do Tempo (Incentivo Acolhedor) */
           <div className="p-5 rounded-2xl border border-white/10 bg-white/[0.02] text-center space-y-2 backdrop-blur-sm">
-            <Sparkles className="w-6 h-6 text-rose-400 mx-auto opacity-80" />
+            <BookOpen className="w-6 h-6 text-primary mx-auto opacity-80" />
             <p className="text-xs text-white/80 font-medium">
               Sua linha do tempo aparecerá aqui assim que você iniciar suas aulas.
             </p>

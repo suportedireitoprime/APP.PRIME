@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, AlertTriangle, CheckCircle2, ChevronRight, Milestone, Sparkles } from 'lucide-react';
+import { Clock, AlertTriangle, CheckCircle2, ChevronRight, Milestone, Bookmark } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 export type TimelineStep = {
@@ -169,8 +169,8 @@ export function LinhaDoTempoAnimada({ raw }: { raw: string }) {
                   </span>
 
                   {step.highlight && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-black uppercase tracking-wider bg-rose-500/25 text-rose-200 border border-rose-400/50 shadow-sm">
-                      <Sparkles className="w-3 h-3 text-amber-300 shrink-0" />
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30 shadow-sm">
+                      <Bookmark className="w-3 h-3 text-amber-300 shrink-0" />
                       {step.highlight}
                     </span>
                   )}
