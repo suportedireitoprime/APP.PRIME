@@ -46,9 +46,10 @@ export const AprenderHeaderToolbar: React.FC<AprenderHeaderToolbarProps> = memo(
               className={cn(
                 'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors flex items-center gap-1 cursor-pointer',
                 aulasViewMode === 'decks'
-                  ? 'bg-rose-500 text-white shadow-sm'
+                  ? 'text-white shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
               )}
+              style={aulasViewMode === 'decks' ? { backgroundColor: '#F43F5E', color: '#FFFFFF' } : undefined}
               title="Visualização em Decks 3D"
             >
               <Layers className="w-3 h-3" />
@@ -63,9 +64,10 @@ export const AprenderHeaderToolbar: React.FC<AprenderHeaderToolbarProps> = memo(
               className={cn(
                 'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors flex items-center gap-1 cursor-pointer',
                 aulasViewMode === 'lista'
-                  ? 'bg-rose-500 text-white shadow-sm'
+                  ? 'text-white shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
               )}
+              style={aulasViewMode === 'lista' ? { backgroundColor: '#F43F5E', color: '#FFFFFF' } : undefined}
               title="Visualização em Lista"
             >
               <span>Lista</span>
@@ -84,9 +86,10 @@ export const AprenderHeaderToolbar: React.FC<AprenderHeaderToolbarProps> = memo(
               className={cn(
                 'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors flex items-center gap-1 cursor-pointer',
                 flashcardsViewMode === 'decks'
-                  ? 'bg-emerald-500 text-white shadow-sm'
+                  ? 'text-white shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
               )}
+              style={flashcardsViewMode === 'decks' ? { backgroundColor: '#10B981', color: '#FFFFFF' } : undefined}
               title="Visualização em Decks 3D"
             >
               <Layers className="w-3 h-3" />
@@ -101,9 +104,10 @@ export const AprenderHeaderToolbar: React.FC<AprenderHeaderToolbarProps> = memo(
               className={cn(
                 'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors flex items-center gap-1 cursor-pointer',
                 flashcardsViewMode === 'lista'
-                  ? 'bg-emerald-500 text-white shadow-sm'
+                  ? 'text-white shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
               )}
+              style={flashcardsViewMode === 'lista' ? { backgroundColor: '#10B981', color: '#FFFFFF' } : undefined}
               title="Visualização em Lista"
             >
               <span>Lista</span>

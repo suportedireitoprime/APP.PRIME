@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useCallback, useRef, memo } from 'react';
 import { motion } from 'framer-motion';
-import { Video, ArrowRight } from 'lucide-react';
+import { Video, Play } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
-import { areaIconFor, getAreaThemePalette, hexToRgb } from '@/lib/areasDireitoIcons';
+import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
 import { getAreaCover } from '@/lib/areasDireitoCovers';
 import { CANONICAL_AREA_TOPICS } from '@/components/aprender/MateriaFlashcardsDeckSection';
 import type { ModuloItem } from '@/hooks/useAprenderAreaModulesMap';
@@ -76,18 +76,6 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
       .trim();
   }, [area?.nome]);
 
-  const { r, g, b } = useMemo(() => hexToRgb(palette.primary), [palette.primary]);
-
-  // Botão na mesma paleta do card, integrado perfeitamente ao design (lógica idêntica ao Flashcards)
-  const enterButtonBg = useMemo(() => {
-    const topR = Math.round(r * 0.32);
-    const topG = Math.round(g * 0.32);
-    const topB = Math.round(b * 0.32);
-    const btmR = Math.round(r * 0.14);
-    const btmG = Math.round(g * 0.14);
-    const btmB = Math.round(b * 0.14);
-    return `linear-gradient(180deg, rgba(${topR}, ${topG}, ${topB}, 0.95) 0%, rgba(${btmR}, ${btmG}, ${btmB}, 0.98) 100%)`;
-  }, [r, g, b]);
 
   // Lista de cards/módulos para o deck de aulas no formato 4:3
   const deckCards = useMemo(() => {
@@ -340,33 +328,31 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
                       </span>
                     </div>
 
-                    {/* Centro do Card: Título da Aula/Módulo sem negrito */}
-                    <div className="my-auto py-2 text-center relative z-10 px-0.5">
+                    {/* Centro do Card: Botão de Player Centralizado */}
+                    <div className="my-auto flex items-center justify-center relative z-10 py-1">
+                      <div 
+                        className={cn(
+                          "w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-[0_6px_20px_rgba(0,0,0,0.6)]",
+                          frente
+                            ? "bg-black/50 backdrop-blur-md border border-white/50 text-white hover:scale-110 active:scale-95"
+                            : "bg-black/35 backdrop-blur-sm border border-white/25 text-white/80"
+                        )}
+                        style={frente ? {
+                          boxShadow: `0 0 20px ${palette.accent}66, 0 4px 14px rgba(0,0,0,0.8)`
+                        } : undefined}
+                      >
+                        <Play className="w-5 h-5 sm:w-5.5 sm:h-5.5 fill-white text-white ml-0.5 drop-shadow-md" />
+                      </div>
+                    </div>
+
+                    {/* Parte Inferior da Capa: Título da Aula/Módulo sem negrito */}
+                    <div className="relative z-10 pt-1 pb-0.5 text-center w-full px-0.5">
                       <h4 
-                        className="text-xs sm:text-[13px] font-normal leading-snug text-white break-words line-clamp-4 drop-shadow-md"
-                        style={{ fontFamily: "'Merriweather', 'Georgia', serif" }}
+                        className="text-[11.5px] sm:text-[12.5px] font-normal leading-snug text-white break-words line-clamp-3 drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]"
+                        style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}
                       >
                         {card.titulo}
                       </h4>
-                    </div>
-
-                    {/* Rodapé do Card: Botão ENTRAR Integrado à Paleta do Fundo */}
-                    <div className="relative z-10 pt-1.5 border-t border-white/15 flex items-center justify-center w-full">
-                      {frente ? (
-                        <div
-                          style={{
-                            background: enterButtonBg,
-                            borderColor: 'rgba(255, 255, 255, 0.22)',
-                            boxShadow: `0 6px 16px -2px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.18)`,
-                          }}
-                          className="w-full py-1.5 px-3 rounded-xl flex items-center justify-center gap-1.5 text-white font-black text-[11px] sm:text-xs uppercase tracking-wider border hover:brightness-125 active:scale-95 transition-all cursor-pointer select-none"
-                        >
-                          <span className="drop-shadow-sm">Entrar</span>
-                          <ArrowRight className="w-3.5 h-3.5 stroke-[2.5] text-white/95" />
-                        </div>
-                      ) : (
-                        <div className="h-6 w-full" />
-                      )}
                     </div>
                   </div>
                 </motion.div>
