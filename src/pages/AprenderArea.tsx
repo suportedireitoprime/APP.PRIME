@@ -360,49 +360,6 @@ const AprenderArea = () => {
           </div>
         ) : (
           <>
-            {/* Seletor de Modo Aulas vs Flashcards vs Questões */}
-            <div className="flex bg-card/60 backdrop-blur-md p-1.5 rounded-2xl border border-white/10 w-full mb-4 shadow-sm gap-1.5">
-              <button
-                type="button"
-                onClick={() => { haptic.selection(); setActiveTab('aulas'); }}
-                className={cn(
-                  "flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2 px-2 sm:px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer",
-                  activeTab === 'aulas'
-                    ? "bg-rose-500 text-white border border-rose-400/30 shadow-md shadow-rose-500/20"
-                    : "text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent"
-                )}
-              >
-                <GraduationCap className="w-4 h-4 shrink-0" />
-                <span>Aulas</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => { haptic.selection(); setActiveTab('flashcards'); }}
-                className={cn(
-                  "flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2 px-2 sm:px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer",
-                  activeTab === 'flashcards'
-                    ? "bg-emerald-500 text-white border border-emerald-400/30 shadow-md shadow-emerald-500/20"
-                    : "text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent"
-                )}
-              >
-                <FlashcardsIcon className="w-4 h-4 shrink-0" />
-                <span>Flashcards</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => { haptic.selection(); setActiveTab('questoes'); }}
-                className={cn(
-                  "flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2 px-2 sm:px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer",
-                  activeTab === 'questoes'
-                    ? "bg-sky-500 text-white border border-sky-400/30 shadow-md shadow-sky-500/20"
-                    : "text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent"
-                )}
-              >
-                <ListChecks className="w-4 h-4 shrink-0" />
-                <span>Questões</span>
-              </button>
-            </div>
-
             {/* Top Bar Selecione o Módulo / Decks de Flashcards */}
             <div className="flex items-center justify-between mb-4 w-full min-w-0">
               <div className="flex items-center gap-2 min-w-0">
@@ -426,41 +383,6 @@ const AprenderArea = () => {
                 {officialFlashcardArea || area?.nome || effectiveAreaName}
               </span>
             </div>
-
-            {/* Banner de Estudo Rápido de Todos os Flashcards da Área */}
-            {isFlash && totalFlashcardsArea > 0 && (
-              <button
-                type="button"
-                onClick={() => {
-                  try { haptic.selection(); } catch {}
-                  navigate(`/flashcards/estudar?area=${encodeURIComponent(officialFlashcardArea || area?.nome || effectiveAreaName)}`, {
-                    state: { from: `/aprender/area/${slug}?tab=flashcards` }
-                  });
-                }}
-                className="w-full mb-5 p-3.5 sm:p-4 rounded-2xl border border-white/15 bg-card/70 hover:bg-card/90 backdrop-blur-md flex items-center justify-between transition-all group cursor-pointer shadow-md active:scale-[0.98]"
-              >
-                <div className="flex items-center gap-3">
-                  <div 
-                    className="w-10 h-10 rounded-xl flex items-center justify-center border border-white/20 shadow-sm"
-                    style={{ backgroundColor: `${palette.primary}25` }}
-                  >
-                    <Play className="w-4 h-4 fill-current ml-0.5" style={{ color: palette.primary }} />
-                  </div>
-                  <div className="text-left min-w-0">
-                    <p className="text-xs sm:text-sm font-bold text-white group-hover:text-emerald-400 transition-colors">
-                      Estudar Todos os Flashcards de {officialFlashcardArea || area?.nome || effectiveAreaName}
-                    </p>
-                    <p className="text-[11px] text-muted-foreground">
-                      {totalFlashcardsArea.toLocaleString('pt-BR')} flashcards distribuídos em {itemsToRender.length} decks
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1 text-xs font-bold shrink-0 ml-2" style={{ color: palette.primary }}>
-                  <span className="hidden sm:inline">Iniciar Trilha</span>
-                  <ArrowRight className="w-4 h-4" />
-                </div>
-              </button>
-            )}
 
             {isFlash && loadingFlashcards && itemsToRender.length === 0 ? (
               <div className="space-y-4 py-6">
@@ -585,10 +507,9 @@ const AprenderArea = () => {
                                 className="pointer-events-none absolute -right-2 -bottom-2 w-[120px] sm:w-[145px] h-[140px] sm:h-[165px] object-contain opacity-35 group-hover:opacity-55 group-hover:scale-105 transition-all duration-300 z-0 select-none filter drop-shadow-[0_5px_12px_rgba(0,0,0,0.65)]"
                               />
 
-                              {/* Cabeçalho da Carta: Tag Deck Refinada em Linha Única */}
-                              <div className="flex items-center justify-start z-[1] w-full pt-1">
-                                <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full backdrop-blur-md bg-black/45 text-white/95 border border-white/20 shadow-sm whitespace-nowrap">
-                                  {isFlash ? <Layers className="w-3 h-3 shrink-0" style={{ color: palette.primary }} /> : null}
+                              {/* Cabeçalho da Carta: Tag Deck no Lado Direito e Sem Ícone */}
+                              <div className="flex items-center justify-end z-[1] w-full pt-1">
+                                <span className="inline-flex items-center text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full backdrop-blur-md bg-black/45 text-white/95 border border-white/20 shadow-sm whitespace-nowrap">
                                   <span>{item.badgeLabel}</span>
                                 </span>
                               </div>
