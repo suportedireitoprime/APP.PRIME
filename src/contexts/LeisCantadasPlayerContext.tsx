@@ -3,6 +3,7 @@ import { fetchTodasLeisCantadas, registrarPlay, type LeiCantada } from "@/lib/le
 import { registrarMidia, clearMediaSession } from "@/lib/mediaSession";
 import { telaAcesa } from "@/lib/nativo/telaAcordada";
 import { fonteDeAudio } from "@/lib/nativo/audioOffline";
+import { notifyMediaPlay, subscribeMediaPlay } from "@/lib/mediaCoordinator";
 
 
 interface LeisCantadasPlayerContextType {
@@ -112,15 +113,34 @@ export const LeisCantadasPlayerProvider: React.FC<{ children: React.ReactNode }>
     return () => { void telaAcesa("leis-cantadas", false); };
   }, [tocando]);
 
+  // Coordenador Universal: pausa se outro player de mídia iniciar
+  useEffect(() => {
+    return subscribeMediaPlay((active) => {
+      if (active !== 'leiscantadas') {
+        if (audioRef.current && !audioRef.current.paused) {
+          audioRef.current.pause();
+        }
+        setTocando(false);
+      }
+    });
+  }, []);
+
   const tocar = (f: LeiCantada) => {
     if (atualId === f.id) {
-      if (tocando) { audioRef.current?.pause(); setTocando(false); }
-      else { audioRef.current?.play().catch(() => {}); setTocando(true); }
+      if (tocando) {
+        audioRef.current?.pause();
+        setTocando(false);
+      } else {
+        notifyMediaPlay('leiscantadas');
+        audioRef.current?.play().catch(() => {});
+        setTocando(true);
+      }
       return;
     }
     // Injeta faixa avulsa (ex.: resumos) na lista para o player conseguir renderizar
     setFaixas((prev) => (prev.some((p) => p.id === f.id) ? prev : [...prev, f]));
     setAtualId(f.id);
+    notifyMediaPlay('leiscantadas');
     setTocando(true);
     setTempo(0); setDur(0);
     if (!playsRegistrados.current.has(f.id)) {

@@ -3,6 +3,7 @@ import { registrarMidia, clearMediaSession } from '@/lib/mediaSession';
 import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { fonteDeAudio } from '@/lib/nativo/audioOffline';
 import { prefetchImage } from '@/lib/cdnImg';
+import { notifyMediaPlay, subscribeMediaPlay } from '@/lib/mediaCoordinator';
 import { toast } from 'sonner';
 import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
 
@@ -87,6 +88,17 @@ export const ResumoLivroPlayerProvider: React.FC<{ children: React.ReactNode }> 
     });
   }, [livroAtual]);
 
+  // Coordenador Universal: pausa se outro player de mídia iniciar
+  useEffect(() => {
+    return subscribeMediaPlay((active) => {
+      if (active !== 'resumolivro') {
+        const el = audioRef.current;
+        if (el && !el.paused) el.pause();
+        setTocando(false);
+      }
+    });
+  }, []);
+
   const tocar = useCallback(
     async (livro: LivroNormalizado) => {
       const el = audioRef.current;
@@ -94,6 +106,7 @@ export const ResumoLivroPlayerProvider: React.FC<{ children: React.ReactNode }> 
 
       if (livroAtual?.id === livro.id) {
         if (el.paused) {
+          notifyMediaPlay('resumolivro');
           await el.play().catch(() => {});
           setTocando(true);
         } else {
@@ -115,6 +128,7 @@ export const ResumoLivroPlayerProvider: React.FC<{ children: React.ReactNode }> 
         const src = await fonteDeAudio(audioIdOf(livro), livro.audioResumoUrl);
         el.src = src;
         el.playbackRate = velocidade;
+        notifyMediaPlay('resumolivro');
         await el.play();
         setTocando(true);
       } catch (err) {
@@ -130,13 +144,14 @@ export const ResumoLivroPlayerProvider: React.FC<{ children: React.ReactNode }> 
     const el = audioRef.current;
     if (!el) return;
     if (el.paused) {
+      notifyMediaPlay('resumolivro');
       el.play().catch(() => {});
       setTocando(true);
     } else {
       el.pause();
       setTocando(false);
     }
-  }, [tocando]);
+  }, []);
 
   const seek = useCallback((v: number) => {
     const el = audioRef.current;

@@ -124,6 +124,17 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
     onSearchOpenChange?.(searchOpen);
   }, [searchOpen, onSearchOpenChange]);
 
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (v) {
+      v.defaultMuted = true;
+      v.muted = true;
+      v.play().catch(() => {});
+    }
+  }, []);
+
   const nome =
     (user?.user_metadata?.display_name as string | undefined) ||
     (user?.user_metadata?.full_name as string | undefined) ||
@@ -156,15 +167,18 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           aria-hidden="true"
         />
 
-        {/* Imagem de Fundo (Professor e Aluna) */}
-        <img
-          src={heroEstudanteImg}
-          alt=""
+        {/* Vídeo de Capa do Painel do Início (Professor e Aluna em looping contínuo) */}
+        <video
+          ref={videoRef}
+          src="/video-capa.webm"
+          poster={heroEstudanteImg}
+          autoPlay
+          loop
+          muted
+          playsInline
+          disablePictureInPicture
           aria-hidden="true"
-          loading="eager"
-          fetchPriority="high"
-          decoding="async"
-          className="absolute inset-0 w-full h-full object-cover object-[65%_center] md:object-center z-0"
+          className="absolute inset-0 w-full h-full object-cover object-[65%_center] md:object-center z-0 pointer-events-none"
         />
 
         {/* Overlay vermelho com gradiente estilo menu e sombra (drop-shadow real na divisória diagonal) */}

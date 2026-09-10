@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
 import { registrarMidia, clearMediaSession } from '@/lib/mediaSession';
 import { telaAcesa } from '@/lib/nativo/telaAcordada';
+import { notifyMediaPlay, subscribeMediaPlay } from '@/lib/mediaCoordinator';
 
 export interface AulaVideo {
   id: string | number;
@@ -72,14 +73,28 @@ export const VideoaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
     };
   }, [tocando]);
 
+  // Coordenador Universal: pausa se outro player de mídia iniciar
+  useEffect(() => {
+    return subscribeMediaPlay((active) => {
+      if (active !== 'videoaula') {
+        setTocando(false);
+      }
+    });
+  }, []);
+
   const tocarVideo = useCallback((aula: AulaVideo) => {
+    notifyMediaPlay('videoaula');
     setAtual(aula);
     setTocando(true);
     setTempo(aula.tempoInicial || 0);
   }, []);
 
   const togglePlay = useCallback(() => {
-    setTocando((prev) => !prev);
+    setTocando((prev) => {
+      const next = !prev;
+      if (next) notifyMediaPlay('videoaula');
+      return next;
+    });
   }, []);
 
   const seek = useCallback((v: number) => {

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
 import { clearMediaSession, registrarMidia } from '@/lib/mediaSession';
 import { telaAcesa } from '@/lib/nativo/telaAcordada';
+import { notifyMediaPlay, subscribeMediaPlay } from '@/lib/mediaCoordinator';
 import { type LivroNormalizado } from '@/lib/bibliotecaColecoes';
 
 const INTRO_URL = 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/audio-intro-2.mp3';
@@ -111,6 +112,21 @@ export const PilulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, [clearFadeInterval, clearAutoPlayTimeout]);
 
+  // Coordenador Universal: pausa se outro player de mídia iniciar
+  useEffect(() => {
+    return subscribeMediaPlay((active) => {
+      if (active !== 'pilulas') {
+        if (audioIntroRef.current && !audioIntroRef.current.paused) {
+          audioIntroRef.current.pause();
+        }
+        if (audioMainRef.current && !audioMainRef.current.paused) {
+          audioMainRef.current.pause();
+        }
+        setIsPlaying(false);
+      }
+    });
+  }, []);
+
   const skipToMain = useCallback(() => {
     if (hasPlayedIntro) return;
     
@@ -173,6 +189,7 @@ export const PilulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
     autoPlayTimeoutRef.current = setTimeout(() => {
       const introEl = audioIntroRef.current;
       if (introEl) {
+        notifyMediaPlay('pilulas');
         introEl.play().then(() => setIsPlaying(true)).catch(err => {
           console.warn('Autoplay bloqueado', err);
           skipToMain();
@@ -189,6 +206,7 @@ export const PilulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
       activeRef.current?.pause();
       setIsPlaying(false);
     } else {
+      notifyMediaPlay('pilulas');
       if (phase === 'intro' && !hasPlayedIntro) {
         const introEl = audioIntroRef.current;
         if (introEl) {

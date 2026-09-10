@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { registrarMidia, clearMediaSession } from '@/lib/mediaSession';
 import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { fonteDeAudio } from '@/lib/nativo/audioOffline';
+import { notifyMediaPlay, subscribeMediaPlay } from '@/lib/mediaCoordinator';
 import { toast } from 'sonner';
 
 export interface AulaAudio {
@@ -183,6 +184,17 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
     });
   }, [atual, atualIdx, fila]);
 
+  // Coordenador Universal: pausa se outro player de mídia iniciar
+  useEffect(() => {
+    return subscribeMediaPlay((active) => {
+      if (active !== 'audioaula') {
+        const el = audioRef.current;
+        if (el && !el.paused) el.pause();
+        setTocando(false);
+      }
+    });
+  }, []);
+
   const tocar = useCallback(
     async (a: AulaAudio, customFila?: AulaAudio[]) => {
       const el = audioRef.current;
@@ -194,6 +206,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
 
       if (atualId === a.id) {
         if (el?.paused) {
+          notifyMediaPlay('audioaula');
           await el.play().catch(() => {});
           setTocando(true);
         } else {
@@ -212,6 +225,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
         if (el) {
           el.src = src;
           el.playbackRate = velocidade;
+          notifyMediaPlay('audioaula');
           await el.play();
         }
         setTocando(true);
@@ -231,6 +245,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
       el.pause();
       setTocando(false);
     } else {
+      notifyMediaPlay('audioaula');
       el.play().catch((err) => {
         console.error('[AudioaulasPlayer] Erro ao alternar reprodução:', err);
         setTocando(false);

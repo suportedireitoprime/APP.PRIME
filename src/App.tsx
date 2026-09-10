@@ -58,15 +58,11 @@ const brasaoImg = brasaoImgAsset;
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { RecordingProvider } from "@/contexts/RecordingContext";
-import { LeisCantadasPlayerProvider } from "@/contexts/LeisCantadasPlayerContext";
+import { UniversalMediaPlayerProvider } from "@/contexts/UniversalMediaPlayerProvider";
 import GlobalLeisCantadasMiniPlayer from "@/components/leis-cantadas/GlobalLeisCantadasMiniPlayer";
-import { AudioaulasPlayerProvider } from "@/contexts/AudioaulasPlayerContext";
 import GlobalAudioaulasMiniPlayer from "@/components/audioaulas/GlobalAudioaulasMiniPlayer";
-import { ResumoLivroPlayerProvider } from "./contexts/ResumoLivroPlayerContext.tsx";
-import { PilulasPlayerProvider } from "@/contexts/PilulasPlayerContext";
 import { GlobalResumoMiniPlayer } from "./components/biblioteca/GlobalResumoMiniPlayer.tsx";
 import ResumoLivroAudioSheet from "./components/biblioteca/ResumoLivroAudioSheet.tsx";
-import { VideoaulasPlayerProvider } from "@/contexts/VideoaulasPlayerContext";
 import GlobalVideoaulaMiniPlayer from "@/components/videoaulas/GlobalVideoaulaMiniPlayer";
 const GeofencePresenceBanner = lazy(() => import("@/components/GeofencePresenceBanner"));
 const ReminderInAppBanner = lazy(() => import("@/components/ReminderInAppBanner"));
@@ -207,47 +203,39 @@ const App = () => (
         <AuthProvider>
           <ThemeProvider>
             <RecordingProvider>
-              <LeisCantadasPlayerProvider>
-                <AudioaulasPlayerProvider>
-                  <PilulasPlayerProvider>
-                    <VideoaulasPlayerProvider>
-                      <ResumoLivroPlayerProvider>
-                        <Suspense fallback={null}>
-                          <AppBootSplash />
-                        </Suspense>
-                        <TooltipProvider>
-                          <SkipToContent />
-                          <Sonner />
+              <UniversalMediaPlayerProvider>
+                <Suspense fallback={null}>
+                  <AppBootSplash />
+                </Suspense>
+                <TooltipProvider>
+                  <SkipToContent />
+                  <Sonner />
 
-                          <Analytics />
-                          <SpeedInsights />
-                          <Suspense fallback={null}>
-                            <AnalyticsDebugPanel />
-                          </Suspense>
+                  <Analytics />
+                  <SpeedInsights />
+                  <Suspense fallback={null}>
+                    <AnalyticsDebugPanel />
+                  </Suspense>
 
-                          <OfflineStatusBadge />
-                          <OfflineWatcher />
-                          <AppWarmupInitializer />
-                          
-                          <Suspense fallback={null}>
-                            <GeofencePresenceBanner />
-                            <ReminderInAppBanner />
-                            <InAppPushPopup />
-                            <HorusTakeoverNoticeDialog />
-                          </Suspense>
-                          <ForceUpdateWrapper />
-                          
-                          <Suspense fallback={<div className="min-h-screen bg-[#0D0D0D]" />}>
-                            <AnimatedRoutes />
-                          </Suspense>
-                          <LazyMediaPlayers />
-                          <BackToTop />
-                        </TooltipProvider>
-                      </ResumoLivroPlayerProvider>
-                    </VideoaulasPlayerProvider>
-                  </PilulasPlayerProvider>
-                </AudioaulasPlayerProvider>
-              </LeisCantadasPlayerProvider>
+                  <OfflineStatusBadge />
+                  <OfflineWatcher />
+                  <AppWarmupInitializer />
+                  
+                  <Suspense fallback={null}>
+                    <GeofencePresenceBanner />
+                    <ReminderInAppBanner />
+                    <InAppPushPopup />
+                    <HorusTakeoverNoticeDialog />
+                  </Suspense>
+                  <ForceUpdateWrapper />
+                  
+                  <Suspense fallback={<div className="min-h-screen bg-[#0D0D0D]" />}>
+                    <AnimatedRoutes />
+                  </Suspense>
+                  <LazyMediaPlayers />
+                  <BackToTop />
+                </TooltipProvider>
+              </UniversalMediaPlayerProvider>
             </RecordingProvider>
           </ThemeProvider>
         </AuthProvider>
