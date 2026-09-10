@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, Lightbulb, AlertTriangle, ChevronDown, BookOpen, Eye, EyeOff, Scale } from 'lucide-react';
+import { MessageSquare, Lightbulb, AlertTriangle, ChevronDown, BookOpen, Eye, EyeOff, Scale, GitFork, Gavel, FileText, Sparkles } from 'lucide-react';
 import { normalizarMarkdown, limparTextoInstrucoes } from '@/lib/markdown';
 import { haptic } from '@/lib/nativeHaptics';
 import { LinhaDoTempoAnimada, isTimelineBlock } from './LinhaDoTempoAnimada';
@@ -22,10 +22,12 @@ export type LeituraPayload = {
   titulo?: string;
   conteudo?: string;
   texto?: string;
+  subtipo?: string;
   em_portugues_claro?: string;
   exemplo?: string;
   pegadinha?: string;
 };
+
 
 type Camada = {
   chave: 'em_portugues_claro' | 'exemplo' | 'pegadinha';
@@ -120,15 +122,42 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
   };
 
+  // Identificação do subtipo de bloco
+  const subtipo = payload?.subtipo;
+  const isGrafoDecisao = subtipo === 'grafo_decisao' || (titulo || '').toLowerCase().includes('grafo de conexão') || (titulo || '').toLowerCase().includes('árvore de decisão');
+  const isJurisprudencia = subtipo === 'jurisprudencia' || (titulo || '').toLowerCase().includes('jurisprudência') || (titulo || '').toLowerCase().includes('tribunais superiores');
+  const isProcessual = subtipo === 'processual' || (titulo || '').toLowerCase().includes('procedimento') || (titulo || '').toLowerCase().includes('ação penal');
+  const isIntro = subtipo === 'intro' || (titulo || '').toLowerCase().includes('abertura da trilha');
+
   return (
     <article className="max-w-[70ch] lg:max-w-[76ch] mx-auto py-3 px-1 sm:px-2 pb-4">
       {titulo && (
         <header className="mb-6 sm:mb-8">
           <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-primary mb-2.5 bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20 shadow-sm">
-            {isCasoPratico ? (
+            {isGrafoDecisao ? (
+              <>
+                <GitFork className="w-3.5 h-3.5 text-primary shrink-0 rotate-180" />
+                <span>Grafo de Decisão & Síntese</span>
+              </>
+            ) : isJurisprudencia ? (
+              <>
+                <Gavel className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span>Jurisprudência dos Tribunais</span>
+              </>
+            ) : isProcessual ? (
+              <>
+                <FileText className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span>Procedimento & Ação Penal</span>
+              </>
+            ) : isIntro ? (
+              <>
+                <Sparkles className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span>Abertura da Trilha</span>
+              </>
+            ) : isCasoPratico ? (
               <>
                 <Scale className="w-3.5 h-3.5 text-primary shrink-0" />
-                <span>Caso Prático</span>
+                <span>Caso Prático Real</span>
               </>
             ) : termosGlossario.length > 0 ? (
               <>

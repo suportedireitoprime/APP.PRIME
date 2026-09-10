@@ -13,7 +13,7 @@ import { type NivelFlashcard } from '@/lib/spacedRepetition';
 import { haptic } from '@/lib/nativeHaptics';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { normalizarMarkdown, limparTextoInstrucoes, limparMarkdownInline } from '@/lib/markdown';
+import { normalizarMarkdown, limparTextoInstrucoes, limparMarkdownInline, formatarDicaProfessora } from '@/lib/markdown';
 
 export interface BlocoViewProps {
   bloco: Bloco;
@@ -125,36 +125,36 @@ export function BlocoView({
     const { titulo, colunas = [], linhas = [] } = bloco.payload || {};
     return (
       <motion.article
-        className="max-w-[70ch] lg:max-w-none mx-auto py-4"
+        className="max-w-[70ch] lg:max-w-none mx-auto py-1.5 sm:py-2.5 px-0.5 sm:px-2"
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.4 }}
       >
         {titulo && (
-          <h3 className="mb-4 sm:mb-6 font-sans text-[18px] sm:text-[20px] font-bold leading-snug text-white flex items-center gap-2">
+          <h3 className="mb-3 sm:mb-4 font-sans text-[16px] sm:text-[18px] font-bold leading-snug text-white flex items-center gap-2">
             <span className="w-1.5 h-4 bg-primary rounded-full" />
             <span>{limparMarkdownInline(titulo)}</span>
           </h3>
         )}
-        <div className="space-y-3 sm:hidden">
+        <div className="space-y-2 sm:hidden">
           {linhas.map((row: string[], ri: number) => (
             <motion.div
               key={ri}
-              className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-lg"
-              initial={{ opacity: 0, y: 10 }}
+              className="overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-md"
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, delay: ri * 0.07 }}
+              transition={{ duration: 0.3, delay: ri * 0.05 }}
             >
-              <div className="bg-white/5 px-4 py-3 font-sans text-[15px] font-bold text-white border-b border-white/5">
+              <div className="bg-white/5 px-3.5 py-2.5 font-sans text-[14px] font-bold text-white border-b border-white/5">
                 {limparMarkdownInline(row[0])}
               </div>
               <dl className="divide-y divide-white/5">
                 {row.slice(1).map((cell, ci) => (
-                  <div key={ci} className="px-4 py-2.5">
-                    <dt className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 mb-1">
+                  <div key={ci} className="px-3.5 py-2">
+                    <dt className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 mb-0.5">
                       {limparMarkdownInline(colunas[ci + 1])}
                     </dt>
-                    <dd className="text-[14px] sm:text-[15px] leading-relaxed text-neutral-200">
+                    <dd className="text-[13px] sm:text-[14px] leading-relaxed text-neutral-200">
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
                         components={{
@@ -171,12 +171,12 @@ export function BlocoView({
             </motion.div>
           ))}
         </div>
-        <div className="hidden overflow-x-auto rounded-2xl border border-white/10 shadow-xl sm:block bg-white/[0.02] backdrop-blur-sm">
-          <table className="w-full text-[15px]">
+        <div className="hidden overflow-x-auto rounded-xl border border-white/10 shadow-lg sm:block bg-white/[0.02] backdrop-blur-sm">
+          <table className="w-full text-[14px]">
             <thead className="bg-white/5">
               <tr>
                 {colunas.map((c: string, i: number) => (
-                  <th key={i} className="px-4 py-3.5 text-left text-[13px] sm:text-[14px] font-bold text-white uppercase tracking-wider">
+                  <th key={i} className="px-3.5 py-2.5 text-left text-[12px] sm:text-[13px] font-bold text-white uppercase tracking-wider">
                     {limparMarkdownInline(c)}
                   </th>
                 ))}
@@ -186,7 +186,7 @@ export function BlocoView({
               {linhas.map((row: string[], ri: number) => (
                 <tr key={ri} className="border-t border-white/5 odd:bg-white/[0.01] hover:bg-white/[0.04] transition-colors">
                   {row.map((cell, ci) => (
-                    <td key={ci} className="px-4 py-3.5 align-top leading-relaxed text-neutral-300">
+                    <td key={ci} className="px-3.5 py-2.5 align-top leading-relaxed text-neutral-300">
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
                         components={{
@@ -449,8 +449,9 @@ export function BlocoView({
   }
 
   if (bloco.tipo === 'destaque') {
-    const { tom = 'info', titulo, texto: textoRaw } = bloco.payload || {};
-    const texto = limparTextoInstrucoes(textoRaw);
+    const { tom = 'info', titulo, texto: textoRaw, subtipo } = bloco.payload || {};
+    const isDicaProfessora = subtipo === 'audio_dica' || (titulo || '').toLowerCase().includes('dica da professora') || (titulo || '').toLowerCase().includes('áudio-guia');
+    const texto = isDicaProfessora ? formatarDicaProfessora(textoRaw) : limparTextoInstrucoes(textoRaw);
 
     let style = {
       bg: 'bg-primary/[0.08]',
@@ -482,15 +483,44 @@ export function BlocoView({
         <div className={`rounded-3xl border ${style.br} ${style.bg} p-6 sm:p-8 backdrop-blur-md shadow-xl ${style.glow}`}>
           <div className={`mb-4 inline-flex items-center gap-2 text-[11px] sm:text-[12px] font-extrabold uppercase tracking-widest ${style.tx} bg-white/5 px-3 py-1 rounded-full border border-white/10`}>
             <style.Icon className="h-4 w-4" strokeWidth={2} />
-            {tom === 'alerta' ? 'Atenção Crucial' : tom === 'dica' ? 'Dica Estratégica' : 'Ponto Fundamental'}
+            {isDicaProfessora ? (
+              <span className="flex items-center gap-1.5">
+                <span>Dica Estratégica · Áudio-Guia</span>
+                <span className="flex items-center gap-0.5 ml-1 h-3" aria-hidden="true">
+                  <span className="w-0.5 h-2.5 bg-amber-400 rounded-full animate-pulse" />
+                  <span className="w-0.5 h-3.5 bg-amber-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
+                  <span className="w-0.5 h-2 bg-amber-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
+                </span>
+              </span>
+            ) : tom === 'alerta' ? (
+              'Atenção Crucial'
+            ) : tom === 'dica' ? (
+              'Dica Estratégica'
+            ) : (
+              'Ponto Fundamental'
+            )}
           </div>
           {titulo && (
             <h2 className="mb-4 font-sans text-xl sm:text-2xl font-black tracking-tight text-white leading-snug">
               {limparMarkdownInline(titulo)}
             </h2>
           )}
-          <div className="prose prose-invert prose-p:text-[16px] sm:prose-p:text-[17px] md:prose-p:text-[18px] prose-p:leading-[1.8] prose-p:text-neutral-200 prose-p:mb-5 prose-li:text-[16px] sm:prose-li:text-[17px] md:prose-li:text-[18px] prose-li:leading-[1.75] prose-li:text-neutral-200 prose-strong:text-white prose-strong:font-bold max-w-none">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          <div className="prose prose-invert prose-blockquote:quotes-none prose-p:text-[16px] sm:prose-p:text-[17px] md:prose-p:text-[18px] prose-p:leading-[1.8] prose-p:text-neutral-200 prose-p:mb-4 prose-li:text-[16px] sm:prose-li:text-[17px] md:prose-li:text-[18px] prose-li:leading-[1.75] prose-li:text-neutral-200 prose-strong:text-white prose-strong:font-bold max-w-none">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                blockquote: ({ children }) => (
+                  <blockquote className="border-l-4 border-amber-500/80 bg-amber-500/[0.04] text-neutral-100 py-3.5 px-4 sm:px-6 rounded-r-2xl my-2 not-italic font-medium shadow-sm backdrop-blur-sm space-y-4">
+                    {children}
+                  </blockquote>
+                ),
+                p: ({ children }) => (
+                  <p className="text-[16px] sm:text-[17px] md:text-[18px] leading-[1.8] text-neutral-200">
+                    {children}
+                  </p>
+                ),
+              }}
+            >
               {normalizarMarkdown(texto)}
             </ReactMarkdown>
           </div>
