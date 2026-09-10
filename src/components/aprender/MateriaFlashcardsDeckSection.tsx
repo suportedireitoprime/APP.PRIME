@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback, useRef, memo } from 'react';
 import { motion } from 'framer-motion';
 import { Layers, ArrowRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
-import { areaIconFor } from '@/lib/areasDireitoIcons';
+import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
 import type { ModuloItem } from '@/hooks/useAprenderAreaModulesMap';
 import type { AprenderArea } from '@/types/aprender';
 import { cn } from '@/lib/utils';
@@ -260,6 +260,7 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
   const iconInfo = useMemo(() => areaIconFor(area.slug), [area.slug]);
   const AreaIcon = iconInfo?.Icon;
   const accentColor = iconInfo?.color || '#10b981';
+  const palette = useMemo(() => getAreaThemePalette(area.slug || area.nome), [area.slug, area.nome]);
 
   // Lista de cards/tópicos que compõem o deck desta matéria (garante sempre 6 a 7 cards em leque)
   const deckCards = useMemo(() => {
@@ -470,50 +471,52 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
                   }}
                   className="absolute cursor-pointer will-change-transform"
                 >
-                  {/* O Card Flashcard em si */}
+                  {/* O Card Flashcard em si com identidade visual e paleta idêntica à tela interna */}
                   <div
                     className={cn(
                       "w-[140px] h-[190px] sm:w-[155px] sm:h-[210px] rounded-[22px] p-3.5 sm:p-4 flex flex-col justify-between select-none relative overflow-hidden transition-all duration-300",
                       frente
-                        ? "border-2 shadow-2xl"
-                        : "border border-white/10 shadow-black/70 opacity-90"
+                        ? "border-2 border-white/40 shadow-2xl"
+                        : "border border-white/20 shadow-black/70"
                     )}
                     style={{
-                      borderColor: frente ? `${accentColor}80` : 'rgba(255,255,255,0.12)',
-                      background: `linear-gradient(150deg, #18181b 0%, #0c0c0e 100%)`,
+                      background: palette.cardGradient,
                       boxShadow: frente
-                        ? `0 20px 45px -10px ${accentColor}55, 0 0 0 1px ${accentColor}35`
-                        : undefined,
+                        ? `${palette.shadow}, 0 20px 45px -10px rgba(0,0,0,0.85)`
+                        : '0 10px 24px -5px rgba(0,0,0,0.65)',
+                      filter: frente ? 'none' : 'brightness(0.72)',
                     }}
                   >
-                    {/* Brilho radial no topo do card */}
-                    <div 
-                      className="pointer-events-none absolute -top-8 -right-8 w-28 h-28 rounded-full blur-2xl opacity-40"
-                      style={{ background: accentColor }}
-                      aria-hidden
+                    {/* Moldura Interna Chanfrada de Carta de Baralho */}
+                    <div className="absolute inset-1 rounded-[16px] border border-white/15 pointer-events-none z-10" />
+
+                    {/* Efeito de Brilho e Acabamento Laminado da Carta */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.03] to-white/[0.12] pointer-events-none z-10" />
+
+                    {/* Marca d'água / Gravura da Deusa Têmis Vazada na Carta */}
+                    <img
+                      src="/images/gamificacao/deusa_temis_vazada.webp"
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                      decoding="async"
+                      className="pointer-events-none absolute -right-2 -bottom-2 w-[105px] sm:w-[125px] h-[120px] sm:h-[140px] object-contain opacity-35 select-none filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.65)] z-0"
                     />
 
-                    {/* Topo do Flashcard: Tag & Ícone */}
+                    {/* Topo do Flashcard: Tag & Ordem */}
                     <div className="flex items-center justify-between w-full relative z-10">
-                      <span 
-                        className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border truncate max-w-[85%]"
-                        style={{
-                          backgroundColor: `${accentColor}18`,
-                          borderColor: `${accentColor}35`,
-                          color: accentColor,
-                        }}
-                      >
+                      <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full backdrop-blur-md bg-black/45 text-white/95 border border-white/20 shadow-sm truncate max-w-[75%]">
                         {area.nome}
                       </span>
-                      <span className="text-[10px] font-bold text-white/40">
+                      <span className="text-[10px] font-bold text-white/70">
                         #{String(card.ordem).padStart(2, '0')}
                       </span>
                     </div>
 
-                    {/* Centro do Flashcard: Título do Tópico com tipografia jurídica */}
-                    <div className="my-auto py-2 text-center relative z-10">
+                    {/* Centro do Flashcard: Título do Tópico sem negrito com tipografia jurídica */}
+                    <div className="my-auto py-2 text-center relative z-10 px-0.5">
                       <h4 
-                        className="text-xs sm:text-[13px] font-medium leading-snug text-white break-words line-clamp-4"
+                        className="text-xs sm:text-[13px] font-normal leading-snug text-white break-words line-clamp-4 drop-shadow-md"
                         style={{ fontFamily: "'Merriweather', 'Georgia', serif" }}
                       >
                         {card.titulo}
@@ -521,15 +524,14 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
                     </div>
 
                     {/* Rodapé do Flashcard: CTA para entrar na lista */}
-                    <div className="relative z-10 pt-1.5 border-t border-white/10 flex items-center justify-between w-full">
-                      <span className="text-[9px] font-medium text-muted-foreground flex items-center gap-1">
-                        <Layers className="w-2.5 h-2.5" style={{ color: accentColor }} />
+                    <div className="relative z-10 pt-1.5 border-t border-white/20 flex items-center justify-between w-full">
+                      <span className="text-[9px] font-medium text-white/80 flex items-center gap-1">
+                        <Layers className="w-2.5 h-2.5 text-white/90" />
                         <span>Flashcard</span>
                       </span>
                       {frente && (
                         <span 
-                          className="text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors"
-                          style={{ color: accentColor }}
+                          className="text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 transition-colors text-white hover:text-amber-200"
                         >
                           <span>Entrar</span>
                           <ArrowRight className="w-2.5 h-2.5" />

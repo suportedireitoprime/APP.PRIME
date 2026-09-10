@@ -577,40 +577,28 @@ const Aprender = () => {
               </div>
             </section>
 
-            {/* Menu de Alternância Global Harmonizado com o Painel Hero Superior */}
-            <div 
-              className="flex p-1.5 rounded-2xl w-full shadow-sm relative z-20 mt-8 mb-4 transition-all duration-500 bg-card border"
-              style={{
-                borderColor: tabTheme.heroBorder,
-                boxShadow: `0 6px 22px -6px ${tabTheme.accent}25`,
-              }}
-            >
+            {/* Menu de Alternância Global */}
+            <div className="flex bg-card p-1.5 rounded-2xl border border-border/80 w-full shadow-sm relative z-20 mt-8 mb-4">
               {(['aulas', 'flashcards', 'questoes'] as const).map((tab) => {
                 const isActive = activeTab === tab;
                 const tabConfig = {
                   aulas: {
                     label: 'Aulas',
                     icon: GraduationCap,
-                    bg: 'linear-gradient(135deg, #241318 0%, #150d10 55%, #0d0d0f 100%)',
-                    border: 'rgba(244, 63, 94, 0.45)',
-                    accent: '#fb7185',
-                    glow: '0 4px 18px -2px rgba(244, 63, 94, 0.35), inset 0 0 0 1px rgba(244, 63, 94, 0.3)',
+                    activeClass: 'bg-primary/15 text-primary border-primary/30 shadow-sm font-bold',
+                    iconColor: 'currentColor',
                   },
                   flashcards: {
                     label: 'Flashcards',
                     icon: FlashcardsIcon,
-                    bg: 'linear-gradient(135deg, #0d281c 0%, #071710 55%, #050d09 100%)',
-                    border: 'rgba(52, 211, 153, 0.45)',
-                    accent: '#34D399',
-                    glow: '0 4px 18px -2px rgba(52, 211, 153, 0.35), inset 0 0 0 1px rgba(52, 211, 153, 0.3)',
+                    activeClass: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/35 shadow-[0_0_14px_rgba(52,211,153,0.18)] font-bold',
+                    iconColor: '#34D399',
                   },
                   questoes: {
                     label: 'Questões',
                     icon: ListChecks,
-                    bg: 'linear-gradient(135deg, #0d2035 0%, #071220 55%, #050c14 100%)',
-                    border: 'rgba(56, 189, 248, 0.45)',
-                    accent: '#38BDF8',
-                    glow: '0 4px 18px -2px rgba(56, 189, 248, 0.35), inset 0 0 0 1px rgba(56, 189, 248, 0.3)',
+                    activeClass: 'bg-sky-500/15 text-sky-400 border-sky-500/35 shadow-[0_0_14px_rgba(56,189,248,0.18)] font-bold',
+                    iconColor: '#38BDF8',
                   },
                 }[tab];
 
@@ -623,28 +611,18 @@ const Aprender = () => {
                       try { haptic.selection(); } catch (e) {}
                       setActiveTab(tab);
                     }}
-                    style={
-                      isActive
-                        ? {
-                            background: tabConfig.bg,
-                            borderColor: tabConfig.border,
-                            boxShadow: tabConfig.glow,
-                            color: '#ffffff',
-                          }
-                        : undefined
-                    }
                     className={cn(
-                      "flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2.5 rounded-xl text-xs sm:text-[13px] font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer border",
+                      "flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2.5 rounded-xl text-xs sm:text-[13px] uppercase tracking-wider transition-all duration-200 cursor-pointer border",
                       isActive
-                        ? "border text-white shadow-md font-extrabold"
-                        : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                        ? tabConfig.activeClass
+                        : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/40 font-semibold"
                     )}
                   >
                     <IconComponent
                       className="w-4 h-4 shrink-0 transition-colors"
-                      style={isActive ? { color: tabConfig.accent } : undefined}
+                      style={isActive ? { color: tabConfig.iconColor } : undefined}
                     />
-                    <span className={isActive ? "text-white font-black drop-shadow-sm" : ""}>
+                    <span>
                       {tabConfig.label}
                     </span>
                   </button>
