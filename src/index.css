@@ -1817,3 +1817,94 @@ html[data-route-transitioning="true"] * {
   transform: translateZ(0);
 }
 @layer utilities { .bg-brand-gradient { background-image: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--brand-burgundy-mid)) 60%, hsl(var(--brand-burgundy-deep)) 100%); } }
+
+/* ==========================================================================
+   ANIMAÇÃO DE CARTAS SENDO EMBARALHADAS (Deck Shuffle Animation 60-120fps GPU)
+   Simula o movimento orgânico de um baralho de flashcards sendo embaralhado
+   ========================================================================== */
+@keyframes deck-shuffle-left {
+  0%, 100% {
+    transform: translate(-14px, 3px) rotate(-5deg);
+  }
+  20% {
+    transform: translate(-38px, -8px) rotate(-13deg);
+  }
+  35% {
+    transform: translate(-20px, 5px) rotate(-2deg);
+  }
+  50% {
+    transform: translate(-34px, -5px) rotate(-11deg);
+  }
+  68% {
+    transform: translate(-8px, 1px) rotate(-3deg);
+  }
+  82% {
+    transform: translate(-15px, 3px) rotate(-5.5deg);
+  }
+}
+
+@keyframes deck-shuffle-right {
+  0%, 100% {
+    transform: translate(14px, 3px) rotate(5deg);
+  }
+  20% {
+    transform: translate(38px, -8px) rotate(13deg);
+  }
+  35% {
+    transform: translate(20px, 5px) rotate(2deg);
+  }
+  50% {
+    transform: translate(34px, -5px) rotate(11deg);
+  }
+  68% {
+    transform: translate(8px, 1px) rotate(3deg);
+  }
+  82% {
+    transform: translate(15px, 3px) rotate(5.5deg);
+  }
+}
+
+@keyframes deck-shuffle-front {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  20% {
+    transform: translate(0, -6px) scale(1.025);
+  }
+  35% {
+    transform: translate(1px, 2px) scale(0.995);
+  }
+  50% {
+    transform: translate(-1px, -4px) scale(1.018);
+  }
+  68% {
+    transform: translate(0, 1px) scale(1);
+  }
+}
+
+.anim-deck-shuffle-left {
+  animation: deck-shuffle-left 3.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.anim-deck-shuffle-right {
+  animation: deck-shuffle-right 3.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.anim-deck-shuffle-front {
+  animation: deck-shuffle-front 3.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-deck-shuffle-left,
+  .anim-deck-shuffle-right,
+  .anim-deck-shuffle-front {
+    animation: none !important;
+  }
+}
+

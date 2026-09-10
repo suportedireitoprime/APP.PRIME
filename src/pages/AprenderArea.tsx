@@ -522,12 +522,13 @@ const AprenderArea = () => {
                               />
                             </div>
 
-                            {/* ── CARTA 1 (Traseira Esquerda - Nivelada na Mesma Altura) ── */}
+                            {/* ── CARTA 1 (Traseira Esquerda - Embaralhamento Suave) ── */}
                             <div
-                              className="absolute inset-0 rounded-2xl border border-white/20 transition-all duration-500 origin-bottom -rotate-[4deg] sm:-rotate-[5deg] group-hover:-rotate-[8deg] sm:group-hover:-rotate-[9deg] -translate-x-3 sm:-translate-x-4 translate-y-1 z-0 shadow-lg overflow-hidden"
+                              className="absolute inset-0 rounded-2xl border border-white/20 transition-all duration-500 origin-bottom anim-deck-shuffle-left group-hover:[animation-duration:1.8s] z-0 shadow-lg overflow-hidden"
                               style={{
                                 background: `linear-gradient(145deg, rgba(28, 25, 32, 0.96) 0%, rgba(12, 12, 16, 0.98) 100%)`,
                                 boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
+                                animationDelay: `${(i % 4) * 0.4}s`,
                               }}
                             >
                               {/* Verso de carta de deck colecionável */}
@@ -542,12 +543,13 @@ const AprenderArea = () => {
                               </div>
                             </div>
 
-                            {/* ── CARTA 2 (Traseira Direita - Nivelada na Mesma Altura) ── */}
+                            {/* ── CARTA 2 (Traseira Direita - Embaralhamento Suave) ── */}
                             <div
-                              className="absolute inset-0 rounded-2xl border border-white/20 transition-all duration-500 origin-bottom rotate-[4deg] sm:rotate-[5deg] group-hover:rotate-[8deg] sm:group-hover:rotate-[9deg] translate-x-3 sm:translate-x-4 translate-y-1 z-0 shadow-lg overflow-hidden"
+                              className="absolute inset-0 rounded-2xl border border-white/20 transition-all duration-500 origin-bottom anim-deck-shuffle-right group-hover:[animation-duration:1.8s] z-0 shadow-lg overflow-hidden"
                               style={{
                                 background: `linear-gradient(215deg, rgba(28, 25, 32, 0.96) 0%, rgba(12, 12, 16, 0.98) 100%)`,
                                 boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
+                                animationDelay: `${(i % 4) * 0.4}s`,
                               }}
                             >
                               {/* Verso de carta de deck colecionável */}
@@ -562,12 +564,13 @@ const AprenderArea = () => {
                               </div>
                             </div>
 
-                            {/* ── CARTA 3 (Principal Frontal - Centro do Deck Aberto) ── */}
+                            {/* ── CARTA 3 (Principal Frontal - Embaralhamento Suave no Centro) ── */}
                             <div
-                              className="relative w-full h-full p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 hover:border-amber-400/60 shadow-[0_16px_36px_rgba(0,0,0,0.75)] transition-all duration-300"
+                              className="relative w-full h-full p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 hover:border-amber-400/60 shadow-[0_16px_36px_rgba(0,0,0,0.75)] transition-all duration-300 anim-deck-shuffle-front group-hover:[animation-duration:1.8s]"
                               style={{
                                 background: palette.cardGradient,
                                 boxShadow: palette.shadow,
+                                animationDelay: `${(i % 4) * 0.4}s`,
                               }}
                             >
                               {/* Moldura Interna Chanfrada de Carta de Baralho */}
