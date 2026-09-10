@@ -500,122 +500,116 @@ const AprenderArea = () => {
                             isLeft ? 'justify-start pl-3 sm:pl-8 md:pl-12' : 'justify-end pr-3 sm:pr-8 md:pr-12'
                           }`}
                         >
-                          {/* ── CONJUNTO DE 3 CARTAS EM FORMATO DE DECK ABERTO EM LEQUE ── */}
+                          {/* ── CONJUNTO DE 3 CARTAS EM FORMATO DE DECK ABERTO EM LEQUE COM ALTURA NIVELADA ── */}
                           <div
                             onClick={item.onClick}
-                            className="relative w-[170px] sm:w-[200px] md:w-[225px] min-h-[255px] sm:min-h-[295px] md:min-h-[325px] cursor-pointer group select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-2"
+                            className="relative w-[165px] sm:w-[190px] md:w-[215px] h-[245px] sm:h-[275px] md:h-[295px] cursor-pointer group select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-2"
                           >
-                            {/* ── CARTA 1 (Traseira Esquerda - Inclinada no Leque) ── */}
+                            {/* Medalhão de Milestone / Nó da Trilha Centralizado no Topo (Sem corte lateral nem sobreposição) */}
                             <div
-                              className="absolute inset-0 rounded-2xl border border-white/20 transition-all duration-500 origin-bottom-left -rotate-[7deg] sm:-rotate-[8deg] group-hover:-rotate-[13deg] sm:group-hover:-rotate-[14deg] group-hover:-translate-x-3 z-0 shadow-lg overflow-hidden"
+                              className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-30 flex items-center justify-center rounded-full w-8 h-8 sm:w-8.5 sm:h-8.5 border-2 border-white/70 text-white font-bold text-xs shadow-xl transition-transform group-hover:scale-110"
                               style={{
-                                background: `linear-gradient(135deg, rgba(25, 25, 30, 0.96) 0%, rgba(12, 12, 16, 0.98) 100%)`,
-                                boxShadow: `0 12px 28px -6px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.12)`,
+                                backgroundColor: palette.primary,
+                                boxShadow: palette.nodeBoxShadow,
                               }}
                             >
-                              {/* Verso decorativo nobre de baralho/deck */}
-                              <div className="absolute inset-1.5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden bg-black/50">
+                              <span className="font-sans font-bold text-[11px] sm:text-xs">
+                                {item.ordemStr}
+                              </span>
+                              <span
+                                className="absolute inset-0 rounded-full animate-ping -z-10 pointer-events-none opacity-40"
+                                style={{ backgroundColor: palette.pingBg }}
+                              />
+                            </div>
+
+                            {/* ── CARTA 1 (Traseira Esquerda - Nivelada na Mesma Altura) ── */}
+                            <div
+                              className="absolute inset-0 rounded-2xl border border-white/20 transition-all duration-500 origin-bottom -rotate-[4deg] sm:-rotate-[5deg] group-hover:-rotate-[8deg] sm:group-hover:-rotate-[9deg] -translate-x-3 sm:-translate-x-4 translate-y-1 z-0 shadow-lg overflow-hidden"
+                              style={{
+                                background: `linear-gradient(145deg, rgba(28, 25, 32, 0.96) 0%, rgba(12, 12, 16, 0.98) 100%)`,
+                                boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
+                              }}
+                            >
+                              {/* Verso de carta de deck colecionável */}
+                              <div className="absolute inset-1.5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden bg-black/40">
                                 <div
-                                  className="w-12 h-12 rounded-full border border-white/15 flex items-center justify-center opacity-40"
+                                  className="w-10 h-10 rounded-full border border-white/15 flex items-center justify-center opacity-30"
                                   style={{ borderColor: palette.primary }}
                                 >
-                                  <Layers className="w-5 h-5 text-white/60" />
+                                  <Layers className="w-4 h-4 text-white/60" />
                                 </div>
-                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:8px_8px] pointer-events-none" />
+                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:8px_8px] pointer-events-none" />
                               </div>
                             </div>
 
-                            {/* ── CARTA 2 (Traseira Direita - Inclinada no Leque) ── */}
+                            {/* ── CARTA 2 (Traseira Direita - Nivelada na Mesma Altura) ── */}
                             <div
-                              className="absolute inset-0 rounded-2xl border border-white/20 transition-all duration-500 origin-bottom-right rotate-[7deg] sm:rotate-[8deg] group-hover:rotate-[13deg] sm:group-hover:rotate-[14deg] group-hover:translate-x-3 z-0 shadow-lg overflow-hidden"
+                              className="absolute inset-0 rounded-2xl border border-white/20 transition-all duration-500 origin-bottom rotate-[4deg] sm:rotate-[5deg] group-hover:rotate-[8deg] sm:group-hover:rotate-[9deg] translate-x-3 sm:translate-x-4 translate-y-1 z-0 shadow-lg overflow-hidden"
                               style={{
-                                background: `linear-gradient(225deg, rgba(25, 25, 30, 0.96) 0%, rgba(12, 12, 16, 0.98) 100%)`,
-                                boxShadow: `0 12px 28px -6px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.12)`,
+                                background: `linear-gradient(215deg, rgba(28, 25, 32, 0.96) 0%, rgba(12, 12, 16, 0.98) 100%)`,
+                                boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
                               }}
                             >
-                              {/* Verso decorativo nobre de baralho/deck */}
-                              <div className="absolute inset-1.5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden bg-black/50">
+                              {/* Verso de carta de deck colecionável */}
+                              <div className="absolute inset-1.5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden bg-black/40">
                                 <div
-                                  className="w-12 h-12 rounded-full border border-white/15 flex items-center justify-center opacity-40"
+                                  className="w-10 h-10 rounded-full border border-white/15 flex items-center justify-center opacity-30"
                                   style={{ borderColor: palette.primary }}
                                 >
-                                  <Layers className="w-5 h-5 text-white/60" />
+                                  <Layers className="w-4 h-4 text-white/60" />
                                 </div>
-                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:8px_8px] pointer-events-none" />
+                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:8px_8px] pointer-events-none" />
                               </div>
                             </div>
 
                             {/* ── CARTA 3 (Principal Frontal - Centro do Deck Aberto) ── */}
                             <div
-                              className="relative w-full h-full min-h-[255px] sm:min-h-[295px] md:min-h-[325px] p-3.5 sm:p-4 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 hover:border-amber-400/60 shadow-[0_16px_36px_rgba(0,0,0,0.75)] transition-all duration-300"
+                              className="relative w-full h-full p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 hover:border-amber-400/60 shadow-[0_16px_36px_rgba(0,0,0,0.75)] transition-all duration-300"
                               style={{
                                 background: palette.cardGradient,
                                 boxShadow: palette.shadow,
                               }}
                             >
-                              {/* Lombada de Livro Clássica na Borda Esquerda */}
-                              <div className="absolute left-0 top-0 bottom-0 w-3 sm:w-3.5 bg-gradient-to-r from-black/65 via-black/30 to-transparent border-r border-white/10 rounded-l-2xl z-20 pointer-events-none flex flex-col justify-between py-4">
-                                <div className="w-full h-0.5 bg-white/25" />
-                                <div className="w-full h-0.5 bg-white/20" />
-                                <div className="w-full h-0.5 bg-white/25" />
-                              </div>
+                              {/* Moldura Interna Chanfrada de Carta de Baralho */}
+                              <div className="absolute inset-1 rounded-[14px] border border-white/15 pointer-events-none z-10" />
 
-                              {/* Efeito de Luz e Reflexo Angular de Capa Dura Editorial */}
-                              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.04] to-white/[0.14] pointer-events-none z-10" />
+                              {/* Efeito de Brilho e Acabamento Laminado da Carta */}
+                              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.03] to-white/[0.12] pointer-events-none z-10" />
 
-                              {/* Marca d'água / Gravura da Deusa Têmis Vazada e Relevo na Capa */}
+                              {/* Marca d'água / Gravura da Deusa Têmis Vazada na Carta */}
                               <img
                                 src="/images/gamificacao/deusa_temis_vazada.webp"
                                 alt=""
                                 aria-hidden="true"
                                 loading="lazy"
                                 decoding="async"
-                                className="pointer-events-none absolute -right-2 -bottom-2 w-[135px] sm:w-[165px] h-[155px] sm:h-[190px] object-contain opacity-35 group-hover:opacity-60 group-hover:scale-105 transition-all duration-300 z-0 select-none filter drop-shadow-[0_6px_14px_rgba(0,0,0,0.7)]"
+                                className="pointer-events-none absolute -right-2 -bottom-2 w-[120px] sm:w-[145px] h-[140px] sm:h-[165px] object-contain opacity-35 group-hover:opacity-55 group-hover:scale-105 transition-all duration-300 z-0 select-none filter drop-shadow-[0_5px_12px_rgba(0,0,0,0.65)]"
                               />
 
-                              {/* Medalhão de Milestone / Nó da Trilha Acoplado ao Card */}
-                              <div
-                                className={`absolute -top-2.5 sm:-top-3 ${
-                                  isLeft ? '-right-2.5 sm:-right-3' : '-left-2.5 sm:-left-3'
-                                } z-30 flex items-center justify-center rounded-full w-8 h-8 sm:w-9 sm:h-9 border-2 border-white/60 text-white font-bold text-xs shadow-xl transition-transform group-hover:scale-110`}
-                                style={{
-                                  backgroundColor: palette.primary,
-                                  boxShadow: palette.nodeBoxShadow,
-                                }}
-                              >
-                                <span className="font-sans font-bold text-[11px] sm:text-xs">
-                                  {item.ordemStr}
-                                </span>
-                                <span
-                                  className="absolute inset-0 rounded-full animate-ping -z-10 pointer-events-none opacity-40"
-                                  style={{ backgroundColor: palette.pingBg }}
-                                />
-                              </div>
-
-                              {/* Cabeçalho da Capa: Tag Deck / Módulo + Selo de Flashcards */}
-                              <div className="flex items-center justify-between gap-1 z-[1] w-full pl-2">
-                                <span className="flex items-center gap-1 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-md bg-black/55 text-white border border-white/20">
+                              {/* Cabeçalho da Carta: Tag Deck + Badge com Total de Flashcards */}
+                              <div className="flex items-center justify-between gap-1.5 z-[1] w-full pt-1">
+                                <span className="flex items-center gap-1 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-md bg-black/60 text-white border border-white/20">
                                   {isFlash ? <Layers className="w-2.5 h-2.5" style={{ color: palette.primary }} /> : null}
                                   <span>{item.badgeLabel}</span>
                                 </span>
                                 {isFlash && (
-                                  <span className="text-[9px] font-semibold text-white/95 px-1.5 py-0.5 rounded-md bg-white/15 border border-white/15 shrink-0">
-                                    {item.displayTotal}
+                                  <span className="text-[9px] font-semibold text-white/95 px-2 py-0.5 rounded-full bg-white/15 border border-white/15 shrink-0 backdrop-blur-sm">
+                                    {item.displayTotal} {item.displayLabel}
                                   </span>
                                 )}
                               </div>
 
-                              {/* Centro da Capa: Título do Livro / Tema com Tipografia Nobre */}
-                              <div className="my-auto py-3 z-[1] w-full pl-2.5 pr-1">
-                                <h3 className="font-sans font-medium text-[13px] sm:text-[15px] leading-snug break-words text-white drop-shadow-md group-hover:text-amber-200 transition-colors line-clamp-4">
+                              {/* Centro da Carta: Título do Tema em Destaque Harmonioso */}
+                              <div className="my-auto py-2 z-[1] w-full px-1">
+                                <h3 className="font-sans font-semibold text-[13px] sm:text-[14.5px] leading-snug break-words text-white drop-shadow-md group-hover:text-amber-200 transition-colors line-clamp-3">
                                   {item.titulo}
                                 </h3>
                               </div>
 
-                              {/* Rodapé da Capa: Progresso do Deck */}
-                              <div className="z-[1] pt-2 border-t border-white/20 w-full pl-2">
+                              {/* Rodapé da Carta: Progresso e Estatísticas */}
+                              <div className="z-[1] pt-1.5 border-t border-white/20 w-full px-0.5">
                                 <div>
-                                  <div className="flex items-center justify-between text-[10px] font-normal text-white/95 mb-1.5">
+                                  <div className="flex items-center justify-between text-[10px] font-normal text-white/95 mb-1">
                                     <span className="truncate">
                                       {item.displayConcluidas > 0
                                         ? `${item.displayConcluidas}/${item.displayTotal} concluídos`
@@ -623,7 +617,7 @@ const AprenderArea = () => {
                                     </span>
                                     <span className="font-semibold font-sans ml-1">{item.displayPct}%</span>
                                   </div>
-                                  <div className="w-full bg-black/50 h-1.5 rounded-full overflow-hidden border border-white/25">
+                                  <div className="w-full bg-black/50 h-1.5 rounded-full overflow-hidden border border-white/20">
                                     <div
                                       className="h-full rounded-full transition-all duration-500 shadow-sm"
                                       style={{
@@ -638,9 +632,9 @@ const AprenderArea = () => {
                           </div>
                         </div>
 
-                        {/* Conector Serpenteante de Trilha em Zigue-Zague Fluido e Sem Deformação */}
+                        {/* Conector Serpenteante de Trilha em Zigue-Zague Conectando Suavemente de Deck a Deck */}
                         {i < itemsToRender.length - 1 && (
-                          <div className="relative w-full h-20 sm:h-24 -my-2 sm:-my-3 pointer-events-none z-[5] overflow-visible">
+                          <div className="relative w-full h-16 sm:h-20 -my-1.5 sm:-my-2 pointer-events-none z-[5] overflow-visible">
                             <svg
                               className="w-full h-full overflow-visible"
                               viewBox="0 0 100 100"
@@ -658,7 +652,7 @@ const AprenderArea = () => {
 
                               {/* Leito da Trilha (traço suave e discreto) */}
                               <path
-                                d={isLeft ? "M 28 0 C 28 65, 72 35, 72 100" : "M 72 0 C 72 65, 28 35, 28 100"}
+                                d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
                                 fill="none"
                                 stroke="rgba(255, 255, 255, 0.08)"
                                 strokeWidth="4"
@@ -668,7 +662,7 @@ const AprenderArea = () => {
 
                               {/* Linha da Trilha em Zigue-Zague Pontilhada Luminosa */}
                               <path
-                                d={isLeft ? "M 28 0 C 28 65, 72 35, 72 100" : "M 72 0 C 72 65, 28 35, 28 100"}
+                                d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
                                 fill="none"
                                 stroke={palette.primary}
                                 strokeWidth="2.5"
@@ -683,7 +677,7 @@ const AprenderArea = () => {
                             <div
                               className="absolute w-2 h-2 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none shadow-md animate-pulse"
                               style={{
-                                left: isLeft ? '36%' : '64%',
+                                left: isLeft ? '38%' : '62%',
                                 top: '28%',
                                 backgroundColor: palette.primary,
                                 boxShadow: `0 0 8px ${palette.primary}`,
@@ -700,7 +694,7 @@ const AprenderArea = () => {
                             <div
                               className="absolute w-2 h-2 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none shadow-md animate-pulse"
                               style={{
-                                left: isLeft ? '64%' : '36%',
+                                left: isLeft ? '62%' : '38%',
                                 top: '72%',
                                 backgroundColor: palette.primary,
                                 boxShadow: `0 0 8px ${palette.primary}`,
