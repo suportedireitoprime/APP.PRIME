@@ -503,11 +503,11 @@ const AprenderArea = () => {
                           {/* ── CONJUNTO DE 3 CARTAS EM FORMATO DE DECK ABERTO EM LEQUE COM ALTURA NIVELADA ── */}
                           <div
                             onClick={item.onClick}
-                            className="relative w-[165px] sm:w-[190px] md:w-[215px] h-[245px] sm:h-[275px] md:h-[295px] cursor-pointer group select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-2 [perspective:1200px] [transform-style:preserve-3d]"
+                            className="relative w-[165px] sm:w-[190px] md:w-[215px] h-[245px] sm:h-[275px] md:h-[295px] cursor-pointer group select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
                           >
-                            {/* Medalhão de Milestone / Nó da Trilha Centralizado no Topo (Sem corte lateral nem sobreposição) */}
+                            {/* Medalhão de Milestone / Nó da Trilha Centralizado no Topo (Estável e Elegante) */}
                             <div
-                              className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-30 flex items-center justify-center rounded-full w-8 h-8 sm:w-8.5 sm:h-8.5 border-2 border-white/70 text-white font-bold text-xs shadow-xl transition-transform group-hover:scale-110"
+                              className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-30 flex items-center justify-center rounded-full w-8 h-8 sm:w-8.5 sm:h-8.5 border-2 border-white/70 text-white font-bold text-xs shadow-xl transition-transform duration-300 group-hover:scale-110"
                               style={{
                                 backgroundColor: palette.primary,
                                 boxShadow: palette.nodeBoxShadow,
@@ -516,19 +516,14 @@ const AprenderArea = () => {
                               <span className="font-sans font-bold text-[11px] sm:text-xs">
                                 {item.ordemStr}
                               </span>
-                              <span
-                                className="absolute inset-0 rounded-full animate-ping -z-10 pointer-events-none opacity-40"
-                                style={{ backgroundColor: palette.pingBg }}
-                              />
                             </div>
 
-                            {/* ── CARTA 1 (Traseira Esquerda - Embaralhamento Suave) ── */}
+                            {/* ── CARTA 1 (Traseira Esquerda - Estável, abre suave no hover) ── */}
                             <div
-                              className="absolute inset-0 rounded-2xl border border-white/20 transition-all duration-500 origin-bottom anim-deck-shuffle-left group-hover:[animation-duration:1.8s] z-0 shadow-lg overflow-hidden"
+                              className="absolute inset-0 rounded-2xl border border-white/20 transition-all duration-300 origin-bottom -rotate-[4deg] sm:-rotate-[5deg] -translate-x-3 sm:-translate-x-4 translate-y-1 group-hover:-rotate-[10deg] group-hover:-translate-x-6 group-hover:-translate-y-1 z-0 shadow-lg overflow-hidden"
                               style={{
                                 background: `linear-gradient(145deg, rgba(28, 25, 32, 0.96) 0%, rgba(12, 12, 16, 0.98) 100%)`,
                                 boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
-                                animationDelay: `${(i % 4) * 0.4}s`,
                               }}
                             >
                               {/* Verso de carta de deck colecionável */}
@@ -543,13 +538,12 @@ const AprenderArea = () => {
                               </div>
                             </div>
 
-                            {/* ── CARTA 2 (Traseira Direita - Embaralhamento Suave) ── */}
+                            {/* ── CARTA 2 (Traseira Direita - Estável, abre suave no hover) ── */}
                             <div
-                              className="absolute inset-0 rounded-2xl border border-white/20 transition-all duration-500 origin-bottom anim-deck-shuffle-right group-hover:[animation-duration:1.8s] z-0 shadow-lg overflow-hidden"
+                              className="absolute inset-0 rounded-2xl border border-white/20 transition-all duration-300 origin-bottom rotate-[4deg] sm:rotate-[5deg] translate-x-3 sm:translate-x-4 translate-y-1 group-hover:rotate-[10deg] group-hover:translate-x-6 group-hover:-translate-y-1 z-0 shadow-lg overflow-hidden"
                               style={{
                                 background: `linear-gradient(215deg, rgba(28, 25, 32, 0.96) 0%, rgba(12, 12, 16, 0.98) 100%)`,
                                 boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
-                                animationDelay: `${(i % 4) * 0.4}s`,
                               }}
                             >
                               {/* Verso de carta de deck colecionável */}
@@ -564,20 +558,16 @@ const AprenderArea = () => {
                               </div>
                             </div>
 
-                            {/* ── CARTA 3 (Principal Frontal - Embaralhamento Suave no Centro) ── */}
+                            {/* ── CARTA 3 (Principal Frontal - Centro Estável) ── */}
                             <div
-                              className="relative w-full h-full p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 hover:border-amber-400/60 shadow-[0_16px_36px_rgba(0,0,0,0.75)] transition-all duration-300 anim-deck-shuffle-front group-hover:[animation-duration:1.8s]"
+                              className="relative w-full h-full p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 hover:border-amber-400/60 shadow-[0_16px_36px_rgba(0,0,0,0.75)] transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-[0_22px_45px_rgba(0,0,0,0.85)]"
                               style={{
                                 background: palette.cardGradient,
                                 boxShadow: palette.shadow,
-                                animationDelay: `${(i % 4) * 0.4}s`,
                               }}
                             >
-                              {/* Reflexo Holográfico de Luz que corta a carta ao concluir o shuffle */}
-                              <div
-                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent anim-deck-glint z-20 pointer-events-none"
-                                style={{ animationDelay: `${(i % 4) * 0.4}s` }}
-                              />
+                              {/* Brilho reflexivo sutil no hover */}
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none z-20" />
 
                               {/* Moldura Interna Chanfrada de Carta de Baralho */}
                               <div className="absolute inset-1 rounded-[14px] border border-white/15 pointer-events-none z-10" />
@@ -682,31 +672,31 @@ const AprenderArea = () => {
                               />
                             </svg>
 
-                            {/* Passos / Checkpoints Esféricos Perfeitos (Não deformam) */}
+                            {/* Passos / Checkpoints Esféricos Perfeitos (Estáveis e com Glow Suave) */}
                             <div
-                              className="absolute w-2 h-2 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none shadow-md animate-pulse"
+                              className="absolute w-2 h-2 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none shadow-md opacity-85"
                               style={{
                                 left: isLeft ? '38%' : '62%',
                                 top: '28%',
                                 backgroundColor: palette.primary,
-                                boxShadow: `0 0 8px ${palette.primary}`,
+                                boxShadow: `0 0 6px ${palette.primary}`,
                               }}
                             />
                             <div
-                              className="absolute w-3 h-3 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none border border-white/70 bg-white shadow-lg"
+                              className="absolute w-2.5 h-2.5 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none border border-white/70 bg-white shadow-lg"
                               style={{
                                 left: '50%',
                                 top: '50%',
-                                boxShadow: `0 0 12px ${palette.primary}`,
+                                boxShadow: `0 0 10px ${palette.primary}`,
                               }}
                             />
                             <div
-                              className="absolute w-2 h-2 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none shadow-md animate-pulse"
+                              className="absolute w-2 h-2 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none shadow-md opacity-85"
                               style={{
                                 left: isLeft ? '62%' : '38%',
                                 top: '72%',
                                 backgroundColor: palette.primary,
-                                boxShadow: `0 0 8px ${palette.primary}`,
+                                boxShadow: `0 0 6px ${palette.primary}`,
                               }}
                             />
                           </div>
