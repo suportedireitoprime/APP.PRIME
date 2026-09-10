@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef, memo } from 'react';
+import React, { useState, useMemo, useCallback, useRef, memo } from 'react';
 import { motion } from 'framer-motion';
-import { Video, Play, ArrowRight } from 'lucide-react';
+import { Video, Play } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
-import { areaIconFor, getAreaThemePalette, hexToRgb } from '@/lib/areasDireitoIcons';
+import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
 import { getAreaCover } from '@/lib/areasDireitoCovers';
 import { CANONICAL_AREA_TOPICS } from '@/components/aprender/MateriaFlashcardsDeckSection';
 import type { ModuloItem } from '@/hooks/useAprenderAreaModulesMap';
@@ -17,29 +17,28 @@ interface MateriaAulasDeckSectionProps {
   overridePct: number;
   onOpenArea: () => void;
   onOpenModulo?: (modulo: ModuloItem | { id: string; titulo: string }) => void;
-  triggerAdvance?: number;
 }
 
-/** Configurações dos slots do leque 3D para thumbnails horizontais 16:9 (estilo YouTube) */
+/** Configurações dos slots do leque 3D para cards verticais no formato 4:3 */
 const getSlot = (diff: number) => {
   switch (diff) {
     case 0:
       return { x: 0, y: 0, rotate: 0, scale: 1, opacity: 1, z: 50 };
     case 1:
-      return { x: 70, y: 8, rotate: 5, scale: 0.90, opacity: 0.88, z: 40 };
+      return { x: 58, y: 7, rotate: 7, scale: 0.9, opacity: 0.9, z: 40 };
     case -1:
-      return { x: -70, y: 8, rotate: -5, scale: 0.90, opacity: 0.88, z: 40 };
+      return { x: -58, y: 7, rotate: -7, scale: 0.9, opacity: 0.9, z: 40 };
     case 2:
-      return { x: 130, y: 16, rotate: 10, scale: 0.78, opacity: 0.65, z: 30 };
+      return { x: 108, y: 16, rotate: 14, scale: 0.78, opacity: 0.68, z: 30 };
     case -2:
-      return { x: -130, y: 16, rotate: -10, scale: 0.78, opacity: 0.65, z: 30 };
+      return { x: -108, y: 16, rotate: -14, scale: 0.78, opacity: 0.68, z: 30 };
     case 3:
-      return { x: 180, y: 24, rotate: 14, scale: 0.66, opacity: 0.38, z: 20 };
+      return { x: 148, y: 24, rotate: 20, scale: 0.66, opacity: 0.40, z: 20 };
     case -3:
-      return { x: -180, y: 24, rotate: -14, scale: 0.66, opacity: 0.38, z: 20 };
+      return { x: -148, y: 24, rotate: -20, scale: 0.66, opacity: 0.40, z: 20 };
     default:
-      if (diff > 0) return { x: 210, y: 30, rotate: 18, scale: 0.55, opacity: 0, z: 10 };
-      return { x: -210, y: 30, rotate: -18, scale: 0.55, opacity: 0, z: 10 };
+      if (diff > 0) return { x: 170, y: 30, rotate: 24, scale: 0.55, opacity: 0, z: 10 };
+      return { x: -170, y: 30, rotate: -24, scale: 0.55, opacity: 0, z: 10 };
   }
 };
 
@@ -51,11 +50,9 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
   overridePct,
   onOpenArea,
   onOpenModulo,
-  triggerAdvance,
 }) => {
   const [ativo, setAtivo] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const isSwipingRef = useRef(false);
 
@@ -64,7 +61,7 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
   const accentColor = iconInfo?.color || '#fb7185';
   const palette = useMemo(() => getAreaThemePalette(area.slug || area.nome), [area.slug, area.nome]);
 
-  // Capa oficial ilustrada da matéria
+  // Capa oficial ilustrada da matéria (idêntica às capas da Home / AprenderCarousel)
   const coverInfo = useMemo(() => getAreaCover(area.slug || area.nome), [area.slug, area.nome]);
   const coverUrl = coverInfo?.cover || null;
 
@@ -77,20 +74,7 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
       .trim();
   }, [area?.nome]);
 
-  const { r, g, b } = useMemo(() => hexToRgb(palette.primary), [palette.primary]);
-
-  // Botão estilizado para "Assistir Aula" integrado à paleta da matéria
-  const enterButtonBg = useMemo(() => {
-    const topR = Math.round(r * 0.38);
-    const topG = Math.round(g * 0.38);
-    const topB = Math.round(b * 0.38);
-    const btmR = Math.round(r * 0.16);
-    const btmG = Math.round(g * 0.16);
-    const btmB = Math.round(b * 0.16);
-    return `linear-gradient(180deg, rgba(${Math.max(topR, 45)}, ${Math.max(topG, 20)}, ${Math.max(topB, 25)}, 0.95) 0%, rgba(${Math.max(btmR, 20)}, ${Math.max(btmG, 10)}, ${Math.max(btmB, 15)}, 0.98) 100%)`;
-  }, [r, g, b]);
-
-  // Lista de cards/módulos para o deck de aulas em formato 16:9
+  // Lista de cards/módulos para o deck de aulas no formato 4:3
   const deckCards = useMemo(() => {
     const list: Array<{
       id: string;
@@ -115,7 +99,7 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
       });
     }
 
-    // 2. Se tiver menos de 6 cards, complementa com tópicos canônicos para garantir o deck em leque
+    // 2. Se tiver menos de 6 cards, complementa com tópicos canônicos para garantir o leque completo
     if (list.length < 6) {
       const canonical = CANONICAL_AREA_TOPICS[area.slug] || [
         `Fundamentos de ${area.nome}`,
@@ -144,8 +128,6 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
   }, [modulos, area, overrideTotal]);
 
   const total = deckCards.length;
-
-  // Animação e navegação ocorrem exclusivamente por interação manual do usuário (clique ou swipe)
 
   const handlePrev = useCallback(() => {
     try { haptic.selection(); } catch {}
@@ -200,11 +182,7 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
   const activeCard = deckCards[ativo] || deckCards[0];
 
   return (
-    <div 
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="w-full space-y-2.5 sm:space-y-3 relative py-2 border-b border-white/[0.08] last:border-b-0"
-    >
+    <div className="w-full space-y-2.5 sm:space-y-3 relative py-2 border-b border-white/[0.08] last:border-b-0">
       {/* Cabeçalho da Matéria (clicar vai direto para a área) */}
       <div 
         onClick={() => {
@@ -241,9 +219,9 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
         </div>
       </div>
 
-      {/* ── 3D Fanned Deck de Aulas em formato 16:9 Widescreen (sem corte nas laterais) ── */}
+      {/* ── 3D Fanned Deck de Aulas no Formato 4:3 com Capas Ilustradas e Botão Play Glassmorphic ── */}
       <div className="relative w-full -mx-2 sm:mx-0 px-2 sm:px-0 pt-1 pb-1 flex flex-col items-center select-none overflow-visible">
-        <div className="relative flex items-center justify-center w-full max-w-full h-[200px] sm:h-[225px] overflow-visible">
+        <div className="relative flex items-center justify-center w-full max-w-full h-[225px] sm:h-[245px] overflow-visible">
           {/* Deck de cards interativo */}
           <motion.div
             drag="x"
@@ -304,10 +282,10 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
                   }}
                   className="absolute cursor-pointer will-change-transform"
                 >
-                  {/* Card em Proporção 16:9 Widescreen (Thumbnail de YouTube) com Capa Real */}
+                  {/* Card no formato 4:3 com Capa Ilustrada Visível (idêntica ao AprenderCarousel da Home) */}
                   <div
                     className={cn(
-                      "w-[250px] sm:w-[290px] aspect-video rounded-[18px] sm:rounded-[20px] p-3 sm:p-3.5 flex flex-col justify-between select-none relative overflow-hidden transition-all duration-300",
+                      "w-[145px] h-[195px] sm:w-[165px] sm:h-[220px] rounded-[20px] p-3 sm:p-3.5 flex flex-col justify-between select-none relative overflow-hidden transition-all duration-300",
                       frente
                         ? "border-2 border-white/40 shadow-2xl"
                         : "border border-white/20 shadow-black/70"
@@ -317,7 +295,7 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
                       boxShadow: frente
                         ? `${palette.shadow}, 0 20px 45px -10px rgba(0,0,0,0.85)`
                         : '0 10px 24px -5px rgba(0,0,0,0.65)',
-                      filter: frente ? 'none' : 'brightness(0.72)',
+                      filter: frente ? 'none' : 'brightness(0.75)',
                     }}
                   >
                     {/* Imagem de Capa Oficial Ilustrada em Alta Resolução */}
@@ -331,54 +309,41 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
                       />
                     )}
 
-                    {/* Degradê Escuro Cinematográfico para Legibilidade Absoluta */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#09090b]/95 via-[#09090b]/60 to-black/35 pointer-events-none z-[1]" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-black/35 pointer-events-none z-[1]" />
+                    {/* Degradê Suave Inferior: Garante legibilidade do texto preservando a ilustração */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/10 pointer-events-none z-[1]" />
 
-                    {/* Moldura Interna Chanfrada de Thumbnail Premium */}
-                    <div className="absolute inset-1 rounded-[14px] sm:rounded-[16px] border border-white/15 pointer-events-none z-[2]" />
+                    {/* Moldura Interna Chanfrada de Capa Premium */}
+                    <div className="absolute inset-1 rounded-[16px] border border-white/20 pointer-events-none z-[2]" />
 
                     {/* Acabamento Laminado / Brilho */}
                     <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.03] to-white/[0.12] pointer-events-none z-[2]" />
 
-                    {/* Topo do Card 16:9: Tag da Matéria + Badge de Aulas estilo YouTube */}
-                    <div className="flex items-center justify-between w-full relative z-[5]">
-                      <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full backdrop-blur-md bg-black/65 text-white/95 border border-white/20 shadow-sm leading-none">
+                    {/* Topo do Card: Tag da Matéria + Badge de Aulas */}
+                    <div className="flex items-center justify-between w-full relative z-10">
+                      <span className="text-[9px] sm:text-[9.5px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full backdrop-blur-md bg-black/60 text-white/95 border border-white/20 shadow-sm leading-none">
                         {nomeMateriaTag}
                       </span>
-                      <span className="text-[9px] sm:text-[10px] font-semibold px-2 py-0.5 rounded-full backdrop-blur-md bg-black/65 text-rose-300 border border-rose-500/30 shadow-sm leading-none flex items-center gap-1">
+                      <span className="text-[8.5px] sm:text-[9px] font-bold px-1.5 py-0.5 rounded-full backdrop-blur-md bg-black/60 text-rose-300 border border-rose-500/30 shadow-sm leading-none flex items-center gap-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
                         {card.totalAulas ? `${card.totalAulas} ${card.totalAulas === 1 ? 'aula' : 'aulas'}` : 'Aula'}
                       </span>
                     </div>
 
-                    {/* Centro do Card 16:9: Título do Tópico/Módulo sem negrito com tipografia nítida */}
-                    <div className="my-auto py-1 text-left relative z-[5] px-1">
+                    {/* Centro do Card: Botão Circular Glassmorphic de Play (estilo Aprender da Home) */}
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 transition-transform duration-300">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/25 backdrop-blur-md border border-white/45 flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.5)]">
+                        <Play className="w-4 h-4 sm:w-5 sm:h-5 text-white ml-0.5" fill="currentColor" />
+                      </div>
+                    </div>
+
+                    {/* Rodapé do Card: Título do Módulo/Aula com Sombra Nítida */}
+                    <div className="relative z-10 pt-1 text-left">
                       <h4 
-                        className="text-[12.5px] sm:text-[13.5px] font-normal leading-snug text-white break-words line-clamp-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)]"
-                        style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif" }}
+                        className="text-[11.5px] sm:text-[12.5px] font-normal leading-tight text-white break-words line-clamp-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]"
+                        style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}
                       >
                         {card.titulo}
                       </h4>
-                    </div>
-
-                    {/* Rodapé do Card 16:9: Botão Assistir Aula no Card Frontal */}
-                    <div className="relative z-[5] pt-1 border-t border-white/15 flex items-center justify-between w-full">
-                      {frente ? (
-                        <div
-                          style={{
-                            background: enterButtonBg,
-                            borderColor: 'rgba(255, 255, 255, 0.22)',
-                            boxShadow: `0 6px 16px -2px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.18)`,
-                          }}
-                          className="w-full py-1.5 px-3 rounded-xl flex items-center justify-center gap-1.5 text-white font-black text-[11px] sm:text-xs uppercase tracking-wider border hover:brightness-125 active:scale-95 transition-all cursor-pointer select-none"
-                        >
-                          <Play className="w-3 h-3 fill-current text-white/95" />
-                          <span className="drop-shadow-sm">Assistir Aula</span>
-                        </div>
-                      ) : (
-                        <div className="h-5 w-full" />
-                      )}
                     </div>
                   </div>
                 </motion.div>
