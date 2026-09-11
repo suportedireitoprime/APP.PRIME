@@ -233,6 +233,33 @@ const AprenderModulo = () => {
     };
   }, [moduloId, uid]);
 
+  // 🚀 PREFETCH AGRESSIVO EM BACKGROUND (0ms de delay no click)
+  // Pré-carrega as aulas (e seus blocos) automaticamente no IndexedDB assim que entra no módulo
+  useEffect(() => {
+    if (aulas.length === 0) return;
+    
+    // Filtra as próximas 5 aulas não concluídas para não sobrecarregar a rede de uma vez
+    const aulasParaPrefetch = aulas.filter(a => !a.concluida).slice(0, 5);
+    
+    // Se todas estiverem concluídas, faz prefetch das 3 primeiras apenas por segurança
+    const alvos = aulasParaPrefetch.length > 0 ? aulasParaPrefetch : aulas.slice(0, 3);
+    
+    // Executa o prefetch de forma sequencial com pequeno delay para não bloquear a thread principal
+    const runPrefetch = async () => {
+      for (const aula of alvos) {
+        try {
+          await new Promise(resolve => setTimeout(resolve, 800)); // Delay entre requisições
+          await prefetchAprenderAula(aula.id);
+        } catch (e) {
+          console.warn(`Erro no prefetch da aula ${aula.id}`, e);
+        }
+      }
+    };
+    
+    // Inicia o processo em background
+    void runPrefetch();
+  }, [aulas]);
+
   // Busca flashcards e subtemas (listas) do módulo no Supabase
   const { data: flashcardsData, isLoading: loadingFlashcards } = useQuery({
     queryKey: ['modulo_flashcards', modulo?.areaNome, modulo?.titulo],

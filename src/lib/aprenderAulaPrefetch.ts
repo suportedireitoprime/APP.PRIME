@@ -2,10 +2,14 @@
 import { supabase } from '@/integrations/supabase/client';
 import { prefetchRoute } from './routePrefetch';
 import { getAprenderCache, setAprenderCache } from '@/services/offlineDb';
+import { interleaveBlocos } from './aprenderUtils';
+import { get as idbGet, set as idbSet } from 'idb-keyval';
 
 type AulaBundle = {
   aula: any;
   blocos: any[];
+  proximaAula?: any;
+  proximasAulas?: any[];
 };
 
 const memCache = new Map<string, AulaBundle>();
@@ -20,13 +24,45 @@ export function getCachedAprenderAula(aulaId: string): AulaBundle | undefined {
 async function fetchFromNetwork(aulaId: string): Promise<AulaBundle> {
   const [{ data: a }, { data: bs }] = await Promise.all([
     supabase.from('aprender_aulas')
-      .select('id, titulo, objetivo, duracao_est_min')
+      .select('id, titulo, objetivo, duracao_est_min, previa, modulo_id, ordem')
       .eq('id', aulaId).maybeSingle(),
     supabase.from('aprender_blocos')
       .select('id, ordem, tipo, payload, resposta_correta')
       .eq('aula_id', aulaId).order('ordem'),
   ]);
-  return { aula: a, blocos: (bs ?? []) as any[] };
+  
+  let proxLista: any[] = [];
+  let proxItem: any = null;
+  if (a?.modulo_id != null) {
+    const { data: prox } = await supabase
+      .from('aprender_aulas')
+      .select('id, titulo, ordem')
+      .eq('modulo_id', a.modulo_id)
+      .gt('ordem', a?.ordem ?? 0)
+      .order('ordem')
+      .limit(8);
+    proxLista = (prox ?? []).map((p: any) => ({ id: p.id, titulo: p.titulo }));
+    proxItem = proxLista[0] ?? null;
+  }
+
+  const finalBlocos = interleaveBlocos((bs ?? []) as any[]);
+  const bundle = { aula: a, blocos: finalBlocos, proximaAula: proxItem, proximasAulas: proxLista };
+  
+  // Pré-carrega imagens em background (0ms delay UI)
+  if (typeof window !== 'undefined') {
+    finalBlocos.forEach(b => {
+      const imgUrl = b.payload?.imageUrl || b.payload?.imagemUrl || b.payload?.url;
+      if (typeof imgUrl === 'string' && imgUrl.startsWith('http')) {
+        const img = new Image();
+        img.src = imgUrl;
+      }
+    });
+  }
+
+  // Sincroniza também com o idb-keyval usado nativamente pelo useAprenderAula
+  await idbSet(`aprender_aula_cache_${aulaId}`, bundle).catch(() => {});
+  
+  return bundle;
 }
 
 function revalidate(aulaId: string) {
