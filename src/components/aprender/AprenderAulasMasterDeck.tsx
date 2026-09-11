@@ -418,7 +418,7 @@ export const AprenderAulasMasterDeck: React.FC<AprenderAulasMasterDeckProps> = m
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-rose-400 stroke-[2.2]" />
-            <h4 className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-white/90">
+            <h4 className="text-[15px] sm:text-base font-medium tracking-tight text-white/90">
               Linha do Tempo Recente
             </h4>
           </div>
@@ -461,7 +461,10 @@ export const AprenderAulasMasterDeck: React.FC<AprenderAulasMasterDeckProps> = m
                       try { haptic.impact(); } catch {}
                       navigate(`/aprender/aula/${aula.aulaId}`);
                     }}
-                    className="p-4 sm:p-5 rounded-2xl bg-[#111]/80 backdrop-blur-md border border-white/10 hover:border-white/20 transition-all cursor-pointer shadow-xl flex flex-col gap-3 relative overflow-hidden group-hover:bg-[#161616]"
+                    style={{
+                      backgroundColor: `${pal.primary}12`, // 12 is roughly 7% opacity
+                    }}
+                    className="p-4 sm:p-5 rounded-2xl backdrop-blur-md border border-white/5 hover:border-white/15 transition-all cursor-pointer shadow-xl flex flex-col gap-3 relative overflow-hidden group-hover:brightness-110"
                   >
                     <div className="flex items-center justify-between gap-2">
                       <span

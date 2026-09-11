@@ -8,9 +8,10 @@ import { haptic } from '@/lib/nativeHaptics';
 
 interface LacunasInterativasBlockProps {
   rawContent: string;
+  onComplete?: () => void;
 }
 
-export function LacunasInterativasBlock({ rawContent }: LacunasInterativasBlockProps) {
+export function LacunasInterativasBlock({ rawContent, onComplete }: LacunasInterativasBlockProps) {
   const [respostas, setRespostas] = useState<Record<number, string>>({});
   const [lacunaAtiva, setLacunaAtiva] = useState<number | null>(null);
   
@@ -59,9 +60,17 @@ export function LacunasInterativasBlock({ rawContent }: LacunasInterativasBlockP
   }, [rawContent]);
 
   const lacunasTotais = Object.keys(parsedData.opcoes).length;
-  const todasRespondidas = lacunasTotais > 0 && Object.keys(respostas).length === lacunasTotais;
+  const todasRespondidas = useMemo(() => {
+    return lacunasTotais > 0 && Object.keys(respostas).length === lacunasTotais;
+  }, [respostas, lacunasTotais]);
 
-  // Se for a primeira vez renderizando, foca na primeira lacuna
+  useEffect(() => {
+    if (todasRespondidas && onComplete) {
+      onComplete();
+    }
+  }, [todasRespondidas, onComplete]);
+
+  // Handle seleçãor a primeira vez renderizando, foca na primeira lacuna
   useEffect(() => {
     if (lacunaAtiva === null && lacunasTotais > 0 && !todasRespondidas) {
       setLacunaAtiva(1);
@@ -175,36 +184,43 @@ export function LacunasInterativasBlock({ rawContent }: LacunasInterativasBlockP
         </div>
       </div>
 
-      {/* Opções (Menu Suspenso Inline) */}
+      {/* Opções Flutuantes (Bottom Sheet/Menu Overlay) */}
       <AnimatePresence mode="wait">
         {!todasRespondidas && lacunaAtiva !== null && parsedData.opcoes[lacunaAtiva] && (
-          <motion.div
-            key="opcoes-ativas"
-            initial={{ opacity: 0, height: 0, y: -10 }}
-            animate={{ opacity: 1, height: 'auto', y: 0 }}
-            exit={{ opacity: 0, height: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-            className="overflow-hidden"
-          >
-            <div className="p-5 sm:p-6 rounded-2xl border border-primary/20 bg-primary/[0.03] mb-6">
-              <h4 className="text-sm font-bold uppercase tracking-widest text-primary mb-4 flex items-center gap-2">
+          <div className="fixed inset-0 z-[100] flex flex-col justify-end pointer-events-auto">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setLacunaAtiva(null)}
+            />
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="relative z-10 w-full rounded-t-[2.5rem] border-t border-white/10 bg-[#161616] p-6 sm:p-8 pb-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl"
+            >
+              <div className="mx-auto mb-6 h-1.5 w-12 rounded-full bg-white/20" />
+              <h4 className="text-sm sm:text-[15px] font-bold uppercase tracking-widest text-primary mb-5 flex items-center gap-2">
                 <ChevronRight className="w-4 h-4" />
                 Selecione o termo para a Lacuna {lacunaAtiva}:
               </h4>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-col gap-3">
                 {parsedData.opcoes[lacunaAtiva].map((opcao, idx) => (
                   <button
                     key={idx}
                     type="button"
                     onClick={() => handleSelectOption(opcao)}
-                    className="px-4 py-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 text-neutral-200 font-semibold text-sm sm:text-[15px] transition-colors shadow-sm active:scale-95"
+                    className="w-full text-left px-5 py-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/50 text-neutral-200 font-semibold text-[15px] sm:text-base transition-all active:scale-[0.98] shadow-sm"
                   >
                     {opcao}
                   </button>
                 ))}
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 

@@ -109,9 +109,10 @@ const AprenderAula = () => {
       (blocoAtual.payload.conteudo.includes('┌') && blocoAtual.payload.conteudo.includes('▼'))
     )) ||
     (currentIdx === total - 1 && blocoAtual?.tipo === 'leitura');
+  const isLacunas = isBlocoTexto(blocoAtual?.tipo) && /Opções do Menu Suspenso/i.test(String(blocoAtual?.payload?.conteudo ?? blocoAtual?.payload?.texto ?? '')) && /Gabarito Comentado/i.test(String(blocoAtual?.payload?.conteudo ?? blocoAtual?.payload?.texto ?? ''));
   const questaoRespondida = blocoAtual ? !!respostas[blocoAtual.id] : true;
   const flashcardVirado = blocoAtual ? !!flipped[blocoAtual.id] : true;
-  const podeAvancar = (!isPergunta || questaoRespondida) && (!isFlashcard || flashcardVirado);
+  const podeAvancar = (!isPergunta || questaoRespondida) && (!isFlashcard || flashcardVirado) && (!isLacunas || questaoRespondida);
 
   const [selectedOpcao, setSelectedOpcao] = useState<string | null>(null);
 
@@ -356,7 +357,7 @@ const AprenderAula = () => {
       <div className="relative z-10 flex min-h-dvh flex-col">
         {/* ── Header editorial com Linha do Tempo no topo ── */}
         <header
-          className={`${isFlashcard ? 'hidden' : 'sticky top-0 z-30 bg-[#121214]/95 backdrop-blur-xl border-b border-white/[0.08]'}`}
+          className={`${(isFlashcard || isLacunas) ? 'hidden' : 'sticky top-0 z-30 bg-[#121214]/95 backdrop-blur-xl border-b border-white/[0.08]'}`}
           style={{ paddingTop: 'calc(var(--sai-top) + 0.25rem)' }}
         >
           {/* ── Linha do Tempo na parte superior (Timeline de Páginas - Item 1) ── */}
@@ -751,8 +752,8 @@ const AprenderAula = () => {
           aria-label="Navegação da aula"
           initial={false}
           animate={{
-            y: ((isPergunta && !respostas[blocoAtual?.id || ''] && selectedOpcao) || (isFlashcard && !flashcardVirado)) ? '110%' : 0,
-            opacity: ((isPergunta && !respostas[blocoAtual?.id || ''] && selectedOpcao) || (isFlashcard && !flashcardVirado)) ? 0 : 1,
+            y: ((isPergunta && !respostas[blocoAtual?.id || ''] && selectedOpcao) || (isFlashcard && !flashcardVirado) || (isLacunas && !questaoRespondida)) ? '110%' : 0,
+            opacity: ((isPergunta && !respostas[blocoAtual?.id || ''] && selectedOpcao) || (isFlashcard && !flashcardVirado) || (isLacunas && !questaoRespondida)) ? 0 : 1,
           }}
           transition={{ type: 'spring', damping: 28, stiffness: 300 }}
           className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.08] bg-[#141417]/95 backdrop-blur-xl flex items-center justify-between"
@@ -761,7 +762,7 @@ const AprenderAula = () => {
             paddingLeft: 'calc(1.25rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
             paddingRight: 'calc(1.25rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
             paddingTop: '0.75rem',
-            pointerEvents: ((isPergunta && !respostas[blocoAtual?.id || ''] && selectedOpcao) || (isFlashcard && !flashcardVirado)) ? 'none' : 'auto',
+            pointerEvents: ((isPergunta && !respostas[blocoAtual?.id || ''] && selectedOpcao) || (isFlashcard && !flashcardVirado) || (isLacunas && !questaoRespondida)) ? 'none' : 'auto',
           }}
         >
           <div className="max-w-7xl mx-auto w-full flex items-center justify-between">

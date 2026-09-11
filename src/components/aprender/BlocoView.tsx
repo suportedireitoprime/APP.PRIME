@@ -143,7 +143,7 @@ export function BlocoView({
     
     // Identifica e desvia para o componente interativo se for um desafio de lacunas
     if (/Opções do Menu Suspenso/i.test(rawContent) && /Gabarito Comentado/i.test(rawContent)) {
-      return <LacunasInterativasBlock rawContent={rawContent} />;
+      return <LacunasInterativasBlock rawContent={rawContent} onComplete={() => onResponder('completo')} />;
     }
     
     return <LeituraBlock payload={bloco.payload || {}} />;
