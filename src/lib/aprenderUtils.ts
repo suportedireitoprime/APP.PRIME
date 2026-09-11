@@ -18,6 +18,23 @@ export type Bloco = {
   resposta_correta: any;
 };
 
+export function isPerguntaBloco(bloco: Bloco | null): boolean {
+  if (!bloco) return false;
+  if (bloco.tipo === 'pergunta') return true;
+  
+  if (isBlocoTexto(bloco.tipo)) {
+    const rawTexto = String(bloco.payload?.conteudo ?? bloco.payload?.texto ?? '');
+    const rawTitulo = String(bloco.payload?.titulo ?? '');
+    if (
+      (rawTitulo.toUpperCase().includes('QUESTÃO') || rawTexto.toUpperCase().includes('QUESTÃO DE FIXAÇÃO')) &&
+      (rawTexto.match(/^[(]?[a-eA-E][)\]\-]\s/m))
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export type Aula = {
   id: string;
   titulo: string;

@@ -15,7 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { useTrackArea } from "@/hooks/useTrackArea";
 
-import { iconePorTipo, rotuloPorTipo } from '@/lib/aprenderUtils';
+import { iconePorTipo, rotuloPorTipo, isBlocoTexto, isPerguntaBloco } from '@/lib/aprenderUtils';
 import { useAprenderAula } from '@/hooks/domain/useAprenderAula';
 import { BlocoView } from '@/components/aprender/BlocoView';
 import { AulaConcluidaScreen } from '@/components/aprender/AulaConcluidaScreen';
@@ -96,7 +96,7 @@ const AprenderAula = () => {
   }, [navigate, location, aula]);
 
   const blocoAtual = (blocos && blocos[currentIdx]) ? blocos[currentIdx] : ((blocos && blocos[0]) ? blocos[0] : null);
-  const isPergunta = blocoAtual?.tipo === 'pergunta';
+  const isPergunta = isPerguntaBloco(blocoAtual);
   const isFlashcard = blocoAtual?.tipo === 'flashcard';
   const isGrafoDecisao =
     blocoAtual?.payload?.subtipo === 'grafo_decisao' ||

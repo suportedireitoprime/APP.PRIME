@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Quote, Scale, Check, X, XCircle, RotateCw, CheckCircle2, ArrowRight, Lightbulb, Flag, ChevronDown, AlertTriangle, BookMarked, HelpCircle, Puzzle, Brain } from 'lucide-react';
-import { Bloco, iconePorTipo, isBlocoTexto, rotuloPorTipo } from '@/lib/aprenderUtils';
+import { Bloco, iconePorTipo, isBlocoTexto, rotuloPorTipo, isPerguntaBloco } from '@/lib/aprenderUtils';
 import { LeituraBlock } from '@/components/aprender/blocos/LeituraBlock';
 import { LacunasInterativasBlock } from '@/components/aprender/blocos/LacunasInterativasBlock';
 import { CheckpointBlock } from '@/components/aprender/blocos/CheckpointBlock';
@@ -32,8 +32,14 @@ export interface BlocoViewProps {
 }
 
 export function BlocoView({
-  bloco, resposta, selectedOpcao: externalSelectedOpcao, onSelectOpcao, onResponder, flipped, onFlip, onAvaliarFlash, onAvancar, conexao, onConexao,
+  bloco: blocoProps, resposta, selectedOpcao: externalSelectedOpcao, onSelectOpcao, onResponder, flipped, onFlip, onAvaliarFlash, onAvancar, conexao, onConexao,
 }: BlocoViewProps) {
+  const bloco = { ...blocoProps };
+  
+  if (isPerguntaBloco(bloco)) {
+    bloco.tipo = 'pergunta';
+  }
+
   const [internalSelectedOpcao, setInternalSelectedOpcao] = useState<string | null>(null);
   const selectedOpcao = externalSelectedOpcao !== undefined ? externalSelectedOpcao : internalSelectedOpcao;
   const setSelectedOpcao = (id: string | null) => {
@@ -676,9 +682,9 @@ export function BlocoView({
            const enunLines = [];
            let parsingOpcoes = false;
            for(const l of lines) {
-               if (l.match(/^[a-eA-E][)\-]\s/)) {
+               if (l.match(/^[(]?[a-eA-E][)\]\-]\s/)) {
                    parsingOpcoes = true;
-                   ops.push(l.replace(/^[a-eA-E][)\-]\s/, '').trim());
+                   ops.push(l.replace(/^[(]?[a-eA-E][)\]\-]\s/, '').trim());
                } else if (parsingOpcoes && l.trim() && !l.startsWith('#')) {
                    ops[ops.length-1] += " " + l.trim();
                } else {
