@@ -682,9 +682,9 @@ export function BlocoView({
            const enunLines = [];
            let parsingOpcoes = false;
            for(const l of lines) {
-               if (l.match(/^[(]?[a-eA-E][)\]\-]\s/)) {
+               if (l.match(/^[\s*]*[(]?[a-eA-E][)\]\-][\s*]+/)) {
                    parsingOpcoes = true;
-                   ops.push(l.replace(/^[(]?[a-eA-E][)\]\-]\s/, '').trim());
+                   ops.push(l.replace(/^[\s*]*[(]?[a-eA-E][)\]\-][\s*]+/, '').replace(/\*\*$/, '').trim());
                } else if (parsingOpcoes && l.trim() && !l.startsWith('#')) {
                    ops[ops.length-1] += " " + l.trim();
                } else {
@@ -701,6 +701,7 @@ export function BlocoView({
     const enunciado = String(rawEnunciado)
       .replace(/^#{1,3}\s*(?:\d+[-.)]\s*)?[^\n]+\n*/i, '')
       .replace(/^###\s*(?:Enunciado|Julgue[^\n]*):\s*/i, '')
+      .replace(/^[\s*]*(?:Enunciado|Questão)[\s*]*:\s*/i, '')
       .trim();
 
     const opcoes = rawOpcoes.map((op: any, i: number) => {

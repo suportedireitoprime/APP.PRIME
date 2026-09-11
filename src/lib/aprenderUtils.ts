@@ -27,7 +27,7 @@ export function isPerguntaBloco(bloco: Bloco | null): boolean {
     const rawTitulo = String(bloco.payload?.titulo ?? '');
     if (
       (rawTitulo.toUpperCase().includes('QUESTÃO') || rawTexto.toUpperCase().includes('QUESTÃO DE FIXAÇÃO')) &&
-      (rawTexto.match(/^[(]?[a-eA-E][)\]\-]\s/m))
+      (rawTexto.match(/^[\s*]*[(]?[a-eA-E][)\]\-][\s*]+/m))
     ) {
       return true;
     }
