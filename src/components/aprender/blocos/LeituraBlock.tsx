@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, Lightbulb, AlertTriangle, ChevronDown, BookOpen, Eye, EyeOff, Scale, GitFork, Gavel, FileText, Sparkles } from 'lucide-react';
+import { MessageSquare, Lightbulb, AlertTriangle, ChevronDown, BookOpen, Eye, EyeOff, Scale, GitFork, Gavel, FileText, Sparkles, Puzzle } from 'lucide-react';
 import { normalizarMarkdown, limparTextoInstrucoes } from '@/lib/markdown';
 import { haptic } from '@/lib/nativeHaptics';
 import { LinhaDoTempoAnimada, isTimelineBlock } from './LinhaDoTempoAnimada';
@@ -289,6 +289,27 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
               },
               code: ({ children, className }) => {
                 const isInline = !className;
+                const txt = String(children);
+                
+                // Mapeamento especial para lacunas (ex: `[ LACUNA 1 ]`)
+                if (isInline && txt.match(/^\[\s*LACUNA\s*\d+\s*\]$/i)) {
+                   return (
+                     <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 bg-amber-500/15 text-amber-400 border border-amber-500/30 rounded-lg text-xs sm:text-sm font-bold font-display shadow-sm shadow-amber-500/10 mx-1 align-middle uppercase tracking-widest whitespace-nowrap">
+                       <Puzzle className="w-3.5 h-3.5" />
+                       {txt.replace(/[\[\]]/g, '').trim()}
+                     </span>
+                   );
+                }
+                
+                // Mapeamento especial para opções de lacunas (ex: `[ despersonalizados ]`)
+                if (isInline && txt.match(/^\[\s*[^\]]+\s*\]$/)) {
+                   return (
+                     <span className="inline-flex items-center px-3 py-1 bg-white/5 text-white/90 border border-white/10 hover:border-white/20 hover:bg-white/10 transition-colors rounded-md text-sm font-medium mx-1 align-middle whitespace-nowrap shadow-sm">
+                       {txt.replace(/[\[\]]/g, '').trim()}
+                     </span>
+                   );
+                }
+                
                 return isInline ? (
                   <code className="rounded-md bg-white/10 px-1.5 py-0.5 text-xs sm:text-sm font-mono font-semibold text-primary">
                     {children}
