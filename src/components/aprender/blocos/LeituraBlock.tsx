@@ -53,7 +53,9 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
     const isGlossario = titulo?.toLowerCase().includes('glossário') ||
       titulo?.toLowerCase().includes('dicionário') ||
       titulo?.toLowerCase().includes('vocabulário');
-    if (!isGlossario && !textoPrincipal.includes('• ') && !textoPrincipal.includes('- **')) return [];
+    
+    if (!isGlossario) return [];
+    
     const linhas = textoPrincipal.split('\n');
     const termos: { termo: string; definicao: string }[] = [];
     for (const l of linhas) {
