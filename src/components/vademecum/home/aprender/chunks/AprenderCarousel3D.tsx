@@ -283,7 +283,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
               }
               handleCardClick(item);
             }}
-            className="group relative shrink-0 w-[calc(50vw-12px)] max-w-[210px] min-w-[155px] h-52 sm:w-44 sm:h-60 md:w-48 md:h-64 rounded-2xl overflow-hidden shadow-lg border border-white/10 active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 hover:shadow-xl hover:border-white/20 select-none"
+            className="group relative shrink-0 w-[calc(42vw-12px)] max-w-[150px] min-w-[130px] h-44 sm:w-36 sm:h-48 md:w-40 md:h-56 rounded-2xl overflow-hidden shadow-lg border border-white/10 active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 hover:shadow-xl hover:border-white/20 select-none"
           >
             <img
               src={item.image}
