@@ -70,12 +70,7 @@ export function LacunasInterativasBlock({ rawContent, onComplete }: LacunasInter
     }
   }, [todasRespondidas, onComplete]);
 
-  // Handle seleçãor a primeira vez renderizando, foca na primeira lacuna
-  useEffect(() => {
-    if (lacunaAtiva === null && lacunasTotais > 0 && !todasRespondidas) {
-      setLacunaAtiva(1);
-    }
-  }, [lacunaAtiva, lacunasTotais, todasRespondidas]);
+  // (Removido o auto-focus inicial na primeira lacuna)
 
   const handleLacunaClick = (id: number) => {
     if (todasRespondidas) return;
@@ -123,7 +118,11 @@ export function LacunasInterativasBlock({ rawContent, onComplete }: LacunasInter
       </div>
 
       {/* Box do Enunciado */}
-      <div className="p-5 sm:p-7 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-md shadow-xl mb-6">
+      <div className="p-5 sm:p-7 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-md shadow-xl mb-6 relative">
+        <p className="text-[11px] sm:text-xs text-neutral-400 uppercase tracking-widest font-bold mb-4 flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+          Selecione as lacunas para responder
+        </p>
         <div className="prose prose-base sm:prose-lg max-w-none prose-invert prose-p:leading-[1.85] prose-p:text-neutral-200">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
@@ -144,27 +143,36 @@ export function LacunasInterativasBlock({ rawContent, onComplete }: LacunasInter
                       type="button"
                       onClick={() => handleLacunaClick(id)}
                       disabled={todasRespondidas}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1 mx-1 align-middle whitespace-nowrap transition-all rounded-lg text-sm sm:text-base font-bold font-display shadow-sm cursor-pointer ${
-                        todasRespondidas
+                      className={`relative overflow-hidden inline-flex items-center gap-1.5 px-3 py-1 mx-1 align-middle whitespace-nowrap transition-all rounded-lg text-sm sm:text-base font-bold font-display shadow-sm cursor-pointer ${
+                        isRespondida || todasRespondidas
                           ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-emerald-500/20'
                           : isAtiva
                           ? 'bg-primary/20 text-white border-2 border-primary shadow-[0_0_12px_hsl(var(--primary)/0.4)] scale-105'
-                          : isRespondida
-                          ? 'bg-white/10 text-white border border-white/30 hover:bg-white/15'
-                          : 'bg-amber-500/10 text-amber-400 border border-amber-500/40 border-dashed hover:bg-amber-500/20 animate-pulse'
+                          : 'bg-white/5 text-white/70 border border-white/20 hover:bg-white/10 hover:text-white'
                       }`}
                     >
-                      {respostas[id] ? (
-                        <>
-                          {todasRespondidas && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
-                          {respostas[id]}
-                        </>
-                      ) : (
-                        <>
-                          <Circle className="w-3.5 h-3.5 opacity-70" />
-                          Lacuna {id}
-                        </>
+                      {!isRespondida && !isAtiva && !todasRespondidas && (
+                        <motion.div
+                          initial={{ x: '-100%' }}
+                          animate={{ x: '200%' }}
+                          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut", repeatDelay: 1 }}
+                          className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"
+                        />
                       )}
+                      
+                      <span className="relative z-10 flex items-center gap-1.5">
+                        {respostas[id] ? (
+                          <>
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                            {respostas[id]}
+                          </>
+                        ) : (
+                          <>
+                            <Circle className="w-3.5 h-3.5 opacity-70" />
+                            Lacuna {id}
+                          </>
+                        )}
+                      </span>
                     </button>
                   );
                 }
