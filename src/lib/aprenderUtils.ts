@@ -8,7 +8,7 @@ export type TipoBloco =
   | 'pergunta' | 'flashcard' | 'conexao'
   | 'citacao' | 'artigo_lei' | 'tabela' | 'mapa_mental' | 'mapa_conceitual'
   | 'infografico' | 'linha_tempo' | 'destaque' | 'fluxograma'
-  | 'ordenacao' | 'cena_animada' | 'checkpoint' | 'recapitulacao';
+  | 'ordenacao' | 'cena_animada' | 'checkpoint' | 'recapitulacao' | 'menu_suspenso';
 
 export type Bloco = {
   id: string;

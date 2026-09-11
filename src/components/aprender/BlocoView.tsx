@@ -14,6 +14,7 @@ import { haptic } from '@/lib/nativeHaptics';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { normalizarMarkdown, limparTextoInstrucoes, limparMarkdownInline, formatarDicaProfessora } from '@/lib/markdown';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 
 export interface BlocoViewProps {
   bloco: Bloco;
@@ -53,6 +54,26 @@ export function BlocoView({
 
   if (bloco.tipo === 'checkpoint') return <CheckpointBlock payload={bloco.payload || {}} />;
   if (bloco.tipo === 'recapitulacao') return <RecapBlock payload={bloco.payload || {}} />;
+  
+  if (bloco.tipo === 'menu_suspenso') {
+    const items = bloco.payload?.items || [];
+    return (
+      <div className="w-full flex flex-col items-center">
+        <Accordion type="single" collapsible className="w-full max-w-2xl space-y-3">
+          {items.map((item: any, i: number) => (
+            <AccordionItem key={i} value={`item-${i}`} className="border-b-0">
+              <AccordionTrigger className="bg-primary/5 hover:bg-primary/10 px-4 py-3 rounded-lg text-left font-medium transition-colors hover:no-underline border border-primary/10">
+                {item.titulo}
+              </AccordionTrigger>
+              <AccordionContent className="p-4 bg-zinc-900/50 mt-1 rounded-lg border border-white/5 text-zinc-300 leading-relaxed whitespace-pre-wrap">
+                {item.conteudo}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
+    );
+  }
 
   if (bloco.tipo === 'citacao') {
     const { texto, autor, fonte_url } = bloco.payload || {};
