@@ -1042,7 +1042,7 @@ export function BlocoView({
                 <Brain className="w-4 h-4 text-primary/80" />
               </div>
               <div className="relative z-10 flex-1 flex items-center justify-center text-center px-2 sm:px-4">
-                <div className="font-sans text-lg sm:text-xl md:text-2xl font-medium leading-relaxed text-white/95 max-w-[50ch]">
+                <div className="font-sans text-[17px] sm:text-[19px] md:text-xl font-normal leading-snug text-white/95 max-w-[50ch]">
                   <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ p: ({ children }) => <>{children}</> }}>
                     {normalizarMarkdown(displayFrente)}
                   </ReactMarkdown>
@@ -1077,7 +1077,7 @@ export function BlocoView({
                 <CheckCircle2 className="w-5 h-5 text-primary" />
               </div>
               <div className="relative z-10 flex-1 overflow-y-auto text-left pr-1 sm:pr-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex flex-col justify-center">
-                <div className="font-sans text-[16px] sm:text-[17px] md:text-[18px] font-medium leading-relaxed text-white/95 max-w-[55ch]">
+                <div className="font-sans text-[15px] sm:text-[16px] md:text-[17px] font-normal leading-[1.6] text-white/95 max-w-[55ch]">
                   <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ p: ({ children }) => <>{children}</> }}>
                     {normalizarMarkdown(displayVerso)}
                   </ReactMarkdown>
