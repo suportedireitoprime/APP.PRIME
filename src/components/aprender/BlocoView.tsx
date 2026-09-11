@@ -961,8 +961,8 @@ export function BlocoView({
     // Auto-extração inteligente de payload bruto legado
     const rawTextToSearch = displayVerso + '\n\n' + displayFrente;
     if (rawTextToSearch.includes('### FRENTE DO CARTÃO') || rawTextToSearch.includes('Pergunta para reflexão')) {
-      const fMatch = rawTextToSearch.match(/###\s*FRENTE\s*DO\s*CARTÃO:?\s*(?:>\s*\*\*Pergunta[^\n]*\*\*:\s*)?([\s\S]*?)(?=---\s*|###\s*VERSO|$)/i);
-      const vMatch = rawTextToSearch.match(/###\s*VERSO\s*DO\s*CARTÃO[^\n]*:?\s*(?:>\s*\*\*Resposta[^\n]*\*\*:\s*)?([\s\S]*$)/i);
+      const fMatch = rawTextToSearch.match(/###\s*FRENTE\s*DO\s*CARTÃO[^\n]*\n+([\s\S]*?)(?=---\s*|###\s*VERSO|$)/i);
+      const vMatch = rawTextToSearch.match(/###\s*VERSO\s*DO\s*CARTÃO[^\n]*\n+([\s\S]*$)/i);
       if (fMatch && vMatch) {
         if (!displayTitulo && displayFrente && displayFrente.length < 60) {
           displayTitulo = displayFrente.replace(/^#+\s*/, '').replace(/^\d+[-.)]\s*/, '');
@@ -972,14 +972,28 @@ export function BlocoView({
       }
     }
 
+    // Auto-extração do "Exemplo Prático" caso esteja embutido no verso
+    let extractedExemplo = exemplo || '';
+    if (displayVerso.match(/Exemplo Prático/i)) {
+      const parts = displayVerso.split(/Exemplo Prático[^\n]*:?/i);
+      if (parts.length > 1) {
+         displayVerso = parts[0];
+         extractedExemplo = parts[1];
+      }
+    }
+
     // Limpeza de prefixos como "Resposta**: " ou "> **Resposta**:"
     displayVerso = displayVerso.replace(/^>*\s*\*{0,2}Resposta\*{0,2}:?\s*/i, '').trim();
     displayFrente = displayFrente.replace(/^>*\s*\*{0,2}Pergunta[^\n:]*\*{0,2}:?\s*/i, '').trim();
+    displayFrente = displayFrente.replace(/^\s*\([^)]+\):\s*/, '').trim(); // Remove parenteses soltos tipo "(Pergunta de Revisão):"
 
     displayFrente = displayFrente.replace(/^[>\s*#-]+|[>\s*#-]+$/gm, '').trim();
     displayVerso = displayVerso.replace(/^[>\s*#-]+|[>\s*#-]+$/gm, '').trim();
+    extractedExemplo = extractedExemplo.replace(/^[>\s*#-]+|[>\s*#-]+$/gm, '').replace(/\*/g, '').trim(); // Remove asteriscos e marcadores
+
     displayFrente = displayFrente.split('\n').map((l: string) => l.replace(/^[>\s]+/, '').trim()).filter(Boolean).join('\n');
     displayVerso = displayVerso.split('\n').map((l: string) => l.replace(/^[>\s]+/, '').trim()).filter(Boolean).join('\n');
+    extractedExemplo = extractedExemplo.split('\n').map((l: string) => l.replace(/^[>\s]+/, '').trim()).filter(Boolean).join('\n');
 
     const Divider = ({ label, Icon }: { label: string; Icon?: React.ComponentType<{ className?: string }> }) => (
       <div className="flex items-center gap-4 my-6" aria-hidden="true">
@@ -1068,10 +1082,10 @@ export function BlocoView({
                     {normalizarMarkdown(displayVerso)}
                   </ReactMarkdown>
                 </div>
-                {exemplo && (
+                {extractedExemplo && (
                   <>
                     <Divider label="Exemplo prático" Icon={Lightbulb} />
-                    <p className="font-sans text-[15px] leading-relaxed text-white/80 italic">{exemplo}</p>
+                    <p className="font-sans text-[15px] leading-relaxed text-white/80 italic">{extractedExemplo}</p>
                   </>
                 )}
                 {aplicando && (
