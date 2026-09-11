@@ -46,14 +46,8 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
   // Evita a duplicação do título e remove metadados [ATO ...], [Animação ...], etc.
   const textoLimpo = useMemo(() => {
     let md = limparTextoInstrucoes(textoPrincipal);
-    // Converte "Exemplo Rápido de Termo:" seguido de texto/lista em um blockquote customizado (h6)
-    md = md.replace(
-      /[^\n]*Exemplo Rápido de Termo:?\*?\s*\n+([\s\S]*?)(?=\n\n|$)/gi,
-      (match, p1) => {
-        const content = p1.split('\n').map((l: string) => `> ${l}`).join('\n');
-        return `> ###### Exemplo Rápido de Termo\n>\n${content}\n\n`;
-      }
-    );
+    // Converte qualquer variação de "Exemplo Rápido de Termo" em um h6 (renderizado como Alert customizado)
+    md = md.replace(/^[^\n]*Exemplo Rápido de Termo[^\n]*$/gim, '###### Exemplo Rápido de Termo');
     return md;
   }, [textoPrincipal]);
 
@@ -144,39 +138,41 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
     <article className="max-w-[70ch] lg:max-w-[76ch] mx-auto py-3 px-1 sm:px-2 pb-4">
       {titulo && (
         <header className="mb-6 sm:mb-8">
-          <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-primary mb-2.5 bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20 shadow-sm">
-            {isGrafoDecisao ? (
-              <>
-                <GitFork className="w-3.5 h-3.5 text-primary shrink-0 rotate-180" />
-                <span>Grafo de Decisão & Síntese</span>
-              </>
-            ) : isJurisprudencia ? (
-              <>
-                <Gavel className="w-3.5 h-3.5 text-primary shrink-0" />
-                <span>Jurisprudência dos Tribunais</span>
-              </>
-            ) : isProcessual ? (
-              <>
-                <FileText className="w-3.5 h-3.5 text-primary shrink-0" />
-                <span>Procedimento & Ação Penal</span>
-              </>
-            ) : isIntro ? (
-              <>
-                <Sparkles className="w-3.5 h-3.5 text-primary shrink-0" />
-                <span>Abertura da Trilha</span>
-              </>
-            ) : isCasoPratico ? (
-              <>
-                <Scale className="w-3.5 h-3.5 text-primary shrink-0" />
-                <span>Caso Prático Real</span>
-              </>
-            ) : termosGlossario.length > 0 ? (
-              <>
-                <BookOpen className="w-3.5 h-3.5 text-primary shrink-0" />
-                <span>Vocabulário Especial</span>
-              </>
-            ) : null}
-          </span>
+          {(isGrafoDecisao || isJurisprudencia || isProcessual || isIntro || isCasoPratico || termosGlossario.length > 0) && (
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-primary mb-2.5 bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20 shadow-sm">
+              {isGrafoDecisao ? (
+                <>
+                  <GitFork className="w-3.5 h-3.5 text-primary shrink-0 rotate-180" />
+                  <span>Grafo de Decisão & Síntese</span>
+                </>
+              ) : isJurisprudencia ? (
+                <>
+                  <Gavel className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span>Jurisprudência dos Tribunais</span>
+                </>
+              ) : isProcessual ? (
+                <>
+                  <FileText className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span>Procedimento & Ação Penal</span>
+                </>
+              ) : isIntro ? (
+                <>
+                  <Sparkles className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span>Abertura da Trilha</span>
+                </>
+              ) : isCasoPratico ? (
+                <>
+                  <Scale className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span>Caso Prático Real</span>
+                </>
+              ) : termosGlossario.length > 0 ? (
+                <>
+                  <BookOpen className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span>Vocabulário Especial</span>
+                </>
+              ) : null}
+            </span>
+          )}
           <h2 className="font-display text-[1.35rem] sm:text-2xl font-bold tracking-normal text-white/95 leading-snug">
             {tituloFormatado}
           </h2>
