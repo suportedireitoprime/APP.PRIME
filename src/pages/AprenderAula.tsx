@@ -771,7 +771,7 @@ const AprenderAula = () => {
                 haptic.selection();
                 setSumarioOpen(true);
               }}
-              className="flex items-center gap-2.5 h-11 px-4 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white/90 hover:text-white hover:bg-white/10 active:scale-95 transition-all shadow-sm min-h-[44px]"
+              className="flex items-center gap-2.5 h-11 px-4 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white/90 hover:text-white hover:bg-white/10 active:scale-95 transition-all shadow-xl shadow-black/40 min-h-[44px]"
               aria-label="Abrir sumário da aula"
             >
               <List className="h-5 w-5 text-primary" />
@@ -779,7 +779,7 @@ const AprenderAula = () => {
             </button>
 
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="flex items-center rounded-2xl bg-white/[0.03] border border-white/[0.08] p-1 backdrop-blur-md shadow-inner">
+              <div className="flex items-center rounded-2xl bg-white/[0.03] border border-white/[0.08] p-1 backdrop-blur-md shadow-xl shadow-black/40">
                 <button
                   onClick={() => goToPage(currentIdx - 1)}
                   disabled={currentIdx <= 0}
@@ -907,13 +907,13 @@ const AprenderAula = () => {
       {/* ── Sheet do Sumário da aula organizado por Atos Pedagógicos (Item 12) ── */}
       <Sheet open={sumarioOpen} onOpenChange={setSumarioOpen}>
         <SheetContent side="bottom" className="h-[78vh] rounded-t-[2rem] p-0 bg-[#18181b] border-t border-white/10 text-white">
-          <SheetHeader className="border-b border-white/5 p-5">
-            <SheetTitle className="text-left text-lg font-bold text-white flex items-center justify-between">
+          <SheetHeader className="border-b border-white/5 p-5 pr-14">
+            <SheetTitle className="text-left text-lg font-black font-display uppercase tracking-widest text-white flex flex-wrap items-center gap-3">
               <span className="flex items-center gap-2.5">
                 <List className="w-5 h-5 text-primary" />
-                Sumário da aula
+                Sumário da Aula
               </span>
-              <span className="text-xs font-semibold text-neutral-400 bg-white/5 px-2.5 py-1 rounded-lg border border-white/10">
+              <span className="text-[10px] font-bold font-sans normal-case tracking-normal text-neutral-400 bg-white/5 px-2.5 py-0.5 rounded-lg border border-white/10">
                 {total} páginas
               </span>
             </SheetTitle>
@@ -989,7 +989,7 @@ const AprenderAula = () => {
                         <p className="text-[11px] uppercase tracking-wider text-neutral-400 font-medium">
                           Página {i + 1} de {total} • {rotuloPorTipo(b.tipo)}
                         </p>
-                        <p className="truncate font-semibold text-white/95 text-[14px]">{titulo}</p>
+                        <p className="font-semibold text-white/95 text-[14px] leading-snug">{titulo}</p>
                       </div>
                     </button>
                   );
