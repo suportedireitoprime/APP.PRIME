@@ -48,25 +48,29 @@ export function BlocoView({
     setInternalSelectedOpcao(null);
   }, [bloco.id]);
 
-  if (isBlocoTexto(bloco.tipo)) {
-    return <LeituraBlock payload={bloco.payload || {}} />;
-  }
-
-  if (bloco.tipo === 'checkpoint') return <CheckpointBlock payload={bloco.payload || {}} />;
-  if (bloco.tipo === 'recapitulacao') return <RecapBlock payload={bloco.payload || {}} />;
-  
-  if (bloco.tipo === 'menu_suspenso') {
+  if (bloco.tipo === 'leitura' && bloco.payload?.isMenuSuspenso) {
     const items = bloco.payload?.items || [];
     return (
       <div className="w-full flex flex-col items-center">
         <Accordion type="single" collapsible className="w-full max-w-2xl space-y-3">
           {items.map((item: any, i: number) => (
-            <AccordionItem key={i} value={`item-${i}`} className="border-b-0">
-              <AccordionTrigger className="bg-primary/5 hover:bg-primary/10 px-4 py-3 rounded-lg text-left font-medium transition-colors hover:no-underline border border-primary/10">
-                {item.titulo}
+            <AccordionItem key={i} value={`item-${i}`} className="border-b-0 group">
+              <AccordionTrigger className="bg-primary/5 hover:bg-primary/10 px-4 py-3.5 sm:px-5 sm:py-4 rounded-xl text-left transition-all hover:no-underline border border-primary/20 hover:border-primary/40 font-display font-black text-[15px] sm:text-[16px] text-white uppercase tracking-widest shadow-sm">
+                {limparMarkdownInline(item.titulo || '')}
               </AccordionTrigger>
-              <AccordionContent className="p-4 bg-zinc-900/50 mt-1 rounded-lg border border-white/5 text-zinc-300 leading-relaxed whitespace-pre-wrap">
-                {item.conteudo}
+              <AccordionContent className="p-4 sm:p-5 bg-card/40 backdrop-blur-sm mt-1.5 rounded-xl border border-white/10 text-neutral-300 leading-relaxed shadow-inner">
+                <div className="prose prose-invert prose-p:text-[15px] sm:prose-p:text-[16px] prose-p:leading-[1.7] prose-p:text-neutral-200 prose-ul:pl-4 prose-li:mb-1 max-w-none">
+                  <ReactMarkdown 
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      p: ({ children }) => <span className="block mb-3 last:mb-0">{children}</span>,
+                      em: ({ children }) => <strong className="font-display font-black text-primary uppercase text-[12px] sm:text-[13px] tracking-widest mr-0.5">{children}</strong>,
+                      strong: ({ children }) => <strong className="font-display font-black text-primary uppercase text-[12px] sm:text-[13px] tracking-widest mr-0.5">{children}</strong>
+                    }}
+                  >
+                    {normalizarMarkdown(item.conteudo || '')}
+                  </ReactMarkdown>
+                </div>
               </AccordionContent>
             </AccordionItem>
           ))}
@@ -74,6 +78,13 @@ export function BlocoView({
       </div>
     );
   }
+
+  if (isBlocoTexto(bloco.tipo)) {
+    return <LeituraBlock payload={bloco.payload || {}} />;
+  }
+
+  if (bloco.tipo === 'checkpoint') return <CheckpointBlock payload={bloco.payload || {}} />;
+  if (bloco.tipo === 'recapitulacao') return <RecapBlock payload={bloco.payload || {}} />;
 
   if (bloco.tipo === 'citacao') {
     const { texto, autor, fonte_url } = bloco.payload || {};

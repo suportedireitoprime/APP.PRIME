@@ -136,24 +136,76 @@ const AprenderModulo = () => {
           }
         }
 
-        // Revalidação em paralelo (sem cascata de 3 awaits sequenciais)
-        const [joinRes, rawAulasRes] = await Promise.all([
-          supabase
-            .from('aprender_modulos')
-            .select('id, titulo, resumo, ordem, area_id, aprender_areas(id, nome, slug)')
-            .eq('id', moduloId)
-            .maybeSingle(),
-          supabase
-            .from('aprender_aulas')
-            .select('id, titulo, objetivo, duracao_est_min, ordem, status')
-            .eq('modulo_id', moduloId)
-            .eq('status', 'published')
-            .order('ordem'),
+        // Revalidação em paralelo com suporte a UUID e slug
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(moduloId);
+
+        let [joinRes, rawAulasRes] = await Promise.all([
+          isUuid
+            ? supabase
+                .from('aprender_modulos')
+                .select('id, titulo, resumo, ordem, area_id, aprender_areas(id, nome, slug)')
+                .eq('id', moduloId)
+                .maybeSingle()
+            : supabase
+                .from('aprender_modulos')
+                .select('id, titulo, resumo, ordem, area_id, aprender_areas(id, nome, slug)')
+                .eq('slug', moduloId)
+                .maybeSingle(),
+          isUuid
+            ? supabase
+                .from('aprender_aulas')
+                .select('id, titulo, objetivo, duracao_est_min, ordem, status')
+                .eq('modulo_id', moduloId)
+                .eq('status', 'published')
+                .order('ordem')
+            : Promise.resolve({ data: [] }),
         ]);
 
         if (cancelled) return;
 
         let rawMod: any = joinRes.data;
+        let rawAulas: any[] = (rawAulasRes.data ?? []) as any[];
+
+        // 🛡️ RECOVERY FALLBACK: Se o módulo foi recriado (UUID mudou) ou retornou 0 aulas
+        if (!rawMod || rawAulas.length === 0) {
+          let foundMod: any = null;
+
+          // 1. Tenta buscar por slug igual ao moduloId
+          if (!foundMod) {
+            const { data: bySlug } = await supabase
+              .from('aprender_modulos')
+              .select('id, titulo, resumo, ordem, area_id, aprender_areas(id, nome, slug)')
+              .eq('slug', moduloId)
+              .maybeSingle();
+            if (bySlug) foundMod = bySlug;
+          }
+
+          // 2. Tenta buscar pelo título do módulo
+          const searchTitle = (rawMod?.titulo || modulo?.titulo || routeState?.modulo?.titulo || '').trim();
+          if (!foundMod && searchTitle) {
+            const { data: byTitle } = await supabase
+              .from('aprender_modulos')
+              .select('id, titulo, resumo, ordem, area_id, aprender_areas(id, nome, slug)')
+              .ilike('titulo', `%${searchTitle}%`)
+              .limit(1);
+            if (byTitle && byTitle.length > 0) foundMod = byTitle[0];
+          }
+
+          // 3. Se encontrou o módulo real no banco, busca as aulas publicadas dele
+          if (foundMod) {
+            rawMod = foundMod;
+            const { data: freshAulas } = await supabase
+              .from('aprender_aulas')
+              .select('id, titulo, objetivo, duracao_est_min, ordem, status')
+              .eq('modulo_id', foundMod.id)
+              .eq('status', 'published')
+              .order('ordem');
+            if (freshAulas && freshAulas.length > 0) {
+              rawAulas = freshAulas;
+            }
+          }
+        }
+
         let areaData: any = null;
         if (rawMod) {
           const relArea = (rawMod as any).aprender_areas;
@@ -170,8 +222,6 @@ const AprenderModulo = () => {
           areaSlug: areaData?.slug ?? routeState?.area?.slug ?? modulo?.areaSlug ?? 'geral',
         };
         setModulo(modInfo);
-
-        const rawAulas = rawAulasRes.data ?? [];
         const aulaIds = rawAulas.map((a) => a.id);
 
         let progData: any[] = [];

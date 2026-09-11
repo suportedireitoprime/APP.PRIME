@@ -11,6 +11,7 @@ import {
   getCachedAprenderArea,
   hydrateAprenderAreaCache,
   loadAprenderArea,
+  fetchAprenderAreaFromNetwork,
   setCachedModuloData,
 } from '@/lib/aprenderAreaLoader';
 import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
@@ -93,9 +94,9 @@ const AprenderArea = () => {
     if (hit) {
       setData(hit);
       setLoading(false);
-      loadAprenderArea(slug, uid).then((d) => {
-        if (!cancelled) setData(d);
-      });
+      fetchAprenderAreaFromNetwork(slug, uid).then((d) => {
+        if (!cancelled && d && (d.aulas.length > 0 || !hit.aulas.length)) setData(d);
+      }).catch(console.warn);
       return;
     }
     (async () => {
@@ -107,7 +108,7 @@ const AprenderArea = () => {
       } else {
         setLoading(true);
       }
-      const fresh = await loadAprenderArea(slug, uid);
+      const fresh = await fetchAprenderAreaFromNetwork(slug, uid);
       if (cancelled) return;
       setData(fresh);
       setLoading(false);

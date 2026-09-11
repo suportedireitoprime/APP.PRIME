@@ -62,7 +62,7 @@ export async function hydrateAprenderAreaCache(slug: string, uid: string | null)
   return null;
 }
 
-async function fetchAprenderAreaFromNetwork(
+export async function fetchAprenderAreaFromNetwork(
   slug: string,
   uid: string | null,
 ): Promise<AprenderAreaData> {

@@ -7,6 +7,25 @@ interface AprenderCarousel3DProps {
   onItemClick: (item: { id: string }) => void;
 }
 
+// 🧭 Controle de sessão: rastreia se o usuário já navegou para outra função e retornou ao início
+let hasEverNavigatedAwayFromHome = false;
+
+export function markHomeNavigated() {
+  hasEverNavigatedAwayFromHome = true;
+  try {
+    sessionStorage.setItem('aprender_carousel_navigated', 'true');
+  } catch {}
+}
+
+export function isHomeNavigated(): boolean {
+  if (hasEverNavigatedAwayFromHome) return true;
+  try {
+    return sessionStorage.getItem('aprender_carousel_navigated') === 'true';
+  } catch {
+    return false;
+  }
+}
+
 export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel3DProps) => {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const isInteracting = useRef(false);
@@ -14,10 +33,28 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
   const pauseTimerRef = useRef<NodeJS.Timeout | null>(null);
   const dragRef = useRef<{ startX: number; startScroll: number; moved: number; isDragging: boolean } | null>(null);
 
+  // 1ª vez que entra no app: NÃO move automaticamente
+  // Se entrou em outra função e voltou: move automaticamente
+  const shouldAutoPlay = isHomeNavigated();
+
+  // Guarda o índice aleatório inicial para não mudar em re-renders da mesma montagem
+  const randomStartIndexRef = useRef<number | null>(null);
+  if (randomStartIndexRef.current === null && items && items.length > 0) {
+    randomStartIndexRef.current = Math.floor(Math.random() * items.length);
+  }
+
+  // Quando o componente desmonta (usuário foi para outra rota/função), marcamos como navegado
+  useEffect(() => {
+    return () => {
+      markHomeNavigated();
+    };
+  }, []);
+
   if (!items || items.length === 0) return null;
 
-  // Triplica os items para criar o efeito infinito perfeito
+  // Triplica os items para permitir scroll infinito perfeito
   const duplicatedItems = [...items, ...items, ...items];
+  const targetCardIndex = items.length + (randomStartIndexRef.current ?? 0);
 
   const pauseInteraction = useCallback((durationMs = 3000) => {
     isInteracting.current = true;
@@ -29,19 +66,37 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
     }, durationMs);
   }, []);
 
-  // Inicializa a posição de scroll no meio para permitir drag em ambas as direções
+  // 🎯 Centraliza a capa aleatória no meio exato:
+  // "Deve ter uma no meio, aí vai aparecer metade de uma, metade da outra"
+  // "E sempre as capas vão estar numa posição diferente dos temas/áreas quando a pessoa entrar pela primeira vez"
   useEffect(() => {
     const el = scrollerRef.current;
     if (!el) return;
-    const initMiddle = () => {
-      const oneSetWidth = el.scrollWidth / 3;
-      if (oneSetWidth > 0 && el.scrollLeft === 0) {
-        el.scrollLeft = oneSetWidth;
+
+    const centerTargetCard = () => {
+      const cards = el.querySelectorAll<HTMLElement>('[data-carousel-card]');
+      const targetCard = cards[targetCardIndex];
+      if (targetCard) {
+        const elRect = el.getBoundingClientRect();
+        const cardRect = targetCard.getBoundingClientRect();
+        const scrollTarget = el.scrollLeft + (cardRect.left - elRect.left) - (el.clientWidth / 2) + (targetCard.clientWidth / 2);
+        el.scrollLeft = scrollTarget;
+      } else {
+        const oneSetWidth = el.scrollWidth / 3;
+        if (oneSetWidth > 0 && el.scrollLeft === 0) {
+          el.scrollLeft = oneSetWidth;
+        }
       }
     };
-    const timer = setTimeout(initMiddle, 50);
-    return () => clearTimeout(timer);
-  }, [items.length]);
+
+    centerTargetCard();
+    const t1 = setTimeout(centerTargetCard, 30);
+    const t2 = setTimeout(centerTargetCard, 120);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [items.length, targetCardIndex]);
 
   // Wrap-around contínuo durante scroll manual (touch ou drag)
   const handleScroll = useCallback(() => {
@@ -57,8 +112,14 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
     }
   }, []);
 
-  // Auto-scroll suave com requestAnimationFrame quando não estiver interagindo
+  // 🔄 Auto-scroll suave:
+  // ATIVA SOMENTE se o usuário já navegou para outra função e voltou!
+  // Na primeira visita: auto-scroll fica pausado (estático).
   useEffect(() => {
+    if (!shouldAutoPlay) {
+      return;
+    }
+
     let animId: number;
     let lastTime = performance.now();
     let isVisible = true;
@@ -69,7 +130,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
 
       const el = scrollerRef.current;
       if (el && isVisible && !isInteracting.current && !isHovered.current && delta < 100) {
-        el.scrollLeft += delta * 0.035; // ~35px por segundo para leitura suave e elegante
+        el.scrollLeft += delta * 0.035; // ~35px por segundo
 
         const oneSetWidth = el.scrollWidth / 3;
         if (oneSetWidth > 0 && el.scrollLeft >= oneSetWidth * 2.25) {
@@ -82,12 +143,10 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
 
     animId = requestAnimationFrame(step);
 
-    // Intersection Observer para pausar animação fora da tela (economia de CPU/Bateria)
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           isVisible = entry.isIntersecting;
-          // Reseta o tempo ao voltar para a tela para evitar saltos bruscos
           if (isVisible) {
             lastTime = performance.now();
           }
@@ -105,7 +164,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
       observer.disconnect();
       if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
     };
-  }, []);
+  }, [shouldAutoPlay]);
 
   // Mouse Drag (Desktop)
   const onMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
@@ -168,6 +227,11 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
     pauseInteraction(3000);
   }, [pauseInteraction]);
 
+  const handleCardClick = useCallback((item: AprenderItem) => {
+    markHomeNavigated();
+    onItemClick(item);
+  }, [onItemClick]);
+
   return (
     <div className="group relative w-full pt-1 pb-4 overflow-hidden">
       {/* Botões de Navegação Desktop */}
@@ -186,9 +250,9 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
         <ChevronRight className="w-6 h-6 md:w-7 md:h-7" strokeWidth={2.5} />
       </button>
 
-      {/* Máscaras de gradiente para suavizar as bordas (fade-out) */}
-      <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none" />
+      {/* Máscaras de gradiente suaves */}
+      <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none" />
 
       <div
         ref={scrollerRef}
@@ -200,7 +264,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
         onMouseEnter={onMouseEnter}
-        className="flex gap-3 overflow-x-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden px-3 py-1 cursor-grab active:cursor-grabbing select-none"
+        className="flex gap-3 overflow-x-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden px-0 py-1 cursor-grab active:cursor-grabbing select-none"
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {duplicatedItems.map((item, idx) => {
@@ -209,6 +273,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
           <button
             key={`${item.id}-${idx}`}
             type="button"
+            data-carousel-card="true"
             aria-hidden={isClone}
             tabIndex={isClone ? -1 : 0}
             onClick={(e) => {
@@ -216,9 +281,9 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
                 e.preventDefault();
                 return;
               }
-              onItemClick(item);
+              handleCardClick(item);
             }}
-            className="group relative shrink-0 w-32 h-44 sm:w-40 sm:h-56 rounded-2xl overflow-hidden shadow-lg border border-white/10 active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 hover:shadow-xl hover:border-white/20 select-none"
+            className="group relative shrink-0 w-[calc(50vw-12px)] max-w-[210px] min-w-[155px] h-52 sm:w-44 sm:h-60 md:w-48 md:h-64 rounded-2xl overflow-hidden shadow-lg border border-white/10 active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 hover:shadow-xl hover:border-white/20 select-none"
           >
             <img
               src={item.image}
