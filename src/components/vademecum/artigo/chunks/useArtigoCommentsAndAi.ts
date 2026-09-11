@@ -292,6 +292,18 @@ export function useArtigoCommentsAndAi({
           const aiAbortCtrl = new AbortController();
           activeAiAbortCtrlRef.current = aiAbortCtrl;
 
+          const timeoutId = setTimeout(() => {
+            aiAbortCtrl.abort();
+            if (activeArtigoIdRef.current === currentId) {
+              setAiContent((prev) => ({
+                ...prev,
+                [activeTab]: 'Tempo limite excedido. O servidor demorou muito para responder.',
+              }));
+              setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
+              setAiGeneratingMode(null);
+            }
+          }, 35000); // Failsafe de 35s
+
           stepInterval = setInterval(() => {
             if (aiAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) {
               if (stepInterval) clearInterval(stepInterval);
@@ -313,6 +325,7 @@ export function useArtigoCommentsAndAi({
             })
             .then(({ data, error }) => {
               if (stepInterval) clearInterval(stepInterval);
+              clearTimeout(timeoutId);
               if (aiAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) return;
               if (!error && data?.reply) {
                 setAiGeneratingStep(3);
@@ -345,6 +358,7 @@ export function useArtigoCommentsAndAi({
             })
             .catch((err: any) => {
               if (stepInterval) clearInterval(stepInterval);
+              clearTimeout(timeoutId);
               if (aiAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) return;
               setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
               setAiGeneratingMode(null);
@@ -404,11 +418,23 @@ export function useArtigoCommentsAndAi({
 
           // Item 5: Aborta chamada de termos anterior e associa novo controller
           activeTermosAbortCtrlRef.current?.abort();
-          const termosAbortCtrl = new AbortController();
-          activeTermosAbortCtrlRef.current = termosAbortCtrl;
+          const aiAbortCtrl = new AbortController();
+          activeTermosAbortCtrlRef.current = aiAbortCtrl;
+
+          const timeoutId = setTimeout(() => {
+            aiAbortCtrl.abort();
+            if (activeArtigoIdRef.current === currentId) {
+              setAiContent((prev) => ({
+                ...prev,
+                termos: 'Tempo limite excedido. O servidor demorou muito para responder.',
+              }));
+              setAiLoading((prev) => ({ ...prev, termos: false }));
+              setAiGeneratingMode(null);
+            }
+          }, 35000); // Failsafe de 35s
 
           stepInterval = setInterval(() => {
-            if (termosAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) {
+            if (aiAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) {
               if (stepInterval) clearInterval(stepInterval);
               return;
             }
@@ -424,11 +450,12 @@ export function useArtigoCommentsAndAi({
                 leiNome: tabelaNome || '',
               },
               // @ts-ignore
-              signal: termosAbortCtrl.signal,
+              signal: aiAbortCtrl.signal,
             })
             .then(({ data, error }) => {
               if (stepInterval) clearInterval(stepInterval);
-              if (termosAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) return;
+              clearTimeout(timeoutId);
+              if (aiAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) return;
               if (!error && data?.reply) {
                 setAiGeneratingStep(3);
                 setAiContent((prev) => ({ ...prev, termos: data.reply }));
@@ -460,7 +487,8 @@ export function useArtigoCommentsAndAi({
             })
             .catch((err: any) => {
               if (stepInterval) clearInterval(stepInterval);
-              if (termosAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) return;
+              clearTimeout(timeoutId);
+              if (aiAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) return;
               setAiLoading((prev) => ({ ...prev, termos: false }));
               setAiGeneratingMode(null);
             });
