@@ -16,11 +16,14 @@ export function normalizarMarkdown(md: string): string {
 
   let text = md;
 
-  // Remove espaços dentro dos marcadores — SOMENTE quando o "**" de abertura
-  // não está grudado numa palavra (senão "**razão** e nos **direitos**" seria
-  // interpretado como um único par e viraria "razão**e nos**direitos").
-  text = text.replace(/(^|[\s([{"'—–-])\*\*\s+([^*\n]+?)\s+\*\*(?![\w])/g, '$1**$2**');
-  text = text.replace(/(^|[\s([{"'—–-])\*\s+([^*\n]+?)\s+\*(?![\w*])/g, '$1*$2*');
+  // Remove espaços dentro dos marcadores de negrito e itálico que impedem o parse correto.
+  // Corrige casos como "** palavra**", "**palavra **" e "** palavra **"
+  text = text.replace(/(^|[\s([{"'—–-])\*\*\s+([^*\n]+?)\*\*(?![\w])/g, '$1**$2**');
+  text = text.replace(/(^|[\s([{"'—–-])\*\*([^*\n]+?)\s+\*\*(?![\w])/g, '$1**$2**');
+  
+  // O mesmo para itálico
+  text = text.replace(/(^|[\s([{"'—–-])\*\s+([^*\n]+?)\*(?![\w*])/g, '$1*$2*');
+  text = text.replace(/(^|[\s([{"'—–-])\*([^*\n]+?)\s+\*(?![\w*])/g, '$1*$2*');
 
   // Normaliza 3+ asteriscos de abertura seguidos de 2+ de fechamento: ***word** → **word**
   text = text.replace(/\*{3,}([^*\n]+?)\*{2,}/g, '**$1**');

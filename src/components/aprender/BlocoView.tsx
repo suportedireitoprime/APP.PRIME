@@ -1072,13 +1072,21 @@ export function BlocoView({
       }
     }
 
-    // Limpeza de prefixos como "Resposta**: " ou "> **Resposta**:"
-    displayVerso = displayVerso.replace(/^>*\s*\*{0,2}Resposta\*{0,2}:?\s*/i, '').trim();
-    displayFrente = displayFrente.replace(/^>*\s*\*{0,2}Pergunta[^\n:]*\*{0,2}:?\s*/i, '').trim();
+    // Limpeza inteligente de prefixos (Resposta: / Pergunta:)
+    displayVerso = displayVerso.replace(/^>*\s*\*\*\s*Resposta\s*:?\s*\*\*\s*/i, '');
+    displayVerso = displayVerso.replace(/^(>*\s*\*\*\s*)Resposta\s*:?\s*/i, '$1');
+    displayVerso = displayVerso.replace(/^>*\s*Resposta\s*:?\s*/i, '');
+    
+    displayFrente = displayFrente.replace(/^>*\s*\*\*\s*Pergunta[^\n:]*\s*\*\*\s*:?\s*/i, '');
+    displayFrente = displayFrente.replace(/^(>*\s*\*\*\s*)Pergunta[^\n:]*:?\s*/i, '$1');
+    displayFrente = displayFrente.replace(/^>*\s*Pergunta[^\n:]*:?\s*/i, '');
+    
     displayFrente = displayFrente.replace(/^\s*\([^)]+\):\s*/, '').trim(); // Remove parenteses soltos tipo "(Pergunta de Revisão):"
 
+    // Limpa caracteres soltos de formatação no início e no fim
     displayFrente = displayFrente.replace(/^[>\s*#-]+|[>\s*#-]+$/gm, '').trim();
     displayVerso = displayVerso.replace(/^[>\s*#-]+|[>\s*#-]+$/gm, '').trim();
+    
     extractedExemplo = extractedExemplo.replace(/^[>\s*#-]+|[>\s*#-]+$/gm, '').replace(/\*/g, '').trim(); // Remove asteriscos e marcadores
 
     displayFrente = displayFrente.split('\n').map((l: string) => l.replace(/^[>\s]+/, '').trim()).filter(Boolean).join('\n');
