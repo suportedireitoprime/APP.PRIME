@@ -64,11 +64,69 @@ export function BlocoView({
                     remarkPlugins={[remarkGfm]}
                     components={{
                       p: ({ children }) => <span className="block mb-3 last:mb-0">{children}</span>,
-                      em: ({ children }) => <strong className="font-display font-black text-primary uppercase text-[12px] sm:text-[13px] tracking-widest mr-0.5">{children}</strong>,
-                      strong: ({ children }) => <strong className="font-display font-black text-primary uppercase text-[12px] sm:text-[13px] tracking-widest mr-0.5">{children}</strong>
+                      em: ({ children }) => {
+                        const txt = String(children).trim();
+                        const lower = txt.toLowerCase();
+                        let Icon = null;
+                        let colorClass = "text-primary";
+                        let bgClass = "bg-primary/10 border-primary/20";
+                        
+                        if (lower.includes('atenção') || lower.includes('importante') || lower.includes('cuidado') || lower.includes('alerta')) {
+                          Icon = AlertTriangle;
+                          colorClass = "text-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]";
+                          bgClass = "bg-amber-500/15 border-amber-500/20";
+                        } else if (lower.includes('dica') || lower.includes('macete') || lower.includes('bizu')) {
+                          Icon = Lightbulb;
+                          colorClass = "text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]";
+                          bgClass = "bg-amber-400/10 border-amber-400/20";
+                        } else if (lower.includes('exemplo')) {
+                          Icon = BookMarked;
+                          bgClass = "bg-primary/15 border-primary/20";
+                        } else if (lower.includes('nota') || lower.includes('observação') || lower.includes('obs')) {
+                          Icon = Flag;
+                          bgClass = "bg-primary/10 border-primary/20";
+                        }
+                        
+                        return (
+                          <strong className={`inline-flex items-center gap-1.5 font-display font-black ${colorClass} uppercase text-[12px] sm:text-[13px] tracking-widest ${bgClass} border px-2 py-0.5 rounded-md mr-0.5 align-middle -mt-1 mb-1`}>
+                            {Icon && <Icon className="w-3.5 h-3.5" />}
+                            {children}
+                          </strong>
+                        );
+                      },
+                      strong: ({ children }) => {
+                        const txt = String(children).trim();
+                        const lower = txt.toLowerCase();
+                        let Icon = null;
+                        let colorClass = "text-primary";
+                        let bgClass = "bg-primary/10 border-primary/20";
+                        
+                        if (lower.includes('atenção') || lower.includes('importante') || lower.includes('cuidado') || lower.includes('alerta')) {
+                          Icon = AlertTriangle;
+                          colorClass = "text-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]";
+                          bgClass = "bg-amber-500/15 border-amber-500/20";
+                        } else if (lower.includes('dica') || lower.includes('macete') || lower.includes('bizu')) {
+                          Icon = Lightbulb;
+                          colorClass = "text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]";
+                          bgClass = "bg-amber-400/10 border-amber-400/20";
+                        } else if (lower.includes('exemplo')) {
+                          Icon = BookMarked;
+                          bgClass = "bg-primary/15 border-primary/20";
+                        } else if (lower.includes('nota') || lower.includes('observação') || lower.includes('obs')) {
+                          Icon = Flag;
+                          bgClass = "bg-primary/10 border-primary/20";
+                        }
+                        
+                        return (
+                          <strong className={`inline-flex items-center gap-1.5 font-display font-black ${colorClass} uppercase text-[12px] sm:text-[13px] tracking-widest ${bgClass} border px-2 py-0.5 rounded-md mr-0.5 align-middle -mt-1 mb-1`}>
+                            {Icon && <Icon className="w-3.5 h-3.5" />}
+                            {children}
+                          </strong>
+                        );
+                      }
                     }}
                   >
-                    {normalizarMarkdown(item.conteudo || '')}
+                    {normalizarMarkdown(item.conteudo || '').replace(/[\uFFFD\u26A0\uFE0F🚨💡📌🛑📝]/g, '')}
                   </ReactMarkdown>
                 </div>
               </AccordionContent>
