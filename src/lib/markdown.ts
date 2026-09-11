@@ -61,7 +61,7 @@ export function limparTextoInstrucoes(raw?: string): string {
   t = t.replace(/^#{1,3}\s*(?:\d+[-.)]\s*)?[^\n]+\n*/i, '').trim();
 
   // Remove meta tags entre colchetes
-  const tagRegex = /\[\s*(?:ATO\b|CHECKPOINT\b|FLASHCARD\b|Animação\b|Transição\b|Efeito\b|Áudio\b|Locução\b|Destaque\b|Visual\b|Ação\b|Interatividade\b|Fluxo\s+Visual\b|Voltada\s+a\b)[^\]]*\]\s*/gi;
+  const tagRegex = /\[\s*(?:BLOCO\b|ATO\b|CHECKPOINT\b|FLASHCARD\b|Animação\b|Transição\b|Efeito\b|Áudio\b|Locução\b|Destaque\b|Visual\b|Ação\b|Interatividade\b|Fluxo\s+Visual\b|Voltada\s+a\b)[^\]]*\]\s*/gi;
   t = t.replace(tagRegex, '').trim();
 
   return t;
