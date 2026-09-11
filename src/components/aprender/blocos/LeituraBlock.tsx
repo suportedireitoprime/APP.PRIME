@@ -45,7 +45,16 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
 
   // Evita a duplicação do título e remove metadados [ATO ...], [Animação ...], etc.
   const textoLimpo = useMemo(() => {
-    return limparTextoInstrucoes(textoPrincipal);
+    let md = limparTextoInstrucoes(textoPrincipal);
+    // Converte "Exemplo Rápido de Termo:" seguido de texto/lista em um blockquote customizado (h6)
+    md = md.replace(
+      /[^\n]*Exemplo Rápido de Termo:?\*?\s*\n+([\s\S]*?)(?=\n\n|$)/gi,
+      (match, p1) => {
+        const content = p1.split('\n').map((l: string) => `> ${l}`).join('\n');
+        return `> ###### Exemplo Rápido de Termo\n>\n${content}\n\n`;
+      }
+    );
+    return md;
   }, [textoPrincipal]);
 
   // Parser de termos de glossário (Item 5)
@@ -166,14 +175,8 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
                 <BookOpen className="w-3.5 h-3.5 text-primary shrink-0" />
                 <span>Vocabulário Especial</span>
               </>
-            ) : (
-              <>
-                <BookOpen className="w-3.5 h-3.5 text-primary shrink-0" />
-                <span>Leitura Essencial</span>
-              </>
-            )}
           </span>
-          <h2 className="font-sans text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-white leading-tight sm:leading-snug">
+          <h2 className="font-display text-[1.35rem] sm:text-2xl font-bold tracking-normal text-white/95 leading-snug">
             {tituloFormatado}
           </h2>
         </header>
@@ -263,11 +266,27 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
                   <span>{children}</span>
                 </h4>
               ),
-              blockquote: ({ children }) => (
-                <blockquote className="border-l-4 border-primary bg-primary/[0.06] border-y border-r border-white/[0.04] text-neutral-100 py-3.5 px-5 rounded-r-2xl my-6 not-italic font-medium shadow-sm backdrop-blur-sm">
-                  {children}
-                </blockquote>
+              h6: () => (
+                <div className="flex items-center gap-2.5 font-extrabold text-amber-400 mb-3 mt-1 text-xs sm:text-sm uppercase tracking-widest">
+                  <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5" />
+                  Exemplo Rápido de Termo
+                </div>
               ),
+              blockquote: ({ children }) => {
+                const text = extractTextFromChildren(children);
+                if (/Exemplo Rápido de Termo/i.test(text)) {
+                   return (
+                     <blockquote className="border-l-4 border-amber-500 bg-amber-500/[0.08] text-neutral-100 py-4 px-5 sm:px-6 rounded-r-2xl my-6 not-italic shadow-sm backdrop-blur-sm">
+                       {children}
+                     </blockquote>
+                   );
+                }
+                return (
+                  <blockquote className="border-l-4 border-primary bg-primary/[0.06] border-y border-r border-white/[0.04] text-neutral-100 py-3.5 px-5 rounded-r-2xl my-6 not-italic font-medium shadow-sm backdrop-blur-sm">
+                    {children}
+                  </blockquote>
+                );
+              },
               pre: ({ children }) => {
                 const rawText = extractTextFromChildren(children);
                 if (isTimelineBlock(rawText)) {

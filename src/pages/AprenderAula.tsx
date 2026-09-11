@@ -784,7 +784,7 @@ const AprenderAula = () => {
                   onClick={() => goToPage(currentIdx - 1)}
                   disabled={currentIdx <= 0}
                   aria-label="Página anterior"
-                  className="flex h-11 w-12 sm:w-14 items-center justify-center rounded-xl bg-white/5 text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all shadow-sm"
+                  className="flex h-11 w-14 sm:w-16 items-center justify-center rounded-xl bg-white/5 text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all shadow-sm cursor-pointer"
                 >
                   <ChevronLeft className="h-6 w-6" />
                 </button>
@@ -802,10 +802,10 @@ const AprenderAula = () => {
                   onClick={() => goToPage(currentIdx + 1)}
                   disabled={currentIdx >= total - 1 || !podeAvancar}
                   aria-label="Próxima página"
-                  className={`flex h-11 w-12 sm:w-14 items-center justify-center rounded-xl transition-all shadow-lg ${
+                  className={`flex h-11 w-14 sm:w-16 items-center justify-center rounded-xl transition-all shadow-lg cursor-pointer ${
                     !podeAvancar || currentIdx >= total - 1
                       ? 'opacity-25 pointer-events-none bg-white/5 text-white/30 shadow-none cursor-not-allowed'
-                      : 'bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 shadow-primary/25 cursor-pointer'
+                      : 'bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 shadow-primary/25'
                   }`}
                 >
                   <ChevronRight className="h-6 w-6" />
