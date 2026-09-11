@@ -677,7 +677,9 @@ export function BlocoView({
        if (bloco.payload?.subtipo === 'certo_errado') {
            rawOpcoes = ["Certo", "Errado"];
        } else {
-           const lines = String(rawEnunciado).split('\n');
+           // Ensure options are on new lines even if they were in a single paragraph
+           const normalizedEnunciado = String(rawEnunciado).replace(/(\s+|^)([(]?[a-eA-E][)\]\-]\s+)/g, '\n$2');
+           const lines = normalizedEnunciado.split('\n');
            const ops = [];
            const enunLines = [];
            let parsingOpcoes = false;
