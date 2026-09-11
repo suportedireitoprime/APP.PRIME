@@ -704,6 +704,7 @@ export function BlocoView({
       .replace(/^#{1,3}\s*(?:\d+[-.)]\s*)?[^\n]+\n*/i, '')
       .replace(/^###\s*(?:Enunciado|Julgue[^\n]*):\s*/i, '')
       .replace(/^[\s*]*(?:Enunciado|Questão)[\s*]*:\s*/i, '')
+      .replace(/☒?\s*GABARITO E JUSTIFICATIVA:[\s\S]*/gi, '')
       .trim();
 
     const opcoes = rawOpcoes.map((op: any, i: number) => {
@@ -852,7 +853,7 @@ export function BlocoView({
           <HelpCircle className="h-3.5 w-3.5" />
           <span>{bloco.payload?.titulo ? limparMarkdownInline(bloco.payload.titulo.replace(/^#+\s*/, '').replace(/^\d+[-.)]\s*/, '')) : 'Questão Comentada (Certo ou Errado)'}</span>
         </div>
-        <div className="mb-6 font-sans text-[17px] sm:text-[18px] md:text-[20px] font-semibold leading-[1.7] text-foreground tracking-tight">
+        <div className="mb-6 font-sans text-[17px] sm:text-[18px] md:text-[20px] font-normal leading-[1.7] text-neutral-200 tracking-tight">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={{

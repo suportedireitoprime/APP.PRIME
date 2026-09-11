@@ -591,7 +591,7 @@ const AprenderAula = () => {
                     : (isPergunta || isGrafoDecisao)
                       ? 'bg-[#0f0f13]/85 backdrop-blur-xl border border-primary/25 shadow-primary/10'
                       : 'bg-[#131316]/95 backdrop-blur-md border border-white/[0.08]'
-                } border-y sm:border rounded-none sm:rounded-3xl px-4 py-5 sm:p-8 md:p-10 ${isFlashcard ? 'shadow-none' : 'shadow-2xl shadow-black/40'} overflow-hidden relative select-none md:cursor-grab md:active:cursor-grabbing min-h-[500px]`}
+                } border-y sm:border rounded-none sm:rounded-3xl px-4 py-5 sm:p-8 md:p-10 ${isFlashcard ? 'shadow-none' : 'shadow-2xl shadow-black/40'} overflow-hidden relative select-none md:cursor-grab md:active:cursor-grabbing ${isLacunas ? 'min-h-[75vh]' : 'min-h-[500px]'}`}
               >
                 {/* ── Fundo animado de quadrados ShapeGrid (Questões e Grafo Decisório) ── */}
                 {(isPergunta || isGrafoDecisao || isLacunas) && (
