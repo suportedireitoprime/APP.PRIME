@@ -175,6 +175,7 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
                 <BookOpen className="w-3.5 h-3.5 text-primary shrink-0" />
                 <span>Vocabulário Especial</span>
               </>
+            ) : null}
           </span>
           <h2 className="font-display text-[1.35rem] sm:text-2xl font-bold tracking-normal text-white/95 leading-snug">
             {tituloFormatado}
