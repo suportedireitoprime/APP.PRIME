@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
     watch: {
-      ignored: ["**/android/**", "**/ios/**", "**/*.csv", "**/*.xlsx", "**/*.xml", "**/new_penal_extracted/**"]
+      ignored: ["**/android/**", "**/ios/**", "**/*.csv", "**/*.xlsx", "**/*.xml", "**/new_penal_extracted/**", "**/xlsx.js"]
     }
   },
   plugins: [

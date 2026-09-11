@@ -356,7 +356,7 @@ const AprenderAula = () => {
       <div className="relative z-10 flex min-h-dvh flex-col">
         {/* ── Header editorial com Linha do Tempo no topo ── */}
         <header
-          className="sticky top-0 z-30 bg-[#121214]/95 backdrop-blur-xl border-b border-white/[0.08]"
+          className={`${isFlashcard ? 'hidden' : 'sticky top-0 z-30 bg-[#121214]/95 backdrop-blur-xl border-b border-white/[0.08]'}`}
           style={{ paddingTop: 'calc(var(--sai-top) + 0.25rem)' }}
         >
           {/* ── Linha do Tempo na parte superior (Timeline de Páginas - Item 1) ── */}

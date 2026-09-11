@@ -419,6 +419,34 @@ const AprenderModulo = () => {
     />
   );
 
+  const dynamicPrimaryHsl = useMemo(() => {
+    const hex = palette.primary || '#e11d48';
+    let r = 0, g = 0, b = 0;
+    if (hex.length === 7) {
+      r = parseInt(hex.substring(1, 3), 16);
+      g = parseInt(hex.substring(3, 5), 16);
+      b = parseInt(hex.substring(5, 7), 16);
+    } else if (hex.length === 4) {
+      r = parseInt(hex[1]+hex[1], 16);
+      g = parseInt(hex[2]+hex[2], 16);
+      b = parseInt(hex[3]+hex[3], 16);
+    }
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h = 0, s = 0, l = (max + min) / 2;
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+      h /= 6;
+    }
+    return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
+  }, [palette.primary]);
+
   return (
     <DesktopPageLayout activeId="aprender" mobileHeader={mobileHeader} title={modulo?.titulo ?? 'Trilha do Tópico'}>
       {/* Fundo ShapeGrid (padrão oficial do app / início do aplicativo) */}
@@ -434,13 +462,16 @@ const AprenderModulo = () => {
         />
       </div>
 
-      <div className="relative z-10 w-full max-w-4xl mx-auto space-y-6 pb-20 pt-2 px-3 sm:px-6">
+      <div 
+        className="relative z-10 w-full max-w-4xl mx-auto space-y-6 pb-20 pt-2 px-3 sm:px-6"
+        style={{ '--primary': dynamicPrimaryHsl } as React.CSSProperties}
+      >
         {/* Botão de Voltar Desktop */}
         <div className="hidden sm:flex items-center justify-between">
           <button
             type="button"
             onClick={handleVoltar}
-            className="inline-flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Voltar para {areaCurta}</span>
@@ -451,7 +482,7 @@ const AprenderModulo = () => {
               haptic.light();
               navigate('/aprender');
             }}
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           >
             <Home className="w-4 h-4" />
             <span>Início Aprender</span>
@@ -466,7 +497,7 @@ const AprenderModulo = () => {
           </div>
         ) : !modulo ? (
           <div className="text-center p-8 rounded-2xl border border-border bg-card">
-            <p className="text-sm font-semibold text-muted-foreground">Tópico não encontrado.</p>
+            <p className="text-sm font-medium text-muted-foreground">Tópico não encontrado.</p>
           </div>
         ) : (
           <>
@@ -474,7 +505,7 @@ const AprenderModulo = () => {
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              className="relative overflow-hidden rounded-3xl border border-white/25 p-6 sm:p-8 text-white space-y-4"
+              className="relative overflow-hidden rounded-3xl border border-white/25 p-4 sm:p-5 text-white space-y-4"
               style={{
                 background: palette.cardGradient,
                 boxShadow: palette.shadow,
@@ -560,7 +591,7 @@ const AprenderModulo = () => {
             {isFlashcards ? (
               <div className="space-y-4 pt-2">
                 <div className="flex items-center justify-between px-1">
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                  <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                     <FlashcardsIcon className="w-4 h-4 text-emerald-400" />
                     <span>Flashcards em Trilha ({flashcardsData?.subtemas.length || 0})</span>
                   </h2>
@@ -599,7 +630,7 @@ const AprenderModulo = () => {
                           {/* Nó da Linha do Tempo — alinhado com flex */}
                           <div
                             className={cn(
-                              'w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 flex items-center justify-center text-xs font-extrabold shrink-0 transition-all shadow-md',
+                              'w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 flex items-center justify-center text-xs font-medium shrink-0 transition-all shadow-md',
                               isCompleted
                                 ? 'bg-emerald-500 text-white border-emerald-500'
                                 : isNext
@@ -630,7 +661,7 @@ const AprenderModulo = () => {
                               );
                             }}
                             className={cn(
-                              'relative min-h-[120px] sm:min-h-[136px] h-auto overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
+                              'relative min-h-[120px] sm:min-h-[136px] h-auto overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 p-3 sm:p-3.5 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
                               isNext
                                 ? 'border-emerald-500/60 bg-card hover:border-emerald-500 shadow-emerald-500/5'
                                 : isCompleted
@@ -660,11 +691,11 @@ const AprenderModulo = () => {
                                 )}
                               </div>
                               {isCompleted ? (
-                                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded text-center leading-none border border-emerald-500/20">
+                                <span className="text-[9px] sm:text-[10px] font-medium uppercase tracking-wider text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded text-center leading-none border border-emerald-500/20">
                                   Concluída
                                 </span>
                               ) : (
-                                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-white/5 px-1.5 py-0.5 rounded text-center leading-none border border-white/10">
+                                <span className="text-[9px] sm:text-[10px] font-medium uppercase tracking-wider text-muted-foreground bg-white/5 px-1.5 py-0.5 rounded text-center leading-none border border-white/10">
                                   {subtema.total} cards
                                 </span>
                               )}
@@ -683,7 +714,7 @@ const AprenderModulo = () => {
                                       ? `${memorizadosDoSubtema} de ${subtema.total} memorizados`
                                       : `0 de ${subtema.total} memorizados`}
                                   </span>
-                                  <span className={cn('font-semibold', isCompleted ? 'text-emerald-400 font-bold' : 'text-foreground/80')}>
+                                  <span className={cn('font-medium', isCompleted ? 'text-emerald-400 font-medium' : 'text-foreground/80')}>
                                     {pctSubtema}%
                                   </span>
                                 </div>
@@ -728,7 +759,7 @@ const AprenderModulo = () => {
               /* 📍 Trilha em Linha do Tempo (Aulas) */
               <div className="space-y-4 pt-2">
                 <div className="flex items-center justify-between px-1">
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                  <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                     <Footprints className="w-4 h-4 text-primary" />
                     <span>Aulas em Trilha ({totalAulas})</span>
                   </h2>
@@ -736,7 +767,7 @@ const AprenderModulo = () => {
 
                 {aulas.length === 0 ? (
                   <div className="p-8 rounded-2xl border border-border bg-card/60 text-center space-y-3">
-                    <p className="text-sm font-semibold text-muted-foreground">Aulas deste tópico em breve!</p>
+                    <p className="text-sm font-medium text-muted-foreground">Aulas deste tópico em breve!</p>
                     {totalFlashcards > 0 && (
                       <div className="pt-1">
                         <button
@@ -745,7 +776,7 @@ const AprenderModulo = () => {
                             try { haptic.light(); } catch {}
                             setActiveTab('flashcards');
                           }}
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold shadow-md hover:bg-primary/90 transition-all cursor-pointer"
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-medium shadow-md hover:bg-primary/90 transition-all cursor-pointer"
                         >
                           <FlashcardsIcon className="w-4 h-4" />
                           <span>Estudar {totalFlashcards} Flashcards deste módulo</span>
@@ -769,7 +800,7 @@ const AprenderModulo = () => {
                           {/* Nó da Linha do Tempo — alinhado com flex */}
                           <div
                             className={cn(
-                              'w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 flex items-center justify-center text-xs font-extrabold shrink-0 transition-all shadow-md',
+                              'w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 flex items-center justify-center text-xs font-medium shrink-0 transition-all shadow-md',
                               aula.concluida
                                 ? 'bg-emerald-500 text-white border-emerald-500'
                                 : isNext
@@ -800,7 +831,7 @@ const AprenderModulo = () => {
                             }}
                             onPointerEnter={() => prefetchAprenderAula(aula.id)}
                             className={cn(
-                              'relative min-h-[120px] sm:min-h-[136px] py-3.5 sm:py-4 px-3.5 sm:px-4 overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
+                              'relative min-h-[120px] sm:min-h-[136px] p-3 sm:p-3.5 overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
                               isNext
                                 ? 'border-primary/60 bg-card hover:border-primary shadow-primary/5'
                                 : aula.concluida
@@ -832,11 +863,11 @@ const AprenderModulo = () => {
                                 )}
                               </div>
                               {aula.concluida ? (
-                                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded text-center leading-none border border-emerald-500/20">
+                                <span className="text-[9px] sm:text-[10px] font-medium uppercase tracking-wider text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded text-center leading-none border border-emerald-500/20">
                                   Concluída
                                 </span>
                               ) : (aula.pct || 0) > 0 ? (
-                                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-1.5 py-0.5 rounded text-center leading-none border border-primary/20">
+                                <span className="text-[9px] sm:text-[10px] font-medium uppercase tracking-wider text-primary bg-primary/10 px-1.5 py-0.5 rounded text-center leading-none border border-primary/20">
                                   {aula.pct}%
                                 </span>
                               ) : null}
@@ -852,9 +883,9 @@ const AprenderModulo = () => {
                                 <div className="flex items-center justify-between text-[11px] sm:text-xs font-normal">
                                   <span className={cn(
                                     aula.concluida
-                                      ? 'text-emerald-400 font-bold'
+                                      ? 'text-emerald-400 font-medium'
                                       : (aula.pct || 0) > 0
-                                      ? 'text-primary font-semibold'
+                                      ? 'text-primary font-medium'
                                       : 'text-muted-foreground'
                                   )}>
                                     {aula.concluida
@@ -868,7 +899,7 @@ const AprenderModulo = () => {
                                       <Cloud className="w-3.5 h-3.5 text-primary/70" />
                                     )}
                                     <span className={cn(
-                                      'font-bold tabular-nums',
+                                      'font-medium tabular-nums',
                                       aula.concluida
                                         ? 'text-emerald-400'
                                         : (aula.pct || 0) > 0

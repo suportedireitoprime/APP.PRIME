@@ -105,7 +105,7 @@ export function BlocoView({
             {limparMarkdownInline(titulo)}
           </h2>
         )}
-        <div className="relative rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.05] via-white/[0.02] to-transparent p-6 sm:p-8 shadow-xl backdrop-blur-md">
+        <div className="relative rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.05] via-white/[0.02] to-transparent p-4 sm:p-6 shadow-xl backdrop-blur-md">
           {(lei || numero) && (
             <p className="mb-4 text-sm font-bold text-white uppercase tracking-wide border-b border-white/10 pb-3">
               {lei} {numero ? <span className="text-primary font-black">— Art. {numero}</span> : ''}
@@ -435,7 +435,7 @@ export function BlocoView({
         ) : (
           <div className="relative border-l-2 border-primary/30 pl-5 sm:pl-8 my-4">
             <div className="absolute -left-[9px] top-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary shadow-[0_0_10px_hsl(var(--primary)/0.6)]" />
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-7 backdrop-blur-md shadow-xl">
+            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-4 sm:p-6 backdrop-blur-md shadow-xl">
               <div className="prose prose-invert prose-p:text-[16px] sm:prose-p:text-[17px] md:prose-p:text-[18px] prose-p:leading-[1.8] prose-p:text-neutral-200 prose-p:mb-5 prose-h3:text-lg sm:prose-h3:text-xl prose-h3:font-bold prose-h3:text-primary prose-h3:mt-4 prose-h3:mb-2 prose-strong:text-white max-w-none">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                   {normalizarMarkdown(textoLimpo)}
@@ -480,7 +480,7 @@ export function BlocoView({
     }
     return (
       <article className="max-w-[70ch] lg:max-w-[76ch] mx-auto py-3 px-1 sm:px-2">
-        <div className={`rounded-3xl border ${style.br} ${style.bg} p-6 sm:p-8 backdrop-blur-md shadow-xl ${style.glow}`}>
+        <div className={`rounded-3xl border ${style.br} ${style.bg} p-4 sm:p-6 backdrop-blur-md shadow-xl ${style.glow}`}>
           <div className={`mb-4 inline-flex items-center gap-2 text-[11px] sm:text-[12px] font-extrabold uppercase tracking-widest ${style.tx} bg-white/5 px-3 py-1 rounded-full border border-white/10`}>
             <style.Icon className="h-4 w-4" strokeWidth={2} />
             {isDicaProfessora ? (
@@ -632,7 +632,7 @@ export function BlocoView({
             <span>Complete o Tipo Penal</span>
           </div>
 
-          <div className="p-5 sm:p-7 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-md shadow-xl mb-6">
+          <div className="p-4 sm:p-6 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-md shadow-xl mb-6">
             <p className="font-sans text-[15px] sm:text-[18px] leading-[1.8] text-white font-normal break-words">
               {parts[0]}
               <span className={`inline-block align-middle text-[13px] sm:text-[15px] mx-1 sm:mx-1.5 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl font-bold transition-all border-2 ${
@@ -1020,7 +1020,7 @@ export function BlocoView({
           >
             {/* Frente */}
             <div
-              className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-[#111] to-[#1a1a1a] border border-white/10 p-6 sm:p-8 md:p-10 flex flex-col shadow-2xl overflow-hidden"
+              className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-[#111] to-[#1a1a1a] border border-white/10 p-4 sm:p-6 md:p-9 flex flex-col shadow-2xl overflow-hidden"
               style={{ backfaceVisibility: 'hidden' }}
             >
               <div
@@ -1055,7 +1055,7 @@ export function BlocoView({
 
             {/* Verso */}
             <div
-              className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30 p-6 sm:p-8 md:p-10 flex flex-col shadow-2xl backdrop-blur-xl overflow-hidden"
+              className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30 p-4 sm:p-6 md:p-9 flex flex-col shadow-2xl backdrop-blur-xl overflow-hidden"
               style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
             >
               <div
