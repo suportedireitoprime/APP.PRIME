@@ -6,11 +6,12 @@ import { supabase } from '@/integrations/supabase/client';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import {
-  ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Footprints, Home
+  ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Footprints, Home, Cloud
 } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { shortenAreaName } from '@/lib/areaNameShortener';
 import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
+import { keys } from 'idb-keyval';
 import {
   getCachedModuloData,
   setCachedModuloData,
@@ -104,6 +105,20 @@ const AprenderModulo = () => {
     if (cachedData?.aulas && cachedData.aulas.length > 0) return false;
     return true;
   });
+
+  const [cachedAulas, setCachedAulas] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    keys().then((allKeys) => {
+      const cached = new Set<string>();
+      for (const k of allKeys) {
+        if (typeof k === 'string' && k.startsWith('aprender_aula_cache_')) {
+          cached.add(k.replace('aprender_aula_cache_', ''));
+        }
+      }
+      setCachedAulas(cached);
+    }).catch(console.warn);
+  }, []);
 
   useEffect(() => {
     if (!moduloId) return;
@@ -250,6 +265,11 @@ const AprenderModulo = () => {
         try {
           await new Promise(resolve => setTimeout(resolve, 800)); // Delay entre requisições
           await prefetchAprenderAula(aula.id);
+          setCachedAulas(prev => {
+            const next = new Set(prev);
+            next.add(aula.id);
+            return next;
+          });
         } catch (e) {
           console.warn(`Erro no prefetch da aula ${aula.id}`, e);
         }
@@ -843,16 +863,21 @@ const AprenderModulo = () => {
                                       ? `${aula.blocosConcluidos || 0} de ${aula.totalBlocos || 0} páginas`
                                       : `0 de ${aula.totalBlocos || 0} páginas`}
                                   </span>
-                                  <span className={cn(
-                                    'font-bold tabular-nums',
-                                    aula.concluida
-                                      ? 'text-emerald-400'
-                                      : (aula.pct || 0) > 0
-                                      ? 'text-primary'
-                                      : 'text-muted-foreground'
-                                  )}>
-                                    {aula.pct || 0}%
-                                  </span>
+                                  <div className="flex items-center gap-1.5">
+                                    {cachedAulas.has(aula.id) && (
+                                      <Cloud className="w-3.5 h-3.5 text-primary/70" />
+                                    )}
+                                    <span className={cn(
+                                      'font-bold tabular-nums',
+                                      aula.concluida
+                                        ? 'text-emerald-400'
+                                        : (aula.pct || 0) > 0
+                                        ? 'text-primary'
+                                        : 'text-muted-foreground'
+                                    )}>
+                                      {aula.pct || 0}%
+                                    </span>
+                                  </div>
                                 </div>
                                 <div className="h-1.5 w-full rounded-full bg-white/10 overflow-hidden border border-white/5">
                                   <div

@@ -1005,39 +1005,63 @@ export function BlocoView({
           >
             {/* Frente */}
             <div
-              className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-[#111] to-[#1a1a1a] border border-white/10 p-6 sm:p-8 md:p-10 flex flex-col shadow-2xl"
+              className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-[#111] to-[#1a1a1a] border border-white/10 p-6 sm:p-8 md:p-10 flex flex-col shadow-2xl overflow-hidden"
               style={{ backfaceVisibility: 'hidden' }}
             >
-              <div className="flex items-center justify-between mb-4">
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -bottom-10 -right-10 sm:-bottom-14 sm:-right-14 select-none z-0 overflow-hidden opacity-[0.05] sm:opacity-[0.07] transition-opacity duration-500"
+              >
+                <img
+                  src="/images/gamificacao/direito_penal_prisao_vazado.webp"
+                  alt=""
+                  loading="eager"
+                  decoding="async"
+                  className="w-56 h-56 sm:w-80 sm:h-80 md:w-[340px] md:h-[340px] object-contain"
+                />
+              </div>
+              <div className="relative z-10 flex items-center justify-between mb-4">
                 <span className="text-[10px] uppercase tracking-widest font-extrabold text-white/70">
                   {displayTitulo ? limparMarkdownInline(displayTitulo.replace(/^\d+[-.)]\s*/, '')) : 'FRENTE'}
                 </span>
                 <Brain className="w-4 h-4 text-primary/80" />
               </div>
-              <div className="flex-1 flex items-center justify-center text-center px-2 sm:px-4">
-                <div className="font-sans text-lg sm:text-xl md:text-2xl font-bold leading-relaxed text-white/95 max-w-[50ch]">
+              <div className="relative z-10 flex-1 flex items-center justify-center text-center px-2 sm:px-4">
+                <div className="font-sans text-lg sm:text-xl md:text-2xl font-medium leading-relaxed text-white/95 max-w-[50ch]">
                   <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ p: ({ children }) => <>{children}</> }}>
                     {normalizarMarkdown(displayFrente)}
                   </ReactMarkdown>
                 </div>
               </div>
-              <div className="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-wider text-white/30 pt-4 sm:pt-6 border-t border-white/5">
+              <div className="relative z-10 flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-wider text-white/30 pt-4 sm:pt-6 border-t border-white/5">
                 <RotateCw className="w-4 h-4" /> Toque para virar
               </div>
             </div>
 
             {/* Verso */}
             <div
-              className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30 p-6 sm:p-8 md:p-10 flex flex-col shadow-2xl backdrop-blur-xl"
+              className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30 p-6 sm:p-8 md:p-10 flex flex-col shadow-2xl backdrop-blur-xl overflow-hidden"
               style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
             >
-              <div className="flex items-center justify-between mb-4">
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -bottom-10 -right-10 sm:-bottom-14 sm:-right-14 select-none z-0 overflow-hidden opacity-[0.03] sm:opacity-[0.05] transition-opacity duration-500"
+              >
+                <img
+                  src="/images/gamificacao/direito_penal_prisao_vazado.webp"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  className="w-56 h-56 sm:w-80 sm:h-80 md:w-[340px] md:h-[340px] object-contain"
+                />
+              </div>
+              <div className="relative z-10 flex items-center justify-between mb-4">
                 <span className="text-[10px] uppercase tracking-widest font-extrabold text-primary">
                   Verso · Resposta
                 </span>
                 <CheckCircle2 className="w-5 h-5 text-primary" />
               </div>
-              <div className="flex-1 overflow-y-auto text-left pr-1 sm:pr-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex flex-col justify-center">
+              <div className="relative z-10 flex-1 overflow-y-auto text-left pr-1 sm:pr-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex flex-col justify-center">
                 <div className="font-sans text-[16px] sm:text-[17px] md:text-[18px] font-medium leading-relaxed text-white/95 max-w-[55ch]">
                   <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ p: ({ children }) => <>{children}</> }}>
                     {normalizarMarkdown(displayVerso)}
@@ -1062,42 +1086,14 @@ export function BlocoView({
                   </div>
                 )}
               </div>
-              <div className="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-wider text-white/30 pt-4 sm:pt-6 mt-3 border-t border-white/5">
+              <div className="relative z-10 flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-wider text-white/30 pt-4 sm:pt-6 mt-3 border-t border-white/5">
                 <RotateCw className="w-4 h-4" /> Toque para voltar
               </div>
             </div>
           </motion.div>
         </div>
 
-        {flipped && (
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 w-full"
-          >
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={(e) => { e.stopPropagation(); haptic.impact('light'); onAvaliarFlash('nao_sabia'); onAvancar?.(); }}
-              className="w-full sm:w-auto flex-1 rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 sm:px-5 py-3 sm:py-3.5 text-sm font-bold text-rose-400 hover:bg-rose-500/20 active:scale-95 transition-all min-h-[48px] cursor-pointer"
-            >
-              Não lembrei
-            </motion.button>
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={(e) => { e.stopPropagation(); haptic.impact('light'); onAvaliarFlash('duvida'); onAvancar?.(); }}
-              className="w-full sm:w-auto flex-1 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 sm:px-5 py-3 sm:py-3.5 text-sm font-bold text-amber-400 hover:bg-amber-500/20 active:scale-95 transition-all min-h-[48px] cursor-pointer"
-            >
-              Mais ou menos
-            </motion.button>
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={(e) => { e.stopPropagation(); haptic.impact('light'); onAvaliarFlash('sabia'); onAvancar?.(); }}
-              className="w-full sm:w-auto flex-1 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 sm:px-5 py-3 sm:py-3.5 text-sm font-bold text-emerald-400 hover:bg-emerald-500/20 active:scale-95 transition-all min-h-[48px] cursor-pointer"
-            >
-              Lembrei fácil
-            </motion.button>
-          </motion.div>
-        )}
+
       </article>
     );
   }

@@ -159,6 +159,7 @@ const AprenderAula = () => {
     if (cardScrollRef.current) {
       cardScrollRef.current.scrollTop = 0;
     }
+    window.scrollTo(0, 0);
     // Salva progresso imediatamente
     void salvarProgresso(clamped >= total - 1, clamped);
   }, [total, currentIdx, podeAvancar, setCurrentIdx, salvarProgresso, playPageTurnSound]);
@@ -168,6 +169,7 @@ const AprenderAula = () => {
     if (cardScrollRef.current) {
       cardScrollRef.current.scrollTop = 0;
     }
+    window.scrollTo(0, 0);
   }, [currentIdx]);
 
   // Gestos Touch (Mobile / Tablet)
@@ -583,10 +585,12 @@ const AprenderAula = () => {
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseLeave}
                 className={`w-full flex-1 flex flex-col ${
-                  (isPergunta || isGrafoDecisao)
-                    ? 'bg-[#0f0f13]/85 backdrop-blur-xl border border-primary/25 shadow-primary/10'
-                    : 'bg-[#131316]/95 backdrop-blur-md border border-white/[0.08]'
-                } border-y sm:border rounded-none sm:rounded-3xl px-4 py-5 sm:p-8 md:p-10 shadow-2xl shadow-black/40 overflow-hidden relative select-none md:cursor-grab md:active:cursor-grabbing min-h-[500px]`}
+                  isFlashcard
+                    ? 'bg-transparent border-transparent'
+                    : (isPergunta || isGrafoDecisao)
+                      ? 'bg-[#0f0f13]/85 backdrop-blur-xl border border-primary/25 shadow-primary/10'
+                      : 'bg-[#131316]/95 backdrop-blur-md border border-white/[0.08]'
+                } border-y sm:border rounded-none sm:rounded-3xl px-4 py-5 sm:p-8 md:p-10 ${isFlashcard ? 'shadow-none' : 'shadow-2xl shadow-black/40'} overflow-hidden relative select-none md:cursor-grab md:active:cursor-grabbing min-h-[500px]`}
               >
                 {/* ── Fundo animado de quadrados ShapeGrid (Questões e Grafo Decisório) ── */}
                 {(isPergunta || isGrafoDecisao) && (
@@ -605,20 +609,22 @@ const AprenderAula = () => {
                 )}
 
                 {/* ── Marca d'água ilustrada vazada no fundo do card (Direito Penal) ── */}
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute -bottom-10 -right-10 sm:-bottom-14 sm:-right-14 select-none z-0 overflow-hidden opacity-[0.07] sm:opacity-[0.09] transition-opacity duration-500"
-                >
-                  <img
-                    src="/images/gamificacao/direito_penal_prisao_vazado.webp"
-                    alt=""
-                    loading="eager"
-                    decoding="async"
-                    className="w-72 h-72 sm:w-96 sm:h-96 md:w-[440px] md:h-[440px] object-contain"
-                  />
-                </div>
+                {!isFlashcard && (
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -bottom-10 -right-10 sm:-bottom-14 sm:-right-14 select-none z-0 overflow-hidden opacity-[0.07] sm:opacity-[0.09] transition-opacity duration-500"
+                  >
+                    <img
+                      src="/images/gamificacao/direito_penal_prisao_vazado.webp"
+                      alt=""
+                      loading="eager"
+                      decoding="async"
+                      className="w-72 h-72 sm:w-96 sm:h-96 md:w-[440px] md:h-[440px] object-contain"
+                    />
+                  </div>
+                )}
 
-                <AnimatePresence mode="wait" custom={direction}>
+                <AnimatePresence mode="popLayout" custom={direction}>
                   <motion.div
                     key={blocoAtual?.id || currentIdx}
                     custom={direction}
@@ -745,8 +751,8 @@ const AprenderAula = () => {
           aria-label="Navegação da aula"
           initial={false}
           animate={{
-            y: (isPergunta && !respostas[blocoAtual?.id || ''] && selectedOpcao) ? '110%' : 0,
-            opacity: (isPergunta && !respostas[blocoAtual?.id || ''] && selectedOpcao) ? 0 : 1,
+            y: ((isPergunta && !respostas[blocoAtual?.id || ''] && selectedOpcao) || (isFlashcard && !flashcardVirado)) ? '110%' : 0,
+            opacity: ((isPergunta && !respostas[blocoAtual?.id || ''] && selectedOpcao) || (isFlashcard && !flashcardVirado)) ? 0 : 1,
           }}
           transition={{ type: 'spring', damping: 28, stiffness: 300 }}
           className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.08] bg-[#141417]/95 backdrop-blur-xl flex items-center justify-between"
@@ -755,7 +761,7 @@ const AprenderAula = () => {
             paddingLeft: 'calc(1.25rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
             paddingRight: 'calc(1.25rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
             paddingTop: '0.75rem',
-            pointerEvents: (isPergunta && !respostas[blocoAtual?.id || ''] && selectedOpcao) ? 'none' : 'auto',
+            pointerEvents: ((isPergunta && !respostas[blocoAtual?.id || ''] && selectedOpcao) || (isFlashcard && !flashcardVirado)) ? 'none' : 'auto',
           }}
         >
           <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
