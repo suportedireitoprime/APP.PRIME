@@ -959,9 +959,10 @@ export function BlocoView({
     displayVerso = limparTextoInstrucoes(displayVerso);
 
     // Auto-extração inteligente de payload bruto legado
-    if (displayVerso.includes('### FRENTE DO CARTÃO') || displayVerso.includes('Pergunta para reflexão')) {
-      const fMatch = displayVerso.match(/###\s*FRENTE\s*DO\s*CARTÃO:?\s*(?:>\s*\*\*Pergunta[^\n]*\*\*:\s*)?([\s\S]*?)(?=---\s*|###\s*VERSO|$)/i);
-      const vMatch = displayVerso.match(/###\s*VERSO\s*DO\s*CARTÃO[^\n]*:?\s*(?:>\s*\*\*Resposta[^\n]*\*\*:\s*)?([\s\S]*$)/i);
+    const rawTextToSearch = displayVerso + '\n\n' + displayFrente;
+    if (rawTextToSearch.includes('### FRENTE DO CARTÃO') || rawTextToSearch.includes('Pergunta para reflexão')) {
+      const fMatch = rawTextToSearch.match(/###\s*FRENTE\s*DO\s*CARTÃO:?\s*(?:>\s*\*\*Pergunta[^\n]*\*\*:\s*)?([\s\S]*?)(?=---\s*|###\s*VERSO|$)/i);
+      const vMatch = rawTextToSearch.match(/###\s*VERSO\s*DO\s*CARTÃO[^\n]*:?\s*(?:>\s*\*\*Resposta[^\n]*\*\*:\s*)?([\s\S]*$)/i);
       if (fMatch && vMatch) {
         if (!displayTitulo && displayFrente && displayFrente.length < 60) {
           displayTitulo = displayFrente.replace(/^#+\s*/, '').replace(/^\d+[-.)]\s*/, '');
