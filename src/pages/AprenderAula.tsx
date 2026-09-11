@@ -594,7 +594,7 @@ const AprenderAula = () => {
                 } border-y sm:border rounded-none sm:rounded-3xl px-4 py-5 sm:p-8 md:p-10 ${isFlashcard ? 'shadow-none' : 'shadow-2xl shadow-black/40'} overflow-hidden relative select-none md:cursor-grab md:active:cursor-grabbing min-h-[500px]`}
               >
                 {/* ── Fundo animado de quadrados ShapeGrid (Questões e Grafo Decisório) ── */}
-                {(isPergunta || isGrafoDecisao) && (
+                {(isPergunta || isGrafoDecisao || isLacunas) && (
                   <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-none sm:rounded-3xl opacity-55">
                     <ShapeGrid
                       speed={0.6}
@@ -610,7 +610,7 @@ const AprenderAula = () => {
                 )}
 
                 {/* ── Marca d'água ilustrada vazada no fundo do card (Direito Penal) ── */}
-                {!isFlashcard && (
+                {!isFlashcard && !isPergunta && !isGrafoDecisao && !isLacunas && (
                   <div
                     aria-hidden="true"
                     className="pointer-events-none absolute -bottom-10 -right-10 sm:-bottom-14 sm:-right-14 select-none z-0 overflow-hidden opacity-[0.07] sm:opacity-[0.09] transition-opacity duration-500"

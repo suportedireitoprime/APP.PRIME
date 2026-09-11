@@ -85,34 +85,36 @@ export function LacunasInterativasBlock({ rawContent, onComplete }: LacunasInter
     setRespostas(prev => {
       const novasRespostas = { ...prev, [lacunaAtiva]: opcao };
       
-      // Auto-avançar para a próxima lacuna não respondida
-      if (Object.keys(novasRespostas).length < lacunasTotais) {
-        let proxima = lacunaAtiva + 1;
-        while (proxima <= lacunasTotais && novasRespostas[proxima]) {
-          proxima++;
-        }
-        if (proxima <= lacunasTotais) {
-          setLacunaAtiva(proxima);
-        } else {
-          // Busca a primeira vazia
-          for (let i = 1; i <= lacunasTotais; i++) {
-            if (!novasRespostas[i]) {
-              setLacunaAtiva(i);
-              break;
+      // Adiciona um pequeno atraso para que o usuário veja o feedback de seleção
+      setTimeout(() => {
+        setLacunaAtiva((atual) => {
+          if (Object.keys(novasRespostas).length < lacunasTotais) {
+            let proxima = lacunaAtiva + 1;
+            while (proxima <= lacunasTotais && novasRespostas[proxima]) {
+              proxima++;
+            }
+            if (proxima <= lacunasTotais) {
+              return proxima;
+            } else {
+              // Busca a primeira vazia
+              for (let i = 1; i <= lacunasTotais; i++) {
+                if (!novasRespostas[i]) {
+                  return i;
+                }
+              }
             }
           }
-        }
-      } else {
-        setLacunaAtiva(null);
-      }
+          return null;
+        });
+      }, 350);
       
       return novasRespostas;
     });
   };
 
   return (
-    <article className="max-w-[70ch] lg:max-w-[76ch] mx-auto py-3 px-1 sm:px-2 pb-8">
-      <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-widest text-amber-400">
+    <article className="max-w-[70ch] lg:max-w-[76ch] mx-auto py-3 px-1 sm:px-2 pb-8 min-h-[55vh] flex flex-col justify-center">
+      <div className="mb-6 inline-flex self-start items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-widest text-amber-400">
         <Puzzle className="h-3.5 w-3.5" />
         <span>Atividade de Fixação Interativa</span>
       </div>
@@ -246,7 +248,7 @@ export function LacunasInterativasBlock({ rawContent, onComplete }: LacunasInter
               <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
                 <CheckCircle2 className="w-5 h-5 text-emerald-400" />
               </div>
-              <h3 className="text-lg font-black tracking-tight text-emerald-300">
+              <h3 className="font-display text-[14px] sm:text-[15px] font-black uppercase tracking-[0.2em] text-emerald-400">
                 Gabarito Comentado
               </h3>
             </div>
