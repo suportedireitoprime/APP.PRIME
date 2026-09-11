@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Quote, Scale, Check, X, XCircle, RotateCw, CheckCircle2, ArrowRight, Lightbulb, Flag, ChevronDown, AlertTriangle, BookMarked, HelpCircle, Puzzle, Brain } from 'lucide-react';
 import { Bloco, iconePorTipo, isBlocoTexto, rotuloPorTipo } from '@/lib/aprenderUtils';
 import { LeituraBlock } from '@/components/aprender/blocos/LeituraBlock';
+import { LacunasInterativasBlock } from '@/components/aprender/blocos/LacunasInterativasBlock';
 import { CheckpointBlock } from '@/components/aprender/blocos/CheckpointBlock';
 import { RecapBlock } from '@/components/aprender/blocos/RecapBlock';
 import { MapaConceitualBlock } from '@/components/aprender/blocos/MapaConceitualBlock';
@@ -138,6 +139,13 @@ export function BlocoView({
   }
 
   if (isBlocoTexto(bloco.tipo)) {
+    const rawContent = String(bloco.payload?.conteudo ?? bloco.payload?.texto ?? '');
+    
+    // Identifica e desvia para o componente interativo se for um desafio de lacunas
+    if (/Opções do Menu Suspenso/i.test(rawContent) && /Gabarito Comentado/i.test(rawContent)) {
+      return <LacunasInterativasBlock rawContent={rawContent} />;
+    }
+    
     return <LeituraBlock payload={bloco.payload || {}} />;
   }
 
