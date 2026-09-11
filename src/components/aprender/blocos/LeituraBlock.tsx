@@ -209,7 +209,7 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
                     className="w-full flex items-center justify-between p-3.5 sm:p-4 text-left cursor-pointer select-none gap-3"
                     aria-expanded={isOpen}
                   >
-                    <span className="font-sans font-bold text-[14px] sm:text-[15px] md:text-[16px] text-neutral-100 tracking-normal leading-snug">
+                    <span className="font-display font-black text-[15px] sm:text-[16px] md:text-[17px] text-white tracking-widest uppercase leading-snug">
                       {termo}
                     </span>
                     <ChevronDown
@@ -227,8 +227,33 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
                         transition={{ duration: 0.25, ease: 'easeOut' }}
                         className="overflow-hidden"
                       >
-                        <div className="px-5 pb-5 pt-1 text-[15px] sm:text-[16px] leading-relaxed text-neutral-200 border-t border-white/[0.06]">
-                          {definicao}
+                        <div className="px-5 pb-5 pt-1 text-[15px] sm:text-[16px] leading-[1.6] text-neutral-200 border-t border-white/[0.06] prose prose-invert prose-p:leading-[1.6] prose-p:mb-4 last:prose-p:mb-0 prose-ul:pl-5 prose-li:mb-2 prose-li:marker:text-primary">
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                              strong: ({ children }) => {
+                                const text = String(children).toUpperCase().trim();
+                                if (text.includes('O QUE É')) {
+                                  return (
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-primary/20 text-primary border border-primary/30 rounded text-[11px] font-black uppercase tracking-wider shadow-sm shadow-primary/10 mr-1.5 align-text-bottom">
+                                      <BookOpen className="w-3.5 h-3.5" /> O QUE É
+                                    </span>
+                                  );
+                                }
+                                if (text.includes('EXEMPLO RÁPIDO')) {
+                                  return (
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-rose-950 text-rose-500 border border-rose-900/50 rounded text-[11px] font-black uppercase tracking-wider shadow-sm shadow-rose-900/20 mr-1.5 align-text-bottom">
+                                      <Bookmark className="w-3.5 h-3.5" /> EXEMPLO RÁPIDO
+                                    </span>
+                                  );
+                                }
+                                return <strong className="font-bold text-white">{children}</strong>;
+                              },
+                              p: ({ children }) => <p className="mb-4 last:mb-0">{children}</p>
+                            }}
+                          >
+                            {definicao}
+                          </ReactMarkdown>
                         </div>
                       </motion.div>
                     )}

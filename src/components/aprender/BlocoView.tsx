@@ -1098,15 +1098,15 @@ export function BlocoView({
     
     displayFrente = displayFrente.replace(/^\s*\([^)]+\):\s*/, '').trim(); // Remove parenteses soltos tipo "(Pergunta de Revisão):"
 
-    // Limpa caracteres soltos de formatação no início e no fim
-    displayFrente = displayFrente.replace(/^[>\s*#-]+|[>\s*#-]+$/gm, '').trim();
-    displayVerso = displayVerso.replace(/^[>\s*#-]+|[>\s*#-]+$/gm, '').trim();
+    // Limpa caracteres soltos de formatação de blockquote no início (preserva markdown como **, #, -, etc)
+    displayFrente = displayFrente.replace(/^>\s*/gm, '').trim();
+    displayVerso = displayVerso.replace(/^>\s*/gm, '').trim();
     
-    extractedExemplo = extractedExemplo.replace(/^[>\s*#-]+|[>\s*#-]+$/gm, '').replace(/\*/g, '').trim(); // Remove asteriscos e marcadores
+    extractedExemplo = extractedExemplo.replace(/^>\s*/gm, '').trim();
 
-    displayFrente = displayFrente.split('\n').map((l: string) => l.replace(/^[>\s]+/, '').trim()).filter(Boolean).join('\n');
-    displayVerso = displayVerso.split('\n').map((l: string) => l.replace(/^[>\s]+/, '').trim()).filter(Boolean).join('\n');
-    extractedExemplo = extractedExemplo.split('\n').map((l: string) => l.replace(/^[>\s]+/, '').trim()).filter(Boolean).join('\n');
+    displayFrente = displayFrente.split('\n').map((l: string) => l.trim()).filter(Boolean).join('\n\n');
+    displayVerso = displayVerso.split('\n').map((l: string) => l.trim()).filter(Boolean).join('\n\n');
+    extractedExemplo = extractedExemplo.split('\n').map((l: string) => l.trim()).filter(Boolean).join('\n\n');
 
     const Divider = ({ label, Icon }: { label: string; Icon?: React.ComponentType<{ className?: string }> }) => (
       <div className="flex items-center gap-4 my-6" aria-hidden="true">
@@ -1155,8 +1155,8 @@ export function BlocoView({
                 <Brain className="w-4 h-4 text-primary/80" />
               </div>
               <div className="relative z-10 flex-1 flex items-center justify-center text-center px-2 sm:px-4">
-                <div className="font-sans text-[17px] sm:text-[19px] md:text-xl font-normal leading-snug text-white/95 max-w-[50ch]">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ p: ({ children }) => <>{children}</> }}>
+                <div className="font-sans text-[17px] sm:text-[19px] md:text-xl font-normal leading-snug text-white/95 max-w-[50ch] prose prose-invert prose-p:leading-snug prose-p:text-white/95 prose-strong:text-white prose-strong:font-bold prose-ul:list-none prose-li:mb-2 prose-p:mb-4 last:prose-p:mb-0">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
                     {normalizarMarkdown(displayFrente)}
                   </ReactMarkdown>
                 </div>
@@ -1190,8 +1190,8 @@ export function BlocoView({
                 <CheckCircle2 className="w-5 h-5 text-primary" />
               </div>
               <div className="relative z-10 flex-1 overflow-y-auto text-left pr-1 sm:pr-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex flex-col justify-center">
-                <div className="font-sans text-[15px] sm:text-[16px] md:text-[17px] font-normal leading-[1.6] text-white/95 max-w-[55ch]">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ p: ({ children }) => <>{children}</> }}>
+                <div className="font-sans text-[15px] sm:text-[16px] md:text-[17px] font-normal leading-[1.6] text-white/95 max-w-[55ch] prose prose-invert prose-p:leading-[1.6] prose-p:text-white/95 prose-strong:text-white prose-strong:font-bold prose-ul:pl-5 prose-li:mb-2 prose-li:marker:text-primary prose-p:mb-4 last:prose-p:mb-0">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
                     {normalizarMarkdown(displayVerso)}
                   </ReactMarkdown>
                 </div>
