@@ -691,8 +691,7 @@ const AprenderModulo = () => {
               </div>
             </motion.div>
           );
-        })()
-        ) : loading && aulas.length === 0 ? (
+        })()) : loading && aulas.length === 0 ? (
           <div className="space-y-4">
             <div className="h-44 rounded-3xl bg-muted animate-pulse" />
             <div className="h-20 rounded-2xl bg-muted animate-pulse" />
