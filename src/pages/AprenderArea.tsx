@@ -295,8 +295,8 @@ const AprenderArea = () => {
       if (modulosOrdenados.length > 0) {
         const estTotal = totalFlashcardsArea > 0 ? Math.max(10, Math.floor(totalFlashcardsArea / modulosOrdenados.length)) : 25;
         return modulosOrdenados.map((m, idx) => ({
-          key: `mod-deck-${m.id}`,
-          titulo: m.titulo,
+          key: m.id,
+          titulo: m.titulo.replace(/^\d+\.\s*/, ''),
           ordemStr: String(m.ordem || idx + 1).padStart(2, '0'),
           badgeLabel: `Deck ${String(m.ordem || idx + 1).padStart(2, '0')}`,
           displayTotal: estTotal,
@@ -355,7 +355,7 @@ const AprenderArea = () => {
 
       return {
         key: m.id,
-        titulo: m.titulo,
+        titulo: m.titulo.replace(/^\d+\.\s*/, ''),
         ordemStr: numStr,
         badgeLabel: activeTab === 'questoes' ? `Questões ${numStr}` : `Módulo ${numStr}`,
         displayTotal: total,
@@ -523,7 +523,7 @@ const AprenderArea = () => {
                             {/* ── CARTA 1 (Traseira/Fundo - Menor e mais escura) ── */}
                             <div
                               className={cn(
-                                "absolute inset-0 rounded-2xl border border-white/10 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
+                                "absolute inset-0 rounded-2xl border border-white/10 opacity-40 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
                                 isLeft
                                   ? "scale-[0.88] rotate-[10deg] translate-x-10 -translate-y-2 group-hover:scale-[0.92] group-hover:rotate-[14deg] group-hover:translate-x-14 group-hover:-translate-y-3"
                                   : "scale-[0.88] -rotate-[10deg] -translate-x-10 -translate-y-2 group-hover:scale-[0.92] group-hover:-rotate-[14deg] group-hover:-translate-x-14 group-hover:-translate-y-3"
@@ -550,7 +550,7 @@ const AprenderArea = () => {
                             {/* ── CARTA 2 (Meio - Tamanho intermediário) ── */}
                             <div
                               className={cn(
-                                "absolute inset-0 rounded-2xl border border-white/15 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
+                                "absolute inset-0 rounded-2xl border border-white/15 opacity-75 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
                                 isLeft
                                   ? "scale-[0.94] rotate-[5deg] translate-x-5 -translate-y-1 group-hover:scale-[0.96] group-hover:rotate-[7deg] group-hover:translate-x-7 group-hover:-translate-y-2"
                                   : "scale-[0.94] -rotate-[5deg] -translate-x-5 -translate-y-1 group-hover:scale-[0.96] group-hover:-rotate-[7deg] group-hover:-translate-x-7 group-hover:-translate-y-2"
@@ -606,8 +606,8 @@ const AprenderArea = () => {
                                 className="pointer-events-none absolute -right-4 -bottom-4 w-[140px] sm:w-[165px] h-[160px] sm:h-[185px] object-cover opacity-45 group-hover:opacity-65 group-hover:scale-105 transition-all duration-300 z-0 select-none filter drop-shadow-[0_5px_12px_rgba(0,0,0,0.65)] mask-image-[linear-gradient(to_bottom,transparent_0%,black_15%,black_85%,transparent_100%)] mix-blend-overlay"
                               />
 
-                              {/* Cabeçalho da Carta: Tag Deck no Lado Direito e Sem Ícone */}
-                              <div className="flex items-center justify-end z-[1] w-full pt-1">
+                              {/* Cabeçalho da Carta: Tag Deck no Lado Esquerdo e Sem Ícone */}
+                              <div className="flex items-center justify-start z-[1] w-full pt-1">
                                 <span className="inline-flex items-center text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full backdrop-blur-md bg-black/45 text-white/95 border border-white/20 shadow-sm whitespace-nowrap">
                                   <span>{item.badgeLabel}</span>
                                 </span>
