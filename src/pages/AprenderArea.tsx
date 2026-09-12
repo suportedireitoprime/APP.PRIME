@@ -459,11 +459,7 @@ const AprenderArea = () => {
               >
                 {officialFlashcardArea || area?.nome || effectiveAreaName}
               </span>
-              {isRefreshing && (
-                <div className="ml-2 mt-0.5">
-                  <div className="w-3 h-3 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
-                </div>
-              )}
+
             </div>
 
             {isFlash && loadingFlashcards && itemsToRender.length === 0 ? (

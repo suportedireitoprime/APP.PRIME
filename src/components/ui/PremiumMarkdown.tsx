@@ -25,7 +25,7 @@ const processChildren = (children: React.ReactNode): React.ReactNode => {
     }
     if (React.isValidElement(child)) {
       // @ts-ignore
-      return React.cloneElement(child, { ...child.props, children: processChildren(child.props.children) });
+      return React.cloneElement(child, { ...(child.props || {}), children: processChildren(child.props?.children) });
     }
     return child;
   });
