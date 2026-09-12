@@ -388,7 +388,6 @@ const AprenderArea = () => {
   const coverInfo = area ? (getAreaCover(area.nome) || getAreaCover(area.slug)) : (slug ? getAreaCover(slug) : null);
   const coverUrl = coverInfo?.cover || "/images/gamificacao/deusa_temis_vazada.webp";
 
-  const isFlash = activeTab === 'flashcards';
 
   const titleDisplay = (
     <span className="font-sans font-extrabold uppercase tracking-widest text-[15px] sm:text-[16px] text-white">
