@@ -6,7 +6,8 @@ import { supabase } from '@/integrations/supabase/client';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import {
-  ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Footprints, Home, Cloud, Brain
+  ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Footprints, Home, Cloud, Brain,
+  Loader2, Sparkles, CircleCheck
 } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { shortenAreaName } from '@/lib/areaNameShortener';
@@ -124,6 +125,22 @@ const AprenderModulo = () => {
   });
   
   const [isGeneratingSyllabus, setIsGeneratingSyllabus] = useState(false);
+  const [syllabusStep, setSyllabusStep] = useState(0);
+
+  // Simula progresso visual enquanto a IA trabalha
+  useEffect(() => {
+    if (!isGeneratingSyllabus) {
+      setSyllabusStep(0);
+      return;
+    }
+    const timers = [
+      setTimeout(() => setSyllabusStep(1), 800),
+      setTimeout(() => setSyllabusStep(2), 3500),
+      setTimeout(() => setSyllabusStep(3), 7000),
+      setTimeout(() => setSyllabusStep(4), 12000),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, [isGeneratingSyllabus]);
 
   const [cachedAulas, setCachedAulas] = useState<Set<string>>(new Set());
 
@@ -582,22 +599,99 @@ const AprenderModulo = () => {
           </button>
         </div>
 
-        {isGeneratingSyllabus ? (
-          <div className="flex flex-col items-center justify-center text-center py-20">
-            <div className="relative mb-8">
-              <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 animate-pulse" />
-              <Brain className="w-20 h-20 text-primary relative z-10 animate-bounce" />
-            </div>
-            <h2 className="text-2xl font-bold text-white mb-3">Gerando plano de estudos...</h2>
-            <p className="text-neutral-400 text-base max-w-md mx-auto">
-              Nossa inteligência artificial está mapeando as melhores aulas para construir esta trilha do zero. Aguarde um instante.
-            </p>
-            <div className="mt-8 flex gap-2">
-              <div className="w-3 h-3 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]"></div>
-              <div className="w-3 h-3 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]"></div>
-              <div className="w-3 h-3 rounded-full bg-primary animate-bounce"></div>
-            </div>
-          </div>
+        {isGeneratingSyllabus ? (() => {
+          const steps = [
+            { label: 'Conectando à inteligência artificial...', icon: Brain },
+            { label: 'Analisando o tema do módulo...', icon: BookOpen },
+            { label: 'Mapeando tópicos e conteúdos oficiais...', icon: Sparkles },
+            { label: 'Estruturando o plano de aulas...', icon: Footprints },
+            { label: 'Finalizando e salvando sua trilha...', icon: CircleCheck },
+          ];
+          const progressPercent = Math.min(Math.round((syllabusStep / (steps.length - 1)) * 95), 95);
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col items-center justify-center py-12 px-4"
+            >
+              {/* Ícone do Cérebro com glow */}
+              <div className="relative mb-6">
+                <div className="absolute inset-0 bg-primary/30 blur-[40px] rounded-full scale-[2] animate-pulse" />
+                <Brain className="w-16 h-16 text-primary relative z-10" strokeWidth={1.8} />
+              </div>
+
+              {/* Título */}
+              <h2 className="text-xl sm:text-2xl font-bold text-white mb-1 text-center">
+                Gerando plano de estudos
+              </h2>
+              <p className="text-neutral-500 text-sm mb-6 text-center">
+                Isso leva de 10 a 30 segundos
+              </p>
+
+              {/* Barra de Progresso Animada */}
+              <div className="w-full max-w-sm mb-2">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-xs font-medium text-neutral-400">Progresso</span>
+                  <span className="text-xs font-bold text-primary tabular-nums">{progressPercent}%</span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-neutral-800 overflow-hidden">
+                  <motion.div
+                    className="h-full rounded-full bg-gradient-to-r from-primary via-primary/80 to-primary"
+                    initial={{ width: '0%' }}
+                    animate={{ width: `${progressPercent}%` }}
+                    transition={{ duration: 1.2, ease: 'easeOut' }}
+                  />
+                </div>
+              </div>
+
+              {/* Checklist de Etapas */}
+              <div className="w-full max-w-sm mt-5 space-y-2.5">
+                {steps.map((step, i) => {
+                  const StepIcon = step.icon;
+                  const isDone = syllabusStep > i;
+                  const isActive = syllabusStep === i;
+                  const isPending = syllabusStep < i;
+
+                  return (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -12 }}
+                      animate={{ opacity: isPending ? 0.35 : 1, x: 0 }}
+                      transition={{ delay: i * 0.08, duration: 0.3 }}
+                      className={cn(
+                        "flex items-center gap-3 rounded-xl px-3.5 py-2.5 transition-all duration-500",
+                        isDone && "bg-emerald-500/10",
+                        isActive && "bg-primary/10 ring-1 ring-primary/30",
+                        isPending && "bg-transparent"
+                      )}
+                    >
+                      {/* Ícone de Status */}
+                      <div className="flex-shrink-0">
+                        {isDone ? (
+                          <CircleCheck className="w-5 h-5 text-emerald-400" strokeWidth={2.2} />
+                        ) : isActive ? (
+                          <Loader2 className="w-5 h-5 text-primary animate-spin" strokeWidth={2.2} />
+                        ) : (
+                          <StepIcon className="w-5 h-5 text-neutral-600" strokeWidth={1.8} />
+                        )}
+                      </div>
+
+                      {/* Label */}
+                      <span className={cn(
+                        "text-sm font-medium transition-colors duration-500",
+                        isDone && "text-emerald-400",
+                        isActive && "text-white",
+                        isPending && "text-neutral-600"
+                      )}>
+                        {step.label}
+                      </span>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          );
+        })()
         ) : loading && aulas.length === 0 ? (
           <div className="space-y-4">
             <div className="h-44 rounded-3xl bg-muted animate-pulse" />
