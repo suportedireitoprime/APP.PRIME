@@ -16,17 +16,16 @@ const processChildren = (children: React.ReactNode): React.ReactNode => {
       if (parts.length === 1) return child;
       
       return parts.map((part, i) => {
-        if (regexBadges.test(part)) {
-          // Extrai o tipo removendo colchetes
-          const type = part.replace(/[\[\]]/g, '');
-          return <PremiumBadge key={i} type={type} />;
+        const match = part.match(/^\[(DICA|ATENÇÃO|ATENCAO|O QUE É|EXEMPLO|EXEMPLO RÁPIDO|JURISPRUDÊNCIA|JURISPRUDENCIA|SÚMULA|SUMULA|IMPORTANTE)\]$/i);
+        if (match) {
+          return <PremiumBadge key={i} type={match[1]} />;
         }
         return part;
       });
     }
     if (React.isValidElement(child)) {
       // @ts-ignore
-      return React.cloneElement(child, { ...child.props }, processChildren(child.props.children));
+      return React.cloneElement(child, { ...child.props, children: processChildren(child.props.children) });
     }
     return child;
   });
@@ -39,16 +38,26 @@ export const PremiumMarkdown: React.FC<PremiumMarkdownProps> = ({ children, comp
       remarkPlugins={[remarkGfm, ...(props.remarkPlugins || [])]}
       components={{
         ...components,
-        p: ({ children: pChildren, ...pProps }) => <p {...pProps}>{processChildren(pChildren)}</p>,
-        li: ({ children: liChildren, ...liProps }) => <li {...liProps}>{processChildren(liChildren)}</li>,
-        span: ({ children: spanChildren, ...spanProps }) => <span {...spanProps}>{processChildren(spanChildren)}</span>,
-        div: ({ children: divChildren, ...divProps }) => <div {...divProps}>{processChildren(divChildren)}</div>,
-        h1: ({ children: hChildren, ...hProps }) => <h1 {...hProps}>{processChildren(hChildren)}</h1>,
-        h2: ({ children: hChildren, ...hProps }) => <h2 {...hProps}>{processChildren(hChildren)}</h2>,
-        h3: ({ children: hChildren, ...hProps }) => <h3 {...hProps}>{processChildren(hChildren)}</h3>,
-        h4: ({ children: hChildren, ...hProps }) => <h4 {...hProps}>{processChildren(hChildren)}</h4>,
-        strong: ({ children: sChildren, ...sProps }) => <strong {...sProps}>{processChildren(sChildren)}</strong>,
-        em: ({ children: eChildren, ...eProps }) => <em {...eProps}>{processChildren(eChildren)}</em>,
+        // @ts-ignore
+        p: ({ node, children: pChildren, ...pProps }) => <p {...pProps}>{processChildren(pChildren)}</p>,
+        // @ts-ignore
+        li: ({ node, children: liChildren, ...liProps }) => <li {...liProps}>{processChildren(liChildren)}</li>,
+        // @ts-ignore
+        span: ({ node, children: spanChildren, ...spanProps }) => <span {...spanProps}>{processChildren(spanChildren)}</span>,
+        // @ts-ignore
+        div: ({ node, children: divChildren, ...divProps }) => <div {...divProps}>{processChildren(divChildren)}</div>,
+        // @ts-ignore
+        h1: ({ node, children: hChildren, ...hProps }) => <h1 {...hProps}>{processChildren(hChildren)}</h1>,
+        // @ts-ignore
+        h2: ({ node, children: hChildren, ...hProps }) => <h2 {...hProps}>{processChildren(hChildren)}</h2>,
+        // @ts-ignore
+        h3: ({ node, children: hChildren, ...hProps }) => <h3 {...hProps}>{processChildren(hChildren)}</h3>,
+        // @ts-ignore
+        h4: ({ node, children: hChildren, ...hProps }) => <h4 {...hProps}>{processChildren(hChildren)}</h4>,
+        // @ts-ignore
+        strong: ({ node, children: sChildren, ...sProps }) => <strong {...sProps}>{processChildren(sChildren)}</strong>,
+        // @ts-ignore
+        em: ({ node, children: eChildren, ...eProps }) => <em {...eProps}>{processChildren(eChildren)}</em>,
       }}
     >
       {children}
