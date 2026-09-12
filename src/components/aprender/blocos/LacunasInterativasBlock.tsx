@@ -32,24 +32,27 @@ export function LacunasInterativasBlock({ rawContent, onComplete }: LacunasInter
     const opcoesMatch = rawContent.match(/(?:#*\s*Opções do Menu Suspenso:?)([\s\S]*?)(?:#*\s*Gabarito Comentado:?)/i);
     if (opcoesMatch) {
       const opcoesText = opcoesMatch[1].trim();
-      const lines = opcoesText.split('\n');
-      lines.forEach(line => {
-        const match = line.match(/Para a Lacuna (\d+)/i);
-        if (match) {
-          const lacunaId = parseInt(match[1], 10);
-          const ops: string[] = [];
-          const optionRegex = /\[\s*([^\]]+?)\s*\]/g;
-          let optMatch;
-          while ((optMatch = optionRegex.exec(line)) !== null) {
-            if (!optMatch[1].toLowerCase().includes('lacuna')) {
-               ops.push(optMatch[1].trim());
-            }
-          }
-          if (ops.length > 0) {
-            data.opcoes[lacunaId] = ops;
+      
+      // Divide o bloco de opções por 'Lacuna X' (com ou sem 'Para a')
+      const blocos = opcoesText.split(/(?:Para a )?Lacuna\s+(\d+)\s*[:-]?/i);
+      
+      for (let i = 1; i < blocos.length; i += 2) {
+        const lacunaId = parseInt(blocos[i], 10);
+        const optionsText = blocos[i + 1];
+        if (!optionsText) continue;
+        
+        const ops: string[] = [];
+        const optionRegex = /\[\s*([^\]]+?)\s*\]/g;
+        let optMatch;
+        while ((optMatch = optionRegex.exec(optionsText)) !== null) {
+          if (!optMatch[1].toLowerCase().includes('lacuna')) {
+             ops.push(optMatch[1].trim());
           }
         }
-      });
+        if (ops.length > 0) {
+          data.opcoes[lacunaId] = ops;
+        }
+      }
     }
 
     const gabaritoMatch = rawContent.match(/(?:#*\s*Gabarito Comentado:?)([\s\S]*)/i);
@@ -83,14 +86,17 @@ export function LacunasInterativasBlock({ rawContent, onComplete }: LacunasInter
     if (lacunaAtiva === null) return;
     haptic.impact();
     
-    setRespostas(prev => {
-      const novasRespostas = { ...prev, [lacunaAtiva]: opcao };
-      
-      // Adiciona um pequeno atraso para que o usuário veja o feedback de seleção
-      setTimeout(() => {
-        setLacunaAtiva((atual) => {
+    const respondida = lacunaAtiva;
+    const novasRespostas = { ...respostas, [respondida]: opcao };
+    setRespostas(novasRespostas);
+    
+    // Adiciona um pequeno atraso para que o usuário veja o feedback de seleção
+    setTimeout(() => {
+      setLacunaAtiva((atual) => {
+        // Só avança se a modal não tiver sido fechada ou mudada pelo usuário
+        if (atual === respondida) {
           if (Object.keys(novasRespostas).length < lacunasTotais) {
-            let proxima = lacunaAtiva + 1;
+            let proxima = respondida + 1;
             while (proxima <= lacunasTotais && novasRespostas[proxima]) {
               proxima++;
             }
@@ -105,12 +111,11 @@ export function LacunasInterativasBlock({ rawContent, onComplete }: LacunasInter
               }
             }
           }
-          return null;
-        });
-      }, 350);
-      
-      return novasRespostas;
-    });
+          return null; // Todas respondidas, fecha a modal
+        }
+        return atual;
+      });
+    }, 450); // Aumentei um pouco para dar tempo de ler o que foi clicado
   };
 
   return (
@@ -198,7 +203,7 @@ export function LacunasInterativasBlock({ rawContent, onComplete }: LacunasInter
       {/* Opções Flutuantes (Bottom Sheet/Menu Overlay) */}
       <AnimatePresence mode="wait">
         {!todasRespondidas && lacunaAtiva !== null && parsedData.opcoes[lacunaAtiva] && (
-          <div className="fixed inset-0 z-[100] flex flex-col justify-end pointer-events-auto">
+          <div className="fixed inset-0 z-[100] flex flex-col justify-end pointer-events-auto" key={`sheet-${lacunaAtiva}`}>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
