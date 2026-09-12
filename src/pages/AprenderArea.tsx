@@ -82,7 +82,7 @@ const AprenderArea = () => {
 
       navigate(`/aprender/modulo/${moduloIdParam}?tab=${activeTab}`, {
         replace: true,
-        state: { modulo: found, area: data.area, aulas: moduloAulas, tab: activeTab },
+        state: { modulo: found, area: data.area ? { ...data.area, slug: data.area.slug ?? slug } : undefined, aulas: moduloAulas, tab: activeTab },
       });
     }
   }, [data, moduloIdParam, activeTab, navigate, user?.id, slug]);
@@ -367,7 +367,7 @@ const AprenderArea = () => {
           navigate(`/aprender/modulo/${m.id}${destTab}`, {
             state: {
               modulo: m,
-              area: data?.area,
+              area: data?.area ? { ...data.area, slug: data.area.slug ?? slug } : undefined,
               aulas: moduloAulas,
               tab: activeTab,
             }

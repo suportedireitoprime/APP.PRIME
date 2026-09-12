@@ -98,7 +98,7 @@ const AprenderModulo = () => {
         ordem: routeState.modulo.ordem,
         areaId: routeState.area?.id ?? routeState.modulo.area_id ?? '',
         areaNome: routeState.area?.nome ?? 'Direito',
-        areaSlug: routeState.area?.slug ?? 'geral',
+        areaSlug: routeState.area?.slug ?? '',
       };
     }
     if (cachedData?.modulo) {
@@ -236,7 +236,7 @@ const AprenderModulo = () => {
           ordem: rawMod?.ordem ?? modulo?.ordem ?? 1,
           areaId: rawMod?.area_id ?? modulo?.areaId ?? '',
           areaNome: areaData?.nome ?? routeState?.area?.nome ?? modulo?.areaNome ?? 'Direito',
-          areaSlug: areaData?.slug ?? routeState?.area?.slug ?? modulo?.areaSlug ?? 'geral',
+          areaSlug: areaData?.slug ?? routeState?.area?.slug ?? modulo?.areaSlug ?? '',
         };
         setModulo(modInfo);
         const aulaIds = rawAulas.map((a) => a.id);
