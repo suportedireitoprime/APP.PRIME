@@ -144,6 +144,84 @@ export function BlocoView({
         bloco.payload = { ...bloco.payload, texto: rawText, conteudo: rawText, isMenuSuspenso: true, items };
       }
     }
+
+    // Interceptar Flashcards (Civil)
+    if (/FRENTE DO CARD/i.test(rawText) && /VERSO DO CARD/i.test(rawText)) {
+      bloco.tipo = 'flashcard';
+      
+      let frente = '';
+      let verso = '';
+      let titulo = 'Cartões de Memorização Ativa';
+      
+      const titleMatch = rawText.match(/^(.*?)(?=\n|FRENTE DO CARD|🃏)/i);
+      if (titleMatch && titleMatch[1].trim().length > 3) {
+        titulo = titleMatch[1].trim().replace(/^#+\s*/, '').replace(/^\d+[-.)]\s*/, '');
+      }
+
+      const fMatch = rawText.match(/FRENTE DO CARD[^\n]*\n+([\s\S]*?)(?=---\s*|VERSO DO CARD|🃏\s*VERSO|$)/i);
+      const vMatch = rawText.match(/VERSO DO CARD[^\n]*\n+([\s\S]*$)/i);
+      
+      if (fMatch) frente = fMatch[1].trim();
+      if (vMatch) verso = vMatch[1].trim();
+      
+      bloco.payload = {
+        ...bloco.payload,
+        frente,
+        verso,
+        titulo,
+        subtipo: 'flashcard'
+      };
+    } 
+    // Interceptar Pergunta Múltipla Escolha
+    else if (/(A\)).*(B\))/i.test(rawText) && /Enunciado/i.test(rawText) && !bloco.payload?.opcoes) {
+      bloco.tipo = 'pergunta';
+      
+      let enunciado = '';
+      const eMatch = rawText.match(/Enunciado:?\s*([\s\S]*?)(?=\n\s*-?\s*\([A-Da-d]\))/i);
+      if (eMatch) {
+        enunciado = eMatch[1].trim();
+      } else {
+        enunciado = rawText.split(/\n\s*-?\s*\([A-Ea-e]\)/i)[0] || rawText;
+      }
+
+      const opcoes = [];
+      const optRegex = /-\s*\(([A-Ea-e])\)\s*([\s\S]*?)(?=\n\s*-?\s*\([A-Ea-e]\)|\n\s*Gabarito|$)/gi;
+      let oMatch;
+      while ((oMatch = optRegex.exec(rawText)) !== null) {
+        opcoes.push({
+          id: oMatch[1].toLowerCase(),
+          texto: oMatch[2].replace(/;$/, '').trim()
+        });
+      }
+
+      let correta = 'a';
+      const gMatch = rawText.match(/Gabarito[^a-zA-Z]*([A-Ea-e])\b/i);
+      if (gMatch) {
+        correta = gMatch[1].toLowerCase();
+      }
+
+      let explicacao = '';
+      const expMatch = rawText.match(/Gabarito[^a-zA-Z]*[A-Ea-e][^\n]*\n([\s\S]*?$)/i);
+      if (expMatch) {
+        explicacao = expMatch[1].trim();
+      } else {
+        const jMatch = rawText.match(/Gabarito.*?\n([\s\S]*?$)/i);
+        if (jMatch) explicacao = jMatch[1].trim();
+      }
+
+      bloco.payload = {
+        ...bloco.payload,
+        subtipo: 'multipla_escolha',
+        titulo: 'Questão Comentada (Múltipla Escolha)',
+        enunciado,
+        opcoes,
+        explicacao
+      };
+      bloco.resposta_correta = {
+        id_correto: correta,
+        explicacao
+      };
+    }
   }
 
   if (isBlocoTexto(bloco.tipo)) {
