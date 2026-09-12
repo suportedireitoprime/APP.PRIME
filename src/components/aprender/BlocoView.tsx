@@ -28,8 +28,75 @@ export interface BlocoViewProps {
   onAvaliarFlash: (nivel: NivelFlashcard) => void;
   onAvancar?: () => void;
   conexao?: Record<number, number | null>;
+  conexao?: Record<number, number | null>;
   onConexao: (map: Record<number, number | null>, done: boolean) => void;
 }
+
+const renderBadge = ({ children }: any) => {
+  const txt = String(children).trim();
+  const lower = txt.toLowerCase();
+  let Icon = null;
+  let colorClass = "text-primary";
+  let bgClass = "bg-primary/10 border-primary/20";
+  
+  if (lower.includes('atenção') || lower.includes('importante') || lower.includes('cuidado') || lower.includes('alerta')) {
+    Icon = AlertTriangle;
+    colorClass = "text-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]";
+    bgClass = "bg-amber-500/15 border-amber-500/20";
+  } else if (lower.includes('dica') || lower.includes('macete') || lower.includes('bizu')) {
+    Icon = Lightbulb;
+    colorClass = "text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]";
+    bgClass = "bg-amber-400/10 border-amber-400/20";
+  } else if (lower.includes('exemplo')) {
+    Icon = BookMarked;
+    bgClass = "bg-primary/15 border-primary/20";
+  } else if (lower.includes('nota') || lower.includes('observação') || lower.includes('obs') || lower.includes('o que é') || lower.includes('conceito')) {
+    Icon = Flag;
+    bgClass = "bg-primary/10 border-primary/20";
+  }
+  
+  return (
+    <strong className={`inline-flex items-center gap-1.5 font-display font-black ${colorClass} uppercase text-[12px] sm:text-[13px] tracking-widest ${bgClass} border px-2 py-0.5 rounded-md mr-0.5 align-middle -mt-1 mb-1`}>
+      {Icon && <Icon className="w-3.5 h-3.5" />}
+      {children}
+    </strong>
+  );
+};
+
+const badgeComponents = {
+  em: renderBadge,
+  strong: renderBadge,
+};
+
+const MenuSuspensoAccordion = ({ items }: { items: any[] }) => {
+  if (!items || items.length === 0) return null;
+  return (
+    <div className="w-full flex flex-col items-center mt-6">
+      <Accordion type="single" collapsible className="w-full max-w-2xl space-y-3">
+        {items.map((item: any, i: number) => (
+          <AccordionItem key={i} value={`item-${i}`} className="border-b-0 group">
+            <AccordionTrigger className="bg-primary/5 hover:bg-primary/10 px-4 py-3.5 sm:px-5 sm:py-4 rounded-xl text-left transition-all hover:no-underline border border-primary/20 hover:border-primary/40 font-display font-black text-[15px] sm:text-[16px] text-white uppercase tracking-widest shadow-sm">
+              {limparMarkdownInline(item.titulo || '')}
+            </AccordionTrigger>
+            <AccordionContent className="p-4 sm:p-5 bg-card/40 backdrop-blur-sm mt-1.5 rounded-xl border border-white/10 text-neutral-300 leading-relaxed shadow-inner">
+              <div className="prose prose-invert prose-p:text-[15px] sm:prose-p:text-[16px] prose-p:leading-[1.7] prose-p:text-neutral-200 prose-ul:pl-4 prose-li:mb-1 max-w-none">
+                <ReactMarkdown 
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    p: ({ children }) => <span className="block mb-3 last:mb-0">{children}</span>,
+                    ...badgeComponents
+                  }}
+                >
+                  {normalizarMarkdown(item.conteudo || '').replace(/[\uFFFD\u26A0\uFE0F🚨💡📌🛑📝]/g, '')}
+                </ReactMarkdown>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </div>
+  );
+};
 
 export function BlocoView({
   bloco: blocoProps, resposta, selectedOpcao: externalSelectedOpcao, onSelectOpcao, onResponder, flipped, onFlip, onAvaliarFlash, onAvancar, conexao, onConexao,
@@ -55,93 +122,28 @@ export function BlocoView({
     setInternalSelectedOpcao(null);
   }, [bloco.id]);
 
-  if (bloco.tipo === 'leitura' && bloco.payload?.isMenuSuspenso) {
-    const items = bloco.payload?.items || [];
-    return (
-      <div className="w-full flex flex-col items-center">
-        <Accordion type="single" collapsible className="w-full max-w-2xl space-y-3">
-          {items.map((item: any, i: number) => (
-            <AccordionItem key={i} value={`item-${i}`} className="border-b-0 group">
-              <AccordionTrigger className="bg-primary/5 hover:bg-primary/10 px-4 py-3.5 sm:px-5 sm:py-4 rounded-xl text-left transition-all hover:no-underline border border-primary/20 hover:border-primary/40 font-display font-black text-[15px] sm:text-[16px] text-white uppercase tracking-widest shadow-sm">
-                {limparMarkdownInline(item.titulo || '')}
-              </AccordionTrigger>
-              <AccordionContent className="p-4 sm:p-5 bg-card/40 backdrop-blur-sm mt-1.5 rounded-xl border border-white/10 text-neutral-300 leading-relaxed shadow-inner">
-                <div className="prose prose-invert prose-p:text-[15px] sm:prose-p:text-[16px] prose-p:leading-[1.7] prose-p:text-neutral-200 prose-ul:pl-4 prose-li:mb-1 max-w-none">
-                  <ReactMarkdown 
-                    remarkPlugins={[remarkGfm]}
-                    components={{
-                      p: ({ children }) => <span className="block mb-3 last:mb-0">{children}</span>,
-                      em: ({ children }) => {
-                        const txt = String(children).trim();
-                        const lower = txt.toLowerCase();
-                        let Icon = null;
-                        let colorClass = "text-primary";
-                        let bgClass = "bg-primary/10 border-primary/20";
-                        
-                        if (lower.includes('atenção') || lower.includes('importante') || lower.includes('cuidado') || lower.includes('alerta')) {
-                          Icon = AlertTriangle;
-                          colorClass = "text-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]";
-                          bgClass = "bg-amber-500/15 border-amber-500/20";
-                        } else if (lower.includes('dica') || lower.includes('macete') || lower.includes('bizu')) {
-                          Icon = Lightbulb;
-                          colorClass = "text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]";
-                          bgClass = "bg-amber-400/10 border-amber-400/20";
-                        } else if (lower.includes('exemplo')) {
-                          Icon = BookMarked;
-                          bgClass = "bg-primary/15 border-primary/20";
-                        } else if (lower.includes('nota') || lower.includes('observação') || lower.includes('obs')) {
-                          Icon = Flag;
-                          bgClass = "bg-primary/10 border-primary/20";
-                        }
-                        
-                        return (
-                          <strong className={`inline-flex items-center gap-1.5 font-display font-black ${colorClass} uppercase text-[12px] sm:text-[13px] tracking-widest ${bgClass} border px-2 py-0.5 rounded-md mr-0.5 align-middle -mt-1 mb-1`}>
-                            {Icon && <Icon className="w-3.5 h-3.5" />}
-                            {children}
-                          </strong>
-                        );
-                      },
-                      strong: ({ children }) => {
-                        const txt = String(children).trim();
-                        const lower = txt.toLowerCase();
-                        let Icon = null;
-                        let colorClass = "text-primary";
-                        let bgClass = "bg-primary/10 border-primary/20";
-                        
-                        if (lower.includes('atenção') || lower.includes('importante') || lower.includes('cuidado') || lower.includes('alerta')) {
-                          Icon = AlertTriangle;
-                          colorClass = "text-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]";
-                          bgClass = "bg-amber-500/15 border-amber-500/20";
-                        } else if (lower.includes('dica') || lower.includes('macete') || lower.includes('bizu')) {
-                          Icon = Lightbulb;
-                          colorClass = "text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]";
-                          bgClass = "bg-amber-400/10 border-amber-400/20";
-                        } else if (lower.includes('exemplo')) {
-                          Icon = BookMarked;
-                          bgClass = "bg-primary/15 border-primary/20";
-                        } else if (lower.includes('nota') || lower.includes('observação') || lower.includes('obs')) {
-                          Icon = Flag;
-                          bgClass = "bg-primary/10 border-primary/20";
-                        }
-                        
-                        return (
-                          <strong className={`inline-flex items-center gap-1.5 font-display font-black ${colorClass} uppercase text-[12px] sm:text-[13px] tracking-widest ${bgClass} border px-2 py-0.5 rounded-md mr-0.5 align-middle -mt-1 mb-1`}>
-                            {Icon && <Icon className="w-3.5 h-3.5" />}
-                            {children}
-                          </strong>
-                        );
-                      }
-                    }}
-                  >
-                    {normalizarMarkdown(item.conteudo || '').replace(/[\uFFFD\u26A0\uFE0F🚨💡📌🛑📝]/g, '')}
-                  </ReactMarkdown>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </div>
-    );
+  // Detecção global de Menu Suspenso
+  if (bloco.tipo === 'leitura' || bloco.tipo === 'destaque') {
+    let rawText = String(bloco.payload?.conteudo ?? bloco.payload?.texto ?? bloco.markdown ?? '');
+    if (/▼.*?\[Menu Suspenso/i.test(rawText)) {
+      const items = [];
+      const regex = /▼.*?\[Menu Suspenso[^\:]*:\s*(.*?)\][^\n]*\n([\s\S]*?)(?=\n▼|$)/gi;
+      let match;
+      while ((match = regex.exec(rawText)) !== null) {
+        items.push({ titulo: match[1].trim(), conteudo: match[2].trim() });
+      }
+      if (items.length > 0) {
+        // Remover todo o conteúdo de glossário interativo do rawText original para evitar duplicação
+        const firstIndex = rawText.indexOf('▼');
+        if (firstIndex !== -1) {
+          rawText = rawText.substring(0, firstIndex).trim();
+          rawText = rawText.replace(/#\s*\[GLOSSÁRIO INTERATIVO[^\n]*\n+/i, '').trim();
+          // Remove a instrução também
+          rawText = rawText.replace(/\*\(Clique em cada termo no menu suspenso[^\n]*\)\*/i, '').trim();
+        }
+        bloco.payload = { ...bloco.payload, texto: rawText, conteudo: rawText, isMenuSuspenso: true, items };
+      }
+    }
   }
 
   if (isBlocoTexto(bloco.tipo)) {
@@ -152,7 +154,14 @@ export function BlocoView({
       return <LacunasInterativasBlock rawContent={rawContent} onComplete={() => onResponder('completo')} />;
     }
     
-    return <LeituraBlock payload={bloco.payload || {}} />;
+    return (
+      <>
+        {String(bloco.payload?.conteudo ?? bloco.payload?.texto ?? '').trim().length > 0 && (
+          <LeituraBlock payload={bloco.payload || {}} />
+        )}
+        <MenuSuspensoAccordion items={bloco.payload?.items || []} />
+      </>
+    );
   }
 
   if (bloco.tipo === 'checkpoint') return <CheckpointBlock payload={bloco.payload || {}} />;
@@ -628,6 +637,8 @@ export function BlocoView({
               {normalizarMarkdown(texto)}
             </ReactMarkdown>
           </div>
+          
+          <MenuSuspensoAccordion items={bloco.payload?.items || []} />
         </div>
       </article>
     );
@@ -1210,9 +1221,9 @@ export function BlocoView({
                 </span>
                 <Brain className="w-4 h-4 text-primary/80" />
               </div>
-              <div className="relative z-10 flex-1 flex items-center justify-center text-center px-2 sm:px-4">
-                <div className="font-sans text-[17px] sm:text-[19px] md:text-xl font-normal leading-snug text-white/95 max-w-[50ch] prose prose-invert prose-p:leading-snug prose-p:text-white/95 prose-strong:text-white prose-strong:font-bold prose-ul:list-none prose-li:mb-2 prose-p:mb-4 last:prose-p:mb-0">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              <div className="relative z-10 flex flex-col justify-center h-full px-2 sm:px-4 pb-12">
+                <div className="font-sans text-[17px] sm:text-[19px] md:text-xl font-normal leading-snug text-white/95 max-w-[50ch] mx-auto text-center prose prose-invert prose-p:leading-snug prose-p:text-white/95 prose-strong:text-white prose-strong:font-bold prose-ul:list-none prose-li:mb-2 prose-p:mb-4 last:prose-p:mb-0">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]} components={badgeComponents}>
                     {normalizarMarkdown(displayFrente)}
                   </ReactMarkdown>
                 </div>
@@ -1247,7 +1258,7 @@ export function BlocoView({
               </div>
               <div className="relative z-10 flex-1 overflow-y-auto text-left pr-1 sm:pr-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex flex-col justify-center">
                 <div className="font-sans text-[15px] sm:text-[16px] md:text-[17px] font-normal leading-[1.6] text-white/95 max-w-[55ch] prose prose-invert prose-p:leading-[1.6] prose-p:text-white/95 prose-strong:text-white prose-strong:font-bold prose-ul:pl-5 prose-li:mb-2 prose-li:marker:text-primary prose-p:mb-4 last:prose-p:mb-0">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]} components={badgeComponents}>
                     {normalizarMarkdown(displayVerso)}
                   </ReactMarkdown>
                 </div>

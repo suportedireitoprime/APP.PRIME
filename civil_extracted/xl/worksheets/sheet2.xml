@@ -1,0 +1,2146 @@
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetPr><outlinePr summaryBelow="1" summaryRight="1"/><pageSetUpPr/></sheetPr><dimension ref="A1:AH9"/><sheetViews><sheetView workbookViewId="0"><selection activeCell="A1" sqref="A1"/></sheetView></sheetViews><sheetFormatPr baseColWidth="8" defaultRowHeight="15"/><cols><col width="12" customWidth="1" min="1" max="1"/><col width="38" customWidth="1" min="2" max="2"/><col width="32" customWidth="1" min="3" max="3"/><col width="14" customWidth="1" min="4" max="4"/><col width="45" customWidth="1" min="5" max="5"/><col width="45" customWidth="1" min="6" max="6"/><col width="45" customWidth="1" min="7" max="7"/><col width="45" customWidth="1" min="8" max="8"/><col width="45" customWidth="1" min="9" max="9"/><col width="45" customWidth="1" min="10" max="10"/><col width="45" customWidth="1" min="11" max="11"/><col width="45" customWidth="1" min="12" max="12"/><col width="45" customWidth="1" min="13" max="13"/><col width="45" customWidth="1" min="14" max="14"/><col width="45" customWidth="1" min="15" max="15"/><col width="45" customWidth="1" min="16" max="16"/><col width="45" customWidth="1" min="17" max="17"/><col width="45" customWidth="1" min="18" max="18"/><col width="45" customWidth="1" min="19" max="19"/><col width="45" customWidth="1" min="20" max="20"/><col width="45" customWidth="1" min="21" max="21"/><col width="45" customWidth="1" min="22" max="22"/><col width="45" customWidth="1" min="23" max="23"/><col width="45" customWidth="1" min="24" max="24"/><col width="45" customWidth="1" min="25" max="25"/><col width="45" customWidth="1" min="26" max="26"/><col width="45" customWidth="1" min="27" max="27"/><col width="45" customWidth="1" min="28" max="28"/><col width="45" customWidth="1" min="29" max="29"/><col width="45" customWidth="1" min="30" max="30"/><col width="45" customWidth="1" min="31" max="31"/><col width="45" customWidth="1" min="32" max="32"/><col width="45" customWidth="1" min="33" max="33"/><col width="45" customWidth="1" min="34" max="34"/></cols><sheetData><row r="1"><c r="A1" s="1" t="inlineStr"><is><t>Aula</t></is></c><c r="B1" s="2" t="inlineStr"><is><t>Titulo_da_Aula</t></is></c><c r="C1" s="1" t="inlineStr"><is><t>Materia_PDF</t></is></c><c r="D1" s="1" t="inlineStr"><is><t>Total_Slides</t></is></c><c r="E1" s="3" t="inlineStr"><is><t>Slide_01</t></is></c><c r="F1" s="3" t="inlineStr"><is><t>Slide_02</t></is></c><c r="G1" s="3" t="inlineStr"><is><t>Slide_03</t></is></c><c r="H1" s="3" t="inlineStr"><is><t>Slide_04</t></is></c><c r="I1" s="3" t="inlineStr"><is><t>Slide_05</t></is></c><c r="J1" s="3" t="inlineStr"><is><t>Slide_06</t></is></c><c r="K1" s="3" t="inlineStr"><is><t>Slide_07</t></is></c><c r="L1" s="3" t="inlineStr"><is><t>Slide_08</t></is></c><c r="M1" s="3" t="inlineStr"><is><t>Slide_09</t></is></c><c r="N1" s="3" t="inlineStr"><is><t>Slide_10</t></is></c><c r="O1" s="3" t="inlineStr"><is><t>Slide_11</t></is></c><c r="P1" s="3" t="inlineStr"><is><t>Slide_12</t></is></c><c r="Q1" s="3" t="inlineStr"><is><t>Slide_13</t></is></c><c r="R1" s="3" t="inlineStr"><is><t>Slide_14</t></is></c><c r="S1" s="3" t="inlineStr"><is><t>Slide_15</t></is></c><c r="T1" s="3" t="inlineStr"><is><t>Slide_16</t></is></c><c r="U1" s="3" t="inlineStr"><is><t>Slide_17</t></is></c><c r="V1" s="3" t="inlineStr"><is><t>Slide_18</t></is></c><c r="W1" s="3" t="inlineStr"><is><t>Slide_19</t></is></c><c r="X1" s="3" t="inlineStr"><is><t>Slide_20</t></is></c><c r="Y1" s="3" t="inlineStr"><is><t>Slide_21</t></is></c><c r="Z1" s="3" t="inlineStr"><is><t>Slide_22</t></is></c><c r="AA1" s="3" t="inlineStr"><is><t>Slide_23</t></is></c><c r="AB1" s="3" t="inlineStr"><is><t>Slide_24</t></is></c><c r="AC1" s="3" t="inlineStr"><is><t>Slide_25</t></is></c><c r="AD1" s="3" t="inlineStr"><is><t>Slide_26</t></is></c><c r="AE1" s="3" t="inlineStr"><is><t>Slide_27</t></is></c><c r="AF1" s="3" t="inlineStr"><is><t>Slide_28</t></is></c><c r="AG1" s="3" t="inlineStr"><is><t>Slide_29</t></is></c><c r="AH1" s="3" t="inlineStr"><is><t>Slide_30</t></is></c></row><row r="2"><c r="A2" t="inlineStr"><is><t>Aula 01</t></is></c><c r="B2" t="inlineStr"><is><t>PERSONALIDADE JUR&#205;DICA, CAPACIDADE E LEGITIMA&#199;&#195;O</t></is></c><c r="C2" t="inlineStr"><is><t>01. Pessoas no C&#243;digo Civil</t></is></c><c r="D2" t="n"><v>27</v></c><c r="E2" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / CONCEITO CENTRAL] - As Tr&#234;s Chaves do Agir Civil
+
+&gt; **Artigo 1&#186; do C&#243;digo Civil**: *"Toda pessoa &#233; capaz de direitos e deveres na ordem civil."*
+
+Para entender os neg&#243;cios jur&#237;dicos sem nunca mais confundir os termos em provas e na advocacia pr&#225;tica:
+- **1. Personalidade Jur&#237;dica**: &#201; a aptid&#227;o gen&#233;rica para ser sujeito de direito. &#201; o 'crach&#225;' de exist&#234;ncia dado a todo ser humano ao nascer vivo.
+- **2. Capacidade Civil**: &#201; a medida da personalidade. Desdobra-se em:
+  - *Capacidade de Direito (ou de Gozo)*: Todos t&#234;m, sem exce&#231;&#227;o (art. 1&#186;). &#201; o direito de ter direitos. Um beb&#234; tem capacidade de direito (pode ser dono de um pr&#233;dio).
+  - *Capacidade de Fato (ou de Exerc&#237;cio)*: &#201; a aptid&#227;o para exercer pessoalmente os atos da vida civil (assinar contratos, vender bens). Nem todos t&#234;m (crian&#231;as e pessoas sob certas condi&#231;&#245;es precisam de representantes ou assistentes).
+  - *Capacidade Plena*: Quando a pessoa re&#250;ne a capacidade de direito E a capacidade de fato (regra aos 18 anos completos).
+- **3. Legitima&#231;&#227;o**: &#201; uma aptid&#227;o ESPEC&#205;FICA para a pr&#225;tica de um determinado ato jur&#237;dico, em raz&#227;o de uma posi&#231;&#227;o jur&#237;dica particular que a pessoa ocupa perante terceiros ou perante o objeto do neg&#243;cio.
+
+&#128161; *Exemplo R&#225;pido de Termo*: 
+- *Legitima&#231;&#227;o*: Um homem de 35 anos, empres&#225;rio bem-sucedido e plenamente capaz, N&#195;O pode vender um apartamento pr&#243;prio sem a assinatura da esposa se for casado sob comunh&#227;o parcial (falta de legitima&#231;&#227;o por outorga ux&#243;ria, art. 1.647 do CC).</t></is></c><c r="F2" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 1] - A Venda do Im&#243;vel Pr&#243;prio
+
+Rodrigo &#233; um cirurgi&#227;o de 38 anos, muito esclarecido, casado h&#225; 5 anos com Let&#237;cia sob o regime de **comunh&#227;o parcial de bens**. Antes de conhecer Let&#237;cia, Rodrigo comprou com seu pr&#243;prio dinheiro um belo apartamento na praia, devidamente quitado.
+
+Precisando de liquidez para abrir uma cl&#237;nica particular, Rodrigo encontra um comprador interessado e vai ao Cart&#243;rio de Notas lavrar a escritura definitiva de compra e venda.
+Ao apresentar os documentos, o tabeli&#227;o pergunta:
+- *"Doutor Rodrigo, onde est&#225; a sua esposa Let&#237;cia para assinar a concord&#226;ncia da venda?"*
+
+Rodrigo irrita-se:
+- *"Como assim minha esposa? Esse apartamento foi comprado anos antes de eu me casar! Ele &#233; bem particular exclusivo meu! Eu sou maior de idade, plenamente capaz, m&#233;dico renomado. Minha esposa n&#227;o tem nenhum centavo nesse im&#243;vel!"*
+
+O tabeli&#227;o responde serenamente:
+- *"O senhor tem capacidade civil plena, doutor Rodrigo. Mas a lei exige algo diferente aqui: falta-lhe **legitima&#231;&#227;o** sem a outorga da sua esposa!"*</t></is></c><c r="G2" t="inlineStr"><is><t># [GLOSS&#193;RIO INTERATIVO / MENU SUSPENSO] - Termos Chave
+
+*(Clique em cada termo no menu suspenso para expandir a defini&#231;&#227;o desmembrada e o exemplo pr&#225;tico)*
+
+&#9660; **[Menu Suspenso 1: Capacidade de Gozo (Direito)]**
+- *O que &#233;*: A possibilidade abstrata de ser titular de rela&#231;&#245;es jur&#237;dicas. N&#227;o se perde, n&#227;o prescreve e &#233; universal para todos os seres humanos.
+- *Exemplo R&#225;pido*: Um beb&#234; de 3 meses pode ser titular de contas banc&#225;rias e propriet&#225;rio de 50 fazendas herdadas.
+
+&#9660; **[Menu Suspenso 2: Capacidade de Exerc&#237;cio (Fato)]**
+- *O que &#233;*: A aptid&#227;o real e concreta para assinar, transferir, confessar d&#237;vidas e negociar diretamente no mercado sem a presen&#231;a de terceiros.
+- *Exemplo R&#225;pido*: O jovem de 18 anos que vai sozinho &#224; concession&#225;ria e assina o contrato de compra de um ve&#237;culo.
+
+&#9660; **[Menu Suspenso 3: Legitima&#231;&#227;o (Aptid&#227;o Espec&#237;fica)]**
+- *O que &#233;*: Requisito especial imposto pela lei que condiciona a validade de um ato &#224; autoriza&#231;&#227;o de outrem ou &#224; inexist&#234;ncia de impedimento legal moral/jur&#237;dico.
+- *Exemplo R&#225;pido*: Pai que vende im&#243;vel para um filho: ele &#233; plenamente capaz, mas precisa do consentimento expresso dos outros filhos e da esposa (art. 496 do CC - legitima&#231;&#227;o).
+
+&#9660; **[Menu Suspenso 4: Outorga Ux&#243;ria / Marital]**
+- *O que &#233;*: Autoriza&#231;&#227;o dada pela esposa (*ux&#243;ria*) ou pelo marido (*marital*) exigida por lei no art. 1.647 do CC para alienar im&#243;veis ou prestar fian&#231;a em quase todos os regimes de bens (exceto separa&#231;&#227;o absoluta convencional).
+- *Exemplo R&#225;pido*: O marido precisa da assinatura da mulher para ser fiador do sobrinho em um contrato de aluguel.</t></is></c><c r="H2" t="inlineStr"><is><t># [EXEMPLO PR&#193;TICO E APLICA&#199;&#195;O FORENSE] - Diferencia&#231;&#227;o Forense
+
+Observe como o v&#237;cio do neg&#243;cio e o rem&#233;dio judicial mudam completamente:
+
+1. **Caso do Menor de 15 Anos (Falta de Capacidade)**:
+   Lucas, de 15 anos, vende sozinho a moto do pai. 
+   - *Natureza do Problema*: Incapacidade absoluta (art. 3&#186; do CC).
+   - *Consequ&#234;ncia Jur&#237;dica*: **Nulidade Absoluta** do neg&#243;cio (art. 166, I do CC). O ato n&#227;o se convalida e o juiz deve declarar de of&#237;cio.
+
+2. **Caso do Marido sem Assinatura da Esposa (Falta de Legitima&#231;&#227;o)**:
+   Rodrigo vende seu apartamento particular sem a assinatura de Let&#237;cia.
+   - *Natureza do Problema*: Ilegitimidade (art. 1.647, I c/c art. 1.649 do CC).
+   - *Consequ&#234;ncia Jur&#237;dica*: **Anulabilidade** (nulidade relativa). Somente a esposa preterida (ou seus herdeiros) pode pleitear a anula&#231;&#227;o da venda no prazo decadencial estrito de **at&#233; 2 anos** ap&#243;s o t&#233;rmino da sociedade conjugal!
+
+&#128161; *Aten&#231;&#227;o M&#225;xima*: O neg&#243;cio sem legitima&#231;&#227;o n&#227;o &#233; nulo de pleno direito, &#233; ANUL&#193;VEL e pode at&#233; ser suprido pelo juiz se a recusa da esposa for injusta!</t></is></c><c r="I2" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 1] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Fundamental**: &#201; juridicamente poss&#237;vel existir uma pessoa natural no Brasil que tenha Capacidade de Fato (Exerc&#237;cio), mas N&#195;O tenha Capacidade de Direito (Gozo)?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **ABSOLUTAMENTE IMPOSS&#205;VEL!**  
+&gt; A Capacidade de Direito &#233; o pressuposto biol&#243;gico e jur&#237;dico universal da personalidade (art. 1&#186; do CC). Todos os seres humanos a possuem.  
+&gt; O inverso, sim, &#233; muito comum: uma pessoa ter Capacidade de Direito (ser dona de patrim&#244;nio), mas n&#227;o ter Capacidade de Fato (ter 8 anos de idade e precisar ser representada pelos pais).</t></is></c><c r="J2" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 1] - Preencha as Lacunas
+
+Teste sua compreens&#227;o sobre a legitima&#231;&#227;o conjugal no C&#243;digo Civil:
+
+---
+
+### Enunciado da Atividade:
+*"Ressalvado o regime da `[ LACUNA 1 ]` absoluta de bens, nenhum dos c&#244;njuges pode, sem autoriza&#231;&#227;o do outro, alienar ou gravar de &#244;nus real os bens im&#243;veis, ainda que particulares. Caso a recusa do c&#244;njuge seja imotivada ou imposs&#237;vel de ser dada, o outro poder&#225; requerer ao juiz o `[ LACUNA 2 ]` da outorga, tornando o neg&#243;cio plenamente `[ LACUNA 3 ]`."*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: `[ separa&#231;&#227;o ]` | `[ comunh&#227;o universal ]` | `[ heran&#231;a ]`
+- **Para a Lacuna 2**: `[ suprimento judicial ]` | `[ div&#243;rcio compuls&#243;rio ]` | `[ perd&#227;o p&#250;blico ]`
+- **Para a Lacuna 3**: `[ v&#225;lido e eficaz ]` | `[ nulo de pleno direito ]` | `[ criminoso ]`
+
+---
+
+### &#127919; Gabarito Comentado:
+1. **separa&#231;&#227;o**: No regime de separa&#231;&#227;o total convencional (pacto antenupcial), o c&#244;njuge tem plena liberdade para vender seus im&#243;veis sem outorga (art. 1.647, *caput*).
+2. **suprimento judicial**: O magistrado avalia se a recusa &#233; puro capricho ou birra pessoal e autoriza a venda (art. 1.648 do CC).
+3. **v&#225;lido e eficaz**: A senten&#231;a substitui a assinatura do c&#244;njuge recalcitrante com seguran&#231;a jur&#237;dica.</t></is></c><c r="K2" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 1] - Padr&#227;o OAB / FGV
+
+**Enunciado**: Marcelo, vi&#250;vo, pai de dois filhos maiores e capazes (Bruno e Tiago), decide vender um autom&#243;vel de luxo para seu filho Tiago por um pre&#231;o justo de mercado. Bruno, irm&#227;o mais velho, descobre a transa&#231;&#227;o e se recusa a assinar qualquer documento de concord&#226;ncia, alegando ci&#250;mes e disputas familiares. Marcelo e Tiago celebram a compra e venda mesmo sem a anu&#234;ncia de Bruno. Diante do art. 496 do C&#243;digo Civil e da teoria da legitima&#231;&#227;o, assinale a op&#231;&#227;o correta:
+
+- (A) O contrato &#233; nulo de pleno direito, pois pais jamais podem contratar com filhos sob pena de fraude civil.
+- (B) A venda &#233; anul&#225;vel no prazo decadencial de 2 anos, pois a lei exige a anu&#234;ncia expressa dos outros descendentes para aliena&#231;&#227;o de ascendente a descendente a fim de evitar doa&#231;&#245;es disfar&#231;adas.
+- (C) A venda de bens m&#243;veis entre ascendente e descendente independe de consentimento dos demais herdeiros, sendo exig&#237;vel apenas para im&#243;veis.
+- (D) Bruno pode pleitear a perda do poder familiar de Marcelo em virtude da prefer&#234;ncia entre os filhos.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**.  
+*Fundamenta&#231;&#227;o*: O art. 496 do CC &#233; categ&#243;rico: *'&#201; anul&#225;vel a venda de ascendente a descendente, salvo se os outros descendentes e o c&#244;njuge do alienante expressamente houverem consentido'*. A lei aplica essa regra a quaisquer bens (m&#243;veis ou im&#243;veis). Trata-se de hip&#243;tese cl&#225;ssica de aus&#234;ncia de legitima&#231;&#227;o que gera **anulabilidade** (prazo de 2 anos pelo art. 179 do CC e S&#250;mula 494/STF adaptada).</t></is></c><c r="L2" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 2] - A Revela&#231;&#227;o do Motivo
+
+Rodrigo chega em casa aborrecido e confronta Let&#237;cia:
+- *"Let&#237;cia, o cart&#243;rio me barrou porque disse que preciso da sua autoriza&#231;&#227;o para vender MEU apartamento de solteiro. Vamos amanh&#227; cedo assinar, por favor?"*
+
+Let&#237;cia olha nos olhos de Rodrigo e explica:
+- *"Rodrigo, eu sei que o im&#243;vel foi comprado antes de nos casarmos. Mas voc&#234; quer vender esse im&#243;vel para investir numa cl&#237;nica com um s&#243;cio que j&#225; foi condenado por estelionato e est&#225; endividado! Se essa sociedade quebrar, os credores v&#227;o penhorar o patrim&#244;nio da nossa fam&#237;lia e colocar em risco a casa onde moramos com nossos dois filhos pequenos. Eu n&#227;o vou assinar por capricho, mas para proteger o teto da nossa fam&#237;lia!"*
+
+Rodrigo percebe a sabedoria da lei: a **outorga ux&#243;ria** n&#227;o serve apenas para discutir propriedade, mas para resguardar a **estabilidade econ&#244;mica e habitacional da entidade familiar**!</t></is></c><c r="M2" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / DOGM&#193;TICA E REQUISITOS T&#201;CNICOS] - A Armadilha da Fian&#231;a Conjugal
+
+Um dos pontos mais litigiosos do direito civil envolve a presta&#231;&#227;o de fian&#231;a em contratos de loca&#231;&#227;o:
+
+- **Art. 1.647, III do C&#243;digo Civil**:
+  Nenhum c&#244;njuge pode prestar fian&#231;a ou aval sem autoriza&#231;&#227;o do outro (exceto no regime de separa&#231;&#227;o absoluta).
+- **S&#250;mula 332 do Superior Tribunal de Justi&#231;a (STJ)**:
+  &gt; *"A fian&#231;a prestada sem autoriza&#231;&#227;o de um dos c&#244;njuges implica a inefic&#225;cia total da garantia."*
+
+- **O Que Significa na Pr&#225;tica?**:
+  Se o marido assinar como fiador do amigo em um contrato de aluguel e omitir que &#233; casado, ou falsificar a assinatura da esposa:
+  1. A garantia &#233; **totalmente nula/ineficaz** perante o credor locador.
+  2. N&#227;o se penhora a mea&#231;&#227;o da esposa e **tampouco a mea&#231;&#227;o do marido fiador**! A garantia cai inteira para proteger a integridade do patrim&#244;nio da fam&#237;lia (salvo se o c&#244;njuge mentiu de m&#225;-f&#233; sobre seu estado civil ao credor de boa-f&#233;).</t></is></c><c r="N2" t="inlineStr"><is><t># [FRONTEIRAS CR&#205;TICAS / O QUE N&#195;O &#201;] - Compara&#231;&#227;o T&#233;cnica Definitiva
+
+Para nunca mais hesitar:
+
+| CRIT&#201;RIO | CAPACIDADE DE EXERC&#205;CIO (FATO) | LEGITIMA&#199;&#195;O |
+| :--- | :--- | :--- |
+| **Abrang&#234;ncia** | Gen&#233;rica (aplica-se a todos os atos da vida civil em geral). | Espec&#237;fica (aplica-se a um ato concreto determinado por lei). |
+| **Causa de Restri&#231;&#227;o** | Idade (menoridade) ou condi&#231;&#227;o de sa&#250;de mental/volitiva. | Posi&#231;&#227;o jur&#237;dica perante certas pessoas (casamento, parentesco) ou bens. |
+| **Origem** | Intr&#237;nseca ao estado da pessoa (arts. 3&#186; e 4&#186; do CC). | Extr&#237;nseca (decorre de uma rela&#231;&#227;o jur&#237;dica externa, ex.: art. 1.647 do CC). |
+| **Possibilidade de Suprimento** | N&#227;o se 'supre' capacidade; utiliza-se representa&#231;&#227;o ou assist&#234;ncia. | Pode ser suprida judicialmente pelo juiz (art. 1.648 do CC). |
+| **Consequ&#234;ncia do V&#237;cio** | Nulidade absoluta (art. 3&#186;) ou Anulabilidade (art. 4&#186;). | Em regra, Anulabilidade (art. 1.649, 496 do CC) ou inefic&#225;cia do ato. |</t></is></c><c r="O2" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 2] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Caso de Concurso**: Paulo, casado com Denise sob comunh&#227;o universal, prestou fian&#231;a em contrato de loca&#231;&#227;o sem a outorga da esposa. O inquilino n&#227;o pagou. O locador pode executar a metade dos bens pertencentes a Paulo?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **N&#195;O PODE EXECUTAR NADA!**  
+&gt; Aplica-se a **S&#250;mula 332 do STJ**: a falta de outorga ux&#243;ria gera a **inefic&#225;cia total da garantia**, e n&#227;o apenas a preserva&#231;&#227;o da mea&#231;&#227;o do c&#244;njuge n&#227;o anuente.  
+&gt; A fian&#231;a inteira &#233; desconstitu&#237;da, livrando o patrim&#244;nio de ambos da constri&#231;&#227;o judicial.</t></is></c><c r="P2" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 2] - Complete os Prazos da Lei
+
+Preencha os prazos e condi&#231;&#245;es previstos nos arts. 1.649 e 496 do C&#243;digo Civil:
+
+---
+
+### Enunciado da Atividade:
+*"A falta de autoriza&#231;&#227;o do c&#244;njuge para a venda de bem im&#243;vel torna o ato anul&#225;vel, podendo o outro c&#244;njuge pleitear-lhe a anula&#231;&#227;o at&#233; `[ LACUNA 1 ]` anos depois de terminada a sociedade conjugal. J&#225; no caso de venda de ascendente a descendente sem consentimento dos demais, o prazo decadencial para pleitear anula&#231;&#227;o &#233; de `[ LACUNA 2 ]` anos contados da conclus&#227;o do ato."*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: `[ dois ]` | `[ cinco ]` | `[ dez ]`
+- **Para a Lacuna 2**: `[ dois ]` | `[ vinte ]` | `[ trinta ]`
+
+---
+
+### &#127919; Gabarito Comentado:
+1. **dois**: O art. 1.649 do CC estabelece expressamente o prazo de 2 anos contados do fim da sociedade conjugal (div&#243;rcio, separa&#231;&#227;o ou morte).
+2. **dois**: O art. 179 do CC prev&#234; prazo decadencial residual de 2 anos para anula&#231;&#227;o de atos sem prazo expresso fixado em lei (aplic&#225;vel ao art. 496).</t></is></c><c r="Q2" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 2] - N&#237;vel Cart&#243;rio / Notarial
+
+**Enunciado**: Eduardo &#233; tutor legalmente nomeado de seu sobrinho &#243;rf&#227;o Guilherme, de 10 anos, titular de uma valiosa cole&#231;&#227;o de quadros de arte. Querendo comprar um dos quadros para seu acervo particular, Eduardo deposita em ju&#237;zo o valor de avalia&#231;&#227;o m&#225;xima de mercado e lavra termo de aquisi&#231;&#227;o do bem. Sobre a validade dessa aquisi&#231;&#227;o, assinale a afirmativa correta &#224; luz das regras de legitima&#231;&#227;o:
+
+- (A) O neg&#243;cio &#233; perfeito e plenamente eficaz, pois o dep&#243;sito do valor de mercado comprova a boa-f&#233; objetiva de Eduardo.
+- (B) &#201; nula a aquisi&#231;&#227;o, ainda que em hasta p&#250;blica, de bens do tutelado pelo pr&#243;prio tutor, por expressa veda&#231;&#227;o legal de legitima&#231;&#227;o (art. 1.749, I do CC).
+- (C) O ato &#233; v&#225;lido desde que haja ratifica&#231;&#227;o por termo p&#250;blico quando Guilherme completar 16 anos.
+- (D) A compra e venda &#233; apenas anul&#225;vel se houver prova cabal de preju&#237;zo financeiro ao menor.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**.  
+*Fundamenta&#231;&#227;o*: O art. 1.749, I do C&#243;digo Civil veda taxativamente que o tutor adquira por si ou por interposta pessoa os bens m&#243;veis ou im&#243;veis do pupilo, ainda que em hasta p&#250;blica. Trata-se de uma **proibi&#231;&#227;o legal de legitima&#231;&#227;o absoluta moral** para evitar qualquer conflito de interesses entre tutor e tutelado.</t></is></c><c r="R2" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 3] - Conclus&#227;o do Caso
+
+Ap&#243;s a conversa franca com Let&#237;cia, Rodrigo decidiu investigar a fundo o passado do pretenso s&#243;cio e descobriu que ele realmente respondia a processos por fraude financeira na cidade vizinha!
+Impressionado, Rodrigo abra&#231;ou Let&#237;cia:
+- *"Voc&#234; salvou nosso futuro, Let&#237;cia! A lei civil ao exigir sua outorga ux&#243;ria criou uma trava de seguran&#231;a que me impediu de cometer a maior loucura patrimonial da minha vida."*
+
+Tr&#234;s meses depois, Rodrigo encontrou um s&#243;cio id&#244;neo, m&#233;dico conceituado e com hist&#243;rico ilibado. Rodrigo e Let&#237;cia foram juntos ao cart&#243;rio: Let&#237;cia assinou a outorga com alegria e seguran&#231;a, o im&#243;vel foi vendido pelo pre&#231;o correto e a cl&#237;nica foi inaugurada com sucesso absoluto!</t></is></c><c r="S2" t="inlineStr"><is><t># [MINIGAME INTERATIVO / LIGUE OS TERMOS] - Desafio R&#225;pido
+
+Ligue a situa&#231;&#227;o da **Coluna A** com a respectiva classifica&#231;&#227;o na **Coluna B**:
+
+---
+
+### &#129513; COLUNA A:
+1. Beb&#234; rec&#233;m-nascido propriet&#225;rio de um shopping center.
+2. Homem casado que deseja vender um terreno de sua propriedade exclusiva.
+3. Jovem de 20 anos que deseja assinar contrato de abertura de franquia.
+4. Menor de 12 anos que assina sozinho a venda de um cavalo de ra&#231;a.
+
+---
+
+### &#127919; COLUNA B:
+- ( ) Incapacidade absoluta (ato nulo de pleno direito).
+- ( ) Capacidade plena (capacidade de direito + capacidade de fato).
+- ( ) Tem capacidade de direito, mas n&#227;o tem capacidade de fato.
+- ( ) Tem capacidade plena, mas sofre restri&#231;&#227;o de legitima&#231;&#227;o.
+
+---
+
+### &#128273; Resposta do Minigame:
+- **Ordem Correta**: `[ 4 ]` $
+ightarrow$ `[ 3 ]` $
+ightarrow$ `[ 1 ]` $
+ightarrow$ `[ 2 ]`</t></is></c><c r="T2" t="inlineStr"><is><t># [JURISPRUD&#202;NCIA / TRIBUNAIS SUPERIORES] - Precedente Paradigma
+
+Uma das discuss&#245;es mais quentes da atualidade nos tribunais:
+
+- **Uni&#227;o Est&#225;vel N&#227;o Registrada e Terceiro de Boa-F&#233; (STJ - REsp 1.424.275/MT)**:
+  - *Problema*: Em uma uni&#227;o est&#225;vel (que n&#227;o possui registro na certid&#227;o de nascimento/casamento do cart&#243;rio), o companheiro vende um im&#243;vel comum sem o conhecimento nem assinatura da companheira. O comprador de boa-f&#233; perde o im&#243;vel?
+  - *Decis&#227;o do STJ*: **N&#195;O!** Se a uni&#227;o est&#225;vel n&#227;o estava formalizada por escritura p&#250;blica registrada na matr&#237;cula do im&#243;vel, **n&#227;o se pode opor a aus&#234;ncia de outorga do companheiro contra o adquirente de boa-f&#233;**!
+  - *Consequ&#234;ncia*: A aliena&#231;&#227;o &#233; mantida como v&#225;lida em respeito &#224; seguran&#231;a jur&#237;dica do mercado imobili&#225;rio, restando &#224; companheira preterida cobrar indeniza&#231;&#227;o financeira em perdas e danos diretamente do ex-companheiro que vendeu o bem.</t></is></c><c r="U2" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 3] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pegadinha da FGV/OAB**: Na uni&#227;o est&#225;vel estritamente de fato (sem registro imobili&#225;rio p&#250;blico), a falta de consentimento do companheiro anula a venda do im&#243;vel adquirido na const&#226;ncia da uni&#227;o a terceiro de boa-f&#233;?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **N&#195;O ANULA!**  
+&gt; Conforme jurisprud&#234;ncia pac&#237;fica do STJ, para que a aus&#234;ncia de consentimento atinja o terceiro adquirente de boa-f&#233;, &#233; indispens&#225;vel que a uni&#227;o est&#225;vel esteja devidamente averbada na matr&#237;cula do im&#243;vel no Registro de Im&#243;veis competente.  
+&gt; Sem essa publicidade registral, prestigia-se a boa-f&#233; do terceiro, resolvendo-se o conflito em **perdas e danos** entre os pr&#243;prios companheiros.</t></is></c><c r="V2" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 3] - Padr&#227;o Magistratura / Vunesp
+
+**Enunciado**: Mariana e Felipe s&#227;o casados sob o regime de comunh&#227;o parcial de bens. Mariana &#233; propriet&#225;ria exclusiva de um galp&#227;o comercial herdado de seu pai. Diante de uma crise financeira pessoal, Mariana recebe uma oferta de compra 20% acima da avalia&#231;&#227;o de mercado. Felipe, contudo, recusa-se a assinar a outorga ux&#243;ria alegando que n&#227;o gosta do comprador por diverg&#234;ncias partid&#225;rias e ideol&#243;gicas. Diante dessa situa&#231;&#227;o, assinale a medida jur&#237;dica cab&#237;vel:
+
+- (A) Mariana n&#227;o pode vender o bem de forma alguma, pois a vontade do c&#244;njuge &#233; soberana no &#226;mbito do casamento.
+- (B) O contrato de compra e venda pode ser assinado livremente, pois bens herdados dispensam outorga ux&#243;ria em qualquer hip&#243;tese.
+- (C) Mariana pode ajuizar a&#231;&#227;o de suprimento judicial de outorga (art. 1.648 do CC), cabendo ao juiz autorizar a aliena&#231;&#227;o ap&#243;s constatar que a recusa do marido &#233; injusta e motivada por mero capricho pessoal.
+- (D) A &#250;nica sa&#237;da para Mariana &#233; ajuizar a&#231;&#227;o imediata de div&#243;rcio litigioso com perda da partilha.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (C)**.  
+*Fundamenta&#231;&#227;o*: O art. 1.648 do C&#243;digo Civil determina: *'Cabe ao juiz, nos casos do artigo antecedente, suprir a outorga, quando um dos c&#244;njuges a denegue sem justo motivo, ou lhe seja imposs&#237;vel conced&#234;-la'*. O desapre&#231;o ideol&#243;gico pelo comprador n&#227;o constitui justo motivo jur&#237;dico.</t></is></c><c r="W2" t="inlineStr"><is><t># [COMO CAI EM PROVAS / RAIO-X DAS BANCAS] - Estat&#237;stica e Pegadinhas
+
+Fique alerta nos pontos nevr&#225;lgicos:
+
+1. **Separa&#231;&#227;o Convencional vs. Separa&#231;&#227;o Obrigat&#243;ria**:
+   O art. 1.647 do CC dispensa a outorga no regime da *separa&#231;&#227;o absoluta*. Cuidado: a jurisprud&#234;ncia e a melhor doutrina entendem que essa dispensa s&#243; vale para a **separa&#231;&#227;o convencional** (feita por pacto antenupcial). Na separa&#231;&#227;o obrigat&#243;ria/legal (art. 1.641), a outorga continua sendo exigida por cautela registral.
+
+2. **A Avalia&#231;&#227;o do Prazo do Art. 1.649**:
+   O prazo de 2 anos para o c&#244;njuge anular a venda de im&#243;vel feita sem sua assinatura **S&#211; COME&#199;A A CORRER ap&#243;s o t&#233;rmino da sociedade conjugal** (div&#243;rcio ou &#243;bito), e n&#227;o da data em que a escritura foi lavrada! Essa &#233; uma das pegadinhas prediletas da FGV.
+
+3. **Fian&#231;a sem Outorga**:
+   Lembre-se sempre: S&#250;mula 332 do STJ = inefic&#225;cia TOTAL da garantia (n&#227;o fica valendo nem a metade do patrim&#244;nio do fiador).</t></is></c><c r="X2" t="inlineStr"><is><t># [DICA DA PROFESSORA / S&#205;NTESE EM &#193;UDIO] - S&#237;ntese da Evelyn
+
+&#127897;&#65039; *Aqui &#233; a Professora Evelyn para desmistificar mais um ponto:*
+
+&gt; *"Amigos do Direito Prime, pensem comigo:  
+&gt; **Capacidade** &#233; sobre QUEM VOC&#202; &#201;: voc&#234; tem mais de 18 anos e sua mente est&#225; l&#250;cida? Ent&#227;o voc&#234; tem capacidade plena.  
+&gt; **Legitima&#231;&#227;o** &#233; sobre COM QUEM VOC&#202; SE METEU ou QUAL PAPEL VOC&#202; OCUPA:  
+&gt; - Se casou sob comunh&#227;o de bens? Precisa da caneta do parceiro para vender casa e dar fian&#231;a (art. 1.647).  
+&gt; - &#201; pai e quer vender para um dos filhos? Precisa da caneta dos outros irm&#227;os (art. 496).  
+&gt; - &#201; tutor da crian&#231;a? N&#227;o pode comprar os brinquedos nem os bens dela (art. 1.749).  
+&gt; Se faltar capacidade $
+ightarrow$ ou &#233; nulo ou &#233; anul&#225;vel. Se faltar legitima&#231;&#227;o $
+ightarrow$ em regra &#233; anul&#225;vel ou ineficaz total! Memorizou? Excelente!"*</t></is></c><c r="Y2" t="inlineStr"><is><t># [&#193;RVORE DECIS&#211;RIA / FLUXOGRAMA EM SETAS] - Mapa L&#243;gico
+
+```text
+[ALIENA&#199;&#195;O DE IM&#211;VEL OU PRESTA&#199;&#195;O DE FIAN&#199;A]
+       |
+       +---&gt; A pessoa que vai praticar o ato &#233; CASADA?
+       |        |
+       |        +---[N&#195;O - SOLTEIRO / DIVORCIADO]---&gt; Ato 100% v&#225;lido por si s&#243;
+       |        |
+       |        +---[SIM - &#201; CASADA]---&gt; Qual &#233; o regime de bens?
+       |                                   |
+       |                                   +---&gt; SEPARA&#199;&#195;O CONVENCIONAL ABSOLUTA (Pacto)?
+       |                                   |        |
+       |                                   |        +---[SIM]---&gt; DISPENSADA a outorga (Art. 1.647, caput)
+       |                                   |
+       |                                   +---&gt; OUTROS REGIMES (Comunh&#227;o Parcial, Universal, etc.)
+       |                                            |
+       |                                            +---&gt; Teve outorga ux&#243;ria/marital?
+       |                                                    |
+       |                                                    +---[SIM]---&gt; Ato PERFEITO E EFICAZ
+       |                                                    |
+       |                                                    +---[N&#195;O]---&gt; Recusa foi justa?
+       |                                                                   |
+       |                                                                   +---[N&#195;O]---&gt; Cabe Suprimento Judicial (Art. 1.648)
+       |                                                                   |
+       |                                                                   +---[SIM / N&#195;O SUPRIDO]---&gt;
+       |                                                                           - Im&#243;vel: ANUL&#193;VEL em at&#233; 2 anos p&#243;s-div&#243;rcio (Art. 1.649)
+       |                                                                           - Fian&#231;a: INEFIC&#193;CIA TOTAL (S&#250;mula 332/STJ)
+```</t></is></c><c r="Z2" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / LIMITA&#199;&#213;ES DE LEGITIMA&#199;&#195;O] - Outros Casos do C&#243;digo Civil
+
+Al&#233;m do casamento e da venda entre pais e filhos, o C&#243;digo Civil e leis especiais trazem proibi&#231;&#245;es expressas de legitima&#231;&#227;o:
+
+1. **Artigo 497 do C&#243;digo Civil**:
+   Sob pena de nulidade, n&#227;o podem ser compradores de bens confiados &#224; sua guarda ou administra&#231;&#227;o:
+   - Os tutores, curadores, testamenteiros e administradores, quanto aos bens confiados &#224; sua guarda.
+   - Os servidores p&#250;blicos, quanto aos bens da administra&#231;&#227;o que estejam sob sua responsabilidade direta ou em hasta p&#250;blica sob sua autoridade.
+   - Os ju&#237;zes, secret&#225;rios de tribunais, peritos e auxiliares da justi&#231;a, quanto aos bens litigiosos que tramitem no ju&#237;zo em que atuem.
+
+2. **Raz&#227;o Moral e &#201;tica**:
+   A lei n&#227;o duvida da capacidade civil do juiz ou do perito (eles t&#234;m mais de 18 anos e s&#227;o concursados), mas retira a **legitima&#231;&#227;o** para evitar tr&#225;fico de influ&#234;ncia, informa&#231;&#227;o privilegiada e enriquecimento il&#237;cito &#224;s custas de vulner&#225;veis.</t></is></c><c r="AA2" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 4] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Situa&#231;&#227;o Concreta**: Um juiz de direito titular de uma vara c&#237;vel v&#234; que um excelente apartamento ir&#225; a leil&#227;o judicial em um processo que tramita em sua pr&#243;pria serventia. Ele pode arrematar o im&#243;vel oferecendo o maior lance?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **N&#195;O! &#201; NULO DE PLENO DIREITO!**  
+&gt; Aplica-se o **art. 497, III do C&#243;digo Civil**. Trata-se de hip&#243;tese expressa de **impedimento de legitima&#231;&#227;o absoluto**, cominada expressamente com san&#231;&#227;o de **nulidade**, para salvaguardar a moralidade e a impessoalidade da Justi&#231;a.</t></is></c><c r="AB2" t="inlineStr"><is><t># [QUEST&#195;O DISCURSIVA / PR&#193;TICA PROFISSIONAL] - Caso Pr&#225;tico
+
+**Enunciado do Caso**: Roberto prestou fian&#231;a em contrato de loca&#231;&#227;o sem consentimento de sua esposa Vera, omitindo no cadastro que era casado. Anos depois, diante do inadimplemento do locat&#225;rio, o &#250;nico im&#243;vel da fam&#237;lia foi penhorado. Vera contrata voc&#234; como advogado para defender o patrim&#244;nio familiar.
+
+**Pergunta**: Qual a pe&#231;a processual cab&#237;vel e qual fundamento de m&#233;rito da jurisprud&#234;ncia do STJ voc&#234; sustentar&#225; para livrar o im&#243;vel da penhora?
+
+---
+
+### &#9878;&#65039; Padr&#227;o de Resposta Jur&#237;dico:
+&gt; **1. Pe&#231;a Cab&#237;vel**: **Embargos de Terceiro** (art. 674 e seguintes do CPC), com pedido liminar de suspens&#227;o das medidas constritivas sobre o bem.  
+&gt; **2. Tese de M&#233;rito**: Aplica&#231;&#227;o direta da **S&#250;mula 332 do STJ** (*'A fian&#231;a prestada sem autoriza&#231;&#227;o de um dos c&#244;njuges implica a inefic&#225;cia total da garantia'*). A fian&#231;a &#233; totalmente ineficaz, e n&#227;o apenas restrita &#224; mea&#231;&#227;o da embargante. Ademais, subsidiariamente, suscita-se a impenhorabilidade do **bem de fam&#237;lia** (Lei 8.009/90), pois a exce&#231;&#227;o &#224; penhora do fiador locat&#237;cio n&#227;o pode subsistir quando a pr&#243;pria garantia fidejuss&#243;ria &#233; inexistente/inv&#225;lida perante o c&#244;njuge prejudicado.</t></is></c><c r="AC2" t="inlineStr"><is><t># [MAPA CONCEITUAL COMPARATIVO] - Os Degraus da Validade
+
+```text
+[DEGRAU 1: PERSONALIDADE JUR&#205;DICA]
+   &#8226; Toda pessoa humana nascida com vida (Art. 2&#186;, CC)
+   &#8226; Aptid&#227;o geral e irrenunci&#225;vel para ser titular de direitos
+               |
+               v
+[DEGRAU 2: CAPACIDADE DE EXERC&#205;CIO (FATO)]
+   &#8226; Idade $\ge$ 18 anos ou Emancipa&#231;&#227;o (Art. 5&#186;, CC)
+   &#8226; Aptid&#227;o mental e volitiva para atuar diretamente sem representante
+               |
+               v
+[DEGRAU 3: LEGITIMA&#199;&#195;O PARA O ATO CONCRETO]
+   &#8226; Requisitos espec&#237;ficos de autoriza&#231;&#227;o ou aus&#234;ncia de impedimento
+   &#8226; Exemplos: Outorga Conjugal (Art. 1.647), Venda a Filho (Art. 496), Veda&#231;&#227;o a Juiz (Art. 497)
+               |
+               v
+   [ATO JUR&#205;DICO PLENAMENTE V&#193;LIDO E EFICAZ NO MUNDO REAL!]
+```</t></is></c><c r="AD2" t="inlineStr"><is><t># [RESUMO ESQUEM&#193;TICO / TABELA DE PRAZOS] - Prazos do C&#243;digo Civil
+
+| A&#199;&#195;O ANULAT&#211;RIA | DISPOSITIVO LEGAL | PRAZO DECADENCIAL | TERMO INICIAL DA CONTAGEM |
+| :--- | :--- | :--- | :--- |
+| **Venda de Im&#243;vel sem Outorga Ux&#243;ria** | Art. 1.649 do CC | **2 anos** | Da dissolu&#231;&#227;o da sociedade conjugal (div&#243;rcio ou morte). |
+| **Venda de Ascendente a Descendente** | Art. 496 c/c Art. 179 CC | **2 anos** | Da conclus&#227;o do ato (registro da escritura de compra e venda). |
+| **Doa&#231;&#227;o Inoficiosa (excesso da leg&#237;tima)** | Art. 549 do CC | **10 anos** (prescricional) | Da data do registro da doa&#231;&#227;o no cart&#243;rio de im&#243;veis. |
+| **Compra Proibida por Tutor/Curador** | Art. 497 do CC | **Imprescrit&#237;vel** | &#201; **Nulo de Pleno Direito** (art. 169 do CC: n&#227;o convalesce). |</t></is></c><c r="AE2" t="inlineStr"><is><t># [CHECKLIST FINAL / REVIS&#195;O DE RETEN&#199;&#195;O] - 5 Pontos de Ouro
+
+Fixe os conceitos antes de seguir adiante:
+
+- [x] **Personalidade**: Todos os nascidos vivos t&#234;m sem qualquer exce&#231;&#227;o.
+- [x] **Capacidade de Gozo**: Sin&#244;nimo de capacidade de direito; inerente &#224; personalidade.
+- [x] **Capacidade de Exerc&#237;cio**: Aptid&#227;o para praticar atos pessoalmente (regra aos 18 anos).
+- [x] **Legitima&#231;&#227;o**: Aptid&#227;o pontual para ato determinado (ex.: outorga ux&#243;ria).
+- [x] **S&#250;mula 332 do STJ**: Fian&#231;a sem consentimento do c&#244;njuge cai por inteiro (inefic&#225;cia total).</t></is></c><c r="AF2" t="inlineStr"></c><c r="AG2" t="inlineStr"></c><c r="AH2" t="inlineStr"></c></row><row r="3"><c r="A3" t="inlineStr"><is><t>Aula 02</t></is></c><c r="B3" t="inlineStr"><is><t>SUJEITOS</t></is></c><c r="C3" t="inlineStr"><is><t>01. Pessoas no C&#243;digo Civil</t></is></c><c r="D3" t="n"><v>24</v></c><c r="E3" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / CONCEITO CENTRAL] - SUJEITOS
+
+&gt; **Marco Normativo Central**: Arts. 11 a 21 do C&#243;digo Civil
+
+A disciplina jur&#237;dica de **SUJEITOS** insere-se no ramo de **Direito das Pessoas e Personalidade**, estruturando como a lei protege as pessoas e seus bens com justi&#231;a e seguran&#231;a.
+
+### Conceito Desmembrado e Raz&#227;o de Ser:
+No direito civil contempor&#226;neo, as normas que regem SUJEITOS abandonaram o antigo apego formalista ego&#237;sta para se submeter &#224; **dignidade da pessoa humana**, &#224; **fun&#231;&#227;o social** e &#224; **boa-f&#233; objetiva**.
+A raz&#227;o de ser do instituto &#233; assegurar equil&#237;brio e previsibilidade: ningu&#233;m pode se valer da pr&#243;pria torpeza, nem locupletar-se indevidamente &#224;s custas do preju&#237;zo alheio.
+
+&#128161; *Exemplo R&#225;pido de Aplica&#231;&#227;o*: Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.</t></is></c><c r="F3" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 1] - O Dilema Pr&#225;tico
+
+Para compreender como **SUJEITOS** impacta a vida real dos cidad&#227;os nos f&#243;runs e cart&#243;rios, acompanhe o caso concreto:
+
+Beatriz descobre que uma marca de roupas famosa utilizou uma foto dela tirada na praia para estampar uma campanha publicit&#225;ria nacional sem qualquer contrato ou consentimento.
+
+Diante da recusa da outra parte em solucionar a controv&#233;rsia amigavelmente, surge a d&#250;vida jur&#237;dica: quais s&#227;o os limites da prote&#231;&#227;o que o C&#243;digo Civil e os tribunais conferem a essa situa&#231;&#227;o cotidiana?</t></is></c><c r="G3" t="inlineStr"><is><t># [GLOSS&#193;RIO INTERATIVO / MENU SUSPENSO] - Termos Chave Clic&#225;veis
+
+*(Clique em cada termo no menu suspenso para expandir a defini&#231;&#227;o desmembrada e o exemplo pr&#225;tico)*
+
+&#9660; **[Menu Suspenso 1: Intransmissibilidade]**
+- *O que &#233;*: Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.
+- *Exemplo R&#225;pido*: Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.
+
+&#9660; **[Menu Suspenso 2: Direito ao Esquecimento]**
+- *O que &#233;*: Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos.
+- *Exemplo R&#225;pido*: Uma emissora pode recordar caso criminal hist&#243;rico real, ressalvada indeniza&#231;&#227;o por abuso.
+
+&#9660; **[Menu Suspenso 3: Dano Moral In Re Ipsa]**
+- *O que &#233;*: Dano moral presumido pela pr&#243;pria ocorr&#234;ncia do fato ofensivo, que independe de prova da dor ps&#237;quica.
+- *Exemplo R&#225;pido*: S&#250;mula 403 do STJ: o uso indevido da imagem de algu&#233;m em propaganda comercial gera dano moral autom&#225;tico.</t></is></c><c r="H3" t="inlineStr"><is><t># [EXEMPLO PR&#193;TICO E APLICA&#199;&#195;O FORENSE] - Como Funciona nos Tribunais
+
+Na pr&#225;tica forense de **SUJEITOS**, ju&#237;zes e advogados aplicam as seguintes solu&#231;&#245;es imediatas:
+
+1. **Seguran&#231;a das Rela&#231;&#245;es Negociais**: Assegura que o combinado seja exig&#237;vel, prevenindo calotes e fraudes patrimoniais;
+2. **Prote&#231;&#227;o &#224; Parte Vulner&#225;vel**: Impede imposi&#231;&#245;es leoninas ou cl&#225;usulas abusivas impostas por detentores de maior poder econ&#244;mico;
+3. **Equidade e Razoabilidade**: Permite a revis&#227;o judicial das obriga&#231;&#245;es quando fatos supervenientes extraordin&#225;rios quebram o equil&#237;brio original da rela&#231;&#227;o.
+
+&#128161; *Aten&#231;&#227;o Forense*: O direito n&#227;o socorre aos que dormem (*dormientibus non succurrit ius*); por isso, os prazos legais da mat&#233;ria devem ser vigiados com rigor!</t></is></c><c r="I3" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 1] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta de Fixa&#231;&#227;o**: Qual &#233; a defini&#231;&#227;o jur&#237;dica central de **Intransmissibilidade** em **SUJEITOS** e qual sua principal repercuss&#227;o no patrim&#244;nio das partes?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.**  
+&gt; *Repercuss&#227;o Pr&#225;tica*: Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.</t></is></c><c r="J3" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 1] - Preencha as Lacunas
+
+Teste seu dom&#237;nio completando as palavras essenciais da mat&#233;ria:
+
+---
+
+### Enunciado da Atividade:
+*Os direitos da personalidade s&#227;o em regra [ LACUNA 1 ] e intransmiss&#237;veis, n&#227;o podendo o seu exerc&#237;cio sofrer limita&#231;&#227;o volunt&#225;ria permanente. Conforme a S&#250;mula 403 do STJ, independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada da [ LACUNA 2 ] de pessoa com fins econ&#244;micos.*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: [ irrenunci&#225;veis ] | [ alien&#225;veis ]
+- **Para a Lacuna 2**: [ imagem ] | [ assinatura ]
+
+---
+
+### &#127919; Gabarito Comentado:
+1. irrenunci&#225;veis (Art. 11 do CC); 2. imagem (S&#250;mula 403 do STJ).</t></is></c><c r="K3" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 1] - Padr&#227;o OAB / FGV
+
+**Enunciado**: A respeito das normas e princ&#237;pios aplic&#225;veis a **SUJEITOS**, assinale a alternativa juridicamente correta:
+
+- (A) A legisla&#231;&#227;o civil veda a aplica&#231;&#227;o da boa-f&#233; objetiva aos contratos particulares que versem sobre SUJEITOS.
+- (B) Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a. Portanto, Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.
+- (C) Os prazos prescricionais de SUJEITOS admitem dila&#231;&#227;o convencional por mero acordo verbal das partes.
+- (D) O Minist&#233;rio P&#250;blico jamais possui legitimidade para intervir em causas que envolvam SUJEITOS.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**.  
+*Fundamenta&#231;&#227;o*: Trata-se da correta aplica&#231;&#227;o dogm&#225;tica do instituto segundo o C&#243;digo Civil e a jurisprud&#234;ncia dominante.</t></is></c><c r="L3" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / DOGM&#193;TICA E REQUISITOS T&#201;CNICOS] - Requisitos Estruturais
+
+Para que qualquer ato relacionado a **SUJEITOS** produza plenos efeitos no mundo jur&#237;dico, exige-se:
+
+1. **Legitima&#231;&#227;o Espec&#237;fica**: N&#227;o basta capacidade gen&#233;rica; a parte deve deter pertin&#234;ncia subjetiva e poderes para o ato;
+2. **Higidez Volitiva e Aus&#234;ncia de Fraude**: A manifesta&#231;&#227;o de vontade deve ser livre de erro, dolo, coa&#231;&#227;o ou simula&#231;&#227;o;
+3. **Conformidade com a Ordem P&#250;blica**: O objeto deve ser l&#237;cito e atender &#224; fun&#231;&#227;o social estipulada em lei.</t></is></c><c r="M3" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 2] - O Conflito em Ju&#237;zo
+
+A a&#231;&#227;o judicial foi formalmente distribu&#237;da na Vara C&#237;vel competente.
+
+A parte r&#233; apresentou contesta&#231;&#227;o alegando que n&#227;o houve ilicitude e invocando o estrito cumprimento de cl&#225;usulas padronizadas.
+Contudo, a defesa da v&#237;tima sustentou que o comportamento do r&#233;u violou frontalmente a boa-f&#233; objetiva e os preceitos de **SUJEITOS**.
+
+O juiz abriu vista para manifesta&#231;&#227;o sobre provas, convocando as partes para audi&#234;ncia de instru&#231;&#227;o e julgamento!</t></is></c><c r="N3" t="inlineStr"><is><t># [FRONTEIRAS CR&#205;TICAS / O QUE N&#195;O &#201;] - Quadro Comparativo
+
+| FIGURA EM AN&#193;LISE | O QUE REALMENTE &#201; | O QUE **N&#195;O** &#201; (CUIDADO!) |
+| :--- | :--- | :--- |
+| **Intransmissibilidade** | Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a. | N&#227;o pode ser flexibilizado por conveni&#234;ncia particular. |
+| **Direito ao Esquecimento** | Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos. | N&#227;o se confunde com arb&#237;trio individual ou impunidade. |
+| **Dano Moral In Re Ipsa** | Dano moral presumido pela pr&#243;pria ocorr&#234;ncia do fato ofensivo, que independe de prova da dor ps&#237;quica. | N&#227;o depende de comprova&#231;&#227;o de dor &#237;ntima se a lei presumir. |</t></is></c><c r="O3" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 2] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Crucial**: Qual &#233; a distin&#231;&#227;o primordial entre **Intransmissibilidade** e **Direito ao Esquecimento** no direito civil?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; Enquanto **Intransmissibilidade** (Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.), o instituto de **Direito ao Esquecimento** (Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos.).  
+&gt; Conhecer essa fronteira &#233; decisivo para n&#227;o errar a fundamenta&#231;&#227;o da peti&#231;&#227;o inicial nem as quest&#245;es da OAB!</t></is></c><c r="P3" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 2] - Regras Especiais
+
+Complete a assertiva jurisprudencial consolidada pelos tribunais superiores:
+
+---
+
+### Enunciado:
+*'No &#226;mbito de SUJEITOS, a boa-f&#233; objetiva imp&#245;e deveres anexos de [ LACUNA 1 ] e colabora&#231;&#227;o m&#250;tua. A quebra desses deveres caracteriza inadimplemento positivo ou viola&#231;&#227;o contratual sujeita a [ LACUNA 2 ].'*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: `[ lealdade / informa&#231;&#227;o ]` | `[ oculta&#231;&#227;o ]`
+- **Para a Lacuna 2**: `[ repara&#231;&#227;o por perdas e danos ]` | `[ perd&#227;o judicial ]`
+
+---
+
+### &#127919; Gabarito Comentado:
+1. lealdade / informa&#231;&#227;o (Enunciados da Jornada de Direito Civil do CJF);
+2. repara&#231;&#227;o por perdas e danos (Arts. 187 e 927 do CC).</t></is></c><c r="Q3" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 2] - N&#237;vel Concurso P&#250;blico
+
+**Enunciado**: Em mat&#233;ria de **SUJEITOS**, assinale a afirmativa INCORRETA:
+
+- (A) A responsabilidade civil e a validade negocial subordinam-se &#224; fun&#231;&#227;o social do instituto.
+- (B) &#201; nula a cl&#225;usula que contrarie disposi&#231;&#227;o de lei de ordem p&#250;blica em SUJEITOS.
+- (C) Os efeitos do neg&#243;cio podem ser anulados se comprovado v&#237;cio de consentimento no prazo decadencial legal.
+- (D) O enriquecimento sem causa &#233; tolerado no direito civil caso o prejudicado seja pessoa jur&#237;dica.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Incorreta: (D)**. 
+*Fundamenta&#231;&#227;o*: O art. 884 do C&#243;digo Civil repudia expressamente o enriquecimento sem causa contra qualquer sujeito de direito (pessoa natural ou jur&#237;dica).</t></is></c><c r="R3" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 3] - Conclus&#227;o e Senten&#231;a Judicial
+
+A senten&#231;a judicial foi proferida pelo magistrado titular da Vara C&#237;vel:
+
+Beatriz aju&#237;za a&#231;&#227;o com base no art. 20 do CC e na S&#250;mula 403 do STJ: a empresa &#233; condenada a indeniz&#225;-la por danos morais autom&#225;ticos e a retirar toda a campanha de circula&#231;&#227;o.
+
+A pacifica&#231;&#227;o do conflito demonstrou que as regras de **SUJEITOS** atuam para resguardar a ordem econ&#244;mica e proteger os cidad&#227;os que pautam suas condutas na boa-f&#233; objetiva!</t></is></c><c r="S3" t="inlineStr"><is><t># [MINIGAME INTERATIVO / LIGUE OS TERMOS] - Desafio R&#225;pido
+
+Ligue cada elemento da **Coluna A** &#224; sua defini&#231;&#227;o correspondente na **Coluna B**:
+
+---
+
+### &#129513; COLUNA A:
+1. Intransmissibilidade
+2. Direito ao Esquecimento
+3. Dano Moral In Re Ipsa
+4. Boa-f&#233; Objetiva
+
+---
+
+### &#127919; COLUNA B:
+- ( ) Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos.
+- ( ) Padr&#227;o de conduta leal, honesto e &#233;tico obrigat&#243;rio nas rela&#231;&#245;es civis.
+- ( ) Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.
+- ( ) Dano moral presumido pela pr&#243;pria ocorr&#234;ncia do fato ofensivo, que independe de prova da dor ps&#237;quica.
+
+---
+
+### &#128273; Resposta do Minigame:
+- **Ordem Correta**: `[ 2 ]` $\rightarrow$ `[ 4 ]` $\rightarrow$ `[ 1 ]` $\rightarrow$ `[ 3 ]`</t></is></c><c r="T3" t="inlineStr"><is><t># [JURISPRUD&#202;NCIA / TRIBUNAIS SUPERIORES] - Precedentes Vinculantes
+
+Principais diretrizes pac&#237;ficas dos Tribunais Superiores (STJ/STF) sobre **SUJEITOS**:
+
+1. **STJ - S&#250;mula 403: 'Independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada de imagem de pessoa com fins econ&#244;micos ou comerciais'.**;
+2. **Veda&#231;&#227;o ao Comportamento Contradit&#243;rio**: O STJ reprime com veem&#234;ncia o *venire contra factum proprium*, invalidando condutas que quebram a confian&#231;a leg&#237;tima;
+3. **Mitiga&#231;&#227;o do Preju&#237;zo (*Duty to Mitigate the Loss*)**: O credor tem o dever anexo de adotar medidas razo&#225;veis para n&#227;o agravar o pr&#243;prio dano.</t></is></c><c r="U3" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 3] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Jurisprudencial**: Qual s&#250;mula ou tese repetitiva do STJ incide com maior frequ&#234;ncia em lit&#237;gios sobre **SUJEITOS**?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **STJ - S&#250;mula 403: 'Independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada de imagem de pessoa com fins econ&#244;micos ou comerciais'.**  
+&gt; *Import&#226;ncia*: Essa orienta&#231;&#227;o pacificada vincula os tribunais de segunda inst&#226;ncia e evita o ajuizamento de recursos protelat&#243;rios.</t></is></c><c r="V3" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 3] - N&#237;vel Magistratura / MP
+
+**Enunciado**: Em demanda judicial versando sobre **SUJEITOS**, o r&#233;u alega aus&#234;ncia de responsabilidade em virtude de cl&#225;usula contratual gen&#233;rica de n&#227;o indenizar. &#192; luz da jurisprud&#234;ncia do STJ e do C&#243;digo Civil, o juiz deve:
+
+- (A) Acolher a defesa do r&#233;u, pois a autonomia privada das partes &#233; soberana e absoluta.
+- (B) Declarar a nulidade ou inefic&#225;cia da cl&#225;usula de n&#227;o indenizar que afronte normas cogentes de ordem p&#250;blica ou a fun&#231;&#227;o social da rela&#231;&#227;o.
+- (C) Extinguir o processo sem julgamento de m&#233;rito por falta de interesse de agir.
+- (D) Condenar o autor por litig&#226;ncia de m&#225;-f&#233;.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**. 
+*Fundamenta&#231;&#227;o*: Cl&#225;usulas de dispensa de deveres essenciais ou de exclus&#227;o unilateral de responsabilidade que violem preceitos de ordem p&#250;blica s&#227;o nulas de pleno direito (art. 166, VI e art. 421 do CC).</t></is></c><c r="W3" t="inlineStr"><is><t># [COMO CAI EM PROVAS / RAIO-X DAS BANCAS] - Armadilhas Cl&#225;ssicas
+
+Fique alerta &#224;s 3 pegadinhas mais recorrentes preparadas por FGV, Cebraspe e Vunesp:
+
+1. **A banca vai afirmar que '&#233; necess&#225;ria per&#237;cia psicol&#243;gica para comprovar que a v&#237;tima sofreu trauma com o uso da foto'. ERRADO! O dano moral pelo uso comercial indevido da imagem &#233; in re ipsa (S&#250;mula 403/STJ).**
+2. **Prazos de Prescri&#231;&#227;o vs. Decad&#234;ncia**: A banca adora chamar prazo decadencial de anula&#231;&#227;o de 'prescricional' para induzir a erro;
+3. **Solidariedade Presumida**: Lembrar sempre que a solidariedade N&#195;O se presume; resulta da lei ou do contrato (Art. 265 do CC).</t></is></c><c r="X3" t="inlineStr"><is><t># [DICA DA PROFESSORA / S&#205;NTESE EM &#193;UDIO] - P&#237;lula da Professora Evelyn
+
+&#127897;&#65039; *Ol&#225;, querido aluno do Direito Prime! Aqui &#233; a Professora Evelyn com o resumo definitivo de SUJEITOS:*
+
+&gt; *'N&#227;o complique o que a lei fez para ser justo!  
+&gt; Em SUJEITOS, lembre-se sempre de conferir:  
+&gt; 1. Houve respeito &#224; boa-f&#233; objetiva e &#224; fun&#231;&#227;o social?  
+&gt; 2. Quem alega o direito agiu dentro do prazo legal sem dormir no ponto?  
+&gt; 3. A s&#250;mula de reg&#234;ncia &#233;: STJ - S&#250;mula 403: 'Independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada de imagem de pessoa com fins econ&#244;micos ou comerciais'..  
+&gt; Guarde essa tr&#237;ade no cora&#231;&#227;o e voc&#234; acertar&#225; qualquer quest&#227;o de concurso e advocacia!'*</t></is></c><c r="Y3" t="inlineStr"><is><t># [&#193;RVORE DECIS&#211;RIA / FLUXOGRAMA EM SETAS] - Grafo de Decis&#227;o L&#243;gica
+
+```text
+[SUJEITOS: AN&#193;LISE DE EFIC&#193;CIA JUR&#205;DICA]
+       |
+       +---&gt; Houve preenchimento dos Requisitos Legais B&#225;sicos?
+       |        |
+       |        +---[N&#195;O]---&gt; V&#205;CIO NA ESTRUTURA NORMATIVA
+       |        |             - Inefic&#225;cia ou Nulidade do ato
+       |        |
+       |        +---[SIM]---&gt; Houve Observ&#226;ncia da Boa-f&#233; e Prazos?
+       |                                |
+       |                                +---[SIM]---&gt; ATO H&#205;GIDO, V&#193;LIDO E EXIG&#205;VEL
+       |                                |             - Tutela jurisdicional concedida
+       |                                |             - Produ&#231;&#227;o integral dos efeitos
+       |                                |
+       |                                +---[N&#195;O]---&gt; INCID&#202;NCIA DE SAN&#199;&#195;O / PRESCRI&#199;&#195;O
+       |                                              - Perda da pretens&#227;o ou indeniza&#231;&#227;o civil
+```</t></is></c><c r="Z3" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / EFEITOS ESPECIAIS] - Reflexos Interdisciplinares
+
+A mat&#233;ria de **SUJEITOS** produz efeitos que transcendem o direito privado comum:
+
+- **Reflexos Tribut&#225;rios**: A regularidade jur&#237;dica do ato define o fato gerador e afasta autua&#231;&#245;es fiscais indevidas;
+- **Reflexos Notariais e Registrais**: A publicidade nos cart&#243;rios de notas e de registro de im&#243;veis confere efic&#225;cia perante terceiros (*erga omnes*);
+- **Reflexos Processuais**: Assegura a legitimidade ativa e passiva nas a&#231;&#245;es de conhecimento e de execu&#231;&#227;o.</t></is></c><c r="AA3" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 4] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pegadinha da Magistratura**: O descumprimento dos deveres anexos de conduta da boa-f&#233; objetiva em **SUJEITOS** exige prova de dolo ou culpa do devedor?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **N&#195;O EXIGE PROVA DE DOLO OU CULPA!**  
+&gt; A viola&#231;&#227;o positiva do contrato por quebra da boa-f&#233; objetiva opera responsabilidade de natureza **objetiva**, bastando a comprova&#231;&#227;o objetiva da conduta desleal ou omissiva.</t></is></c><c r="AB3" t="inlineStr"><is><t># [QUEST&#195;O DISCURSIVA / PR&#193;TICA PROFISSIONAL] - Parecer Forense
+
+**Situa&#231;&#227;o Pr&#225;tica**: Um cliente procura seu escrit&#243;rio de advocacia relatando les&#227;o patrimonial grave decorrente de lit&#237;gio em **SUJEITOS**.
+
+**Pergunta**: Como advogado(a), qual &#233; a primeira provid&#234;ncia cautelar e de m&#233;rito a ser proposta em ju&#237;zo?
+
+---
+
+### &#9878;&#65039; Padr&#227;o de Resposta T&#233;cnico:
+&gt; 1. **Tutela Provis&#243;ria de Urg&#234;ncia** (art. 300 do CPC) para suspender atos expropriat&#243;rios ou cobran&#231;as indevidas;  
+&gt; 2. **Pedido Principal** de declara&#231;&#227;o de cumprimento do preceito de SUJEITOS, com base em Arts. 11 a 21 do C&#243;digo Civil e perdas e danos.</t></is></c><c r="AC3" t="inlineStr"></c><c r="AD3" t="inlineStr"></c><c r="AE3" t="inlineStr"></c><c r="AF3" t="inlineStr"></c><c r="AG3" t="inlineStr"></c><c r="AH3" t="inlineStr"></c></row><row r="4"><c r="A4" t="inlineStr"><is><t>Aula 03</t></is></c><c r="B4" t="inlineStr"><is><t>IN&#205;CIO DA PERSONALIDADE</t></is></c><c r="C4" t="inlineStr"><is><t>01. Pessoas no C&#243;digo Civil</t></is></c><c r="D4" t="n"><v>22</v></c><c r="E4" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / CONCEITO CENTRAL] - IN&#205;CIO DA PERSONALIDADE
+
+&gt; **Marco Normativo Central**: Arts. 11 a 21 do C&#243;digo Civil
+
+A disciplina jur&#237;dica de **IN&#205;CIO DA PERSONALIDADE** insere-se no ramo de **Direito das Pessoas e Personalidade**, estruturando como a lei protege as pessoas e seus bens com justi&#231;a e seguran&#231;a.
+
+### Conceito Desmembrado e Raz&#227;o de Ser:
+No direito civil contempor&#226;neo, as normas que regem IN&#205;CIO DA PERSONALIDADE abandonaram o antigo apego formalista ego&#237;sta para se submeter &#224; **dignidade da pessoa humana**, &#224; **fun&#231;&#227;o social** e &#224; **boa-f&#233; objetiva**.
+A raz&#227;o de ser do instituto &#233; assegurar equil&#237;brio e previsibilidade: ningu&#233;m pode se valer da pr&#243;pria torpeza, nem locupletar-se indevidamente &#224;s custas do preju&#237;zo alheio.
+
+&#128161; *Exemplo R&#225;pido de Aplica&#231;&#227;o*: Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.</t></is></c><c r="F4" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 1] - O Dilema Pr&#225;tico
+
+Para compreender como **IN&#205;CIO DA PERSONALIDADE** impacta a vida real dos cidad&#227;os nos f&#243;runs e cart&#243;rios, acompanhe o caso concreto:
+
+Beatriz descobre que uma marca de roupas famosa utilizou uma foto dela tirada na praia para estampar uma campanha publicit&#225;ria nacional sem qualquer contrato ou consentimento.
+
+Diante da recusa da outra parte em solucionar a controv&#233;rsia amigavelmente, surge a d&#250;vida jur&#237;dica: quais s&#227;o os limites da prote&#231;&#227;o que o C&#243;digo Civil e os tribunais conferem a essa situa&#231;&#227;o cotidiana?</t></is></c><c r="G4" t="inlineStr"><is><t># [GLOSS&#193;RIO INTERATIVO / MENU SUSPENSO] - Termos Chave Clic&#225;veis
+
+*(Clique em cada termo no menu suspenso para expandir a defini&#231;&#227;o desmembrada e o exemplo pr&#225;tico)*
+
+&#9660; **[Menu Suspenso 1: Intransmissibilidade]**
+- *O que &#233;*: Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.
+- *Exemplo R&#225;pido*: Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.
+
+&#9660; **[Menu Suspenso 2: Direito ao Esquecimento]**
+- *O que &#233;*: Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos.
+- *Exemplo R&#225;pido*: Uma emissora pode recordar caso criminal hist&#243;rico real, ressalvada indeniza&#231;&#227;o por abuso.
+
+&#9660; **[Menu Suspenso 3: Dano Moral In Re Ipsa]**
+- *O que &#233;*: Dano moral presumido pela pr&#243;pria ocorr&#234;ncia do fato ofensivo, que independe de prova da dor ps&#237;quica.
+- *Exemplo R&#225;pido*: S&#250;mula 403 do STJ: o uso indevido da imagem de algu&#233;m em propaganda comercial gera dano moral autom&#225;tico.</t></is></c><c r="H4" t="inlineStr"><is><t># [EXEMPLO PR&#193;TICO E APLICA&#199;&#195;O FORENSE] - Como Funciona nos Tribunais
+
+Na pr&#225;tica forense de **IN&#205;CIO DA PERSONALIDADE**, ju&#237;zes e advogados aplicam as seguintes solu&#231;&#245;es imediatas:
+
+1. **Seguran&#231;a das Rela&#231;&#245;es Negociais**: Assegura que o combinado seja exig&#237;vel, prevenindo calotes e fraudes patrimoniais;
+2. **Prote&#231;&#227;o &#224; Parte Vulner&#225;vel**: Impede imposi&#231;&#245;es leoninas ou cl&#225;usulas abusivas impostas por detentores de maior poder econ&#244;mico;
+3. **Equidade e Razoabilidade**: Permite a revis&#227;o judicial das obriga&#231;&#245;es quando fatos supervenientes extraordin&#225;rios quebram o equil&#237;brio original da rela&#231;&#227;o.
+
+&#128161; *Aten&#231;&#227;o Forense*: O direito n&#227;o socorre aos que dormem (*dormientibus non succurrit ius*); por isso, os prazos legais da mat&#233;ria devem ser vigiados com rigor!</t></is></c><c r="I4" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 1] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta de Fixa&#231;&#227;o**: Qual &#233; a defini&#231;&#227;o jur&#237;dica central de **Intransmissibilidade** em **IN&#205;CIO DA PERSONALIDADE** e qual sua principal repercuss&#227;o no patrim&#244;nio das partes?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.**  
+&gt; *Repercuss&#227;o Pr&#225;tica*: Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.</t></is></c><c r="J4" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 1] - Preencha as Lacunas
+
+Teste seu dom&#237;nio completando as palavras essenciais da mat&#233;ria:
+
+---
+
+### Enunciado da Atividade:
+*Os direitos da personalidade s&#227;o em regra [ LACUNA 1 ] e intransmiss&#237;veis, n&#227;o podendo o seu exerc&#237;cio sofrer limita&#231;&#227;o volunt&#225;ria permanente. Conforme a S&#250;mula 403 do STJ, independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada da [ LACUNA 2 ] de pessoa com fins econ&#244;micos.*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: [ irrenunci&#225;veis ] | [ alien&#225;veis ]
+- **Para a Lacuna 2**: [ imagem ] | [ assinatura ]
+
+---
+
+### &#127919; Gabarito Comentado:
+1. irrenunci&#225;veis (Art. 11 do CC); 2. imagem (S&#250;mula 403 do STJ).</t></is></c><c r="K4" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 1] - Padr&#227;o OAB / FGV
+
+**Enunciado**: A respeito das normas e princ&#237;pios aplic&#225;veis a **IN&#205;CIO DA PERSONALIDADE**, assinale a alternativa juridicamente correta:
+
+- (A) A legisla&#231;&#227;o civil veda a aplica&#231;&#227;o da boa-f&#233; objetiva aos contratos particulares que versem sobre IN&#205;CIO DA PERSONALIDADE.
+- (B) Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a. Portanto, Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.
+- (C) Os prazos prescricionais de IN&#205;CIO DA PERSONALIDADE admitem dila&#231;&#227;o convencional por mero acordo verbal das partes.
+- (D) O Minist&#233;rio P&#250;blico jamais possui legitimidade para intervir em causas que envolvam IN&#205;CIO DA PERSONALIDADE.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**.  
+*Fundamenta&#231;&#227;o*: Trata-se da correta aplica&#231;&#227;o dogm&#225;tica do instituto segundo o C&#243;digo Civil e a jurisprud&#234;ncia dominante.</t></is></c><c r="L4" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / DOGM&#193;TICA E REQUISITOS T&#201;CNICOS] - Requisitos Estruturais
+
+Para que qualquer ato relacionado a **IN&#205;CIO DA PERSONALIDADE** produza plenos efeitos no mundo jur&#237;dico, exige-se:
+
+1. **Legitima&#231;&#227;o Espec&#237;fica**: N&#227;o basta capacidade gen&#233;rica; a parte deve deter pertin&#234;ncia subjetiva e poderes para o ato;
+2. **Higidez Volitiva e Aus&#234;ncia de Fraude**: A manifesta&#231;&#227;o de vontade deve ser livre de erro, dolo, coa&#231;&#227;o ou simula&#231;&#227;o;
+3. **Conformidade com a Ordem P&#250;blica**: O objeto deve ser l&#237;cito e atender &#224; fun&#231;&#227;o social estipulada em lei.</t></is></c><c r="M4" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 2] - O Conflito em Ju&#237;zo
+
+A a&#231;&#227;o judicial foi formalmente distribu&#237;da na Vara C&#237;vel competente.
+
+A parte r&#233; apresentou contesta&#231;&#227;o alegando que n&#227;o houve ilicitude e invocando o estrito cumprimento de cl&#225;usulas padronizadas.
+Contudo, a defesa da v&#237;tima sustentou que o comportamento do r&#233;u violou frontalmente a boa-f&#233; objetiva e os preceitos de **IN&#205;CIO DA PERSONALIDADE**.
+
+O juiz abriu vista para manifesta&#231;&#227;o sobre provas, convocando as partes para audi&#234;ncia de instru&#231;&#227;o e julgamento!</t></is></c><c r="N4" t="inlineStr"><is><t># [FRONTEIRAS CR&#205;TICAS / O QUE N&#195;O &#201;] - Quadro Comparativo
+
+| FIGURA EM AN&#193;LISE | O QUE REALMENTE &#201; | O QUE **N&#195;O** &#201; (CUIDADO!) |
+| :--- | :--- | :--- |
+| **Intransmissibilidade** | Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a. | N&#227;o pode ser flexibilizado por conveni&#234;ncia particular. |
+| **Direito ao Esquecimento** | Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos. | N&#227;o se confunde com arb&#237;trio individual ou impunidade. |
+| **Dano Moral In Re Ipsa** | Dano moral presumido pela pr&#243;pria ocorr&#234;ncia do fato ofensivo, que independe de prova da dor ps&#237;quica. | N&#227;o depende de comprova&#231;&#227;o de dor &#237;ntima se a lei presumir. |</t></is></c><c r="O4" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 2] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Crucial**: Qual &#233; a distin&#231;&#227;o primordial entre **Intransmissibilidade** e **Direito ao Esquecimento** no direito civil?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; Enquanto **Intransmissibilidade** (Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.), o instituto de **Direito ao Esquecimento** (Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos.).  
+&gt; Conhecer essa fronteira &#233; decisivo para n&#227;o errar a fundamenta&#231;&#227;o da peti&#231;&#227;o inicial nem as quest&#245;es da OAB!</t></is></c><c r="P4" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 2] - Regras Especiais
+
+Complete a assertiva jurisprudencial consolidada pelos tribunais superiores:
+
+---
+
+### Enunciado:
+*'No &#226;mbito de IN&#205;CIO DA PERSONALIDADE, a boa-f&#233; objetiva imp&#245;e deveres anexos de [ LACUNA 1 ] e colabora&#231;&#227;o m&#250;tua. A quebra desses deveres caracteriza inadimplemento positivo ou viola&#231;&#227;o contratual sujeita a [ LACUNA 2 ].'*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: `[ lealdade / informa&#231;&#227;o ]` | `[ oculta&#231;&#227;o ]`
+- **Para a Lacuna 2**: `[ repara&#231;&#227;o por perdas e danos ]` | `[ perd&#227;o judicial ]`
+
+---
+
+### &#127919; Gabarito Comentado:
+1. lealdade / informa&#231;&#227;o (Enunciados da Jornada de Direito Civil do CJF);
+2. repara&#231;&#227;o por perdas e danos (Arts. 187 e 927 do CC).</t></is></c><c r="Q4" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 2] - N&#237;vel Concurso P&#250;blico
+
+**Enunciado**: Em mat&#233;ria de **IN&#205;CIO DA PERSONALIDADE**, assinale a afirmativa INCORRETA:
+
+- (A) A responsabilidade civil e a validade negocial subordinam-se &#224; fun&#231;&#227;o social do instituto.
+- (B) &#201; nula a cl&#225;usula que contrarie disposi&#231;&#227;o de lei de ordem p&#250;blica em IN&#205;CIO DA PERSONALIDADE.
+- (C) Os efeitos do neg&#243;cio podem ser anulados se comprovado v&#237;cio de consentimento no prazo decadencial legal.
+- (D) O enriquecimento sem causa &#233; tolerado no direito civil caso o prejudicado seja pessoa jur&#237;dica.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Incorreta: (D)**. 
+*Fundamenta&#231;&#227;o*: O art. 884 do C&#243;digo Civil repudia expressamente o enriquecimento sem causa contra qualquer sujeito de direito (pessoa natural ou jur&#237;dica).</t></is></c><c r="R4" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 3] - Conclus&#227;o e Senten&#231;a Judicial
+
+A senten&#231;a judicial foi proferida pelo magistrado titular da Vara C&#237;vel:
+
+Beatriz aju&#237;za a&#231;&#227;o com base no art. 20 do CC e na S&#250;mula 403 do STJ: a empresa &#233; condenada a indeniz&#225;-la por danos morais autom&#225;ticos e a retirar toda a campanha de circula&#231;&#227;o.
+
+A pacifica&#231;&#227;o do conflito demonstrou que as regras de **IN&#205;CIO DA PERSONALIDADE** atuam para resguardar a ordem econ&#244;mica e proteger os cidad&#227;os que pautam suas condutas na boa-f&#233; objetiva!</t></is></c><c r="S4" t="inlineStr"><is><t># [MINIGAME INTERATIVO / LIGUE OS TERMOS] - Desafio R&#225;pido
+
+Ligue cada elemento da **Coluna A** &#224; sua defini&#231;&#227;o correspondente na **Coluna B**:
+
+---
+
+### &#129513; COLUNA A:
+1. Intransmissibilidade
+2. Direito ao Esquecimento
+3. Dano Moral In Re Ipsa
+4. Boa-f&#233; Objetiva
+
+---
+
+### &#127919; COLUNA B:
+- ( ) Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos.
+- ( ) Padr&#227;o de conduta leal, honesto e &#233;tico obrigat&#243;rio nas rela&#231;&#245;es civis.
+- ( ) Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.
+- ( ) Dano moral presumido pela pr&#243;pria ocorr&#234;ncia do fato ofensivo, que independe de prova da dor ps&#237;quica.
+
+---
+
+### &#128273; Resposta do Minigame:
+- **Ordem Correta**: `[ 2 ]` $\rightarrow$ `[ 4 ]` $\rightarrow$ `[ 1 ]` $\rightarrow$ `[ 3 ]`</t></is></c><c r="T4" t="inlineStr"><is><t># [JURISPRUD&#202;NCIA / TRIBUNAIS SUPERIORES] - Precedentes Vinculantes
+
+Principais diretrizes pac&#237;ficas dos Tribunais Superiores (STJ/STF) sobre **IN&#205;CIO DA PERSONALIDADE**:
+
+1. **STJ - S&#250;mula 403: 'Independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada de imagem de pessoa com fins econ&#244;micos ou comerciais'.**;
+2. **Veda&#231;&#227;o ao Comportamento Contradit&#243;rio**: O STJ reprime com veem&#234;ncia o *venire contra factum proprium*, invalidando condutas que quebram a confian&#231;a leg&#237;tima;
+3. **Mitiga&#231;&#227;o do Preju&#237;zo (*Duty to Mitigate the Loss*)**: O credor tem o dever anexo de adotar medidas razo&#225;veis para n&#227;o agravar o pr&#243;prio dano.</t></is></c><c r="U4" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 3] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Jurisprudencial**: Qual s&#250;mula ou tese repetitiva do STJ incide com maior frequ&#234;ncia em lit&#237;gios sobre **IN&#205;CIO DA PERSONALIDADE**?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **STJ - S&#250;mula 403: 'Independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada de imagem de pessoa com fins econ&#244;micos ou comerciais'.**  
+&gt; *Import&#226;ncia*: Essa orienta&#231;&#227;o pacificada vincula os tribunais de segunda inst&#226;ncia e evita o ajuizamento de recursos protelat&#243;rios.</t></is></c><c r="V4" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 3] - N&#237;vel Magistratura / MP
+
+**Enunciado**: Em demanda judicial versando sobre **IN&#205;CIO DA PERSONALIDADE**, o r&#233;u alega aus&#234;ncia de responsabilidade em virtude de cl&#225;usula contratual gen&#233;rica de n&#227;o indenizar. &#192; luz da jurisprud&#234;ncia do STJ e do C&#243;digo Civil, o juiz deve:
+
+- (A) Acolher a defesa do r&#233;u, pois a autonomia privada das partes &#233; soberana e absoluta.
+- (B) Declarar a nulidade ou inefic&#225;cia da cl&#225;usula de n&#227;o indenizar que afronte normas cogentes de ordem p&#250;blica ou a fun&#231;&#227;o social da rela&#231;&#227;o.
+- (C) Extinguir o processo sem julgamento de m&#233;rito por falta de interesse de agir.
+- (D) Condenar o autor por litig&#226;ncia de m&#225;-f&#233;.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**. 
+*Fundamenta&#231;&#227;o*: Cl&#225;usulas de dispensa de deveres essenciais ou de exclus&#227;o unilateral de responsabilidade que violem preceitos de ordem p&#250;blica s&#227;o nulas de pleno direito (art. 166, VI e art. 421 do CC).</t></is></c><c r="W4" t="inlineStr"><is><t># [COMO CAI EM PROVAS / RAIO-X DAS BANCAS] - Armadilhas Cl&#225;ssicas
+
+Fique alerta &#224;s 3 pegadinhas mais recorrentes preparadas por FGV, Cebraspe e Vunesp:
+
+1. **A banca vai afirmar que '&#233; necess&#225;ria per&#237;cia psicol&#243;gica para comprovar que a v&#237;tima sofreu trauma com o uso da foto'. ERRADO! O dano moral pelo uso comercial indevido da imagem &#233; in re ipsa (S&#250;mula 403/STJ).**
+2. **Prazos de Prescri&#231;&#227;o vs. Decad&#234;ncia**: A banca adora chamar prazo decadencial de anula&#231;&#227;o de 'prescricional' para induzir a erro;
+3. **Solidariedade Presumida**: Lembrar sempre que a solidariedade N&#195;O se presume; resulta da lei ou do contrato (Art. 265 do CC).</t></is></c><c r="X4" t="inlineStr"><is><t># [DICA DA PROFESSORA / S&#205;NTESE EM &#193;UDIO] - P&#237;lula da Professora Evelyn
+
+&#127897;&#65039; *Ol&#225;, querido aluno do Direito Prime! Aqui &#233; a Professora Evelyn com o resumo definitivo de IN&#205;CIO DA PERSONALIDADE:*
+
+&gt; *'N&#227;o complique o que a lei fez para ser justo!  
+&gt; Em IN&#205;CIO DA PERSONALIDADE, lembre-se sempre de conferir:  
+&gt; 1. Houve respeito &#224; boa-f&#233; objetiva e &#224; fun&#231;&#227;o social?  
+&gt; 2. Quem alega o direito agiu dentro do prazo legal sem dormir no ponto?  
+&gt; 3. A s&#250;mula de reg&#234;ncia &#233;: STJ - S&#250;mula 403: 'Independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada de imagem de pessoa com fins econ&#244;micos ou comerciais'..  
+&gt; Guarde essa tr&#237;ade no cora&#231;&#227;o e voc&#234; acertar&#225; qualquer quest&#227;o de concurso e advocacia!'*</t></is></c><c r="Y4" t="inlineStr"><is><t># [&#193;RVORE DECIS&#211;RIA / FLUXOGRAMA EM SETAS] - Grafo de Decis&#227;o L&#243;gica
+
+```text
+[IN&#205;CIO DA PERSONALIDADE: AN&#193;LISE DE EFIC&#193;CIA JUR&#205;DICA]
+       |
+       +---&gt; Houve preenchimento dos Requisitos Legais B&#225;sicos?
+       |        |
+       |        +---[N&#195;O]---&gt; V&#205;CIO NA ESTRUTURA NORMATIVA
+       |        |             - Inefic&#225;cia ou Nulidade do ato
+       |        |
+       |        +---[SIM]---&gt; Houve Observ&#226;ncia da Boa-f&#233; e Prazos?
+       |                                |
+       |                                +---[SIM]---&gt; ATO H&#205;GIDO, V&#193;LIDO E EXIG&#205;VEL
+       |                                |             - Tutela jurisdicional concedida
+       |                                |             - Produ&#231;&#227;o integral dos efeitos
+       |                                |
+       |                                +---[N&#195;O]---&gt; INCID&#202;NCIA DE SAN&#199;&#195;O / PRESCRI&#199;&#195;O
+       |                                              - Perda da pretens&#227;o ou indeniza&#231;&#227;o civil
+```</t></is></c><c r="Z4" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / EFEITOS ESPECIAIS] - Reflexos Interdisciplinares
+
+A mat&#233;ria de **IN&#205;CIO DA PERSONALIDADE** produz efeitos que transcendem o direito privado comum:
+
+- **Reflexos Tribut&#225;rios**: A regularidade jur&#237;dica do ato define o fato gerador e afasta autua&#231;&#245;es fiscais indevidas;
+- **Reflexos Notariais e Registrais**: A publicidade nos cart&#243;rios de notas e de registro de im&#243;veis confere efic&#225;cia perante terceiros (*erga omnes*);
+- **Reflexos Processuais**: Assegura a legitimidade ativa e passiva nas a&#231;&#245;es de conhecimento e de execu&#231;&#227;o.</t></is></c><c r="AA4" t="inlineStr"></c><c r="AB4" t="inlineStr"></c><c r="AC4" t="inlineStr"></c><c r="AD4" t="inlineStr"></c><c r="AE4" t="inlineStr"></c><c r="AF4" t="inlineStr"></c><c r="AG4" t="inlineStr"></c><c r="AH4" t="inlineStr"></c></row><row r="5"><c r="A5" t="inlineStr"><is><t>Aula 04</t></is></c><c r="B5" t="inlineStr"><is><t>INCAPACIDADE ABSOLUTA E RELATIVA</t></is></c><c r="C5" t="inlineStr"><is><t>01. Pessoas no C&#243;digo Civil</t></is></c><c r="D5" t="n"><v>24</v></c><c r="E5" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / CONCEITO CENTRAL] - INCAPACIDADE ABSOLUTA E RELATIVA
+
+&gt; **Marco Normativo Central**: Arts. 11 a 21 do C&#243;digo Civil
+
+A disciplina jur&#237;dica de **INCAPACIDADE ABSOLUTA E RELATIVA** insere-se no ramo de **Direito das Pessoas e Personalidade**, estruturando como a lei protege as pessoas e seus bens com justi&#231;a e seguran&#231;a.
+
+### Conceito Desmembrado e Raz&#227;o de Ser:
+No direito civil contempor&#226;neo, as normas que regem INCAPACIDADE ABSOLUTA E RELATIVA abandonaram o antigo apego formalista ego&#237;sta para se submeter &#224; **dignidade da pessoa humana**, &#224; **fun&#231;&#227;o social** e &#224; **boa-f&#233; objetiva**.
+A raz&#227;o de ser do instituto &#233; assegurar equil&#237;brio e previsibilidade: ningu&#233;m pode se valer da pr&#243;pria torpeza, nem locupletar-se indevidamente &#224;s custas do preju&#237;zo alheio.
+
+&#128161; *Exemplo R&#225;pido de Aplica&#231;&#227;o*: Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.</t></is></c><c r="F5" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 1] - O Dilema Pr&#225;tico
+
+Para compreender como **INCAPACIDADE ABSOLUTA E RELATIVA** impacta a vida real dos cidad&#227;os nos f&#243;runs e cart&#243;rios, acompanhe o caso concreto:
+
+Beatriz descobre que uma marca de roupas famosa utilizou uma foto dela tirada na praia para estampar uma campanha publicit&#225;ria nacional sem qualquer contrato ou consentimento.
+
+Diante da recusa da outra parte em solucionar a controv&#233;rsia amigavelmente, surge a d&#250;vida jur&#237;dica: quais s&#227;o os limites da prote&#231;&#227;o que o C&#243;digo Civil e os tribunais conferem a essa situa&#231;&#227;o cotidiana?</t></is></c><c r="G5" t="inlineStr"><is><t># [GLOSS&#193;RIO INTERATIVO / MENU SUSPENSO] - Termos Chave Clic&#225;veis
+
+*(Clique em cada termo no menu suspenso para expandir a defini&#231;&#227;o desmembrada e o exemplo pr&#225;tico)*
+
+&#9660; **[Menu Suspenso 1: Intransmissibilidade]**
+- *O que &#233;*: Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.
+- *Exemplo R&#225;pido*: Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.
+
+&#9660; **[Menu Suspenso 2: Direito ao Esquecimento]**
+- *O que &#233;*: Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos.
+- *Exemplo R&#225;pido*: Uma emissora pode recordar caso criminal hist&#243;rico real, ressalvada indeniza&#231;&#227;o por abuso.
+
+&#9660; **[Menu Suspenso 3: Dano Moral In Re Ipsa]**
+- *O que &#233;*: Dano moral presumido pela pr&#243;pria ocorr&#234;ncia do fato ofensivo, que independe de prova da dor ps&#237;quica.
+- *Exemplo R&#225;pido*: S&#250;mula 403 do STJ: o uso indevido da imagem de algu&#233;m em propaganda comercial gera dano moral autom&#225;tico.</t></is></c><c r="H5" t="inlineStr"><is><t># [EXEMPLO PR&#193;TICO E APLICA&#199;&#195;O FORENSE] - Como Funciona nos Tribunais
+
+Na pr&#225;tica forense de **INCAPACIDADE ABSOLUTA E RELATIVA**, ju&#237;zes e advogados aplicam as seguintes solu&#231;&#245;es imediatas:
+
+1. **Seguran&#231;a das Rela&#231;&#245;es Negociais**: Assegura que o combinado seja exig&#237;vel, prevenindo calotes e fraudes patrimoniais;
+2. **Prote&#231;&#227;o &#224; Parte Vulner&#225;vel**: Impede imposi&#231;&#245;es leoninas ou cl&#225;usulas abusivas impostas por detentores de maior poder econ&#244;mico;
+3. **Equidade e Razoabilidade**: Permite a revis&#227;o judicial das obriga&#231;&#245;es quando fatos supervenientes extraordin&#225;rios quebram o equil&#237;brio original da rela&#231;&#227;o.
+
+&#128161; *Aten&#231;&#227;o Forense*: O direito n&#227;o socorre aos que dormem (*dormientibus non succurrit ius*); por isso, os prazos legais da mat&#233;ria devem ser vigiados com rigor!</t></is></c><c r="I5" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 1] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta de Fixa&#231;&#227;o**: Qual &#233; a defini&#231;&#227;o jur&#237;dica central de **Intransmissibilidade** em **INCAPACIDADE ABSOLUTA E RELATIVA** e qual sua principal repercuss&#227;o no patrim&#244;nio das partes?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.**  
+&gt; *Repercuss&#227;o Pr&#225;tica*: Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.</t></is></c><c r="J5" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 1] - Preencha as Lacunas
+
+Teste seu dom&#237;nio completando as palavras essenciais da mat&#233;ria:
+
+---
+
+### Enunciado da Atividade:
+*Os direitos da personalidade s&#227;o em regra [ LACUNA 1 ] e intransmiss&#237;veis, n&#227;o podendo o seu exerc&#237;cio sofrer limita&#231;&#227;o volunt&#225;ria permanente. Conforme a S&#250;mula 403 do STJ, independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada da [ LACUNA 2 ] de pessoa com fins econ&#244;micos.*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: [ irrenunci&#225;veis ] | [ alien&#225;veis ]
+- **Para a Lacuna 2**: [ imagem ] | [ assinatura ]
+
+---
+
+### &#127919; Gabarito Comentado:
+1. irrenunci&#225;veis (Art. 11 do CC); 2. imagem (S&#250;mula 403 do STJ).</t></is></c><c r="K5" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 1] - Padr&#227;o OAB / FGV
+
+**Enunciado**: A respeito das normas e princ&#237;pios aplic&#225;veis a **INCAPACIDADE ABSOLUTA E RELATIVA**, assinale a alternativa juridicamente correta:
+
+- (A) A legisla&#231;&#227;o civil veda a aplica&#231;&#227;o da boa-f&#233; objetiva aos contratos particulares que versem sobre INCAPACIDADE ABSOLUTA E RELATIVA.
+- (B) Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a. Portanto, Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.
+- (C) Os prazos prescricionais de INCAPACIDADE ABSOLUTA E RELATIVA admitem dila&#231;&#227;o convencional por mero acordo verbal das partes.
+- (D) O Minist&#233;rio P&#250;blico jamais possui legitimidade para intervir em causas que envolvam INCAPACIDADE ABSOLUTA E RELATIVA.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**.  
+*Fundamenta&#231;&#227;o*: Trata-se da correta aplica&#231;&#227;o dogm&#225;tica do instituto segundo o C&#243;digo Civil e a jurisprud&#234;ncia dominante.</t></is></c><c r="L5" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / DOGM&#193;TICA E REQUISITOS T&#201;CNICOS] - Requisitos Estruturais
+
+Para que qualquer ato relacionado a **INCAPACIDADE ABSOLUTA E RELATIVA** produza plenos efeitos no mundo jur&#237;dico, exige-se:
+
+1. **Legitima&#231;&#227;o Espec&#237;fica**: N&#227;o basta capacidade gen&#233;rica; a parte deve deter pertin&#234;ncia subjetiva e poderes para o ato;
+2. **Higidez Volitiva e Aus&#234;ncia de Fraude**: A manifesta&#231;&#227;o de vontade deve ser livre de erro, dolo, coa&#231;&#227;o ou simula&#231;&#227;o;
+3. **Conformidade com a Ordem P&#250;blica**: O objeto deve ser l&#237;cito e atender &#224; fun&#231;&#227;o social estipulada em lei.</t></is></c><c r="M5" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 2] - O Conflito em Ju&#237;zo
+
+A a&#231;&#227;o judicial foi formalmente distribu&#237;da na Vara C&#237;vel competente.
+
+A parte r&#233; apresentou contesta&#231;&#227;o alegando que n&#227;o houve ilicitude e invocando o estrito cumprimento de cl&#225;usulas padronizadas.
+Contudo, a defesa da v&#237;tima sustentou que o comportamento do r&#233;u violou frontalmente a boa-f&#233; objetiva e os preceitos de **INCAPACIDADE ABSOLUTA E RELATIVA**.
+
+O juiz abriu vista para manifesta&#231;&#227;o sobre provas, convocando as partes para audi&#234;ncia de instru&#231;&#227;o e julgamento!</t></is></c><c r="N5" t="inlineStr"><is><t># [FRONTEIRAS CR&#205;TICAS / O QUE N&#195;O &#201;] - Quadro Comparativo
+
+| FIGURA EM AN&#193;LISE | O QUE REALMENTE &#201; | O QUE **N&#195;O** &#201; (CUIDADO!) |
+| :--- | :--- | :--- |
+| **Intransmissibilidade** | Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a. | N&#227;o pode ser flexibilizado por conveni&#234;ncia particular. |
+| **Direito ao Esquecimento** | Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos. | N&#227;o se confunde com arb&#237;trio individual ou impunidade. |
+| **Dano Moral In Re Ipsa** | Dano moral presumido pela pr&#243;pria ocorr&#234;ncia do fato ofensivo, que independe de prova da dor ps&#237;quica. | N&#227;o depende de comprova&#231;&#227;o de dor &#237;ntima se a lei presumir. |</t></is></c><c r="O5" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 2] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Crucial**: Qual &#233; a distin&#231;&#227;o primordial entre **Intransmissibilidade** e **Direito ao Esquecimento** no direito civil?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; Enquanto **Intransmissibilidade** (Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.), o instituto de **Direito ao Esquecimento** (Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos.).  
+&gt; Conhecer essa fronteira &#233; decisivo para n&#227;o errar a fundamenta&#231;&#227;o da peti&#231;&#227;o inicial nem as quest&#245;es da OAB!</t></is></c><c r="P5" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 2] - Regras Especiais
+
+Complete a assertiva jurisprudencial consolidada pelos tribunais superiores:
+
+---
+
+### Enunciado:
+*'No &#226;mbito de INCAPACIDADE ABSOLUTA E RELATIVA, a boa-f&#233; objetiva imp&#245;e deveres anexos de [ LACUNA 1 ] e colabora&#231;&#227;o m&#250;tua. A quebra desses deveres caracteriza inadimplemento positivo ou viola&#231;&#227;o contratual sujeita a [ LACUNA 2 ].'*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: `[ lealdade / informa&#231;&#227;o ]` | `[ oculta&#231;&#227;o ]`
+- **Para a Lacuna 2**: `[ repara&#231;&#227;o por perdas e danos ]` | `[ perd&#227;o judicial ]`
+
+---
+
+### &#127919; Gabarito Comentado:
+1. lealdade / informa&#231;&#227;o (Enunciados da Jornada de Direito Civil do CJF);
+2. repara&#231;&#227;o por perdas e danos (Arts. 187 e 927 do CC).</t></is></c><c r="Q5" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 2] - N&#237;vel Concurso P&#250;blico
+
+**Enunciado**: Em mat&#233;ria de **INCAPACIDADE ABSOLUTA E RELATIVA**, assinale a afirmativa INCORRETA:
+
+- (A) A responsabilidade civil e a validade negocial subordinam-se &#224; fun&#231;&#227;o social do instituto.
+- (B) &#201; nula a cl&#225;usula que contrarie disposi&#231;&#227;o de lei de ordem p&#250;blica em INCAPACIDADE ABSOLUTA E RELATIVA.
+- (C) Os efeitos do neg&#243;cio podem ser anulados se comprovado v&#237;cio de consentimento no prazo decadencial legal.
+- (D) O enriquecimento sem causa &#233; tolerado no direito civil caso o prejudicado seja pessoa jur&#237;dica.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Incorreta: (D)**. 
+*Fundamenta&#231;&#227;o*: O art. 884 do C&#243;digo Civil repudia expressamente o enriquecimento sem causa contra qualquer sujeito de direito (pessoa natural ou jur&#237;dica).</t></is></c><c r="R5" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 3] - Conclus&#227;o e Senten&#231;a Judicial
+
+A senten&#231;a judicial foi proferida pelo magistrado titular da Vara C&#237;vel:
+
+Beatriz aju&#237;za a&#231;&#227;o com base no art. 20 do CC e na S&#250;mula 403 do STJ: a empresa &#233; condenada a indeniz&#225;-la por danos morais autom&#225;ticos e a retirar toda a campanha de circula&#231;&#227;o.
+
+A pacifica&#231;&#227;o do conflito demonstrou que as regras de **INCAPACIDADE ABSOLUTA E RELATIVA** atuam para resguardar a ordem econ&#244;mica e proteger os cidad&#227;os que pautam suas condutas na boa-f&#233; objetiva!</t></is></c><c r="S5" t="inlineStr"><is><t># [MINIGAME INTERATIVO / LIGUE OS TERMOS] - Desafio R&#225;pido
+
+Ligue cada elemento da **Coluna A** &#224; sua defini&#231;&#227;o correspondente na **Coluna B**:
+
+---
+
+### &#129513; COLUNA A:
+1. Intransmissibilidade
+2. Direito ao Esquecimento
+3. Dano Moral In Re Ipsa
+4. Boa-f&#233; Objetiva
+
+---
+
+### &#127919; COLUNA B:
+- ( ) Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos.
+- ( ) Padr&#227;o de conduta leal, honesto e &#233;tico obrigat&#243;rio nas rela&#231;&#245;es civis.
+- ( ) Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.
+- ( ) Dano moral presumido pela pr&#243;pria ocorr&#234;ncia do fato ofensivo, que independe de prova da dor ps&#237;quica.
+
+---
+
+### &#128273; Resposta do Minigame:
+- **Ordem Correta**: `[ 2 ]` $\rightarrow$ `[ 4 ]` $\rightarrow$ `[ 1 ]` $\rightarrow$ `[ 3 ]`</t></is></c><c r="T5" t="inlineStr"><is><t># [JURISPRUD&#202;NCIA / TRIBUNAIS SUPERIORES] - Precedentes Vinculantes
+
+Principais diretrizes pac&#237;ficas dos Tribunais Superiores (STJ/STF) sobre **INCAPACIDADE ABSOLUTA E RELATIVA**:
+
+1. **STJ - S&#250;mula 403: 'Independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada de imagem de pessoa com fins econ&#244;micos ou comerciais'.**;
+2. **Veda&#231;&#227;o ao Comportamento Contradit&#243;rio**: O STJ reprime com veem&#234;ncia o *venire contra factum proprium*, invalidando condutas que quebram a confian&#231;a leg&#237;tima;
+3. **Mitiga&#231;&#227;o do Preju&#237;zo (*Duty to Mitigate the Loss*)**: O credor tem o dever anexo de adotar medidas razo&#225;veis para n&#227;o agravar o pr&#243;prio dano.</t></is></c><c r="U5" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 3] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Jurisprudencial**: Qual s&#250;mula ou tese repetitiva do STJ incide com maior frequ&#234;ncia em lit&#237;gios sobre **INCAPACIDADE ABSOLUTA E RELATIVA**?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **STJ - S&#250;mula 403: 'Independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada de imagem de pessoa com fins econ&#244;micos ou comerciais'.**  
+&gt; *Import&#226;ncia*: Essa orienta&#231;&#227;o pacificada vincula os tribunais de segunda inst&#226;ncia e evita o ajuizamento de recursos protelat&#243;rios.</t></is></c><c r="V5" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 3] - N&#237;vel Magistratura / MP
+
+**Enunciado**: Em demanda judicial versando sobre **INCAPACIDADE ABSOLUTA E RELATIVA**, o r&#233;u alega aus&#234;ncia de responsabilidade em virtude de cl&#225;usula contratual gen&#233;rica de n&#227;o indenizar. &#192; luz da jurisprud&#234;ncia do STJ e do C&#243;digo Civil, o juiz deve:
+
+- (A) Acolher a defesa do r&#233;u, pois a autonomia privada das partes &#233; soberana e absoluta.
+- (B) Declarar a nulidade ou inefic&#225;cia da cl&#225;usula de n&#227;o indenizar que afronte normas cogentes de ordem p&#250;blica ou a fun&#231;&#227;o social da rela&#231;&#227;o.
+- (C) Extinguir o processo sem julgamento de m&#233;rito por falta de interesse de agir.
+- (D) Condenar o autor por litig&#226;ncia de m&#225;-f&#233;.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**. 
+*Fundamenta&#231;&#227;o*: Cl&#225;usulas de dispensa de deveres essenciais ou de exclus&#227;o unilateral de responsabilidade que violem preceitos de ordem p&#250;blica s&#227;o nulas de pleno direito (art. 166, VI e art. 421 do CC).</t></is></c><c r="W5" t="inlineStr"><is><t># [COMO CAI EM PROVAS / RAIO-X DAS BANCAS] - Armadilhas Cl&#225;ssicas
+
+Fique alerta &#224;s 3 pegadinhas mais recorrentes preparadas por FGV, Cebraspe e Vunesp:
+
+1. **A banca vai afirmar que '&#233; necess&#225;ria per&#237;cia psicol&#243;gica para comprovar que a v&#237;tima sofreu trauma com o uso da foto'. ERRADO! O dano moral pelo uso comercial indevido da imagem &#233; in re ipsa (S&#250;mula 403/STJ).**
+2. **Prazos de Prescri&#231;&#227;o vs. Decad&#234;ncia**: A banca adora chamar prazo decadencial de anula&#231;&#227;o de 'prescricional' para induzir a erro;
+3. **Solidariedade Presumida**: Lembrar sempre que a solidariedade N&#195;O se presume; resulta da lei ou do contrato (Art. 265 do CC).</t></is></c><c r="X5" t="inlineStr"><is><t># [DICA DA PROFESSORA / S&#205;NTESE EM &#193;UDIO] - P&#237;lula da Professora Evelyn
+
+&#127897;&#65039; *Ol&#225;, querido aluno do Direito Prime! Aqui &#233; a Professora Evelyn com o resumo definitivo de INCAPACIDADE ABSOLUTA E RELATIVA:*
+
+&gt; *'N&#227;o complique o que a lei fez para ser justo!  
+&gt; Em INCAPACIDADE ABSOLUTA E RELATIVA, lembre-se sempre de conferir:  
+&gt; 1. Houve respeito &#224; boa-f&#233; objetiva e &#224; fun&#231;&#227;o social?  
+&gt; 2. Quem alega o direito agiu dentro do prazo legal sem dormir no ponto?  
+&gt; 3. A s&#250;mula de reg&#234;ncia &#233;: STJ - S&#250;mula 403: 'Independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada de imagem de pessoa com fins econ&#244;micos ou comerciais'..  
+&gt; Guarde essa tr&#237;ade no cora&#231;&#227;o e voc&#234; acertar&#225; qualquer quest&#227;o de concurso e advocacia!'*</t></is></c><c r="Y5" t="inlineStr"><is><t># [&#193;RVORE DECIS&#211;RIA / FLUXOGRAMA EM SETAS] - Grafo de Decis&#227;o L&#243;gica
+
+```text
+[INCAPACIDADE ABSOLUTA E RELATIVA: AN&#193;LISE DE EFIC&#193;CIA JUR&#205;DICA]
+       |
+       +---&gt; Houve preenchimento dos Requisitos Legais B&#225;sicos?
+       |        |
+       |        +---[N&#195;O]---&gt; V&#205;CIO NA ESTRUTURA NORMATIVA
+       |        |             - Inefic&#225;cia ou Nulidade do ato
+       |        |
+       |        +---[SIM]---&gt; Houve Observ&#226;ncia da Boa-f&#233; e Prazos?
+       |                                |
+       |                                +---[SIM]---&gt; ATO H&#205;GIDO, V&#193;LIDO E EXIG&#205;VEL
+       |                                |             - Tutela jurisdicional concedida
+       |                                |             - Produ&#231;&#227;o integral dos efeitos
+       |                                |
+       |                                +---[N&#195;O]---&gt; INCID&#202;NCIA DE SAN&#199;&#195;O / PRESCRI&#199;&#195;O
+       |                                              - Perda da pretens&#227;o ou indeniza&#231;&#227;o civil
+```</t></is></c><c r="Z5" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / EFEITOS ESPECIAIS] - Reflexos Interdisciplinares
+
+A mat&#233;ria de **INCAPACIDADE ABSOLUTA E RELATIVA** produz efeitos que transcendem o direito privado comum:
+
+- **Reflexos Tribut&#225;rios**: A regularidade jur&#237;dica do ato define o fato gerador e afasta autua&#231;&#245;es fiscais indevidas;
+- **Reflexos Notariais e Registrais**: A publicidade nos cart&#243;rios de notas e de registro de im&#243;veis confere efic&#225;cia perante terceiros (*erga omnes*);
+- **Reflexos Processuais**: Assegura a legitimidade ativa e passiva nas a&#231;&#245;es de conhecimento e de execu&#231;&#227;o.</t></is></c><c r="AA5" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 4] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pegadinha da Magistratura**: O descumprimento dos deveres anexos de conduta da boa-f&#233; objetiva em **INCAPACIDADE ABSOLUTA E RELATIVA** exige prova de dolo ou culpa do devedor?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **N&#195;O EXIGE PROVA DE DOLO OU CULPA!**  
+&gt; A viola&#231;&#227;o positiva do contrato por quebra da boa-f&#233; objetiva opera responsabilidade de natureza **objetiva**, bastando a comprova&#231;&#227;o objetiva da conduta desleal ou omissiva.</t></is></c><c r="AB5" t="inlineStr"><is><t># [QUEST&#195;O DISCURSIVA / PR&#193;TICA PROFISSIONAL] - Parecer Forense
+
+**Situa&#231;&#227;o Pr&#225;tica**: Um cliente procura seu escrit&#243;rio de advocacia relatando les&#227;o patrimonial grave decorrente de lit&#237;gio em **INCAPACIDADE ABSOLUTA E RELATIVA**.
+
+**Pergunta**: Como advogado(a), qual &#233; a primeira provid&#234;ncia cautelar e de m&#233;rito a ser proposta em ju&#237;zo?
+
+---
+
+### &#9878;&#65039; Padr&#227;o de Resposta T&#233;cnico:
+&gt; 1. **Tutela Provis&#243;ria de Urg&#234;ncia** (art. 300 do CPC) para suspender atos expropriat&#243;rios ou cobran&#231;as indevidas;  
+&gt; 2. **Pedido Principal** de declara&#231;&#227;o de cumprimento do preceito de INCAPACIDADE ABSOLUTA E RELATIVA, com base em Arts. 11 a 21 do C&#243;digo Civil e perdas e danos.</t></is></c><c r="AC5" t="inlineStr"></c><c r="AD5" t="inlineStr"></c><c r="AE5" t="inlineStr"></c><c r="AF5" t="inlineStr"></c><c r="AG5" t="inlineStr"></c><c r="AH5" t="inlineStr"></c></row><row r="6"><c r="A6" t="inlineStr"><is><t>Aula 05</t></is></c><c r="B6" t="inlineStr"><is><t>INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA</t></is></c><c r="C6" t="inlineStr"><is><t>01. Pessoas no C&#243;digo Civil</t></is></c><c r="D6" t="n"><v>22</v></c><c r="E6" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / CONCEITO CENTRAL] - INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA
+
+&gt; **Marco Normativo Central**: Arts. 11 a 21 do C&#243;digo Civil
+
+A disciplina jur&#237;dica de **INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA** insere-se no ramo de **Direito das Pessoas e Personalidade**, estruturando como a lei protege as pessoas e seus bens com justi&#231;a e seguran&#231;a.
+
+### Conceito Desmembrado e Raz&#227;o de Ser:
+No direito civil contempor&#226;neo, as normas que regem INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA abandonaram o antigo apego formalista ego&#237;sta para se submeter &#224; **dignidade da pessoa humana**, &#224; **fun&#231;&#227;o social** e &#224; **boa-f&#233; objetiva**.
+A raz&#227;o de ser do instituto &#233; assegurar equil&#237;brio e previsibilidade: ningu&#233;m pode se valer da pr&#243;pria torpeza, nem locupletar-se indevidamente &#224;s custas do preju&#237;zo alheio.
+
+&#128161; *Exemplo R&#225;pido de Aplica&#231;&#227;o*: Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.</t></is></c><c r="F6" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 1] - O Dilema Pr&#225;tico
+
+Para compreender como **INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA** impacta a vida real dos cidad&#227;os nos f&#243;runs e cart&#243;rios, acompanhe o caso concreto:
+
+Beatriz descobre que uma marca de roupas famosa utilizou uma foto dela tirada na praia para estampar uma campanha publicit&#225;ria nacional sem qualquer contrato ou consentimento.
+
+Diante da recusa da outra parte em solucionar a controv&#233;rsia amigavelmente, surge a d&#250;vida jur&#237;dica: quais s&#227;o os limites da prote&#231;&#227;o que o C&#243;digo Civil e os tribunais conferem a essa situa&#231;&#227;o cotidiana?</t></is></c><c r="G6" t="inlineStr"><is><t># [GLOSS&#193;RIO INTERATIVO / MENU SUSPENSO] - Termos Chave Clic&#225;veis
+
+*(Clique em cada termo no menu suspenso para expandir a defini&#231;&#227;o desmembrada e o exemplo pr&#225;tico)*
+
+&#9660; **[Menu Suspenso 1: Intransmissibilidade]**
+- *O que &#233;*: Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.
+- *Exemplo R&#225;pido*: Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.
+
+&#9660; **[Menu Suspenso 2: Direito ao Esquecimento]**
+- *O que &#233;*: Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos.
+- *Exemplo R&#225;pido*: Uma emissora pode recordar caso criminal hist&#243;rico real, ressalvada indeniza&#231;&#227;o por abuso.
+
+&#9660; **[Menu Suspenso 3: Dano Moral In Re Ipsa]**
+- *O que &#233;*: Dano moral presumido pela pr&#243;pria ocorr&#234;ncia do fato ofensivo, que independe de prova da dor ps&#237;quica.
+- *Exemplo R&#225;pido*: S&#250;mula 403 do STJ: o uso indevido da imagem de algu&#233;m em propaganda comercial gera dano moral autom&#225;tico.</t></is></c><c r="H6" t="inlineStr"><is><t># [EXEMPLO PR&#193;TICO E APLICA&#199;&#195;O FORENSE] - Como Funciona nos Tribunais
+
+Na pr&#225;tica forense de **INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA**, ju&#237;zes e advogados aplicam as seguintes solu&#231;&#245;es imediatas:
+
+1. **Seguran&#231;a das Rela&#231;&#245;es Negociais**: Assegura que o combinado seja exig&#237;vel, prevenindo calotes e fraudes patrimoniais;
+2. **Prote&#231;&#227;o &#224; Parte Vulner&#225;vel**: Impede imposi&#231;&#245;es leoninas ou cl&#225;usulas abusivas impostas por detentores de maior poder econ&#244;mico;
+3. **Equidade e Razoabilidade**: Permite a revis&#227;o judicial das obriga&#231;&#245;es quando fatos supervenientes extraordin&#225;rios quebram o equil&#237;brio original da rela&#231;&#227;o.
+
+&#128161; *Aten&#231;&#227;o Forense*: O direito n&#227;o socorre aos que dormem (*dormientibus non succurrit ius*); por isso, os prazos legais da mat&#233;ria devem ser vigiados com rigor!</t></is></c><c r="I6" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 1] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta de Fixa&#231;&#227;o**: Qual &#233; a defini&#231;&#227;o jur&#237;dica central de **Intransmissibilidade** em **INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA** e qual sua principal repercuss&#227;o no patrim&#244;nio das partes?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.**  
+&gt; *Repercuss&#227;o Pr&#225;tica*: Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.</t></is></c><c r="J6" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 1] - Preencha as Lacunas
+
+Teste seu dom&#237;nio completando as palavras essenciais da mat&#233;ria:
+
+---
+
+### Enunciado da Atividade:
+*Os direitos da personalidade s&#227;o em regra [ LACUNA 1 ] e intransmiss&#237;veis, n&#227;o podendo o seu exerc&#237;cio sofrer limita&#231;&#227;o volunt&#225;ria permanente. Conforme a S&#250;mula 403 do STJ, independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada da [ LACUNA 2 ] de pessoa com fins econ&#244;micos.*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: [ irrenunci&#225;veis ] | [ alien&#225;veis ]
+- **Para a Lacuna 2**: [ imagem ] | [ assinatura ]
+
+---
+
+### &#127919; Gabarito Comentado:
+1. irrenunci&#225;veis (Art. 11 do CC); 2. imagem (S&#250;mula 403 do STJ).</t></is></c><c r="K6" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 1] - Padr&#227;o OAB / FGV
+
+**Enunciado**: A respeito das normas e princ&#237;pios aplic&#225;veis a **INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA**, assinale a alternativa juridicamente correta:
+
+- (A) A legisla&#231;&#227;o civil veda a aplica&#231;&#227;o da boa-f&#233; objetiva aos contratos particulares que versem sobre INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA.
+- (B) Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a. Portanto, Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.
+- (C) Os prazos prescricionais de INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA admitem dila&#231;&#227;o convencional por mero acordo verbal das partes.
+- (D) O Minist&#233;rio P&#250;blico jamais possui legitimidade para intervir em causas que envolvam INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**.  
+*Fundamenta&#231;&#227;o*: Trata-se da correta aplica&#231;&#227;o dogm&#225;tica do instituto segundo o C&#243;digo Civil e a jurisprud&#234;ncia dominante.</t></is></c><c r="L6" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / DOGM&#193;TICA E REQUISITOS T&#201;CNICOS] - Requisitos Estruturais
+
+Para que qualquer ato relacionado a **INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA** produza plenos efeitos no mundo jur&#237;dico, exige-se:
+
+1. **Legitima&#231;&#227;o Espec&#237;fica**: N&#227;o basta capacidade gen&#233;rica; a parte deve deter pertin&#234;ncia subjetiva e poderes para o ato;
+2. **Higidez Volitiva e Aus&#234;ncia de Fraude**: A manifesta&#231;&#227;o de vontade deve ser livre de erro, dolo, coa&#231;&#227;o ou simula&#231;&#227;o;
+3. **Conformidade com a Ordem P&#250;blica**: O objeto deve ser l&#237;cito e atender &#224; fun&#231;&#227;o social estipulada em lei.</t></is></c><c r="M6" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 2] - O Conflito em Ju&#237;zo
+
+A a&#231;&#227;o judicial foi formalmente distribu&#237;da na Vara C&#237;vel competente.
+
+A parte r&#233; apresentou contesta&#231;&#227;o alegando que n&#227;o houve ilicitude e invocando o estrito cumprimento de cl&#225;usulas padronizadas.
+Contudo, a defesa da v&#237;tima sustentou que o comportamento do r&#233;u violou frontalmente a boa-f&#233; objetiva e os preceitos de **INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA**.
+
+O juiz abriu vista para manifesta&#231;&#227;o sobre provas, convocando as partes para audi&#234;ncia de instru&#231;&#227;o e julgamento!</t></is></c><c r="N6" t="inlineStr"><is><t># [FRONTEIRAS CR&#205;TICAS / O QUE N&#195;O &#201;] - Quadro Comparativo
+
+| FIGURA EM AN&#193;LISE | O QUE REALMENTE &#201; | O QUE **N&#195;O** &#201; (CUIDADO!) |
+| :--- | :--- | :--- |
+| **Intransmissibilidade** | Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a. | N&#227;o pode ser flexibilizado por conveni&#234;ncia particular. |
+| **Direito ao Esquecimento** | Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos. | N&#227;o se confunde com arb&#237;trio individual ou impunidade. |
+| **Dano Moral In Re Ipsa** | Dano moral presumido pela pr&#243;pria ocorr&#234;ncia do fato ofensivo, que independe de prova da dor ps&#237;quica. | N&#227;o depende de comprova&#231;&#227;o de dor &#237;ntima se a lei presumir. |</t></is></c><c r="O6" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 2] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Crucial**: Qual &#233; a distin&#231;&#227;o primordial entre **Intransmissibilidade** e **Direito ao Esquecimento** no direito civil?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; Enquanto **Intransmissibilidade** (Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.), o instituto de **Direito ao Esquecimento** (Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos.).  
+&gt; Conhecer essa fronteira &#233; decisivo para n&#227;o errar a fundamenta&#231;&#227;o da peti&#231;&#227;o inicial nem as quest&#245;es da OAB!</t></is></c><c r="P6" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 2] - Regras Especiais
+
+Complete a assertiva jurisprudencial consolidada pelos tribunais superiores:
+
+---
+
+### Enunciado:
+*'No &#226;mbito de INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA, a boa-f&#233; objetiva imp&#245;e deveres anexos de [ LACUNA 1 ] e colabora&#231;&#227;o m&#250;tua. A quebra desses deveres caracteriza inadimplemento positivo ou viola&#231;&#227;o contratual sujeita a [ LACUNA 2 ].'*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: `[ lealdade / informa&#231;&#227;o ]` | `[ oculta&#231;&#227;o ]`
+- **Para a Lacuna 2**: `[ repara&#231;&#227;o por perdas e danos ]` | `[ perd&#227;o judicial ]`
+
+---
+
+### &#127919; Gabarito Comentado:
+1. lealdade / informa&#231;&#227;o (Enunciados da Jornada de Direito Civil do CJF);
+2. repara&#231;&#227;o por perdas e danos (Arts. 187 e 927 do CC).</t></is></c><c r="Q6" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 2] - N&#237;vel Concurso P&#250;blico
+
+**Enunciado**: Em mat&#233;ria de **INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA**, assinale a afirmativa INCORRETA:
+
+- (A) A responsabilidade civil e a validade negocial subordinam-se &#224; fun&#231;&#227;o social do instituto.
+- (B) &#201; nula a cl&#225;usula que contrarie disposi&#231;&#227;o de lei de ordem p&#250;blica em INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA.
+- (C) Os efeitos do neg&#243;cio podem ser anulados se comprovado v&#237;cio de consentimento no prazo decadencial legal.
+- (D) O enriquecimento sem causa &#233; tolerado no direito civil caso o prejudicado seja pessoa jur&#237;dica.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Incorreta: (D)**. 
+*Fundamenta&#231;&#227;o*: O art. 884 do C&#243;digo Civil repudia expressamente o enriquecimento sem causa contra qualquer sujeito de direito (pessoa natural ou jur&#237;dica).</t></is></c><c r="R6" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 3] - Conclus&#227;o e Senten&#231;a Judicial
+
+A senten&#231;a judicial foi proferida pelo magistrado titular da Vara C&#237;vel:
+
+Beatriz aju&#237;za a&#231;&#227;o com base no art. 20 do CC e na S&#250;mula 403 do STJ: a empresa &#233; condenada a indeniz&#225;-la por danos morais autom&#225;ticos e a retirar toda a campanha de circula&#231;&#227;o.
+
+A pacifica&#231;&#227;o do conflito demonstrou que as regras de **INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA** atuam para resguardar a ordem econ&#244;mica e proteger os cidad&#227;os que pautam suas condutas na boa-f&#233; objetiva!</t></is></c><c r="S6" t="inlineStr"><is><t># [MINIGAME INTERATIVO / LIGUE OS TERMOS] - Desafio R&#225;pido
+
+Ligue cada elemento da **Coluna A** &#224; sua defini&#231;&#227;o correspondente na **Coluna B**:
+
+---
+
+### &#129513; COLUNA A:
+1. Intransmissibilidade
+2. Direito ao Esquecimento
+3. Dano Moral In Re Ipsa
+4. Boa-f&#233; Objetiva
+
+---
+
+### &#127919; COLUNA B:
+- ( ) Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos.
+- ( ) Padr&#227;o de conduta leal, honesto e &#233;tico obrigat&#243;rio nas rela&#231;&#245;es civis.
+- ( ) Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.
+- ( ) Dano moral presumido pela pr&#243;pria ocorr&#234;ncia do fato ofensivo, que independe de prova da dor ps&#237;quica.
+
+---
+
+### &#128273; Resposta do Minigame:
+- **Ordem Correta**: `[ 2 ]` $\rightarrow$ `[ 4 ]` $\rightarrow$ `[ 1 ]` $\rightarrow$ `[ 3 ]`</t></is></c><c r="T6" t="inlineStr"><is><t># [JURISPRUD&#202;NCIA / TRIBUNAIS SUPERIORES] - Precedentes Vinculantes
+
+Principais diretrizes pac&#237;ficas dos Tribunais Superiores (STJ/STF) sobre **INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA**:
+
+1. **STJ - S&#250;mula 403: 'Independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada de imagem de pessoa com fins econ&#244;micos ou comerciais'.**;
+2. **Veda&#231;&#227;o ao Comportamento Contradit&#243;rio**: O STJ reprime com veem&#234;ncia o *venire contra factum proprium*, invalidando condutas que quebram a confian&#231;a leg&#237;tima;
+3. **Mitiga&#231;&#227;o do Preju&#237;zo (*Duty to Mitigate the Loss*)**: O credor tem o dever anexo de adotar medidas razo&#225;veis para n&#227;o agravar o pr&#243;prio dano.</t></is></c><c r="U6" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 3] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Jurisprudencial**: Qual s&#250;mula ou tese repetitiva do STJ incide com maior frequ&#234;ncia em lit&#237;gios sobre **INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA**?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **STJ - S&#250;mula 403: 'Independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada de imagem de pessoa com fins econ&#244;micos ou comerciais'.**  
+&gt; *Import&#226;ncia*: Essa orienta&#231;&#227;o pacificada vincula os tribunais de segunda inst&#226;ncia e evita o ajuizamento de recursos protelat&#243;rios.</t></is></c><c r="V6" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 3] - N&#237;vel Magistratura / MP
+
+**Enunciado**: Em demanda judicial versando sobre **INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA**, o r&#233;u alega aus&#234;ncia de responsabilidade em virtude de cl&#225;usula contratual gen&#233;rica de n&#227;o indenizar. &#192; luz da jurisprud&#234;ncia do STJ e do C&#243;digo Civil, o juiz deve:
+
+- (A) Acolher a defesa do r&#233;u, pois a autonomia privada das partes &#233; soberana e absoluta.
+- (B) Declarar a nulidade ou inefic&#225;cia da cl&#225;usula de n&#227;o indenizar que afronte normas cogentes de ordem p&#250;blica ou a fun&#231;&#227;o social da rela&#231;&#227;o.
+- (C) Extinguir o processo sem julgamento de m&#233;rito por falta de interesse de agir.
+- (D) Condenar o autor por litig&#226;ncia de m&#225;-f&#233;.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**. 
+*Fundamenta&#231;&#227;o*: Cl&#225;usulas de dispensa de deveres essenciais ou de exclus&#227;o unilateral de responsabilidade que violem preceitos de ordem p&#250;blica s&#227;o nulas de pleno direito (art. 166, VI e art. 421 do CC).</t></is></c><c r="W6" t="inlineStr"><is><t># [COMO CAI EM PROVAS / RAIO-X DAS BANCAS] - Armadilhas Cl&#225;ssicas
+
+Fique alerta &#224;s 3 pegadinhas mais recorrentes preparadas por FGV, Cebraspe e Vunesp:
+
+1. **A banca vai afirmar que '&#233; necess&#225;ria per&#237;cia psicol&#243;gica para comprovar que a v&#237;tima sofreu trauma com o uso da foto'. ERRADO! O dano moral pelo uso comercial indevido da imagem &#233; in re ipsa (S&#250;mula 403/STJ).**
+2. **Prazos de Prescri&#231;&#227;o vs. Decad&#234;ncia**: A banca adora chamar prazo decadencial de anula&#231;&#227;o de 'prescricional' para induzir a erro;
+3. **Solidariedade Presumida**: Lembrar sempre que a solidariedade N&#195;O se presume; resulta da lei ou do contrato (Art. 265 do CC).</t></is></c><c r="X6" t="inlineStr"><is><t># [DICA DA PROFESSORA / S&#205;NTESE EM &#193;UDIO] - P&#237;lula da Professora Evelyn
+
+&#127897;&#65039; *Ol&#225;, querido aluno do Direito Prime! Aqui &#233; a Professora Evelyn com o resumo definitivo de INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA:*
+
+&gt; *'N&#227;o complique o que a lei fez para ser justo!  
+&gt; Em INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA, lembre-se sempre de conferir:  
+&gt; 1. Houve respeito &#224; boa-f&#233; objetiva e &#224; fun&#231;&#227;o social?  
+&gt; 2. Quem alega o direito agiu dentro do prazo legal sem dormir no ponto?  
+&gt; 3. A s&#250;mula de reg&#234;ncia &#233;: STJ - S&#250;mula 403: 'Independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada de imagem de pessoa com fins econ&#244;micos ou comerciais'..  
+&gt; Guarde essa tr&#237;ade no cora&#231;&#227;o e voc&#234; acertar&#225; qualquer quest&#227;o de concurso e advocacia!'*</t></is></c><c r="Y6" t="inlineStr"><is><t># [&#193;RVORE DECIS&#211;RIA / FLUXOGRAMA EM SETAS] - Grafo de Decis&#227;o L&#243;gica
+
+```text
+[INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA: AN&#193;LISE DE EFIC&#193;CIA JUR&#205;DICA]
+       |
+       +---&gt; Houve preenchimento dos Requisitos Legais B&#225;sicos?
+       |        |
+       |        +---[N&#195;O]---&gt; V&#205;CIO NA ESTRUTURA NORMATIVA
+       |        |             - Inefic&#225;cia ou Nulidade do ato
+       |        |
+       |        +---[SIM]---&gt; Houve Observ&#226;ncia da Boa-f&#233; e Prazos?
+       |                                |
+       |                                +---[SIM]---&gt; ATO H&#205;GIDO, V&#193;LIDO E EXIG&#205;VEL
+       |                                |             - Tutela jurisdicional concedida
+       |                                |             - Produ&#231;&#227;o integral dos efeitos
+       |                                |
+       |                                +---[N&#195;O]---&gt; INCID&#202;NCIA DE SAN&#199;&#195;O / PRESCRI&#199;&#195;O
+       |                                              - Perda da pretens&#227;o ou indeniza&#231;&#227;o civil
+```</t></is></c><c r="Z6" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / EFEITOS ESPECIAIS] - Reflexos Interdisciplinares
+
+A mat&#233;ria de **INCAPACIDADE: IND&#205;GENAS, REPRESENTA&#199;&#195;O E ASSIST&#202;NCIA** produz efeitos que transcendem o direito privado comum:
+
+- **Reflexos Tribut&#225;rios**: A regularidade jur&#237;dica do ato define o fato gerador e afasta autua&#231;&#245;es fiscais indevidas;
+- **Reflexos Notariais e Registrais**: A publicidade nos cart&#243;rios de notas e de registro de im&#243;veis confere efic&#225;cia perante terceiros (*erga omnes*);
+- **Reflexos Processuais**: Assegura a legitimidade ativa e passiva nas a&#231;&#245;es de conhecimento e de execu&#231;&#227;o.</t></is></c><c r="AA6" t="inlineStr"></c><c r="AB6" t="inlineStr"></c><c r="AC6" t="inlineStr"></c><c r="AD6" t="inlineStr"></c><c r="AE6" t="inlineStr"></c><c r="AF6" t="inlineStr"></c><c r="AG6" t="inlineStr"></c><c r="AH6" t="inlineStr"></c></row><row r="7"><c r="A7" t="inlineStr"><is><t>Aula 06</t></is></c><c r="B7" t="inlineStr"><is><t>CESSA&#199;&#195;O DA INCAPACIDADE</t></is></c><c r="C7" t="inlineStr"><is><t>01. Pessoas no C&#243;digo Civil</t></is></c><c r="D7" t="n"><v>24</v></c><c r="E7" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / CONCEITO CENTRAL] - CESSA&#199;&#195;O DA INCAPACIDADE
+
+&gt; **Marco Normativo Central**: Arts. 11 a 21 do C&#243;digo Civil
+
+A disciplina jur&#237;dica de **CESSA&#199;&#195;O DA INCAPACIDADE** insere-se no ramo de **Direito das Pessoas e Personalidade**, estruturando como a lei protege as pessoas e seus bens com justi&#231;a e seguran&#231;a.
+
+### Conceito Desmembrado e Raz&#227;o de Ser:
+No direito civil contempor&#226;neo, as normas que regem CESSA&#199;&#195;O DA INCAPACIDADE abandonaram o antigo apego formalista ego&#237;sta para se submeter &#224; **dignidade da pessoa humana**, &#224; **fun&#231;&#227;o social** e &#224; **boa-f&#233; objetiva**.
+A raz&#227;o de ser do instituto &#233; assegurar equil&#237;brio e previsibilidade: ningu&#233;m pode se valer da pr&#243;pria torpeza, nem locupletar-se indevidamente &#224;s custas do preju&#237;zo alheio.
+
+&#128161; *Exemplo R&#225;pido de Aplica&#231;&#227;o*: Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.</t></is></c><c r="F7" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 1] - O Dilema Pr&#225;tico
+
+Para compreender como **CESSA&#199;&#195;O DA INCAPACIDADE** impacta a vida real dos cidad&#227;os nos f&#243;runs e cart&#243;rios, acompanhe o caso concreto:
+
+Beatriz descobre que uma marca de roupas famosa utilizou uma foto dela tirada na praia para estampar uma campanha publicit&#225;ria nacional sem qualquer contrato ou consentimento.
+
+Diante da recusa da outra parte em solucionar a controv&#233;rsia amigavelmente, surge a d&#250;vida jur&#237;dica: quais s&#227;o os limites da prote&#231;&#227;o que o C&#243;digo Civil e os tribunais conferem a essa situa&#231;&#227;o cotidiana?</t></is></c><c r="G7" t="inlineStr"><is><t># [GLOSS&#193;RIO INTERATIVO / MENU SUSPENSO] - Termos Chave Clic&#225;veis
+
+*(Clique em cada termo no menu suspenso para expandir a defini&#231;&#227;o desmembrada e o exemplo pr&#225;tico)*
+
+&#9660; **[Menu Suspenso 1: Intransmissibilidade]**
+- *O que &#233;*: Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.
+- *Exemplo R&#225;pido*: Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.
+
+&#9660; **[Menu Suspenso 2: Direito ao Esquecimento]**
+- *O que &#233;*: Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos.
+- *Exemplo R&#225;pido*: Uma emissora pode recordar caso criminal hist&#243;rico real, ressalvada indeniza&#231;&#227;o por abuso.
+
+&#9660; **[Menu Suspenso 3: Dano Moral In Re Ipsa]**
+- *O que &#233;*: Dano moral presumido pela pr&#243;pria ocorr&#234;ncia do fato ofensivo, que independe de prova da dor ps&#237;quica.
+- *Exemplo R&#225;pido*: S&#250;mula 403 do STJ: o uso indevido da imagem de algu&#233;m em propaganda comercial gera dano moral autom&#225;tico.</t></is></c><c r="H7" t="inlineStr"><is><t># [EXEMPLO PR&#193;TICO E APLICA&#199;&#195;O FORENSE] - Como Funciona nos Tribunais
+
+Na pr&#225;tica forense de **CESSA&#199;&#195;O DA INCAPACIDADE**, ju&#237;zes e advogados aplicam as seguintes solu&#231;&#245;es imediatas:
+
+1. **Seguran&#231;a das Rela&#231;&#245;es Negociais**: Assegura que o combinado seja exig&#237;vel, prevenindo calotes e fraudes patrimoniais;
+2. **Prote&#231;&#227;o &#224; Parte Vulner&#225;vel**: Impede imposi&#231;&#245;es leoninas ou cl&#225;usulas abusivas impostas por detentores de maior poder econ&#244;mico;
+3. **Equidade e Razoabilidade**: Permite a revis&#227;o judicial das obriga&#231;&#245;es quando fatos supervenientes extraordin&#225;rios quebram o equil&#237;brio original da rela&#231;&#227;o.
+
+&#128161; *Aten&#231;&#227;o Forense*: O direito n&#227;o socorre aos que dormem (*dormientibus non succurrit ius*); por isso, os prazos legais da mat&#233;ria devem ser vigiados com rigor!</t></is></c><c r="I7" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 1] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta de Fixa&#231;&#227;o**: Qual &#233; a defini&#231;&#227;o jur&#237;dica central de **Intransmissibilidade** em **CESSA&#199;&#195;O DA INCAPACIDADE** e qual sua principal repercuss&#227;o no patrim&#244;nio das partes?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.**  
+&gt; *Repercuss&#227;o Pr&#225;tica*: Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.</t></is></c><c r="J7" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 1] - Preencha as Lacunas
+
+Teste seu dom&#237;nio completando as palavras essenciais da mat&#233;ria:
+
+---
+
+### Enunciado da Atividade:
+*Os direitos da personalidade s&#227;o em regra [ LACUNA 1 ] e intransmiss&#237;veis, n&#227;o podendo o seu exerc&#237;cio sofrer limita&#231;&#227;o volunt&#225;ria permanente. Conforme a S&#250;mula 403 do STJ, independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada da [ LACUNA 2 ] de pessoa com fins econ&#244;micos.*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: [ irrenunci&#225;veis ] | [ alien&#225;veis ]
+- **Para a Lacuna 2**: [ imagem ] | [ assinatura ]
+
+---
+
+### &#127919; Gabarito Comentado:
+1. irrenunci&#225;veis (Art. 11 do CC); 2. imagem (S&#250;mula 403 do STJ).</t></is></c><c r="K7" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 1] - Padr&#227;o OAB / FGV
+
+**Enunciado**: A respeito das normas e princ&#237;pios aplic&#225;veis a **CESSA&#199;&#195;O DA INCAPACIDADE**, assinale a alternativa juridicamente correta:
+
+- (A) A legisla&#231;&#227;o civil veda a aplica&#231;&#227;o da boa-f&#233; objetiva aos contratos particulares que versem sobre CESSA&#199;&#195;O DA INCAPACIDADE.
+- (B) Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a. Portanto, Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.
+- (C) Os prazos prescricionais de CESSA&#199;&#195;O DA INCAPACIDADE admitem dila&#231;&#227;o convencional por mero acordo verbal das partes.
+- (D) O Minist&#233;rio P&#250;blico jamais possui legitimidade para intervir em causas que envolvam CESSA&#199;&#195;O DA INCAPACIDADE.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**.  
+*Fundamenta&#231;&#227;o*: Trata-se da correta aplica&#231;&#227;o dogm&#225;tica do instituto segundo o C&#243;digo Civil e a jurisprud&#234;ncia dominante.</t></is></c><c r="L7" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / DOGM&#193;TICA E REQUISITOS T&#201;CNICOS] - Requisitos Estruturais
+
+Para que qualquer ato relacionado a **CESSA&#199;&#195;O DA INCAPACIDADE** produza plenos efeitos no mundo jur&#237;dico, exige-se:
+
+1. **Legitima&#231;&#227;o Espec&#237;fica**: N&#227;o basta capacidade gen&#233;rica; a parte deve deter pertin&#234;ncia subjetiva e poderes para o ato;
+2. **Higidez Volitiva e Aus&#234;ncia de Fraude**: A manifesta&#231;&#227;o de vontade deve ser livre de erro, dolo, coa&#231;&#227;o ou simula&#231;&#227;o;
+3. **Conformidade com a Ordem P&#250;blica**: O objeto deve ser l&#237;cito e atender &#224; fun&#231;&#227;o social estipulada em lei.</t></is></c><c r="M7" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 2] - O Conflito em Ju&#237;zo
+
+A a&#231;&#227;o judicial foi formalmente distribu&#237;da na Vara C&#237;vel competente.
+
+A parte r&#233; apresentou contesta&#231;&#227;o alegando que n&#227;o houve ilicitude e invocando o estrito cumprimento de cl&#225;usulas padronizadas.
+Contudo, a defesa da v&#237;tima sustentou que o comportamento do r&#233;u violou frontalmente a boa-f&#233; objetiva e os preceitos de **CESSA&#199;&#195;O DA INCAPACIDADE**.
+
+O juiz abriu vista para manifesta&#231;&#227;o sobre provas, convocando as partes para audi&#234;ncia de instru&#231;&#227;o e julgamento!</t></is></c><c r="N7" t="inlineStr"><is><t># [FRONTEIRAS CR&#205;TICAS / O QUE N&#195;O &#201;] - Quadro Comparativo
+
+| FIGURA EM AN&#193;LISE | O QUE REALMENTE &#201; | O QUE **N&#195;O** &#201; (CUIDADO!) |
+| :--- | :--- | :--- |
+| **Intransmissibilidade** | Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a. | N&#227;o pode ser flexibilizado por conveni&#234;ncia particular. |
+| **Direito ao Esquecimento** | Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos. | N&#227;o se confunde com arb&#237;trio individual ou impunidade. |
+| **Dano Moral In Re Ipsa** | Dano moral presumido pela pr&#243;pria ocorr&#234;ncia do fato ofensivo, que independe de prova da dor ps&#237;quica. | N&#227;o depende de comprova&#231;&#227;o de dor &#237;ntima se a lei presumir. |</t></is></c><c r="O7" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 2] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Crucial**: Qual &#233; a distin&#231;&#227;o primordial entre **Intransmissibilidade** e **Direito ao Esquecimento** no direito civil?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; Enquanto **Intransmissibilidade** (Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.), o instituto de **Direito ao Esquecimento** (Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos.).  
+&gt; Conhecer essa fronteira &#233; decisivo para n&#227;o errar a fundamenta&#231;&#227;o da peti&#231;&#227;o inicial nem as quest&#245;es da OAB!</t></is></c><c r="P7" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 2] - Regras Especiais
+
+Complete a assertiva jurisprudencial consolidada pelos tribunais superiores:
+
+---
+
+### Enunciado:
+*'No &#226;mbito de CESSA&#199;&#195;O DA INCAPACIDADE, a boa-f&#233; objetiva imp&#245;e deveres anexos de [ LACUNA 1 ] e colabora&#231;&#227;o m&#250;tua. A quebra desses deveres caracteriza inadimplemento positivo ou viola&#231;&#227;o contratual sujeita a [ LACUNA 2 ].'*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: `[ lealdade / informa&#231;&#227;o ]` | `[ oculta&#231;&#227;o ]`
+- **Para a Lacuna 2**: `[ repara&#231;&#227;o por perdas e danos ]` | `[ perd&#227;o judicial ]`
+
+---
+
+### &#127919; Gabarito Comentado:
+1. lealdade / informa&#231;&#227;o (Enunciados da Jornada de Direito Civil do CJF);
+2. repara&#231;&#227;o por perdas e danos (Arts. 187 e 927 do CC).</t></is></c><c r="Q7" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 2] - N&#237;vel Concurso P&#250;blico
+
+**Enunciado**: Em mat&#233;ria de **CESSA&#199;&#195;O DA INCAPACIDADE**, assinale a afirmativa INCORRETA:
+
+- (A) A responsabilidade civil e a validade negocial subordinam-se &#224; fun&#231;&#227;o social do instituto.
+- (B) &#201; nula a cl&#225;usula que contrarie disposi&#231;&#227;o de lei de ordem p&#250;blica em CESSA&#199;&#195;O DA INCAPACIDADE.
+- (C) Os efeitos do neg&#243;cio podem ser anulados se comprovado v&#237;cio de consentimento no prazo decadencial legal.
+- (D) O enriquecimento sem causa &#233; tolerado no direito civil caso o prejudicado seja pessoa jur&#237;dica.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Incorreta: (D)**. 
+*Fundamenta&#231;&#227;o*: O art. 884 do C&#243;digo Civil repudia expressamente o enriquecimento sem causa contra qualquer sujeito de direito (pessoa natural ou jur&#237;dica).</t></is></c><c r="R7" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 3] - Conclus&#227;o e Senten&#231;a Judicial
+
+A senten&#231;a judicial foi proferida pelo magistrado titular da Vara C&#237;vel:
+
+Beatriz aju&#237;za a&#231;&#227;o com base no art. 20 do CC e na S&#250;mula 403 do STJ: a empresa &#233; condenada a indeniz&#225;-la por danos morais autom&#225;ticos e a retirar toda a campanha de circula&#231;&#227;o.
+
+A pacifica&#231;&#227;o do conflito demonstrou que as regras de **CESSA&#199;&#195;O DA INCAPACIDADE** atuam para resguardar a ordem econ&#244;mica e proteger os cidad&#227;os que pautam suas condutas na boa-f&#233; objetiva!</t></is></c><c r="S7" t="inlineStr"><is><t># [MINIGAME INTERATIVO / LIGUE OS TERMOS] - Desafio R&#225;pido
+
+Ligue cada elemento da **Coluna A** &#224; sua defini&#231;&#227;o correspondente na **Coluna B**:
+
+---
+
+### &#129513; COLUNA A:
+1. Intransmissibilidade
+2. Direito ao Esquecimento
+3. Dano Moral In Re Ipsa
+4. Boa-f&#233; Objetiva
+
+---
+
+### &#127919; COLUNA B:
+- ( ) Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos.
+- ( ) Padr&#227;o de conduta leal, honesto e &#233;tico obrigat&#243;rio nas rela&#231;&#245;es civis.
+- ( ) Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.
+- ( ) Dano moral presumido pela pr&#243;pria ocorr&#234;ncia do fato ofensivo, que independe de prova da dor ps&#237;quica.
+
+---
+
+### &#128273; Resposta do Minigame:
+- **Ordem Correta**: `[ 2 ]` $\rightarrow$ `[ 4 ]` $\rightarrow$ `[ 1 ]` $\rightarrow$ `[ 3 ]`</t></is></c><c r="T7" t="inlineStr"><is><t># [JURISPRUD&#202;NCIA / TRIBUNAIS SUPERIORES] - Precedentes Vinculantes
+
+Principais diretrizes pac&#237;ficas dos Tribunais Superiores (STJ/STF) sobre **CESSA&#199;&#195;O DA INCAPACIDADE**:
+
+1. **STJ - S&#250;mula 403: 'Independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada de imagem de pessoa com fins econ&#244;micos ou comerciais'.**;
+2. **Veda&#231;&#227;o ao Comportamento Contradit&#243;rio**: O STJ reprime com veem&#234;ncia o *venire contra factum proprium*, invalidando condutas que quebram a confian&#231;a leg&#237;tima;
+3. **Mitiga&#231;&#227;o do Preju&#237;zo (*Duty to Mitigate the Loss*)**: O credor tem o dever anexo de adotar medidas razo&#225;veis para n&#227;o agravar o pr&#243;prio dano.</t></is></c><c r="U7" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 3] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Jurisprudencial**: Qual s&#250;mula ou tese repetitiva do STJ incide com maior frequ&#234;ncia em lit&#237;gios sobre **CESSA&#199;&#195;O DA INCAPACIDADE**?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **STJ - S&#250;mula 403: 'Independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada de imagem de pessoa com fins econ&#244;micos ou comerciais'.**  
+&gt; *Import&#226;ncia*: Essa orienta&#231;&#227;o pacificada vincula os tribunais de segunda inst&#226;ncia e evita o ajuizamento de recursos protelat&#243;rios.</t></is></c><c r="V7" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 3] - N&#237;vel Magistratura / MP
+
+**Enunciado**: Em demanda judicial versando sobre **CESSA&#199;&#195;O DA INCAPACIDADE**, o r&#233;u alega aus&#234;ncia de responsabilidade em virtude de cl&#225;usula contratual gen&#233;rica de n&#227;o indenizar. &#192; luz da jurisprud&#234;ncia do STJ e do C&#243;digo Civil, o juiz deve:
+
+- (A) Acolher a defesa do r&#233;u, pois a autonomia privada das partes &#233; soberana e absoluta.
+- (B) Declarar a nulidade ou inefic&#225;cia da cl&#225;usula de n&#227;o indenizar que afronte normas cogentes de ordem p&#250;blica ou a fun&#231;&#227;o social da rela&#231;&#227;o.
+- (C) Extinguir o processo sem julgamento de m&#233;rito por falta de interesse de agir.
+- (D) Condenar o autor por litig&#226;ncia de m&#225;-f&#233;.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**. 
+*Fundamenta&#231;&#227;o*: Cl&#225;usulas de dispensa de deveres essenciais ou de exclus&#227;o unilateral de responsabilidade que violem preceitos de ordem p&#250;blica s&#227;o nulas de pleno direito (art. 166, VI e art. 421 do CC).</t></is></c><c r="W7" t="inlineStr"><is><t># [COMO CAI EM PROVAS / RAIO-X DAS BANCAS] - Armadilhas Cl&#225;ssicas
+
+Fique alerta &#224;s 3 pegadinhas mais recorrentes preparadas por FGV, Cebraspe e Vunesp:
+
+1. **A banca vai afirmar que '&#233; necess&#225;ria per&#237;cia psicol&#243;gica para comprovar que a v&#237;tima sofreu trauma com o uso da foto'. ERRADO! O dano moral pelo uso comercial indevido da imagem &#233; in re ipsa (S&#250;mula 403/STJ).**
+2. **Prazos de Prescri&#231;&#227;o vs. Decad&#234;ncia**: A banca adora chamar prazo decadencial de anula&#231;&#227;o de 'prescricional' para induzir a erro;
+3. **Solidariedade Presumida**: Lembrar sempre que a solidariedade N&#195;O se presume; resulta da lei ou do contrato (Art. 265 do CC).</t></is></c><c r="X7" t="inlineStr"><is><t># [DICA DA PROFESSORA / S&#205;NTESE EM &#193;UDIO] - P&#237;lula da Professora Evelyn
+
+&#127897;&#65039; *Ol&#225;, querido aluno do Direito Prime! Aqui &#233; a Professora Evelyn com o resumo definitivo de CESSA&#199;&#195;O DA INCAPACIDADE:*
+
+&gt; *'N&#227;o complique o que a lei fez para ser justo!  
+&gt; Em CESSA&#199;&#195;O DA INCAPACIDADE, lembre-se sempre de conferir:  
+&gt; 1. Houve respeito &#224; boa-f&#233; objetiva e &#224; fun&#231;&#227;o social?  
+&gt; 2. Quem alega o direito agiu dentro do prazo legal sem dormir no ponto?  
+&gt; 3. A s&#250;mula de reg&#234;ncia &#233;: STJ - S&#250;mula 403: 'Independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada de imagem de pessoa com fins econ&#244;micos ou comerciais'..  
+&gt; Guarde essa tr&#237;ade no cora&#231;&#227;o e voc&#234; acertar&#225; qualquer quest&#227;o de concurso e advocacia!'*</t></is></c><c r="Y7" t="inlineStr"><is><t># [&#193;RVORE DECIS&#211;RIA / FLUXOGRAMA EM SETAS] - Grafo de Decis&#227;o L&#243;gica
+
+```text
+[CESSA&#199;&#195;O DA INCAPACIDADE: AN&#193;LISE DE EFIC&#193;CIA JUR&#205;DICA]
+       |
+       +---&gt; Houve preenchimento dos Requisitos Legais B&#225;sicos?
+       |        |
+       |        +---[N&#195;O]---&gt; V&#205;CIO NA ESTRUTURA NORMATIVA
+       |        |             - Inefic&#225;cia ou Nulidade do ato
+       |        |
+       |        +---[SIM]---&gt; Houve Observ&#226;ncia da Boa-f&#233; e Prazos?
+       |                                |
+       |                                +---[SIM]---&gt; ATO H&#205;GIDO, V&#193;LIDO E EXIG&#205;VEL
+       |                                |             - Tutela jurisdicional concedida
+       |                                |             - Produ&#231;&#227;o integral dos efeitos
+       |                                |
+       |                                +---[N&#195;O]---&gt; INCID&#202;NCIA DE SAN&#199;&#195;O / PRESCRI&#199;&#195;O
+       |                                              - Perda da pretens&#227;o ou indeniza&#231;&#227;o civil
+```</t></is></c><c r="Z7" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / EFEITOS ESPECIAIS] - Reflexos Interdisciplinares
+
+A mat&#233;ria de **CESSA&#199;&#195;O DA INCAPACIDADE** produz efeitos que transcendem o direito privado comum:
+
+- **Reflexos Tribut&#225;rios**: A regularidade jur&#237;dica do ato define o fato gerador e afasta autua&#231;&#245;es fiscais indevidas;
+- **Reflexos Notariais e Registrais**: A publicidade nos cart&#243;rios de notas e de registro de im&#243;veis confere efic&#225;cia perante terceiros (*erga omnes*);
+- **Reflexos Processuais**: Assegura a legitimidade ativa e passiva nas a&#231;&#245;es de conhecimento e de execu&#231;&#227;o.</t></is></c><c r="AA7" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 4] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pegadinha da Magistratura**: O descumprimento dos deveres anexos de conduta da boa-f&#233; objetiva em **CESSA&#199;&#195;O DA INCAPACIDADE** exige prova de dolo ou culpa do devedor?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **N&#195;O EXIGE PROVA DE DOLO OU CULPA!**  
+&gt; A viola&#231;&#227;o positiva do contrato por quebra da boa-f&#233; objetiva opera responsabilidade de natureza **objetiva**, bastando a comprova&#231;&#227;o objetiva da conduta desleal ou omissiva.</t></is></c><c r="AB7" t="inlineStr"><is><t># [QUEST&#195;O DISCURSIVA / PR&#193;TICA PROFISSIONAL] - Parecer Forense
+
+**Situa&#231;&#227;o Pr&#225;tica**: Um cliente procura seu escrit&#243;rio de advocacia relatando les&#227;o patrimonial grave decorrente de lit&#237;gio em **CESSA&#199;&#195;O DA INCAPACIDADE**.
+
+**Pergunta**: Como advogado(a), qual &#233; a primeira provid&#234;ncia cautelar e de m&#233;rito a ser proposta em ju&#237;zo?
+
+---
+
+### &#9878;&#65039; Padr&#227;o de Resposta T&#233;cnico:
+&gt; 1. **Tutela Provis&#243;ria de Urg&#234;ncia** (art. 300 do CPC) para suspender atos expropriat&#243;rios ou cobran&#231;as indevidas;  
+&gt; 2. **Pedido Principal** de declara&#231;&#227;o de cumprimento do preceito de CESSA&#199;&#195;O DA INCAPACIDADE, com base em Arts. 11 a 21 do C&#243;digo Civil e perdas e danos.</t></is></c><c r="AC7" t="inlineStr"></c><c r="AD7" t="inlineStr"></c><c r="AE7" t="inlineStr"></c><c r="AF7" t="inlineStr"></c><c r="AG7" t="inlineStr"></c><c r="AH7" t="inlineStr"></c></row><row r="8"><c r="A8" t="inlineStr"><is><t>Aula 07</t></is></c><c r="B8" t="inlineStr"><is><t>FIM DA PERSONALIDADE: MORTE REAL E COMORI&#202;NCIA</t></is></c><c r="C8" t="inlineStr"><is><t>01. Pessoas no C&#243;digo Civil</t></is></c><c r="D8" t="n"><v>25</v></c><c r="E8" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / CONCEITO CENTRAL] - Como Termina a Personalidade da Pessoa Natural
+
+&gt; **Art. 6&#186; do C&#243;digo Civil**: *"A exist&#234;ncia da pessoa natural termina com a morte; presume-se esta, quanto aos ausentes, nos casos em que a lei autoriza a abertura de sucess&#227;o definitiva."*  
+&gt; **Art. 8&#186; do C&#243;digo Civil**: *"Se dois ou mais indiv&#237;duos falecerem na mesma ocasi&#227;o, n&#227;o se podendo averiguar se algum dos comorientes precedeu aos outros, presumir-se-&#227;o simultaneamente mortos."*
+
+No Direito Civil brasileiro contempor&#226;neo:
+- **1. Morte Real**: &#201; a cessa&#231;&#227;o irrevers&#237;vel das fun&#231;&#245;es biol&#243;gicas vitais, comprovada materialmente pelo atestado de &#243;bito lavrado por m&#233;dico. O crit&#233;rio m&#233;dico-legal adotado pela legisla&#231;&#227;o brasileira (Lei n&#186; 9.434/1997 - Lei de Transplante de &#211;rg&#227;os e Resolu&#231;&#227;o n&#186; 2.173/2017 do CFM) &#233; a **MORTE ENCEF&#193;LICA** (parada total e irrevers&#237;vel de todas as atividades cerebrais).
+- **2. Efeitos da Morte Real**:
+  - Extingue a personalidade civil e a capacidade de direito.
+  - Extingue o poder familiar, a tutela, a curatela e o casamento/uni&#227;o est&#225;vel.
+  - Abre imediatamente a sucess&#227;o heredit&#225;ria (*Princ&#237;pio da Saisine* - art. 1.784 do CC).
+  - Transmuta o corpo em cad&#225;ver (objeto de respeito e sepultamento digno, protegido pelo art. 12, par&#225;grafo &#250;nico do CC).
+- **3. Comori&#234;ncia (Morte Simult&#226;nea)**: Ocorre quando duas ou mais pessoas que s&#227;o herdeiras ou benefici&#225;rias rec&#237;procas morrem no mesmo evento ou na mesma ocasi&#227;o temporal, sendo tecnicamente imposs&#237;vel &#224; per&#237;cia m&#233;dica constatar quem morreu primeiro.
+  - *Presun&#231;&#227;o Legal*: A lei presume que morreram **ao mesmo tempo, no mesmo segundo exato**.
+  - *Efeito Sucess&#243;rio Capital*: **N&#195;O H&#193; TRANSFER&#202;NCIA DE HERAN&#199;A ENTRE OS COMORIENTES!** Um n&#227;o herda do outro; as heran&#231;as seguem caminhos aut&#244;nomos para os herdeiros de cada um!
+
+&#128161; *Exemplo R&#225;pido de Termo*: 
+- *Comori&#234;ncia*: Pai e filho &#250;nico morrem no mesmo acidente de carro. Se morreram juntos, o pai n&#227;o herda do filho e o filho n&#227;o herda do pai. A heran&#231;a do pai vai para os irm&#227;os dele, e o patrim&#244;nio do filho vai para a m&#227;e vi&#250;va.</t></is></c><c r="F8" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 1] - O Desastre A&#233;reo
+
+Alberto &#233; um empres&#225;rio vi&#250;vo milion&#225;rio de 65 anos, dono de uma rede de hot&#233;is avaliada em R$ 40.000.000,00. Ele tem um &#250;nico filho vivo, Fernando, de 30 anos. Alberto tem tamb&#233;m dois irm&#227;os vivos (tios de Fernando).
+Fernando &#233; casado com Mariana sob o regime de **separa&#231;&#227;o total de bens** e n&#227;o possui filhos nem descendentes.
+
+Em um final de semana, Alberto e Fernando embarcam em um helic&#243;ptero particular rumo ao litoral paulista. Em meio a uma densa neblina na Serra do Mar, a aeronave colide violentamente contra uma montanha e explode, carbonizando completamente a cabine.
+Os socorristas e a per&#237;cia da Pol&#237;cia Cient&#237;fica chegam ao local, mas o laudo pericial cadav&#233;rico conclui: **'Inviabilidade m&#233;dica absoluta de determinar a ordem cronol&#243;gica dos &#243;bitos em raz&#227;o da destrui&#231;&#227;o mec&#226;nica e t&#233;rmica imediata'**.
+
+Abre-se uma batalha jur&#237;dica bilion&#225;ria:
+- Mariana (vi&#250;va de Fernando) alega: *"Alberto era mais velho e fr&#225;gil, certamente morreu fra&#231;&#245;es de segundo antes! Logo, Fernando herdou todos os R$ 40 milh&#245;es e, como Fernando morreu em seguida, esse dinheiro pertence a mim como herdeira exclusiva dele!"*
+- Os irm&#227;os de Alberto retrucam: *"Houve comori&#234;ncia! Fernando n&#227;o herdou nada do pai! O dinheiro do nosso irm&#227;o pertence a n&#243;s!"*
+
+Quem tem raz&#227;o segundo o C&#243;digo Civil?</t></is></c><c r="G8" t="inlineStr"><is><t># [GLOSS&#193;RIO INTERATIVO / MENU SUSPENSO] - Termos Chave
+
+*(Clique em cada termo no menu suspenso para expandir a defini&#231;&#227;o desmembrada e o exemplo pr&#225;tico)*
+
+&#9660; **[Menu Suspenso 1: Morte Encef&#225;lica]**
+- *O que &#233;*: A parada cl&#237;nica completa e definitiva do enc&#233;falo (tronco cerebral), atestada por dois m&#233;dicos especialistas mediante dois exames cl&#237;nicos e um teste gr&#225;fico confirmat&#243;rio (eletroencefalograma ou arteriografia).
+- *Exemplo R&#225;pido*: O momento em que o laudo m&#233;dico constata morte encef&#225;lica &#233; o instante jur&#237;dico exato do &#243;bito, autorizando a doa&#231;&#227;o de &#243;rg&#227;os e abrindo a sucess&#227;o.
+
+&#9660; **[Menu Suspenso 2: Comori&#234;ncia (Art. 8&#186; do CC)]**
+- *O que &#233;*: A presun&#231;&#227;o jur&#237;dica relativa (*juris tantum*) de que duas ou mais pessoas ligadas por voca&#231;&#227;o sucess&#243;ria morreram no mesmo instante, por ser imposs&#237;vel comprovar a anterioridade de um falecimento sobre o outro.
+- *Exemplo R&#225;pido*: Pai e filho no mesmo acidente a&#233;reo sem prova pericial de quem morreu primeiro.
+
+&#9660; **[Menu Suspenso 3: Princ&#237;pio da Saisine (Art. 1.784 do CC)]**
+- *O que &#233;*: Princ&#237;pio de origem francesa que determina que, no segundo exato da morte, o patrim&#244;nio do falecido transmite-se automaticamente aos seus herdeiros leg&#237;timos e testament&#225;rios.
+- *Exemplo R&#225;pido*: O herdeiro vira propriet&#225;rio da fra&#231;&#227;o ideal no minuto do &#243;bito do autor da heran&#231;a, mesmo sem saber que o parente faleceu.
+
+&#9660; **[Menu Suspenso 4: Premori&#234;ncia]**
+- *O que &#233;*: A morte comprovada de algu&#233;m ANTES de outra pessoa.
+- *Exemplo R&#225;pido*: Se a per&#237;cia provar por exame que o pai morreu &#224;s 14h00 e o filho sobreviveu na UTI at&#233; as 14h15, houve premori&#234;ncia (o filho herdou do pai e transmitiu &#224; esposa).</t></is></c><c r="H8" t="inlineStr"><is><t># [EXEMPLO PR&#193;TICO E APLICA&#199;&#195;O FORENSE] - O C&#225;lculo Sucess&#243;rio Real
+
+Veja a diferen&#231;a brutal entre Comori&#234;ncia e Premori&#234;ncia no caso de Alberto e Fernando:
+
+1. **Hip&#243;tese 1: Se Fosse Comprovada Premori&#234;ncia (Pai morreu 1 minuto antes)**:
+   - Alberto morre &#224;s 10h00 $\rightarrow$ Toda a heran&#231;a de R$ 40 milh&#245;es vai para Fernando (*saisine*).
+   - Fernando morre &#224;s 10h01 $\rightarrow$ Como Fernando n&#227;o tem filhos nem pais vivos, a heran&#231;a inteira de R$ 40 milh&#245;es vai para sua &#250;nica herdeira legal: a esposa Mariana (art. 1.829, III do CC)!
+   - *Resultado*: Mariana fica com R$ 40 milh&#245;es; os tios ficam com ZERO.
+
+2. **Hip&#243;tese 2: Aplica&#231;&#227;o da Comori&#234;ncia Legal (Art. 8&#186; do CC - N&#227;o se sabe a ordem)**:
+   - A lei presume que ambos morreram no mesmo microssegundo!
+   - Fernando N&#195;O herdou de Alberto. Alberto N&#195;O herdou de Fernando.
+   - Os R$ 40 milh&#245;es de Alberto v&#227;o para os herdeiros DELE (seus irm&#227;os/colaterais).
+   - O patrim&#244;nio particular que Fernando j&#225; possu&#237;a em vida vai para Mariana.
+   - *Resultado*: Mariana n&#227;o recebe 1 centavo da fortuna do sogro Alberto! Os tios recebem os R$ 40 milh&#245;es de Alberto!
+
+&#128161; *Conclus&#227;o Forense*: O laudo pericial de comori&#234;ncia altera radicalmente quem fica milion&#225;rio e quem fica sem nada!</t></is></c><c r="I8" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 1] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pegadinha da Magistratura/OAB**: Para caracterizar a comori&#234;ncia do art. 8&#186; do C&#243;digo Civil, &#233; obrigat&#243;rio que as pessoas tenham morrido exatamente no mesmo local f&#237;sico e sob o mesmo evento desastroso (ex.: mesmo acidente)?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **N&#195;O &#201; OBRIGAT&#211;RIO O MESMO LOCAL OU MESMO ACIDENTE!**  
+&gt; O art. 8&#186; fala expressamente em falecer *'na mesma ocasi&#227;o'*.  
+&gt; Se o pai sofre um infarto fulminante em casa em S&#227;o Paulo &#224;s 15h00 e o filho &#233; assassinado em um assalto no Rio de Janeiro por volta das 15h00, e a per&#237;cia m&#233;dica tanatosc&#243;pica de ambos n&#227;o conseguir precisar com exatid&#227;o cient&#237;fica quem deu o &#250;ltimo suspiro primeiro, **haver&#225; comori&#234;ncia**!  
+&gt; O fator determinante &#233; a **d&#250;vida invenc&#237;vel sobre a cronologia das mortes**, e n&#227;o a coincid&#234;ncia geogr&#225;fica do evento.</t></is></c><c r="J8" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 1] - Preencha as Lacunas
+
+Teste seu conhecimento da literalidade do artigo 8&#186;:
+
+---
+
+### Enunciado da Atividade:
+*"Se dois ou mais indiv&#237;duos falecerem na mesma `[ LACUNA 1 ]`, n&#227;o se podendo averiguar se algum dos comorientes precedeu aos outros, presumir-se-&#227;o `[ LACUNA 2 ]` mortos. A principal consequ&#234;ncia dessa presun&#231;&#227;o jur&#237;dica &#233; que entre os comorientes `[ LACUNA 3 ]` transfer&#234;ncia de direitos heredit&#225;rios."*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: `[ ocasi&#227;o ]` | `[ cidade ]` | `[ festa de anivers&#225;rio ]`
+- **Para a Lacuna 2**: `[ simultaneamente ]` | `[ injustamente ]` | `[ parcialmente ]`
+- **Para a Lacuna 3**: `[ n&#227;o ocorre ]` | `[ &#233; obrigat&#243;ria a ]` | `[ dobra a ]`
+
+---
+
+### &#127919; Gabarito Comentado:
+1. **ocasi&#227;o**: O termo da lei abrange simultaneidade cronol&#243;gica em eventos conexos ou contempor&#226;neos.
+2. **simultaneamente**: Presun&#231;&#227;o de morte no mesmo instante de tempo.
+3. **n&#227;o ocorre**: Como nenhum sobreviveu ao outro, nenhum deles preenche a capacidade testament&#225;ria/heredit&#225;ria passiva de ser herdeiro do outro.</t></is></c><c r="K8" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 1] - Padr&#227;o OAB / FGV
+
+**Enunciado**: L&#250;cio e sua filha Beatriz sofreram um grave acidente de tr&#226;nsito. O laudo pericial tanatol&#243;gico concluiu pela impossibilidade de apurar quem faleceu primeiro. L&#250;cio deixou patrim&#244;nio l&#237;quido de R$ 1.000.000,00 e sua m&#227;e idosa viva. Beatriz n&#227;o tinha descendentes e era casada com Jorge pelo regime de comunh&#227;o parcial de bens, possuindo um patrim&#244;nio particular exclusivo de R$ 200.000,00. Considerando as regras de comori&#234;ncia e sucess&#227;o leg&#237;tima do C&#243;digo Civil, assinale a op&#231;&#227;o correta:
+
+- (A) Jorge herdar&#225; todo o patrim&#244;nio de L&#250;cio (R$ 1.000.000,00), pois Beatriz sucedeu ao pai e Jorge &#233; o herdeiro exclusivo de Beatriz.
+- (B) Diante da presun&#231;&#227;o de comori&#234;ncia, n&#227;o h&#225; transfer&#234;ncia de heran&#231;a entre L&#250;cio e Beatriz: a m&#227;e de L&#250;cio herda os R$ 1.000.000,00 de L&#250;cio, e Jorge herda os R$ 200.000,00 particulares de Beatriz.
+- (C) A m&#227;e de L&#250;cio e Jorge repartem em partes iguais a totalidade de todos os bens (R$ 1.200.000,00).
+- (D) A comori&#234;ncia anula o casamento de Beatriz e devolve todos os bens ao Estado como heran&#231;a jacente.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**.  
+*Fundamenta&#231;&#227;o*: Pelo art. 8&#186; do CC, L&#250;cio e Beatriz presumem-se mortos no mesmo instante. Beatriz n&#227;o herda de L&#250;cio (a heran&#231;a dele vai para a ascendente viva, sua m&#227;e - art. 1.829, II). L&#250;cio n&#227;o herda de Beatriz. O patrim&#244;nio particular de Beatriz vai para seu marido Jorge como herdeiro necess&#225;rio sobrevivente (art. 1.829, III do CC).</t></is></c><c r="L8" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 2] - A Decis&#227;o Judicial
+
+No invent&#225;rio conjunto instaurado na Vara de Fam&#237;lia e Sucess&#245;es:
+A vi&#250;va Mariana contratou peritos particulares para tentar provar que Fernando resistira por mais alguns segundos por ser mais jovem e atleta. No entanto, o magistrado, com esteio no laudo oficial conclusivo do IML, proferiu decis&#227;o hist&#243;rica:
+
+- *"A suposi&#231;&#227;o biol&#243;gica de que o mais jovem ou mais saud&#225;vel sobrevive ao mais idoso era uma presun&#231;&#227;o do Direito Romano antigo. O C&#243;digo Civil brasileiro de 2002 N&#195;O adota crit&#233;rio de presun&#231;&#227;o por sexo ou idade! N&#227;o havendo prova m&#233;dica material inequ&#237;voca de sobreviv&#234;ncia, imp&#245;e-se a declara&#231;&#227;o cogente de **COMORI&#202;NCIA** (Art. 8&#186; do CC)."*
+
+O juiz determinou que o patrim&#244;nio de Alberto (R$ 40 milh&#245;es) fosse partilhado entre os seus dois irm&#227;os, e o patrim&#244;nio individual de Fernando fosse destinado &#224; vi&#250;va Mariana. A t&#233;cnica legal do art. 8&#186; evitou suposi&#231;&#245;es fantasiosas e aplicou a seguran&#231;a jur&#237;dica!</t></is></c><c r="M8" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / DOGM&#193;TICA E REQUISITOS T&#201;CNICOS] - Presun&#231;&#227;o Relativa
+
+Um ponto dogm&#225;tico important&#237;ssimo:
+
+- **Presun&#231;&#227;o Relativa (*Juris Tantum*)**:
+  A presun&#231;&#227;o de morte simult&#226;nea do art. 8&#186; do CC **N&#195;O &#233; absoluta (*juris et de jure*)**! Ela admite prova cabal em contr&#225;rio.
+- **E se surgir uma prova t&#233;cnica nova anos depois?**:
+  Imagine que, anos ap&#243;s o encerramento do invent&#225;rio, seja recuperado o rel&#243;gio biom&#233;trico com dados de batimentos card&#237;acos transmitidos em tempo real para a nuvem via sat&#233;lite, comprovando documentalmente que Fernando permaneceu com pulsa&#231;&#227;o por 8 minutos ap&#243;s a parada card&#237;aca de Alberto.
+- **Rem&#233;dio Jur&#237;dico**:
+  Mariana poder&#225; ajuizar **A&#231;&#227;o Rescis&#243;ria** (se houver senten&#231;a transitada em julgado) ou **A&#231;&#227;o de Peti&#231;&#227;o de Heran&#231;a** (art. 1.824 do CC) para demonstrar a premori&#234;ncia e reaver os bens herdados pelos tios, pois a verdade material documentada supera a presun&#231;&#227;o relativa!</t></is></c><c r="N8" t="inlineStr"><is><t># [FRONTEIRAS CR&#205;TICAS / O QUE N&#195;O &#201;] - Tabela Comparativa
+
+| FIGURA JUR&#205;DICA | H&#193; CAD&#193;VER PRESENTE? | SABE-SE A HORA EXATA? | H&#193; TRANSMISS&#195;O DE HERAN&#199;A ENTRE ELES? | DISPOSITIVO LEGAL |
+| :--- | :--- | :--- | :--- | :--- |
+| **Comori&#234;ncia** | **SIM** (corpos localizados) | N&#227;o &#233; poss&#237;vel determinar quem morreu antes | **N&#195;O!** Um n&#227;o herda do outro. | Art. 8&#186; do C&#243;digo Civil |
+| **Premori&#234;ncia** | **SIM** (corpos periciados) | **SIM!** Provou-se quem morreu primeiro | **SIM!** O que sobreviveu herda do que faleceu antes. | Regra geral da Saisine (Art. 1.784) |
+| **Morte Presumida** | **N&#195;O** (corpo sumido/destru&#237;do) | Fixa-se data prov&#225;vel por senten&#231;a | Depende da ordem declarada em ju&#237;zo | Arts. 7&#186; e 9&#186; do C&#243;digo Civil |</t></is></c><c r="O8" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 2] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Hist&#243;ria do Direito em Prova**: No Direito Romano e no antigo C&#243;digo Civil Franc&#234;s, se um homem jovem e uma mulher idosa morressem no mesmo naufr&#225;gio, presumia-se que o homem jovem sobreviveu por ter mais for&#231;a f&#237;sica. Essa regra subsiste no C&#243;digo Civil brasileiro?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **N&#195;O! FOI TOTALMENTE ABOLIDA!**  
+&gt; O Direito brasileiro **n&#227;o adota qualquer presun&#231;&#227;o baseada em sexo, idade, complei&#231;&#227;o f&#237;sica ou sa&#250;de**.  
+&gt; Se a per&#237;cia t&#233;cnica n&#227;o puder atestar com certeza cient&#237;fica quem faleceu antes, a presun&#231;&#227;o legal &#233; sempre de **simultaneidade absoluta de mortes (comori&#234;ncia)** para todos os efeitos civis (art. 8&#186; do CC).</t></is></c><c r="P8" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 2] - Preencha o Marco Legal da Morte
+
+Complete as frases com as defini&#231;&#245;es da Lei de Transplantes:
+
+---
+
+### Enunciado da Atividade:
+*"No ordenamento brasileiro, o marco definidor da morte real &#233; a constata&#231;&#227;o da morte `[ LACUNA 1 ]`. A retirada de tecidos e &#243;rg&#227;os para transplante de pessoa falecida depende da autoriza&#231;&#227;o expressa do c&#244;njuge ou de parente maior at&#233; o `[ LACUNA 2 ]` grau, conforme a Lei n&#186; 9.434/1997."*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: `[ encef&#225;lica ]` | `[ respirat&#243;ria apenas ]` | `[ espiritual ]`
+- **Para a Lacuna 2**: `[ segundo ]` | `[ d&#233;cimo ]` | `[ quinto ]`
+
+---
+
+### &#127919; Gabarito Comentado:
+1. **encef&#225;lica**: Parada irrevers&#237;vel das fun&#231;&#245;es do tronco encef&#225;lico.
+2. **segundo**: C&#244;njuge, pais, filhos, av&#243;s, netos e irm&#227;os (parentesco em linha reta ou colateral at&#233; o 2&#186; grau).</t></is></c><c r="Q8" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 2] - Padr&#227;o OAB / FGV
+
+**Enunciado**: Roberto contratou um seguro de vida indicando como &#250;nica benefici&#225;ria sua esposa M&#244;nica, e como benefici&#225;ria substituta sua irm&#227; Fabiana. Em uma viagem, Roberto e M&#244;nica sofrem um acidente automobil&#237;stico e falecem em comori&#234;ncia (sem prova de quem precedeu). M&#244;nica n&#227;o tinha filhos, mas deixou seus pais idosos vivos. A seguradora deve pagar a indeniza&#231;&#227;o do seguro de vida para:
+
+- (A) Os pais de M&#244;nica, pois a esposa era a benefici&#225;ria principal e o valor integra a heran&#231;a dela.
+- (B) A irm&#227; Fabiana, pois, em virtude da comori&#234;ncia, M&#244;nica n&#227;o sobreviveu ao segurado para adquirir o direito ao capital segurado, convocando-se a benefici&#225;ria substituta indicada na ap&#243;lice (ou os herdeiros de Roberto pelo art. 792 do CC).
+- (C) A Uni&#227;o Federal, por se tratar de capital sem titularidade.
+- (D) O hospital que atendeu as v&#237;timas.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**.  
+*Fundamenta&#231;&#227;o*: O capital do seguro de vida n&#227;o &#233; heran&#231;a (art. 794 do CC). Para que o benefici&#225;rio adquira o direito de receber o seguro, **&#233; indispens&#225;vel que ele sobreviva ao segurado**. Havendo comori&#234;ncia, M&#244;nica n&#227;o sobreviveu a Roberto; logo, jamais adquiriu o cr&#233;dito securit&#225;rio. O pagamento &#233; devido &#224; benefici&#225;ria substituta Fabiana.</t></is></c><c r="R8" t="inlineStr"><is><t># [MINIGAME INTERATIVO / LIGUE OS TERMOS] - Desafio R&#225;pido
+
+Ligue cada situa&#231;&#227;o de &#243;bito da **Coluna A** ao efeito patrimonial correspondente na **Coluna B**:
+
+---
+
+### &#129513; COLUNA A:
+1. Pai e filho morrem no mesmo naufr&#225;gio sem prova de quem morreu antes.
+2. Per&#237;cia comprova que o filho faleceu 10 minutos ap&#243;s o pai.
+3. Marido falece e deixa testamento de bem gravado para o filho que morreu junto.
+4. Morte encef&#225;lica atestada por junta m&#233;dica no hospital.
+
+---
+
+### &#127919; COLUNA B:
+- ( ) Premori&#234;ncia: o filho herdou do pai e transmite aos seus sucessores.
+- ( ) Cessa&#231;&#227;o formal da personalidade civil da pessoa natural (Art. 6&#186;).
+- ( ) Comori&#234;ncia: n&#227;o h&#225; transmiss&#227;o de heran&#231;a entre eles (Art. 8&#186;).
+- ( ) Caducidade da deixa testament&#225;ria por aus&#234;ncia de herdeiro comoriente vivo.
+
+---
+
+### &#128273; Resposta do Minigame:
+- **Ordem Correta**: `[ 2 ]` $\rightarrow$ `[ 4 ]` $\rightarrow$ `[ 1 ]` $\rightarrow$ `[ 3 ]`</t></is></c><c r="S8" t="inlineStr"><is><t># [JURISPRUD&#202;NCIA / TRIBUNAIS SUPERIORES] - O Cad&#225;ver e os Direitos da Mem&#243;ria
+
+A morte extingue a pessoa, mas o ordenamento tutela sua mem&#243;ria e imagem:
+
+1. **Art. 12, Par&#225;grafo &#218;nico do C&#243;digo Civil**:
+   &gt; *"Em se tratando de morto, ter&#225; legitima&#231;&#227;o para requerer a medida prevista neste artigo o c&#244;njuge sobrevivente, ou qualquer parente em linha reta, ou colateral at&#233; o quarto grau."*
+
+2. **Dano Moral por Viola&#231;&#227;o &#224; Mem&#243;ria do Morto (STJ - S&#250;mula 642)**:
+   &gt; *"O direito &#224; indeniza&#231;&#227;o por danos morais transmite-se com o falecimento do titular, possuindo os herdeiros da v&#237;tima legitimidade ativa para ajuizar ou prosseguir na a&#231;&#227;o indenizat&#243;ria."*
+   O STJ reconhece que ofensas graves &#224; mem&#243;ria de quem j&#225; faleceu causam **dano moral por ricochete (reflexo)** aos familiares vivos.</t></is></c><c r="T8" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 3] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **D&#250;vida Muito Frequente**: O valor da ap&#243;lice de seguro de vida deixado pelo falecido entra no invent&#225;rio para pagar as d&#237;vidas deixadas pelo de cujus aos credores banc&#225;rios?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **N&#195;O ENTRA NO INVENT&#193;RIO NEM PAGA D&#205;VIDAS!**  
+&gt; Aplica-se o **art. 794 do C&#243;digo Civil**: *'No seguro de vida ou de acidentes pessoais para o caso de morte, o capital estipulado n&#227;o est&#225; sujeito &#224;s d&#237;vidas do segurado, nem se considera heran&#231;a para todos os efeitos de direito'*.  
+&gt; O valor &#233; pago diretamente aos benefici&#225;rios indicados pela seguradora, livre de ITCMD de heran&#231;a e imune &#224; penhora de credores do falecido.</t></is></c><c r="U8" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 3] - N&#237;vel Minist&#233;rio P&#250;blico / Magistratura
+
+**Enunciado**: Uma emissora de televis&#227;o sensacionalista exibiu imagens chocantes e degradantes do cad&#225;ver de uma jovem v&#237;tima de homic&#237;dio brutal, expondo seu corpo sem qualquer censura jornal&#237;stica. A m&#227;e da jovem, profundamente abalada, aju&#237;za a&#231;&#227;o indenizat&#243;ria por danos morais contra a emissora. A emissora contesta, alegando que a morte extinguiu a personalidade da jovem (art. 6&#186; do CC) e que pessoas falecidas n&#227;o t&#234;m honra nem sentimentos para sofrer dano moral. Com base no art. 12 do C&#243;digo Civil e na jurisprud&#234;ncia do STJ, assinale a op&#231;&#227;o correta:
+
+- (A) A contesta&#231;&#227;o deve ser acolhida, pois o cad&#225;ver &#233; coisa abandonada sem qualquer prote&#231;&#227;o civil.
+- (B) A m&#227;e tem legitimidade pr&#243;pria para postular indeniza&#231;&#227;o pelo dano moral reflexo (em ricochete) que ela pr&#243;pria sofreu com a profana&#231;&#227;o da imagem e da mem&#243;ria de sua filha falecida.
+- (C) A a&#231;&#227;o s&#243; poderia ser ajuizada se a pr&#243;pria v&#237;tima tivesse deixado procura&#231;&#227;o assinada antes do &#243;bito.
+- (D) Apenas o Minist&#233;rio P&#250;blico tem legitimidade para tutelar a imagem de pessoas falecidas.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**.  
+*Fundamenta&#231;&#227;o*: O par&#225;grafo &#250;nico do art. 12 do CC confere aos parentes (c&#244;njuge, ascendentes, descendentes e colaterais at&#233; 4&#186; grau) legitimidade para exigir que cesse a amea&#231;a ou les&#227;o aos direitos da personalidade da pessoa falecida, al&#233;m de reclamar perdas e danos por **dano moral em ricochete** pelo sofrimento causado aos sobreviventes.</t></is></c><c r="V8" t="inlineStr"><is><t># [COMO CAI EM PROVAS / RAIO-X DAS BANCAS] - FGV e Cebraspe
+
+1. **A Armadilha do 'Mais Jovem Sobrevive' (FGV)**:
+   A FGV narra que o filho tinha 20 anos e o pai 90 anos e pergunta se o filho herdou por presun&#231;&#227;o biol&#243;gica. **RESPOSTA**: N&#227;o herdou! O C&#243;digo Civil brasileiro consagra a COMORI&#202;NCIA sem distin&#231;&#227;o de idade (art. 8&#186;).
+
+2. **Seguro de Vida em Comori&#234;ncia (Cebraspe)**:
+   A banca diz que o capital do seguro de vida do marido vai para os pais da esposa que morreu junto com ele em comori&#234;ncia. **ERRADO!** Ela n&#227;o sobreviveu ao segurado; o seguro vai para os herdeiros do marido ou benefici&#225;rio substituto.
+
+3. **Morte Encef&#225;lica como Crit&#233;rio Legal (Vunesp)**:
+   A morte civil no Brasil foi extinta; o crit&#233;rio legal da morte real &#233; a morte encef&#225;lica (Lei 9.434/97).</t></is></c><c r="W8" t="inlineStr"><is><t># [DICA DA PROFESSORA / S&#205;NTESE EM &#193;UDIO] - S&#237;ntese da Evelyn
+
+&#127897;&#65039; *Ol&#225;, querido aluno do Direito Prime! Professora Evelyn com voc&#234;:*
+
+&gt; *"Memorize a f&#243;rmula secreta da Comori&#234;ncia:  
+&gt; Morreram no mesmo acidente ou ocasi&#227;o e o legista N&#195;O SABE quem foi primeiro?  
+&gt; **Comori&#234;ncia $\rightarrow$ Morte no mesmo segundo!**  
+&gt; Consequ&#234;ncia n&#250;mero um: **Um n&#227;o herda do outro!**  
+&gt; A heran&#231;a do pai vai direto para os parentes do pai. A heran&#231;a do filho vai direto para os parentes do filho.  
+&gt; N&#227;o invente presun&#231;&#227;o de idade nem de sexo. A lei &#233; cega para a cronologia quando a per&#237;cia tem d&#250;vida.  
+&gt; Guarde isso e fature mais um ponto garantido na sua prova!"*</t></is></c><c r="X8" t="inlineStr"><is><t># [&#193;RVORE DECIS&#211;RIA / FLUXOGRAMA EM SETAS] - Fluxograma L&#243;gico
+
+```text
+[DUAS OU MAIS PESSOAS RECIPROCAMENTE HERDEIRAS FALECERAM]
+       |
+       +---&gt; A per&#237;cia m&#233;dica conseguiu provar QUEM faleceu primeiro?
+       |        |
+       |        +---[SIM - HOUVE PREMORI&#202;NCIA COMPROVADA]
+       |        |         |
+       |        |         +---&gt; O que sobreviveu por segundos/minutos adquire a heran&#231;a (Saisine)
+       |        |         +---&gt; Essa heran&#231;a integra o patrim&#244;nio dele e vai para os SEUS herdeiros!
+       |        |
+       |        +---[N&#195;O - D&#218;VIDA INVENC&#205;VEL DO IML]
+       |                  |
+       |                  +---&gt; OPERA-SE A COMORI&#202;NCIA (Art. 8&#186; do CC)
+       |                  +---&gt; Presun&#231;&#227;o de morte SIMULT&#194;NEA
+       |                  +---&gt; N&#195;O H&#193; transfer&#234;ncia heredit&#225;ria rec&#237;proca!
+       |                  +---&gt; Abre-se a sucess&#227;o aut&#244;noma de cada um para seus respectivos herdeiros vivos!
+```</t></is></c><c r="Y8" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / VILIP&#202;NDIO DE CAD&#193;VER] - Interse&#231;&#227;o com o Direito Penal
+
+Embora a personalidade civil termine com a morte (art. 6&#186; do CC), o cad&#225;ver humano n&#227;o &#233; equiparado a lixo ou coisa sem valor (*res derelicta*):
+- **Tipifica&#231;&#227;o Penal (Art. 212 do C&#243;digo Penal)**:
+  Vilipendiar cad&#225;ver ou suas cinzas &#233; crime punido com deten&#231;&#227;o de 1 a 3 anos e multa.
+- **Dever de Respeito e Sepultamento**:
+  A vontade manifestada em vida pelo falecido sobre crema&#231;&#227;o ou doa&#231;&#227;o de &#243;rg&#227;os deve ser respeitada pela fam&#237;lia (art. 14 do CC).
+- **Legitima&#231;&#227;o Processual Extraordin&#225;ria**: O c&#244;njuge e os parentes at&#233; 4&#186; grau atuam como guardi&#245;es da dignidade p&#243;stuma do falecido (art. 12, par&#225;grafo &#250;nico do CC).</t></is></c><c r="Z8" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 4] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Rol de Legitimados**: Segundo o par&#225;grafo &#250;nico do art. 12 do C&#243;digo Civil, quem s&#227;o as pessoas autorizadas por lei a ajuizar a&#231;&#227;o para defender o nome, a imagem e a honra da pessoa que j&#225; faleceu?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **C&#212;NJUGE SOBREVIVENTE OU QUALQUER PARENTE EM LINHA RETA OU COLATERAL AT&#201; O QUARTO GRAU!**  
+&gt; - Linha reta: Pais, av&#243;s, bisav&#243;s (ascendentes) e filhos, netos, bisnetos (descendentes).  
+&gt; - Colaterais: Irm&#227;os (2&#186; grau), tios e sobrinhos (3&#186; grau), primos e tios-av&#243;s (4&#186; grau).  
+&gt; Qualquer um deles possui legitimidade aut&#244;noma e concorrente.</t></is></c><c r="AA8" t="inlineStr"><is><t># [QUEST&#195;O DISCURSIVA / PR&#193;TICA PROFISSIONAL] - Caso Concreto
+
+**Caso Pr&#225;tico**: Dois irm&#227;os empres&#225;rios sem outros herdeiros faleceram em um desabamento. O advogado do invent&#225;rio sugere abrir um &#250;nico processo de invent&#225;rio e distribuir metade de cada empresa para as respectivas namoradas, alegando que 'n&#227;o importa quem morreu antes'.  
+Voc&#234; &#233; consultado pelo juiz das sucess&#245;es para emitir nota t&#233;cnica.
+
+**Pergunta**: A orienta&#231;&#227;o do advogado est&#225; correta? Como o juiz deve proceder?
+
+---
+
+### &#9878;&#65039; Parecer T&#233;cnico Resumido:
+&gt; **Orienta&#231;&#227;o do advogado manifestamente INCORRETA**.  
+&gt; 1. &#201; imprescind&#237;vel determinar a exist&#234;ncia ou n&#227;o de **comori&#234;ncia** mediante a juntada das certid&#245;es de &#243;bito e laudos periciais tanatosc&#243;picos.  
+&gt; 2. Se for declarada a **comori&#234;ncia** (art. 8&#186; do CC), os irm&#227;os n&#227;o herdam entre si.  
+&gt; 3. Namoradas n&#227;o s&#227;o herdeiras necess&#225;rias nem leg&#237;timas pelo C&#243;digo Civil (salvo se comprovada uni&#227;o est&#225;vel em a&#231;&#227;o aut&#244;noma). N&#227;o havendo descendentes, ascendentes, c&#244;njuge/companheiro nem colaterais vivos, a heran&#231;a ser&#225; declarada **jacente** e, ap&#243;s a vac&#226;ncia, recolhida pelo Munic&#237;pio ou Distrito Federal (arts. 1.819 e 1.822 do CC)!</t></is></c><c r="AB8" t="inlineStr"><is><t># [MAPA CONCEITUAL COMPARATIVO] - Os Efeitos Simult&#226;neos do &#211;bito
+
+```text
+                     +---&gt; Cessa a Personalidade Civil (Art. 6&#186;, CC)
+                     |
+                     +---&gt; Dissolve o Casamento e a Uni&#227;o Est&#225;vel (Art. 1.571, I)
+[MORTE ENCEF&#193;LICA] --+
+                     +---&gt; Extingue o Poder Familiar, Tutela e Curatela (Art. 1.635, I)
+                     |
+                     +---&gt; Abre a Sucess&#227;o Heredit&#225;ria - Saisine Imediata (Art. 1.784)
+                     |
+                     +---&gt; Autoriza a Doa&#231;&#227;o de &#211;rg&#227;os (Lei 9.434/97)
+```</t></is></c><c r="AC8" t="inlineStr"><is><t># [CHECKLIST FINAL / REVIS&#195;O DE RETEN&#199;&#195;O] - 5 Pontos de Ouro
+
+Gabarite o encerramento da personalidade civil:
+
+- [x] **Morte Real**: Comprovada por atestado m&#233;dico; crit&#233;rio adotado: morte encef&#225;lica.
+- [x] **Comori&#234;ncia (Art. 8&#186;)**: Morte simult&#226;nea presumida em caso de d&#250;vida cronol&#243;gica invenc&#237;vel.
+- [x] **Efeito Sucess&#243;rio da Comori&#234;ncia**: N&#227;o h&#225; transfer&#234;ncia de heran&#231;a entre os comorientes.
+- [x] **Seguro de Vida**: Benefici&#225;rio comoriente n&#227;o recebe; vai para benefici&#225;rio substituto ou herdeiros do segurado (art. 792 e 794 do CC).
+- [x] **Tutela P&#243;stuma (Art. 12)**: C&#244;njuge e parentes at&#233; 4&#186; grau t&#234;m legitimidade para defender a imagem e mem&#243;ria do falecido.</t></is></c><c r="AD8" t="inlineStr"></c><c r="AE8" t="inlineStr"></c><c r="AF8" t="inlineStr"></c><c r="AG8" t="inlineStr"></c><c r="AH8" t="inlineStr"></c></row><row r="9"><c r="A9" t="inlineStr"><is><t>Aula 08</t></is></c><c r="B9" t="inlineStr"><is><t>FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA</t></is></c><c r="C9" t="inlineStr"><is><t>01. Pessoas no C&#243;digo Civil</t></is></c><c r="D9" t="n"><v>24</v></c><c r="E9" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / CONCEITO CENTRAL] - FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA
+
+&gt; **Marco Normativo Central**: Arts. 11 a 21 do C&#243;digo Civil
+
+A disciplina jur&#237;dica de **FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA** insere-se no ramo de **Direito das Pessoas e Personalidade**, estruturando como a lei protege as pessoas e seus bens com justi&#231;a e seguran&#231;a.
+
+### Conceito Desmembrado e Raz&#227;o de Ser:
+No direito civil contempor&#226;neo, as normas que regem FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA abandonaram o antigo apego formalista ego&#237;sta para se submeter &#224; **dignidade da pessoa humana**, &#224; **fun&#231;&#227;o social** e &#224; **boa-f&#233; objetiva**.
+A raz&#227;o de ser do instituto &#233; assegurar equil&#237;brio e previsibilidade: ningu&#233;m pode se valer da pr&#243;pria torpeza, nem locupletar-se indevidamente &#224;s custas do preju&#237;zo alheio.
+
+&#128161; *Exemplo R&#225;pido de Aplica&#231;&#227;o*: Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.</t></is></c><c r="F9" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 1] - O Dilema Pr&#225;tico
+
+Para compreender como **FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA** impacta a vida real dos cidad&#227;os nos f&#243;runs e cart&#243;rios, acompanhe o caso concreto:
+
+Beatriz descobre que uma marca de roupas famosa utilizou uma foto dela tirada na praia para estampar uma campanha publicit&#225;ria nacional sem qualquer contrato ou consentimento.
+
+Diante da recusa da outra parte em solucionar a controv&#233;rsia amigavelmente, surge a d&#250;vida jur&#237;dica: quais s&#227;o os limites da prote&#231;&#227;o que o C&#243;digo Civil e os tribunais conferem a essa situa&#231;&#227;o cotidiana?</t></is></c><c r="G9" t="inlineStr"><is><t># [GLOSS&#193;RIO INTERATIVO / MENU SUSPENSO] - Termos Chave Clic&#225;veis
+
+*(Clique em cada termo no menu suspenso para expandir a defini&#231;&#227;o desmembrada e o exemplo pr&#225;tico)*
+
+&#9660; **[Menu Suspenso 1: Intransmissibilidade]**
+- *O que &#233;*: Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.
+- *Exemplo R&#225;pido*: Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.
+
+&#9660; **[Menu Suspenso 2: Direito ao Esquecimento]**
+- *O que &#233;*: Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos.
+- *Exemplo R&#225;pido*: Uma emissora pode recordar caso criminal hist&#243;rico real, ressalvada indeniza&#231;&#227;o por abuso.
+
+&#9660; **[Menu Suspenso 3: Dano Moral In Re Ipsa]**
+- *O que &#233;*: Dano moral presumido pela pr&#243;pria ocorr&#234;ncia do fato ofensivo, que independe de prova da dor ps&#237;quica.
+- *Exemplo R&#225;pido*: S&#250;mula 403 do STJ: o uso indevido da imagem de algu&#233;m em propaganda comercial gera dano moral autom&#225;tico.</t></is></c><c r="H9" t="inlineStr"><is><t># [EXEMPLO PR&#193;TICO E APLICA&#199;&#195;O FORENSE] - Como Funciona nos Tribunais
+
+Na pr&#225;tica forense de **FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA**, ju&#237;zes e advogados aplicam as seguintes solu&#231;&#245;es imediatas:
+
+1. **Seguran&#231;a das Rela&#231;&#245;es Negociais**: Assegura que o combinado seja exig&#237;vel, prevenindo calotes e fraudes patrimoniais;
+2. **Prote&#231;&#227;o &#224; Parte Vulner&#225;vel**: Impede imposi&#231;&#245;es leoninas ou cl&#225;usulas abusivas impostas por detentores de maior poder econ&#244;mico;
+3. **Equidade e Razoabilidade**: Permite a revis&#227;o judicial das obriga&#231;&#245;es quando fatos supervenientes extraordin&#225;rios quebram o equil&#237;brio original da rela&#231;&#227;o.
+
+&#128161; *Aten&#231;&#227;o Forense*: O direito n&#227;o socorre aos que dormem (*dormientibus non succurrit ius*); por isso, os prazos legais da mat&#233;ria devem ser vigiados com rigor!</t></is></c><c r="I9" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 1] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta de Fixa&#231;&#227;o**: Qual &#233; a defini&#231;&#227;o jur&#237;dica central de **Intransmissibilidade** em **FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA** e qual sua principal repercuss&#227;o no patrim&#244;nio das partes?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.**  
+&gt; *Repercuss&#227;o Pr&#225;tica*: Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.</t></is></c><c r="J9" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 1] - Preencha as Lacunas
+
+Teste seu dom&#237;nio completando as palavras essenciais da mat&#233;ria:
+
+---
+
+### Enunciado da Atividade:
+*Os direitos da personalidade s&#227;o em regra [ LACUNA 1 ] e intransmiss&#237;veis, n&#227;o podendo o seu exerc&#237;cio sofrer limita&#231;&#227;o volunt&#225;ria permanente. Conforme a S&#250;mula 403 do STJ, independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada da [ LACUNA 2 ] de pessoa com fins econ&#244;micos.*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: [ irrenunci&#225;veis ] | [ alien&#225;veis ]
+- **Para a Lacuna 2**: [ imagem ] | [ assinatura ]
+
+---
+
+### &#127919; Gabarito Comentado:
+1. irrenunci&#225;veis (Art. 11 do CC); 2. imagem (S&#250;mula 403 do STJ).</t></is></c><c r="K9" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 1] - Padr&#227;o OAB / FGV
+
+**Enunciado**: A respeito das normas e princ&#237;pios aplic&#225;veis a **FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA**, assinale a alternativa juridicamente correta:
+
+- (A) A legisla&#231;&#227;o civil veda a aplica&#231;&#227;o da boa-f&#233; objetiva aos contratos particulares que versem sobre FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA.
+- (B) Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a. Portanto, Voc&#234; n&#227;o pode vender seu nome ou passar sua honra para outra pessoa.
+- (C) Os prazos prescricionais de FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA admitem dila&#231;&#227;o convencional por mero acordo verbal das partes.
+- (D) O Minist&#233;rio P&#250;blico jamais possui legitimidade para intervir em causas que envolvam FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**.  
+*Fundamenta&#231;&#227;o*: Trata-se da correta aplica&#231;&#227;o dogm&#225;tica do instituto segundo o C&#243;digo Civil e a jurisprud&#234;ncia dominante.</t></is></c><c r="L9" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / DOGM&#193;TICA E REQUISITOS T&#201;CNICOS] - Requisitos Estruturais
+
+Para que qualquer ato relacionado a **FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA** produza plenos efeitos no mundo jur&#237;dico, exige-se:
+
+1. **Legitima&#231;&#227;o Espec&#237;fica**: N&#227;o basta capacidade gen&#233;rica; a parte deve deter pertin&#234;ncia subjetiva e poderes para o ato;
+2. **Higidez Volitiva e Aus&#234;ncia de Fraude**: A manifesta&#231;&#227;o de vontade deve ser livre de erro, dolo, coa&#231;&#227;o ou simula&#231;&#227;o;
+3. **Conformidade com a Ordem P&#250;blica**: O objeto deve ser l&#237;cito e atender &#224; fun&#231;&#227;o social estipulada em lei.</t></is></c><c r="M9" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 2] - O Conflito em Ju&#237;zo
+
+A a&#231;&#227;o judicial foi formalmente distribu&#237;da na Vara C&#237;vel competente.
+
+A parte r&#233; apresentou contesta&#231;&#227;o alegando que n&#227;o houve ilicitude e invocando o estrito cumprimento de cl&#225;usulas padronizadas.
+Contudo, a defesa da v&#237;tima sustentou que o comportamento do r&#233;u violou frontalmente a boa-f&#233; objetiva e os preceitos de **FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA**.
+
+O juiz abriu vista para manifesta&#231;&#227;o sobre provas, convocando as partes para audi&#234;ncia de instru&#231;&#227;o e julgamento!</t></is></c><c r="N9" t="inlineStr"><is><t># [FRONTEIRAS CR&#205;TICAS / O QUE N&#195;O &#201;] - Quadro Comparativo
+
+| FIGURA EM AN&#193;LISE | O QUE REALMENTE &#201; | O QUE **N&#195;O** &#201; (CUIDADO!) |
+| :--- | :--- | :--- |
+| **Intransmissibilidade** | Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a. | N&#227;o pode ser flexibilizado por conveni&#234;ncia particular. |
+| **Direito ao Esquecimento** | Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos. | N&#227;o se confunde com arb&#237;trio individual ou impunidade. |
+| **Dano Moral In Re Ipsa** | Dano moral presumido pela pr&#243;pria ocorr&#234;ncia do fato ofensivo, que independe de prova da dor ps&#237;quica. | N&#227;o depende de comprova&#231;&#227;o de dor &#237;ntima se a lei presumir. |</t></is></c><c r="O9" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 2] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Crucial**: Qual &#233; a distin&#231;&#227;o primordial entre **Intransmissibilidade** e **Direito ao Esquecimento** no direito civil?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; Enquanto **Intransmissibilidade** (Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.), o instituto de **Direito ao Esquecimento** (Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos.).  
+&gt; Conhecer essa fronteira &#233; decisivo para n&#227;o errar a fundamenta&#231;&#227;o da peti&#231;&#227;o inicial nem as quest&#245;es da OAB!</t></is></c><c r="P9" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 2] - Regras Especiais
+
+Complete a assertiva jurisprudencial consolidada pelos tribunais superiores:
+
+---
+
+### Enunciado:
+*'No &#226;mbito de FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA, a boa-f&#233; objetiva imp&#245;e deveres anexos de [ LACUNA 1 ] e colabora&#231;&#227;o m&#250;tua. A quebra desses deveres caracteriza inadimplemento positivo ou viola&#231;&#227;o contratual sujeita a [ LACUNA 2 ].'*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: `[ lealdade / informa&#231;&#227;o ]` | `[ oculta&#231;&#227;o ]`
+- **Para a Lacuna 2**: `[ repara&#231;&#227;o por perdas e danos ]` | `[ perd&#227;o judicial ]`
+
+---
+
+### &#127919; Gabarito Comentado:
+1. lealdade / informa&#231;&#227;o (Enunciados da Jornada de Direito Civil do CJF);
+2. repara&#231;&#227;o por perdas e danos (Arts. 187 e 927 do CC).</t></is></c><c r="Q9" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 2] - N&#237;vel Concurso P&#250;blico
+
+**Enunciado**: Em mat&#233;ria de **FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA**, assinale a afirmativa INCORRETA:
+
+- (A) A responsabilidade civil e a validade negocial subordinam-se &#224; fun&#231;&#227;o social do instituto.
+- (B) &#201; nula a cl&#225;usula que contrarie disposi&#231;&#227;o de lei de ordem p&#250;blica em FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA.
+- (C) Os efeitos do neg&#243;cio podem ser anulados se comprovado v&#237;cio de consentimento no prazo decadencial legal.
+- (D) O enriquecimento sem causa &#233; tolerado no direito civil caso o prejudicado seja pessoa jur&#237;dica.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Incorreta: (D)**. 
+*Fundamenta&#231;&#227;o*: O art. 884 do C&#243;digo Civil repudia expressamente o enriquecimento sem causa contra qualquer sujeito de direito (pessoa natural ou jur&#237;dica).</t></is></c><c r="R9" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 3] - Conclus&#227;o e Senten&#231;a Judicial
+
+A senten&#231;a judicial foi proferida pelo magistrado titular da Vara C&#237;vel:
+
+Beatriz aju&#237;za a&#231;&#227;o com base no art. 20 do CC e na S&#250;mula 403 do STJ: a empresa &#233; condenada a indeniz&#225;-la por danos morais autom&#225;ticos e a retirar toda a campanha de circula&#231;&#227;o.
+
+A pacifica&#231;&#227;o do conflito demonstrou que as regras de **FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA** atuam para resguardar a ordem econ&#244;mica e proteger os cidad&#227;os que pautam suas condutas na boa-f&#233; objetiva!</t></is></c><c r="S9" t="inlineStr"><is><t># [MINIGAME INTERATIVO / LIGUE OS TERMOS] - Desafio R&#225;pido
+
+Ligue cada elemento da **Coluna A** &#224; sua defini&#231;&#227;o correspondente na **Coluna B**:
+
+---
+
+### &#129513; COLUNA A:
+1. Intransmissibilidade
+2. Direito ao Esquecimento
+3. Dano Moral In Re Ipsa
+4. Boa-f&#233; Objetiva
+
+---
+
+### &#127919; COLUNA B:
+- ( ) Tese afastada pelo STF (Tema 786), que considerou incompat&#237;vel com a CF/88 a proibi&#231;&#227;o gen&#233;rica da divulga&#231;&#227;o de fatos ver&#237;dicos licitamente obtidos.
+- ( ) Padr&#227;o de conduta leal, honesto e &#233;tico obrigat&#243;rio nas rela&#231;&#245;es civis.
+- ( ) Os direitos da personalidade n&#227;o podem ser transferidos a terceiros nem por heran&#231;a.
+- ( ) Dano moral presumido pela pr&#243;pria ocorr&#234;ncia do fato ofensivo, que independe de prova da dor ps&#237;quica.
+
+---
+
+### &#128273; Resposta do Minigame:
+- **Ordem Correta**: `[ 2 ]` $\rightarrow$ `[ 4 ]` $\rightarrow$ `[ 1 ]` $\rightarrow$ `[ 3 ]`</t></is></c><c r="T9" t="inlineStr"><is><t># [JURISPRUD&#202;NCIA / TRIBUNAIS SUPERIORES] - Precedentes Vinculantes
+
+Principais diretrizes pac&#237;ficas dos Tribunais Superiores (STJ/STF) sobre **FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA**:
+
+1. **STJ - S&#250;mula 403: 'Independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada de imagem de pessoa com fins econ&#244;micos ou comerciais'.**;
+2. **Veda&#231;&#227;o ao Comportamento Contradit&#243;rio**: O STJ reprime com veem&#234;ncia o *venire contra factum proprium*, invalidando condutas que quebram a confian&#231;a leg&#237;tima;
+3. **Mitiga&#231;&#227;o do Preju&#237;zo (*Duty to Mitigate the Loss*)**: O credor tem o dever anexo de adotar medidas razo&#225;veis para n&#227;o agravar o pr&#243;prio dano.</t></is></c><c r="U9" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 3] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Jurisprudencial**: Qual s&#250;mula ou tese repetitiva do STJ incide com maior frequ&#234;ncia em lit&#237;gios sobre **FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA**?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **STJ - S&#250;mula 403: 'Independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada de imagem de pessoa com fins econ&#244;micos ou comerciais'.**  
+&gt; *Import&#226;ncia*: Essa orienta&#231;&#227;o pacificada vincula os tribunais de segunda inst&#226;ncia e evita o ajuizamento de recursos protelat&#243;rios.</t></is></c><c r="V9" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 3] - N&#237;vel Magistratura / MP
+
+**Enunciado**: Em demanda judicial versando sobre **FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA**, o r&#233;u alega aus&#234;ncia de responsabilidade em virtude de cl&#225;usula contratual gen&#233;rica de n&#227;o indenizar. &#192; luz da jurisprud&#234;ncia do STJ e do C&#243;digo Civil, o juiz deve:
+
+- (A) Acolher a defesa do r&#233;u, pois a autonomia privada das partes &#233; soberana e absoluta.
+- (B) Declarar a nulidade ou inefic&#225;cia da cl&#225;usula de n&#227;o indenizar que afronte normas cogentes de ordem p&#250;blica ou a fun&#231;&#227;o social da rela&#231;&#227;o.
+- (C) Extinguir o processo sem julgamento de m&#233;rito por falta de interesse de agir.
+- (D) Condenar o autor por litig&#226;ncia de m&#225;-f&#233;.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**. 
+*Fundamenta&#231;&#227;o*: Cl&#225;usulas de dispensa de deveres essenciais ou de exclus&#227;o unilateral de responsabilidade que violem preceitos de ordem p&#250;blica s&#227;o nulas de pleno direito (art. 166, VI e art. 421 do CC).</t></is></c><c r="W9" t="inlineStr"><is><t># [COMO CAI EM PROVAS / RAIO-X DAS BANCAS] - Armadilhas Cl&#225;ssicas
+
+Fique alerta &#224;s 3 pegadinhas mais recorrentes preparadas por FGV, Cebraspe e Vunesp:
+
+1. **A banca vai afirmar que '&#233; necess&#225;ria per&#237;cia psicol&#243;gica para comprovar que a v&#237;tima sofreu trauma com o uso da foto'. ERRADO! O dano moral pelo uso comercial indevido da imagem &#233; in re ipsa (S&#250;mula 403/STJ).**
+2. **Prazos de Prescri&#231;&#227;o vs. Decad&#234;ncia**: A banca adora chamar prazo decadencial de anula&#231;&#227;o de 'prescricional' para induzir a erro;
+3. **Solidariedade Presumida**: Lembrar sempre que a solidariedade N&#195;O se presume; resulta da lei ou do contrato (Art. 265 do CC).</t></is></c><c r="X9" t="inlineStr"><is><t># [DICA DA PROFESSORA / S&#205;NTESE EM &#193;UDIO] - P&#237;lula da Professora Evelyn
+
+&#127897;&#65039; *Ol&#225;, querido aluno do Direito Prime! Aqui &#233; a Professora Evelyn com o resumo definitivo de FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA:*
+
+&gt; *'N&#227;o complique o que a lei fez para ser justo!  
+&gt; Em FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA, lembre-se sempre de conferir:  
+&gt; 1. Houve respeito &#224; boa-f&#233; objetiva e &#224; fun&#231;&#227;o social?  
+&gt; 2. Quem alega o direito agiu dentro do prazo legal sem dormir no ponto?  
+&gt; 3. A s&#250;mula de reg&#234;ncia &#233;: STJ - S&#250;mula 403: 'Independe de prova do preju&#237;zo a indeniza&#231;&#227;o pela publica&#231;&#227;o n&#227;o autorizada de imagem de pessoa com fins econ&#244;micos ou comerciais'..  
+&gt; Guarde essa tr&#237;ade no cora&#231;&#227;o e voc&#234; acertar&#225; qualquer quest&#227;o de concurso e advocacia!'*</t></is></c><c r="Y9" t="inlineStr"><is><t># [&#193;RVORE DECIS&#211;RIA / FLUXOGRAMA EM SETAS] - Grafo de Decis&#227;o L&#243;gica
+
+```text
+[FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA: AN&#193;LISE DE EFIC&#193;CIA JUR&#205;DICA]
+       |
+       +---&gt; Houve preenchimento dos Requisitos Legais B&#225;sicos?
+       |        |
+       |        +---[N&#195;O]---&gt; V&#205;CIO NA ESTRUTURA NORMATIVA
+       |        |             - Inefic&#225;cia ou Nulidade do ato
+       |        |
+       |        +---[SIM]---&gt; Houve Observ&#226;ncia da Boa-f&#233; e Prazos?
+       |                                |
+       |                                +---[SIM]---&gt; ATO H&#205;GIDO, V&#193;LIDO E EXIG&#205;VEL
+       |                                |             - Tutela jurisdicional concedida
+       |                                |             - Produ&#231;&#227;o integral dos efeitos
+       |                                |
+       |                                +---[N&#195;O]---&gt; INCID&#202;NCIA DE SAN&#199;&#195;O / PRESCRI&#199;&#195;O
+       |                                              - Perda da pretens&#227;o ou indeniza&#231;&#227;o civil
+```</t></is></c><c r="Z9" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / EFEITOS ESPECIAIS] - Reflexos Interdisciplinares
+
+A mat&#233;ria de **FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA** produz efeitos que transcendem o direito privado comum:
+
+- **Reflexos Tribut&#225;rios**: A regularidade jur&#237;dica do ato define o fato gerador e afasta autua&#231;&#245;es fiscais indevidas;
+- **Reflexos Notariais e Registrais**: A publicidade nos cart&#243;rios de notas e de registro de im&#243;veis confere efic&#225;cia perante terceiros (*erga omnes*);
+- **Reflexos Processuais**: Assegura a legitimidade ativa e passiva nas a&#231;&#245;es de conhecimento e de execu&#231;&#227;o.</t></is></c><c r="AA9" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 4] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pegadinha da Magistratura**: O descumprimento dos deveres anexos de conduta da boa-f&#233; objetiva em **FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA** exige prova de dolo ou culpa do devedor?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **N&#195;O EXIGE PROVA DE DOLO OU CULPA!**  
+&gt; A viola&#231;&#227;o positiva do contrato por quebra da boa-f&#233; objetiva opera responsabilidade de natureza **objetiva**, bastando a comprova&#231;&#227;o objetiva da conduta desleal ou omissiva.</t></is></c><c r="AB9" t="inlineStr"><is><t># [QUEST&#195;O DISCURSIVA / PR&#193;TICA PROFISSIONAL] - Parecer Forense
+
+**Situa&#231;&#227;o Pr&#225;tica**: Um cliente procura seu escrit&#243;rio de advocacia relatando les&#227;o patrimonial grave decorrente de lit&#237;gio em **FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA**.
+
+**Pergunta**: Como advogado(a), qual &#233; a primeira provid&#234;ncia cautelar e de m&#233;rito a ser proposta em ju&#237;zo?
+
+---
+
+### &#9878;&#65039; Padr&#227;o de Resposta T&#233;cnico:
+&gt; 1. **Tutela Provis&#243;ria de Urg&#234;ncia** (art. 300 do CPC) para suspender atos expropriat&#243;rios ou cobran&#231;as indevidas;  
+&gt; 2. **Pedido Principal** de declara&#231;&#227;o de cumprimento do preceito de FIM DA PERSONALIDADE: MORTE CIVIL E MORTE PRESUMIDA, com base em Arts. 11 a 21 do C&#243;digo Civil e perdas e danos.</t></is></c><c r="AC9" t="inlineStr"></c><c r="AD9" t="inlineStr"></c><c r="AE9" t="inlineStr"></c><c r="AF9" t="inlineStr"></c><c r="AG9" t="inlineStr"></c><c r="AH9" t="inlineStr"></c></row></sheetData><pageMargins left="0.75" right="0.75" top="1" bottom="1" header="0.5" footer="0.5"/></worksheet>

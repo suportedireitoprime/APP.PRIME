@@ -1,0 +1,488 @@
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetPr><outlinePr summaryBelow="1" summaryRight="1"/><pageSetUpPr/></sheetPr><dimension ref="A1:AH3"/><sheetViews><sheetView workbookViewId="0"><selection activeCell="A1" sqref="A1"/></sheetView></sheetViews><sheetFormatPr baseColWidth="8" defaultRowHeight="15"/><cols><col width="12" customWidth="1" min="1" max="1"/><col width="38" customWidth="1" min="2" max="2"/><col width="32" customWidth="1" min="3" max="3"/><col width="14" customWidth="1" min="4" max="4"/><col width="45" customWidth="1" min="5" max="5"/><col width="45" customWidth="1" min="6" max="6"/><col width="45" customWidth="1" min="7" max="7"/><col width="45" customWidth="1" min="8" max="8"/><col width="45" customWidth="1" min="9" max="9"/><col width="45" customWidth="1" min="10" max="10"/><col width="45" customWidth="1" min="11" max="11"/><col width="45" customWidth="1" min="12" max="12"/><col width="45" customWidth="1" min="13" max="13"/><col width="45" customWidth="1" min="14" max="14"/><col width="45" customWidth="1" min="15" max="15"/><col width="45" customWidth="1" min="16" max="16"/><col width="45" customWidth="1" min="17" max="17"/><col width="45" customWidth="1" min="18" max="18"/><col width="45" customWidth="1" min="19" max="19"/><col width="45" customWidth="1" min="20" max="20"/><col width="45" customWidth="1" min="21" max="21"/><col width="45" customWidth="1" min="22" max="22"/><col width="45" customWidth="1" min="23" max="23"/><col width="45" customWidth="1" min="24" max="24"/><col width="45" customWidth="1" min="25" max="25"/><col width="45" customWidth="1" min="26" max="26"/><col width="45" customWidth="1" min="27" max="27"/><col width="45" customWidth="1" min="28" max="28"/><col width="45" customWidth="1" min="29" max="29"/><col width="45" customWidth="1" min="30" max="30"/><col width="45" customWidth="1" min="31" max="31"/><col width="45" customWidth="1" min="32" max="32"/><col width="45" customWidth="1" min="33" max="33"/><col width="45" customWidth="1" min="34" max="34"/></cols><sheetData><row r="1"><c r="A1" s="1" t="inlineStr"><is><t>Aula</t></is></c><c r="B1" s="2" t="inlineStr"><is><t>Titulo_da_Aula</t></is></c><c r="C1" s="1" t="inlineStr"><is><t>Materia_PDF</t></is></c><c r="D1" s="1" t="inlineStr"><is><t>Total_Slides</t></is></c><c r="E1" s="3" t="inlineStr"><is><t>Slide_01</t></is></c><c r="F1" s="3" t="inlineStr"><is><t>Slide_02</t></is></c><c r="G1" s="3" t="inlineStr"><is><t>Slide_03</t></is></c><c r="H1" s="3" t="inlineStr"><is><t>Slide_04</t></is></c><c r="I1" s="3" t="inlineStr"><is><t>Slide_05</t></is></c><c r="J1" s="3" t="inlineStr"><is><t>Slide_06</t></is></c><c r="K1" s="3" t="inlineStr"><is><t>Slide_07</t></is></c><c r="L1" s="3" t="inlineStr"><is><t>Slide_08</t></is></c><c r="M1" s="3" t="inlineStr"><is><t>Slide_09</t></is></c><c r="N1" s="3" t="inlineStr"><is><t>Slide_10</t></is></c><c r="O1" s="3" t="inlineStr"><is><t>Slide_11</t></is></c><c r="P1" s="3" t="inlineStr"><is><t>Slide_12</t></is></c><c r="Q1" s="3" t="inlineStr"><is><t>Slide_13</t></is></c><c r="R1" s="3" t="inlineStr"><is><t>Slide_14</t></is></c><c r="S1" s="3" t="inlineStr"><is><t>Slide_15</t></is></c><c r="T1" s="3" t="inlineStr"><is><t>Slide_16</t></is></c><c r="U1" s="3" t="inlineStr"><is><t>Slide_17</t></is></c><c r="V1" s="3" t="inlineStr"><is><t>Slide_18</t></is></c><c r="W1" s="3" t="inlineStr"><is><t>Slide_19</t></is></c><c r="X1" s="3" t="inlineStr"><is><t>Slide_20</t></is></c><c r="Y1" s="3" t="inlineStr"><is><t>Slide_21</t></is></c><c r="Z1" s="3" t="inlineStr"><is><t>Slide_22</t></is></c><c r="AA1" s="3" t="inlineStr"><is><t>Slide_23</t></is></c><c r="AB1" s="3" t="inlineStr"><is><t>Slide_24</t></is></c><c r="AC1" s="3" t="inlineStr"><is><t>Slide_25</t></is></c><c r="AD1" s="3" t="inlineStr"><is><t>Slide_26</t></is></c><c r="AE1" s="3" t="inlineStr"><is><t>Slide_27</t></is></c><c r="AF1" s="3" t="inlineStr"><is><t>Slide_28</t></is></c><c r="AG1" s="3" t="inlineStr"><is><t>Slide_29</t></is></c><c r="AH1" s="3" t="inlineStr"><is><t>Slide_30</t></is></c></row><row r="2"><c r="A2" t="inlineStr"><is><t>Aula 01</t></is></c><c r="B2" t="inlineStr"><is><t>BIO&#201;TICA E BIODIREITO</t></is></c><c r="C2" t="inlineStr"><is><t>36. Diretivas Antecipadas de Vontade</t></is></c><c r="D2" t="n"><v>22</v></c><c r="E2" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / CONCEITO CENTRAL] - BIO&#201;TICA E BIODIREITO
+
+&gt; **Marco Normativo Central**: Arts. 1.784 a 2.027 do C&#243;digo Civil
+
+A disciplina jur&#237;dica de **BIO&#201;TICA E BIODIREITO** insere-se no ramo de **Direito das Sucess&#245;es e Planejamento Heredit&#225;rio**, estruturando como a lei protege as pessoas e seus bens com justi&#231;a e seguran&#231;a.
+
+### Conceito Desmembrado e Raz&#227;o de Ser:
+No direito civil contempor&#226;neo, as normas que regem BIO&#201;TICA E BIODIREITO abandonaram o antigo apego formalista ego&#237;sta para se submeter &#224; **dignidade da pessoa humana**, &#224; **fun&#231;&#227;o social** e &#224; **boa-f&#233; objetiva**.
+A raz&#227;o de ser do instituto &#233; assegurar equil&#237;brio e previsibilidade: ningu&#233;m pode se valer da pr&#243;pria torpeza, nem locupletar-se indevidamente &#224;s custas do preju&#237;zo alheio.
+
+&#128161; *Exemplo R&#225;pido de Aplica&#231;&#227;o*: O herdeiro j&#225; &#233; dono do patrim&#244;nio no segundo em que o pai falece, mesmo antes de abrir o invent&#225;rio.</t></is></c><c r="F2" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 1] - O Dilema Pr&#225;tico
+
+Para compreender como **BIO&#201;TICA E BIODIREITO** impacta a vida real dos cidad&#227;os nos f&#243;runs e cart&#243;rios, acompanhe o caso concreto:
+
+Ant&#244;nio, pai de dois filhos, doou em vida 80% de todo o seu patrim&#244;nio ao filho ca&#231;ula, sem constar dispensa expressa de cola&#231;&#227;o da parte dispon&#237;vel.
+
+Diante da recusa da outra parte em solucionar a controv&#233;rsia amigavelmente, surge a d&#250;vida jur&#237;dica: quais s&#227;o os limites da prote&#231;&#227;o que o C&#243;digo Civil e os tribunais conferem a essa situa&#231;&#227;o cotidiana?</t></is></c><c r="G2" t="inlineStr"><is><t># [GLOSS&#193;RIO INTERATIVO / MENU SUSPENSO] - Termos Chave Clic&#225;veis
+
+*(Clique em cada termo no menu suspenso para expandir a defini&#231;&#227;o desmembrada e o exemplo pr&#225;tico)*
+
+&#9660; **[Menu Suspenso 1: Princ&#237;pio da Saisine (Art. 1.784 do CC)]**
+- *O que &#233;*: Fic&#231;&#227;o jur&#237;dica que transmite a posse e propriedade da heran&#231;a aos herdeiros leg&#237;timos e testament&#225;rios no instante exato da morte do autor da heran&#231;a.
+- *Exemplo R&#225;pido*: O herdeiro j&#225; &#233; dono do patrim&#244;nio no segundo em que o pai falece, mesmo antes de abrir o invent&#225;rio.
+
+&#9660; **[Menu Suspenso 2: Herdeiros Necess&#225;rios e Leg&#237;tima]**
+- *O que &#233;*: Descendentes, ascendentes e o c&#244;njuge sobrevivente (art. 1.845 do CC); eles t&#234;m direito intang&#237;vel a 50% de todo o patrim&#244;nio do falecido (leg&#237;tima).
+- *Exemplo R&#225;pido*: Quem tem filhos s&#243; pode doar ou deixar em testamento at&#233; metade de seus bens em favor de amigos ou institui&#231;&#245;es.
+
+&#9660; **[Menu Suspenso 3: Cola&#231;&#227;o de Bens (Art. 2.002 do CC)]**
+- *O que &#233;*: Ato obrigat&#243;rio pelo qual os descendentes informam no invent&#225;rio as doa&#231;&#245;es em vida recebidas dos pais para igualar a partilha com os irm&#227;os.
+- *Exemplo R&#225;pido*: Se o pai doou uma casa para um dos filhos em vida, esse valor &#233; descontado da heran&#231;a dele no invent&#225;rio final.</t></is></c><c r="H2" t="inlineStr"><is><t># [EXEMPLO PR&#193;TICO E APLICA&#199;&#195;O FORENSE] - Como Funciona nos Tribunais
+
+Na pr&#225;tica forense de **BIO&#201;TICA E BIODIREITO**, ju&#237;zes e advogados aplicam as seguintes solu&#231;&#245;es imediatas:
+
+1. **Seguran&#231;a das Rela&#231;&#245;es Negociais**: Assegura que o combinado seja exig&#237;vel, prevenindo calotes e fraudes patrimoniais;
+2. **Prote&#231;&#227;o &#224; Parte Vulner&#225;vel**: Impede imposi&#231;&#245;es leoninas ou cl&#225;usulas abusivas impostas por detentores de maior poder econ&#244;mico;
+3. **Equidade e Razoabilidade**: Permite a revis&#227;o judicial das obriga&#231;&#245;es quando fatos supervenientes extraordin&#225;rios quebram o equil&#237;brio original da rela&#231;&#227;o.
+
+&#128161; *Aten&#231;&#227;o Forense*: O direito n&#227;o socorre aos que dormem (*dormientibus non succurrit ius*); por isso, os prazos legais da mat&#233;ria devem ser vigiados com rigor!</t></is></c><c r="I2" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 1] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta de Fixa&#231;&#227;o**: Qual &#233; a defini&#231;&#227;o jur&#237;dica central de **Princ&#237;pio da Saisine (Art. 1.784 do CC)** em **BIO&#201;TICA E BIODIREITO** e qual sua principal repercuss&#227;o no patrim&#244;nio das partes?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **Fic&#231;&#227;o jur&#237;dica que transmite a posse e propriedade da heran&#231;a aos herdeiros leg&#237;timos e testament&#225;rios no instante exato da morte do autor da heran&#231;a.**  
+&gt; *Repercuss&#227;o Pr&#225;tica*: O herdeiro j&#225; &#233; dono do patrim&#244;nio no segundo em que o pai falece, mesmo antes de abrir o invent&#225;rio.</t></is></c><c r="J2" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 1] - Preencha as Lacunas
+
+Teste seu dom&#237;nio completando as palavras essenciais da mat&#233;ria:
+
+---
+
+### Enunciado da Atividade:
+*Aberta a sucess&#227;o, a heran&#231;a transmite-se, desde logo, aos herdeiros leg&#237;timos e testament&#225;rios pelo princ&#237;pio da [ LACUNA 1 ]. Pertence aos herdeiros necess&#225;rios, de pleno direito, a metade dos bens da heran&#231;a, constituindo a [ LACUNA 2 ].*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: [ saisine ] | [ usucapi&#227;o ]
+- **Para a Lacuna 2**: [ leg&#237;tima ] | [ quota p&#250;blica ]
+
+---
+
+### &#127919; Gabarito Comentado:
+1. saisine (Art. 1.784 do CC); 2. leg&#237;tima (Art. 1.846 do CC).</t></is></c><c r="K2" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 1] - Padr&#227;o OAB / FGV
+
+**Enunciado**: A respeito das normas e princ&#237;pios aplic&#225;veis a **BIO&#201;TICA E BIODIREITO**, assinale a alternativa juridicamente correta:
+
+- (A) A legisla&#231;&#227;o civil veda a aplica&#231;&#227;o da boa-f&#233; objetiva aos contratos particulares que versem sobre BIO&#201;TICA E BIODIREITO.
+- (B) Fic&#231;&#227;o jur&#237;dica que transmite a posse e propriedade da heran&#231;a aos herdeiros leg&#237;timos e testament&#225;rios no instante exato da morte do autor da heran&#231;a. Portanto, O herdeiro j&#225; &#233; dono do patrim&#244;nio no segundo em que o pai falece, mesmo antes de abrir o invent&#225;rio.
+- (C) Os prazos prescricionais de BIO&#201;TICA E BIODIREITO admitem dila&#231;&#227;o convencional por mero acordo verbal das partes.
+- (D) O Minist&#233;rio P&#250;blico jamais possui legitimidade para intervir em causas que envolvam BIO&#201;TICA E BIODIREITO.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**.  
+*Fundamenta&#231;&#227;o*: Trata-se da correta aplica&#231;&#227;o dogm&#225;tica do instituto segundo o C&#243;digo Civil e a jurisprud&#234;ncia dominante.</t></is></c><c r="L2" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / DOGM&#193;TICA E REQUISITOS T&#201;CNICOS] - Requisitos Estruturais
+
+Para que qualquer ato relacionado a **BIO&#201;TICA E BIODIREITO** produza plenos efeitos no mundo jur&#237;dico, exige-se:
+
+1. **Legitima&#231;&#227;o Espec&#237;fica**: N&#227;o basta capacidade gen&#233;rica; a parte deve deter pertin&#234;ncia subjetiva e poderes para o ato;
+2. **Higidez Volitiva e Aus&#234;ncia de Fraude**: A manifesta&#231;&#227;o de vontade deve ser livre de erro, dolo, coa&#231;&#227;o ou simula&#231;&#227;o;
+3. **Conformidade com a Ordem P&#250;blica**: O objeto deve ser l&#237;cito e atender &#224; fun&#231;&#227;o social estipulada em lei.</t></is></c><c r="M2" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 2] - O Conflito em Ju&#237;zo
+
+A a&#231;&#227;o judicial foi formalmente distribu&#237;da na Vara C&#237;vel competente.
+
+A parte r&#233; apresentou contesta&#231;&#227;o alegando que n&#227;o houve ilicitude e invocando o estrito cumprimento de cl&#225;usulas padronizadas.
+Contudo, a defesa da v&#237;tima sustentou que o comportamento do r&#233;u violou frontalmente a boa-f&#233; objetiva e os preceitos de **BIO&#201;TICA E BIODIREITO**.
+
+O juiz abriu vista para manifesta&#231;&#227;o sobre provas, convocando as partes para audi&#234;ncia de instru&#231;&#227;o e julgamento!</t></is></c><c r="N2" t="inlineStr"><is><t># [FRONTEIRAS CR&#205;TICAS / O QUE N&#195;O &#201;] - Quadro Comparativo
+
+| FIGURA EM AN&#193;LISE | O QUE REALMENTE &#201; | O QUE **N&#195;O** &#201; (CUIDADO!) |
+| :--- | :--- | :--- |
+| **Princ&#237;pio da Saisine (Art. 1.784 do CC)** | Fic&#231;&#227;o jur&#237;dica que transmite a posse e propriedade da heran&#231;a aos herdeiros leg&#237;timos e testament&#225;rios no instante exato da morte do autor da heran&#231;a. | N&#227;o pode ser flexibilizado por conveni&#234;ncia particular. |
+| **Herdeiros Necess&#225;rios e Leg&#237;tima** | Descendentes, ascendentes e o c&#244;njuge sobrevivente (art. 1.845 do CC); eles t&#234;m direito intang&#237;vel a 50% de todo o patrim&#244;nio do falecido (leg&#237;tima). | N&#227;o se confunde com arb&#237;trio individual ou impunidade. |
+| **Cola&#231;&#227;o de Bens (Art. 2.002 do CC)** | Ato obrigat&#243;rio pelo qual os descendentes informam no invent&#225;rio as doa&#231;&#245;es em vida recebidas dos pais para igualar a partilha com os irm&#227;os. | N&#227;o depende de comprova&#231;&#227;o de dor &#237;ntima se a lei presumir. |</t></is></c><c r="O2" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 2] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Crucial**: Qual &#233; a distin&#231;&#227;o primordial entre **Princ&#237;pio da Saisine (Art. 1.784 do CC)** e **Herdeiros Necess&#225;rios e Leg&#237;tima** no direito civil?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; Enquanto **Princ&#237;pio da Saisine (Art. 1.784 do CC)** (Fic&#231;&#227;o jur&#237;dica que transmite a posse e propriedade da heran&#231;a aos herdeiros leg&#237;timos e testament&#225;rios no instante exato da morte do autor da heran&#231;a.), o instituto de **Herdeiros Necess&#225;rios e Leg&#237;tima** (Descendentes, ascendentes e o c&#244;njuge sobrevivente (art. 1.845 do CC); eles t&#234;m direito intang&#237;vel a 50% de todo o patrim&#244;nio do falecido (leg&#237;tima).).  
+&gt; Conhecer essa fronteira &#233; decisivo para n&#227;o errar a fundamenta&#231;&#227;o da peti&#231;&#227;o inicial nem as quest&#245;es da OAB!</t></is></c><c r="P2" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 2] - Regras Especiais
+
+Complete a assertiva jurisprudencial consolidada pelos tribunais superiores:
+
+---
+
+### Enunciado:
+*'No &#226;mbito de BIO&#201;TICA E BIODIREITO, a boa-f&#233; objetiva imp&#245;e deveres anexos de [ LACUNA 1 ] e colabora&#231;&#227;o m&#250;tua. A quebra desses deveres caracteriza inadimplemento positivo ou viola&#231;&#227;o contratual sujeita a [ LACUNA 2 ].'*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: `[ lealdade / informa&#231;&#227;o ]` | `[ oculta&#231;&#227;o ]`
+- **Para a Lacuna 2**: `[ repara&#231;&#227;o por perdas e danos ]` | `[ perd&#227;o judicial ]`
+
+---
+
+### &#127919; Gabarito Comentado:
+1. lealdade / informa&#231;&#227;o (Enunciados da Jornada de Direito Civil do CJF);
+2. repara&#231;&#227;o por perdas e danos (Arts. 187 e 927 do CC).</t></is></c><c r="Q2" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 2] - N&#237;vel Concurso P&#250;blico
+
+**Enunciado**: Em mat&#233;ria de **BIO&#201;TICA E BIODIREITO**, assinale a afirmativa INCORRETA:
+
+- (A) A responsabilidade civil e a validade negocial subordinam-se &#224; fun&#231;&#227;o social do instituto.
+- (B) &#201; nula a cl&#225;usula que contrarie disposi&#231;&#227;o de lei de ordem p&#250;blica em BIO&#201;TICA E BIODIREITO.
+- (C) Os efeitos do neg&#243;cio podem ser anulados se comprovado v&#237;cio de consentimento no prazo decadencial legal.
+- (D) O enriquecimento sem causa &#233; tolerado no direito civil caso o prejudicado seja pessoa jur&#237;dica.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Incorreta: (D)**. 
+*Fundamenta&#231;&#227;o*: O art. 884 do C&#243;digo Civil repudia expressamente o enriquecimento sem causa contra qualquer sujeito de direito (pessoa natural ou jur&#237;dica).</t></is></c><c r="R2" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 3] - Conclus&#227;o e Senten&#231;a Judicial
+
+A senten&#231;a judicial foi proferida pelo magistrado titular da Vara C&#237;vel:
+
+No invent&#225;rio aberto com o falecimento de Ant&#244;nio, o filho primog&#234;nito requer a cola&#231;&#227;o e a redu&#231;&#227;o da doa&#231;&#227;o inoficiosa (art. 549 do CC): o juiz determina a nulidade do excesso de 30% da leg&#237;tima, restabelecendo a igualdade patrimonial rigorosa entre os irm&#227;os!
+
+A pacifica&#231;&#227;o do conflito demonstrou que as regras de **BIO&#201;TICA E BIODIREITO** atuam para resguardar a ordem econ&#244;mica e proteger os cidad&#227;os que pautam suas condutas na boa-f&#233; objetiva!</t></is></c><c r="S2" t="inlineStr"><is><t># [MINIGAME INTERATIVO / LIGUE OS TERMOS] - Desafio R&#225;pido
+
+Ligue cada elemento da **Coluna A** &#224; sua defini&#231;&#227;o correspondente na **Coluna B**:
+
+---
+
+### &#129513; COLUNA A:
+1. Princ&#237;pio da Saisine (Art. 1.784 do CC)
+2. Herdeiros Necess&#225;rios e Leg&#237;tima
+3. Cola&#231;&#227;o de Bens (Art. 2.002 do CC)
+4. Boa-f&#233; Objetiva
+
+---
+
+### &#127919; COLUNA B:
+- ( ) Descendentes, ascendentes e o c&#244;njuge sobrevivente (art. 1.845 do CC); eles t&#234;m direito intang&#237;vel a 50% de todo o patrim&#244;nio do falecido (leg&#237;tima).
+- ( ) Padr&#227;o de conduta leal, honesto e &#233;tico obrigat&#243;rio nas rela&#231;&#245;es civis.
+- ( ) Fic&#231;&#227;o jur&#237;dica que transmite a posse e propriedade da heran&#231;a aos herdeiros leg&#237;timos e testament&#225;rios no instante exato da morte do autor da heran&#231;a.
+- ( ) Ato obrigat&#243;rio pelo qual os descendentes informam no invent&#225;rio as doa&#231;&#245;es em vida recebidas dos pais para igualar a partilha com os irm&#227;os.
+
+---
+
+### &#128273; Resposta do Minigame:
+- **Ordem Correta**: `[ 2 ]` $\rightarrow$ `[ 4 ]` $\rightarrow$ `[ 1 ]` $\rightarrow$ `[ 3 ]`</t></is></c><c r="T2" t="inlineStr"><is><t># [JURISPRUD&#202;NCIA / TRIBUNAIS SUPERIORES] - Precedentes Vinculantes
+
+Principais diretrizes pac&#237;ficas dos Tribunais Superiores (STJ/STF) sobre **BIO&#201;TICA E BIODIREITO**:
+
+1. **STF - Tema 809: 'No sistema constitucional vigente, &#233; inconstitucional a distin&#231;&#227;o de regimes sucess&#243;rios entre c&#244;njuges e companheiros, devendo ser aplicado em ambos os casos o regime do artigo 1.829 do CC/2002'.**;
+2. **Veda&#231;&#227;o ao Comportamento Contradit&#243;rio**: O STJ reprime com veem&#234;ncia o *venire contra factum proprium*, invalidando condutas que quebram a confian&#231;a leg&#237;tima;
+3. **Mitiga&#231;&#227;o do Preju&#237;zo (*Duty to Mitigate the Loss*)**: O credor tem o dever anexo de adotar medidas razo&#225;veis para n&#227;o agravar o pr&#243;prio dano.</t></is></c><c r="U2" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 3] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Jurisprudencial**: Qual s&#250;mula ou tese repetitiva do STJ incide com maior frequ&#234;ncia em lit&#237;gios sobre **BIO&#201;TICA E BIODIREITO**?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **STF - Tema 809: 'No sistema constitucional vigente, &#233; inconstitucional a distin&#231;&#227;o de regimes sucess&#243;rios entre c&#244;njuges e companheiros, devendo ser aplicado em ambos os casos o regime do artigo 1.829 do CC/2002'.**  
+&gt; *Import&#226;ncia*: Essa orienta&#231;&#227;o pacificada vincula os tribunais de segunda inst&#226;ncia e evita o ajuizamento de recursos protelat&#243;rios.</t></is></c><c r="V2" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 3] - N&#237;vel Magistratura / MP
+
+**Enunciado**: Em demanda judicial versando sobre **BIO&#201;TICA E BIODIREITO**, o r&#233;u alega aus&#234;ncia de responsabilidade em virtude de cl&#225;usula contratual gen&#233;rica de n&#227;o indenizar. &#192; luz da jurisprud&#234;ncia do STJ e do C&#243;digo Civil, o juiz deve:
+
+- (A) Acolher a defesa do r&#233;u, pois a autonomia privada das partes &#233; soberana e absoluta.
+- (B) Declarar a nulidade ou inefic&#225;cia da cl&#225;usula de n&#227;o indenizar que afronte normas cogentes de ordem p&#250;blica ou a fun&#231;&#227;o social da rela&#231;&#227;o.
+- (C) Extinguir o processo sem julgamento de m&#233;rito por falta de interesse de agir.
+- (D) Condenar o autor por litig&#226;ncia de m&#225;-f&#233;.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**. 
+*Fundamenta&#231;&#227;o*: Cl&#225;usulas de dispensa de deveres essenciais ou de exclus&#227;o unilateral de responsabilidade que violem preceitos de ordem p&#250;blica s&#227;o nulas de pleno direito (art. 166, VI e art. 421 do CC).</t></is></c><c r="W2" t="inlineStr"><is><t># [COMO CAI EM PROVAS / RAIO-X DAS BANCAS] - Armadilhas Cl&#225;ssicas
+
+Fique alerta &#224;s 3 pegadinhas mais recorrentes preparadas por FGV, Cebraspe e Vunesp:
+
+1. **A banca diz que o companheiro em uni&#227;o est&#225;vel tem regime sucess&#243;rio inferior ao do c&#244;njuge casado. INCONSTITUCIONAL! O STF (Temas 498 e 809) equiparou c&#244;njuge e companheiro para fins sucess&#243;rios no art. 1.829 do CC.**
+2. **Prazos de Prescri&#231;&#227;o vs. Decad&#234;ncia**: A banca adora chamar prazo decadencial de anula&#231;&#227;o de 'prescricional' para induzir a erro;
+3. **Solidariedade Presumida**: Lembrar sempre que a solidariedade N&#195;O se presume; resulta da lei ou do contrato (Art. 265 do CC).</t></is></c><c r="X2" t="inlineStr"><is><t># [DICA DA PROFESSORA / S&#205;NTESE EM &#193;UDIO] - P&#237;lula da Professora Evelyn
+
+&#127897;&#65039; *Ol&#225;, querido aluno do Direito Prime! Aqui &#233; a Professora Evelyn com o resumo definitivo de BIO&#201;TICA E BIODIREITO:*
+
+&gt; *'N&#227;o complique o que a lei fez para ser justo!  
+&gt; Em BIO&#201;TICA E BIODIREITO, lembre-se sempre de conferir:  
+&gt; 1. Houve respeito &#224; boa-f&#233; objetiva e &#224; fun&#231;&#227;o social?  
+&gt; 2. Quem alega o direito agiu dentro do prazo legal sem dormir no ponto?  
+&gt; 3. A s&#250;mula de reg&#234;ncia &#233;: STF - Tema 809: 'No sistema constitucional vigente, &#233; inconstitucional a distin&#231;&#227;o de regimes sucess&#243;rios entre c&#244;njuges e companheiros, devendo ser aplicado em ambos os casos o regime do artigo 1.829 do CC/2002'..  
+&gt; Guarde essa tr&#237;ade no cora&#231;&#227;o e voc&#234; acertar&#225; qualquer quest&#227;o de concurso e advocacia!'*</t></is></c><c r="Y2" t="inlineStr"><is><t># [&#193;RVORE DECIS&#211;RIA / FLUXOGRAMA EM SETAS] - Grafo de Decis&#227;o L&#243;gica
+
+```text
+[BIO&#201;TICA E BIODIREITO: AN&#193;LISE DE EFIC&#193;CIA JUR&#205;DICA]
+       |
+       +---&gt; Houve preenchimento dos Requisitos Legais B&#225;sicos?
+       |        |
+       |        +---[N&#195;O]---&gt; V&#205;CIO NA ESTRUTURA NORMATIVA
+       |        |             - Inefic&#225;cia ou Nulidade do ato
+       |        |
+       |        +---[SIM]---&gt; Houve Observ&#226;ncia da Boa-f&#233; e Prazos?
+       |                                |
+       |                                +---[SIM]---&gt; ATO H&#205;GIDO, V&#193;LIDO E EXIG&#205;VEL
+       |                                |             - Tutela jurisdicional concedida
+       |                                |             - Produ&#231;&#227;o integral dos efeitos
+       |                                |
+       |                                +---[N&#195;O]---&gt; INCID&#202;NCIA DE SAN&#199;&#195;O / PRESCRI&#199;&#195;O
+       |                                              - Perda da pretens&#227;o ou indeniza&#231;&#227;o civil
+```</t></is></c><c r="Z2" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / EFEITOS ESPECIAIS] - Reflexos Interdisciplinares
+
+A mat&#233;ria de **BIO&#201;TICA E BIODIREITO** produz efeitos que transcendem o direito privado comum:
+
+- **Reflexos Tribut&#225;rios**: A regularidade jur&#237;dica do ato define o fato gerador e afasta autua&#231;&#245;es fiscais indevidas;
+- **Reflexos Notariais e Registrais**: A publicidade nos cart&#243;rios de notas e de registro de im&#243;veis confere efic&#225;cia perante terceiros (*erga omnes*);
+- **Reflexos Processuais**: Assegura a legitimidade ativa e passiva nas a&#231;&#245;es de conhecimento e de execu&#231;&#227;o.</t></is></c><c r="AA2" t="inlineStr"></c><c r="AB2" t="inlineStr"></c><c r="AC2" t="inlineStr"></c><c r="AD2" t="inlineStr"></c><c r="AE2" t="inlineStr"></c><c r="AF2" t="inlineStr"></c><c r="AG2" t="inlineStr"></c><c r="AH2" t="inlineStr"></c></row><row r="3"><c r="A3" t="inlineStr"><is><t>Aula 02</t></is></c><c r="B3" t="inlineStr"><is><t>Bio&#233;tica e Biodireito</t></is></c><c r="C3" t="inlineStr"><is><t>36. Diretivas Antecipadas de Vontade</t></is></c><c r="D3" t="n"><v>24</v></c><c r="E3" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / CONCEITO CENTRAL] - Bio&#233;tica e Biodireito
+
+&gt; **Marco Normativo Central**: Arts. 1.784 a 2.027 do C&#243;digo Civil
+
+A disciplina jur&#237;dica de **Bio&#233;tica e Biodireito** insere-se no ramo de **Direito das Sucess&#245;es e Planejamento Heredit&#225;rio**, estruturando como a lei protege as pessoas e seus bens com justi&#231;a e seguran&#231;a.
+
+### Conceito Desmembrado e Raz&#227;o de Ser:
+No direito civil contempor&#226;neo, as normas que regem Bio&#233;tica e Biodireito abandonaram o antigo apego formalista ego&#237;sta para se submeter &#224; **dignidade da pessoa humana**, &#224; **fun&#231;&#227;o social** e &#224; **boa-f&#233; objetiva**.
+A raz&#227;o de ser do instituto &#233; assegurar equil&#237;brio e previsibilidade: ningu&#233;m pode se valer da pr&#243;pria torpeza, nem locupletar-se indevidamente &#224;s custas do preju&#237;zo alheio.
+
+&#128161; *Exemplo R&#225;pido de Aplica&#231;&#227;o*: O herdeiro j&#225; &#233; dono do patrim&#244;nio no segundo em que o pai falece, mesmo antes de abrir o invent&#225;rio.</t></is></c><c r="F3" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 1] - O Dilema Pr&#225;tico
+
+Para compreender como **Bio&#233;tica e Biodireito** impacta a vida real dos cidad&#227;os nos f&#243;runs e cart&#243;rios, acompanhe o caso concreto:
+
+Ant&#244;nio, pai de dois filhos, doou em vida 80% de todo o seu patrim&#244;nio ao filho ca&#231;ula, sem constar dispensa expressa de cola&#231;&#227;o da parte dispon&#237;vel.
+
+Diante da recusa da outra parte em solucionar a controv&#233;rsia amigavelmente, surge a d&#250;vida jur&#237;dica: quais s&#227;o os limites da prote&#231;&#227;o que o C&#243;digo Civil e os tribunais conferem a essa situa&#231;&#227;o cotidiana?</t></is></c><c r="G3" t="inlineStr"><is><t># [GLOSS&#193;RIO INTERATIVO / MENU SUSPENSO] - Termos Chave Clic&#225;veis
+
+*(Clique em cada termo no menu suspenso para expandir a defini&#231;&#227;o desmembrada e o exemplo pr&#225;tico)*
+
+&#9660; **[Menu Suspenso 1: Princ&#237;pio da Saisine (Art. 1.784 do CC)]**
+- *O que &#233;*: Fic&#231;&#227;o jur&#237;dica que transmite a posse e propriedade da heran&#231;a aos herdeiros leg&#237;timos e testament&#225;rios no instante exato da morte do autor da heran&#231;a.
+- *Exemplo R&#225;pido*: O herdeiro j&#225; &#233; dono do patrim&#244;nio no segundo em que o pai falece, mesmo antes de abrir o invent&#225;rio.
+
+&#9660; **[Menu Suspenso 2: Herdeiros Necess&#225;rios e Leg&#237;tima]**
+- *O que &#233;*: Descendentes, ascendentes e o c&#244;njuge sobrevivente (art. 1.845 do CC); eles t&#234;m direito intang&#237;vel a 50% de todo o patrim&#244;nio do falecido (leg&#237;tima).
+- *Exemplo R&#225;pido*: Quem tem filhos s&#243; pode doar ou deixar em testamento at&#233; metade de seus bens em favor de amigos ou institui&#231;&#245;es.
+
+&#9660; **[Menu Suspenso 3: Cola&#231;&#227;o de Bens (Art. 2.002 do CC)]**
+- *O que &#233;*: Ato obrigat&#243;rio pelo qual os descendentes informam no invent&#225;rio as doa&#231;&#245;es em vida recebidas dos pais para igualar a partilha com os irm&#227;os.
+- *Exemplo R&#225;pido*: Se o pai doou uma casa para um dos filhos em vida, esse valor &#233; descontado da heran&#231;a dele no invent&#225;rio final.</t></is></c><c r="H3" t="inlineStr"><is><t># [EXEMPLO PR&#193;TICO E APLICA&#199;&#195;O FORENSE] - Como Funciona nos Tribunais
+
+Na pr&#225;tica forense de **Bio&#233;tica e Biodireito**, ju&#237;zes e advogados aplicam as seguintes solu&#231;&#245;es imediatas:
+
+1. **Seguran&#231;a das Rela&#231;&#245;es Negociais**: Assegura que o combinado seja exig&#237;vel, prevenindo calotes e fraudes patrimoniais;
+2. **Prote&#231;&#227;o &#224; Parte Vulner&#225;vel**: Impede imposi&#231;&#245;es leoninas ou cl&#225;usulas abusivas impostas por detentores de maior poder econ&#244;mico;
+3. **Equidade e Razoabilidade**: Permite a revis&#227;o judicial das obriga&#231;&#245;es quando fatos supervenientes extraordin&#225;rios quebram o equil&#237;brio original da rela&#231;&#227;o.
+
+&#128161; *Aten&#231;&#227;o Forense*: O direito n&#227;o socorre aos que dormem (*dormientibus non succurrit ius*); por isso, os prazos legais da mat&#233;ria devem ser vigiados com rigor!</t></is></c><c r="I3" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 1] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta de Fixa&#231;&#227;o**: Qual &#233; a defini&#231;&#227;o jur&#237;dica central de **Princ&#237;pio da Saisine (Art. 1.784 do CC)** em **Bio&#233;tica e Biodireito** e qual sua principal repercuss&#227;o no patrim&#244;nio das partes?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **Fic&#231;&#227;o jur&#237;dica que transmite a posse e propriedade da heran&#231;a aos herdeiros leg&#237;timos e testament&#225;rios no instante exato da morte do autor da heran&#231;a.**  
+&gt; *Repercuss&#227;o Pr&#225;tica*: O herdeiro j&#225; &#233; dono do patrim&#244;nio no segundo em que o pai falece, mesmo antes de abrir o invent&#225;rio.</t></is></c><c r="J3" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 1] - Preencha as Lacunas
+
+Teste seu dom&#237;nio completando as palavras essenciais da mat&#233;ria:
+
+---
+
+### Enunciado da Atividade:
+*Aberta a sucess&#227;o, a heran&#231;a transmite-se, desde logo, aos herdeiros leg&#237;timos e testament&#225;rios pelo princ&#237;pio da [ LACUNA 1 ]. Pertence aos herdeiros necess&#225;rios, de pleno direito, a metade dos bens da heran&#231;a, constituindo a [ LACUNA 2 ].*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: [ saisine ] | [ usucapi&#227;o ]
+- **Para a Lacuna 2**: [ leg&#237;tima ] | [ quota p&#250;blica ]
+
+---
+
+### &#127919; Gabarito Comentado:
+1. saisine (Art. 1.784 do CC); 2. leg&#237;tima (Art. 1.846 do CC).</t></is></c><c r="K3" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 1] - Padr&#227;o OAB / FGV
+
+**Enunciado**: A respeito das normas e princ&#237;pios aplic&#225;veis a **Bio&#233;tica e Biodireito**, assinale a alternativa juridicamente correta:
+
+- (A) A legisla&#231;&#227;o civil veda a aplica&#231;&#227;o da boa-f&#233; objetiva aos contratos particulares que versem sobre Bio&#233;tica e Biodireito.
+- (B) Fic&#231;&#227;o jur&#237;dica que transmite a posse e propriedade da heran&#231;a aos herdeiros leg&#237;timos e testament&#225;rios no instante exato da morte do autor da heran&#231;a. Portanto, O herdeiro j&#225; &#233; dono do patrim&#244;nio no segundo em que o pai falece, mesmo antes de abrir o invent&#225;rio.
+- (C) Os prazos prescricionais de Bio&#233;tica e Biodireito admitem dila&#231;&#227;o convencional por mero acordo verbal das partes.
+- (D) O Minist&#233;rio P&#250;blico jamais possui legitimidade para intervir em causas que envolvam Bio&#233;tica e Biodireito.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**.  
+*Fundamenta&#231;&#227;o*: Trata-se da correta aplica&#231;&#227;o dogm&#225;tica do instituto segundo o C&#243;digo Civil e a jurisprud&#234;ncia dominante.</t></is></c><c r="L3" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / DOGM&#193;TICA E REQUISITOS T&#201;CNICOS] - Requisitos Estruturais
+
+Para que qualquer ato relacionado a **Bio&#233;tica e Biodireito** produza plenos efeitos no mundo jur&#237;dico, exige-se:
+
+1. **Legitima&#231;&#227;o Espec&#237;fica**: N&#227;o basta capacidade gen&#233;rica; a parte deve deter pertin&#234;ncia subjetiva e poderes para o ato;
+2. **Higidez Volitiva e Aus&#234;ncia de Fraude**: A manifesta&#231;&#227;o de vontade deve ser livre de erro, dolo, coa&#231;&#227;o ou simula&#231;&#227;o;
+3. **Conformidade com a Ordem P&#250;blica**: O objeto deve ser l&#237;cito e atender &#224; fun&#231;&#227;o social estipulada em lei.</t></is></c><c r="M3" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 2] - O Conflito em Ju&#237;zo
+
+A a&#231;&#227;o judicial foi formalmente distribu&#237;da na Vara C&#237;vel competente.
+
+A parte r&#233; apresentou contesta&#231;&#227;o alegando que n&#227;o houve ilicitude e invocando o estrito cumprimento de cl&#225;usulas padronizadas.
+Contudo, a defesa da v&#237;tima sustentou que o comportamento do r&#233;u violou frontalmente a boa-f&#233; objetiva e os preceitos de **Bio&#233;tica e Biodireito**.
+
+O juiz abriu vista para manifesta&#231;&#227;o sobre provas, convocando as partes para audi&#234;ncia de instru&#231;&#227;o e julgamento!</t></is></c><c r="N3" t="inlineStr"><is><t># [FRONTEIRAS CR&#205;TICAS / O QUE N&#195;O &#201;] - Quadro Comparativo
+
+| FIGURA EM AN&#193;LISE | O QUE REALMENTE &#201; | O QUE **N&#195;O** &#201; (CUIDADO!) |
+| :--- | :--- | :--- |
+| **Princ&#237;pio da Saisine (Art. 1.784 do CC)** | Fic&#231;&#227;o jur&#237;dica que transmite a posse e propriedade da heran&#231;a aos herdeiros leg&#237;timos e testament&#225;rios no instante exato da morte do autor da heran&#231;a. | N&#227;o pode ser flexibilizado por conveni&#234;ncia particular. |
+| **Herdeiros Necess&#225;rios e Leg&#237;tima** | Descendentes, ascendentes e o c&#244;njuge sobrevivente (art. 1.845 do CC); eles t&#234;m direito intang&#237;vel a 50% de todo o patrim&#244;nio do falecido (leg&#237;tima). | N&#227;o se confunde com arb&#237;trio individual ou impunidade. |
+| **Cola&#231;&#227;o de Bens (Art. 2.002 do CC)** | Ato obrigat&#243;rio pelo qual os descendentes informam no invent&#225;rio as doa&#231;&#245;es em vida recebidas dos pais para igualar a partilha com os irm&#227;os. | N&#227;o depende de comprova&#231;&#227;o de dor &#237;ntima se a lei presumir. |</t></is></c><c r="O3" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 2] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Crucial**: Qual &#233; a distin&#231;&#227;o primordial entre **Princ&#237;pio da Saisine (Art. 1.784 do CC)** e **Herdeiros Necess&#225;rios e Leg&#237;tima** no direito civil?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; Enquanto **Princ&#237;pio da Saisine (Art. 1.784 do CC)** (Fic&#231;&#227;o jur&#237;dica que transmite a posse e propriedade da heran&#231;a aos herdeiros leg&#237;timos e testament&#225;rios no instante exato da morte do autor da heran&#231;a.), o instituto de **Herdeiros Necess&#225;rios e Leg&#237;tima** (Descendentes, ascendentes e o c&#244;njuge sobrevivente (art. 1.845 do CC); eles t&#234;m direito intang&#237;vel a 50% de todo o patrim&#244;nio do falecido (leg&#237;tima).).  
+&gt; Conhecer essa fronteira &#233; decisivo para n&#227;o errar a fundamenta&#231;&#227;o da peti&#231;&#227;o inicial nem as quest&#245;es da OAB!</t></is></c><c r="P3" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 2] - Regras Especiais
+
+Complete a assertiva jurisprudencial consolidada pelos tribunais superiores:
+
+---
+
+### Enunciado:
+*'No &#226;mbito de Bio&#233;tica e Biodireito, a boa-f&#233; objetiva imp&#245;e deveres anexos de [ LACUNA 1 ] e colabora&#231;&#227;o m&#250;tua. A quebra desses deveres caracteriza inadimplemento positivo ou viola&#231;&#227;o contratual sujeita a [ LACUNA 2 ].'*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: `[ lealdade / informa&#231;&#227;o ]` | `[ oculta&#231;&#227;o ]`
+- **Para a Lacuna 2**: `[ repara&#231;&#227;o por perdas e danos ]` | `[ perd&#227;o judicial ]`
+
+---
+
+### &#127919; Gabarito Comentado:
+1. lealdade / informa&#231;&#227;o (Enunciados da Jornada de Direito Civil do CJF);
+2. repara&#231;&#227;o por perdas e danos (Arts. 187 e 927 do CC).</t></is></c><c r="Q3" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 2] - N&#237;vel Concurso P&#250;blico
+
+**Enunciado**: Em mat&#233;ria de **Bio&#233;tica e Biodireito**, assinale a afirmativa INCORRETA:
+
+- (A) A responsabilidade civil e a validade negocial subordinam-se &#224; fun&#231;&#227;o social do instituto.
+- (B) &#201; nula a cl&#225;usula que contrarie disposi&#231;&#227;o de lei de ordem p&#250;blica em Bio&#233;tica e Biodireito.
+- (C) Os efeitos do neg&#243;cio podem ser anulados se comprovado v&#237;cio de consentimento no prazo decadencial legal.
+- (D) O enriquecimento sem causa &#233; tolerado no direito civil caso o prejudicado seja pessoa jur&#237;dica.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Incorreta: (D)**. 
+*Fundamenta&#231;&#227;o*: O art. 884 do C&#243;digo Civil repudia expressamente o enriquecimento sem causa contra qualquer sujeito de direito (pessoa natural ou jur&#237;dica).</t></is></c><c r="R3" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 3] - Conclus&#227;o e Senten&#231;a Judicial
+
+A senten&#231;a judicial foi proferida pelo magistrado titular da Vara C&#237;vel:
+
+No invent&#225;rio aberto com o falecimento de Ant&#244;nio, o filho primog&#234;nito requer a cola&#231;&#227;o e a redu&#231;&#227;o da doa&#231;&#227;o inoficiosa (art. 549 do CC): o juiz determina a nulidade do excesso de 30% da leg&#237;tima, restabelecendo a igualdade patrimonial rigorosa entre os irm&#227;os!
+
+A pacifica&#231;&#227;o do conflito demonstrou que as regras de **Bio&#233;tica e Biodireito** atuam para resguardar a ordem econ&#244;mica e proteger os cidad&#227;os que pautam suas condutas na boa-f&#233; objetiva!</t></is></c><c r="S3" t="inlineStr"><is><t># [MINIGAME INTERATIVO / LIGUE OS TERMOS] - Desafio R&#225;pido
+
+Ligue cada elemento da **Coluna A** &#224; sua defini&#231;&#227;o correspondente na **Coluna B**:
+
+---
+
+### &#129513; COLUNA A:
+1. Princ&#237;pio da Saisine (Art. 1.784 do CC)
+2. Herdeiros Necess&#225;rios e Leg&#237;tima
+3. Cola&#231;&#227;o de Bens (Art. 2.002 do CC)
+4. Boa-f&#233; Objetiva
+
+---
+
+### &#127919; COLUNA B:
+- ( ) Descendentes, ascendentes e o c&#244;njuge sobrevivente (art. 1.845 do CC); eles t&#234;m direito intang&#237;vel a 50% de todo o patrim&#244;nio do falecido (leg&#237;tima).
+- ( ) Padr&#227;o de conduta leal, honesto e &#233;tico obrigat&#243;rio nas rela&#231;&#245;es civis.
+- ( ) Fic&#231;&#227;o jur&#237;dica que transmite a posse e propriedade da heran&#231;a aos herdeiros leg&#237;timos e testament&#225;rios no instante exato da morte do autor da heran&#231;a.
+- ( ) Ato obrigat&#243;rio pelo qual os descendentes informam no invent&#225;rio as doa&#231;&#245;es em vida recebidas dos pais para igualar a partilha com os irm&#227;os.
+
+---
+
+### &#128273; Resposta do Minigame:
+- **Ordem Correta**: `[ 2 ]` $\rightarrow$ `[ 4 ]` $\rightarrow$ `[ 1 ]` $\rightarrow$ `[ 3 ]`</t></is></c><c r="T3" t="inlineStr"><is><t># [JURISPRUD&#202;NCIA / TRIBUNAIS SUPERIORES] - Precedentes Vinculantes
+
+Principais diretrizes pac&#237;ficas dos Tribunais Superiores (STJ/STF) sobre **Bio&#233;tica e Biodireito**:
+
+1. **STF - Tema 809: 'No sistema constitucional vigente, &#233; inconstitucional a distin&#231;&#227;o de regimes sucess&#243;rios entre c&#244;njuges e companheiros, devendo ser aplicado em ambos os casos o regime do artigo 1.829 do CC/2002'.**;
+2. **Veda&#231;&#227;o ao Comportamento Contradit&#243;rio**: O STJ reprime com veem&#234;ncia o *venire contra factum proprium*, invalidando condutas que quebram a confian&#231;a leg&#237;tima;
+3. **Mitiga&#231;&#227;o do Preju&#237;zo (*Duty to Mitigate the Loss*)**: O credor tem o dever anexo de adotar medidas razo&#225;veis para n&#227;o agravar o pr&#243;prio dano.</t></is></c><c r="U3" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 3] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Jurisprudencial**: Qual s&#250;mula ou tese repetitiva do STJ incide com maior frequ&#234;ncia em lit&#237;gios sobre **Bio&#233;tica e Biodireito**?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **STF - Tema 809: 'No sistema constitucional vigente, &#233; inconstitucional a distin&#231;&#227;o de regimes sucess&#243;rios entre c&#244;njuges e companheiros, devendo ser aplicado em ambos os casos o regime do artigo 1.829 do CC/2002'.**  
+&gt; *Import&#226;ncia*: Essa orienta&#231;&#227;o pacificada vincula os tribunais de segunda inst&#226;ncia e evita o ajuizamento de recursos protelat&#243;rios.</t></is></c><c r="V3" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 3] - N&#237;vel Magistratura / MP
+
+**Enunciado**: Em demanda judicial versando sobre **Bio&#233;tica e Biodireito**, o r&#233;u alega aus&#234;ncia de responsabilidade em virtude de cl&#225;usula contratual gen&#233;rica de n&#227;o indenizar. &#192; luz da jurisprud&#234;ncia do STJ e do C&#243;digo Civil, o juiz deve:
+
+- (A) Acolher a defesa do r&#233;u, pois a autonomia privada das partes &#233; soberana e absoluta.
+- (B) Declarar a nulidade ou inefic&#225;cia da cl&#225;usula de n&#227;o indenizar que afronte normas cogentes de ordem p&#250;blica ou a fun&#231;&#227;o social da rela&#231;&#227;o.
+- (C) Extinguir o processo sem julgamento de m&#233;rito por falta de interesse de agir.
+- (D) Condenar o autor por litig&#226;ncia de m&#225;-f&#233;.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**. 
+*Fundamenta&#231;&#227;o*: Cl&#225;usulas de dispensa de deveres essenciais ou de exclus&#227;o unilateral de responsabilidade que violem preceitos de ordem p&#250;blica s&#227;o nulas de pleno direito (art. 166, VI e art. 421 do CC).</t></is></c><c r="W3" t="inlineStr"><is><t># [COMO CAI EM PROVAS / RAIO-X DAS BANCAS] - Armadilhas Cl&#225;ssicas
+
+Fique alerta &#224;s 3 pegadinhas mais recorrentes preparadas por FGV, Cebraspe e Vunesp:
+
+1. **A banca diz que o companheiro em uni&#227;o est&#225;vel tem regime sucess&#243;rio inferior ao do c&#244;njuge casado. INCONSTITUCIONAL! O STF (Temas 498 e 809) equiparou c&#244;njuge e companheiro para fins sucess&#243;rios no art. 1.829 do CC.**
+2. **Prazos de Prescri&#231;&#227;o vs. Decad&#234;ncia**: A banca adora chamar prazo decadencial de anula&#231;&#227;o de 'prescricional' para induzir a erro;
+3. **Solidariedade Presumida**: Lembrar sempre que a solidariedade N&#195;O se presume; resulta da lei ou do contrato (Art. 265 do CC).</t></is></c><c r="X3" t="inlineStr"><is><t># [DICA DA PROFESSORA / S&#205;NTESE EM &#193;UDIO] - P&#237;lula da Professora Evelyn
+
+&#127897;&#65039; *Ol&#225;, querido aluno do Direito Prime! Aqui &#233; a Professora Evelyn com o resumo definitivo de Bio&#233;tica e Biodireito:*
+
+&gt; *'N&#227;o complique o que a lei fez para ser justo!  
+&gt; Em Bio&#233;tica e Biodireito, lembre-se sempre de conferir:  
+&gt; 1. Houve respeito &#224; boa-f&#233; objetiva e &#224; fun&#231;&#227;o social?  
+&gt; 2. Quem alega o direito agiu dentro do prazo legal sem dormir no ponto?  
+&gt; 3. A s&#250;mula de reg&#234;ncia &#233;: STF - Tema 809: 'No sistema constitucional vigente, &#233; inconstitucional a distin&#231;&#227;o de regimes sucess&#243;rios entre c&#244;njuges e companheiros, devendo ser aplicado em ambos os casos o regime do artigo 1.829 do CC/2002'..  
+&gt; Guarde essa tr&#237;ade no cora&#231;&#227;o e voc&#234; acertar&#225; qualquer quest&#227;o de concurso e advocacia!'*</t></is></c><c r="Y3" t="inlineStr"><is><t># [&#193;RVORE DECIS&#211;RIA / FLUXOGRAMA EM SETAS] - Grafo de Decis&#227;o L&#243;gica
+
+```text
+[BIO&#201;TICA E BIODIREITO: AN&#193;LISE DE EFIC&#193;CIA JUR&#205;DICA]
+       |
+       +---&gt; Houve preenchimento dos Requisitos Legais B&#225;sicos?
+       |        |
+       |        +---[N&#195;O]---&gt; V&#205;CIO NA ESTRUTURA NORMATIVA
+       |        |             - Inefic&#225;cia ou Nulidade do ato
+       |        |
+       |        +---[SIM]---&gt; Houve Observ&#226;ncia da Boa-f&#233; e Prazos?
+       |                                |
+       |                                +---[SIM]---&gt; ATO H&#205;GIDO, V&#193;LIDO E EXIG&#205;VEL
+       |                                |             - Tutela jurisdicional concedida
+       |                                |             - Produ&#231;&#227;o integral dos efeitos
+       |                                |
+       |                                +---[N&#195;O]---&gt; INCID&#202;NCIA DE SAN&#199;&#195;O / PRESCRI&#199;&#195;O
+       |                                              - Perda da pretens&#227;o ou indeniza&#231;&#227;o civil
+```</t></is></c><c r="Z3" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / EFEITOS ESPECIAIS] - Reflexos Interdisciplinares
+
+A mat&#233;ria de **Bio&#233;tica e Biodireito** produz efeitos que transcendem o direito privado comum:
+
+- **Reflexos Tribut&#225;rios**: A regularidade jur&#237;dica do ato define o fato gerador e afasta autua&#231;&#245;es fiscais indevidas;
+- **Reflexos Notariais e Registrais**: A publicidade nos cart&#243;rios de notas e de registro de im&#243;veis confere efic&#225;cia perante terceiros (*erga omnes*);
+- **Reflexos Processuais**: Assegura a legitimidade ativa e passiva nas a&#231;&#245;es de conhecimento e de execu&#231;&#227;o.</t></is></c><c r="AA3" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 4] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pegadinha da Magistratura**: O descumprimento dos deveres anexos de conduta da boa-f&#233; objetiva em **Bio&#233;tica e Biodireito** exige prova de dolo ou culpa do devedor?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **N&#195;O EXIGE PROVA DE DOLO OU CULPA!**  
+&gt; A viola&#231;&#227;o positiva do contrato por quebra da boa-f&#233; objetiva opera responsabilidade de natureza **objetiva**, bastando a comprova&#231;&#227;o objetiva da conduta desleal ou omissiva.</t></is></c><c r="AB3" t="inlineStr"><is><t># [QUEST&#195;O DISCURSIVA / PR&#193;TICA PROFISSIONAL] - Parecer Forense
+
+**Situa&#231;&#227;o Pr&#225;tica**: Um cliente procura seu escrit&#243;rio de advocacia relatando les&#227;o patrimonial grave decorrente de lit&#237;gio em **Bio&#233;tica e Biodireito**.
+
+**Pergunta**: Como advogado(a), qual &#233; a primeira provid&#234;ncia cautelar e de m&#233;rito a ser proposta em ju&#237;zo?
+
+---
+
+### &#9878;&#65039; Padr&#227;o de Resposta T&#233;cnico:
+&gt; 1. **Tutela Provis&#243;ria de Urg&#234;ncia** (art. 300 do CPC) para suspender atos expropriat&#243;rios ou cobran&#231;as indevidas;  
+&gt; 2. **Pedido Principal** de declara&#231;&#227;o de cumprimento do preceito de Bio&#233;tica e Biodireito, com base em Arts. 1.784 a 2.027 do C&#243;digo Civil e perdas e danos.</t></is></c><c r="AC3" t="inlineStr"></c><c r="AD3" t="inlineStr"></c><c r="AE3" t="inlineStr"></c><c r="AF3" t="inlineStr"></c><c r="AG3" t="inlineStr"></c><c r="AH3" t="inlineStr"></c></row></sheetData><pageMargins left="0.75" right="0.75" top="1" bottom="1" header="0.5" footer="0.5"/></worksheet>

@@ -25,7 +25,8 @@ export function LacunasInterativasBlock({ rawContent, onComplete }: LacunasInter
 
     const enunciadoMatch = rawContent.match(/(?:#*\s*Enunciado da Atividade:?)([\s\S]*?)(?:#*\s*Opções do Menu Suspenso:?)/i);
     if (enunciadoMatch) {
-      data.enunciado = enunciadoMatch[1].trim();
+      // Envolvemos [ LACUNA 1 ] em crases para que o ReactMarkdown trate como código inline
+      data.enunciado = enunciadoMatch[1].trim().replace(/\[\s*LACUNA\s*(\d+)\s*\]/gi, '`[ LACUNA $1 ]`');
     }
 
     const opcoesMatch = rawContent.match(/(?:#*\s*Opções do Menu Suspenso:?)([\s\S]*?)(?:#*\s*Gabarito Comentado:?)/i);

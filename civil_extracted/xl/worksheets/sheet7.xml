@@ -1,0 +1,1914 @@
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetPr><outlinePr summaryBelow="1" summaryRight="1"/><pageSetUpPr/></sheetPr><dimension ref="A1:AH8"/><sheetViews><sheetView workbookViewId="0"><selection activeCell="A1" sqref="A1"/></sheetView></sheetViews><sheetFormatPr baseColWidth="8" defaultRowHeight="15"/><cols><col width="12" customWidth="1" min="1" max="1"/><col width="38" customWidth="1" min="2" max="2"/><col width="32" customWidth="1" min="3" max="3"/><col width="14" customWidth="1" min="4" max="4"/><col width="45" customWidth="1" min="5" max="5"/><col width="45" customWidth="1" min="6" max="6"/><col width="45" customWidth="1" min="7" max="7"/><col width="45" customWidth="1" min="8" max="8"/><col width="45" customWidth="1" min="9" max="9"/><col width="45" customWidth="1" min="10" max="10"/><col width="45" customWidth="1" min="11" max="11"/><col width="45" customWidth="1" min="12" max="12"/><col width="45" customWidth="1" min="13" max="13"/><col width="45" customWidth="1" min="14" max="14"/><col width="45" customWidth="1" min="15" max="15"/><col width="45" customWidth="1" min="16" max="16"/><col width="45" customWidth="1" min="17" max="17"/><col width="45" customWidth="1" min="18" max="18"/><col width="45" customWidth="1" min="19" max="19"/><col width="45" customWidth="1" min="20" max="20"/><col width="45" customWidth="1" min="21" max="21"/><col width="45" customWidth="1" min="22" max="22"/><col width="45" customWidth="1" min="23" max="23"/><col width="45" customWidth="1" min="24" max="24"/><col width="45" customWidth="1" min="25" max="25"/><col width="45" customWidth="1" min="26" max="26"/><col width="45" customWidth="1" min="27" max="27"/><col width="45" customWidth="1" min="28" max="28"/><col width="45" customWidth="1" min="29" max="29"/><col width="45" customWidth="1" min="30" max="30"/><col width="45" customWidth="1" min="31" max="31"/><col width="45" customWidth="1" min="32" max="32"/><col width="45" customWidth="1" min="33" max="33"/><col width="45" customWidth="1" min="34" max="34"/></cols><sheetData><row r="1"><c r="A1" s="1" t="inlineStr"><is><t>Aula</t></is></c><c r="B1" s="2" t="inlineStr"><is><t>Titulo_da_Aula</t></is></c><c r="C1" s="1" t="inlineStr"><is><t>Materia_PDF</t></is></c><c r="D1" s="1" t="inlineStr"><is><t>Total_Slides</t></is></c><c r="E1" s="3" t="inlineStr"><is><t>Slide_01</t></is></c><c r="F1" s="3" t="inlineStr"><is><t>Slide_02</t></is></c><c r="G1" s="3" t="inlineStr"><is><t>Slide_03</t></is></c><c r="H1" s="3" t="inlineStr"><is><t>Slide_04</t></is></c><c r="I1" s="3" t="inlineStr"><is><t>Slide_05</t></is></c><c r="J1" s="3" t="inlineStr"><is><t>Slide_06</t></is></c><c r="K1" s="3" t="inlineStr"><is><t>Slide_07</t></is></c><c r="L1" s="3" t="inlineStr"><is><t>Slide_08</t></is></c><c r="M1" s="3" t="inlineStr"><is><t>Slide_09</t></is></c><c r="N1" s="3" t="inlineStr"><is><t>Slide_10</t></is></c><c r="O1" s="3" t="inlineStr"><is><t>Slide_11</t></is></c><c r="P1" s="3" t="inlineStr"><is><t>Slide_12</t></is></c><c r="Q1" s="3" t="inlineStr"><is><t>Slide_13</t></is></c><c r="R1" s="3" t="inlineStr"><is><t>Slide_14</t></is></c><c r="S1" s="3" t="inlineStr"><is><t>Slide_15</t></is></c><c r="T1" s="3" t="inlineStr"><is><t>Slide_16</t></is></c><c r="U1" s="3" t="inlineStr"><is><t>Slide_17</t></is></c><c r="V1" s="3" t="inlineStr"><is><t>Slide_18</t></is></c><c r="W1" s="3" t="inlineStr"><is><t>Slide_19</t></is></c><c r="X1" s="3" t="inlineStr"><is><t>Slide_20</t></is></c><c r="Y1" s="3" t="inlineStr"><is><t>Slide_21</t></is></c><c r="Z1" s="3" t="inlineStr"><is><t>Slide_22</t></is></c><c r="AA1" s="3" t="inlineStr"><is><t>Slide_23</t></is></c><c r="AB1" s="3" t="inlineStr"><is><t>Slide_24</t></is></c><c r="AC1" s="3" t="inlineStr"><is><t>Slide_25</t></is></c><c r="AD1" s="3" t="inlineStr"><is><t>Slide_26</t></is></c><c r="AE1" s="3" t="inlineStr"><is><t>Slide_27</t></is></c><c r="AF1" s="3" t="inlineStr"><is><t>Slide_28</t></is></c><c r="AG1" s="3" t="inlineStr"><is><t>Slide_29</t></is></c><c r="AH1" s="3" t="inlineStr"><is><t>Slide_30</t></is></c></row><row r="2"><c r="A2" t="inlineStr"><is><t>Aula 01</t></is></c><c r="B2" t="inlineStr"><is><t>DELINEAMENTOS GERAIS</t></is></c><c r="C2" t="inlineStr"><is><t>06. Prescri&#231;&#227;o e Decad&#234;ncia</t></is></c><c r="D2" t="n"><v>25</v></c><c r="E2" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / CONCEITO CENTRAL] - DELINEAMENTOS GERAIS
+
+&gt; **Marco Normativo Central**: Arts. 189 a 211 do C&#243;digo Civil
+
+A disciplina jur&#237;dica de **DELINEAMENTOS GERAIS** insere-se no ramo de **Prescri&#231;&#227;o e Decad&#234;ncia no C&#243;digo Civil**, estruturando como a lei protege as pessoas e seus bens com justi&#231;a e seguran&#231;a.
+
+### Conceito Desmembrado e Raz&#227;o de Ser:
+No direito civil contempor&#226;neo, as normas que regem DELINEAMENTOS GERAIS abandonaram o antigo apego formalista ego&#237;sta para se submeter &#224; **dignidade da pessoa humana**, &#224; **fun&#231;&#227;o social** e &#224; **boa-f&#233; objetiva**.
+A raz&#227;o de ser do instituto &#233; assegurar equil&#237;brio e previsibilidade: ningu&#233;m pode se valer da pr&#243;pria torpeza, nem locupletar-se indevidamente &#224;s custas do preju&#237;zo alheio.
+
+&#128161; *Exemplo R&#225;pido de Aplica&#231;&#227;o*: Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.</t></is></c><c r="F2" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 1] - O Dilema Pr&#225;tico
+
+Para compreender como **DELINEAMENTOS GERAIS** impacta a vida real dos cidad&#227;os nos f&#243;runs e cart&#243;rios, acompanhe o caso concreto:
+
+Marcos sofreu um acidente de carro provocado por um motorista embriagado. Tr&#234;s anos e meio depois, tenta entrar com a&#231;&#227;o de cobran&#231;a das despesas m&#233;dicas.
+
+Diante da recusa da outra parte em solucionar a controv&#233;rsia amigavelmente, surge a d&#250;vida jur&#237;dica: quais s&#227;o os limites da prote&#231;&#227;o que o C&#243;digo Civil e os tribunais conferem a essa situa&#231;&#227;o cotidiana?</t></is></c><c r="G2" t="inlineStr"><is><t># [GLOSS&#193;RIO INTERATIVO / MENU SUSPENSO] - Termos Chave Clic&#225;veis
+
+*(Clique em cada termo no menu suspenso para expandir a defini&#231;&#227;o desmembrada e o exemplo pr&#225;tico)*
+
+&#9660; **[Menu Suspenso 1: Prescri&#231;&#227;o (Art. 189 do CC)]**
+- *O que &#233;*: Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.
+- *Exemplo R&#225;pido*: Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.
+
+&#9660; **[Menu Suspenso 2: Decad&#234;ncia]**
+- *O que &#233;*: Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato.
+- *Exemplo R&#225;pido*: O prazo de 4 anos para anular um contrato com dolo &#233; decadencial: passou o prazo, o direito de anular morre para sempre.
+
+&#9660; **[Menu Suspenso 3: Causas Impeditivas e Suspensivas]**
+- *O que &#233;*: Fatos previstos na lei que impedem o in&#237;cio da contagem ou paralisam o rel&#243;gio da prescri&#231;&#227;o (ex.: entre c&#244;njuges na const&#226;ncia do casamento ou contra menores de 16 anos).
+- *Exemplo R&#225;pido*: Enquanto voc&#234; for casado, a prescri&#231;&#227;o das d&#237;vidas entre voc&#234; e seu parceiro fica congelada (Art. 197, I do CC).</t></is></c><c r="H2" t="inlineStr"><is><t># [EXEMPLO PR&#193;TICO E APLICA&#199;&#195;O FORENSE] - Como Funciona nos Tribunais
+
+Na pr&#225;tica forense de **DELINEAMENTOS GERAIS**, ju&#237;zes e advogados aplicam as seguintes solu&#231;&#245;es imediatas:
+
+1. **Seguran&#231;a das Rela&#231;&#245;es Negociais**: Assegura que o combinado seja exig&#237;vel, prevenindo calotes e fraudes patrimoniais;
+2. **Prote&#231;&#227;o &#224; Parte Vulner&#225;vel**: Impede imposi&#231;&#245;es leoninas ou cl&#225;usulas abusivas impostas por detentores de maior poder econ&#244;mico;
+3. **Equidade e Razoabilidade**: Permite a revis&#227;o judicial das obriga&#231;&#245;es quando fatos supervenientes extraordin&#225;rios quebram o equil&#237;brio original da rela&#231;&#227;o.
+
+&#128161; *Aten&#231;&#227;o Forense*: O direito n&#227;o socorre aos que dormem (*dormientibus non succurrit ius*); por isso, os prazos legais da mat&#233;ria devem ser vigiados com rigor!</t></is></c><c r="I2" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 1] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta de Fixa&#231;&#227;o**: Qual &#233; a defini&#231;&#227;o jur&#237;dica central de **Prescri&#231;&#227;o (Art. 189 do CC)** em **DELINEAMENTOS GERAIS** e qual sua principal repercuss&#227;o no patrim&#244;nio das partes?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.**  
+&gt; *Repercuss&#227;o Pr&#225;tica*: Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.</t></is></c><c r="J2" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 1] - Preencha as Lacunas
+
+Teste seu dom&#237;nio completando as palavras essenciais da mat&#233;ria:
+
+---
+
+### Enunciado da Atividade:
+*Violado o direito, nasce para o titular a [ LACUNA 1 ], a qual se extingue pela prescri&#231;&#227;o nos prazos fixados em lei. As causas que interrompem a prescri&#231;&#227;o produzem o efeito de [ LACUNA 2 ] do zero o c&#244;mputo do prazo temporal.*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: [ pretens&#227;o ] | [ vingan&#231;a p&#250;blica ]
+- **Para a Lacuna 2**: [ reiniciar / recome&#231;ar ] | [ duplicar ]
+
+---
+
+### &#127919; Gabarito Comentado:
+1. pretens&#227;o (Art. 189 do CC); 2. reiniciar / recome&#231;ar (Art. 202 do CC).</t></is></c><c r="K2" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 1] - Padr&#227;o OAB / FGV
+
+**Enunciado**: A respeito das normas e princ&#237;pios aplic&#225;veis a **DELINEAMENTOS GERAIS**, assinale a alternativa juridicamente correta:
+
+- (A) A legisla&#231;&#227;o civil veda a aplica&#231;&#227;o da boa-f&#233; objetiva aos contratos particulares que versem sobre DELINEAMENTOS GERAIS.
+- (B) Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo. Portanto, Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.
+- (C) Os prazos prescricionais de DELINEAMENTOS GERAIS admitem dila&#231;&#227;o convencional por mero acordo verbal das partes.
+- (D) O Minist&#233;rio P&#250;blico jamais possui legitimidade para intervir em causas que envolvam DELINEAMENTOS GERAIS.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**.  
+*Fundamenta&#231;&#227;o*: Trata-se da correta aplica&#231;&#227;o dogm&#225;tica do instituto segundo o C&#243;digo Civil e a jurisprud&#234;ncia dominante.</t></is></c><c r="L2" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / DOGM&#193;TICA E REQUISITOS T&#201;CNICOS] - Requisitos Estruturais
+
+Para que qualquer ato relacionado a **DELINEAMENTOS GERAIS** produza plenos efeitos no mundo jur&#237;dico, exige-se:
+
+1. **Legitima&#231;&#227;o Espec&#237;fica**: N&#227;o basta capacidade gen&#233;rica; a parte deve deter pertin&#234;ncia subjetiva e poderes para o ato;
+2. **Higidez Volitiva e Aus&#234;ncia de Fraude**: A manifesta&#231;&#227;o de vontade deve ser livre de erro, dolo, coa&#231;&#227;o ou simula&#231;&#227;o;
+3. **Conformidade com a Ordem P&#250;blica**: O objeto deve ser l&#237;cito e atender &#224; fun&#231;&#227;o social estipulada em lei.</t></is></c><c r="M2" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 2] - O Conflito em Ju&#237;zo
+
+A a&#231;&#227;o judicial foi formalmente distribu&#237;da na Vara C&#237;vel competente.
+
+A parte r&#233; apresentou contesta&#231;&#227;o alegando que n&#227;o houve ilicitude e invocando o estrito cumprimento de cl&#225;usulas padronizadas.
+Contudo, a defesa da v&#237;tima sustentou que o comportamento do r&#233;u violou frontalmente a boa-f&#233; objetiva e os preceitos de **DELINEAMENTOS GERAIS**.
+
+O juiz abriu vista para manifesta&#231;&#227;o sobre provas, convocando as partes para audi&#234;ncia de instru&#231;&#227;o e julgamento!</t></is></c><c r="N2" t="inlineStr"><is><t># [FRONTEIRAS CR&#205;TICAS / O QUE N&#195;O &#201;] - Quadro Comparativo
+
+| FIGURA EM AN&#193;LISE | O QUE REALMENTE &#201; | O QUE **N&#195;O** &#201; (CUIDADO!) |
+| :--- | :--- | :--- |
+| **Prescri&#231;&#227;o (Art. 189 do CC)** | Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo. | N&#227;o pode ser flexibilizado por conveni&#234;ncia particular. |
+| **Decad&#234;ncia** | Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato. | N&#227;o se confunde com arb&#237;trio individual ou impunidade. |
+| **Causas Impeditivas e Suspensivas** | Fatos previstos na lei que impedem o in&#237;cio da contagem ou paralisam o rel&#243;gio da prescri&#231;&#227;o (ex.: entre c&#244;njuges na const&#226;ncia do casamento ou contra menores de 16 anos). | N&#227;o depende de comprova&#231;&#227;o de dor &#237;ntima se a lei presumir. |</t></is></c><c r="O2" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 2] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Crucial**: Qual &#233; a distin&#231;&#227;o primordial entre **Prescri&#231;&#227;o (Art. 189 do CC)** e **Decad&#234;ncia** no direito civil?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; Enquanto **Prescri&#231;&#227;o (Art. 189 do CC)** (Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.), o instituto de **Decad&#234;ncia** (Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato.).  
+&gt; Conhecer essa fronteira &#233; decisivo para n&#227;o errar a fundamenta&#231;&#227;o da peti&#231;&#227;o inicial nem as quest&#245;es da OAB!</t></is></c><c r="P2" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 2] - Regras Especiais
+
+Complete a assertiva jurisprudencial consolidada pelos tribunais superiores:
+
+---
+
+### Enunciado:
+*'No &#226;mbito de DELINEAMENTOS GERAIS, a boa-f&#233; objetiva imp&#245;e deveres anexos de [ LACUNA 1 ] e colabora&#231;&#227;o m&#250;tua. A quebra desses deveres caracteriza inadimplemento positivo ou viola&#231;&#227;o contratual sujeita a [ LACUNA 2 ].'*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: `[ lealdade / informa&#231;&#227;o ]` | `[ oculta&#231;&#227;o ]`
+- **Para a Lacuna 2**: `[ repara&#231;&#227;o por perdas e danos ]` | `[ perd&#227;o judicial ]`
+
+---
+
+### &#127919; Gabarito Comentado:
+1. lealdade / informa&#231;&#227;o (Enunciados da Jornada de Direito Civil do CJF);
+2. repara&#231;&#227;o por perdas e danos (Arts. 187 e 927 do CC).</t></is></c><c r="Q2" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 2] - N&#237;vel Concurso P&#250;blico
+
+**Enunciado**: Em mat&#233;ria de **DELINEAMENTOS GERAIS**, assinale a afirmativa INCORRETA:
+
+- (A) A responsabilidade civil e a validade negocial subordinam-se &#224; fun&#231;&#227;o social do instituto.
+- (B) &#201; nula a cl&#225;usula que contrarie disposi&#231;&#227;o de lei de ordem p&#250;blica em DELINEAMENTOS GERAIS.
+- (C) Os efeitos do neg&#243;cio podem ser anulados se comprovado v&#237;cio de consentimento no prazo decadencial legal.
+- (D) O enriquecimento sem causa &#233; tolerado no direito civil caso o prejudicado seja pessoa jur&#237;dica.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Incorreta: (D)**. 
+*Fundamenta&#231;&#227;o*: O art. 884 do C&#243;digo Civil repudia expressamente o enriquecimento sem causa contra qualquer sujeito de direito (pessoa natural ou jur&#237;dica).</t></is></c><c r="R2" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 3] - Conclus&#227;o e Senten&#231;a Judicial
+
+A senten&#231;a judicial foi proferida pelo magistrado titular da Vara C&#237;vel:
+
+O juiz reconhece a prescri&#231;&#227;o trienal (art. 206, &#167;3&#186;, V do CC): para repara&#231;&#227;o civil extracontratual, o prazo &#233; de 3 anos cravados da data do fato lesivo, julgando extinto o processo com resolu&#231;&#227;o do m&#233;rito.
+
+A pacifica&#231;&#227;o do conflito demonstrou que as regras de **DELINEAMENTOS GERAIS** atuam para resguardar a ordem econ&#244;mica e proteger os cidad&#227;os que pautam suas condutas na boa-f&#233; objetiva!</t></is></c><c r="S2" t="inlineStr"><is><t># [MINIGAME INTERATIVO / LIGUE OS TERMOS] - Desafio R&#225;pido
+
+Ligue cada elemento da **Coluna A** &#224; sua defini&#231;&#227;o correspondente na **Coluna B**:
+
+---
+
+### &#129513; COLUNA A:
+1. Prescri&#231;&#227;o (Art. 189 do CC)
+2. Decad&#234;ncia
+3. Causas Impeditivas e Suspensivas
+4. Boa-f&#233; Objetiva
+
+---
+
+### &#127919; COLUNA B:
+- ( ) Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato.
+- ( ) Padr&#227;o de conduta leal, honesto e &#233;tico obrigat&#243;rio nas rela&#231;&#245;es civis.
+- ( ) Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.
+- ( ) Fatos previstos na lei que impedem o in&#237;cio da contagem ou paralisam o rel&#243;gio da prescri&#231;&#227;o (ex.: entre c&#244;njuges na const&#226;ncia do casamento ou contra menores de 16 anos).
+
+---
+
+### &#128273; Resposta do Minigame:
+- **Ordem Correta**: `[ 2 ]` $\rightarrow$ `[ 4 ]` $\rightarrow$ `[ 1 ]` $\rightarrow$ `[ 3 ]`</t></is></c><c r="T2" t="inlineStr"><is><t># [JURISPRUD&#202;NCIA / TRIBUNAIS SUPERIORES] - Precedentes Vinculantes
+
+Principais diretrizes pac&#237;ficas dos Tribunais Superiores (STJ/STF) sobre **DELINEAMENTOS GERAIS**:
+
+1. **STJ - EREsp 1.280.825/RJ: 'Nas controv&#233;rsias relacionadas &#224; responsabilidade contratual, aplica-se a regra geral da prescri&#231;&#227;o decenal (art. 205 do CC)'.**;
+2. **Veda&#231;&#227;o ao Comportamento Contradit&#243;rio**: O STJ reprime com veem&#234;ncia o *venire contra factum proprium*, invalidando condutas que quebram a confian&#231;a leg&#237;tima;
+3. **Mitiga&#231;&#227;o do Preju&#237;zo (*Duty to Mitigate the Loss*)**: O credor tem o dever anexo de adotar medidas razo&#225;veis para n&#227;o agravar o pr&#243;prio dano.</t></is></c><c r="U2" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 3] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Jurisprudencial**: Qual s&#250;mula ou tese repetitiva do STJ incide com maior frequ&#234;ncia em lit&#237;gios sobre **DELINEAMENTOS GERAIS**?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **STJ - EREsp 1.280.825/RJ: 'Nas controv&#233;rsias relacionadas &#224; responsabilidade contratual, aplica-se a regra geral da prescri&#231;&#227;o decenal (art. 205 do CC)'.**  
+&gt; *Import&#226;ncia*: Essa orienta&#231;&#227;o pacificada vincula os tribunais de segunda inst&#226;ncia e evita o ajuizamento de recursos protelat&#243;rios.</t></is></c><c r="V2" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 3] - N&#237;vel Magistratura / MP
+
+**Enunciado**: Em demanda judicial versando sobre **DELINEAMENTOS GERAIS**, o r&#233;u alega aus&#234;ncia de responsabilidade em virtude de cl&#225;usula contratual gen&#233;rica de n&#227;o indenizar. &#192; luz da jurisprud&#234;ncia do STJ e do C&#243;digo Civil, o juiz deve:
+
+- (A) Acolher a defesa do r&#233;u, pois a autonomia privada das partes &#233; soberana e absoluta.
+- (B) Declarar a nulidade ou inefic&#225;cia da cl&#225;usula de n&#227;o indenizar que afronte normas cogentes de ordem p&#250;blica ou a fun&#231;&#227;o social da rela&#231;&#227;o.
+- (C) Extinguir o processo sem julgamento de m&#233;rito por falta de interesse de agir.
+- (D) Condenar o autor por litig&#226;ncia de m&#225;-f&#233;.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**. 
+*Fundamenta&#231;&#227;o*: Cl&#225;usulas de dispensa de deveres essenciais ou de exclus&#227;o unilateral de responsabilidade que violem preceitos de ordem p&#250;blica s&#227;o nulas de pleno direito (art. 166, VI e art. 421 do CC).</t></is></c><c r="W2" t="inlineStr"><is><t># [COMO CAI EM PROVAS / RAIO-X DAS BANCAS] - Armadilhas Cl&#225;ssicas
+
+Fique alerta &#224;s 3 pegadinhas mais recorrentes preparadas por FGV, Cebraspe e Vunesp:
+
+1. **A banca vai misturar os prazos de repara&#231;&#227;o contratual com extracontratual. ATEN&#199;&#195;O: Extracontratual = 3 anos (Art. 206, &#167;3&#186;, V); Inadimplemento Contratual = 10 anos (Art. 205 - EREsp 1.280.825/RJ do STJ).**
+2. **Prazos de Prescri&#231;&#227;o vs. Decad&#234;ncia**: A banca adora chamar prazo decadencial de anula&#231;&#227;o de 'prescricional' para induzir a erro;
+3. **Solidariedade Presumida**: Lembrar sempre que a solidariedade N&#195;O se presume; resulta da lei ou do contrato (Art. 265 do CC).</t></is></c><c r="X2" t="inlineStr"><is><t># [DICA DA PROFESSORA / S&#205;NTESE EM &#193;UDIO] - P&#237;lula da Professora Evelyn
+
+&#127897;&#65039; *Ol&#225;, querido aluno do Direito Prime! Aqui &#233; a Professora Evelyn com o resumo definitivo de DELINEAMENTOS GERAIS:*
+
+&gt; *'N&#227;o complique o que a lei fez para ser justo!  
+&gt; Em DELINEAMENTOS GERAIS, lembre-se sempre de conferir:  
+&gt; 1. Houve respeito &#224; boa-f&#233; objetiva e &#224; fun&#231;&#227;o social?  
+&gt; 2. Quem alega o direito agiu dentro do prazo legal sem dormir no ponto?  
+&gt; 3. A s&#250;mula de reg&#234;ncia &#233;: STJ - EREsp 1.280.825/RJ: 'Nas controv&#233;rsias relacionadas &#224; responsabilidade contratual, aplica-se a regra geral da prescri&#231;&#227;o decenal (art. 205 do CC)'..  
+&gt; Guarde essa tr&#237;ade no cora&#231;&#227;o e voc&#234; acertar&#225; qualquer quest&#227;o de concurso e advocacia!'*</t></is></c><c r="Y2" t="inlineStr"><is><t># [&#193;RVORE DECIS&#211;RIA / FLUXOGRAMA EM SETAS] - Grafo de Decis&#227;o L&#243;gica
+
+```text
+[DELINEAMENTOS GERAIS: AN&#193;LISE DE EFIC&#193;CIA JUR&#205;DICA]
+       |
+       +---&gt; Houve preenchimento dos Requisitos Legais B&#225;sicos?
+       |        |
+       |        +---[N&#195;O]---&gt; V&#205;CIO NA ESTRUTURA NORMATIVA
+       |        |             - Inefic&#225;cia ou Nulidade do ato
+       |        |
+       |        +---[SIM]---&gt; Houve Observ&#226;ncia da Boa-f&#233; e Prazos?
+       |                                |
+       |                                +---[SIM]---&gt; ATO H&#205;GIDO, V&#193;LIDO E EXIG&#205;VEL
+       |                                |             - Tutela jurisdicional concedida
+       |                                |             - Produ&#231;&#227;o integral dos efeitos
+       |                                |
+       |                                +---[N&#195;O]---&gt; INCID&#202;NCIA DE SAN&#199;&#195;O / PRESCRI&#199;&#195;O
+       |                                              - Perda da pretens&#227;o ou indeniza&#231;&#227;o civil
+```</t></is></c><c r="Z2" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / EFEITOS ESPECIAIS] - Reflexos Interdisciplinares
+
+A mat&#233;ria de **DELINEAMENTOS GERAIS** produz efeitos que transcendem o direito privado comum:
+
+- **Reflexos Tribut&#225;rios**: A regularidade jur&#237;dica do ato define o fato gerador e afasta autua&#231;&#245;es fiscais indevidas;
+- **Reflexos Notariais e Registrais**: A publicidade nos cart&#243;rios de notas e de registro de im&#243;veis confere efic&#225;cia perante terceiros (*erga omnes*);
+- **Reflexos Processuais**: Assegura a legitimidade ativa e passiva nas a&#231;&#245;es de conhecimento e de execu&#231;&#227;o.</t></is></c><c r="AA2" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 4] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pegadinha da Magistratura**: O descumprimento dos deveres anexos de conduta da boa-f&#233; objetiva em **DELINEAMENTOS GERAIS** exige prova de dolo ou culpa do devedor?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **N&#195;O EXIGE PROVA DE DOLO OU CULPA!**  
+&gt; A viola&#231;&#227;o positiva do contrato por quebra da boa-f&#233; objetiva opera responsabilidade de natureza **objetiva**, bastando a comprova&#231;&#227;o objetiva da conduta desleal ou omissiva.</t></is></c><c r="AB2" t="inlineStr"><is><t># [QUEST&#195;O DISCURSIVA / PR&#193;TICA PROFISSIONAL] - Parecer Forense
+
+**Situa&#231;&#227;o Pr&#225;tica**: Um cliente procura seu escrit&#243;rio de advocacia relatando les&#227;o patrimonial grave decorrente de lit&#237;gio em **DELINEAMENTOS GERAIS**.
+
+**Pergunta**: Como advogado(a), qual &#233; a primeira provid&#234;ncia cautelar e de m&#233;rito a ser proposta em ju&#237;zo?
+
+---
+
+### &#9878;&#65039; Padr&#227;o de Resposta T&#233;cnico:
+&gt; 1. **Tutela Provis&#243;ria de Urg&#234;ncia** (art. 300 do CPC) para suspender atos expropriat&#243;rios ou cobran&#231;as indevidas;  
+&gt; 2. **Pedido Principal** de declara&#231;&#227;o de cumprimento do preceito de DELINEAMENTOS GERAIS, com base em Arts. 189 a 211 do C&#243;digo Civil e perdas e danos.</t></is></c><c r="AC2" t="inlineStr"><is><t># [MAPA CONCEITUAL COMPARATIVO] - Os Pilares de DELINEAMENTOS GERAIS
+
+```text
+                      [ORDEM P&#218;BLICA E LEGALIDADE]
+                                   |
+                                   v
+[AUTONOMIA PRIVADA] &lt;&#9472;&#9472;&#9472;&gt; [DELINEAMENTOS GERAIS] &lt;&#9472;&#9472;&#9472;&gt; [BOA-F&#201; OBJETIVA]
+                                   |
+                                   v
+                      [EQUIL&#205;BRIO E FUN&#199;&#195;O SOCIAL]
+```</t></is></c><c r="AD2" t="inlineStr"></c><c r="AE2" t="inlineStr"></c><c r="AF2" t="inlineStr"></c><c r="AG2" t="inlineStr"></c><c r="AH2" t="inlineStr"></c></row><row r="3"><c r="A3" t="inlineStr"><is><t>Aula 02</t></is></c><c r="B3" t="inlineStr"><is><t>REGRAS GERAIS</t></is></c><c r="C3" t="inlineStr"><is><t>06. Prescri&#231;&#227;o e Decad&#234;ncia</t></is></c><c r="D3" t="n"><v>27</v></c><c r="E3" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / CONCEITO CENTRAL] - REGRAS GERAIS
+
+&gt; **Marco Normativo Central**: Arts. 189 a 211 do C&#243;digo Civil
+
+A disciplina jur&#237;dica de **REGRAS GERAIS** insere-se no ramo de **Prescri&#231;&#227;o e Decad&#234;ncia no C&#243;digo Civil**, estruturando como a lei protege as pessoas e seus bens com justi&#231;a e seguran&#231;a.
+
+### Conceito Desmembrado e Raz&#227;o de Ser:
+No direito civil contempor&#226;neo, as normas que regem REGRAS GERAIS abandonaram o antigo apego formalista ego&#237;sta para se submeter &#224; **dignidade da pessoa humana**, &#224; **fun&#231;&#227;o social** e &#224; **boa-f&#233; objetiva**.
+A raz&#227;o de ser do instituto &#233; assegurar equil&#237;brio e previsibilidade: ningu&#233;m pode se valer da pr&#243;pria torpeza, nem locupletar-se indevidamente &#224;s custas do preju&#237;zo alheio.
+
+&#128161; *Exemplo R&#225;pido de Aplica&#231;&#227;o*: Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.</t></is></c><c r="F3" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 1] - O Dilema Pr&#225;tico
+
+Para compreender como **REGRAS GERAIS** impacta a vida real dos cidad&#227;os nos f&#243;runs e cart&#243;rios, acompanhe o caso concreto:
+
+Marcos sofreu um acidente de carro provocado por um motorista embriagado. Tr&#234;s anos e meio depois, tenta entrar com a&#231;&#227;o de cobran&#231;a das despesas m&#233;dicas.
+
+Diante da recusa da outra parte em solucionar a controv&#233;rsia amigavelmente, surge a d&#250;vida jur&#237;dica: quais s&#227;o os limites da prote&#231;&#227;o que o C&#243;digo Civil e os tribunais conferem a essa situa&#231;&#227;o cotidiana?</t></is></c><c r="G3" t="inlineStr"><is><t># [GLOSS&#193;RIO INTERATIVO / MENU SUSPENSO] - Termos Chave Clic&#225;veis
+
+*(Clique em cada termo no menu suspenso para expandir a defini&#231;&#227;o desmembrada e o exemplo pr&#225;tico)*
+
+&#9660; **[Menu Suspenso 1: Prescri&#231;&#227;o (Art. 189 do CC)]**
+- *O que &#233;*: Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.
+- *Exemplo R&#225;pido*: Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.
+
+&#9660; **[Menu Suspenso 2: Decad&#234;ncia]**
+- *O que &#233;*: Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato.
+- *Exemplo R&#225;pido*: O prazo de 4 anos para anular um contrato com dolo &#233; decadencial: passou o prazo, o direito de anular morre para sempre.
+
+&#9660; **[Menu Suspenso 3: Causas Impeditivas e Suspensivas]**
+- *O que &#233;*: Fatos previstos na lei que impedem o in&#237;cio da contagem ou paralisam o rel&#243;gio da prescri&#231;&#227;o (ex.: entre c&#244;njuges na const&#226;ncia do casamento ou contra menores de 16 anos).
+- *Exemplo R&#225;pido*: Enquanto voc&#234; for casado, a prescri&#231;&#227;o das d&#237;vidas entre voc&#234; e seu parceiro fica congelada (Art. 197, I do CC).</t></is></c><c r="H3" t="inlineStr"><is><t># [EXEMPLO PR&#193;TICO E APLICA&#199;&#195;O FORENSE] - Como Funciona nos Tribunais
+
+Na pr&#225;tica forense de **REGRAS GERAIS**, ju&#237;zes e advogados aplicam as seguintes solu&#231;&#245;es imediatas:
+
+1. **Seguran&#231;a das Rela&#231;&#245;es Negociais**: Assegura que o combinado seja exig&#237;vel, prevenindo calotes e fraudes patrimoniais;
+2. **Prote&#231;&#227;o &#224; Parte Vulner&#225;vel**: Impede imposi&#231;&#245;es leoninas ou cl&#225;usulas abusivas impostas por detentores de maior poder econ&#244;mico;
+3. **Equidade e Razoabilidade**: Permite a revis&#227;o judicial das obriga&#231;&#245;es quando fatos supervenientes extraordin&#225;rios quebram o equil&#237;brio original da rela&#231;&#227;o.
+
+&#128161; *Aten&#231;&#227;o Forense*: O direito n&#227;o socorre aos que dormem (*dormientibus non succurrit ius*); por isso, os prazos legais da mat&#233;ria devem ser vigiados com rigor!</t></is></c><c r="I3" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 1] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta de Fixa&#231;&#227;o**: Qual &#233; a defini&#231;&#227;o jur&#237;dica central de **Prescri&#231;&#227;o (Art. 189 do CC)** em **REGRAS GERAIS** e qual sua principal repercuss&#227;o no patrim&#244;nio das partes?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.**  
+&gt; *Repercuss&#227;o Pr&#225;tica*: Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.</t></is></c><c r="J3" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 1] - Preencha as Lacunas
+
+Teste seu dom&#237;nio completando as palavras essenciais da mat&#233;ria:
+
+---
+
+### Enunciado da Atividade:
+*Violado o direito, nasce para o titular a [ LACUNA 1 ], a qual se extingue pela prescri&#231;&#227;o nos prazos fixados em lei. As causas que interrompem a prescri&#231;&#227;o produzem o efeito de [ LACUNA 2 ] do zero o c&#244;mputo do prazo temporal.*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: [ pretens&#227;o ] | [ vingan&#231;a p&#250;blica ]
+- **Para a Lacuna 2**: [ reiniciar / recome&#231;ar ] | [ duplicar ]
+
+---
+
+### &#127919; Gabarito Comentado:
+1. pretens&#227;o (Art. 189 do CC); 2. reiniciar / recome&#231;ar (Art. 202 do CC).</t></is></c><c r="K3" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 1] - Padr&#227;o OAB / FGV
+
+**Enunciado**: A respeito das normas e princ&#237;pios aplic&#225;veis a **REGRAS GERAIS**, assinale a alternativa juridicamente correta:
+
+- (A) A legisla&#231;&#227;o civil veda a aplica&#231;&#227;o da boa-f&#233; objetiva aos contratos particulares que versem sobre REGRAS GERAIS.
+- (B) Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo. Portanto, Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.
+- (C) Os prazos prescricionais de REGRAS GERAIS admitem dila&#231;&#227;o convencional por mero acordo verbal das partes.
+- (D) O Minist&#233;rio P&#250;blico jamais possui legitimidade para intervir em causas que envolvam REGRAS GERAIS.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**.  
+*Fundamenta&#231;&#227;o*: Trata-se da correta aplica&#231;&#227;o dogm&#225;tica do instituto segundo o C&#243;digo Civil e a jurisprud&#234;ncia dominante.</t></is></c><c r="L3" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / DOGM&#193;TICA E REQUISITOS T&#201;CNICOS] - Requisitos Estruturais
+
+Para que qualquer ato relacionado a **REGRAS GERAIS** produza plenos efeitos no mundo jur&#237;dico, exige-se:
+
+1. **Legitima&#231;&#227;o Espec&#237;fica**: N&#227;o basta capacidade gen&#233;rica; a parte deve deter pertin&#234;ncia subjetiva e poderes para o ato;
+2. **Higidez Volitiva e Aus&#234;ncia de Fraude**: A manifesta&#231;&#227;o de vontade deve ser livre de erro, dolo, coa&#231;&#227;o ou simula&#231;&#227;o;
+3. **Conformidade com a Ordem P&#250;blica**: O objeto deve ser l&#237;cito e atender &#224; fun&#231;&#227;o social estipulada em lei.</t></is></c><c r="M3" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 2] - O Conflito em Ju&#237;zo
+
+A a&#231;&#227;o judicial foi formalmente distribu&#237;da na Vara C&#237;vel competente.
+
+A parte r&#233; apresentou contesta&#231;&#227;o alegando que n&#227;o houve ilicitude e invocando o estrito cumprimento de cl&#225;usulas padronizadas.
+Contudo, a defesa da v&#237;tima sustentou que o comportamento do r&#233;u violou frontalmente a boa-f&#233; objetiva e os preceitos de **REGRAS GERAIS**.
+
+O juiz abriu vista para manifesta&#231;&#227;o sobre provas, convocando as partes para audi&#234;ncia de instru&#231;&#227;o e julgamento!</t></is></c><c r="N3" t="inlineStr"><is><t># [FRONTEIRAS CR&#205;TICAS / O QUE N&#195;O &#201;] - Quadro Comparativo
+
+| FIGURA EM AN&#193;LISE | O QUE REALMENTE &#201; | O QUE **N&#195;O** &#201; (CUIDADO!) |
+| :--- | :--- | :--- |
+| **Prescri&#231;&#227;o (Art. 189 do CC)** | Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo. | N&#227;o pode ser flexibilizado por conveni&#234;ncia particular. |
+| **Decad&#234;ncia** | Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato. | N&#227;o se confunde com arb&#237;trio individual ou impunidade. |
+| **Causas Impeditivas e Suspensivas** | Fatos previstos na lei que impedem o in&#237;cio da contagem ou paralisam o rel&#243;gio da prescri&#231;&#227;o (ex.: entre c&#244;njuges na const&#226;ncia do casamento ou contra menores de 16 anos). | N&#227;o depende de comprova&#231;&#227;o de dor &#237;ntima se a lei presumir. |</t></is></c><c r="O3" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 2] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Crucial**: Qual &#233; a distin&#231;&#227;o primordial entre **Prescri&#231;&#227;o (Art. 189 do CC)** e **Decad&#234;ncia** no direito civil?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; Enquanto **Prescri&#231;&#227;o (Art. 189 do CC)** (Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.), o instituto de **Decad&#234;ncia** (Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato.).  
+&gt; Conhecer essa fronteira &#233; decisivo para n&#227;o errar a fundamenta&#231;&#227;o da peti&#231;&#227;o inicial nem as quest&#245;es da OAB!</t></is></c><c r="P3" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 2] - Regras Especiais
+
+Complete a assertiva jurisprudencial consolidada pelos tribunais superiores:
+
+---
+
+### Enunciado:
+*'No &#226;mbito de REGRAS GERAIS, a boa-f&#233; objetiva imp&#245;e deveres anexos de [ LACUNA 1 ] e colabora&#231;&#227;o m&#250;tua. A quebra desses deveres caracteriza inadimplemento positivo ou viola&#231;&#227;o contratual sujeita a [ LACUNA 2 ].'*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: `[ lealdade / informa&#231;&#227;o ]` | `[ oculta&#231;&#227;o ]`
+- **Para a Lacuna 2**: `[ repara&#231;&#227;o por perdas e danos ]` | `[ perd&#227;o judicial ]`
+
+---
+
+### &#127919; Gabarito Comentado:
+1. lealdade / informa&#231;&#227;o (Enunciados da Jornada de Direito Civil do CJF);
+2. repara&#231;&#227;o por perdas e danos (Arts. 187 e 927 do CC).</t></is></c><c r="Q3" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 2] - N&#237;vel Concurso P&#250;blico
+
+**Enunciado**: Em mat&#233;ria de **REGRAS GERAIS**, assinale a afirmativa INCORRETA:
+
+- (A) A responsabilidade civil e a validade negocial subordinam-se &#224; fun&#231;&#227;o social do instituto.
+- (B) &#201; nula a cl&#225;usula que contrarie disposi&#231;&#227;o de lei de ordem p&#250;blica em REGRAS GERAIS.
+- (C) Os efeitos do neg&#243;cio podem ser anulados se comprovado v&#237;cio de consentimento no prazo decadencial legal.
+- (D) O enriquecimento sem causa &#233; tolerado no direito civil caso o prejudicado seja pessoa jur&#237;dica.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Incorreta: (D)**. 
+*Fundamenta&#231;&#227;o*: O art. 884 do C&#243;digo Civil repudia expressamente o enriquecimento sem causa contra qualquer sujeito de direito (pessoa natural ou jur&#237;dica).</t></is></c><c r="R3" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 3] - Conclus&#227;o e Senten&#231;a Judicial
+
+A senten&#231;a judicial foi proferida pelo magistrado titular da Vara C&#237;vel:
+
+O juiz reconhece a prescri&#231;&#227;o trienal (art. 206, &#167;3&#186;, V do CC): para repara&#231;&#227;o civil extracontratual, o prazo &#233; de 3 anos cravados da data do fato lesivo, julgando extinto o processo com resolu&#231;&#227;o do m&#233;rito.
+
+A pacifica&#231;&#227;o do conflito demonstrou que as regras de **REGRAS GERAIS** atuam para resguardar a ordem econ&#244;mica e proteger os cidad&#227;os que pautam suas condutas na boa-f&#233; objetiva!</t></is></c><c r="S3" t="inlineStr"><is><t># [MINIGAME INTERATIVO / LIGUE OS TERMOS] - Desafio R&#225;pido
+
+Ligue cada elemento da **Coluna A** &#224; sua defini&#231;&#227;o correspondente na **Coluna B**:
+
+---
+
+### &#129513; COLUNA A:
+1. Prescri&#231;&#227;o (Art. 189 do CC)
+2. Decad&#234;ncia
+3. Causas Impeditivas e Suspensivas
+4. Boa-f&#233; Objetiva
+
+---
+
+### &#127919; COLUNA B:
+- ( ) Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato.
+- ( ) Padr&#227;o de conduta leal, honesto e &#233;tico obrigat&#243;rio nas rela&#231;&#245;es civis.
+- ( ) Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.
+- ( ) Fatos previstos na lei que impedem o in&#237;cio da contagem ou paralisam o rel&#243;gio da prescri&#231;&#227;o (ex.: entre c&#244;njuges na const&#226;ncia do casamento ou contra menores de 16 anos).
+
+---
+
+### &#128273; Resposta do Minigame:
+- **Ordem Correta**: `[ 2 ]` $\rightarrow$ `[ 4 ]` $\rightarrow$ `[ 1 ]` $\rightarrow$ `[ 3 ]`</t></is></c><c r="T3" t="inlineStr"><is><t># [JURISPRUD&#202;NCIA / TRIBUNAIS SUPERIORES] - Precedentes Vinculantes
+
+Principais diretrizes pac&#237;ficas dos Tribunais Superiores (STJ/STF) sobre **REGRAS GERAIS**:
+
+1. **STJ - EREsp 1.280.825/RJ: 'Nas controv&#233;rsias relacionadas &#224; responsabilidade contratual, aplica-se a regra geral da prescri&#231;&#227;o decenal (art. 205 do CC)'.**;
+2. **Veda&#231;&#227;o ao Comportamento Contradit&#243;rio**: O STJ reprime com veem&#234;ncia o *venire contra factum proprium*, invalidando condutas que quebram a confian&#231;a leg&#237;tima;
+3. **Mitiga&#231;&#227;o do Preju&#237;zo (*Duty to Mitigate the Loss*)**: O credor tem o dever anexo de adotar medidas razo&#225;veis para n&#227;o agravar o pr&#243;prio dano.</t></is></c><c r="U3" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 3] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Jurisprudencial**: Qual s&#250;mula ou tese repetitiva do STJ incide com maior frequ&#234;ncia em lit&#237;gios sobre **REGRAS GERAIS**?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **STJ - EREsp 1.280.825/RJ: 'Nas controv&#233;rsias relacionadas &#224; responsabilidade contratual, aplica-se a regra geral da prescri&#231;&#227;o decenal (art. 205 do CC)'.**  
+&gt; *Import&#226;ncia*: Essa orienta&#231;&#227;o pacificada vincula os tribunais de segunda inst&#226;ncia e evita o ajuizamento de recursos protelat&#243;rios.</t></is></c><c r="V3" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 3] - N&#237;vel Magistratura / MP
+
+**Enunciado**: Em demanda judicial versando sobre **REGRAS GERAIS**, o r&#233;u alega aus&#234;ncia de responsabilidade em virtude de cl&#225;usula contratual gen&#233;rica de n&#227;o indenizar. &#192; luz da jurisprud&#234;ncia do STJ e do C&#243;digo Civil, o juiz deve:
+
+- (A) Acolher a defesa do r&#233;u, pois a autonomia privada das partes &#233; soberana e absoluta.
+- (B) Declarar a nulidade ou inefic&#225;cia da cl&#225;usula de n&#227;o indenizar que afronte normas cogentes de ordem p&#250;blica ou a fun&#231;&#227;o social da rela&#231;&#227;o.
+- (C) Extinguir o processo sem julgamento de m&#233;rito por falta de interesse de agir.
+- (D) Condenar o autor por litig&#226;ncia de m&#225;-f&#233;.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**. 
+*Fundamenta&#231;&#227;o*: Cl&#225;usulas de dispensa de deveres essenciais ou de exclus&#227;o unilateral de responsabilidade que violem preceitos de ordem p&#250;blica s&#227;o nulas de pleno direito (art. 166, VI e art. 421 do CC).</t></is></c><c r="W3" t="inlineStr"><is><t># [COMO CAI EM PROVAS / RAIO-X DAS BANCAS] - Armadilhas Cl&#225;ssicas
+
+Fique alerta &#224;s 3 pegadinhas mais recorrentes preparadas por FGV, Cebraspe e Vunesp:
+
+1. **A banca vai misturar os prazos de repara&#231;&#227;o contratual com extracontratual. ATEN&#199;&#195;O: Extracontratual = 3 anos (Art. 206, &#167;3&#186;, V); Inadimplemento Contratual = 10 anos (Art. 205 - EREsp 1.280.825/RJ do STJ).**
+2. **Prazos de Prescri&#231;&#227;o vs. Decad&#234;ncia**: A banca adora chamar prazo decadencial de anula&#231;&#227;o de 'prescricional' para induzir a erro;
+3. **Solidariedade Presumida**: Lembrar sempre que a solidariedade N&#195;O se presume; resulta da lei ou do contrato (Art. 265 do CC).</t></is></c><c r="X3" t="inlineStr"><is><t># [DICA DA PROFESSORA / S&#205;NTESE EM &#193;UDIO] - P&#237;lula da Professora Evelyn
+
+&#127897;&#65039; *Ol&#225;, querido aluno do Direito Prime! Aqui &#233; a Professora Evelyn com o resumo definitivo de REGRAS GERAIS:*
+
+&gt; *'N&#227;o complique o que a lei fez para ser justo!  
+&gt; Em REGRAS GERAIS, lembre-se sempre de conferir:  
+&gt; 1. Houve respeito &#224; boa-f&#233; objetiva e &#224; fun&#231;&#227;o social?  
+&gt; 2. Quem alega o direito agiu dentro do prazo legal sem dormir no ponto?  
+&gt; 3. A s&#250;mula de reg&#234;ncia &#233;: STJ - EREsp 1.280.825/RJ: 'Nas controv&#233;rsias relacionadas &#224; responsabilidade contratual, aplica-se a regra geral da prescri&#231;&#227;o decenal (art. 205 do CC)'..  
+&gt; Guarde essa tr&#237;ade no cora&#231;&#227;o e voc&#234; acertar&#225; qualquer quest&#227;o de concurso e advocacia!'*</t></is></c><c r="Y3" t="inlineStr"><is><t># [&#193;RVORE DECIS&#211;RIA / FLUXOGRAMA EM SETAS] - Grafo de Decis&#227;o L&#243;gica
+
+```text
+[REGRAS GERAIS: AN&#193;LISE DE EFIC&#193;CIA JUR&#205;DICA]
+       |
+       +---&gt; Houve preenchimento dos Requisitos Legais B&#225;sicos?
+       |        |
+       |        +---[N&#195;O]---&gt; V&#205;CIO NA ESTRUTURA NORMATIVA
+       |        |             - Inefic&#225;cia ou Nulidade do ato
+       |        |
+       |        +---[SIM]---&gt; Houve Observ&#226;ncia da Boa-f&#233; e Prazos?
+       |                                |
+       |                                +---[SIM]---&gt; ATO H&#205;GIDO, V&#193;LIDO E EXIG&#205;VEL
+       |                                |             - Tutela jurisdicional concedida
+       |                                |             - Produ&#231;&#227;o integral dos efeitos
+       |                                |
+       |                                +---[N&#195;O]---&gt; INCID&#202;NCIA DE SAN&#199;&#195;O / PRESCRI&#199;&#195;O
+       |                                              - Perda da pretens&#227;o ou indeniza&#231;&#227;o civil
+```</t></is></c><c r="Z3" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / EFEITOS ESPECIAIS] - Reflexos Interdisciplinares
+
+A mat&#233;ria de **REGRAS GERAIS** produz efeitos que transcendem o direito privado comum:
+
+- **Reflexos Tribut&#225;rios**: A regularidade jur&#237;dica do ato define o fato gerador e afasta autua&#231;&#245;es fiscais indevidas;
+- **Reflexos Notariais e Registrais**: A publicidade nos cart&#243;rios de notas e de registro de im&#243;veis confere efic&#225;cia perante terceiros (*erga omnes*);
+- **Reflexos Processuais**: Assegura a legitimidade ativa e passiva nas a&#231;&#245;es de conhecimento e de execu&#231;&#227;o.</t></is></c><c r="AA3" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 4] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pegadinha da Magistratura**: O descumprimento dos deveres anexos de conduta da boa-f&#233; objetiva em **REGRAS GERAIS** exige prova de dolo ou culpa do devedor?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **N&#195;O EXIGE PROVA DE DOLO OU CULPA!**  
+&gt; A viola&#231;&#227;o positiva do contrato por quebra da boa-f&#233; objetiva opera responsabilidade de natureza **objetiva**, bastando a comprova&#231;&#227;o objetiva da conduta desleal ou omissiva.</t></is></c><c r="AB3" t="inlineStr"><is><t># [QUEST&#195;O DISCURSIVA / PR&#193;TICA PROFISSIONAL] - Parecer Forense
+
+**Situa&#231;&#227;o Pr&#225;tica**: Um cliente procura seu escrit&#243;rio de advocacia relatando les&#227;o patrimonial grave decorrente de lit&#237;gio em **REGRAS GERAIS**.
+
+**Pergunta**: Como advogado(a), qual &#233; a primeira provid&#234;ncia cautelar e de m&#233;rito a ser proposta em ju&#237;zo?
+
+---
+
+### &#9878;&#65039; Padr&#227;o de Resposta T&#233;cnico:
+&gt; 1. **Tutela Provis&#243;ria de Urg&#234;ncia** (art. 300 do CPC) para suspender atos expropriat&#243;rios ou cobran&#231;as indevidas;  
+&gt; 2. **Pedido Principal** de declara&#231;&#227;o de cumprimento do preceito de REGRAS GERAIS, com base em Arts. 189 a 211 do C&#243;digo Civil e perdas e danos.</t></is></c><c r="AC3" t="inlineStr"><is><t># [MAPA CONCEITUAL COMPARATIVO] - Os Pilares de REGRAS GERAIS
+
+```text
+                      [ORDEM P&#218;BLICA E LEGALIDADE]
+                                   |
+                                   v
+[AUTONOMIA PRIVADA] &lt;&#9472;&#9472;&#9472;&gt; [REGRAS GERAIS] &lt;&#9472;&#9472;&#9472;&gt; [BOA-F&#201; OBJETIVA]
+                                   |
+                                   v
+                      [EQUIL&#205;BRIO E FUN&#199;&#195;O SOCIAL]
+```</t></is></c><c r="AD3" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 3] - Desafio Avan&#231;ado
+
+Preencha as lacunas sobre a teoria do adimplemento substancial em REGRAS GERAIS:
+
+---
+
+### Enunciado:
+*'A teoria do [ LACUNA 1 ] impede a resolu&#231;&#227;o do contrato quando a presta&#231;&#227;o devida tiver sido cumprida em parte essencialmente preponderante, resguardando a preserva&#231;&#227;o do neg&#243;cio e autorizando apenas a cobran&#231;a do [ LACUNA 2 ].'*
+
+---
+
+### Op&#231;&#245;es:
+- **Para a Lacuna 1**: `[ adimplemento substancial ]` | `[ confisco pr&#233;vio ]`
+- **Para a Lacuna 2**: `[ saldo remanescente ]` | `[ dobro de multa ]`
+
+---
+
+### &#127919; Gabarito: 1. adimplemento substancial; 2. saldo remanescente (STJ).</t></is></c><c r="AE3" t="inlineStr"><is><t># [RESUMO ESQUEM&#193;TICO / TABELA DE PRAZOS] - Prazos e Condi&#231;&#245;es
+
+| SITUA&#199;&#195;O EM REGRAS GERAIS | TIPO DE PRAZO | DISPOSITIVO LEGAL |
+| :--- | :--- | :--- |
+| **Regra Geral Residual Civil** | 10 anos (prescricional) | Art. 205 do C&#243;digo Civil |
+| **Repara&#231;&#227;o Civil Extracontratual** | 3 anos (prescricional) | Art. 206, &#167;3&#186;, V do CC |
+| **A&#231;&#227;o Anulat&#243;ria por V&#237;cio** | 4 anos (decadencial) | Art. 178 do C&#243;digo Civil |
+| **Nulidade Absoluta por Ilicitude** | Imprescrit&#237;vel | Art. 169 do C&#243;digo Civil |</t></is></c><c r="AF3" t="inlineStr"></c><c r="AG3" t="inlineStr"></c><c r="AH3" t="inlineStr"></c></row><row r="4"><c r="A4" t="inlineStr"><is><t>Aula 03</t></is></c><c r="B4" t="inlineStr"><is><t>PRESCRI&#199;&#195;O</t></is></c><c r="C4" t="inlineStr"><is><t>06. Prescri&#231;&#227;o e Decad&#234;ncia</t></is></c><c r="D4" t="n"><v>25</v></c><c r="E4" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / CONCEITO CENTRAL] - PRESCRI&#199;&#195;O
+
+&gt; **Marco Normativo Central**: Arts. 189 a 211 do C&#243;digo Civil
+
+A disciplina jur&#237;dica de **PRESCRI&#199;&#195;O** insere-se no ramo de **Prescri&#231;&#227;o e Decad&#234;ncia no C&#243;digo Civil**, estruturando como a lei protege as pessoas e seus bens com justi&#231;a e seguran&#231;a.
+
+### Conceito Desmembrado e Raz&#227;o de Ser:
+No direito civil contempor&#226;neo, as normas que regem PRESCRI&#199;&#195;O abandonaram o antigo apego formalista ego&#237;sta para se submeter &#224; **dignidade da pessoa humana**, &#224; **fun&#231;&#227;o social** e &#224; **boa-f&#233; objetiva**.
+A raz&#227;o de ser do instituto &#233; assegurar equil&#237;brio e previsibilidade: ningu&#233;m pode se valer da pr&#243;pria torpeza, nem locupletar-se indevidamente &#224;s custas do preju&#237;zo alheio.
+
+&#128161; *Exemplo R&#225;pido de Aplica&#231;&#227;o*: Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.</t></is></c><c r="F4" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 1] - O Dilema Pr&#225;tico
+
+Para compreender como **PRESCRI&#199;&#195;O** impacta a vida real dos cidad&#227;os nos f&#243;runs e cart&#243;rios, acompanhe o caso concreto:
+
+Marcos sofreu um acidente de carro provocado por um motorista embriagado. Tr&#234;s anos e meio depois, tenta entrar com a&#231;&#227;o de cobran&#231;a das despesas m&#233;dicas.
+
+Diante da recusa da outra parte em solucionar a controv&#233;rsia amigavelmente, surge a d&#250;vida jur&#237;dica: quais s&#227;o os limites da prote&#231;&#227;o que o C&#243;digo Civil e os tribunais conferem a essa situa&#231;&#227;o cotidiana?</t></is></c><c r="G4" t="inlineStr"><is><t># [GLOSS&#193;RIO INTERATIVO / MENU SUSPENSO] - Termos Chave Clic&#225;veis
+
+*(Clique em cada termo no menu suspenso para expandir a defini&#231;&#227;o desmembrada e o exemplo pr&#225;tico)*
+
+&#9660; **[Menu Suspenso 1: Prescri&#231;&#227;o (Art. 189 do CC)]**
+- *O que &#233;*: Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.
+- *Exemplo R&#225;pido*: Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.
+
+&#9660; **[Menu Suspenso 2: Decad&#234;ncia]**
+- *O que &#233;*: Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato.
+- *Exemplo R&#225;pido*: O prazo de 4 anos para anular um contrato com dolo &#233; decadencial: passou o prazo, o direito de anular morre para sempre.
+
+&#9660; **[Menu Suspenso 3: Causas Impeditivas e Suspensivas]**
+- *O que &#233;*: Fatos previstos na lei que impedem o in&#237;cio da contagem ou paralisam o rel&#243;gio da prescri&#231;&#227;o (ex.: entre c&#244;njuges na const&#226;ncia do casamento ou contra menores de 16 anos).
+- *Exemplo R&#225;pido*: Enquanto voc&#234; for casado, a prescri&#231;&#227;o das d&#237;vidas entre voc&#234; e seu parceiro fica congelada (Art. 197, I do CC).</t></is></c><c r="H4" t="inlineStr"><is><t># [EXEMPLO PR&#193;TICO E APLICA&#199;&#195;O FORENSE] - Como Funciona nos Tribunais
+
+Na pr&#225;tica forense de **PRESCRI&#199;&#195;O**, ju&#237;zes e advogados aplicam as seguintes solu&#231;&#245;es imediatas:
+
+1. **Seguran&#231;a das Rela&#231;&#245;es Negociais**: Assegura que o combinado seja exig&#237;vel, prevenindo calotes e fraudes patrimoniais;
+2. **Prote&#231;&#227;o &#224; Parte Vulner&#225;vel**: Impede imposi&#231;&#245;es leoninas ou cl&#225;usulas abusivas impostas por detentores de maior poder econ&#244;mico;
+3. **Equidade e Razoabilidade**: Permite a revis&#227;o judicial das obriga&#231;&#245;es quando fatos supervenientes extraordin&#225;rios quebram o equil&#237;brio original da rela&#231;&#227;o.
+
+&#128161; *Aten&#231;&#227;o Forense*: O direito n&#227;o socorre aos que dormem (*dormientibus non succurrit ius*); por isso, os prazos legais da mat&#233;ria devem ser vigiados com rigor!</t></is></c><c r="I4" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 1] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta de Fixa&#231;&#227;o**: Qual &#233; a defini&#231;&#227;o jur&#237;dica central de **Prescri&#231;&#227;o (Art. 189 do CC)** em **PRESCRI&#199;&#195;O** e qual sua principal repercuss&#227;o no patrim&#244;nio das partes?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.**  
+&gt; *Repercuss&#227;o Pr&#225;tica*: Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.</t></is></c><c r="J4" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 1] - Preencha as Lacunas
+
+Teste seu dom&#237;nio completando as palavras essenciais da mat&#233;ria:
+
+---
+
+### Enunciado da Atividade:
+*Violado o direito, nasce para o titular a [ LACUNA 1 ], a qual se extingue pela prescri&#231;&#227;o nos prazos fixados em lei. As causas que interrompem a prescri&#231;&#227;o produzem o efeito de [ LACUNA 2 ] do zero o c&#244;mputo do prazo temporal.*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: [ pretens&#227;o ] | [ vingan&#231;a p&#250;blica ]
+- **Para a Lacuna 2**: [ reiniciar / recome&#231;ar ] | [ duplicar ]
+
+---
+
+### &#127919; Gabarito Comentado:
+1. pretens&#227;o (Art. 189 do CC); 2. reiniciar / recome&#231;ar (Art. 202 do CC).</t></is></c><c r="K4" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 1] - Padr&#227;o OAB / FGV
+
+**Enunciado**: A respeito das normas e princ&#237;pios aplic&#225;veis a **PRESCRI&#199;&#195;O**, assinale a alternativa juridicamente correta:
+
+- (A) A legisla&#231;&#227;o civil veda a aplica&#231;&#227;o da boa-f&#233; objetiva aos contratos particulares que versem sobre PRESCRI&#199;&#195;O.
+- (B) Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo. Portanto, Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.
+- (C) Os prazos prescricionais de PRESCRI&#199;&#195;O admitem dila&#231;&#227;o convencional por mero acordo verbal das partes.
+- (D) O Minist&#233;rio P&#250;blico jamais possui legitimidade para intervir em causas que envolvam PRESCRI&#199;&#195;O.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**.  
+*Fundamenta&#231;&#227;o*: Trata-se da correta aplica&#231;&#227;o dogm&#225;tica do instituto segundo o C&#243;digo Civil e a jurisprud&#234;ncia dominante.</t></is></c><c r="L4" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / DOGM&#193;TICA E REQUISITOS T&#201;CNICOS] - Requisitos Estruturais
+
+Para que qualquer ato relacionado a **PRESCRI&#199;&#195;O** produza plenos efeitos no mundo jur&#237;dico, exige-se:
+
+1. **Legitima&#231;&#227;o Espec&#237;fica**: N&#227;o basta capacidade gen&#233;rica; a parte deve deter pertin&#234;ncia subjetiva e poderes para o ato;
+2. **Higidez Volitiva e Aus&#234;ncia de Fraude**: A manifesta&#231;&#227;o de vontade deve ser livre de erro, dolo, coa&#231;&#227;o ou simula&#231;&#227;o;
+3. **Conformidade com a Ordem P&#250;blica**: O objeto deve ser l&#237;cito e atender &#224; fun&#231;&#227;o social estipulada em lei.</t></is></c><c r="M4" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 2] - O Conflito em Ju&#237;zo
+
+A a&#231;&#227;o judicial foi formalmente distribu&#237;da na Vara C&#237;vel competente.
+
+A parte r&#233; apresentou contesta&#231;&#227;o alegando que n&#227;o houve ilicitude e invocando o estrito cumprimento de cl&#225;usulas padronizadas.
+Contudo, a defesa da v&#237;tima sustentou que o comportamento do r&#233;u violou frontalmente a boa-f&#233; objetiva e os preceitos de **PRESCRI&#199;&#195;O**.
+
+O juiz abriu vista para manifesta&#231;&#227;o sobre provas, convocando as partes para audi&#234;ncia de instru&#231;&#227;o e julgamento!</t></is></c><c r="N4" t="inlineStr"><is><t># [FRONTEIRAS CR&#205;TICAS / O QUE N&#195;O &#201;] - Quadro Comparativo
+
+| FIGURA EM AN&#193;LISE | O QUE REALMENTE &#201; | O QUE **N&#195;O** &#201; (CUIDADO!) |
+| :--- | :--- | :--- |
+| **Prescri&#231;&#227;o (Art. 189 do CC)** | Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo. | N&#227;o pode ser flexibilizado por conveni&#234;ncia particular. |
+| **Decad&#234;ncia** | Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato. | N&#227;o se confunde com arb&#237;trio individual ou impunidade. |
+| **Causas Impeditivas e Suspensivas** | Fatos previstos na lei que impedem o in&#237;cio da contagem ou paralisam o rel&#243;gio da prescri&#231;&#227;o (ex.: entre c&#244;njuges na const&#226;ncia do casamento ou contra menores de 16 anos). | N&#227;o depende de comprova&#231;&#227;o de dor &#237;ntima se a lei presumir. |</t></is></c><c r="O4" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 2] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Crucial**: Qual &#233; a distin&#231;&#227;o primordial entre **Prescri&#231;&#227;o (Art. 189 do CC)** e **Decad&#234;ncia** no direito civil?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; Enquanto **Prescri&#231;&#227;o (Art. 189 do CC)** (Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.), o instituto de **Decad&#234;ncia** (Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato.).  
+&gt; Conhecer essa fronteira &#233; decisivo para n&#227;o errar a fundamenta&#231;&#227;o da peti&#231;&#227;o inicial nem as quest&#245;es da OAB!</t></is></c><c r="P4" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 2] - Regras Especiais
+
+Complete a assertiva jurisprudencial consolidada pelos tribunais superiores:
+
+---
+
+### Enunciado:
+*'No &#226;mbito de PRESCRI&#199;&#195;O, a boa-f&#233; objetiva imp&#245;e deveres anexos de [ LACUNA 1 ] e colabora&#231;&#227;o m&#250;tua. A quebra desses deveres caracteriza inadimplemento positivo ou viola&#231;&#227;o contratual sujeita a [ LACUNA 2 ].'*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: `[ lealdade / informa&#231;&#227;o ]` | `[ oculta&#231;&#227;o ]`
+- **Para a Lacuna 2**: `[ repara&#231;&#227;o por perdas e danos ]` | `[ perd&#227;o judicial ]`
+
+---
+
+### &#127919; Gabarito Comentado:
+1. lealdade / informa&#231;&#227;o (Enunciados da Jornada de Direito Civil do CJF);
+2. repara&#231;&#227;o por perdas e danos (Arts. 187 e 927 do CC).</t></is></c><c r="Q4" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 2] - N&#237;vel Concurso P&#250;blico
+
+**Enunciado**: Em mat&#233;ria de **PRESCRI&#199;&#195;O**, assinale a afirmativa INCORRETA:
+
+- (A) A responsabilidade civil e a validade negocial subordinam-se &#224; fun&#231;&#227;o social do instituto.
+- (B) &#201; nula a cl&#225;usula que contrarie disposi&#231;&#227;o de lei de ordem p&#250;blica em PRESCRI&#199;&#195;O.
+- (C) Os efeitos do neg&#243;cio podem ser anulados se comprovado v&#237;cio de consentimento no prazo decadencial legal.
+- (D) O enriquecimento sem causa &#233; tolerado no direito civil caso o prejudicado seja pessoa jur&#237;dica.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Incorreta: (D)**. 
+*Fundamenta&#231;&#227;o*: O art. 884 do C&#243;digo Civil repudia expressamente o enriquecimento sem causa contra qualquer sujeito de direito (pessoa natural ou jur&#237;dica).</t></is></c><c r="R4" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 3] - Conclus&#227;o e Senten&#231;a Judicial
+
+A senten&#231;a judicial foi proferida pelo magistrado titular da Vara C&#237;vel:
+
+O juiz reconhece a prescri&#231;&#227;o trienal (art. 206, &#167;3&#186;, V do CC): para repara&#231;&#227;o civil extracontratual, o prazo &#233; de 3 anos cravados da data do fato lesivo, julgando extinto o processo com resolu&#231;&#227;o do m&#233;rito.
+
+A pacifica&#231;&#227;o do conflito demonstrou que as regras de **PRESCRI&#199;&#195;O** atuam para resguardar a ordem econ&#244;mica e proteger os cidad&#227;os que pautam suas condutas na boa-f&#233; objetiva!</t></is></c><c r="S4" t="inlineStr"><is><t># [MINIGAME INTERATIVO / LIGUE OS TERMOS] - Desafio R&#225;pido
+
+Ligue cada elemento da **Coluna A** &#224; sua defini&#231;&#227;o correspondente na **Coluna B**:
+
+---
+
+### &#129513; COLUNA A:
+1. Prescri&#231;&#227;o (Art. 189 do CC)
+2. Decad&#234;ncia
+3. Causas Impeditivas e Suspensivas
+4. Boa-f&#233; Objetiva
+
+---
+
+### &#127919; COLUNA B:
+- ( ) Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato.
+- ( ) Padr&#227;o de conduta leal, honesto e &#233;tico obrigat&#243;rio nas rela&#231;&#245;es civis.
+- ( ) Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.
+- ( ) Fatos previstos na lei que impedem o in&#237;cio da contagem ou paralisam o rel&#243;gio da prescri&#231;&#227;o (ex.: entre c&#244;njuges na const&#226;ncia do casamento ou contra menores de 16 anos).
+
+---
+
+### &#128273; Resposta do Minigame:
+- **Ordem Correta**: `[ 2 ]` $\rightarrow$ `[ 4 ]` $\rightarrow$ `[ 1 ]` $\rightarrow$ `[ 3 ]`</t></is></c><c r="T4" t="inlineStr"><is><t># [JURISPRUD&#202;NCIA / TRIBUNAIS SUPERIORES] - Precedentes Vinculantes
+
+Principais diretrizes pac&#237;ficas dos Tribunais Superiores (STJ/STF) sobre **PRESCRI&#199;&#195;O**:
+
+1. **STJ - EREsp 1.280.825/RJ: 'Nas controv&#233;rsias relacionadas &#224; responsabilidade contratual, aplica-se a regra geral da prescri&#231;&#227;o decenal (art. 205 do CC)'.**;
+2. **Veda&#231;&#227;o ao Comportamento Contradit&#243;rio**: O STJ reprime com veem&#234;ncia o *venire contra factum proprium*, invalidando condutas que quebram a confian&#231;a leg&#237;tima;
+3. **Mitiga&#231;&#227;o do Preju&#237;zo (*Duty to Mitigate the Loss*)**: O credor tem o dever anexo de adotar medidas razo&#225;veis para n&#227;o agravar o pr&#243;prio dano.</t></is></c><c r="U4" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 3] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Jurisprudencial**: Qual s&#250;mula ou tese repetitiva do STJ incide com maior frequ&#234;ncia em lit&#237;gios sobre **PRESCRI&#199;&#195;O**?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **STJ - EREsp 1.280.825/RJ: 'Nas controv&#233;rsias relacionadas &#224; responsabilidade contratual, aplica-se a regra geral da prescri&#231;&#227;o decenal (art. 205 do CC)'.**  
+&gt; *Import&#226;ncia*: Essa orienta&#231;&#227;o pacificada vincula os tribunais de segunda inst&#226;ncia e evita o ajuizamento de recursos protelat&#243;rios.</t></is></c><c r="V4" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 3] - N&#237;vel Magistratura / MP
+
+**Enunciado**: Em demanda judicial versando sobre **PRESCRI&#199;&#195;O**, o r&#233;u alega aus&#234;ncia de responsabilidade em virtude de cl&#225;usula contratual gen&#233;rica de n&#227;o indenizar. &#192; luz da jurisprud&#234;ncia do STJ e do C&#243;digo Civil, o juiz deve:
+
+- (A) Acolher a defesa do r&#233;u, pois a autonomia privada das partes &#233; soberana e absoluta.
+- (B) Declarar a nulidade ou inefic&#225;cia da cl&#225;usula de n&#227;o indenizar que afronte normas cogentes de ordem p&#250;blica ou a fun&#231;&#227;o social da rela&#231;&#227;o.
+- (C) Extinguir o processo sem julgamento de m&#233;rito por falta de interesse de agir.
+- (D) Condenar o autor por litig&#226;ncia de m&#225;-f&#233;.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**. 
+*Fundamenta&#231;&#227;o*: Cl&#225;usulas de dispensa de deveres essenciais ou de exclus&#227;o unilateral de responsabilidade que violem preceitos de ordem p&#250;blica s&#227;o nulas de pleno direito (art. 166, VI e art. 421 do CC).</t></is></c><c r="W4" t="inlineStr"><is><t># [COMO CAI EM PROVAS / RAIO-X DAS BANCAS] - Armadilhas Cl&#225;ssicas
+
+Fique alerta &#224;s 3 pegadinhas mais recorrentes preparadas por FGV, Cebraspe e Vunesp:
+
+1. **A banca vai misturar os prazos de repara&#231;&#227;o contratual com extracontratual. ATEN&#199;&#195;O: Extracontratual = 3 anos (Art. 206, &#167;3&#186;, V); Inadimplemento Contratual = 10 anos (Art. 205 - EREsp 1.280.825/RJ do STJ).**
+2. **Prazos de Prescri&#231;&#227;o vs. Decad&#234;ncia**: A banca adora chamar prazo decadencial de anula&#231;&#227;o de 'prescricional' para induzir a erro;
+3. **Solidariedade Presumida**: Lembrar sempre que a solidariedade N&#195;O se presume; resulta da lei ou do contrato (Art. 265 do CC).</t></is></c><c r="X4" t="inlineStr"><is><t># [DICA DA PROFESSORA / S&#205;NTESE EM &#193;UDIO] - P&#237;lula da Professora Evelyn
+
+&#127897;&#65039; *Ol&#225;, querido aluno do Direito Prime! Aqui &#233; a Professora Evelyn com o resumo definitivo de PRESCRI&#199;&#195;O:*
+
+&gt; *'N&#227;o complique o que a lei fez para ser justo!  
+&gt; Em PRESCRI&#199;&#195;O, lembre-se sempre de conferir:  
+&gt; 1. Houve respeito &#224; boa-f&#233; objetiva e &#224; fun&#231;&#227;o social?  
+&gt; 2. Quem alega o direito agiu dentro do prazo legal sem dormir no ponto?  
+&gt; 3. A s&#250;mula de reg&#234;ncia &#233;: STJ - EREsp 1.280.825/RJ: 'Nas controv&#233;rsias relacionadas &#224; responsabilidade contratual, aplica-se a regra geral da prescri&#231;&#227;o decenal (art. 205 do CC)'..  
+&gt; Guarde essa tr&#237;ade no cora&#231;&#227;o e voc&#234; acertar&#225; qualquer quest&#227;o de concurso e advocacia!'*</t></is></c><c r="Y4" t="inlineStr"><is><t># [&#193;RVORE DECIS&#211;RIA / FLUXOGRAMA EM SETAS] - Grafo de Decis&#227;o L&#243;gica
+
+```text
+[PRESCRI&#199;&#195;O: AN&#193;LISE DE EFIC&#193;CIA JUR&#205;DICA]
+       |
+       +---&gt; Houve preenchimento dos Requisitos Legais B&#225;sicos?
+       |        |
+       |        +---[N&#195;O]---&gt; V&#205;CIO NA ESTRUTURA NORMATIVA
+       |        |             - Inefic&#225;cia ou Nulidade do ato
+       |        |
+       |        +---[SIM]---&gt; Houve Observ&#226;ncia da Boa-f&#233; e Prazos?
+       |                                |
+       |                                +---[SIM]---&gt; ATO H&#205;GIDO, V&#193;LIDO E EXIG&#205;VEL
+       |                                |             - Tutela jurisdicional concedida
+       |                                |             - Produ&#231;&#227;o integral dos efeitos
+       |                                |
+       |                                +---[N&#195;O]---&gt; INCID&#202;NCIA DE SAN&#199;&#195;O / PRESCRI&#199;&#195;O
+       |                                              - Perda da pretens&#227;o ou indeniza&#231;&#227;o civil
+```</t></is></c><c r="Z4" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / EFEITOS ESPECIAIS] - Reflexos Interdisciplinares
+
+A mat&#233;ria de **PRESCRI&#199;&#195;O** produz efeitos que transcendem o direito privado comum:
+
+- **Reflexos Tribut&#225;rios**: A regularidade jur&#237;dica do ato define o fato gerador e afasta autua&#231;&#245;es fiscais indevidas;
+- **Reflexos Notariais e Registrais**: A publicidade nos cart&#243;rios de notas e de registro de im&#243;veis confere efic&#225;cia perante terceiros (*erga omnes*);
+- **Reflexos Processuais**: Assegura a legitimidade ativa e passiva nas a&#231;&#245;es de conhecimento e de execu&#231;&#227;o.</t></is></c><c r="AA4" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 4] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pegadinha da Magistratura**: O descumprimento dos deveres anexos de conduta da boa-f&#233; objetiva em **PRESCRI&#199;&#195;O** exige prova de dolo ou culpa do devedor?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **N&#195;O EXIGE PROVA DE DOLO OU CULPA!**  
+&gt; A viola&#231;&#227;o positiva do contrato por quebra da boa-f&#233; objetiva opera responsabilidade de natureza **objetiva**, bastando a comprova&#231;&#227;o objetiva da conduta desleal ou omissiva.</t></is></c><c r="AB4" t="inlineStr"><is><t># [QUEST&#195;O DISCURSIVA / PR&#193;TICA PROFISSIONAL] - Parecer Forense
+
+**Situa&#231;&#227;o Pr&#225;tica**: Um cliente procura seu escrit&#243;rio de advocacia relatando les&#227;o patrimonial grave decorrente de lit&#237;gio em **PRESCRI&#199;&#195;O**.
+
+**Pergunta**: Como advogado(a), qual &#233; a primeira provid&#234;ncia cautelar e de m&#233;rito a ser proposta em ju&#237;zo?
+
+---
+
+### &#9878;&#65039; Padr&#227;o de Resposta T&#233;cnico:
+&gt; 1. **Tutela Provis&#243;ria de Urg&#234;ncia** (art. 300 do CPC) para suspender atos expropriat&#243;rios ou cobran&#231;as indevidas;  
+&gt; 2. **Pedido Principal** de declara&#231;&#227;o de cumprimento do preceito de PRESCRI&#199;&#195;O, com base em Arts. 189 a 211 do C&#243;digo Civil e perdas e danos.</t></is></c><c r="AC4" t="inlineStr"><is><t># [MAPA CONCEITUAL COMPARATIVO] - Os Pilares de PRESCRI&#199;&#195;O
+
+```text
+                      [ORDEM P&#218;BLICA E LEGALIDADE]
+                                   |
+                                   v
+[AUTONOMIA PRIVADA] &lt;&#9472;&#9472;&#9472;&gt; [PRESCRI&#199;&#195;O] &lt;&#9472;&#9472;&#9472;&gt; [BOA-F&#201; OBJETIVA]
+                                   |
+                                   v
+                      [EQUIL&#205;BRIO E FUN&#199;&#195;O SOCIAL]
+```</t></is></c><c r="AD4" t="inlineStr"></c><c r="AE4" t="inlineStr"></c><c r="AF4" t="inlineStr"></c><c r="AG4" t="inlineStr"></c><c r="AH4" t="inlineStr"></c></row><row r="5"><c r="A5" t="inlineStr"><is><t>Aula 04</t></is></c><c r="B5" t="inlineStr"><is><t>INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS</t></is></c><c r="C5" t="inlineStr"><is><t>06. Prescri&#231;&#227;o e Decad&#234;ncia</t></is></c><c r="D5" t="n"><v>27</v></c><c r="E5" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / CONCEITO CENTRAL] - INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS
+
+&gt; **Marco Normativo Central**: Arts. 189 a 211 do C&#243;digo Civil
+
+A disciplina jur&#237;dica de **INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS** insere-se no ramo de **Prescri&#231;&#227;o e Decad&#234;ncia no C&#243;digo Civil**, estruturando como a lei protege as pessoas e seus bens com justi&#231;a e seguran&#231;a.
+
+### Conceito Desmembrado e Raz&#227;o de Ser:
+No direito civil contempor&#226;neo, as normas que regem INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS abandonaram o antigo apego formalista ego&#237;sta para se submeter &#224; **dignidade da pessoa humana**, &#224; **fun&#231;&#227;o social** e &#224; **boa-f&#233; objetiva**.
+A raz&#227;o de ser do instituto &#233; assegurar equil&#237;brio e previsibilidade: ningu&#233;m pode se valer da pr&#243;pria torpeza, nem locupletar-se indevidamente &#224;s custas do preju&#237;zo alheio.
+
+&#128161; *Exemplo R&#225;pido de Aplica&#231;&#227;o*: Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.</t></is></c><c r="F5" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 1] - O Dilema Pr&#225;tico
+
+Para compreender como **INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS** impacta a vida real dos cidad&#227;os nos f&#243;runs e cart&#243;rios, acompanhe o caso concreto:
+
+Marcos sofreu um acidente de carro provocado por um motorista embriagado. Tr&#234;s anos e meio depois, tenta entrar com a&#231;&#227;o de cobran&#231;a das despesas m&#233;dicas.
+
+Diante da recusa da outra parte em solucionar a controv&#233;rsia amigavelmente, surge a d&#250;vida jur&#237;dica: quais s&#227;o os limites da prote&#231;&#227;o que o C&#243;digo Civil e os tribunais conferem a essa situa&#231;&#227;o cotidiana?</t></is></c><c r="G5" t="inlineStr"><is><t># [GLOSS&#193;RIO INTERATIVO / MENU SUSPENSO] - Termos Chave Clic&#225;veis
+
+*(Clique em cada termo no menu suspenso para expandir a defini&#231;&#227;o desmembrada e o exemplo pr&#225;tico)*
+
+&#9660; **[Menu Suspenso 1: Prescri&#231;&#227;o (Art. 189 do CC)]**
+- *O que &#233;*: Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.
+- *Exemplo R&#225;pido*: Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.
+
+&#9660; **[Menu Suspenso 2: Decad&#234;ncia]**
+- *O que &#233;*: Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato.
+- *Exemplo R&#225;pido*: O prazo de 4 anos para anular um contrato com dolo &#233; decadencial: passou o prazo, o direito de anular morre para sempre.
+
+&#9660; **[Menu Suspenso 3: Causas Impeditivas e Suspensivas]**
+- *O que &#233;*: Fatos previstos na lei que impedem o in&#237;cio da contagem ou paralisam o rel&#243;gio da prescri&#231;&#227;o (ex.: entre c&#244;njuges na const&#226;ncia do casamento ou contra menores de 16 anos).
+- *Exemplo R&#225;pido*: Enquanto voc&#234; for casado, a prescri&#231;&#227;o das d&#237;vidas entre voc&#234; e seu parceiro fica congelada (Art. 197, I do CC).</t></is></c><c r="H5" t="inlineStr"><is><t># [EXEMPLO PR&#193;TICO E APLICA&#199;&#195;O FORENSE] - Como Funciona nos Tribunais
+
+Na pr&#225;tica forense de **INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS**, ju&#237;zes e advogados aplicam as seguintes solu&#231;&#245;es imediatas:
+
+1. **Seguran&#231;a das Rela&#231;&#245;es Negociais**: Assegura que o combinado seja exig&#237;vel, prevenindo calotes e fraudes patrimoniais;
+2. **Prote&#231;&#227;o &#224; Parte Vulner&#225;vel**: Impede imposi&#231;&#245;es leoninas ou cl&#225;usulas abusivas impostas por detentores de maior poder econ&#244;mico;
+3. **Equidade e Razoabilidade**: Permite a revis&#227;o judicial das obriga&#231;&#245;es quando fatos supervenientes extraordin&#225;rios quebram o equil&#237;brio original da rela&#231;&#227;o.
+
+&#128161; *Aten&#231;&#227;o Forense*: O direito n&#227;o socorre aos que dormem (*dormientibus non succurrit ius*); por isso, os prazos legais da mat&#233;ria devem ser vigiados com rigor!</t></is></c><c r="I5" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 1] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta de Fixa&#231;&#227;o**: Qual &#233; a defini&#231;&#227;o jur&#237;dica central de **Prescri&#231;&#227;o (Art. 189 do CC)** em **INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS** e qual sua principal repercuss&#227;o no patrim&#244;nio das partes?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.**  
+&gt; *Repercuss&#227;o Pr&#225;tica*: Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.</t></is></c><c r="J5" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 1] - Preencha as Lacunas
+
+Teste seu dom&#237;nio completando as palavras essenciais da mat&#233;ria:
+
+---
+
+### Enunciado da Atividade:
+*Violado o direito, nasce para o titular a [ LACUNA 1 ], a qual se extingue pela prescri&#231;&#227;o nos prazos fixados em lei. As causas que interrompem a prescri&#231;&#227;o produzem o efeito de [ LACUNA 2 ] do zero o c&#244;mputo do prazo temporal.*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: [ pretens&#227;o ] | [ vingan&#231;a p&#250;blica ]
+- **Para a Lacuna 2**: [ reiniciar / recome&#231;ar ] | [ duplicar ]
+
+---
+
+### &#127919; Gabarito Comentado:
+1. pretens&#227;o (Art. 189 do CC); 2. reiniciar / recome&#231;ar (Art. 202 do CC).</t></is></c><c r="K5" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 1] - Padr&#227;o OAB / FGV
+
+**Enunciado**: A respeito das normas e princ&#237;pios aplic&#225;veis a **INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS**, assinale a alternativa juridicamente correta:
+
+- (A) A legisla&#231;&#227;o civil veda a aplica&#231;&#227;o da boa-f&#233; objetiva aos contratos particulares que versem sobre INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS.
+- (B) Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo. Portanto, Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.
+- (C) Os prazos prescricionais de INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS admitem dila&#231;&#227;o convencional por mero acordo verbal das partes.
+- (D) O Minist&#233;rio P&#250;blico jamais possui legitimidade para intervir em causas que envolvam INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**.  
+*Fundamenta&#231;&#227;o*: Trata-se da correta aplica&#231;&#227;o dogm&#225;tica do instituto segundo o C&#243;digo Civil e a jurisprud&#234;ncia dominante.</t></is></c><c r="L5" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / DOGM&#193;TICA E REQUISITOS T&#201;CNICOS] - Requisitos Estruturais
+
+Para que qualquer ato relacionado a **INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS** produza plenos efeitos no mundo jur&#237;dico, exige-se:
+
+1. **Legitima&#231;&#227;o Espec&#237;fica**: N&#227;o basta capacidade gen&#233;rica; a parte deve deter pertin&#234;ncia subjetiva e poderes para o ato;
+2. **Higidez Volitiva e Aus&#234;ncia de Fraude**: A manifesta&#231;&#227;o de vontade deve ser livre de erro, dolo, coa&#231;&#227;o ou simula&#231;&#227;o;
+3. **Conformidade com a Ordem P&#250;blica**: O objeto deve ser l&#237;cito e atender &#224; fun&#231;&#227;o social estipulada em lei.</t></is></c><c r="M5" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 2] - O Conflito em Ju&#237;zo
+
+A a&#231;&#227;o judicial foi formalmente distribu&#237;da na Vara C&#237;vel competente.
+
+A parte r&#233; apresentou contesta&#231;&#227;o alegando que n&#227;o houve ilicitude e invocando o estrito cumprimento de cl&#225;usulas padronizadas.
+Contudo, a defesa da v&#237;tima sustentou que o comportamento do r&#233;u violou frontalmente a boa-f&#233; objetiva e os preceitos de **INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS**.
+
+O juiz abriu vista para manifesta&#231;&#227;o sobre provas, convocando as partes para audi&#234;ncia de instru&#231;&#227;o e julgamento!</t></is></c><c r="N5" t="inlineStr"><is><t># [FRONTEIRAS CR&#205;TICAS / O QUE N&#195;O &#201;] - Quadro Comparativo
+
+| FIGURA EM AN&#193;LISE | O QUE REALMENTE &#201; | O QUE **N&#195;O** &#201; (CUIDADO!) |
+| :--- | :--- | :--- |
+| **Prescri&#231;&#227;o (Art. 189 do CC)** | Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo. | N&#227;o pode ser flexibilizado por conveni&#234;ncia particular. |
+| **Decad&#234;ncia** | Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato. | N&#227;o se confunde com arb&#237;trio individual ou impunidade. |
+| **Causas Impeditivas e Suspensivas** | Fatos previstos na lei que impedem o in&#237;cio da contagem ou paralisam o rel&#243;gio da prescri&#231;&#227;o (ex.: entre c&#244;njuges na const&#226;ncia do casamento ou contra menores de 16 anos). | N&#227;o depende de comprova&#231;&#227;o de dor &#237;ntima se a lei presumir. |</t></is></c><c r="O5" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 2] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Crucial**: Qual &#233; a distin&#231;&#227;o primordial entre **Prescri&#231;&#227;o (Art. 189 do CC)** e **Decad&#234;ncia** no direito civil?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; Enquanto **Prescri&#231;&#227;o (Art. 189 do CC)** (Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.), o instituto de **Decad&#234;ncia** (Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato.).  
+&gt; Conhecer essa fronteira &#233; decisivo para n&#227;o errar a fundamenta&#231;&#227;o da peti&#231;&#227;o inicial nem as quest&#245;es da OAB!</t></is></c><c r="P5" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 2] - Regras Especiais
+
+Complete a assertiva jurisprudencial consolidada pelos tribunais superiores:
+
+---
+
+### Enunciado:
+*'No &#226;mbito de INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS, a boa-f&#233; objetiva imp&#245;e deveres anexos de [ LACUNA 1 ] e colabora&#231;&#227;o m&#250;tua. A quebra desses deveres caracteriza inadimplemento positivo ou viola&#231;&#227;o contratual sujeita a [ LACUNA 2 ].'*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: `[ lealdade / informa&#231;&#227;o ]` | `[ oculta&#231;&#227;o ]`
+- **Para a Lacuna 2**: `[ repara&#231;&#227;o por perdas e danos ]` | `[ perd&#227;o judicial ]`
+
+---
+
+### &#127919; Gabarito Comentado:
+1. lealdade / informa&#231;&#227;o (Enunciados da Jornada de Direito Civil do CJF);
+2. repara&#231;&#227;o por perdas e danos (Arts. 187 e 927 do CC).</t></is></c><c r="Q5" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 2] - N&#237;vel Concurso P&#250;blico
+
+**Enunciado**: Em mat&#233;ria de **INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS**, assinale a afirmativa INCORRETA:
+
+- (A) A responsabilidade civil e a validade negocial subordinam-se &#224; fun&#231;&#227;o social do instituto.
+- (B) &#201; nula a cl&#225;usula que contrarie disposi&#231;&#227;o de lei de ordem p&#250;blica em INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS.
+- (C) Os efeitos do neg&#243;cio podem ser anulados se comprovado v&#237;cio de consentimento no prazo decadencial legal.
+- (D) O enriquecimento sem causa &#233; tolerado no direito civil caso o prejudicado seja pessoa jur&#237;dica.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Incorreta: (D)**. 
+*Fundamenta&#231;&#227;o*: O art. 884 do C&#243;digo Civil repudia expressamente o enriquecimento sem causa contra qualquer sujeito de direito (pessoa natural ou jur&#237;dica).</t></is></c><c r="R5" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 3] - Conclus&#227;o e Senten&#231;a Judicial
+
+A senten&#231;a judicial foi proferida pelo magistrado titular da Vara C&#237;vel:
+
+O juiz reconhece a prescri&#231;&#227;o trienal (art. 206, &#167;3&#186;, V do CC): para repara&#231;&#227;o civil extracontratual, o prazo &#233; de 3 anos cravados da data do fato lesivo, julgando extinto o processo com resolu&#231;&#227;o do m&#233;rito.
+
+A pacifica&#231;&#227;o do conflito demonstrou que as regras de **INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS** atuam para resguardar a ordem econ&#244;mica e proteger os cidad&#227;os que pautam suas condutas na boa-f&#233; objetiva!</t></is></c><c r="S5" t="inlineStr"><is><t># [MINIGAME INTERATIVO / LIGUE OS TERMOS] - Desafio R&#225;pido
+
+Ligue cada elemento da **Coluna A** &#224; sua defini&#231;&#227;o correspondente na **Coluna B**:
+
+---
+
+### &#129513; COLUNA A:
+1. Prescri&#231;&#227;o (Art. 189 do CC)
+2. Decad&#234;ncia
+3. Causas Impeditivas e Suspensivas
+4. Boa-f&#233; Objetiva
+
+---
+
+### &#127919; COLUNA B:
+- ( ) Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato.
+- ( ) Padr&#227;o de conduta leal, honesto e &#233;tico obrigat&#243;rio nas rela&#231;&#245;es civis.
+- ( ) Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.
+- ( ) Fatos previstos na lei que impedem o in&#237;cio da contagem ou paralisam o rel&#243;gio da prescri&#231;&#227;o (ex.: entre c&#244;njuges na const&#226;ncia do casamento ou contra menores de 16 anos).
+
+---
+
+### &#128273; Resposta do Minigame:
+- **Ordem Correta**: `[ 2 ]` $\rightarrow$ `[ 4 ]` $\rightarrow$ `[ 1 ]` $\rightarrow$ `[ 3 ]`</t></is></c><c r="T5" t="inlineStr"><is><t># [JURISPRUD&#202;NCIA / TRIBUNAIS SUPERIORES] - Precedentes Vinculantes
+
+Principais diretrizes pac&#237;ficas dos Tribunais Superiores (STJ/STF) sobre **INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS**:
+
+1. **STJ - EREsp 1.280.825/RJ: 'Nas controv&#233;rsias relacionadas &#224; responsabilidade contratual, aplica-se a regra geral da prescri&#231;&#227;o decenal (art. 205 do CC)'.**;
+2. **Veda&#231;&#227;o ao Comportamento Contradit&#243;rio**: O STJ reprime com veem&#234;ncia o *venire contra factum proprium*, invalidando condutas que quebram a confian&#231;a leg&#237;tima;
+3. **Mitiga&#231;&#227;o do Preju&#237;zo (*Duty to Mitigate the Loss*)**: O credor tem o dever anexo de adotar medidas razo&#225;veis para n&#227;o agravar o pr&#243;prio dano.</t></is></c><c r="U5" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 3] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Jurisprudencial**: Qual s&#250;mula ou tese repetitiva do STJ incide com maior frequ&#234;ncia em lit&#237;gios sobre **INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS**?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **STJ - EREsp 1.280.825/RJ: 'Nas controv&#233;rsias relacionadas &#224; responsabilidade contratual, aplica-se a regra geral da prescri&#231;&#227;o decenal (art. 205 do CC)'.**  
+&gt; *Import&#226;ncia*: Essa orienta&#231;&#227;o pacificada vincula os tribunais de segunda inst&#226;ncia e evita o ajuizamento de recursos protelat&#243;rios.</t></is></c><c r="V5" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 3] - N&#237;vel Magistratura / MP
+
+**Enunciado**: Em demanda judicial versando sobre **INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS**, o r&#233;u alega aus&#234;ncia de responsabilidade em virtude de cl&#225;usula contratual gen&#233;rica de n&#227;o indenizar. &#192; luz da jurisprud&#234;ncia do STJ e do C&#243;digo Civil, o juiz deve:
+
+- (A) Acolher a defesa do r&#233;u, pois a autonomia privada das partes &#233; soberana e absoluta.
+- (B) Declarar a nulidade ou inefic&#225;cia da cl&#225;usula de n&#227;o indenizar que afronte normas cogentes de ordem p&#250;blica ou a fun&#231;&#227;o social da rela&#231;&#227;o.
+- (C) Extinguir o processo sem julgamento de m&#233;rito por falta de interesse de agir.
+- (D) Condenar o autor por litig&#226;ncia de m&#225;-f&#233;.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**. 
+*Fundamenta&#231;&#227;o*: Cl&#225;usulas de dispensa de deveres essenciais ou de exclus&#227;o unilateral de responsabilidade que violem preceitos de ordem p&#250;blica s&#227;o nulas de pleno direito (art. 166, VI e art. 421 do CC).</t></is></c><c r="W5" t="inlineStr"><is><t># [COMO CAI EM PROVAS / RAIO-X DAS BANCAS] - Armadilhas Cl&#225;ssicas
+
+Fique alerta &#224;s 3 pegadinhas mais recorrentes preparadas por FGV, Cebraspe e Vunesp:
+
+1. **A banca vai misturar os prazos de repara&#231;&#227;o contratual com extracontratual. ATEN&#199;&#195;O: Extracontratual = 3 anos (Art. 206, &#167;3&#186;, V); Inadimplemento Contratual = 10 anos (Art. 205 - EREsp 1.280.825/RJ do STJ).**
+2. **Prazos de Prescri&#231;&#227;o vs. Decad&#234;ncia**: A banca adora chamar prazo decadencial de anula&#231;&#227;o de 'prescricional' para induzir a erro;
+3. **Solidariedade Presumida**: Lembrar sempre que a solidariedade N&#195;O se presume; resulta da lei ou do contrato (Art. 265 do CC).</t></is></c><c r="X5" t="inlineStr"><is><t># [DICA DA PROFESSORA / S&#205;NTESE EM &#193;UDIO] - P&#237;lula da Professora Evelyn
+
+&#127897;&#65039; *Ol&#225;, querido aluno do Direito Prime! Aqui &#233; a Professora Evelyn com o resumo definitivo de INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS:*
+
+&gt; *'N&#227;o complique o que a lei fez para ser justo!  
+&gt; Em INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS, lembre-se sempre de conferir:  
+&gt; 1. Houve respeito &#224; boa-f&#233; objetiva e &#224; fun&#231;&#227;o social?  
+&gt; 2. Quem alega o direito agiu dentro do prazo legal sem dormir no ponto?  
+&gt; 3. A s&#250;mula de reg&#234;ncia &#233;: STJ - EREsp 1.280.825/RJ: 'Nas controv&#233;rsias relacionadas &#224; responsabilidade contratual, aplica-se a regra geral da prescri&#231;&#227;o decenal (art. 205 do CC)'..  
+&gt; Guarde essa tr&#237;ade no cora&#231;&#227;o e voc&#234; acertar&#225; qualquer quest&#227;o de concurso e advocacia!'*</t></is></c><c r="Y5" t="inlineStr"><is><t># [&#193;RVORE DECIS&#211;RIA / FLUXOGRAMA EM SETAS] - Grafo de Decis&#227;o L&#243;gica
+
+```text
+[INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS: AN&#193;LISE DE EFIC&#193;CIA JUR&#205;DICA]
+       |
+       +---&gt; Houve preenchimento dos Requisitos Legais B&#225;sicos?
+       |        |
+       |        +---[N&#195;O]---&gt; V&#205;CIO NA ESTRUTURA NORMATIVA
+       |        |             - Inefic&#225;cia ou Nulidade do ato
+       |        |
+       |        +---[SIM]---&gt; Houve Observ&#226;ncia da Boa-f&#233; e Prazos?
+       |                                |
+       |                                +---[SIM]---&gt; ATO H&#205;GIDO, V&#193;LIDO E EXIG&#205;VEL
+       |                                |             - Tutela jurisdicional concedida
+       |                                |             - Produ&#231;&#227;o integral dos efeitos
+       |                                |
+       |                                +---[N&#195;O]---&gt; INCID&#202;NCIA DE SAN&#199;&#195;O / PRESCRI&#199;&#195;O
+       |                                              - Perda da pretens&#227;o ou indeniza&#231;&#227;o civil
+```</t></is></c><c r="Z5" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / EFEITOS ESPECIAIS] - Reflexos Interdisciplinares
+
+A mat&#233;ria de **INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS** produz efeitos que transcendem o direito privado comum:
+
+- **Reflexos Tribut&#225;rios**: A regularidade jur&#237;dica do ato define o fato gerador e afasta autua&#231;&#245;es fiscais indevidas;
+- **Reflexos Notariais e Registrais**: A publicidade nos cart&#243;rios de notas e de registro de im&#243;veis confere efic&#225;cia perante terceiros (*erga omnes*);
+- **Reflexos Processuais**: Assegura a legitimidade ativa e passiva nas a&#231;&#245;es de conhecimento e de execu&#231;&#227;o.</t></is></c><c r="AA5" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 4] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pegadinha da Magistratura**: O descumprimento dos deveres anexos de conduta da boa-f&#233; objetiva em **INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS** exige prova de dolo ou culpa do devedor?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **N&#195;O EXIGE PROVA DE DOLO OU CULPA!**  
+&gt; A viola&#231;&#227;o positiva do contrato por quebra da boa-f&#233; objetiva opera responsabilidade de natureza **objetiva**, bastando a comprova&#231;&#227;o objetiva da conduta desleal ou omissiva.</t></is></c><c r="AB5" t="inlineStr"><is><t># [QUEST&#195;O DISCURSIVA / PR&#193;TICA PROFISSIONAL] - Parecer Forense
+
+**Situa&#231;&#227;o Pr&#225;tica**: Um cliente procura seu escrit&#243;rio de advocacia relatando les&#227;o patrimonial grave decorrente de lit&#237;gio em **INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS**.
+
+**Pergunta**: Como advogado(a), qual &#233; a primeira provid&#234;ncia cautelar e de m&#233;rito a ser proposta em ju&#237;zo?
+
+---
+
+### &#9878;&#65039; Padr&#227;o de Resposta T&#233;cnico:
+&gt; 1. **Tutela Provis&#243;ria de Urg&#234;ncia** (art. 300 do CPC) para suspender atos expropriat&#243;rios ou cobran&#231;as indevidas;  
+&gt; 2. **Pedido Principal** de declara&#231;&#227;o de cumprimento do preceito de INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS, com base em Arts. 189 a 211 do C&#243;digo Civil e perdas e danos.</t></is></c><c r="AC5" t="inlineStr"><is><t># [MAPA CONCEITUAL COMPARATIVO] - Os Pilares de INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS
+
+```text
+                      [ORDEM P&#218;BLICA E LEGALIDADE]
+                                   |
+                                   v
+[AUTONOMIA PRIVADA] &lt;&#9472;&#9472;&#9472;&gt; [INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS] &lt;&#9472;&#9472;&#9472;&gt; [BOA-F&#201; OBJETIVA]
+                                   |
+                                   v
+                      [EQUIL&#205;BRIO E FUN&#199;&#195;O SOCIAL]
+```</t></is></c><c r="AD5" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 3] - Desafio Avan&#231;ado
+
+Preencha as lacunas sobre a teoria do adimplemento substancial em INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS:
+
+---
+
+### Enunciado:
+*'A teoria do [ LACUNA 1 ] impede a resolu&#231;&#227;o do contrato quando a presta&#231;&#227;o devida tiver sido cumprida em parte essencialmente preponderante, resguardando a preserva&#231;&#227;o do neg&#243;cio e autorizando apenas a cobran&#231;a do [ LACUNA 2 ].'*
+
+---
+
+### Op&#231;&#245;es:
+- **Para a Lacuna 1**: `[ adimplemento substancial ]` | `[ confisco pr&#233;vio ]`
+- **Para a Lacuna 2**: `[ saldo remanescente ]` | `[ dobro de multa ]`
+
+---
+
+### &#127919; Gabarito: 1. adimplemento substancial; 2. saldo remanescente (STJ).</t></is></c><c r="AE5" t="inlineStr"><is><t># [RESUMO ESQUEM&#193;TICO / TABELA DE PRAZOS] - Prazos e Condi&#231;&#245;es
+
+| SITUA&#199;&#195;O EM INTERRUP&#199;&#195;O DA PRESCRI&#199;&#195;O E REGRAS DECADENCIAIS | TIPO DE PRAZO | DISPOSITIVO LEGAL |
+| :--- | :--- | :--- |
+| **Regra Geral Residual Civil** | 10 anos (prescricional) | Art. 205 do C&#243;digo Civil |
+| **Repara&#231;&#227;o Civil Extracontratual** | 3 anos (prescricional) | Art. 206, &#167;3&#186;, V do CC |
+| **A&#231;&#227;o Anulat&#243;ria por V&#237;cio** | 4 anos (decadencial) | Art. 178 do C&#243;digo Civil |
+| **Nulidade Absoluta por Ilicitude** | Imprescrit&#237;vel | Art. 169 do C&#243;digo Civil |</t></is></c><c r="AF5" t="inlineStr"></c><c r="AG5" t="inlineStr"></c><c r="AH5" t="inlineStr"></c></row><row r="6"><c r="A6" t="inlineStr"><is><t>Aula 05</t></is></c><c r="B6" t="inlineStr"><is><t>A&#199;&#213;ES IMPRESCRIT&#205;VEIS</t></is></c><c r="C6" t="inlineStr"><is><t>06. Prescri&#231;&#227;o e Decad&#234;ncia</t></is></c><c r="D6" t="n"><v>25</v></c><c r="E6" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / CONCEITO CENTRAL] - A&#199;&#213;ES IMPRESCRIT&#205;VEIS
+
+&gt; **Marco Normativo Central**: Arts. 189 a 211 do C&#243;digo Civil
+
+A disciplina jur&#237;dica de **A&#199;&#213;ES IMPRESCRIT&#205;VEIS** insere-se no ramo de **Prescri&#231;&#227;o e Decad&#234;ncia no C&#243;digo Civil**, estruturando como a lei protege as pessoas e seus bens com justi&#231;a e seguran&#231;a.
+
+### Conceito Desmembrado e Raz&#227;o de Ser:
+No direito civil contempor&#226;neo, as normas que regem A&#199;&#213;ES IMPRESCRIT&#205;VEIS abandonaram o antigo apego formalista ego&#237;sta para se submeter &#224; **dignidade da pessoa humana**, &#224; **fun&#231;&#227;o social** e &#224; **boa-f&#233; objetiva**.
+A raz&#227;o de ser do instituto &#233; assegurar equil&#237;brio e previsibilidade: ningu&#233;m pode se valer da pr&#243;pria torpeza, nem locupletar-se indevidamente &#224;s custas do preju&#237;zo alheio.
+
+&#128161; *Exemplo R&#225;pido de Aplica&#231;&#227;o*: Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.</t></is></c><c r="F6" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 1] - O Dilema Pr&#225;tico
+
+Para compreender como **A&#199;&#213;ES IMPRESCRIT&#205;VEIS** impacta a vida real dos cidad&#227;os nos f&#243;runs e cart&#243;rios, acompanhe o caso concreto:
+
+Marcos sofreu um acidente de carro provocado por um motorista embriagado. Tr&#234;s anos e meio depois, tenta entrar com a&#231;&#227;o de cobran&#231;a das despesas m&#233;dicas.
+
+Diante da recusa da outra parte em solucionar a controv&#233;rsia amigavelmente, surge a d&#250;vida jur&#237;dica: quais s&#227;o os limites da prote&#231;&#227;o que o C&#243;digo Civil e os tribunais conferem a essa situa&#231;&#227;o cotidiana?</t></is></c><c r="G6" t="inlineStr"><is><t># [GLOSS&#193;RIO INTERATIVO / MENU SUSPENSO] - Termos Chave Clic&#225;veis
+
+*(Clique em cada termo no menu suspenso para expandir a defini&#231;&#227;o desmembrada e o exemplo pr&#225;tico)*
+
+&#9660; **[Menu Suspenso 1: Prescri&#231;&#227;o (Art. 189 do CC)]**
+- *O que &#233;*: Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.
+- *Exemplo R&#225;pido*: Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.
+
+&#9660; **[Menu Suspenso 2: Decad&#234;ncia]**
+- *O que &#233;*: Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato.
+- *Exemplo R&#225;pido*: O prazo de 4 anos para anular um contrato com dolo &#233; decadencial: passou o prazo, o direito de anular morre para sempre.
+
+&#9660; **[Menu Suspenso 3: Causas Impeditivas e Suspensivas]**
+- *O que &#233;*: Fatos previstos na lei que impedem o in&#237;cio da contagem ou paralisam o rel&#243;gio da prescri&#231;&#227;o (ex.: entre c&#244;njuges na const&#226;ncia do casamento ou contra menores de 16 anos).
+- *Exemplo R&#225;pido*: Enquanto voc&#234; for casado, a prescri&#231;&#227;o das d&#237;vidas entre voc&#234; e seu parceiro fica congelada (Art. 197, I do CC).</t></is></c><c r="H6" t="inlineStr"><is><t># [EXEMPLO PR&#193;TICO E APLICA&#199;&#195;O FORENSE] - Como Funciona nos Tribunais
+
+Na pr&#225;tica forense de **A&#199;&#213;ES IMPRESCRIT&#205;VEIS**, ju&#237;zes e advogados aplicam as seguintes solu&#231;&#245;es imediatas:
+
+1. **Seguran&#231;a das Rela&#231;&#245;es Negociais**: Assegura que o combinado seja exig&#237;vel, prevenindo calotes e fraudes patrimoniais;
+2. **Prote&#231;&#227;o &#224; Parte Vulner&#225;vel**: Impede imposi&#231;&#245;es leoninas ou cl&#225;usulas abusivas impostas por detentores de maior poder econ&#244;mico;
+3. **Equidade e Razoabilidade**: Permite a revis&#227;o judicial das obriga&#231;&#245;es quando fatos supervenientes extraordin&#225;rios quebram o equil&#237;brio original da rela&#231;&#227;o.
+
+&#128161; *Aten&#231;&#227;o Forense*: O direito n&#227;o socorre aos que dormem (*dormientibus non succurrit ius*); por isso, os prazos legais da mat&#233;ria devem ser vigiados com rigor!</t></is></c><c r="I6" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 1] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta de Fixa&#231;&#227;o**: Qual &#233; a defini&#231;&#227;o jur&#237;dica central de **Prescri&#231;&#227;o (Art. 189 do CC)** em **A&#199;&#213;ES IMPRESCRIT&#205;VEIS** e qual sua principal repercuss&#227;o no patrim&#244;nio das partes?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.**  
+&gt; *Repercuss&#227;o Pr&#225;tica*: Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.</t></is></c><c r="J6" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 1] - Preencha as Lacunas
+
+Teste seu dom&#237;nio completando as palavras essenciais da mat&#233;ria:
+
+---
+
+### Enunciado da Atividade:
+*Violado o direito, nasce para o titular a [ LACUNA 1 ], a qual se extingue pela prescri&#231;&#227;o nos prazos fixados em lei. As causas que interrompem a prescri&#231;&#227;o produzem o efeito de [ LACUNA 2 ] do zero o c&#244;mputo do prazo temporal.*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: [ pretens&#227;o ] | [ vingan&#231;a p&#250;blica ]
+- **Para a Lacuna 2**: [ reiniciar / recome&#231;ar ] | [ duplicar ]
+
+---
+
+### &#127919; Gabarito Comentado:
+1. pretens&#227;o (Art. 189 do CC); 2. reiniciar / recome&#231;ar (Art. 202 do CC).</t></is></c><c r="K6" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 1] - Padr&#227;o OAB / FGV
+
+**Enunciado**: A respeito das normas e princ&#237;pios aplic&#225;veis a **A&#199;&#213;ES IMPRESCRIT&#205;VEIS**, assinale a alternativa juridicamente correta:
+
+- (A) A legisla&#231;&#227;o civil veda a aplica&#231;&#227;o da boa-f&#233; objetiva aos contratos particulares que versem sobre A&#199;&#213;ES IMPRESCRIT&#205;VEIS.
+- (B) Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo. Portanto, Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.
+- (C) Os prazos prescricionais de A&#199;&#213;ES IMPRESCRIT&#205;VEIS admitem dila&#231;&#227;o convencional por mero acordo verbal das partes.
+- (D) O Minist&#233;rio P&#250;blico jamais possui legitimidade para intervir em causas que envolvam A&#199;&#213;ES IMPRESCRIT&#205;VEIS.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**.  
+*Fundamenta&#231;&#227;o*: Trata-se da correta aplica&#231;&#227;o dogm&#225;tica do instituto segundo o C&#243;digo Civil e a jurisprud&#234;ncia dominante.</t></is></c><c r="L6" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / DOGM&#193;TICA E REQUISITOS T&#201;CNICOS] - Requisitos Estruturais
+
+Para que qualquer ato relacionado a **A&#199;&#213;ES IMPRESCRIT&#205;VEIS** produza plenos efeitos no mundo jur&#237;dico, exige-se:
+
+1. **Legitima&#231;&#227;o Espec&#237;fica**: N&#227;o basta capacidade gen&#233;rica; a parte deve deter pertin&#234;ncia subjetiva e poderes para o ato;
+2. **Higidez Volitiva e Aus&#234;ncia de Fraude**: A manifesta&#231;&#227;o de vontade deve ser livre de erro, dolo, coa&#231;&#227;o ou simula&#231;&#227;o;
+3. **Conformidade com a Ordem P&#250;blica**: O objeto deve ser l&#237;cito e atender &#224; fun&#231;&#227;o social estipulada em lei.</t></is></c><c r="M6" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 2] - O Conflito em Ju&#237;zo
+
+A a&#231;&#227;o judicial foi formalmente distribu&#237;da na Vara C&#237;vel competente.
+
+A parte r&#233; apresentou contesta&#231;&#227;o alegando que n&#227;o houve ilicitude e invocando o estrito cumprimento de cl&#225;usulas padronizadas.
+Contudo, a defesa da v&#237;tima sustentou que o comportamento do r&#233;u violou frontalmente a boa-f&#233; objetiva e os preceitos de **A&#199;&#213;ES IMPRESCRIT&#205;VEIS**.
+
+O juiz abriu vista para manifesta&#231;&#227;o sobre provas, convocando as partes para audi&#234;ncia de instru&#231;&#227;o e julgamento!</t></is></c><c r="N6" t="inlineStr"><is><t># [FRONTEIRAS CR&#205;TICAS / O QUE N&#195;O &#201;] - Quadro Comparativo
+
+| FIGURA EM AN&#193;LISE | O QUE REALMENTE &#201; | O QUE **N&#195;O** &#201; (CUIDADO!) |
+| :--- | :--- | :--- |
+| **Prescri&#231;&#227;o (Art. 189 do CC)** | Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo. | N&#227;o pode ser flexibilizado por conveni&#234;ncia particular. |
+| **Decad&#234;ncia** | Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato. | N&#227;o se confunde com arb&#237;trio individual ou impunidade. |
+| **Causas Impeditivas e Suspensivas** | Fatos previstos na lei que impedem o in&#237;cio da contagem ou paralisam o rel&#243;gio da prescri&#231;&#227;o (ex.: entre c&#244;njuges na const&#226;ncia do casamento ou contra menores de 16 anos). | N&#227;o depende de comprova&#231;&#227;o de dor &#237;ntima se a lei presumir. |</t></is></c><c r="O6" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 2] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Crucial**: Qual &#233; a distin&#231;&#227;o primordial entre **Prescri&#231;&#227;o (Art. 189 do CC)** e **Decad&#234;ncia** no direito civil?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; Enquanto **Prescri&#231;&#227;o (Art. 189 do CC)** (Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.), o instituto de **Decad&#234;ncia** (Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato.).  
+&gt; Conhecer essa fronteira &#233; decisivo para n&#227;o errar a fundamenta&#231;&#227;o da peti&#231;&#227;o inicial nem as quest&#245;es da OAB!</t></is></c><c r="P6" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 2] - Regras Especiais
+
+Complete a assertiva jurisprudencial consolidada pelos tribunais superiores:
+
+---
+
+### Enunciado:
+*'No &#226;mbito de A&#199;&#213;ES IMPRESCRIT&#205;VEIS, a boa-f&#233; objetiva imp&#245;e deveres anexos de [ LACUNA 1 ] e colabora&#231;&#227;o m&#250;tua. A quebra desses deveres caracteriza inadimplemento positivo ou viola&#231;&#227;o contratual sujeita a [ LACUNA 2 ].'*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: `[ lealdade / informa&#231;&#227;o ]` | `[ oculta&#231;&#227;o ]`
+- **Para a Lacuna 2**: `[ repara&#231;&#227;o por perdas e danos ]` | `[ perd&#227;o judicial ]`
+
+---
+
+### &#127919; Gabarito Comentado:
+1. lealdade / informa&#231;&#227;o (Enunciados da Jornada de Direito Civil do CJF);
+2. repara&#231;&#227;o por perdas e danos (Arts. 187 e 927 do CC).</t></is></c><c r="Q6" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 2] - N&#237;vel Concurso P&#250;blico
+
+**Enunciado**: Em mat&#233;ria de **A&#199;&#213;ES IMPRESCRIT&#205;VEIS**, assinale a afirmativa INCORRETA:
+
+- (A) A responsabilidade civil e a validade negocial subordinam-se &#224; fun&#231;&#227;o social do instituto.
+- (B) &#201; nula a cl&#225;usula que contrarie disposi&#231;&#227;o de lei de ordem p&#250;blica em A&#199;&#213;ES IMPRESCRIT&#205;VEIS.
+- (C) Os efeitos do neg&#243;cio podem ser anulados se comprovado v&#237;cio de consentimento no prazo decadencial legal.
+- (D) O enriquecimento sem causa &#233; tolerado no direito civil caso o prejudicado seja pessoa jur&#237;dica.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Incorreta: (D)**. 
+*Fundamenta&#231;&#227;o*: O art. 884 do C&#243;digo Civil repudia expressamente o enriquecimento sem causa contra qualquer sujeito de direito (pessoa natural ou jur&#237;dica).</t></is></c><c r="R6" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 3] - Conclus&#227;o e Senten&#231;a Judicial
+
+A senten&#231;a judicial foi proferida pelo magistrado titular da Vara C&#237;vel:
+
+O juiz reconhece a prescri&#231;&#227;o trienal (art. 206, &#167;3&#186;, V do CC): para repara&#231;&#227;o civil extracontratual, o prazo &#233; de 3 anos cravados da data do fato lesivo, julgando extinto o processo com resolu&#231;&#227;o do m&#233;rito.
+
+A pacifica&#231;&#227;o do conflito demonstrou que as regras de **A&#199;&#213;ES IMPRESCRIT&#205;VEIS** atuam para resguardar a ordem econ&#244;mica e proteger os cidad&#227;os que pautam suas condutas na boa-f&#233; objetiva!</t></is></c><c r="S6" t="inlineStr"><is><t># [MINIGAME INTERATIVO / LIGUE OS TERMOS] - Desafio R&#225;pido
+
+Ligue cada elemento da **Coluna A** &#224; sua defini&#231;&#227;o correspondente na **Coluna B**:
+
+---
+
+### &#129513; COLUNA A:
+1. Prescri&#231;&#227;o (Art. 189 do CC)
+2. Decad&#234;ncia
+3. Causas Impeditivas e Suspensivas
+4. Boa-f&#233; Objetiva
+
+---
+
+### &#127919; COLUNA B:
+- ( ) Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato.
+- ( ) Padr&#227;o de conduta leal, honesto e &#233;tico obrigat&#243;rio nas rela&#231;&#245;es civis.
+- ( ) Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.
+- ( ) Fatos previstos na lei que impedem o in&#237;cio da contagem ou paralisam o rel&#243;gio da prescri&#231;&#227;o (ex.: entre c&#244;njuges na const&#226;ncia do casamento ou contra menores de 16 anos).
+
+---
+
+### &#128273; Resposta do Minigame:
+- **Ordem Correta**: `[ 2 ]` $\rightarrow$ `[ 4 ]` $\rightarrow$ `[ 1 ]` $\rightarrow$ `[ 3 ]`</t></is></c><c r="T6" t="inlineStr"><is><t># [JURISPRUD&#202;NCIA / TRIBUNAIS SUPERIORES] - Precedentes Vinculantes
+
+Principais diretrizes pac&#237;ficas dos Tribunais Superiores (STJ/STF) sobre **A&#199;&#213;ES IMPRESCRIT&#205;VEIS**:
+
+1. **STJ - EREsp 1.280.825/RJ: 'Nas controv&#233;rsias relacionadas &#224; responsabilidade contratual, aplica-se a regra geral da prescri&#231;&#227;o decenal (art. 205 do CC)'.**;
+2. **Veda&#231;&#227;o ao Comportamento Contradit&#243;rio**: O STJ reprime com veem&#234;ncia o *venire contra factum proprium*, invalidando condutas que quebram a confian&#231;a leg&#237;tima;
+3. **Mitiga&#231;&#227;o do Preju&#237;zo (*Duty to Mitigate the Loss*)**: O credor tem o dever anexo de adotar medidas razo&#225;veis para n&#227;o agravar o pr&#243;prio dano.</t></is></c><c r="U6" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 3] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Jurisprudencial**: Qual s&#250;mula ou tese repetitiva do STJ incide com maior frequ&#234;ncia em lit&#237;gios sobre **A&#199;&#213;ES IMPRESCRIT&#205;VEIS**?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **STJ - EREsp 1.280.825/RJ: 'Nas controv&#233;rsias relacionadas &#224; responsabilidade contratual, aplica-se a regra geral da prescri&#231;&#227;o decenal (art. 205 do CC)'.**  
+&gt; *Import&#226;ncia*: Essa orienta&#231;&#227;o pacificada vincula os tribunais de segunda inst&#226;ncia e evita o ajuizamento de recursos protelat&#243;rios.</t></is></c><c r="V6" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 3] - N&#237;vel Magistratura / MP
+
+**Enunciado**: Em demanda judicial versando sobre **A&#199;&#213;ES IMPRESCRIT&#205;VEIS**, o r&#233;u alega aus&#234;ncia de responsabilidade em virtude de cl&#225;usula contratual gen&#233;rica de n&#227;o indenizar. &#192; luz da jurisprud&#234;ncia do STJ e do C&#243;digo Civil, o juiz deve:
+
+- (A) Acolher a defesa do r&#233;u, pois a autonomia privada das partes &#233; soberana e absoluta.
+- (B) Declarar a nulidade ou inefic&#225;cia da cl&#225;usula de n&#227;o indenizar que afronte normas cogentes de ordem p&#250;blica ou a fun&#231;&#227;o social da rela&#231;&#227;o.
+- (C) Extinguir o processo sem julgamento de m&#233;rito por falta de interesse de agir.
+- (D) Condenar o autor por litig&#226;ncia de m&#225;-f&#233;.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**. 
+*Fundamenta&#231;&#227;o*: Cl&#225;usulas de dispensa de deveres essenciais ou de exclus&#227;o unilateral de responsabilidade que violem preceitos de ordem p&#250;blica s&#227;o nulas de pleno direito (art. 166, VI e art. 421 do CC).</t></is></c><c r="W6" t="inlineStr"><is><t># [COMO CAI EM PROVAS / RAIO-X DAS BANCAS] - Armadilhas Cl&#225;ssicas
+
+Fique alerta &#224;s 3 pegadinhas mais recorrentes preparadas por FGV, Cebraspe e Vunesp:
+
+1. **A banca vai misturar os prazos de repara&#231;&#227;o contratual com extracontratual. ATEN&#199;&#195;O: Extracontratual = 3 anos (Art. 206, &#167;3&#186;, V); Inadimplemento Contratual = 10 anos (Art. 205 - EREsp 1.280.825/RJ do STJ).**
+2. **Prazos de Prescri&#231;&#227;o vs. Decad&#234;ncia**: A banca adora chamar prazo decadencial de anula&#231;&#227;o de 'prescricional' para induzir a erro;
+3. **Solidariedade Presumida**: Lembrar sempre que a solidariedade N&#195;O se presume; resulta da lei ou do contrato (Art. 265 do CC).</t></is></c><c r="X6" t="inlineStr"><is><t># [DICA DA PROFESSORA / S&#205;NTESE EM &#193;UDIO] - P&#237;lula da Professora Evelyn
+
+&#127897;&#65039; *Ol&#225;, querido aluno do Direito Prime! Aqui &#233; a Professora Evelyn com o resumo definitivo de A&#199;&#213;ES IMPRESCRIT&#205;VEIS:*
+
+&gt; *'N&#227;o complique o que a lei fez para ser justo!  
+&gt; Em A&#199;&#213;ES IMPRESCRIT&#205;VEIS, lembre-se sempre de conferir:  
+&gt; 1. Houve respeito &#224; boa-f&#233; objetiva e &#224; fun&#231;&#227;o social?  
+&gt; 2. Quem alega o direito agiu dentro do prazo legal sem dormir no ponto?  
+&gt; 3. A s&#250;mula de reg&#234;ncia &#233;: STJ - EREsp 1.280.825/RJ: 'Nas controv&#233;rsias relacionadas &#224; responsabilidade contratual, aplica-se a regra geral da prescri&#231;&#227;o decenal (art. 205 do CC)'..  
+&gt; Guarde essa tr&#237;ade no cora&#231;&#227;o e voc&#234; acertar&#225; qualquer quest&#227;o de concurso e advocacia!'*</t></is></c><c r="Y6" t="inlineStr"><is><t># [&#193;RVORE DECIS&#211;RIA / FLUXOGRAMA EM SETAS] - Grafo de Decis&#227;o L&#243;gica
+
+```text
+[A&#199;&#213;ES IMPRESCRIT&#205;VEIS: AN&#193;LISE DE EFIC&#193;CIA JUR&#205;DICA]
+       |
+       +---&gt; Houve preenchimento dos Requisitos Legais B&#225;sicos?
+       |        |
+       |        +---[N&#195;O]---&gt; V&#205;CIO NA ESTRUTURA NORMATIVA
+       |        |             - Inefic&#225;cia ou Nulidade do ato
+       |        |
+       |        +---[SIM]---&gt; Houve Observ&#226;ncia da Boa-f&#233; e Prazos?
+       |                                |
+       |                                +---[SIM]---&gt; ATO H&#205;GIDO, V&#193;LIDO E EXIG&#205;VEL
+       |                                |             - Tutela jurisdicional concedida
+       |                                |             - Produ&#231;&#227;o integral dos efeitos
+       |                                |
+       |                                +---[N&#195;O]---&gt; INCID&#202;NCIA DE SAN&#199;&#195;O / PRESCRI&#199;&#195;O
+       |                                              - Perda da pretens&#227;o ou indeniza&#231;&#227;o civil
+```</t></is></c><c r="Z6" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / EFEITOS ESPECIAIS] - Reflexos Interdisciplinares
+
+A mat&#233;ria de **A&#199;&#213;ES IMPRESCRIT&#205;VEIS** produz efeitos que transcendem o direito privado comum:
+
+- **Reflexos Tribut&#225;rios**: A regularidade jur&#237;dica do ato define o fato gerador e afasta autua&#231;&#245;es fiscais indevidas;
+- **Reflexos Notariais e Registrais**: A publicidade nos cart&#243;rios de notas e de registro de im&#243;veis confere efic&#225;cia perante terceiros (*erga omnes*);
+- **Reflexos Processuais**: Assegura a legitimidade ativa e passiva nas a&#231;&#245;es de conhecimento e de execu&#231;&#227;o.</t></is></c><c r="AA6" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 4] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pegadinha da Magistratura**: O descumprimento dos deveres anexos de conduta da boa-f&#233; objetiva em **A&#199;&#213;ES IMPRESCRIT&#205;VEIS** exige prova de dolo ou culpa do devedor?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **N&#195;O EXIGE PROVA DE DOLO OU CULPA!**  
+&gt; A viola&#231;&#227;o positiva do contrato por quebra da boa-f&#233; objetiva opera responsabilidade de natureza **objetiva**, bastando a comprova&#231;&#227;o objetiva da conduta desleal ou omissiva.</t></is></c><c r="AB6" t="inlineStr"><is><t># [QUEST&#195;O DISCURSIVA / PR&#193;TICA PROFISSIONAL] - Parecer Forense
+
+**Situa&#231;&#227;o Pr&#225;tica**: Um cliente procura seu escrit&#243;rio de advocacia relatando les&#227;o patrimonial grave decorrente de lit&#237;gio em **A&#199;&#213;ES IMPRESCRIT&#205;VEIS**.
+
+**Pergunta**: Como advogado(a), qual &#233; a primeira provid&#234;ncia cautelar e de m&#233;rito a ser proposta em ju&#237;zo?
+
+---
+
+### &#9878;&#65039; Padr&#227;o de Resposta T&#233;cnico:
+&gt; 1. **Tutela Provis&#243;ria de Urg&#234;ncia** (art. 300 do CPC) para suspender atos expropriat&#243;rios ou cobran&#231;as indevidas;  
+&gt; 2. **Pedido Principal** de declara&#231;&#227;o de cumprimento do preceito de A&#199;&#213;ES IMPRESCRIT&#205;VEIS, com base em Arts. 189 a 211 do C&#243;digo Civil e perdas e danos.</t></is></c><c r="AC6" t="inlineStr"><is><t># [MAPA CONCEITUAL COMPARATIVO] - Os Pilares de A&#199;&#213;ES IMPRESCRIT&#205;VEIS
+
+```text
+                      [ORDEM P&#218;BLICA E LEGALIDADE]
+                                   |
+                                   v
+[AUTONOMIA PRIVADA] &lt;&#9472;&#9472;&#9472;&gt; [A&#199;&#213;ES IMPRESCRIT&#205;VEIS] &lt;&#9472;&#9472;&#9472;&gt; [BOA-F&#201; OBJETIVA]
+                                   |
+                                   v
+                      [EQUIL&#205;BRIO E FUN&#199;&#195;O SOCIAL]
+```</t></is></c><c r="AD6" t="inlineStr"></c><c r="AE6" t="inlineStr"></c><c r="AF6" t="inlineStr"></c><c r="AG6" t="inlineStr"></c><c r="AH6" t="inlineStr"></c></row><row r="7"><c r="A7" t="inlineStr"><is><t>Aula 06</t></is></c><c r="B7" t="inlineStr"><is><t>INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O</t></is></c><c r="C7" t="inlineStr"><is><t>06. Prescri&#231;&#227;o e Decad&#234;ncia</t></is></c><c r="D7" t="n"><v>27</v></c><c r="E7" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / CONCEITO CENTRAL] - INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O
+
+&gt; **Marco Normativo Central**: Arts. 189 a 211 do C&#243;digo Civil
+
+A disciplina jur&#237;dica de **INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O** insere-se no ramo de **Prescri&#231;&#227;o e Decad&#234;ncia no C&#243;digo Civil**, estruturando como a lei protege as pessoas e seus bens com justi&#231;a e seguran&#231;a.
+
+### Conceito Desmembrado e Raz&#227;o de Ser:
+No direito civil contempor&#226;neo, as normas que regem INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O abandonaram o antigo apego formalista ego&#237;sta para se submeter &#224; **dignidade da pessoa humana**, &#224; **fun&#231;&#227;o social** e &#224; **boa-f&#233; objetiva**.
+A raz&#227;o de ser do instituto &#233; assegurar equil&#237;brio e previsibilidade: ningu&#233;m pode se valer da pr&#243;pria torpeza, nem locupletar-se indevidamente &#224;s custas do preju&#237;zo alheio.
+
+&#128161; *Exemplo R&#225;pido de Aplica&#231;&#227;o*: Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.</t></is></c><c r="F7" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 1] - O Dilema Pr&#225;tico
+
+Para compreender como **INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O** impacta a vida real dos cidad&#227;os nos f&#243;runs e cart&#243;rios, acompanhe o caso concreto:
+
+Marcos sofreu um acidente de carro provocado por um motorista embriagado. Tr&#234;s anos e meio depois, tenta entrar com a&#231;&#227;o de cobran&#231;a das despesas m&#233;dicas.
+
+Diante da recusa da outra parte em solucionar a controv&#233;rsia amigavelmente, surge a d&#250;vida jur&#237;dica: quais s&#227;o os limites da prote&#231;&#227;o que o C&#243;digo Civil e os tribunais conferem a essa situa&#231;&#227;o cotidiana?</t></is></c><c r="G7" t="inlineStr"><is><t># [GLOSS&#193;RIO INTERATIVO / MENU SUSPENSO] - Termos Chave Clic&#225;veis
+
+*(Clique em cada termo no menu suspenso para expandir a defini&#231;&#227;o desmembrada e o exemplo pr&#225;tico)*
+
+&#9660; **[Menu Suspenso 1: Prescri&#231;&#227;o (Art. 189 do CC)]**
+- *O que &#233;*: Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.
+- *Exemplo R&#225;pido*: Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.
+
+&#9660; **[Menu Suspenso 2: Decad&#234;ncia]**
+- *O que &#233;*: Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato.
+- *Exemplo R&#225;pido*: O prazo de 4 anos para anular um contrato com dolo &#233; decadencial: passou o prazo, o direito de anular morre para sempre.
+
+&#9660; **[Menu Suspenso 3: Causas Impeditivas e Suspensivas]**
+- *O que &#233;*: Fatos previstos na lei que impedem o in&#237;cio da contagem ou paralisam o rel&#243;gio da prescri&#231;&#227;o (ex.: entre c&#244;njuges na const&#226;ncia do casamento ou contra menores de 16 anos).
+- *Exemplo R&#225;pido*: Enquanto voc&#234; for casado, a prescri&#231;&#227;o das d&#237;vidas entre voc&#234; e seu parceiro fica congelada (Art. 197, I do CC).</t></is></c><c r="H7" t="inlineStr"><is><t># [EXEMPLO PR&#193;TICO E APLICA&#199;&#195;O FORENSE] - Como Funciona nos Tribunais
+
+Na pr&#225;tica forense de **INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O**, ju&#237;zes e advogados aplicam as seguintes solu&#231;&#245;es imediatas:
+
+1. **Seguran&#231;a das Rela&#231;&#245;es Negociais**: Assegura que o combinado seja exig&#237;vel, prevenindo calotes e fraudes patrimoniais;
+2. **Prote&#231;&#227;o &#224; Parte Vulner&#225;vel**: Impede imposi&#231;&#245;es leoninas ou cl&#225;usulas abusivas impostas por detentores de maior poder econ&#244;mico;
+3. **Equidade e Razoabilidade**: Permite a revis&#227;o judicial das obriga&#231;&#245;es quando fatos supervenientes extraordin&#225;rios quebram o equil&#237;brio original da rela&#231;&#227;o.
+
+&#128161; *Aten&#231;&#227;o Forense*: O direito n&#227;o socorre aos que dormem (*dormientibus non succurrit ius*); por isso, os prazos legais da mat&#233;ria devem ser vigiados com rigor!</t></is></c><c r="I7" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 1] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta de Fixa&#231;&#227;o**: Qual &#233; a defini&#231;&#227;o jur&#237;dica central de **Prescri&#231;&#227;o (Art. 189 do CC)** em **INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O** e qual sua principal repercuss&#227;o no patrim&#244;nio das partes?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.**  
+&gt; *Repercuss&#227;o Pr&#225;tica*: Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.</t></is></c><c r="J7" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 1] - Preencha as Lacunas
+
+Teste seu dom&#237;nio completando as palavras essenciais da mat&#233;ria:
+
+---
+
+### Enunciado da Atividade:
+*Violado o direito, nasce para o titular a [ LACUNA 1 ], a qual se extingue pela prescri&#231;&#227;o nos prazos fixados em lei. As causas que interrompem a prescri&#231;&#227;o produzem o efeito de [ LACUNA 2 ] do zero o c&#244;mputo do prazo temporal.*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: [ pretens&#227;o ] | [ vingan&#231;a p&#250;blica ]
+- **Para a Lacuna 2**: [ reiniciar / recome&#231;ar ] | [ duplicar ]
+
+---
+
+### &#127919; Gabarito Comentado:
+1. pretens&#227;o (Art. 189 do CC); 2. reiniciar / recome&#231;ar (Art. 202 do CC).</t></is></c><c r="K7" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 1] - Padr&#227;o OAB / FGV
+
+**Enunciado**: A respeito das normas e princ&#237;pios aplic&#225;veis a **INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O**, assinale a alternativa juridicamente correta:
+
+- (A) A legisla&#231;&#227;o civil veda a aplica&#231;&#227;o da boa-f&#233; objetiva aos contratos particulares que versem sobre INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O.
+- (B) Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo. Portanto, Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.
+- (C) Os prazos prescricionais de INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O admitem dila&#231;&#227;o convencional por mero acordo verbal das partes.
+- (D) O Minist&#233;rio P&#250;blico jamais possui legitimidade para intervir em causas que envolvam INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**.  
+*Fundamenta&#231;&#227;o*: Trata-se da correta aplica&#231;&#227;o dogm&#225;tica do instituto segundo o C&#243;digo Civil e a jurisprud&#234;ncia dominante.</t></is></c><c r="L7" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / DOGM&#193;TICA E REQUISITOS T&#201;CNICOS] - Requisitos Estruturais
+
+Para que qualquer ato relacionado a **INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O** produza plenos efeitos no mundo jur&#237;dico, exige-se:
+
+1. **Legitima&#231;&#227;o Espec&#237;fica**: N&#227;o basta capacidade gen&#233;rica; a parte deve deter pertin&#234;ncia subjetiva e poderes para o ato;
+2. **Higidez Volitiva e Aus&#234;ncia de Fraude**: A manifesta&#231;&#227;o de vontade deve ser livre de erro, dolo, coa&#231;&#227;o ou simula&#231;&#227;o;
+3. **Conformidade com a Ordem P&#250;blica**: O objeto deve ser l&#237;cito e atender &#224; fun&#231;&#227;o social estipulada em lei.</t></is></c><c r="M7" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 2] - O Conflito em Ju&#237;zo
+
+A a&#231;&#227;o judicial foi formalmente distribu&#237;da na Vara C&#237;vel competente.
+
+A parte r&#233; apresentou contesta&#231;&#227;o alegando que n&#227;o houve ilicitude e invocando o estrito cumprimento de cl&#225;usulas padronizadas.
+Contudo, a defesa da v&#237;tima sustentou que o comportamento do r&#233;u violou frontalmente a boa-f&#233; objetiva e os preceitos de **INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O**.
+
+O juiz abriu vista para manifesta&#231;&#227;o sobre provas, convocando as partes para audi&#234;ncia de instru&#231;&#227;o e julgamento!</t></is></c><c r="N7" t="inlineStr"><is><t># [FRONTEIRAS CR&#205;TICAS / O QUE N&#195;O &#201;] - Quadro Comparativo
+
+| FIGURA EM AN&#193;LISE | O QUE REALMENTE &#201; | O QUE **N&#195;O** &#201; (CUIDADO!) |
+| :--- | :--- | :--- |
+| **Prescri&#231;&#227;o (Art. 189 do CC)** | Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo. | N&#227;o pode ser flexibilizado por conveni&#234;ncia particular. |
+| **Decad&#234;ncia** | Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato. | N&#227;o se confunde com arb&#237;trio individual ou impunidade. |
+| **Causas Impeditivas e Suspensivas** | Fatos previstos na lei que impedem o in&#237;cio da contagem ou paralisam o rel&#243;gio da prescri&#231;&#227;o (ex.: entre c&#244;njuges na const&#226;ncia do casamento ou contra menores de 16 anos). | N&#227;o depende de comprova&#231;&#227;o de dor &#237;ntima se a lei presumir. |</t></is></c><c r="O7" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 2] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Crucial**: Qual &#233; a distin&#231;&#227;o primordial entre **Prescri&#231;&#227;o (Art. 189 do CC)** e **Decad&#234;ncia** no direito civil?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; Enquanto **Prescri&#231;&#227;o (Art. 189 do CC)** (Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.), o instituto de **Decad&#234;ncia** (Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato.).  
+&gt; Conhecer essa fronteira &#233; decisivo para n&#227;o errar a fundamenta&#231;&#227;o da peti&#231;&#227;o inicial nem as quest&#245;es da OAB!</t></is></c><c r="P7" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 2] - Regras Especiais
+
+Complete a assertiva jurisprudencial consolidada pelos tribunais superiores:
+
+---
+
+### Enunciado:
+*'No &#226;mbito de INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O, a boa-f&#233; objetiva imp&#245;e deveres anexos de [ LACUNA 1 ] e colabora&#231;&#227;o m&#250;tua. A quebra desses deveres caracteriza inadimplemento positivo ou viola&#231;&#227;o contratual sujeita a [ LACUNA 2 ].'*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: `[ lealdade / informa&#231;&#227;o ]` | `[ oculta&#231;&#227;o ]`
+- **Para a Lacuna 2**: `[ repara&#231;&#227;o por perdas e danos ]` | `[ perd&#227;o judicial ]`
+
+---
+
+### &#127919; Gabarito Comentado:
+1. lealdade / informa&#231;&#227;o (Enunciados da Jornada de Direito Civil do CJF);
+2. repara&#231;&#227;o por perdas e danos (Arts. 187 e 927 do CC).</t></is></c><c r="Q7" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 2] - N&#237;vel Concurso P&#250;blico
+
+**Enunciado**: Em mat&#233;ria de **INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O**, assinale a afirmativa INCORRETA:
+
+- (A) A responsabilidade civil e a validade negocial subordinam-se &#224; fun&#231;&#227;o social do instituto.
+- (B) &#201; nula a cl&#225;usula que contrarie disposi&#231;&#227;o de lei de ordem p&#250;blica em INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O.
+- (C) Os efeitos do neg&#243;cio podem ser anulados se comprovado v&#237;cio de consentimento no prazo decadencial legal.
+- (D) O enriquecimento sem causa &#233; tolerado no direito civil caso o prejudicado seja pessoa jur&#237;dica.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Incorreta: (D)**. 
+*Fundamenta&#231;&#227;o*: O art. 884 do C&#243;digo Civil repudia expressamente o enriquecimento sem causa contra qualquer sujeito de direito (pessoa natural ou jur&#237;dica).</t></is></c><c r="R7" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 3] - Conclus&#227;o e Senten&#231;a Judicial
+
+A senten&#231;a judicial foi proferida pelo magistrado titular da Vara C&#237;vel:
+
+O juiz reconhece a prescri&#231;&#227;o trienal (art. 206, &#167;3&#186;, V do CC): para repara&#231;&#227;o civil extracontratual, o prazo &#233; de 3 anos cravados da data do fato lesivo, julgando extinto o processo com resolu&#231;&#227;o do m&#233;rito.
+
+A pacifica&#231;&#227;o do conflito demonstrou que as regras de **INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O** atuam para resguardar a ordem econ&#244;mica e proteger os cidad&#227;os que pautam suas condutas na boa-f&#233; objetiva!</t></is></c><c r="S7" t="inlineStr"><is><t># [MINIGAME INTERATIVO / LIGUE OS TERMOS] - Desafio R&#225;pido
+
+Ligue cada elemento da **Coluna A** &#224; sua defini&#231;&#227;o correspondente na **Coluna B**:
+
+---
+
+### &#129513; COLUNA A:
+1. Prescri&#231;&#227;o (Art. 189 do CC)
+2. Decad&#234;ncia
+3. Causas Impeditivas e Suspensivas
+4. Boa-f&#233; Objetiva
+
+---
+
+### &#127919; COLUNA B:
+- ( ) Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato.
+- ( ) Padr&#227;o de conduta leal, honesto e &#233;tico obrigat&#243;rio nas rela&#231;&#245;es civis.
+- ( ) Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.
+- ( ) Fatos previstos na lei que impedem o in&#237;cio da contagem ou paralisam o rel&#243;gio da prescri&#231;&#227;o (ex.: entre c&#244;njuges na const&#226;ncia do casamento ou contra menores de 16 anos).
+
+---
+
+### &#128273; Resposta do Minigame:
+- **Ordem Correta**: `[ 2 ]` $\rightarrow$ `[ 4 ]` $\rightarrow$ `[ 1 ]` $\rightarrow$ `[ 3 ]`</t></is></c><c r="T7" t="inlineStr"><is><t># [JURISPRUD&#202;NCIA / TRIBUNAIS SUPERIORES] - Precedentes Vinculantes
+
+Principais diretrizes pac&#237;ficas dos Tribunais Superiores (STJ/STF) sobre **INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O**:
+
+1. **STJ - EREsp 1.280.825/RJ: 'Nas controv&#233;rsias relacionadas &#224; responsabilidade contratual, aplica-se a regra geral da prescri&#231;&#227;o decenal (art. 205 do CC)'.**;
+2. **Veda&#231;&#227;o ao Comportamento Contradit&#243;rio**: O STJ reprime com veem&#234;ncia o *venire contra factum proprium*, invalidando condutas que quebram a confian&#231;a leg&#237;tima;
+3. **Mitiga&#231;&#227;o do Preju&#237;zo (*Duty to Mitigate the Loss*)**: O credor tem o dever anexo de adotar medidas razo&#225;veis para n&#227;o agravar o pr&#243;prio dano.</t></is></c><c r="U7" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 3] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Jurisprudencial**: Qual s&#250;mula ou tese repetitiva do STJ incide com maior frequ&#234;ncia em lit&#237;gios sobre **INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O**?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **STJ - EREsp 1.280.825/RJ: 'Nas controv&#233;rsias relacionadas &#224; responsabilidade contratual, aplica-se a regra geral da prescri&#231;&#227;o decenal (art. 205 do CC)'.**  
+&gt; *Import&#226;ncia*: Essa orienta&#231;&#227;o pacificada vincula os tribunais de segunda inst&#226;ncia e evita o ajuizamento de recursos protelat&#243;rios.</t></is></c><c r="V7" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 3] - N&#237;vel Magistratura / MP
+
+**Enunciado**: Em demanda judicial versando sobre **INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O**, o r&#233;u alega aus&#234;ncia de responsabilidade em virtude de cl&#225;usula contratual gen&#233;rica de n&#227;o indenizar. &#192; luz da jurisprud&#234;ncia do STJ e do C&#243;digo Civil, o juiz deve:
+
+- (A) Acolher a defesa do r&#233;u, pois a autonomia privada das partes &#233; soberana e absoluta.
+- (B) Declarar a nulidade ou inefic&#225;cia da cl&#225;usula de n&#227;o indenizar que afronte normas cogentes de ordem p&#250;blica ou a fun&#231;&#227;o social da rela&#231;&#227;o.
+- (C) Extinguir o processo sem julgamento de m&#233;rito por falta de interesse de agir.
+- (D) Condenar o autor por litig&#226;ncia de m&#225;-f&#233;.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**. 
+*Fundamenta&#231;&#227;o*: Cl&#225;usulas de dispensa de deveres essenciais ou de exclus&#227;o unilateral de responsabilidade que violem preceitos de ordem p&#250;blica s&#227;o nulas de pleno direito (art. 166, VI e art. 421 do CC).</t></is></c><c r="W7" t="inlineStr"><is><t># [COMO CAI EM PROVAS / RAIO-X DAS BANCAS] - Armadilhas Cl&#225;ssicas
+
+Fique alerta &#224;s 3 pegadinhas mais recorrentes preparadas por FGV, Cebraspe e Vunesp:
+
+1. **A banca vai misturar os prazos de repara&#231;&#227;o contratual com extracontratual. ATEN&#199;&#195;O: Extracontratual = 3 anos (Art. 206, &#167;3&#186;, V); Inadimplemento Contratual = 10 anos (Art. 205 - EREsp 1.280.825/RJ do STJ).**
+2. **Prazos de Prescri&#231;&#227;o vs. Decad&#234;ncia**: A banca adora chamar prazo decadencial de anula&#231;&#227;o de 'prescricional' para induzir a erro;
+3. **Solidariedade Presumida**: Lembrar sempre que a solidariedade N&#195;O se presume; resulta da lei ou do contrato (Art. 265 do CC).</t></is></c><c r="X7" t="inlineStr"><is><t># [DICA DA PROFESSORA / S&#205;NTESE EM &#193;UDIO] - P&#237;lula da Professora Evelyn
+
+&#127897;&#65039; *Ol&#225;, querido aluno do Direito Prime! Aqui &#233; a Professora Evelyn com o resumo definitivo de INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O:*
+
+&gt; *'N&#227;o complique o que a lei fez para ser justo!  
+&gt; Em INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O, lembre-se sempre de conferir:  
+&gt; 1. Houve respeito &#224; boa-f&#233; objetiva e &#224; fun&#231;&#227;o social?  
+&gt; 2. Quem alega o direito agiu dentro do prazo legal sem dormir no ponto?  
+&gt; 3. A s&#250;mula de reg&#234;ncia &#233;: STJ - EREsp 1.280.825/RJ: 'Nas controv&#233;rsias relacionadas &#224; responsabilidade contratual, aplica-se a regra geral da prescri&#231;&#227;o decenal (art. 205 do CC)'..  
+&gt; Guarde essa tr&#237;ade no cora&#231;&#227;o e voc&#234; acertar&#225; qualquer quest&#227;o de concurso e advocacia!'*</t></is></c><c r="Y7" t="inlineStr"><is><t># [&#193;RVORE DECIS&#211;RIA / FLUXOGRAMA EM SETAS] - Grafo de Decis&#227;o L&#243;gica
+
+```text
+[INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O: AN&#193;LISE DE EFIC&#193;CIA JUR&#205;DICA]
+       |
+       +---&gt; Houve preenchimento dos Requisitos Legais B&#225;sicos?
+       |        |
+       |        +---[N&#195;O]---&gt; V&#205;CIO NA ESTRUTURA NORMATIVA
+       |        |             - Inefic&#225;cia ou Nulidade do ato
+       |        |
+       |        +---[SIM]---&gt; Houve Observ&#226;ncia da Boa-f&#233; e Prazos?
+       |                                |
+       |                                +---[SIM]---&gt; ATO H&#205;GIDO, V&#193;LIDO E EXIG&#205;VEL
+       |                                |             - Tutela jurisdicional concedida
+       |                                |             - Produ&#231;&#227;o integral dos efeitos
+       |                                |
+       |                                +---[N&#195;O]---&gt; INCID&#202;NCIA DE SAN&#199;&#195;O / PRESCRI&#199;&#195;O
+       |                                              - Perda da pretens&#227;o ou indeniza&#231;&#227;o civil
+```</t></is></c><c r="Z7" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / EFEITOS ESPECIAIS] - Reflexos Interdisciplinares
+
+A mat&#233;ria de **INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O** produz efeitos que transcendem o direito privado comum:
+
+- **Reflexos Tribut&#225;rios**: A regularidade jur&#237;dica do ato define o fato gerador e afasta autua&#231;&#245;es fiscais indevidas;
+- **Reflexos Notariais e Registrais**: A publicidade nos cart&#243;rios de notas e de registro de im&#243;veis confere efic&#225;cia perante terceiros (*erga omnes*);
+- **Reflexos Processuais**: Assegura a legitimidade ativa e passiva nas a&#231;&#245;es de conhecimento e de execu&#231;&#227;o.</t></is></c><c r="AA7" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 4] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pegadinha da Magistratura**: O descumprimento dos deveres anexos de conduta da boa-f&#233; objetiva em **INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O** exige prova de dolo ou culpa do devedor?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **N&#195;O EXIGE PROVA DE DOLO OU CULPA!**  
+&gt; A viola&#231;&#227;o positiva do contrato por quebra da boa-f&#233; objetiva opera responsabilidade de natureza **objetiva**, bastando a comprova&#231;&#227;o objetiva da conduta desleal ou omissiva.</t></is></c><c r="AB7" t="inlineStr"><is><t># [QUEST&#195;O DISCURSIVA / PR&#193;TICA PROFISSIONAL] - Parecer Forense
+
+**Situa&#231;&#227;o Pr&#225;tica**: Um cliente procura seu escrit&#243;rio de advocacia relatando les&#227;o patrimonial grave decorrente de lit&#237;gio em **INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O**.
+
+**Pergunta**: Como advogado(a), qual &#233; a primeira provid&#234;ncia cautelar e de m&#233;rito a ser proposta em ju&#237;zo?
+
+---
+
+### &#9878;&#65039; Padr&#227;o de Resposta T&#233;cnico:
+&gt; 1. **Tutela Provis&#243;ria de Urg&#234;ncia** (art. 300 do CPC) para suspender atos expropriat&#243;rios ou cobran&#231;as indevidas;  
+&gt; 2. **Pedido Principal** de declara&#231;&#227;o de cumprimento do preceito de INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O, com base em Arts. 189 a 211 do C&#243;digo Civil e perdas e danos.</t></is></c><c r="AC7" t="inlineStr"><is><t># [MAPA CONCEITUAL COMPARATIVO] - Os Pilares de INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O
+
+```text
+                      [ORDEM P&#218;BLICA E LEGALIDADE]
+                                   |
+                                   v
+[AUTONOMIA PRIVADA] &lt;&#9472;&#9472;&#9472;&gt; [INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O] &lt;&#9472;&#9472;&#9472;&gt; [BOA-F&#201; OBJETIVA]
+                                   |
+                                   v
+                      [EQUIL&#205;BRIO E FUN&#199;&#195;O SOCIAL]
+```</t></is></c><c r="AD7" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 3] - Desafio Avan&#231;ado
+
+Preencha as lacunas sobre a teoria do adimplemento substancial em INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O:
+
+---
+
+### Enunciado:
+*'A teoria do [ LACUNA 1 ] impede a resolu&#231;&#227;o do contrato quando a presta&#231;&#227;o devida tiver sido cumprida em parte essencialmente preponderante, resguardando a preserva&#231;&#227;o do neg&#243;cio e autorizando apenas a cobran&#231;a do [ LACUNA 2 ].'*
+
+---
+
+### Op&#231;&#245;es:
+- **Para a Lacuna 1**: `[ adimplemento substancial ]` | `[ confisco pr&#233;vio ]`
+- **Para a Lacuna 2**: `[ saldo remanescente ]` | `[ dobro de multa ]`
+
+---
+
+### &#127919; Gabarito: 1. adimplemento substancial; 2. saldo remanescente (STJ).</t></is></c><c r="AE7" t="inlineStr"><is><t># [RESUMO ESQUEM&#193;TICO / TABELA DE PRAZOS] - Prazos e Condi&#231;&#245;es
+
+| SITUA&#199;&#195;O EM INSTITUTOS AFINS - PEREMP&#199;&#195;O E PRECLUS&#195;O | TIPO DE PRAZO | DISPOSITIVO LEGAL |
+| :--- | :--- | :--- |
+| **Regra Geral Residual Civil** | 10 anos (prescricional) | Art. 205 do C&#243;digo Civil |
+| **Repara&#231;&#227;o Civil Extracontratual** | 3 anos (prescricional) | Art. 206, &#167;3&#186;, V do CC |
+| **A&#231;&#227;o Anulat&#243;ria por V&#237;cio** | 4 anos (decadencial) | Art. 178 do C&#243;digo Civil |
+| **Nulidade Absoluta por Ilicitude** | Imprescrit&#237;vel | Art. 169 do C&#243;digo Civil |</t></is></c><c r="AF7" t="inlineStr"></c><c r="AG7" t="inlineStr"></c><c r="AH7" t="inlineStr"></c></row><row r="8"><c r="A8" t="inlineStr"><is><t>Aula 07</t></is></c><c r="B8" t="inlineStr"><is><t>Delineamentos Gerais</t></is></c><c r="C8" t="inlineStr"><is><t>06. Prescri&#231;&#227;o e Decad&#234;ncia</t></is></c><c r="D8" t="n"><v>25</v></c><c r="E8" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / CONCEITO CENTRAL] - Delineamentos Gerais
+
+&gt; **Marco Normativo Central**: Arts. 189 a 211 do C&#243;digo Civil
+
+A disciplina jur&#237;dica de **Delineamentos Gerais** insere-se no ramo de **Prescri&#231;&#227;o e Decad&#234;ncia no C&#243;digo Civil**, estruturando como a lei protege as pessoas e seus bens com justi&#231;a e seguran&#231;a.
+
+### Conceito Desmembrado e Raz&#227;o de Ser:
+No direito civil contempor&#226;neo, as normas que regem Delineamentos Gerais abandonaram o antigo apego formalista ego&#237;sta para se submeter &#224; **dignidade da pessoa humana**, &#224; **fun&#231;&#227;o social** e &#224; **boa-f&#233; objetiva**.
+A raz&#227;o de ser do instituto &#233; assegurar equil&#237;brio e previsibilidade: ningu&#233;m pode se valer da pr&#243;pria torpeza, nem locupletar-se indevidamente &#224;s custas do preju&#237;zo alheio.
+
+&#128161; *Exemplo R&#225;pido de Aplica&#231;&#227;o*: Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.</t></is></c><c r="F8" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 1] - O Dilema Pr&#225;tico
+
+Para compreender como **Delineamentos Gerais** impacta a vida real dos cidad&#227;os nos f&#243;runs e cart&#243;rios, acompanhe o caso concreto:
+
+Marcos sofreu um acidente de carro provocado por um motorista embriagado. Tr&#234;s anos e meio depois, tenta entrar com a&#231;&#227;o de cobran&#231;a das despesas m&#233;dicas.
+
+Diante da recusa da outra parte em solucionar a controv&#233;rsia amigavelmente, surge a d&#250;vida jur&#237;dica: quais s&#227;o os limites da prote&#231;&#227;o que o C&#243;digo Civil e os tribunais conferem a essa situa&#231;&#227;o cotidiana?</t></is></c><c r="G8" t="inlineStr"><is><t># [GLOSS&#193;RIO INTERATIVO / MENU SUSPENSO] - Termos Chave Clic&#225;veis
+
+*(Clique em cada termo no menu suspenso para expandir a defini&#231;&#227;o desmembrada e o exemplo pr&#225;tico)*
+
+&#9660; **[Menu Suspenso 1: Prescri&#231;&#227;o (Art. 189 do CC)]**
+- *O que &#233;*: Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.
+- *Exemplo R&#225;pido*: Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.
+
+&#9660; **[Menu Suspenso 2: Decad&#234;ncia]**
+- *O que &#233;*: Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato.
+- *Exemplo R&#225;pido*: O prazo de 4 anos para anular um contrato com dolo &#233; decadencial: passou o prazo, o direito de anular morre para sempre.
+
+&#9660; **[Menu Suspenso 3: Causas Impeditivas e Suspensivas]**
+- *O que &#233;*: Fatos previstos na lei que impedem o in&#237;cio da contagem ou paralisam o rel&#243;gio da prescri&#231;&#227;o (ex.: entre c&#244;njuges na const&#226;ncia do casamento ou contra menores de 16 anos).
+- *Exemplo R&#225;pido*: Enquanto voc&#234; for casado, a prescri&#231;&#227;o das d&#237;vidas entre voc&#234; e seu parceiro fica congelada (Art. 197, I do CC).</t></is></c><c r="H8" t="inlineStr"><is><t># [EXEMPLO PR&#193;TICO E APLICA&#199;&#195;O FORENSE] - Como Funciona nos Tribunais
+
+Na pr&#225;tica forense de **Delineamentos Gerais**, ju&#237;zes e advogados aplicam as seguintes solu&#231;&#245;es imediatas:
+
+1. **Seguran&#231;a das Rela&#231;&#245;es Negociais**: Assegura que o combinado seja exig&#237;vel, prevenindo calotes e fraudes patrimoniais;
+2. **Prote&#231;&#227;o &#224; Parte Vulner&#225;vel**: Impede imposi&#231;&#245;es leoninas ou cl&#225;usulas abusivas impostas por detentores de maior poder econ&#244;mico;
+3. **Equidade e Razoabilidade**: Permite a revis&#227;o judicial das obriga&#231;&#245;es quando fatos supervenientes extraordin&#225;rios quebram o equil&#237;brio original da rela&#231;&#227;o.
+
+&#128161; *Aten&#231;&#227;o Forense*: O direito n&#227;o socorre aos que dormem (*dormientibus non succurrit ius*); por isso, os prazos legais da mat&#233;ria devem ser vigiados com rigor!</t></is></c><c r="I8" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 1] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta de Fixa&#231;&#227;o**: Qual &#233; a defini&#231;&#227;o jur&#237;dica central de **Prescri&#231;&#227;o (Art. 189 do CC)** em **Delineamentos Gerais** e qual sua principal repercuss&#227;o no patrim&#244;nio das partes?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.**  
+&gt; *Repercuss&#227;o Pr&#225;tica*: Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.</t></is></c><c r="J8" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 1] - Preencha as Lacunas
+
+Teste seu dom&#237;nio completando as palavras essenciais da mat&#233;ria:
+
+---
+
+### Enunciado da Atividade:
+*Violado o direito, nasce para o titular a [ LACUNA 1 ], a qual se extingue pela prescri&#231;&#227;o nos prazos fixados em lei. As causas que interrompem a prescri&#231;&#227;o produzem o efeito de [ LACUNA 2 ] do zero o c&#244;mputo do prazo temporal.*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: [ pretens&#227;o ] | [ vingan&#231;a p&#250;blica ]
+- **Para a Lacuna 2**: [ reiniciar / recome&#231;ar ] | [ duplicar ]
+
+---
+
+### &#127919; Gabarito Comentado:
+1. pretens&#227;o (Art. 189 do CC); 2. reiniciar / recome&#231;ar (Art. 202 do CC).</t></is></c><c r="K8" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 1] - Padr&#227;o OAB / FGV
+
+**Enunciado**: A respeito das normas e princ&#237;pios aplic&#225;veis a **Delineamentos Gerais**, assinale a alternativa juridicamente correta:
+
+- (A) A legisla&#231;&#227;o civil veda a aplica&#231;&#227;o da boa-f&#233; objetiva aos contratos particulares que versem sobre Delineamentos Gerais.
+- (B) Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo. Portanto, Voc&#234; tinha uma nota promiss&#243;ria para cobrar e dormiu no ponto por 5 anos: a d&#237;vida prescreveu e voc&#234; n&#227;o pode mais penhorar os bens do devedor.
+- (C) Os prazos prescricionais de Delineamentos Gerais admitem dila&#231;&#227;o convencional por mero acordo verbal das partes.
+- (D) O Minist&#233;rio P&#250;blico jamais possui legitimidade para intervir em causas que envolvam Delineamentos Gerais.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**.  
+*Fundamenta&#231;&#227;o*: Trata-se da correta aplica&#231;&#227;o dogm&#225;tica do instituto segundo o C&#243;digo Civil e a jurisprud&#234;ncia dominante.</t></is></c><c r="L8" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / DOGM&#193;TICA E REQUISITOS T&#201;CNICOS] - Requisitos Estruturais
+
+Para que qualquer ato relacionado a **Delineamentos Gerais** produza plenos efeitos no mundo jur&#237;dico, exige-se:
+
+1. **Legitima&#231;&#227;o Espec&#237;fica**: N&#227;o basta capacidade gen&#233;rica; a parte deve deter pertin&#234;ncia subjetiva e poderes para o ato;
+2. **Higidez Volitiva e Aus&#234;ncia de Fraude**: A manifesta&#231;&#227;o de vontade deve ser livre de erro, dolo, coa&#231;&#227;o ou simula&#231;&#227;o;
+3. **Conformidade com a Ordem P&#250;blica**: O objeto deve ser l&#237;cito e atender &#224; fun&#231;&#227;o social estipulada em lei.</t></is></c><c r="M8" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 2] - O Conflito em Ju&#237;zo
+
+A a&#231;&#227;o judicial foi formalmente distribu&#237;da na Vara C&#237;vel competente.
+
+A parte r&#233; apresentou contesta&#231;&#227;o alegando que n&#227;o houve ilicitude e invocando o estrito cumprimento de cl&#225;usulas padronizadas.
+Contudo, a defesa da v&#237;tima sustentou que o comportamento do r&#233;u violou frontalmente a boa-f&#233; objetiva e os preceitos de **Delineamentos Gerais**.
+
+O juiz abriu vista para manifesta&#231;&#227;o sobre provas, convocando as partes para audi&#234;ncia de instru&#231;&#227;o e julgamento!</t></is></c><c r="N8" t="inlineStr"><is><t># [FRONTEIRAS CR&#205;TICAS / O QUE N&#195;O &#201;] - Quadro Comparativo
+
+| FIGURA EM AN&#193;LISE | O QUE REALMENTE &#201; | O QUE **N&#195;O** &#201; (CUIDADO!) |
+| :--- | :--- | :--- |
+| **Prescri&#231;&#227;o (Art. 189 do CC)** | Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo. | N&#227;o pode ser flexibilizado por conveni&#234;ncia particular. |
+| **Decad&#234;ncia** | Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato. | N&#227;o se confunde com arb&#237;trio individual ou impunidade. |
+| **Causas Impeditivas e Suspensivas** | Fatos previstos na lei que impedem o in&#237;cio da contagem ou paralisam o rel&#243;gio da prescri&#231;&#227;o (ex.: entre c&#244;njuges na const&#226;ncia do casamento ou contra menores de 16 anos). | N&#227;o depende de comprova&#231;&#227;o de dor &#237;ntima se a lei presumir. |</t></is></c><c r="O8" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 2] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Crucial**: Qual &#233; a distin&#231;&#227;o primordial entre **Prescri&#231;&#227;o (Art. 189 do CC)** e **Decad&#234;ncia** no direito civil?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; Enquanto **Prescri&#231;&#227;o (Art. 189 do CC)** (Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.), o instituto de **Decad&#234;ncia** (Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato.).  
+&gt; Conhecer essa fronteira &#233; decisivo para n&#227;o errar a fundamenta&#231;&#227;o da peti&#231;&#227;o inicial nem as quest&#245;es da OAB!</t></is></c><c r="P8" t="inlineStr"><is><t># [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 2] - Regras Especiais
+
+Complete a assertiva jurisprudencial consolidada pelos tribunais superiores:
+
+---
+
+### Enunciado:
+*'No &#226;mbito de Delineamentos Gerais, a boa-f&#233; objetiva imp&#245;e deveres anexos de [ LACUNA 1 ] e colabora&#231;&#227;o m&#250;tua. A quebra desses deveres caracteriza inadimplemento positivo ou viola&#231;&#227;o contratual sujeita a [ LACUNA 2 ].'*
+
+---
+
+### Op&#231;&#245;es do Menu Suspenso:
+- **Para a Lacuna 1**: `[ lealdade / informa&#231;&#227;o ]` | `[ oculta&#231;&#227;o ]`
+- **Para a Lacuna 2**: `[ repara&#231;&#227;o por perdas e danos ]` | `[ perd&#227;o judicial ]`
+
+---
+
+### &#127919; Gabarito Comentado:
+1. lealdade / informa&#231;&#227;o (Enunciados da Jornada de Direito Civil do CJF);
+2. repara&#231;&#227;o por perdas e danos (Arts. 187 e 927 do CC).</t></is></c><c r="Q8" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 2] - N&#237;vel Concurso P&#250;blico
+
+**Enunciado**: Em mat&#233;ria de **Delineamentos Gerais**, assinale a afirmativa INCORRETA:
+
+- (A) A responsabilidade civil e a validade negocial subordinam-se &#224; fun&#231;&#227;o social do instituto.
+- (B) &#201; nula a cl&#225;usula que contrarie disposi&#231;&#227;o de lei de ordem p&#250;blica em Delineamentos Gerais.
+- (C) Os efeitos do neg&#243;cio podem ser anulados se comprovado v&#237;cio de consentimento no prazo decadencial legal.
+- (D) O enriquecimento sem causa &#233; tolerado no direito civil caso o prejudicado seja pessoa jur&#237;dica.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Incorreta: (D)**. 
+*Fundamenta&#231;&#227;o*: O art. 884 do C&#243;digo Civil repudia expressamente o enriquecimento sem causa contra qualquer sujeito de direito (pessoa natural ou jur&#237;dica).</t></is></c><c r="R8" t="inlineStr"><is><t># [STORYTELLING / CASO CONCRETO - PARTE 3] - Conclus&#227;o e Senten&#231;a Judicial
+
+A senten&#231;a judicial foi proferida pelo magistrado titular da Vara C&#237;vel:
+
+O juiz reconhece a prescri&#231;&#227;o trienal (art. 206, &#167;3&#186;, V do CC): para repara&#231;&#227;o civil extracontratual, o prazo &#233; de 3 anos cravados da data do fato lesivo, julgando extinto o processo com resolu&#231;&#227;o do m&#233;rito.
+
+A pacifica&#231;&#227;o do conflito demonstrou que as regras de **Delineamentos Gerais** atuam para resguardar a ordem econ&#244;mica e proteger os cidad&#227;os que pautam suas condutas na boa-f&#233; objetiva!</t></is></c><c r="S8" t="inlineStr"><is><t># [MINIGAME INTERATIVO / LIGUE OS TERMOS] - Desafio R&#225;pido
+
+Ligue cada elemento da **Coluna A** &#224; sua defini&#231;&#227;o correspondente na **Coluna B**:
+
+---
+
+### &#129513; COLUNA A:
+1. Prescri&#231;&#227;o (Art. 189 do CC)
+2. Decad&#234;ncia
+3. Causas Impeditivas e Suspensivas
+4. Boa-f&#233; Objetiva
+
+---
+
+### &#127919; COLUNA B:
+- ( ) Perda do pr&#243;prio direito potestativo em si pelo seu n&#227;o exerc&#237;cio no prazo fatal fixado pela lei ou pelo contrato.
+- ( ) Padr&#227;o de conduta leal, honesto e &#233;tico obrigat&#243;rio nas rela&#231;&#245;es civis.
+- ( ) Perda da pretens&#227;o execut&#243;ria de exigir judicialmente o cumprimento de um direito subjetivo patrimonial violado, pelo decurso do tempo.
+- ( ) Fatos previstos na lei que impedem o in&#237;cio da contagem ou paralisam o rel&#243;gio da prescri&#231;&#227;o (ex.: entre c&#244;njuges na const&#226;ncia do casamento ou contra menores de 16 anos).
+
+---
+
+### &#128273; Resposta do Minigame:
+- **Ordem Correta**: `[ 2 ]` $\rightarrow$ `[ 4 ]` $\rightarrow$ `[ 1 ]` $\rightarrow$ `[ 3 ]`</t></is></c><c r="T8" t="inlineStr"><is><t># [JURISPRUD&#202;NCIA / TRIBUNAIS SUPERIORES] - Precedentes Vinculantes
+
+Principais diretrizes pac&#237;ficas dos Tribunais Superiores (STJ/STF) sobre **Delineamentos Gerais**:
+
+1. **STJ - EREsp 1.280.825/RJ: 'Nas controv&#233;rsias relacionadas &#224; responsabilidade contratual, aplica-se a regra geral da prescri&#231;&#227;o decenal (art. 205 do CC)'.**;
+2. **Veda&#231;&#227;o ao Comportamento Contradit&#243;rio**: O STJ reprime com veem&#234;ncia o *venire contra factum proprium*, invalidando condutas que quebram a confian&#231;a leg&#237;tima;
+3. **Mitiga&#231;&#227;o do Preju&#237;zo (*Duty to Mitigate the Loss*)**: O credor tem o dever anexo de adotar medidas razo&#225;veis para n&#227;o agravar o pr&#243;prio dano.</t></is></c><c r="U8" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 3] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pergunta Jurisprudencial**: Qual s&#250;mula ou tese repetitiva do STJ incide com maior frequ&#234;ncia em lit&#237;gios sobre **Delineamentos Gerais**?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **STJ - EREsp 1.280.825/RJ: 'Nas controv&#233;rsias relacionadas &#224; responsabilidade contratual, aplica-se a regra geral da prescri&#231;&#227;o decenal (art. 205 do CC)'.**  
+&gt; *Import&#226;ncia*: Essa orienta&#231;&#227;o pacificada vincula os tribunais de segunda inst&#226;ncia e evita o ajuizamento de recursos protelat&#243;rios.</t></is></c><c r="V8" t="inlineStr"><is><t># [QUEST&#195;O DE FIXA&#199;&#195;O 3] - N&#237;vel Magistratura / MP
+
+**Enunciado**: Em demanda judicial versando sobre **Delineamentos Gerais**, o r&#233;u alega aus&#234;ncia de responsabilidade em virtude de cl&#225;usula contratual gen&#233;rica de n&#227;o indenizar. &#192; luz da jurisprud&#234;ncia do STJ e do C&#243;digo Civil, o juiz deve:
+
+- (A) Acolher a defesa do r&#233;u, pois a autonomia privada das partes &#233; soberana e absoluta.
+- (B) Declarar a nulidade ou inefic&#225;cia da cl&#225;usula de n&#227;o indenizar que afronte normas cogentes de ordem p&#250;blica ou a fun&#231;&#227;o social da rela&#231;&#227;o.
+- (C) Extinguir o processo sem julgamento de m&#233;rito por falta de interesse de agir.
+- (D) Condenar o autor por litig&#226;ncia de m&#225;-f&#233;.
+
+---
+
+### &#127942; Gabarito e Justificativa:
+**Alternativa Correta: (B)**. 
+*Fundamenta&#231;&#227;o*: Cl&#225;usulas de dispensa de deveres essenciais ou de exclus&#227;o unilateral de responsabilidade que violem preceitos de ordem p&#250;blica s&#227;o nulas de pleno direito (art. 166, VI e art. 421 do CC).</t></is></c><c r="W8" t="inlineStr"><is><t># [COMO CAI EM PROVAS / RAIO-X DAS BANCAS] - Armadilhas Cl&#225;ssicas
+
+Fique alerta &#224;s 3 pegadinhas mais recorrentes preparadas por FGV, Cebraspe e Vunesp:
+
+1. **A banca vai misturar os prazos de repara&#231;&#227;o contratual com extracontratual. ATEN&#199;&#195;O: Extracontratual = 3 anos (Art. 206, &#167;3&#186;, V); Inadimplemento Contratual = 10 anos (Art. 205 - EREsp 1.280.825/RJ do STJ).**
+2. **Prazos de Prescri&#231;&#227;o vs. Decad&#234;ncia**: A banca adora chamar prazo decadencial de anula&#231;&#227;o de 'prescricional' para induzir a erro;
+3. **Solidariedade Presumida**: Lembrar sempre que a solidariedade N&#195;O se presume; resulta da lei ou do contrato (Art. 265 do CC).</t></is></c><c r="X8" t="inlineStr"><is><t># [DICA DA PROFESSORA / S&#205;NTESE EM &#193;UDIO] - P&#237;lula da Professora Evelyn
+
+&#127897;&#65039; *Ol&#225;, querido aluno do Direito Prime! Aqui &#233; a Professora Evelyn com o resumo definitivo de Delineamentos Gerais:*
+
+&gt; *'N&#227;o complique o que a lei fez para ser justo!  
+&gt; Em Delineamentos Gerais, lembre-se sempre de conferir:  
+&gt; 1. Houve respeito &#224; boa-f&#233; objetiva e &#224; fun&#231;&#227;o social?  
+&gt; 2. Quem alega o direito agiu dentro do prazo legal sem dormir no ponto?  
+&gt; 3. A s&#250;mula de reg&#234;ncia &#233;: STJ - EREsp 1.280.825/RJ: 'Nas controv&#233;rsias relacionadas &#224; responsabilidade contratual, aplica-se a regra geral da prescri&#231;&#227;o decenal (art. 205 do CC)'..  
+&gt; Guarde essa tr&#237;ade no cora&#231;&#227;o e voc&#234; acertar&#225; qualquer quest&#227;o de concurso e advocacia!'*</t></is></c><c r="Y8" t="inlineStr"><is><t># [&#193;RVORE DECIS&#211;RIA / FLUXOGRAMA EM SETAS] - Grafo de Decis&#227;o L&#243;gica
+
+```text
+[DELINEAMENTOS GERAIS: AN&#193;LISE DE EFIC&#193;CIA JUR&#205;DICA]
+       |
+       +---&gt; Houve preenchimento dos Requisitos Legais B&#225;sicos?
+       |        |
+       |        +---[N&#195;O]---&gt; V&#205;CIO NA ESTRUTURA NORMATIVA
+       |        |             - Inefic&#225;cia ou Nulidade do ato
+       |        |
+       |        +---[SIM]---&gt; Houve Observ&#226;ncia da Boa-f&#233; e Prazos?
+       |                                |
+       |                                +---[SIM]---&gt; ATO H&#205;GIDO, V&#193;LIDO E EXIG&#205;VEL
+       |                                |             - Tutela jurisdicional concedida
+       |                                |             - Produ&#231;&#227;o integral dos efeitos
+       |                                |
+       |                                +---[N&#195;O]---&gt; INCID&#202;NCIA DE SAN&#199;&#195;O / PRESCRI&#199;&#195;O
+       |                                              - Perda da pretens&#227;o ou indeniza&#231;&#227;o civil
+```</t></is></c><c r="Z8" t="inlineStr"><is><t># [INFORMA&#199;&#195;O / EFEITOS ESPECIAIS] - Reflexos Interdisciplinares
+
+A mat&#233;ria de **Delineamentos Gerais** produz efeitos que transcendem o direito privado comum:
+
+- **Reflexos Tribut&#225;rios**: A regularidade jur&#237;dica do ato define o fato gerador e afasta autua&#231;&#245;es fiscais indevidas;
+- **Reflexos Notariais e Registrais**: A publicidade nos cart&#243;rios de notas e de registro de im&#243;veis confere efic&#225;cia perante terceiros (*erga omnes*);
+- **Reflexos Processuais**: Assegura a legitimidade ativa e passiva nas a&#231;&#245;es de conhecimento e de execu&#231;&#227;o.</t></is></c><c r="AA8" t="inlineStr"><is><t># [FLASHCARD / REVIS&#195;O ATIVA 4] - Frente e Verso
+
+### &#127924; FRENTE DO CARD:
+&gt; **Pegadinha da Magistratura**: O descumprimento dos deveres anexos de conduta da boa-f&#233; objetiva em **Delineamentos Gerais** exige prova de dolo ou culpa do devedor?
+
+---
+
+### &#128260; VERSO DO CARD (Resposta Comentada):
+&gt; **N&#195;O EXIGE PROVA DE DOLO OU CULPA!**  
+&gt; A viola&#231;&#227;o positiva do contrato por quebra da boa-f&#233; objetiva opera responsabilidade de natureza **objetiva**, bastando a comprova&#231;&#227;o objetiva da conduta desleal ou omissiva.</t></is></c><c r="AB8" t="inlineStr"><is><t># [QUEST&#195;O DISCURSIVA / PR&#193;TICA PROFISSIONAL] - Parecer Forense
+
+**Situa&#231;&#227;o Pr&#225;tica**: Um cliente procura seu escrit&#243;rio de advocacia relatando les&#227;o patrimonial grave decorrente de lit&#237;gio em **Delineamentos Gerais**.
+
+**Pergunta**: Como advogado(a), qual &#233; a primeira provid&#234;ncia cautelar e de m&#233;rito a ser proposta em ju&#237;zo?
+
+---
+
+### &#9878;&#65039; Padr&#227;o de Resposta T&#233;cnico:
+&gt; 1. **Tutela Provis&#243;ria de Urg&#234;ncia** (art. 300 do CPC) para suspender atos expropriat&#243;rios ou cobran&#231;as indevidas;  
+&gt; 2. **Pedido Principal** de declara&#231;&#227;o de cumprimento do preceito de Delineamentos Gerais, com base em Arts. 189 a 211 do C&#243;digo Civil e perdas e danos.</t></is></c><c r="AC8" t="inlineStr"><is><t># [MAPA CONCEITUAL COMPARATIVO] - Os Pilares de Delineamentos Gerais
+
+```text
+                      [ORDEM P&#218;BLICA E LEGALIDADE]
+                                   |
+                                   v
+[AUTONOMIA PRIVADA] &lt;&#9472;&#9472;&#9472;&gt; [DELINEAMENTOS GERAIS] &lt;&#9472;&#9472;&#9472;&gt; [BOA-F&#201; OBJETIVA]
+                                   |
+                                   v
+                      [EQUIL&#205;BRIO E FUN&#199;&#195;O SOCIAL]
+```</t></is></c><c r="AD8" t="inlineStr"></c><c r="AE8" t="inlineStr"></c><c r="AF8" t="inlineStr"></c><c r="AG8" t="inlineStr"></c><c r="AH8" t="inlineStr"></c></row></sheetData><pageMargins left="0.75" right="0.75" top="1" bottom="1" header="0.5" footer="0.5"/></worksheet>
