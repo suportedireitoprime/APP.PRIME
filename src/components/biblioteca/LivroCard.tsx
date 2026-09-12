@@ -65,6 +65,6 @@ const LivroCard = memo(function LivroCard({ livro, onClick, priority }: LivroCar
       )}
     </motion.button>
   );
-};
+});
 
 export default LivroCard;
