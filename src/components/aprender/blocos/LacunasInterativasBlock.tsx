@@ -23,13 +23,17 @@ export function LacunasInterativasBlock({ rawContent, onComplete }: LacunasInter
       gabarito: ''
     };
 
-    const enunciadoMatch = rawContent.match(/(?:#*\s*Enunciado da Atividade:?)([\s\S]*?)(?:#*\s*Opções do Menu Suspenso:?)/i);
+    // Extrai o Enunciado (Tudo após 'Enunciado' até a próxima seção de opções, menu, gabarito ou fim do texto)
+    const regexEnunciado = /(?:#*\s*Enunciado.*?:\s*)([\s\S]*?)(?=#*\s*(?:Op[çc][õo]es|Gabarito|Respostas|Menu)|$)/i;
+    const enunciadoMatch = rawContent.match(regexEnunciado);
     if (enunciadoMatch) {
       // Envolvemos [ LACUNA 1 ] em crases para que o ReactMarkdown trate como código inline
       data.enunciado = enunciadoMatch[1].trim().replace(/\[\s*LACUNA\s*(\d+)\s*\]/gi, '`[ LACUNA $1 ]`');
     }
 
-    const opcoesMatch = rawContent.match(/(?:#*\s*Opções do Menu Suspenso:?)([\s\S]*?)(?:#*\s*Gabarito Comentado:?)/i);
+    // Extrai as Opções (Tudo após 'Opções' ou 'Menu' até o Gabarito ou fim do texto)
+    const regexOpcoes = /(?:#*\s*(?:Op[çc][õo]es|Menu).*?:\s*)([\s\S]*?)(?=#*\s*(?:Gabarito|Respostas)|$)/i;
+    const opcoesMatch = rawContent.match(regexOpcoes);
     if (opcoesMatch) {
       const opcoesText = opcoesMatch[1].trim();
       
@@ -55,7 +59,8 @@ export function LacunasInterativasBlock({ rawContent, onComplete }: LacunasInter
       }
     }
 
-    const gabaritoMatch = rawContent.match(/(?:#*\s*Gabarito Comentado:?)([\s\S]*)/i);
+    const regexGabarito = /(?:#*\s*(?:Gabarito|Respostas).*?:\s*)([\s\S]*)/i;
+    const gabaritoMatch = rawContent.match(regexGabarito);
     if (gabaritoMatch) {
       data.gabarito = gabaritoMatch[1].trim();
     }
