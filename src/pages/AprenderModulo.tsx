@@ -64,6 +64,8 @@ export type AulaItem = {
   pct?: number;
   totalBlocos?: number;
   blocosConcluidos?: number;
+};
+
 const SyllabusLoadingScreen = ({ syllabusStep }: { syllabusStep: number }) => {
   const steps = [
     { label: 'Conectando à inteligência artificial...', icon: Brain },

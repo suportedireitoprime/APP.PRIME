@@ -10,6 +10,7 @@ import {
   ChevronRight,
   BookOpen,
   Brain,
+  Play,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -554,7 +555,7 @@ const AprenderAula = () => {
                 </button>
               )}
 
-              {currentIdx < total - 1 && podeAvancar && (
+              {currentIdx > 0 && currentIdx < total - 1 && podeAvancar && (
                 <button
                   onClick={() => goToPage(currentIdx + 1)}
                   aria-label="Próxima página"
@@ -745,66 +746,85 @@ const AprenderAula = () => {
             pointerEvents: ((isPergunta && !respostas[blocoAtual?.id || ''] && selectedOpcao) || (isFlashcard && !flashcardVirado) || (isLacunas && !questaoRespondida)) ? 'none' : 'auto',
           }}
         >
-          <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
-            <button
-              onClick={() => {
-                haptic.selection();
-                setSumarioOpen(true);
-              }}
-              className="flex items-center gap-2.5 h-12 px-4 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white/90 hover:text-white hover:bg-white/10 active:scale-95 transition-all shadow-xl shadow-black/40 min-h-[48px]"
-              aria-label="Abrir sumário da aula"
-            >
-              <List className="h-5 w-5 text-primary" />
-              <span className="text-[14px] font-semibold tracking-wide">Sumário</span>
-            </button>
+          {currentIdx === 0 ? (
+            <div className="max-w-md mx-auto w-full flex items-center justify-center px-2">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => {
+                  haptic.impact('medium');
+                  goToPage(1);
+                }}
+                className="w-full flex items-center justify-center gap-3 h-13 sm:h-14 py-3.5 px-6 rounded-2xl bg-primary text-primary-foreground font-bold text-base sm:text-lg shadow-xl shadow-primary/30 hover:bg-primary/90 hover:shadow-primary/50 active:scale-[0.98] transition-all min-h-[48px] cursor-pointer group"
+                aria-label="Iniciar aula"
+              >
+                <Play className="h-5 w-5 fill-current transition-transform group-hover:scale-110" />
+                <span className="tracking-wide">Iniciar</span>
+                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" strokeWidth={2.5} />
+              </motion.button>
+            </div>
+          ) : (
+            <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
+              <button
+                onClick={() => {
+                  haptic.selection();
+                  setSumarioOpen(true);
+                }}
+                className="flex items-center gap-2.5 h-12 px-4 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white/90 hover:text-white hover:bg-white/10 active:scale-95 transition-all shadow-xl shadow-black/40 min-h-[48px]"
+                aria-label="Abrir sumário da aula"
+              >
+                <List className="h-5 w-5 text-primary" />
+                <span className="text-[14px] font-semibold tracking-wide">Sumário</span>
+              </button>
 
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="flex items-center rounded-2xl bg-white/[0.03] border border-white/[0.08] p-1 backdrop-blur-md shadow-xl shadow-black/40">
-                <button
-                  onClick={() => goToPage(currentIdx - 1)}
-                  disabled={currentIdx <= 0}
-                  aria-label="Página anterior"
-                  className="flex h-12 w-14 sm:w-16 items-center justify-center rounded-xl bg-white/5 text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all shadow-sm cursor-pointer min-h-[48px]"
-                >
-                  <ChevronLeft className="h-6 w-6" />
-                </button>
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="flex items-center rounded-2xl bg-white/[0.03] border border-white/[0.08] p-1 backdrop-blur-md shadow-xl shadow-black/40">
+                  <button
+                    onClick={() => goToPage(currentIdx - 1)}
+                    disabled={currentIdx <= 0}
+                    aria-label="Página anterior"
+                    className="flex h-12 w-14 sm:w-16 items-center justify-center rounded-xl bg-white/5 text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all shadow-sm cursor-pointer min-h-[48px]"
+                  >
+                    <ChevronLeft className="h-6 w-6" />
+                  </button>
 
-                <div className="flex flex-col items-center justify-center px-4 sm:px-6 min-w-[90px] sm:min-w-[100px] select-none">
-                  <span className="text-[14px] font-black tabular-nums text-white leading-none">
-                    {currentIdx + 1} de {total}
-                  </span>
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-neutral-400 mt-1 leading-none">
-                    Páginas
-                  </span>
+                  <div className="flex flex-col items-center justify-center px-4 sm:px-6 min-w-[90px] sm:min-w-[100px] select-none">
+                    <span className="text-[14px] font-black tabular-nums text-white leading-none">
+                      {currentIdx + 1} de {total}
+                    </span>
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-neutral-400 mt-1 leading-none">
+                      Páginas
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => goToPage(currentIdx + 1)}
+                    disabled={currentIdx >= total - 1 || !podeAvancar}
+                    aria-label="Próxima página"
+                    className={`flex h-12 w-14 sm:w-16 items-center justify-center rounded-xl transition-all shadow-lg cursor-pointer min-h-[48px] ${
+                      !podeAvancar || currentIdx >= total - 1
+                        ? 'opacity-25 pointer-events-none bg-white/5 text-white/30 shadow-none cursor-not-allowed'
+                        : 'bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 shadow-primary/25'
+                    }`}
+                  >
+                    <ChevronRight className="h-6 w-6" />
+                  </button>
                 </div>
 
-                <button
-                  onClick={() => goToPage(currentIdx + 1)}
-                  disabled={currentIdx >= total - 1 || !podeAvancar}
-                  aria-label="Próxima página"
-                  className={`flex h-12 w-14 sm:w-16 items-center justify-center rounded-xl transition-all shadow-lg cursor-pointer min-h-[48px] ${
-                    !podeAvancar || currentIdx >= total - 1
-                      ? 'opacity-25 pointer-events-none bg-white/5 text-white/30 shadow-none cursor-not-allowed'
-                      : 'bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 shadow-primary/25'
-                  }`}
-                >
-                  <ChevronRight className="h-6 w-6" />
-                </button>
+                {canFinish && (
+                  <button
+                    onClick={() => {
+                      haptic.impact('medium');
+                      concluirAula();
+                    }}
+                    className="flex h-10 items-center gap-1.5 rounded-xl bg-primary text-primary-foreground px-4 text-[13px] font-bold hover:bg-primary/90 active:scale-95 transition-all shadow-md shadow-primary/25 min-h-[44px]"
+                  >
+                    Concluir <CheckCircle2 className="h-4 w-4" />
+                  </button>
+                )}
               </div>
-
-              {canFinish && (
-                <button
-                  onClick={() => {
-                    haptic.impact('medium');
-                    concluirAula();
-                  }}
-                  className="flex h-10 items-center gap-1.5 rounded-xl bg-primary text-primary-foreground px-4 text-[13px] font-bold hover:bg-primary/90 active:scale-95 transition-all shadow-md shadow-primary/25 min-h-[44px]"
-                >
-                  Concluir <CheckCircle2 className="h-4 w-4" />
-                </button>
-              )}
             </div>
-          </div>
+          )}
         </motion.nav>
 
       </div>
