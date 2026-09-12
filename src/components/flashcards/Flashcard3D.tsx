@@ -4,7 +4,7 @@ import { ChevronRight, Scale, RotateCcw, CheckCircle2, Lightbulb, BookOpen } fro
 import { Button } from '@/components/ui/button';
 import { FlashcardCard } from '@/lib/flashcardsQueries';
 import { getAreaThemePalette } from '@/lib/areasDireitoIcons';
-import ReactMarkdown from 'react-markdown';
+import { PremiumMarkdown } from '@/components/ui/PremiumMarkdown';
 import remarkGfm from 'remark-gfm';
 
 type Flashcard3DProps = {
@@ -206,7 +206,7 @@ const Flashcard3D = memo(function Flashcard3D({
                       textShadow: "0 2px 14px rgba(0,0,0,0.85)" 
                     }}
                   >
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{atual.pergunta}</ReactMarkdown>
+                    <PremiumMarkdown remarkPlugins={[remarkGfm]}>{atual.pergunta}</PremiumMarkdown>
                   </motion.div>
                 </div>
                 
@@ -258,7 +258,7 @@ const Flashcard3D = memo(function Flashcard3D({
                       atual.resposta.length < 150 ? 'text-lg sm:text-xl prose-p:text-lg sm:prose-p:text-xl' :
                       'text-base sm:text-lg prose-p:text-base sm:prose-p:text-lg'
                     } prose-strong:text-emerald-400 prose-ul:text-left prose-ul:mx-auto prose-li:my-1 prose-headings:mb-2`}>
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{atual.resposta}</ReactMarkdown>
+                      <PremiumMarkdown remarkPlugins={[remarkGfm]}>{atual.resposta}</PremiumMarkdown>
                     </div>
                   </div>
                   

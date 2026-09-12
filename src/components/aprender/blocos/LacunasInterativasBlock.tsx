@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
+import { PremiumMarkdown } from '@/components/ui/PremiumMarkdown';
 import remarkGfm from 'remark-gfm';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Puzzle, CheckCircle2, Circle, ChevronRight } from 'lucide-react';
@@ -137,7 +137,7 @@ export function LacunasInterativasBlock({ rawContent, onComplete }: LacunasInter
           Selecione as lacunas para responder
         </p>
         <div className="prose prose-base sm:prose-lg max-w-none prose-invert prose-p:leading-[1.85] prose-p:text-neutral-200">
-          <ReactMarkdown
+        <PremiumMarkdown
             remarkPlugins={[remarkGfm]}
             components={{
               code: ({ children, className }) => {
@@ -201,7 +201,7 @@ export function LacunasInterativasBlock({ rawContent, onComplete }: LacunasInter
             }}
           >
             {normalizarMarkdown(parsedData.enunciado)}
-          </ReactMarkdown>
+          </PremiumMarkdown>
         </div>
       </div>
 
