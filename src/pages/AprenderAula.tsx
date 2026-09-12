@@ -27,6 +27,9 @@ import { AulaPreviaScreen, type PreviaAula } from '@/components/aprender/AulaPre
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import pageTurnSound from '@/assets/page-turn.mp3';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { normalizarMarkdown } from '@/lib/markdown';
 
 export const getAtoInfo = (idx: number, totalSlides: number) => {
   const lim1 = Math.max(1, Math.round(totalSlides * 0.33));
@@ -476,16 +479,12 @@ const AprenderAula = () => {
               <span className={`inline-flex items-center text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full border mb-1 ${atoInfo.badgeBg} ${atoInfo.cor}`}>
                 {atoInfo.nome}
               </span>
-              <p className="text-[13px] sm:text-[14px] md:text-[15px] font-bold text-white truncate max-w-[280px] sm:max-w-none leading-tight font-sans tracking-tight">
+              <h1 className="text-[13px] sm:text-[14px] md:text-[15px] font-bold text-white leading-snug font-sans tracking-tight max-w-xl mx-auto">
                 {aula.titulo}
-              </p>
-              {!podeAvancar ? (
+              </h1>
+              {!podeAvancar && (
                 <p className={`text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mt-0.5 animate-pulse ${isPergunta ? 'text-amber-400' : 'text-sky-400'}`}>
                   {isPergunta ? 'Responda à questão para avançar' : 'Toque no cartão para virar e avançar'}
-                </p>
-              ) : (
-                <p className="text-[10px] sm:text-[11px] font-semibold text-primary uppercase tracking-wider mt-0.5">
-                  Página {currentIdx + 1} de {total} • {blocoAtual ? rotuloPorTipo(blocoAtual.tipo, blocoAtual.payload?.subtipo) : ''}
                 </p>
               )}
             </div>
@@ -629,6 +628,7 @@ const AprenderAula = () => {
                           onSelectOpcao={(opcao) => {
                             haptic.selection();
                             setSelectedOpcao(opcao);
+                            responderPergunta(blocoAtual, opcao);
                           }}
                           onResponder={(escolha) => {
                             responderPergunta(blocoAtual, escolha);
@@ -666,75 +666,13 @@ const AprenderAula = () => {
           </div>
         </main>
 
-        {/* ── Barra de Confirmação de Resposta — Ocupa o rodapé quando uma opção é selecionada ── */}
-        <AnimatePresence>
-          {isPergunta && !respostas[blocoAtual?.id || ''] && selectedOpcao && (
-            <motion.aside
-              aria-label="Confirmar resposta selecionada"
-              initial={{ y: '100%', opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: '100%', opacity: 0 }}
-              transition={{ type: 'spring', damping: 28, stiffness: 320 }}
-              className="fixed bottom-0 left-0 right-0 z-50 border-t border-primary/30 bg-[#141417]/98 backdrop-blur-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.85)] pointer-events-auto"
-              style={{
-                paddingBottom: 'calc(0.75rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))',
-                paddingLeft: 'calc(1.25rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
-                paddingRight: 'calc(1.25rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
-                paddingTop: '0.75rem',
-              }}
-            >
-              <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <span className="flex h-2.5 w-2.5 relative shrink-0">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary" />
-                  </span>
-                  <span className="text-xs sm:text-sm font-bold text-white tracking-wide truncate">
-                    {['certo', 'errado', 'verdadeiro', 'falso'].includes(selectedOpcao.toLowerCase())
-                      ? `Opção ${selectedOpcao.toUpperCase()} selecionada`
-                      : `Alternativa ${selectedOpcao.toUpperCase()} selecionada`}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      haptic.selection();
-                      setSelectedOpcao(null);
-                    }}
-                    className="h-12 px-3 sm:px-4 rounded-xl bg-white/5 border border-white/10 text-neutral-400 hover:text-white hover:bg-white/10 active:scale-95 text-xs sm:text-sm font-semibold transition-all min-h-[48px]"
-                  >
-                    Trocar
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      haptic.impact('medium');
-                      if (blocoAtual) {
-                        responderPergunta(blocoAtual, selectedOpcao);
-                      }
-                      setSelectedOpcao(null);
-                    }}
-                    className="flex items-center justify-center gap-2 h-12 rounded-xl bg-gradient-to-r from-primary to-rose-600 px-4 sm:px-6 text-xs sm:text-sm font-black text-white shadow-md shadow-primary/30 hover:brightness-110 active:scale-[0.97] transition-all cursor-pointer min-h-[48px]"
-                  >
-                    <span>Confirmar Resposta</span>
-                    <ArrowRight className="h-4 w-4 text-white" strokeWidth={2.5} />
-                  </button>
-                </div>
-              </div>
-            </motion.aside>
-          )}
-        </AnimatePresence>
-
-        {/* ── Barra inferior: APENAS sumário + quantas páginas tem + navegação (desce quando confirmar está visível) ── */}
+        {/* ── Barra inferior: APENAS sumário + quantas páginas tem + navegação ── */}
         <motion.nav
           aria-label="Navegação da aula"
           initial={false}
           animate={{
-            y: ((isPergunta && !respostas[blocoAtual?.id || ''] && selectedOpcao) || (isFlashcard && !flashcardVirado) || (isLacunas && !questaoRespondida)) ? '110%' : 0,
-            opacity: ((isPergunta && !respostas[blocoAtual?.id || ''] && selectedOpcao) || (isFlashcard && !flashcardVirado) || (isLacunas && !questaoRespondida)) ? 0 : 1,
+            y: ((isFlashcard && !flashcardVirado) || (isLacunas && !questaoRespondida)) ? '110%' : 0,
+            opacity: ((isFlashcard && !flashcardVirado) || (isLacunas && !questaoRespondida)) ? 0 : 1,
           }}
           transition={{ type: 'spring', damping: 28, stiffness: 300 }}
           className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.08] bg-[#141417]/95 backdrop-blur-xl flex items-center justify-between"
@@ -878,9 +816,18 @@ const AprenderAula = () => {
               </div>
 
               <div className="overflow-y-auto pr-2 pb-6 flex-1">
-                <p className="text-[11px] font-extrabold uppercase tracking-widest text-primary mb-2">Comentário do Professor</p>
-                <div className="rounded-2xl border border-white/10 bg-[#121214] p-5 text-[15px] leading-relaxed text-neutral-100 whitespace-pre-wrap shadow-inner">
-                  {feedbackPergunta.explicacao || 'Nenhum comentário disponível para esta questão.'}
+                <div className="flex items-center gap-2 mb-2.5">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/20 text-primary">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                  </span>
+                  <p className="text-[11px] font-extrabold uppercase tracking-widest text-primary">Gabarito Comentado</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-[#121214] p-5 text-[15px] leading-relaxed text-neutral-100 shadow-inner">
+                  <div className="prose prose-invert max-w-none text-[15px] leading-relaxed text-neutral-200">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {normalizarMarkdown(feedbackPergunta.explicacao || 'Nenhum comentário disponível para esta questão.')}
+                    </ReactMarkdown>
+                  </div>
                 </div>
               </div>
 

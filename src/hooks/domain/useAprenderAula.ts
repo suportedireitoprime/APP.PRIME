@@ -347,12 +347,19 @@ export function useAprenderAula(aulaId: string | undefined, user: any) {
       haptic.notification('error');
     }
 
+    const rawJustificativa =
+      bloco.resposta_correta?.explicacao ||
+      bloco.payload?.justificativa ||
+      bloco.payload?.gabarito ||
+      bloco.payload?.explicacao ||
+      bloco.justificativa ||
+      '';
+
     setFeedbackPergunta({
       correta,
       escolha,
       explicacao:
-        bloco.resposta_correta?.explicacao ||
-        bloco.payload?.explicacao ||
+        rawJustificativa ||
         'Revise o conceito aprendido nesta etapa e siga em frente!',
     });
   };

@@ -1155,7 +1155,13 @@ export const BlocoView = React.memo(function BlocoView({
                     <motion.button
                       key={op.id}
                       disabled={!!resposta}
-                      onClick={() => { if (!resposta) { haptic.selection(); setSelectedOpcao(id); } }}
+                      onClick={() => {
+                        if (!resposta) {
+                          haptic.selection();
+                          setSelectedOpcao(id);
+                          onResponder(id);
+                        }
+                      }}
                       className={`group relative flex w-full items-center gap-3.5 sm:gap-4 rounded-2xl border p-4 sm:p-5 text-left transition-all duration-200 min-h-[3.75rem] sm:min-h-[4.25rem] active:scale-[0.98] cursor-pointer ${cardClass}`}
                       whileTap={{ scale: resposta ? 1 : 0.97 }}
                       initial={{ opacity: 0, y: 8 }}
@@ -1202,7 +1208,13 @@ export const BlocoView = React.memo(function BlocoView({
                   <motion.button
                     key={op.id}
                     disabled={!!resposta}
-                    onClick={() => { if (!resposta) { haptic.selection(); setSelectedOpcao(id); } }}
+                    onClick={() => {
+                      if (!resposta) {
+                        haptic.selection();
+                        setSelectedOpcao(id);
+                        onResponder(id);
+                      }
+                    }}
                     className={`group relative flex w-full items-center gap-3 sm:gap-4 rounded-2xl border p-3.5 sm:p-4 md:p-5 text-left text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed transition-all duration-200 min-h-[3.5rem] sm:min-h-[4rem] active:scale-[0.98] cursor-pointer ${cardClass}`}
                     whileTap={{ scale: resposta ? 1 : 0.97 }}
                     initial={{ opacity: 0, y: 8 }}

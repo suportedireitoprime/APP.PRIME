@@ -170,13 +170,13 @@ export function ConexaoBlock({ pares, onCompleto }: Props) {
         </div>
       </div>
 
-      {/* Grid de Nós do Grafo (Lado a Lado em telas médias/grandes) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 relative">
-        {/* Coluna Esquerda: Conceitos */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 mb-1 text-[11px] font-extrabold uppercase tracking-wider text-neutral-400">
-            <span className="w-2 h-2 rounded-full bg-primary" />
-            <span>Nós de Origem (Conceito)</span>
+      {/* Tabela de Conexões: Lado a Lado com Nós e Xizinho Conector no Meio */}
+      <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 relative items-start">
+        {/* Coluna Esquerda: Conceitos (Nós de Origem) */}
+        <div className="space-y-2.5 sm:space-y-3">
+          <div className="flex items-center gap-1.5 sm:gap-2 mb-1 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-neutral-400">
+            <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
+            <span className="truncate">Nós de Origem (Conceito)</span>
           </div>
 
           {ordemTermos.map((i) => {
@@ -195,7 +195,7 @@ export function ConexaoBlock({ pares, onCompleto }: Props) {
                 animate={errado ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
                 transition={{ duration: 0.35 }}
                 whileTap={{ scale: feito ? 1 : 0.98 }}
-                className={`group relative flex w-full items-center justify-between gap-4 rounded-3xl border p-4 sm:p-5 text-left transition-all duration-200 min-h-[64px] cursor-pointer ${
+                className={`group relative flex w-full items-center justify-between gap-2 sm:gap-3 rounded-2xl sm:rounded-3xl border p-2.5 sm:p-4 text-left transition-all duration-200 min-h-[58px] sm:min-h-[64px] cursor-pointer ${
                   feito && colorTheme
                     ? `${colorTheme.border} ${colorTheme.bg} ${colorTheme.ring} shadow-md`
                     : errado
@@ -205,34 +205,36 @@ export function ConexaoBlock({ pares, onCompleto }: Props) {
                     : 'border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.08] text-neutral-200 backdrop-blur-sm shadow-sm'
                 }`}
               >
-                <div className="flex items-center gap-3.5 flex-1">
+                <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
                   {feito && colorTheme ? (
-                    <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border text-[12px] font-black ${colorTheme.badge}`}>
-                      <Link2 className="h-4 w-4" />
+                    <span className={`flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg sm:rounded-xl border text-[11px] sm:text-[12px] font-black ${colorTheme.badge}`}>
+                      <Link2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                     </span>
                   ) : (
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-[12px] font-bold text-neutral-400 shadow-inner">
+                    <span className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg sm:rounded-xl border border-white/10 bg-white/5 text-[11px] sm:text-[12px] font-bold text-neutral-400 shadow-inner">
                       {lista.indexOf(lista[i]) + 1}
                     </span>
                   )}
-                  <span className={`font-semibold text-[15px] sm:text-[16px] leading-snug break-words ${feito && colorTheme ? colorTheme.text : 'text-white'}`}>
+                  <span className={`font-semibold text-[13px] sm:text-[15px] leading-tight break-words ${feito && colorTheme ? colorTheme.text : 'text-white'}`}>
                     {lista[i].termo}
                   </span>
                 </div>
 
-                {/* Socket de Conexão na borda direita */}
+                {/* Xizinho Conector no centro voltado para a coluna da direita */}
                 <div className="relative flex items-center justify-center shrink-0 ml-1">
                   <span
-                    className={`h-4 w-4 rounded-full border-2 transition-all ${
+                    className={`h-6 w-6 sm:h-7 sm:w-7 rounded-full border-2 flex items-center justify-center transition-all text-[11px] sm:text-xs font-black ${
                       feito && colorTheme
-                        ? colorTheme.socket
+                        ? `${colorTheme.socket} text-white border-transparent shadow-[0_0_12px_rgba(255,255,255,0.4)]`
                         : sel
-                        ? 'border-primary bg-primary animate-pulse shadow-[0_0_10px_hsl(var(--primary))]'
-                        : 'border-white/20 bg-neutral-800'
+                        ? 'border-primary bg-primary text-black animate-pulse shadow-[0_0_12px_hsl(var(--primary))]'
+                        : 'border-white/20 bg-white/5 text-neutral-400 group-hover:border-primary/50'
                     }`}
-                  />
+                  >
+                    {feito ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : '✕'}
+                  </span>
                   {sel && (
-                    <span className="absolute h-6 w-6 rounded-full border border-primary animate-ping pointer-events-none" />
+                    <span className="absolute h-8 w-8 rounded-full border border-primary animate-ping pointer-events-none" />
                   )}
                 </div>
               </motion.button>
@@ -240,11 +242,11 @@ export function ConexaoBlock({ pares, onCompleto }: Props) {
           })}
         </div>
 
-        {/* Coluna Direita: Significados */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 mb-1 text-[11px] font-extrabold uppercase tracking-wider text-neutral-400">
-            <span className="w-2 h-2 rounded-full bg-neutral-500" />
-            <span>Nós de Destino (Significado)</span>
+        {/* Coluna Direita: Significados (Nós de Destino) */}
+        <div className="space-y-2.5 sm:space-y-3">
+          <div className="flex items-center gap-1.5 sm:gap-2 mb-1 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-neutral-400">
+            <span className="w-2 h-2 rounded-full bg-neutral-500 shrink-0" />
+            <span className="truncate">Nós de Destino (Significado)</span>
           </div>
 
           {ordemDefs.map((di) => {
@@ -263,7 +265,7 @@ export function ConexaoBlock({ pares, onCompleto }: Props) {
                 animate={errado ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
                 transition={{ duration: 0.35 }}
                 whileTap={{ scale: feito || termoSel == null ? 1 : 0.98 }}
-                className={`group relative flex w-full items-start gap-4 rounded-3xl border p-4 sm:p-5 text-left transition-all duration-200 min-h-[64px] ${
+                className={`group relative flex w-full items-start gap-2 sm:gap-3 rounded-2xl sm:rounded-3xl border p-2.5 sm:p-4 text-left transition-all duration-200 min-h-[58px] sm:min-h-[64px] ${
                   feito && colorTheme
                     ? `${colorTheme.border} ${colorTheme.bg} ${colorTheme.ring} shadow-md`
                     : errado
@@ -273,30 +275,32 @@ export function ConexaoBlock({ pares, onCompleto }: Props) {
                     : 'border-white/10 bg-white/[0.02] text-neutral-400 opacity-60 cursor-not-allowed'
                 }`}
               >
-                {/* Socket de Conexão na borda esquerda */}
-                <div className="relative flex items-center justify-center shrink-0 mt-0.5">
+                {/* Xizinho Conector no centro voltado para a coluna da esquerda */}
+                <div className="relative flex items-center justify-center shrink-0 mr-1 mt-0.5">
                   <span
-                    className={`h-4 w-4 rounded-full border-2 transition-all ${
+                    className={`h-6 w-6 sm:h-7 sm:w-7 rounded-full border-2 flex items-center justify-center transition-all text-[11px] sm:text-xs font-black ${
                       feito && colorTheme
-                        ? colorTheme.socket
+                        ? `${colorTheme.socket} text-white border-transparent shadow-[0_0_12px_rgba(255,255,255,0.4)]`
                         : aguardando
-                        ? 'border-primary/60 bg-neutral-900 group-hover:border-primary'
-                        : 'border-white/20 bg-neutral-800'
+                        ? 'border-primary/60 bg-neutral-900 text-primary group-hover:border-primary group-hover:bg-primary/20'
+                        : 'border-white/20 bg-white/5 text-neutral-500'
                     }`}
-                  />
+                  >
+                    {feito ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : '✕'}
+                  </span>
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <p className={`text-[14px] sm:text-[15px] leading-relaxed font-medium ${feito && colorTheme ? colorTheme.text : 'text-neutral-200'}`}>
+                  <p className={`text-[12px] sm:text-[14px] leading-snug font-medium ${feito && colorTheme ? colorTheme.text : 'text-neutral-200'}`}>
                     {lista[di].definicao}
                   </p>
                 </div>
 
                 {feito && (
-                  <Check className="h-4 w-4 shrink-0 text-emerald-400 mt-1" strokeWidth={2.5} />
+                  <Check className="h-4 w-4 shrink-0 text-emerald-400 mt-0.5" strokeWidth={2.5} />
                 )}
                 {errado && (
-                  <X className="h-4 w-4 shrink-0 text-rose-400 mt-1" strokeWidth={2.5} />
+                  <X className="h-4 w-4 shrink-0 text-rose-400 mt-0.5" strokeWidth={2.5} />
                 )}
               </motion.button>
             );
