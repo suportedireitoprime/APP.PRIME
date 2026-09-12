@@ -1,0 +1,300 @@
+# [INFORMAÇÃO / CONCEITO CENTRAL] - SUJEITOS
+
+> **Marco Normativo Central**: Arts. 11 a 21 do Código Civil
+
+A disciplina jurídica de **SUJEITOS** insere-se no ramo de **Direito das Pessoas e Personalidade**, estruturando como a lei protege as pessoas e seus bens com justiça e segurança.
+
+### Conceito Desmembrado e Razão de Ser:
+No direito civil contemporâneo, as normas que regem SUJEITOS abandonaram o antigo apego formalista egoísta para se submeter à **dignidade da pessoa humana**, à **função social** e à **boa-fé objetiva**.
+A razão de ser do instituto é assegurar equilíbrio e previsibilidade: ninguém pode se valer da própria torpeza, nem locupletar-se indevidamente às custas do prejuízo alheio.
+
+ *Exemplo Rápido de Aplicação*: Você não pode vender seu nome ou passar sua honra para outra pessoa.
+
+# [STORYTELLING / CASO CONCRETO - PARTE 1] - O Dilema Prático
+
+Para compreender como **SUJEITOS** impacta a vida real dos cidadãos nos fóruns e cartórios, acompanhe o caso concreto:
+
+Beatriz descobre que uma marca de roupas famosa utilizou uma foto dela tirada na praia para estampar uma campanha publicitária nacional sem qualquer contrato ou consentimento.
+
+Diante da recusa da outra parte em solucionar a controvérsia amigavelmente, surge a dúvida jurídica: quais são os limites da proteção que o Código Civil e os tribunais conferem a essa situação cotidiana?
+
+# [GLOSSÁRIO INTERATIVO / MENU SUSPENSO] - Termos Chave Clicáveis
+
+*(Clique em cada termo no menu suspenso para expandir a definição desmembrada e o exemplo prático)*
+
+▼ **[Menu Suspenso 1: Intransmissibilidade]**
+- *O que é*: Os direitos da personalidade não podem ser transferidos a terceiros nem por herança.
+- *Exemplo Rápido*: Você não pode vender seu nome ou passar sua honra para outra pessoa.
+
+▼ **[Menu Suspenso 2: Direito ao Esquecimento]**
+- *O que é*: Tese afastada pelo STF (Tema 786), que considerou incompatível com a CF/88 a proibição genérica da divulgação de fatos verídicos licitamente obtidos.
+- *Exemplo Rápido*: Uma emissora pode recordar caso criminal histórico real, ressalvada indenização por abuso.
+
+▼ **[Menu Suspenso 3: Dano Moral In Re Ipsa]**
+- *O que é*: Dano moral presumido pela própria ocorrência do fato ofensivo, que independe de prova da dor psíquica.
+- *Exemplo Rápido*: Súmula 403 do STJ: o uso indevido da imagem de alguém em propaganda comercial gera dano moral automático.
+
+# [EXEMPLO PRÁTICO E APLICAÇÃO FORENSE] - Como Funciona nos Tribunais
+
+Na prática forense de **SUJEITOS**, juízes e advogados aplicam as seguintes soluções imediatas:
+
+1. **Segurança das Relações Negociais**: Assegura que o combinado seja exigível, prevenindo calotes e fraudes patrimoniais;
+2. **Proteção à Parte Vulnerável**: Impede imposições leoninas ou cláusulas abusivas impostas por detentores de maior poder econômico;
+3. **Equidade e Razoabilidade**: Permite a revisão judicial das obrigações quando fatos supervenientes extraordinários quebram o equilíbrio original da relação.
+
+ *Atenção Forense*: O direito não socorre aos que dormem (*dormientibus non succurrit ius*); por isso, os prazos legais da matéria devem ser vigiados com rigor!
+
+# [FLASHCARD / REVISÃO ATIVA 1] - Frente e Verso
+
+###  FRENTE DO CARD:
+> **Pergunta de Fixação**: Qual é a definição jurídica central de **Intransmissibilidade** em **SUJEITOS** e qual sua principal repercussão no patrimônio das partes?
+
+---
+
+###  VERSO DO CARD (Resposta Comentada):
+> **Os direitos da personalidade não podem ser transferidos a terceiros nem por herança.**  
+> *Repercussão Prática*: Você não pode vender seu nome ou passar sua honra para outra pessoa.
+
+# [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 1] - Preencha as Lacunas
+
+Teste seu domínio completando as palavras essenciais da matéria:
+
+---
+
+### Enunciado da Atividade:
+*Os direitos da personalidade são em regra [ LACUNA 1 ] e intransmissíveis, não podendo o seu exercício sofrer limitação voluntária permanente. Conforme a Súmula 403 do STJ, independe de prova do prejuízo a indenização pela publicação não autorizada da [ LACUNA 2 ] de pessoa com fins econômicos.*
+
+---
+
+### Opções do Menu Suspenso:
+- **Para a Lacuna 1**: [ irrenunciáveis ] | [ alienáveis ]
+- **Para a Lacuna 2**: [ imagem ] | [ assinatura ]
+
+---
+
+###  Gabarito Comentado:
+1. irrenunciáveis (Art. 11 do CC); 2. imagem (Súmula 403 do STJ).
+
+# [QUESTÃO DE FIXAÇÃO 1] - Padrão OAB / FGV
+
+**Enunciado**: A respeito das normas e princípios aplicáveis a **SUJEITOS**, assinale a alternativa juridicamente correta:
+
+- (A) A legislação civil veda a aplicação da boa-fé objetiva aos contratos particulares que versem sobre SUJEITOS.
+- (B) Os direitos da personalidade não podem ser transferidos a terceiros nem por herança. Portanto, Você não pode vender seu nome ou passar sua honra para outra pessoa.
+- (C) Os prazos prescricionais de SUJEITOS admitem dilação convencional por mero acordo verbal das partes.
+- (D) O Ministério Público jamais possui legitimidade para intervir em causas que envolvam SUJEITOS.
+
+---
+
+###  Gabarito e Justificativa:
+**Alternativa Correta: (B)**.  
+*Fundamentação*: Trata-se da correta aplicação dogmática do instituto segundo o Código Civil e a jurisprudência dominante.
+
+# [INFORMAÇÃO / DOGMÁTICA E REQUISITOS TÉCNICOS] - Requisitos Estruturais
+
+Para que qualquer ato relacionado a **SUJEITOS** produza plenos efeitos no mundo jurídico, exige-se:
+
+1. **Legitimação Específica**: Não basta capacidade genérica; a parte deve deter pertinência subjetiva e poderes para o ato;
+2. **Higidez Volitiva e Ausência de Fraude**: A manifestação de vontade deve ser livre de erro, dolo, coação ou simulação;
+3. **Conformidade com a Ordem Pública**: O objeto deve ser lícito e atender à função social estipulada em lei.
+
+# [STORYTELLING / CASO CONCRETO - PARTE 2] - O Conflito em Juízo
+
+A ação judicial foi formalmente distribuída na Vara Cível competente.
+
+A parte ré apresentou contestação alegando que não houve ilicitude e invocando o estrito cumprimento de cláusulas padronizadas.
+Contudo, a defesa da vítima sustentou que o comportamento do réu violou frontalmente a boa-fé objetiva e os preceitos de **SUJEITOS**.
+
+O juiz abriu vista para manifestação sobre provas, convocando as partes para audiência de instrução e julgamento!
+
+# [FRONTEIRAS CRÍTICAS / O QUE NÃO É] - Quadro Comparativo
+
+| FIGURA EM ANÁLISE | O QUE REALMENTE É | O QUE **NÃO** É (CUIDADO!) |
+| :--- | :--- | :--- |
+| **Intransmissibilidade** | Os direitos da personalidade não podem ser transferidos a terceiros nem por herança. | Não pode ser flexibilizado por conveniência particular. |
+| **Direito ao Esquecimento** | Tese afastada pelo STF (Tema 786), que considerou incompatível com a CF/88 a proibição genérica da divulgação de fatos verídicos licitamente obtidos. | Não se confunde com arbítrio individual ou impunidade. |
+| **Dano Moral In Re Ipsa** | Dano moral presumido pela própria ocorrência do fato ofensivo, que independe de prova da dor psíquica. | Não depende de comprovação de dor íntima se a lei presumir. |
+
+# [FLASHCARD / REVISÃO ATIVA 2] - Frente e Verso
+
+###  FRENTE DO CARD:
+> **Pergunta Crucial**: Qual é a distinção primordial entre **Intransmissibilidade** e **Direito ao Esquecimento** no direito civil?
+
+---
+
+###  VERSO DO CARD (Resposta Comentada):
+> Enquanto **Intransmissibilidade** (Os direitos da personalidade não podem ser transferidos a terceiros nem por herança.), o instituto de **Direito ao Esquecimento** (Tese afastada pelo STF (Tema 786), que considerou incompatível com a CF/88 a proibição genérica da divulgação de fatos verídicos licitamente obtidos.).  
+> Conhecer essa fronteira é decisivo para não errar a fundamentação da petição inicial nem as questões da OAB!
+
+# [COMPLETAR LACUNA / ATIVIDADE INTERATIVA 2] - Regras Especiais
+
+Complete a assertiva jurisprudencial consolidada pelos tribunais superiores:
+
+---
+
+### Enunciado:
+*'No âmbito de SUJEITOS, a boa-fé objetiva impõe deveres anexos de [ LACUNA 1 ] e colaboração mútua. A quebra desses deveres caracteriza inadimplemento positivo ou violação contratual sujeita a [ LACUNA 2 ].'*
+
+---
+
+### Opções do Menu Suspenso:
+- **Para a Lacuna 1**: `[ lealdade / informação ]` | `[ ocultação ]`
+- **Para a Lacuna 2**: `[ reparação por perdas e danos ]` | `[ perdão judicial ]`
+
+---
+
+###  Gabarito Comentado:
+1. lealdade / informação (Enunciados da Jornada de Direito Civil do CJF);
+2. reparação por perdas e danos (Arts. 187 e 927 do CC).
+
+# [QUESTÃO DE FIXAÇÃO 2] - Nível Concurso Público
+
+**Enunciado**: Em matéria de **SUJEITOS**, assinale a afirmativa INCORRETA:
+
+- (A) A responsabilidade civil e a validade negocial subordinam-se à função social do instituto.
+- (B) É nula a cláusula que contrarie disposição de lei de ordem pública em SUJEITOS.
+- (C) Os efeitos do negócio podem ser anulados se comprovado vício de consentimento no prazo decadencial legal.
+- (D) O enriquecimento sem causa é tolerado no direito civil caso o prejudicado seja pessoa jurídica.
+
+---
+
+###  Gabarito e Justificativa:
+**Alternativa Incorreta: (D)**. 
+*Fundamentação*: O art. 884 do Código Civil repudia expressamente o enriquecimento sem causa contra qualquer sujeito de direito (pessoa natural ou jurídica).
+
+# [STORYTELLING / CASO CONCRETO - PARTE 3] - Conclusão e Sentença Judicial
+
+A sentença judicial foi proferida pelo magistrado titular da Vara Cível:
+
+Beatriz ajuíza ação com base no art. 20 do CC e na Súmula 403 do STJ: a empresa é condenada a indenizá-la por danos morais automáticos e a retirar toda a campanha de circulação.
+
+A pacificação do conflito demonstrou que as regras de **SUJEITOS** atuam para resguardar a ordem econômica e proteger os cidadãos que pautam suas condutas na boa-fé objetiva!
+
+# [MINIGAME INTERATIVO / LIGUE OS TERMOS] - Desafio Rápido
+
+Ligue cada elemento da **Coluna A** à sua definição correspondente na **Coluna B**:
+
+---
+
+### 里 COLUNA A:
+1. Intransmissibilidade
+2. Direito ao Esquecimento
+3. Dano Moral In Re Ipsa
+4. Boa-fé Objetiva
+
+---
+
+###  COLUNA B:
+- ( ) Tese afastada pelo STF (Tema 786), que considerou incompatível com a CF/88 a proibição genérica da divulgação de fatos verídicos licitamente obtidos.
+- ( ) Padrão de conduta leal, honesto e ético obrigatório nas relações civis.
+- ( ) Os direitos da personalidade não podem ser transferidos a terceiros nem por herança.
+- ( ) Dano moral presumido pela própria ocorrência do fato ofensivo, que independe de prova da dor psíquica.
+
+---
+
+###  Resposta do Minigame:
+- **Ordem Correta**: `[ 2 ]` $\rightarrow$ `[ 4 ]` $\rightarrow$ `[ 1 ]` $\rightarrow$ `[ 3 ]`
+
+# [JURISPRUDÊNCIA / TRIBUNAIS SUPERIORES] - Precedentes Vinculantes
+
+Principais diretrizes pacíficas dos Tribunais Superiores (STJ/STF) sobre **SUJEITOS**:
+
+1. **STJ - Súmula 403: 'Independe de prova do prejuízo a indenização pela publicação não autorizada de imagem de pessoa com fins econômicos ou comerciais'.**;
+2. **Vedação ao Comportamento Contraditório**: O STJ reprime com veemência o *venire contra factum proprium*, invalidando condutas que quebram a confiança legítima;
+3. **Mitigação do Prejuízo (*Duty to Mitigate the Loss*)**: O credor tem o dever anexo de adotar medidas razoáveis para não agravar o próprio dano.
+
+# [FLASHCARD / REVISÃO ATIVA 3] - Frente e Verso
+
+###  FRENTE DO CARD:
+> **Pergunta Jurisprudencial**: Qual súmula ou tese repetitiva do STJ incide com maior frequência em litígios sobre **SUJEITOS**?
+
+---
+
+###  VERSO DO CARD (Resposta Comentada):
+> **STJ - Súmula 403: 'Independe de prova do prejuízo a indenização pela publicação não autorizada de imagem de pessoa com fins econômicos ou comerciais'.**  
+> *Importância*: Essa orientação pacificada vincula os tribunais de segunda instância e evita o ajuizamento de recursos protelatórios.
+
+# [QUESTÃO DE FIXAÇÃO 3] - Nível Magistratura / MP
+
+**Enunciado**: Em demanda judicial versando sobre **SUJEITOS**, o réu alega ausência de responsabilidade em virtude de cláusula contratual genérica de não indenizar. À luz da jurisprudência do STJ e do Código Civil, o juiz deve:
+
+- (A) Acolher a defesa do réu, pois a autonomia privada das partes é soberana e absoluta.
+- (B) Declarar a nulidade ou ineficácia da cláusula de não indenizar que afronte normas cogentes de ordem pública ou a função social da relação.
+- (C) Extinguir o processo sem julgamento de mérito por falta de interesse de agir.
+- (D) Condenar o autor por litigância de má-fé.
+
+---
+
+###  Gabarito e Justificativa:
+**Alternativa Correta: (B)**. 
+*Fundamentação*: Cláusulas de dispensa de deveres essenciais ou de exclusão unilateral de responsabilidade que violem preceitos de ordem pública são nulas de pleno direito (art. 166, VI e art. 421 do CC).
+
+# [COMO CAI EM PROVAS / RAIO-X DAS BANCAS] - Armadilhas Clássicas
+
+Fique alerta às 3 pegadinhas mais recorrentes preparadas por FGV, Cebraspe e Vunesp:
+
+1. **A banca vai afirmar que 'é necessária perícia psicológica para comprovar que a vítima sofreu trauma com o uso da foto'. ERRADO! O dano moral pelo uso comercial indevido da imagem é in re ipsa (Súmula 403/STJ).**
+2. **Prazos de Prescrição vs. Decadência**: A banca adora chamar prazo decadencial de anulação de 'prescricional' para induzir a erro;
+3. **Solidariedade Presumida**: Lembrar sempre que a solidariedade NÃO se presume; resulta da lei ou do contrato (Art. 265 do CC).
+
+# [DICA DA PROFESSORA / SÍNTESE EM ÁUDIO] - Pílula da Professora Evelyn
+
+️ *Olá, querido aluno do Direito Prime! Aqui é a Professora Evelyn com o resumo definitivo de SUJEITOS:*
+
+> *'Não complique o que a lei fez para ser justo!  
+> Em SUJEITOS, lembre-se sempre de conferir:  
+> 1. Houve respeito à boa-fé objetiva e à função social?  
+> 2. Quem alega o direito agiu dentro do prazo legal sem dormir no ponto?  
+> 3. A súmula de regência é: STJ - Súmula 403: 'Independe de prova do prejuízo a indenização pela publicação não autorizada de imagem de pessoa com fins econômicos ou comerciais'..  
+> Guarde essa tríade no coração e você acertará qualquer questão de concurso e advocacia!'*
+
+# [ÁRVORE DECISÓRIA / FLUXOGRAMA EM SETAS] - Grafo de Decisão Lógica
+
+```text
+[SUJEITOS: ANÁLISE DE EFICÁCIA JURÍDICA]
+       |
+       +---> Houve preenchimento dos Requisitos Legais Básicos?
+       |        |
+       |        +---[NÃO]---> VÍCIO NA ESTRUTURA NORMATIVA
+       |        |             - Ineficácia ou Nulidade do ato
+       |        |
+       |        +---[SIM]---> Houve Observância da Boa-fé e Prazos?
+       |                                |
+       |                                +---[SIM]---> ATO HÍGIDO, VÁLIDO E EXIGÍVEL
+       |                                |             - Tutela jurisdicional concedida
+       |                                |             - Produção integral dos efeitos
+       |                                |
+       |                                +---[NÃO]---> INCIDÊNCIA DE SANÇÃO / PRESCRIÇÃO
+       |                                              - Perda da pretensão ou indenização civil
+```
+
+# [INFORMAÇÃO / EFEITOS ESPECIAIS] - Reflexos Interdisciplinares
+
+A matéria de **SUJEITOS** produz efeitos que transcendem o direito privado comum:
+
+- **Reflexos Tributários**: A regularidade jurídica do ato define o fato gerador e afasta autuações fiscais indevidas;
+- **Reflexos Notariais e Registrais**: A publicidade nos cartórios de notas e de registro de imóveis confere eficácia perante terceiros (*erga omnes*);
+- **Reflexos Processuais**: Assegura a legitimidade ativa e passiva nas ações de conhecimento e de execução.
+
+# [FLASHCARD / REVISÃO ATIVA 4] - Frente e Verso
+
+###  FRENTE DO CARD:
+> **Pegadinha da Magistratura**: O descumprimento dos deveres anexos de conduta da boa-fé objetiva em **SUJEITOS** exige prova de dolo ou culpa do devedor?
+
+---
+
+###  VERSO DO CARD (Resposta Comentada):
+> **NÃO EXIGE PROVA DE DOLO OU CULPA!**  
+> A violação positiva do contrato por quebra da boa-fé objetiva opera responsabilidade de natureza **objetiva**, bastando a comprovação objetiva da conduta desleal ou omissiva.
+
+# [QUESTÃO DISCURSIVA / PRÁTICA PROFISSIONAL] - Parecer Forense
+
+**Situação Prática**: Um cliente procura seu escritório de advocacia relatando lesão patrimonial grave decorrente de litígio em **SUJEITOS**.
+
+**Pergunta**: Como advogado(a), qual é a primeira providência cautelar e de mérito a ser proposta em juízo?
+
+---
+
+### ⚖️ Padrão de Resposta Técnico:
+> 1. **Tutela Provisória de Urgência** (art. 300 do CPC) para suspender atos expropriatórios ou cobranças indevidas;  
+> 2. **Pedido Principal** de declaração de cumprimento do preceito de SUJEITOS, com base em Arts. 11 a 21 do Código Civil e perdas e danos.

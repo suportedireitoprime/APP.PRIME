@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import {
-  ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Footprints, Home, Cloud
+  ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Footprints, Home, Cloud, Brain
 } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { shortenAreaName } from '@/lib/areaNameShortener';
@@ -122,6 +122,8 @@ const AprenderModulo = () => {
     if (cachedData?.aulas && cachedData.aulas.length > 0) return false;
     return true;
   });
+  
+  const [isGeneratingSyllabus, setIsGeneratingSyllabus] = useState(false);
 
   const [cachedAulas, setCachedAulas] = useState<Set<string>>(new Set());
 
@@ -173,7 +175,6 @@ const AprenderModulo = () => {
                 .from('aprender_aulas')
                 .select('id, titulo, objetivo, duracao_est_min, ordem, status')
                 .eq('modulo_id', moduloId)
-                .eq('status', 'published')
                 .order('ordem')
             : Promise.resolve({ data: [] }),
         ]);
@@ -215,11 +216,36 @@ const AprenderModulo = () => {
               .from('aprender_aulas')
               .select('id, titulo, objetivo, duracao_est_min, ordem, status')
               .eq('modulo_id', foundMod.id)
-              .eq('status', 'published')
               .order('ordem');
             if (freshAulas && freshAulas.length > 0) {
               rawAulas = freshAulas;
             }
+          }
+        }
+
+        // --- Geração Automática de Ementa (Plano de Aulas) ---
+        if (rawMod && rawAulas.length === 0) {
+          setIsGeneratingSyllabus(true);
+          try {
+            const { error: genError } = await supabase.functions.invoke('aprender-modulo-gerar-aulas', {
+              body: { moduloId: rawMod.id }
+            });
+            if (genError) throw genError;
+            
+            // Tenta buscar novamente após gerar
+            const { data: generatedAulas } = await supabase
+              .from('aprender_aulas')
+              .select('id, titulo, objetivo, duracao_est_min, ordem, status')
+              .eq('modulo_id', rawMod.id)
+              .order('ordem');
+              
+            if (generatedAulas && generatedAulas.length > 0) {
+              rawAulas = generatedAulas;
+            }
+          } catch (err) {
+            console.error("Falha ao gerar ementa do módulo:", err);
+          } finally {
+            setIsGeneratingSyllabus(false);
           }
         }
 
@@ -556,7 +582,23 @@ const AprenderModulo = () => {
           </button>
         </div>
 
-        {loading && aulas.length === 0 ? (
+        {isGeneratingSyllabus ? (
+          <div className="flex flex-col items-center justify-center text-center py-20">
+            <div className="relative mb-8">
+              <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 animate-pulse" />
+              <Brain className="w-20 h-20 text-primary relative z-10 animate-bounce" />
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-3">Gerando plano de estudos...</h2>
+            <p className="text-neutral-400 text-base max-w-md mx-auto">
+              Nossa inteligência artificial está mapeando as melhores aulas para construir esta trilha do zero. Aguarde um instante.
+            </p>
+            <div className="mt-8 flex gap-2">
+              <div className="w-3 h-3 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]"></div>
+              <div className="w-3 h-3 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]"></div>
+              <div className="w-3 h-3 rounded-full bg-primary animate-bounce"></div>
+            </div>
+          </div>
+        ) : loading && aulas.length === 0 ? (
           <div className="space-y-4">
             <div className="h-44 rounded-3xl bg-muted animate-pulse" />
             <div className="h-20 rounded-2xl bg-muted animate-pulse" />

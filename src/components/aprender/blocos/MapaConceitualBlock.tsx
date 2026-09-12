@@ -14,11 +14,11 @@ export function MapaConceitualBlock({ payload }: { payload: any }) {
 
   const posicoes = useMemo(() => {
     const n = nos.length || 1;
-    // Base layout na estrutura do viewBox: 0 0 600 600
-    const cx = 300;
-    const cy = 300;
+    // Base layout na estrutura do viewBox: 0 0 800 800
+    const cx = 400;
+    const cy = 400;
     // Ajusta o raio dinamicamente: grafos maiores precisam de mais espaço
-    const radius = n <= 3 ? 160 : n <= 5 ? 200 : 220;
+    const radius = n <= 3 ? 240 : n <= 5 ? 280 : 320;
     const map: Record<string, { x: number; y: number }> = {};
     
     if (n === 1) {
@@ -72,14 +72,14 @@ export function MapaConceitualBlock({ payload }: { payload: any }) {
   };
 
   return (
-    <article className="max-w-[68ch] lg:max-w-none">
+    <article className="w-full mx-auto max-w-full">
       {titulo && (
-        <h3 className="mb-4 font-sans text-[20px] sm:text-[24px] font-bold text-foreground">
+        <h3 className="mb-4 font-sans text-[20px] sm:text-[24px] font-bold text-foreground max-w-[70ch] mx-auto px-4">
           {titulo}
         </h3>
       )}
       
-      <div className="rounded-3xl border border-border/50 bg-card/40 p-1 sm:p-4 backdrop-blur-sm shadow-sm relative overflow-hidden">
+      <div className="rounded-none sm:rounded-3xl border-y sm:border border-border/50 bg-card/40 backdrop-blur-sm shadow-sm relative overflow-hidden w-full max-w-[900px] mx-auto">
         {/* Glow de fundo */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50" />
         
@@ -90,7 +90,7 @@ export function MapaConceitualBlock({ payload }: { payload: any }) {
           viewport={{ once: true, margin: "-100px" }}
           className="relative z-10 w-full"
         >
-          <svg viewBox="0 0 600 600" className="w-full h-auto max-h-[65vh] drop-shadow-md">
+          <svg viewBox="0 0 800 800" className="w-full h-auto max-h-[75vh] drop-shadow-md">
             <defs>
               <filter id="glow">
                 <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
@@ -167,7 +167,7 @@ export function MapaConceitualBlock({ payload }: { payload: any }) {
                   whileTap={{ scale: 0.95 }}
                 >
                   <circle 
-                    cx={p.x} cy={p.y} r="46" 
+                    cx={p.x} cy={p.y} r="64" 
                     fill="hsl(var(--primary))" fillOpacity={isActive ? "0.2" : "0.08"}
                     stroke="hsl(var(--primary))" strokeWidth={isActive ? "3" : "2"}
                     filter={isActive ? "url(#glow)" : undefined}
@@ -176,15 +176,15 @@ export function MapaConceitualBlock({ payload }: { payload: any }) {
                   
                   {l2 ? (
                     <>
-                      <text x={p.x} y={p.y - 4} textAnchor="middle" fontSize="12" fill="hsl(var(--foreground))" fontWeight="800">
+                      <text x={p.x} y={p.y - 4} textAnchor="middle" fontSize="14" fill="hsl(var(--foreground))" fontWeight="800">
                         {l1}
                       </text>
-                      <text x={p.x} y={p.y + 12} textAnchor="middle" fontSize="12" fill="hsl(var(--foreground))" fontWeight="800">
+                      <text x={p.x} y={p.y + 14} textAnchor="middle" fontSize="14" fill="hsl(var(--foreground))" fontWeight="800">
                         {l2}
                       </text>
                     </>
                   ) : (
-                    <text x={p.x} y={p.y + 4} textAnchor="middle" fontSize="12" fill="hsl(var(--foreground))" fontWeight="800">
+                    <text x={p.x} y={p.y + 5} textAnchor="middle" fontSize="14" fill="hsl(var(--foreground))" fontWeight="800">
                       {no.rotulo.length > 20 ? no.rotulo.slice(0, 18) + '…' : no.rotulo}
                     </text>
                   )}

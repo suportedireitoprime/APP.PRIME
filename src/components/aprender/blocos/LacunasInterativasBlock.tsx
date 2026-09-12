@@ -116,11 +116,10 @@ export function LacunasInterativasBlock({ rawContent, onComplete }: LacunasInter
               }
             }
           }
-          return null; // Todas respondidas, fecha a modal
         }
         return atual;
       });
-    }, 450); // Aumentei um pouco para dar tempo de ler o que foi clicado
+    }, 150); // Reduzido para ser mais rápido (UX Snappy)
   };
 
   return (
@@ -206,9 +205,9 @@ export function LacunasInterativasBlock({ rawContent, onComplete }: LacunasInter
       </div>
 
       {/* Opções Flutuantes (Bottom Sheet/Menu Overlay) */}
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {!todasRespondidas && lacunaAtiva !== null && parsedData.opcoes[lacunaAtiva] && (
-          <div className="fixed inset-0 z-[100] flex flex-col justify-end pointer-events-auto" key={`sheet-${lacunaAtiva}`}>
+          <div className="fixed inset-0 z-[100] flex flex-col justify-end pointer-events-auto" key="lacunas-sheet">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -264,9 +263,9 @@ export function LacunasInterativasBlock({ rawContent, onComplete }: LacunasInter
               </h3>
             </div>
             <div className="prose prose-sm sm:prose-base max-w-none prose-invert prose-p:leading-relaxed prose-strong:text-white">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              <PremiumMarkdown remarkPlugins={[remarkGfm]}>
                 {normalizarMarkdown(parsedData.gabarito)}
-              </ReactMarkdown>
+              </PremiumMarkdown>
             </div>
           </motion.div>
         )}

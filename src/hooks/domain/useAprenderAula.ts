@@ -17,6 +17,7 @@ export function useAprenderAula(aulaId: string | undefined, user: any) {
   const [aula, setAula] = useState<Aula | null>(null);
   const [blocos, setBlocos] = useState<Bloco[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [proximaAula, setProximaAula] = useState<{ id: string; titulo: string } | null>(null);
   const [proximasAulas, setProximasAulas] = useState<{ id: string; titulo: string }[]>([]);
 
@@ -68,6 +69,79 @@ export function useAprenderAula(aulaId: string | undefined, user: any) {
     try { a.currentTime = 0; void a.play(); } catch {}
   };
 
+  const fetchAulasEBlocos = useCallback(async (isMounted: boolean) => {
+    const cacheKey = `aprender_aula_cache_${aulaId}`;
+    try {
+      const [{ data: a }, { data: bs }] = await Promise.all([
+        supabase.from('aprender_aulas').select('id, titulo, objetivo, duracao_est_min, previa, modulo_id, ordem').eq('id', aulaId).maybeSingle(),
+        supabase.from('aprender_blocos').select('id, ordem, tipo, payload, resposta_correta').eq('aula_id', aulaId).order('ordem'),
+      ]);
+      if (!isMounted) return null;
+
+      if (a) {
+        setAula(a as Aula | null);
+        let loadedBlocos = (bs ?? []) as Bloco[];
+
+        // Geração sob Demanda via IA se a aula estiver vazia
+        if (loadedBlocos.length === 0) {
+          setIsGenerating(true);
+          try {
+            const { error: genError } = await supabase.functions.invoke('aprender-aula-gerar', {
+              body: { aulaId }
+            });
+            if (genError) throw genError;
+            
+            // Busca novamente após a IA gerar
+            const { data: bsRefetched } = await supabase.from('aprender_blocos').select('id, ordem, tipo, payload, resposta_correta').eq('aula_id', aulaId).order('ordem');
+            loadedBlocos = (bsRefetched ?? []) as Bloco[];
+          } catch (err) {
+            console.error("Falha ao gerar aula via IA:", err);
+            toast.error("Ocorreu um erro ao gerar a aula. Tente novamente mais tarde.");
+          } finally {
+            setIsGenerating(false);
+          }
+        }
+
+        const finalBlocos = interleaveBlocos(loadedBlocos);
+        setBlocos(finalBlocos);
+        startedAt.current = Date.now();
+        setLoading(false);
+
+        let proxLista: any[] = [];
+        let proxItem: any = null;
+        if (a?.modulo_id != null) {
+          const { data: prox } = await supabase
+            .from('aprender_aulas')
+            .select('id, titulo, ordem')
+            .eq('modulo_id', a.modulo_id)
+            .gt('ordem', a.ordem ?? 0)
+            .order('ordem')
+            .limit(8);
+          proxLista = (prox ?? []).map((p: any) => ({ id: p.id, titulo: p.titulo }));
+          proxItem = proxLista[0] ?? null;
+          setProximasAulas(proxLista);
+          setProximaAula(proxItem);
+        } else {
+          setProximaAula(null);
+          setProximasAulas([]);
+        }
+
+        // Grava em IndexedDB para acesso 100% offline
+        void idbSet(cacheKey, {
+          aula: a,
+          blocos: finalBlocos,
+          proximaAula: proxItem,
+          proximasAulas: proxLista,
+        }).catch(() => {});
+
+        return finalBlocos;
+      }
+    } catch (networkErr) {
+      console.warn('Rede indisponível, falha ao buscar aula remota:', networkErr);
+    }
+    return null;
+  }, [aulaId]);
+
   // Carrega aula e blocos
   useEffect(() => {
     if (!aulaId) return;
@@ -76,7 +150,7 @@ export function useAprenderAula(aulaId: string | undefined, user: any) {
       const cacheKey = `aprender_aula_cache_${aulaId}`;
       try {
         const cached = await idbGet<{ aula: Aula; blocos: Bloco[]; proximaAula: any; proximasAulas: any }>(cacheKey);
-        if (cached && isMounted) {
+        if (cached && isMounted && cached.blocos && cached.blocos.length > 0) {
           setAula(cached.aula);
           setBlocos(cached.blocos);
           setProximaAula(cached.proximaAula);
@@ -87,54 +161,10 @@ export function useAprenderAula(aulaId: string | undefined, user: any) {
         console.warn('Erro ao carregar cache offline da aula:', err);
       }
 
-      try {
-        const [{ data: a }, { data: bs }] = await Promise.all([
-          supabase.from('aprender_aulas').select('id, titulo, objetivo, duracao_est_min, previa, modulo_id, ordem').eq('id', aulaId).maybeSingle(),
-          supabase.from('aprender_blocos').select('id, ordem, tipo, payload, resposta_correta').eq('aula_id', aulaId).order('ordem'),
-        ]);
-        if (!isMounted) return;
-
-        if (a) {
-          setAula(a as Aula | null);
-          const loadedBlocos = (bs ?? []) as Bloco[];
-          const finalBlocos = interleaveBlocos(loadedBlocos);
-          setBlocos(finalBlocos);
-          startedAt.current = Date.now();
-          setLoading(false);
-
-          let proxLista: any[] = [];
-          let proxItem: any = null;
-          if (a?.modulo_id != null) {
-            const { data: prox } = await supabase
-              .from('aprender_aulas')
-              .select('id, titulo, ordem')
-              .eq('modulo_id', a.modulo_id)
-              .gt('ordem', a.ordem ?? 0)
-              .order('ordem')
-              .limit(8);
-            proxLista = (prox ?? []).map((p: any) => ({ id: p.id, titulo: p.titulo }));
-            proxItem = proxLista[0] ?? null;
-            setProximasAulas(proxLista);
-            setProximaAula(proxItem);
-          } else {
-            setProximaAula(null);
-            setProximasAulas([]);
-          }
-
-          // Grava em IndexedDB para acesso 100% offline
-          void idbSet(cacheKey, {
-            aula: a,
-            blocos: finalBlocos,
-            proximaAula: proxItem,
-            proximasAulas: proxLista,
-          }).catch(() => {});
-        }
-      } catch (networkErr) {
-        console.warn('Rede indisponível, utilizando dados offline:', networkErr);
-      }
+      await fetchAulasEBlocos(isMounted);
     })();
     return () => { isMounted = false; };
-  }, [aulaId]);
+  }, [aulaId, fetchAulasEBlocos]);
 
   const total = blocos.length;
   const perguntas = useMemo(() => blocos.filter((b) => b.tipo === 'pergunta'), [blocos]);
@@ -295,7 +325,7 @@ export function useAprenderAula(aulaId: string | undefined, user: any) {
           .maybeSingle()
       : { data: null as any };
     const nova = proximaRevisao(nivel, anterior?.proxima_revisao_em);
-    await salvarBloco(bloco, { nivel }, nivel === 'sabia', nova);
+    void salvarBloco(bloco, { nivel }, nivel === 'sabia', nova);
     toast.success(`Revisão marcada para ${rotuloIntervalo(nova)}`);
     playSwooshSound();
   };
@@ -309,7 +339,7 @@ export function useAprenderAula(aulaId: string | undefined, user: any) {
     ).toLowerCase();
     const correta = correctId === escolha.toLowerCase();
     setRespostas((r) => ({ ...r, [bloco.id]: { correta, escolha } }));
-    await salvarBloco(bloco, { escolha }, correta);
+    void salvarBloco(bloco, { escolha }, correta);
     if (correta) {
       playSwooshSound();
       haptic.notification('success');
@@ -398,6 +428,7 @@ export function useAprenderAula(aulaId: string | undefined, user: any) {
     aula,
     blocos,
     loading,
+    isGenerating,
     proximaAula,
     proximasAulas,
     total,

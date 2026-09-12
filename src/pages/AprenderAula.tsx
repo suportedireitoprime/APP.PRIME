@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
   BookOpen,
+  Brain,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -46,7 +47,7 @@ const AprenderAula = () => {
   const { user } = useAuth();
 
   const {
-    aula, blocos, loading, proximaAula, total,
+    aula, blocos, loading, isGenerating, proximaAula, total,
     currentIdx, setCurrentIdx, respostas, flipped, setFlipped, conexoes, setConexoes,
     finalizada, mostrarPrevia, progressoSalvo,
     feedbackPergunta, setFeedbackPergunta,
@@ -173,6 +174,20 @@ const AprenderAula = () => {
     window.scrollTo(0, 0);
   }, [currentIdx]);
 
+  // Lock de Overscroll e Scroll no Body (Item 8) - A aula deve ser 100% contida sem elasticidade vertical
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    document.body.style.overscrollBehavior = 'none';
+    document.documentElement.style.overflow = 'hidden';
+    document.documentElement.style.overscrollBehavior = 'none';
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.overscrollBehavior = '';
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.overscrollBehavior = '';
+    };
+  }, []);
+
   // Gestos Touch (Mobile / Tablet)
   const handleTouchStart = (e: React.TouchEvent) => {
     // Deadzone de 36px na borda esquerda: protege o gesto nativo de voltar do iOS e Android (Item 20)
@@ -277,6 +292,26 @@ const AprenderAula = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentIdx, total, podeAvancar, goToPage, feedbackPergunta, sumarioOpen, blocos, flipped, playFlipSound, setFlipped, avaliarFlashcard]);
 
+  if (isGenerating) {
+    return (
+      <div className="min-h-screen bg-[#0D0D0D] p-6 flex flex-col items-center justify-center text-center">
+        <div className="relative mb-8">
+          <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 animate-pulse" />
+          <Brain className="w-20 h-20 text-primary relative z-10 animate-bounce" />
+        </div>
+        <h2 className="text-2xl font-bold text-white mb-3">Nossa IA está construindo a sua aula sob medida.</h2>
+        <p className="text-neutral-400 text-base max-w-md mx-auto">
+          Estamos buscando o contexto, analisando os tópicos e gerando um material didático incrivelmente rico. Isso leva cerca de 30 a 60 segundos...
+        </p>
+        <div className="mt-8 flex gap-2">
+          <div className="w-3 h-3 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]"></div>
+          <div className="w-3 h-3 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]"></div>
+          <div className="w-3 h-3 rounded-full bg-primary animate-bounce"></div>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0D0D0D] p-6">
@@ -341,6 +376,9 @@ const AprenderAula = () => {
 
   return (
     <div className="flex min-h-dvh flex-col bg-[#0D0D0D] text-neutral-100 selection:bg-primary/30 relative overflow-x-hidden">
+      {/* Fundo escuro imersivo */}
+      <div className="fixed inset-0 bg-[#0d0f12] pointer-events-none z-0" />
+
       {/* Background ShapeGrid oficial idêntico ao de Pílulas e restante do APP.PRIME (Item 3) */}
       <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
         <ShapeGrid
@@ -354,7 +392,7 @@ const AprenderAula = () => {
         />
       </div>
 
-      <div className="relative z-10 flex min-h-dvh flex-col">
+      <div className="relative z-10 flex h-[100dvh] flex-col overflow-hidden">
         {/* ── Header editorial com Linha do Tempo no topo ── */}
         <header
           className={`${(isFlashcard || isLacunas) ? 'hidden' : 'sticky top-0 z-30 bg-[#121214]/95 backdrop-blur-xl border-b border-white/[0.08]'}`}
@@ -456,107 +494,55 @@ const AprenderAula = () => {
           </div>
         </header>
 
-        {/* ── Corpo da aula adaptativo: 2 Painéis no Desktop/Tablet Landscape (Item 18) ── */}
-        <main className="flex-1 flex flex-col justify-center px-0 sm:px-6 md:px-8 py-0 sm:py-6 max-w-7xl w-full mx-auto pb-24 relative">
-          <div className="flex-1 flex gap-6 items-stretch w-full">
-            {/* Painel Lateral Esquerdo (Two-Pane Master Detail) para telas grandes (lg: / xl: - Item 18) */}
-            <aside className="hidden lg:flex flex-col w-72 shrink-0 bg-[#141416]/90 backdrop-blur-md border border-white/[0.08] rounded-3xl p-4 shadow-xl select-none max-h-[calc(100vh-160px)] overflow-hidden">
-              <div className="flex items-center justify-between pb-3 mb-2 border-b border-white/[0.06]">
-                <span className="text-xs font-bold text-white/90 flex items-center gap-2">
-                  <List className="w-4 h-4 text-primary" />
-                  Roteiro da Aula
-                </span>
-                <span className="text-[10px] font-mono font-semibold text-neutral-400 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
-                  {total} págs
-                </span>
+        {/* Item 11/13: Layout Multipartição (Tablet - Split View) */}
+        <main className="flex-1 flex w-full relative z-10 h-full overflow-hidden">
+          {/* Esquerda: Sumário ou Placeholder Widescreen (Só visível no Desktop/Tablet LG+) */}
+          <aside className="hidden lg:flex flex-col w-[340px] xl:w-[400px] border-r border-white/5 bg-[#121214]/60 backdrop-blur-md h-full shrink-0 overflow-y-auto">
+            <div className="p-6">
+              <h2 className="text-sm font-bold text-white/90 uppercase tracking-widest mb-4">Progresso da Aula</h2>
+              <div className="space-y-2">
+                {blocos.map((b, i) => {
+                  const isPast = i < currentIdx;
+                  const isCurrent = i === currentIdx;
+                  const canJump = i <= currentIdx || podeAvancar;
+                  const atoAtual = getAtoInfo(i, total);
+                  return (
+                    <button
+                      key={b.id}
+                      disabled={!canJump}
+                      onClick={() => canJump && goToPage(i)}
+                      className={`w-full text-left p-3 rounded-xl transition-all duration-300 ${
+                        isCurrent 
+                          ? 'bg-primary/20 border border-primary/30' 
+                          : isPast
+                            ? 'bg-white/5 hover:bg-white/10' 
+                            : 'opacity-40'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs font-black text-white/50">{String(i + 1).padStart(2, '0')}</span>
+                        <span className={`text-sm font-medium ${isCurrent ? 'text-primary' : 'text-white/80'} truncate`}>
+                          {rotuloPorTipo(b.tipo)}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
+            </div>
+          </aside>
 
-              <div className="flex-1 overflow-y-auto space-y-4 pr-1.5 no-scrollbar">
-                {[
-                  {
-                    ato: 1,
-                    titulo: 'Ato I · Fundamentos',
-                    cor: 'text-sky-400',
-                    badgeBg: 'bg-sky-500/10 border-sky-500/20',
-                    items: blocos.slice(0, Math.max(1, Math.round(total * 0.33))),
-                    offset: 0,
-                  },
-                  {
-                    ato: 2,
-                    titulo: 'Ato II · Doutrina & Casos',
-                    cor: 'text-amber-400',
-                    badgeBg: 'bg-amber-500/10 border-amber-500/20',
-                    items: blocos.slice(Math.max(1, Math.round(total * 0.33)), Math.max(2, Math.round(total * 0.68))),
-                    offset: Math.max(1, Math.round(total * 0.33)),
-                  },
-                  {
-                    ato: 3,
-                    titulo: 'Ato III · Fixação Ativa',
-                    cor: 'text-emerald-400',
-                    badgeBg: 'bg-emerald-500/10 border-emerald-500/20',
-                    items: blocos.slice(Math.max(2, Math.round(total * 0.68))),
-                    offset: Math.max(2, Math.round(total * 0.68)),
-                  },
-                ].map((secao) => (
-                  <div key={secao.ato} className="space-y-1">
-                    <div className="flex items-center gap-1.5 px-1 py-1">
-                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${secao.badgeBg} ${secao.cor}`}>
-                        {secao.titulo}
-                      </span>
-                    </div>
-                    <div className="space-y-0.5">
-                      {secao.items.map((b, localIdx) => {
-                        const i = secao.offset + localIdx;
-                        const Icon = iconePorTipo(b.tipo);
-                        const isCurrent = i === currentIdx;
-                        const isPassed = i <= highestVisible;
-                        const canClick = i <= currentIdx || podeAvancar;
-                        const titulo = b.payload?.titulo || b.payload?.enunciado || b.payload?.frente || rotuloPorTipo(b.tipo, b.payload?.subtipo);
-
-                        return (
-                          <button
-                            key={b.id}
-                            disabled={!canClick}
-                            onClick={() => {
-                              if (canClick) goToPage(i);
-                            }}
-                            className={`flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left transition-all ${
-                              !canClick ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'
-                            } ${
-                              isCurrent
-                                ? 'bg-primary/15 border border-primary/40 text-white shadow-sm'
-                                : isPassed
-                                ? 'hover:bg-white/[0.06] text-neutral-300'
-                                : 'text-neutral-500 hover:bg-white/[0.03]'
-                            }`}
-                          >
-                            <span
-                              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-xs ${
-                                isCurrent
-                                  ? 'bg-primary text-primary-foreground font-bold'
-                                  : isPassed
-                                  ? 'bg-white/10 text-primary'
-                                  : 'bg-white/5 text-neutral-500'
-                              }`}
-                            >
-                              <Icon className="h-3.5 w-3.5" />
-                            </span>
-                            <div className="min-w-0 flex-1">
-                              <p className="truncate text-xs font-medium leading-tight">
-                                {i + 1}. {titulo}
-                              </p>
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </aside>
-
-            {/* Painel Central / Direito: Cartão da Aula */}
-            <div className="flex-1 flex flex-col min-w-0 relative">
+          {/* Direita: O Slide da Aula (Centralizado) */}
+          <div
+            className="flex-1 flex flex-col items-center h-full relative overflow-hidden"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseLeave}
+          >
+            <div className="flex-1 w-full max-w-2xl mx-auto flex flex-col pt-3 pb-[100px] relative overflow-hidden px-4 md:px-8">
               {/* Setas Flutuantes Laterais para Navegação Rápida em Telas Maiores */}
               {currentIdx > 0 && (
                 <button
@@ -579,12 +565,6 @@ const AprenderAula = () => {
               )}
 
               <div
-                onTouchStart={handleTouchStart}
-                onTouchEnd={handleTouchEnd}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseLeave}
                 className={`w-full flex-1 flex flex-col ${
                   isFlashcard
                     ? 'bg-transparent border-transparent'
@@ -722,7 +702,7 @@ const AprenderAula = () => {
                       haptic.selection();
                       setSelectedOpcao(null);
                     }}
-                    className="h-11 px-3 sm:px-4 rounded-xl bg-white/5 border border-white/10 text-neutral-400 hover:text-white hover:bg-white/10 active:scale-95 text-xs sm:text-sm font-semibold transition-all min-h-[44px]"
+                    className="h-12 px-3 sm:px-4 rounded-xl bg-white/5 border border-white/10 text-neutral-400 hover:text-white hover:bg-white/10 active:scale-95 text-xs sm:text-sm font-semibold transition-all min-h-[48px]"
                   >
                     Trocar
                   </button>
@@ -736,7 +716,7 @@ const AprenderAula = () => {
                       }
                       setSelectedOpcao(null);
                     }}
-                    className="flex items-center justify-center gap-2 h-11 rounded-xl bg-gradient-to-r from-primary to-rose-600 px-4 sm:px-6 text-xs sm:text-sm font-black text-white shadow-md shadow-primary/30 hover:brightness-110 active:scale-[0.97] transition-all cursor-pointer min-h-[44px]"
+                    className="flex items-center justify-center gap-2 h-12 rounded-xl bg-gradient-to-r from-primary to-rose-600 px-4 sm:px-6 text-xs sm:text-sm font-black text-white shadow-md shadow-primary/30 hover:brightness-110 active:scale-[0.97] transition-all cursor-pointer min-h-[48px]"
                   >
                     <span>Confirmar Resposta</span>
                     <ArrowRight className="h-4 w-4 text-white" strokeWidth={2.5} />
@@ -771,7 +751,7 @@ const AprenderAula = () => {
                 haptic.selection();
                 setSumarioOpen(true);
               }}
-              className="flex items-center gap-2.5 h-11 px-4 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white/90 hover:text-white hover:bg-white/10 active:scale-95 transition-all shadow-xl shadow-black/40 min-h-[44px]"
+              className="flex items-center gap-2.5 h-12 px-4 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white/90 hover:text-white hover:bg-white/10 active:scale-95 transition-all shadow-xl shadow-black/40 min-h-[48px]"
               aria-label="Abrir sumário da aula"
             >
               <List className="h-5 w-5 text-primary" />
@@ -784,7 +764,7 @@ const AprenderAula = () => {
                   onClick={() => goToPage(currentIdx - 1)}
                   disabled={currentIdx <= 0}
                   aria-label="Página anterior"
-                  className="flex h-11 w-14 sm:w-16 items-center justify-center rounded-xl bg-white/5 text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all shadow-sm cursor-pointer"
+                  className="flex h-12 w-14 sm:w-16 items-center justify-center rounded-xl bg-white/5 text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all shadow-sm cursor-pointer min-h-[48px]"
                 >
                   <ChevronLeft className="h-6 w-6" />
                 </button>
@@ -802,7 +782,7 @@ const AprenderAula = () => {
                   onClick={() => goToPage(currentIdx + 1)}
                   disabled={currentIdx >= total - 1 || !podeAvancar}
                   aria-label="Próxima página"
-                  className={`flex h-11 w-14 sm:w-16 items-center justify-center rounded-xl transition-all shadow-lg cursor-pointer ${
+                  className={`flex h-12 w-14 sm:w-16 items-center justify-center rounded-xl transition-all shadow-lg cursor-pointer min-h-[48px] ${
                     !podeAvancar || currentIdx >= total - 1
                       ? 'opacity-25 pointer-events-none bg-white/5 text-white/30 shadow-none cursor-not-allowed'
                       : 'bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 shadow-primary/25'

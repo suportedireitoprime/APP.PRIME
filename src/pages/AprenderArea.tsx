@@ -603,7 +603,7 @@ const AprenderArea = () => {
                                 className="pointer-events-none absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0 select-none"
                               />
                               {/* Overlay Escuro para Contraste do Texto */}
-                              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/95 via-[#0d0f12]/50 to-[#0d0f12]/10 pointer-events-none z-0" />
+                              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/90 via-[#0d0f12]/10 to-transparent pointer-events-none z-0" />
 
                               {/* Cabeçalho da Carta: Tag Deck no Lado Esquerdo e Sem Ícone */}
                               <div className="flex items-center justify-start z-[1] w-full pt-1">

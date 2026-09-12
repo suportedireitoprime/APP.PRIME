@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Quote, Scale, Check, X, XCircle, RotateCw, CheckCircle2, ArrowRight, Lightbulb, Flag, ChevronDown, AlertTriangle, BookMarked, HelpCircle, Puzzle, Brain } from 'lucide-react';
+import { Quote, Scale, Check, X, XCircle, RotateCw, CheckCircle2, ArrowRight, Lightbulb, Flag, ChevronDown, AlertTriangle, BookMarked, HelpCircle, Puzzle, Brain, Zap, ShieldCheck, Target, Eye } from 'lucide-react';
 import { Bloco, iconePorTipo, isBlocoTexto, rotuloPorTipo, isPerguntaBloco } from '@/lib/aprenderUtils';
 import { LeituraBlock } from '@/components/aprender/blocos/LeituraBlock';
 import { LacunasInterativasBlock } from '@/components/aprender/blocos/LacunasInterativasBlock';
@@ -56,8 +56,8 @@ const renderBadge = ({ children }: any) => {
   }
   
   return (
-    <strong className={`inline-flex items-center gap-1.5 font-display font-black ${colorClass} uppercase text-[12px] sm:text-[13px] tracking-widest ${bgClass} border px-2 py-0.5 rounded-md mr-0.5 align-middle -mt-1 mb-1`}>
-      {Icon && <Icon className="w-3.5 h-3.5" />}
+    <strong className={`inline-flex items-center gap-1.5 font-display font-bold text-white uppercase text-[11px] sm:text-[12px] tracking-wider ${bgClass} border px-1.5 py-0.5 rounded mx-1 align-baseline leading-none shadow-sm ${colorClass.includes('drop-shadow') ? colorClass : ''}`}>
+      {Icon && <Icon className={`w-3 h-3 ${colorClass.includes('text-') ? colorClass : 'text-primary'}`} />}
       {children}
     </strong>
   );
@@ -98,7 +98,7 @@ const MenuSuspensoAccordion = ({ items }: { items: any[] }) => {
   );
 };
 
-export function BlocoView({
+export const BlocoView = React.memo(function BlocoView({
   bloco: blocoProps, resposta, selectedOpcao: externalSelectedOpcao, onSelectOpcao, onResponder, flipped, onFlip, onAvaliarFlash, onAvancar, conexao, onConexao,
 }: BlocoViewProps) {
   const bloco = { ...blocoProps };
@@ -244,6 +244,46 @@ export function BlocoView({
 
   if (bloco.tipo === 'checkpoint') return <CheckpointBlock payload={bloco.payload || {}} />;
   if (bloco.tipo === 'recapitulacao') return <RecapBlock payload={bloco.payload || {}} />;
+
+  if (bloco.tipo === 'destaque' && bloco.payload?.subtipo === 'capa') {
+    const { titulo, texto, sumario } = bloco.payload || {};
+    return (
+      <article className="max-w-[70ch] mx-auto py-10 text-center flex flex-col items-center justify-center min-h-[50vh]">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-4 leading-tight">
+          {titulo}
+        </h1>
+        <p className="text-neutral-300 text-lg mb-10 max-w-[50ch] mx-auto leading-relaxed">
+          {texto}
+        </p>
+        
+        {Array.isArray(sumario) && sumario.length > 0 && (
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-left w-full max-w-md mb-10 shadow-lg">
+            <h3 className="text-primary font-bold text-sm tracking-widest uppercase mb-4 flex items-center gap-2">
+              <span className="w-1 h-4 bg-primary rounded-full"/> Nesta aula você verá:
+            </h3>
+            <ul className="space-y-3">
+              {sumario.map((item: string, i: number) => (
+                <li key={i} className="flex items-start gap-3 text-neutral-200">
+                  <div className="mt-2 min-w-[6px] h-[6px] rounded-full bg-primary/70" />
+                  <span className="leading-relaxed text-[15px]">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {onAvancar && (
+          <button 
+            onClick={onAvancar}
+            className="group relative inline-flex items-center justify-center gap-3 bg-primary text-black font-extrabold text-lg px-10 py-4 rounded-full shadow-[0_0_30px_hsl(var(--primary)/0.3)] hover:shadow-[0_0_40px_hsl(var(--primary)/0.5)] hover:scale-105 active:scale-95 transition-all outline-none"
+          >
+            INICIAR AULA
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </button>
+        )}
+      </article>
+    );
+  }
 
   if (bloco.tipo === 'citacao') {
     const { texto, autor, fonte_url } = bloco.payload || {};
@@ -575,7 +615,7 @@ export function BlocoView({
     const { titulo, eventos = [], texto: rawTexto } = bloco.payload || {};
     const textoLimpo = limparTextoInstrucoes(rawTexto || '');
     return (
-      <article className="max-w-[70ch] lg:max-w-[76ch] mx-auto py-3 px-1 sm:px-2">
+      <article className="max-w-[70ch] lg:max-w-[76ch] mx-auto py-3 px-4 sm:px-6">
         <header className="mb-6 sm:mb-8">
           <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-primary mb-2 bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
             Linha Estrutural · Origem e Contexto
@@ -588,7 +628,7 @@ export function BlocoView({
         </header>
 
         {eventos && eventos.length > 0 ? (
-          <ol className="relative border-l-2 border-primary/30 pl-5 sm:pl-8 space-y-5 sm:space-y-7 my-4">
+          <ol className="relative border-l-2 border-primary/30 pl-5 sm:pl-7 space-y-5 sm:space-y-7 my-4 ml-2 sm:ml-4">
             {eventos.map((ev: any, i: number) => (
               <motion.li
                 key={i}
@@ -597,8 +637,14 @@ export function BlocoView({
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4, delay: i * 0.1 }}
               >
+                {/* 
+                  Cálculo: pl-5 (20px). Bolinha w-6 (24px). Raio=12px. 
+                  Para centralizar na borda: -left = 20px + 12px - 1px(meia borda) = 31px.
+                  sm: pl-7 (28px). Bolinha sm:w-7 (28px). Raio=14px.
+                  Para centralizar: -left = 28px + 14px - 1px = 41px.
+                */}
                 <motion.span
-                  className="absolute -left-[27px] sm:-left-[39px] top-1.5 flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-primary text-black font-black text-[11px] shadow-[0_0_12px_hsl(var(--primary)/0.6)]"
+                  className="absolute -left-[31px] sm:-left-[41px] top-1.5 flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-primary text-black font-black text-[11px] shadow-[0_0_12px_hsl(var(--primary)/0.6)]"
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.3, delay: i * 0.1 + 0.1, type: 'spring', stiffness: 400 }}
@@ -644,33 +690,84 @@ export function BlocoView({
     const isDicaProfessora = subtipo === 'audio_dica' || (titulo || '').toLowerCase().includes('dica da professora') || (titulo || '').toLowerCase().includes('áudio-guia');
     const texto = isDicaProfessora ? formatarDicaProfessora(textoRaw) : limparTextoInstrucoes(textoRaw);
 
+    const lowerTitle = (titulo || '').toLowerCase();
+    
     let style = {
       bg: 'bg-primary/[0.08]',
       br: 'border-primary/30',
       tx: 'text-primary',
       glow: 'shadow-[0_0_24px_hsl(var(--primary)/0.1)]',
       Icon: BookMarked,
+      label: 'Ponto Fundamental'
     };
-    if (tom === 'alerta') {
+
+    if (tom === 'alerta' || lowerTitle.includes('cuidado') || lowerTitle.includes('importante') || lowerTitle.includes('atenção')) {
       style = {
         bg: 'bg-amber-500/[0.06]',
         br: 'border-amber-500/25',
         tx: 'text-amber-400',
         glow: 'shadow-[0_0_24px_rgba(245,158,11,0.08)]',
         Icon: AlertTriangle,
+        label: 'Atenção Crucial'
       };
-    }
-    if (tom === 'dica') {
+    } else if (tom === 'dica' || lowerTitle.includes('dica') || lowerTitle.includes('macete') || lowerTitle.includes('bizu')) {
       style = {
         bg: 'bg-amber-500/[0.08]',
         br: 'border-amber-500/30',
         tx: 'text-amber-400',
         glow: 'shadow-[0_0_24px_rgba(245,158,11,0.1)]',
         Icon: Lightbulb,
+        label: 'Dica Estratégica'
+      };
+    } else if (lowerTitle.includes('exceção')) {
+      style = {
+        bg: 'bg-rose-500/[0.06]',
+        br: 'border-rose-500/25',
+        tx: 'text-rose-400',
+        glow: 'shadow-[0_0_24px_rgba(244,63,94,0.08)]',
+        Icon: Zap,
+        label: 'Ponto de Exceção'
+      };
+    } else if (lowerTitle.includes('regra')) {
+      style = {
+        bg: 'bg-emerald-500/[0.06]',
+        br: 'border-emerald-500/25',
+        tx: 'text-emerald-400',
+        glow: 'shadow-[0_0_24px_rgba(16,185,129,0.08)]',
+        Icon: ShieldCheck,
+        label: 'Regra Geral'
+      };
+    } else if (lowerTitle.includes('jurisprudência') || lowerTitle.includes('stj') || lowerTitle.includes('stf')) {
+      style = {
+        bg: 'bg-blue-500/[0.06]',
+        br: 'border-blue-500/25',
+        tx: 'text-blue-400',
+        glow: 'shadow-[0_0_24px_rgba(59,130,246,0.08)]',
+        Icon: Scale,
+        label: 'Entendimento Jurisprudencial'
+      };
+    } else if (lowerTitle.includes('foco') || lowerTitle.includes('objetivo')) {
+      style = {
+        bg: 'bg-primary/[0.08]',
+        br: 'border-primary/30',
+        tx: 'text-primary',
+        glow: 'shadow-[0_0_24px_hsl(var(--primary)/0.1)]',
+        Icon: Target,
+        label: 'Foco Central'
+      };
+    } else if (lowerTitle.includes('visão') || lowerTitle.includes('olhar')) {
+      style = {
+        bg: 'bg-purple-500/[0.06]',
+        br: 'border-purple-500/25',
+        tx: 'text-purple-400',
+        glow: 'shadow-[0_0_24px_rgba(168,85,247,0.08)]',
+        Icon: Eye,
+        label: 'Visão Clínica'
       };
     }
+
     return (
-      <article className="max-w-[70ch] lg:max-w-[76ch] mx-auto py-3 px-1 sm:px-2">
+      <article className="max-w-[70ch] lg:max-w-[76ch] mx-auto py-3 px-4 sm:px-6">
         <div className={`rounded-3xl border ${style.br} ${style.bg} p-4 sm:p-6 backdrop-blur-md shadow-xl ${style.glow}`}>
           <div className={`mb-4 inline-flex items-center gap-2 text-[11px] sm:text-[12px] font-extrabold uppercase tracking-widest ${style.tx} bg-white/5 px-3 py-1 rounded-full border border-white/10`}>
             <style.Icon className="h-4 w-4" strokeWidth={2} />
@@ -683,12 +780,8 @@ export function BlocoView({
                   <span className="w-0.5 h-2 bg-amber-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
                 </span>
               </span>
-            ) : tom === 'alerta' ? (
-              'Atenção Crucial'
-            ) : tom === 'dica' ? (
-              'Dica Estratégica'
             ) : (
-              'Ponto Fundamental'
+              <span>{style.label}</span>
             )}
           </div>
           {titulo && (
@@ -809,6 +902,7 @@ export function BlocoView({
     const opcoes = rawOpcoes.map((op: any, i: number) => {
       let texto = typeof op === 'string' ? op : (op.texto || '');
       let id = typeof op === 'string' ? '' : op.id;
+      texto = texto.replace(/^[\s*]*[(]?[a-eA-E][)\]\-.]\s*/, '').trim();
 
       const match = texto.match(gabaritoRegex);
       if (match) {
@@ -1149,7 +1243,7 @@ export function BlocoView({
           >
             <div className="p-5 sm:p-6 rounded-2xl border border-primary/20 bg-primary/[0.03] backdrop-blur-sm relative">
               <h4 className="text-primary text-[11px] sm:text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
-                <CheckCircle className="w-4 h-4" />
+                <CheckCircle2 className="w-4 h-4" />
                 Gabarito Comentado
               </h4>
               <div className="prose prose-base max-w-none prose-invert prose-p:leading-[1.75] prose-p:text-neutral-200">
@@ -1299,8 +1393,8 @@ export function BlocoView({
                 </span>
                 <Brain className="w-4 h-4 text-primary/80" />
               </div>
-              <div className="relative z-10 flex flex-col justify-center h-full px-2 sm:px-4 pb-12">
-                <div className="font-sans text-[17px] sm:text-[19px] md:text-xl font-normal leading-snug text-white/95 max-w-[50ch] mx-auto text-center prose prose-invert prose-p:leading-snug prose-p:text-white/95 prose-strong:text-white prose-strong:font-bold prose-ul:list-none prose-li:mb-2 prose-p:mb-4 last:prose-p:mb-0">
+              <div className="relative z-10 flex-1 overflow-y-auto text-center px-2 sm:px-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex flex-col py-4">
+                <div className="font-sans text-[17px] sm:text-[19px] md:text-xl font-normal leading-snug text-white/95 max-w-[50ch] mx-auto prose prose-invert prose-p:leading-snug prose-p:text-white/95 prose-strong:text-white prose-strong:font-bold prose-ul:list-none prose-li:mb-2 prose-p:mb-4 last:prose-p:mb-0">
                   <ReactMarkdown remarkPlugins={[remarkGfm]} components={badgeComponents}>
                     {normalizarMarkdown(displayFrente)}
                   </ReactMarkdown>
@@ -1334,8 +1428,8 @@ export function BlocoView({
                 </span>
                 <CheckCircle2 className="w-5 h-5 text-primary" />
               </div>
-              <div className="relative z-10 flex-1 overflow-y-auto text-left pr-1 sm:pr-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex flex-col justify-center">
-                <div className="font-sans text-[15px] sm:text-[16px] md:text-[17px] font-normal leading-[1.6] text-white/95 max-w-[55ch] prose prose-invert prose-p:leading-[1.6] prose-p:text-white/95 prose-strong:text-white prose-strong:font-bold prose-ul:pl-5 prose-li:mb-2 prose-li:marker:text-primary prose-p:mb-4 last:prose-p:mb-0">
+              <div className="relative z-10 flex-1 overflow-y-auto text-left pr-1 sm:pr-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex flex-col py-2">
+                <div className="font-sans text-[16px] sm:text-[17px] md:text-[18px] font-normal leading-[1.6] text-white/95 max-w-[55ch] mx-auto prose prose-invert prose-p:leading-[1.6] prose-p:text-white/95 prose-strong:text-white prose-strong:font-bold prose-ul:pl-5 prose-li:mb-2 prose-li:marker:text-primary prose-p:mb-4 last:prose-p:mb-0">
                   <ReactMarkdown remarkPlugins={[remarkGfm]} components={badgeComponents}>
                     {normalizarMarkdown(displayVerso)}
                   </ReactMarkdown>
@@ -1392,4 +1486,4 @@ export function BlocoView({
   }
 
   return null;
-}
+});

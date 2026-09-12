@@ -195,44 +195,44 @@ export function ConexaoBlock({ pares, onCompleto }: Props) {
                 animate={errado ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
                 transition={{ duration: 0.35 }}
                 whileTap={{ scale: feito ? 1 : 0.98 }}
-                className={`group relative flex w-full items-center justify-between gap-3 rounded-2xl border p-3.5 sm:p-4 text-left transition-all duration-200 min-h-[52px] cursor-pointer ${
+                className={`group relative flex w-full items-center justify-between gap-4 rounded-3xl border p-4 sm:p-5 text-left transition-all duration-200 min-h-[64px] cursor-pointer ${
                   feito && colorTheme
                     ? `${colorTheme.border} ${colorTheme.bg} ${colorTheme.ring} shadow-md`
                     : errado
                     ? 'border-rose-500/60 bg-rose-500/10 text-white'
                     : sel
-                    ? 'border-primary bg-primary/20 ring-2 ring-primary shadow-[0_0_16px_hsl(var(--primary)/0.25)] text-white'
-                    : 'border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.06] text-neutral-200 backdrop-blur-sm'
+                    ? 'border-primary bg-primary/20 ring-2 ring-primary shadow-[0_0_20px_hsl(var(--primary)/0.3)] text-white'
+                    : 'border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.08] text-neutral-200 backdrop-blur-sm shadow-sm'
                 }`}
               >
-                <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                <div className="flex items-center gap-3.5 flex-1">
                   {feito && colorTheme ? (
-                    <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[11px] font-black ${colorTheme.badge}`}>
-                      <Link2 className="h-3 w-3" />
+                    <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border text-[12px] font-black ${colorTheme.badge}`}>
+                      <Link2 className="h-4 w-4" />
                     </span>
                   ) : (
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[11px] font-bold text-neutral-400">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-[12px] font-bold text-neutral-400 shadow-inner">
                       {lista.indexOf(lista[i]) + 1}
                     </span>
                   )}
-                  <span className={`font-semibold text-[14px] sm:text-[15px] leading-snug truncate ${feito && colorTheme ? colorTheme.text : 'text-white'}`}>
+                  <span className={`font-semibold text-[15px] sm:text-[16px] leading-snug break-words ${feito && colorTheme ? colorTheme.text : 'text-white'}`}>
                     {lista[i].termo}
                   </span>
                 </div>
 
                 {/* Socket de Conexão na borda direita */}
-                <div className="relative flex items-center justify-center shrink-0">
+                <div className="relative flex items-center justify-center shrink-0 ml-1">
                   <span
-                    className={`h-3.5 w-3.5 rounded-full border-2 transition-all ${
+                    className={`h-4 w-4 rounded-full border-2 transition-all ${
                       feito && colorTheme
                         ? colorTheme.socket
                         : sel
-                        ? 'border-primary bg-primary animate-pulse shadow-[0_0_8px_hsl(var(--primary))]'
+                        ? 'border-primary bg-primary animate-pulse shadow-[0_0_10px_hsl(var(--primary))]'
                         : 'border-white/20 bg-neutral-800'
                     }`}
                   />
                   {sel && (
-                    <span className="absolute h-5 w-5 rounded-full border border-primary animate-ping pointer-events-none" />
+                    <span className="absolute h-6 w-6 rounded-full border border-primary animate-ping pointer-events-none" />
                   )}
                 </div>
               </motion.button>
@@ -263,7 +263,7 @@ export function ConexaoBlock({ pares, onCompleto }: Props) {
                 animate={errado ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
                 transition={{ duration: 0.35 }}
                 whileTap={{ scale: feito || termoSel == null ? 1 : 0.98 }}
-                className={`group relative flex w-full items-start gap-3 rounded-2xl border p-3.5 sm:p-4 text-left transition-all duration-200 min-h-[52px] ${
+                className={`group relative flex w-full items-start gap-4 rounded-3xl border p-4 sm:p-5 text-left transition-all duration-200 min-h-[64px] ${
                   feito && colorTheme
                     ? `${colorTheme.border} ${colorTheme.bg} ${colorTheme.ring} shadow-md`
                     : errado
@@ -274,9 +274,9 @@ export function ConexaoBlock({ pares, onCompleto }: Props) {
                 }`}
               >
                 {/* Socket de Conexão na borda esquerda */}
-                <div className="relative flex items-center justify-center shrink-0 mt-1">
+                <div className="relative flex items-center justify-center shrink-0 mt-0.5">
                   <span
-                    className={`h-3.5 w-3.5 rounded-full border-2 transition-all ${
+                    className={`h-4 w-4 rounded-full border-2 transition-all ${
                       feito && colorTheme
                         ? colorTheme.socket
                         : aguardando
@@ -287,7 +287,7 @@ export function ConexaoBlock({ pares, onCompleto }: Props) {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <p className={`text-[13px] sm:text-[14px] leading-relaxed ${feito && colorTheme ? colorTheme.text : 'text-neutral-200'}`}>
+                  <p className={`text-[14px] sm:text-[15px] leading-relaxed font-medium ${feito && colorTheme ? colorTheme.text : 'text-neutral-200'}`}>
                     {lista[di].definicao}
                   </p>
                 </div>

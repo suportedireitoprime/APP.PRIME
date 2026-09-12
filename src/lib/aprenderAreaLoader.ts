@@ -91,10 +91,10 @@ export async function fetchAprenderAreaFromNetwork(
       .in('modulo_id', modIds)
       .order('ordem')
       .limit(3000);
-    publicadas = ((ausTodas ?? []).filter((x: any) => x.status === 'published') as AulaRow[]);
-    (ausTodas ?? []).forEach((x: any) => {
-      if (x.status !== 'published') preparo[x.modulo_id] = (preparo[x.modulo_id] || 0) + 1;
-    });
+    publicadas = (ausTodas ?? []) as AulaRow[];
+    // (ausTodas ?? []).forEach((x: any) => {
+    //   if (x.status !== 'published') preparo[x.modulo_id] = (preparo[x.modulo_id] || 0) + 1;
+    // });
 
     if (uid && publicadas.length) {
       const ids = publicadas.map((x) => x.id);
@@ -353,7 +353,6 @@ export async function fetchAprenderModuloFromNetwork(
       .from('aprender_aulas')
       .select('id, titulo, objetivo, duracao_est_min, ordem, status')
       .eq('modulo_id', moduloId)
-      .eq('status', 'published')
       .order('ordem'),
   ]);
 
