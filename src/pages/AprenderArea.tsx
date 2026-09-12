@@ -506,16 +506,18 @@ const AprenderArea = () => {
                               </span>
                             </div>
 
-                            {/* ── CARTA 1 (Traseira Esquerda - Estável, abre suave no hover) ── */}
+                            {/* ── CARTA 1 (Traseira/Fundo - Menor e mais escura) ── */}
                             <div
-                              className="absolute inset-0 rounded-2xl border border-white/20 transition-all duration-300 origin-bottom -rotate-[4deg] sm:-rotate-[5deg] -translate-x-3 sm:-translate-x-4 translate-y-1 group-hover:-rotate-[10deg] group-hover:-translate-x-6 group-hover:-translate-y-1 z-0 shadow-lg overflow-hidden"
+                              className="absolute inset-0 rounded-2xl border border-white/10 transition-all duration-400 origin-bottom scale-[0.85] -translate-y-6 sm:-translate-y-8 group-hover:scale-95 group-hover:-rotate-[12deg] group-hover:-translate-x-8 group-hover:-translate-y-2 z-0 shadow-lg overflow-hidden"
                               style={{
-                                background: `linear-gradient(145deg, rgba(28, 25, 32, 0.96) 0%, rgba(12, 12, 16, 0.98) 100%)`,
+                                background: palette.cardGradient,
                                 boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
                               }}
                             >
-                              {/* Verso de carta de deck colecionável */}
-                              <div className="absolute inset-1.5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden bg-black/40">
+                              {/* Overlay de escurecimento para dar profundidade (Carta mais ao fundo) */}
+                              <div className="absolute inset-0 bg-black/50 pointer-events-none z-[1]" />
+                              
+                              <div className="absolute inset-1.5 rounded-xl border border-white/5 flex items-center justify-center overflow-hidden z-[2]">
                                 <div
                                   className="w-10 h-10 rounded-full border border-white/15 flex items-center justify-center opacity-30"
                                   style={{ borderColor: palette.primary }}
@@ -526,16 +528,18 @@ const AprenderArea = () => {
                               </div>
                             </div>
 
-                            {/* ── CARTA 2 (Traseira Direita - Estável, abre suave no hover) ── */}
+                            {/* ── CARTA 2 (Meio - Tamanho intermediário) ── */}
                             <div
-                              className="absolute inset-0 rounded-2xl border border-white/20 transition-all duration-300 origin-bottom rotate-[4deg] sm:rotate-[5deg] translate-x-3 sm:translate-x-4 translate-y-1 group-hover:rotate-[10deg] group-hover:translate-x-6 group-hover:-translate-y-1 z-0 shadow-lg overflow-hidden"
+                              className="absolute inset-0 rounded-2xl border border-white/15 transition-all duration-400 origin-bottom scale-[0.92] -translate-y-3 sm:-translate-y-4 group-hover:scale-95 group-hover:rotate-[12deg] group-hover:translate-x-8 group-hover:-translate-y-2 z-0 shadow-lg overflow-hidden"
                               style={{
-                                background: `linear-gradient(215deg, rgba(28, 25, 32, 0.96) 0%, rgba(12, 12, 16, 0.98) 100%)`,
+                                background: palette.cardGradient,
                                 boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
                               }}
                             >
-                              {/* Verso de carta de deck colecionável */}
-                              <div className="absolute inset-1.5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden bg-black/40">
+                              {/* Overlay de escurecimento médio para dar profundidade */}
+                              <div className="absolute inset-0 bg-black/25 pointer-events-none z-[1]" />
+
+                              <div className="absolute inset-1.5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden z-[2]">
                                 <div
                                   className="w-10 h-10 rounded-full border border-white/15 flex items-center justify-center opacity-30"
                                   style={{ borderColor: palette.primary }}

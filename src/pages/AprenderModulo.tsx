@@ -25,6 +25,23 @@ import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
 import type { FlashcardCard } from '@/lib/flashcardsQueries';
 import { getLocalAulaProgress } from '@/lib/aprenderProgressoStorage';
 
+// Função utilitária para normalizar títulos que vieram 100% em MAIÚSCULAS do banco de dados
+const normalizarTitulo = (t: string) => {
+  if (!t) return '';
+  const alphaChars = t.replace(/[^a-zA-Záéíóúâêôãõç]/g, '');
+  if (alphaChars.length > 0 && alphaChars.toUpperCase() === alphaChars) {
+    const lowers = ['e', 'da', 'do', 'de', 'das', 'dos', 'na', 'no', 'nas', 'nos', 'a', 'o', 'as', 'os', 'em', 'por', 'para', 'com', 'ou'];
+    const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XX', 'XXI'];
+    return t.toLowerCase().split(' ').map((w, i) => {
+      const cleanW = w.replace(/[,.;:!?"()]/g, '');
+      if (romans.includes(cleanW.toUpperCase())) return w.toUpperCase();
+      if (lowers.includes(cleanW) && i !== 0) return w;
+      return w.charAt(0).toUpperCase() + w.slice(1);
+    }).join(' ');
+  }
+  return t;
+};
+
 export type ModuloDetalhe = {
   id: string;
   titulo: string;
@@ -924,8 +941,8 @@ const AprenderModulo = () => {
                             </div>
 
                             <div className="min-w-0 flex-1 flex flex-col justify-center h-full py-0.5">
-                              <h3 className="text-sm sm:text-base font-normal font-sans text-foreground break-words leading-snug line-clamp-2 group-hover:text-primary transition-colors">
-                                {aula.titulo}
+                              <h3 className="text-sm sm:text-base font-normal font-sans text-foreground break-words leading-snug line-clamp-2 group-hover:text-primary transition-colors" title={aula.titulo}>
+                                {normalizarTitulo(aula.titulo)}
                               </h3>
 
                               {/* Barra de Progresso da Aula na Lista */}
