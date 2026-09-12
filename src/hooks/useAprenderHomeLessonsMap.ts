@@ -28,7 +28,8 @@ export function useAprenderHomeLessonsMap() {
           .from('aprender_aulas')
           .select('id, modulo_id, titulo, objetivo, duracao_est_min, ordem, status, modulo:aprender_modulos!inner(id, area_id, titulo)')
           .eq('status', 'published')
-          .order('ordem');
+          .order('ordem')
+          .limit(3000);
 
         if (cancelled || error || !raw) {
           if (!cancelled) setLoadingMap(false);

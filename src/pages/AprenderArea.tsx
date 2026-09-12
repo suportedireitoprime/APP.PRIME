@@ -19,6 +19,7 @@ import { BookOpenText, GraduationCap, ListChecks, Layers, ArrowRight, Play } fro
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
+import { getAreaCover } from '@/lib/areasDireitoCovers';
 import { useFlashcardsResumoAreas } from '@/lib/flashcardsQueries';
 import { CANONICAL_AREA_TOPICS } from '@/components/aprender/MateriaFlashcardsDeckSection';
 import { haptic } from '@/lib/nativeHaptics';
@@ -94,9 +95,16 @@ const AprenderArea = () => {
     if (hit) {
       setData(hit);
       setLoading(false);
+      setIsRefreshing(true);
       fetchAprenderAreaFromNetwork(slug, uid).then((d) => {
-        if (!cancelled && d && (d.aulas.length > 0 || !hit.aulas.length)) setData(d);
-      }).catch(console.warn);
+        if (!cancelled && d && (d.aulas.length > 0 || !hit.aulas.length)) {
+          setData(d);
+        }
+        if (!cancelled) setIsRefreshing(false);
+      }).catch((err) => {
+        console.warn(err);
+        if (!cancelled) setIsRefreshing(false);
+      });
       return;
     }
     (async () => {
@@ -372,9 +380,15 @@ const AprenderArea = () => {
     });
   }, [isFlash, temasFlashcards, modulosOrdenados, aulas, progresso, activeTab, area?.nome, officialFlashcardArea, effectiveAreaName, slug, navigate, data?.area, totalFlashcardsArea, user?.id]);
 
-  const areaVisual = useMemo(() => areaIconFor(slug || area?.slug || area?.nome), [slug, area]);
-  const AreaIconComp = areaVisual?.Icon;
-  const palette = useMemo(() => getAreaThemePalette(slug || area?.slug || area?.nome), [slug, area]);
+  const iconInfo = areaIconFor(slug || area?.slug || area?.nome || 'geral');
+  const AreaIconComp = iconInfo?.Icon || BookOpenText;
+  const palette = useMemo(() => getAreaThemePalette(slug || area?.nome || area?.slug || 'geral'), [slug, area]);
+
+  // Capa oficial ilustrada da matéria
+  const coverInfo = area ? (getAreaCover(area.nome) || getAreaCover(area.slug)) : (slug ? getAreaCover(slug) : null);
+  const coverUrl = coverInfo?.cover || "/images/gamificacao/deusa_temis_vazada.webp";
+
+  const isFlash = activeTab === 'flashcards';
 
   const titleDisplay = (
     <span className="font-sans font-extrabold uppercase tracking-widest text-[15px] sm:text-[16px] text-white">
@@ -446,6 +460,11 @@ const AprenderArea = () => {
               >
                 {officialFlashcardArea || area?.nome || effectiveAreaName}
               </span>
+              {isRefreshing && (
+                <div className="ml-2 mt-0.5">
+                  <div className="w-3 h-3 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
+                </div>
+              )}
             </div>
 
             {isFlash && loadingFlashcards && itemsToRender.length === 0 ? (
@@ -508,7 +527,12 @@ const AprenderArea = () => {
 
                             {/* ── CARTA 1 (Traseira/Fundo - Menor e mais escura) ── */}
                             <div
-                              className="absolute inset-0 rounded-2xl border border-white/10 transition-all duration-400 origin-bottom scale-[0.85] -translate-y-6 sm:-translate-y-8 group-hover:scale-95 group-hover:-rotate-[12deg] group-hover:-translate-x-8 group-hover:-translate-y-2 z-0 shadow-lg overflow-hidden"
+                              className={cn(
+                                "absolute inset-0 rounded-2xl border border-white/10 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
+                                isLeft
+                                  ? "scale-[0.88] rotate-[10deg] translate-x-10 -translate-y-2 group-hover:scale-[0.92] group-hover:rotate-[14deg] group-hover:translate-x-14 group-hover:-translate-y-3"
+                                  : "scale-[0.88] -rotate-[10deg] -translate-x-10 -translate-y-2 group-hover:scale-[0.92] group-hover:-rotate-[14deg] group-hover:-translate-x-14 group-hover:-translate-y-3"
+                              )}
                               style={{
                                 background: palette.cardGradient,
                                 boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
@@ -530,7 +554,12 @@ const AprenderArea = () => {
 
                             {/* ── CARTA 2 (Meio - Tamanho intermediário) ── */}
                             <div
-                              className="absolute inset-0 rounded-2xl border border-white/15 transition-all duration-400 origin-bottom scale-[0.92] -translate-y-3 sm:-translate-y-4 group-hover:scale-95 group-hover:rotate-[12deg] group-hover:translate-x-8 group-hover:-translate-y-2 z-0 shadow-lg overflow-hidden"
+                              className={cn(
+                                "absolute inset-0 rounded-2xl border border-white/15 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
+                                isLeft
+                                  ? "scale-[0.94] rotate-[5deg] translate-x-5 -translate-y-1 group-hover:scale-[0.96] group-hover:rotate-[7deg] group-hover:translate-x-7 group-hover:-translate-y-2"
+                                  : "scale-[0.94] -rotate-[5deg] -translate-x-5 -translate-y-1 group-hover:scale-[0.96] group-hover:-rotate-[7deg] group-hover:-translate-x-7 group-hover:-translate-y-2"
+                              )}
                               style={{
                                 background: palette.cardGradient,
                                 boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
@@ -552,7 +581,12 @@ const AprenderArea = () => {
 
                             {/* ── CARTA 3 (Principal Frontal - Centro Estável) ── */}
                             <div
-                              className="relative w-full h-full p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 hover:border-amber-400/60 shadow-[0_16px_36px_rgba(0,0,0,0.75)] transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-[0_22px_45px_rgba(0,0,0,0.85)]"
+                              className={cn(
+                                "relative w-full h-full p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 hover:border-amber-400/60 transition-all duration-300 origin-bottom",
+                                isLeft
+                                  ? "group-hover:-rotate-[1deg] group-hover:-translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)] group-hover:shadow-[0_22px_45px_rgba(0,0,0,0.85)]"
+                                  : "group-hover:rotate-[1deg] group-hover:translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)] group-hover:shadow-[0_22px_45px_rgba(0,0,0,0.85)]"
+                              )}
                               style={{
                                 background: palette.cardGradient,
                                 boxShadow: palette.shadow,
@@ -567,14 +601,14 @@ const AprenderArea = () => {
                               {/* Efeito de Brilho e Acabamento Laminado da Carta */}
                               <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.03] to-white/[0.12] pointer-events-none z-10" />
 
-                              {/* Marca d'água / Gravura da Deusa Têmis Vazada na Carta */}
+                              {/* Marca d'água / Capa Específica da Matéria na Carta */}
                               <img
-                                src="/images/gamificacao/deusa_temis_vazada.webp"
+                                src={coverUrl}
                                 alt=""
                                 aria-hidden="true"
                                 loading="lazy"
                                 decoding="async"
-                                className="pointer-events-none absolute -right-2 -bottom-2 w-[120px] sm:w-[145px] h-[140px] sm:h-[165px] object-contain opacity-35 group-hover:opacity-55 group-hover:scale-105 transition-all duration-300 z-0 select-none filter drop-shadow-[0_5px_12px_rgba(0,0,0,0.65)]"
+                                className="pointer-events-none absolute -right-4 -bottom-4 w-[140px] sm:w-[165px] h-[160px] sm:h-[185px] object-cover opacity-45 group-hover:opacity-65 group-hover:scale-105 transition-all duration-300 z-0 select-none filter drop-shadow-[0_5px_12px_rgba(0,0,0,0.65)] mask-image-[linear-gradient(to_bottom,transparent_0%,black_15%,black_85%,transparent_100%)] mix-blend-overlay"
                               />
 
                               {/* Cabeçalho da Carta: Tag Deck no Lado Direito e Sem Ícone */}

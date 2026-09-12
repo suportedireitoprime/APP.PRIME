@@ -4,6 +4,8 @@ import { ChevronRight, Scale, RotateCcw, CheckCircle2, Lightbulb, BookOpen } fro
 import { Button } from '@/components/ui/button';
 import { FlashcardCard } from '@/lib/flashcardsQueries';
 import { getAreaThemePalette } from '@/lib/areasDireitoIcons';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 type Flashcard3DProps = {
   atual: FlashcardCard;
@@ -66,7 +68,9 @@ function Bloco({ icon: Icon, titulo, texto }: { icon: any; titulo: string; texto
       <p className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold uppercase text-muted-foreground">
         <Icon className="h-3.5 w-3.5" /> {titulo}
       </p>
-      <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">{texto}</p>
+      <div className="prose prose-invert max-w-none text-sm leading-relaxed prose-p:my-1 prose-strong:text-emerald-400 prose-ul:my-1 prose-li:my-0">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{texto}</ReactMarkdown>
+      </div>
     </div>
   );
 }
@@ -192,18 +196,18 @@ const Flashcard3D = memo(function Flashcard3D({
                 
                 {/* Pergunta */}
                 <div className="relative z-10 flex-1 flex items-center justify-center text-center px-2 py-3">
-                  <motion.p 
+                  <motion.div 
                     initial={{ opacity: 0, y: 6 }} 
                     animate={{ opacity: 1, y: 0 }} 
                     transition={{ delay: 0.1, duration: 0.3 }} 
-                    className="text-xl md:text-2xl leading-snug font-normal text-white drop-shadow-md" 
+                    className="prose prose-invert max-w-none text-xl md:text-2xl leading-snug font-normal text-white drop-shadow-md prose-p:my-1 prose-strong:text-white prose-em:text-white/80" 
                     style={{ 
                       fontFamily: "'Merriweather','Georgia',serif", 
                       textShadow: "0 2px 14px rgba(0,0,0,0.85)" 
                     }}
                   >
-                    {atual.pergunta}
-                  </motion.p>
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{atual.pergunta}</ReactMarkdown>
+                  </motion.div>
                 </div>
                 
                 {/* Rodapé da Frente */}
@@ -248,14 +252,14 @@ const Flashcard3D = memo(function Flashcard3D({
                     Resposta Explicada
                   </p>
                   <div className="flex-1 flex flex-col items-center justify-center space-y-4 pb-4">
-                    <p className={`whitespace-pre-wrap font-medium leading-relaxed text-foreground text-center max-w-prose ${
-                      atual.resposta.length < 40 ? 'text-2xl sm:text-3xl' :
-                      atual.resposta.length < 80 ? 'text-xl sm:text-2xl' :
-                      atual.resposta.length < 150 ? 'text-lg sm:text-xl' :
-                      'text-base sm:text-lg'
-                    }`}>
-                      {atual.resposta}
-                    </p>
+                    <div className={`prose prose-invert max-w-prose text-center flex-1 flex flex-col justify-center ${
+                      atual.resposta.length < 40 ? 'text-2xl sm:text-3xl prose-p:text-2xl sm:prose-p:text-3xl' :
+                      atual.resposta.length < 80 ? 'text-xl sm:text-2xl prose-p:text-xl sm:prose-p:text-2xl' :
+                      atual.resposta.length < 150 ? 'text-lg sm:text-xl prose-p:text-lg sm:prose-p:text-xl' :
+                      'text-base sm:text-lg prose-p:text-base sm:prose-p:text-lg'
+                    } prose-strong:text-emerald-400 prose-ul:text-left prose-ul:mx-auto prose-li:my-1 prose-headings:mb-2`}>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{atual.resposta}</ReactMarkdown>
+                    </div>
                   </div>
                   
                   {(atual.exemplo || atual.base_legal || atual.dica) && (
