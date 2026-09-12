@@ -95,15 +95,12 @@ const AprenderArea = () => {
     if (hit) {
       setData(hit);
       setLoading(false);
-      setIsRefreshing(true);
       fetchAprenderAreaFromNetwork(slug, uid).then((d) => {
         if (!cancelled && d && (d.aulas.length > 0 || !hit.aulas.length)) {
           setData(d);
         }
-        if (!cancelled) setIsRefreshing(false);
       }).catch((err) => {
         console.warn(err);
-        if (!cancelled) setIsRefreshing(false);
       });
       return;
     }
