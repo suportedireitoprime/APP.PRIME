@@ -120,12 +120,12 @@ export default function ArtigoBlocosMarkdown({ content }: { content: string }) {
             <a href={href} target="_blank" rel="noreferrer" className="text-primary underline underline-offset-2">{children}</a>
           ),
           table: ({ children }) => (
-            <div className="my-5 overflow-x-auto rounded-xl border border-border/60">
-              <table className="w-full text-[12.5px]">{children}</table>
+            <div className="my-5 overflow-x-auto rounded-xl border border-border/60 scrollbar-thin scrollbar-thumb-foreground/10 scrollbar-track-transparent">
+              <table className="w-full min-w-[600px] text-[12.5px] border-collapse">{children}</table>
             </div>
           ),
-          th: ({ children }) => <th className="text-left font-semibold text-foreground px-3 py-2 bg-muted/60">{children}</th>,
-          td: ({ children }) => <td className="px-3 py-2 text-muted-foreground border-t border-border/50 align-top">{children}</td>,
+          th: ({ children }) => <th className="text-left font-semibold text-foreground px-4 py-3 bg-muted/60 border border-border/50">{children}</th>,
+          td: ({ children }) => <td className="px-4 py-3 text-muted-foreground border border-border/50 align-top">{children}</td>,
           blockquote: ({ children }) => {
             const text = String(
               (Array.isArray(children) ? children : [children])
