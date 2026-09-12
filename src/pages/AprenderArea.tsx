@@ -596,15 +596,17 @@ const AprenderArea = () => {
                               {/* Efeito de Brilho e Acabamento Laminado da Carta */}
                               <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.03] to-white/[0.12] pointer-events-none z-10" />
 
-                              {/* Marca d'água / Capa Específica da Matéria na Carta */}
+                              {/* Imagem de Fundo (Capa da Matéria Expandida e Original) */}
                               <img
                                 src={coverUrl}
                                 alt=""
                                 aria-hidden="true"
                                 loading="lazy"
                                 decoding="async"
-                                className="pointer-events-none absolute -right-4 -bottom-4 w-[140px] sm:w-[165px] h-[160px] sm:h-[185px] object-cover opacity-45 group-hover:opacity-65 group-hover:scale-105 transition-all duration-300 z-0 select-none filter drop-shadow-[0_5px_12px_rgba(0,0,0,0.65)] mask-image-[linear-gradient(to_bottom,transparent_0%,black_15%,black_85%,transparent_100%)] mix-blend-overlay"
+                                className="pointer-events-none absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0 select-none"
                               />
+                              {/* Overlay Escuro para Contraste do Texto */}
+                              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/95 via-[#0d0f12]/50 to-[#0d0f12]/10 pointer-events-none z-0" />
 
                               {/* Cabeçalho da Carta: Tag Deck no Lado Esquerdo e Sem Ícone */}
                               <div className="flex items-center justify-start z-[1] w-full pt-1">
