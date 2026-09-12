@@ -700,20 +700,46 @@ export function BlocoView({
        }
     }
 
+    let justificativaText = bloco.payload?.justificativa || bloco.payload?.gabarito || bloco.justificativa || '';
+    const gabaritoRegex = /(?:--\s*Alternativa Correta[\s\S]*|☒?\s*GABARITO E JUSTIFICATIVA:[\s\S]*|Gabarito:[\s\S]*|Justificativa:[\s\S]*)/i;
+
+    if (gabaritoRegex.test(rawEnunciado)) {
+      const match = String(rawEnunciado).match(gabaritoRegex);
+      if (match && !justificativaText) justificativaText = match[0];
+      rawEnunciado = String(rawEnunciado).replace(gabaritoRegex, '');
+    }
+
     const enunciado = String(rawEnunciado)
       .replace(/^#{1,3}\s*(?:\d+[-.)]\s*)?[^\n]+\n*/i, '')
       .replace(/^###\s*(?:Enunciado|Julgue[^\n]*):\s*/i, '')
       .replace(/^[\s*]*(?:Enunciado|Questão)[\s*]*:\s*/i, '')
-      .replace(/☒?\s*GABARITO E JUSTIFICATIVA:[\s\S]*/gi, '')
+      .replace(/\[\s*\]\s*$/, '') // Remove stray checkbox or brackets at the end
+      .replace(/☒/g, '')
       .trim();
 
     const opcoes = rawOpcoes.map((op: any, i: number) => {
-      if (typeof op === 'string') {
-        const id = op.toLowerCase() === 'certo' ? 'certo' : op.toLowerCase() === 'errado' ? 'errado' : String.fromCharCode(97 + i);
-        return { id, texto: op };
+      let texto = typeof op === 'string' ? op : (op.texto || '');
+      let id = typeof op === 'string' ? '' : op.id;
+
+      const match = texto.match(gabaritoRegex);
+      if (match) {
+        if (!justificativaText) justificativaText = match[0];
+        texto = texto.replace(gabaritoRegex, '').trim();
       }
-      return op;
+
+      if (!id) {
+        id = texto.toLowerCase() === 'certo' ? 'certo' : texto.toLowerCase() === 'errado' ? 'errado' : String.fromCharCode(97 + i);
+      }
+
+      return { id, texto };
     });
+
+    justificativaText = String(justificativaText)
+      .replace(/^(?:--\s*Alternativa Correta[:\s]*(\([a-eA-E]\)|\w+)?\.?\s*\*Fundamentação\*:\s*)/i, '')
+      .replace(/^(?:☒?\s*GABARITO E JUSTIFICATIVA:\s*)/i, '')
+      .replace(/^(?:Gabarito:\s*)/i, '')
+      .replace(/^(?:Justificativa:\s*)/i, '')
+      .trim();
 
     const correta = String(
       bloco.resposta_correta?.id_correto ??
@@ -1024,6 +1050,33 @@ export function BlocoView({
             </div>
           );
         })()}
+
+        {resposta && justificativaText && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="mt-8 overflow-hidden"
+          >
+            <div className="p-5 sm:p-6 rounded-2xl border border-primary/20 bg-primary/[0.03] backdrop-blur-sm relative">
+              <h4 className="text-primary text-[11px] sm:text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
+                <CheckCircle className="w-4 h-4" />
+                Gabarito Comentado
+              </h4>
+              <div className="prose prose-base max-w-none prose-invert prose-p:leading-[1.75] prose-p:text-neutral-200">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    p: ({ children }) => <p className="mb-4 last:mb-0">{children}</p>,
+                    strong: ({ children }) => <strong className="font-bold text-white">{children}</strong>
+                  }}
+                >
+                  {normalizarMarkdown(justificativaText)}
+                </ReactMarkdown>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {!onSelectOpcao && (
           <AnimatePresence>
