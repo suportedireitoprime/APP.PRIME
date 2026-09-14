@@ -491,18 +491,19 @@ const AprenderArea = () => {
 
                     return (
                       <div key={item.key} className="w-full flex flex-col">
-                        {/* Linha do Card em Zigue-Zague (Alternando Esquerda e Direita) */}
+                        {/* Linha do Card em Zigue-Zague com Card e Título no Lado Oposto Conectado por Linha Fina */}
                         <div
-                          className={`relative z-10 flex w-full items-center ${
-                            isLeft ? 'justify-start pl-3 sm:pl-8 md:pl-12' : 'justify-end pr-3 sm:pr-8 md:pr-12'
-                          }`}
+                          className={cn(
+                            "relative z-10 flex w-full items-center justify-between gap-2 xs:gap-3 sm:gap-6 md:gap-8 px-2 sm:px-6 md:px-10 max-w-3xl lg:max-w-4xl mx-auto group",
+                            isLeft ? "flex-row" : "flex-row-reverse"
+                          )}
                         >
                           {/* ── CONJUNTO DE 3 CARTAS EM FORMATO DE DECK ABERTO EM LEQUE COM ALTURA NIVELADA ── */}
                           <div
                             onClick={item.onClick}
                             onPointerEnter={(item as any).onPrefetch}
                             onTouchStart={(item as any).onPrefetch}
-                            className="relative w-[165px] sm:w-[190px] md:w-[215px] h-[245px] sm:h-[275px] md:h-[295px] cursor-pointer group select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
+                            className="relative shrink-0 w-[140px] xs:w-[155px] sm:w-[185px] md:w-[210px] h-[215px] xs:h-[235px] sm:h-[265px] md:h-[290px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
                           >
                             {/* Medalhão de Milestone / Nó da Trilha Centralizado no Topo (Estável e Elegante) */}
                             <div
@@ -522,8 +523,8 @@ const AprenderArea = () => {
                               className={cn(
                                 "absolute inset-0 rounded-2xl border border-white/10 opacity-40 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
                                 isLeft
-                                  ? "scale-[0.88] rotate-[10deg] translate-x-10 -translate-y-2 group-hover:scale-[0.92] group-hover:rotate-[14deg] group-hover:translate-x-14 group-hover:-translate-y-3"
-                                  : "scale-[0.88] -rotate-[10deg] -translate-x-10 -translate-y-2 group-hover:scale-[0.92] group-hover:-rotate-[14deg] group-hover:-translate-x-14 group-hover:-translate-y-3"
+                                  ? "scale-[0.88] rotate-[6deg] translate-x-3 sm:translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:rotate-[8deg] group-hover:translate-x-5 group-hover:-translate-y-3"
+                                  : "scale-[0.88] -rotate-[6deg] -translate-x-3 sm:-translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:-rotate-[8deg] group-hover:-translate-x-5 group-hover:-translate-y-3"
                               )}
                               style={{
                                 background: palette.cardGradient,
@@ -549,8 +550,8 @@ const AprenderArea = () => {
                               className={cn(
                                 "absolute inset-0 rounded-2xl border border-white/15 opacity-75 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
                                 isLeft
-                                  ? "scale-[0.94] rotate-[5deg] translate-x-5 -translate-y-1 group-hover:scale-[0.96] group-hover:rotate-[7deg] group-hover:translate-x-7 group-hover:-translate-y-2"
-                                  : "scale-[0.94] -rotate-[5deg] -translate-x-5 -translate-y-1 group-hover:scale-[0.96] group-hover:-rotate-[7deg] group-hover:-translate-x-7 group-hover:-translate-y-2"
+                                  ? "scale-[0.94] rotate-[3deg] translate-x-1.5 sm:translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:rotate-[4deg] group-hover:translate-x-3 group-hover:-translate-y-2"
+                                  : "scale-[0.94] -rotate-[3deg] -translate-x-1.5 sm:-translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:-rotate-[4deg] group-hover:-translate-x-3 group-hover:-translate-y-2"
                               )}
                               style={{
                                 background: palette.cardGradient,
@@ -574,7 +575,7 @@ const AprenderArea = () => {
                             {/* ── CARTA 3 (Principal Frontal - Centro Estável) ── */}
                             <div
                               className={cn(
-                                "relative w-full h-full p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 hover:border-amber-400/60 transition-all duration-300 origin-bottom",
+                                "relative w-full h-full p-2.5 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 hover:border-amber-400/60 transition-all duration-300 origin-bottom",
                                 isLeft
                                   ? "group-hover:-rotate-[1deg] group-hover:-translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)] group-hover:shadow-[0_22px_45px_rgba(0,0,0,0.85)]"
                                   : "group-hover:rotate-[1deg] group-hover:translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)] group-hover:shadow-[0_22px_45px_rgba(0,0,0,0.85)]"
@@ -602,27 +603,38 @@ const AprenderArea = () => {
                                 decoding="async"
                                 className="pointer-events-none absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0 select-none"
                               />
-                              {/* Overlay Escuro para Contraste do Texto */}
-                              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/90 via-[#0d0f12]/10 to-transparent pointer-events-none z-0" />
+                              {/* Overlay para Contraste do Topo e Rodapé, mantendo o centro limpo para a ilustração */}
+                              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/90 via-black/10 to-[#0d0f12]/50 pointer-events-none z-0" />
 
-                              {/* Cabeçalho da Carta: Tag Deck no Lado Esquerdo e Sem Ícone */}
+                              {/* Cabeçalho da Carta: Tag Deck no Lado Esquerdo */}
                               <div className="flex items-center justify-start z-[1] w-full pt-1">
-                                <span className="inline-flex items-center text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full backdrop-blur-md bg-black/45 text-white/95 border border-white/20 shadow-sm whitespace-nowrap">
+                                <span className="inline-flex items-center text-[9.5px] sm:text-[11px] font-bold uppercase tracking-wider px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full backdrop-blur-md bg-black/50 text-white/95 border border-white/20 shadow-sm whitespace-nowrap">
                                   <span>{item.badgeLabel}</span>
                                 </span>
                               </div>
 
-                              {/* Centro da Carta: Título do Tema sem negrito (font-normal) */}
-                              <div className="my-auto py-2.5 z-[1] w-full px-1">
-                                <h3 className="font-sans font-normal text-[16px] sm:text-[17.5px] md:text-[18.5px] leading-snug break-words text-white drop-shadow-md group-hover:text-amber-200 transition-colors line-clamp-3">
-                                  {item.titulo}
-                                </h3>
+                              {/* Centro da Carta: Ícone de Player (Destaque Elegante para Iniciar o Deck) */}
+                              <div className="my-auto py-2 z-[1] w-full flex items-center justify-center">
+                                <div className="relative flex items-center justify-center">
+                                  {/* Pulso luminoso no hover */}
+                                  <div
+                                    className="absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-125 pointer-events-none"
+                                    style={{ backgroundColor: `${palette.primary}50` }}
+                                  />
+
+                                  {/* Botão de Play Minimalista e Moderno */}
+                                  <div
+                                    className="relative w-10 h-10 xs:w-11 xs:h-11 sm:w-13 sm:h-13 rounded-full bg-black/50 backdrop-blur-md border border-white/30 flex items-center justify-center text-white/90 shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:border-amber-300 group-hover:bg-amber-500 group-hover:text-black group-hover:shadow-[0_0_22px_rgba(245,158,11,0.6)]"
+                                  >
+                                    <Play className="w-4 h-4 xs:w-5 xs:h-5 sm:w-5.5 sm:h-5.5 fill-current translate-x-0.5 transition-colors" />
+                                  </div>
+                                </div>
                               </div>
 
                               {/* Rodapé da Carta: Progresso e Estatísticas */}
-                              <div className="z-[1] pt-2 border-t border-white/20 w-full px-0.5">
+                              <div className="z-[1] pt-1.5 sm:pt-2 border-t border-white/20 w-full px-0.5">
                                 <div>
-                                  <div className="flex items-center justify-between text-[10.5px] sm:text-[11px] font-normal text-white/95 mb-1.5">
+                                  <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-normal text-white/95 mb-1 sm:mb-1.5">
                                     <span className="truncate">
                                       {item.displayConcluidas > 0
                                         ? `${item.displayConcluidas}/${item.displayTotal} concluídos`
@@ -630,7 +642,7 @@ const AprenderArea = () => {
                                     </span>
                                     <span className="font-semibold font-sans ml-1">{item.displayPct}%</span>
                                   </div>
-                                  <div className="w-full bg-black/50 h-2 rounded-full overflow-hidden border border-white/20">
+                                  <div className="w-full bg-black/50 h-1.5 sm:h-2 rounded-full overflow-hidden border border-white/20">
                                     <div
                                       className="h-full rounded-full transition-all duration-500 shadow-sm"
                                       style={{
@@ -643,11 +655,80 @@ const AprenderArea = () => {
                               </div>
                             </div>
                           </div>
+
+                          {/* ── LINHA FINA CONECTORA E TÍTULO NO LADO OPOSTO ── */}
+                          <div
+                            onClick={item.onClick}
+                            onPointerEnter={(item as any).onPrefetch}
+                            onTouchStart={(item as any).onPrefetch}
+                            className={cn(
+                              "flex-1 min-w-0 flex items-center cursor-pointer select-none py-2 transition-all",
+                              isLeft
+                                ? "flex-row pl-1.5 xs:pl-2 sm:pl-3"
+                                : "flex-row-reverse pr-1.5 xs:pr-2 sm:pr-3"
+                            )}
+                          >
+                            {/* Linha Fina Conectora com Degradê */}
+                            <div
+                              className={cn(
+                                "flex items-center shrink-0 w-6 xs:w-8 sm:w-12 md:w-16",
+                                isLeft ? "flex-row" : "flex-row-reverse"
+                              )}
+                            >
+                              {/* Ponto de Ancoragem na Lateral do Card */}
+                              <div
+                                className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full border border-white/70 shrink-0 transition-transform duration-300 group-hover:scale-125"
+                                style={{
+                                  backgroundColor: palette.primary,
+                                  boxShadow: `0 0 8px ${palette.primary}`,
+                                }}
+                              />
+                              {/* Linha Fina */}
+                              <div
+                                className="flex-1 h-[1px] transition-all duration-300 group-hover:h-[1.5px]"
+                                style={{
+                                  background: isLeft
+                                    ? `linear-gradient(to right, ${palette.primary}, rgba(255,255,255,0.3), transparent)`
+                                    : `linear-gradient(to left, ${palette.primary}, rgba(255,255,255,0.3), transparent)`,
+                                }}
+                              />
+                            </div>
+
+                            {/* Nome do Card em Letras Finas (Conforme Solicitado) */}
+                            <div
+                              className={cn(
+                                "flex-1 min-w-0 flex flex-col justify-center px-1.5 xs:px-2.5 sm:px-4 transition-transform duration-300 group-hover:-translate-y-0.5",
+                                isLeft ? "items-start text-left" : "items-end text-right"
+                              )}
+                            >
+                              <div
+                                className={cn(
+                                  "flex items-center gap-1.5 mb-1 opacity-80",
+                                  isLeft ? "justify-start" : "justify-end"
+                                )}
+                              >
+                                <span
+                                  className="text-[9.5px] sm:text-[11px] font-normal uppercase tracking-wider"
+                                  style={{ color: palette.primary }}
+                                >
+                                  {item.badgeLabel}
+                                </span>
+                                <span className="w-1 h-1 rounded-full bg-white/25" />
+                                <span className="text-[9.5px] sm:text-[11px] font-light text-zinc-400">
+                                  {item.displayTotal} flashcards
+                                </span>
+                              </div>
+
+                              <h3 className="font-sans font-light text-[13.5px] xs:text-[15px] sm:text-[17px] md:text-[19px] lg:text-[20px] leading-snug break-words text-zinc-100 group-hover:text-amber-200 transition-colors drop-shadow-sm line-clamp-3 sm:line-clamp-4">
+                                {item.titulo}
+                              </h3>
+                            </div>
+                          </div>
                         </div>
 
                         {/* Conector Serpenteante de Trilha em Zigue-Zague Conectando Suavemente de Deck a Deck */}
                         {i < itemsToRender.length - 1 && (
-                          <div className="relative w-full h-16 sm:h-20 -my-1.5 sm:-my-2 pointer-events-none z-[5] overflow-visible">
+                          <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-16 sm:h-20 -my-1.5 sm:-my-2 pointer-events-none z-[5] overflow-visible">
                             <svg
                               className="w-full h-full overflow-visible"
                               viewBox="0 0 100 100"

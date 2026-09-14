@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { animate } from 'framer-motion';
 import { areaIconFor } from '@/lib/areasDireitoIcons';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
@@ -80,9 +81,14 @@ function formatTemaBreadcrumb(raw: string): string[] {
 const FlashcardsEstudo = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
   const fromPath = (location.state as any)?.from;
 
   const handleBack = () => {
+    // Invalida cache das trilhas de flashcards ao sair
+    queryClient.invalidateQueries({ queryKey: ['area_flashcards_temas'] });
+    queryClient.invalidateQueries({ queryKey: ['flashcards_areas_resumo'] });
+    
     if (fromPath) {
       navigate(fromPath);
     } else if (window.history.length > 2) {
@@ -102,7 +108,8 @@ const FlashcardsEstudo = () => {
     exitDirection, sessionPerTitle,
     ordemParam, toggleOrdem,
     gateFlashcards, refetchCards,
-    areaParam, temasParam, setFeitos
+    areaParam, temasParam, setFeitos,
+    savedIndexToResume, confirmResume,
   } = useFlashcardsEngine();
 
   const corParam = params.get('cor');
@@ -479,6 +486,33 @@ const FlashcardsEstudo = () => {
       {/* Sheets de Categorias */}
       {areaSheet && (
         <AreaTemasSheet area={areaSheet} open={!!areaSheet} onOpenChange={(v) => !v && setAreaSheet(null)} />
+      )}
+
+      {/* Modal Minimalista de Retomada */}
+      {savedIndexToResume !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+          <div className="bg-[#0d0f12] border border-white/10 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl animate-in zoom-in-95 duration-300">
+            <h3 className="text-[19px] font-extrabold text-white mb-2">Retomar Estudo?</h3>
+            <p className="text-sm text-zinc-400 mb-6">
+              Você parou no flashcard <strong className="text-white">{savedIndexToResume + 1}</strong>. Deseja continuar ou recomeçar?
+            </p>
+            <div className="flex flex-col gap-3">
+              <Button 
+                onClick={() => { haptic.selection(); confirmResume(true); }}
+                className="w-full h-12 rounded-2xl font-bold bg-amber-500 hover:bg-amber-600 text-black border-none"
+              >
+                Continuar de onde parei
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => { haptic.selection(); confirmResume(false); }}
+                className="w-full h-12 rounded-2xl font-bold border-white/10 text-zinc-300 hover:bg-white/5 hover:text-white"
+              >
+                Começar do zero
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -115,10 +115,7 @@ export const FlashcardsMasterDeck: React.FC<FlashcardsMasterDeckProps> = memo(({
   const handleOpenActive = useCallback(() => {
     if (!activeArea) return;
     try { haptic.impact(); } catch {}
-    const p = new URLSearchParams();
-    p.set('areas', activeArea.area);
-    p.set('limite', 'todos');
-    navigate(`/flashcards/estudar?${p.toString()}`);
+    navigate(`/aprender/area/${activeArea.slug || activeArea.area}?tab=flashcards`);
   }, [activeArea, navigate]);
 
   if (!areas || areas.length === 0) return null;
@@ -196,38 +193,43 @@ export const FlashcardsMasterDeck: React.FC<FlashcardsMasterDeckProps> = memo(({
                       frente ? "border-2 border-white/40 shadow-2xl" : "border border-white/20 shadow-black/80"
                     )}
                     style={{
-                      background: `linear-gradient(145deg, ${palette.primary} 0%, #1a1a1a 100%)`,
+                      backgroundColor: palette.primary,
+                      backgroundImage: coverUrl ? `url(${coverUrl})` : `linear-gradient(145deg, ${palette.primary} 0%, #1a1a1a 100%)`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
                       filter: frente ? 'none' : 'brightness(0.65)',
                     }}
                   >
                     {/* Watermark Icon */}
-                    <div className="absolute right-[-15%] bottom-[-10%] opacity-[0.07] pointer-events-none z-0 mix-blend-overlay">
-                      {iconInfo?.Icon && <iconInfo.Icon className="w-48 h-48 sm:w-64 sm:h-64" />}
-                    </div>
+                    {!coverUrl && (
+                      <div className="absolute right-[-15%] bottom-[-10%] opacity-[0.07] pointer-events-none z-0 mix-blend-overlay">
+                        {iconInfo?.Icon && <iconInfo.Icon className="w-48 h-48 sm:w-64 sm:h-64" />}
+                      </div>
+                    )}
 
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent pointer-events-none z-0" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none z-0" />
                     <div className="absolute inset-0 -translate-x-[150%] group-hover:translate-x-[150%] bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-[-25deg] transition-transform duration-1000 ease-in-out pointer-events-none z-10" />
                     <div className="absolute inset-1.5 rounded-[16px] border border-white/20 pointer-events-none z-10" />
                     <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.04] to-white/[0.14] pointer-events-none z-10" />
 
                     <div className="flex items-center justify-center w-full relative z-10 mt-1">
-                      <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-md bg-black/40 text-white border border-white/25 shadow-md text-center leading-none">
+                      <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-md bg-black/50 text-white border border-white/25 shadow-md text-center leading-none">
                         {nomeMateriaTag}
                       </span>
                     </div>
 
-                    <div className="mt-auto mb-3 py-2 text-center relative z-10 px-1 flex flex-col items-center">
+                    <div className="absolute bottom-0 left-0 right-0 pt-16 pb-4 text-center z-10 px-2 flex flex-col items-center bg-gradient-to-t from-[#0a0a0a]/95 via-[#0a0a0a]/70 to-transparent rounded-b-[20px]">
                       {frente && (
-                        <div className="mb-2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#34D399]/90 hover:bg-[#34D399] border border-white/30 backdrop-blur-md text-[#050505] flex items-center justify-center shadow-[0_0_15px_rgba(52,211,153,0.5)] group-hover:scale-110 transition-transform">
+                        <div className="mb-2.5 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#34D399]/90 hover:bg-[#34D399] border border-white/30 backdrop-blur-md text-[#050505] flex items-center justify-center shadow-[0_0_15px_rgba(52,211,153,0.5)] group-hover:scale-110 transition-transform">
                           <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-current translate-x-0.5" />
                         </div>
                       )}
 
-                      <h3 className="text-sm sm:text-base font-bold leading-snug text-white drop-shadow-lg line-clamp-2" style={{ fontFamily: "'Merriweather', 'Georgia', serif" }}>
+                      <h3 className="text-[15px] sm:text-[17px] font-bold leading-tight text-white drop-shadow-md line-clamp-2" style={{ fontFamily: "'Barlow', system-ui, sans-serif", letterSpacing: '-0.01em' }}>
                         {area.area}
                       </h3>
 
-                      <p className="text-[11px] sm:text-xs text-white/80 mt-1 drop-shadow-sm font-medium">
+                      <p className="text-[11px] sm:text-xs text-white/90 mt-1 drop-shadow-sm font-medium">
                         {area.total_cards > 0 ? `${area.total_cards} flashcards` : 'Em breve'}
                       </p>
                     </div>

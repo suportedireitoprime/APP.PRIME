@@ -119,11 +119,15 @@ export function useSubscription(options: Options = {}): SubscriptionState {
           return true;
         }
 
-        // 2.5 Verifica se o usuário está no período de teste gratuito
-        const trialEndsAt = user.user_metadata?.trial_ends_at;
-        if (trialEndsAt && new Date(trialEndsAt) > new Date()) {
+        // 2.5 Verifica se o usuário está no período de teste de 3 dias (baseado na criação da conta)
+        const createdAt = new Date(user.created_at);
+        const trialEndsAt = user.user_metadata?.trial_ends_at 
+          ? new Date(user.user_metadata.trial_ends_at) 
+          : new Date(createdAt.getTime() + 3 * 24 * 60 * 60 * 1000);
+
+        if (trialEndsAt > new Date()) {
           persist({
-            isPremium: true, loading: false, plano: 'Teste de 3 Dias', startedAt: null, expiresAt: trialEndsAt, source: null, status: 'SUBSCRIPTION_STATE_ACTIVE', isAdminOverride: false,
+            isPremium: true, loading: false, plano: 'Teste de 3 Dias', startedAt: createdAt.toISOString(), expiresAt: trialEndsAt.toISOString(), source: null, status: 'SUBSCRIPTION_STATE_ACTIVE', isAdminOverride: false,
           });
           return true;
         }

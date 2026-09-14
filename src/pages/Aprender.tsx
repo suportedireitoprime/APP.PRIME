@@ -16,7 +16,6 @@ import {
   AprenderMateriasContent,
   AprenderLeftSidebar,
   AprenderRightSidebar,
-  AprenderNonAdminOverlay,
 } from '@/components/aprender/chunks';
 
 const Aprender = () => {
@@ -152,8 +151,6 @@ const Aprender = () => {
           />
         </div>
 
-        {/* Overlay de Bloqueio para Não-Admins */}
-        {!isAdmin && <AprenderNonAdminOverlay />}
       </div>
 
       <AprenderLembretesSheet open={lembretesOpen} onOpenChange={setLembretesOpen} />

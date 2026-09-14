@@ -139,7 +139,7 @@ const Flashcards = () => {
              <div className="flex items-center gap-2 mb-2">
               <span className="h-4 w-1 rounded-full bg-[#36AF85]" />
               <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                Matérias
+                Matérias e Trilhas
               </p>
             </div>
             {areasRaw && areasRaw.length > 0 && (

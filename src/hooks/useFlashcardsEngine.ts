@@ -97,6 +97,8 @@ export function useFlashcardsEngine() {
     }
   }, [cardsRaw, ordemParam, artigosParam, quantidadeParam, subtemaParam]);
 
+  const [savedIndexToResume, setSavedIndexToResume] = useState<number | null>(null);
+
   // Ponto de Retomada
   const sessionKey = `flashcards_pos_${areaParam || areasParam || deckId || 'geral'}_${temasParam || 'todos'}`;
 
@@ -106,17 +108,27 @@ export function useFlashcardsEngine() {
       if (savedIdx) {
         const parsed = parseInt(savedIdx, 10);
         if (!isNaN(parsed) && parsed > 0 && parsed < cards.length) {
-          setIdx(parsed);
+          setSavedIndexToResume(parsed);
         }
       }
     }
   }, [cards, sessionKey]);
 
+  const confirmResume = useCallback((shouldResume: boolean) => {
+    if (shouldResume && savedIndexToResume !== null) {
+      setIdx(savedIndexToResume);
+    } else {
+      setIdx(0);
+      localStorage.setItem(sessionKey, '0');
+    }
+    setSavedIndexToResume(null);
+  }, [savedIndexToResume, sessionKey]);
+
   useEffect(() => {
-    if (cards.length > 0 && idx >= 0) {
+    if (cards.length > 0 && idx >= 0 && savedIndexToResume === null) {
       localStorage.setItem(sessionKey, idx.toString());
     }
-  }, [idx, cards.length, sessionKey]);
+  }, [idx, cards.length, sessionKey, savedIndexToResume]);
 
   useEffect(() => {
     const s = getFlashcardsSessoes().find(s => s.id === sessaoId);
@@ -257,6 +269,8 @@ export function useFlashcardsEngine() {
     refetchCards,
     areaParam,
     temasParam,
-    setFeitos
+    setFeitos,
+    savedIndexToResume,
+    confirmResume,
   };
 }

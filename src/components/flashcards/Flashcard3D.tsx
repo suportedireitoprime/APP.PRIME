@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { FlashcardCard } from '@/lib/flashcardsQueries';
 import { getAreaThemePalette } from '@/lib/areasDireitoIcons';
 import { PremiumMarkdown } from '@/components/ui/PremiumMarkdown';
+import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 type Flashcard3DProps = {
