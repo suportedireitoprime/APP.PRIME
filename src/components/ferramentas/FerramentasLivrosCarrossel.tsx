@@ -1,0 +1,353 @@
+import { memo, useEffect, useRef, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Library, Clock, ArrowUpRight, ChevronRight } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { findColecao, normalizeLivro, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
+import { cdnImg, directImg, prefetchImages } from '@/lib/cdnImg';
+import { getPersistedColecao, setPersistedColecao } from '@/services/offlineDb';
+import { withBundleFallback, bundle } from '@/services/offlineBundle';
+import { haptic } from '@/lib/nativeHaptics';
+import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
+import CarouselDots from '@/components/vademecum/home/carousel/CarouselDots';
+
+const FALLBACK_CLASSICOS: LivroNormalizado[] = [
+  {
+    id: 144,
+    titulo: 'Teoria Pura do Direito',
+    autor: 'Hans Kelsen',
+    sobre: 'Obra fundamental da Teoria do Direito Positivo e do Normativismo Jurídico.',
+    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg', 300),
+    link: null,
+    download: 'https://drive.google.com/file/d/1XFuOCvzSjk_XWO4xGaWwNqWG_6MsxYYl/view?usp=drive_link',
+    area: 'Teoria do Direito',
+    colecaoId: 'classicos',
+  },
+  {
+    id: 138,
+    titulo: 'Sobre a Liberdade',
+    autor: 'John Stuart Mill',
+    sobre: 'Ensaio clássico sobre os limites do poder da sociedade sobre o indivíduo.',
+    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/sobre_a_liberdade_manual.jpg', 300),
+    link: null,
+    download: 'https://drive.google.com/file/d/1WeTT6eY67FoI7Jh9HuSKmrvgSwOF5iyr/view?usp=drivesdk',
+    area: 'Filosofia Política',
+    colecaoId: 'classicos',
+  },
+  {
+    id: 141,
+    titulo: 'Ética a Nicômaco',
+    autor: 'Aristóteles',
+    sobre: 'Tratado clássico sobre a virtude, a justiça e a busca da felicidade.',
+    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.jpg', 300),
+    link: null,
+    download: 'https://drive.google.com/file/d/1fDqngE5NhIvFiVD6GE2t_ebdepqP0uH9/view?usp=drivesdk',
+    area: 'Filosofia do Direito',
+    colecaoId: 'classicos',
+  },
+  {
+    id: 140,
+    titulo: 'O Príncipe',
+    autor: 'Nicolau Maquiavel',
+    sobre: 'Tratado de ciência política sobre o exercício e a manutenção do poder.',
+    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_arte_da_guerra_manual.jpg', 300),
+    link: null,
+    download: 'https://drive.google.com/file/d/1fxskqftGKsAoCYWElzSX9NGZ3dj7E8O7/view?usp=drivesdk',
+    area: 'Filosofia Política',
+    colecaoId: 'classicos',
+  },
+  {
+    id: 126,
+    titulo: 'O Leviatã',
+    autor: 'Thomas Hobbes',
+    sobre: 'Tratado sobre soberania, contrato social e filosofia política moderna.',
+    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_luta_pelo_direito_manual.jpg', 300),
+    link: null,
+    download: 'https://drive.google.com/file/d/15oWYvvoQT3OLhS32VU2vB2MGz-8KnHTE/view?usp=drivesdk',
+    area: 'Filosofia Política',
+    colecaoId: 'classicos',
+  },
+];
+
+const AUTOPLAY_MS = 8000;
+
+export const FerramentasLivrosCarrossel = () => {
+  const navigate = useNavigate();
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const autoplayRef = useRef<number | null>(null);
+  const userInteractingRef = useRef(false);
+
+  const [livros, setLivros] = useState<LivroNormalizado[]>(FALLBACK_CLASSICOS);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [selectedLivro, setSelectedLivro] = useState<LivroNormalizado | null>(null);
+
+  // Carrega do cache persistido e da base de clássicos
+  useEffect(() => {
+    let mounted = true;
+
+    // Hidratação rápida offline-first
+    getPersistedColecao<LivroNormalizado>('classicos').then((cached) => {
+      if (mounted && cached && cached.length > 0) {
+        setLivros(cached.slice(0, 15));
+      }
+    });
+
+    const colecaoClassicos = findColecao('classicos');
+    if (!colecaoClassicos) return;
+
+    const fetchBooks = async () => {
+      try {
+        const query = supabase
+          .from('biblioteca_classicos')
+          .select('id, livro, autor, area, imagem, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url, paginas, minutos_leitura')
+          .not('imagem', 'is', null)
+          .limit(20);
+
+        const data = await withBundleFallback(
+          query.then((res) => {
+            if (res.error) throw res.error;
+            return res.data;
+          }),
+          async () => {
+            const rows = await bundle.bibliotecaClassicos();
+            return rows || [];
+          }
+        );
+
+        if (mounted && Array.isArray(data) && data.length > 0) {
+          const normalized = data.map((r: any) => normalizeLivro(r, colecaoClassicos));
+          setLivros(normalized.slice(0, 15));
+          setPersistedColecao('classicos', normalized).catch(() => {});
+
+          prefetchImages(
+            normalized.slice(0, 6).map((l) => (l.capa ? cdnImg(l.capa, 240) : null))
+          );
+        }
+      } catch (err) {
+        // Usa fallback silenciosamente em caso de erro
+      }
+    };
+
+    fetchBooks();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const scrollToIndex = useCallback((idx: number, behavior: ScrollBehavior = 'smooth') => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+    const child = scroller.children[idx] as HTMLElement | undefined;
+    if (!child) return;
+    const target = child.offsetLeft - (scroller.clientWidth - child.clientWidth) / 2;
+    scroller.scrollTo({ left: target, behavior });
+  }, []);
+
+  // Autoplay
+  useEffect(() => {
+    if (livros.length < 2) return;
+    const tick = () => {
+      if (userInteractingRef.current) return;
+      const next = (activeIndex + 1) % livros.length;
+      setActiveIndex(next);
+      scrollToIndex(next);
+    };
+    autoplayRef.current = window.setInterval(tick, AUTOPLAY_MS);
+    return () => {
+      if (autoplayRef.current) window.clearInterval(autoplayRef.current);
+    };
+  }, [activeIndex, livros.length, scrollToIndex]);
+
+  // Observer de interseção para atualizar o slide ativo ao arrastar
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller || livros.length === 0) return;
+
+    const ratios = new Map<Element, number>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          ratios.set(entry.target, entry.intersectionRatio);
+        });
+
+        let maxRatio = -1;
+        let bestTarget: Element | null = null;
+        ratios.forEach((ratio, target) => {
+          if (ratio > maxRatio) {
+            maxRatio = ratio;
+            bestTarget = target;
+          }
+        });
+
+        if (bestTarget) {
+          const idx = Array.from(scroller.children).indexOf(bestTarget);
+          if (idx !== -1) setActiveIndex(idx);
+        }
+      },
+      {
+        root: scroller,
+        threshold: Array.from({ length: 11 }, (_, i) => i / 10),
+      }
+    );
+
+    Array.from(scroller.children).forEach((child) => observer.observe(child));
+    return () => observer.disconnect();
+  }, [livros.length]);
+
+  const pauseAutoplay = () => {
+    userInteractingRef.current = true;
+    window.setTimeout(() => {
+      userInteractingRef.current = false;
+    }, 4000);
+  };
+
+  const handleOpenLivro = (livro: LivroNormalizado) => {
+    haptic.selection();
+    setSelectedLivro(livro);
+  };
+
+  if (!livros.length) return null;
+
+  return (
+    <section className="space-y-3 -mx-4 sm:-mx-6">
+      {/* Cabeçalho do Carrossel de Livros */}
+      <div className="px-4 sm:px-6">
+        <div className="flex items-center justify-between pb-1 border-b border-border/40 mb-1">
+          <div className="flex items-center gap-2">
+            <span className="w-1 h-5 rounded-full bg-primary" />
+            <h2 className="font-display text-lg font-bold text-foreground tracking-wide">
+              LIVROS JURÍDICOS
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              haptic.selection();
+              navigate('/biblioteca?aba=acervos');
+            }}
+            className="flex items-center gap-1 text-xs font-semibold text-primary hover:text-primary/80 active:scale-95 transition-all"
+          >
+            <span>Ver acervo</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+        <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3 truncate">
+          clássicos e obras fundamentais do Direito
+        </p>
+      </div>
+
+      {/* Faixa Carrossel Horizontal */}
+      <div
+        ref={scrollerRef}
+        onPointerDown={pauseAutoplay}
+        onTouchStart={pauseAutoplay}
+        className="flex gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-1 px-[7.5%] md:px-[4%] lg:px-[3%] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {livros.map((livro, i) => {
+          const isActive = i === activeIndex;
+          const meta = livro.autor ? `${livro.autor} · ${livro.area ?? 'Clássicos'}` : (livro.area ?? 'Clássico do Direito');
+
+          return (
+            <motion.button
+              key={`${livro.id}-${i}`}
+              type="button"
+              onClick={() => handleOpenLivro(livro)}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: Math.min(i * 0.04, 0.2) }}
+              className="snap-center shrink-0 w-[85%] md:w-[46%] lg:w-[31%] active:scale-[0.99] text-left"
+            >
+              <div
+                className={`relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 flex transform-gpu will-change-transform bg-brand-gradient ${
+                  isActive ? 'opacity-100 scale-100 shadow-lg' : 'opacity-85 scale-[0.98]'
+                }`}
+              >
+                {/* SVGs jurídicos decorativos ao fundo */}
+                <svg
+                  aria-hidden
+                  viewBox="0 0 200 200"
+                  className="pointer-events-none absolute -right-4 -bottom-6 w-[130px] h-[130px] text-white/10"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M100 30 V170 M70 170 H130 M100 55 L55 95 M100 55 L145 95" strokeLinecap="round" />
+                  <path d="M35 95 Q55 135 75 95 Z" />
+                  <path d="M125 95 Q145 135 165 95 Z" />
+                </svg>
+                <svg
+                  aria-hidden
+                  viewBox="0 0 100 100"
+                  className="pointer-events-none absolute top-2 right-14 w-[54px] h-[54px] text-white/10"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                >
+                  <path d="M18 78 L58 38" />
+                  <rect x="52" y="20" width="30" height="14" rx="2" transform="rotate(45 67 27)" />
+                  <path d="M10 88 H50" />
+                </svg>
+
+                {/* Capa do livro */}
+                <div className="relative h-full w-[104px] shrink-0 flex items-center justify-center px-2.5 z-[1]">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Library className="w-8 h-8 text-white/30" />
+                  </div>
+                  {livro.capa && (
+                    <img
+                      src={cdnImg(livro.capa, 240)}
+                      alt={livro.titulo}
+                      loading="eager"
+                      fetchPriority="high"
+                      decoding="async"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                      className="relative h-[118px] w-auto max-w-full object-contain rounded-md z-[2]"
+                      style={{
+                        boxShadow:
+                          '0 14px 26px -8px rgba(0,0,0,0.75), 0 6px 12px -4px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,0,0,0.25)',
+                      }}
+                    />
+                  )}
+                </div>
+
+                {/* Detalhes à direita */}
+                <div className="relative flex-1 min-w-0 flex flex-col justify-end px-3.5 pb-3 pt-3 z-[1]">
+                  <span className="self-start flex items-center gap-1 text-[9.5px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider text-white mb-1.5 bg-black/35 backdrop-blur-sm">
+                    <Library className="w-2.5 h-2.5" />
+                    Clássico
+                  </span>
+                  <div className="flex items-center gap-1.5 mb-1 text-[11px] text-white/85">
+                    <Clock className="w-3 h-3 shrink-0" />
+                    <span className="truncate">{meta}</span>
+                  </div>
+                  <p className="font-display text-white text-[14px] font-semibold leading-snug line-clamp-2 drop-shadow-sm">
+                    {livro.titulo}
+                  </p>
+                  <div className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-md">
+                    <ArrowUpRight className="w-3 h-3 text-white" strokeWidth={2.2} />
+                  </div>
+                </div>
+              </div>
+            </motion.button>
+          );
+        })}
+      </div>
+
+      {/* Indicadores de Paginação */}
+      <CarouselDots total={livros.length} activeIndex={activeIndex} />
+
+      {/* Sheet Modal com Detalhes Completos, Leitor e Resumo em Áudio */}
+      <LivroDetailSheet
+        livro={selectedLivro}
+        open={!!selectedLivro}
+        onClose={() => setSelectedLivro(null)}
+      />
+    </section>
+  );
+};
+
+export default memo(FerramentasLivrosCarrossel);

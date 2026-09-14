@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChevronRight } from 'lucide-react';
 import { DESKTOP_TOOL_GROUPS } from '@/config/desktopTools';
+import FerramentasLivrosCarrossel from './FerramentasLivrosCarrossel';
 
 interface FerramentasDesktopGridProps {
   onToolClick: (id: string, route?: string) => void;
@@ -9,7 +10,11 @@ interface FerramentasDesktopGridProps {
 export const FerramentasDesktopGrid: React.FC<FerramentasDesktopGridProps> = ({ onToolClick }) => {
   return (
     <div className="mx-auto w-full max-w-[1600px] space-y-10">
+      {/* Carrossel exclusivo de Livros */}
+      <FerramentasLivrosCarrossel />
+
       {DESKTOP_TOOL_GROUPS.map((group) => (
+
         <section key={group.id}>
           <div className="mb-4 flex items-baseline gap-3 border-b border-border pb-2">
             <h2 className="font-display text-lg font-bold text-foreground">{group.label}</h2>

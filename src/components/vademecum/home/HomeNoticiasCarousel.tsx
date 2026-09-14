@@ -2,16 +2,11 @@ import { useEffect, useRef, useState, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { type Noticia } from '@/services/noticiasService';
 import NoticiaViewerSheet from '@/components/vademecum/blog/NoticiaViewerSheet';
-import BlogPostSheet from '@/components/vademecum/blog/BlogPostSheet';
-import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
-import { findColecao, normalizeLivro, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
-import { type BlogPost } from '@/data/blogPosts';
 import { resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 import { AUTOPLAY_MS, FeedItem } from './carousel/carouselTypes';
 import { useHomeFeed } from './carousel/useHomeFeed';
 import CarouselHeaderTitle from './carousel/CarouselHeaderTitle';
-import CarouselLivroCard from './carousel/CarouselLivroCard';
 import CarouselMediaCard from './carousel/CarouselMediaCard';
 import CarouselDots from './carousel/CarouselDots';
 
@@ -41,18 +36,15 @@ function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: Props) {
   }, []);
 
   const [selectedNoticia, setSelectedNoticia] = useState<Noticia | null>(null);
-  const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
-  const [selectedLivro, setSelectedLivro] = useState<LivroNormalizado | null>(null);
-
-  const activeItem = feed[activeIndex];
 
   useEffect(() => {
-    const hasOpen = !!selectedNoticia || !!selectedPost || !!selectedLivro;
+    const hasOpen = !!selectedNoticia;
     onOpenChange?.(hasOpen);
     if (!hasOpen) {
       resetBodyScrollLock();
     }
-  }, [selectedNoticia, selectedPost, selectedLivro, onOpenChange]);
+  }, [selectedNoticia, onOpenChange]);
+
 
   const scrollToIndex = useCallback((idx: number, behavior: ScrollBehavior = 'smooth') => {
     const scroller = scrollerRef.current;
@@ -132,30 +124,6 @@ function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: Props) {
   const handleOpen = useCallback((item: FeedItem) => {
     if (item.kind === 'noticia') {
       setSelectedNoticia(item.data);
-    } else if (item.kind === 'blog') {
-      setSelectedPost(item.data);
-    } else if (item.kind === 'livro') {
-      const l = item.data;
-      const colecaoClassicos = findColecao('classicos');
-      const normalized = colecaoClassicos
-        ? normalizeLivro(l, colecaoClassicos)
-        : {
-            id: l.id,
-            titulo: l.livro ?? 'Clássico',
-            autor: l.autor,
-            sobre: l.sobre,
-            capa: l.imagem,
-            link: l.link,
-            download: l.download,
-            area: l.area,
-            colecaoId: 'classicos',
-            capaHorizontal: l.capa_horizontal,
-            anoLancamento: l.ano_lancamento,
-            editora: l.editora,
-            curiosidades: l.curiosidades,
-            analiseDetalhada: l.analise_detalhada,
-          };
-      setSelectedLivro(normalized);
     }
   }, []);
 
@@ -170,11 +138,9 @@ function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: Props) {
     );
   }
 
-  const kind = activeItem?.kind ?? 'noticia';
-
   return (
     <div className="space-y-2.5">
-      <CarouselHeaderTitle kind={kind} />
+      <CarouselHeaderTitle kind="noticia" />
 
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
@@ -188,35 +154,24 @@ function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: Props) {
           onTouchStart={pauseAutoplay}
           className="flex gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-1 px-[7.5%] md:px-[4%] lg:px-[3%] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
-          {feed.map((item, i) =>
-            item.kind === 'livro' ? (
-              <CarouselLivroCard
-                key={item.id}
-                item={item}
-                isActive={i === activeIndex}
-                index={i}
-                onOpen={handleOpen}
-              />
-            ) : (
-              <CarouselMediaCard
-                key={item.id}
-                item={item}
-                isActive={i === activeIndex}
-                index={i}
-                onOpen={handleOpen}
-              />
-            )
-          )}
+          {feed.map((item, i) => (
+            <CarouselMediaCard
+              key={item.id}
+              item={item}
+              isActive={i === activeIndex}
+              index={i}
+              onOpen={handleOpen}
+            />
+          ))}
         </motion.div>
       </AnimatePresence>
 
       <CarouselDots total={feed.length} activeIndex={activeIndex} />
 
       <NoticiaViewerSheet noticia={selectedNoticia} onClose={() => setSelectedNoticia(null)} />
-      <BlogPostSheet post={selectedPost} onClose={() => setSelectedPost(null)} />
-      <LivroDetailSheet livro={selectedLivro} open={!!selectedLivro} onClose={() => setSelectedLivro(null)} />
     </div>
   );
 }
 
 export default memo(HomeNoticiasCarousel);
+
