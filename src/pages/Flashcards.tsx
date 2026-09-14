@@ -17,8 +17,7 @@ import FlashcardsFiltroSheet, { FlashcardsFiltro } from '@/components/flashcards
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import FlashcardsMasterDeck from '@/components/flashcards/FlashcardsMasterDeck';
 
-const ATALHOS_FLASHCARDS_5 = [
-  { id: 'materias', label: 'Matérias', desc: '29 disciplinas', icon: BookOpen, route: '/flashcards/materias' },
+const ATALHOS_FLASHCARDS = [
   { id: 'decks', label: 'Decks', desc: 'Seus baralhos', icon: FolderPlus, route: '/flashcards/decks' },
   { id: 'revisar', label: 'Revisão', desc: 'Volte no que errou', icon: RotateCcw, route: '/flashcards/revisar' },
   { id: 'historico', label: 'Histórico', desc: 'Sessões salvas', icon: History, route: '/flashcards/historico' },
@@ -110,17 +109,24 @@ const Flashcards = () => {
 
 
 
-          {/* ── 5 Cards de Ações Rápidas (Matérias, Decks, Revisão, Histórico, Desempenho) ── */}
-          <motion.div 
-            className="grid grid-cols-5 gap-1.5 sm:gap-2.5"
-            initial="hidden"
-            animate="show"
-            variants={{
-              hidden: { opacity: 0 },
-              show: { opacity: 1, transition: { staggerChildren: 0.04 } }
-            }}
-          >
-            {ATALHOS_FLASHCARDS_5.map((a) => {
+          {/* ── 4 Cards de Ações Rápidas (Decks, Revisão, Histórico, Desempenho) ── */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <span className="h-4 w-1 rounded-full bg-[#36AF85]" />
+              <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                Atalhos
+              </p>
+            </div>
+            <motion.div 
+              className="grid grid-cols-4 gap-1.5 sm:gap-2.5"
+              initial="hidden"
+              animate="show"
+              variants={{
+                hidden: { opacity: 0 },
+                show: { opacity: 1, transition: { staggerChildren: 0.04 } }
+              }}
+            >
+              {ATALHOS_FLASHCARDS.map((a) => {
               const Icon = a.icon;
               return (
                 <motion.button
@@ -145,7 +151,8 @@ const Flashcards = () => {
                 </motion.button>
               );
             })}
-          </motion.div>
+            </motion.div>
+          </div>
 
 
 
@@ -185,22 +192,12 @@ const Flashcards = () => {
                         ? "bg-[#36AF85] text-white shadow-sm"
                         : "text-muted-foreground hover:text-foreground"
                     )}
-                    title="Visualizar em Grade de Matérias"
+                    title="Visualizar em Lista de Matérias"
                   >
                     <LayoutGrid className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Grade</span>
+                    <span className="hidden sm:inline">Lista</span>
                   </button>
                 </div>
-
-                {/* Botão Ver Todas */}
-                <button
-                  type="button"
-                  onClick={() => { haptic.selection(); navigate('/flashcards/materias'); }}
-                  className="text-[11px] font-bold text-[#36AF85] hover:text-[#36AF85]/80 flex items-center gap-0.5 px-2 py-1 rounded-lg hover:bg-[#36AF85]/10 transition-colors"
-                >
-                  <span>Ver Todas</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
               </div>
             </div>
 

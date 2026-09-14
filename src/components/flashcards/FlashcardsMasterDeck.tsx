@@ -123,10 +123,6 @@ export const FlashcardsMasterDeck: React.FC<FlashcardsMasterDeckProps> = memo(({
   return (
     <div className="w-full space-y-6 select-none mt-2">
       <div className="relative w-full -mx-2 sm:mx-0 px-2 sm:px-0 pt-2 pb-2 flex flex-col items-center select-none overflow-visible">
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[460px] h-[300px] sm:h-[460px] rounded-full pointer-events-none opacity-20 blur-[90px] transition-colors duration-700"
-          style={{ backgroundColor: activeAccentColor }}
-        />
 
         <div className="relative flex items-center justify-center w-full max-w-full h-[330px] sm:h-[390px] md:h-[420px] overflow-visible">
           {ativo > 0 && (
