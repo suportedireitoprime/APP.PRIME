@@ -41,7 +41,11 @@ const AreaEscolhaLista = ({ areas, loading, tab, Icon, accent, emptyText, subtit
         <li key={a.id}>
           <button
             type="button"
-            onClick={() => navigate(`/aprender/area/${a.slug}?tab=${tab}`)}
+            onClick={() => {
+              if (tab === 'flashcards') navigate(`/flashcards/area/${a.slug}`);
+              else if (tab === 'questoes') navigate(`/questoes/area/${a.slug}`);
+              else navigate(`/aprender/area/${a.slug}`);
+            }}
             className="flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-3.5 text-left transition-colors hover:bg-accent/40 active:scale-[0.995]"
           >
             <span

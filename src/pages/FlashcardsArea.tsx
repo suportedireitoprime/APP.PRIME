@@ -25,17 +25,17 @@ import { CANONICAL_AREA_TOPICS } from '@/components/aprender/MateriaFlashcardsDe
 import { haptic } from '@/lib/nativeHaptics';
 import { cn } from '@/lib/utils';
 
-const AprenderArea = () => {
-  useTrackArea("aprender_area_aberta");
+const FlashcardsArea = () => {
+  useTrackArea("flashcards_area_aberta");
   const navigate = useNavigate();
   const location = useLocation();
-  const goBack = () => navigate('/aprender');
+  const goBack = () => navigate('/flashcards');
   const { slug } = useParams<{ slug: string }>();
   const { user } = useAuth();
 
   const [searchParams] = useSearchParams();
   const moduloIdParam = searchParams.get('moduloId');
-  const [activeTab] = useState<'aulas'>('aulas');
+  const [activeTab] = useState<'flashcards'>('flashcards');
 
   const initial = slug ? getCachedAprenderArea(slug, user?.id ?? null) : undefined;
   const [data, setData] = useState<AprenderAreaData | null>(initial ?? null);
@@ -234,7 +234,7 @@ const AprenderArea = () => {
     return (temasFlashcards || []).reduce((acc, t) => acc + (t.total || 0), 0);
   }, [flashcardAreaRow?.total_cards, temasFlashcards]);
 
-  const isFlash = false;
+  const isFlash = true;
 
   const iconInfo = areaIconFor(slug || area?.slug || area?.nome || 'geral');
   const AreaIconComp = iconInfo?.Icon || BookOpenText;
@@ -242,8 +242,11 @@ const AprenderArea = () => {
 
   // Progresso geral de flashcards da área
   const totalCompreendidos = useMemo(() => {
+    if (flashcardAreaRow?.compreendidos !== undefined) {
+      return flashcardAreaRow.compreendidos;
+    }
     return (temasFlashcards || []).reduce((acc, t) => acc + (t.compreendidos || 0), 0);
-  }, [temasFlashcards]);
+  }, [temasFlashcards, flashcardAreaRow]);
   const progressoPctFlash = totalFlashcardsArea > 0 ? Math.round((totalCompreendidos / totalFlashcardsArea) * 100) : 0;
 
   // Itens unificados: na aba flashcards são sempre DECKS DE FLASHCARDS
@@ -261,7 +264,7 @@ const AprenderArea = () => {
         onClick: () => {
           try { haptic.light(); } catch {}
           navigate(`/flashcards/estudar?area=${encodeURIComponent(officialFlashcardArea || area?.nome || effectiveAreaName)}&temas=${encodeURIComponent(t.tema)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`, {
-            state: { from: `/aprender/area/${slug}?tab=flashcards` }
+            state: { from: `/flashcards/area/${slug}` }
           });
         },
       }));
@@ -283,7 +286,7 @@ const AprenderArea = () => {
           onClick: () => {
             try { haptic.light(); } catch {}
             navigate(`/flashcards/estudar?area=${encodeURIComponent(officialFlashcardArea || area?.nome || effectiveAreaName)}&temas=${encodeURIComponent(tema)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`, {
-              state: { from: `/aprender/area/${slug}?tab=flashcards` }
+              state: { from: `/flashcards/area/${slug}` }
             });
           },
         }));
@@ -303,7 +306,7 @@ const AprenderArea = () => {
           onClick: () => {
             try { haptic.light(); } catch {}
             navigate(`/flashcards/estudar?area=${encodeURIComponent(officialFlashcardArea || area?.nome || effectiveAreaName)}&temas=${encodeURIComponent(m.titulo)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`, {
-              state: { from: `/aprender/area/${slug}?tab=flashcards` }
+              state: { from: `/flashcards/area/${slug}` }
             });
           },
         }));
@@ -324,7 +327,7 @@ const AprenderArea = () => {
           onClick: () => {
             try { haptic.light(); } catch {}
             navigate(`/flashcards/estudar?area=${encodeURIComponent(areaLabel)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`, {
-              state: { from: `/aprender/area/${slug}?tab=flashcards` }
+              state: { from: `/flashcards/area/${slug}` }
             });
           },
         }];
@@ -413,7 +416,7 @@ const AprenderArea = () => {
   const mobileHeader = (
     <PageHeader 
       title={titleDisplay} 
-      subtitle="Trilha de Aprendizado" 
+      subtitle="Trilha de Flashcards" 
       onBack={goBack} 
       variant="dark"
     />
@@ -424,7 +427,7 @@ const AprenderArea = () => {
       wide
       activeId="aprender"
       title={officialFlashcardArea || area?.nome || effectiveAreaName}
-      subtitle="Trilha de Aprendizado"
+      subtitle="Trilha de Flashcards"
       mobileHeader={mobileHeader}
     >
       {/* Fundo ShapeGrid (padrão oficial do app / início do aplicativo) */}
@@ -452,12 +455,12 @@ const AprenderArea = () => {
           </div>
         ) : (
           <>
-            {/* Top Bar Selecione o Módulo */}
+            {/* Top Bar Selecione o Módulo / Decks de Flashcards */}
             <div className="flex items-center justify-between mb-4 w-full min-w-0">
               <div className="flex items-center gap-2 min-w-0">
-                <BookOpenText className="w-5 h-5 shrink-0" style={{ color: palette.primary }} />
+                <Layers className="w-5 h-5 shrink-0" style={{ color: palette.primary }} />
                 <h2 className="text-xs sm:text-sm font-normal font-sans uppercase tracking-widest text-white truncate">
-                  Selecione o Módulo
+                  {`Decks de Flashcards (${itemsToRender.length})`}
                 </h2>
               </div>
             </div>
@@ -820,4 +823,4 @@ const AprenderArea = () => {
   );
 };
 
-export default AprenderArea;
+export default FlashcardsArea;

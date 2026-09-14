@@ -73,8 +73,8 @@ export const AprenderMateriasContent: React.FC<AprenderMateriasContentProps> = m
               overrideTotal={overrideTotal}
               overrideConcluidas={overrideConcluidas}
               overridePct={overridePct}
-              onOpenArea={() => navigate(`/aprender/area/${area.slug}?tab=flashcards`)}
-              onOpenModulo={(mod) => navigate(`/aprender/area/${area.slug}?tab=flashcards&moduloId=${mod.id}`)}
+              onOpenArea={() => navigate(`/flashcards/area/${area.slug}`)}
+              onOpenModulo={(mod) => navigate(`/flashcards/area/${area.slug}?moduloId=${mod.id}`)}
             />
           );
         })}
@@ -165,7 +165,7 @@ export const AprenderMateriasContent: React.FC<AprenderMateriasContentProps> = m
                 if (isAulas) {
                   navigate(`/aprender/area/${area.slug}`);
                 } else if (isFlashcards) {
-                  navigate(`/aprender/area/${area.slug}?tab=flashcards`);
+                  navigate(`/flashcards/area/${area.slug}`);
                 } else {
                   toast.info('Questões por trilha estarão disponíveis em breve!');
                 }

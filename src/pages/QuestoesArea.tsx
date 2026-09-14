@@ -25,17 +25,17 @@ import { CANONICAL_AREA_TOPICS } from '@/components/aprender/MateriaFlashcardsDe
 import { haptic } from '@/lib/nativeHaptics';
 import { cn } from '@/lib/utils';
 
-const AprenderArea = () => {
-  useTrackArea("aprender_area_aberta");
+const QuestoesArea = () => {
+  useTrackArea("questoes_area_aberta");
   const navigate = useNavigate();
   const location = useLocation();
-  const goBack = () => navigate('/aprender');
+  const goBack = () => navigate('/aprender/questoes');
   const { slug } = useParams<{ slug: string }>();
   const { user } = useAuth();
 
   const [searchParams] = useSearchParams();
   const moduloIdParam = searchParams.get('moduloId');
-  const [activeTab] = useState<'aulas'>('aulas');
+  const [activeTab] = useState<'questoes'>('questoes');
 
   const initial = slug ? getCachedAprenderArea(slug, user?.id ?? null) : undefined;
   const [data, setData] = useState<AprenderAreaData | null>(initial ?? null);
@@ -413,7 +413,7 @@ const AprenderArea = () => {
   const mobileHeader = (
     <PageHeader 
       title={titleDisplay} 
-      subtitle="Trilha de Aprendizado" 
+      subtitle="Praticar Questões" 
       onBack={goBack} 
       variant="dark"
     />
@@ -424,7 +424,7 @@ const AprenderArea = () => {
       wide
       activeId="aprender"
       title={officialFlashcardArea || area?.nome || effectiveAreaName}
-      subtitle="Trilha de Aprendizado"
+      subtitle="Praticar Questões"
       mobileHeader={mobileHeader}
     >
       {/* Fundo ShapeGrid (padrão oficial do app / início do aplicativo) */}
@@ -457,7 +457,7 @@ const AprenderArea = () => {
               <div className="flex items-center gap-2 min-w-0">
                 <BookOpenText className="w-5 h-5 shrink-0" style={{ color: palette.primary }} />
                 <h2 className="text-xs sm:text-sm font-normal font-sans uppercase tracking-widest text-white truncate">
-                  Selecione o Módulo
+                  Praticar por Tópico
                 </h2>
               </div>
             </div>
@@ -820,4 +820,4 @@ const AprenderArea = () => {
   );
 };
 
-export default AprenderArea;
+export default QuestoesArea;

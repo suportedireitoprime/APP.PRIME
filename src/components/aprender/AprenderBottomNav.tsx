@@ -27,20 +27,6 @@ const TABS: Tab[] = [
     match: (p) => p.startsWith('/aprender/trilhas'),
   },
   {
-    id: 'flashcards',
-    label: 'Flashcards',
-    to: '/aprender/flashcards',
-    icon: Layers,
-    match: (p) => p.startsWith('/aprender/flashcards'),
-  },
-  {
-    id: 'questoes',
-    label: 'Questões',
-    to: '/aprender/questoes',
-    icon: Target,
-    match: (p) => p.startsWith('/aprender/questoes'),
-  },
-  {
     id: 'conquistas',
     label: 'Conquistas',
     to: '/aprender/desempenho',

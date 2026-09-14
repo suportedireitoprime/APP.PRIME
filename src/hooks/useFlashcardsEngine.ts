@@ -55,7 +55,7 @@ export function useFlashcardsEngine() {
   const [sessionCompreendidos, setSessionCompreendidos] = useState(0);
   const [sessionRevisar, setSessionRevisar] = useState(0);
   const [exitDirection, setExitDirection] = useState<'left' | 'down'>('left');
-  const [emContagem, setEmContagem] = useState(!escolhendo);
+  const [emContagem, setEmContagem] = useState(false);
   
   const salvando = useRef(false);
   const gateFlashcards = useGatedFeature('flashcards', 'flashcards');

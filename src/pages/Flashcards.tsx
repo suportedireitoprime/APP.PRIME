@@ -26,8 +26,6 @@ const Flashcards = () => {
   const { data: areasRaw } = useFlashcardsResumoAreas();
 
   const [filtroAberto, setFiltroAberto] = useState(false);
-  const [diasFrequencia, setDiasFrequencia] = useState<7 | 15 | 30>(30);
-  const [expandedFrequencia, setExpandedFrequencia] = useState(false);
   const loading = loadingDash;
 
   // SEO & Título dinâmico
@@ -147,74 +145,7 @@ const Flashcards = () => {
             )}
           </section>
 
-          {/* ── Atividade Recente (Heatmap SRS) ───────────────────── */}
-          {dash?.atividade_30d && dash.atividade_30d.length > 0 && (
-            <section className="space-y-3 pt-2">
-              <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] flex items-center justify-between">
-                Sua Frequência ({diasFrequencia} dias)
-              </p>
-              <div className="flex bg-card/60 border border-border/80 rounded-2xl overflow-hidden backdrop-blur-md shadow-sm">
-                <div className="flex-1 p-4 flex flex-col justify-center">
-                  <div className="flex flex-wrap gap-1.5 justify-center">
-                    {dash.atividade_30d.slice(-diasFrequencia).map((dia, idx) => {
-                      // intensity based on total cards reviewed
-                      let bg = 'bg-muted/50';
-                      let text = 'text-muted-foreground/40';
-                      if (dia.total > 0 && dia.total < 20) { bg = 'bg-[#36AF85]/30'; text = 'text-[#36AF85]/80'; }
-                      else if (dia.total >= 20 && dia.total < 50) { bg = 'bg-[#36AF85]/60'; text = 'text-[#0d0f12]/60'; }
-                      else if (dia.total >= 50) { bg = 'bg-[#36AF85]'; text = 'text-[#0d0f12]/80'; }
-                      
-                      const dt = dia.dia.split('-');
-                      const abrev = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'][new Date(Number(dt[0]), Number(dt[1])-1, Number(dt[2])).getDay()];
-                      
-                      return (
-                        <div 
-                          key={idx} 
-                          className={`w-5 h-5 sm:w-6 sm:h-6 rounded-md flex items-center justify-center text-[9px] font-bold ${bg} ${text}`} 
-                          title={`${dia.dia}: ${dia.total} revisões`}
-                        >
-                          {abrev}
-                        </div>
-                      );
-                    })}
-                  </div>
-                  {expandedFrequencia && (
-                     <div className="flex justify-center gap-2 mt-4 pt-4 border-t border-border/50">
-                        {[7, 15, 30].map(n => (
-                           <button key={n} onClick={() => { setDiasFrequencia(n as any); setExpandedFrequencia(false); haptic.selection(); }}
-                            className={`px-3 py-1 rounded-full text-[11px] font-bold transition-colors ${diasFrequencia === n ? 'bg-primary text-white' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
-                             {n} dias
-                           </button>
-                        ))}
-                     </div>
-                  )}
-                  <div className="flex items-center justify-between mt-3 text-[10px] text-muted-foreground font-medium px-1">
-                    <span>{diasFrequencia} dias atrás</span>
-                    <div className="flex items-center gap-1">
-                      <span>Menos</span>
-                      <div className="flex gap-0.5 mx-1">
-                        <div className="w-2.5 h-2.5 rounded-sm bg-muted/50" />
-                        <div className="w-2.5 h-2.5 rounded-sm bg-[#36AF85]/30" />
-                        <div className="w-2.5 h-2.5 rounded-sm bg-[#36AF85]/60" />
-                        <div className="w-2.5 h-2.5 rounded-sm bg-[#36AF85]" />
-                      </div>
-                      <span>Mais</span>
-                    </div>
-                    <span>Hoje</span>
-                  </div>
-                </div>
-                
-                <button 
-                  onClick={() => { haptic.selection(); setExpandedFrequencia(!expandedFrequencia); }}
-                  className="w-8 shrink-0 flex flex-col items-center justify-center bg-[#0d0f12] text-white/90 border-l border-border/50 hover:bg-black transition-colors"
-                >
-                  <span className="text-[10px] font-black uppercase tracking-widest leading-[1.2] py-4">
-                    V<br/>E<br/>R
-                  </span>
-                </button>
-              </div>
-            </section>
-          )}
+
 
 
         </div>

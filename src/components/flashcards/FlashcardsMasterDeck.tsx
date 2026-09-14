@@ -115,7 +115,7 @@ export const FlashcardsMasterDeck: React.FC<FlashcardsMasterDeckProps> = memo(({
   const handleOpenActive = useCallback(() => {
     if (!activeArea) return;
     try { haptic.impact(); } catch {}
-    navigate(`/aprender/area/${activeArea.slug || activeArea.area}?tab=flashcards`);
+    navigate(`/flashcards/area/${activeArea.slug || activeArea.area}`);
   }, [activeArea, navigate]);
 
   if (!areas || areas.length === 0) return null;

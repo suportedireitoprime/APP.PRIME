@@ -191,6 +191,8 @@ const ForcaPage = lazy(() => import("./pages/gamificacao/Forca.tsx"));
 const CacaPalavrasPage = lazy(() => import("./pages/gamificacao/CacaPalavras.tsx"));
 const CategoriaAprender = lazy(() => import("./pages/CategoriaAprender.tsx"));
 const AprenderArea = lazy(() => import("./pages/AprenderArea.tsx"));
+const QuestoesArea = lazy(() => import("./pages/QuestoesArea.tsx"));
+const FlashcardsArea = lazy(() => import("./pages/FlashcardsArea.tsx"));
 const AprenderTeoria = lazy(() => import("./pages/AprenderTeoria.tsx"));
 const AprenderTrilhas = lazy(() => import("./pages/AprenderTrilhas.tsx"));
 const AprenderQuestoes = lazy(() => import("./pages/AprenderQuestoes.tsx"));
@@ -1031,6 +1033,10 @@ function AnimatedRoutes() {
           <Route path="/aprender/flashcards" element={<ProtectedRoute><PageTransition instant><AprenderFlashcards /></PageTransition></ProtectedRoute>} />
           <Route path="/aprender/desempenho" element={<ProtectedRoute><PageTransition instant><AprenderDesempenho /></PageTransition></ProtectedRoute>} />
           <Route path="/aprender/aula/:aulaId" element={<ProtectedRoute><PageTransition instant><AprenderAula /></PageTransition></ProtectedRoute>} />
+          
+          <Route path="/questoes/area/:slug" element={<ProtectedRoute><PageTransition instant><QuestoesArea /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/area/:slug" element={<ProtectedRoute><PageTransition instant><FlashcardsArea /></PageTransition></ProtectedRoute>} />
+
           <Route path="/flashcards" element={<ProtectedRoute><FlashcardsRouteWrapper><PageTransition instant><Flashcards /></PageTransition></FlashcardsRouteWrapper></ProtectedRoute>} />
           <Route path="/flashcards/estudar" element={<ProtectedRoute><PageTransition instant><FlashcardsEstudo /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/trilhas" element={<ProtectedRoute><PageTransition instant><FlashcardsTrilhas /></PageTransition></ProtectedRoute>} />
