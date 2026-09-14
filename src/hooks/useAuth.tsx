@@ -235,6 +235,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signOut = useCallback(async () => {
+    // Purge any body locks (scroll, pointer-events) before unmounting the DOM
+    if (typeof document !== 'undefined') {
+      document.body.style.pointerEvents = '';
+      document.body.style.overflow = '';
+      document.body.removeAttribute('data-scroll-locked');
+      document.querySelectorAll('[data-scroll-locked]').forEach((el) => el.removeAttribute('data-scroll-locked'));
+      import('@/hooks/useBodyScrollLock').then((m) => m.resetBodyScrollLock(true)).catch(() => {});
+    }
+
     // Paraleliza Firebase + Supabase signout — eram sequenciais e causavam
     // delay perceptível (cada um leva ~200-500ms de rede).
     const firebaseLogout = Capacitor.isNativePlatform()

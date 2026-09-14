@@ -64,10 +64,22 @@ Deno.serve(async (req) => {
       // Caso não seja um legado, verificamos se é um usuário novo vindo do app (externalReference = user_id)
       const externalRef = payment.externalReference || body?.customer?.externalReference;
       if (externalRef) {
+        let inferredPlan = 'mensal';
+        const val = payment.value || 0;
+        const desc = (payment.description || '').toLowerCase();
+        
+        if (val >= 190 || desc.includes('anual')) {
+          inferredPlan = 'anual';
+        } else if (val >= 140 && val <= 160) {
+          inferredPlan = 'anual'; // Promo Pix
+        } else if (desc.includes('vitalicio') || val >= 250) {
+          inferredPlan = 'vitalicio';
+        }
+
         // Mock a legacy object just to pass the checks, but with claimed_user_id
         legacy = {
           id: 'new_user',
-          tipo: payment.value >= 199 ? 'vitalicio' : 'mensal', // inferido pelo valor ou description
+          tipo: inferredPlan,
           claimed_user_id: externalRef,
           asaas_customer_id: customerId,
           asaas_subscription_id: subscriptionId,

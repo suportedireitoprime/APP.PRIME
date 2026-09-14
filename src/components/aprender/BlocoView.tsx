@@ -292,12 +292,15 @@ export const BlocoView = React.memo(function BlocoView({
               <span className="w-1 h-4 bg-primary rounded-full" /> Nesta aula você verá:
             </h3>
             <ul className="space-y-3">
-              {sumario.map((item: string, i: number) => (
+              {sumario.map((item: any, i: number) => {
+                const text = typeof item === 'object' ? item.titulo || item.marco || '' : item;
+                return (
                 <li key={i} className="flex items-start gap-3 text-neutral-200">
                   <div className="mt-2 min-w-[6px] h-[6px] rounded-full bg-primary/70" />
-                  <span className="leading-relaxed text-[14px] sm:text-[15px]">{item}</span>
+                  <span className="leading-relaxed text-[14px] sm:text-[15px]">{text}</span>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           </div>
         )}
@@ -383,7 +386,9 @@ export const BlocoView = React.memo(function BlocoView({
   }
 
   if (bloco.tipo === 'tabela') {
-    const { titulo, colunas = [], linhas = [] } = bloco.payload || {};
+    const { titulo, colunas: rawColunas, linhas: rawLinhas } = bloco.payload || {};
+    const colunas = Array.isArray(rawColunas) ? rawColunas : [];
+    const linhas = Array.isArray(rawLinhas) ? rawLinhas : [];
     return (
       <motion.article
         className="max-w-[70ch] lg:max-w-none mx-auto py-1.5 sm:py-2.5 px-0.5 sm:px-2"
@@ -469,7 +474,8 @@ export const BlocoView = React.memo(function BlocoView({
   }
 
   if (bloco.tipo === 'mapa_mental') {
-    const { raiz, definicao_raiz, ramos = [] } = bloco.payload || {};
+    const { raiz, definicao_raiz, ramos: rawRamos } = bloco.payload || {};
+    const ramos = Array.isArray(rawRamos) ? rawRamos : [];
     return (
       <article className="mt-4 mb-8">
         <div className="flex items-center justify-between mb-4">
@@ -581,7 +587,8 @@ export const BlocoView = React.memo(function BlocoView({
   }
 
   if (bloco.tipo === 'fluxograma') {
-    const { titulo, etapas = [] } = bloco.payload || {};
+    const { titulo, etapas: rawEtapas } = bloco.payload || {};
+    const etapas = Array.isArray(rawEtapas) ? rawEtapas : [];
     const stepStyle = (t?: string) => {
       switch (t) {
         case 'inicio': return { border: 'border-emerald-500/50', bg: 'bg-emerald-500/5', badge: 'bg-emerald-500 text-white', label: 'Início' };
@@ -642,7 +649,8 @@ export const BlocoView = React.memo(function BlocoView({
   }
 
   if (bloco.tipo === 'linha_tempo') {
-    const { titulo, eventos = [], texto: rawTexto } = bloco.payload || {};
+    const { titulo, eventos: rawEventos, texto: rawTexto } = bloco.payload || {};
+    const eventos = Array.isArray(rawEventos) ? rawEventos : [];
     const textoLimpo = limparTextoInstrucoes(rawTexto || '');
     return (
       <article className="max-w-[70ch] lg:max-w-[76ch] mx-auto py-3 px-4 sm:px-6">

@@ -435,7 +435,7 @@ export const AudioMock: React.FC = () => {
   );
 };
 
-const RadarMock: React.FC = () => {
+export const RadarMock: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const pulse = ((frame % 60) / 60) * 100;

@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 export interface ProfileSummary {
   displayName: string;
+  nomeCompleto?: string | null;
   isPremium: boolean;
   avatarUrl: string;
   bio: string;
@@ -55,12 +56,13 @@ async function fetchProfileSummary(userId: string, fallbackEmail: string, fallba
   }
   const { data } = await supabase
     .from('profiles')
-    .select('display_name,is_premium,bio,capa_id,interacoes_total,segundos_em_tela,perfil_contexto,perfil_tipos')
+    .select('display_name,nome_completo,is_premium,bio,capa_id,interacoes_total,segundos_em_tela,perfil_contexto,perfil_tipos')
     .eq('id', userId)
     .maybeSingle();
   const p: any = data ?? {};
   const summary: ProfileSummary = {
     displayName: p.nome_preferido || p.display_name || (fallbackEmail.split('@')[0] || 'Usuário'),
+    nomeCompleto: p.nome_completo || p.display_name || null,
     isPremium: !!p.is_premium,
     avatarUrl: p.avatar_url || fallbackAvatar || '',
     bio: p.bio ?? '',

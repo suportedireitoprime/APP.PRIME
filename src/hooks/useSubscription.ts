@@ -119,8 +119,23 @@ export function useSubscription(options: Options = {}): SubscriptionState {
           return true;
         }
 
+        // 2.5 Verifica se o usuário está no período de teste gratuito
+        const trialEndsAt = user.user_metadata?.trial_ends_at;
+        if (trialEndsAt && new Date(trialEndsAt) > new Date()) {
+          persist({
+            isPremium: true, loading: false, plano: 'Teste de 3 Dias', startedAt: null, expiresAt: trialEndsAt, source: null, status: 'SUBSCRIPTION_STATE_ACTIVE', isAdminOverride: false,
+          });
+          return true;
+        }
+
         // 3. Avaliar as respostas em ordem de prioridade
-        if (cancelRes.data) return true; // Cancelou, rebaixa
+        if (cancelRes.data) {
+          persist({
+            isPremium: false, loading: false, plano: null, expiresAt: null, startedAt: null,
+            source: null, status: 'CANCELED', isAdminOverride: false,
+          });
+          return true;
+        }
 
         if (playRes.data) {
           persist({
@@ -211,6 +226,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
       .channel(`sub-${user.id}-${Math.random().toString(36).slice(2, 10)}`)
       .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'play_subscriptions', filter: `user_id=eq.${user.id}` }, () => { fetchOnce(); })
       .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'apple_subscriptions', filter: `user_id=eq.${user.id}` }, () => { fetchOnce(); })
+      .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'asaas_subscriptions', filter: `user_id=eq.${user.id}` }, () => { fetchOnce(); })
       .subscribe();
 
     // Ao voltar do segundo plano: revalida com a loja e reconsulta. Cobre

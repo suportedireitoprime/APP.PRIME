@@ -22,9 +22,10 @@ Deno.serve(async (req) => {
     if (userError || !user) throw new Error('Unauthorized');
 
     const body = await req.json();
-    const { plan, email, name, cpfCnpj } = body; // plan: 'mensal' | 'vitalicio'
+    const { plan, email, name, cpfCnpj, creditCard, creditCardHolderInfo, phone, installmentCount } = body; 
+    // plan: 'mensal' | 'anual' | 'anual_pix'
 
-    if (!['mensal', 'vitalicio'].includes(plan)) {
+    if (!['mensal', 'anual', 'anual_pix'].includes(plan)) {
       throw new Error('Plano inválido');
     }
 
@@ -34,10 +35,6 @@ Deno.serve(async (req) => {
       throw new Error('API Key do Asaas não configurada');
     }
 
-    // Identificar se a chave é de sandbox para direcionar a URL
-    const isSandbox = apiKey.startsWith('$aact_YTU') ? false : true; 
-    // '$aact_YTU...' é o padrão das chaves de produção antigas, e as novas podem variar. 
-    // Idealmente, a URL deve ser via .env, mas vamos usar production por padrão.
     const baseUrl = Deno.env.get('ASAAS_API_URL') || 'https://api.asaas.com/v3';
 
     // Helper for Asaas requests
@@ -61,61 +58,121 @@ Deno.serve(async (req) => {
     // 1. Check or Create Customer
     let customerId = '';
     const userEmail = email || user.email;
+    const finalCpfCnpj = cpfCnpj || creditCardHolderInfo?.cpfCnpj;
     const searchRes = await asaasRequest(`/customers?email=${encodeURIComponent(userEmail)}`, 'GET');
+    
     if (searchRes.data && searchRes.data.length > 0) {
       customerId = searchRes.data[0].id;
+      // Optionally update customer if CPF is provided now but was missing
+      if (finalCpfCnpj && !searchRes.data[0].cpfCnpj) {
+        await asaasRequest(`/customers/${customerId}`, 'POST', { cpfCnpj: finalCpfCnpj });
+      }
     } else {
       const newCustomer = await asaasRequest('/customers', 'POST', {
-        name: name || 'Usuário Prime',
+        name: name || creditCardHolderInfo?.name || 'Usuário Prime',
         email: userEmail,
-        cpfCnpj: cpfCnpj || undefined,
+        cpfCnpj: finalCpfCnpj || undefined,
+        phone: phone || creditCardHolderInfo?.phone || undefined,
+        externalReference: user.id
       });
       customerId = newCustomer.id;
     }
 
     // 2. Create Charge or Subscription
     let invoiceUrl = '';
+    let pixQrCode = '';
+    let pixCopyPaste = '';
     const today = new Date().toISOString().split('T')[0];
 
-    if (plan === 'mensal') {
-      const sub = await asaasRequest('/subscriptions', 'POST', {
+    const isCreditCard = !!creditCard;
+    const billingType = plan === 'anual_pix' ? 'PIX' : (isCreditCard ? 'CREDIT_CARD' : 'UNDEFINED');
+    const isInstallment = installmentCount && installmentCount > 1 && plan === 'anual';
+    
+    let sub: any;
+
+    if (isInstallment) {
+      const paymentPayload: any = {
         customer: customerId,
-        billingType: 'UNDEFINED',
-        value: 29.90,
-        nextDueDate: today,
-        cycle: 'MONTHLY',
-        description: 'Assinatura Mensal Estudos Jurídicos',
-        externalReference: user.id
-      });
-      
-      // Asaas subscriptions usually don't return invoiceUrl directly. We need to fetch the first payment.
-      invoiceUrl = sub.invoiceUrl; 
-      if (!invoiceUrl) {
-        const payRes = await asaasRequest(`/subscriptions/${sub.id}/payments`, 'GET');
-        if (payRes.data && payRes.data.length > 0) {
-          invoiceUrl = payRes.data[0].invoiceUrl;
-        }
-      }
-    } else if (plan === 'vitalicio') {
-      const charge = await asaasRequest('/payments', 'POST', {
-        customer: customerId,
-        billingType: 'UNDEFINED',
-        value: 199.90,
+        billingType: billingType,
         dueDate: today,
-        description: 'Acesso Vitalício Estudos Jurídicos',
+        value: 199.90, // Asaas accepts `value` and `installmentCount` on POST /payments for credit cards to charge the full amount split in X parcels.
+        installmentCount: installmentCount,
+        description: `Anual Estudos Jurídicos (Parcelado em ${installmentCount}x)`,
         externalReference: user.id
-      });
-      invoiceUrl = charge.invoiceUrl;
+      };
+      if (isCreditCard) {
+        paymentPayload.creditCard = creditCard;
+        paymentPayload.creditCardHolderInfo = creditCardHolderInfo;
+      }
+      sub = await asaasRequest('/payments', 'POST', paymentPayload);
+      invoiceUrl = sub.invoiceUrl;
+    } else {
+      const subPayload: any = {
+        customer: customerId,
+        billingType: billingType,
+        nextDueDate: today,
+        externalReference: user.id
+      };
+
+      if (plan === 'mensal') {
+        subPayload.value = 29.90;
+        subPayload.cycle = 'MONTHLY';
+        subPayload.description = 'Mensal Estudos Jurídicos';
+      } else if (plan === 'anual') {
+        subPayload.value = 199.90;
+        subPayload.cycle = 'YEARLY';
+        subPayload.description = 'Anual Estudos Jurídicos';
+      } else if (plan === 'anual_pix') {
+        subPayload.value = 149.90;
+        subPayload.cycle = 'YEARLY';
+        subPayload.description = 'Promoção Estudos Jurídicos';
+      }
+
+      if (isCreditCard) {
+        subPayload.creditCard = creditCard;
+        subPayload.creditCardHolderInfo = creditCardHolderInfo;
+      }
+
+      sub = await asaasRequest('/subscriptions', 'POST', subPayload);
+      invoiceUrl = sub.invoiceUrl;
     }
 
-    return new Response(JSON.stringify({ invoiceUrl }), {
+    if (!invoiceUrl || plan === 'anual_pix') {
+      if (!isInstallment) {
+        const payRes = await asaasRequest(`/subscriptions/${sub.id}/payments`, 'GET');
+        if (payRes.data && payRes.data.length > 0) {
+          const payment = payRes.data[0];
+          invoiceUrl = invoiceUrl || payment.invoiceUrl;
+          
+          if (billingType === 'PIX') {
+            const qrCodeRes = await asaasRequest(`/payments/${payment.id}/pixQrCode`, 'GET');
+            pixQrCode = qrCodeRes.encodedImage;
+            pixCopyPaste = qrCodeRes.payload;
+          }
+        }
+      } else {
+        // se for payment avulso PIX
+        if (billingType === 'PIX') {
+           const qrCodeRes = await asaasRequest(`/payments/${sub.id}/pixQrCode`, 'GET');
+           pixQrCode = qrCodeRes.encodedImage;
+           pixCopyPaste = qrCodeRes.payload;
+        }
+      }
+    }
+
+    return new Response(JSON.stringify({ 
+      invoiceUrl, 
+      pixQrCode, 
+      pixCopyPaste,
+      status: sub.status 
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (err: any) {
     console.error('asaas-checkout falhou:', err);
     return new Response(JSON.stringify({ error: err.message }), {
-      status: 400,
+      status: 200, // Returning 200 to let the client parse the error body gracefully
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }

@@ -26,6 +26,7 @@ export default function CadastroOnboardingOverlay({
   open,
   onFinished,
   previewMode,
+  initialName,
 }: Props) {
   const [phase, setPhase] = useState<'form' | 'video'>('form');
   const [result, setResult] = useState<CadastroResult | null>(null);
@@ -53,7 +54,7 @@ export default function CadastroOnboardingOverlay({
   return (
     <>
       {phase === 'form' && (
-        <TriagemForm open={true} onFinished={handleFormFinished} previewMode={previewMode} />
+        <TriagemForm open={true} onFinished={handleFormFinished} previewMode={previewMode} initialName={initialName} />
       )}
       {phase === 'video' && result && (
         <AppIntroOverlay 

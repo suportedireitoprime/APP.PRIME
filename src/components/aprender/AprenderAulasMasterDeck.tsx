@@ -415,93 +415,83 @@ export const AprenderAulasMasterDeck: React.FC<AprenderAulasMasterDeckProps> = m
 
       {/* ── 3. Linha do Tempo de Recentes ("O que a pessoa fez por último") ─ */}
       <div className="w-full max-w-xl mx-auto space-y-3 pt-2">
-        <div className="flex items-center justify-between px-1">
+        <div className="flex items-center justify-between px-2 pb-1">
           <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-rose-400 stroke-[2.2]" />
-            <h4 className="text-[15px] sm:text-base font-medium tracking-tight text-white/90">
-              Linha do Tempo Recente
+            <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+            <h4 className="text-[13px] sm:text-sm font-medium tracking-wide text-muted-foreground">
+              Linha do tempo recente
             </h4>
           </div>
           {timelineRecentes.length > 0 && (
             <span className="text-[11px] text-muted-foreground">
-              {timelineRecentes.length} aula(s) recente(s)
+              {timelineRecentes.length} aula(s)
             </span>
           )}
         </div>
 
         {timelineRecentes.length > 0 ? (
-          <div className="relative border-l-2 border-white/10 ml-5 sm:ml-6 pl-6 sm:pl-7 space-y-4">
+          <div className="relative border-l border-white/10 ml-4 sm:ml-5 pl-4 sm:pl-5 space-y-1">
             {timelineRecentes.map((aula, idx) => {
               const pal = getAreaThemePalette(aula.areaSlug || aula.areaNome);
               const isFirst = idx === 0;
+              
+              // Se o título estiver inteiramente em caixa alta, converte para Capitalizado.
+              const formatTitle = (title: string) => {
+                if (!title) return '';
+                if (title === title.toUpperCase() && title.length > 3) {
+                  return title.charAt(0).toUpperCase() + title.slice(1).toLowerCase();
+                }
+                return title;
+              };
 
               return (
                 <div key={aula.aulaId} className="relative group">
                   {/* Ponto / Nó da Linha do Tempo */}
                   <div
                     className={cn(
-                      "absolute -left-[39px] sm:-left-[45px] top-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 flex items-center justify-center shadow-lg transition-transform group-hover:scale-110",
-                      isFirst ? "bg-rose-500 border-white text-white" : "bg-zinc-900 border-white/30 text-white/70"
+                      "absolute -left-[21px] sm:-left-[25px] top-[22px] w-2 h-2 rounded-full transition-all duration-300 group-hover:scale-150",
+                      isFirst ? "bg-primary" : "bg-white/20"
                     )}
                     style={{
-                      borderColor: isFirst ? '#ffffff' : pal.primary,
-                      boxShadow: isFirst ? `0 0 12px ${pal.primary}80` : undefined,
+                      backgroundColor: isFirst ? pal.primary : undefined,
+                      boxShadow: isFirst ? `0 0 0 3px ${pal.primary}25` : undefined,
                     }}
-                  >
-                    {aula.pct === 100 ? (
-                      <CheckCircle2 className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.5]" />
-                    ) : (
-                      <Play className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-current ml-0.5" />
-                    )}
-                  </div>
+                  />
 
-                  {/* Card da Aula Recente */}
+                  {/* Card da Aula Recente Minimalista */}
                   <div
                     onClick={() => {
                       try { haptic.impact(); } catch {}
                       navigate(`/aprender/aula/${aula.aulaId}`);
                     }}
-                    style={{
-                      backgroundColor: `${pal.primary}12`, // 12 is roughly 7% opacity
-                    }}
-                    className="p-4 sm:p-5 rounded-2xl backdrop-blur-md border border-white/5 hover:border-white/15 transition-all cursor-pointer shadow-xl flex flex-col gap-3 relative overflow-hidden group-hover:brightness-110"
+                    className="py-3 px-3 sm:px-4 rounded-xl transition-colors cursor-pointer flex flex-col gap-1.5 hover:bg-white/[0.03]"
                   >
-                    <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
                       <span
-                        className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md text-white border"
-                        style={{
-                          backgroundColor: `${pal.primary}15`,
-                          borderColor: `${pal.primary}40`,
-                          color: pal.primary,
-                        }}
+                        className="text-[10px] font-medium tracking-wider text-muted-foreground/80"
+                        style={isFirst ? { color: pal.primary } : {}}
                       >
                         {aula.areaNome}
                       </span>
-                      <span className="text-xs font-semibold text-white/70">
+                      <span className="w-1 h-1 rounded-full bg-white/10" />
+                      <span className="text-[10px] text-muted-foreground/60">
                         {aula.pct}% concluído
                       </span>
                     </div>
 
-                    <h5 className="text-sm sm:text-base font-medium text-white group-hover:text-rose-400 transition-colors line-clamp-2 leading-relaxed tracking-normal font-sans">
-                      {aula.titulo}
+                    <h5 className="text-[13px] sm:text-sm font-medium text-white/90 group-hover:text-white transition-colors line-clamp-2 leading-snug">
+                      {formatTitle(aula.titulo)}
                     </h5>
 
                     {/* Mini progresso */}
-                    <div className="flex items-center justify-between gap-4 pt-1">
-                      <div className="flex-1 bg-white/5 h-1.5 rounded-full overflow-hidden">
-                        <div
-                          className="h-full rounded-full transition-all duration-500"
-                          style={{
-                            width: `${Math.min(100, Math.max(0, aula.pct))}%`,
-                            backgroundColor: pal.primary,
-                            boxShadow: `0 0 8px ${pal.primary}80`,
-                          }}
-                        />
-                      </div>
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-rose-400 shrink-0 group-hover:translate-x-1 transition-transform">
-                        <span>Continuar</span>
-                        <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
-                      </div>
+                    <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden mt-1 max-w-[200px]">
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{
+                          width: `${Math.min(100, Math.max(0, aula.pct))}%`,
+                          backgroundColor: pal.primary,
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -510,13 +500,13 @@ export const AprenderAulasMasterDeck: React.FC<AprenderAulasMasterDeckProps> = m
           </div>
         ) : (
           /* Estado Vazio de Linha do Tempo (Incentivo Acolhedor) */
-          <div className="p-5 rounded-2xl border border-white/10 bg-white/[0.02] text-center space-y-2 backdrop-blur-sm">
-            <BookOpen className="w-6 h-6 text-primary mx-auto opacity-80" />
-            <p className="text-xs text-white/80 font-medium">
-              Sua linha do tempo aparecerá aqui assim que você iniciar suas aulas.
+          <div className="p-4 sm:p-5 rounded-2xl border border-white/5 bg-white/[0.01] text-center space-y-2">
+            <BookOpen className="w-5 h-5 text-muted-foreground mx-auto opacity-50" />
+            <p className="text-[13px] text-white/70 font-medium">
+              Nenhuma aula recente
             </p>
             <p className="text-[11px] text-muted-foreground">
-              Escolha uma matéria no deck acima e dê o play para começar seus estudos!
+              Escolha uma matéria acima para começar.
             </p>
           </div>
         )}

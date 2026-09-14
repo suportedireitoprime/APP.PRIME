@@ -24,7 +24,7 @@ const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/overlay
 const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/AssistenteOverlayV2'));
 import HomeHeaderHero from '@/components/vademecum/home/HomeHeaderHero';
 import HomeSearchButton from '@/components/vademecum/home/HomeSearchButton';
-import FeatureDiscoveryCard from '@/components/vademecum/ui_elements/FeatureDiscoveryCard';
+
 import MobileHomeSections from '@/components/vademecum/home/MobileHomeSections';
 import { useHomeWarmup } from '@/hooks/useHomeWarmup';
 import { pushRecente } from '@/lib/leisRecentes';
@@ -195,7 +195,7 @@ const IndexMobile = () => {
           <main ref={contentRef} className="max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-2">
             <img src={primeLogo} alt="" aria-hidden="true" loading="eager" decoding="sync" fetchPriority="high" className="absolute w-0 h-0 opacity-0 pointer-events-none" />
             
-            <FeatureDiscoveryCard />
+
             <MobileHomeSections onTabChange={setHomeTab} onNewsOpenChange={setNewsOpen} />
           </main>
         </div>

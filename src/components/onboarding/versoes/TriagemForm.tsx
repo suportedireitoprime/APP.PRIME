@@ -593,7 +593,7 @@ function CardContent({
   return (
     <div
       className="relative z-10 flex-1 min-h-0 flex flex-col px-6 pt-4 overflow-y-auto overscroll-contain touch-pan-y"
-      style={{ paddingBottom: 'calc(var(--sai-bottom) + 24px)' }}
+      style={{ paddingBottom: 'calc(var(--sai-bottom) + 120px)' }}
     >
       {step === 'intro1' && (
         <>
@@ -880,24 +880,37 @@ function CardContent({
       )}
 
       {/* Thumb-Zone Fixed Button */}
-      {!['persona', 'foco', 'resumo'].includes(step) && (
-        <div className="absolute bottom-0 left-0 w-full p-6 pt-12 pointer-events-none flex justify-end z-20" style={{ background: 'linear-gradient(to top, rgba(10,10,10,1) 0%, rgba(10,10,10,0.8) 40%, transparent 100%)' }}>
-          <div className="pointer-events-auto w-full">
-            <ContinueBtn 
-              disabled={
-                step === 'interesses' ? data.interesses.length === 0 :
-                step === 'dores' ? data.dores.length === 0 :
-                step === 'nome' ? !data.nome.trim() : false
-              } 
-              isSubmitting={isSubmitting} 
-              onClick={() => {
-                haptic.impact();
-                advance({});
-              }} 
-              icon={step === 'whatsapp' ? <Check className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
-            />
-          </div>
-        </div>
+      {!['persona', 'foco', 'resumo', 'intro1', 'intro2'].includes(step) && (
+        (() => {
+          const isDisabled = step === 'interesses' ? data.interesses.length === 0 :
+                             step === 'dores' ? data.dores.length === 0 :
+                             step === 'nome' ? !data.nome.trim() : false;
+                             
+          const shouldHide = (step === 'interesses' || step === 'dores') && isDisabled;
+          
+          if (shouldHide) return null;
+
+          return (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} 
+              animate={{ opacity: 1, y: 0 }}
+              className="absolute bottom-0 left-0 w-full p-6 pt-12 pointer-events-none flex justify-end z-20" 
+              style={{ background: 'linear-gradient(to top, rgba(10,10,10,1) 0%, rgba(10,10,10,0.8) 40%, transparent 100%)' }}
+            >
+              <div className="pointer-events-auto w-full">
+                <ContinueBtn 
+                  disabled={isDisabled} 
+                  isSubmitting={isSubmitting} 
+                  onClick={() => {
+                    haptic.impact();
+                    advance({});
+                  }} 
+                  icon={step === 'whatsapp' ? <Check className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
+                />
+              </div>
+            </motion.div>
+          );
+        })()
       )}
     </div>
   );

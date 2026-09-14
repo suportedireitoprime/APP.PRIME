@@ -464,15 +464,7 @@ const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) =>
             <AlertDialogAction onClick={(e) => {
               e.preventDefault();
               setLogoutPrompt(false);
-              setTimeout(() => {
-                document.body.style.pointerEvents = '';
-                document.body.style.overflow = '';
-                document.body.removeAttribute('data-scroll-locked');
-                document.querySelectorAll('[data-scroll-locked]').forEach((el) =>
-                  el.removeAttribute('data-scroll-locked'),
-                );
-                setTimeout(() => signOut(), 150);
-              }, 250);
+              setTimeout(() => signOut(), 50);
             }} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
             Sim, sair
           </AlertDialogAction>

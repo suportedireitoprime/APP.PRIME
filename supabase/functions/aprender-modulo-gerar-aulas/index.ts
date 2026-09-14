@@ -144,7 +144,7 @@ Você deve retornar ESTRITAMENTE um objeto JSON no seguinte formato, sem formata
       ordem: index + 1,
       duracao_est_min: 15,
       previa: true,
-      modelo_ia: 'gemini-3.6-flash',
+      modelo_ia: 'gemini-1.5-flash',
       gerada_em: new Date().toISOString()
     }));
 

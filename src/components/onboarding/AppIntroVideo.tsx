@@ -6,7 +6,7 @@ import { wipe } from '@remotion/transitions/wipe';
 
 import { YELLOW, YELLOW_SOFT, INK, CREAM, displayFont, bodyFont, BackdropRays, Sparkles } from './chunks/AppIntroShared';
 import { SceneAbertura, SceneApresentacao, FeatureScene } from './chunks/AppIntroScenes';
-import { WhatsMock, DocMock, OCRMock, AudioMock, ProgressMock, MapMock, LogoMock } from './chunks/AppIntroMocks';
+import { WhatsMock, DocMock, OCRMock, AudioMock, ProgressMock, MapMock, LogoMock, RadarMock } from './chunks/AppIntroMocks';
 
 /* ------------------------------------------------------------------ */
 /*  Composi��o principal                                              */

@@ -145,106 +145,59 @@ export default function MinhaAssinaturaView({ plano, expiresAt, startedAt, sourc
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="relative overflow-hidden rounded-3xl border border-primary/30 shadow-2xl shadow-black/50"
-        style={{
-          background:
-            'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(0 95% 55%) 55%, hsl(0 90% 45%) 100%)',
-        }}
+        className="relative overflow-hidden rounded-3xl border border-border/50 bg-black/40 shadow-2xl shadow-black/50 backdrop-blur-xl"
       >
-        {/* Warmth radials */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.28),transparent_60%)]" />
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.30),transparent_65%)]" />
-
-        {/* Legal motifs floating on borders */}
-        <svg
-          className="pointer-events-none absolute inset-0 w-full h-full opacity-[0.22] mix-blend-multiply"
-          viewBox="0 0 400 300"
-          preserveAspectRatio="xMidYMid slice"
-          aria-hidden
-        >
-          <defs>
-            <g id="mv-scales" stroke="rgba(0,0,0,0.95)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="0" y1="-24" x2="0" y2="20" />
-              <circle cx="0" cy="-24" r="2.4" fill="rgba(0,0,0,0.95)" />
-              <line x1="-20" y1="-18" x2="20" y2="-18" />
-              <line x1="-20" y1="-18" x2="-26" y2="-4" />
-              <line x1="-20" y1="-18" x2="-14" y2="-4" />
-              <path d="M -28 -4 Q -20 4 -12 -4" />
-              <line x1="20" y1="-18" x2="14" y2="-4" />
-              <line x1="20" y1="-18" x2="26" y2="-4" />
-              <path d="M 12 -4 Q 20 4 28 -4" />
-              <line x1="-10" y1="20" x2="10" y2="20" />
-            </g>
-            <g id="mv-gavel" stroke="rgba(0,0,0,0.95)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-              <g transform="rotate(-30)">
-                <rect x="-16" y="-8" width="32" height="12" rx="2" />
-                <line x1="4" y1="4" x2="22" y2="22" strokeWidth="3" />
-              </g>
-              <rect x="-18" y="18" width="36" height="5" rx="1" />
-            </g>
-            <g id="mv-book" stroke="rgba(0,0,0,0.95)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M -22 -14 Q -22 -16 -20 -16 L -2 -12 Q 0 -11 0 -9 L 0 14 Q 0 12 -2 11 L -20 8 Q -22 7 -22 5 Z" />
-              <path d="M 22 -14 Q 22 -16 20 -16 L 2 -12 Q 0 -11 0 -9 L 0 14 Q 0 12 2 11 L 20 8 Q 22 7 22 5 Z" />
-              <line x1="-18" y1="-8" x2="-6" y2="-6" />
-              <line x1="-18" y1="2" x2="-6" y2="4" />
-              <line x1="6" y1="-6" x2="18" y2="-8" />
-              <line x1="6" y1="4" x2="18" y2="2" />
-            </g>
-          </defs>
-          <g className="hero-legal-icon float-a"><use href="#mv-scales" transform="translate(46,52) scale(1.15)" /></g>
-          <g className="hero-legal-icon float-b" style={{ animationDelay: '.6s' }}><use href="#mv-gavel" transform="translate(356,54) scale(1.1)" /></g>
-          <g className="hero-legal-icon float-c" style={{ animationDelay: '1.1s' }}><use href="#mv-book" transform="translate(46,248) scale(1.1)" /></g>
-          <g className="hero-legal-icon float-a" style={{ animationDelay: '1.7s' }}><use href="#mv-scales" transform="translate(356,250) scale(1.15)" /></g>
-        </svg>
+        {/* Glow sutil */}
+        <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/20 rounded-full blur-[80px] pointer-events-none" />
 
         <div className="relative p-6">
           {/* Chips */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/85 text-primary font-body text-[10px] font-bold uppercase tracking-wider shadow">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 font-body text-[10px] font-bold uppercase tracking-wider shadow-sm">
               <CheckCircle2 className="w-3 h-3" /> Ativa
             </span>
             {isAdminOverride && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/85 text-primary font-body text-[10px] font-bold uppercase tracking-wider shadow">
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 font-body text-[10px] font-bold uppercase tracking-wider shadow-sm">
                 <Sparkles className="w-3 h-3" /> Concedido
               </span>
             )}
           </div>
 
           {/* Brand block */}
-          <div className="mt-5 flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-black/85 border-2 border-black/90 flex items-center justify-center shadow-[0_10px_28px_rgba(0,0,0,0.45)] shrink-0">
-              <Crown className="w-8 h-8 text-primary" />
+          <div className="mt-6 flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center shrink-0">
+              <Crown className="w-7 h-7 text-primary" />
             </div>
             <div className="min-w-0 flex-1">
-              <h2 className="font-display text-[26px] leading-none font-black tracking-tight text-black drop-shadow-[0_1px_1px_rgba(255,255,255,0.25)]">
-                VACATIO {label.replace('Premium ', '').toUpperCase().trim() || 'PREMIUM'}
+              <h2 className="font-display text-[22px] sm:text-[24px] leading-none font-bold tracking-tight text-foreground">
+                PLANO {label.replace('Premium ', '').toUpperCase().trim() || 'PREMIUM'}
               </h2>
-              <p className="font-body text-[13px] font-semibold text-black/75 mt-1">
+              <p className="font-body text-[13px] text-muted-foreground mt-1.5">
                 {preco}{equivalente ? ` · ${equivalente}` : ''}
               </p>
             </div>
           </div>
 
           {/* Validity strip */}
-          <div className="mt-5 rounded-2xl bg-black/85 border border-black/60 px-4 py-3">
+          <div className="mt-6 rounded-2xl bg-card/60 border border-border/50 px-4 py-4">
             <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 text-primary/70">
+              <div className="flex items-center gap-2 text-muted-foreground">
                 <Calendar className="w-4 h-4" />
                 <span className="font-body text-[11px] uppercase tracking-wider">
                   Próxima renovação
                 </span>
               </div>
-              <span className="font-display text-sm font-bold text-primary">
+              <span className="font-display text-sm font-bold text-foreground">
                 {fmtDate(expiresAt)}
               </span>
             </div>
             {diasRestantes != null && (
               <>
-                <div className="h-1.5 rounded-full bg-white/10 overflow-hidden mt-3">
+                <div className="h-1.5 rounded-full bg-secondary overflow-hidden mt-3">
                   <div className="h-full bg-primary transition-all" style={{ width: `${progresso}%` }} />
                 </div>
-                <p className="font-body text-[11px] text-primary/60 mt-2">
-                  {diasRestantes} {diasRestantes === 1 ? 'dia restante' : 'dias restantes'} no ciclo atual
+                <p className="font-body text-[11px] text-muted-foreground mt-2">
+                  <strong className="text-foreground font-medium">{diasRestantes}</strong> {diasRestantes === 1 ? 'dia restante' : 'dias restantes'} no ciclo atual
                 </p>
               </>
             )}
@@ -266,11 +219,11 @@ export default function MinhaAssinaturaView({ plano, expiresAt, startedAt, sourc
           )}
 
           {/* Actions */}
-          <div className="mt-4 grid grid-cols-2 gap-2">
+          <div className="mt-4 grid grid-cols-2 gap-3">
             {!isAdminOverride && (
               <button
                 onClick={openStore}
-                className="h-11 rounded-xl bg-black text-primary font-display font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-black/40 active:scale-[0.98] transition"
+                className="h-11 rounded-xl bg-secondary/50 border border-border/50 text-foreground hover:bg-secondary transition-colors font-display font-semibold text-sm flex items-center justify-center gap-2 active:scale-[0.98]"
               >
                 <ExternalLink className="w-4 h-4" />
                 {source === 'apple' ? 'App Store' : source === 'asaas' ? 'Asaas' : 'Google Play'}
@@ -278,7 +231,7 @@ export default function MinhaAssinaturaView({ plano, expiresAt, startedAt, sourc
             )}
             <button
               onClick={openSupport}
-              className={`h-11 rounded-xl bg-white/85 hover:bg-white text-black font-display font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-black/20 active:scale-[0.98] transition ${isAdminOverride ? 'col-span-2' : ''}`}
+              className={`h-11 rounded-xl bg-secondary/50 border border-border/50 text-foreground hover:bg-secondary transition-colors font-display font-semibold text-sm flex items-center justify-center gap-2 active:scale-[0.98] ${isAdminOverride ? 'col-span-2' : ''}`}
             >
               <LifeBuoy className="w-4 h-4" />
               Suporte

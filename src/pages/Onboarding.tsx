@@ -8,6 +8,7 @@ import CadastroOnboardingOverlay, {
   type CadastroResult,
 } from '@/components/onboarding/CadastroOnboardingOverlay';
 import NotificacoesPermissaoStep from '@/components/onboarding/NotificacoesPermissaoStep';
+import TrialWelcomeModal from '@/components/onboarding/TrialWelcomeModal';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const Onboarding = () => {
@@ -16,6 +17,7 @@ const Onboarding = () => {
   const { user } = useAuth();
   const [saving, setSaving] = useState(false);
   const [pedirNotificacoes, setPedirNotificacoes] = useState(false);
+  const [pedirTrial, setPedirTrial] = useState(false);
 
   // SEO & Título dinâmico da Triagem
   useEffect(() => {
@@ -81,6 +83,11 @@ const Onboarding = () => {
   const concluirNotificacoes = (granted: boolean) => {
     setPedirNotificacoes(false);
     toast.success(granted ? 'Notificações ativadas. Bora estudar!' : 'Bora estudar!');
+    setPedirTrial(true);
+  };
+
+  const concluirTrial = () => {
+    setPedirTrial(false);
     startTransition(() => {
       navigate('/', { replace: true });
     });
@@ -91,13 +98,17 @@ const Onboarding = () => {
   return (
     <main className="min-h-dvh bg-black">
       <AnimatePresence mode="wait">
-        {!pedirNotificacoes ? (
+        {!pedirNotificacoes && !pedirTrial ? (
           <motion.div key="onboarding-flow" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
             <CadastroOnboardingOverlay open onFinished={finalizar} initialName={initialName} />
           </motion.div>
-        ) : (
+        ) : pedirNotificacoes ? (
           <motion.div key="notificacoes-step" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
             <NotificacoesPermissaoStep onDone={concluirNotificacoes} />
+          </motion.div>
+        ) : (
+          <motion.div key="trial-step" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
+            <TrialWelcomeModal onDone={concluirTrial} />
           </motion.div>
         )}
       </AnimatePresence>
