@@ -1,4 +1,4 @@
-import { registerPlugin, PluginListenerHandle } from '@capacitor/core';
+import { registerPlugin, PluginListenerHandle, Capacitor } from '@capacitor/core';
 
 export interface NativeAuthResponse {
   success: boolean;
@@ -14,7 +14,7 @@ export interface NativeAuthPluginInterface {
   ): Promise<PluginListenerHandle>;
 }
 
-export const NativeAuth = registerPlugin<NativeAuthPluginInterface>('NativeAuth', {
+const RawNativeAuth = registerPlugin<NativeAuthPluginInterface>('NativeAuth', {
   web: () => ({
     async openAuth() {
       return { success: false };
@@ -29,3 +29,42 @@ export const NativeAuth = registerPlugin<NativeAuthPluginInterface>('NativeAuth'
     },
   }),
 });
+
+export const NativeAuth: NativeAuthPluginInterface = {
+  async openAuth(options) {
+    if (!Capacitor.isPluginAvailable('NativeAuth')) {
+      return { success: false };
+    }
+    try {
+      return await RawNativeAuth.openAuth(options);
+    } catch (err) {
+      console.warn('[NativeAuth] openAuth não disponível ou falhou:', err);
+      return { success: false };
+    }
+  },
+
+  async openLanding() {
+    if (!Capacitor.isPluginAvailable('NativeAuth')) {
+      return { success: false };
+    }
+    try {
+      return await RawNativeAuth.openLanding();
+    } catch (err) {
+      console.warn('[NativeAuth] openLanding não disponível ou falhou:', err);
+      return { success: false };
+    }
+  },
+
+  async addListener(eventName, listenerFunc) {
+    if (!Capacitor.isPluginAvailable('NativeAuth')) {
+      return { remove: async () => {} };
+    }
+    try {
+      return await RawNativeAuth.addListener(eventName, listenerFunc);
+    } catch (err) {
+      console.warn('[NativeAuth] addListener não disponível ou falhou:', err);
+      return { remove: async () => {} };
+    }
+  },
+};
+

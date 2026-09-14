@@ -53,53 +53,65 @@ const Auth = () => {
       let isSubscribed = true;
       let authHandle: { remove: () => void } | null = null;
       
-      import('@/plugins/NativeAuthPlugin').then(({ NativeAuth }) => {
-        NativeAuth.addListener('onAuthSuccess', async (data) => {
-          if (data?.session) {
-            try {
-              const sessionObj =
-                typeof data.session === 'string' ? JSON.parse(data.session) : data.session;
-              if (sessionObj?.access_token && sessionObj?.refresh_token) {
-                await supabase.auth.setSession({
-                  access_token: sessionObj.access_token,
-                  refresh_token: sessionObj.refresh_token,
-                });
+      import('@/plugins/NativeAuthPlugin')
+        .then(({ NativeAuth }) => {
+          NativeAuth.addListener('onAuthSuccess', async (data) => {
+            if (data?.session) {
+              try {
+                const sessionObj =
+                  typeof data.session === 'string' ? JSON.parse(data.session) : data.session;
+                if (sessionObj?.access_token && sessionObj?.refresh_token) {
+                  await supabase.auth.setSession({
+                    access_token: sessionObj.access_token,
+                    refresh_token: sessionObj.refresh_token,
+                  });
+                }
+              } catch (e) {
+                console.warn('[Auth] Erro ao restaurar sessão nativa:', e);
               }
-            } catch (e) {
-              console.warn('[Auth] Erro ao restaurar sessão nativa:', e);
+              startTransition(() => {
+                navigate('/', { replace: true });
+              });
             }
-            startTransition(() => {
-              navigate('/', { replace: true });
+          })
+            .then((h) => {
+              if (!isSubscribed) {
+                h?.remove?.();
+              } else {
+                authHandle = h;
+              }
+            })
+            .catch((err) => {
+              console.warn('[Auth] NativeAuth.addListener não disponível:', err);
             });
-          }
-        }).then((h) => {
-          if (!isSubscribed) {
-            h?.remove?.();
-          } else {
-            authHandle = h;
-          }
-        });
 
-        NativeAuth.openAuth({ mode: 'login' }).then(async (res) => {
-          if (res?.success && res.session) {
-            try {
-              const sessionObj =
-                typeof res.session === 'string' ? JSON.parse(res.session) : res.session;
-              if (sessionObj?.access_token && sessionObj?.refresh_token) {
-                await supabase.auth.setSession({
-                  access_token: sessionObj.access_token,
-                  refresh_token: sessionObj.refresh_token,
+          NativeAuth.openAuth({ mode: 'login' })
+            .then(async (res) => {
+              if (res?.success && res.session) {
+                try {
+                  const sessionObj =
+                    typeof res.session === 'string' ? JSON.parse(res.session) : res.session;
+                  if (sessionObj?.access_token && sessionObj?.refresh_token) {
+                    await supabase.auth.setSession({
+                      access_token: sessionObj.access_token,
+                      refresh_token: sessionObj.refresh_token,
+                    });
+                  }
+                } catch (e) {
+                  console.warn('[Auth] Erro ao restaurar sessão nativa:', e);
+                }
+                startTransition(() => {
+                  navigate('/', { replace: true });
                 });
               }
-            } catch (e) {
-              console.warn('[Auth] Erro ao restaurar sessão nativa:', e);
-            }
-            startTransition(() => {
-              navigate('/', { replace: true });
+            })
+            .catch((err) => {
+              console.warn('[Auth] NativeAuth.openAuth não disponível:', err);
             });
-          }
-        }).catch(() => {});
-      }).catch(() => {});
+        })
+        .catch((err) => {
+          console.warn('[Auth] Falha ao carregar NativeAuthPlugin:', err);
+        });
 
       return () => {
         isSubscribed = false;
