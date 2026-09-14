@@ -246,6 +246,16 @@ const AprenderArea = () => {
 
   const isFlash = activeTab === 'flashcards';
 
+  const iconInfo = areaIconFor(slug || area?.slug || area?.nome || 'geral');
+  const AreaIconComp = iconInfo?.Icon || BookOpenText;
+  const palette = useMemo(() => getAreaThemePalette(slug || area?.nome || area?.slug || 'geral'), [slug, area]);
+
+  // Progresso geral de flashcards da área
+  const totalCompreendidos = useMemo(() => {
+    return (temasFlashcards || []).reduce((acc, t) => acc + (t.compreendidos || 0), 0);
+  }, [temasFlashcards]);
+  const progressoPctFlash = totalFlashcardsArea > 0 ? Math.round((totalCompreendidos / totalFlashcardsArea) * 100) : 0;
+
   // Itens unificados: na aba flashcards são sempre DECKS DE FLASHCARDS
   const itemsToRender = useMemo(() => {
     if (isFlash && temasFlashcards && temasFlashcards.length > 0) {
@@ -398,9 +408,6 @@ const AprenderArea = () => {
     });
   }, [isFlash, temasFlashcards, modulosOrdenados, aulas, progresso, activeTab, area?.nome, officialFlashcardArea, effectiveAreaName, slug, navigate, data?.area, totalFlashcardsArea, user?.id, palette]);
 
-  const iconInfo = areaIconFor(slug || area?.slug || area?.nome || 'geral');
-  const AreaIconComp = iconInfo?.Icon || BookOpenText;
-  const palette = useMemo(() => getAreaThemePalette(slug || area?.nome || area?.slug || 'geral'), [slug, area]);
 
   // Capa oficial ilustrada da matéria
   const coverInfo = area ? (getAreaCover(area.nome) || getAreaCover(area.slug)) : (slug ? getAreaCover(slug) : null);
@@ -467,18 +474,33 @@ const AprenderArea = () => {
                   {isFlash ? `Decks de Flashcards (${itemsToRender.length})` : activeTab === 'questoes' ? 'Praticar por Tópico' : 'Selecione o Módulo'}
                 </h2>
               </div>
-              <span 
-                className="text-[10px] sm:text-xs font-normal font-sans uppercase tracking-wider px-2.5 py-0.5 rounded-full border shrink-0"
-                style={{
-                  backgroundColor: palette.badgeBg,
-                  borderColor: palette.badgeBorder,
-                  color: palette.primary,
-                }}
-              >
-                {officialFlashcardArea || area?.nome || effectiveAreaName}
-              </span>
-
             </div>
+            {/* Barra de progresso geral da área */}
+            {isFlash && totalFlashcardsArea > 0 && (
+              <div className="w-full mt-2 mb-1">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] sm:text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                    {totalCompreendidos} / {totalFlashcardsArea} dominados
+                  </span>
+                  <span 
+                    className="text-[11px] sm:text-xs font-bold tabular-nums"
+                    style={{ color: palette.primary }}
+                  >
+                    {progressoPctFlash}%
+                  </span>
+                </div>
+                <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-700 ease-out"
+                    style={{
+                      width: `${Math.max(progressoPctFlash, 1)}%`,
+                      background: `linear-gradient(90deg, ${palette.primary}, ${palette.accent || palette.primary})`,
+                      boxShadow: `0 0 8px ${palette.primary}66`,
+                    }}
+                  />
+                </div>
+              </div>
+            )}
 
             {isFlash && loadingFlashcards && itemsToRender.length === 0 ? (
               <div className="space-y-4 py-6">
