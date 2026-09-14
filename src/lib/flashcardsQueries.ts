@@ -2,7 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { withBundleFallback, bundle } from '@/services/offlineBundle';
 import { getOfflineDecks } from '@/lib/flashcardsOfflineManager';
-import { saveOfflinePackage } from '@/services/downloadManager';
+import { saveOfflinePackage, getOfflinePackage } from '@/services/downloadManager';
+import { FALLBACK_FLASHCARDS_AREAS, FALLBACK_FLASHCARDS_DASH } from './flashcardsConstants';
 
 export type FlashcardsDash = {
   total_cards: number;
@@ -43,10 +44,15 @@ export const useFlashcardsDashboard = () => {
   return useQuery({
     queryKey: ['flashcards_dashboard'],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('flashcards_dashboard');
-      if (error) throw error;
-      return (data || null) as unknown as FlashcardsDash | null;
+      try {
+        const { data, error } = await supabase.rpc('flashcards_dashboard');
+        if (error) throw error;
+        return (data || null) as unknown as FlashcardsDash | null;
+      } catch {
+        return FALLBACK_FLASHCARDS_DASH;
+      }
     },
+    placeholderData: FALLBACK_FLASHCARDS_DASH,
     staleTime: 5 * 60 * 1000,
   });
 };
@@ -56,33 +62,52 @@ export const useFlashcardsResumoAreas = () => {
     queryKey: ['flashcards_resumo_areas'],
     queryFn: async () => {
       const onlineFn = async () => {
-        const { data, error } = await supabase.rpc('flashcards_resumo_areas');
-        if (error) throw error;
-        
-        const result = [...(data || [])] as FlashcardsAreaRow[];
-        const hasTermos = result.find(r => r.area === 'Termos Jurídicos');
-        
-        if (!hasTermos) {
-          const { count } = await supabase.from('flashcards_cards').select('*', { count: 'exact', head: true }).eq('area', 'Termos Jurídicos');
-          if (count && count > 0) {
-            result.push({
-              area: 'Termos Jurídicos',
-              slug: 'termos-juridicos',
-              ordem: 99,
-              total_cards: count,
-              compreendidos: 0,
-              a_revisar: 0
-            });
+        try {
+          const { data, error } = await supabase.rpc('flashcards_resumo_areas');
+          if (error) throw error;
+          
+          let result = [...(data || [])] as FlashcardsAreaRow[];
+          if (!result || result.length === 0) {
+            result = [...FALLBACK_FLASHCARDS_AREAS];
           }
+          
+          const hasTermos = result.find(r => r.area === 'Termos Jurídicos');
+          if (!hasTermos) {
+            try {
+              const { count } = await supabase.from('flashcards_cards').select('*', { count: 'exact', head: true }).eq('area', 'Termos Jurídicos');
+              if (count && count > 0) {
+                result.push({
+                  area: 'Termos Jurídicos',
+                  slug: 'termos-juridicos',
+                  ordem: 99,
+                  total_cards: count,
+                  compreendidos: 0,
+                  a_revisar: 0
+                });
+              }
+            } catch {}
+          }
+          
+          if (result && result.length > 0) {
+            void saveOfflinePackage('flashcards-resumo-areas', 'Flashcards Áreas', result);
+          }
+          return result;
+        } catch {
+          const local = await getOfflinePackage<FlashcardsAreaRow>('flashcards-resumo-areas');
+          if (local && local.length > 0) return local;
+          return FALLBACK_FLASHCARDS_AREAS;
         }
-        
-        if (result && result.length > 0) {
-          void saveOfflinePackage('flashcards-resumo-areas', 'Flashcards Áreas', result);
-        }
-        return result;
       };
-      return withBundleFallback(onlineFn(), () => bundle.flashcardsResumoAreas<FlashcardsAreaRow>());
+
+      const offlineFn = async () => {
+        const local = await getOfflinePackage<FlashcardsAreaRow>('flashcards-resumo-areas');
+        if (local && local.length > 0) return local;
+        return FALLBACK_FLASHCARDS_AREAS;
+      };
+
+      return withBundleFallback(onlineFn(), offlineFn);
     },
+    placeholderData: FALLBACK_FLASHCARDS_AREAS,
     staleTime: 5 * 60 * 1000,
   });
 };

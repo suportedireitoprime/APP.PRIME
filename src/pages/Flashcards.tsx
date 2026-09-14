@@ -3,30 +3,47 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Layers, Target, BarChart3, FolderPlus, RotateCcw, Filter, BookOpen, Scale, Gavel, Quote, Lightbulb, Clock, History, Dices, Route, Trophy } from 'lucide-react';
+import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Layers, Target, BarChart3, FolderPlus, RotateCcw, Filter, BookOpen, Scale, Gavel, Quote, Lightbulb, Clock, History, Dices, Route, Trophy, LayoutGrid } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import FlashcardsCargoHero from '@/components/flashcards/FlashcardsCargoHero';
 import { useFlashcardsDashboard, useFlashcardsResumoAreas, FlashcardsAreaRow, FlashcardsDash } from '@/lib/flashcardsQueries';
+import { FALLBACK_FLASHCARDS_AREAS } from '@/lib/flashcardsConstants';
+import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
+import { getAreaCover } from '@/lib/areasDireitoCovers';
+import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
 import FlashcardsFiltroSheet, { FlashcardsFiltro } from '@/components/flashcards/FlashcardsFiltroSheet';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import FlashcardsMasterDeck from '@/components/flashcards/FlashcardsMasterDeck';
 
-
-const ATALHOS_FLASHCARDS_4 = [
-  { id: 'historico', label: 'Histórico', desc: 'Sessões salvas', icon: History, route: '/flashcards/historico' },
+const ATALHOS_FLASHCARDS_5 = [
+  { id: 'materias', label: 'Matérias', desc: '29 disciplinas', icon: BookOpen, route: '/flashcards/materias' },
   { id: 'decks', label: 'Decks', desc: 'Seus baralhos', icon: FolderPlus, route: '/flashcards/decks' },
   { id: 'revisar', label: 'Revisão', desc: 'Volte no que errou', icon: RotateCcw, route: '/flashcards/revisar' },
+  { id: 'historico', label: 'Histórico', desc: 'Sessões salvas', icon: History, route: '/flashcards/historico' },
   { id: 'desempenho', label: 'Desempenho', desc: 'Estatísticas', icon: BarChart3, route: '/flashcards/progresso' },
 ];
 
 const Flashcards = () => {
   const navigate = useNavigate();
   const { data: dash, isLoading: loadingDash } = useFlashcardsDashboard();
-  const { data: areasRaw } = useFlashcardsResumoAreas();
+  const { data: areasRaw, isLoading: loadingAreas } = useFlashcardsResumoAreas();
 
   const [filtroAberto, setFiltroAberto] = useState(false);
+  const [viewMode, setViewMode] = useState<'decks' | 'grade'>('decks');
+  const [buscaMateria, setBuscaMateria] = useState('');
   const loading = loadingDash;
+
+  const areas = useMemo(() => {
+    return areasRaw && areasRaw.length > 0 ? areasRaw : FALLBACK_FLASHCARDS_AREAS;
+  }, [areasRaw]);
+
+  const materiasFiltradas = useMemo(() => {
+    if (!buscaMateria.trim()) return areas;
+    const q = buscaMateria.trim().toLowerCase();
+    return areas.filter(a => a.area.toLowerCase().includes(q) || a.slug.toLowerCase().includes(q));
+  }, [areas, buscaMateria]);
 
   // SEO & Título dinâmico
   useEffect(() => {
@@ -63,7 +80,7 @@ const Flashcards = () => {
             total={dash?.estudados || 0} 
             hoje={dash?.hoje || 0} 
             meta={100} 
-            disponiveis={dash?.total_cards || 0} 
+            disponiveis={dash?.total_cards || 78077} 
             streak={dash?.streak || 0}
           />
         </div>
@@ -93,17 +110,17 @@ const Flashcards = () => {
 
 
 
-          {/* ── 4 Cards (Histórico, Decks, Revisão, Desempenho) ── */}
+          {/* ── 5 Cards de Ações Rápidas (Matérias, Decks, Revisão, Histórico, Desempenho) ── */}
           <motion.div 
-            className="grid grid-cols-4 gap-2.5"
+            className="grid grid-cols-5 gap-1.5 sm:gap-2.5"
             initial="hidden"
             animate="show"
             variants={{
               hidden: { opacity: 0 },
-              show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+              show: { opacity: 1, transition: { staggerChildren: 0.04 } }
             }}
           >
-            {ATALHOS_FLASHCARDS_4.map((a) => {
+            {ATALHOS_FLASHCARDS_5.map((a) => {
               const Icon = a.icon;
               return (
                 <motion.button
@@ -115,15 +132,15 @@ const Flashcards = () => {
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => { haptic.selection(); navigate(a.route); }}
-                  className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-zinc-400/50 transition-colors gap-2 text-center focus-visible:outline-none"
+                  className="group flex flex-col items-center justify-center p-2 sm:p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-zinc-400/50 transition-colors gap-1.5 text-center focus-visible:outline-none"
                 >
-                  <div className="relative w-10 h-10 flex items-center justify-center">
-                    <Icon className="w-7 h-7 sm:w-8 sm:h-8 text-zinc-400 transition-all duration-300 group-hover:text-zinc-200 group-hover:scale-110" strokeWidth={2} />
-                    <Icon className="absolute inset-auto w-7 h-7 sm:w-8 sm:h-8 text-white opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 icon-shine-mask" strokeWidth={2} />
+                  <div className="relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center">
+                    <Icon className="w-5 h-5 sm:w-7 sm:h-7 text-zinc-400 transition-all duration-300 group-hover:text-zinc-200 group-hover:scale-110" strokeWidth={2} />
+                    <Icon className="absolute inset-auto w-5 h-5 sm:w-7 sm:h-7 text-white opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 icon-shine-mask" strokeWidth={2} />
                   </div>
                   <div>
-                    <p className="text-xs font-extrabold text-foreground leading-tight">{a.label}</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5 hidden sm:block">{a.desc}</p>
+                    <p className="text-[11px] sm:text-xs font-extrabold text-foreground leading-tight truncate">{a.label}</p>
+                    <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-0.5 hidden sm:block truncate">{a.desc}</p>
                   </div>
                 </motion.button>
               );
@@ -132,16 +149,146 @@ const Flashcards = () => {
 
 
 
-          {/* ── Decks de Flashcards (Master Deck) ───────────────────── */}
-          <section className="pt-2">
-             <div className="flex items-center gap-2 mb-2">
-              <span className="h-4 w-1 rounded-full bg-[#36AF85]" />
-              <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                Matérias e Trilhas
-              </p>
+          {/* ── Seção de Matérias e Trilhas (Decks 3D / Grade Completa) ───────────────────── */}
+          <section className="pt-2 space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="h-4 w-1 rounded-full bg-[#36AF85]" />
+                <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                  Matérias e Trilhas ({areas.length})
+                </p>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                {/* Alternador de Modo: Decks 3D vs Grade */}
+                <div className="flex items-center rounded-xl bg-card/80 border border-border/80 p-0.5 shadow-sm backdrop-blur-sm">
+                  <button
+                    type="button"
+                    onClick={() => { haptic.selection(); setViewMode('decks'); }}
+                    className={cn(
+                      "flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer",
+                      viewMode === 'decks'
+                        ? "bg-[#36AF85] text-white shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                    title="Visualizar em Decks 3D"
+                  >
+                    <Layers className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Decks</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { haptic.selection(); setViewMode('grade'); }}
+                    className={cn(
+                      "flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer",
+                      viewMode === 'grade'
+                        ? "bg-[#36AF85] text-white shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                    title="Visualizar em Grade de Matérias"
+                  >
+                    <LayoutGrid className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Grade</span>
+                  </button>
+                </div>
+
+                {/* Botão Ver Todas */}
+                <button
+                  type="button"
+                  onClick={() => { haptic.selection(); navigate('/flashcards/materias'); }}
+                  className="text-[11px] font-bold text-[#36AF85] hover:text-[#36AF85]/80 flex items-center gap-0.5 px-2 py-1 rounded-lg hover:bg-[#36AF85]/10 transition-colors"
+                >
+                  <span>Ver Todas</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
-            {areasRaw && areasRaw.length > 0 && (
-              <FlashcardsMasterDeck areas={areasRaw} />
+
+            {viewMode === 'decks' ? (
+              <FlashcardsMasterDeck areas={areas} />
+            ) : (
+              <div className="space-y-3">
+                <div className="relative">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                  <Input
+                    value={buscaMateria}
+                    onChange={(e) => setBuscaMateria(e.target.value)}
+                    placeholder="Filtrar matérias (ex: Penal, Civil, Constitucional)..."
+                    className="h-10 pl-9 rounded-xl border-border/80 bg-card/60 backdrop-blur-md text-xs"
+                  />
+                  {buscaMateria && (
+                    <button
+                      onClick={() => setBuscaMateria('')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
+                  {materiasFiltradas.map((area) => {
+                    const iconInfo = areaIconFor(area.slug || area.area);
+                    const AreaIcon = iconInfo?.Icon || BookOpen;
+                    const palette = getAreaThemePalette(area.slug || area.area);
+                    const coverInfo = getAreaCover(area.area) || getAreaCover(area.slug);
+                    const coverUrl = coverInfo?.cover;
+
+                    return (
+                      <motion.button
+                        key={area.slug || area.area}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => {
+                          haptic.selection();
+                          navigate(`/flashcards/area/${area.slug || area.area}`);
+                        }}
+                        className="group relative flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 hover:border-zinc-400/50 transition-all text-left overflow-hidden shadow-sm min-h-[140px] focus-visible:outline-none"
+                        style={{
+                          background: coverUrl
+                            ? `linear-gradient(to top, rgba(10,10,12,0.95) 0%, rgba(10,10,12,0.7) 60%, rgba(10,10,12,0.45) 100%), url(${coverUrl}) center/cover no-repeat`
+                            : `linear-gradient(145deg, ${palette.primary}22 0%, #141416 100%)`
+                        }}
+                      >
+                        <div className="flex items-start justify-between gap-2 z-10 w-full">
+                          <div
+                            className="w-8 h-8 rounded-xl flex items-center justify-center border border-white/10 shadow-sm"
+                            style={{ backgroundColor: `${iconInfo?.color || '#36AF85'}22` }}
+                          >
+                            <AreaIcon className="w-4 h-4" style={{ color: iconInfo?.color || '#36AF85' }} strokeWidth={2.2} />
+                          </div>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black/60 text-white/90 border border-white/10 shrink-0">
+                            {area.total_cards > 0 ? `${area.total_cards} cards` : 'Em breve'}
+                          </span>
+                        </div>
+
+                        <div className="z-10 mt-3 w-full">
+                          <h3 className="text-xs sm:text-sm font-bold text-white leading-snug line-clamp-2 group-hover:text-[#36AF85] transition-colors">
+                            {area.area}
+                          </h3>
+                          {area.compreendidos > 0 ? (
+                            <div className="mt-2 flex items-center gap-1.5">
+                              <div className="flex-1 bg-white/10 h-1.5 rounded-full overflow-hidden">
+                                <div
+                                  className="bg-[#36AF85] h-full rounded-full"
+                                  style={{ width: `${Math.min(100, Math.round((area.compreendidos / (area.total_cards || 1)) * 100))}%` }}
+                                />
+                              </div>
+                              <span className="text-[9px] text-muted-foreground font-semibold">
+                                {area.compreendidos} dominados
+                              </span>
+                            </div>
+                          ) : (
+                            <p className="text-[10px] text-muted-foreground mt-1 group-hover:text-zinc-300 transition-colors">
+                              Começar revisão →
+                            </p>
+                          )}
+                        </div>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              </div>
             )}
           </section>
 
