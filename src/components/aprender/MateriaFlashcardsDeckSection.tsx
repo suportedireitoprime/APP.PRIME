@@ -219,6 +219,41 @@ export const CANONICAL_AREA_TOPICS: Record<string, string[]> = {
     'Hermenêutica e Interpretação Jurídica',
     'Moral, Eficácia e Validade da Norma',
   ],
+  'filosofia-do-direito': [
+    'Filosofia do Direito',
+    'Filosofia do Direito na Modernidade',
+    'Hermenêutica e Métodos Interpretativos',
+    'Hans Kelsen',
+    'Filosofia do Direito na Antiguidade',
+  ],
+  'direito-eleitoral': [
+    'Direito Eleitoral',
+    'Elegibilidade e Inelegibilidade',
+    'Processo Eleitoral e Votação',
+    'Partidos Políticos e Financiamento',
+    'Condutas Vedadas e Crimes Eleitorais',
+  ],
+  'formacao-complementar': [
+    'Oratória Jurídica e Sustentação Oral',
+    'Metodologia da Pesquisa Jurídica',
+    'Liderança e Gestão de Escritório',
+    'Redação e Linguagem Forense',
+    'Comportamento e Postura Profissional',
+  ],
+  'politicas-publicas': [
+    'Políticas Públicas e Estado Democrático',
+    'Ciclo e Avaliação de Políticas Públicas',
+    'Controle e Governança Pública',
+    'Planejamento e Orçamento de Políticas',
+    'Políticas Setoriais e Sociais',
+  ],
+  'pesquisa-cientifica': [
+    'Metodologia Científica Aplicada ao Direito',
+    'Estrutura e Normas de Artigo Jurídico',
+    'Levantamento Bibliográfico e Fontes',
+    'Citações e Referências ABNT',
+    'Ética na Pesquisa e Escrita Acadêmica',
+  ],
 };
 
 /** Posição visual em leque (deck 3D) com profundidade e perspectiva */

@@ -308,6 +308,27 @@ const AprenderArea = () => {
           },
         }));
       }
+
+      // Fallback absoluto: se totalFlashcardsArea > 0 mas nenhum deck foi gerado, cria um deck genérico
+      if (totalFlashcardsArea > 0) {
+        const areaLabel = officialFlashcardArea || area?.nome || effectiveAreaName || 'Geral';
+        return [{
+          key: `fallback-all-${slug}`,
+          titulo: areaLabel,
+          ordemStr: '01',
+          badgeLabel: 'Deck 01',
+          displayTotal: totalFlashcardsArea,
+          displayConcluidas: 0,
+          displayLabel: totalFlashcardsArea === 1 ? 'flashcard' : 'flashcards',
+          displayPct: 0,
+          onClick: () => {
+            try { haptic.light(); } catch {}
+            navigate(`/flashcards/estudar?area=${encodeURIComponent(areaLabel)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`, {
+              state: { from: `/aprender/area/${slug}?tab=flashcards` }
+            });
+          },
+        }];
+      }
     }
 
     return modulosOrdenados.map((m, idx) => {
@@ -375,7 +396,7 @@ const AprenderArea = () => {
         },
       };
     });
-  }, [isFlash, temasFlashcards, modulosOrdenados, aulas, progresso, activeTab, area?.nome, officialFlashcardArea, effectiveAreaName, slug, navigate, data?.area, totalFlashcardsArea, user?.id]);
+  }, [isFlash, temasFlashcards, modulosOrdenados, aulas, progresso, activeTab, area?.nome, officialFlashcardArea, effectiveAreaName, slug, navigate, data?.area, totalFlashcardsArea, user?.id, palette]);
 
   const iconInfo = areaIconFor(slug || area?.slug || area?.nome || 'geral');
   const AreaIconComp = iconInfo?.Icon || BookOpenText;
