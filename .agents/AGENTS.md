@@ -81,6 +81,7 @@
 - **Áudio Nativo com Background:** Reprodução encadeada via `MediaPlayer` (Android) e `AVPlayer` / `AVSpeechSynthesizer` (iOS).
 
 ## Eficiência de Tokens & Desempenho (Padrão Lovable & Antigravity)
+- **Pesquisa Lógica e Direcionada:** NUNCA faça buscas amplas e genéricas no projeto inteiro por palavras comuns (ex: pesquisar "Estudos" em todo o `src/` retornando centenas de resultados inúteis). Use dedução lógica da arquitetura: se a tarefa é sobre o menu, vá direto aos arquivos de navegação (`BottomNav.tsx`, `SideMenu.tsx`). Encurte caminhos.
 - **Busca Direcionada (Progressive Disclosure):** Use `grep_search` e `view_file` com intervalos de linhas delimitados para inspecionar código. Nunca leia arquivos inteiros desnecessariamente.
 - **Edição Cirúrgica (`replace_file_content`):** Altere apenas os blocos de código modificados. Evite reescrever arquivos completos.
 - **Respostas Enxutas:** Não cole códigos inteiros nas respostas do chat. Use links clicáveis no formato `[arquivo](file:///caminho#L1-L10)`.

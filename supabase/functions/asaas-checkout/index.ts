@@ -90,16 +90,30 @@ Deno.serve(async (req) => {
     
     let sub: any;
 
-    if (isInstallment) {
+    if (isInstallment || (plan === 'anual' && isCreditCard)) {
+      // Calculation of the total amount including Asaas credit card tax repass
+      let taxRate = 0;
+      const num = installmentCount || 1;
+      if (num === 1) taxRate = 0.0339;
+      else if (num <= 6) taxRate = 0.0389;
+      else taxRate = 0.0439;
+      
+      const totalWithTax = (199.90 + 0.29) / (1 - taxRate);
+      
       const paymentPayload: any = {
         customer: customerId,
         billingType: billingType,
         dueDate: today,
-        value: 199.90, // Asaas accepts `value` and `installmentCount` on POST /payments for credit cards to charge the full amount split in X parcels.
-        installmentCount: installmentCount,
-        description: `Anual Estudos Jurídicos (Parcelado em ${installmentCount}x)`,
-        externalReference: user.id
+        description: `Anual Estudos Jurídicos${num > 1 ? ` (Parcelado em ${num}x)` : ''}`,
       };
+
+      if (num > 1) {
+        paymentPayload.installmentCount = num;
+        paymentPayload.totalValue = Number(totalWithTax.toFixed(2));
+      } else {
+        paymentPayload.value = Number(totalWithTax.toFixed(2));
+      }
+      paymentPayload.externalReference = user.id;
       if (isCreditCard) {
         paymentPayload.creditCard = creditCard;
         paymentPayload.creditCardHolderInfo = creditCardHolderInfo;
