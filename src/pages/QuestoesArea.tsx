@@ -402,6 +402,8 @@ const QuestoesArea = () => {
                   Praticar por Tópico
                 </h2>
               </div>
+            </div>
+
             {/* Barra de progresso geral da área */}
             {totalQuestoesArea > 0 && (
               <div className="w-full mt-2 mb-1">
