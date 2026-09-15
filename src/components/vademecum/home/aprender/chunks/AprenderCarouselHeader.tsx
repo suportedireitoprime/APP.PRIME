@@ -20,12 +20,12 @@ export const AprenderCarouselHeader = memo(({ onNavigateAll }: AprenderCarouselH
   return (
     <div className="mb-0 relative z-10 pointer-events-none px-5 flex items-start justify-between gap-3">
       <div>
-        <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 pointer-events-auto">
+        <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 pointer-events-auto uppercase tracking-widest">
           <span className="w-1 h-5 rounded-full bg-[#E11D48]" />
           Aprender
         </h3>
-        <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3 pointer-events-auto">
-          Aulas de Direito passo a passo e detalhadas
+        <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3 pointer-events-auto whitespace-nowrap truncate">
+          Aulas passo a passo
         </p>
       </div>
       <button
