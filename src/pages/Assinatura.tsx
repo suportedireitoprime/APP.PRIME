@@ -20,6 +20,7 @@ import { useTrackArea } from "@/hooks/useTrackArea";
 import { track } from "@/lib/analyticsEvents";
 import { useGoBack } from '@/hooks/useGoBack';
 import PaywallImageStack from '@/components/planos/PaywallImageStack';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 import horusOwl from '@/assets/horus/horus-owl.webp';
 
 function TrialCountdownBanner({ expiresAt }: { expiresAt: string | null }) {
@@ -49,14 +50,14 @@ function TrialCountdownBanner({ expiresAt }: { expiresAt: string | null }) {
   if (!timeLeft || timeLeft === 'Seu teste expirou') return null;
 
   return (
-    <div className="mx-4 mt-6 bg-sky-500/10 border border-sky-500/30 rounded-2xl p-4 flex flex-col items-center justify-center relative overflow-hidden shadow-lg shadow-sky-500/5">
-      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-sky-400 to-sky-600"></div>
-      <Timer className="w-6 h-6 text-sky-400 mb-2" />
-      <h3 className="font-display font-black text-sky-400 text-lg mb-1 tracking-wide uppercase">Seu Teste Gratuito</h3>
-      <p className="font-body text-sm font-semibold text-sky-500/90 text-center">
+    <div className="mx-4 mt-6 bg-red-500/10 border border-red-500/30 rounded-2xl p-4 flex flex-col items-center justify-center relative overflow-hidden shadow-lg shadow-red-500/5">
+      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-red-400 to-red-600"></div>
+      <Timer className="w-6 h-6 text-red-400 mb-2" />
+      <h3 className="font-display font-black text-red-400 text-lg mb-1 tracking-wide uppercase">Seu Teste Gratuito</h3>
+      <p className="font-body text-sm font-semibold text-red-500/90 text-center">
         Aproveite todos os recursos.
       </p>
-      <div className="mt-3 px-4 py-1.5 rounded-full bg-sky-500/20 text-sky-400 font-display font-black text-sm tracking-wider">
+      <div className="mt-3 px-4 py-1.5 rounded-full bg-red-500/20 text-red-400 font-display font-black text-sm tracking-wider animate-pulse">
         TERMINA EM {timeLeft}
       </div>
     </div>
@@ -219,6 +220,8 @@ export default function Assinatura() {
   if (view === "plans") {
     return (
       <div className="min-h-dvh bg-background pb-[calc(4rem+var(--sai-bottom))]">
+        <ShapeGrid />
+        
         <WelcomePremiumOverlay
           open={showWelcome}
           planoLabel={planoAtual ?? 'Premium'}
@@ -510,11 +513,11 @@ export default function Assinatura() {
                     </p>
 
                     <div className="flex flex-col items-center justify-center gap-0">
-                      <div className="flex items-baseline gap-1">
-                        <span className="font-display text-3xl sm:text-4xl font-black text-foreground">R$ 199,90</span>
-                        <span className="text-xs font-semibold text-muted-foreground">/ano</span>
+                      <div className="flex items-baseline gap-1 text-primary">
+                        <span className="font-display text-2xl font-bold">12x de</span>
+                        <span className="font-display text-4xl sm:text-5xl font-black ml-1">R$ 16,65</span>
                       </div>
-                      <span className="text-xs font-bold text-muted-foreground pt-0.5">equivalente a R$ 16,65 /mês</span>
+                      <span className="text-xs font-bold text-muted-foreground pt-1">ou R$ 199,90 à vista</span>
                     </div>
 
                     <div className="text-xs font-bold text-primary flex items-center justify-center gap-1 pt-1">
