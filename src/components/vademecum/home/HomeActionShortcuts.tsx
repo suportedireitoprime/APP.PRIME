@@ -18,7 +18,7 @@ const HomeActionShortcuts = () => {
   const shortcutBadges = useShortcutBadges();
 
   return (
-    <div className="grid grid-cols-4 gap-2 sm:gap-3 mt-1">
+    <div className="grid grid-cols-4 gap-2 mx-1 mt-1">
       {SHORTCUT_ITEMS.map((item, index) => {
         const Icon = item.icon;
         const badgeCount = item.badgeKey ? shortcutBadges.counts[item.badgeKey] : 0;
@@ -39,7 +39,7 @@ const HomeActionShortcuts = () => {
               navigate(item.to);
             }}
             style={{ '--shimmer-delay': `${index * 150}ms` } as React.CSSProperties}
-            className="group relative flex flex-col items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 px-1 min-h-[56px] sm:min-h-[62px] rounded-2xl bg-black/75 hover:bg-black/90 backdrop-blur-md border border-white/15 hover:border-white/25 shadow-lg shadow-black/30 active:scale-[0.96] transition-all duration-75 touch-manipulation shortcut-button-shine cursor-pointer select-none overflow-hidden"
+            className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-2 text-center min-h-[48px] select-none cursor-pointer overflow-hidden"
           >
             {badgeCount > 0 && item.badgeColor && (
               <span
@@ -51,11 +51,11 @@ const HomeActionShortcuts = () => {
             )}
 
             <Icon
-              className="w-[22px] h-[22px] sm:w-6 sm:h-6 shrink-0 transition-all group-hover:scale-110"
-              style={{ color: item.color, filter: 'saturate(1.3) drop-shadow(0 2px 6px rgba(0,0,0,0.6))' }}
-              strokeWidth={2.2}
+              className="w-5 h-5 shrink-0 transition-all group-hover:scale-110"
+              style={{ color: item.color }}
+              strokeWidth={2}
             />
-            <span className="w-full text-center px-0.5 text-[8.5px] sm:text-[9.5px] font-black text-white/95 leading-none uppercase tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] whitespace-nowrap">
+            <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
               {item.label}
             </span>
           </button>
