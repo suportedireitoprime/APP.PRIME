@@ -94,24 +94,24 @@ const HomeLeiSecaBar = () => {
       onClick={handleClick}
       role="button"
       aria-label="Praticar Lei Seca. Abra artigos comentados, pílulas e simulados."
-      className="group relative w-full flex items-center justify-between gap-2.5 sm:gap-3.5 h-16 sm:h-[68px] px-3.5 sm:px-4 rounded-2xl bg-[#252528] hover:bg-[#2E2E33] backdrop-blur-md border border-white/10 shadow-lg shadow-black/30 active:scale-[0.99] transition-all cursor-pointer overflow-hidden lei-seca-sweep-shine text-left"
+      className="group relative w-full flex items-center justify-between gap-3 sm:gap-4 h-[76px] sm:h-[84px] md:h-[88px] px-4 sm:px-5 rounded-2xl bg-[#252528] hover:bg-[#2E2E33] backdrop-blur-md border border-white/10 shadow-lg shadow-black/30 active:scale-[0.99] transition-all cursor-pointer overflow-hidden lei-seca-sweep-shine text-left"
     >
       {/* Lado Esquerdo: Ícone + Textos com flexbox (sem risco de colisão) */}
       <div className="flex items-center gap-3 sm:gap-3.5 min-w-0 flex-1 relative z-10">
-        {/* Ícone da Balança da Justiça maior e mais fino, sem fundo vermelho */}
-        <div className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center shrink-0">
+        {/* Ícone da Balança da Justiça com proporção confortável */}
+        <div className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center shrink-0">
           <Scale
-            className="w-7 h-7 sm:w-[30px] sm:h-[30px] text-primary shrink-0 group-hover:scale-105 transition-transform"
+            className="w-8 h-8 sm:w-[32px] sm:h-[32px] text-primary shrink-0 group-hover:scale-105 transition-transform"
             strokeWidth={1.3}
           />
         </div>
 
         {/* Textos: Título chamativo e subtítulo com efeito digitando */}
         <div className="flex flex-col items-start min-w-0 flex-1 overflow-hidden">
-          <span className="font-display text-white text-[13.5px] sm:text-[15px] font-bold uppercase tracking-wider leading-snug truncate w-full">
+          <span className="font-display text-white text-[14.5px] sm:text-[16px] font-bold uppercase tracking-wider leading-snug truncate w-full">
             Praticar Lei Seca
           </span>
-          <span className="font-body text-white/70 text-[11px] sm:text-[12px] font-medium truncate flex items-center leading-tight mt-0.5 w-full">
+          <span className="font-body text-white/70 text-[11.5px] sm:text-[13px] font-medium truncate flex items-center leading-tight mt-1 w-full">
             <TypingLeiSecaHint />
           </span>
         </div>
@@ -120,7 +120,7 @@ const HomeLeiSecaBar = () => {
       {/* Lado Direito: Botão 'PRATICAR >' em vermelho com alto apelo de clique */}
       <div
         aria-hidden="true"
-        className="relative z-10 shrink-0 h-10 sm:h-11 px-3.5 sm:px-4 rounded-xl bg-primary hover:bg-[#BE123C] text-white font-display text-[12px] sm:text-[13px] font-black tracking-wider flex items-center justify-center gap-1 shadow-md shadow-primary/30 group-hover:shadow-primary/50 group-hover:scale-[1.02] transition-all select-none uppercase"
+        className="relative z-10 shrink-0 h-11 sm:h-12 px-4 sm:px-5 rounded-xl bg-primary hover:bg-[#BE123C] text-white font-display text-[12.5px] sm:text-[13.5px] font-black tracking-wider flex items-center justify-center gap-1 shadow-md shadow-primary/30 group-hover:shadow-primary/50 group-hover:scale-[1.02] transition-all select-none uppercase"
       >
         <span>PRATICAR</span>
         <ChevronRight className="w-4 h-4 stroke-[2.8] transition-transform group-hover:translate-x-0.5" />

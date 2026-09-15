@@ -13,14 +13,14 @@ import CarouselDots from '@/components/vademecum/home/carousel/CarouselDots';
 
 const FALLBACK_CLASSICOS: LivroNormalizado[] = [
   {
-    id: 144,
-    titulo: 'Teoria Pura do Direito',
-    autor: 'Hans Kelsen',
-    sobre: 'Obra fundamental da Teoria do Direito Positivo e do Normativismo Jurídico.',
-    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg', 300),
+    id: 12,
+    titulo: 'A Luta pelo Direito',
+    autor: 'Rudolf von Ihering',
+    sobre: 'A luta pelo direito como dever ético e afirmação da própria existência humana.',
+    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_luta_pelo_direito_manual.jpg', 300),
     link: null,
-    download: 'https://drive.google.com/file/d/1XFuOCvzSjk_XWO4xGaWwNqWG_6MsxYYl/view?usp=drive_link',
-    area: 'Teoria do Direito',
+    download: 'https://drive.google.com/file/d/15oWYvvoQT3OLhS32VU2vB2MGz-8KnHTE/view?usp=drivesdk',
+    area: 'Filosofia do Direito',
     colecaoId: 'classicos',
   },
   {
@@ -35,22 +35,55 @@ const FALLBACK_CLASSICOS: LivroNormalizado[] = [
     colecaoId: 'classicos',
   },
   {
-    id: 141,
-    titulo: 'Ética a Nicômaco',
-    autor: 'Aristóteles',
-    sobre: 'Tratado clássico sobre a virtude, a justiça e a busca da felicidade.',
+    id: 19,
+    titulo: 'A Arte da Guerra',
+    autor: 'Sun Tzu',
+    sobre: 'Tratado clássico de estratégia, disciplina e resolução de conflitos.',
+    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_arte_da_guerra_manual.jpg', 300),
+    link: null,
+    download: 'https://drive.google.com/file/d/1fxskqftGKsAoCYWElzSX9NGZ3dj7E8O7/view?usp=drivesdk',
+    area: 'Estratégia e Filosofia',
+    colecaoId: 'classicos',
+  },
+  {
+    id: 9,
+    titulo: 'O Espírito das Leis',
+    autor: 'Montesquieu',
+    sobre: 'A formulação clássica da separação dos poderes e o princípio da moderação política.',
     capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.jpg', 300),
     link: null,
     download: 'https://drive.google.com/file/d/1fDqngE5NhIvFiVD6GE2t_ebdepqP0uH9/view?usp=drivesdk',
-    area: 'Filosofia do Direito',
+    area: 'Teoria do Estado',
+    colecaoId: 'classicos',
+  },
+  {
+    id: 144,
+    titulo: 'Teoria Pura do Direito',
+    autor: 'Hans Kelsen',
+    sobre: 'Obra fundamental da Teoria do Direito Positivo e do Normativismo Jurídico.',
+    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg', 300),
+    link: null,
+    download: 'https://drive.google.com/file/d/1XFuOCvzSjk_XWO4xGaWwNqWG_6MsxYYl/view?usp=drive_link',
+    area: 'Teoria do Direito',
+    colecaoId: 'classicos',
+  },
+  {
+    id: 10,
+    titulo: 'O Mundo Assombrado pelos Demônios',
+    autor: 'Carl Sagan',
+    sobre: 'Ciência, pensamento crítico e o ceticismo como arma contra as ilusões.',
+    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_mundo_assombrado_pelos_demonios_manual.jpg', 300),
+    link: null,
+    download: null,
+    area: 'Pensamento Crítico',
     colecaoId: 'classicos',
   },
   {
     id: 140,
     titulo: 'O Príncipe',
     autor: 'Nicolau Maquiavel',
-    sobre: 'Tratado de ciência política sobre o exercício e a manutenção do poder.',
-    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_arte_da_guerra_manual.jpg', 300),
+    sobre: 'Tratado clássico de ciência política sobre o exercício e a manutenção do poder.',
+    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.jpg', 300),
     link: null,
     download: 'https://drive.google.com/file/d/1fxskqftGKsAoCYWElzSX9NGZ3dj7E8O7/view?usp=drivesdk',
     area: 'Filosofia Política',
@@ -71,64 +104,116 @@ const FALLBACK_CLASSICOS: LivroNormalizado[] = [
 
 const AUTOPLAY_MS = 8000;
 
+// Cache em memória compartilhado do catálogo de clássicos
+let memoryPoolClassicos: LivroNormalizado[] | null = null;
+let memoryPoolPromise: Promise<LivroNormalizado[]> | null = null;
+
+// Gera uma sequência aleatória variada para cada visita
+function generateSessionSequence(pool: LivroNormalizado[]): LivroNormalizado[] {
+  if (!pool || pool.length === 0) return [];
+  const copy = [...pool];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy.slice(0, 15);
+}
+
+// Carrega o pool de livros em background sem travar renderização
+async function ensureClassicosPool(): Promise<LivroNormalizado[]> {
+  if (memoryPoolClassicos && memoryPoolClassicos.length > 0) {
+    return memoryPoolClassicos;
+  }
+  if (memoryPoolPromise) {
+    return memoryPoolPromise;
+  }
+
+  memoryPoolPromise = (async () => {
+    try {
+      const cached = await getPersistedColecao<LivroNormalizado>('classicos');
+      if (cached && cached.length > 0) {
+        memoryPoolClassicos = cached;
+        return cached;
+      }
+    } catch {}
+
+    const colecaoClassicos = findColecao('classicos');
+    if (!colecaoClassicos) return FALLBACK_CLASSICOS;
+
+    try {
+      const query = supabase
+        .from('biblioteca_classicos')
+        .select('id, livro, autor, area, imagem, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url, paginas, minutos_leitura')
+        .not('imagem', 'is', null)
+        .limit(30);
+
+      const data = await withBundleFallback(
+        query.then((res) => {
+          if (res.error) throw res.error;
+          return res.data;
+        }),
+        async () => {
+          const rows = await bundle.bibliotecaClassicos();
+          return rows || [];
+        }
+      );
+
+      if (Array.isArray(data) && data.length > 0) {
+        const normalized = data.map((r: any) => normalizeLivro(r, colecaoClassicos));
+        memoryPoolClassicos = normalized;
+        setPersistedColecao('classicos', normalized).catch(() => {});
+        prefetchImages(
+          normalized.slice(0, 8).map((l) => (l.capa ? cdnImg(l.capa, 240) : null))
+        );
+        return normalized;
+      }
+    } catch {}
+
+    return FALLBACK_CLASSICOS;
+  })();
+
+  return memoryPoolPromise;
+}
+
+// Pré-aquece o pool em idle
+if (typeof window !== 'undefined') {
+  void ensureClassicosPool();
+}
+
 export const FerramentasLivrosCarrossel = () => {
   const navigate = useNavigate();
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const autoplayRef = useRef<number | null>(null);
   const userInteractingRef = useRef(false);
 
-  const [livros, setLivros] = useState<LivroNormalizado[]>(FALLBACK_CLASSICOS);
+  // Inicializa a sequência da visita ATUAL diretamente no mount.
+  // Uma vez definida a sequência desta visita, ela NUNCA muda durante a visualização ("não muda do nada"),
+  // e se fechar e abrir novamente a tela, gerará uma nova sequência variada.
+  const [livros, setLivros] = useState<LivroNormalizado[]>(() => {
+    const pool = (memoryPoolClassicos && memoryPoolClassicos.length > 0)
+      ? memoryPoolClassicos
+      : FALLBACK_CLASSICOS;
+    return generateSessionSequence(pool);
+  });
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedLivro, setSelectedLivro] = useState<LivroNormalizado | null>(null);
 
-  // Carrega do cache persistido e da base de clássicos
+  // Atualiza o pool em segundo plano para as PRÓXIMAS aberturas, sem trocar a lista atual visível
   useEffect(() => {
     let mounted = true;
 
-    // Hidratação rápida offline-first
-    getPersistedColecao<LivroNormalizado>('classicos').then((cached) => {
-      if (mounted && cached && cached.length > 0) {
-        setLivros(cached.slice(0, 15));
-      }
-    });
-
-    const colecaoClassicos = findColecao('classicos');
-    if (!colecaoClassicos) return;
-
-    const fetchBooks = async () => {
-      try {
-        const query = supabase
-          .from('biblioteca_classicos')
-          .select('id, livro, autor, area, imagem, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url, paginas, minutos_leitura')
-          .not('imagem', 'is', null)
-          .limit(20);
-
-        const data = await withBundleFallback(
-          query.then((res) => {
-            if (res.error) throw res.error;
-            return res.data;
-          }),
-          async () => {
-            const rows = await bundle.bibliotecaClassicos();
-            return rows || [];
-          }
-        );
-
-        if (mounted && Array.isArray(data) && data.length > 0) {
-          const normalized = data.map((r: any) => normalizeLivro(r, colecaoClassicos));
-          setLivros(normalized.slice(0, 15));
-          setPersistedColecao('classicos', normalized).catch(() => {});
-
-          prefetchImages(
-            normalized.slice(0, 6).map((l) => (l.capa ? cdnImg(l.capa, 240) : null))
-          );
+    ensureClassicosPool().then((pool) => {
+      if (!mounted) return;
+      setLivros((curr) => {
+        // Se a lista estiver vazia por algum motivo extraordinário, popula agora.
+        // Se já possui livros em exibição, MANTÉM a sequência atual estável.
+        if (!curr || curr.length === 0) {
+          return generateSessionSequence(pool);
         }
-      } catch (err) {
-        // Usa fallback silenciosamente em caso de erro
-      }
-    };
-
-    fetchBooks();
+        return curr;
+      });
+    });
 
     return () => {
       mounted = false;
