@@ -114,8 +114,20 @@ const HomeTabEstudos = ({
             ))}
           </div>
 
-          {/* Barra Praticar Lei Seca (Abaixo de Mapas Mentais e Dicionário) */}
-          <div className="pt-2">
+          {/* Seção Lei Seca com Título, Risquinho Vermelho e Descrição */}
+          <div className="pt-4 flex flex-col gap-2.5">
+            <div className="mb-0.5 relative z-10 flex items-start justify-between gap-3">
+              <div>
+                <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 uppercase tracking-widest">
+                  <span className="w-1 h-5 rounded-full bg-[#E11D48]" />
+                  Lei Seca
+                </h3>
+                <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3">
+                  Pratique artigos comentados, simulados e questões
+                </p>
+              </div>
+            </div>
+
             <HomeLeiSecaBar />
           </div>
         </div>

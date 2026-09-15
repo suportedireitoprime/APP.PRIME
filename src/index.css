@@ -975,6 +975,38 @@ body {
   mix-blend-mode: screen;
 }
 
+/* === Reflexo contínuo suave na barra de Lei Seca === */
+.lei-seca-sweep-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.lei-seca-sweep-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.04) 40%,
+    rgba(255, 255, 255, 0.16) 50%,
+    rgba(255, 255, 255, 0.04) 60%,
+    transparent 80%
+  );
+  transform: translateX(-150%) skewX(-15deg);
+  animation: shimmer-reflect-loop 4.5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: screen;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lei-seca-sweep-shine::after {
+    display: none;
+  }
+}
+
 /* === Reflexo sequencial nos botões de atalho (Aprender, Flashcards, etc) === */
 .shortcut-button-shine {
   position: relative;

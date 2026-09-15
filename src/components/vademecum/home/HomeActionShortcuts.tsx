@@ -39,7 +39,7 @@ const HomeActionShortcuts = () => {
               navigate(item.to);
             }}
             style={{ '--shimmer-delay': `${index * 150}ms` } as React.CSSProperties}
-            className="group relative flex flex-col items-center justify-center gap-2 py-3.5 sm:py-4 px-1.5 sm:px-2 min-h-[64px] sm:min-h-[72px] rounded-2xl bg-black/75 hover:bg-black/90 backdrop-blur-md border border-white/15 hover:border-white/25 shadow-lg shadow-black/30 active:scale-[0.96] transition-all duration-75 touch-manipulation shortcut-button-shine cursor-pointer select-none overflow-hidden"
+            className="group relative flex flex-col items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 px-1 min-h-[56px] sm:min-h-[62px] rounded-2xl bg-black/75 hover:bg-black/90 backdrop-blur-md border border-white/15 hover:border-white/25 shadow-lg shadow-black/30 active:scale-[0.96] transition-all duration-75 touch-manipulation shortcut-button-shine cursor-pointer select-none overflow-hidden"
           >
             {badgeCount > 0 && item.badgeColor && (
               <span
@@ -51,11 +51,11 @@ const HomeActionShortcuts = () => {
             )}
 
             <Icon
-              className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 transition-all group-hover:scale-110"
+              className="w-[22px] h-[22px] sm:w-6 sm:h-6 shrink-0 transition-all group-hover:scale-110"
               style={{ color: item.color, filter: 'saturate(1.3) drop-shadow(0 2px 6px rgba(0,0,0,0.6))' }}
               strokeWidth={2.2}
             />
-            <span className="w-full text-center px-0.5 text-[10px] sm:text-[11px] font-black text-white/95 leading-tight uppercase tracking-wider drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] truncate">
+            <span className="w-full text-center px-0.5 text-[8.5px] sm:text-[9.5px] font-black text-white/95 leading-none uppercase tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] whitespace-nowrap">
               {item.label}
             </span>
           </button>
