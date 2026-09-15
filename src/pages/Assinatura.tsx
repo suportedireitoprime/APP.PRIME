@@ -219,10 +219,21 @@ export default function Assinatura() {
 
   if (view === "plans") {
     return (
-      <div className="min-h-dvh bg-background pb-[calc(4rem+var(--sai-bottom))]">
-        <ShapeGrid />
+      <div className="min-h-dvh bg-background pb-[calc(4rem+var(--sai-bottom))] relative overflow-x-hidden">
+        <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
+          <ShapeGrid
+            speed={0.5}
+            squareSize={40}
+            direction="diagonal"
+            borderColor="rgba(255, 255, 255, 0.04)"
+            hoverFillColor="rgba(255, 255, 255, 0.08)"
+            shape="square"
+            hoverTrailAmount={5}
+          />
+        </div>
         
-        <WelcomePremiumOverlay
+        <div className="relative z-10 flex flex-col">
+          <WelcomePremiumOverlay
           open={showWelcome}
           planoLabel={planoAtual ?? 'Premium'}
           syncing={false}
@@ -771,6 +782,7 @@ export default function Assinatura() {
             </Sheet>
           </>
         )}
+        </div>
       </div>
 
     );
