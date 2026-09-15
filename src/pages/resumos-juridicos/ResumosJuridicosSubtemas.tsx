@@ -11,11 +11,16 @@ import { haptic } from "@/lib/nativeHaptics";
 import ShapeGrid from "@/components/ui/ShapeGrid";
 import { toast } from "@/hooks/use-toast";
 import { useTypewriter } from "@/hooks/useTypewriter";
+import { getAreaCover } from "@/lib/areasDireitoCovers";
+import { ResumosMetodosDeck } from "@/components/resumos/ResumosMetodosDeck";
 
 const RED = "#ef4444";
 
 type Ordem = "crono" | "alpha" | "fav";
 type Metodo = "conceitos" | "cornell" | "feynman";
+
+// Cache em memória para subtemas
+const subtemasCache = new Map<string, ResumoRow[]>();
 
 export default function ResumosJuridicosSubtemas() {
   const { area, tema } = useParams<{ area: string; tema: string }>();
@@ -23,8 +28,9 @@ export default function ResumosJuridicosSubtemas() {
   const decodedTema = decodeURIComponent(tema || "");
   const navigate = useNavigate();
   
-  const [rows, setRows] = useState<ResumoRow[]>([]);
-  const [loading, setLoading] = useState(true);
+  const cacheKey = useMemo(() => `${decodedArea}:${decodedTema}`, [decodedArea, decodedTema]);
+  const [rows, setRows] = useState<ResumoRow[]>(() => subtemasCache.get(cacheKey) || []);
+  const [loading, setLoading] = useState(() => !subtemasCache.has(cacheKey));
   const [q, setQ] = useState("");
   
   const [selected, setSelected] = useState<ResumoRow | null>(null);
@@ -38,43 +44,89 @@ export default function ResumosJuridicosSubtemas() {
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
-      setLoading(true);
-      const { data } = await (supabase as any)
-        .from("resumos_juridicos")
-        .select("id, area, tema, subtema, ordem_subtema, markdown, exemplos, termos")
-        .eq("area", decodedArea)
-        .eq("tema", decodedTema)
-        .order("ordem_subtema", { ascending: true, nullsFirst: false })
-        .order("subtema", { ascending: true })
-        .limit(5000);
-      let list = (data || []) as ResumoRow[];
-      if (list.length === 0) {
-        try {
-          const { getResumosCatalog } = await import("@/services/resumosCatalog");
-          const catalog = await getResumosCatalog();
-          const areaObj = catalog.find((c) => c.area === decodedArea);
-          const temaObj = areaObj?.temas.find((t) => t.tema === decodedTema);
-          if (temaObj?.subtemas && temaObj.subtemas.length > 0) {
-            list = temaObj.subtemas.map((s) => ({
-              id: s.id,
-              area: decodedArea,
-              tema: decodedTema,
-              subtema: s.subtema,
-              ordem_subtema: s.ordem ?? 1,
-              markdown: s.markdown || '',
-              exemplos: s.exemplos || '',
-              termos: s.termos || '',
-            }));
+    const localKey = `resumos_subtemas:${cacheKey}`;
+
+    // 1. Checar cache local se ainda não estiver em memória
+    if (!subtemasCache.has(cacheKey)) {
+      try {
+        const stored = localStorage.getItem(localKey);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            subtemasCache.set(cacheKey, parsed);
+            setRows(parsed);
+            setLoading(false);
           }
-        } catch {}
-      }
-      if (cancelled) return;
-      setRows(list);
-      setLoading(false);
+        }
+      } catch {}
+    }
+
+    (async () => {
+      // 2. Carregar instantaneamente (0ms) do catálogo offline
+      try {
+        const { getResumosCatalog } = await import("@/services/resumosCatalog");
+        const catalog = await getResumosCatalog();
+        const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        const areaObj = catalog.find((c) => norm(c.area) === norm(decodedArea));
+        const temaObj = areaObj?.temas.find((t) => norm(t.tema) === norm(decodedTema));
+        if (temaObj?.subtemas && temaObj.subtemas.length > 0) {
+          const list: ResumoRow[] = temaObj.subtemas.map((s, idx) => ({
+            id: s.id,
+            area: decodedArea,
+            tema: decodedTema,
+            subtema: s.subtema,
+            ordem_subtema: s.ordem ?? idx + 1,
+            markdown: s.markdown || null,
+            exemplos: s.exemplos || null,
+            termos: s.termos || null,
+          }));
+          if (!cancelled) {
+            subtemasCache.set(cacheKey, list);
+            setRows(list);
+            setLoading(false);
+            try {
+              localStorage.setItem(localKey, JSON.stringify(list));
+            } catch {}
+            return;
+          }
+        }
+      } catch {}
+
+      // 3. Fallback: buscar dados leves no Supabase sem carregar o markdown pesado na listagem
+      try {
+        const { data } = await (supabase as any)
+          .from("resumos_juridicos")
+          .select("id, area, tema, subtema, ordem_subtema")
+          .eq("area", decodedArea)
+          .eq("tema", decodedTema)
+          .order("ordem_subtema", { ascending: true, nullsFirst: false })
+          .order("subtema", { ascending: true })
+          .limit(1000);
+
+        if (!cancelled && data && data.length > 0) {
+          const list: ResumoRow[] = data.map((d: any) => ({
+            id: d.id,
+            area: d.area,
+            tema: d.tema,
+            subtema: d.subtema,
+            ordem_subtema: d.ordem_subtema,
+            markdown: null,
+            exemplos: null,
+            termos: null,
+          }));
+          subtemasCache.set(cacheKey, list);
+          setRows(list);
+          try {
+            localStorage.setItem(localKey, JSON.stringify(list));
+          } catch {}
+        }
+      } catch {}
+
+      if (!cancelled) setLoading(false);
     })();
+
     return () => { cancelled = true; };
-  }, [decodedArea, decodedTema]);
+  }, [cacheKey, decodedArea, decodedTema]);
 
   const subtemasOrdenados = useMemo(() => {
     let result = rows;
@@ -305,94 +357,17 @@ export default function ResumosJuridicosSubtemas() {
                 </button>
               </div>
 
-              {/* 3 Métodos com Cores Oficiais e Descrições */}
-              <div className="flex flex-col gap-3 relative z-10">
-                {/* 1. Conceitos (Vermelho) */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    haptic.selection();
+              {/* Deck 3D de Metodologias (Estilo Pílulas com Swipe e Efeito em Leque) */}
+              <div className="relative z-10 w-full pt-1 pb-2">
+                <ResumosMetodosDeck
+                  coverUrl={getAreaCover(modalResumo.area)?.cover}
+                  initialMetodo="conceitos"
+                  onSelectMetodo={(metodoId) => {
                     const r = modalResumo;
                     setModalResumo(null);
-                    openReader(r, "conceitos");
+                    openReader(r, metodoId);
                   }}
-                  className="group relative flex items-start gap-3.5 p-3.5 sm:p-4 rounded-2xl border border-white/10 hover:border-[#ef4444]/60 bg-white/[0.03] hover:bg-[#ef4444]/10 transition-all active:scale-[0.98] text-left cursor-pointer"
-                >
-                  <div className="w-11 h-11 rounded-xl bg-[#ef4444]/15 border border-[#ef4444]/30 flex items-center justify-center text-[#ef4444] shrink-0 group-hover:scale-105 group-hover:bg-[#ef4444] group-hover:text-white transition-all shadow-md">
-                    <FileText className="w-5 h-5" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-sm sm:text-[15px] font-black uppercase tracking-wider text-white group-hover:text-[#ef4444] transition-colors">
-                        Conceitos
-                      </span>
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#ef4444]/20 text-[#ef4444] border border-[#ef4444]/30">
-                        Tradicional
-                      </span>
-                    </div>
-                    <p className="text-[12.5px] sm:text-[13px] text-zinc-300 leading-relaxed mt-1">
-                      Visão aprofundada e completa da matéria, com fundamentação jurídica, exemplos práticos e termos-chave.
-                    </p>
-                  </div>
-                </button>
-
-                {/* 2. Método Cornell (Azul) */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    haptic.selection();
-                    const r = modalResumo;
-                    setModalResumo(null);
-                    openReader(r, "cornell");
-                  }}
-                  className="group relative flex items-start gap-3.5 p-3.5 sm:p-4 rounded-2xl border border-white/10 hover:border-[#38bdf8]/60 bg-white/[0.03] hover:bg-[#38bdf8]/10 transition-all active:scale-[0.98] text-left cursor-pointer"
-                >
-                  <div className="w-11 h-11 rounded-xl bg-[#38bdf8]/15 border border-[#38bdf8]/30 flex items-center justify-center text-[#38bdf8] shrink-0 group-hover:scale-105 group-hover:bg-[#38bdf8] group-hover:text-zinc-950 transition-all shadow-md">
-                    <NotebookText className="w-5 h-5" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-sm sm:text-[15px] font-black uppercase tracking-wider text-white group-hover:text-[#38bdf8] transition-colors">
-                        Método Cornell
-                      </span>
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#38bdf8]/20 text-[#38bdf8] border border-[#38bdf8]/30">
-                        Fixação Ativa
-                      </span>
-                    </div>
-                    <p className="text-[12.5px] sm:text-[13px] text-zinc-300 leading-relaxed mt-1">
-                      Organização em tópicos, palavras-chave e perguntas de revisão para autoavaliação e retenção acelerada.
-                    </p>
-                  </div>
-                </button>
-
-                {/* 3. Método Feynman (Amarelo) */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    haptic.selection();
-                    const r = modalResumo;
-                    setModalResumo(null);
-                    openReader(r, "feynman");
-                  }}
-                  className="group relative flex items-start gap-3.5 p-3.5 sm:p-4 rounded-2xl border border-white/10 hover:border-[#fbbf24]/60 bg-white/[0.03] hover:bg-[#fbbf24]/10 transition-all active:scale-[0.98] text-left cursor-pointer"
-                >
-                  <div className="w-11 h-11 rounded-xl bg-[#fbbf24]/15 border border-[#fbbf24]/30 flex items-center justify-center text-[#fbbf24] shrink-0 group-hover:scale-105 group-hover:bg-[#fbbf24] group-hover:text-zinc-950 transition-all shadow-md">
-                    <Brain className="w-5 h-5" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-sm sm:text-[15px] font-black uppercase tracking-wider text-white group-hover:text-[#fbbf24] transition-colors">
-                        Método Feynman
-                      </span>
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#fbbf24]/20 text-[#fbbf24] border border-[#fbbf24]/30">
-                        Simplificação
-                      </span>
-                    </div>
-                    <p className="text-[12.5px] sm:text-[13px] text-zinc-300 leading-relaxed mt-1">
-                      Explicação em 4 passos com linguagem simples do dia a dia e analogias para eliminar lacunas de entendimento.
-                    </p>
-                  </div>
-                </button>
+                />
               </div>
             </motion.div>
           </div>

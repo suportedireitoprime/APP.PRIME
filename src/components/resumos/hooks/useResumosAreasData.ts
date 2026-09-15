@@ -50,62 +50,39 @@ export function useResumosAreasData() {
         setLoading(true);
       }
 
-      const map = new Map<string, Set<string>>();
-      const totalMap = new Map<string, number>();
-      let from = 0;
-      const step = 1000;
-      let gotAny = false;
+      try {
+        const { getResumosCatalog } = await import("@/services/resumosCatalog");
+        const catalog = await getResumosCatalog();
+        
+        const map = new Map<string, Set<string>>();
+        const totalMap = new Map<string, number>();
 
-      while (true) {
-        const { data, error } = await (supabase as any)
-          .from("resumos_juridicos")
-          .select("area, tema")
-          .not("area", "is", null)
-          .range(from, from + step - 1);
-
-        if (error) break;
-        if (!data || data.length === 0) break;
-
-        gotAny = true;
-        for (const r of data as { area: string; tema: string }) {
-          if (!map.has(r.area)) map.set(r.area, new Set());
-          if (r.tema) map.get(r.area)!.add(r.tema);
-          totalMap.set(r.area, (totalMap.get(r.area) || 0) + 1);
+        for (const c of catalog) {
+          if (!c.area) continue;
+          if (!map.has(c.area)) map.set(c.area, new Set());
+          for (const t of c.temas) {
+            if (t.tema) map.get(c.area)!.add(t.tema);
+          }
+          totalMap.set(c.area, (totalMap.get(c.area) || 0) + (c.total || 0));
         }
 
-        if (data.length < step) break;
-        from += step;
-      }
+        const list = Array.from(map.entries())
+          .map(([area, temasSet]) => ({
+            area,
+            total: totalMap.get(area) || 0,
+            temas: Array.from(temasSet).sort((a, b) => a.localeCompare(b)),
+          }))
+          .sort((a, b) => a.area.localeCompare(b.area));
 
-      if (!gotAny) {
-        try {
-          const { getResumosCatalog } = await import("@/services/resumosCatalog");
-          const catalog = await getResumosCatalog();
-          for (const c of catalog) {
-            if (!c.area) continue;
-            if (!map.has(c.area)) map.set(c.area, new Set());
-            for (const t of c.temas) {
-              if (t.tema) map.get(c.area)!.add(t.tema);
-            }
-            totalMap.set(c.area, (totalMap.get(c.area) || 0) + (c.total || 0));
-          }
-        } catch {}
-      }
-
-      const list = Array.from(map.entries())
-        .map(([area, temasSet]) => ({
-          area,
-          total: totalMap.get(area) || 0,
-          temas: Array.from(temasSet).sort((a, b) => a.localeCompare(b)),
-        }))
-        .sort((a, b) => a.area.localeCompare(b.area));
-
-      if (list.length > 0) {
-        areasThemesCache = list;
-        setRows(list);
-        try {
-          localStorage.setItem("resumos_areas_temas_cache", JSON.stringify(list));
-        } catch {}
+        if (list.length > 0) {
+          areasThemesCache = list;
+          setRows(list);
+          try {
+            localStorage.setItem("resumos_areas_temas_cache", JSON.stringify(list));
+          } catch {}
+        }
+      } catch (err) {
+        console.error("Erro ao carregar catálogo", err);
       }
       setLoading(false);
     })();

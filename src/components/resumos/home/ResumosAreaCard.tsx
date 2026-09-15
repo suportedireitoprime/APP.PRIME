@@ -1,7 +1,7 @@
 import React from "react";
 import { ChevronRight } from "lucide-react";
 import { haptic } from "@/lib/nativeHaptics";
-import { capaDaArea } from "@/lib/audioaulasHelper";
+import { getAreaCover } from "@/lib/areasDireitoCovers";
 import { type AreaRow } from "../resumosStyles";
 
 interface ResumosAreaCardProps {
@@ -22,7 +22,7 @@ export const ResumosAreaCard: React.FC<ResumosAreaCardProps> = ({ areaRow, onCli
     >
       <div className="w-16 h-[88px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
         <img
-          src={capaDaArea(areaRow.area)}
+          src={getAreaCover(areaRow.area)?.cover}
           alt={displayArea}
           className="w-full h-full object-cover"
           loading="lazy"

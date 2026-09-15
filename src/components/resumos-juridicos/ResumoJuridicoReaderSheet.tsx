@@ -104,6 +104,43 @@ export default function ResumoJuridicoReaderSheet({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [bloqueadoLeitura, setBloqueadoLeitura] = useState(false);
 
+  // Busca sob demanda do markdown caso a lista tenha sido carregada em modo leve
+  const [fullData, setFullData] = useState<{
+    markdown: string | null;
+    exemplos: string | null;
+    termos: string | null;
+  } | null>(null);
+  const [loadingContent, setLoadingContent] = useState(false);
+
+  useEffect(() => {
+    if (!resumo?.id) {
+      setFullData(null);
+      setLoadingContent(false);
+      return;
+    }
+
+    if (!resumo.markdown) {
+      setLoadingContent(true);
+      supabase
+        .from("resumos_juridicos")
+        .select("markdown, exemplos, termos")
+        .eq("id", resumo.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data) {
+            setFullData(data);
+          }
+          setLoadingContent(false);
+        })
+        .catch(() => {
+          setLoadingContent(false);
+        });
+    } else {
+      setFullData(null);
+      setLoadingContent(false);
+    }
+  }, [resumo?.id, resumo?.markdown]);
+
   const handleClose = () => {
     onClose?.();
     onOpenChange?.(false);
@@ -195,8 +232,12 @@ export default function ResumoJuridicoReaderSheet({
   const incFont = () => setFontSize((s) => Math.min(26, s + 1));
   const decFont = () => setFontSize((s) => Math.max(13, s - 1));
 
+  const currentMarkdown = fullData?.markdown ?? resumo?.markdown;
+  const currentExemplos = fullData?.exemplos ?? resumo?.exemplos;
+  const currentTermos = fullData?.termos ?? resumo?.termos;
+
   const rawContent =
-    tab === "resumo" ? resumo?.markdown : tab === "exemplos" ? resumo?.exemplos : resumo?.termos;
+    tab === "resumo" ? currentMarkdown : tab === "exemplos" ? currentExemplos : currentTermos;
 
   const content = useMemo(() => {
     return normalizarResumo(removerEmojis(rawContent));
@@ -523,6 +564,11 @@ export default function ResumoJuridicoReaderSheet({
                           >
                             {content}
                           </ReactMarkdown>
+                        ) : loadingContent ? (
+                          <div className="flex items-center justify-center py-16 text-muted-foreground gap-2">
+                            <Loader2 className="w-5 h-5 animate-spin text-[#ef4444]" />
+                            <span className="text-sm font-medium">Carregando resumo completo...</span>
+                          </div>
                         ) : (
                           <p className="text-muted-foreground">Sem conteúdo neste tópico.</p>
                         )}

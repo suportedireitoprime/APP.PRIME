@@ -10,6 +10,7 @@ import ShapeGrid from "@/components/ui/ShapeGrid";
 import { toast } from "@/hooks/use-toast";
 import { useTypewriter } from "@/hooks/useTypewriter";
 import { PrimeImage } from '@/components/ui/PrimeImage';
+import { getAreaCover } from "@/lib/areasDireitoCovers";
 
 type Row = { tema: string; ordem_tema: number | null; total: number };
 type Ordem = "crono" | "alpha" | "fav";
@@ -22,6 +23,10 @@ export default function ResumosJuridicosTemas() {
   const decodedArea = decodeURIComponent(area || "");
   const navigate = useNavigate();
   
+  const areaCover = useMemo(() => {
+    return getAreaCover(decodedArea)?.cover || "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg";
+  }, [decodedArea]);
+
   const [rows, setRows] = useState<Row[]>(() => temasCache.get(decodedArea) || []);
   const [loading, setLoading] = useState(!temasCache.has(decodedArea));
   const [q, setQ] = useState("");
@@ -38,7 +43,7 @@ export default function ResumosJuridicosTemas() {
     return () => window.removeEventListener("resumos-local-change", onEvt);
   }, []);
 
-  // 1. Carregar Temas
+  // 1. Carregar Temas Instantaneamente
   useEffect(() => {
     let cancelled = false;
     const cacheKey = `resumos_temas_cache:${decodedArea}`;
@@ -61,9 +66,32 @@ export default function ResumosJuridicosTemas() {
     }
 
     (async () => {
-      if (!temasCache.has(decodedArea)) setLoading(true);
-      let list: Row[] = [];
+      // 1. Tentar catálogo offline imediatamente (0ms)
+      try {
+        const { getResumosCatalog } = await import("@/services/resumosCatalog");
+        const catalog = await getResumosCatalog();
+        const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        const areaObj = catalog.find((c) => norm(c.area) === norm(decodedArea));
+        if (areaObj && areaObj.temas && areaObj.temas.length > 0) {
+          const list: Row[] = areaObj.temas.map((t, idx) => ({
+            tema: t.tema,
+            ordem_tema: idx + 1,
+            total: t.total || (t.subtemas?.length || 1),
+          }));
+          if (!cancelled) {
+            temasCache.set(decodedArea, list);
+            setRows(list);
+            setLoading(false);
+            try {
+              localStorage.setItem(cacheKey, JSON.stringify(list));
+            } catch {}
+            return;
+          }
+        }
+      } catch {}
 
+      // 2. Se não encontrar no catálogo offline, consultar RPC ou Supabase
+      let list: Row[] = [];
       try {
         const { data: rpcData, error: rpcErr } = await (supabase as any).rpc("get_resumos_temas_counts", {
           p_area: decodedArea,
@@ -78,52 +106,31 @@ export default function ResumosJuridicosTemas() {
       } catch {}
 
       if (list.length === 0) {
-        const map = new Map<string, { ordem: number | null; total: number }>();
-        let from = 0;
-        const step = 1000;
-        let gotAny = false;
-        while (true) {
-          const { data, error } = await (supabase as any)
+        try {
+          const { data } = await (supabase as any)
             .from("resumos_juridicos")
             .select("tema, ordem_tema")
             .eq("area", decodedArea)
-            .range(from, from + step - 1);
-          if (error) break;
-          if (!data || data.length === 0) break;
-          gotAny = true;
-          for (const r of data as { tema: string; ordem_tema: number | null }[]) {
-            const prev = map.get(r.tema);
-            map.set(r.tema, {
-              ordem: prev?.ordem ?? r.ordem_tema,
-              total: (prev?.total || 0) + 1,
-            });
-          }
-          if (data.length < step) break;
-          from += step;
-        }
-        if (!gotAny) {
-          try {
-            const { getResumosCatalog } = await import("@/services/resumosCatalog");
-            const catalog = await getResumosCatalog();
-            const areaObj = catalog.find((c) => c.area === decodedArea);
-            if (areaObj) {
-              for (const t of areaObj.temas) {
-                map.set(t.tema, {
-                  ordem: null,
-                  total: t.total || (t.subtemas?.length || 1),
-                });
-              }
+            .limit(2000);
+          if (data && data.length > 0) {
+            const map = new Map<string, { ordem: number | null; total: number }>();
+            for (const r of data as { tema: string; ordem_tema: number | null }[]) {
+              const prev = map.get(r.tema);
+              map.set(r.tema, {
+                ordem: prev?.ordem ?? r.ordem_tema,
+                total: (prev?.total || 0) + 1,
+              });
             }
-          } catch {}
-        }
-        list = Array.from(map.entries())
-          .map(([tema, v]) => ({ tema, ordem_tema: v.ordem, total: v.total }))
-          .sort((a, b) => {
-            if (a.ordem_tema != null && b.ordem_tema != null) return a.ordem_tema - b.ordem_tema;
-            if (a.ordem_tema != null) return -1;
-            if (b.ordem_tema != null) return 1;
-            return a.tema.localeCompare(b.tema);
-          });
+            list = Array.from(map.entries())
+              .map(([tema, v]) => ({ tema, ordem_tema: v.ordem, total: v.total }))
+              .sort((a, b) => {
+                if (a.ordem_tema != null && b.ordem_tema != null) return a.ordem_tema - b.ordem_tema;
+                if (a.ordem_tema != null) return -1;
+                if (b.ordem_tema != null) return 1;
+                return a.tema.localeCompare(b.tema);
+              });
+          }
+        } catch {}
       }
 
       if (cancelled) return;
@@ -244,8 +251,8 @@ export default function ResumosJuridicosTemas() {
                 >
                   <div className="w-16 h-[88px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
                     <PrimeImage 
-                      src="https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg" 
-                      alt="Capa" 
+                      src={areaCover} 
+                      alt={r.tema} 
                       targetWidth={160} 
                       aspectRatio="2/3" 
                       className="w-full h-full object-cover" 

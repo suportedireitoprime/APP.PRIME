@@ -372,9 +372,10 @@ const Flashcards = () => {
                     );
                   })}
                 </div>
-              </div>
-            )}
-          </section>
+              )}
+            </div>
+          )}
+        </section>
 
 
 

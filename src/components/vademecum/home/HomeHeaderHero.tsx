@@ -176,10 +176,18 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
             className="absolute inset-0 overflow-hidden"
             style={{ clipPath: 'polygon(0 0, 47% 0, 36% 100%, 0% 100%)' }}
           >
-            <div className="absolute inset-0 bg-brand-gradient" />
-            <div className="absolute inset-0 opacity-15 mix-blend-overlay">
-              <ShapeGrid />
-            </div>
+            <div className="absolute inset-0 bg-hero-panel" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
+
+            <HeroMotifs />
+
+            {/* Grid Pattern Background */}
+            <div className="absolute inset-0 opacity-10" style={{
+              backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px)',
+              backgroundSize: '24px 24px'
+            }} />
           </div>
         </div>
 
