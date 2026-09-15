@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Presentation, Clock, ChevronRight, Play } from 'lucide-react';
+import { Presentation, ChevronRight, Play } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { supabase } from '@/integrations/supabase/client';
 import { PrimeImage } from '@/components/ui/PrimeImage';
@@ -105,7 +105,6 @@ const HomeApresentacoesTimeline = () => {
 
   const handleOpenItem = (item: ApresentacaoItem) => {
     try { haptic.impact(); } catch {}
-    // Se for fallback mock, redireciona para a listagem para escolher uma real
     if (item.id.startsWith('f-')) {
       navigate('/apresentacoes');
       return;
@@ -116,38 +115,32 @@ const HomeApresentacoesTimeline = () => {
   };
 
   return (
-    <section aria-label="Linha do tempo de apresentações" className="flex flex-col gap-3 pt-6 pb-2">
-      {/* Cabeçalho da Seção */}
-      <div className="flex items-center justify-between gap-3 mb-1">
-        <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-primary shrink-0" />
-          <h4 className="font-display text-[13px] sm:text-sm font-bold tracking-wider text-white/90 uppercase">
-            Linha do tempo recente
-          </h4>
-          <span className="text-[11px] text-muted-foreground font-medium hidden sm:inline">
-            • Apresentações
-          </span>
+    <section aria-label="Apresentações narradas" className="flex flex-col gap-3 pt-6 pb-2">
+      {/* Cabeçalho da Seção com risquinho vermelho, descrição e botão Ver todos idêntico ao de Aprender */}
+      <div className="mb-1 relative z-10 flex items-start justify-between gap-3">
+        <div>
+          <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 uppercase tracking-widest">
+            <span className="w-1 h-5 rounded-full bg-[#E11D48]" />
+            Apresentação
+          </h3>
+          <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3">
+            Aulas narradas em slides e organizadas por tema
+          </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          {itens.length > 0 && (
-            <span className="text-[11px] text-muted-foreground font-medium">
-              {itens.length} {itens.length === 1 ? 'aula' : 'aulas'}
-            </span>
-          )}
-          <button
-            type="button"
-            onClick={handleOpenApresentacoes}
-            className="flex items-center gap-1 text-[11.5px] sm:text-xs font-semibold text-primary hover:text-primary/85 transition-colors cursor-pointer group px-2 py-1 rounded-lg hover:bg-white/[0.04]"
-          >
-            <span>Ver todos</span>
-            <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-          </button>
-        </div>
+        {/* Botão Ver todos no estilo pill de Aprender */}
+        <button
+          type="button"
+          onClick={handleOpenApresentacoes}
+          className="group shrink-0 mt-0.5 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.14] active:scale-95 backdrop-blur-md border border-white/15 hover:border-white/25 text-[12px] font-semibold text-foreground/90 hover:text-white transition-all shadow-sm cursor-pointer"
+        >
+          <span>Ver todos</span>
+          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all" />
+        </button>
       </div>
 
       {/* Linha do Tempo Conectada */}
-      <div className="relative border-l border-white/10 ml-4 sm:ml-5 pl-4 sm:pl-5 space-y-3">
+      <div className="relative border-l border-white/10 ml-4 sm:ml-5 pl-4 sm:pl-5 space-y-3 pt-1">
         {itens.map((item, idx) => {
           const pal = getAreaThemePalette(item.area || 'direito-administrativo');
           const isFirst = idx === 0;
@@ -239,17 +232,6 @@ const HomeApresentacoesTimeline = () => {
           );
         })}
       </div>
-
-      {/* Botão Inferior 'Ver todas as apresentações' */}
-      <button
-        type="button"
-        onClick={handleOpenApresentacoes}
-        className="w-full mt-2 py-3 px-4 rounded-xl bg-[#252528] hover:bg-[#2F2F33] border border-white/5 hover:border-white/10 text-[12px] sm:text-[13px] font-medium text-white/80 hover:text-white flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-[0.99] group shadow-sm"
-      >
-        <Presentation className="w-4 h-4 text-primary shrink-0" />
-        <span>Ver catálogo completo de Apresentações</span>
-        <ChevronRight className="w-4 h-4 text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
-      </button>
     </section>
   );
 };

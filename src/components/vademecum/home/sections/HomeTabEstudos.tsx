@@ -66,10 +66,7 @@ const HomeTabEstudos = ({
           ))}
         </div>
       ) : (
-        <div className="flex flex-col gap-4 pt-2">
-          {/* Barra Praticar Lei Seca (Estilo Search Bar) */}
-          <HomeLeiSecaBar />
-
+        <div className="flex flex-col gap-3 pt-2">
           <div className="mb-1 relative z-10 flex items-start justify-between gap-3">
             <div>
               <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 uppercase tracking-widest">
@@ -115,6 +112,11 @@ const HomeTabEstudos = ({
                 data-track-section="estudos"
               />
             ))}
+          </div>
+
+          {/* Barra Praticar Lei Seca (Abaixo de Mapas Mentais e Dicionário) */}
+          <div className="pt-2">
+            <HomeLeiSecaBar />
           </div>
         </div>
       )}
