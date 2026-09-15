@@ -7,36 +7,10 @@ interface AprenderCarousel3DProps {
   onItemClick: (item: { id: string }) => void;
 }
 
-// 🧭 Controle de sessão: rastreia se o usuário já navegou para outra função e retornou ao início
-let hasEverNavigatedAwayFromHome = false;
-
-export function markHomeNavigated() {
-  hasEverNavigatedAwayFromHome = true;
-  try {
-    sessionStorage.setItem('aprender_carousel_navigated', 'true');
-  } catch {}
-}
-
-export function isHomeNavigated(): boolean {
-  if (hasEverNavigatedAwayFromHome) return true;
-  try {
-    return sessionStorage.getItem('aprender_carousel_navigated') === 'true';
-  } catch {
-    return false;
-  }
-}
-
 export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel3DProps) => {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
-  const isInteracting = useRef(false);
-  const isHovered = useRef(false);
-  const pauseTimerRef = useRef<NodeJS.Timeout | null>(null);
   const dragRef = useRef<{ startX: number; startScroll: number; moved: number; isDragging: boolean } | null>(null);
   const rafId = useRef<number | null>(null);
-
-  // 1ª vez que entra no app: NÃO move automaticamente
-  // Se entrou em outra função e voltou: move automaticamente
-  const shouldAutoPlay = isHomeNavigated();
 
   // Guarda o índice aleatório inicial para não mudar em re-renders da mesma montagem
   const randomStartIndexRef = useRef<number | null>(null);
@@ -44,7 +18,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
     randomStartIndexRef.current = Math.floor(Math.random() * items.length);
   }
 
-  // 🎯 Atualiza o card centralizado aplicando o relevo e zoom 3D sem re-render de React (120fps fluido)
+  // 🎯 Atualiza o card centralizado aplicando o zoom e ativando a animação de reflexo vítreo
   const updateCenterCard = useCallback(() => {
     const el = scrollerRef.current;
     if (!el) return;
@@ -62,7 +36,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
       const card = cards[i];
       const cardRect = card.getBoundingClientRect();
 
-      // Otimização: ignora e desativa cards distantes da viewport
+      // Otimização: desativa cards fora da tela
       if (cardRect.right < containerRect.left - 120 || cardRect.left > containerRect.right + 120) {
         if (card.getAttribute('data-is-center') === 'true') {
           card.setAttribute('data-is-center', 'false');
@@ -91,20 +65,16 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
     }
   }, []);
 
-  // Quando o componente desmonta, limpamos timers e listeners
+  // Cleanup na desmontagem
   useEffect(() => {
     return () => {
-      markHomeNavigated();
       if (rafId.current !== null) {
         cancelAnimationFrame(rafId.current);
-      }
-      if (pauseTimerRef.current) {
-        clearTimeout(pauseTimerRef.current);
       }
     };
   }, []);
 
-  // Listener de resize da janela para manter o card centralizado perfeito
+  // Listener de resize da janela para manter o alinhamento
   useEffect(() => {
     const handleResize = () => {
       updateCenterCard();
@@ -117,21 +87,11 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
 
   if (!items || items.length === 0) return null;
 
-  // Triplica os items para permitir scroll infinito perfeito
+  // Triplica os items para permitir scroll infinito sem saltos
   const duplicatedItems = [...items, ...items, ...items];
   const targetCardIndex = items.length + (randomStartIndexRef.current ?? 0);
 
-  const pauseInteraction = useCallback((durationMs = 3000) => {
-    isInteracting.current = true;
-    if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
-    pauseTimerRef.current = setTimeout(() => {
-      if (!dragRef.current?.isDragging && !isHovered.current) {
-        isInteracting.current = false;
-      }
-    }, durationMs);
-  }, []);
-
-  // 🎯 Centraliza a capa aleatória no meio exato e aplica o relevo inicial
+  // 🎯 Centraliza a capa aleatória no meio exato ao montar
   useEffect(() => {
     const el = scrollerRef.current;
     if (!el) return;
@@ -185,66 +145,11 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
     }
   }, [updateCenterCard]);
 
-  // 🔄 Auto-scroll suave atualizando dinamicamente o card em relevo
-  useEffect(() => {
-    if (!shouldAutoPlay) {
-      return;
-    }
-
-    let animId: number;
-    let lastTime = performance.now();
-    let isVisible = true;
-
-    const step = (time: number) => {
-      const delta = time - lastTime;
-      lastTime = time;
-
-      const el = scrollerRef.current;
-      if (el && isVisible && !isInteracting.current && !isHovered.current && delta < 100) {
-        el.scrollLeft += delta * 0.035; // ~35px por segundo
-
-        const oneSetWidth = el.scrollWidth / 3;
-        if (oneSetWidth > 0 && el.scrollLeft >= oneSetWidth * 2.25) {
-          el.scrollLeft -= oneSetWidth;
-        }
-
-        updateCenterCard();
-      }
-
-      animId = requestAnimationFrame(step);
-    };
-
-    animId = requestAnimationFrame(step);
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          isVisible = entry.isIntersecting;
-          if (isVisible) {
-            lastTime = performance.now();
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (scrollerRef.current) {
-      observer.observe(scrollerRef.current);
-    }
-
-    return () => {
-      cancelAnimationFrame(animId);
-      observer.disconnect();
-      if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
-    };
-  }, [shouldAutoPlay, updateCenterCard]);
-
   // Mouse Drag (Desktop)
   const onMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (e.button !== 0) return;
     const el = scrollerRef.current;
     if (!el) return;
-    isInteracting.current = true;
     dragRef.current = {
       startX: e.clientX,
       startScroll: el.scrollLeft,
@@ -275,46 +180,28 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
       setTimeout(() => {
         dragRef.current = null;
       }, 50);
-      pauseInteraction(2500);
     }
-  }, [pauseInteraction]);
-
-  // Touch Handlers (Mobile)
-  const onTouchStart = useCallback(() => {
-    isInteracting.current = true;
   }, []);
 
+  // Touch Handlers (Mobile)
   const onTouchEnd = useCallback(() => {
-    pauseInteraction(3000);
     if (rafId.current === null) {
       rafId.current = requestAnimationFrame(() => {
         rafId.current = null;
         updateCenterCard();
       });
     }
-  }, [pauseInteraction, updateCenterCard]);
-
-  const onMouseEnter = useCallback(() => {
-    isHovered.current = true;
-  }, []);
-
-  const onMouseLeave = useCallback(() => {
-    isHovered.current = false;
-    endMouseDrag();
-  }, [endMouseDrag]);
+  }, [updateCenterCard]);
 
   const scrollByAmount = useCallback((direction: 'left' | 'right') => {
     const el = scrollerRef.current;
     if (!el) return;
-    isInteracting.current = true;
     const amount = el.clientWidth * 0.75;
     el.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' });
-    pauseInteraction(3000);
     setTimeout(updateCenterCard, 350);
-  }, [pauseInteraction, updateCenterCard]);
+  }, [updateCenterCard]);
 
   const handleCardClick = useCallback((item: AprenderItem) => {
-    markHomeNavigated();
     onItemClick(item);
   }, [onItemClick]);
 
@@ -346,10 +233,8 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={endMouseDrag}
-        onMouseLeave={onMouseLeave}
-        onTouchStart={onTouchStart}
+        onMouseLeave={endMouseDrag}
         onTouchEnd={onTouchEnd}
-        onMouseEnter={onMouseEnter}
         className="relative flex items-center gap-3 sm:gap-4 overflow-x-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden px-4 py-4 cursor-grab active:cursor-grabbing select-none"
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
@@ -374,19 +259,18 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
               will-change-transform
               transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]
 
-              /* Estado Padrão (Fora do centro / Laterais) */
+              /* Estado Padrão (Laterais / Fora do Centro) */
               scale-[0.92] sm:scale-[0.93] opacity-75 translate-y-0 z-10
               border border-white/10 shadow-[0_4px_16px_rgba(0,0,0,0.45)]
               hover:opacity-90 hover:scale-[0.96]
 
-              /* Estado CENTRALIZADO: Efeito Relevo 3D & Zoom Leve */
-              data-[is-center=true]:scale-[1.07] sm:data-[is-center=true]:scale-[1.09]
-              data-[is-center=true]:-translate-y-2
+              /* Estado CENTRALIZADO: Zoom e Relevo sem contorno branco */
+              data-[is-center=true]:scale-[1.08] sm:data-[is-center=true]:scale-[1.10]
+              data-[is-center=true]:-translate-y-2.5
               data-[is-center=true]:opacity-100
               data-[is-center=true]:z-20
-              data-[is-center=true]:border-white/45
-              data-[is-center=true]:ring-1 data-[is-center=true]:ring-white/30
-              data-[is-center=true]:shadow-[0_20px_42px_-6px_rgba(0,0,0,0.85),0_0_24px_rgba(255,255,255,0.14)]
+              data-[is-center=true]:border-white/15
+              data-[is-center=true]:shadow-[0_22px_44px_-6px_rgba(0,0,0,0.85)]
               active:scale-[1.02]
             "
           >
@@ -401,9 +285,24 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none transition-opacity duration-300 group-data-[is-center=true]:from-black/75" />
             
-            {/* Play Button (Glassmorphism com relevo) */}
+            {/* Animação de Reflexo Vítreo (Glass Sheen / Shimmer) no card central */}
+            <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden rounded-2xl opacity-0 group-data-[is-center=true]:opacity-100 transition-opacity duration-700">
+              {/* Feixe de luz diagonal animado que varre suavemente a superfície */}
+              <div
+                className="absolute -inset-y-6 w-full pointer-events-none"
+                style={{
+                  background: 'linear-gradient(105deg, transparent 20%, rgba(255, 255, 255, 0.04) 38%, rgba(255, 255, 255, 0.35) 48%, rgba(255, 255, 255, 0.45) 50%, rgba(255, 255, 255, 0.35) 52%, rgba(255, 255, 255, 0.04) 62%, transparent 80%)',
+                  animation: 'shimmer-reflect-loop 3.2s ease-in-out infinite',
+                  mixBlendMode: 'screen',
+                }}
+              />
+              {/* Brilho superior de reflexo especular */}
+              <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/15 via-white/[0.02] to-transparent pointer-events-none" />
+            </div>
+
+            {/* Play Button (Glassmorphism) */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 transition-transform duration-300 group-data-[is-center=true]:scale-110">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/25 backdrop-blur-md border border-white/35 group-data-[is-center=true]:border-white/75 group-data-[is-center=true]:bg-black/35 flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.5)] group-data-[is-center=true]:shadow-[0_0_18px_rgba(255,255,255,0.25)] transition-all duration-300">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/25 backdrop-blur-md border border-white/35 group-data-[is-center=true]:border-white/60 group-data-[is-center=true]:bg-black/35 flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.5)] transition-all duration-300">
                 <Play className="w-4 h-4 sm:w-5 sm:h-5 text-white ml-0.5 transition-transform group-data-[is-center=true]:scale-105" fill="currentColor" />
               </div>
             </div>
