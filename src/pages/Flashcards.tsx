@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Layers, Target, BarChart3, FolderPlus, RotateCcw, Filter, BookOpen, Scale, Gavel, Quote, Lightbulb, Clock, History, Dices, Route, Trophy, LayoutGrid } from 'lucide-react';
+import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Layers, Target, BarChart3, FolderPlus, RotateCcw, Filter, BookOpen, Scale, Gavel, Quote, Lightbulb, Clock, History, Dices, Route, Trophy, LayoutGrid, List } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import FlashcardsCargoHero from '@/components/flashcards/FlashcardsCargoHero';
@@ -30,7 +30,7 @@ const Flashcards = () => {
   const { data: areasRaw, isLoading: loadingAreas } = useFlashcardsResumoAreas();
 
   const [filtroAberto, setFiltroAberto] = useState(false);
-  const [viewMode, setViewMode] = useState<'decks' | 'grade'>('decks');
+  const [viewMode, setViewMode] = useState<'decks' | 'categorias' | 'lista'>('decks');
   const [buscaMateria, setBuscaMateria] = useState('');
   const loading = loadingDash;
 
@@ -185,16 +185,30 @@ const Flashcards = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => { haptic.selection(); setViewMode('grade'); }}
+                    onClick={() => { haptic.selection(); setViewMode('categorias'); }}
                     className={cn(
                       "flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer",
-                      viewMode === 'grade'
+                      viewMode === 'categorias'
                         ? "bg-[#36AF85] text-white shadow-sm"
                         : "text-muted-foreground hover:text-foreground"
                     )}
-                    title="Visualizar em Lista de Matérias"
+                    title="Visualizar em Categorias"
                   >
                     <LayoutGrid className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Categorias</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { haptic.selection(); setViewMode('lista'); }}
+                    className={cn(
+                      "flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer",
+                      viewMode === 'lista'
+                        ? "bg-[#36AF85] text-white shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                    title="Visualizar em Lista"
+                  >
+                    <List className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">Lista</span>
                   </button>
                 </div>
@@ -223,7 +237,8 @@ const Flashcards = () => {
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
+                {viewMode === 'categorias' ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
                   {materiasFiltradas.map((area) => {
                     const iconInfo = areaIconFor(area.slug || area.area);
                     const AreaIcon = iconInfo?.Icon || BookOpen;
@@ -278,6 +293,78 @@ const Flashcards = () => {
                           ) : (
                             <p className="text-[10px] text-muted-foreground mt-1 group-hover:text-zinc-300 transition-colors">
                               Começar revisão →
+                            </p>
+                          )}
+                        </div>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {materiasFiltradas.map((area) => {
+                    const iconInfo = areaIconFor(area.slug || area.area);
+                    const AreaIcon = iconInfo?.Icon || BookOpen;
+                    const palette = getAreaThemePalette(area.slug || area.area);
+                    const coverInfo = getAreaCover(area.area) || getAreaCover(area.slug);
+                    const coverUrl = coverInfo?.cover;
+
+                    return (
+                      <motion.button
+                        key={area.slug || area.area}
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => {
+                          haptic.selection();
+                          navigate(`/flashcards/area/${area.slug || area.area}`);
+                        }}
+                        className="group flex items-stretch gap-4 p-3 rounded-2xl bg-card border border-border/80 hover:border-zinc-400/50 transition-all text-left overflow-hidden shadow-sm focus-visible:outline-none"
+                      >
+                        <div
+                          className="w-20 h-24 sm:w-24 sm:h-28 rounded-xl shrink-0 border border-white/10 shadow-md relative overflow-hidden flex items-center justify-center"
+                          style={{
+                            backgroundColor: palette.primary,
+                            backgroundImage: coverUrl ? `url(${coverUrl})` : `linear-gradient(145deg, ${palette.primary} 0%, #1a1a1a 100%)`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                          }}
+                        >
+                          {!coverUrl && (
+                            <div className="absolute inset-0 flex items-center justify-center opacity-30 mix-blend-overlay">
+                              <AreaIcon className="w-10 h-10" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 py-1 flex flex-col justify-center min-w-0">
+                          <div className="flex items-center gap-2 mb-1.5">
+                            <div
+                              className="w-6 h-6 rounded-md flex items-center justify-center border border-white/10 shrink-0"
+                              style={{ backgroundColor: `${iconInfo?.color || '#36AF85'}22` }}
+                            >
+                              <AreaIcon className="w-3.5 h-3.5" style={{ color: iconInfo?.color || '#36AF85' }} />
+                            </div>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-zinc-800/80 text-white border border-white/5">
+                              {area.total_cards > 0 ? `${area.total_cards} cards` : 'Em breve'}
+                            </span>
+                          </div>
+                          <h3 className="text-sm sm:text-base font-bold text-foreground leading-snug truncate group-hover:text-[#36AF85] transition-colors">
+                            {area.area}
+                          </h3>
+                          {area.compreendidos > 0 ? (
+                            <div className="mt-2.5 flex items-center gap-2">
+                              <div className="flex-1 bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                                <div
+                                  className="bg-[#36AF85] h-full rounded-full"
+                                  style={{ width: `${Math.min(100, Math.round((area.compreendidos / (area.total_cards || 1)) * 100))}%` }}
+                                />
+                              </div>
+                              <span className="text-[10px] text-muted-foreground font-semibold whitespace-nowrap">
+                                {area.compreendidos} dominados
+                              </span>
+                            </div>
+                          ) : (
+                            <p className="text-[11px] text-muted-foreground mt-2 group-hover:text-zinc-300 transition-colors flex items-center gap-1">
+                              Começar revisão <ChevronRight className="w-3 h-3" />
                             </p>
                           )}
                         </div>
