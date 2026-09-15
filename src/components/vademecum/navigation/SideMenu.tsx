@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import {
   Info, LogOut, ChevronRight,
   User, LifeBuoy, Lock, Gem, MessageSquareHeart,
-  Pencil, Sparkles, Bell as BellIcon, Crown, CheckSquare,
+  Pencil, Sparkles, Bell as BellIcon, Crown, CheckSquare, Timer,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfileSummary } from '@/hooks/useProfileSummary';
@@ -61,7 +61,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
   useEscapeKey(open, onClose);
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
-  const { isPremium } = useSubscription();
+  const { isPremium, isTrial, expiresAt } = useSubscription();
   useBodyScrollLock(open);
 
   useEffect(() => {
@@ -204,7 +204,9 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <h2 className="font-display text-base font-bold text-foreground leading-tight truncate">{displayName}</h2>
-                      {isPremium ? (
+                      {isTrial ? (
+                        <TrialBadge expiresAt={expiresAt} />
+                      ) : isPremium ? (
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-[#F59E0B]/40 bg-[#F59E0B]/10 text-[10px] font-body font-bold uppercase tracking-wider text-[#FBBF24] shadow-sm shadow-[#F59E0B]/10">
                           <Crown className="w-3.5 h-3.5 text-[#F59E0B]" strokeWidth={2.4} /> Premium
                         </span>
@@ -402,6 +404,37 @@ function MenuRow({
       <Icon className={`w-5 h-5 shrink-0 ${danger ? 'text-red-400' : 'text-hero-panel'}`} aria-hidden="true" />
       <span className="font-body text-[15px] flex-1">{label}</span>
     </button>
+  );
+}
+
+function TrialBadge({ expiresAt }: { expiresAt: string | null }) {
+  const [timeLeft, setTimeLeft] = useState('');
+
+  useEffect(() => {
+    if (!expiresAt) return;
+    const update = () => {
+      const diff = new Date(expiresAt).getTime() - Date.now();
+      if (diff <= 0) {
+        setTimeLeft('EXPIRADO');
+        return;
+      }
+      const totalHours = Math.floor(diff / (1000 * 60 * 60));
+      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      if (totalHours > 24) {
+        setTimeLeft(`TESTE: ${totalHours} HORAS RESTANTES`);
+      } else {
+        setTimeLeft(`TESTE: ${totalHours}H E ${mins}M RESTANTES`);
+      }
+    };
+    update();
+    const interval = setInterval(update, 60000);
+    return () => clearInterval(interval);
+  }, [expiresAt]);
+
+  return (
+    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border border-sky-500/40 bg-sky-500/10 text-[10px] font-body font-bold tracking-wider text-sky-400 shadow-sm shadow-sky-500/10 whitespace-nowrap">
+      <Timer className="w-3 h-3 text-sky-400" strokeWidth={2.4} /> {timeLeft}
+    </span>
   );
 }
 

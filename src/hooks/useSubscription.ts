@@ -11,6 +11,7 @@ interface SubscriptionState {
   source: 'play' | 'apple' | 'asaas' | null;
   status: string | null;
   isAdminOverride: boolean;
+  isTrial: boolean;
   refresh: () => void;
 }
 
@@ -56,6 +57,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         source: 'play',
         status: 'SUBSCRIPTION_STATE_ACTIVE',
         isAdminOverride: true,
+        isTrial: false,
       };
     }
     if (cacheKey && typeof localStorage !== 'undefined') {
@@ -67,7 +69,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         }
       } catch { /* ignore */ }
     }
-    return { isPremium: false, loading: true, plano: null, expiresAt: null, startedAt: null, source: null, status: null, isAdminOverride: false };
+    return { isPremium: false, loading: true, plano: null, expiresAt: null, startedAt: null, source: null, status: null, isAdminOverride: false, isTrial: false };
   });
   const persist = useCallback((s: Omit<SubscriptionState, 'refresh'>) => {
     setState(s);
@@ -81,7 +83,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
 
   useEffect(() => {
     if (!user) {
-      setState({ isPremium: false, loading: false, plano: null, expiresAt: null, startedAt: null, source: null, status: null, isAdminOverride: false });
+      setState({ isPremium: false, loading: false, plano: null, expiresAt: null, startedAt: null, source: null, status: null, isAdminOverride: false, isTrial: false });
       return;
     }
     // Offline: mantém o snapshot em cache (já hidratado no useState).
@@ -114,7 +116,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
           const expiresAt = new Date(startedAt);
           expiresAt.setFullYear(expiresAt.getFullYear() + 1);
           persist({
-            isPremium: true, loading: false, plano: 'anual', startedAt: startedAt.toISOString(), expiresAt: expiresAt.toISOString(), source: 'play', status: 'SUBSCRIPTION_STATE_ACTIVE', isAdminOverride: true,
+            isPremium: true, loading: false, plano: 'anual', startedAt: startedAt.toISOString(), expiresAt: expiresAt.toISOString(), source: 'play', status: 'SUBSCRIPTION_STATE_ACTIVE', isAdminOverride: true, isTrial: false,
           });
           return true;
         }
@@ -127,7 +129,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
 
         if (trialEndsAt > new Date()) {
           persist({
-            isPremium: true, loading: false, plano: 'Teste de 3 Dias', startedAt: createdAt.toISOString(), expiresAt: trialEndsAt.toISOString(), source: null, status: 'SUBSCRIPTION_STATE_ACTIVE', isAdminOverride: false,
+            isPremium: true, loading: false, plano: 'Teste de 3 Dias', startedAt: createdAt.toISOString(), expiresAt: trialEndsAt.toISOString(), source: null, status: 'SUBSCRIPTION_STATE_ACTIVE', isAdminOverride: false, isTrial: true,
           });
           return true;
         }
@@ -136,7 +138,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         if (cancelRes.data) {
           persist({
             isPremium: false, loading: false, plano: null, expiresAt: null, startedAt: null,
-            source: null, status: 'CANCELED', isAdminOverride: false,
+            source: null, status: 'CANCELED', isAdminOverride: false, isTrial: false,
           });
           return true;
         }
@@ -145,7 +147,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
           persist({
             isPremium: true, loading: false,
             plano: playRes.data.product_id, expiresAt: playRes.data.expires_at, startedAt: null, source: 'play',
-            status: playRes.data.status as string, isAdminOverride: false,
+            status: playRes.data.status as string, isAdminOverride: false, isTrial: false,
           });
           return true;
         }
@@ -154,7 +156,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
           persist({
             isPremium: true, loading: false,
             plano: appleRes.data.product_id, expiresAt: appleRes.data.expires_at, startedAt: appleRes.data.start_time, source: 'apple',
-            status: appleRes.data.status as string, isAdminOverride: false,
+            status: appleRes.data.status as string, isAdminOverride: false, isTrial: false,
           });
           return true;
         }
@@ -164,7 +166,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
           persist({
             isPremium: true, loading: false,
             plano: l.plano, expiresAt: l.expires_at, startedAt: l.started_at, source: 'asaas',
-            status: l.status, isAdminOverride: false,
+            status: l.status, isAdminOverride: false, isTrial: false,
           });
           return true;
         }
@@ -194,7 +196,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         // 6. Nenhuma assinatura encontrada
         persist({
           isPremium: false, loading: false, plano: null, expiresAt: null, startedAt: null,
-          source: null, status: null, isAdminOverride: false,
+          source: null, status: null, isAdminOverride: false, isTrial: false,
         });
         return false;
 

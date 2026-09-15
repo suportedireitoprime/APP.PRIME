@@ -15,8 +15,12 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
     watch: {
-      ignored: ["**/android/**", "**/ios/**", "**/*.csv", "**/*.xlsx", "**/*.xml", "**/new_penal_extracted/**", "**/xlsx.js"]
-    }
+      usePolling: false,
+      ignored: ["**/android/**", "**/ios/**", "**/*.csv", "**/*.xlsx", "**/*.xml", "**/new_penal_extracted/**", "**/xlsx.js", "**/dist/**", "**/build-assets/**", "**/.git/**"]
+    },
+    warmup: {
+      clientFiles: ["./src/main.tsx", "./src/App.tsx", "./src/AppRoutes.tsx", "./src/index.css"],
+    },
   },
   plugins: [
     react(),

@@ -2,7 +2,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, User, ArrowLeftRight, MicVocal, Pill, BookMarked, Microscope, Stethoscope, Podcast } from 'lucide-react';
+import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, User, ArrowLeftRight, MicVocal, Pill, BookMarked, Microscope, Stethoscope, Podcast, Crown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import MentorOverlay from '@/components/vademecum/overlays/MentorOverlay';
 // PessoalSheet removido — Meu Espaço agora é rota dedicada (/meu-espaco).
@@ -377,6 +377,9 @@ const BottomNav = () => {
               <div className="flex items-center gap-2">
                 <GraduationCap className="w-5 h-5 text-primary" />
                 <h3 className="font-display text-lg text-foreground">Estudos</h3>
+                <span className="ml-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-[#F59E0B]/40 bg-[#F59E0B]/10 text-[10px] font-body font-bold uppercase tracking-wider text-[#FBBF24] shadow-[0_0_10px_rgba(245,158,11,0.2)]">
+                   <Crown className="w-3 h-3 text-[#F59E0B]" strokeWidth={2.4} /> Premium
+                </span>
               </div>
               <button
                 onClick={() => { haptic.light(); setEstudosOpen(false); }}

@@ -17,6 +17,7 @@ const planoLabel = (plano: string | null, source: 'play' | 'apple' | 'asaas' | n
   if (p.includes('vitalicio')) return { titulo: 'Premium Vitalício', desc: 'Acesso permanente — plano migrado do app anterior.', tag: 'VITALÍCIO' };
   if (p.includes('anual') || p.includes('year')) return { titulo: 'Premium Anual', desc: `Renovação anual via ${via}.`, tag: 'ANUAL' };
   if (p.includes('mensal') || p.includes('month')) return { titulo: 'Premium Mensal', desc: `Renovação mensal via ${via}.`, tag: 'MENSAL' };
+  if (p.includes('teste')) return { titulo: 'Teste de 3 Dias', desc: 'Período gratuito para testar todos os recursos.', tag: 'TRIAL' };
   return { titulo: 'Premium', desc: `Ativa via ${via}.`, tag: 'PRO' };
 };
 
@@ -73,7 +74,7 @@ const Perfil = () => {
             userId={user.id}
             displayName={displayName}
             avatarUrl={avatarUrl}
-            isPremium={sub.isPremium}
+            isPremium={sub.isPremium && !sub.isTrial}
             provider={provider}
             emailConfirmed={emailConfirmed}
             contexto={profile?.perfil_contexto}
@@ -82,7 +83,7 @@ const Perfil = () => {
 
           <div className="lg:hidden">
             <PlanoCard
-              isPremium={sub.isPremium}
+              isPremium={sub.isPremium && !sub.isTrial}
               loading={sub.loading}
               titulo={plano.titulo}
               desc={plano.desc}
@@ -107,9 +108,9 @@ const Perfil = () => {
         </div>
 
         <div className="space-y-5 lg:sticky lg:top-6">
-          <div className="hidden lg:block">
+          <div className="hidden lg:block lg:col-span-1">
             <PlanoCard
-              isPremium={sub.isPremium}
+              isPremium={sub.isPremium && !sub.isTrial}
               loading={sub.loading}
               titulo={plano.titulo}
               desc={plano.desc}

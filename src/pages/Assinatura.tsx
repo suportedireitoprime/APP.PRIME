@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams, Navigate, useLocation } from "react-route
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from "framer-motion";
 import { Capacitor } from '@capacitor/core';
-import { Zap, Check, Shield, Brain, Loader2, Smartphone, RotateCw, Monitor, Sparkles, MessageCircle, Headphones, FileText, Library, Scale, Briefcase, CreditCard, QrCode, X, Clock, Gift } from "lucide-react";
+import { Zap, Check, Shield, Brain, Loader2, Smartphone, RotateCw, Monitor, Sparkles, MessageCircle, Headphones, FileText, Library, Scale, Briefcase, CreditCard, QrCode, X, Clock, Gift, Timer } from "lucide-react";
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -22,6 +22,47 @@ import { useGoBack } from '@/hooks/useGoBack';
 import PaywallImageStack from '@/components/planos/PaywallImageStack';
 import horusOwl from '@/assets/horus/horus-owl.webp';
 
+function TrialCountdownBanner({ expiresAt }: { expiresAt: string | null }) {
+  const [timeLeft, setTimeLeft] = useState('');
+
+  useEffect(() => {
+    if (!expiresAt) return;
+    const update = () => {
+      const diff = new Date(expiresAt).getTime() - Date.now();
+      if (diff <= 0) {
+        setTimeLeft('Seu teste expirou');
+        return;
+      }
+      const totalHours = Math.floor(diff / (1000 * 60 * 60));
+      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      if (totalHours > 24) {
+        setTimeLeft(`${totalHours}h restantes`);
+      } else {
+        setTimeLeft(`${totalHours}h ${mins}m restantes`);
+      }
+    };
+    update();
+    const interval = setInterval(update, 60000);
+    return () => clearInterval(interval);
+  }, [expiresAt]);
+
+  if (!timeLeft || timeLeft === 'Seu teste expirou') return null;
+
+  return (
+    <div className="mx-4 mt-6 bg-sky-500/10 border border-sky-500/30 rounded-2xl p-4 flex flex-col items-center justify-center relative overflow-hidden shadow-lg shadow-sky-500/5">
+      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-sky-400 to-sky-600"></div>
+      <Timer className="w-6 h-6 text-sky-400 mb-2" />
+      <h3 className="font-display font-black text-sky-400 text-lg mb-1 tracking-wide uppercase">Seu Teste Gratuito</h3>
+      <p className="font-body text-sm font-semibold text-sky-500/90 text-center">
+        Aproveite todos os recursos.
+      </p>
+      <div className="mt-3 px-4 py-1.5 rounded-full bg-sky-500/20 text-sky-400 font-display font-black text-sm tracking-wider">
+        TERMINA EM {timeLeft}
+      </div>
+    </div>
+  );
+}
+
 export default function Assinatura() {
   useTrackArea("assinatura_aberta");
   const navigate = useNavigate();
@@ -30,7 +71,7 @@ export default function Assinatura() {
   const { session } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const welcomeFlag = searchParams.get('welcome') === '1';
-  const { refresh: refreshSubscription, isPremium, loading: subLoading, plano: planoAtual } = useSubscription({ pollOnMount: welcomeFlag });
+  const { refresh: refreshSubscription, isPremium, isTrial, loading: subLoading, plano: planoAtual, expiresAt } = useSubscription({ pollOnMount: welcomeFlag });
   const [showWelcome, setShowWelcome] = useState(welcomeFlag);
 
   const { data: profileSummary } = useProfileSummary();
@@ -126,7 +167,7 @@ export default function Assinatura() {
       navigate(stateFrom, { replace: true });
       return;
     }
-    goBack('/');
+    goBack();
   };
 
   useEffect(() => {
@@ -171,7 +212,7 @@ export default function Assinatura() {
 
   const previewPlans = showDevToggle && searchParams.get('preview') === 'plans';
 
-  if (view === "plans" && !subLoading && isPremium && !showWelcome && !previewPlans) {
+  if (view === "plans" && !subLoading && (isPremium && !isTrial) && !showWelcome && !previewPlans) {
     return <Navigate to="/planos/ativos" replace />;
   }
 
@@ -331,6 +372,8 @@ export default function Assinatura() {
           title="Assinatura Premium"
           onBack={handleBack}
         />
+
+        {isTrial && <TrialCountdownBanner expiresAt={expiresAt} />}
 
         <div className="max-w-2xl mx-auto pt-6 space-y-7">
             <PaywallImageStack />

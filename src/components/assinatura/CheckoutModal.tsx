@@ -654,11 +654,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                           onFocus={() => setIsFlipped(false)}
                           className="w-full h-12 rounded-2xl bg-black/40 border border-white/10 focus:border-primary focus:ring-1 focus:ring-primary font-medium px-4 text-sm appearance-none outline-none backdrop-blur-md transition-all text-white"
                         >
-                          {[1,2,3,4,5,6,7,8,9,10,11,12].map(num => (
-                            <option key={num} value={num} className="bg-background text-foreground">
-                              {num}x de R$ {(199.90 / num).toFixed(2).replace('.', ',')} {num === 1 ? ' (à vista)' : ' sem juros'}
-                            </option>
-                          ))}
+                          {[1,2,3,4,5,6,7,8,9,10,11,12].map(num => {
+                            // Cálculo de repasse padrão do Asaas para cartão de crédito
+                            let taxRate = 0;
+                            if (num === 1) taxRate = 0.0339;
+                            else if (num <= 6) taxRate = 0.0389;
+                            else taxRate = 0.0439;
+                            
+                            const totalWithTax = (199.90 + 0.29) / (1 - taxRate);
+                            const installmentValue = totalWithTax / num;
+
+                            return (
+                              <option key={num} value={num} className="bg-background text-foreground">
+                                {num}x de R$ {installmentValue.toFixed(2).replace('.', ',')} {num === 1 ? ' (à vista)' : ` (Total: R$ ${totalWithTax.toFixed(2).replace('.', ',')})`}
+                              </option>
+                            );
+                          })}
                         </select>
                       </div>
                     )}
