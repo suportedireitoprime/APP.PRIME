@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import HomeCard from '@/components/vademecum/home/HomeCard';
 import HomeTresPoderes from './HomeTresPoderes';
+import HomeLeiSecaBar from './HomeLeiSecaBar';
+import HomeApresentacoesTimeline from './HomeApresentacoesTimeline';
 import { toast } from '@/hooks/use-toast';
 const HomeNoticiasCarousel = lazyWithRetry(() => import('@/components/vademecum/home/HomeNoticiasCarousel'));
 import { GRID_CATS, EMALTA_CATS, Cat } from './homeSectionsData';
@@ -64,7 +66,10 @@ const HomeTabEstudos = ({
           ))}
         </div>
       ) : (
-        <div className="flex flex-col gap-3 pt-2">
+        <div className="flex flex-col gap-4 pt-2">
+          {/* Barra Praticar Lei Seca (Estilo Search Bar) */}
+          <HomeLeiSecaBar />
+
           <div className="mb-1 relative z-10 flex items-start justify-between gap-3">
             <div>
               <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 uppercase tracking-widest">
@@ -77,7 +82,7 @@ const HomeTabEstudos = ({
             </div>
           </div>
           
-          <div key="grid-estudos" className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2 md:gap-4">
+          <div key="grid-estudos" className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-4">
             {EMALTA_CATS.map((c, i) => (
               <HomeCard
                 key={`cat-${c.id}`}
@@ -127,6 +132,9 @@ const HomeTabEstudos = ({
       <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
         <HomeTresPoderes />
       </div>
+
+      {/* Linha do Tempo de Apresentações (Logo após Três Poderes) */}
+      <HomeApresentacoesTimeline />
 
       {/* Espaço de segurança para garantir que o último elemento não fique atrás do BottomNav */}
       <div className="h-28 w-full shrink-0 pointer-events-none" />

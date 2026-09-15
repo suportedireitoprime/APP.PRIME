@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -8,8 +8,10 @@ import {
 import QuestoesHero from '@/components/questoes/QuestoesHero';
 import QuestoesFiltroSheet from '@/components/questoes/QuestoesFiltroSheet';
 import { haptic } from '@/lib/nativeHaptics';
-import { useQuestoesCargos, useQuestoesDesempenho } from '@/hooks/useQuestoes';
+import { useQuestoesCargos, useQuestoesDesempenho, useQuestoesAreas } from '@/hooks/useQuestoes';
 import QuestoesMasterDeck from '@/components/questoes/QuestoesMasterDeck';
+import ShapeGrid from '@/components/ui/ShapeGrid';
+import { FALLBACK_FLASHCARDS_AREAS } from '@/lib/flashcardsConstants';
 
 const ATALHOS_4 = [
   { id: 'historico', label: 'Histórico', desc: 'Sessões salvas', icon: History, route: '/questoes/historico' },
@@ -23,15 +25,42 @@ const Questoes = () => {
   const location = useLocation();
   const { cargos } = useQuestoesCargos();
   const { dados } = useQuestoesDesempenho();
+  const { areas: rawAreas } = useQuestoesAreas();
 
   const [filtroAberto, setFiltroAberto] = useState(false);
+
+  const materiasAreas = useMemo(() => {
+    const counts: Record<string, number> = {};
+    (rawAreas || []).forEach((a) => {
+      counts[a.area] = a.total;
+    });
+
+    return FALLBACK_FLASHCARDS_AREAS.map((f) => ({
+      area: f.area,
+      slug: f.slug,
+      total_questoes: counts[f.area] || counts[f.area.replace('Direito ', '')] || 0,
+    })).sort((a, b) => b.total_questoes - a.total_questoes);
+  }, [rawAreas]);
 
   const pct = dados?.total ? Math.round((dados.acertos / dados.total) * 100) : 0;
   const disponiveis = cargos.reduce((s, c) => s + (c.total_questoes ?? 0), 0);
 
   return (
-    <div className="theme-questoes min-h-screen bg-background">
-      <div className="mx-auto w-full max-w-3xl lg:max-w-7xl 2xl:max-w-[1600px] px-0 lg:px-8 pb-12">
+    <div className="theme-questoes min-h-screen bg-background relative overflow-hidden">
+      {/* ── Fundo Animado com Quadradinhos (ShapeGrid Oficial do App) ── */}
+      <div className="fixed inset-0 z-0 opacity-80 mix-blend-screen pointer-events-none">
+        <ShapeGrid 
+          speed={0.5} 
+          squareSize={40}
+          direction="diagonal"
+          borderColor="rgba(255, 255, 255, 0.05)"
+          hoverFillColor="rgba(255, 255, 255, 0.1)"
+          shape="square"
+          hoverTrailAmount={5}
+        />
+      </div>
+
+      <div className="relative z-10 mx-auto w-full max-w-3xl lg:max-w-7xl 2xl:max-w-[1600px] px-0 lg:px-8 pb-12">
         <div className="space-y-6">
           {/* ── Banner de Desempenho ───────────────── */}
           <div className="w-full">
@@ -148,16 +177,16 @@ const Questoes = () => {
             </div>
           </section>
 
-          {/* ── Decks de Questões (Master Deck) ───────────────────── */}
+          {/* ── Decks de Questões (Master Deck: Matérias em Trilhas) ───────────────────── */}
           <section className="pt-2">
             <div className="flex items-center gap-2 mb-2">
               <span className="h-4 w-1 rounded-full bg-primary" />
               <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                Cadernos / Matérias
+                Matérias em Trilhas ({materiasAreas.length})
               </p>
             </div>
-            {cargos && cargos.length > 0 && (
-              <QuestoesMasterDeck cargos={cargos} />
+            {materiasAreas && materiasAreas.length > 0 && (
+              <QuestoesMasterDeck areas={materiasAreas} />
             )}
           </section>
           </div>

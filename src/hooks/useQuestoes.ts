@@ -209,6 +209,21 @@ export function useQuestoesSessao(opts: SortearOpts) {
       if (res.length > limit) {
         res = res.slice(0, limit);
       }
+
+      // Fallback resiliente: se o filtro por assunto específico não retornar questões, busca questões da disciplina
+      if (res.length === 0 && (f.disciplinas?.length || o.area)) {
+        const fallbackArea = f.disciplinas?.[0] || o.area;
+        const { data: fbData } = await db.rpc('questoes_sortear', {
+          _nivel: o.nivel ?? null,
+          _area: fallbackArea ?? null,
+          _cargo_id: o.cargoId ?? null,
+          _limit: limit,
+          _excluir_respondidas: false,
+        });
+        if (fbData && fbData.length > 0) {
+          res = fbData as Questao[];
+        }
+      }
     }
 
     if (!isMounted.current) return;
