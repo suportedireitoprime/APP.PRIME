@@ -7,6 +7,7 @@ export function removerEmojis(texto?: string | null): string {
   return texto
     .replace(EMOJI_RE, '')
     .replace(/[ \t]{2,}/g, ' ')
-    .replace(/(^|\n)([>\-*]?\s*)\s+/g, '$1$2')
+    .replace(/^[ \t]+(?=[^ \t\*\-\+\d>#])/gm, '')
     .trimEnd();
 }
+

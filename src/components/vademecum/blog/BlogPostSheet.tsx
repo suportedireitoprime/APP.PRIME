@@ -343,12 +343,38 @@ export default function BlogPostSheet({ post, onClose, showGoTo = false, inline 
                             <code className="text-slate-100 font-mono text-xs md:text-sm" {...props} />
                           )
                         ),
+                        ul: ({ node, ...props }) => (
+                          <ul className="my-4 space-y-2.5 list-disc pl-6 text-foreground/90 leading-relaxed marker:text-primary" {...props} />
+                        ),
+                        ol: ({ node, ...props }) => (
+                          <ol className="my-4 space-y-2.5 list-decimal pl-6 text-foreground/90 leading-relaxed marker:text-primary font-medium" {...props} />
+                        ),
+                        li: ({ node, ...props }) => (
+                          <li className="pl-1 text-foreground/90 leading-relaxed" {...props} />
+                        ),
+                        h2: ({ node, ...props }) => (
+                          <h2 className="font-display text-xl md:text-2xl text-foreground font-bold tracking-tight mt-8 mb-3.5 border-b border-border/20 pb-2" {...props} />
+                        ),
+                        h3: ({ node, ...props }) => (
+                          <h3 className="font-display text-lg md:text-xl text-foreground font-bold tracking-tight mt-6 mb-2 text-primary" {...props} />
+                        ),
+                        p: ({ node, ...props }) => (
+                          <p className="text-foreground/90 leading-[1.8] my-4" {...props} />
+                        ),
+                        strong: ({ node, ...props }) => (
+                          <strong className="font-semibold text-foreground" {...props} />
+                        ),
                         hr: ({ node, ...props }) => (
-                          <hr className="my-6 border-border/60" {...props} />
+                          <hr className="my-8 border-border/40" {...props} />
                         ),
                       }}
                     >
-                      {removerEmojis(conteudo.replace(/\\n/g, '\n'))}
+                      {removerEmojis(
+                        conteudo
+                          .replace(/\\n/g, '\n')
+                          .replace(/([^\n])\n---/g, '$1\n\n---')
+                          .replace(/\n---\n([^\n])/g, '\n---\n\n$1')
+                      )}
                     </ReactMarkdown>
                   ) : (
                     <div className="space-y-3 animate-pulse" aria-label="Carregando artigo">
