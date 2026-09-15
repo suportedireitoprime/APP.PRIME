@@ -21,6 +21,7 @@ import {
   LeiSecaEmptyState,
   type LeiSecaFiltro,
 } from "@/components/lei-seca/chunks";
+import ShapeGrid from "@/components/ui/ShapeGrid";
 
 export default function LeiSecaIndex({ modo = "todos" }: { modo?: LeiSecaFiltro }) {
   const navigate = useNavigate();
@@ -86,9 +87,23 @@ export default function LeiSecaIndex({ modo = "todos" }: { modo?: LeiSecaFiltro 
   };
 
   return (
-    <div className="min-h-screen bg-background animate-ls-enter" style={{ backgroundColor: '#0D0D0D' }}>
-      {/* Chunk 1: Hero com Progresso e Estatísticas */}
-      <LeiSecaHero
+    <div className="min-h-screen bg-background text-white relative overflow-x-hidden animate-ls-enter" style={{ backgroundColor: '#0D0D0D' }}>
+      {/* Fundo ShapeGrid animado (padrão oficial do app) */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <ShapeGrid
+          speed={0.5}
+          squareSize={40}
+          direction="diagonal"
+          borderColor="rgba(255, 255, 255, 0.05)"
+          hoverFillColor="rgba(255, 255, 255, 0.1)"
+          shape="square"
+          hoverTrailAmount={5}
+        />
+      </div>
+
+      <div className="relative z-10">
+        {/* Chunk 1: Hero com Progresso e Estatísticas */}
+        <LeiSecaHero
         pctGlobal={pctGlobal}
         totalMaterias={materias.length}
         totalTrilhas={trilhas?.length ?? 0}
@@ -218,6 +233,7 @@ export default function LeiSecaIndex({ modo = "todos" }: { modo?: LeiSecaFiltro 
         trilhas={trilhas ?? []}
         resumo={resumo}
       />
+      </div>
     </div>
   );
 }

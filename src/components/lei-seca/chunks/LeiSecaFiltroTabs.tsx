@@ -29,19 +29,21 @@ function FiltroPill({ ativo, onClick, icon, label, badge }: FiltroPillProps) {
         onClick();
       }}
       className={cn(
-        "flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[44px] rounded-full text-[13px] font-bold transition-all duration-[80ms] touch-manipulation active:scale-[0.97]",
+        "flex-1 sm:flex-none relative inline-flex items-center justify-center gap-2 px-5 py-2.5 min-h-[44px] rounded-xl text-[13px] transition-all duration-200 touch-manipulation active:scale-[0.97]",
         ativo
-          ? "bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white shadow-md shadow-violet-500/20"
-          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+          ? "bg-gradient-to-r from-purple-700 via-purple-600 to-indigo-600 text-white font-bold shadow-[0_4px_18px_rgba(147,51,234,0.45)] border border-purple-400/30 scale-[1.01]"
+          : "text-zinc-400 hover:text-white hover:bg-white/[0.04] font-medium border border-transparent"
       )}
     >
-      {icon}
+      <span className={cn("transition-transform duration-200", ativo ? "text-white scale-105" : "text-zinc-400")}>
+        {icon}
+      </span>
       <span>{label}</span>
       {badge !== undefined && badge > 0 && (
         <span
           className={cn(
-            "ml-0.5 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-extrabold",
-            ativo ? "bg-white/25 text-white" : "bg-violet-500/15 text-violet-500"
+            "ml-0.5 inline-flex items-center justify-center min-w-[20px] h-[20px] px-1.5 rounded-full text-[10px] font-black tracking-tight transition-colors",
+            ativo ? "bg-white/25 text-white" : "bg-purple-950/50 text-purple-300 border border-purple-700/30"
           )}
         >
           {badge}
@@ -58,7 +60,7 @@ export function LeiSecaFiltroTabs({
   totalFavoritos = 0,
 }: LeiSecaFiltroTabsProps) {
   return (
-    <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-muted/60 border border-border/60 mb-6 overflow-x-auto">
+    <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-zinc-900/80 backdrop-blur-xl border border-white/[0.08] shadow-[0_4px_20px_rgba(0,0,0,0.5)] mb-6 overflow-x-auto">
       <FiltroPill
         ativo={filtroAtual === "todos"}
         onClick={() => onChangeFiltro("todos")}

@@ -59,15 +59,15 @@ export function LeiSecaHero({
 
   return (
     <section
-      className="w-full text-white px-4 pt-[calc(1.25rem+var(--sai-top))] pb-6 shadow-xl"
-      style={{ background: "radial-gradient(120% 90% at 0% 0%, #4c1d95 0%, #2e1065 45%, #0f0a1f 100%)" }}
+      className="w-full text-white px-4 pt-[calc(1.25rem+var(--sai-top))] pb-6 shadow-2xl backdrop-blur-md border-b border-purple-900/30"
+      style={{ background: "radial-gradient(120% 90% at 0% 0%, rgba(76, 29, 149, 0.85) 0%, rgba(46, 16, 101, 0.65) 45%, rgba(15, 10, 31, 0.25) 100%)" }}
     >
       <div className="max-w-5xl mx-auto">
         <button
           type="button"
           onClick={handleBack}
           aria-label="Voltar para tela inicial"
-          className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full touch-manipulation bg-white/15 ring-1 ring-white/25 backdrop-blur-sm flex items-center justify-center text-white mb-3 active:scale-95 transition-all duration-[80ms]"
+          className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full touch-manipulation bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md flex items-center justify-center text-white mb-3 active:scale-95 transition-all shadow-lg"
         >
           <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
         </button>
@@ -105,10 +105,10 @@ export function LeiSecaHero({
 
       {/* Título */}
       <div className="relative z-10 mb-5">
-        <h1 className="text-xl md:text-2xl font-black tracking-tight leading-tight">
+        <h1 className="font-body text-xl sm:text-2xl md:text-[26px] font-black uppercase tracking-wider text-white leading-tight">
           Estudo Esquematizado & Guiado
         </h1>
-        <p className="text-xs md:text-sm text-purple-100/80 mt-1 max-w-xl">
+        <p className="font-body text-xs sm:text-sm text-purple-100/80 mt-1.5 max-w-xl leading-relaxed">
           Percorra os artigos divididos em partes pedagógicas. Marque como lido, resolva questões e acompanhe seu progresso real.
         </p>
       </div>
