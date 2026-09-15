@@ -77,23 +77,17 @@ const HomeTabEstudos = ({
             </div>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2 md:gap-4">
+          <div key="grid-estudos" className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2 md:gap-4">
             {EMALTA_CATS.map((c, i) => (
               <HomeCard
-                key={c.id}
+                key={`cat-${c.id}`}
                 icon={c.icon}
                 label={c.label}
                 sublabel={c.sublabel}
                 color="#FFFFFF"
-                iconStyle={{ filter: 'drop-shadow(0 0 4px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 10px rgba(255, 255, 255, 0.45))' }}
                 iconStrokeWidth={1.5}
                 delay={i * 0.05}
-                className="transition-all"
-                style={{
-                  backgroundImage: 'linear-gradient(to bottom right, #2a2a30 0%, #16161a 55%, #0e0e11 100%)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  boxShadow: 'inset 0 1px 1px rgba(255, 255, 255, 0.12), 0 4px 14px rgba(0, 0, 0, 0.5)',
-                }}
+                className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
                 iconClassName={c.id === 'ea-mapas' ? 'w-6 h-6' : ''}
                 badge={c.emBreve ? 'Em breve' : undefined}
                 onClick={() => {
