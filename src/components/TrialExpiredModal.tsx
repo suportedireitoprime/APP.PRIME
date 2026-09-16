@@ -53,7 +53,9 @@ export function TrialExpiredModal() {
   const [ativo, setAtivo] = useState(0);
   const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'anual' | 'anual_pix' | null>(null);
 
-  useBodyScrollLock(true);
+  const isAdmin = Boolean(user?.email && ['wn7corporation@gmail.com', 'suporte@direitoprime.com.br', 'wn7juridico@gmail.com'].includes(user.email.trim().toLowerCase()));
+
+  useBodyScrollLock(!isAdmin);
 
   const firstName =
     user?.user_metadata?.full_name?.split(' ')[0] ||
@@ -77,6 +79,10 @@ export function TrialExpiredModal() {
     }, 350);
     return () => clearTimeout(timeout);
   }, []);
+
+  if (isAdmin) {
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-y-auto bg-black/70 backdrop-blur-md p-4 py-8">
