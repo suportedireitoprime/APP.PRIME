@@ -28,21 +28,20 @@ const MATERIAS: MateriaCover[] = [
   { id: 'const', nome: 'Direito Constitucional', tag: 'CONSTITUCIONAL', cover: constCover },
   { id: 'admin', nome: 'Direito Administrativo', tag: 'ADMINISTRATIVO', cover: adminCover },
   { id: 'trab', nome: 'Direito do Trabalho', tag: 'TRABALHO', cover: trabCover },
-  { id: 'proc_penal', nome: 'Processo Penal', tag: 'PROC. PENAL', cover: procPenalCover },
+  { id: 'proc_penal', nome: 'Processo Penal', tag: 'PROCESSO PENAL', cover: procPenalCover },
   { id: 'trib', nome: 'Direito Tributário', tag: 'TRIBUTÁRIO', cover: tribCover },
-  { id: 'proc_civil', nome: 'Processo Civil', tag: 'PROC. CIVIL', cover: procCivilCover },
+  { id: 'proc_civil', nome: 'Processo Civil', tag: 'PROCESSO CIVIL', cover: procCivilCover },
 ];
 
-/** Posições de perspectiva 3D dos cards no deck */
 const SLOTS = [
-  { x: 0, y: 0, rotate: 0, scale: 1, opacity: 1, z: 50 },
-  { x: 58, y: 6, rotate: 8, scale: 0.86, opacity: 0.85, z: 40 },
-  { x: 96, y: 14, rotate: 15, scale: 0.72, opacity: 0.4, z: 30 },
-  { x: 0, y: 16, rotate: 0, scale: 0.6, opacity: 0, z: 10 },
-  { x: 0, y: 16, rotate: 0, scale: 0.6, opacity: 0, z: 10 },
-  { x: 0, y: 16, rotate: 0, scale: 0.6, opacity: 0, z: 10 },
-  { x: -96, y: 14, rotate: -15, scale: 0.72, opacity: 0.4, z: 30 },
-  { x: -58, y: 6, rotate: -8, scale: 0.86, opacity: 0.85, z: 40 },
+  { x: 0, y: -45, rotate: 0, scale: 1.15, opacity: 1, z: 50 },
+  { x: 62, y: -25, rotate: 8, scale: 0.9, opacity: 0.85, z: 40 },
+  { x: 104, y: -10, rotate: 15, scale: 0.72, opacity: 0.4, z: 30 },
+  { x: 0, y: -5, rotate: 0, scale: 0.6, opacity: 0, z: 10 },
+  { x: 0, y: -5, rotate: 0, scale: 0.6, opacity: 0, z: 10 },
+  { x: 0, y: -5, rotate: 0, scale: 0.6, opacity: 0, z: 10 },
+  { x: -104, y: -10, rotate: -15, scale: 0.72, opacity: 0.4, z: 30 },
+  { x: -62, y: -25, rotate: -8, scale: 0.9, opacity: 0.85, z: 40 },
 ];
 
 export function TrialExpiredModal() {
@@ -126,11 +125,8 @@ export function TrialExpiredModal() {
           initial={{ y: 24, opacity: 0, scale: 0.98 }}
           animate={{ y: 0, opacity: 1, scale: 1 }}
           transition={{ duration: 0.35, ease: 'easeOut' }}
-          className="relative z-10 space-y-4 rounded-3xl border border-white/10 bg-[#121417]/95 backdrop-blur-2xl p-6 sm:p-7 shadow-2xl shadow-black/60 text-center overflow-hidden"
+          className="relative z-10 space-y-4 rounded-3xl border border-white/10 bg-[#121417]/95 backdrop-blur-2xl p-6 sm:p-7 shadow-2xl shadow-black/60 text-center"
         >
-          {/* Brilho de fundo sutil */}
-          <div className="absolute top-0 right-0 w-48 h-48 bg-primary/15 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-
           {/* Decks com as capas do Aprender passando no automático */}
           <div className="relative flex flex-col items-center justify-center pt-2 pb-1">
             <div className="relative flex items-center justify-center w-full max-w-[320px] h-[165px] sm:h-[175px]">
@@ -151,11 +147,7 @@ export function TrialExpiredModal() {
                     }}
                     transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                     style={{ zIndex: slot.z }}
-                    className={`absolute w-[114px] sm:w-[124px] h-[148px] sm:h-[160px] rounded-2xl overflow-hidden shadow-2xl shrink-0 ${
-                      frente
-                        ? 'border-2 border-primary shadow-[0_14px_36px_rgba(224,31,71,0.45)] ring-2 ring-primary/40'
-                        : 'border border-white/20'
-                    }`}
+                    className={`absolute w-[114px] sm:w-[124px] h-[148px] sm:h-[160px] rounded-2xl overflow-hidden shadow-2xl shrink-0 border border-white/20`}
                   >
                     <img
                       src={m.cover}
@@ -164,8 +156,8 @@ export function TrialExpiredModal() {
                       loading={i < 4 ? 'eager' : 'lazy'}
                       decoding="async"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-2.5 text-left">
-                      <span className="text-[10px] sm:text-[11px] font-display font-black tracking-wider uppercase text-white drop-shadow leading-tight">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent flex flex-col justify-end p-2.5 text-center pb-4">
+                      <span className="text-[10px] sm:text-[11px] font-display font-black tracking-widest uppercase text-white drop-shadow leading-tight">
                         {m.tag}
                       </span>
                     </div>
@@ -174,15 +166,8 @@ export function TrialExpiredModal() {
               })}
             </div>
 
-            {/* Identificador da matéria ativa */}
+            {/* Identificador da matéria ativa removido (apenas dots agora) */}
             <div className="flex flex-col items-center gap-1.5 mt-1">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 shadow-sm">
-                <Sparkles className="w-3.5 h-3.5 text-primary" />
-                <span className="text-[11px] font-display font-black tracking-widest text-primary uppercase">
-                  {MATERIAS[ativo].nome}
-                </span>
-              </div>
-
               {/* Dots de navegação suave */}
               <div className="flex items-center gap-1 mt-0.5">
                 {MATERIAS.map((m, idx) => (
@@ -203,7 +188,7 @@ export function TrialExpiredModal() {
           </h2>
 
           {/* Mensagem persuasiva elegante citando o nome */}
-          <p className="text-[13px] sm:text-[14px] text-muted-foreground leading-relaxed text-center max-w-sm mx-auto">
+          <p className="text-[13px] sm:text-[14px] text-muted-foreground leading-relaxed text-center max-w-sm mx-auto line-clamp-3">
             <strong className="text-foreground font-bold">{firstName}</strong>, sua degustação gratuita chegou ao fim. Tenha acesso completo e ilimitado a todas as matérias de Direito, questões comentadas, Vade Mecum inteligente e resumos exclusivos.
           </p>
 
