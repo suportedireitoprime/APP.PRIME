@@ -5,6 +5,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { isAdminEmail } from '@/lib/adminEmails';
 
 export interface ProfileSummary {
   displayName: string;
@@ -43,7 +44,7 @@ async function fetchProfileSummary(userId: string, fallbackEmail: string, fallba
     if (cached) return cached;
     return {
       displayName: fallbackEmail.split('@')[0] || 'Usuário',
-      isPremium: false,
+      isPremium: isAdminEmail(fallbackEmail),
       avatarUrl: fallbackAvatar || '',
       bio: '',
       capaId: 'capa1',
@@ -63,7 +64,7 @@ async function fetchProfileSummary(userId: string, fallbackEmail: string, fallba
   const summary: ProfileSummary = {
     displayName: p.nome_preferido || p.display_name || (fallbackEmail.split('@')[0] || 'Usuário'),
     nomeCompleto: p.nome_completo || p.display_name || null,
-    isPremium: !!p.is_premium,
+    isPremium: !!p.is_premium || isAdminEmail(fallbackEmail),
     avatarUrl: p.avatar_url || fallbackAvatar || '',
     bio: p.bio ?? '',
     capaId: p.capa_id ?? 'capa1',
