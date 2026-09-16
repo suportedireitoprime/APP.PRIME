@@ -54,8 +54,10 @@ const AgendaCamara = () => {
         d => d.toISOString().split('T')[0] === new Date().toISOString().split('T')[0]
       );
       if (todayIndex !== -1) {
-        // Estima largura do chip (cerca de 60px) para rolar
-        timelineRef.current.scrollLeft = Math.max(0, (todayIndex * 64) - (window.innerWidth / 2) + 32);
+        const viewport = timelineRef.current.querySelector('[data-radix-scroll-area-viewport]');
+        if (viewport) {
+          viewport.scrollLeft = Math.max(0, (todayIndex * 64) - (window.innerWidth / 2) + 32);
+        }
       }
     }
   }, [diasTimeline]);
@@ -97,7 +99,7 @@ const AgendaCamara = () => {
   };
 
   return (
-    <div className="fixed inset-0 bg-[#0A0A0A] z-50 flex flex-col w-full h-full safe-area-pt relative">
+    <div className="flex flex-col min-h-screen bg-[#0A0A0A] w-full safe-area-pt relative">
       
       <ShapeGrid 
          active={true} 
@@ -143,17 +145,28 @@ const AgendaCamara = () => {
                     onClick={() => {
                       haptic.selection();
                       setDataSelecionada(d.toISOString().split('T')[0]);
+                      
+                      // Centralizar no clique
+                      if (timelineRef.current) {
+                        const viewport = timelineRef.current.querySelector('[data-radix-scroll-area-viewport]');
+                        if (viewport) {
+                          viewport.scrollTo({
+                            left: Math.max(0, (idx * 64) - (window.innerWidth / 2) + 32),
+                            behavior: 'smooth'
+                          });
+                        }
+                      }
                     }}
-                    className={`flex flex-col items-center justify-center min-w-[60px] p-2 rounded-xl border transition-all ${
+                    className={`flex flex-col items-center justify-center min-w-[60px] p-2 rounded-xl border transition-all duration-300 ${
                       isSelected 
-                        ? 'bg-sky-500/20 border-sky-500 text-sky-400 scale-105 shadow-md shadow-sky-500/10' 
+                        ? 'bg-rose-500/20 border-rose-500 text-rose-400 scale-110 shadow-lg shadow-rose-500/20 z-10 mx-1' 
                         : 'bg-white/5 border-transparent text-white/50 hover:bg-white/10'
                     }`}
                   >
                     <span className="text-[10px] uppercase font-bold tracking-wider mb-1">
                       {isToday ? 'HOJE' : getDiaDaSemana(d)}
                     </span>
-                    <span className={`text-sm font-black ${isSelected ? 'text-sky-400' : 'text-white/80'}`}>
+                    <span className={`text-sm font-black ${isSelected ? 'text-rose-400' : 'text-white/80'}`}>
                       {formataDataTimeline(d)}
                     </span>
                   </button>
