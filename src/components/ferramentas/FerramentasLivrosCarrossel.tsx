@@ -295,7 +295,7 @@ export const FerramentasLivrosCarrossel = () => {
   if (!livros.length) return null;
 
   return (
-    <section className="space-y-3 -mx-4 sm:-mx-6">
+    <section className="space-y-3">
       {/* Cabeçalho do Carrossel de Livros */}
       <div className="mb-0 relative z-10 pointer-events-none px-5 flex items-start justify-between gap-3">
         <div>
