@@ -1,7 +1,9 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Rss, Globe, Headphones, PlaySquare } from 'lucide-react';
+import { ArrowLeft, Rss, Globe, Headphones, PlaySquare, Calendar } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { useGoBack } from '@/hooks/useGoBack';
+import ShapeGrid from '@/components/ui/ShapeGrid';
+import HomeCard from '@/components/vademecum/home/HomeCard';
 
 import stfImg from '@/assets/poderes/stf.webp';
 import camaraImg from '@/assets/poderes/camara.webp';
@@ -107,40 +109,54 @@ const PoderDetalhe = () => {
            </div>
         </div>
 
-        {/* Cards de Atalhos Customizados */}
-        <div className="relative z-10 px-3 sm:px-5 pt-2">
-           <div className="grid grid-cols-4 gap-2 sm:gap-3">
-              {CARDS.map((item, index) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => {
-                      haptic.selection();
-                      toast({ title: 'Em breve', description: `O módulo de ${item.label} está em desenvolvimento.` });
-                    }}
-                    style={{ '--shimmer-delay': `${index * 150}ms` } as React.CSSProperties}
-                    className="group relative flex flex-col items-center justify-center gap-2 py-3 px-1 min-h-[48px] rounded-2xl bg-black/75 backdrop-blur-sm border border-white/15 shadow-lg shadow-black/30 active:scale-[0.96] transition-all duration-75 touch-manipulation hover:bg-black/90"
-                  >
-                    <Icon
-                      className="w-5 h-5 shrink-0 transition-all group-hover:scale-110"
-                      style={{ color: item.color, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
-                      strokeWidth={2}
-                    />
-                    <span className="w-full text-center px-0.5 text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] truncate">
-                      {item.label}
-                    </span>
-                  </button>
-                );
-              })}
-           </div>
-        </div>
+        {/* Removido os 4 cards originais quadrados do header */}
       </div>
 
-      {/* Área de Conteúdo abaixo do Hero (Vazio por enquanto conforme solicitado, mas pronto para scroll) */}
-      <div className="flex-1 px-4 py-8">
-        <div className="flex flex-col items-center justify-center h-40 text-center opacity-60">
-          <p className="text-sm font-medium">Selecione uma opção acima para carregar o conteúdo.</p>
+      {/* Área de Conteúdo abaixo do Hero (Grid Animado + Cards) */}
+      <div className="flex-1 relative flex flex-col bg-[#050505] min-h-[50vh]">
+        {/* Fundo Animado com Quadradinhos */}
+        <ShapeGrid 
+           active={true} 
+           className="absolute inset-0 z-0 opacity-40 pointer-events-none" 
+           hoverFillColor={poder.solidColor} 
+        />
+        
+        <div className="relative z-10 px-4 py-8">
+           <div className="mb-4">
+              <h3 className="font-display text-white text-[16px] font-bold mb-1 flex items-center gap-2 uppercase tracking-widest">
+                <span className="w-1 h-4 rounded-full" style={{ backgroundColor: poder.solidColor }} />
+                Conteúdos
+              </h3>
+              <p className="font-body text-white/50 text-[12px] leading-snug ml-3">
+                Explore os recursos disponíveis
+              </p>
+           </div>
+           
+           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <HomeCard
+                icon={Calendar}
+                label="Pauta do Dia"
+                sublabel="Sessões e Eventos"
+                color={poder.solidColor}
+                onClick={() => navigate(`/tres-poderes/${id}/agenda`)}
+                className="bg-[#101010] border-white/10 hover:bg-[#1A1A1A]"
+              />
+              {CARDS.map((item, index) => (
+                <HomeCard
+                  key={item.id}
+                  icon={item.icon}
+                  label={item.label}
+                  sublabel="Em breve"
+                  color="#FFFFFF"
+                  delay={(index + 1) * 0.05}
+                  onClick={() => {
+                    haptic.selection();
+                    toast({ title: 'Em breve', description: `O módulo de ${item.label} está em desenvolvimento.` });
+                  }}
+                  className="bg-[#101010] border-white/10 hover:bg-[#1A1A1A]"
+                />
+              ))}
+           </div>
         </div>
       </div>
     </div>
