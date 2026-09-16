@@ -57,7 +57,7 @@ const PortaisPoder = () => {
         <ShapeGrid active={true} hoverFillColor={poderId === 'stf' ? '#10B981' : poderId === 'senado' ? '#3B82F6' : '#F59E0B'} />
       </div>
 
-      {/* Header Fixo */}
+      {/* Header Fixo - Ajustado top margin */}
       <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-xl border-b border-white/5 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
         <div className="flex items-center justify-between px-4 pb-3">
           <button
@@ -80,8 +80,16 @@ const PortaisPoder = () => {
         </div>
       </header>
 
-      {/* Listagem em Categorias */}
-      <main className="flex-1 relative z-10 p-4 md:p-6 lg:max-w-4xl lg:mx-auto lg:w-full space-y-8 pb-32">
+      {/* Listagem em Categorias - Ajustado bottom padding */}
+      <main className="flex-1 relative z-10 p-4 md:p-6 lg:max-w-4xl lg:mx-auto lg:w-full space-y-6 pb-[calc(5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+        
+        {/* Descrição dos Portais */}
+        <div className="mb-2 bg-white/5 border border-white/10 rounded-2xl p-4">
+          <p className="text-[13.5px] text-white/80 leading-relaxed text-center sm:text-left">
+            Explore os portais institucionais e ferramentas interativas. Aqui você tem acesso direto aos serviços, transparência e meios de participação cidadã do <strong className="text-white">{poderData.title}</strong>.
+          </p>
+        </div>
+
         {Object.entries(categories).map(([category, portais], groupIdx) => (
           <div key={category} className="space-y-3">
             <h2 className="text-[13px] font-bold text-white/50 tracking-widest uppercase pl-1 flex items-center gap-2">
@@ -179,7 +187,7 @@ const PortaisPoder = () => {
                   <h2 className="font-display font-bold text-2xl text-white mb-2 leading-tight">
                     {selectedPortal.title}
                   </h2>
-                  <p className="text-[14px] text-emerald-400 font-medium">
+                  <p className="text-[14px] font-medium" style={{ color: selectedPortal.color }}>
                     {poderData.subtitle}
                   </p>
                 </div>
@@ -194,9 +202,9 @@ const PortaisPoder = () => {
 
                   {/* Exemplo Prático */}
                   <div className="bg-white/5 rounded-2xl p-4 border border-white/10 relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-1 h-full bg-yellow-500" />
-                    <h4 className="flex items-center gap-2 text-white font-bold text-[14px] mb-2">
-                      <Lightbulb className="w-4 h-4 text-yellow-500" />
+                    <div className="absolute top-0 left-0 w-1 h-full" style={{ backgroundColor: selectedPortal.color }} />
+                    <h4 className="flex items-center gap-2 text-white font-bold text-[14px] mb-2 uppercase tracking-wide">
+                      <Lightbulb className="w-4 h-4" style={{ color: selectedPortal.color }} />
                       Na Prática (Dia a Dia)
                     </h4>
                     <p className="text-[14px] text-white/70 leading-relaxed">
