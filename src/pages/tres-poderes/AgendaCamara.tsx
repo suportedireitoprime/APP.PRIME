@@ -89,20 +89,17 @@ const AgendaCamara = () => {
     setDiasTimeline(arrayDias);
   }, []);
 
-  // Centralizar o scroll no dia atual ao montar
+  // Centralizar o scroll na data selecionada ao montar ou mudar
   useEffect(() => {
-    if (diasTimeline.length > 0 && timelineRef.current) {
-      const todayIndex = diasTimeline.findIndex(
-        d => d.toISOString().split('T')[0] === new Date().toISOString().split('T')[0]
-      );
-      if (todayIndex !== -1) {
-        const viewport = timelineRef.current.querySelector('[data-radix-scroll-area-viewport]');
-        if (viewport) {
-          viewport.scrollLeft = Math.max(0, (todayIndex * 64) - (window.innerWidth / 2) + 32);
+    if (diasTimeline.length > 0) {
+      setTimeout(() => {
+        const selectedEl = document.getElementById(`date-btn-${dataSelecionada}`);
+        if (selectedEl) {
+          selectedEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
         }
-      }
+      }, 100); // pequeno delay para garantir a renderização
     }
-  }, [diasTimeline]);
+  }, [diasTimeline, dataSelecionada]);
 
   const fetchAgenda = async (data: string) => {
     try {
@@ -184,25 +181,17 @@ const AgendaCamara = () => {
                 return (
                   <button
                     key={idx}
+                    id={`date-btn-${d.toISOString().split('T')[0]}`}
                     onClick={() => {
-                      haptic.selection();
-                      setDataSelecionada(d.toISOString().split('T')[0]);
-                      
-                      // Centralizar no clique
-                      if (timelineRef.current) {
-                        const viewport = timelineRef.current.querySelector('[data-radix-scroll-area-viewport]');
-                        if (viewport) {
-                          viewport.scrollTo({
-                            left: Math.max(0, (idx * 64) - (window.innerWidth / 2) + 32),
-                            behavior: 'smooth'
-                          });
-                        }
+                      if (!isSelected) {
+                        haptic.selection();
+                        setDataSelecionada(d.toISOString().split('T')[0]);
                       }
                     }}
-                    className={`flex flex-col items-center justify-center min-w-[60px] p-2 rounded-xl border transition-all duration-300 ${
+                    className={`flex flex-col items-center justify-center p-2 rounded-xl border transition-all duration-300 ${
                       isSelected 
-                        ? 'bg-rose-500/20 border-rose-500 text-rose-400 scale-110 shadow-lg shadow-rose-500/20 z-10 mx-1' 
-                        : 'bg-white/5 border-transparent text-white/50 hover:bg-white/10'
+                        ? 'bg-rose-500/20 border-rose-500 text-rose-400 scale-[1.15] shadow-lg shadow-rose-500/20 z-10 mx-2 min-w-[65px] h-[70px]' 
+                        : 'bg-white/5 border-transparent text-white/50 hover:bg-white/10 min-w-[60px] h-[60px]'
                     }`}
                   >
                     <span className="text-[10px] uppercase font-bold tracking-wider mb-1">
