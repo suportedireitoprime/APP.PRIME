@@ -19,18 +19,44 @@ interface EventoCamara {
   situacao: string;
 }
 
-const TIPO_EVENTO_LEGENDA: Record<string, string> = {
-  'REUNIÃO TÉCNICA': 'Encontro focado em debater aspectos técnicos e específicos de um tema ou projeto em andamento.',
-  'SESSÃO DELIBERATIVA': 'Onde os deputados votam e decidem sobre projetos de lei, medidas provisórias e outras proposições.',
-  'SESSÃO SOLENE': 'Reunião especial destinada a homenagens, comemorações e eventos cívicos, sem votação de projetos.',
-  'SESSÃO NÃO DELIBERATIVA': 'Sessão destinada apenas a discursos, debates e comunicações parlamentares, sem votação.',
-  'REUNIÃO DELIBERATIVA': 'Reunião de comissão focada em votar relatórios e projetos de lei em tramitação.',
-  'AUDIÊNCIA PÚBLICA': 'Evento aberto para ouvir especialistas, representantes da sociedade e cidadãos sobre um tema relevante.',
-  'SEMINÁRIO': 'Evento amplo para discussão e palestras sobre assuntos de interesse público.',
-  'COMISSÃO PARLAMENTAR DE INQUÉRITO': 'Reunião destinada a investigar denúncias de irregularidades e fatos determinados.'
+type LegendaEvento = { descricao: string; exemplo: string };
+
+const TIPO_EVENTO_LEGENDA: Record<string, LegendaEvento> = {
+  'REUNIÃO TÉCNICA': {
+    descricao: 'Encontro focado em debater aspectos técnicos e específicos de um tema ou projeto em andamento.',
+    exemplo: 'Exemplo: Especialistas e deputados discutindo os impactos técnicos de uma nova rodovia antes da votação.'
+  },
+  'SESSÃO DELIBERATIVA': {
+    descricao: 'Momento em que os deputados votam e decidem sobre projetos de lei e outras proposições.',
+    exemplo: 'Exemplo: Votação final da Reforma Tributária no Plenário.'
+  },
+  'SESSÃO SOLENE': {
+    descricao: 'Reunião especial para homenagens, comemorações e eventos cívicos, sem votações.',
+    exemplo: 'Exemplo: Sessão no plenário em homenagem ao Dia do Ortopedista ou ao centenário de uma cidade.'
+  },
+  'SESSÃO NÃO DELIBERATIVA': {
+    descricao: 'Sessão destinada apenas a discursos, debates e comunicações parlamentares, sem votação.',
+    exemplo: 'Exemplo: Deputados usando o microfone para relatar problemas recentes em seus estados.'
+  },
+  'REUNIÃO DELIBERATIVA': {
+    descricao: 'Reunião de uma comissão específica focada em votar relatórios e projetos.',
+    exemplo: 'Exemplo: A Comissão de Educação votando o relatório sobre o piso salarial dos professores.'
+  },
+  'AUDIÊNCIA PÚBLICA': {
+    descricao: 'Evento aberto para ouvir especialistas e a sociedade sobre um tema relevante.',
+    exemplo: 'Exemplo: Debate com médicos, pacientes e indústria sobre a regulamentação de um novo medicamento.'
+  },
+  'SEMINÁRIO': {
+    descricao: 'Evento amplo para discussão e palestras sobre assuntos de interesse público.',
+    exemplo: 'Exemplo: Ciclo de palestras sobre os desafios da Inteligência Artificial no Brasil.'
+  },
+  'COMISSÃO PARLAMENTAR DE INQUÉRITO': {
+    descricao: 'Reunião destinada a investigar denúncias de irregularidades e fatos determinados.',
+    exemplo: 'Exemplo: Depoimento oficial de uma testemunha convocada pela CPI.'
+  }
 };
 
-const getLegenda = (titulo: string) => {
+const getLegenda = (titulo: string): LegendaEvento | null => {
   if (!titulo) return null;
   const t = titulo.toUpperCase();
   for (const [key, value] of Object.entries(TIPO_EVENTO_LEGENDA)) {
@@ -41,10 +67,9 @@ const getLegenda = (titulo: string) => {
 
 const formatarDescricao = (texto: string) => {
   if (!texto) return null;
-  // Expressão regular avançada: encontra letras minúsculas/números encostados 
-  // em letras maiúsculas que deveriam estar separados (API envia tudo colado)
-  // Ex: "cultural: Coral", "18h20 Abertura"
-  const formatted = texto.replace(/([a-zçãõáéíóú0-9:;,)])\s+([A-ZÀ-Ú])/g, '$1\n\n$2');
+  // Apenas quebra a linha antes de horários (ex: 14h30) se houver espaço antes.
+  // Isso evita quebrar palavras ao meio que tenham letras maiúsculas.
+  const formatted = texto.replace(/(\s+)(\d{1,2}h(?:\d{2})?\b)/g, '\n\n$2');
   
   const linhas = formatted.split(/\n+/);
   return (
@@ -292,20 +317,32 @@ const AgendaCamara = () => {
                   )}
                 </div>
 
+                {/* Explicação Curta sempre visível no card */}
+                {getLegenda(evento.titulo) && (
+                  <div className="mt-2 bg-sky-500/5 border border-sky-500/10 rounded-lg p-2.5">
+                    <span className="text-[10px] font-bold text-sky-400/90 uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                      <Info className="w-3 h-3" />
+                      O que é isso?
+                    </span>
+                    <p className="text-[11px] sm:text-[12px] text-sky-100/70 leading-relaxed font-medium">
+                      {getLegenda(evento.titulo)?.descricao}
+                    </p>
+                  </div>
+                )}
+
                 {/* Área Expansível */}
                 <div className={`grid transition-all duration-300 ease-in-out mt-2 ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                   <div className="overflow-hidden flex flex-col gap-3">
                     
-                    {/* Legenda Explicativa do Tipo de Evento */}
+                    {/* Exemplo Prático (Visível ao expandir) */}
                     {isExpanded && getLegenda(evento.titulo) && (
-                      <div className="pt-2 border-t border-white/5 mt-1">
-                        <div className="bg-sky-500/10 border border-sky-500/20 rounded-lg p-3">
-                          <span className="text-[10px] font-bold text-sky-400 uppercase tracking-widest mb-1 flex items-center gap-1.5">
-                            <Info className="w-3.5 h-3.5" />
-                            O que é isso?
+                      <div className="pt-1">
+                        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3">
+                          <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1 block">
+                            Exemplo Prático
                           </span>
-                          <p className="text-[12px] text-sky-100/80 leading-relaxed font-medium">
-                            {getLegenda(evento.titulo)}
+                          <p className="text-[12px] text-emerald-100/80 leading-relaxed font-medium">
+                            {getLegenda(evento.titulo)?.exemplo}
                           </p>
                         </div>
                       </div>
