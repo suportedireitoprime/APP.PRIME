@@ -1,8 +1,8 @@
 name: Sync STF Pautas
 
 on:
-  schedule:
-    - cron: '0 8 * * 1-5' # Roda às 8h da manhã de segunda a sexta
+  repository_dispatch:
+    types: [sync_stf_pautas]
   workflow_dispatch: # Permite execução manual
 
 jobs:
@@ -24,6 +24,6 @@ jobs:
         
     - name: Run STF Scraper
       env:
-        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-        SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        SUPABASE_URL: ${{ github.event.client_payload.supabase_url || secrets.SUPABASE_URL }}
+        SUPABASE_SERVICE_ROLE_KEY: ${{ github.event.client_payload.supabase_key || secrets.SUPABASE_SERVICE_ROLE_KEY }}
       run: python stf_scraper.py

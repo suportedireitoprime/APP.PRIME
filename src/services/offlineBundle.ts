@@ -81,6 +81,7 @@ export const bundle = {
     return fetchBundle<T>(`questoes_${safeName}`);
   },
   leiSecaTrilhas: <T = any>() => fetchBundle<T>('lei-seca-trilhas'),
+  stfMinistros: <T = any>() => fetchBundle<T>('stf-ministros'),
 };
 
 /**

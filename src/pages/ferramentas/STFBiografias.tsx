@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { pdf, Document, Page, Text as PdfText, StyleSheet } from '@react-pdf/renderer';
+import { bundle, withBundleFallback } from '@/services/offlineBundle';
 
 const pdfStyles = StyleSheet.create({
   page: { padding: 40, fontFamily: 'Helvetica' },
@@ -28,6 +29,7 @@ type Ministro = {
   nome: string;
   nome_completo: string;
   foto_url: string;
+  foto_url_offline?: string;
   status: 'vigente' | 'aposentado' | 'falecido';
   genero: 'M' | 'F';
   data_nascimento?: string;
@@ -79,13 +81,19 @@ export default function STFBiografias() {
 
   useEffect(() => {
     const fetchBiografias = async () => {
-      const { data, error } = await supabase
-        .from('stf_ministros')
-        .select('id, nome, nome_completo, foto_url, status, genero, data_nascimento, data_indicacao, data_fim')
-        .order('status', { ascending: false })
-        .order('nome', { ascending: true });
+      const data = await withBundleFallback<Ministro>(
+        (async () => {
+          const res = await supabase
+            .from('stf_ministros')
+            .select('id, nome, nome_completo, foto_url, status, genero, data_nascimento, data_indicacao, data_fim')
+            .order('status', { ascending: false })
+            .order('nome', { ascending: true });
+          return res.data as Ministro[] | null;
+        })(),
+        () => bundle.stfMinistros<Ministro>()
+      );
 
-      if (data) {
+      if (data && data.length > 0) {
         const sorted = data.sort((a, b) => {
           if (a.status === 'vigente' && b.status !== 'vigente') return -1;
           if (a.status !== 'vigente' && b.status === 'vigente') return 1;
@@ -301,10 +309,10 @@ export default function STFBiografias() {
               >
                   {/* Foto 3x4 */}
                   <div className="relative w-24 sm:w-28 flex-shrink-0 overflow-hidden bg-zinc-900/80 border-r border-white/5">
-                    {ministro.foto_url ? (
+                    {(ministro.foto_url_offline || ministro.foto_url) ? (
                       <>
                         <img 
-                          src={ministro.foto_url}
+                          src={ministro.foto_url_offline || ministro.foto_url}
                           alt={ministro.nome}
                           loading="lazy"
                           decoding="async"
@@ -396,9 +404,9 @@ export default function STFBiografias() {
                   
                   {/* Foto 3x4 Modal - Always left */}
                   <div className="relative w-32 sm:w-40 flex-shrink-0 bg-zinc-900 border-r border-white/5">
-                    {selectedMinistro.foto_url ? (
+                    {(selectedMinistro.foto_url_offline || selectedMinistro.foto_url) ? (
                       <img 
-                        src={selectedMinistro.foto_url}
+                        src={selectedMinistro.foto_url_offline || selectedMinistro.foto_url}
                         alt={selectedMinistro.nome}
                         className="w-full h-full object-cover object-top"
                       />
