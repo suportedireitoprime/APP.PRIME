@@ -52,8 +52,13 @@ export async function fetchDeputados(busca?: string, partido?: string, uf?: stri
     }));
   }
   
-  setCache(cacheKey, data);
-  return data;
+  const mappedData = data.map((d: any) => ({
+    ...d,
+    id: d.dados_json?.id || d.id
+  }));
+  
+  setCache(cacheKey, mappedData);
+  return mappedData;
 }
 
 export async function fetchDeputadoDetalhe(id: number) {

@@ -45,8 +45,8 @@ const DeputadosPanel = ({ searchQuery }: DeputadosPanelProps) => {
     const totalDespesas = despesas.reduce((sum: number, d: any) => sum + (d.valorDocumento || 0), 0);
     return (
       <div>
-        <button onClick={() => { setSelected(null); setDetalhe(null); }} className="flex items-center gap-1 text-sm text-primary mb-4">
-          <ArrowLeft className="w-4 h-4" /> Voltar
+        <button onClick={() => { setSelected(null); setDetalhe(null); }} className="flex w-fit items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-full text-xs font-semibold uppercase tracking-wider transition-colors mb-6 text-white border border-white/10">
+          <ArrowLeft className="w-4 h-4" /> Voltar para a lista
         </button>
         <div className="flex items-center gap-4 mb-4">
           <Avatar className="w-16 h-16">
