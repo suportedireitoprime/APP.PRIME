@@ -25,6 +25,28 @@ const maskCard = (v: string) => v.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '
 const maskExpiry = (v: string) => v.replace(/\D/g, '').replace(/(\d{2})(\d)/, '$1/$2').slice(0, 5);
 const maskCVC = (v: string) => v.replace(/\D/g, '').slice(0, 4);
 
+const isValidCPF = (cpf: string) => {
+  const strCPF = cpf.replace(/\D/g, '');
+  if (strCPF.length !== 11) return false;
+  if (/^(\d)\1{10}$/.test(strCPF)) return false;
+  
+  let sum = 0;
+  let remainder;
+  
+  for (let i = 1; i <= 9; i++) sum = sum + parseInt(strCPF.substring(i - 1, i)) * (11 - i);
+  remainder = (sum * 10) % 11;
+  if (remainder === 10 || remainder === 11) remainder = 0;
+  if (remainder !== parseInt(strCPF.substring(9, 10))) return false;
+  
+  sum = 0;
+  for (let i = 1; i <= 10; i++) sum = sum + parseInt(strCPF.substring(i - 1, i)) * (12 - i);
+  remainder = (sum * 10) % 11;
+  if (remainder === 10 || remainder === 11) remainder = 0;
+  if (remainder !== parseInt(strCPF.substring(10, 11))) return false;
+  
+  return true;
+};
+
 const CreditCardPreview = ({ name, number, expiry, cvc, isFlipped }: { name: string, number: string, expiry: string, cvc: string, isFlipped: boolean }) => {
   return (
     <div className="relative w-full max-w-[320px] mx-auto aspect-[1.586/1] mb-8 mt-2" style={{ perspective: "1000px" }}>
@@ -101,6 +123,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     cpf: '',
     phone: '',
     cep: '',
+    address: '',
+    addressNumber: '',
+    neighborhood: '',
+    city: '',
+    uf: '',
     cardNumber: '',
     cardName: '',
     cardExpiry: '',
@@ -134,6 +161,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
           const data = await res.json();
           if (!data.erro) {
             setAddressInfo(`${data.logradouro}, ${data.bairro} - ${data.localidade}/${data.uf}`);
+            setFormData(prev => ({
+              ...prev,
+              address: data.logradouro || '',
+              neighborhood: data.bairro || '',
+              city: data.localidade || '',
+              uf: data.uf || ''
+            }));
           } else {
             setAddressInfo('CEP não encontrado');
           }
@@ -207,7 +241,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   };
 
   const handleNextStep = () => {
-    if (!formData.cpf || formData.cpf.length < 14) {
+    if (!formData.cpf || !isValidCPF(formData.cpf)) {
       toast.error('Preencha um CPF válido.');
       return;
     }
@@ -219,6 +253,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     if (!isPix) {
       if (!formData.cep || formData.cep.length < 9) {
         toast.error('Preencha um CEP válido.');
+        return;
+      }
+      if (!formData.addressNumber) {
+        toast.error('Preencha o número do endereço.');
         return;
       }
       setStep(2);
@@ -260,19 +298,23 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
 
       if (!isPix) {
         const [expMonth, expYear] = formData.cardExpiry.split('/');
+        
+        // Remove accents for Asaas
+        const normalizedHolderName = formData.cardName.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+
         payload.creditCard = {
-          holderName: formData.cardName.toUpperCase(),
+          holderName: normalizedHolderName,
           number: formData.cardNumber.replace(/\D/g, ''),
           expiryMonth: expMonth,
           expiryYear: `20${expYear}`,
           ccv: formData.cardCvc
         };
         payload.creditCardHolderInfo = {
-          name: formData.cardName.toUpperCase() || userName,
+          name: normalizedHolderName || userName,
           email: userEmail,
           cpfCnpj: formData.cpf.replace(/\D/g, ''),
           postalCode: formData.cep.replace(/\D/g, ''),
-          addressNumber: 'SN', // Oculto mas preenchido
+          addressNumber: formData.addressNumber || 'SN',
           phone: formData.phone.replace(/\D/g, '')
         };
       }
@@ -541,30 +583,86 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                     </div>
 
                     {!isPix && (
-                      <div className="space-y-1">
-                        <Label className="text-xs font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wider">
-                          <MapPin className="w-3.5 h-3.5"/> CEP
-                        </Label>
-                        <Input 
-                          value={formData.cep} 
-                          onChange={handleChange('cep', maskCEP)}
-                          placeholder="00000-000" 
-                          className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
-                          inputMode="numeric"
-                        />
+                      <>
+                        <div className="grid grid-cols-3 gap-3">
+                          <div className="col-span-2 space-y-1">
+                            <Label className="text-xs font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wider">
+                              <MapPin className="w-3.5 h-3.5"/> CEP
+                            </Label>
+                            <Input 
+                              value={formData.cep} 
+                              onChange={handleChange('cep', maskCEP)}
+                              placeholder="00000-000" 
+                              className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
+                              inputMode="numeric"
+                            />
+                          </div>
+                          <div className="col-span-1 space-y-1">
+                            <Label className="text-xs font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wider">
+                              Nº
+                            </Label>
+                            <Input 
+                              value={formData.addressNumber} 
+                              onChange={handleChange('addressNumber')}
+                              placeholder="123" 
+                              className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
+                            />
+                          </div>
+                        </div>
+
                         <AnimatePresence>
                           {addressInfo && (
-                            <motion.p 
+                            <motion.div 
                               initial={{ opacity: 0, height: 0 }}
                               animate={{ opacity: 1, height: 'auto' }}
                               exit={{ opacity: 0, height: 0 }}
-                              className="text-xs font-medium text-emerald-400 mt-1 pl-2"
+                              className="space-y-3 pt-2"
                             >
-                              {addressInfo}
-                            </motion.p>
+                              <div className="space-y-1">
+                                <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Endereço</Label>
+                                <Input 
+                                  value={formData.address} 
+                                  onChange={handleChange('address')}
+                                  placeholder="Rua, Avenida..." 
+                                  className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
+                                />
+                              </div>
+                              <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-1">
+                                  <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Bairro</Label>
+                                  <Input 
+                                    value={formData.neighborhood} 
+                                    onChange={handleChange('neighborhood')}
+                                    placeholder="Bairro" 
+                                    className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
+                                  />
+                                </div>
+                                <div className="grid grid-cols-3 gap-3">
+                                  <div className="col-span-2 space-y-1">
+                                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Cidade</Label>
+                                    <Input 
+                                      value={formData.city} 
+                                      onChange={handleChange('city')}
+                                      placeholder="Cidade" 
+                                      className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
+                                    />
+                                  </div>
+                                  <div className="col-span-1 space-y-1">
+                                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">UF</Label>
+                                    <Input 
+                                      value={formData.uf} 
+                                      onChange={handleChange('uf')}
+                                      placeholder="SP" 
+                                      maxLength={2}
+                                      className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all uppercase"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </motion.div>
                           )}
                         </AnimatePresence>
-                      </div>
+                      </>
                     )}
 
                     <div className="pt-4">
@@ -661,19 +759,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                             className="w-full h-11 rounded-xl bg-black/40 border border-white/10 focus:border-primary focus:ring-1 focus:ring-primary font-medium px-3 text-sm appearance-none outline-none backdrop-blur-md transition-all text-white"
                           >
                           {[1,2,3,4,5,6,7,8,9,10,11,12].map(num => {
-                            // Cálculo de repasse padrão do Asaas para cartão de crédito
-                            let taxRate = 0;
-                            if (num === 1) taxRate = 0; // à vista não tem juros para o cliente aqui se for 199.90 puro. O código original era 0.0339 mas vamos exibir o preço cravado:
-                            else if (num <= 6) taxRate = 0.0389;
-                            else taxRate = 0.0439;
-                            
-                            // 199.90 à vista sem taxa no select para bater com a promessa (1x de 199.90).
-                            const totalWithTax = num === 1 ? 199.90 : (199.90 + 0.29) / (1 - taxRate);
+                            // Cálculo sem juros no display (absorvidos pela operação)
+                            const totalWithTax = 199.90;
                             const installmentValue = totalWithTax / num;
 
                             return (
                               <option key={num} value={num} className="bg-background text-foreground">
-                                {num}x de R$ {installmentValue.toFixed(2).replace('.', ',')} {num === 1 ? ' à vista' : ` (Total: R$ ${totalWithTax.toFixed(2).replace('.', ',')})`}
+                                {num}x de R$ {installmentValue.toFixed(2).replace('.', ',')} {num === 1 ? ' à vista' : ''}
                               </option>
                             );
                           })}
