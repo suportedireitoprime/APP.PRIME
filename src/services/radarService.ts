@@ -74,15 +74,20 @@ export async function fetchDeputados(busca?: string, partido?: string, uf?: stri
 
 export async function fetchDeputadoDetalhe(id: number) {
   try {
-    const cacheKey = `depDetalhe:${id}`;
+    const cacheKey = `depDetalheSupabase:${id}`;
     const hit = cached<any>(cacheKey);
     if (hit) return hit;
-    const url = `${CAMARA_API}/deputados/${id}`;
-    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-    if (!res.ok) return null;
-    const json = await res.json();
-    const result = json.dados;
-    if (result) setCache(cacheKey, result);
+
+    const { data, error } = await (supabase as any)
+      .from('radar_deputados')
+      .select('dados_json')
+      .eq('camara_id', id)
+      .single();
+
+    if (error || !data?.dados_json?.detalhe) return null;
+
+    const result = data.dados_json.detalhe;
+    setCache(cacheKey, result);
     return result;
   } catch (error) {
     console.error("Erro no fetchDeputadoDetalhe:", error);
@@ -92,11 +97,21 @@ export async function fetchDeputadoDetalhe(id: number) {
 
 export async function fetchDeputadoDespesas(id: number) {
   try {
-    const url = `${CAMARA_API}/deputados/${id}/despesas?ordem=DESC&ordenarPor=ano&itens=30`;
-    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-    if (!res.ok) return [];
-    const json = await res.json();
-    return json.dados || [];
+    const cacheKey = `depDespesasSupabase:${id}`;
+    const hit = cached<any[]>(cacheKey);
+    if (hit) return hit;
+
+    const { data, error } = await (supabase as any)
+      .from('radar_deputados')
+      .select('dados_json')
+      .eq('camara_id', id)
+      .single();
+
+    if (error || !data?.dados_json?.despesas) return [];
+
+    const result = data.dados_json.despesas;
+    setCache(cacheKey, result);
+    return result;
   } catch (error) {
     console.error("Erro no fetchDeputadoDespesas:", error);
     return [];
