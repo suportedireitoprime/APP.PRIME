@@ -167,13 +167,17 @@ const PoderDetalhe = () => {
                   key={item.id}
                   icon={item.icon}
                   label={item.label}
-                  sublabel="Em breve"
+                  sublabel={item.id === 'portais' && id === 'stf' ? 'Serviços Oficiais' : 'Em breve'}
                   color="#FFFFFF"
                   iconStrokeWidth={1.5}
                   delay={(index + 1) * 0.05}
                   onClick={() => {
                     haptic.selection();
-                    toast({ title: 'Em breve', description: `O módulo de ${item.label} está em desenvolvimento.` });
+                    if (item.id === 'portais' && id === 'stf') {
+                      navigate(`/tres-poderes/stf/portais`);
+                    } else {
+                      toast({ title: 'Em breve', description: `O módulo de ${item.label} está em desenvolvimento.` });
+                    }
                   }}
                   className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
                 />
