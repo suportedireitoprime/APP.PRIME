@@ -3,9 +3,12 @@ import { ArrowRight, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import horusAsset from '@/assets/horus/horus-star.webp';
 import bgImage from '@/assets/auth-judge-scene.webp';
+import { useAuth } from "@/hooks/useAuth";
 
 export function TrialExpiredModal() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const firstName = user?.user_metadata?.full_name?.split(' ')[0] || user?.user_metadata?.name?.split(' ')[0] || 'Advogado(a)';
 
   return (
     <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-y-auto bg-black/60 backdrop-blur-md p-4">
@@ -82,7 +85,7 @@ export function TrialExpiredModal() {
             </h2>
             
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Sua degustação de <strong className="text-foreground">3 dias</strong> chegou ao fim, mas sua evolução não pode parar agora. 
+              <strong className="text-foreground">{firstName}</strong>, sua degustação de <strong className="text-foreground">3 dias</strong> chegou ao fim, mas sua evolução não pode parar agora. 
               Assine e destrave acesso <strong className="text-foreground">ilimitado</strong> a todas as ferramentas premium.
             </p>
             
