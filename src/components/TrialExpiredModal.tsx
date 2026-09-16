@@ -14,6 +14,7 @@ import trabCover from '@/assets/biblioteca/areas/direito-do-trabalho.webp';
 import tribCover from '@/assets/biblioteca/areas/direito-tributario.webp';
 import procPenalCover from '@/assets/biblioteca/areas/direito-processual-penal.webp';
 import procCivilCover from '@/assets/biblioteca/areas/direito-processual-civil.webp';
+import somTeclado from '@/assets/teclado.mp3';
 
 interface MateriaCover {
   id: string;
@@ -62,6 +63,15 @@ export function TrialExpiredModal() {
       setAtivo((prev) => (prev + 1) % MATERIAS.length);
     }, 2500);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const audio = new Audio(somTeclado);
+      audio.volume = 0.4;
+      audio.play().catch(() => {});
+    }, 350);
+    return () => clearTimeout(timeout);
   }, []);
 
   return (
@@ -195,7 +205,7 @@ export function TrialExpiredModal() {
           {/* Botões de Ação */}
           <div className="w-full space-y-2.5 pt-2">
             <button
-              onClick={() => setCheckoutPlan('anual')}
+              onClick={() => navigate('/assinatura')}
               className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display font-black text-base tracking-wider bg-primary text-primary-foreground active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/30 group"
             >
               <span>DESTRAVAR MEU ACESSO</span>
