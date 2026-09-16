@@ -135,14 +135,6 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         }
 
         // 3. Avaliar as respostas em ordem de prioridade
-        if (cancelRes.data) {
-          persist({
-            isPremium: false, loading: false, plano: null, expiresAt: null, startedAt: null,
-            source: null, status: 'CANCELED', isAdminOverride: false, isTrial: false,
-          });
-          return true;
-        }
-
         if (playRes.data) {
           persist({
             isPremium: true, loading: false,
@@ -162,11 +154,19 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         }
 
         if (legadoRes.data) {
-          const l = legadoRes.data as { plano: string, status: string, expires_at: string, started_at: string };
+          const l = legadoRes.data as any;
           persist({
             isPremium: true, loading: false,
             plano: l.plano, expiresAt: l.expires_at, startedAt: l.started_at, source: 'asaas',
             status: l.status, isAdminOverride: false, isTrial: false,
+          });
+          return true;
+        }
+
+        if (cancelRes.data) {
+          persist({
+            isPremium: false, loading: false, plano: null, expiresAt: null, startedAt: null,
+            source: null, status: 'CANCELED', isAdminOverride: false, isTrial: false,
           });
           return true;
         }

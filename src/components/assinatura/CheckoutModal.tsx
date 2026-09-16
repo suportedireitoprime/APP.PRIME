@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -136,6 +136,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
 
   const [pixData, setPixData] = useState<{ qrCode: string; payload: string } | null>(null);
   const [pixTimeLeft, setPixTimeLeft] = useState<number>(600);
+  const [pixExpiryTime, setPixExpiryTime] = useState<number | null>(null);
+  const isProcessingRef = useRef(false);
 
   const isPix = plan === 'anual_pix';
 
@@ -144,9 +146,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
       setStep(1);
       setPixData(null);
       setPixTimeLeft(600);
+      setPixExpiryTime(null);
       setInstallmentCount(1);
       setAddressInfo('');
       setVerifyingPayment(false);
+      isProcessingRef.current = false;
       setFormData(prev => ({ ...prev, name: userName || '', cardName: userName || '' }));
     }
   }, [open, userName]);
@@ -205,20 +209,18 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     return () => clearInterval(interval);
   }, [step, pixData, onSuccess, onOpenChange]);
 
-  // PIX Expiration Timer — stable interval, no dep on pixTimeLeft
+  // PIX Expiration Timer — stable interval, uses absolute time to survive background states
   useEffect(() => {
-    if (step !== 3 || !pixData) return;
+    if (step !== 3 || !pixData || !pixExpiryTime) return;
     const timer = setInterval(() => {
-      setPixTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          return 0;
-        }
-        return prev - 1;
-      });
+      const remaining = Math.max(0, Math.floor((pixExpiryTime - Date.now()) / 1000));
+      setPixTimeLeft(remaining);
+      if (remaining <= 0) {
+        clearInterval(timer);
+      }
     }, 1000);
     return () => clearInterval(timer);
-  }, [step, pixData]);
+  }, [step, pixData, pixExpiryTime]);
 
   useEffect(() => {
     if (step === 3 && pixTimeLeft === 0) {
@@ -285,6 +287,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
       }
     }
 
+    if (isProcessingRef.current) return;
+    isProcessingRef.current = true;
     setLoading(true);
     try {
       const payload: any = {
@@ -338,6 +342,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
 
       if (isPix && data?.pixQrCode) {
         setPixData({ qrCode: data.pixQrCode, payload: data.pixCopyPaste });
+        setPixExpiryTime(Date.now() + 600 * 1000);
         setStep(3);
       } else if (!isPix) {
         if (data?.status === 'ACTIVE' || data?.status === 'CONFIRMED' || data?.invoiceUrl) {
@@ -364,6 +369,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     } catch (err: any) {
       toast.error(err.message || 'Erro inesperado ao processar.');
     } finally {
+      isProcessingRef.current = false;
       setLoading(false);
     }
   };
@@ -806,6 +812,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                       </h4>
                       <p className="text-sm font-medium text-muted-foreground px-4">
                         Escaneie o QR code ou copie a chave abaixo para finalizar sua assinatura em poucos segundos.
+                      </p>
+                      <p className="text-[12px] font-medium text-emerald-400 mt-2 bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-lg mx-6 leading-tight">
+                        Pode fechar esta tela ou o app. O acesso será liberado automaticamente após a compensação.
                       </p>
                       <div className="inline-flex items-center justify-center bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono font-bold text-lg px-4 py-1.5 rounded-full mt-2 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
                         ⏱ Expira em {formatTime(pixTimeLeft)}
