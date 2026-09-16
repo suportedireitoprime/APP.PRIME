@@ -65,6 +65,16 @@ const getLegenda = (titulo: string): LegendaEvento | null => {
   return null;
 };
 
+const getCorSituacao = (situacao: string) => {
+  if (!situacao) return 'text-sky-400 bg-sky-500/10 border-sky-500/20';
+  const s = situacao.toUpperCase();
+  if (s.includes('CONVOCADA')) return 'text-amber-400 bg-amber-500/10 border-amber-500/20';
+  if (s.includes('AGENDADA')) return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
+  if (s.includes('CANCELADA')) return 'text-rose-400 bg-rose-500/10 border-rose-500/20';
+  if (s.includes('ENCERRADA') || s.includes('REALIZADA')) return 'text-purple-400 bg-purple-500/10 border-purple-500/20';
+  return 'text-sky-400 bg-sky-500/10 border-sky-500/20';
+};
+
 const formatarDescricao = (texto: string) => {
   if (!texto) return null;
   // Apenas quebra a linha antes de horários (ex: 14h30) se houver espaço antes.
@@ -293,7 +303,7 @@ const AgendaCamara = () => {
                     {evento.titulo}
                   </h3>
                   {evento.situacao && (
-                    <span className="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded bg-sky-500/10 text-sky-400 whitespace-nowrap flex-shrink-0 border border-sky-500/20">
+                    <span className={`text-[9px] sm:text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded whitespace-nowrap flex-shrink-0 border ${getCorSituacao(evento.situacao)}`}>
                       {evento.situacao}
                     </span>
                   )}
@@ -301,7 +311,7 @@ const AgendaCamara = () => {
                 
                 {/* Info básica sempre visível */}
                 <div className="flex flex-wrap items-center gap-3 mt-1">
-                  <div className="flex items-center gap-1.5 text-sky-400 bg-sky-500/10 px-2 py-1 rounded-md">
+                  <div className="flex items-center gap-1.5 text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-md">
                     <Clock className="w-3.5 h-3.5" />
                     <span className="text-[12px] font-bold">
                       {evento.horaInicio ? new Date(evento.horaInicio).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '--:--'}
@@ -319,12 +329,10 @@ const AgendaCamara = () => {
 
                 {/* Explicação Curta sempre visível no card */}
                 {getLegenda(evento.titulo) && (
-                  <div className="mt-2 bg-sky-500/5 border border-sky-500/10 rounded-lg p-2.5">
-                    <span className="text-[10px] font-bold text-sky-400/90 uppercase tracking-widest mb-1 flex items-center gap-1.5">
-                      <Info className="w-3 h-3" />
-                      O que é isso?
-                    </span>
-                    <p className="text-[11px] sm:text-[12px] text-sky-100/70 leading-relaxed font-medium">
+                  <div className="mt-2 flex items-start gap-1.5 bg-white/5 border border-white/10 rounded-md p-2">
+                    <Info className="w-3.5 h-3.5 text-sky-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-[11px] sm:text-[12px] text-white/70 leading-tight font-medium">
+                      <span className="font-bold text-sky-400/90 mr-1.5 uppercase tracking-wider">O que é isso?</span>
                       {getLegenda(evento.titulo)?.descricao}
                     </p>
                   </div>
