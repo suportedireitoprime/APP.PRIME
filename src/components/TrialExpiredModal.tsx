@@ -210,8 +210,8 @@ export function TrialExpiredModal() {
           <div className="w-full space-y-2.5 pt-2">
             <button
               onClick={() => {
-                Haptics.impact({ style: ImpactStyle.Medium }).catch(() => {});
-                navigate('/assinatura');
+                try { Haptics.impact({ style: ImpactStyle.Medium }).catch(() => {}); } catch(e){}
+                window.location.href = '/assinatura';
               }}
               className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display font-black text-base tracking-wider bg-primary text-primary-foreground active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/30 group"
             >
@@ -221,7 +221,7 @@ export function TrialExpiredModal() {
 
             <button
               type="button"
-              onClick={() => navigate('/assinatura')}
+              onClick={() => { window.location.href = '/assinatura'; }}
               className="w-full text-xs font-semibold text-muted-foreground hover:text-foreground py-1.5 transition-colors flex items-center justify-center gap-1"
             >
               Conhecer outros planos e formas de pagamento

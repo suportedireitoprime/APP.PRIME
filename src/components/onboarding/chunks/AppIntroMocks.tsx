@@ -1,6 +1,6 @@
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, spring, Img } from 'remotion';
-import { YELLOW, YELLOW_SOFT, INK, CREAM, displayFont, bodyFont } from './AppIntroShared';
+import { YELLOW, YELLOW_SOFT, INK, CREAM, displayFont, bodyFont, BackdropRays, Sparkles, Eyebrow } from './AppIntroShared';
 
 import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
 import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
@@ -844,10 +844,10 @@ const ScenePerguntaNome: React.FC<{ owlSrc: string }> = ({ owlSrc }) => {
 };
 
 /* ------------------------------------------------------------------ */
-/*  Scene  SAUDA��O FINAL                                            */
+/*  Scene   SAUDAO FINAL                                            */
 /* ------------------------------------------------------------------ */
 
-const SceneSaudacao: React.FC<{ owlSrc: string; nome: string }> = ({
+export const SceneSaudacao: React.FC<{ owlSrc: string; nome: string }> = ({
   nome,
 }) => {
   const frame = useCurrentFrame();
