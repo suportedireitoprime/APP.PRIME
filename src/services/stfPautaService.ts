@@ -2,29 +2,35 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface STFPautaItem {
   id: string;
-  titulo: string;
+  modalidade: string;
+  data_sessao: string;
+  orgao_julgador: string;
+  processo: string;
   relator: string;
+  partes: string;
+  tema_repercussao: string;
   resumo: string;
-  data: string;
-  orgao: string;
+  status: string;
 }
 
 export const stfPautaService = {
-  async getPautaDoDia(): Promise<STFPautaItem[]> {
+  async getPautasSTF(): Promise<STFPautaItem[]> {
     try {
-      const { data, error } = await supabase.functions.invoke('stf-pauta', {
-        method: 'POST',
-      });
+      const { data, error } = await supabase
+        .from('stf_pautas')
+        .select('*')
+        .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('Erro ao buscar pauta do STF via Edge Function:', error);
+        console.error('Erro ao buscar pautas do STF do banco:', error);
         throw error;
       }
 
-      return data as STFPautaItem[];
+      return (data || []) as STFPautaItem[];
     } catch (err) {
       console.error('Erro na requisição da pauta STF:', err);
       throw err;
     }
   }
 };
+

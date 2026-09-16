@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar as CalendarIcon, Info, X } from 'lucide-react';
+import { ArrowLeft, Calendar as CalendarIcon, Info, X, Users, Scale, AlertCircle } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -32,6 +32,7 @@ const AgendaSTF = () => {
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [eventoSelecionado, setEventoSelecionado] = useState<STFPautaItem | null>(null);
+  const [activeTab, setActiveTab] = useState<'Presencial' | 'Virtual' | 'Repercussão Geral'>('Presencial');
 
   useBodyScrollLock(!!eventoSelecionado);
 
@@ -39,7 +40,7 @@ const AgendaSTF = () => {
     try {
       setLoading(true);
       setErro(null);
-      const data = await stfPautaService.getPautaDoDia();
+      const data = await stfPautaService.getPautasSTF();
       setEventos(data);
     } catch (err: any) {
       console.error("Erro ao buscar agenda do STF:", err);
@@ -53,6 +54,12 @@ const AgendaSTF = () => {
     fetchAgenda();
   }, []);
 
+  const abas = ['Presencial', 'Virtual', 'Repercussão Geral'] as const;
+
+  const eventosFiltrados = useMemo(() => {
+    return eventos.filter(e => e.modalidade === activeTab);
+  }, [eventos, activeTab]);
+
   return (
     <div className="flex flex-col min-h-screen bg-[#0A0A0A] w-full safe-area-pt relative">
       <ShapeGrid 
@@ -62,7 +69,7 @@ const AgendaSTF = () => {
       />
 
       {/* Header Fixo */}
-      <div className="flex-none bg-[#0A0A0A]/90 backdrop-blur-md border-b border-white/5 z-20">
+      <div className="flex-none bg-[#0A0A0A]/90 backdrop-blur-md border-b border-white/5 z-20 sticky top-0">
         <div className="flex items-center justify-between px-4 h-14 sm:h-16">
           <button 
             onClick={() => {
@@ -85,11 +92,31 @@ const AgendaSTF = () => {
           
           <div className="w-12 h-12" />
         </div>
+
+        {/* Abas de Navegação */}
+        <div className="flex items-center px-4 overflow-x-auto no-scrollbar gap-2 pb-3">
+          {abas.map((aba) => (
+            <button
+              key={aba}
+              onClick={() => {
+                haptic.selection();
+                setActiveTab(aba);
+              }}
+              className={`whitespace-nowrap px-4 py-2 rounded-full text-[13px] font-bold transition-colors ${
+                activeTab === aba 
+                  ? 'bg-rose-500 text-white' 
+                  : 'bg-white/5 text-white/60 hover:bg-white/10'
+              }`}
+            >
+              {aba}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Lista de Eventos */}
       <div className="flex-1 overflow-y-auto pb-24 z-10">
-        <div className="p-4 space-y-4 pt-6">
+        <div className="p-4 space-y-4 pt-4">
           {loading ? (
             Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="bg-white/5 rounded-2xl p-4 border border-white/5">
@@ -108,21 +135,23 @@ const AgendaSTF = () => {
                 Tentar Novamente
               </button>
             </div>
-          ) : eventos.length === 0 ? (
+          ) : eventosFiltrados.length === 0 ? (
             <div className="text-center text-white/50 py-12 px-6 flex flex-col items-center">
               <CalendarIcon className="w-12 h-12 opacity-20 mb-3" />
-              <p>Nenhum processo listado para a pauta atual do STF.</p>
+              <p>Nenhum processo listado para a modalidade {activeTab}.</p>
             </div>
           ) : (
             <div className="space-y-4">
               <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 flex items-center justify-center">
                 <CalendarIcon className="w-4 h-4 text-rose-400 mr-2" />
                 <span className="text-sm font-bold text-rose-100">
-                  Sessão do dia {new Date(eventos[0]?.data || new Date()).toLocaleDateString('pt-BR')}
+                  {eventosFiltrados[0]?.data_sessao 
+                    ? `Sessão: ${eventosFiltrados[0].data_sessao}`
+                    : `Sessões Pautadas`}
                 </span>
               </div>
               
-              {eventos.map((evento) => (
+              {eventosFiltrados.map((evento) => (
                 <div 
                   key={evento.id} 
                   onClick={() => {
@@ -133,7 +162,7 @@ const AgendaSTF = () => {
                 >
                   <div className="flex flex-col gap-2">
                     <h3 className="font-black text-[13px] sm:text-[14px] text-white uppercase tracking-wide leading-tight">
-                      {evento.titulo}
+                      {evento.processo}
                     </h3>
                     <span className="text-[12px] font-bold text-rose-400 uppercase tracking-widest block">
                       {evento.relator}
@@ -147,12 +176,12 @@ const AgendaSTF = () => {
                     )}
                     
                     {/* Explicação Curta sempre visível no card */}
-                    {getLegenda(evento.titulo) && (
+                    {getLegenda(evento.processo) && (
                       <div className="mt-2 flex items-start gap-1.5 bg-white/5 border border-white/10 rounded-md p-2">
                         <Info className="w-3.5 h-3.5 text-sky-400 flex-shrink-0 mt-0.5" />
                         <p className="text-[11px] sm:text-[12px] text-white/70 leading-tight font-medium">
                           <span className="font-bold text-sky-400/90 mr-1.5 uppercase tracking-wider">O que é isso?</span>
-                          {getLegenda(evento.titulo)?.descricao}
+                          {getLegenda(evento.processo)?.descricao}
                         </p>
                       </div>
                     )}
@@ -192,21 +221,53 @@ const AgendaSTF = () => {
               <div className="flex flex-col gap-5 pt-2">
                 <div>
                   <h2 className="text-[18px] sm:text-[20px] font-extrabold tracking-widest text-white leading-tight uppercase">
-                    {eventoSelecionado.titulo}
+                    {eventoSelecionado.processo}
                   </h2>
-                  <span className="text-[13px] font-bold text-rose-400 mt-2 block">
+                  <span className="text-[13px] font-bold text-rose-400 mt-2 block flex items-center gap-1.5">
+                    <Scale className="w-4 h-4" />
                     {eventoSelecionado.relator}
                   </span>
+                  {eventoSelecionado.orgao_julgador && (
+                    <span className="text-[12px] font-bold text-white/50 mt-1 block">
+                      {eventoSelecionado.orgao_julgador}
+                    </span>
+                  )}
                 </div>
 
                 {/* Exemplo Prático (Visível no Bottom Sheet) */}
-                {getLegenda(eventoSelecionado.titulo) && (
+                {getLegenda(eventoSelecionado.processo) && (
                   <div className="bg-sky-500/10 border border-sky-500/20 rounded-xl p-4">
                     <span className="text-[11px] font-bold text-sky-400 uppercase tracking-widest mb-1.5 block">
                       Exemplo Prático
                     </span>
                     <p className="text-[13px] text-sky-100/80 leading-relaxed font-medium">
-                      {getLegenda(eventoSelecionado.titulo)?.exemplo}
+                      {getLegenda(eventoSelecionado.processo)?.exemplo}
+                    </p>
+                  </div>
+                )}
+
+                {/* Partes */}
+                {eventoSelecionado.partes && (
+                  <div className="pt-2">
+                    <span className="text-[11px] font-bold text-white/40 uppercase tracking-widest mb-2 block flex items-center gap-1.5">
+                      <Users className="w-3.5 h-3.5" />
+                      Partes Envolvidas
+                    </span>
+                    <p className="text-[13px] text-white/70 leading-relaxed font-medium bg-white/5 p-3 rounded-lg border border-white/5">
+                      {eventoSelecionado.partes}
+                    </p>
+                  </div>
+                )}
+                
+                {/* Tema Repercussão Geral */}
+                {eventoSelecionado.tema_repercussao && eventoSelecionado.tema_repercussao !== 'N/A (Controle Concentrado)' && eventoSelecionado.tema_repercussao !== 'N/A' && (
+                  <div className="pt-2">
+                    <span className="text-[11px] font-bold text-amber-400/80 uppercase tracking-widest mb-2 block flex items-center gap-1.5">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      Tema de Repercussão
+                    </span>
+                    <p className="text-[13px] text-amber-100/70 leading-relaxed font-bold bg-amber-500/5 border border-amber-500/10 p-3 rounded-lg">
+                      {eventoSelecionado.tema_repercussao}
                     </p>
                   </div>
                 )}
@@ -214,9 +275,19 @@ const AgendaSTF = () => {
                 {/* Descrição Completa e Formatada */}
                 {eventoSelecionado.resumo && (
                   <div className="pt-2">
-                    <span className="text-[11px] font-bold text-rose-400 uppercase tracking-widest mb-2 block">Resumo do Processo</span>
-                    <p className="text-[13px] text-white/70 leading-relaxed text-justify mb-2">
+                    <span className="text-[11px] font-bold text-rose-400 uppercase tracking-widest mb-2 block">Resumo da Controvérsia</span>
+                    <p className="text-[14px] text-white/80 leading-relaxed text-justify mb-2">
                       {eventoSelecionado.resumo}
+                    </p>
+                  </div>
+                )}
+
+                {/* Status */}
+                {eventoSelecionado.status && (
+                  <div className="pt-2">
+                    <span className="text-[11px] font-bold text-emerald-400/80 uppercase tracking-widest mb-2 block">Status / Fase do Julgamento</span>
+                    <p className="text-[13px] text-emerald-100/80 leading-relaxed font-medium bg-emerald-500/5 border border-emerald-500/10 p-3 rounded-lg">
+                      {eventoSelecionado.status}
                     </p>
                   </div>
                 )}
