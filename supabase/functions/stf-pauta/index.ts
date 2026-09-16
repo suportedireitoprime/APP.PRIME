@@ -54,12 +54,17 @@ serve(async (req) => {
     const yyyy = today.getFullYear();
     const dateStr = `${dd}/${mm}/${yyyy}`;
 
+    let browserlessError = '';
+
     // Tentativa 1: Browserless /function (Injeção de JS direto no Puppeteer)
     if (BROWSERLESS_API_KEY && pauta.length === 0) {
       console.log('Tentativa 1: Browserless Function API...');
       try {
         const browserlessCode = `
           export default async ({ page }) => {
+            await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+            await page.setExtraHTTPHeaders({ 'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7' });
+            
             await page.goto('${targetUrl}', { waitUntil: 'networkidle0' });
             
             const dayStr = '${today.getDate()}';
@@ -128,13 +133,20 @@ serve(async (req) => {
             pauta = result;
             methodUsed = 'Browserless';
             console.log('Sucesso via Browserless. Extraídos:', pauta.length);
+          } else {
+             browserlessError = 'Empty array or invalid JSON returned';
           }
+        } else {
+           browserlessError = 'HTTP ' + response.status + ' ' + (await response.text());
         }
       } catch (err) {
         console.error('Erro no Browserless:', err.message);
+        browserlessError = err.message;
       }
     }
 
+    let firecrawlError = '';
+    
     // Tentativa 2: Firecrawl Actions (com CSS Selector dinâmico)
     if (FIRECRAWL_API_KEY && pauta.length === 0) {
       console.log('Tentativa 2: Firecrawl Actions...');
@@ -178,9 +190,13 @@ serve(async (req) => {
           });
           
           if (pauta.length > 0) methodUsed = 'Firecrawl';
+          else firecrawlError = 'No elements found in HTML';
+        } else {
+           firecrawlError = JSON.stringify(data);
         }
       } catch (err) {
         console.error('Erro no Firecrawl:', err.message);
+        firecrawlError = err.message;
       }
     }
 
@@ -193,7 +209,15 @@ serve(async (req) => {
 
     // Adiciona o método de extração na resposta como um header para telemetria (para não quebrar o array JSON)
     return new Response(JSON.stringify(pauta), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json', 'X-Scraper-Method': methodUsed },
+      headers: { 
+        ...corsHeaders, 
+        'Content-Type': 'application/json', 
+        'X-Scraper-Method': methodUsed,
+        'X-Has-Browserless': BROWSERLESS_API_KEY ? 'yes' : 'no',
+        'X-Has-Firecrawl': FIRECRAWL_API_KEY ? 'yes' : 'no',
+        'X-Firecrawl-Error': firecrawlError || 'none',
+        'X-Browserless-Error': browserlessError || 'none'
+      },
       status: 200,
     });
 

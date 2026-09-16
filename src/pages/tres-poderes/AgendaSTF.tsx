@@ -114,36 +114,52 @@ const AgendaSTF = () => {
               <p>Nenhum processo listado para a pauta atual do STF.</p>
             </div>
           ) : (
-            eventos.map((evento) => (
-              <div 
-                key={evento.id} 
-                onClick={() => {
-                  haptic.selection();
-                  setEventoSelecionado(evento);
-                }}
-                className="bg-[#111111]/80 backdrop-blur-sm rounded-2xl border border-white/5 overflow-hidden transition-all duration-300 relative group active:scale-[0.98] cursor-pointer hover:border-white/10 p-4"
-              >
-                <div className="flex flex-col gap-2">
-                  <h3 className="font-black text-[13px] sm:text-[14px] text-white uppercase tracking-wide leading-tight">
-                    {evento.titulo}
-                  </h3>
-                  <span className="text-[12px] font-bold text-rose-400 uppercase tracking-widest block">
-                    {evento.relator}
-                  </span>
-                  
-                  {/* Explicação Curta sempre visível no card */}
-                  {getLegenda(evento.titulo) && (
-                    <div className="mt-2 flex items-start gap-1.5 bg-white/5 border border-white/10 rounded-md p-2">
-                      <Info className="w-3.5 h-3.5 text-sky-400 flex-shrink-0 mt-0.5" />
-                      <p className="text-[11px] sm:text-[12px] text-white/70 leading-tight font-medium">
-                        <span className="font-bold text-sky-400/90 mr-1.5 uppercase tracking-wider">O que é isso?</span>
-                        {getLegenda(evento.titulo)?.descricao}
-                      </p>
-                    </div>
-                  )}
-                </div>
+            <div className="space-y-4">
+              <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 flex items-center justify-center">
+                <CalendarIcon className="w-4 h-4 text-rose-400 mr-2" />
+                <span className="text-sm font-bold text-rose-100">
+                  Sessão do dia {new Date(eventos[0]?.data || new Date()).toLocaleDateString('pt-BR')}
+                </span>
               </div>
-            ))
+              
+              {eventos.map((evento) => (
+                <div 
+                  key={evento.id} 
+                  onClick={() => {
+                    haptic.selection();
+                    setEventoSelecionado(evento);
+                  }}
+                  className="bg-[#111111]/80 backdrop-blur-sm rounded-2xl border border-white/5 overflow-hidden transition-all duration-300 relative group active:scale-[0.98] cursor-pointer hover:border-white/10 p-4"
+                >
+                  <div className="flex flex-col gap-2">
+                    <h3 className="font-black text-[13px] sm:text-[14px] text-white uppercase tracking-wide leading-tight">
+                      {evento.titulo}
+                    </h3>
+                    <span className="text-[12px] font-bold text-rose-400 uppercase tracking-widest block">
+                      {evento.relator}
+                    </span>
+                    
+                    {/* Resumo Real do Processo */}
+                    {evento.resumo && (
+                      <p className="text-[12px] text-white/60 leading-snug line-clamp-2 mt-1">
+                        {evento.resumo}
+                      </p>
+                    )}
+                    
+                    {/* Explicação Curta sempre visível no card */}
+                    {getLegenda(evento.titulo) && (
+                      <div className="mt-2 flex items-start gap-1.5 bg-white/5 border border-white/10 rounded-md p-2">
+                        <Info className="w-3.5 h-3.5 text-sky-400 flex-shrink-0 mt-0.5" />
+                        <p className="text-[11px] sm:text-[12px] text-white/70 leading-tight font-medium">
+                          <span className="font-bold text-sky-400/90 mr-1.5 uppercase tracking-wider">O que é isso?</span>
+                          {getLegenda(evento.titulo)?.descricao}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>
