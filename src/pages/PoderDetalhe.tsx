@@ -38,10 +38,10 @@ const PODERES_DATA: Record<string, any> = {
 };
 
 const CARDS = [
-  { id: 'blog', label: 'Blog', icon: Rss, color: '#FACC15' },
-  { id: 'portais', label: 'Portais', icon: Globe, color: '#34D399' },
-  { id: 'audio', label: 'Áudio Aulas', icon: Headphones, color: '#F87171' },
-  { id: 'video', label: 'Vídeo Aulas', icon: PlaySquare, color: '#A78BFA' },
+  { id: 'blog', label: 'BLOG', icon: Rss, color: '#FACC15' },
+  { id: 'portais', label: 'PORTAIS', icon: Globe, color: '#34D399' },
+  { id: 'audio', label: 'ÁUDIO AULAS', icon: Headphones, color: '#F87171' },
+  { id: 'video', label: 'VÍDEO AULAS', icon: PlaySquare, color: '#A78BFA' },
 ];
 
 const PoderDetalhe = () => {
@@ -124,22 +124,23 @@ const PoderDetalhe = () => {
         <div className="relative z-10 px-4 py-8">
            <div className="mb-4">
               <h3 className="font-display text-white text-[16px] font-bold mb-1 flex items-center gap-2 uppercase tracking-widest">
-                <span className="w-1 h-4 rounded-full" style={{ backgroundColor: poder.solidColor }} />
+                <span className="w-1 h-5 rounded-full" style={{ backgroundColor: poder.solidColor }} />
                 Conteúdos
               </h3>
-              <p className="font-body text-white/50 text-[12px] leading-snug ml-3">
+              <p className="font-body text-white/50 text-[12.5px] leading-snug ml-3">
                 Explore os recursos disponíveis
               </p>
            </div>
            
-           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+           <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
               <HomeCard
                 icon={Calendar}
-                label="Pauta do Dia"
-                sublabel="Sessões e Eventos"
-                color={poder.solidColor}
+                label="PAUTA DO DIA"
+                sublabel="Sessões"
+                color="#FFFFFF"
+                iconStrokeWidth={1.5}
                 onClick={() => navigate(`/tres-poderes/${id}/agenda`)}
-                className="bg-[#101010] border-white/10 hover:bg-[#1A1A1A]"
+                className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
               />
               {CARDS.map((item, index) => (
                 <HomeCard
@@ -148,12 +149,13 @@ const PoderDetalhe = () => {
                   label={item.label}
                   sublabel="Em breve"
                   color="#FFFFFF"
+                  iconStrokeWidth={1.5}
                   delay={(index + 1) * 0.05}
                   onClick={() => {
                     haptic.selection();
                     toast({ title: 'Em breve', description: `O módulo de ${item.label} está em desenvolvimento.` });
                   }}
-                  className="bg-[#101010] border-white/10 hover:bg-[#1A1A1A]"
+                  className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
                 />
               ))}
            </div>
