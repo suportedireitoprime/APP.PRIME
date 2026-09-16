@@ -19,6 +19,48 @@ interface EventoCamara {
   situacao: string;
 }
 
+const TIPO_EVENTO_LEGENDA: Record<string, string> = {
+  'REUNIÃO TÉCNICA': 'Encontro focado em debater aspectos técnicos e específicos de um tema ou projeto em andamento.',
+  'SESSÃO DELIBERATIVA': 'Onde os deputados votam e decidem sobre projetos de lei, medidas provisórias e outras proposições.',
+  'SESSÃO SOLENE': 'Reunião especial destinada a homenagens, comemorações e eventos cívicos, sem votação de projetos.',
+  'SESSÃO NÃO DELIBERATIVA': 'Sessão destinada apenas a discursos, debates e comunicações parlamentares, sem votação.',
+  'REUNIÃO DELIBERATIVA': 'Reunião de comissão focada em votar relatórios e projetos de lei em tramitação.',
+  'AUDIÊNCIA PÚBLICA': 'Evento aberto para ouvir especialistas, representantes da sociedade e cidadãos sobre um tema relevante.',
+  'SEMINÁRIO': 'Evento amplo para discussão e palestras sobre assuntos de interesse público.',
+  'COMISSÃO PARLAMENTAR DE INQUÉRITO': 'Reunião destinada a investigar denúncias de irregularidades e fatos determinados.'
+};
+
+const getLegenda = (titulo: string) => {
+  if (!titulo) return null;
+  const t = titulo.toUpperCase();
+  for (const [key, value] of Object.entries(TIPO_EVENTO_LEGENDA)) {
+    if (t.includes(key)) return value;
+  }
+  return null;
+};
+
+const formatarDescricao = (texto: string) => {
+  if (!texto) return null;
+  // Expressão regular avançada: encontra letras minúsculas/números encostados 
+  // em letras maiúsculas que deveriam estar separados (API envia tudo colado)
+  // Ex: "cultural: Coral", "18h20 Abertura"
+  const formatted = texto.replace(/([a-zçãõáéíóú0-9:;,)])\s+([A-ZÀ-Ú])/g, '$1\n\n$2');
+  
+  const linhas = formatted.split(/\n+/);
+  return (
+    <>
+      {linhas.map((linha, idx) => {
+        if (!linha.trim()) return null;
+        return (
+          <p key={idx} className="text-[13px] text-white/70 leading-relaxed text-justify mb-2 last:mb-0">
+            {linha.trim()}
+          </p>
+        );
+      })}
+    </>
+  );
+};
+
 const AgendaCamara = () => {
   const navigate = useNavigate();
   const [dataSelecionada, setDataSelecionada] = useState(() => {
@@ -264,11 +306,27 @@ const AgendaCamara = () => {
                 {/* Área Expansível */}
                 <div className={`grid transition-all duration-300 ease-in-out mt-2 ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                   <div className="overflow-hidden flex flex-col gap-3">
+                    
+                    {/* Legenda Explicativa do Tipo de Evento */}
+                    {isExpanded && getLegenda(evento.titulo) && (
+                      <div className="pt-2 border-t border-white/5 mt-1">
+                        <div className="bg-sky-500/10 border border-sky-500/20 rounded-lg p-3">
+                          <span className="text-[10px] font-bold text-sky-400 uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                            <Info className="w-3.5 h-3.5" />
+                            O que é isso?
+                          </span>
+                          <p className="text-[12px] text-sky-100/80 leading-relaxed font-medium">
+                            {getLegenda(evento.titulo)}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
                     {evento.descricao && evento.descricao !== evento.titulo && (
                       <div className="pt-2 border-t border-white/5">
-                        <p className="text-[13px] text-white/70 leading-relaxed">
-                          {evento.descricao}
-                        </p>
+                        <div className="flex flex-col gap-2">
+                          {formatarDescricao(evento.descricao)}
+                        </div>
                       </div>
                     )}
                     {evento.orgaos && (
