@@ -452,6 +452,7 @@ const preloadImage = new Image();
 preloadImage.src = brasaoImg;
 preloadImage.decoding = 'async';
 import { TrialExpiredModal } from "@/components/TrialExpiredModal";
+import { isAdminEmail } from "@/lib/adminEmails";
 
 function ProtectedRoute({ children, requireOnboarding = true }: { children: React.ReactNode; requireOnboarding?: boolean }) {
   const { user, loading } = useAuth();
@@ -602,7 +603,7 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
       '/onboarding'
     ].includes(location.pathname);
     
-    if (!profile.isPremium && diffDays > 3 && !isAllowedPath) {
+    if (!profile.isPremium && !isAdminEmail(user.email) && diffDays > 3 && !isAllowedPath) {
       return (
         <>
           {children}
