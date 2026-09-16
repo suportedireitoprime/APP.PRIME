@@ -451,10 +451,12 @@ const AssistenteHorus = lazy(() => import("./pages/AssistenteHorus.tsx"));
 const preloadImage = new Image();
 preloadImage.src = brasaoImg;
 preloadImage.decoding = 'async';
+import { TrialExpiredModal } from "@/components/TrialExpiredModal";
 
 function ProtectedRoute({ children, requireOnboarding = true }: { children: React.ReactNode; requireOnboarding?: boolean }) {
   const { user, loading } = useAuth();
   const location = useLocation();
+  const { data: profile, isLoading: profileLoading } = useProfileSummary();
 
   // Leitura síncrona do cache — não bloqueia o paint.
   const cacheKey = user ? `onboarding_completed:${user.id}` : null;
@@ -583,6 +585,26 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
   // porque o Navigate vem antes do return children).
   if (requireOnboarding && needsOnboarding && location.pathname !== '/onboarding') {
     return <Navigate to="/onboarding" replace />;
+  }
+
+  // Check Trial Expiration
+  if (user && !profileLoading && profile) {
+    const createdAt = new Date(user.created_at);
+    const diffDays = Math.ceil((Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
+    const isAllowedPath = [
+      '/', 
+      '/assinatura', 
+      '/planos-ativos', 
+      '/perfil', 
+      '/configuracoes', 
+      '/suporte', 
+      '/opiniao', 
+      '/onboarding'
+    ].includes(location.pathname);
+    
+    if (!profile.isPremium && diffDays > 3 && !isAllowedPath) {
+      return <TrialExpiredModal />;
+    }
   }
 
   return <>{children}</>;
