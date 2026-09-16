@@ -306,8 +306,8 @@ export default function Assinatura() {
               <h1 className="font-display text-3xl sm:text-4xl font-black text-foreground leading-[1.1]">
                 Sua carreira jurídica em <span className="text-primary">outro nível.</span>
               </h1>
-              <p className="font-body text-sm font-medium text-muted-foreground pt-1">
-                Junte-se a milhares de estudantes e advogados que usam IA para dominar o Direito.
+              <p className="text-[13px] text-muted-foreground font-medium max-w-sm mx-auto">
+                Libere seu potencial máximo agora na OAB, Concursos e na Advocacia.
               </p>
             </div>
 
