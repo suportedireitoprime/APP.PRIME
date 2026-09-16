@@ -1,27 +1,44 @@
 import { useState, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Browser } from '@capacitor/browser';
-import { ArrowLeft, Globe, ExternalLink, X } from 'lucide-react';
+import { ArrowLeft, Globe, ExternalLink, X, Lightbulb, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import { useGoBack } from '@/hooks/useGoBack';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import { STF_PORTAIS, StfPortal } from '@/data/stfPortais';
+import { PORTAIS_PODERES, PortalPoder } from '@/data/portaisPoderes';
 
-const StfPortais = () => {
+const PortaisPoder = () => {
+  const { poderId } = useParams<{ poderId: string }>();
   const goBack = useGoBack();
-  const [selectedPortal, setSelectedPortal] = useState<StfPortal | null>(null);
+  const navigate = useNavigate();
+  const [selectedPortal, setSelectedPortal] = useState<PortalPoder | null>(null);
+
+  const poderData = poderId && PORTAIS_PODERES[poderId] ? PORTAIS_PODERES[poderId] : null;
 
   // Group by categories
   const categories = useMemo(() => {
-    const groups: Record<string, StfPortal[]> = {};
-    STF_PORTAIS.forEach(portal => {
+    if (!poderData) return {};
+    const groups: Record<string, PortalPoder[]> = {};
+    poderData.portais.forEach(portal => {
       if (!groups[portal.category]) {
         groups[portal.category] = [];
       }
       groups[portal.category].push(portal);
     });
     return groups;
-  }, []);
+  }, [poderData]);
+
+  if (!poderData) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center min-h-screen bg-background text-white">
+        <p className="text-muted-foreground mb-4">Poder não encontrado ou sem portais mapeados.</p>
+        <button onClick={() => goBack()} className="px-4 py-2 bg-primary rounded-lg text-sm">
+          Voltar
+        </button>
+      </div>
+    );
+  }
 
   const handleOpenWebView = async (url: string) => {
     haptic.selection();
@@ -29,7 +46,6 @@ const StfPortais = () => {
       await Browser.open({ url, presentationStyle: 'fullscreen' });
     } catch (e) {
       console.error('Error opening browser:', e);
-      // Fallback para web caso o plugin falhe
       window.open(url, '_blank');
     }
   };
@@ -38,12 +54,12 @@ const StfPortais = () => {
     <div className="flex flex-col min-h-screen bg-background">
       {/* Fundo animado */}
       <div className="fixed inset-0 z-0 pointer-events-none opacity-50">
-        <ShapeGrid active={true} hoverFillColor="#10B981" />
+        <ShapeGrid active={true} hoverFillColor={poderId === 'stf' ? '#10B981' : poderId === 'senado' ? '#3B82F6' : '#F59E0B'} />
       </div>
 
       {/* Header Fixo */}
-      <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-xl border-b border-white/5 pt-safe">
-        <div className="flex items-center justify-between px-4 h-16">
+      <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-xl border-b border-white/5 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
+        <div className="flex items-center justify-between px-4 pb-3">
           <button
             onClick={() => { haptic.selection(); goBack(); }}
             className="w-10 h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 active:scale-95 transition-all border border-white/10"
@@ -53,10 +69,10 @@ const StfPortais = () => {
 
           <div className="flex flex-col items-center justify-center">
             <h1 className="font-display font-bold text-[17px] text-white tracking-widest uppercase">
-              PORTAIS DO STF
+              {poderData.title}
             </h1>
-            <span className="text-[11px] text-emerald-400 font-medium tracking-wide">
-              Serviços Oficiais
+            <span className="text-[11px] text-emerald-400 font-medium tracking-wide uppercase">
+              {poderData.subtitle}
             </span>
           </div>
 
@@ -88,7 +104,6 @@ const StfPortais = () => {
                     }}
                     className="flex items-center p-4 rounded-2xl bg-zinc-900/60 border border-white/5 hover:bg-zinc-800/80 active:scale-[0.98] transition-all text-left group overflow-hidden relative"
                   >
-                    {/* Linha colorida indicativa */}
                     <div 
                       className="absolute left-0 top-0 bottom-0 w-1 opacity-60 group-hover:opacity-100 transition-opacity" 
                       style={{ backgroundColor: portal.color }} 
@@ -143,12 +158,12 @@ const StfPortais = () => {
               {/* Botão Fechar Modal Desktop/Geral */}
               <button
                 onClick={() => setSelectedPortal(null)}
-                className="absolute top-4 right-4 md:top-6 md:right-6 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/60 hover:text-white transition-colors"
+                className="absolute top-4 right-4 md:top-6 md:right-6 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/60 hover:text-white transition-colors z-10"
               >
                 <X className="w-4 h-4" />
               </button>
 
-              <div className="p-6 md:p-8 overflow-y-auto flex-1">
+              <div className="p-6 md:p-8 overflow-y-auto flex-1 pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
                 <div className="flex flex-col items-center text-center mb-6">
                   <div 
                     className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-black/50"
@@ -161,23 +176,53 @@ const StfPortais = () => {
                     {selectedPortal.category}
                   </span>
                   
-                  <h2 className="font-display font-bold text-2xl text-white mb-2">
+                  <h2 className="font-display font-bold text-2xl text-white mb-2 leading-tight">
                     {selectedPortal.title}
                   </h2>
                   <p className="text-[14px] text-emerald-400 font-medium">
-                    Serviço Oficial do STF
+                    {poderData.subtitle}
                   </p>
                 </div>
 
-                <div className="prose prose-invert prose-p:leading-relaxed prose-p:text-[15px] prose-p:text-white/70 max-w-none mb-8">
-                  {selectedPortal.fullExplanation.split('\n\n').map((paragraph, i) => (
-                    <p key={i}>{paragraph}</p>
-                  ))}
+                <div className="space-y-6 mb-8">
+                  {/* Descrição Geral */}
+                  <div className="prose prose-invert prose-p:leading-relaxed prose-p:text-[15px] prose-p:text-white/70 max-w-none">
+                    {selectedPortal.fullExplanation.split('\n\n').map((paragraph, i) => (
+                      <p key={i}>{paragraph}</p>
+                    ))}
+                  </div>
+
+                  {/* Exemplo Prático */}
+                  <div className="bg-white/5 rounded-2xl p-4 border border-white/10 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-yellow-500" />
+                    <h4 className="flex items-center gap-2 text-white font-bold text-[14px] mb-2">
+                      <Lightbulb className="w-4 h-4 text-yellow-500" />
+                      Na Prática (Dia a Dia)
+                    </h4>
+                    <p className="text-[14px] text-white/70 leading-relaxed">
+                      {selectedPortal.practicalExample}
+                    </p>
+                  </div>
+
+                  {/* Tópicos / Principais Recursos */}
+                  <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                    <h4 className="text-white font-bold text-[14px] mb-3 uppercase tracking-widest text-center opacity-80">
+                      Principais Recursos
+                    </h4>
+                    <ul className="space-y-2.5">
+                      {selectedPortal.topics.map((topic, i) => (
+                        <li key={i} className="flex items-start gap-2.5 text-[14px] text-white/70">
+                          <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: selectedPortal.color }} />
+                          <span className="leading-snug">{topic}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
 
                 <button
                   onClick={() => handleOpenWebView(selectedPortal.url)}
-                  className="w-full h-[52px] rounded-xl flex items-center justify-center gap-2 font-bold text-[15px] text-white shadow-lg transition-transform active:scale-95"
+                  className="w-full h-[52px] rounded-xl flex items-center justify-center gap-2 font-bold text-[15px] text-white shadow-lg transition-transform active:scale-95 mt-4"
                   style={{ backgroundColor: selectedPortal.color }}
                 >
                   <Globe className="w-5 h-5" />
@@ -193,4 +238,4 @@ const StfPortais = () => {
   );
 };
 
-export default StfPortais;
+export default PortaisPoder;
