@@ -111,10 +111,19 @@ main::-webkit-scrollbar-track {
 }
 
 html,
-body,
-#root {
+body {
+  height: 100%;
+  overflow: hidden !important; /* Trava o scroll no viewport para esconder a scrollbar branca nativa do iOS/Mobile */
   background-color: #0D0D0D !important;
   color: #FFFFFF;
+}
+
+#root {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  background-color: #0D0D0D !important;
 }
 
 body {
@@ -123,15 +132,7 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* No Android WebView com edge-to-edge, env(safe-area-inset-*) NÃO é propagado
- * mesmo com viewport-fit=cover. A MainActivity nativa lê os insets em Java e
- * injeta --sai-top/right/bottom/left no :root via JS. Componentes fixos/sticky
- * devem ler `var(--sai-*, env(safe-area-inset-*, 0px))` — o body NÃO recebe
- * padding porque isso desloca o padding-box de headers sticky (dobra o inset
- * no iOS). */
 html {
-  background-color: #0D0D0D !important;
-  
   /* Garante calha limpa sem faixas brancas no mobile */
   scrollbar-gutter: auto;
 
