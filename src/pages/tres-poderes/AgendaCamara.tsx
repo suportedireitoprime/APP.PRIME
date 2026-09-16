@@ -209,7 +209,7 @@ const AgendaCamara = () => {
         {/* Timeline Horizontal */}
         <div className="pb-3 w-full border-t border-white/5 pt-3 bg-black/20">
           <ScrollArea className="w-full whitespace-nowrap" ref={timelineRef}>
-            <div className="flex w-max space-x-2 px-4">
+            <div className="flex items-center w-max space-x-2 px-4 py-2">
               {diasTimeline.map((d, idx) => {
                 const isSelected = d.toISOString().split('T')[0] === dataSelecionada;
                 const isToday = d.toISOString().split('T')[0] === new Date().toISOString().split('T')[0];
