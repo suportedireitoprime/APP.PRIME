@@ -85,11 +85,9 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
     };
   }, [updateCenterCard]);
 
-  if (!items || items.length === 0) return null;
-
   // Triplica os items para permitir scroll infinito sem saltos
-  const duplicatedItems = [...items, ...items, ...items];
-  const targetCardIndex = items.length + (randomStartIndexRef.current ?? 0);
+  const duplicatedItems = items && items.length > 0 ? [...items, ...items, ...items] : [];
+  const targetCardIndex = (items?.length || 0) + (randomStartIndexRef.current ?? 0);
 
   // 🎯 Centraliza a capa aleatória no meio exato ao montar
   useEffect(() => {
@@ -205,19 +203,21 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
     onItemClick(item);
   }, [onItemClick]);
 
+  if (!items || items.length === 0) return null;
+
   return (
     <div className="group relative w-full pt-1 pb-3 overflow-hidden">
       {/* Botões de Navegação Desktop */}
       <button
         onClick={(e) => { e.preventDefault(); scrollByAmount('left'); }}
-        className="absolute left-2 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/60 border border-white/20 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex hover:bg-black/80 shadow-lg backdrop-blur-sm"
+        className="absolute left-2 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/60 border border-white/20 text-white items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex hover:bg-black/80 shadow-lg backdrop-blur-sm"
         aria-label="Rolar para esquerda"
       >
         <ChevronLeft className="w-6 h-6 md:w-7 md:h-7" strokeWidth={2.5} />
       </button>
       <button
         onClick={(e) => { e.preventDefault(); scrollByAmount('right'); }}
-        className="absolute right-2 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/60 border border-white/20 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex hover:bg-black/80 shadow-lg backdrop-blur-sm"
+        className="absolute right-2 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/60 border border-white/20 text-white items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex hover:bg-black/80 shadow-lg backdrop-blur-sm"
         aria-label="Rolar para direita"
       >
         <ChevronRight className="w-6 h-6 md:w-7 md:h-7" strokeWidth={2.5} />
@@ -255,19 +255,18 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
               }
               handleCardClick(item);
             }}
-            className="group relative shrink-0 w-[calc(42vw-12px)] max-w-[150px] min-w-[130px] h-44 sm:w-36 sm:h-48 md:w-40 md:h-56 rounded-2xl overflow-hidden cursor-pointer select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50
+            className="group relative shrink-0 w-[calc(42vw-12px)] max-w-[150px] min-w-[130px] h-52 sm:w-36 sm:h-56 md:w-40 md:h-64 rounded-2xl overflow-hidden cursor-pointer select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50
               will-change-transform
               transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]
 
               /* Estado Padrão (Laterais / Fora do Centro) */
-              scale-[0.92] sm:scale-[0.93] opacity-75 translate-y-0 z-10
+              scale-[0.92] sm:scale-[0.93] opacity-100 translate-y-0 z-10
               border border-white/10 shadow-[0_4px_16px_rgba(0,0,0,0.45)]
-              hover:opacity-90 hover:scale-[0.96]
+              hover:scale-[0.96]
 
               /* Estado CENTRALIZADO: Zoom e Relevo sem contorno branco */
               data-[is-center=true]:scale-[1.08] sm:data-[is-center=true]:scale-[1.10]
               data-[is-center=true]:-translate-y-2.5
-              data-[is-center=true]:opacity-100
               data-[is-center=true]:z-20
               data-[is-center=true]:border-white/15
               data-[is-center=true]:shadow-[0_22px_44px_-6px_rgba(0,0,0,0.85)]
@@ -283,7 +282,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
               draggable={false}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 group-data-[is-center=true]:scale-105 pointer-events-none select-none"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none transition-opacity duration-300 group-data-[is-center=true]:from-black/75" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent pointer-events-none transition-opacity duration-300" />
             
             {/* Animação de Reflexo Vítreo (Glass Sheen / Shimmer) no card central */}
             <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden rounded-2xl opacity-0 group-data-[is-center=true]:opacity-100 transition-opacity duration-700">
@@ -308,7 +307,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
             </div>
 
             <div className="absolute bottom-2.5 left-2.5 right-2.5 text-left pointer-events-none z-10 transition-all duration-300">
-              <span className="text-[12px] sm:text-[13px] font-bold text-white drop-shadow-md leading-tight block line-clamp-2 group-data-[is-center=true]:font-black group-data-[is-center=true]:drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
+              <span className="font-display font-black tracking-wide text-[13px] sm:text-[14px] text-white drop-shadow-md leading-tight block line-clamp-2 uppercase group-data-[is-center=true]:drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
                 {item.fullName || item.text}
               </span>
             </div>
