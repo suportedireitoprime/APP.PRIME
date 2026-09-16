@@ -8,6 +8,8 @@ import HomeLeiSecaBar from './HomeLeiSecaBar';
 import HomeApresentacoesTimeline from './HomeApresentacoesTimeline';
 import { toast } from '@/hooks/use-toast';
 const HomeNoticiasCarousel = lazyWithRetry(() => import('@/components/vademecum/home/HomeNoticiasCarousel'));
+const HomeAprenderCarousel = lazyWithRetry(() => import('@/components/vademecum/home/aprender/HomeAprenderCarousel'));
+import { AprenderCarouselSkeleton } from '@/components/vademecum/home/aprender/chunks';
 import { GRID_CATS, EMALTA_CATS, Cat } from './homeSectionsData';
 
 interface HomeTabEstudosProps {
@@ -50,6 +52,7 @@ const HomeTabEstudos = ({
               key={c.id}
               icon={c.icon}
               label={c.label}
+              sublabel={c.sublabel || ''}
               color={c.color}
               delay={i * 0.05}
               onClick={() => {
@@ -113,6 +116,15 @@ const HomeTabEstudos = ({
               />
             ))}
           </div>
+
+          {/* Aprender em Carrossel 3D */}
+          {!hideBlog && (
+            <div className="pt-2 pb-2">
+              <Suspense fallback={<AprenderCarouselSkeleton />}>
+                <HomeAprenderCarousel hideBlog={hideBlog} />
+              </Suspense>
+            </div>
+          )}
 
           {/* Seção Lei Seca com Título, Risquinho Vermelho e Descrição */}
           <div className="pt-4 flex flex-col gap-2.5">

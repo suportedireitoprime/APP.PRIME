@@ -28,9 +28,6 @@ import HomeTabAreas from './sections/HomeTabAreas';
 import HomeTabEstudos from './sections/HomeTabEstudos';
 import HomeCategorySheet from './sections/HomeCategorySheet';
 import HomeAreasModal from './sections/HomeAreasModal';
-import { AprenderCarouselSkeleton } from '@/components/vademecum/home/aprender/chunks';
-
-const HomeAprenderCarousel = lazyWithRetry(() => import('@/components/vademecum/home/aprender/HomeAprenderCarousel'));
 
 const HomeNoticiasCarousel = lazyWithRetry(() => import('@/components/vademecum/home/HomeNoticiasCarousel'));
 const VoiceCaptureOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/VoiceCaptureOverlay'));
@@ -175,13 +172,6 @@ const MobileHomeSections = ({
 
   return (
     <div className="space-y-6 pt-4">
-      {/* Aprender em Carrossel 3D no topo (Modularizado em Chunks) */}
-      {!hideBlog && (
-        <Suspense fallback={<AprenderCarouselSkeleton />}>
-          <HomeAprenderCarousel hideBlog={hideBlog} />
-        </Suspense>
-      )}
-
       <AnimatePresence mode="wait" initial={false}>
         {currentTab === 'categorias' && (
           <HomeTabCategorias
