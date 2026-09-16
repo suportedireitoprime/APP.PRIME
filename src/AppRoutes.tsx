@@ -603,7 +603,12 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
     ].includes(location.pathname);
     
     if (!profile.isPremium && diffDays > 3 && !isAllowedPath) {
-      return <TrialExpiredModal />;
+      return (
+        <>
+          {children}
+          <TrialExpiredModal />
+        </>
+      );
     }
   }
 
