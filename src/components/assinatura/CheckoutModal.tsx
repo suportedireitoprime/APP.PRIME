@@ -392,7 +392,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   return (
     <Dialog open={open} onOpenChange={(v) => !loading && onOpenChange(v)}>
       <DialogContent 
-        className="max-w-none w-screen h-[100dvh] m-0 p-0 rounded-none border-none flex flex-col bg-background/95 overflow-hidden shadow-none [&>button]:hidden"
+        className="max-w-none w-screen min-h-[100vh] h-[100dvh] m-0 p-0 rounded-none border-none flex flex-col bg-background/95 overflow-hidden shadow-none [&>button]:hidden"
       >
         <DialogDescription className="sr-only">Checkout e pagamento do Direito Prime.</DialogDescription>
 

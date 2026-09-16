@@ -182,7 +182,7 @@ export default function Assinatura() {
         />
 
         <Sheet open={paymentMethodSheetOpen} onOpenChange={setPaymentMethodSheetOpen}>
-          <SheetContent side="bottom" className="h-full sm:h-[95vh] rounded-none sm:rounded-t-3xl px-6 pb-8 bg-background border-border flex flex-col pt-12 overflow-y-auto relative">
+          <SheetContent side="bottom" className="rounded-none sm:rounded-t-3xl px-6 pb-12 pt-12 bg-background border-border relative">
             <div className="absolute inset-0 pointer-events-none opacity-20">
               <ShapeGrid />
             </div>
@@ -192,7 +192,7 @@ export default function Assinatura() {
                 Acesso imediato ao plano Anual. Selecione a forma de pagamento abaixo.
               </SheetDescription>
             </SheetHeader>
-            <div className="flex flex-col gap-4 flex-1 relative z-10">
+            <div className="flex flex-col gap-4 relative z-10">
               <Button
                 variant="outline"
                 className="h-auto py-5 flex items-center justify-start gap-4 px-5 border-2 border-primary/30 hover:border-primary hover:bg-primary/5 transition-all rounded-3xl group"
