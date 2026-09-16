@@ -104,8 +104,12 @@ export async function purchase(plan: PlanId): Promise<{ ok: boolean; error?: str
   }
 }
 
+let isRestoring = false;
+
 export async function restorePurchases(): Promise<{ ok: boolean; restored: number; error?: string }> {
   if (!isBillingAvailable()) return { ok: false, restored: 0, error: 'Só disponível no app nativo.' };
+  if (isRestoring) return { ok: false, restored: 0, error: 'Restauração já em andamento.' };
+  isRestoring = true;
   try {
     const { NativePurchases, PURCHASE_TYPE } = await import('@capgo/native-purchases');
     const platform = currentPlatform();
@@ -126,6 +130,8 @@ export async function restorePurchases(): Promise<{ ok: boolean; restored: numbe
     return { ok: true, restored };
   } catch (err: any) {
     return { ok: false, restored: 0, error: err?.message ?? 'Falha ao restaurar.' };
+  } finally {
+    isRestoring = false;
   }
 }
 

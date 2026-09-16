@@ -250,6 +250,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ? FirebaseAuthentication.signOut().catch((e) => console.error('[FirebaseAuth] Erro signout nativo', e))
       : Promise.resolve();
 
+    if (typeof localStorage !== 'undefined') {
+      Object.keys(localStorage).forEach(k => {
+        if (k.startsWith('sub_state_')) localStorage.removeItem(k);
+      });
+    }
+
     await Promise.all([
       firebaseLogout,
       supabase.auth.signOut(),

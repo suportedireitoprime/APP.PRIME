@@ -713,6 +713,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                         placeholder="0000 0000 0000 0000" 
                         className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium font-mono text-sm backdrop-blur-md transition-all"
                         inputMode="numeric"
+                        autoComplete="cc-number"
+                        autoCorrect="off"
+                        spellCheck={false}
                       />
                     </div>
 
@@ -724,6 +727,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                         onFocus={() => setIsFlipped(false)}
                         placeholder="JOAO S SILVA" 
                         className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium uppercase text-sm backdrop-blur-md transition-all"
+                        autoComplete="cc-name"
+                        autoCorrect="off"
+                        spellCheck={false}
                       />
                     </div>
 
@@ -737,6 +743,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                           placeholder="MM/AA" 
                           className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium font-mono text-sm backdrop-blur-md transition-all"
                           inputMode="numeric"
+                          autoComplete="cc-exp"
+                          autoCorrect="off"
+                          spellCheck={false}
                         />
                       </div>
                       <div className="space-y-1">
@@ -750,6 +759,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                           className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium font-mono text-sm backdrop-blur-md transition-all"
                           inputMode="numeric"
                           type="password"
+                          autoComplete="cc-csc"
+                          autoCorrect="off"
+                          spellCheck={false}
                         />
                       </div>
                     </div>

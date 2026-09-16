@@ -65,7 +65,12 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         const raw = localStorage.getItem(cacheKey);
         if (raw) {
           const cached = JSON.parse(raw);
-          return { ...cached, loading: true };
+          const isTooOld = Date.now() - (cached.__cache_timestamp || 0) > 48 * 60 * 60 * 1000;
+          if (!isTooOld) {
+            return { ...cached, loading: true };
+          } else {
+            localStorage.removeItem(cacheKey);
+          }
         }
       } catch { /* ignore */ }
     }
@@ -74,7 +79,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
   const persist = useCallback((s: Omit<SubscriptionState, 'refresh'>) => {
     setState(s);
     if (cacheKey && typeof localStorage !== 'undefined') {
-      try { localStorage.setItem(cacheKey, JSON.stringify({ ...s, loading: false })); } catch { /* ignore */ }
+      try { localStorage.setItem(cacheKey, JSON.stringify({ ...s, loading: false, __cache_timestamp: Date.now() })); } catch { /* ignore */ }
     }
   }, [cacheKey]);
   const [nonce, setNonce] = useState(0);
