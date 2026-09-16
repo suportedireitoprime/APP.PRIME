@@ -7,14 +7,15 @@ import { fetchDeputados, fetchDeputadoDetalhe, fetchDeputadoDespesas, UFS } from
 
 interface DeputadosPanelProps {
   searchQuery: string;
+  selected: any;
+  setSelected: (dep: any) => void;
 }
 
-const DeputadosPanel = ({ searchQuery }: DeputadosPanelProps) => {
+const DeputadosPanel = ({ searchQuery, selected, setSelected }: DeputadosPanelProps) => {
   const [deputados, setDeputados] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [localSearch, setLocalSearch] = useState('');
   const [filtroUf, setFiltroUf] = useState('');
-  const [selected, setSelected] = useState<any>(null);
   const [detalhe, setDetalhe] = useState<any>(null);
   const [despesas, setDespesas] = useState<any[]>([]);
 
@@ -23,6 +24,13 @@ const DeputadosPanel = ({ searchQuery }: DeputadosPanelProps) => {
   useEffect(() => {
     loadDeputados();
   }, [query, filtroUf]);
+
+  useEffect(() => {
+    if (!selected) {
+      setDetalhe(null);
+      setDespesas([]);
+    }
+  }, [selected]);
 
   async function loadDeputados() {
     setLoading(true);
@@ -33,9 +41,18 @@ const DeputadosPanel = ({ searchQuery }: DeputadosPanelProps) => {
 
   async function selectDeputado(dep: any) {
     setSelected(dep);
+    
+    let safeId = dep.id;
+    if (typeof safeId === 'string' && safeId.includes('-')) {
+      const match = dep.foto_url?.match(/\/(\d+)\.jpg/i);
+      if (match && match[1]) {
+        safeId = parseInt(match[1]);
+      }
+    }
+
     const [det, desp] = await Promise.all([
-      fetchDeputadoDetalhe(dep.id),
-      fetchDeputadoDespesas(dep.id),
+      fetchDeputadoDetalhe(safeId),
+      fetchDeputadoDespesas(safeId),
     ]);
     setDetalhe(det);
     setDespesas(desp);
@@ -45,9 +62,6 @@ const DeputadosPanel = ({ searchQuery }: DeputadosPanelProps) => {
     const totalDespesas = despesas.reduce((sum: number, d: any) => sum + (d.valorDocumento || 0), 0);
     return (
       <div>
-        <button onClick={() => { setSelected(null); setDetalhe(null); }} className="flex w-fit items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-full text-xs font-semibold uppercase tracking-wider transition-colors mb-6 text-white border border-white/10">
-          <ArrowLeft className="w-4 h-4" /> Voltar para a lista
-        </button>
         <div className="flex items-center gap-4 mb-4">
           <Avatar className="w-16 h-16">
             <AvatarImage src={selected.foto_url} alt={selected.nome} />
