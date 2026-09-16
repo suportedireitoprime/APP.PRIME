@@ -84,12 +84,16 @@ const formatarDescricao = (texto: string) => {
   const regexHorarios = /(\s+)(\d{1,2}h(?:\d{2})?(?:\s*-\s*\d{1,2}h(?:\d{2})?)?)\s+/g;
   const formatted = texto.replace(regexHorarios, '\n\n**$2** ');
   
-  const linhas = formatted.split(/\n+/);
+  const linhasRaw = formatted.split(/\n+/).map(l => l.trim()).filter(l => l.length > 0);
+  
+  // Remove linhas idênticas duplicadas (a API da Câmara costuma repetir a pauta no mesmo campo)
+  const linhas = linhasRaw.filter((linha, index) => {
+    return linhasRaw.indexOf(linha) === index;
+  });
+
   return (
     <>
       {linhas.map((linha, idx) => {
-        if (!linha.trim()) return null;
-        
         if (linha.includes('**')) {
           const partes = linha.split('**');
           return (
@@ -103,7 +107,7 @@ const formatarDescricao = (texto: string) => {
 
         return (
           <p key={idx} className="text-[13px] text-white/70 leading-relaxed text-justify mb-2 last:mb-0">
-            {linha.trim()}
+            {linha}
           </p>
         );
       })}

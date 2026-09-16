@@ -47,10 +47,11 @@ serve(async (req) => {
       horaInicio: evento.dataHoraInicio,
       horaFim: evento.dataHoraFim,
       local: evento.localCamara?.nome || evento.localExterno || 'Não especificado',
-      orgaos: evento.orgaos?.map((o: any) => o.sigla).join(', ') || '',
+      orgaos: evento.orgaos?.map((o: any) => o.nome || o.sigla).join(', ') || '',
       fases: evento.fases || '',
       situacao: evento.situacao,
-      uri: evento.uri
+      uri: evento.uri,
+      urlRegistro: evento.urlRegistro
     }))
 
     return new Response(
