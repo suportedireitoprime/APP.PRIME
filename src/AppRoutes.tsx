@@ -141,6 +141,7 @@ const Configuracoes = lazy(() => import("./pages/Configuracoes.tsx"));
 const AgendaCamara = lazy(() => import("./pages/tres-poderes/AgendaCamara.tsx"));
 const AgendaSenado = lazy(() => import("./pages/tres-poderes/AgendaSenado.tsx"));
 const RadarDeputados = lazy(() => import("./pages/RadarDeputados.tsx"));
+const RadarSTF = lazy(() => import("./pages/RadarSTF.tsx"));
 const RadarVotacoes = lazy(() => import("./pages/RadarVotacoes.tsx"));
 const PoderDetalhe = lazy(() => import("./pages/PoderDetalhe.tsx"));
 const RadarRankings = lazy(() => import("./pages/RadarRankings.tsx"));
@@ -1001,6 +1002,7 @@ function AnimatedRoutes() {
           <Route path="/anotacoes/audio" element={<ProtectedRoute><PageTransition><AnotacoesAudio /></PageTransition></ProtectedRoute>} />
           <Route path="/ajustes/excluir-conta" element={<ProtectedRoute><PageTransition><ExcluirConta /></PageTransition></ProtectedRoute>} />
           <Route path="/radar/deputados" element={<ProtectedRoute><PageTransition><RadarDeputados /></PageTransition></ProtectedRoute>} />
+          <Route path="/radar/stf" element={<ProtectedRoute><PageTransition><RadarSTF /></PageTransition></ProtectedRoute>} />
           <Route path="/radar/votacoes" element={<ProtectedRoute><PageTransition><RadarVotacoes /></PageTransition></ProtectedRoute>} />
           <Route path="/radar/rankings" element={<ProtectedRoute><PageTransition><RadarRankings /></PageTransition></ProtectedRoute>} />
           <Route path="/radar/proposicoes" element={<ProtectedRoute><PageTransition><RadarProposicoes /></PageTransition></ProtectedRoute>} />

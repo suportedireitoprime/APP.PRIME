@@ -1,23 +1,25 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ScanEye, Landmark, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ScanEye, Landmark, ArrowRight, CheckCircle2, Scale } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import radarLeisLocal from '@/assets/radares/radar-leis.webp';
 import radarLegislativoLocal from '@/assets/radares/radar-legislativo.webp';
+import brasaoAsset from '@/assets/brasao-republica.webp';
 import radarLeisAsset from '@/assets/radares/radar-leis.webp.asset.json';
 import radarLegislativoAsset from '@/assets/radares/radar-legislativo.webp.asset.json';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { srcOf } from '@/lib/assetUrl';
 import { useGoBack } from '@/hooks/useGoBack';
 
-type RadarKey = 'leis' | 'legislativo';
+type RadarKey = 'leis' | 'legislativo' | 'stf';
 
 // Native → bundled WebP. Web → CDN (WebP comprimido, ~100 KB).
 const isNative = Capacitor.isNativePlatform();
 const radarLeisSrc = isNative ? radarLeisLocal : srcOf(radarLeisAsset);
 const radarLegislativoSrc = isNative ? radarLegislativoLocal : srcOf(radarLegislativoAsset);
+const brasaoSrc = brasaoAsset;
 
 // Cache aquecido: pré-carrega ambas as capas assim que o módulo entra em memória.
 if (typeof window !== 'undefined') {
@@ -72,6 +74,23 @@ const RADARES: Record<RadarKey, {
     route: '/radar/proposicoes',
     gradient:
       'radial-gradient(120% 90% at 50% 30%, #0d2246 0%, #08132b 45%, #030814 100%)',
+  },
+  stf: {
+    label: 'Radar STF',
+    short: 'Pautas e Ministros',
+    cover: brasaoSrc,
+    icon: Scale,
+    descricao:
+      'Acompanhe de perto as pautas de julgamento do Supremo Tribunal Federal e conheça a composição da Corte.',
+    bullets: [
+      'Pautas de julgamento atualizadas',
+      'Perfil completo dos ministros (biografia e indicações)',
+      'Links diretos para processos oficiais',
+    ],
+    cta: 'Abrir Radar STF',
+    route: '/radar/stf',
+    gradient:
+      'radial-gradient(120% 90% at 50% 30%, #4a3809 0%, #2b2005 45%, #0d0a02 100%)',
   },
 };
 
