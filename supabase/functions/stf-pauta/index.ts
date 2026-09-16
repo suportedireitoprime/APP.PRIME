@@ -12,7 +12,7 @@ const REAL_STF_FALLBACK_DATA = [
     id: "stf-1",
     titulo: "ADI 5529",
     relator: "MINISTRO DIAS TOFFOLI",
-    resumo: "Ação Direta de Inconstitucionalidade sobre a validade do parágrafo único do artigo 40 da Lei de Propriedade Industrial (LPI), que trata da prorrogação de prazos de patentes.",
+    resumo: "Ação Direta de Inconstitucionalidade sobre a validade do parágrafo único do artigo 40 da LPI (prorrogação de prazos de patentes).",
     data: new Date().toISOString(),
     orgao: "Plenário"
   },
@@ -20,7 +20,7 @@ const REAL_STF_FALLBACK_DATA = [
     id: "stf-2",
     titulo: "RE 1037396",
     relator: "MINISTRO LUIZ FUX",
-    resumo: "Recurso Extraordinário com Repercussão Geral. Discute a constitucionalidade do artigo 19 da Lei do Marco Civil da Internet, que exige ordem judicial prévia para a responsabilização de provedores por conteúdo de terceiros.",
+    resumo: "Discute a constitucionalidade do artigo 19 da Lei do Marco Civil da Internet.",
     data: new Date().toISOString(),
     orgao: "Plenário"
   },
@@ -28,15 +28,7 @@ const REAL_STF_FALLBACK_DATA = [
     id: "stf-3",
     titulo: "ADPF 442",
     relator: "MINISTRA ROSA WEBER (ACERVO)",
-    resumo: "Arguição de Descumprimento de Preceito Fundamental que questiona a recepção dos artigos 124 e 126 do Código Penal pela Constituição Federal (interrupção voluntária da gravidez).",
-    data: new Date().toISOString(),
-    orgao: "Plenário"
-  },
-  {
-    id: "stf-4",
-    titulo: "RE 635659",
-    relator: "MINISTRO GILMAR MENDES",
-    resumo: "Recurso Extraordinário que discute a descriminalização do porte de drogas para consumo pessoal (art. 28 da Lei 11.343/2006).",
+    resumo: "Questiona a recepção dos artigos 124 e 126 do Código Penal pela Constituição (interrupção voluntária da gravidez).",
     data: new Date().toISOString(),
     orgao: "Plenário"
   }
@@ -48,15 +40,104 @@ serve(async (req) => {
   }
 
   try {
+    const BROWSERLESS_API_KEY = Deno.env.get('BROWSERLESS_API_KEY');
     const FIRECRAWL_API_KEY = Deno.env.get('FIRECRAWL_API_KEY');
-    // URL consolidada do STF
+    
     const targetUrl = 'https://portal.stf.jus.br/pauta/pesquisarCalendario.asp';
-    let htmlContent = '';
-    const pauta = [];
+    let pauta = [];
+    let methodUsed = 'none';
 
-    // Tentativa 1: Extração Avançada via Firecrawl
-    if (FIRECRAWL_API_KEY) {
-      console.log('Iniciando extração via Firecrawl com Actions (Interação Dinâmica)...');
+    // Datas dinâmicas para os seletores
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const yyyy = today.getFullYear();
+    const dateStr = `${dd}/${mm}/${yyyy}`;
+
+    // Tentativa 1: Browserless /function (Injeção de JS direto no Puppeteer)
+    if (BROWSERLESS_API_KEY && pauta.length === 0) {
+      console.log('Tentativa 1: Browserless Function API...');
+      try {
+        const browserlessCode = `
+          export default async ({ page }) => {
+            await page.goto('${targetUrl}', { waitUntil: 'networkidle0' });
+            
+            const dayStr = '${today.getDate()}';
+            const spans = await page.$$('.calendario table tbody tr td span, .calendario table tbody tr td a');
+            let clicked = false;
+            
+            // Tenta clicar no dia de hoje
+            for (const span of spans) {
+              const text = await page.evaluate(el => el.innerText, span);
+              if (text.trim() === dayStr) {
+                await span.click();
+                clicked = true;
+                break;
+              }
+            }
+            
+            // Se hoje não tem sessão, clica no primeiro dia disponível do mês
+            if (!clicked) {
+               for (const span of spans) {
+                  const text = await page.evaluate(el => el.innerText, span);
+                  const isLink = await page.evaluate(el => el.tagName === 'A', span);
+                  if (text.trim().length > 0 && isLink) {
+                     await span.click();
+                     break;
+                  }
+               }
+            }
+
+            await page.waitForTimeout(4000);
+            
+            const processos = await page.evaluate(() => {
+               const items = [];
+               document.querySelectorAll('.cal-sessao').forEach((el, index) => {
+                  const link = el.querySelector('.sessao-1 a strong');
+                  if (!link) return;
+                  
+                  const titleFull = link.innerText;
+                  const titleMatch = titleFull.match(/^([^(]+)/);
+                  const relatorMatch = titleFull.match(/relator:\\s*([^;)]+)/i);
+                  
+                  items.push({
+                     id: 'stf-bl-' + index,
+                     titulo: titleMatch ? titleMatch[1].trim() : titleFull,
+                     relator: relatorMatch ? relatorMatch[1].trim() : "Relator não informado",
+                     resumo: el.querySelector('.hint-msg')?.innerText?.trim() || "Pauta de julgamento",
+                     data: new Date().toISOString(),
+                     orgao: 'Plenário / STF'
+                  });
+               });
+               return items;
+            });
+            
+            return processos;
+          }
+        `;
+        
+        const response = await fetch(`https://chrome.browserless.io/function?token=${BROWSERLESS_API_KEY}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: browserlessCode })
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          if (Array.isArray(result) && result.length > 0) {
+            pauta = result;
+            methodUsed = 'Browserless';
+            console.log('Sucesso via Browserless. Extraídos:', pauta.length);
+          }
+        }
+      } catch (err) {
+        console.error('Erro no Browserless:', err.message);
+      }
+    }
+
+    // Tentativa 2: Firecrawl Actions (com CSS Selector dinâmico)
+    if (FIRECRAWL_API_KEY && pauta.length === 0) {
+      console.log('Tentativa 2: Firecrawl Actions...');
       try {
         const response = await fetch('https://api.firecrawl.dev/v1/scrape', {
           method: 'POST',
@@ -67,10 +148,10 @@ serve(async (req) => {
           body: JSON.stringify({ 
             url: targetUrl, 
             formats: ['html'],
-            // Instruímos o Firecrawl a clicar na data ativa do calendário e aguardar o carregamento
             actions: [
               { type: 'wait', milliseconds: 2000 },
-              { type: 'click', selector: 'td.ativa' },
+              // Tenta clicar exatamente na data de hoje. Se falhar (ex: não tem pauta hoje), clica na primeira data disponível com onclick
+              { type: 'click', selector: `a[onclick*="${dateStr}"], a[onclick*="/"]` },
               { type: 'wait', milliseconds: 4000 }
             ]
           })
@@ -78,55 +159,48 @@ serve(async (req) => {
         
         const data = await response.json();
         if (response.ok && data.success && data.data.html) {
-          htmlContent = data.data.html;
-        } else {
-          console.warn('Firecrawl não retornou sucesso absoluto:', data.error || 'Desconhecido');
+          const $ = cheerio.load(data.data.html);
+          $('.cal-sessao').each((index, element) => {
+            const titleFull = $(element).find('.sessao-1 a strong').text().trim();
+            if (titleFull) {
+              const titleMatch = titleFull.match(/^([^(]+)/);
+              const relatorMatch = titleFull.match(/relator:\s*([^;)]+)/i);
+              
+              pauta.push({
+                id: `stf-fc-${index}`,
+                titulo: titleMatch ? titleMatch[1].trim() : titleFull,
+                relator: relatorMatch ? relatorMatch[1].trim() : 'Relator não informado',
+                resumo: $(element).find('.hint-msg').text().trim() || 'Pauta de julgamento.',
+                data: new Date().toISOString(),
+                orgao: 'Plenário / STF'
+              });
+            }
+          });
+          
+          if (pauta.length > 0) methodUsed = 'Firecrawl';
         }
       } catch (err) {
-        console.error('Erro na chamada do Firecrawl:', err.message);
+        console.error('Erro no Firecrawl:', err.message);
       }
     }
 
-    // Processamento do HTML via Cheerio (caso tenhamos obtido algo)
-    if (htmlContent && !htmlContent.includes('403 Forbidden')) {
-      const $ = cheerio.load(htmlContent);
-
-      // O STF pode utilizar table ou divs. Vamos tentar múltiplos seletores
-      $('.processo, tr.processo, .processo-item, .card-processo').each((index, element) => {
-        const titulo = $(element).find('.titulo, .classe-numero, .nome-processo, h4').text().trim();
-        const relator = $(element).find('.relator, .ministro').text().trim();
-        const resumo = $(element).find('.resumo, .assunto, .descricao').text().trim();
-        const dataProc = $(element).find('.data, .data-julgamento').text().trim();
-
-        if (titulo && titulo.length > 2) {
-          pauta.push({
-            id: `stf-ext-${index}`,
-            titulo: titulo,
-            relator: relator || 'Relator não informado',
-            resumo: resumo || 'Pauta de julgamento.',
-            data: dataProc || new Date().toISOString(),
-            orgao: 'Plenário / STF'
-          });
-        }
-      });
-    }
-
-    // Se o scraping dinâmico falhar ou a página não retornar processos visíveis (bloqueio de AJAX)
+    // Fallback: Dados Reais Mockados caso a sessão não exista hoje ou os scrapers falhem
     if (pauta.length === 0) {
-      console.log('Nenhum processo extraído. Utilizando fallback oficial de processos reais do STF.');
-      pauta.push(...REAL_STF_FALLBACK_DATA);
+      console.log('Tentativa 3: Utilizando fallback oficial.');
+      pauta = REAL_STF_FALLBACK_DATA;
+      methodUsed = 'Fallback';
     }
 
-    // Retorna a Pauta Estruturada em JSON
+    // Adiciona o método de extração na resposta como um header para telemetria (para não quebrar o array JSON)
     return new Response(JSON.stringify(pauta), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json', 'X-Scraper-Method': methodUsed },
       status: 200,
     });
 
   } catch (error) {
-    console.error('Erro geral na Edge Function:', error);
-    return new Response(JSON.stringify({ success: false, error: error.message, data: REAL_STF_FALLBACK_DATA }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    console.error('Erro geral:', error);
+    return new Response(JSON.stringify(REAL_STF_FALLBACK_DATA), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json', 'X-Scraper-Error': error.message },
       status: 500,
     });
   }
