@@ -57,24 +57,34 @@ export async function fetchDeputados(busca?: string, partido?: string, uf?: stri
 }
 
 export async function fetchDeputadoDetalhe(id: number) {
-  const cacheKey = `depDetalhe:${id}`;
-  const hit = cached<any>(cacheKey);
-  if (hit) return hit;
-  const url = `${CAMARA_API}/deputados/${id}`;
-  const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-  if (!res.ok) return null;
-  const json = await res.json();
-  const result = json.dados;
-  if (result) setCache(cacheKey, result);
-  return result;
+  try {
+    const cacheKey = `depDetalhe:${id}`;
+    const hit = cached<any>(cacheKey);
+    if (hit) return hit;
+    const url = `${CAMARA_API}/deputados/${id}`;
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) return null;
+    const json = await res.json();
+    const result = json.dados;
+    if (result) setCache(cacheKey, result);
+    return result;
+  } catch (error) {
+    console.error("Erro no fetchDeputadoDetalhe:", error);
+    return null;
+  }
 }
 
 export async function fetchDeputadoDespesas(id: number) {
-  const url = `${CAMARA_API}/deputados/${id}/despesas?ordem=DESC&ordenarPor=ano&itens=30`;
-  const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-  if (!res.ok) return [];
-  const json = await res.json();
-  return json.dados || [];
+  try {
+    const url = `${CAMARA_API}/deputados/${id}/despesas?ordem=DESC&ordenarPor=ano&itens=30`;
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) return [];
+    const json = await res.json();
+    return json.dados || [];
+  } catch (error) {
+    console.error("Erro no fetchDeputadoDespesas:", error);
+    return [];
+  }
 }
 
 // ---- SENADORES ----

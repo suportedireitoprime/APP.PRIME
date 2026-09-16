@@ -114,7 +114,7 @@ const DeputadosPanel = ({ searchQuery }: DeputadosPanelProps) => {
           onChange={(e) => setFiltroUf(e.target.value)}
           className="h-9 px-2 rounded-md border border-border bg-card/50 text-sm"
         >
-          <option value="">UF</option>
+          <option value="">Todos</option>
           {UFS.map(uf => <option key={uf} value={uf}>{uf}</option>)}
         </select>
       </div>
