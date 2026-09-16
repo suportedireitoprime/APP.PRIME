@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, FileText, Globe, Headphones, PlaySquare, CalendarDays, ScanEye, Rss, ArrowLeft } from 'lucide-react';
+import { ChevronLeft, FileText, Globe, Headphones, PlaySquare, CalendarDays, ScanEye, Rss, ArrowLeft, Users } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { useGoBack } from '@/hooks/useGoBack';
 import ShapeGrid from '@/components/ui/ShapeGrid';
@@ -151,6 +151,17 @@ const PoderDetalhe = () => {
                 onClick={() => navigate(`/radar-360`)}
                 className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
               />
+              {id === 'camara' && (
+                <HomeCard
+                  icon={Users}
+                  label="DEPUTADOS"
+                  sublabel="Lista oficial"
+                  color="#FFFFFF"
+                  iconStrokeWidth={1.5}
+                  onClick={() => navigate(`/radar/deputados`)}
+                  className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
+                />
+              )}
               {CARDS.map((item, index) => (
                 <HomeCard
                   key={item.id}
