@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar as CalendarIcon, MapPin, Clock, Info } from 'lucide-react';
+import { ArrowLeft, Calendar as CalendarIcon, MapPin, Clock, Info, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { haptic } from '@/lib/nativeHaptics';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
@@ -352,8 +352,18 @@ const AgendaSenado = () => {
           style={{ height: '95vh', maxHeight: '95vh' }}
         >
           {/* Header Draggable area */}
-          <div className="flex-none p-4 pb-2 w-full pt-3" onClick={() => setEventoSelecionado(null)}>
+          <div className="flex-none p-4 pb-2 w-full pt-3 relative" onClick={() => setEventoSelecionado(null)}>
             <div className="w-12 h-1.5 bg-white/20 rounded-full mx-auto flex-shrink-0" />
+            <button 
+              className="absolute right-4 top-3 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                haptic.selection();
+                setEventoSelecionado(null);
+              }}
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
           <ScrollArea className="flex-1 w-full px-5 pb-8">
@@ -363,7 +373,7 @@ const AgendaSenado = () => {
                   <span className={`text-[10px] sm:text-[11px] uppercase tracking-widest font-bold px-2 py-1 rounded inline-block mb-3 border ${getCorSituacao(eventoSelecionado.situacao)}`}>
                     {eventoSelecionado.situacao || 'SITUAÇÃO DESCONHECIDA'}
                   </span>
-                  <h2 className="text-[18px] sm:text-[20px] font-black text-white leading-tight uppercase">
+                  <h2 className="text-[18px] sm:text-[20px] font-extrabold tracking-widest text-white leading-tight uppercase">
                     {eventoSelecionado.titulo}
                   </h2>
                 </div>
@@ -433,7 +443,7 @@ const AgendaSenado = () => {
                     rel="noopener noreferrer"
                     className="w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white py-3.5 rounded-xl font-bold text-sm transition-colors border border-white/10"
                   >
-                    Abrir no Portal do Senado
+                    Acessar Pauta e Documentos (PDF)
                   </a>
                 </div>
 
