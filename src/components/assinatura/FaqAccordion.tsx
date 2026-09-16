@@ -13,10 +13,10 @@ export function FaqAccordion() {
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="para-quem" className="border-border">
           <AccordionTrigger className="font-body text-sm font-semibold text-foreground text-left hover:no-underline">
-            Para quem é o Direito Prime?
+            Para quem é o Estudos Jurídicos?
           </AccordionTrigger>
           <AccordionContent className="font-body text-sm text-muted-foreground leading-relaxed">
-            O Direito Prime é feito para <span className="text-foreground font-medium">estudantes de Direito, concurseiros e advogados</span> que precisam de agilidade no dia a dia jurídico. Consulte qualquer lei atualizada em segundos, tire dúvidas com IA jurídica 24h, gere resumos automáticos, ouça leis inteiras narradas, estude com flashcards e mapas mentais, acompanhe novidades legislativas em tempo real e leve toda a biblioteca no bolso — na faculdade, no trabalho, no fórum ou revisando para a próxima prova.
+            O Estudos Jurídicos é feito para <span className="text-foreground font-medium">estudantes de Direito, concurseiros e advogados</span> que precisam de agilidade no dia a dia jurídico. Consulte qualquer lei atualizada em segundos, tire dúvidas com IA jurídica 24h, gere resumos automáticos, ouça leis inteiras narradas, estude com flashcards e mapas mentais, acompanhe novidades legislativas em tempo real e leve toda a biblioteca no bolso — na faculdade, no trabalho, no fórum ou revisando para a próxima prova.
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="cancelar" className="border-border">
@@ -40,7 +40,7 @@ export function FaqAccordion() {
             O pagamento é seguro?
           </AccordionTrigger>
           <AccordionContent className="font-body text-sm text-muted-foreground leading-relaxed">
-            O pagamento é processado pelo Asaas (Instituição de Pagamento autorizada pelo Banco Central), com a mesma segurança usada em milhares de empresas. O Direito Prime nunca tem acesso aos dados do seu cartão.
+            O pagamento é processado pelo Asaas (Instituição de Pagamento autorizada pelo Banco Central), com a mesma segurança usada em milhares de empresas. O Estudos Jurídicos nunca tem acesso aos dados do seu cartão.
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="dispositivos" className="border-border-0 border-b-0">

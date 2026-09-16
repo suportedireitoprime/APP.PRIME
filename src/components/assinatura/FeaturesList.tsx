@@ -1,86 +1,103 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Scale, MessageCircle, Brain, Library, Headphones, FileText, Sparkles, Monitor, Shield, Briefcase, Zap } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Scale, Brain, Library, Sparkles, Briefcase, CheckCircle2 } from "lucide-react";
 
-export const PRO_FEATURES = [
-  { icon: Scale, text: 'Vade Mecum completo todas as leis em vigor, sempre atualizadas' },
-  { icon: MessageCircle, text: 'Horus 24h no WhatsApp assistente jurídico com todas as funções' },
-  { icon: Brain, text: 'IA jurídica ilimitada tire dúvidas, gere peças e estude sem parar' },
-  { icon: Library, text: 'Biblioteca profissional com +200 livros e ebooks jurídicos' },
-  { icon: Headphones, text: 'Narração nativa ouça leis inteiras com voz humana' },
-  { icon: FileText, text: 'Resumos automáticos por IA de leis, artigos e livros' },
-  { icon: Sparkles, text: 'Funções do artigo explicar, mapa mental, flashcards e mais' },
-  { icon: Monitor, text: 'Acesso completo no Desktop, Web e App sincronizados' },
-  { icon: Shield, text: 'Radar Legislativo em tempo real nenhuma novidade escapa' },
-  { icon: Briefcase, text: 'Uso profissional liberado advogados, servidores e concurseiros' },
-  { icon: Zap, text: 'Sem anúncios, Suporte prioritário, Atualizações antecipadas' },
+const CATEGORIZED_FEATURES = [
+  {
+    category: "Vade Mecum Inteligente",
+    icon: Scale,
+    features: [
+      "Todas as leis em vigor sempre atualizadas automaticamente",
+      "Busca inteligente de artigos por termo ou número",
+      "Súmulas Vinculantes do STF integradas",
+      "Leis secas formatadas para leitura confortável",
+      "Histórico de artigos mais lidos e recentes",
+      "Organização por áreas do Direito e matérias"
+    ]
+  },
+  {
+    category: "IA Jurídica (Horus)",
+    icon: Brain,
+    features: [
+      "Assistente Hórus 24h no WhatsApp",
+      "Tira-dúvidas ilimitado sobre leis e casos práticos",
+      "Criador de peças jurídicas (petições, recursos, contratos)",
+      "Resumos automáticos de artigos complexos da lei",
+      "Explicações simplificadas ('Em português claro')",
+      "Exemplos práticos gerados na hora para qualquer artigo"
+    ]
+  },
+  {
+    category: "Biblioteca Profissional",
+    icon: Library,
+    features: [
+      "+200 livros e ebooks jurídicos disponíveis",
+      "Resumos focados nos temas mais cobrados",
+      "Doutrinas essenciais e clássicos da literatura jurídica",
+      "Biografias de juristas históricos e filósofos do Direito",
+      "Leitura offline e progresso salvo automaticamente",
+      "Conteúdo curado pela equipe editorial"
+    ]
+  },
+  {
+    category: "Kit Completo de Estudos",
+    icon: Sparkles,
+    features: [
+      "Narração nativa: ouça as leis inteiras com voz humana",
+      "Milhares de Flashcards de memorização integrados",
+      "Mapas mentais visuais gerados a partir da legislação",
+      "Simulador de questões comentadas por alternativas",
+      "Marca-texto (grifos virtuais) sincronizados na nuvem",
+      "Anotações pessoais salvas em cada artigo da lei"
+    ]
+  },
+  {
+    category: "Uso Profissional & Ferramentas",
+    icon: Briefcase,
+    features: [
+      "Radar Legislativo: notificações de novas leis em tempo real",
+      "Acesso simultâneo no App (iOS/Android), Web e Desktop",
+      "Modo Offline Premium: acesse todo o conteúdo sem internet",
+      "Sem anúncios e sem interrupções",
+      "Suporte prioritário exclusivo para assinantes",
+      "Acesso antecipado a novas ferramentas do ecossistema"
+    ]
+  }
 ];
 
-const ITEMS_PER_PAGE = 5;
-const TOTAL_PAGES = Math.ceil(PRO_FEATURES.length / ITEMS_PER_PAGE);
-
 export function FeaturesList({ tabKey }: { tabKey: string }) {
-  const [currentPage, setCurrentPage] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentPage((prev) => (prev + 1) % TOTAL_PAGES);
-    }, 4500);
-    return () => clearInterval(timer);
-  }, [tabKey]); // reset interval if tabKey changes (though it shouldn't matter much)
-
-  const currentFeatures = PRO_FEATURES.slice(
-    currentPage * ITEMS_PER_PAGE,
-    (currentPage + 1) * ITEMS_PER_PAGE
-  );
-
   return (
-    <motion.div
-      key={tabKey}
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="mx-4 rounded-2xl p-5 bg-card/60 border border-border overflow-hidden"
-    >
-      <div className="flex items-center justify-between gap-2 mb-4">
-        <h3 className="font-display text-sm font-bold text-foreground uppercase tracking-wider">
-          Tudo que você desbloqueia
-        </h3>
-        
-        {/* Pagination Dots */}
-        <div className="flex gap-1.5">
-          {Array.from({ length: TOTAL_PAGES }).map((_, idx) => (
-            <div 
-              key={idx}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                currentPage === idx ? "w-4 bg-primary" : "w-1.5 bg-muted-foreground/30"
-              }`}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="relative" style={{ minHeight: '220px' }}>
-        <AnimatePresence mode="wait">
-          <motion.ul
-            key={currentPage}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="space-y-3 absolute inset-0 w-full"
-          >
-            {currentFeatures.map(({ icon: Icon, text }) => (
-              <li key={text} className="flex items-start gap-3">
-                <div className="mt-0.5 shrink-0 w-6 h-6 rounded-lg bg-muted flex items-center justify-center">
-                  <Icon className="w-3.5 h-3.5 text-primary" strokeWidth={2.5} />
+    <div className="mx-4 rounded-2xl p-5 bg-card/60 border border-border">
+      <h3 className="font-display text-sm font-bold text-foreground uppercase tracking-wider mb-5 text-center">
+        Tudo que você desbloqueia
+      </h3>
+      
+      <Accordion type="single" collapsible className="w-full space-y-3">
+        {CATEGORIZED_FEATURES.map((cat, i) => {
+          const Icon = cat.icon;
+          return (
+            <AccordionItem key={i} value={`cat-${i}`} className="border border-white/5 bg-black/20 rounded-xl overflow-hidden shadow-sm">
+              <AccordionTrigger className="px-4 py-3.5 hover:no-underline hover:bg-white/5 transition-colors group">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <Icon className="w-4 h-4 text-primary" />
+                  </div>
+                  <span className="font-display font-bold text-[13px] tracking-wide text-left">{cat.category}</span>
                 </div>
-                <span className="font-body text-sm text-foreground leading-snug">{text}</span>
-              </li>
-            ))}
-          </motion.ul>
-        </AnimatePresence>
-      </div>
-    </motion.div>
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-4 pt-1">
+                <ul className="space-y-3">
+                  {cat.features.map((feat, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5 opacity-90" />
+                      <span className="font-body text-[13px] text-muted-foreground leading-snug font-medium pr-1">{feat}</span>
+                    </li>
+                  ))}
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+          );
+        })}
+      </Accordion>
+    </div>
   );
 }
