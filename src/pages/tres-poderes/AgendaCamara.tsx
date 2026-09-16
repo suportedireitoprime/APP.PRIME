@@ -17,6 +17,7 @@ interface EventoCamara {
   local: string;
   orgaos: string;
   situacao: string;
+  urlRegistro?: string;
 }
 
 type LegendaEvento = { descricao: string; exemplo: string };
@@ -77,15 +78,29 @@ const getCorSituacao = (situacao: string) => {
 
 const formatarDescricao = (texto: string) => {
   if (!texto) return null;
-  // Apenas quebra a linha antes de horários (ex: 14h30) se houver espaço antes.
-  // Isso evita quebrar palavras ao meio que tenham letras maiúsculas.
-  const formatted = texto.replace(/(\s+)(\d{1,2}h(?:\d{2})?\b)/g, '\n\n$2');
+  
+  // Captura horários sozinhos (ex: 18h20) ou intervalos (ex: 17h30 - 18h20) 
+  // O espaço antes é mantido, mas envolvemos o horário em tags ** para processar
+  const regexHorarios = /(\s+)(\d{1,2}h(?:\d{2})?(?:\s*-\s*\d{1,2}h(?:\d{2})?)?)\s+/g;
+  const formatted = texto.replace(regexHorarios, '\n\n**$2** ');
   
   const linhas = formatted.split(/\n+/);
   return (
     <>
       {linhas.map((linha, idx) => {
         if (!linha.trim()) return null;
+        
+        if (linha.includes('**')) {
+          const partes = linha.split('**');
+          return (
+            <p key={idx} className="text-[13px] text-white/70 leading-relaxed text-justify mb-2 last:mb-0">
+              {partes.map((parte, i) => (
+                i % 2 === 1 ? <strong key={i} className="font-black text-white">{parte}</strong> : parte
+              ))}
+            </p>
+          );
+        }
+
         return (
           <p key={idx} className="text-[13px] text-white/70 leading-relaxed text-justify mb-2 last:mb-0">
             {linha.trim()}
@@ -105,7 +120,7 @@ const AgendaCamara = () => {
   const [eventos, setEventos] = useState<EventoCamara[]>([]);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
-  const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [eventoSelecionado, setEventoSelecionado] = useState<EventoCamara | null>(null);
 
   // Ref para rolar a linha do tempo até o dia selecionado (hoje) ao montar
   const timelineRef = useRef<HTMLDivElement>(null);
@@ -147,8 +162,24 @@ const AgendaCamara = () => {
 
       if (error) throw error;
       
-      const evts = result.eventos || [];
-      setEventos(evts);
+      if (result && result.dados) {
+        const evts = result.dados.map((e: any) => ({
+          id: e.id,
+          titulo: e.descricaoTipo || 'Evento da Câmara',
+          descricao: e.descricao || 'Sem descrição detalhada.',
+          horaInicio: e.dataHoraInicio,
+          horaFim: e.dataHoraFim,
+          local: e.localCamara?.nome || e.localExterno || 'Local a definir',
+          orgaos: e.orgaos?.map((o: any) => o.nome).join(', ') || '',
+          situacao: e.situacao || '',
+          urlRegistro: e.urlRegistro || undefined
+        }));
+
+        setEventos(evts);
+      } else {
+        const evts = result.eventos || [];
+        setEventos(evts);
+      }
     } catch (err: any) {
       console.error("Erro ao buscar agenda da Câmara:", err);
       setErro("Não foi possível carregar a pauta. Tente novamente mais tarde.");
@@ -244,144 +275,196 @@ const AgendaCamara = () => {
         </div>
       </div>
 
-      {/* Conteúdo Scrollável */}
-      <ScrollArea className="flex-1 w-full relative z-10">
-        <div className="p-4 pb-safe space-y-4">
-          
-          {loading && (
-            <div className="space-y-4">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col gap-3 backdrop-blur-sm">
-                  <Skeleton className="h-5 w-3/4 bg-white/10" />
-                  <Skeleton className="h-4 w-1/2 bg-white/10" />
-                  <div className="flex gap-2">
-                    <Skeleton className="h-4 w-20 bg-white/10" />
-                    <Skeleton className="h-4 w-24 bg-white/10" />
-                  </div>
+      {/* Lista de Eventos (Scrollável) */}
+      <div className="flex-1 overflow-y-auto pb-24 z-10">
+        <div className="p-4 space-y-4">
+          {loading ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="bg-white/5 rounded-2xl p-4 border border-white/5">
+                <Skeleton className="h-5 w-3/4 bg-white/10 mb-3" />
+                <Skeleton className="h-4 w-1/2 bg-white/10 mb-4" />
+                <div className="flex gap-2">
+                  <Skeleton className="h-6 w-20 bg-white/10 rounded-md" />
+                  <Skeleton className="h-6 w-32 bg-white/10 rounded-md" />
                 </div>
-              ))}
-            </div>
-          )}
-
-          {!loading && erro && (
-            <div className="flex flex-col items-center justify-center py-12 text-center px-6">
-              <Info className="w-10 h-10 text-rose-500 mb-3 opacity-80" />
-              <p className="text-sm text-white/70">{erro}</p>
+              </div>
+            ))
+          ) : erro ? (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-6 text-center">
+              <p className="text-red-400 text-sm mb-4">{erro}</p>
               <button 
                 onClick={() => fetchAgenda(dataSelecionada)}
-                className="mt-4 px-6 py-2 bg-white/10 rounded-full text-sm text-white hover:bg-white/20 transition-colors"
+                className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-bold"
               >
                 Tentar Novamente
               </button>
             </div>
-          )}
-
-          {!loading && !erro && eventos.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-20 text-center px-6 bg-black/20 rounded-2xl border border-white/5 mt-4 backdrop-blur-sm">
-              <CalendarIcon className="w-12 h-12 text-white/20 mb-4" />
-              <h3 className="text-base font-bold text-white/90 mb-1">Sem eventos programados</h3>
-              <p className="text-sm text-white/50">Não há sessões ou comissões agendadas para esta data.</p>
+          ) : eventos.length === 0 ? (
+            <div className="text-center text-white/50 py-12 px-6 flex flex-col items-center">
+              <CalendarIcon className="w-12 h-12 opacity-20 mb-3" />
+              <p>Nenhuma sessão ou reunião agendada para este dia na Câmara dos Deputados.</p>
             </div>
-          )}
-
-          {!loading && !erro && eventos.map((evento) => {
-            const isExpanded = expandedId === evento.id;
-            return (
+          ) : (
+            eventos.map((evento) => (
               <div 
                 key={evento.id} 
                 onClick={() => {
                   haptic.selection();
-                  setExpandedId(isExpanded ? null : evento.id);
+                  setEventoSelecionado(evento);
                 }}
-                className="p-4 rounded-2xl bg-[#121214]/90 backdrop-blur-md border border-white/5 flex flex-col gap-2 relative overflow-hidden cursor-pointer transition-all hover:bg-[#1A1A1D]/90"
+                className="bg-[#111111]/80 backdrop-blur-sm rounded-2xl border border-white/5 overflow-hidden transition-all duration-300 relative group active:scale-[0.98] cursor-pointer hover:border-white/10"
               >
-                {/* Barra lateral */}
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-sky-500" />
-                
-                <div className="flex items-start justify-between gap-3 mb-1">
-                  <h3 className="text-[13px] sm:text-[14px] font-black uppercase tracking-widest text-white/95 leading-snug break-words flex-1">
-                    {evento.titulo}
-                  </h3>
-                  {evento.situacao && (
-                    <span className={`text-[9px] sm:text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded whitespace-nowrap flex-shrink-0 border ${getCorSituacao(evento.situacao)}`}>
-                      {evento.situacao}
-                    </span>
+                {/* Linha colorida lateral (opcional) */}
+                <div className={`absolute left-0 top-0 bottom-0 w-1 ${evento.situacao?.toUpperCase().includes('CONVOCADA') ? 'bg-amber-500' : 'bg-white/20'}`} />
+
+                <div className="p-4 pl-5">
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <h3 className="font-black text-[13px] sm:text-[14px] text-white uppercase tracking-wide leading-tight">
+                      {evento.titulo}
+                    </h3>
+                    {evento.situacao && (
+                      <span className={`text-[9px] sm:text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded whitespace-nowrap flex-shrink-0 border ${getCorSituacao(evento.situacao)}`}>
+                        {evento.situacao}
+                      </span>
+                    )}
+                  </div>
+                  
+                  {/* Info básica sempre visível */}
+                  <div className="flex flex-wrap items-center gap-3 mt-1">
+                    <div className="flex items-center gap-1.5 text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-md">
+                      <Clock className="w-3.5 h-3.5" />
+                      <span className="text-[12px] font-bold">
+                        {evento.horaInicio ? new Date(evento.horaInicio).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '--:--'}
+                        {evento.horaFim ? ` às ${new Date(evento.horaFim).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}` : ''}
+                      </span>
+                    </div>
+                    
+                    {evento.local && (
+                      <div className="flex items-center gap-1.5 text-white/60">
+                        <MapPin className="w-3.5 h-3.5" />
+                        <span className="text-[12px] line-clamp-1">{evento.local}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Explicação Curta sempre visível no card */}
+                  {getLegenda(evento.titulo) && (
+                    <div className="mt-2 flex items-start gap-1.5 bg-white/5 border border-white/10 rounded-md p-2">
+                      <Info className="w-3.5 h-3.5 text-sky-400 flex-shrink-0 mt-0.5" />
+                      <p className="text-[11px] sm:text-[12px] text-white/70 leading-tight font-medium">
+                        <span className="font-bold text-sky-400/90 mr-1.5 uppercase tracking-wider">O que é isso?</span>
+                        {getLegenda(evento.titulo)?.descricao}
+                      </p>
+                    </div>
                   )}
                 </div>
-                
-                {/* Info básica sempre visível */}
-                <div className="flex flex-wrap items-center gap-3 mt-1">
-                  <div className="flex items-center gap-1.5 text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-md">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span className="text-[12px] font-bold">
-                      {evento.horaInicio ? new Date(evento.horaInicio).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '--:--'}
-                      {evento.horaFim ? ` às ${new Date(evento.horaFim).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}` : ''}
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Modal Bottom Sheet: Detalhes do Evento */}
+      <div className={`fixed inset-0 z-50 flex flex-col justify-end transition-all duration-300 ${eventoSelecionado ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setEventoSelecionado(null)} />
+        
+        <div 
+          className={`relative bg-[#0d0f12] border-t border-white/10 w-full rounded-t-3xl flex flex-col transition-transform duration-300 ${eventoSelecionado ? 'translate-y-0' : 'translate-y-full'}`}
+          style={{ height: '95vh', maxHeight: '95vh' }}
+        >
+          {/* Header Draggable area */}
+          <div className="flex-none p-4 pb-2 w-full pt-3" onClick={() => setEventoSelecionado(null)}>
+            <div className="w-12 h-1.5 bg-white/20 rounded-full mx-auto flex-shrink-0" />
+          </div>
+
+          <ScrollArea className="flex-1 w-full px-5 pb-8">
+            {eventoSelecionado && (
+              <div className="flex flex-col gap-5 pt-2">
+                <div>
+                  <span className={`text-[10px] sm:text-[11px] uppercase tracking-widest font-bold px-2 py-1 rounded inline-block mb-3 border ${getCorSituacao(eventoSelecionado.situacao)}`}>
+                    {eventoSelecionado.situacao || 'SITUAÇÃO DESCONHECIDA'}
+                  </span>
+                  <h2 className="text-[18px] sm:text-[20px] font-black text-white leading-tight uppercase">
+                    {eventoSelecionado.titulo}
+                  </h2>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex items-center gap-1.5 text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1.5 rounded-md">
+                    <Clock className="w-4 h-4" />
+                    <span className="text-[13px] font-bold">
+                      {eventoSelecionado.horaInicio ? new Date(eventoSelecionado.horaInicio).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '--:--'}
+                      {eventoSelecionado.horaFim ? ` às ${new Date(eventoSelecionado.horaFim).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}` : ''}
                     </span>
                   </div>
                   
-                  {evento.local && (
+                  {eventoSelecionado.local && (
                     <div className="flex items-center gap-1.5 text-white/60">
-                      <MapPin className="w-3.5 h-3.5" />
-                      <span className="text-[12px] line-clamp-1">{evento.local}</span>
+                      <MapPin className="w-4 h-4" />
+                      <span className="text-[13px]">{eventoSelecionado.local}</span>
                     </div>
                   )}
                 </div>
 
-                {/* Explicação Curta sempre visível no card */}
-                {getLegenda(evento.titulo) && (
-                  <div className="mt-2 flex items-start gap-1.5 bg-white/5 border border-white/10 rounded-md p-2">
-                    <Info className="w-3.5 h-3.5 text-sky-400 flex-shrink-0 mt-0.5" />
-                    <p className="text-[11px] sm:text-[12px] text-white/70 leading-tight font-medium">
-                      <span className="font-bold text-sky-400/90 mr-1.5 uppercase tracking-wider">O que é isso?</span>
-                      {getLegenda(evento.titulo)?.descricao}
+                {/* Exemplo Prático (Visível no Bottom Sheet) */}
+                {getLegenda(eventoSelecionado.titulo) && (
+                  <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4">
+                    <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-widest mb-1.5 block">
+                      Exemplo Prático
+                    </span>
+                    <p className="text-[13px] text-emerald-100/80 leading-relaxed font-medium">
+                      {getLegenda(eventoSelecionado.titulo)?.exemplo}
                     </p>
                   </div>
                 )}
 
-                {/* Área Expansível */}
-                <div className={`grid transition-all duration-300 ease-in-out mt-2 ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
-                  <div className="overflow-hidden flex flex-col gap-3">
-                    
-                    {/* Exemplo Prático (Visível ao expandir) */}
-                    {isExpanded && getLegenda(evento.titulo) && (
-                      <div className="pt-1">
-                        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3">
-                          <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1 block">
-                            Exemplo Prático
-                          </span>
-                          <p className="text-[12px] text-emerald-100/80 leading-relaxed font-medium">
-                            {getLegenda(evento.titulo)?.exemplo}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
-                    {evento.descricao && evento.descricao !== evento.titulo && (
-                      <div className="pt-2 border-t border-white/5">
-                        <div className="flex flex-col gap-2">
-                          {formatarDescricao(evento.descricao)}
-                        </div>
-                      </div>
-                    )}
-                    {evento.orgaos && (
-                      <div className="pt-2 border-t border-white/5">
-                        <span className="text-[10px] font-bold text-sky-500/80 uppercase tracking-widest block mb-1">Órgãos Envolvidos</span>
-                        <span className="text-[12px] text-white/70 font-medium">{evento.orgaos}</span>
-                      </div>
-                    )}
+                {/* Descrição Completa e Formatada */}
+                {eventoSelecionado.descricao && eventoSelecionado.descricao !== eventoSelecionado.titulo && (
+                  <div className="pt-2">
+                    <span className="text-[11px] font-bold text-sky-400 uppercase tracking-widest mb-2 block">Pauta Oficial</span>
+                    <div className="flex flex-col gap-2">
+                      {formatarDescricao(eventoSelecionado.descricao)}
+                    </div>
                   </div>
+                )}
+                
+                {/* Órgãos */}
+                {eventoSelecionado.orgaos && (
+                  <div className="pt-3 border-t border-white/5">
+                    <span className="text-[11px] font-bold text-white/40 uppercase tracking-widest block mb-1">Órgãos Envolvidos</span>
+                    <span className="text-[13px] text-white/70 font-medium">{eventoSelecionado.orgaos}</span>
+                  </div>
+                )}
+
+                {/* Ações / API Extra */}
+                <div className="pt-5 flex flex-col gap-3">
+                  {eventoSelecionado.urlRegistro && (
+                    <a 
+                      href={eventoSelecionado.urlRegistro}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-3.5 rounded-xl font-bold text-sm transition-colors"
+                    >
+                      Assistir Vídeo Oficial
+                    </a>
+                  )}
+                  <a 
+                    href={`https://www.camara.leg.br/evento-legislativo/${eventoSelecionado.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white py-3.5 rounded-xl font-bold text-sm transition-colors border border-white/10"
+                  >
+                    Ver Documentos na Íntegra (Câmara)
+                  </a>
                 </div>
 
-                {/* Ícone de expansão */}
-                <div className="w-full flex justify-center mt-1 text-white/20">
-                  {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                </div>
+                {/* Spacer final */}
+                <div className="h-6" />
               </div>
-            );
-          })}
-          
+            )}
+          </ScrollArea>
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 };
