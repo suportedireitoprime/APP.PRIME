@@ -1287,6 +1287,7 @@ function AnimatedRoutes() {
           <Route path="/pessoal/tematicas" element={<ProtectedRoute><PageTransition><PessoalTematicas /></PageTransition></ProtectedRoute>} />
           <Route path="/meu-espaco" element={<ProtectedRoute><PageTransition instant><MeuEspaco /></PageTransition></ProtectedRoute>} />
           <Route path="/graficos/avaliacao" element={<ProtectedRoute><PageTransition><AvaliacaoInteligente /></PageTransition></ProtectedRoute>} />
+          <Route path="/tres-poderes/camara/agenda" element={<ProtectedRoute><PageTransition><AgendaCamara /></PageTransition></ProtectedRoute>} />
           <Route path="/tres-poderes/:id" element={<PageTransition><PoderDetalhe /></PageTransition>} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
 
