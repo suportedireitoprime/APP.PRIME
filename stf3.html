@@ -1,0 +1,275 @@
+<!DOCTYPE html><html lang="pt-BR">
+	<body>
+		<div id="main" class="container-fluid p-0">
+			<div id="wrapper-cabecalho" class="wrapper-cabecalho">
+    <div class="fixed-top" id="cabecalho">
+        <section class="menu-acessibilidade p-0 m-0">
+  <div class="container">
+    <div class="menu-acessibilidade__itens">
+      <div class="p-0">
+        <div class="acessibilidade">
+          <!-- <div class="acessibilidade__landing ms-0">
+            <a href="/acessibilidade">
+              Acessibilidade</a>
+          </div> -->
+          <ul class="atalhos d-flex sr-only">
+            <div class="d-flex">Ir para:</div>
+            <li class="atalhos__item"><a class="atalhos__link" accesskey="1" href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#conteudo" id="conteudo-acessibilidade"><span>1</span> conteúdo</a></li>
+            <li class="atalhos__item"><a class="atalhos__link" accesskey="2" href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#menu-principal" id="menu-acessibilidade"><span>2</span> menu</a></li>
+            <li class="atalhos__item"><a class="atalhos__link" accesskey="3" href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#pesquisa" id="busca-acessibilidade"><span>3</span> busca</a></li>
+            <li class="atalhos__item"><a class="atalhos__link" accesskey="4" href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#rodape" id="rodape-acessibilidade"><span>4</span> rodapé</a></li>
+          </ul>
+          <div class="d-flex gap-2">
+            <div class="link-borda-direita pe-2">
+              <a id="barra-acessibilidade" href="https://portal.stf.jus.br/acessibilidade" target="_self" class="btn btn-contraste d-flex align-items-center gap-2"><i class="fas fa-universal-access fs-5"></i>Acessibilidade</a>
+            </div>
+            <div class="d-flex gap-2 link-borda-direita pe-2">
+              <button class="btn btn-contraste fw-bold" id="diminuir-fonte" title="Diminuir fonte">A-</button>
+              <button class="btn btn-contraste fw-bold" id="aumentar-fonte" title="Aumentar fonte">A+</button>
+            </div>
+            <button class="btn btn-contraste" id="alto-contraste" title="Alto contraste"><i class="fas fa-adjust"></i></button>
+            <button type="button" class="btn btn-contraste dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-volume-up" title="clique aqui para recomendações de acessibilidade "></i></button>
+            <div class="dropdown-menu fw-normal fs-5 px-2">
+              Para Melhor Usabilidade do Portal Recomendamos Usar os Leitores JAWS e NVDA
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="links-acessibilidade mx-auto mx-md-0 p-0">
+
+        <div class="link-borda-direita">
+          <a id="barra-stf-educa" href="https://ead.stf.jus.br/" target="_blank" class="btn btn-contraste">STF Educa</a>
+        </div>
+        <div class="link-borda-direita">
+          <a id="gestao-pessoas" href="https://egesp-portal.stf.jus.br/" target="_blank" class="btn btn-contraste">Gestão de Pessoas</a>
+        </div>
+        <div class="link-borda-direita">
+          <a id="contato-topo" href="https://portal.stf.jus.br/ouvidoria" target="_self" class="btn btn-contraste">Ouvidoria</a>
+        </div>
+        <div class="link-borda-direita">
+          <a id="tranparencia" href="https://portal.stf.jus.br/transparencia" target="_self" class="btn btn-contraste">Transparência <span class="d-none d-md-inline d-lg-none d-xl-inline"> e Prestação de Contas</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+        
+    </div>
+</div><section id="pesquisa" class=" pesquisa pesquisa-padrao m-0 px-0">
+    <div class="container pt-3">
+        <div class="text-end mt-4 mt-md-3 mb-3">
+            <p class="__stf-branco m-0">
+                <span class=" m-r-16 label-peticione">Peticione e acompanhe processos:</span> <a href="https://peticionamento.stf.jus.br/" target="_blank" class="btn ">Peticionamento Eletrônico</a>
+            </p>
+        </div>
+        <div class=" pesquisa-conteudo clearfix">
+            <div class=" pesquisa-titulo mt-3 mb-3">
+                <h3 class="m-0">O que você procura?</h3>
+            </div>
+            <div class="pesquisa-campos">
+                <div class="d-block d-md-none campo-container">
+                    <select id="menu-pesquisa-mobile" class=" pesquisa-select full-width">
+                        <option value="">Selecione o tipo de pesquisa</option>
+                        <option data-aba="abaProcesso" value="abaProcesso">Processos</option>
+                        <option data-aba="abaJurisprudencia" value="abaJurisprudencia">Jurisprudência</option> 
+                        <!-- <option data-aba="abaNoticias" value="abaNoticias">Notícias</option> -->
+                        <option data-aba="abaRepercussao" value="abaRepercussao">Repercussão Geral</option>
+                        <!-- <option data-aba="abaServicos" value="abaServicos">Pesquisa</option> -->
+                        <option data-aba="abaConteudo" value="abaConteudo">Conteúdo e Notícias</option>
+                    </select>
+                </div>
+                <div class="form-inline">
+                    <div class="campo-container"> 
+                        <form id="pesquisa-principal">
+                            <div class="seletores-campo d-none d-md-block">
+                                
+                                <ul class="seletores d-none d-md-block" id="menuPesquisa">
+                                    <li>
+                                        <span class="ativo" id="abaProcesso">Processos</span>
+                                    </li>
+                                    <li>
+                                        <span id="abaJurisprudencia">Jurisprudência</span>
+                                    </li>
+                                    <!-- <li>
+                                        <span id="abaNoticias">Notícias</span>
+                                    </li> -->
+                                    <li>
+                                        <span id="abaRepercussao">Repercussão Geral</span>
+                                    </li>
+                                    <!-- <li>
+                                        <span id="abaServicos">Pesquisa</span>
+                                    </li> -->
+                                    <li>
+                                        <span id="abaConteudo">Conteúdo e Notícias</span>
+                                    </li>
+                                </ul>
+                                
+                            </div>
+                            <div class="col-12 pesquisa-processo aba-pesquisa" style="">
+                                <label for="tipo-pesquisa-processo" class="sr-only">Escolher tipo de pesquisa de processo</label>
+                                <select id="tipo-pesquisa-processo" class="campo-texto tipo-pesquisa-processo">
+                                    <option value="CLASSE_E_NUMERO">Por Classe e Número</option>
+                                    <option value="NUMERO_ORIGEM">Por Número na Origem</option>
+                                    <option value="NUMERO_UNICO">Por Número Único</option>
+                                    <option value="PARTE">Por Parte</option>
+                                    <option value="ADVOGADO">Por Advogado</option>
+                                </select>
+                                <div class="campo-pesquisa-processo pesquisa-processo-classe">
+                                    <label for="Siglas" class="sr-only">Pesquisa por classe do processo</label>
+                                    <select class="campo-texto processo-classe" id="Siglas"><option value="">Classe</option><option value="AC">AC</option>"&gt;<option value="ACO">ACO</option>"&gt;<option value="ADC">ADC</option>"&gt;<option value="ADI">ADI</option>"&gt;<option value="ADO">ADO</option>"&gt;<option value="ADPF">ADPF</option>"&gt;<option value="AI">AI</option>"&gt;<option value="AImp">AImp</option>"&gt;<option value="AO">AO</option>"&gt;<option value="AOE">AOE</option>"&gt;<option value="AP">AP</option>"&gt;<option value="AR">AR</option>"&gt;<option value="ARE">ARE</option>"&gt;<option value="AS">AS</option>"&gt;<option value="CC">CC</option>"&gt;<option value="Cm">Cm</option>"&gt;<option value="EI">EI</option>"&gt;<option value="EL">EL</option>"&gt;<option value="EP">EP</option>"&gt;<option value="Ext">Ext</option>"&gt;<option value="HC">HC</option>"&gt;<option value="HD">HD</option>"&gt;<option value="IF">IF</option>"&gt;<option value="Inq">Inq</option>"&gt;<option value="MI">MI</option>"&gt;<option value="MS">MS</option>"&gt;<option value="PADM">PADM</option>"&gt;<option value="Pet">Pet</option>"&gt;<option value="PPE">PPE</option>"&gt;<option value="PSV">PSV</option>"&gt;<option value="RC">RC</option>"&gt;<option value="Rcl">Rcl</option>"&gt;<option value="RE">RE</option>"&gt;<option value="RHC">RHC</option>"&gt;<option value="RHD">RHD</option>"&gt;<option value="RMI">RMI</option>"&gt;<option value="RMS">RMS</option>"&gt;<option value="RvC">RvC</option>"&gt;<option value="SE">SE</option>"&gt;<option value="SIRDR">SIRDR</option>"&gt;<option value="SL">SL</option>"&gt;<option value="SS">SS</option>"&gt;<option value="STA">STA</option>"&gt;<option value="STP">STP</option>"&gt;<option value="TPA">TPA</option>"&gt;</select>
+                                    <div class="campo-pesquisa-numero">
+                                        <label for="pesquisaPrincipalClasseNumero" class="sr-only">Pesquisa por número do processo</label>
+                                        <input type="text" name="pesquisaPrincipalClasseNumero" id="pesquisaPrincipalClasseNumero" maxlength="40" class="campo-texto" placeholder=" Digite o número do processo (ex: 100)">
+                                    </div>
+                                </div>
+                                <div class="campo-pesquisa-processo pesquisa-numero-unico" style=" display: none;">
+                                    <label for="pesquisaPrincipalNumeroUnico" class="sr-only">Pesquisa por número único</label>
+                                     <input type="text" name="pesquisaPrincipalNumeroUnico" id="pesquisaPrincipalNumeroUnico" class=" campo-texto" placeholder=" Digite o número único">
+                                </div>
+                                <div class="campo-pesquisa-processo pesquisa-parte" style=" display:none;">
+                                    <label for="pesquisaPrincipalParte" class="sr-only">Pesquisa por nome da parte</label>
+                                    <input type=" text" name="pesquisaPrincipalParte" id="pesquisaPrincipalParte" maxlength="100" minlength="3" class="campo-texto" placeholder="Digite o nome da parte">
+                                </div>
+                                <div class="campo-pesquisa-processo pesquisa-advogado" style=" display:none;">
+                                    <label for="pesquisaPrincipalAdvogado" class="sr-only">Pesquisa por nome do(a) advogado(a)</label>
+                                    <input type=" text" name="pesquisaPrincipalAdvogado" id="pesquisaPrincipalAdvogado" maxlength="100" minlength="3" class="campo-texto" placeholder="Digite o nome do(a) advogado(a)">
+                                </div>
+                                <div class="campo-pesquisa-processo pesquisa-numero-origem" style=" display:none;">
+                                    <label for="pesquisaPrincipalNumeroOrigem" class="sr-only">Pesquisa por número na origem</label>
+                                    <input type="text" name="pesquisaPrincipalNumeroOrigem" id="pesquisaPrincipalNumeroOrigem" maxlength=" 40" class=" campo-texto" placeholder="Digite o número na origem">
+                                </div>
+                            </div>
+                            <div class="col-12 pesquisa-jurisprudencia aba-pesquisa" style="display: none;">
+                                <div class="col-12 no-padding">
+                                    <label for="pesquisaJurisprudencia" class="sr-only">Pesquisa por jurisprudência</label>
+                                    <input type="text" name="pesquisaJurisprudencia" id="pesquisaJurisprudencia" maxlength=" 100" class="campo-texto" placeholder="Digite um termo para a pesquisa de jurisprudência...">
+                                </div>
+                            </div>
+                            <!-- <div class="col-12 pesquisa-noticias-e-textos aba-pesquisa"
+                                style=" display: none;">
+                                <label for="pesquisaNoticiasTextos" class="sr-only">Pesquisa de notícias</label>
+                                <input type="text" name="pesquisaNoticiasTextos" id="pesquisaNoticiasTextos" maxlength="80" class="campo-texto" 
+									placeholder="Informe um assunto sobre uma notícia...">
+                            </div> -->
+                            <div class="col-12 pesquisa-repercussao aba-pesquisa" style="display: none;">
+                                <label for="pesquisaRepercussao" class="sr-only">Pesquisa de repercussão geral</label>
+                                <input type="text" name="pesquisaRepercussao" id="pesquisaRepercussao" class="campo-texto" maxlength="40" placeholder="Informe uma palavra-chave para pesquisa...">
+                            </div>
+                            <!-- <div class="col-12 pesquisa-servicos aba-pesquisa" style="display: none;">
+                                <label for="pesquisaServicos" class="sr-only">Pesquisa de serviços</label>
+                              <input type="text" name="pesquisaServicos" id="pesquisaServicos" class="campo-texto" maxlength="100" placeholder="Informe uma palavra-chave para pesquisa...">
+                            </div> -->
+                            <div class="col-12 pesquisa-conteudo aba-pesquisa" style="display: none;">
+                                <label for="pesquisaConteudo" class="sr-only">Pesquisa de serviços</label>
+                              <input type="text" name="pesquisaConteudo" id="pesquisaConteudo" class="campo-texto" maxlength="100" placeholder="Pesquisar conteúdo e notícias...">
+                            </div>
+                            <button form="pesquisa-principal" id="btnPesquisar" class="btn float-end btnBarraPesquisa">
+                                <i class="fas fa-search" id="botaoBarraPesquisa"></i>
+                                <span class="d-none d-md-inline">Pesquisar</span>
+                            </button>
+                        </form>
+                        <!-- <ul class="list-group pesquisa-servicos__lista" id="resultPesquisaServicos">
+            
+                        </ul> -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+
+<!-- <script src="/util/componentes/pesquisa/json.js" type="text/javascript"></script> -->
+
+			<section id="conteudo" class="container-fluid p-0">
+				<div class="container p-0">
+					<div id="texto-pagina-interna-wrapper" class="col-12 m-0 p-xs-0 m-t-24 m-b-24 p-sm-8">
+						<div id="texto-pagina-interna" class="p-l-40 p-r-40 m-b-40 p-l-xs-0 p-r-xs-0">
+							<div class="texto m-0">
+								<div class="col-12 col-md-12 p-0 p-l-xs-16 p-r-xs-16">
+									<h2 class="texto-super-titulo m-b-24 d-flex gap-2">Portal de Sessões de Julgamento</h2>
+									<div class="d-flex justify-content-between mb-1">
+										<h3 class="subtitulo-pagina d-flex gap-2 mt-2">
+											<span class="titulo__icone">
+												<svg version="1.1" viewBox="0 0 60.299998 60.600001" fill="currentColor" id="svg31" sodipodi:docname="icone-PORTAL_SESSOES_DE_JULGAMENTO.svg" inkscape:version="1.3 (0e150ed6c4, 2023-07-21)" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+  <path class="cls-1" d="M 60.3,1.1 V 0 c 0,0 0,0 0,0 v 0 c 0,0 -1.1,0 -1.1,0 V 0 C 26.7,0.6 0.5,27 0,59.5 v 0 1.1 H 4.8 C 5.4,30.3 30,5.8 60.3,5.3 Z" id="path1"></path>
+  <path class="cls-1" d="M 60.3,13.9 V 11.3 C 32.5,11.7 11.4,32.8 10.8,60.6 h 2.6 C 14,34.3 33.9,14.4 60.3,13.9 Z" id="path2"></path>
+  <path class="cls-1" d="m 15.1,60.6 h 45.2 v -45 C 34.9,16.1 15.7,35.2 15.1,60.5 Z" id="path3"></path>
+</svg>
+
+											</span>
+											Julgamentos Presenciais
+										</h3>
+										<div class="w-25">
+											<div class="text-end mx-auto w-100">
+												<a href="https://portal.stf.jus.br/#secao-julgamentos" class="btn btn-primary btn-md w-50">Voltar</a>
+											</div>
+										</div>
+									</div>
+									<div class="divider-titulo-formulario"></div>
+									<br>
+									<!-- <hr class="visible-xs"> -->
+
+									<div id="app" class="texto-conteudo m-t-16"><div id="lado_esquerdo" class="col-12 col-sm-12 col-md-12 m-0 p-xs-0 p-sm-8 p-b-32 p-l-0 p-r-0"><ul id="abas" class="nav nav-tabs"><li role="presentation" class="nav-item"><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#julgamento_presencial" data-bs-target="#julgamento_presencial" data-bs-toggle="tab" class="nav-link active">Julgamentos Presenciais</a></li> <li role="presentation" class="nav-item"><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#processo" data-bs-target="#processo" data-bs-toggle="tab" class="nav-link">Processo</a></li> <li role="presentation" class="nav-item"><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#pauta-tematica" data-bs-target="#pauta-tematica" data-bs-toggle="tab" class="nav-link">Pauta Temática</a></li> <li role="presentation" class="nav-item"><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#agenda-2030" data-bs-target="#agenda-2030" data-bs-toggle="tab" class="nav-link">Agenda 2030</a></li> <li role="presentation" class="nav-item"><a href="https://portal.stf.jus.br/textos/publicacao.asp?servico=post-processos&amp;pagina=sustentacao-oral">Sustentação Oral</a></li></ul> <div id="conteudo-abas" class="tab-content"><div role="tabpanel" id="julgamento_presencial" class="tab-pane active"><form method="post" class="form-cinza"><div class="row"><div class="col-12 col-sm-12 col-md-3"><div class="form-group"><label for="classe">Classe:</label> <select id="classe" name="classe" class="form-control form-select"><option value="">Classe</option><option value="AC">AC</option><option value="ACO">ACO</option><option value="ADC">ADC</option><option value="ADI">ADI</option><option value="ADO">ADO</option><option value="ADPF">ADPF</option><option value="AI">AI</option><option value="AImp">AImp</option><option value="AO">AO</option><option value="AOE">AOE</option><option value="AP">AP</option><option value="AR">AR</option><option value="ARE">ARE</option><option value="AS">AS</option><option value="CC">CC</option><option value="Cm">Cm</option><option value="EI">EI</option><option value="EL">EL</option><option value="EP">EP</option><option value="Ext">Ext</option><option value="HC">HC</option><option value="HD">HD</option><option value="IF">IF</option><option value="Inq">Inq</option><option value="MI">MI</option><option value="MS">MS</option><option value="PADM">PADM</option><option value="Pet">Pet</option><option value="PPE">PPE</option><option value="PSV">PSV</option><option value="RC">RC</option><option value="Rcl">Rcl</option><option value="RE">RE</option><option value="RHC">RHC</option><option value="RHD">RHD</option><option value="RMI">RMI</option><option value="RMS">RMS</option><option value="RvC">RvC</option><option value="SE">SE</option><option value="SIRDR">SIRDR</option><option value="SL">SL</option><option value="SS">SS</option><option value="STA">STA</option><option value="STP">STP</option><option value="TPA">TPA</option></select></div></div> <div class="col-12 col-sm-12 col-md-3"><div class="form-group"><label for="numero">Número:</label> <input type="text" id="numero" name="numero" class="form-control"></div></div> <div class="col-12 col-sm-12 col-md-auto"><div class="form-group text-center text-md-start"><label for="pesquisar" class="d-block">&nbsp;</label> <button type="submit" id="pesquisar" class="form-control btn btn-pesquisa-escuro">Pesquisar</button></div></div></div></form> <h4 class="m-t-24">CALENDÁRIO DE JULGAMENTOS PRESENCIAIS</h4> <form class="form-cinza"><fieldset><legend><small>Escolha o mês, o ano e clique nas datas para ver mais detalhes:</small></legend> <div class="row"><div class="col-12 col-sm-12 col-md-3"><div class="form-group"><select id="mes" name="mes" class="form-control form-select"><option value="01">Janeiro</option> <option value="02">Fevereiro</option> <option value="03">Março</option> <option value="04">Abril</option> <option value="05">Maio</option> <option value="06">Junho</option> <option value="07">Julho</option> <option value="08">Agosto</option> <option value="09">Setembro</option> <option value="10">Outubro</option> <option value="11">Novembro</option> <option value="12">Dezembro</option></select></div></div> <div class="col-12 col-sm-12 col-md-3"><div class="form-group"><select id="ano" name="ano" class="form-control form-select"><option value="2027">2027</option> <option value="2026">2026</option> <option value="2025">2025</option> <option value="2024">2024</option> <option value="2023">2023</option> <option value="2022">2022</option> <option value="2021">2021</option> <option value="2020">2020</option> <option value="2019">2019</option> <option value="2018">2018</option> <option value="2017">2017</option> <option value="2016">2016</option> <option value="2015">2015</option> <option value="2014">2014</option> <option value="2013">2013</option> <option value="2012">2012</option> <option value="2011">2011</option> <option value="2010">2010</option> <option value="2009">2009</option> <option value="2008">2008</option> <option value="2007">2007</option> <option value="2006">2006</option> <option value="2005">2005</option> <option value="2004">2004</option> <option value="2003">2003</option> <option value="2002">2002</option> <option value="2001">2001</option></select></div></div></div></fieldset></form> <div class="row m-t-24"><div class="col-12 col-lg-5"><div class="calendario card p-4"> <table><caption class="sr-only">Calendário de julgamento presencial</caption> <tbody><tr><th>D</th> <th>S</th> <th>T</th> <th>Q</th> <th>Q</th> <th>S</th> <th>S</th></tr> <tr><td class="ativa"><span></span></td><td class="ativa"><span></span></td><td class="ativa"><span>1</span></td><td class="ativa"><span>2</span></td><td class="ativa"><span>3</span></td><td class="ativa"><span>4</span></td><td class="ativa"><span>5</span></td></tr><tr><td class="ativa"><span>6</span></td><td class="ativa"><span>7</span></td><td class="ativa"><span>8</span></td><td class="ativa"><span>9</span></td><td class="ativa"><span>10</span></td><td class="ativa"><span>11</span></td><td class="ativa"><span>12</span></td></tr><tr><td class="ativa"><span>13</span></td><td class="ativa"><span>14</span></td><td class="ativa"><span>15</span></td><td class="ativa"><span>16</span></td><td class="ativa"><span>17</span></td><td class="ativa"><span>18</span></td><td class="ativa"><span>19</span></td></tr><tr><td class="ativa"><span>20</span></td><td class="ativa"><span>21</span></td><td class="ativa"><span>22</span></td><td class="ativa"><span>23</span></td><td class="ativa"><span>24</span></td><td class="ativa"><span>25</span></td><td class="ativa"><span>26</span></td></tr><tr><td class="ativa"><span>27</span></td><td class="ativa"><span>28</span></td><td class="ativa"><span>29</span></td><td class="ativa"><span>30</span></td></tr></tbody></table></div></div> <div class="col-12 col-lg-7"><section><span>Seleciona uma data para exibir as pautas de julgamento</span></section></div></div></div> <div role="tabpanel" id="processo" class="tab-pane"><form method="post" class="form-cinza"><div class="row"><div class="col-12 col-sm-12 col-md-3"><div class="form-group"><label for="classe2">Classe:</label> <select id="classe2" name="classe" class="form-control form-select"><option value="">Classe</option><option value="AC">AC</option><option value="ACO">ACO</option><option value="ADC">ADC</option><option value="ADI">ADI</option><option value="ADO">ADO</option><option value="ADPF">ADPF</option><option value="AI">AI</option><option value="AImp">AImp</option><option value="AO">AO</option><option value="AOE">AOE</option><option value="AP">AP</option><option value="AR">AR</option><option value="ARE">ARE</option><option value="AS">AS</option><option value="CC">CC</option><option value="Cm">Cm</option><option value="EI">EI</option><option value="EL">EL</option><option value="EP">EP</option><option value="Ext">Ext</option><option value="HC">HC</option><option value="HD">HD</option><option value="IF">IF</option><option value="Inq">Inq</option><option value="MI">MI</option><option value="MS">MS</option><option value="PADM">PADM</option><option value="Pet">Pet</option><option value="PPE">PPE</option><option value="PSV">PSV</option><option value="RC">RC</option><option value="Rcl">Rcl</option><option value="RE">RE</option><option value="RHC">RHC</option><option value="RHD">RHD</option><option value="RMI">RMI</option><option value="RMS">RMS</option><option value="RvC">RvC</option><option value="SE">SE</option><option value="SIRDR">SIRDR</option><option value="SL">SL</option><option value="SS">SS</option><option value="STA">STA</option><option value="STP">STP</option><option value="TPA">TPA</option></select></div></div> <div class="col-12 col-sm-12 col-md-3"><div class="form-group"><label for="numero2">Número:</label> <input type="text" id="numero2" name="numero" class="form-control"></div></div> <div class="col-12 col-sm-12 col-md-2 text-center text-md-left"><div class="form-group"><label for="pesquisar" class="d-block">&nbsp;</label> <button type="submit" id="pesquisar2" class="form-control btn btn-pesquisa-escuro">Pesquisar</button></div></div> <div class="col-12 col-sm-12 col-md-4"><div class="alert" style="background-color: rgb(255, 255, 255); border-radius: 0px;"><strong>PROCESSOS</strong> <p>Selecione a classe e informe o número para pesquisar se o processo foi liberado para julgamento</p></div></div></div></form> <!----></div> <div role="tabpanel" id="pauta-tematica" class="tab-pane"><div class="row"><div class="col-12"><div id="listagem-pautas"><h5 text-align="center">Organização, por assunto, dos processos liberados para julgamento no plenário</h5> <table class="table table-striped"><caption class="sr-only">Organização, por assunto, dos processos liberados para julgamento no plenário</caption> <tbody><tr><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.1 - TRIBUNAL DE CONTAS</a></td><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.2 - IMPOSTO DE RENDA</a></td></tr><tr><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.3 - TRIBUTOS E REGIME TRIBUTÁRIO</a></td><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.4 - ICMS</a></td></tr><tr><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.5 - REFORMA AGRÁRIA</a></td><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.6 - CONTRIBUIÇÕES</a></td></tr><tr><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.7 - MATÉRIA PENAL</a></td><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.8 - CONTROLE DE CONSTITUCIONALIDADE</a></td></tr><tr><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.9 - DIREITO DO TRABALHO</a></td><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.10 - SERVIDOR PÚBLICO</a></td></tr><tr><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.11 - DIREITO ECONÔMICO</a></td><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.12 - PRECATÓRIO</a></td></tr><tr><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.13 - DIREITO INTERNACIONAL PRIVADO</a></td><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.14 - ORDEM SOCIAL</a></td></tr><tr><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.15 - DIREITOS FUNDAMENTAIS</a></td><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.16 - PODER JUDICIÁRIO E FUNÇÕES ESSENCIAIS À JUSTIÇA</a></td></tr><tr><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.17 - MATÉRIA PROCESSUAL</a></td><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.18 - MATÉRIA ORÇAMENTÁRIA, FINANCEIRA E REPARTIÇÃO DE RECEITA</a></td></tr><tr><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.19 - DIREITO ADMINISTRATIVO</a></td><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.20 - SEPARAÇÃO DE PODERES E FEDERAÇÃO</a></td></tr><tr><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.21 - DIREITO ELEITORAL E MATÉRIA POLÍTICA</a></td><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.22 - COMPETÊNCIA DO STF</a></td></tr><tr><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.23 - PAUTA MISTA</a></td><td><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#">P.26 - PROCESSOS SIGILOSOS</a></td></tr></tbody></table></div></div></div></div> <div role="tabpanel" id="agenda-2030" class="tab-pane"><div class="row"><div class="col-12"><h5>Organização, por <a href="https://portal.stf.jus.br/hotsites/agenda-2030/" target="_blank">Objetivo de Desenvolvimento Sustentável (ODS)</a>, dos processos liberados para julgamento no plenário</h5> <div id="listagem-pautas2" class="listagem-pautas d-flex flex-wrap mx-auto justify-content-center mt-4"><div><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#"><div class="zoom"><img id="icone-ods3" src="https://portal.stf.jus.br/assets/img/agenda-onu/81.png" width="120" alt="ODS 1 - Erradicação da Pobreza"></div></a></div><div><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#"><div class="zoom"><img id="icone-ods3" src="https://portal.stf.jus.br/assets/img/agenda-onu/82.png" width="120" alt="ODS 2 - Fome Zero e Agricultura Sustentável"></div></a></div><div><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#"><div class="zoom"><img id="icone-ods3" src="https://portal.stf.jus.br/assets/img/agenda-onu/83.png" width="120" alt="ODS 3 - Saúde e Bem-Estar"></div></a></div><div><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#"><div class="zoom"><img id="icone-ods3" src="https://portal.stf.jus.br/assets/img/agenda-onu/84.png" width="120" alt="ODS 4 - Educação de Qualidade"></div></a></div><div><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#"><div class="zoom"><img id="icone-ods3" src="https://portal.stf.jus.br/assets/img/agenda-onu/85.png" width="120" alt="ODS 5 - Igualdade de Gênero"></div></a></div><div><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#"><div class="zoom"><img id="icone-ods3" src="https://portal.stf.jus.br/assets/img/agenda-onu/86.png" width="120" alt="ODS 6 - Água Potável e Saneamento"></div></a></div><div><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#"><div class="zoom"><img id="icone-ods3" src="https://portal.stf.jus.br/assets/img/agenda-onu/87.png" width="120" alt="ODS 7 - Energia Acessível e Limpa"></div></a></div><div><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#"><div class="zoom"><img id="icone-ods3" src="https://portal.stf.jus.br/assets/img/agenda-onu/88.png" width="120" alt="ODS 8 - Trabalho Decente e Crescimento Econômico"></div></a></div><div><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#"><div class="zoom"><img id="icone-ods3" src="https://portal.stf.jus.br/assets/img/agenda-onu/89.png" width="120" alt="ODS 9 - Indústria, Inovação e Infraestrutura"></div></a></div><div><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#"><div class="zoom"><img id="icone-ods3" src="https://portal.stf.jus.br/assets/img/agenda-onu/90.png" width="120" alt="ODS 10 - Redução das Desigualdades"></div></a></div><div><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#"><div class="zoom"><img id="icone-ods3" src="https://portal.stf.jus.br/assets/img/agenda-onu/91.png" width="120" alt="ODS 11 - Cidades e Comunidades Sustentáveis"></div></a></div><div><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#"><div class="zoom"><img id="icone-ods3" src="https://portal.stf.jus.br/assets/img/agenda-onu/92.png" width="120" alt="ODS 12 - Consumo e Produção Responsáveis"></div></a></div><div><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#"><div class="zoom"><img id="icone-ods3" src="https://portal.stf.jus.br/assets/img/agenda-onu/93.png" width="120" alt="ODS 13 - Ação contra a Mudança Global do Clima"></div></a></div><div><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#"><div class="zoom"><img id="icone-ods3" src="https://portal.stf.jus.br/assets/img/agenda-onu/94.png" width="120" alt="ODS 14 - Vida na Água"></div></a></div><div><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#"><div class="zoom"><img id="icone-ods3" src="https://portal.stf.jus.br/assets/img/agenda-onu/95.png" width="120" alt="ODS 15 - Vida Terrestre"></div></a></div><div><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#"><div class="zoom"><img id="icone-ods3" src="https://portal.stf.jus.br/assets/img/agenda-onu/96.png" width="120" alt="ODS 16 - Paz, Justiça e Instituições Eficazes"></div></a></div><div><a href="https://portal.stf.jus.br/pauta/pesquisarCalendario.asp#"><div class="zoom"><img id="icone-ods3" src="https://portal.stf.jus.br/assets/img/agenda-onu/97.png" width="120" alt="ODS 17 - Parcerias e Meios de Implementação"></div></a></div><div><a href="https://portal.stf.jus.br/hotsites/agenda-2030/" target="_blank"><div class="zoom"><img id="icone-ods2" src="https://portal.stf.jus.br/assets/img/agenda-onu/18.png" width="120" alt="Conheça a Agenda 2030"></div></a></div></div></div></div></div></div></div>     </div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+			</section>
+
+			
+
+		</div>
+
+        
+
+
+ 
+
+
+
+
+
+
+<div vw="" class="enabled">
+  <div vw-access-button="" class="active"></div>
+  <div vw-plugin-wrapper="">
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+
+<div id="vlibras-access-wrapper"><div id="vlibras-access"> <img id="vlibras-popup" src="https://vlibras.gov.br/app/assets/images/vlibras-popup.webp" alt="Acessível com VLibras"> <button type="button" aria-label="Conteúdo acessível em Libras usando o VLibras Widget com opções dos Avatares Ícaro, Hosana ou Guga." id="vlibras-button"> <img src="https://vlibras.gov.br/app/assets/images/vlibras-access.svg" alt="" aria-hidden="true" width="300" height="150"> </button> </div> </div>
+		
+		
+		
+		
+		
+
+	
+
+<div class="loadingoverlay" style="box-sizing: border-box; position: fixed; display: flex; flex-flow: column; align-items: center; justify-content: space-around; background: rgba(255, 255, 255, 0.8); top: 0px; left: 0px; width: 100%; height: 100%; z-index: 2147483647; opacity: 0.931067;"><div class="loadingoverlay_element" style="order: 1; box-sizing: border-box; overflow: visible; flex: 0 0 auto; display: flex; justify-content: center; align-items: center; animation-name: loadingoverlay_animation__rotate_right; animation-duration: 2000ms; animation-timing-function: linear; animation-iteration-count: infinite; width: 120px; height: 120px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" style="width: 100%; height: 100%; fill: rgb(32, 32, 32);"><circle r="80" cx="500" cy="90" style="fill: rgb(32, 32, 32);"></circle><circle r="80" cx="500" cy="910" style="fill: rgb(32, 32, 32);"></circle><circle r="80" cx="90" cy="500" style="fill: rgb(32, 32, 32);"></circle><circle r="80" cx="910" cy="500" style="fill: rgb(32, 32, 32);"></circle><circle r="80" cx="212" cy="212" style="fill: rgb(32, 32, 32);"></circle><circle r="80" cx="788" cy="212" style="fill: rgb(32, 32, 32);"></circle><circle r="80" cx="212" cy="788" style="fill: rgb(32, 32, 32);"></circle><circle r="80" cx="788" cy="788" style="fill: rgb(32, 32, 32);"></circle></svg></div></div><div style="display: none;"><button type="button" id="prebannerBtn" class="prebanner prebanner__border__1 glowCookies__left glowCookies__border animation" style="color: var(--stfAzulEscuro); background-color: #fff;">
+                                    <svg fill="currentColor" style="margin-right: 7px; margin-top: 2px; vertical-align: text-top;" height="1rem" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                        <path d="M510.52 255.82c-69.97-.85-126.47-57.69-126.47-127.86-70.17 0-127-56.49-127.86-126.45-27.26-4.14-55.13.3-79.72 12.82l-69.13 35.22a132.221 132.221 0 0 0-57.79 57.81l-35.1 68.88a132.645 132.645 0 0 0-12.82 80.95l12.08 76.27a132.521 132.521 0 0 0 37.16 72.96l54.77 54.76a132.036 132.036 0 0 0 72.71 37.06l76.71 12.15c27.51 4.36 55.7-.11 80.53-12.76l69.13-35.21a132.273 132.273 0 0 0 57.79-57.81l35.1-68.88c12.56-24.64 17.01-52.58 12.91-79.91zM176 368c-17.67 0-32-14.33-32-32s14.33-32 32-32 32 14.33 32 32-14.33 32-32 32zm32-160c-17.67 0-32-14.33-32-32s14.33-32 32-32 32 14.33 32 32-14.33 32-32 32zm160 128c-17.67 0-32-14.33-32-32s14.33-32 32-32 32 14.33 32 32-14.33 32-32 32z"></path>
+                                    </svg>Gerenciar cookies</button></div><div><div id="glowCookies-banner" class="glowCookies__banner glowCookies__banner__1 glowCookies__border glowCookies__left glowCookies__show">
+                                <div>
+                                    <p style="color: var(--stfCinzaClaro);">
+                                        O Portal do STF coleta dados, por meio de cookies ou dos navegadores, a fim de cumprir obrigação legal, permitir a melhor navegação ou para realizar análises estatísticas. 
+                                        <a href="https://portal.stf.jus.br/lgpd" target="_blank" class="read__more" style="color: var(--stfAzulHoverClaro);">
+                                            Para saber mais, acesse a página do STF sobre a LGPD.
+                                        </a>
+                                    </p>
+                                </div>    
+                                    <div class="btn__section">
+                                        <button type="button" id="acceptCookies" class="btn__accept accept__btn__styles" style="color: #fff; background-color: var(--stfAzulMedio);">
+                                            Estou ciente
+                                        </button>
+                                        <button type="button" id="rejectCookies" class="btn__settings settings__btn__styles" style="color: var(--stfCinzaMedio); background-color: var(--stfCinzaClaro);">
+                                            Rejeitar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div></body></html>
