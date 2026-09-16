@@ -124,30 +124,35 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
             >
               <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent pointer-events-none" />
               
-              <div className="absolute top-0 right-0 bg-primary text-primary-foreground font-black text-[9px] px-2.5 py-0.5 rounded-bl-xl tracking-wider">
+              {/* Imagem de Fundo Vazada */}
+              <div className="absolute top-0 bottom-0 right-0 w-3/5 pointer-events-none overflow-hidden rounded-r-3xl z-0" style={{ WebkitMaskImage: 'linear-gradient(to right, transparent, black 40%)' }}>
+                <img src="/anual_premium.jpg" alt="" className="w-full h-full object-cover opacity-60 mix-blend-screen scale-125 translate-x-4 translate-y-1" loading="lazy" />
+              </div>
+
+              <div className="absolute top-0 right-0 bg-primary text-primary-foreground font-black text-[9px] px-2.5 py-0.5 rounded-bl-xl tracking-wider z-10">
                 MAIS ESCOLHIDO
               </div>
 
-              <div className="flex justify-between items-start mb-1.5">
+              <div className="flex justify-between items-start mb-1.5 relative z-10">
                 <div>
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <ShieldCheck className="w-4 h-4 text-primary" />
-                    <h3 className="font-display font-black text-primary text-base uppercase tracking-wider">Plano Anual</h3>
+                    <h3 className="font-display font-black text-primary text-base uppercase tracking-wider shadow-black/50 drop-shadow-md">Plano Anual</h3>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-baseline gap-1 mb-1 text-foreground">
-                <span className="font-display text-lg font-bold">12x de</span>
-                <span className="font-display text-3xl font-black">R$ 16,65</span>
+              <div className="flex items-baseline gap-1 mb-1 text-foreground relative z-10">
+                <span className="font-display text-lg font-bold shadow-black/50 drop-shadow-md">12x de</span>
+                <span className="font-display text-3xl font-black shadow-black/50 drop-shadow-md">R$ 16,65</span>
               </div>
 
-              <p className="text-[10px] font-bold text-muted-foreground mb-2">
+              <p className="text-[10px] font-bold text-muted-foreground mb-2 relative z-10 drop-shadow-md shadow-black/50">
                 ou R$ 199,90 à vista
               </p>
               
-              <div className="w-full pt-1 flex items-center justify-center">
-                <TypewriterText messages={anualMessages} className="text-[11px] font-bold text-primary" />
+              <div className="w-full pt-1 flex items-center justify-center relative z-10">
+                <TypewriterText messages={anualMessages} className="text-[11px] font-bold text-primary drop-shadow-md" />
               </div>
             </button>
           )}
@@ -158,26 +163,31 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
               onClick={() => onSelectPlan('mensal')}
               className="relative w-full rounded-3xl border-2 transition-all duration-300 text-left p-4 overflow-hidden border-border bg-card shadow-lg ring-1 ring-border/50"
             >
-              <div className="flex justify-between items-start mb-1.5">
+              {/* Imagem de Fundo Vazada */}
+              <div className="absolute top-0 bottom-0 right-0 w-3/5 pointer-events-none overflow-hidden rounded-r-3xl z-0" style={{ WebkitMaskImage: 'linear-gradient(to right, transparent, black 40%)' }}>
+                <img src="/mensal_premium.jpg" alt="" className="w-full h-full object-cover opacity-50 mix-blend-screen scale-125 translate-x-4 translate-y-1" loading="lazy" />
+              </div>
+
+              <div className="flex justify-between items-start mb-1.5 relative z-10">
                 <div>
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <ShieldCheck className="w-4 h-4 text-muted-foreground" />
-                    <h3 className="font-display font-black text-muted-foreground text-base uppercase tracking-wider">Plano Mensal</h3>
+                    <h3 className="font-display font-black text-muted-foreground text-base uppercase tracking-wider shadow-black/50 drop-shadow-md">Plano Mensal</h3>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-baseline gap-1 mb-1 text-foreground">
-                <span className="font-display text-3xl font-black">R$ 29,90</span>
-                <span className="text-[10px] font-bold text-muted-foreground">/mês</span>
+              <div className="flex items-baseline gap-1 mb-1 text-foreground relative z-10">
+                <span className="font-display text-3xl font-black shadow-black/50 drop-shadow-md">R$ 29,90</span>
+                <span className="text-[10px] font-bold text-muted-foreground shadow-black/50 drop-shadow-md">/mês</span>
               </div>
               
-              <p className="text-[10px] font-bold text-muted-foreground mb-2">
+              <p className="text-[10px] font-bold text-muted-foreground mb-2 relative z-10 drop-shadow-md shadow-black/50">
                 Sem fidelidade. Cancele quando quiser.
               </p>
 
-              <div className="w-full pt-1 flex items-center justify-center">
-                <TypewriterText messages={mensalMessages} className="text-[11px] font-bold text-muted-foreground" />
+              <div className="w-full pt-1 flex items-center justify-center relative z-10">
+                <TypewriterText messages={mensalMessages} className="text-[11px] font-bold text-muted-foreground drop-shadow-md" />
               </div>
             </button>
           )}

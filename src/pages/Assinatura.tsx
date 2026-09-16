@@ -263,7 +263,7 @@ export default function Assinatura() {
         </AnimatePresence>
 
         <PageHeader
-          title="Assinatura Premium"
+          title={<span className="tracking-widest font-display uppercase font-black text-[15px]">Assinatura Premium</span>}
           onBack={handleBack}
         />
 
