@@ -38,10 +38,7 @@ export function TrialCountdownBanner({ expiresAt }: { expiresAt: string | null }
         
         <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-red-500/0 via-red-500/80 to-red-500/0"></div>
         
-        <div className="flex items-center gap-3 relative z-10 pl-1">
-           <div className="w-9 h-9 bg-red-500/10 rounded-full flex items-center justify-center border border-red-500/20 shrink-0">
-              <img src="/logo-prime.webp" alt="Logo" className="w-5 h-5 object-contain drop-shadow-md" />
-           </div>
+        <div className="flex items-center gap-3 relative z-10 pl-2">
            <div className="flex flex-col">
               <span className="font-display font-black text-white text-[11px] sm:text-xs tracking-wide uppercase shadow-sm">Seu Teste Gratuito</span>
               <span className="font-body text-[9px] sm:text-[10px] font-semibold text-red-400">Aproveite todos os recursos.</span>

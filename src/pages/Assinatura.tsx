@@ -182,34 +182,66 @@ export default function Assinatura() {
         />
 
         <Sheet open={paymentMethodSheetOpen} onOpenChange={setPaymentMethodSheetOpen}>
-          <SheetContent side="bottom" className="rounded-t-3xl px-6 pb-8 bg-background border-border">
-            <SheetHeader className="mb-6">
-              <SheetTitle className="text-xl font-display font-black text-foreground">Como você prefere pagar?</SheetTitle>
-              <SheetDescription className="text-sm font-medium">
-                Escolha a forma de pagamento para o plano Anual.
+          <SheetContent side="bottom" className="h-full sm:h-[95vh] rounded-none sm:rounded-t-3xl px-6 pb-8 bg-background border-border flex flex-col pt-12 overflow-y-auto">
+            <SheetHeader className="mb-8 text-left shrink-0">
+              <SheetTitle className="text-3xl font-display font-black text-foreground leading-tight">Escolha como<br/>prefere pagar.</SheetTitle>
+              <SheetDescription className="text-base font-medium mt-2">
+                Acesso imediato ao plano Anual. Selecione a forma de pagamento abaixo.
               </SheetDescription>
             </SheetHeader>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-5 flex-1">
               <Button
                 variant="outline"
-                className="h-16 flex items-center justify-start gap-4 px-4 border-2 border-primary/20 hover:border-primary hover:bg-primary/5 transition-all"
+                className="h-auto py-5 flex flex-col items-stretch justify-start gap-4 px-5 border-2 border-primary/30 hover:border-primary hover:bg-primary/5 transition-all rounded-3xl"
                 onClick={() => {
                   setPaymentMethodSheetOpen(false);
                   startPurchase('anual');
                 }}
               >
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <CreditCard className="w-5 h-5 text-primary" />
+                {/* Cartão de Crédito Animado */}
+                <div className="w-full h-32 rounded-xl bg-gradient-to-br from-primary via-[hsl(348_78%_38%)] to-purple-700 relative overflow-hidden shadow-lg mb-2">
+                  {/* Padrões geométricos */}
+                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                  <div className="absolute bottom-[-20%] left-[-10%] w-24 h-24 bg-black/20 rounded-full blur-xl"></div>
+                  {/* Chip */}
+                  <div className="absolute top-4 left-4 w-10 h-7 bg-yellow-400/80 rounded-md border border-yellow-300/50 flex flex-col justify-evenly px-1">
+                    <div className="w-full h-[1px] bg-yellow-600/50"></div>
+                    <div className="w-full h-[1px] bg-yellow-600/50"></div>
+                    <div className="w-full h-[1px] bg-yellow-600/50"></div>
+                  </div>
+                  {/* NFC Icon */}
+                  <div className="absolute top-5 left-16 flex gap-1">
+                     <span className="w-1 h-3 bg-white/40 rounded-full rotate-12"></span>
+                     <span className="w-1 h-4 bg-white/40 rounded-full rotate-12 -mt-0.5"></span>
+                     <span className="w-1 h-5 bg-white/40 rounded-full rotate-12 -mt-1"></span>
+                  </div>
+                  {/* Card Info */}
+                  <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
+                    <div className="flex flex-col text-left">
+                       <span className="font-mono text-white/90 text-sm tracking-widest">**** **** **** ****</span>
+                       <span className="font-display font-bold text-white text-xs tracking-wider uppercase mt-1">Plano Anual</span>
+                    </div>
+                    <div className="flex gap-1">
+                       <div className="w-6 h-6 rounded-full bg-red-500/80"></div>
+                       <div className="w-6 h-6 rounded-full bg-orange-400/80 -ml-3 mix-blend-screen"></div>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex flex-col items-start text-left flex-1">
-                  <span className="font-bold text-base text-foreground">Cartão de Crédito</span>
-                  <span className="text-xs text-muted-foreground">Acesso imediato</span>
+
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <CreditCard className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex flex-col items-start text-left flex-1">
+                    <span className="font-bold text-lg text-foreground">Cartão de Crédito</span>
+                    <span className="text-sm font-semibold text-primary">Até 12x de R$ 16,65</span>
+                  </div>
                 </div>
               </Button>
 
               <Button
                 variant="outline"
-                className="h-16 flex items-center justify-start gap-4 px-4 border-2 border-emerald-500/20 hover:border-emerald-500 hover:bg-emerald-500/5 transition-all"
+                className="h-20 flex items-center justify-start gap-4 px-5 border-2 border-border/80 hover:border-emerald-500 hover:bg-emerald-500/5 transition-all rounded-3xl"
                 onClick={() => {
                   setPaymentMethodSheetOpen(false);
                   startPurchase('anual_pix');
@@ -219,8 +251,8 @@ export default function Assinatura() {
                   <QrCode className="w-5 h-5 text-emerald-500" />
                 </div>
                 <div className="flex flex-col items-start text-left flex-1">
-                  <span className="font-bold text-base text-foreground">PIX (Desconto)</span>
-                  <span className="text-xs text-emerald-500 font-medium">Promoção: R$ 149,90/ano</span>
+                  <span className="font-bold text-lg text-foreground">PIX</span>
+                  <span className="text-sm font-medium text-muted-foreground">R$ 199,90 à vista</span>
                 </div>
               </Button>
             </div>
