@@ -142,14 +142,7 @@ const AgendaSTF = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 flex items-center justify-center">
-                <CalendarIcon className="w-4 h-4 text-rose-400 mr-2" />
-                <span className="text-sm font-bold text-rose-100">
-                  {eventosFiltrados[0]?.data_sessao 
-                    ? `Sessão: ${eventosFiltrados[0].data_sessao}`
-                    : `Sessões Pautadas`}
-                </span>
-              </div>
+              {/* Global date banner removed */}
               
               {eventosFiltrados.map((evento) => (
                 <div 
@@ -167,6 +160,12 @@ const AgendaSTF = () => {
                     <span className="text-[12px] font-bold text-rose-400 uppercase tracking-widest block">
                       {evento.relator}
                     </span>
+                    {evento.data_sessao && (
+                      <span className="text-[11px] font-bold text-emerald-400/90 flex items-center gap-1.5 block">
+                        <CalendarIcon className="w-3.5 h-3.5" />
+                        {evento.data_sessao}
+                      </span>
+                    )}
                     
                     {/* Resumo Real do Processo */}
                     {evento.resumo && (
@@ -232,16 +231,40 @@ const AgendaSTF = () => {
                       {eventoSelecionado.orgao_julgador}
                     </span>
                   )}
+                  {eventoSelecionado.data_sessao && (
+                    <span className="text-[12px] font-bold text-emerald-400 mt-1 block flex items-center gap-1.5">
+                      <CalendarIcon className="w-3.5 h-3.5" />
+                      {eventoSelecionado.data_sessao}
+                    </span>
+                  )}
+                  {eventoSelecionado.modalidade && (
+                    <span className="text-[12px] font-bold text-white/40 mt-1 block uppercase tracking-wider">
+                      Modalidade: {eventoSelecionado.modalidade}
+                    </span>
+                  )}
                 </div>
+
+                {/* Status - Moved to top for visibility */}
+                {eventoSelecionado.status && (
+                  <div className="pt-2">
+                    <span className="text-[11px] font-bold text-emerald-400/80 uppercase tracking-widest mb-2 block flex items-center gap-1.5">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      Status / Fase do Julgamento
+                    </span>
+                    <p className="text-[13px] text-emerald-100/80 leading-relaxed font-medium bg-emerald-500/5 border border-emerald-500/10 p-3 rounded-lg">
+                      {eventoSelecionado.status}
+                    </p>
+                  </div>
+                )}
 
                 {/* Exemplo Prático (Visível no Bottom Sheet) */}
                 {getLegenda(eventoSelecionado.processo) && (
                   <div className="bg-sky-500/10 border border-sky-500/20 rounded-xl p-4">
                     <span className="text-[11px] font-bold text-sky-400 uppercase tracking-widest mb-1.5 block">
-                      Exemplo Prático
+                      O que é isso? (Exemplo Prático)
                     </span>
                     <p className="text-[13px] text-sky-100/80 leading-relaxed font-medium">
-                      {getLegenda(eventoSelecionado.processo)?.exemplo}
+                      {getLegenda(eventoSelecionado.processo)?.descricao} {getLegenda(eventoSelecionado.processo)?.exemplo}
                     </p>
                   </div>
                 )}
@@ -282,15 +305,7 @@ const AgendaSTF = () => {
                   </div>
                 )}
 
-                {/* Status */}
-                {eventoSelecionado.status && (
-                  <div className="pt-2">
-                    <span className="text-[11px] font-bold text-emerald-400/80 uppercase tracking-widest mb-2 block">Status / Fase do Julgamento</span>
-                    <p className="text-[13px] text-emerald-100/80 leading-relaxed font-medium bg-emerald-500/5 border border-emerald-500/10 p-3 rounded-lg">
-                      {eventoSelecionado.status}
-                    </p>
-                  </div>
-                )}
+                {/* Status was here, now moved up */}
                 
                 {/* Ações / API Extra */}
                 <div className="pt-5 flex flex-col gap-3">
