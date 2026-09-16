@@ -37,7 +37,7 @@ export function TrialExpiredModal() {
             aria-live="polite"
           >
             <p className="text-[15px] font-semibold leading-snug">
-              Seu tempo gratuito de teste chegou ao fim! ⏳
+              Seu passe livre terminou! A jornada continua? 🚀
             </p>
             <span
               className="absolute -bottom-2 left-6 w-0 h-0 pointer-events-none"
@@ -69,7 +69,8 @@ export function TrialExpiredModal() {
             </h2>
             
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Seus <strong className="text-foreground">3 dias de teste gratuito</strong> chegaram ao fim. Escolha um plano para continuar acessando o Vade Mecum, a IA Jurídica e todas as ferramentas premium.
+              Sua degustação de <strong className="text-foreground">3 dias</strong> chegou ao fim, mas sua evolução não pode parar agora. 
+              Assine e destrave acesso <strong className="text-foreground">ilimitado</strong> a todas as ferramentas premium.
             </p>
             
             <div className="w-full mt-2">
@@ -77,7 +78,7 @@ export function TrialExpiredModal() {
                 onClick={() => navigate('/assinatura')}
                 className="w-full h-14 rounded-2xl font-display font-black text-base bg-primary text-primary-foreground active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/25"
               >
-                VER PLANOS
+                DESTRAVAR MEU ACESSO
                 <ArrowRight className="w-5 h-5" />
               </button>
             </div>
