@@ -24,49 +24,23 @@ export async function fetchDeputados(busca?: string, partido?: string, uf?: stri
   const cacheKey = `deputados:${busca || ''}:${partido || ''}:${uf || ''}`;
   const hit = cached<any[]>(cacheKey);
   if (hit) return hit;
-  let query = (supabase as any).from('radar_deputados').select('id,nome,sigla_partido,sigla_uf,foto_url,email,dados_json').order('nome');
+
+  let query = (supabase as any)
+    .from('radar_deputados')
+    .select('id,camara_id,nome,sigla_partido,sigla_uf,foto_url,email')
+    .order('nome');
+    
   if (busca) query = query.ilike('nome', `%${busca}%`);
   if (partido) query = query.eq('sigla_partido', partido);
   if (uf) query = query.eq('sigla_uf', uf);
-  
+
   const { data, error } = await query;
+  if (error || !data) return [];
   
-  if (error || !data || data.length === 0) {
-    // Fallback to API
-    let url = `${CAMARA_API}/deputados?ordem=ASC&ordenarPor=nome&itens=100`;
-    if (busca) url += `&nome=${encodeURIComponent(busca)}`;
-    if (partido) url += `&siglaPartido=${partido}`;
-    if (uf) url += `&siglaUf=${uf}`;
-    
-    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-    if (!res.ok) return [];
-    const json = await res.json();
-    return (json.dados || []).map((d: any) => ({
-      id: d.id,
-      nome: d.nome,
-      sigla_partido: d.siglaPartido,
-      sigla_uf: d.siglaUf,
-      foto_url: d.urlFoto,
-      email: d.email,
-      dados_json: d,
-    }));
-  }
-  
-  const mappedData = data.map((d: any) => {
-    let extractedId = d.id;
-    if (d.dados_json?.id) {
-      extractedId = d.dados_json.id;
-    } else if (d.foto_url) {
-      const match = d.foto_url.match(/\/(\d+)\.jpg/i);
-      if (match && match[1]) {
-        extractedId = parseInt(match[1]);
-      }
-    }
-    return {
-      ...d,
-      id: extractedId
-    };
-  });
+  const mappedData = data.map((d: any) => ({
+    ...d,
+    id: d.camara_id // O frontend espera que id seja o ID da câmara
+  }));
   
   setCache(cacheKey, mappedData);
   return mappedData;
