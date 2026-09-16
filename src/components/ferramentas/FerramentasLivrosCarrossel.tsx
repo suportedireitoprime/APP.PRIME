@@ -148,10 +148,10 @@ async function ensureClassicosPool(): Promise<LivroNormalizado[]> {
         .limit(30);
 
       const data = await withBundleFallback(
-        query.then((res) => {
+        Promise.resolve(query.then((res) => {
           if (res.error) throw res.error;
           return res.data;
-        }),
+        })),
         async () => {
           const rows = await bundle.bibliotecaClassicos();
           return rows || [];
@@ -297,29 +297,27 @@ export const FerramentasLivrosCarrossel = () => {
   return (
     <section className="space-y-3 -mx-4 sm:-mx-6">
       {/* Cabeçalho do Carrossel de Livros */}
-      <div className="px-4 sm:px-6">
-        <div className="flex items-center justify-between pb-1 border-b border-border/40 mb-1">
-          <div className="flex items-center gap-2">
+      <div className="mb-0 relative z-10 pointer-events-none px-5 flex items-start justify-between gap-3">
+        <div>
+          <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 pointer-events-auto uppercase tracking-widest">
             <span className="w-1 h-5 rounded-full bg-primary" />
-            <h2 className="font-display text-lg font-bold text-foreground tracking-wide">
-              LIVROS JURÍDICOS
-            </h2>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              haptic.selection();
-              navigate('/biblioteca?aba=acervos');
-            }}
-            className="flex items-center gap-1 text-xs font-semibold text-primary hover:text-primary/80 active:scale-95 transition-all"
-          >
-            <span>Ver acervo</span>
-            <ChevronRight className="w-3.5 h-3.5" />
-          </button>
+            LIVROS JURÍDICOS
+          </h3>
+          <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3 pointer-events-auto whitespace-nowrap truncate">
+            clássicos e obras fundamentais do Direito
+          </p>
         </div>
-        <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3 truncate">
-          clássicos e obras fundamentais do Direito
-        </p>
+        <button
+          type="button"
+          onClick={() => {
+            haptic.selection();
+            navigate('/biblioteca?aba=acervos');
+          }}
+          className="group pointer-events-auto shrink-0 mt-0.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.14] active:scale-95 backdrop-blur-md border border-white/15 hover:border-white/25 text-[12px] font-semibold text-foreground/90 hover:text-white transition-all shadow-sm"
+        >
+          <span>Ver todos</span>
+          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all" />
+        </button>
       </div>
 
       {/* Faixa Carrossel Horizontal */}

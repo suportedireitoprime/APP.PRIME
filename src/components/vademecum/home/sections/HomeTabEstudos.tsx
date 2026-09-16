@@ -8,9 +8,14 @@ import HomeLeiSecaBar from './HomeLeiSecaBar';
 import HomeApresentacoesTimeline from './HomeApresentacoesTimeline';
 import { toast } from '@/hooks/use-toast';
 const HomeNoticiasCarousel = lazyWithRetry(() => import('@/components/vademecum/home/HomeNoticiasCarousel'));
+const HomeLivrosCarousel = lazyWithRetry(() => import('@/components/ferramentas/FerramentasLivrosCarrossel'));
 const HomeAprenderCarousel = lazyWithRetry(() => import('@/components/vademecum/home/aprender/HomeAprenderCarousel'));
 import { AprenderCarouselSkeleton } from '@/components/vademecum/home/aprender/chunks';
 import { GRID_CATS, EMALTA_CATS, Cat } from './homeSectionsData';
+import { useState } from 'react';
+
+// Variável fora do ciclo de vida para alternar sempre que o componente montar novamente (ex: voltou de uma aba)
+let nextTopCarousel: 'noticias' | 'livros' = 'noticias';
 
 interface HomeTabEstudosProps {
   emAltaLeis?: boolean;
@@ -35,6 +40,12 @@ const HomeTabEstudos = ({
 }: HomeTabEstudosProps) => {
   const navigate = useNavigate();
 
+  const [topCarousel] = useState<'noticias' | 'livros'>(() => {
+    const current = nextTopCarousel;
+    nextTopCarousel = current === 'noticias' ? 'livros' : 'noticias';
+    return current;
+  });
+
   return (
     <motion.div
       key="estudos"
@@ -44,11 +55,15 @@ const HomeTabEstudos = ({
       transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
       className="space-y-6"
     >
-      {/* Carrossel de Notícias Jurídicas no topo */}
+      {/* Carrossel de Notícias Jurídicas ou Livros no topo */}
       {!hideNoticias && (
         <div className="pt-2 pb-2 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
           <Suspense fallback={<div className="h-48 bg-muted/20 animate-pulse rounded-xl mx-4" />}>
-            <HomeNoticiasCarousel onOpenChange={onNewsOpenChange} autoplay={noticiasAutoplay} />
+            {topCarousel === 'noticias' ? (
+              <HomeNoticiasCarousel onOpenChange={onNewsOpenChange} autoplay={noticiasAutoplay} />
+            ) : (
+              <HomeLivrosCarousel />
+            )}
           </Suspense>
         </div>
       )}
