@@ -29,24 +29,24 @@ export function TrialCountdownBanner({ expiresAt }: { expiresAt: string | null }
 
   return (
     <div className="sticky top-[calc(0.5rem+var(--sai-top,0px))] z-50 mx-4 mt-2 mb-4 transition-all duration-300 pointer-events-none">
-      <div className="bg-[#111111]/80 backdrop-blur-xl border border-red-500/30 rounded-2xl p-2.5 flex items-center justify-between shadow-[0_10px_30px_rgba(239,68,68,0.15)] overflow-hidden pointer-events-auto relative">
+      <div className="bg-[#111111]/90 backdrop-blur-xl border-2 border-red-500/40 rounded-2xl p-3 flex flex-col sm:flex-row items-center sm:justify-between shadow-[0_15px_40px_rgba(239,68,68,0.25)] overflow-hidden pointer-events-auto relative gap-3">
         {/* Imagem de Fundo Vazado (Watermark) */}
         <div 
-          className="absolute inset-0 opacity-[0.05] bg-no-repeat pointer-events-none"
+          className="absolute inset-0 opacity-[0.08] bg-no-repeat pointer-events-none"
           style={{ backgroundImage: "url('/logo-prime.webp')", backgroundPosition: 'right -20px center', backgroundSize: '150%' }}
         />
         
-        <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-red-500/0 via-red-500/80 to-red-500/0"></div>
+        <div className="absolute top-0 inset-x-0 h-[3px] bg-gradient-to-r from-red-500/0 via-red-500 to-red-500/0"></div>
         
-        <div className="flex items-center gap-3 relative z-10 pl-2">
+        <div className="flex items-center gap-3 relative z-10 w-full sm:w-auto text-center sm:text-left justify-center sm:justify-start">
            <div className="flex flex-col">
-              <span className="font-display font-black text-white text-[11px] sm:text-xs tracking-wide uppercase shadow-sm">Seu Teste Gratuito</span>
-              <span className="font-body text-[9px] sm:text-[10px] font-semibold text-red-400">Aproveite todos os recursos.</span>
+              <span className="font-display font-black text-white text-[13px] sm:text-sm tracking-widest uppercase shadow-sm">Seu Teste Gratuito</span>
+              <span className="font-body text-[11px] sm:text-xs font-semibold text-red-400">Aproveite todos os recursos.</span>
            </div>
         </div>
         
-        <div className="relative z-10 px-3 py-1.5 rounded-xl bg-red-500 text-white font-display font-black text-[9px] sm:text-[10px] tracking-widest uppercase animate-pulse flex items-center gap-1.5 shrink-0 shadow-[0_0_15px_rgba(239,68,68,0.4)]">
-           <Timer className="w-3.5 h-3.5" />
+        <div className="relative z-10 w-full sm:w-auto px-4 py-2 rounded-xl bg-red-600 text-white font-display font-black text-sm sm:text-base tracking-widest uppercase animate-pulse flex items-center justify-center gap-2 shrink-0 shadow-[0_0_20px_rgba(239,68,68,0.5)]">
+           <Timer className="w-5 h-5" />
            <span className="whitespace-nowrap">{timeLeft}</span>
         </div>
       </div>
