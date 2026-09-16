@@ -24,7 +24,7 @@ export async function fetchDeputados(busca?: string, partido?: string, uf?: stri
   const cacheKey = `deputados:${busca || ''}:${partido || ''}:${uf || ''}`;
   const hit = cached<any[]>(cacheKey);
   if (hit) return hit;
-  let query = (supabase as any).from('radar_deputados').select('id,nome,sigla_partido,sigla_uf,foto_url,email').order('nome');
+  let query = (supabase as any).from('radar_deputados').select('id,nome,sigla_partido,sigla_uf,foto_url,email,dados_json').order('nome');
   if (busca) query = query.ilike('nome', `%${busca}%`);
   if (partido) query = query.eq('sigla_partido', partido);
   if (uf) query = query.eq('sigla_uf', uf);
@@ -52,10 +52,21 @@ export async function fetchDeputados(busca?: string, partido?: string, uf?: stri
     }));
   }
   
-  const mappedData = data.map((d: any) => ({
-    ...d,
-    id: d.dados_json?.id || d.id
-  }));
+  const mappedData = data.map((d: any) => {
+    let extractedId = d.id;
+    if (d.dados_json?.id) {
+      extractedId = d.dados_json.id;
+    } else if (d.foto_url) {
+      const match = d.foto_url.match(/\/(\d+)\.jpg/i);
+      if (match && match[1]) {
+        extractedId = parseInt(match[1]);
+      }
+    }
+    return {
+      ...d,
+      id: extractedId
+    };
+  });
   
   setCache(cacheKey, mappedData);
   return mappedData;
