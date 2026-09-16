@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Clock, ShieldCheck, Zap } from "lucide-react";
+import { TypewriterText } from "@/components/ui/TypewriterText";
 
 interface PricingCardsProps {
   selectedPlan: 'mensal' | 'anual' | 'promocao';
@@ -10,6 +11,20 @@ interface PricingCardsProps {
 export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingCardsProps) {
   // Define o card a ser exibido com base na seleção
   const activePlan = selectedPlan === 'promocao' && !isNewUser ? 'anual' : selectedPlan;
+
+  const anualMessages = [
+    "Acesso total por 1 ano inteiro",
+    "Economize mais de 50%",
+    "Sua carreira em outro nível",
+    "O plano mais escolhido"
+  ];
+
+  const mensalMessages = [
+    "Acesso flexível mês a mês",
+    "Sem fidelidade, cancele fácil",
+    "Pague apenas pelo que usar",
+    "Acesso completo a tudo"
+  ];
 
   return (
     <div className="w-full flex flex-col gap-4 px-4 pt-2 pb-4">
@@ -83,9 +98,6 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
                   </div>
                   <p className="font-body text-[11px] font-semibold text-muted-foreground line-through">De R$ 199,90</p>
                 </div>
-                <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 shadow-lg mt-1">
-                  <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
-                </div>
               </div>
 
               <div className="flex items-baseline gap-1 mb-1">
@@ -98,8 +110,8 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
                 Promoção válida por 24 horas
               </p>
               
-              <div className="w-full bg-emerald-500/10 rounded-lg p-2.5 flex items-center justify-center border border-emerald-500/20">
-                <span className="text-[11px] font-bold text-emerald-400">Equivale a apenas R$ 12,49 / mês</span>
+              <div className="w-full pt-1 flex items-center justify-center">
+                <TypewriterText messages={["Equivale a apenas R$ 12,49 / mês", "Desconto exclusivo de boas-vindas", "Aproveite antes que acabe"]} className="text-[11px] font-bold text-emerald-400" />
               </div>
             </button>
           )}
@@ -123,9 +135,6 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
                     <h3 className="font-display font-black text-primary text-base uppercase tracking-wider">Plano Anual</h3>
                   </div>
                 </div>
-                <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-lg mt-1">
-                  <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
-                </div>
               </div>
 
               <div className="flex items-baseline gap-1 mb-1 text-foreground">
@@ -137,8 +146,8 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
                 ou R$ 199,90 à vista
               </p>
               
-              <div className="w-full bg-primary/10 rounded-lg p-2.5 flex items-center justify-center border border-primary/20">
-                <span className="text-[11px] font-bold text-primary">Acesso total por 1 ano inteiro</span>
+              <div className="w-full pt-1 flex items-center justify-center">
+                <TypewriterText messages={anualMessages} className="text-[11px] font-bold text-primary" />
               </div>
             </button>
           )}
@@ -156,9 +165,6 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
                     <h3 className="font-display font-black text-muted-foreground text-base uppercase tracking-wider">Plano Mensal</h3>
                   </div>
                 </div>
-                <div className="w-5 h-5 rounded-full bg-foreground flex items-center justify-center shrink-0 shadow-lg mt-1">
-                  <Check className="w-3.5 h-3.5 text-background" strokeWidth={3} />
-                </div>
               </div>
 
               <div className="flex items-baseline gap-1 mb-1 text-foreground">
@@ -170,8 +176,8 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
                 Sem fidelidade. Cancele quando quiser.
               </p>
 
-              <div className="w-full bg-foreground/5 rounded-lg p-2.5 flex items-center justify-center border border-border">
-                <span className="text-[11px] font-bold text-muted-foreground">Acesso flexível mês a mês</span>
+              <div className="w-full pt-1 flex items-center justify-center">
+                <TypewriterText messages={mensalMessages} className="text-[11px] font-bold text-muted-foreground" />
               </div>
             </button>
           )}

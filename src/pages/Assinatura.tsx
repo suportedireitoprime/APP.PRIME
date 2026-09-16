@@ -182,78 +182,51 @@ export default function Assinatura() {
         />
 
         <Sheet open={paymentMethodSheetOpen} onOpenChange={setPaymentMethodSheetOpen}>
-          <SheetContent side="bottom" className="h-full sm:h-[95vh] rounded-none sm:rounded-t-3xl px-6 pb-8 bg-background border-border flex flex-col pt-12 overflow-y-auto">
-            <SheetHeader className="mb-8 text-left shrink-0">
-              <SheetTitle className="text-3xl font-display font-black text-foreground leading-tight">Escolha como<br/>prefere pagar.</SheetTitle>
-              <SheetDescription className="text-base font-medium mt-2">
+          <SheetContent side="bottom" className="h-full sm:h-[95vh] rounded-none sm:rounded-t-3xl px-6 pb-8 bg-background border-border flex flex-col pt-12 overflow-y-auto relative">
+            <div className="absolute inset-0 pointer-events-none opacity-20">
+              <ShapeGrid />
+            </div>
+            <SheetHeader className="mb-8 text-left shrink-0 relative z-10">
+              <SheetTitle className="text-3xl font-display font-black text-foreground leading-tight uppercase">Escolha como<br/>prefere pagar.</SheetTitle>
+              <SheetDescription className="text-[13px] font-medium mt-2 text-muted-foreground">
                 Acesso imediato ao plano Anual. Selecione a forma de pagamento abaixo.
               </SheetDescription>
             </SheetHeader>
-            <div className="flex flex-col gap-5 flex-1">
+            <div className="flex flex-col gap-4 flex-1 relative z-10">
               <Button
                 variant="outline"
-                className="h-auto py-5 flex flex-col items-stretch justify-start gap-4 px-5 border-2 border-primary/30 hover:border-primary hover:bg-primary/5 transition-all rounded-3xl"
+                className="h-auto py-5 flex items-center justify-start gap-4 px-5 border-2 border-primary/30 hover:border-primary hover:bg-primary/5 transition-all rounded-3xl group"
                 onClick={() => {
                   setPaymentMethodSheetOpen(false);
                   startPurchase('anual');
                 }}
               >
-                {/* Cartão de Crédito Animado */}
-                <div className="w-full h-32 rounded-xl bg-gradient-to-br from-primary via-[hsl(348_78%_38%)] to-purple-700 relative overflow-hidden shadow-lg mb-2">
-                  {/* Padrões geométricos */}
-                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-                  <div className="absolute bottom-[-20%] left-[-10%] w-24 h-24 bg-black/20 rounded-full blur-xl"></div>
-                  {/* Chip */}
-                  <div className="absolute top-4 left-4 w-10 h-7 bg-yellow-400/80 rounded-md border border-yellow-300/50 flex flex-col justify-evenly px-1">
-                    <div className="w-full h-[1px] bg-yellow-600/50"></div>
-                    <div className="w-full h-[1px] bg-yellow-600/50"></div>
-                    <div className="w-full h-[1px] bg-yellow-600/50"></div>
-                  </div>
-                  {/* NFC Icon */}
-                  <div className="absolute top-5 left-16 flex gap-1">
-                     <span className="w-1 h-3 bg-white/40 rounded-full rotate-12"></span>
-                     <span className="w-1 h-4 bg-white/40 rounded-full rotate-12 -mt-0.5"></span>
-                     <span className="w-1 h-5 bg-white/40 rounded-full rotate-12 -mt-1"></span>
-                  </div>
-                  {/* Card Info */}
-                  <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
-                    <div className="flex flex-col text-left">
-                       <span className="font-mono text-white/90 text-sm tracking-widest">**** **** **** ****</span>
-                       <span className="font-display font-bold text-white text-xs tracking-wider uppercase mt-1">Plano Anual</span>
-                    </div>
-                    <div className="flex gap-1">
-                       <div className="w-6 h-6 rounded-full bg-red-500/80"></div>
-                       <div className="w-6 h-6 rounded-full bg-orange-400/80 -ml-3 mix-blend-screen"></div>
-                    </div>
-                  </div>
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <CreditCard className="w-6 h-6 text-primary" />
                 </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <CreditCard className="w-5 h-5 text-primary" />
-                  </div>
-                  <div className="flex flex-col items-start text-left flex-1">
-                    <span className="font-bold text-lg text-foreground">Cartão de Crédito</span>
-                    <span className="text-sm font-semibold text-primary">Até 12x de R$ 16,65</span>
-                  </div>
+                <div className="flex flex-col items-start text-left flex-1">
+                  <span className="font-bold text-lg text-foreground">Cartão de Crédito</span>
+                  <span className="text-[11px] font-bold text-primary">Até 12x de R$ 16,65</span>
                 </div>
+                <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors group-hover:translate-x-1" />
               </Button>
 
               <Button
                 variant="outline"
-                className="h-20 flex items-center justify-start gap-4 px-5 border-2 border-border/80 hover:border-emerald-500 hover:bg-emerald-500/5 transition-all rounded-3xl"
+                className="h-auto py-5 flex items-center justify-start gap-4 px-5 border-2 border-border/80 hover:border-emerald-500 hover:bg-emerald-500/5 transition-all rounded-3xl group"
                 onClick={() => {
                   setPaymentMethodSheetOpen(false);
                   startPurchase('anual_pix');
                 }}
               >
-                <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
-                  <QrCode className="w-5 h-5 text-emerald-500" />
+                <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
+                  <QrCode className="w-6 h-6 text-emerald-500" />
                 </div>
                 <div className="flex flex-col items-start text-left flex-1">
                   <span className="font-bold text-lg text-foreground">PIX</span>
-                  <span className="text-sm font-medium text-muted-foreground">R$ 199,90 à vista</span>
+                  <span className="text-[11px] font-bold text-muted-foreground">R$ 199,90 à vista</span>
                 </div>
+                <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-500 transition-colors group-hover:translate-x-1" />
               </Button>
             </div>
           </SheetContent>
