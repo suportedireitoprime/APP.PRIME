@@ -138,6 +138,7 @@ const ModoAulaAula = lazy(() => import("./pages/ModoAulaAula.tsx"));
 const MeExplique = lazy(routePrefetch.meExplique);
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const Configuracoes = lazy(() => import("./pages/Configuracoes.tsx"));
+const AgendaCamara = lazy(() => import("./pages/tres-poderes/AgendaCamara.tsx"));
 const RadarDeputados = lazy(() => import("./pages/RadarDeputados.tsx"));
 const RadarVotacoes = lazy(() => import("./pages/RadarVotacoes.tsx"));
 const PoderDetalhe = lazy(() => import("./pages/PoderDetalhe.tsx"));
