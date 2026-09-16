@@ -310,7 +310,7 @@ export default function Assinatura() {
                   if (tab === 'promocao') {
                      startPurchase('anual_pix');
                   } else if (tab === 'anual') {
-                     setPaymentMethodSheetOpen(true);
+                     startPurchase('anual');
                   } else {
                      startPurchase(tab);
                   }
