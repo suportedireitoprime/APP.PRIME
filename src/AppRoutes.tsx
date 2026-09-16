@@ -139,6 +139,7 @@ const MeExplique = lazy(routePrefetch.meExplique);
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const Configuracoes = lazy(() => import("./pages/Configuracoes.tsx"));
 const AgendaCamara = lazy(() => import("./pages/tres-poderes/AgendaCamara.tsx"));
+const AgendaSenado = lazy(() => import("./pages/tres-poderes/AgendaSenado.tsx"));
 const RadarDeputados = lazy(() => import("./pages/RadarDeputados.tsx"));
 const RadarVotacoes = lazy(() => import("./pages/RadarVotacoes.tsx"));
 const PoderDetalhe = lazy(() => import("./pages/PoderDetalhe.tsx"));
@@ -1288,6 +1289,7 @@ function AnimatedRoutes() {
           <Route path="/meu-espaco" element={<ProtectedRoute><PageTransition instant><MeuEspaco /></PageTransition></ProtectedRoute>} />
           <Route path="/graficos/avaliacao" element={<ProtectedRoute><PageTransition><AvaliacaoInteligente /></PageTransition></ProtectedRoute>} />
           <Route path="/tres-poderes/camara/agenda" element={<ProtectedRoute><PageTransition><AgendaCamara /></PageTransition></ProtectedRoute>} />
+          <Route path="/tres-poderes/senado/agenda" element={<ProtectedRoute><PageTransition><AgendaSenado /></PageTransition></ProtectedRoute>} />
           <Route path="/tres-poderes/:id" element={<PageTransition><PoderDetalhe /></PageTransition>} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
 
