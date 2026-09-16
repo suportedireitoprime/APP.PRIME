@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, CreditCard, ShieldCheck, User, MapPin, Smartphone, ArrowRight, CheckCircle2, Copy, X, ChevronLeft, Clock } from "lucide-react";
+import { Loader2, CreditCard, ShieldCheck, User, MapPin, Smartphone, ArrowRight, CheckCircle2, Copy, X, ChevronLeft, Clock, ChevronDown } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -392,7 +392,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   return (
     <Dialog open={open} onOpenChange={(v) => !loading && onOpenChange(v)}>
       <DialogContent 
-        className="max-w-none w-screen min-h-[100vh] h-[100dvh] m-0 p-0 rounded-none border-none flex flex-col bg-background/95 overflow-hidden shadow-none [&>button]:hidden"
+        className="max-w-none sm:max-w-lg w-full min-h-[100vh] sm:min-h-0 sm:max-h-[92vh] h-[100dvh] sm:h-auto m-0 p-0 rounded-none sm:rounded-3xl border-none sm:border sm:border-white/10 flex flex-col bg-[#0D0D0D]/90 backdrop-blur-2xl overflow-hidden shadow-2xl [&>button]:hidden"
       >
         <DialogDescription className="sr-only">Checkout e pagamento do Direito Prime.</DialogDescription>
 
@@ -423,24 +423,29 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         <div className="flex-1 overflow-y-auto relative z-10">
           <div className="max-w-md mx-auto w-full p-6 flex flex-col pb-[calc(5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
             
-            {/* Plan Info Card */}
-            <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-sm p-5 mb-8 flex flex-col items-center justify-center relative overflow-hidden shadow-xl">
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
-                VOCÊ ESTÁ ASSINANDO:
-              </p>
-              <h3 className="font-display text-lg font-black text-foreground/90 mb-2">
-                Estudos Jurídicos {planInfo.title}
-              </h3>
-              <div className="flex items-baseline gap-1">
-                <span className="font-display text-4xl font-black text-foreground">{planInfo.price}</span>
-                <span className="text-sm font-semibold text-muted-foreground">{planInfo.sub}</span>
+            {/* Plan Info Card - Hidden on Step 2 as requested */}
+            {step !== 2 && (
+              <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-sm p-5 mb-6 flex flex-col items-center justify-center relative overflow-hidden shadow-xl">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
+                  VOCÊ ESTÁ ASSINANDO:
+                </p>
+                <h3 className="font-display text-lg font-black text-foreground/90 mb-1">
+                  Estudos Jurídicos {planInfo.title}
+                </h3>
+                <div className="flex items-baseline gap-1">
+                  <span className="font-display text-4xl font-black text-foreground">{planInfo.price}</span>
+                  <span className="text-sm font-semibold text-muted-foreground">{planInfo.sub}</span>
+                </div>
+                {plan === 'anual' && (
+                  <p className="text-xs text-emerald-400 font-bold mt-1">ou 12x de R$ 17,45</p>
+                )}
+                {plan === 'anual_pix' && (
+                  <span className="absolute top-0 right-0 bg-emerald-500/80 backdrop-blur-md text-white font-black text-[9px] px-2 py-0.5 rounded-bl-lg tracking-wider">
+                    DESCONTO APLICADO
+                  </span>
+                )}
               </div>
-              {plan === 'anual_pix' && (
-                <span className="absolute top-0 right-0 bg-emerald-500/80 backdrop-blur-md text-white font-black text-[9px] px-2 py-0.5 rounded-bl-lg tracking-wider">
-                  DESCONTO APLICADO
-                </span>
-              )}
-            </div>
+            )}
 
             {/* Step Indicator */}
             {!isPix && (
@@ -484,9 +489,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                     animate={{ opacity: 1, filter: 'blur(0px)', x: 0 }}
                     exit={{ opacity: 0, filter: 'blur(10px)', x: 20 }}
                     transition={{ duration: 0.3 }}
-                    className="space-y-4"
+                    className="space-y-3"
                   >
-                    <div className="space-y-1.5">
+                    <div className="space-y-1">
                       <Label className="text-xs font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wider">
                         <User className="w-3.5 h-3.5"/> Nome Completo
                       </Label>
@@ -494,22 +499,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                         value={formData.name} 
                         onChange={handleChange('name')}
                         placeholder="Nome Completo"
-                        className="h-12 rounded-2xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-base backdrop-blur-md transition-all"
+                        className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
                       />
                     </div>
 
-                    <div className="space-y-1.5">
+                    <div className="space-y-1">
                       <Label className="text-xs font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wider">
                         <User className="w-3.5 h-3.5"/> E-mail
                       </Label>
                       <Input 
                         value={userEmail || ''} 
                         disabled
-                        className="h-12 rounded-2xl bg-black/20 border-white/10 font-medium opacity-50 backdrop-blur-md cursor-not-allowed"
+                        className="h-11 rounded-xl bg-black/20 border-white/10 font-medium text-sm opacity-50 backdrop-blur-md cursor-not-allowed"
                       />
                     </div>
 
-                    <div className="space-y-1.5">
+                    <div className="space-y-1">
                       <Label className="text-xs font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wider">
                         <User className="w-3.5 h-3.5"/> CPF (Obrigatório)
                       </Label>
@@ -517,12 +522,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                         value={formData.cpf} 
                         onChange={handleChange('cpf', maskCPF)}
                         placeholder="000.000.000-00" 
-                        className="h-12 rounded-2xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-base backdrop-blur-md transition-all"
+                        className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
                         inputMode="numeric"
                       />
                     </div>
 
-                    <div className="space-y-1.5">
+                    <div className="space-y-1">
                       <Label className="text-xs font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wider">
                         <Smartphone className="w-3.5 h-3.5"/> Telefone
                       </Label>
@@ -530,13 +535,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                         value={formData.phone} 
                         onChange={handleChange('phone', maskPhone)}
                         placeholder="(00) 00000-0000" 
-                        className="h-12 rounded-2xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-base backdrop-blur-md transition-all"
+                        className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
                         inputMode="numeric"
                       />
                     </div>
 
                     {!isPix && (
-                      <div className="space-y-1.5">
+                      <div className="space-y-1">
                         <Label className="text-xs font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wider">
                           <MapPin className="w-3.5 h-3.5"/> CEP
                         </Label>
@@ -544,7 +549,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                           value={formData.cep} 
                           onChange={handleChange('cep', maskCEP)}
                           placeholder="00000-000" 
-                          className="h-12 rounded-2xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-base backdrop-blur-md transition-all"
+                          className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
                           inputMode="numeric"
                         />
                         <AnimatePresence>
@@ -562,11 +567,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                       </div>
                     )}
 
-                    <div className="pt-6">
+                    <div className="pt-4">
                       <Button 
                         onClick={handleNextStep}
                         disabled={loading}
-                        className="w-full h-14 rounded-2xl font-black bg-primary hover:bg-primary/90 text-white text-base transition-all active:scale-95 shadow-[0_8px_30px_rgba(224,31,71,0.3)]"
+                        className="w-full h-12 rounded-xl font-black bg-primary hover:bg-primary/90 text-white text-sm transition-all active:scale-95 shadow-[0_8px_30px_rgba(224,31,71,0.3)]"
                       >
                         {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 
                         isPix ? 'Gerar PIX' : 'Continuar para Pagamento'}
@@ -583,7 +588,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                     animate={{ opacity: 1, filter: 'blur(0px)', x: 0 }}
                     exit={{ opacity: 0, filter: 'blur(10px)', x: 20 }}
                     transition={{ duration: 0.3 }}
-                    className="space-y-4"
+                    className="space-y-3"
                   >
                     <CreditCardPreview 
                        name={formData.cardName}
@@ -593,52 +598,52 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                        isFlipped={isFlipped}
                     />
 
-                    <div className="space-y-1.5">
-                      <Label className="text-xs font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wider">
-                        <CreditCard className="w-3.5 h-3.5"/> Número do Cartão
+                    <div className="space-y-1">
+                      <Label className="text-[10px] font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wider">
+                        <CreditCard className="w-3 h-3"/> Número do Cartão
                       </Label>
                       <Input 
                         value={formData.cardNumber} 
                         onChange={handleChange('cardNumber', maskCard)}
                         onFocus={() => setIsFlipped(false)}
                         placeholder="0000 0000 0000 0000" 
-                        className="h-12 rounded-2xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium font-mono text-base backdrop-blur-md transition-all"
+                        className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium font-mono text-sm backdrop-blur-md transition-all"
                         inputMode="numeric"
                       />
                     </div>
 
-                    <div className="space-y-1.5">
-                      <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Nome Impresso no Cartão</Label>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Nome Impresso no Cartão</Label>
                       <Input 
                         value={formData.cardName} 
                         onChange={handleChange('cardName')}
                         onFocus={() => setIsFlipped(false)}
                         placeholder="JOAO S SILVA" 
-                        className="h-12 rounded-2xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium uppercase text-base backdrop-blur-md transition-all"
+                        className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium uppercase text-sm backdrop-blur-md transition-all"
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Validade</Label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Validade</Label>
                         <Input 
                           value={formData.cardExpiry} 
                           onChange={handleChange('cardExpiry', maskExpiry)}
                           onFocus={() => setIsFlipped(false)}
                           placeholder="MM/AA" 
-                          className="h-12 rounded-2xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium font-mono text-base backdrop-blur-md transition-all"
+                          className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium font-mono text-sm backdrop-blur-md transition-all"
                           inputMode="numeric"
                         />
                       </div>
-                      <div className="space-y-1.5">
-                        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">CVV</Label>
+                      <div className="space-y-1">
+                        <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">CVV</Label>
                         <Input 
                           value={formData.cardCvc} 
                           onChange={handleChange('cardCvc', maskCVC)}
                           onFocus={() => setIsFlipped(true)}
                           onBlur={() => setIsFlipped(false)}
                           placeholder="123" 
-                          className="h-12 rounded-2xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium font-mono text-base backdrop-blur-md transition-all"
+                          className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium font-mono text-sm backdrop-blur-md transition-all"
                           inputMode="numeric"
                           type="password"
                         />
@@ -646,39 +651,43 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                     </div>
 
                     {plan === 'anual' && (
-                      <div className="space-y-1.5 pt-2">
-                        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Parcelamento</Label>
-                        <select 
-                          value={installmentCount}
-                          onChange={(e) => setInstallmentCount(Number(e.target.value))}
-                          onFocus={() => setIsFlipped(false)}
-                          className="w-full h-12 rounded-2xl bg-black/40 border border-white/10 focus:border-primary focus:ring-1 focus:ring-primary font-medium px-4 text-sm appearance-none outline-none backdrop-blur-md transition-all text-white"
-                        >
+                      <div className="space-y-1">
+                        <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Parcelamento</Label>
+                        <div className="relative">
+                          <select 
+                            value={installmentCount}
+                            onChange={(e) => setInstallmentCount(Number(e.target.value))}
+                            onFocus={() => setIsFlipped(false)}
+                            className="w-full h-11 rounded-xl bg-black/40 border border-white/10 focus:border-primary focus:ring-1 focus:ring-primary font-medium px-3 text-sm appearance-none outline-none backdrop-blur-md transition-all text-white"
+                          >
                           {[1,2,3,4,5,6,7,8,9,10,11,12].map(num => {
                             // Cálculo de repasse padrão do Asaas para cartão de crédito
                             let taxRate = 0;
-                            if (num === 1) taxRate = 0.0339;
+                            if (num === 1) taxRate = 0; // à vista não tem juros para o cliente aqui se for 199.90 puro. O código original era 0.0339 mas vamos exibir o preço cravado:
                             else if (num <= 6) taxRate = 0.0389;
                             else taxRate = 0.0439;
                             
-                            const totalWithTax = (199.90 + 0.29) / (1 - taxRate);
+                            // 199.90 à vista sem taxa no select para bater com a promessa (1x de 199.90).
+                            const totalWithTax = num === 1 ? 199.90 : (199.90 + 0.29) / (1 - taxRate);
                             const installmentValue = totalWithTax / num;
 
                             return (
                               <option key={num} value={num} className="bg-background text-foreground">
-                                {num}x de R$ {installmentValue.toFixed(2).replace('.', ',')} {num === 1 ? ' (à vista)' : ` (Total: R$ ${totalWithTax.toFixed(2).replace('.', ',')})`}
+                                {num}x de R$ {installmentValue.toFixed(2).replace('.', ',')} {num === 1 ? ' à vista' : ` (Total: R$ ${totalWithTax.toFixed(2).replace('.', ',')})`}
                               </option>
                             );
                           })}
-                        </select>
+                          </select>
+                          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                        </div>
                       </div>
                     )}
 
-                    <div className="pt-6">
+                    <div className="pt-4">
                       <Button 
                         onClick={processCheckout}
                         disabled={loading}
-                        className="w-full h-14 rounded-2xl font-black bg-primary hover:bg-primary/90 text-white text-base transition-all active:scale-95 shadow-[0_8px_30px_rgba(224,31,71,0.4)]"
+                        className="w-full h-12 rounded-xl font-black bg-primary hover:bg-primary/90 text-white text-sm transition-all active:scale-95 shadow-[0_8px_30px_rgba(224,31,71,0.4)]"
                       >
                         {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Confirmar Assinatura'}
                         {!loading && <CheckCircle2 className="w-5 h-5 ml-2" />}

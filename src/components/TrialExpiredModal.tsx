@@ -1,90 +1,229 @@
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Lock } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import horusAsset from '@/assets/horus/horus-star.webp';
 import { useAuth } from "@/hooks/useAuth";
+import { CheckoutModal } from "@/components/assinatura/CheckoutModal";
+
+import penalCover from '@/assets/biblioteca/areas/direito-penal.webp';
+import civilCover from '@/assets/biblioteca/areas/direito-civil.webp';
+import constCover from '@/assets/biblioteca/areas/direito-constitucional.webp';
+import adminCover from '@/assets/biblioteca/areas/direito-administrativo.webp';
+import trabCover from '@/assets/biblioteca/areas/direito-do-trabalho.webp';
+import tribCover from '@/assets/biblioteca/areas/direito-tributario.webp';
+import procPenalCover from '@/assets/biblioteca/areas/direito-processual-penal.webp';
+import procCivilCover from '@/assets/biblioteca/areas/direito-processual-civil.webp';
+
+interface MateriaCover {
+  id: string;
+  nome: string;
+  tag: string;
+  cover: string;
+}
+
+const MATERIAS: MateriaCover[] = [
+  { id: 'penal', nome: 'Direito Penal', tag: 'DIREITO PENAL', cover: penalCover },
+  { id: 'civil', nome: 'Direito Civil', tag: 'DIREITO CIVIL', cover: civilCover },
+  { id: 'const', nome: 'Direito Constitucional', tag: 'CONSTITUCIONAL', cover: constCover },
+  { id: 'admin', nome: 'Direito Administrativo', tag: 'ADMINISTRATIVO', cover: adminCover },
+  { id: 'trab', nome: 'Direito do Trabalho', tag: 'TRABALHO', cover: trabCover },
+  { id: 'proc_penal', nome: 'Processo Penal', tag: 'PROC. PENAL', cover: procPenalCover },
+  { id: 'trib', nome: 'Direito Tributário', tag: 'TRIBUTÁRIO', cover: tribCover },
+  { id: 'proc_civil', nome: 'Processo Civil', tag: 'PROC. CIVIL', cover: procCivilCover },
+];
+
+/** Posições de perspectiva 3D dos cards no deck */
+const SLOTS = [
+  { x: 0, y: 0, rotate: 0, scale: 1, opacity: 1, z: 50 },
+  { x: 58, y: 6, rotate: 8, scale: 0.86, opacity: 0.85, z: 40 },
+  { x: 96, y: 14, rotate: 15, scale: 0.72, opacity: 0.4, z: 30 },
+  { x: 0, y: 16, rotate: 0, scale: 0.6, opacity: 0, z: 10 },
+  { x: 0, y: 16, rotate: 0, scale: 0.6, opacity: 0, z: 10 },
+  { x: 0, y: 16, rotate: 0, scale: 0.6, opacity: 0, z: 10 },
+  { x: -96, y: 14, rotate: -15, scale: 0.72, opacity: 0.4, z: 30 },
+  { x: -58, y: 6, rotate: -8, scale: 0.86, opacity: 0.85, z: 40 },
+];
 
 export function TrialExpiredModal() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const firstName = user?.user_metadata?.full_name?.split(' ')[0] || user?.user_metadata?.name?.split(' ')[0] || 'Advogado(a)';
+  const [ativo, setAtivo] = useState(0);
+  const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'anual' | 'anual_pix' | null>(null);
+
+  const firstName =
+    user?.user_metadata?.full_name?.split(' ')[0] ||
+    user?.user_metadata?.name?.split(' ')[0] ||
+    'Doutor(a)';
+
+  useEffect(() => {
+    const reduz = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reduz) return;
+    const interval = setInterval(() => {
+      setAtivo((prev) => (prev + 1) % MATERIAS.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-y-auto bg-black/60 backdrop-blur-md p-4">
-      <div className="relative mx-auto w-full max-w-md pt-28">
-        
-        {/* Horus mascote animado */}
-        <motion.div
-          initial={{ y: -160, rotate: -8, opacity: 0, scale: 0.8 }}
-          animate={{
-            y: [ -160, 0, -14, 0 ],
-            rotate: [ -8, 2, -1, 0 ],
-            scale: [ 0.8, 1.08, 0.98, 1 ],
-            opacity: 1
-          }}
-          transition={{ duration: 0.7, times: [0, 0.55, 0.8, 1], ease: ['easeIn','easeOut','easeOut','easeOut'] }}
-          className="absolute top-0 -left-4 z-20 w-40 h-40 drop-shadow-[0_18px_20px_rgba(0,0,0,0.55)] pointer-events-none"
-          style={{ willChange: 'transform, opacity' }}
-        >
-          <img src={horusAsset} alt="Horus" draggable={false} className="w-full h-full object-contain pointer-events-none" />
-        </motion.div>
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-y-auto bg-black/70 backdrop-blur-md p-4 py-8">
+      {/* Checkout direto mantendo o fundo fosco */}
+      <CheckoutModal
+        open={!!checkoutPlan}
+        onOpenChange={(v) => { if (!v) setCheckoutPlan(null); }}
+        plan={checkoutPlan}
+        userEmail={user?.email || ''}
+        userName={user?.user_metadata?.full_name || user?.user_metadata?.name || ''}
+        onSuccess={() => {
+          window.location.reload();
+        }}
+      />
 
-        {/* Balão de fala */}
-        <AnimatePresence>
+      <div className="relative mx-auto w-full max-w-md pt-24 sm:pt-28">
+        {/* Horus mascote em cima do cartão, na parte de cima */}
+        <div className="absolute -top-[82px] sm:-top-[92px] left-4 sm:left-7 z-30 flex items-end pointer-events-none">
           <motion.div
-            initial={{ opacity: 0, scale: 0.6, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ type: 'spring', stiffness: 380, damping: 22, delay: 0.6 }}
-            className="absolute top-[-20px] left-32 z-20 max-w-[240px] bg-white text-neutral-900 rounded-2xl px-4 py-3 shadow-xl border-2 border-neutral-900"
-            style={{ transformOrigin: 'bottom left', willChange: 'transform, opacity' }}
-            aria-live="polite"
+            initial={{ y: -40, opacity: 0, scale: 0.85 }}
+            animate={{
+              y: [ -40, 0, -6, 0 ],
+              scale: [ 0.85, 1.04, 0.98, 1 ],
+              opacity: 1
+            }}
+            transition={{ duration: 0.65, ease: 'easeOut' }}
+            className="w-28 h-28 sm:w-34 sm:h-34 drop-shadow-[0_18px_24px_rgba(0,0,0,0.65)] shrink-0"
           >
-            <p className="text-[15px] font-semibold leading-snug">
+            <img
+              src={horusAsset}
+              alt="Horus"
+              draggable={false}
+              className="w-full h-full object-contain"
+            />
+          </motion.div>
+
+          {/* Balão de fala ao lado do Horus */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.7, x: -10, y: 10 }}
+            animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+            transition={{ type: 'spring', stiffness: 360, damping: 22, delay: 0.35 }}
+            className="relative -top-5 -left-1 max-w-[205px] sm:max-w-[235px] bg-white text-neutral-950 rounded-2xl px-3.5 py-2 shadow-2xl border-2 border-neutral-900 pointer-events-auto"
+          >
+            <p className="text-[12px] sm:text-[13px] font-black leading-snug text-neutral-900">
               Seu passe livre terminou! A jornada continua? 🚀
             </p>
             <span
-              className="absolute -bottom-2 left-6 w-0 h-0 pointer-events-none"
-              style={{ borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '12px solid #171717' }}
+              className="absolute -bottom-2 left-4 w-0 h-0 pointer-events-none"
+              style={{ borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderTop: '9px solid #171717' }}
             />
             <span
-              className="absolute -bottom-[6px] left-[21px] w-0 h-0 pointer-events-none"
-              style={{ borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderTop: '9px solid #ffffff' }}
+              className="absolute -bottom-[5px] left-[17px] w-0 h-0 pointer-events-none"
+              style={{ borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '7px solid #ffffff' }}
             />
           </motion.div>
-        </AnimatePresence>
+        </div>
 
         {/* Card Principal */}
         <motion.div
           initial={{ y: 24, opacity: 0, scale: 0.98 }}
           animate={{ y: 0, opacity: 1, scale: 1 }}
           transition={{ duration: 0.35, ease: 'easeOut' }}
-          className="relative z-10 space-y-6 rounded-3xl border border-border bg-card p-6 shadow-2xl shadow-black/20 text-center overflow-hidden"
+          className="relative z-10 space-y-4 rounded-3xl border border-white/10 bg-[#121417]/95 backdrop-blur-2xl p-6 sm:p-7 shadow-2xl shadow-black/60 text-center overflow-hidden"
         >
-          <div className="absolute top-0 right-0 w-40 h-40 bg-primary/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-          
-          <div className="flex flex-col items-center gap-4 relative z-10">
-            <div className="w-16 h-16 rounded-full bg-amber-500/15 ring-4 ring-amber-500/20 flex items-center justify-center">
-              <Lock className="w-8 h-8 text-amber-500" />
+          {/* Brilho de fundo sutil */}
+          <div className="absolute top-0 right-0 w-48 h-48 bg-primary/15 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+
+          {/* Decks com as capas do Aprender passando no automático */}
+          <div className="relative flex flex-col items-center justify-center pt-2 pb-1">
+            <div className="relative flex items-center justify-center w-full max-w-[320px] h-[165px] sm:h-[175px]">
+              {MATERIAS.map((m, i) => {
+                const pos = (i - ativo + MATERIAS.length) % MATERIAS.length;
+                const slot = SLOTS[pos];
+                const frente = pos === 0;
+
+                return (
+                  <motion.div
+                    key={m.id}
+                    animate={{
+                      x: slot.x,
+                      y: slot.y,
+                      rotate: slot.rotate,
+                      scale: slot.scale,
+                      opacity: slot.opacity,
+                    }}
+                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    style={{ zIndex: slot.z }}
+                    className={`absolute w-[114px] sm:w-[124px] h-[148px] sm:h-[160px] rounded-2xl overflow-hidden shadow-2xl shrink-0 ${
+                      frente
+                        ? 'border-2 border-primary shadow-[0_14px_36px_rgba(224,31,71,0.45)] ring-2 ring-primary/40'
+                        : 'border border-white/20'
+                    }`}
+                  >
+                    <img
+                      src={m.cover}
+                      alt={m.nome}
+                      className="w-full h-full object-cover"
+                      loading={i < 4 ? 'eager' : 'lazy'}
+                      decoding="async"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-2.5 text-left">
+                      <span className="text-[10px] sm:text-[11px] font-display font-black tracking-wider uppercase text-white drop-shadow leading-tight">
+                        {m.tag}
+                      </span>
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
-            
-            <h2 className="text-xl font-bold tracking-tight text-foreground uppercase">
-              SEU TEMPO ACABOU
-            </h2>
-            
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              <strong className="text-foreground">{firstName}</strong>, sua degustação de <strong className="text-foreground">3 dias</strong> chegou ao fim, mas sua evolução não pode parar agora. 
-              Assine e destrave acesso <strong className="text-foreground">ilimitado</strong> a todas as ferramentas premium.
-            </p>
-            
-            <div className="w-full mt-2">
-              <button
-                onClick={() => navigate('/assinatura')}
-                className="w-full h-14 rounded-2xl font-display font-black text-base bg-primary text-primary-foreground active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/25"
-              >
-                DESTRAVAR MEU ACESSO
-                <ArrowRight className="w-5 h-5" />
-              </button>
+
+            {/* Identificador da matéria ativa */}
+            <div className="flex flex-col items-center gap-1.5 mt-1">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 shadow-sm">
+                <Sparkles className="w-3.5 h-3.5 text-primary" />
+                <span className="text-[11px] font-display font-black tracking-widest text-primary uppercase">
+                  {MATERIAS[ativo].nome}
+                </span>
+              </div>
+
+              {/* Dots de navegação suave */}
+              <div className="flex items-center gap-1 mt-0.5">
+                {MATERIAS.map((m, idx) => (
+                  <span
+                    key={m.id}
+                    className={`h-1 rounded-full transition-all duration-300 ${
+                      idx === ativo ? 'w-4 bg-primary' : 'w-1 bg-white/25'
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
+          </div>
+
+          {/* Título com espaço maior entre as letras */}
+          <h2 className="text-xl sm:text-2xl font-display font-black tracking-[0.25em] sm:tracking-[0.3em] text-foreground uppercase text-center mt-2">
+            SEU TEMPO ACABOU
+          </h2>
+
+          {/* Mensagem persuasiva elegante citando o nome */}
+          <p className="text-[13px] sm:text-[14px] text-muted-foreground leading-relaxed text-center max-w-sm mx-auto">
+            <strong className="text-foreground font-bold">{firstName}</strong>, sua degustação gratuita chegou ao fim. Tenha acesso completo e ilimitado a todas as matérias de Direito, questões comentadas, Vade Mecum inteligente e resumos exclusivos.
+          </p>
+
+          {/* Botões de Ação */}
+          <div className="w-full space-y-2.5 pt-2">
+            <button
+              onClick={() => setCheckoutPlan('anual')}
+              className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display font-black text-base tracking-wider bg-primary text-primary-foreground active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/30 group"
+            >
+              <span>DESTRAVAR MEU ACESSO</span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate('/assinatura')}
+              className="w-full text-xs font-semibold text-muted-foreground hover:text-foreground py-1.5 transition-colors flex items-center justify-center gap-1"
+            >
+              Conhecer outros planos e formas de pagamento
+            </button>
           </div>
         </motion.div>
       </div>
