@@ -141,8 +141,8 @@ export async function fetchProposicoes(tipo?: string, ano?: number, pagina = 1, 
       url += `&siglaTipo=PL,PEC,PLP`;
     }
     if (ano) url += `&ano=${ano}`;
-    if (dataInicio) url += `&dataInicio=${dataInicio}`;
-    if (dataFim) url += `&dataFim=${dataFim}`;
+    if (dataInicio) url += `&dataApresentacaoInicio=${dataInicio}`;
+    if (dataFim) url += `&dataApresentacaoFim=${dataFim}`;
     
     const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
     if (!res.ok) return [];

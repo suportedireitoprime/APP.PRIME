@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Rss, Globe, Headphones, PlaySquare, Calendar } from 'lucide-react';
+import { ChevronLeft, FileText, Globe, Headphones, PlaySquare, CalendarDays, ScanEye } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { useGoBack } from '@/hooks/useGoBack';
 import ShapeGrid from '@/components/ui/ShapeGrid';
@@ -134,12 +134,21 @@ const PoderDetalhe = () => {
            
            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
               <HomeCard
-                icon={Calendar}
+                icon={CalendarDays}
                 label="PAUTA DO DIA"
                 sublabel="Sessões"
                 color="#FFFFFF"
                 iconStrokeWidth={1.5}
                 onClick={() => navigate(`/tres-poderes/${id}/agenda`)}
+                className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
+              />
+              <HomeCard
+                icon={ScanEye}
+                label="RADAR LEGISLATIVO"
+                sublabel="Projetos de Lei"
+                color="#FFFFFF"
+                iconStrokeWidth={1.5}
+                onClick={() => navigate(`/radar-360`)}
                 className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
               />
               {CARDS.map((item, index) => (
