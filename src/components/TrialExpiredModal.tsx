@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import horusAsset from '@/assets/horus/horus-star.webp';
+import bgImage from '@/assets/auth-judge-scene.webp';
 
 export function TrialExpiredModal() {
   const navigate = useNavigate();
@@ -55,8 +56,20 @@ export function TrialExpiredModal() {
           initial={{ y: 24, opacity: 0, scale: 0.98 }}
           animate={{ y: 0, opacity: 1, scale: 1 }}
           transition={{ duration: 0.35, ease: 'easeOut' }}
-          className="relative z-10 space-y-6 rounded-3xl border border-border bg-card p-6 shadow-2xl shadow-black/20 text-center"
+          className="relative z-10 space-y-6 rounded-3xl border border-border bg-card p-6 shadow-2xl shadow-black/20 text-center overflow-hidden"
         >
+          {/* Imagem de Fundo Vazada */}
+          <div 
+            className="absolute inset-0 z-0 opacity-15 pointer-events-none mix-blend-screen"
+            style={{ 
+              backgroundImage: `url(${bgImage})`, 
+              backgroundSize: 'cover', 
+              backgroundPosition: 'center 20%',
+              WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 70%)',
+              maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 70%)'
+            }}
+          />
+
           <div className="absolute top-0 right-0 w-40 h-40 bg-primary/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
           
           <div className="flex flex-col items-center gap-4 relative z-10">
