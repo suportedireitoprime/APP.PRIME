@@ -7,7 +7,7 @@ export function TrialExpiredModal() {
   const navigate = useNavigate();
 
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-y-auto bg-[#0D0D0D]/90 backdrop-blur-md p-4">
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-y-auto bg-black/60 backdrop-blur-md p-4">
       <div className="relative mx-auto w-full max-w-md pt-28">
         
         {/* Horus mascote animado */}
