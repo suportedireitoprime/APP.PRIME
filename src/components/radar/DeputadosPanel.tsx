@@ -18,6 +18,7 @@ const DeputadosPanel = ({ searchQuery, selected, setSelected }: DeputadosPanelPr
   const [filtroUf, setFiltroUf] = useState('');
   const [detalhe, setDetalhe] = useState<any>(null);
   const [despesas, setDespesas] = useState<any[]>([]);
+  const [loadingDetalhes, setLoadingDetalhes] = useState(false);
 
   const query = searchQuery || localSearch;
 
@@ -41,6 +42,7 @@ const DeputadosPanel = ({ searchQuery, selected, setSelected }: DeputadosPanelPr
 
   async function selectDeputado(dep: any) {
     setSelected(dep);
+    setLoadingDetalhes(true);
     
     let safeId = dep.id;
     if (typeof safeId === 'string' && safeId.includes('-')) {
@@ -56,6 +58,7 @@ const DeputadosPanel = ({ searchQuery, selected, setSelected }: DeputadosPanelPr
     ]);
     setDetalhe(det);
     setDespesas(desp);
+    setLoadingDetalhes(false);
   }
 
   if (selected) {
@@ -74,39 +77,52 @@ const DeputadosPanel = ({ searchQuery, selected, setSelected }: DeputadosPanelPr
           </div>
         </div>
 
-        {detalhe && (
-          <Card className="mb-4 bg-card/50 border-border/50">
-            <CardContent className="p-4 text-sm space-y-1">
-              {detalhe.nomeCivil && <p><span className="text-muted-foreground">Nome civil:</span> {detalhe.nomeCivil}</p>}
-              {detalhe.dataNascimento && <p><span className="text-muted-foreground">Nascimento:</span> {detalhe.dataNascimento}</p>}
-              {detalhe.escolaridade && <p><span className="text-muted-foreground">Escolaridade:</span> {detalhe.escolaridade}</p>}
-              {detalhe.municipioNascimento && <p><span className="text-muted-foreground">Naturalidade:</span> {detalhe.municipioNascimento}/{detalhe.ufNascimento}</p>}
-            </CardContent>
-          </Card>
-        )}
+        {loadingDetalhes ? (
+          <div className="flex justify-center py-8">
+            <RefreshCw className="w-5 h-5 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <>
+            {detalhe && (
+              <Card className="mb-4 bg-card/50 border-border/50">
+                <CardContent className="p-4 text-sm space-y-1">
+                  {detalhe.nomeCivil && <p><span className="text-muted-foreground">Nome civil:</span> {detalhe.nomeCivil}</p>}
+                  {detalhe.dataNascimento && <p><span className="text-muted-foreground">Nascimento:</span> {detalhe.dataNascimento}</p>}
+                  {detalhe.escolaridade && <p><span className="text-muted-foreground">Escolaridade:</span> {detalhe.escolaridade}</p>}
+                  {detalhe.municipioNascimento && <p><span className="text-muted-foreground">Naturalidade:</span> {detalhe.municipioNascimento}/{detalhe.ufNascimento}</p>}
+                </CardContent>
+              </Card>
+            )}
 
-        <h3 className="font-display text-sm font-semibold mb-3 flex items-center gap-2">
-          <Banknote className="w-4 h-4 text-primary" />
-          Despesas Recentes
-          <span className="text-xs text-muted-foreground ml-auto">
-            Total: R$ {totalDespesas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-          </span>
-        </h3>
-        <div className="space-y-2">
-          {despesas.slice(0, 10).map((d: any, i: number) => (
-            <Card key={i} className="bg-card/50 border-border/50">
-              <CardContent className="p-3">
-                <p className="text-xs font-medium">{d.tipoDespesa}</p>
-                <div className="flex justify-between mt-1">
-                  <span className="text-xs text-muted-foreground">{d.dataDocumento}</span>
-                  <span className="text-xs font-bold text-primary">
-                    R$ {(d.valorDocumento || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+            <h3 className="font-display text-sm font-semibold mb-3 flex items-center gap-2">
+              <Banknote className="w-4 h-4 text-primary" />
+              Despesas Recentes
+              <span className="text-xs text-muted-foreground ml-auto">
+                Total: R$ {totalDespesas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              </span>
+            </h3>
+            
+            {despesas.length === 0 && (
+              <p className="text-sm text-muted-foreground">Nenhuma despesa registrada.</p>
+            )}
+
+            <div className="space-y-2">
+              {despesas.slice(0, 10).map((d: any, i: number) => (
+                <Card key={i} className="bg-card/50 border-border/50">
+                  <CardContent className="p-3">
+                    <p className="text-xs font-medium">{d.tipoDespesa}</p>
+                    <div className="flex justify-between mt-1">
+                      <span className="text-xs text-muted-foreground">{d.dataDocumento}</span>
+                      <span className="text-xs font-bold text-primary">
+                        R$ {(d.valorDocumento || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     );
   }
