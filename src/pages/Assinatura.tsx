@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams, Navigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Capacitor } from '@capacitor/core';
-import { CreditCard, QrCode, Smartphone, RotateCw, Gift } from "lucide-react";
+import { CreditCard, QrCode, Smartphone, RotateCw, Gift, ArrowRight } from "lucide-react";
 
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Button } from "@/components/ui/button";
@@ -328,13 +328,16 @@ export default function Assinatura() {
                      startPurchase(tab);
                   }
                 }}
-                className={`btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display text-lg font-black tracking-wider transition-all active:scale-[0.98] ${
+                className={`btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display text-lg font-black tracking-wider transition-all active:scale-[0.98] group ${
                   tab === 'promocao' 
                     ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-[0_10px_30px_rgba(16,185,129,0.3)]'
                     : 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_10px_30px_rgba(224,31,71,0.4)]'
                 }`}
               >
-                <span>{tab === 'promocao' ? 'Assinar no PIX com Desconto' : 'Liberar Acesso Completo'}</span>
+                <span className="flex items-center justify-center gap-2">
+                  {tab === 'promocao' ? 'Assinar no PIX' : 'Assinar'}
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </span>
               </Button>
 
               <p className="text-[11px] text-muted-foreground text-center leading-tight px-4">

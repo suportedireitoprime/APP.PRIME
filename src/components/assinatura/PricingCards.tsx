@@ -150,20 +150,29 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
               className="relative w-full rounded-3xl border-2 transition-all duration-300 text-left p-4 overflow-hidden border-border bg-card shadow-lg ring-1 ring-border/50"
             >
               <div className="flex justify-between items-start mb-1.5">
-                <h3 className="font-display font-bold text-muted-foreground text-[13px] uppercase tracking-wider">Plano Mensal</h3>
-                <div className="w-5 h-5 rounded-full bg-foreground flex items-center justify-center shrink-0">
-                  <Check className="w-3 h-3 text-background" strokeWidth={3} />
+                <div>
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <ShieldCheck className="w-4 h-4 text-muted-foreground" />
+                    <h3 className="font-display font-black text-muted-foreground text-base uppercase tracking-wider">Plano Mensal</h3>
+                  </div>
+                </div>
+                <div className="w-5 h-5 rounded-full bg-foreground flex items-center justify-center shrink-0 shadow-lg mt-1">
+                  <Check className="w-3.5 h-3.5 text-background" strokeWidth={3} />
                 </div>
               </div>
 
-              <div className="flex items-baseline gap-1">
-                <span className="font-display text-3xl font-black text-foreground">R$ 29,90</span>
+              <div className="flex items-baseline gap-1 mb-1 text-foreground">
+                <span className="font-display text-3xl font-black">R$ 29,90</span>
                 <span className="text-[10px] font-bold text-muted-foreground">/mês</span>
               </div>
               
-              <p className="text-[10px] font-medium text-muted-foreground mt-1">
-                Cancele quando quiser.
+              <p className="text-[10px] font-bold text-muted-foreground mb-2">
+                Sem fidelidade. Cancele quando quiser.
               </p>
+
+              <div className="w-full bg-foreground/5 rounded-lg p-2.5 flex items-center justify-center border border-border">
+                <span className="text-[11px] font-bold text-muted-foreground">Acesso flexível mês a mês</span>
+              </div>
             </button>
           )}
         </motion.div>
