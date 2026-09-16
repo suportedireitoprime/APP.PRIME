@@ -50,15 +50,31 @@ function TrialCountdownBanner({ expiresAt }: { expiresAt: string | null }) {
   if (!timeLeft || timeLeft === 'Seu teste expirou') return null;
 
   return (
-    <div className="mx-4 mt-6 bg-red-500/10 border border-red-500/30 rounded-2xl p-4 flex flex-col items-center justify-center relative overflow-hidden shadow-lg shadow-red-500/5">
+    <div className="mx-4 mt-6 bg-red-500/10 border border-red-500/30 rounded-2xl p-5 flex flex-col items-center justify-center relative overflow-hidden shadow-lg shadow-red-500/5">
+      {/* Imagem de Fundo Vazado (Watermark) */}
+      <div 
+        className="absolute inset-0 opacity-[0.03] bg-center bg-no-repeat bg-contain"
+        style={{ backgroundImage: "url('/logo-prime.webp')", backgroundPosition: 'center', backgroundSize: '120%' }}
+      />
+      
       <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-red-400 to-red-600"></div>
-      <Timer className="w-6 h-6 text-red-400 mb-2" />
-      <h3 className="font-display font-black text-red-400 text-lg mb-1 tracking-wide uppercase">Seu Teste Gratuito</h3>
-      <p className="font-body text-sm font-semibold text-red-500/90 text-center">
+      
+      {/* Logo no lugar do Timer */}
+      <div className="relative z-10 w-12 h-12 mb-3 bg-red-500/10 rounded-full flex items-center justify-center border border-red-500/20 shadow-sm">
+         <img src="/logo-prime.webp" alt="Logo" className="w-8 h-8 object-contain drop-shadow-md" />
+      </div>
+
+      <h3 className="relative z-10 font-display font-black text-red-400 text-lg mb-1 tracking-wide uppercase text-center">
+        Seu Teste Gratuito
+      </h3>
+      
+      <p className="relative z-10 font-body text-sm font-semibold text-red-500/90 text-center mb-1">
         Aproveite todos os recursos.
       </p>
-      <div className="mt-3 px-4 py-1.5 rounded-full bg-red-500/20 text-red-400 font-display font-black text-sm tracking-wider animate-pulse">
-        TERMINA EM {timeLeft}
+      
+      <div className="relative z-10 mt-3 px-5 py-1.5 rounded-full bg-red-500/20 border border-red-500/30 text-red-400 font-display font-black text-sm tracking-wider animate-pulse flex items-center gap-2 shadow-[0_0_15px_rgba(239,68,68,0.2)]">
+        <Timer className="w-4 h-4" />
+        TERMINA EM {timeLeft.toUpperCase()}
       </div>
     </div>
   );
