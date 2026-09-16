@@ -119,7 +119,7 @@ const HomeTabEstudos = ({
 
           {/* Aprender em Carrossel 3D */}
           {!hideBlog && (
-            <div className="pt-2 pb-2">
+            <div className="pt-6 pb-0">
               <Suspense fallback={<AprenderCarouselSkeleton />}>
                 <HomeAprenderCarousel hideBlog={hideBlog} />
               </Suspense>
@@ -127,7 +127,7 @@ const HomeTabEstudos = ({
           )}
 
           {/* Seção Lei Seca com Título, Risquinho Vermelho e Descrição */}
-          <div className="pt-4 flex flex-col gap-2.5">
+          <div className="pt-2 flex flex-col gap-2.5">
             <div className="mb-0.5 relative z-10 flex items-start justify-between gap-3">
               <div>
                 <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 uppercase tracking-widest">
