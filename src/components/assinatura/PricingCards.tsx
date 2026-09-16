@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Clock, ShieldCheck, Zap } from "lucide-react";
 import { TypewriterText } from "@/components/ui/TypewriterText";
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 interface PricingCardsProps {
   selectedPlan: 'mensal' | 'anual' | 'promocao';
@@ -32,7 +33,10 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
       <div className="flex p-1 bg-card/60 rounded-full border border-border/50 relative z-20 shadow-inner max-w-sm mx-auto w-full">
         <button
           type="button"
-          onClick={() => onSelectPlan('mensal')}
+          onClick={() => {
+            Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
+            onSelectPlan('mensal');
+          }}
           className={`relative z-10 flex-1 py-2 text-[11px] sm:text-xs font-bold uppercase tracking-wider rounded-full transition-all duration-300 ${
             activePlan === 'mensal' 
               ? 'text-foreground' 
@@ -51,7 +55,10 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
 
         <button
           type="button"
-          onClick={() => onSelectPlan(isNewUser ? 'promocao' : 'anual')}
+          onClick={() => {
+            Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
+            onSelectPlan(isNewUser ? 'promocao' : 'anual');
+          }}
           className={`relative z-10 flex-1 py-2 text-[11px] sm:text-xs font-bold uppercase tracking-wider rounded-full transition-all duration-300 ${
             (activePlan === 'anual' || activePlan === 'promocao')
               ? 'text-foreground' 

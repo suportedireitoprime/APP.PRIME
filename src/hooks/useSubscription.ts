@@ -47,11 +47,11 @@ export function useSubscription(options: Options = {}): SubscriptionState {
     if (isAdminEmail) {
       const startedAt = new Date();
       const expiresAt = new Date(startedAt);
-      expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+      expiresAt.setFullYear(expiresAt.getFullYear() + 100);
       return {
         isPremium: true,
         loading: false,
-        plano: 'anual',
+        plano: 'vitalício',
         startedAt: startedAt.toISOString(),
         expiresAt: expiresAt.toISOString(),
         source: 'play',
@@ -119,9 +119,9 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         if (ADMIN_EMAILS.has(email)) {
           const startedAt = new Date();
           const expiresAt = new Date(startedAt);
-          expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+          expiresAt.setFullYear(expiresAt.getFullYear() + 100);
           persist({
-            isPremium: true, loading: false, plano: 'anual', startedAt: startedAt.toISOString(), expiresAt: expiresAt.toISOString(), source: 'play', status: 'SUBSCRIPTION_STATE_ACTIVE', isAdminOverride: true, isTrial: false,
+            isPremium: true, loading: false, plano: 'vitalício', startedAt: startedAt.toISOString(), expiresAt: expiresAt.toISOString(), source: 'play', status: 'SUBSCRIPTION_STATE_ACTIVE', isAdminOverride: true, isTrial: false,
           });
           return true;
         }

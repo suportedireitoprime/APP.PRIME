@@ -17,6 +17,7 @@ export type CadastroResult = {
 type Props = {
   open: boolean;
   onFinished: (r: CadastroResult) => void;
+  onFormFinished?: (r: CadastroResult) => void;
   previewMode?: boolean;
   initialName?: string;
   playerRefExternal?: any;
@@ -25,6 +26,7 @@ type Props = {
 export default function CadastroOnboardingOverlay({
   open,
   onFinished,
+  onFormFinished,
   previewMode,
   initialName,
 }: Props) {
@@ -32,7 +34,7 @@ export default function CadastroOnboardingOverlay({
   const [result, setResult] = useState<CadastroResult | null>(null);
 
   const handleFormFinished = (r: TriagemResult) => {
-    setResult({
+    const res = {
       persona: r.persona,
       personaLabel: r.personaLabel,
       faixa: r.faixa,
@@ -41,7 +43,9 @@ export default function CadastroOnboardingOverlay({
       interesses: r.interesses,
       dores: r.dores,
       whatsapp: r.whatsapp,
-    });
+    };
+    setResult(res);
+    if (onFormFinished) onFormFinished(res);
     setPhase('video');
   };
 

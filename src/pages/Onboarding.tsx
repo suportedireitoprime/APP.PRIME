@@ -34,16 +34,12 @@ const Onboarding = () => {
     }
   }, [user, navigate]);
 
-  const finalizar = async (r: CadastroResult) => {
-    if (!user) {
-      navigate('/', { replace: true });
-      return;
-    }
-    setSaving(true);
+  const salvarNoBanco = async (r: CadastroResult) => {
+    if (!user) return;
 
-    const timeoutPromise = new Promise<{ error: Error }>((resolve) => 
-      setTimeout(() => resolve({ error: new Error('Timeout de rede') }), 10000)
-    );
+    try { localStorage.setItem(`onboarding_completed:${user.id}`, '1'); } catch {}
+    import('idb-keyval').then(({ set }) => set(`onboarding_completed:${user.id}`, '1')).catch(() => {});
+    try { window.sessionStorage.removeItem('just_signed_up'); } catch {}
 
     const savePromise = supabase
       .from('profiles')
@@ -61,21 +57,12 @@ const Onboarding = () => {
       } as any)
       .eq('id', user.id);
 
-    const { error } = await Promise.race([savePromise, timeoutPromise]);
+    savePromise.then(({ error }) => {
+      if (error) toast.error('Erro ao salvar no banco. Ajuste depois em Perfil.');
+    });
+  };
 
-    setSaving(false);
-
-    if (error) {
-      if (error.message === 'Timeout de rede') {
-        toast.error('A conexão está lenta. Salvando offline, ajustaremos depois.');
-      } else {
-        toast.error('Erro ao salvar no banco. Ajuste depois em Perfil.');
-      }
-    }
-
-    try { localStorage.setItem(`onboarding_completed:${user.id}`, '1'); } catch {}
-    import('idb-keyval').then(({ set }) => set(`onboarding_completed:${user.id}`, '1')).catch(() => {});
-    try { window.sessionStorage.removeItem('just_signed_up'); } catch {}
+  const finalizar = () => {
     setPedirNotificacoes(true);
   };
 
@@ -100,7 +87,12 @@ const Onboarding = () => {
       <AnimatePresence mode="wait">
         {!pedirNotificacoes && !pedirTrial ? (
           <motion.div key="onboarding-flow" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
-            <CadastroOnboardingOverlay open onFinished={finalizar} initialName={initialName} />
+            <CadastroOnboardingOverlay 
+              open 
+              onFormFinished={salvarNoBanco}
+              onFinished={finalizar} 
+              initialName={initialName} 
+            />
           </motion.div>
         ) : pedirNotificacoes ? (
           <motion.div key="notificacoes-step" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
