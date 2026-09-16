@@ -12,42 +12,67 @@ serve(async (req) => {
   }
 
   try {
-    const BROWSERLESS_TOKEN = Deno.env.get('BROWSERLESS_TOKEN');
-
+    const BROWSERLESS_API_KEY = Deno.env.get('BROWSERLESS_API_KEY');
+    const FIRECRAWL_API_KEY = Deno.env.get('FIRECRAWL_API_KEY');
+    const targetUrl = 'https://portal.stf.jus.br/sessoes/';
     let htmlContent = '';
+    let successSource = '';
 
     try {
-      if (BROWSERLESS_TOKEN) {
-        // Usar a API do Browserless
-        const browserlessUrl = `https://chrome.browserless.io/content?token=${BROWSERLESS_TOKEN}`;
-        const response = await fetch(browserlessUrl, {
+      if (FIRECRAWL_API_KEY) {
+        console.log('Tentando via Firecrawl...');
+        const response = await fetch('https://api.firecrawl.dev/v1/scrape', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${FIRECRAWL_API_KEY}`
+          },
+          body: JSON.stringify({ url: targetUrl, formats: ['html'] })
+        });
+        
+        const data = await response.json();
+        if (response.ok && data.success && data.data.html && !data.data.html.includes('403 Forbidden')) {
+          htmlContent = data.data.html;
+          successSource = 'Firecrawl';
+        } else {
+          console.log('Firecrawl falhou ou foi bloqueado:', data);
+        }
+      }
+
+      if (!htmlContent && BROWSERLESS_API_KEY) {
+        console.log('Tentando via Browserless...');
+        const response = await fetch(`https://chrome.browserless.io/content?token=${BROWSERLESS_API_KEY}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            url: 'https://portal.stf.jus.br/sessoes/',
-            gotoOptions: { waitUntil: 'networkidle2' }
-          })
+          body: JSON.stringify({ url: targetUrl, gotoOptions: { waitUntil: 'networkidle2' } })
         });
-
-        if (!response.ok) throw new Error(`Browserless API error: ${response.statusText}`);
-        htmlContent = await response.text();
-      } else {
-        // Fallback nativo
-        console.log('BROWSERLESS_TOKEN não configurado. Tentando fetch nativo...');
-        const response = await fetch('https://portal.stf.jus.br/sessoes/', {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        
+        if (response.ok) {
+          const text = await response.text();
+          if (!text.includes('403 Forbidden')) {
+            htmlContent = text;
+            successSource = 'Browserless';
+          } else {
+            console.log('Browserless bloqueado com 403 Forbidden');
           }
+        }
+      }
+
+      if (!htmlContent) {
+        console.log('Tentando fetch nativo (Fallback)...');
+        const response = await fetch(targetUrl, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
         });
         if (response.ok) {
-          htmlContent = await response.text();
-        } else {
-          console.log('Fetch nativo falhou com status:', response.status);
+          const text = await response.text();
+          if (!text.includes('403 Forbidden')) {
+            htmlContent = text;
+            successSource = 'Nativo';
+          }
         }
       }
     } catch (fetchErr) {
-      console.log('Erro no fetch da pauta:', fetchErr.message);
-      // htmlContent continuará vazio e acionará o mock abaixo
+      console.log('Erro de rede na extração:', fetchErr.message);
     }
 
     const $ = cheerio.load(htmlContent);
@@ -71,22 +96,21 @@ serve(async (req) => {
       }
     });
 
-    // Mock temporário para quando não temos BROWSERLESS_TOKEN e o STF bloqueou o fetch
     if (pauta.length === 0) {
       pauta.push(
         {
           id: "1",
           titulo: "ADI 0000",
           relator: "MINISTRO LUIZ FUX",
-          resumo: "Pauta capturada - (Requer Browserless API configurada no Supabase para burlar bloqueio)",
+          resumo: "Pauta indisponível. Motivo: STF WAF bloqueou todos os métodos (Firecrawl, Browserless e Nativo).",
           data: new Date().toISOString(),
           orgao: "STF"
         },
         {
           id: "2",
           titulo: "RE 123456",
-          relator: "MINISTRO GILMAR MENDES",
-          resumo: "Ação de demonstração do layout. Insira o BROWSERLESS_TOKEN nas variáveis de ambiente do Supabase.",
+          relator: "INFO SISTEMA",
+          resumo: "A chave do Firecrawl atual está inválida. Verifique o Supabase Secrets.",
           data: new Date().toISOString(),
           orgao: "STF"
         }
@@ -98,7 +122,7 @@ serve(async (req) => {
       status: 200,
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ success: false, error: error.message }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500,
     });
