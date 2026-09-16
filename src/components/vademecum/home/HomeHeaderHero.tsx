@@ -164,7 +164,7 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           aria-hidden="true"
           loading="eager"
           decoding="async"
-          className="absolute inset-0 w-full h-full object-cover object-[35%_center] md:object-center z-0 pointer-events-none"
+          className="absolute inset-0 w-full h-full object-cover object-[15%_center] md:object-center z-0 pointer-events-none scale-[0.85] translate-x-[8%] origin-right"
         />
 
         {/* Overlay vermelho com gradiente estilo menu e sombra (drop-shadow real na divisória diagonal) */}
