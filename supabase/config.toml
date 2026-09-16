@@ -166,3 +166,14 @@ entrypoint = "./functions/agenda-camara/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/agenda-camara/*.html" ]
+
+[functions.stf-pauta]
+enabled = true
+verify_jwt = false
+import_map = "./functions/stf-pauta/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/stf-pauta/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/stf-pauta/*.html" ]

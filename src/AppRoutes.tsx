@@ -140,6 +140,7 @@ const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const Configuracoes = lazy(() => import("./pages/Configuracoes.tsx"));
 const AgendaCamara = lazy(() => import("./pages/tres-poderes/AgendaCamara.tsx"));
 const AgendaSenado = lazy(() => import("./pages/tres-poderes/AgendaSenado.tsx"));
+const AgendaSTF = lazy(() => import("./pages/tres-poderes/AgendaSTF.tsx"));
 const RadarDeputados = lazy(() => import("./pages/RadarDeputados.tsx"));
 const RadarSTF = lazy(() => import("./pages/RadarSTF.tsx"));
 const RadarVotacoes = lazy(() => import("./pages/RadarVotacoes.tsx"));
@@ -1293,6 +1294,7 @@ function AnimatedRoutes() {
           <Route path="/graficos/avaliacao" element={<ProtectedRoute><PageTransition><AvaliacaoInteligente /></PageTransition></ProtectedRoute>} />
           <Route path="/tres-poderes/camara/agenda" element={<ProtectedRoute><PageTransition><AgendaCamara /></PageTransition></ProtectedRoute>} />
           <Route path="/tres-poderes/senado/agenda" element={<ProtectedRoute><PageTransition><AgendaSenado /></PageTransition></ProtectedRoute>} />
+          <Route path="/tres-poderes/stf/agenda" element={<ProtectedRoute><PageTransition><AgendaSTF /></PageTransition></ProtectedRoute>} />
           <Route path="/tres-poderes/:poderId/portais" element={<ProtectedRoute><PageTransition><PortaisPoder /></PageTransition></ProtectedRoute>} />
           <Route path="/tres-poderes/:id" element={<PageTransition><PoderDetalhe /></PageTransition>} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
