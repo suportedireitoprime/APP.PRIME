@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import horusAsset from '@/assets/horus/horus-star.webp';
 import { useAuth } from "@/hooks/useAuth";
 import { CheckoutModal } from "@/components/assinatura/CheckoutModal";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
 
 import penalCover from '@/assets/biblioteca/areas/direito-penal.webp';
 import civilCover from '@/assets/biblioteca/areas/direito-civil.webp';
@@ -50,6 +52,8 @@ export function TrialExpiredModal() {
   const { user } = useAuth();
   const [ativo, setAtivo] = useState(0);
   const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'anual' | 'anual_pix' | null>(null);
+
+  useBodyScrollLock(true);
 
   const firstName =
     user?.user_metadata?.full_name?.split(' ')[0] ||
@@ -205,7 +209,10 @@ export function TrialExpiredModal() {
           {/* Botões de Ação */}
           <div className="w-full space-y-2.5 pt-2">
             <button
-              onClick={() => navigate('/assinatura')}
+              onClick={() => {
+                Haptics.impact({ style: ImpactStyle.Medium }).catch(() => {});
+                navigate('/assinatura');
+              }}
               className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display font-black text-base tracking-wider bg-primary text-primary-foreground active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/30 group"
             >
               <span>DESTRAVAR MEU ACESSO</span>

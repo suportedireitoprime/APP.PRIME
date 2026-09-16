@@ -142,9 +142,9 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
                 </div>
               </div>
 
-              <div className="flex items-baseline gap-1 mb-1 text-foreground relative z-10">
-                <span className="font-display text-lg font-bold shadow-black/50 drop-shadow-md">12x de</span>
+              <div className="flex items-baseline gap-1.5 mb-1 text-foreground relative z-10">
                 <span className="font-display text-3xl font-black shadow-black/50 drop-shadow-md">R$ 16,65</span>
+                <span className="font-display text-lg font-bold shadow-black/50 drop-shadow-md text-muted-foreground">em 12x</span>
               </div>
 
               <p className="text-[10px] font-bold text-muted-foreground mb-2 relative z-10 drop-shadow-md shadow-black/50">
