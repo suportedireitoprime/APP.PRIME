@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, RefreshCw, ArrowLeft, Banknote } from 'lucide-react';
+import { Search, RefreshCw, ArrowLeft, Banknote, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -106,17 +106,27 @@ const DeputadosPanel = ({ searchQuery }: DeputadosPanelProps) => {
             placeholder="Buscar deputado..."
             value={localSearch}
             onChange={(e) => setLocalSearch(e.target.value)}
-            className="pl-9 h-9 text-sm bg-card/50 border-border/50"
+            className="pl-9 h-11 rounded-xl text-sm bg-card/50 border-border/50"
           />
         </div>
-        <select
-          value={filtroUf}
-          onChange={(e) => setFiltroUf(e.target.value)}
-          className="h-9 px-2 rounded-md border border-border bg-card/50 text-sm"
+      </div>
+      
+      <div className="flex overflow-x-auto gap-2 pb-4 scrollbar-none items-center -mx-4 px-4 sm:mx-0 sm:px-0">
+        <button
+          onClick={() => setFiltroUf('')}
+          className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors border ${!filtroUf ? 'bg-white text-black border-white' : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10'}`}
         >
-          <option value="">Todos</option>
-          {UFS.map(uf => <option key={uf} value={uf}>{uf}</option>)}
-        </select>
+          Todos
+        </button>
+        {UFS.map(uf => (
+          <button
+            key={uf}
+            onClick={() => setFiltroUf(uf)}
+            className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors border ${filtroUf === uf ? 'bg-white text-black border-white' : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10'}`}
+          >
+            {uf}
+          </button>
+        ))}
       </div>
 
       {loading ? (
@@ -140,6 +150,7 @@ const DeputadosPanel = ({ searchQuery }: DeputadosPanelProps) => {
                   <p className="text-sm font-medium truncate">{dep.nome}</p>
                   <p className="text-xs text-muted-foreground">{dep.sigla_partido} - {dep.sigla_uf}</p>
                 </div>
+                <ChevronRight className="w-5 h-5 text-white/20 flex-shrink-0" />
               </CardContent>
             </Card>
           ))}
