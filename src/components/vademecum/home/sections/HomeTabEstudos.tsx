@@ -44,6 +44,15 @@ const HomeTabEstudos = ({
       transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
       className="space-y-6"
     >
+      {/* Carrossel de Notícias Jurídicas no topo */}
+      {!hideNoticias && (
+        <div className="pt-2 pb-2 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
+          <Suspense fallback={<div className="h-48 bg-muted/20 animate-pulse rounded-xl mx-4" />}>
+            <HomeNoticiasCarousel onOpenChange={onNewsOpenChange} autoplay={noticiasAutoplay} />
+          </Suspense>
+        </div>
+      )}
+
       {/* Em Alta — leis (Vade Mecum) ou funções de estudo (home) */}
       {emAltaLeis ? (
         <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 md:gap-4">
@@ -145,14 +154,6 @@ const HomeTabEstudos = ({
         </div>
       )}
 
-      {/* Carrossel de notícias movido para o final */}
-      {!hideNoticias && (
-        <div className="pt-8 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
-          <Suspense fallback={<div className="h-48 bg-muted/20 animate-pulse rounded-xl mx-4" />}>
-            <HomeNoticiasCarousel onOpenChange={onNewsOpenChange} autoplay={noticiasAutoplay} />
-          </Suspense>
-        </div>
-      )}
 
       {/* Seção Três Poderes */}
       <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
