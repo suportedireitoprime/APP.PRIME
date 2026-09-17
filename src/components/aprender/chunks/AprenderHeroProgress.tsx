@@ -65,12 +65,12 @@ export const AprenderHeroProgress: React.FC<AprenderHeroProgressProps> = memo(({
         fadeBg: '#0c1c2e',
       }
     : {
-        heroBg: 'linear-gradient(135deg, #1f1215 0%, #150d10 55%, #0d0d0f 100%)',
-        heroBorder: 'rgba(244, 63, 94, 0.25)',
-        glow: 'linear-gradient(135deg, rgba(225, 29, 72, 0.45) 0%, transparent 100%)',
-        accent: '#fb7185',
-        badgeText: 'text-rose-300/90',
-        fadeBg: '#1f1215',
+        heroBg: 'linear-gradient(135deg, #1f1a0b 0%, #171206 55%, #0d0a02 100%)',
+        heroBorder: 'rgba(245, 158, 11, 0.25)',
+        glow: 'linear-gradient(135deg, rgba(245, 158, 11, 0.45) 0%, transparent 100%)',
+        accent: '#fbbf24',
+        badgeText: 'text-amber-400',
+        fadeBg: '#1f1a0b',
       };
 
   const size = 72;

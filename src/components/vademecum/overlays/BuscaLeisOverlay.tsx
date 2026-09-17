@@ -109,7 +109,7 @@ const BuscaLeisOverlay = ({ open, onClose, onSelectLei }: Props) => {
   const [query, setQuery] = useState('');
   const dragControls = useDragControls();
   const shouldReduceMotion = useReducedMotion();
-  const debouncedQuery = useDebounce(query, 120);
+  const debouncedQuery = useDebounce(query, 300);
   const [modo, setModo] = useState<ModoVadeMecum>('artigos');
   const [ramoAtivo, setRamoAtivo] = useState<RamoJuridico>('todos');
   const [favVersion, setFavVersion] = useState(0);

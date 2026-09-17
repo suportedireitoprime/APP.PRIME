@@ -189,11 +189,7 @@ export const AprenderAulasMasterDeck: React.FC<AprenderAulasMasterDeckProps> = m
     <div className="w-full space-y-6 select-none">
       {/* ── 1. Hero Master Deck 3D de Matérias ───────────────────────── */}
       <div className="relative w-full -mx-2 sm:mx-0 px-2 sm:px-0 pt-2 pb-2 flex flex-col items-center select-none overflow-visible">
-        {/* Ambiência luminosa sutil adaptada à matéria ativa */}
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[460px] h-[300px] sm:h-[460px] rounded-full pointer-events-none opacity-25 blur-[90px] transition-colors duration-700"
-          style={{ backgroundColor: activeAccentColor }}
-        />
+        {/* Ambiência luminosa sutil adaptada à matéria ativa (Removida a pedido) */}
 
         {/* Arena de rotação do deck 3D */}
         <div className="relative flex items-center justify-center w-full max-w-full h-[330px] sm:h-[390px] md:h-[420px] overflow-visible">
@@ -479,9 +475,15 @@ export const AprenderAulasMasterDeck: React.FC<AprenderAulasMasterDeckProps> = m
                       </span>
                     </div>
 
-                    <h5 className="text-[13px] sm:text-sm font-medium text-white/90 group-hover:text-white transition-colors line-clamp-2 leading-snug">
-                      {formatTitle(aula.titulo)}
-                    </h5>
+                    <div className="flex items-start justify-between gap-3 mt-0.5">
+                      <h5 
+                        className="text-[13px] sm:text-[14px] font-bold text-white/90 group-hover:text-white transition-colors line-clamp-2 leading-snug"
+                        style={{ fontFamily: "'Merriweather', 'Georgia', serif" }}
+                      >
+                        {formatTitle(aula.titulo)}
+                      </h5>
+                      <ArrowRight className="w-4 h-4 text-white/30 shrink-0 mt-0.5 group-hover:text-white group-hover:translate-x-1 transition-all" />
+                    </div>
 
                     {/* Mini progresso */}
                     <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden mt-1 max-w-[200px]">
