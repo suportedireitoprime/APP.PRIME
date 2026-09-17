@@ -601,7 +601,11 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
   // Check Trial Expiration
   if (user && !profileLoading && profile) {
     const createdAt = new Date(user.created_at);
-    const diffDays = Math.ceil((Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
+    const trialEndsAt = user.user_metadata?.trial_ends_at 
+      ? new Date(user.user_metadata.trial_ends_at) 
+      : new Date(createdAt.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const isTrialActive = Date.now() < trialEndsAt.getTime();
+
     const cleanPath = (location.pathname || '').replace(/\/+$/, '') || '/';
     const isAllowedPath = 
       cleanPath === '/' ||
@@ -620,7 +624,7 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
     
     const isUserPremium = !!profile.isPremium || (isSubPremium && !isSubTrial) || isAdminEmail(user.email);
 
-    if (!isUserPremium && diffDays > 3 && !isAllowedPath) {
+    if (!isUserPremium && !isTrialActive && !isAllowedPath) {
       return (
         <>
           {children}

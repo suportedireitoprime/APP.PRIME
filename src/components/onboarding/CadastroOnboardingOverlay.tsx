@@ -1,10 +1,8 @@
-import { useState } from 'react';
-import TriagemForm from './versoes/TriagemForm';
-import type { TriagemResult } from './versoes/triagemShared';
-import AppIntroOverlay from './AppIntroOverlay';
+import React from 'react';
+import TriagemModerna from './TriagemModerna';
 
 export type CadastroResult = {
-  persona: TriagemResult['persona'];
+  persona: 'faculdade' | 'oab' | 'concurso' | 'advogado' | null;
   personaLabel: string | null;
   faixa: string | null;
   nome: string;
@@ -20,7 +18,7 @@ type Props = {
   onFormFinished?: (r: CadastroResult) => void;
   previewMode?: boolean;
   initialName?: string;
-  playerRefExternal?: any;
+  playerRefExternal?: unknown;
 };
 
 export default function CadastroOnboardingOverlay({
@@ -30,44 +28,18 @@ export default function CadastroOnboardingOverlay({
   previewMode,
   initialName,
 }: Props) {
-  const [phase, setPhase] = useState<'form' | 'video'>('form');
-  const [result, setResult] = useState<CadastroResult | null>(null);
-
-  const handleFormFinished = (r: TriagemResult) => {
-    const res = {
-      persona: r.persona,
-      personaLabel: r.personaLabel,
-      faixa: r.faixa,
-      nome: r.nome,
-      areas: r.areas,
-      interesses: r.interesses,
-      dores: r.dores,
-      whatsapp: r.whatsapp,
-    };
-    setResult(res);
-    if (onFormFinished) onFormFinished(res);
-    setPhase('video');
-  };
-
-  const handleVideoFinished = () => {
-    if (result) onFinished(result);
-  };
-
   if (!open) return null;
 
+  const handleComplete = (r: CadastroResult) => {
+    if (onFormFinished) onFormFinished(r);
+    onFinished(r);
+  };
+
   return (
-    <>
-      {phase === 'form' && (
-        <TriagemForm open={true} onFinished={handleFormFinished} previewMode={previewMode} initialName={initialName} />
-      )}
-      {phase === 'video' && result && (
-        <AppIntroOverlay 
-          open={true} 
-          nome={result.nome} 
-          onFinished={handleVideoFinished} 
-          previewMode={previewMode} 
-        />
-      )}
-    </>
+    <TriagemModerna
+      initialName={initialName}
+      onComplete={handleComplete}
+      previewMode={previewMode}
+    />
   );
 }

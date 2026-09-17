@@ -7,6 +7,8 @@ import { useHideSplashScreen } from '@/hooks/useHideSplashScreen';
 import CadastroOnboardingOverlay, {
   type CadastroResult,
 } from '@/components/onboarding/CadastroOnboardingOverlay';
+import { HorusPromoModal } from '@/components/assinatura/HorusPromoModal';
+import { CheckoutModal } from '@/components/assinatura/CheckoutModal';
 import NotificacoesPermissaoStep from '@/components/onboarding/NotificacoesPermissaoStep';
 import TrialWelcomeModal from '@/components/onboarding/TrialWelcomeModal';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -15,9 +17,20 @@ const Onboarding = () => {
   useHideSplashScreen(100);
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [saving, setSaving] = useState(false);
+  const [pedirPromo, setPedirPromo] = useState(false);
+  const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'anual' | 'anual_pix' | null>(null);
   const [pedirNotificacoes, setPedirNotificacoes] = useState(false);
   const [pedirTrial, setPedirTrial] = useState(false);
+  
+  // 24 hours countdown in seconds
+  const [timeLeft, setTimeLeft] = useState(24 * 60 * 60 - 1);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(prev => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   // SEO & Título dinâmico da Triagem
   useEffect(() => {
@@ -63,30 +76,67 @@ const Onboarding = () => {
   };
 
   const finalizar = () => {
-    setPedirNotificacoes(true);
+    // Apresenta a promoção exclusiva de boas-vindas logo após a triagem (R$ 149,90 no PIX)
+    setPedirPromo(true);
   };
 
-
-  const concluirNotificacoes = (granted: boolean) => {
-    setPedirNotificacoes(false);
-    toast.success(granted ? 'Notificações ativadas. Bora estudar!' : 'Bora estudar!');
+  const fecharPromo = () => {
+    setPedirPromo(false);
     setPedirTrial(true);
   };
 
-  const concluirTrial = () => {
-    setPedirTrial(false);
+  const resgatarPromo = () => {
+    setCheckoutPlan('anual_pix');
+  };
+
+  const concluirCheckout = () => {
+    setCheckoutPlan(null);
+    setPedirPromo(false);
+    toast.success('Parabéns! Sua assinatura foi ativada.');
     startTransition(() => {
       navigate('/', { replace: true });
     });
   };
 
-  const initialName = user?.user_metadata?.full_name || '';
+  const concluirTrial = () => {
+    setPedirTrial(false);
+    setPedirNotificacoes(true);
+  };
+
+  const concluirNotificacoes = (granted: boolean) => {
+    setPedirNotificacoes(false);
+    toast.success(granted ? 'Notificações ativadas. Seja bem-vindo(a)!' : 'Seja bem-vindo(a)!');
+    startTransition(() => {
+      navigate('/', { replace: true });
+    });
+  };
+
+  const initialName = user?.user_metadata?.full_name || user?.user_metadata?.name || '';
+  const userEmail = user?.email || '';
 
   return (
     <main className="min-h-dvh bg-black">
+      {/* Modal de Checkout PIX R$ 149,90 */}
+      <CheckoutModal
+        open={!!checkoutPlan}
+        onOpenChange={(v) => { if (!v) setCheckoutPlan(null); }}
+        plan={checkoutPlan}
+        userEmail={userEmail}
+        userName={initialName}
+        onSuccess={concluirCheckout}
+      />
+
+      {/* Modal de Promoção 24h R$ 149,90 PIX */}
+      <HorusPromoModal
+        open={pedirPromo}
+        timeLeft={timeLeft}
+        onClose={fecharPromo}
+        onRedeem={resgatarPromo}
+      />
+
       <AnimatePresence mode="wait">
-        {!pedirNotificacoes && !pedirTrial ? (
-          <motion.div key="onboarding-flow" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
+        {!pedirTrial && !pedirNotificacoes ? (
+          <motion.div key="onboarding-flow" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}>
             <CadastroOnboardingOverlay 
               open 
               onFormFinished={salvarNoBanco}
@@ -94,13 +144,13 @@ const Onboarding = () => {
               initialName={initialName} 
             />
           </motion.div>
-        ) : pedirNotificacoes ? (
-          <motion.div key="notificacoes-step" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
-            <NotificacoesPermissaoStep onDone={concluirNotificacoes} />
+        ) : pedirTrial ? (
+          <motion.div key="trial-step" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}>
+            <TrialWelcomeModal onDone={concluirTrial} />
           </motion.div>
         ) : (
-          <motion.div key="trial-step" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
-            <TrialWelcomeModal onDone={concluirTrial} />
+          <motion.div key="notificacoes-step" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}>
+            <NotificacoesPermissaoStep onDone={concluirNotificacoes} />
           </motion.div>
         )}
       </AnimatePresence>

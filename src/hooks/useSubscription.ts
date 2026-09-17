@@ -66,7 +66,8 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         if (raw) {
           const cached = JSON.parse(raw);
           const isTooOld = Date.now() - (cached.__cache_timestamp || 0) > 48 * 60 * 60 * 1000;
-          if (!isTooOld) {
+          const isExpiredTrial = cached.isTrial && cached.expiresAt && new Date(cached.expiresAt).getTime() <= Date.now();
+          if (!isTooOld && !isExpiredTrial) {
             return { ...cached, loading: true };
           } else {
             localStorage.removeItem(cacheKey);
