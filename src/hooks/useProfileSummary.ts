@@ -37,13 +37,68 @@ function writeCache(uid: string, value: ProfileSummary) {
   try { localStorage.setItem(LS_KEY(uid), JSON.stringify(value)); } catch { /* ignore */ }
 }
 
-async function fetchProfileSummary(userId: string, fallbackEmail: string, fallbackAvatar: string): Promise<ProfileSummary> {
-  // Offline: usa o último snapshot salvo (ou um shape mínimo com o e-mail).
+interface ProfileRow {
+  display_name?: string | null;
+  nome_completo?: string | null;
+  nome_preferido?: string | null;
+  avatar_url?: string | null;
+  is_premium?: boolean | null;
+  bio?: string | null;
+  capa_id?: string | null;
+  interacoes_total?: number | null;
+  segundos_em_tela?: number | null;
+  perfil_contexto?: string | null;
+  perfil_tipos?: string[] | null;
+}
+
+export function resolveUserDisplayName(
+  profile?: { nome_preferido?: string | null; nome_completo?: string | null; display_name?: string | null } | null,
+  userMetadata?: Record<string, unknown> | null,
+  fallbackEmail?: string | null
+): string {
+  const metaName = String(
+    userMetadata?.full_name ||
+    userMetadata?.name ||
+    userMetadata?.display_name ||
+    userMetadata?.nome_completo ||
+    userMetadata?.nomeCompleto ||
+    ''
+  ).trim();
+  const emailPart = fallbackEmail ? fallbackEmail.split('@')[0] : '';
+
+  return (
+    profile?.nome_preferido?.trim() ||
+    profile?.nome_completo?.trim() ||
+    profile?.display_name?.trim() ||
+    metaName ||
+    emailPart ||
+    'Usuário'
+  );
+}
+
+async function fetchProfileSummary(
+  userId: string,
+  fallbackEmail: string,
+  fallbackAvatar: string,
+  userMetadata?: Record<string, unknown> | null
+): Promise<ProfileSummary> {
+  const metaName = String(
+    userMetadata?.full_name ||
+    userMetadata?.name ||
+    userMetadata?.display_name ||
+    userMetadata?.nome_completo ||
+    userMetadata?.nomeCompleto ||
+    ''
+  ).trim();
+  const emailFallback = fallbackEmail.split('@')[0] || 'Usuário';
+
+  // Offline: usa o último snapshot salvo (ou um shape mínimo com o e-mail/meta).
   if (typeof navigator !== 'undefined' && navigator.onLine === false) {
     const cached = readCache(userId);
     if (cached) return cached;
     return {
-      displayName: fallbackEmail.split('@')[0] || 'Usuário',
+      displayName: metaName || emailFallback,
+      nomeCompleto: metaName || null,
       isPremium: isAdminEmail(fallbackEmail),
       avatarUrl: fallbackAvatar || '',
       bio: '',
@@ -57,13 +112,27 @@ async function fetchProfileSummary(userId: string, fallbackEmail: string, fallba
   }
   const { data } = await supabase
     .from('profiles')
-    .select('display_name,nome_completo,is_premium,bio,capa_id,interacoes_total,segundos_em_tela,perfil_contexto,perfil_tipos')
+    .select('display_name,nome_completo,nome_preferido,avatar_url,is_premium,bio,capa_id,interacoes_total,segundos_em_tela,perfil_contexto,perfil_tipos')
     .eq('id', userId)
     .maybeSingle();
-  const p: any = data ?? {};
+  const p: ProfileRow = (data as unknown as ProfileRow) ?? {};
+
+  const resolvedDisplayName =
+    p.nome_preferido?.trim() ||
+    p.nome_completo?.trim() ||
+    p.display_name?.trim() ||
+    metaName ||
+    emailFallback;
+
+  const resolvedNomeCompleto =
+    p.nome_completo?.trim() ||
+    p.display_name?.trim() ||
+    metaName ||
+    null;
+
   const summary: ProfileSummary = {
-    displayName: p.nome_preferido || p.display_name || (fallbackEmail.split('@')[0] || 'Usuário'),
-    nomeCompleto: p.nome_completo || p.display_name || null,
+    displayName: resolvedDisplayName,
+    nomeCompleto: resolvedNomeCompleto,
     isPremium: !!p.is_premium || isAdminEmail(fallbackEmail),
     avatarUrl: p.avatar_url || fallbackAvatar || '',
     bio: p.bio ?? '',
@@ -80,16 +149,17 @@ async function fetchProfileSummary(userId: string, fallbackEmail: string, fallba
 
 export function useProfileSummary() {
   const { user } = useAuth();
+  const meta = user?.user_metadata as Record<string, unknown> | undefined;
   const fallbackAvatar =
-    (user?.user_metadata as any)?.avatar_url ||
-    (user?.user_metadata as any)?.picture ||
+    (typeof meta?.avatar_url === 'string' ? meta.avatar_url : '') ||
+    (typeof meta?.picture === 'string' ? meta.picture : '') ||
     '';
   const fallbackEmail = user?.email ?? '';
 
   return useQuery({
     queryKey: KEY(user?.id),
     enabled: !!user?.id,
-    queryFn: () => fetchProfileSummary(user!.id, fallbackEmail, fallbackAvatar),
+    queryFn: () => fetchProfileSummary(user!.id, fallbackEmail, fallbackAvatar, meta),
     initialData: user?.id ? readCache(user.id) : undefined,
     staleTime: 30_000,
     gcTime: 1000 * 60 * 60 * 24 * 7, // 7d — persistido
@@ -104,13 +174,14 @@ export function usePrefetchProfileSummary() {
   const { user } = useAuth();
   return () => {
     if (!user?.id) return;
+    const meta = user.user_metadata as Record<string, unknown> | undefined;
     const fallbackAvatar =
-      (user.user_metadata as any)?.avatar_url ||
-      (user.user_metadata as any)?.picture ||
+      (typeof meta?.avatar_url === 'string' ? meta.avatar_url : '') ||
+      (typeof meta?.picture === 'string' ? meta.picture : '') ||
       '';
     qc.prefetchQuery({
       queryKey: KEY(user.id),
-      queryFn: () => fetchProfileSummary(user.id, user.email ?? '', fallbackAvatar),
+      queryFn: () => fetchProfileSummary(user.id, user.email ?? '', fallbackAvatar, meta),
       staleTime: 30_000,
     });
   };

@@ -103,60 +103,100 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
     }
   };
 
+  const passwordStrength = React.useMemo(() => {
+    if (!password) {
+      return { score: 0, label: '', color: 'bg-white/10', hasLetter: false, hasNumber: false, hasMinLength: false };
+    }
+    const hasMinLength = password.length >= 6;
+    const hasLetter = /[a-zA-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecial = /[^a-zA-Z0-9]/.test(password);
+    const isEight = password.length >= 8;
+
+    let score = 0;
+    if (hasMinLength) score++;
+    if (hasLetter && hasNumber) score++;
+    if (isEight && (hasSpecial || password.length >= 10)) score++;
+
+    let label = 'Fraca';
+    let color = 'bg-red-500';
+    if (score === 2) {
+      label = 'Média';
+      color = 'bg-amber-500';
+    } else if (score >= 3) {
+      label = 'Forte';
+      color = 'bg-emerald-500';
+    }
+
+    return { score, label, color, hasLetter, hasNumber, hasMinLength };
+  }, [password]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting || googleLoading || appleLoading) return;
+
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanDisplayName = displayName.trim();
+
+    if (mode === 'signup') {
+      if (password.length < 6) {
+        toastErroAuth('A senha deve ter no mínimo 6 caracteres.');
+        return;
+      }
+      if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
+        toastErroAuth('A senha deve conter letras e números para sua segurança.');
+        return;
+      }
+      if (password !== confirmPassword) {
+        toastErroAuth('As senhas não coincidem.');
+        return;
+      }
+    }
+
     setSubmitting(true);
-    track(`${mode}_attempted`, { email_domain: email.split('@')[1] ?? 'unknown' });
+    track(`${mode}_attempted`, { email_domain: cleanEmail.split('@')[1] ?? 'unknown' });
     try {
       if (mode === 'forgot') {
         if (!resetEmailSent) {
-          const { error } = await resetPassword(email);
+          const { error } = await resetPassword(cleanEmail);
           if (error) throw error;
-          track('password_reset_sent', { email_domain: email.split('@')[1] ?? 'unknown' });
+          track('password_reset_sent', { email_domain: cleanEmail.split('@')[1] ?? 'unknown' });
           toast.success('Enviamos o código de recuperação para seu email.');
           setResetEmailSent(true);
         } else {
           if (!resetCode || !resetNewPassword) {
             toastErroAuth('Preencha o código e a nova senha.');
-            setSubmitting(false);
             return;
           }
           if (resetNewPassword.length < 6) {
             toastErroAuth('A nova senha deve ter pelo menos 6 caracteres.');
-            setSubmitting(false);
             return;
           }
-          const { error: otpError } = await verifyOtp(email, resetCode.trim(), 'recovery');
+          const { error: otpError } = await verifyOtp(cleanEmail, resetCode.trim(), 'recovery');
           if (otpError) throw otpError;
           const { error: updateError } = await updatePassword(resetNewPassword);
           if (updateError) throw updateError;
           toast.success('Senha atualizada com sucesso! Entrando...');
-          track('password_reset_success', { email_domain: email.split('@')[1] ?? 'unknown' });
-          // O hook global de sessão no Auth.tsx detectará o login e fará o redirect automaticamente.
+          track('password_reset_success', { email_domain: cleanEmail.split('@')[1] ?? 'unknown' });
         }
       } else if (mode === 'login') {
-        const { error } = await signIn(email, password);
+        const { error } = await signIn(cleanEmail, password);
         if (error) throw error;
         track('login_success', { method: 'email' });
       } else {
-        if (password !== confirmPassword) {
-          toastErroAuth('As senhas não coincidem.');
-          setSubmitting(false);
-          return;
-        }
-        const { error } = await signUp(email, password, displayName);
+        const { error } = await signUp(cleanEmail, password, cleanDisplayName);
         if (error) throw error;
-        track('signup_success', { method: 'email', has_display_name: Boolean(displayName) });
+        track('signup_success', { method: 'email', has_display_name: Boolean(cleanDisplayName) });
         try {
           (await import('@/lib/analytics')).grantConsent();
         } catch {}
         toast.success('Conta criada! Verifique seu email para confirmar.');
-        // Se autoconfirmado, o hook global no Auth.tsx detectará o login e fará o redirect automaticamente.
       }
     } catch (err: unknown) {
       const errorMsg = (err as Error).message ?? 'unknown';
       track(`${mode}_failed`, { erro: errorMsg });
       toastErroAuth(errorMsg);
+    } finally {
       setSubmitting(false);
     }
   };
@@ -269,7 +309,7 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.2 }}
                 onSubmit={handleSubmit}
-                className="space-y-4"
+                className={`space-y-4 ${submitting ? 'pointer-events-none opacity-85' : ''}`}
               >
                 {mode === 'forgot' && (
                   <div className="text-center mb-4">
@@ -325,25 +365,66 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                 )}
 
                 {mode !== 'forgot' && (
-                  <div className="relative">
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      name={mode === 'signup' ? 'new-password' : 'current-password'}
-                      autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-                      placeholder="Senha"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      minLength={6}
-                      className={inputCls}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors"
-                    >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        name={mode === 'signup' ? 'new-password' : 'current-password'}
+                        autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                        placeholder="Senha"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        minLength={6}
+                        className={inputCls}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors"
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+
+                    {mode === 'signup' && password.length > 0 && (
+                      <div className="px-1 pt-1 space-y-1.5">
+                        <div className="flex items-center justify-between text-xs font-body">
+                          <span className="text-white/60">Força da senha:</span>
+                          <span
+                            className={`font-semibold ${
+                              passwordStrength.score >= 3
+                                ? 'text-emerald-400'
+                                : passwordStrength.score === 2
+                                ? 'text-amber-400'
+                                : 'text-red-400'
+                            }`}
+                          >
+                            {passwordStrength.label}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-3 gap-1.5 h-1.5">
+                          <div
+                            className={`h-full rounded-full transition-all duration-300 ${
+                              passwordStrength.score >= 1 ? passwordStrength.color : 'bg-white/10'
+                            }`}
+                          />
+                          <div
+                            className={`h-full rounded-full transition-all duration-300 ${
+                              passwordStrength.score >= 2 ? passwordStrength.color : 'bg-white/10'
+                            }`}
+                          />
+                          <div
+                            className={`h-full rounded-full transition-all duration-300 ${
+                              passwordStrength.score >= 3 ? passwordStrength.color : 'bg-white/10'
+                            }`}
+                          />
+                        </div>
+                        <p className="text-[11px] text-white/50 leading-tight">
+                          Mínimo de 6 caracteres combinando letras e números.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -404,8 +485,8 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                 {!resetEmailSent && (
                   <button
                     type="submit"
-                    disabled={submitting}
-                    className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 mt-2"
+                    disabled={submitting || googleLoading || appleLoading}
+                    className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:pointer-events-none mt-2"
                   >
                     {submitting ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
@@ -423,8 +504,8 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                 {resetEmailSent && (
                   <button
                     type="submit"
-                    disabled={submitting}
-                    className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 mt-2"
+                    disabled={submitting || googleLoading || appleLoading}
+                    className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:pointer-events-none mt-2"
                   >
                     {submitting ? (
                       <Loader2 className="w-5 h-5 animate-spin" />

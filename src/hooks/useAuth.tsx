@@ -236,11 +236,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = useCallback(async (email: string, password: string, displayName?: string) => {
     const cleanEmail = email.trim().toLowerCase();
+    const cleanName = displayName?.trim() || cleanEmail.split('@')[0];
     const { data, error } = await supabase.auth.signUp({
       email: cleanEmail,
       password,
       options: {
-        data: { display_name: displayName?.trim() || cleanEmail.split('@')[0] },
+        data: {
+          display_name: cleanName,
+          name: cleanName,
+          full_name: cleanName,
+        },
         emailRedirectTo: window.location.origin,
       },
     });
@@ -274,9 +279,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (typeof localStorage !== 'undefined') {
       Object.keys(localStorage).forEach(k => {
-        if (k.startsWith('sub_state_')) localStorage.removeItem(k);
+        if (
+          k.startsWith('sub_state_') ||
+          k.startsWith('direitoprime:sub:') ||
+          k.startsWith('onboarding_completed:') ||
+          k.startsWith('direitoprime:profile-summary:')
+        ) {
+          localStorage.removeItem(k);
+        }
       });
     }
+
+    // Limpa também chaves do IndexedDB vinculadas à sessão
+    try {
+      const { del } = await import('idb-keyval');
+      if (user?.id) {
+        await Promise.all([
+          del(`direitoprime:sub:${user.id}`).catch(() => {}),
+          del(`onboarding_completed:${user.id}`).catch(() => {}),
+        ]);
+      }
+    } catch {}
 
     await Promise.all([
       firebaseLogout,
@@ -285,7 +308,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Não fazer window.location.replace — o onAuthStateChange já seta
     // user=null e loading=false, e o ProtectedRoute/HomeGate redireciona
     // automaticamente para /auth sem recarregar a página inteira.
-  }, []);
+  }, [user?.id]);
 
   const resetPassword = useCallback(async (email: string) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {

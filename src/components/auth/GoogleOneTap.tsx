@@ -3,6 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
+import { Capacitor } from '@capacitor/core';
+
 declare global {
   interface Window {
     google?: any;
@@ -13,6 +15,9 @@ export const GoogleOneTap: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // WebViews nativas (Android/iOS) não suportam FedCM / cookies de terceiros adequadamente
+    if (Capacitor.isNativePlatform()) return;
+
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
     if (!clientId) {
       console.warn('[GoogleOneTap] VITE_GOOGLE_CLIENT_ID não está definido no .env');
