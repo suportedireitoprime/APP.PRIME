@@ -7,8 +7,7 @@ import JurisBlogCarousel from '@/components/vademecum/blog/JurisBlogCarousel';
 import HeroOrnaments from '@/components/vademecum/home/HeroOrnaments';
 import HomeCard from '@/components/vademecum/home/HomeCard';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import { heroFigures } from '@/assets/hero-figures';
-import { assetUrl } from '@/lib/assetUrl';
+import jurisprudenciaHeroImg from '@/assets/jurisprudencia-hero.png';
 import { prefetchRoute } from '@/lib/routePrefetch';
 import { fetchSumulas } from '@/services/sumulasService';
 import { fetchPesquisasProntas } from '@/services/pesquisasProntasService';
@@ -37,26 +36,6 @@ function prefetchTarget(id: string) {
   prefetchRoute('sumulasTribunal');
   void fetchSumulas(id).catch(() => {});
 }
-
-// Figuras vazadas com temática de tribunal/julgamento — mesmo padrão do painel
-// amarelo do início, porém na paleta verde desta seção.
-const JURIS_FIGURE_ALTS = [
-  'Juiz com martelo',
-  'Advogada argumentando',
-  'Martelo do juiz',
-  'Balança da justiça',
-  'Colonata em perspectiva',
-  'Fachada de faculdade',
-  'Juramento de advogado',
-  'Advogado lendo peça',
-  'Cícero',
-  'Montesquieu',
-  'Escadaria da faculdade',
-  'Pergaminho lacrado',
-];
-const JURIS_FIGURES = JURIS_FIGURE_ALTS
-  .map((alt) => heroFigures.find((f) => f.alt === alt))
-  .filter((f): f is (typeof heroFigures)[number] => Boolean(f));
 
 // Página dedicada de Jurisprudência: substitui o antigo bottom sheet por uma
 // tela cheia com painel verde no topo, barra de busca e cartões de coleção.
@@ -149,37 +128,6 @@ const Jurisprudencia = () => {
   useTrackArea("jurisprudencia_aberta");
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
-  const [coverIndex, setCoverIndex] = useState(() => Math.floor(Math.random() * JURIS_FIGURES.length));
-
-  useEffect(() => {
-    if (JURIS_FIGURES.length <= 1) return;
-    let id: ReturnType<typeof setInterval> | null = null;
-    const start = () => {
-      if (id) return;
-      id = setInterval(() => setCoverIndex((i) => (i + 1) % JURIS_FIGURES.length), 9000);
-    };
-    const stop = () => { if (id) { clearInterval(id); id = null; } };
-    if (!document.hidden) start();
-    const onVis = () => (document.hidden ? stop() : start());
-    document.addEventListener('visibilitychange', onVis);
-    return () => { stop(); document.removeEventListener('visibilitychange', onVis); };
-  }, []);
-
-  // Aquece o cache de TODAS as figuras (são poucas e leves) em idle, para
-  // que os slides seguintes apareçam instantaneamente sem "carregando".
-  useEffect(() => {
-    const w: any = window;
-    const idle = w.requestIdleCallback || ((cb: any) => setTimeout(cb, 400));
-    const cancel = w.cancelIdleCallback || clearTimeout;
-    const handle = idle(() => {
-      JURIS_FIGURES.forEach((f) => {
-        const img = new Image();
-        img.decoding = 'async';
-        img.src = assetUrl(f.url);
-      });
-    });
-    return () => cancel(handle);
-  }, []);
 
   const abrir = (id: string) => {
     track('jurisprudencia_category_opened', { category_id: id });
@@ -226,63 +174,54 @@ const Jurisprudencia = () => {
   return (
     <div className="w-full min-h-dvh bg-background pb-[calc(var(--sai-bottom)+5rem)] lg:pb-12 relative">
       <ShapeGrid />
-      {/* Painel verde (mirror do painel amarelo do início) */}
       <div
-        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[calc(var(--sai-top)+0.5rem)]"
-
+        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[calc(var(--sai-top)+0.5rem)] flex flex-col z-20"
         style={{
-          background:
-            'linear-gradient(150deg, hsl(164 45% 16%) 0%, hsl(158 52% 11%) 55%, hsl(150 45% 7%) 100%)',
+          transform: 'translateZ(0)',
+          backgroundColor: '#050505',
         }}
       >
-        {/* Ornamentos SVG (mesmo do painel amarelo), tingidos de verde */}
-        <div className="absolute inset-0 opacity-70 pointer-events-none [filter:hue-rotate(95deg)_saturate(0.85)]">
-          <HeroOrnaments />
+        <div
+          className="pointer-events-none absolute -top-[1200px] left-0 right-0 h-[1200px] z-0"
+          style={{ backgroundColor: '#050505' }}
+          aria-hidden="true"
+        />
+
+        <img
+          src={jurisprudenciaHeroImg}
+          alt=""
+          aria-hidden="true"
+          loading="eager"
+          decoding="async"
+          className="absolute inset-0 w-full h-full object-cover object-[32%_center] md:object-center z-0 pointer-events-none translate-x-[12%] md:translate-x-[8%]"
+        />
+
+        {/* Overlay com divisória diagonal */}
+        <div 
+          className="absolute inset-0 z-[1] pointer-events-none"
+          style={{ filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.8)) drop-shadow(8px 0 10px rgba(0,0,0,0.95))' }}
+        >
+          <div 
+            className="absolute inset-0 overflow-hidden"
+            style={{ clipPath: 'polygon(0 0, 47% 0, 36% 100%, 0% 100%)' }}
+          >
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(150deg, hsl(164 45% 16%) 0%, hsl(158 52% 11%) 55%, hsl(150 45% 7%) 100%)' }} />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
+            
+            <div className="absolute inset-0 opacity-70 pointer-events-none [filter:hue-rotate(95deg)_saturate(0.85)]">
+              <HeroOrnaments />
+            </div>
+
+            {/* Grid Pattern Background */}
+            <div className="absolute inset-0 opacity-10" style={{
+              backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px)',
+              backgroundSize: '24px 24px'
+            }} />
+          </div>
         </div>
 
-        {/* Figuras vazadas rotativas com crossfade + Ken Burns (mesmo padrão do painel amarelo) */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <AnimatePresence initial={false}>
-            {(() => {
-              const fig = JURIS_FIGURES[coverIndex % JURIS_FIGURES.length];
-              if (!fig) return null;
-              const posClass =
-                fig.side === 'left'
-                  ? 'left-[4%] right-auto origin-bottom-left'
-                  : fig.side === 'right'
-                  ? 'right-[4%] left-auto origin-bottom-right'
-                  : 'left-1/2 -translate-x-1/2 origin-bottom';
-              const kenBurnsAnim = (coverIndex % 2 === 0)
-                ? 'ken-burns-a 12s ease-in-out infinite alternate'
-                : 'ken-burns-b 12s ease-in-out infinite alternate';
-              return (
-                <motion.img
-                  key={coverIndex}
-                  src={assetUrl(fig.url)}
-                  alt=""
-                  aria-hidden
-                  loading="eager"
-                  decoding="async"
-                  // @ts-expect-error non-standard yet-widely-supported hint
-                  fetchpriority="high"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 0.92 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }}
-                  style={{ animation: kenBurnsAnim, willChange: 'transform' }}
-                  className={`absolute bottom-2 top-2 h-[calc(100%-16px)] w-auto max-w-[62%] sm:max-w-[52%] lg:max-w-[42%] object-contain drop-shadow-[0_10px_25px_rgba(0,0,0,0.55)] ${posClass}`}
-                />
-              );
-            })()}
-          </AnimatePresence>
-        </div>
-
-        {/* Escurecedor para legibilidade */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/20 via-emerald-950/25 to-emerald-950/70" />
-
-        {/* Glow decorativo */}
-        <div className="absolute -top-16 -right-10 w-56 h-56 rounded-full bg-emerald-400/15 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -left-10 w-64 h-64 rounded-full bg-teal-300/10 blur-3xl pointer-events-none" />
+        {/* Glow decorativo opcional para ajudar no verde */}
+        <div className="absolute -top-16 -left-10 w-56 h-56 rounded-full bg-emerald-400/15 blur-3xl pointer-events-none z-[2]" />
 
         {/* Header com voltar */}
         <div className="relative flex items-center justify-between px-4 pb-2 lg:hidden">
