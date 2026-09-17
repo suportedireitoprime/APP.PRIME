@@ -14,18 +14,18 @@ const OAUTH_DEEP_LINK = `${NATIVE_PACKAGE}://auth-callback`;
 // Esquema legado, mantido só para não quebrar links antigos já espalhados.
 const LEGACY_DEEP_LINK_SCHEMES = ['br.com.direito.app://', 'direitoprime://'];
 const getNativeGoogleError = (error: unknown) => {
-  const err = error as { message?: string; code?: string; status?: string | number; statusCode?: string | number };
-  const code = String(err?.code ?? err?.status ?? err?.statusCode ?? '');
+  const err = error as { message?: string; code?: string | number; status?: string | number; statusCode?: string | number };
+  const code = String(err?.code ?? err?.status ?? err?.statusCode ?? '').trim();
   const message = err?.message || String(error);
-  const raw = `${code} ${message}`.trim();
+  const raw = `${code} ${message}`.trim().toLowerCase();
 
-  if (code === '12501' || raw.includes('12501') || message.toLowerCase().includes('canceled the sign-in flow')) {
+  if (code === '12501' || raw.includes('12501') || raw.includes('canceled the sign-in flow') || raw.includes('sign in canceled') || raw.includes('user cancelled')) {
     return new Error(
       `O Google recusou o login nativo no Android (código 12501). Isso quase sempre indica OAuth/SHA-1 incompatível: confira se o Client ID Android do pacote ${NATIVE_PACKAGE} usa o SHA-1 da chave que assinou este APK/AAB e se, no Supabase, o Google tem o Client ID Web primeiro e o Android depois.`,
     );
   }
 
-  if (code === '10' || raw.includes('DEVELOPER_ERROR') || raw.includes('code: 10') || raw.includes('10')) {
+  if (code === '10' || raw.includes('developer_error') || raw.includes('code: 10') || raw.includes('10')) {
     return new Error(
       `Erro de configuração do Google Sign-In (DEVELOPER_ERROR 10). Verifique package ${NATIVE_PACKAGE}, SHA-1 da chave de assinatura e Client IDs Web/Android no Google Cloud e no Supabase.`,
     );
@@ -66,8 +66,22 @@ const AuthContext = createContext<AuthContextType>({
 const readCachedSession = (): Session | null => {
   if (typeof window === 'undefined') return null;
   try {
-    // Acesso direto em O(1) evita bloquear a Main Thread iterando sobre todo o localStorage
-    const raw = window.localStorage.getItem('sb-dnjrgpldcwcpoywamorr-auth-token');
+    // Acesso O(1) na chave padrão do projeto com fallback resiliente
+    const projectRef = 'dnjrgpldcwcpoywamorr';
+    const primaryKey = `sb-${projectRef}-auth-token`;
+    let raw = window.localStorage.getItem(primaryKey);
+    
+    // Fallback caso a referência do projeto mude
+    if (!raw) {
+      for (let i = 0; i < window.localStorage.length; i++) {
+        const key = window.localStorage.key(i);
+        if (key && key.startsWith('sb-') && key.endsWith('-auth-token')) {
+          raw = window.localStorage.getItem(key);
+          break;
+        }
+      }
+    }
+
     if (raw) {
       const parsed = JSON.parse(raw);
       const session = (parsed?.currentSession ?? parsed) as Session | null;
@@ -130,13 +144,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     const sessionTimeout = new Promise<{ data: { session: Session | null } }>((resolve) =>
-      setTimeout(() => resolve({ data: { session: null } }), 4000),
+      setTimeout(() => resolve({ data: { session: initialSession } }), 4000),
     );
     
     Promise.race([supabase.auth.getSession(), sessionTimeout])
       .then((result) => {
         if (!isMounted) return;
-        const currentSession = result?.data?.session ?? null;
+        // Se vier nulo por timeout ou conexão lenta, preserva initialSession em cache
+        const currentSession = result?.data?.session ?? initialSession ?? null;
         startTransition(() => {
           setSession(currentSession);
           setUser(currentSession?.user ?? null);
@@ -145,7 +160,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       })
       .catch((err) => {
         console.error('[Auth] Erro ao recuperar sessão', err);
-        if (isMounted) setLoading(false);
+        if (isMounted) {
+          setSession(initialSession ?? null);
+          setUser(initialSession?.user ?? null);
+          setLoading(false);
+        }
       });
 
     // Handle OAuth deep link on native (<appId>://auth-callback?code=...)
@@ -165,7 +184,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const aceito =
           !!url &&
           (url.startsWith(`${NATIVE_PACKAGE}://`) ||
-            LEGACY_DEEP_LINK_SCHEMES.some((s) => url.startsWith(s)));
+            LEGACY_DEEP_LINK_SCHEMES.some((s) => url.startsWith(s)) ||
+            url.includes('://auth-callback') ||
+            url.includes('auth-callback'));
         if (!aceito) return;
         let isOAuthCallback = false;
         try {
@@ -214,21 +235,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signUp = useCallback(async (email: string, password: string, displayName?: string) => {
-    const { error } = await supabase.auth.signUp({
-      email,
+    const cleanEmail = email.trim().toLowerCase();
+    const { data, error } = await supabase.auth.signUp({
+      email: cleanEmail,
       password,
       options: {
-        data: { display_name: displayName || email.split('@')[0] },
+        data: { display_name: displayName?.trim() || cleanEmail.split('@')[0] },
         emailRedirectTo: window.location.origin,
       },
     });
     if (!error) {
-      // Sinaliza ao ProtectedRoute que o próximo render deve ir direto pra
-      // /onboarding, sem esperar o round-trip do Supabase pra profiles.
-      try { window.sessionStorage.setItem('just_signed_up', '1'); } catch {}
+      // Só sinaliza para ir direto para /onboarding se a sessão foi criada de imediato
+      if (data?.session && data?.user) {
+        try { window.sessionStorage.setItem('just_signed_up', '1'); } catch {}
+      }
       import('@/lib/appEvents').then(({ appEvents }) => appEvents.signUp('email')).catch(() => {});
-      // Aquecimento do chunk da triagem — abre imediato quando o app
-      // navegar pra /onboarding.
+      // Aquecimento do chunk da triagem — abre imediato quando o app navegar pra /onboarding.
       import('@/components/onboarding/CadastroOnboardingOverlay').catch(() => {});
     }
     return { error: error as Error | null };

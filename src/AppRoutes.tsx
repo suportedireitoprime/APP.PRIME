@@ -506,7 +506,7 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
     // Acabou de criar conta — não precisa consultar o Supabase para saber
     // se a triagem foi feita (ainda nem existe o perfil). Libera a tela
     // imediatamente e deixa o Onboarding resolver o resto.
-    if (justSignedUp) {
+    if (justSignedUp && user) {
       setInitialCheckDone(true);
       setNeedsOnboarding(true);
       return;
