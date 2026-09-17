@@ -307,12 +307,23 @@ const PremiumGate = ({
   const [showBenefits, setShowBenefits] = useState(false);
   const { user } = useAuth();
 
-  // Verifica se o trial expirou
+  // Verifica se o trial expirou (usando a mesma lógica do AppRoutes)
   const isTrialExpired = useMemo(() => {
-    if (!user?.user_metadata?.trial_start) return false;
-    const trialStart = new Date(user.user_metadata.trial_start).getTime();
-    const nowMs = Date.now();
-    return nowMs > trialStart + (3 * 24 * 60 * 60 * 1000); // 3 dias
+    if (!user) return false;
+    const createdAt = new Date(user.created_at);
+    let trialEndsAt = new Date(createdAt.getTime() + 3 * 24 * 60 * 60 * 1000);
+    
+    if (user.user_metadata?.trial_ends_at) {
+      const metaTrial = new Date(user.user_metadata.trial_ends_at);
+      if (!isNaN(metaTrial.getTime())) {
+        trialEndsAt = metaTrial;
+      }
+    } else if (user.user_metadata?.trial_start) {
+      const trialStart = new Date(user.user_metadata.trial_start).getTime();
+      trialEndsAt = new Date(trialStart + (3 * 24 * 60 * 60 * 1000));
+    }
+
+    return Date.now() > trialEndsAt.getTime();
   }, [user]);
 
   // Player de demonstração de narração
