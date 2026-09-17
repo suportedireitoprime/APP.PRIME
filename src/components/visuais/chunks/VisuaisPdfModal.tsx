@@ -129,7 +129,7 @@ export function VisuaisPdfModal({ open, registro, onClose }: VisuaisPdfModalProp
                 {registro.tipo.replace('_', ' ')}
               </span>
             </div>
-            <h2 className="text-sm sm:text-base font-bold text-white truncate max-w-[200px] sm:max-w-md mt-0.5">
+            <h2 className="text-sm sm:text-base font-bold text-white tracking-wide truncate max-w-[220px] sm:max-w-md mt-0.5 font-['Plus_Jakarta_Sans',sans-serif]">
               {registro.titulo}
             </h2>
           </div>

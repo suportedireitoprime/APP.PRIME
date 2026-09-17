@@ -3,8 +3,8 @@ import { pdf, Document, Page, Image as PdfImage } from '@react-pdf/renderer';
 import { buildScene, PALETA, type Scene, type SceneNode } from '@/lib/visuaisJuridicos/layout';
 import type { VisualContent, VisualEstilo } from '@/lib/visuaisJuridicos/types';
 
-const SANS = 'Inter, "Helvetica Neue", Arial, sans-serif';
-const SERIF = 'Georgia, "Times New Roman", serif';
+const SANS = '"Barlow", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+const SERIF = '"Plus Jakarta Sans", "Barlow", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
 
 function renderNode(node: SceneNode, i: number) {
   switch (node.k) {

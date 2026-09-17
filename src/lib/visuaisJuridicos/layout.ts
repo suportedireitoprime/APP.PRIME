@@ -63,7 +63,8 @@ function measure(text: string, size: number, weight = 400, serif = false): numbe
     }
   }
   if (!ctx) return text.length * size * 0.52;
-  ctx.font = `${weight} ${size}px ${serif ? 'Georgia, "Times New Roman", serif' : 'Inter, "Helvetica Neue", Arial, sans-serif'}`;
+  const fam = serif ? '"Plus Jakarta Sans", "Barlow", "Inter", sans-serif' : '"Barlow", "Inter", sans-serif';
+  ctx.font = `${weight} ${size}px ${fam}`;
   return ctx.measureText(text).width;
 }
 

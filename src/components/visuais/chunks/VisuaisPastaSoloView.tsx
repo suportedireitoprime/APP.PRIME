@@ -120,7 +120,7 @@ export function VisuaisPastaSoloView({
                   </span>
                 </div>
 
-                <h3 className="font-bold text-sm sm:text-base text-white line-clamp-2 leading-tight">
+                <h3 className="font-bold text-sm sm:text-base text-white line-clamp-2 leading-tight font-['Plus_Jakarta_Sans',sans-serif] tracking-wide">
                   {arquivo.titulo}
                 </h3>
               </div>
