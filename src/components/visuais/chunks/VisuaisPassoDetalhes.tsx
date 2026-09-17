@@ -285,7 +285,7 @@ export function VisuaisPassoDetalhes({
         </>
       )}
 
-      {categoria === 'leis' && (
+      {(categoria === 'leis' || categoria === 'codigos' || categoria === 'estatutos') && (
         <>
           {carregandoArtigos && (
             <p className="flex items-center gap-2 px-1 py-2 text-xs text-muted-foreground">

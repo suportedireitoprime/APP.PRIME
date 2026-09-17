@@ -25,6 +25,29 @@ export function formatTime(dateStr: string) {
   return `${day} ${months[d.getMonth()]} · ${hh}:${mm}`;
 }
 
+export function formatTempoRelativo(dateStr?: string | null): string {
+  if (!dateStr) return 'recente';
+  const data = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now.getTime() - data.getTime();
+  
+  if (isNaN(diffMs) || diffMs <= 0) return 'agora';
+  
+  const diffSegs = Math.floor(diffMs / 1000);
+  const diffMins = Math.floor(diffSegs / 60);
+  const diffHoras = Math.floor(diffMins / 60);
+  const diffDias = Math.floor(diffHoras / 24);
+
+  if (diffMins < 1) return 'agora';
+  if (diffMins === 1) return 'há 1 minuto';
+  if (diffMins < 60) return `há ${diffMins} minutos`;
+  if (diffHoras === 1) return 'há 1 hora';
+  if (diffHoras < 24) return `há ${diffHoras} horas`;
+  if (diffDias === 1) return 'há 1 dia';
+  if (diffDias < 7) return `há ${diffDias} dias`;
+  return `há ${Math.floor(diffDias / 7)} semanas`;
+}
+
 export function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {

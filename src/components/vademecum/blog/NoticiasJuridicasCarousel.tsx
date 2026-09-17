@@ -10,6 +10,7 @@ import {
 } from '@/services/noticiasService';
 import { newsImg } from '@/lib/cdnImg';
 import NoticiaViewerSheet from '@/components/vademecum/blog/NoticiaViewerSheet';
+import { formatTempoRelativo } from '@/components/vademecum/home/carousel/carouselTypes';
 
 const AUTOPLAY_MS = 10000;
 const MAX_NEWS = 10;
@@ -167,9 +168,9 @@ export default function NoticiasJuridicasCarousel({ titleClassName = 'px-5' }: P
                   <ArrowUpRight className="w-3.5 h-3.5 text-white" strokeWidth={2.2} />
                 </div>
 
-                <span className="absolute top-2.5 left-2.5 inline-flex items-center gap-1 text-[9.5px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider bg-primary text-primary-foreground">
-                  <Newspaper className="w-2.5 h-2.5" />
-                  Notícia
+                <span className="absolute top-2.5 left-2.5 z-20 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] sm:text-[10.5px] font-bold tracking-wide text-white bg-black/60 backdrop-blur-md border border-white/20 shadow-md">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                  <span>{formatTempoRelativo(n.data_publicacao)}</span>
                 </span>
 
                 <div className="absolute inset-0 flex flex-col justify-end px-4 pb-3 pt-4">

@@ -36,6 +36,24 @@ export const MATERIAS: CatalogoItem[] = [
   contexto: `Matéria jurídica brasileira: ${label}. Panorama geral dos institutos centrais da disciplina.`,
 }));
 
+export const CODIGOS: CatalogoItem[] = LEIS_CATALOG.filter((l) => l.tipo === 'codigo').map((l) => ({
+  key: `lei:${l.id}`,
+  label: l.nome,
+  sub: `${l.sigla} — ${l.descricao}`,
+  contexto: `${l.nome} (${l.sigla}) — ${l.descricao}. Código da legislação brasileira vigente.`,
+  leiId: l.id,
+  tabela: l.tabela_nome,
+}));
+
+export const ESTATUTOS: CatalogoItem[] = LEIS_CATALOG.filter((l) => l.tipo === 'estatuto').map((l) => ({
+  key: `lei:${l.id}`,
+  label: l.nome,
+  sub: `${l.sigla} — ${l.descricao}`,
+  contexto: `${l.nome} (${l.sigla}) — ${l.descricao}. Estatuto da legislação brasileira vigente.`,
+  leiId: l.id,
+  tabela: l.tabela_nome,
+}));
+
 export const LEIS: CatalogoItem[] = LEIS_CATALOG.map((l) => ({
   key: `lei:${l.id}`,
   label: l.nome,
@@ -63,12 +81,16 @@ export const JURISPRUDENCIA: CatalogoItem[] = [
 
 export function itensDaCategoria(categoria: VisualCategoria): CatalogoItem[] {
   if (categoria === 'materias') return MATERIAS;
+  if (categoria === 'codigos') return CODIGOS;
+  if (categoria === 'estatutos') return ESTATUTOS;
   if (categoria === 'leis') return LEIS;
   return JURISPRUDENCIA;
 }
 
 export const CATEGORIA_INFO: Record<VisualCategoria, { label: string; desc: string }> = {
-  materias: { label: 'Matérias', desc: 'Panorama de uma disciplina jurídica inteira' },
+  materias: { label: 'Matérias', desc: 'Disciplinas e ramos do Direito com temas e princípios' },
+  codigos: { label: 'Códigos', desc: 'Códigos fundamentais do ordenamento jurídico brasileiro' },
+  estatutos: { label: 'Estatutos', desc: 'Estatutos específicos e legislação temática consolidada' },
   leis: { label: 'Leis', desc: 'Códigos, estatutos e leis do Vade Mecum — com artigo opcional' },
   jurisprudencia: { label: 'Jurisprudência', desc: 'Súmulas, precedentes e teses dos tribunais' },
 };

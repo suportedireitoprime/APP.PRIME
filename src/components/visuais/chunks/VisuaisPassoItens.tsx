@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ChevronRight, Loader2, Sparkles, Star } from 'lucide-react';
+import { Loader2, BookOpen, Scale, Award } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { iconeDoItem } from '@/lib/visuaisJuridicos/icones';
 import type { CatalogoItem } from '@/lib/visuaisJuridicos/catalogo';
@@ -8,8 +8,11 @@ import type { VisualCategoria, VisualRecord } from '@/lib/visuaisJuridicos/types
 import { ITEM_CORES, type Filtro } from './visuaisConstants';
 import { VisuaisBarraBusca } from './VisuaisBarraBusca';
 import { VisuaisAbasFiltro, EstrelaFavorito } from './VisuaisAbasFiltro';
+import HomeCard from '@/components/vademecum/home/HomeCard';
 
 interface VisuaisPassoItensProps {
+  categoria: VisualCategoria;
+  onSelectCategoria: (c: VisualCategoria) => void;
   filtro: Filtro;
   setFiltro: (f: Filtro) => void;
   busca: string;
@@ -22,13 +25,25 @@ interface VisuaisPassoItensProps {
   gerando: boolean;
   gerandoKey: string | null;
   prontos: Record<string, VisualRecord>;
-  categoria: VisualCategoria;
   favoritos: string[];
   onEscolherItem: (item: CatalogoItem) => void;
   alternarFavorito: (key: string) => void;
 }
 
+const CATEGORIAS_PAINEL: Array<{
+  id: VisualCategoria;
+  label: string;
+  icone: typeof BookOpen;
+  cor: string;
+}> = [
+  { id: 'materias', label: 'Matérias', icone: BookOpen, cor: '#38bdf8' },
+  { id: 'codigos', label: 'Códigos', icone: Scale, cor: '#ef4444' },
+  { id: 'estatutos', label: 'Estatutos', icone: Award, cor: '#10b981' },
+];
+
 export function VisuaisPassoItens({
+  categoria,
+  onSelectCategoria,
   filtro,
   setFiltro,
   busca,
@@ -41,106 +56,122 @@ export function VisuaisPassoItens({
   gerando,
   gerandoKey,
   prontos,
-  categoria,
   favoritos,
   onEscolherItem,
   alternarFavorito,
 }: VisuaisPassoItensProps) {
   return (
-    <div className="space-y-2">
-      <div className="sticky top-0 z-10 -mx-1 space-y-4 bg-background px-1 pb-3 pt-0.5">
+    <div className="space-y-4">
+      {/* ── Topo Fixo: Seletor de Categoria + Filtros + Busca ── */}
+      <div className="sticky top-0 z-10 -mx-1 space-y-3 bg-background/95 backdrop-blur-md px-1 pb-3 pt-0.5">
+        {/* Seletor de Categoria Principal: Matérias | Códigos | Estatutos */}
+        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-secondary/50 border border-white/5">
+          {CATEGORIAS_PAINEL.map((cat) => {
+            const ativa = categoria === cat.id;
+            const Icone = cat.icone;
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  onSelectCategoria(cat.id);
+                }}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl font-display text-[13px] sm:text-[14px] font-bold uppercase tracking-wider transition-all duration-200 ${
+                  ativa
+                    ? 'bg-zinc-800 text-white shadow-md border border-white/10'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.04]'
+                }`}
+              >
+                <Icone
+                  className="w-4 h-4 shrink-0 transition-transform duration-200"
+                  style={{ color: ativa ? cat.cor : undefined }}
+                  strokeWidth={ativa ? 2.2 : 1.6}
+                />
+                <span className="truncate">{cat.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Abas de Filtro (Todos / Favoritos / Recentes) */}
         <VisuaisAbasFiltro valor={filtro} onChange={setFiltro} />
-        <VisuaisBarraBusca valor={busca} onChange={setBusca} placeholder="Pesquisar nesta área" />
+
+        {/* Barra de Busca */}
+        <VisuaisBarraBusca
+          valor={busca}
+          onChange={setBusca}
+          placeholder={`Buscar em ${
+            categoria === 'materias'
+              ? 'matérias (ex.: Penal, Civil...)'
+              : categoria === 'codigos'
+                ? 'códigos (ex.: Penal, Civil...)'
+                : 'estatutos (ex.: OAB, ECA...)'
+          }`}
+        />
       </div>
 
       {(carregando || carregandoMaterias) && (
         <p className="flex items-center gap-2 px-1 py-2 text-xs text-muted-foreground">
-          <Loader2 className="h-3.5 w-3.5 animate-spin" />{' '}
-          {carregandoMaterias ? 'Carregando matérias…' : 'Verificando o que já está pronto…'}
+          <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
+          {carregandoMaterias ? 'Carregando matérias…' : 'Verificando conteúdos prontos…'}
         </p>
       )}
 
-      {lista.slice(0, limiteLista).map((i, idx) => {
-        const Icon = iconeDoItem(i.key, i.label, i.sub);
-        const cor = ITEM_CORES[idx % ITEM_CORES.length];
-        const favorito = favoritos.includes(i.key);
-        return (
-          <motion.div
-            key={i.key}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: Math.min(idx * 0.02, 0.2), duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
-            className="relative"
-          >
-            <button
-              disabled={gerando}
-              onClick={() => {
-                haptic.selection();
-                onEscolherItem(i);
-              }}
-              className="w-full flex items-center gap-4 px-4 h-[84px] rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.99] transition"
-            >
-              <div className="relative overflow-hidden rounded-xl shrink-0">
-                <Icon
-                  className="w-8 h-8 relative"
-                  style={{
-                    color: cor,
-                    filter: 'saturate(1.5) brightness(1.2) drop-shadow(0 2px 8px rgba(0,0,0,0.5))',
-                  }}
-                  strokeWidth={1.3}
-                />
-                <span aria-hidden className="pointer-events-none absolute inset-0 icon-shine" />
-              </div>
-              <div className="flex-1 min-w-0 text-left">
-                <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
-                  {i.label}
-                </p>
-                {i.sub && (
-                  <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-1">
-                    {i.sub}
-                  </p>
-                )}
-                {favorito && (
-                  <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-amber-400/15 px-1.5 py-0.5 font-display text-[9.5px] font-bold uppercase tracking-wider text-amber-500">
-                    <Star className="h-2.5 w-2.5 fill-amber-500" /> Favorito
-                  </span>
-                )}
-              </div>
+      {/* ── Grid de Cards no Padrão do Painel de Estudos ── */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2 md:gap-4">
+        {lista.slice(0, limiteLista).map((i, idx) => {
+          const Icon = iconeDoItem(i.key, i.label, i.sub);
+          const cor = ITEM_CORES[idx % ITEM_CORES.length];
+          const favorito = favoritos.includes(i.key);
+          const isPronto = Boolean(prontos[i.key]);
 
-              <span className="mr-7 shrink-0">
-                {gerandoKey === i.key ? (
-                  <Loader2 className="w-5 h-5 animate-spin text-primary" />
-                ) : prontos[i.key] ? (
-                  <span className="rounded-full bg-primary/15 px-2 py-0.5 font-display text-[10px] font-bold tracking-wider text-primary">
-                    PRONTO
-                  </span>
-                ) : categoria === 'jurisprudencia' ? (
-                  <Sparkles className="w-5 h-5 text-muted-foreground" />
-                ) : (
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                )}
-              </span>
-            </button>
-            <EstrelaFavorito ativo={favorito} onToggle={() => alternarFavorito(i.key)} />
-          </motion.div>
-        );
-      })}
+          return (
+            <motion.div
+              key={i.key}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: Math.min(idx * 0.02, 0.2), duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
+              className="relative group"
+            >
+              <HomeCard
+                icon={Icon}
+                label={i.label}
+                sublabel={i.sub || ''}
+                color={cor}
+                delay={0}
+                badge={favorito ? '★' : isPronto ? 'PRONTO' : undefined}
+                className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm min-h-[96px] h-[96px]"
+                iconClassName="w-7 h-7"
+                iconStrokeWidth={1.5}
+                onClick={() => {
+                  onEscolherItem(i);
+                }}
+              />
+              <div className="absolute top-2 right-2 z-20">
+                <EstrelaFavorito ativo={favorito} onToggle={() => alternarFavorito(i.key)} />
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
 
       {!lista.length && !carregando && !carregandoMaterias && (
-        <p className="py-8 text-center font-body text-sm text-muted-foreground">
+        <p className="py-12 text-center font-body text-sm text-muted-foreground">
           {filtro === 'favoritos'
-            ? 'Nenhum favorito por aqui ainda.'
+            ? 'Nenhum favorito encontrado nesta categoria.'
             : filtro === 'recentes'
-              ? 'Você ainda não abriu nenhum visual nesta área.'
-              : 'Nenhum tema encontrado.'}
+              ? 'Nenhum item aberto recentemente nesta categoria.'
+              : 'Nenhum item encontrado.'}
         </p>
       )}
 
       {lista.length > limiteLista && (
         <div className="pt-2 pb-6">
           <button
+            type="button"
             onClick={() => setLimiteLista((l) => l + 30)}
-            className="w-full py-3.5 rounded-xl bg-secondary/50 font-display text-sm font-bold text-primary active:scale-95 transition-transform"
+            className="w-full py-3.5 rounded-xl bg-secondary/50 font-display text-sm font-bold text-primary active:scale-95 transition-transform hover:bg-secondary/70"
           >
             Mostrar mais opções...
           </button>

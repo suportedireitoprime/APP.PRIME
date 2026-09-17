@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronRight, ChevronLeft, X } from 'lucide-react';
+import { ChevronRight, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useSubscription } from '@/hooks/useSubscription';
@@ -17,6 +17,7 @@ import { fetchArtigosLei, getCachedArtigos } from '@/services/legislacaoService'
 import type { ArtigoLei } from '@/data/mockData';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
+import VisuaisDeckModal from './VisuaisDeckModal';
 import {
   fetchAreasResumos,
   fetchTemasResumos,
@@ -31,8 +32,6 @@ import {
   norm,
   isArtigoReal,
   type Filtro,
-  VisuaisPassoTipos,
-  VisuaisPassoCategorias,
   VisuaisPassoItens,
   VisuaisPassoDetalhes,
 } from './chunks';
@@ -40,15 +39,15 @@ import {
 export interface VisuaisJuridicosSheetProps {
   open: boolean;
   onClose: () => void;
-  /** Quando definido, o componente abre direto neste formato, em tela cheia (rota própria). */
+  /** Quando definido, o componente abre com este formato pré-selecionado. */
   tipoInicial?: VisualTipo;
-  /** Categoria inicial quando aberta pela URL (ex.: 'materias' | 'leis' | 'jurisprudencia'). */
+  /** Categoria inicial quando aberta pela URL (ex.: 'materias' | 'codigos' | 'estatutos'). */
   categoriaInicial?: VisualCategoria;
   itemSlugInicial?: string;
   temaSlugInicial?: string;
-  /** 'sheet' = folha de baixo pra cima (escolha do formato). 'page' = tela cheia dedicada. */
+  /** 'sheet' = folha de baixo pra cima. 'page' = tela cheia dedicada. */
   modo?: 'sheet' | 'page';
-  /** Chamado ao escolher um formato no passo 1 (usado para navegar para a rota do formato). */
+  /** Chamado ao escolher um formato (usado para navegar para a rota do formato se necessário). */
   onEscolherTipo?: (tipo: VisualTipo) => void;
   /** Espelha a navegação interna na URL (ex.: ['materias','direito-civil','lindb']). */
   onRotaChange?: (segmentos: string[]) => void;
@@ -71,8 +70,8 @@ export default function VisuaisJuridicosSheet({
   const { isPremium } = useSubscription();
   const podeGerar = isPremium || isAdminEmail(user?.email);
 
-  const [tipo, setTipo] = useState<VisualTipo | null>(tipoInicial ?? null);
-  const [categoria, setCategoria] = useState<VisualCategoria | null>(categoriaInicial ?? null);
+  const [tipo, setTipo] = useState<VisualTipo>(tipoInicial ?? 'mapa_mental');
+  const [categoria, setCategoria] = useState<VisualCategoria>(categoriaInicial ?? 'materias');
 
   useEffect(() => {
     if (tipoInicial) setTipo(tipoInicial);
@@ -95,6 +94,16 @@ export default function VisuaisJuridicosSheet({
   const [temas, setTemas] = useState<TemaResumo[]>([]);
   const [carregandoTemas, setCarregandoTemas] = useState(false);
   const [tema, setTema] = useState<TemaResumo | null>(null);
+
+  // Deck modal para seleção 3D do formato ao gerar
+  const [deckOpen, setDeckOpen] = useState(false);
+  const [pendingTarget, setPendingTarget] = useState<{
+    alvo: CatalogoItem;
+    sub?: string;
+    kind: 'artigo' | 'tema';
+    temaPai?: string;
+    rotulo: string;
+  } | null>(null);
 
   // Sincroniza o item a partir da URL se itemSlugInicial for fornecido
   useEffect(() => {
@@ -168,11 +177,9 @@ export default function VisuaisJuridicosSheet({
     [filtro, favoritos, recentes],
   );
 
-  const passo = !tipo ? 1 : !categoria ? 2 : !item ? 3 : 4;
-
   const reset = useCallback(() => {
-    setTipo(tipoInicial ?? null);
-    setCategoria(categoriaInicial ?? null);
+    setTipo(tipoInicial ?? 'mapa_mental');
+    setCategoria(categoriaInicial ?? 'materias');
     setItem(null);
     setArtigo('');
     setBusca('');
@@ -182,9 +189,11 @@ export default function VisuaisJuridicosSheet({
     setTema(null);
     setSubtemas([]);
     setFiltro('todos');
+    setDeckOpen(false);
+    setPendingTarget(null);
   }, [tipoInicial, categoriaInicial]);
 
-  // Espelha o passo atual na URL (…/visuais/mapa-mental/materias/direito-civil/lindb).
+  // Espelha o passo atual na URL (…/visuais/materias/direito-civil/lindb).
   const onRotaRef = useRef(onRotaChange);
   onRotaRef.current = onRotaChange;
   useEffect(() => {
@@ -203,7 +212,7 @@ export default function VisuaisJuridicosSheet({
     if (!open) reset();
   }, [open, reset]);
 
-  // Usa o cache já pré-carregado no início do app — abre instantâneo, sem delay.
+  // Carrega visuais já em cache
   useEffect(() => {
     if (!open || !tipo || !categoria) return;
     let cancelado = false;
@@ -236,9 +245,7 @@ export default function VisuaisJuridicosSheet({
     return `${base.key}#${kind === 'tema' ? 'tema' : 'art'}-${norm(a).replace(/[^a-z0-9]+/g, '-')}`;
   }, []);
 
-  const itemKey = useMemo(() => (item ? chaveDe(item, artigo) : ''), [item, artigo, chaveDe]);
-
-  // Matérias reaproveitam a tabela de resumos jurídicos.
+  // Matérias: busca resumos jurídicos
   useEffect(() => {
     if (!open || categoria !== 'materias') return;
     let cancelado = false;
@@ -316,9 +323,9 @@ export default function VisuaisJuridicosSheet({
     return aplicarFiltro(base, (s) => chaveDe(item!, `${tema?.tema ?? ''} ${s.subtema}`, 'tema'));
   }, [subtemas, buscaArtigo, aplicarFiltro, chaveDe, item, tema]);
 
-  // Carrega os artigos da lei escolhida — reaproveita a tabela do Vade Mecum.
+  // Carrega os artigos da lei/código/estatuto escolhido — reaproveita a tabela do Vade Mecum.
   useEffect(() => {
-    if (categoria !== 'leis' || !item?.tabela) {
+    if ((categoria !== 'leis' && categoria !== 'codigos' && categoria !== 'estatutos') || !item?.tabela) {
       setArtigos([]);
       return;
     }
@@ -354,7 +361,7 @@ export default function VisuaisJuridicosSheet({
 
   const lista = useMemo(() => {
     if (!categoria) return [];
-    const todos = categoria === 'materias' ? areas : itensDaCategoria(categoria);
+    const todos = categoria === 'materias' ? (areas.length ? areas : MATERIAS) : itensDaCategoria(categoria);
     const q = norm(busca.trim());
     const filtrados = q ? todos.filter((i) => norm(`${i.label} ${i.sub ?? ''}`).includes(q)) : todos;
     const porAba = aplicarFiltro(filtrados, (i) => i.key);
@@ -362,39 +369,69 @@ export default function VisuaisJuridicosSheet({
     return [...porAba].sort((a, b) => Number(Boolean(prontos[b.key])) - Number(Boolean(prontos[a.key])));
   }, [categoria, areas, busca, prontos, aplicarFiltro, filtro]);
 
-  const gerar = async (alvo?: CatalogoItem, sub?: string, kind: 'artigo' | 'tema' = 'artigo', temaPai?: string) => {
+  /**
+   * Disparado quando o usuário clica num tópico/artigo para gerar.
+   * Conforme o fluxo solicitado, abre o Deck 3D para escolha do formato!
+   */
+  const gerar = (alvo?: CatalogoItem, sub?: string, kind: 'artigo' | 'tema' = 'artigo', temaPai?: string) => {
     const base = alvo || item;
-    if (!tipo || !categoria || !base) return;
+    if (!base) return;
     if (!podeGerar) {
       setGateOpen(true);
       return;
     }
     const valor = (sub ?? (alvo ? '' : artigo)).trim();
-    const chave = chaveDe(base, temaPai ? `${temaPai} ${valor}` : valor, kind);
-    const pronto = prontos[chave];
-    if (pronto) {
+    const rotulo = valor
+      ? kind === 'tema'
+        ? `${base.label} — ${temaPai ? `${temaPai} · ${valor}` : valor}`
+        : `${base.label} — Art. ${valor.replace(/^art\.?\s*/i, '')}`
+      : base.label;
+
+    setPendingTarget({ alvo: base, sub: valor, kind, temaPai, rotulo });
+    setDeckOpen(true);
+  };
+
+  /**
+   * Execução da geração chamada quando o usuário confirma o formato no Deck Modal.
+   */
+  const executarGeracao = async (
+    tipoEscolhido: VisualTipo,
+    target: { alvo: CatalogoItem; sub?: string; kind: 'artigo' | 'tema'; temaPai?: string; rotulo: string }
+  ) => {
+    const base = target.alvo;
+    const valor = target.sub ?? '';
+    const chave = chaveDe(base, target.temaPai ? `${target.temaPai} ${valor}` : valor, target.kind);
+
+    setTipo(tipoEscolhido);
+
+    // Se já estiver pronto no cache para esse tipo, abre na hora
+    const cache = visuaisEmCache();
+    const prontoEmCache = cache?.find((r) => r.item_key === chave && r.tipo === tipoEscolhido);
+    if (prontoEmCache) {
       marcarRecente(chave);
-      setAberto(pronto);
+      setAberto(prontoEmCache);
+      return;
+    }
+    const prontoLocal = prontos[chave];
+    if (prontoLocal && prontoLocal.tipo === tipoEscolhido) {
+      marcarRecente(chave);
+      setAberto(prontoLocal);
       return;
     }
 
     setGerando(true);
     setGerandoKey(chave);
     try {
-      const rotulo = valor
-        ? kind === 'tema'
-          ? `${base.label} — ${temaPai ? `${temaPai} · ${valor}` : valor}`
-          : `${base.label} — Art. ${valor.replace(/^art\.?\s*/i, '')}`
-        : base.label;
       const contexto = valor
-        ? kind === 'tema'
-          ? temaPai
-            ? `${base.contexto} Foque exclusivamente no subtópico "${valor}", dentro do tópico "${temaPai}" desta matéria.`
+        ? target.kind === 'tema'
+          ? target.temaPai
+            ? `${base.contexto} Foque exclusivamente no subtópico "${valor}", dentro do tópico "${target.temaPai}" desta matéria.`
             : `${base.contexto} Foque exclusivamente no tópico "${valor}" desta matéria.`
           : `${base.contexto} Foque exclusivamente no artigo ${valor}.`
         : base.contexto;
+
       const { data, error } = await supabase.functions.invoke('visual-juridico-gerar', {
-        body: { tipo, categoria, item_key: chave, item_label: rotulo, contexto },
+        body: { tipo: tipoEscolhido, categoria, item_key: chave, item_label: target.rotulo, contexto },
       });
       if (error) {
         let errorDetails = ((error as Record<string, unknown>).message as string) || '';
@@ -438,65 +475,42 @@ export default function VisuaisJuridicosSheet({
     } else if (item) {
       setItem(null);
       setBuscaArtigo('');
-    } else if (categoria) {
-      setCategoria(null);
-      setBusca('');
-    } else if (tipo) {
-      setTipo(null);
     } else {
       onClose();
     }
   };
 
   const getTitle = () => {
-    if (passo === 1 || !tipo) return 'Visuais jurídicos';
-    if (passo === 2 || !categoria) return TIPO_INFO[tipo]?.label ?? 'Visuais jurídicos';
-    if (passo === 3 || !item) return CATEGORIA_INFO[categoria]?.label ?? 'Categorias';
+    if (!item) return 'VISUAIS JURÍDICOS';
     if (tema) return tema.tema;
-    return item?.label ?? '';
+    return item?.label ?? 'VISUAIS JURÍDICOS';
   };
 
   const getSubtitle = () => {
-    if (passo === 1 || !tipo) return 'Escolha o formato que combina com o seu estudo';
-    if (passo === 2 || !categoria) return 'De onde vem o conteúdo?';
-    if (passo === 3 || !item) return 'Escolha o tema — o que já está gerado abre na hora';
+    if (!item) return 'Escolha uma matéria, código ou estatuto para estudar';
     if (categoria === 'materias') {
       return tema ? `Subtemas de ${tema.tema} — escolha um para gerar` : 'Escolha o tópico para ver os subtemas';
     }
-    return 'Escolha o artigo';
+    return 'Escolha o artigo para gerar o visual';
   };
 
   const trilha = useMemo(() => {
     const c: Array<{ label: string; onClick?: () => void }> = [
       {
-        label: 'Visuais',
+        label: 'Painel',
         onClick: () => {
           setTema(null);
           setItem(null);
-          setCategoria(null);
-          setTipo(null);
+        },
+      },
+      {
+        label: CATEGORIA_INFO[categoria]?.label ?? 'Matérias',
+        onClick: () => {
+          setTema(null);
+          setItem(null);
         },
       },
     ];
-    if (tipo) {
-      c.push({
-        label: TIPO_INFO[tipo]?.label ?? 'Visual',
-        onClick: () => {
-          setTema(null);
-          setItem(null);
-          setCategoria(null);
-        },
-      });
-    }
-    if (categoria) {
-      c.push({
-        label: CATEGORIA_INFO[categoria]?.label ?? 'Categoria',
-        onClick: () => {
-          setTema(null);
-          setItem(null);
-        },
-      });
-    }
     if (item) {
       c.push({
         label: item.label,
@@ -507,7 +521,7 @@ export default function VisuaisJuridicosSheet({
     const last = c[c.length - 1];
     if (last) last.onClick = undefined;
     return c;
-  }, [tipo, categoria, item, tema]);
+  }, [categoria, item, tema]);
 
   return (
     <>
@@ -524,64 +538,38 @@ export default function VisuaisJuridicosSheet({
               />
             )}
             <motion.div
-              initial={emPagina ? { opacity: 0 } : { y: '100%' }}
-              animate={emPagina ? { opacity: 1 } : { y: 0 }}
-              exit={emPagina ? { opacity: 0 } : { y: '100%' }}
-              transition={emPagina ? { duration: 0.2 } : { type: 'spring', damping: 30, stiffness: 300 }}
-              className={
-                emPagina
-                  ? 'fixed inset-0 z-[61] flex h-[100dvh] flex-col overflow-hidden bg-background'
-                  : `fixed inset-x-0 bottom-0 z-[61] flex flex-col overflow-hidden bg-background shadow-2xl ${
-                      tipo ? 'top-0 h-[100dvh] rounded-none' : 'max-h-[90dvh] rounded-t-3xl'
-                    }`
-              }
+              initial={emPagina ? { opacity: 0 } : { opacity: 0, scale: 0.98 }}
+              animate={emPagina ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+              exit={emPagina ? { opacity: 0 } : { opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[61] flex h-[100dvh] flex-col overflow-hidden bg-background shadow-2xl"
             >
               {emPagina ? (
-                <PageHeader title={getTitle()} subtitle={getSubtitle()} onBack={onClose} />
+                <PageHeader title={getTitle()} subtitle={getSubtitle()} onBack={voltar} />
               ) : (
-                <>
-                  <div className="flex items-center justify-center pt-2 pb-1">
-                    <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
-                  </div>
-                  <div className="flex items-center justify-between gap-3 px-5 pb-3">
-                    {passo > 1 && (
-                      <button
-                        onClick={() => {
-                          haptic.light();
-                          voltar();
-                        }}
-                        aria-label="Voltar"
-                        className="w-11 h-11 shrink-0 rounded-full bg-secondary/70 flex items-center justify-center active:scale-95 transition-transform"
-                      >
-                        <ChevronLeft className="w-6 h-6 text-foreground" strokeWidth={2.2} />
-                      </button>
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <h3 className="font-display text-xl font-bold uppercase tracking-[0.04em] leading-none text-foreground truncate">
-                        {getTitle()}
-                      </h3>
-                      <p className="mt-1 font-body text-[12px] leading-tight text-muted-foreground truncate">
-                        {getSubtitle()}
-                      </p>
-                    </div>
+                <PageHeader
+                  title={getTitle()}
+                  subtitle={getSubtitle()}
+                  onBack={voltar}
+                  rightAction={
                     <button
                       onClick={() => {
                         haptic.light();
                         onClose();
                       }}
                       aria-label="Fechar"
-                      className="w-11 h-11 shrink-0 rounded-full bg-secondary/70 flex items-center justify-center active:scale-95 transition-transform"
+                      className="w-10 h-10 rounded-full bg-secondary/70 flex items-center justify-center active:scale-95 transition-transform"
                     >
-                      <X className="w-6 h-6 text-foreground" strokeWidth={2.2} />
+                      <X className="w-5 h-5 text-foreground" strokeWidth={2.2} />
                     </button>
-                  </div>
-                </>
+                  }
+                />
               )}
 
-              {passo > 1 && (
+              {item && (
                 <nav
                   aria-label="Trilha de navegação"
-                  className="flex items-center gap-1 overflow-x-auto whitespace-nowrap px-5 pb-2 pt-1 text-[12px] font-body text-muted-foreground lg:mx-auto lg:w-full lg:max-w-[900px] lg:px-8"
+                  className="flex items-center gap-1 overflow-x-auto whitespace-nowrap px-5 pb-2 pt-1 text-[12px] font-body text-muted-foreground lg:mx-auto lg:w-full lg:max-w-[1200px] lg:px-8"
                 >
                   {trilha.map((c, i) => (
                     <span key={`${c.label}-${i}`} className="flex items-center gap-1 shrink-0">
@@ -598,25 +586,16 @@ export default function VisuaisJuridicosSheet({
                 </nav>
               )}
 
-              <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-[calc(1.25rem+var(--sai-bottom))] pt-3 lg:mx-auto lg:w-full lg:max-w-[900px] lg:px-8">
-                {/* 1 — tipo */}
-                {passo === 1 && (
-                  <VisuaisPassoTipos
-                    onSelectTipo={setTipo}
-                    onEscolherTipo={onEscolherTipo}
-                  />
-                )}
-
-                {/* 2 — categoria */}
-                {passo === 2 && (
-                  <VisuaisPassoCategorias
-                    onSelectCategoria={setCategoria}
-                  />
-                )}
-
-                {/* 3 — item */}
-                {passo === 3 && (
+              <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-[calc(1.25rem+var(--sai-bottom))] pt-3 lg:mx-auto lg:w-full lg:max-w-[1400px] lg:px-8">
+                {/* 1 — Painel: Seleção de Matéria / Código / Estatuto com HomeCards */}
+                {!item ? (
                   <VisuaisPassoItens
+                    categoria={categoria}
+                    onSelectCategoria={(cat) => {
+                      setCategoria(cat);
+                      setBusca('');
+                      setFiltro('todos');
+                    }}
                     filtro={filtro}
                     setFiltro={setFiltro}
                     busca={busca}
@@ -629,23 +608,19 @@ export default function VisuaisJuridicosSheet({
                     gerando={gerando}
                     gerandoKey={gerandoKey}
                     prontos={prontos}
-                    categoria={categoria!}
                     favoritos={favoritos}
                     onEscolherItem={(i) => {
                       setArtigo('');
                       setBuscaArtigo('');
                       setFiltro('todos');
-                      if (categoria === 'leis' || categoria === 'materias') setItem(i);
-                      else gerar(i);
+                      setItem(i);
                     }}
                     alternarFavorito={alternarFavorito}
                   />
-                )}
-
-                {/* 4 — tópicos da matéria (resumos) ou artigos da lei */}
-                {passo === 4 && item && (
+                ) : (
+                  /* 2 — Tópicos da matéria ou Artigos da lei/código/estatuto */
                   <VisuaisPassoDetalhes
-                    categoria={categoria!}
+                    categoria={categoria}
                     filtro={filtro}
                     setFiltro={setFiltro}
                     buscaArtigo={buscaArtigo}
@@ -675,6 +650,20 @@ export default function VisuaisJuridicosSheet({
           </>
         )}
       </AnimatePresence>
+
+      {/* ── Deck 3D Modal: Escolha do formato (Mapa Mental, Infográfico, Fluxograma, Diagrama) ao gerar ── */}
+      <VisuaisDeckModal
+        open={deckOpen}
+        onClose={() => setDeckOpen(false)}
+        onSelectTipo={(tipoEscolhido) => {
+          setDeckOpen(false);
+          if (pendingTarget) {
+            executarGeracao(tipoEscolhido, pendingTarget);
+          }
+        }}
+        title="VISUAIS JURÍDICOS"
+        subtitle={pendingTarget ? `Escolha o formato para ${pendingTarget.rotulo}` : 'Escolha o formato'}
+      />
 
       <GeracaoAnimacaoOverlay
         open={gerando}

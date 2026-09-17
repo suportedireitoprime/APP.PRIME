@@ -419,6 +419,7 @@ export function formatNarracaoTime(seconds: number): string {
 
 /** Split AI content into titled sections using a separator marker */
 export function splitSections(text: string, marker: string): Array<{ title: string; body: string }> {
+  if (!text || typeof text !== 'string') return [];
   const parts = text.split(marker).filter((s) => s.trim());
   return parts.map((part, i) => {
     const lines = part.trim().split('\n');

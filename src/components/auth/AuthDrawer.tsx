@@ -13,6 +13,7 @@ import {
   ArrowLeft,
   KeyRound,
   CheckCircle,
+  ShieldCheck,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -61,6 +62,7 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
     else if (mode === 'forgot') document.title = 'Recuperar Senha | Direito Prime';
 
     if (mode === 'forgot') setShowEmailForm(true);
+    if (mode === 'signup') setShowEmailForm(false);
   }, [mode]);
 
   useEffect(() => {
@@ -139,18 +141,8 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
     const cleanDisplayName = displayName.trim();
 
     if (mode === 'signup') {
-      if (password.length < 6) {
-        toastErroAuth('A senha deve ter no mínimo 6 caracteres.');
-        return;
-      }
-      if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
-        toastErroAuth('A senha deve conter letras e números para sua segurança.');
-        return;
-      }
-      if (password !== confirmPassword) {
-        toastErroAuth('As senhas não coincidem.');
-        return;
-      }
+      toastErroAuth('Novos cadastros são permitidos exclusivamente via Google ou Apple.');
+      return;
     }
 
     setSubmitting(true);
@@ -184,13 +176,8 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
         if (error) throw error;
         track('login_success', { method: 'email' });
       } else {
-        const { error } = await signUp(cleanEmail, password, cleanDisplayName);
-        if (error) throw error;
-        track('signup_success', { method: 'email', has_display_name: Boolean(cleanDisplayName) });
-        try {
-          (await import('@/lib/analytics')).grantConsent();
-        } catch {}
-        toast.success('Conta criada! Verifique seu email para confirmar.');
+        toastErroAuth('Novos cadastros são permitidos exclusivamente via Google ou Apple.');
+        return;
       }
     } catch (err: unknown) {
       const errorMsg = (err as Error).message ?? 'unknown';
@@ -247,11 +234,18 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="font-display text-xl font-bold text-white">
-                {mode === 'login' ? 'Entrar' : mode === 'signup' ? 'Criar Conta' : 'Recuperar Senha'}
+                {mode === 'login'
+                  ? showEmailForm
+                    ? 'Entrar com E-mail'
+                    : 'Entrar'
+                  : mode === 'signup'
+                  ? 'Criar Conta'
+                  : 'Recuperar Senha'}
               </h2>
               <p className="text-sm font-body text-white/60 mt-1">
-                {mode === 'login' && 'Bem-vindo de volta.'}
-                {mode === 'signup' && 'Comece sua jornada jurídica.'}
+                {mode === 'login' && !showEmailForm && 'Bem-vindo de volta.'}
+                {mode === 'login' && showEmailForm && 'Acesse com seu e-mail e senha.'}
+                {mode === 'signup' && 'Cadastre-se rapidamente com Google ou Apple.'}
                 {mode === 'forgot' && 'Não se preocupe, vamos recuperar.'}
               </p>
             </div>
@@ -267,7 +261,73 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
           </div>
 
           <AnimatePresence mode="wait">
-            {!showEmailForm && mode !== 'forgot' ? (
+            {mode === 'signup' ? (
+              <motion.div
+                key="signup-options"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-4"
+              >
+                <SocialButtons 
+                  onGoogle={handleGoogle} 
+                  onApple={handleApple} 
+                  googleLoading={googleLoading} 
+                  appleLoading={appleLoading}
+                  mode="signup"
+                />
+
+                {/* Informação sobre cadastro exclusivo com Google e Apple */}
+                <div className="p-4 rounded-2xl bg-white/[0.04] border border-white/10 flex items-start gap-3 mt-4">
+                  <div className="w-8 h-8 rounded-xl bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
+                    <ShieldCheck className="w-4 h-4 text-primary" />
+                  </div>
+                  <div className="space-y-1 text-left">
+                    <p className="text-xs font-bold text-white">Cadastro Exclusivo via Google ou Apple</p>
+                    <p className="text-[11.5px] text-white/60 leading-relaxed font-body">
+                      Para sua segurança e prevenção de contas duplicadas, o cadastro de novas contas é realizado exclusivamente através do Google ou Apple.
+                    </p>
+                  </div>
+                </div>
+
+                <p className="text-[11px] leading-relaxed font-body text-white/50 text-center px-2">
+                  Ao criar sua conta, você concorda com os{' '}
+                  <button
+                    type="button"
+                    onClick={() => setLegalOpen('termos')}
+                    className="text-white font-medium underline hover:text-primary transition-colors"
+                  >
+                    Termos de Uso
+                  </button>{' '}
+                  e com a{' '}
+                  <button
+                    type="button"
+                    onClick={() => setLegalOpen('privacidade')}
+                    className="text-white font-medium underline hover:text-primary transition-colors"
+                  >
+                    Política de Privacidade
+                  </button>
+                  .
+                </p>
+
+                {/* Opção para usuários existentes que criaram conta com e-mail */}
+                <div className="pt-4 border-t border-white/10 text-center space-y-2">
+                  <p className="text-xs text-white/50">Já possui uma conta criada anteriormente com e-mail?</p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMode('login');
+                      setShowEmailForm(true);
+                    }}
+                    className="w-full py-3.5 px-4 rounded-2xl font-body font-semibold text-sm bg-white/5 border border-white/10 text-white flex items-center justify-center gap-2 hover:bg-white/10 active:scale-[0.99] transition-all cursor-pointer"
+                  >
+                    <Mail className="w-4 h-4 text-white/70" />
+                    Entrar com e-mail e senha
+                  </button>
+                </div>
+              </motion.div>
+            ) : !showEmailForm && mode !== 'forgot' ? (
               <motion.div
                 key="social-options"
                 initial={{ opacity: 0, x: -20 }}
@@ -280,7 +340,8 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                   onGoogle={handleGoogle} 
                   onApple={handleApple} 
                   googleLoading={googleLoading} 
-                  appleLoading={appleLoading} 
+                  appleLoading={appleLoading}
+                  mode="login"
                 />
                 
                 <div className="relative py-4">
@@ -298,8 +359,19 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                   className="w-full py-4 rounded-2xl font-body font-semibold text-base bg-white/5 border border-white/10 text-white flex items-center justify-center gap-2 hover:bg-white/10 transition-colors"
                 >
                   <Mail className="w-5 h-5 text-white/70" />
-                  Usar email e senha
+                  Entrar com e-mail e senha
                 </button>
+
+                <div className="pt-4 border-t border-white/10 text-center">
+                  <p className="text-xs text-white/50">Não possui uma conta?</p>
+                  <button
+                    type="button"
+                    onClick={() => setMode('signup')}
+                    className="mt-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+                  >
+                    Cadastre-se com Google ou Apple
+                  </button>
+                </div>
               </motion.div>
             ) : (
               <motion.form
@@ -328,22 +400,6 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                   </div>
                 )}
 
-                {mode === 'signup' && (
-                  <div className="relative">
-                    <input
-                      type="text"
-                      name="name"
-                      autoComplete="name"
-                      placeholder="Nome de exibição"
-                      value={displayName}
-                      onChange={(e) => setDisplayName(e.target.value)}
-                      className={inputCls}
-                      autoFocus={mode === 'signup'}
-                    />
-                    <User className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  </div>
-                )}
-
                 {(mode !== 'forgot' || !resetEmailSent) && (
                   <div className="relative">
                     <input
@@ -358,7 +414,7 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       className={inputCls}
-                      autoFocus={mode !== 'signup'}
+                      autoFocus
                     />
                     <Mail className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   </div>
@@ -369,8 +425,8 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                     <div className="relative">
                       <input
                         type={showPassword ? 'text' : 'password'}
-                        name={mode === 'signup' ? 'new-password' : 'current-password'}
-                        autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                        name="current-password"
+                        autoComplete="current-password"
                         placeholder="Senha"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -386,62 +442,6 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
                     </div>
-
-                    {mode === 'signup' && password.length > 0 && (
-                      <div className="px-1 pt-1 space-y-1.5">
-                        <div className="flex items-center justify-between text-xs font-body">
-                          <span className="text-white/60">Força da senha:</span>
-                          <span
-                            className={`font-semibold ${
-                              passwordStrength.score >= 3
-                                ? 'text-emerald-400'
-                                : passwordStrength.score === 2
-                                ? 'text-amber-400'
-                                : 'text-red-400'
-                            }`}
-                          >
-                            {passwordStrength.label}
-                          </span>
-                        </div>
-                        <div className="grid grid-cols-3 gap-1.5 h-1.5">
-                          <div
-                            className={`h-full rounded-full transition-all duration-300 ${
-                              passwordStrength.score >= 1 ? passwordStrength.color : 'bg-white/10'
-                            }`}
-                          />
-                          <div
-                            className={`h-full rounded-full transition-all duration-300 ${
-                              passwordStrength.score >= 2 ? passwordStrength.color : 'bg-white/10'
-                            }`}
-                          />
-                          <div
-                            className={`h-full rounded-full transition-all duration-300 ${
-                              passwordStrength.score >= 3 ? passwordStrength.color : 'bg-white/10'
-                            }`}
-                          />
-                        </div>
-                        <p className="text-[11px] text-white/50 leading-tight">
-                          Mínimo de 6 caracteres combinando letras e números.
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {mode === 'signup' && (
-                  <div className="relative">
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      name="confirm-password"
-                      autoComplete="new-password"
-                      placeholder="Confirmar senha"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      required
-                      minLength={6}
-                      className={inputCls}
-                    />
-                    <Lock className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   </div>
                 )}
 
@@ -486,14 +486,13 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                   <button
                     type="submit"
                     disabled={submitting || googleLoading || appleLoading}
-                    className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:pointer-events-none mt-2"
+                    className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:pointer-events-none mt-2 cursor-pointer"
                   >
                     {submitting ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
                     ) : (
                       <>
                         {mode === 'login' && 'Acessar'}
-                        {mode === 'signup' && 'Criar Conta'}
                         {mode === 'forgot' && 'Enviar link de recuperação'}
                         <ArrowRight className="w-5 h-5" />
                       </>
@@ -505,7 +504,7 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                   <button
                     type="submit"
                     disabled={submitting || googleLoading || appleLoading}
-                    className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:pointer-events-none mt-2"
+                    className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:pointer-events-none mt-2 cursor-pointer"
                   >
                     {submitting ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
@@ -518,39 +517,33 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                   </button>
                 )}
 
-                {mode === 'signup' && (
-                  <p className="text-[11px] leading-relaxed font-body text-white/50 text-center px-2 mt-4">
-                    Ao criar sua conta, você concorda com os{' '}
-                    <button
-                      type="button"
-                      onClick={() => setLegalOpen('termos')}
-                      className="text-white font-medium underline hover:text-primary transition-colors"
-                    >
-                      Termos de Uso
-                    </button>{' '}
-                    e com a{' '}
-                    <button
-                      type="button"
-                      onClick={() => setLegalOpen('privacidade')}
-                      className="text-white font-medium underline hover:text-primary transition-colors"
-                    >
-                      Política de Privacidade
-                    </button>
-                    .
-                  </p>
-                )}
-
                 {mode === 'login' && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMode('forgot');
-                      setResetEmailSent(false);
-                    }}
-                    className="w-full text-center text-sm font-body text-white/60 hover:text-white mt-2 transition-colors"
-                  >
-                    Esqueceu sua senha?
-                  </button>
+                  <div className="space-y-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMode('forgot');
+                        setResetEmailSent(false);
+                      }}
+                      className="w-full text-center text-sm font-body text-white/60 hover:text-white transition-colors cursor-pointer"
+                    >
+                      Esqueceu sua senha?
+                    </button>
+
+                    <div className="pt-3 border-t border-white/10 text-center">
+                      <p className="text-xs text-white/50">Não possui uma conta?</p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMode('signup');
+                          setShowEmailForm(false);
+                        }}
+                        className="mt-1.5 text-sm font-semibold text-primary hover:text-primary/80 transition-colors cursor-pointer"
+                      >
+                        Cadastre-se com Google ou Apple
+                      </button>
+                    </div>
+                  </div>
                 )}
 
                 {mode === 'forgot' && (
@@ -560,7 +553,7 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                       setMode('login');
                       setResetEmailSent(false);
                     }}
-                    className="w-full text-center text-sm font-body text-white/60 hover:text-white mt-2 transition-colors"
+                    className="w-full text-center text-sm font-body text-white/60 hover:text-white mt-2 transition-colors cursor-pointer"
                   >
                     {resetEmailSent ? 'Entendi, voltar ao login' : 'Voltar ao login'}
                   </button>

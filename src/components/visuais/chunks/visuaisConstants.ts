@@ -1,4 +1,4 @@
-import { Brain, Layers, GitBranch, Network, BookOpen, Scale, Gavel, Star, Clock } from 'lucide-react';
+import { Brain, Layers, GitBranch, Network, BookOpen, Scale, Gavel, Star, Clock, Award } from 'lucide-react';
 import type { VisualCategoria, VisualTipo } from '@/lib/visuaisJuridicos/types';
 import type { ArtigoLei } from '@/data/mockData';
 
@@ -18,12 +18,16 @@ export const TIPO_COR: Record<VisualTipo, string> = {
 
 export const CATEGORIA_ICON: Record<VisualCategoria, typeof Brain> = {
   materias: BookOpen,
+  codigos: Scale,
+  estatutos: Award,
   leis: Scale,
   jurisprudencia: Gavel,
 };
 
 export const CATEGORIA_COR: Record<VisualCategoria, string> = {
   materias: '#38bdf8',
+  codigos: '#ef4444',
+  estatutos: '#10b981',
   leis: '#e01f47',
   jurisprudencia: '#a78bfa',
 };
@@ -31,7 +35,7 @@ export const CATEGORIA_COR: Record<VisualCategoria, string> = {
 export const ITEM_CORES = ['#e01f47', '#38bdf8', '#f59e0b', '#22c55e', '#a78bfa', '#ec4899', '#14b8a6', '#f97316'];
 
 export const TIPOS: VisualTipo[] = ['mapa_mental', 'infografico', 'fluxograma', 'diagrama'];
-export const CATEGORIAS: VisualCategoria[] = ['materias', 'leis', 'jurisprudencia'];
+export const CATEGORIAS: VisualCategoria[] = ['materias', 'codigos', 'estatutos'];
 
 export const norm = (v: string) => v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 

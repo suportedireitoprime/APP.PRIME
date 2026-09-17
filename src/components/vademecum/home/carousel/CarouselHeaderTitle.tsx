@@ -21,7 +21,7 @@ const CarouselHeaderTitle = ({ kind = 'noticia' }: CarouselHeaderTitleProps) => 
       </div>
       <button
         type="button"
-        onClick={() => navigate('/blog-juridico')}
+        onClick={() => navigate('/noticias')}
         className="group pointer-events-auto shrink-0 mt-0.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.14] active:scale-95 backdrop-blur-md border border-white/15 hover:border-white/25 text-[12px] font-semibold text-foreground/90 hover:text-white transition-all shadow-sm"
       >
         <span>Ver todas</span>

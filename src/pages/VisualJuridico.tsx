@@ -23,15 +23,15 @@ export default function VisualJuridico() {
     if (SLUG_TIPO[primeiro]) {
       tipo = SLUG_TIPO[primeiro];
       const catRaw = pathSegs[1];
-      if (catRaw === 'materias' || catRaw === 'leis' || catRaw === 'jurisprudencia') {
-        categoriaInicial = catRaw;
+      if (catRaw === 'materias' || catRaw === 'leis' || catRaw === 'jurisprudencia' || catRaw === 'codigos' || catRaw === 'estatutos') {
+        categoriaInicial = catRaw as VisualCategoria;
       }
       itemSlugInicial = pathSegs[2];
       temaSlugInicial = pathSegs[3];
-    } else if (primeiro === 'materias' || primeiro === 'leis' || primeiro === 'jurisprudencia') {
-      // Se omitiu o formato e entrou direto na categoria (ex.: /visuais/materias)
+    } else if (primeiro === 'materias' || primeiro === 'leis' || primeiro === 'jurisprudencia' || primeiro === 'codigos' || primeiro === 'estatutos') {
+      // Se omitiu o formato e entrou direto na categoria (ex.: /visuais/materias ou /visuais/codigos)
       tipo = 'mapa_mental';
-      categoriaInicial = primeiro;
+      categoriaInicial = primeiro as VisualCategoria;
       itemSlugInicial = pathSegs[1];
       temaSlugInicial = pathSegs[2];
     } else {

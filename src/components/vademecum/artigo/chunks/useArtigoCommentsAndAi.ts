@@ -61,6 +61,7 @@ export function useArtigoCommentsAndAi({
   const [aiGeneratingStep, setAiGeneratingStep] = useState(0);
 
   const splitSections = useCallback((text: string, marker: string) => {
+    if (!text || typeof text !== 'string') return [];
     const parts = text.split(marker).filter((s) => s.trim());
     return parts.map((part, i) => {
       const lines = part.trim().split('\n');
@@ -245,6 +246,7 @@ export function useArtigoCommentsAndAi({
     const currentId = artigo.id;
     const cacheKey = { tabela: tabelaNome || 'unknown', numero: artigo.numero, modo: activeTab };
     setAiLoading((prev) => ({ ...prev, [activeTab]: true }));
+    let stepInterval: ReturnType<typeof setInterval> | null = null;
 
     import('@/lib/aiCacheLocal').then(({ getLocalAiCache, setLocalAiCache }) => {
       if (activeArtigoIdRef.current !== currentId) return;

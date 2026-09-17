@@ -4,7 +4,7 @@ import { Clock, ArrowUpRight, Film, Newspaper } from 'lucide-react';
 import { newsImg, cdnImg } from '@/lib/cdnImg';
 import { TEMA_COLORS, type BlogPost } from '@/data/blogPosts';
 import { Noticia } from '@/services/noticiasService';
-import { FeedItem, formatTime } from './carouselTypes';
+import { FeedItem, formatTime, formatTempoRelativo } from './carouselTypes';
 
 interface CarouselMediaCardProps {
   item: FeedItem;
@@ -74,6 +74,13 @@ const CarouselMediaCard = ({ item, isActive, index, onOpen }: CarouselMediaCardP
             style={{ background: c.chip, color: c.chipText }}
           >
             Blog · {(item.data as BlogPost).tema}
+          </span>
+        )}
+
+        {!isB && (
+          <span className="absolute top-2.5 left-2.5 z-20 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] sm:text-[10.5px] font-bold tracking-wide text-white bg-black/60 backdrop-blur-md border border-white/20 shadow-md">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <span>{formatTempoRelativo((item.data as Noticia).data_publicacao)}</span>
           </span>
         )}
 

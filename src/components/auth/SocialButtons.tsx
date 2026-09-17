@@ -6,6 +6,7 @@ interface SocialButtonsProps {
   onApple: () => void;
   googleLoading: boolean;
   appleLoading: boolean;
+  mode?: 'login' | 'signup' | 'forgot' | null;
 }
 
 const GoogleIcon = () => (
@@ -28,25 +29,32 @@ export const SocialButtons: React.FC<SocialButtonsProps> = ({
   onApple,
   googleLoading,
   appleLoading,
+  mode = 'login',
 }) => {
+  const isSignup = mode === 'signup';
+
   return (
     <div className="flex flex-col gap-3 w-full">
       <button
         onClick={onGoogle}
         disabled={googleLoading || appleLoading}
-        className="w-full flex items-center justify-center gap-3 h-14 bg-white text-zinc-900 rounded-2xl font-bold transition-all hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-center gap-3 h-14 bg-white text-zinc-900 rounded-2xl font-bold transition-all hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-md active:scale-[0.99]"
       >
         {googleLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <GoogleIcon />}
-        <span className="text-sm font-semibold tracking-wide">Entrar com Google</span>
+        <span className="text-sm font-semibold tracking-wide">
+          {isSignup ? 'Cadastrar com Google' : 'Entrar com Google'}
+        </span>
       </button>
 
       <button
         onClick={onApple}
         disabled={appleLoading || googleLoading}
-        className="w-full flex items-center justify-center gap-3 h-14 bg-white text-zinc-900 rounded-2xl font-bold transition-all hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-center gap-3 h-14 bg-white text-zinc-900 rounded-2xl font-bold transition-all hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-md active:scale-[0.99]"
       >
         {appleLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <AppleIcon />}
-        <span className="text-sm font-semibold tracking-wide">Entrar com Apple</span>
+        <span className="text-sm font-semibold tracking-wide">
+          {isSignup ? 'Cadastrar com Apple' : 'Entrar com Apple'}
+        </span>
       </button>
     </div>
   );

@@ -637,6 +637,8 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
     const cleanPath = (location.pathname || '').replace(/\/+$/, '') || '/';
     // Item 29: Home ('/') não é isenta de bloqueio pós-trial. Apenas telas de assinatura, planos, perfil, configurações e termos são permitidas sem plano ativo.
     const isAllowedPath = 
+      cleanPath === '/' || // Permite visualizar o início do aplicativo
+      cleanPath === '/materias' || // Permite visualizar o catálogo
       cleanPath === '/assinatura' ||
       cleanPath.startsWith('/assinatura/') ||
       cleanPath === '/planos/ativos' ||
@@ -652,14 +654,19 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
     
     const isUserPremium = !!profile.isPremium || (isSubPremium && !isSubTrial) || isAdminEmail(user.email);
 
-    if (!isUserPremium && !isAllowedPath) {
-      // O TrialExpiredModal não bloqueia mais a tela inteira.
-      // Agora ele será chamado pelo PremiumGate quando o usuário tentar acessar uma função.
-      // Se precisarmos bloquear a navegação futura inteira, colocaríamos de volta, mas a pedido,
-      // ele só aparece ao clicar em função.
-      // O Paywall normal cuidará disso.
-      // actually wait, AppRoutes is the global blocker. If we don't return null, they can access the routes.
-      // The user wants them to access the app and ONLY block when clicking a function.
+    if (!isUserPremium && !isTrialActive && !isAllowedPath) {
+      return (
+        <>
+          {children}
+          <TrialExpiredModal 
+            open={true} 
+            onClose={() => {
+              // Quando o usuário fecha o modal de tempo expirado, volta para a tela anterior
+              window.history.back();
+            }} 
+          />
+        </>
+      );
     }
   }
 
