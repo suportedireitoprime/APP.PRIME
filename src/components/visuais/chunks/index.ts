@@ -5,3 +5,4 @@ export * from './VisuaisPassoTipos';
 export * from './VisuaisPassoCategorias';
 export * from './VisuaisPassoItens';
 export * from './VisuaisPassoDetalhes';
+export * from './VisuaisHeroPanel';

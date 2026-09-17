@@ -17,6 +17,7 @@ import { fetchArtigosLei, getCachedArtigos } from '@/services/legislacaoService'
 import type { ArtigoLei } from '@/data/mockData';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 import VisuaisDeckModal from './VisuaisDeckModal';
 import {
   fetchAreasResumos,
@@ -164,6 +165,15 @@ export default function VisuaisJuridicosSheet({
     setRecentes(listarRecentes());
   }, []);
 
+  // Oculta a navegação inferior (BottomNav) enquanto o visualizador estiver aberto
+  useEffect(() => {
+    if (!open) return;
+    window.dispatchEvent(new CustomEvent('direitoprime:bottom-nav-visibility', { detail: { hidden: true } }));
+    return () => {
+      window.dispatchEvent(new CustomEvent('direitoprime:bottom-nav-visibility', { detail: { hidden: false } }));
+    };
+  }, [open]);
+
   /** Aplica a aba ativa sobre uma lista já filtrada por texto. */
   const aplicarFiltro = useCallback(
     <T,>(itens: T[], chave: (i: T) => string) => {
@@ -172,9 +182,12 @@ export default function VisuaisJuridicosSheet({
         const ordem = new Map(recentes.map((k, i) => [k, i]));
         return itens.filter((i) => ordem.has(chave(i))).sort((a, b) => ordem.get(chave(a))! - ordem.get(chave(b))!);
       }
+      if (filtro === 'prontos') {
+        return itens.filter((i) => Boolean(prontos[chave(i)]));
+      }
       return itens;
     },
-    [filtro, favoritos, recentes],
+    [filtro, favoritos, recentes, prontos],
   );
 
   const reset = useCallback(() => {
@@ -534,7 +547,7 @@ export default function VisuaisJuridicosSheet({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={onClose}
-                className="fixed inset-0 z-[60] bg-black/60"
+                className="fixed inset-0 z-[99] bg-black/80 backdrop-blur-sm"
               />
             )}
             <motion.div
@@ -542,83 +555,104 @@ export default function VisuaisJuridicosSheet({
               animate={emPagina ? { opacity: 1 } : { opacity: 1, scale: 1 }}
               exit={emPagina ? { opacity: 0 } : { opacity: 0, scale: 0.98 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[61] flex h-[100dvh] flex-col overflow-hidden bg-background shadow-2xl"
+              className="fixed inset-0 z-[100] flex h-[100dvh] flex-col overflow-hidden bg-[#0D0D0D] text-foreground shadow-2xl"
             >
-              {emPagina ? (
-                <PageHeader title={getTitle()} subtitle={getSubtitle()} onBack={voltar} />
-              ) : (
-                <PageHeader
-                  title={getTitle()}
-                  subtitle={getSubtitle()}
-                  onBack={voltar}
-                  rightAction={
-                    <button
-                      onClick={() => {
-                        haptic.light();
-                        onClose();
-                      }}
-                      aria-label="Fechar"
-                      className="w-10 h-10 rounded-full bg-secondary/70 flex items-center justify-center active:scale-95 transition-transform"
-                    >
-                      <X className="w-5 h-5 text-foreground" strokeWidth={2.2} />
-                    </button>
-                  }
+              {/* Fundo animado quadrado padrão do aplicativo (ShapeGrid) */}
+              <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+                <ShapeGrid
+                  speed={0.5}
+                  squareSize={40}
+                  direction="diagonal"
+                  borderColor="rgba(255, 255, 255, 0.05)"
+                  hoverFillColor="rgba(255, 255, 255, 0.08)"
+                  shape="square"
+                  hoverTrailAmount={4}
                 />
-              )}
+              </div>
 
-              {item && (
-                <nav
-                  aria-label="Trilha de navegação"
-                  className="flex items-center gap-1 overflow-x-auto whitespace-nowrap px-5 pb-2 pt-1 text-[12px] font-body text-muted-foreground lg:mx-auto lg:w-full lg:max-w-[1200px] lg:px-8"
-                >
-                  {trilha.map((c, i) => (
-                    <span key={`${c.label}-${i}`} className="flex items-center gap-1 shrink-0">
-                      {i > 0 && <ChevronRight className="h-3 w-3 opacity-50" />}
-                      {c.onClick ? (
-                        <button onClick={c.onClick} className="hover:text-foreground active:scale-95 transition">
-                          {c.label}
+              <div className="relative z-10 flex h-full flex-col overflow-hidden">
+                {/* Cabeçalho fixo padrão apenas quando estiver visualizando detalhes de uma matéria/código */}
+                {item && (
+                  emPagina ? (
+                    <PageHeader title={getTitle()} subtitle={getSubtitle()} onBack={voltar} />
+                  ) : (
+                    <PageHeader
+                      title={getTitle()}
+                      subtitle={getSubtitle()}
+                      onBack={voltar}
+                      rightAction={
+                        <button
+                          onClick={() => {
+                            haptic.light();
+                            onClose();
+                          }}
+                          aria-label="Fechar"
+                          className="w-10 h-10 rounded-full bg-secondary/70 flex items-center justify-center active:scale-95 transition-transform"
+                        >
+                          <X className="w-5 h-5 text-foreground" strokeWidth={2.2} />
                         </button>
-                      ) : (
-                        <span className="text-foreground font-semibold">{c.label}</span>
-                      )}
-                    </span>
-                  ))}
-                </nav>
-              )}
+                      }
+                    />
+                  )
+                )}
 
-              <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-[calc(1.25rem+var(--sai-bottom))] pt-3 lg:mx-auto lg:w-full lg:max-w-[1400px] lg:px-8">
-                {/* 1 — Painel: Seleção de Matéria / Código / Estatuto com HomeCards */}
-                {!item ? (
-                  <VisuaisPassoItens
-                    categoria={categoria}
-                    onSelectCategoria={(cat) => {
-                      setCategoria(cat);
-                      setBusca('');
-                      setFiltro('todos');
-                    }}
-                    filtro={filtro}
-                    setFiltro={setFiltro}
-                    busca={busca}
-                    setBusca={setBusca}
-                    carregando={carregando}
-                    carregandoMaterias={carregandoMaterias}
-                    lista={lista}
-                    limiteLista={limiteLista}
-                    setLimiteLista={setLimiteLista}
-                    gerando={gerando}
-                    gerandoKey={gerandoKey}
-                    prontos={prontos}
-                    favoritos={favoritos}
-                    onEscolherItem={(i) => {
-                      setArtigo('');
-                      setBuscaArtigo('');
-                      setFiltro('todos');
-                      setItem(i);
-                    }}
-                    alternarFavorito={alternarFavorito}
-                  />
-                ) : (
-                  /* 2 — Tópicos da matéria ou Artigos da lei/código/estatuto */
+                {item && (
+                  <nav
+                    aria-label="Trilha de navegação"
+                    className="flex items-center gap-1 overflow-x-auto whitespace-nowrap px-5 pb-2 pt-1 text-[12px] font-body text-muted-foreground lg:mx-auto lg:w-full lg:max-w-[1200px] lg:px-8"
+                  >
+                    {trilha.map((c, i) => (
+                      <span key={`${c.label}-${i}`} className="flex items-center gap-1 shrink-0">
+                        {i > 0 && <ChevronRight className="h-3 w-3 opacity-50" />}
+                        {c.onClick ? (
+                          <button onClick={c.onClick} className="hover:text-foreground active:scale-95 transition">
+                            {c.label}
+                          </button>
+                        ) : (
+                          <span className="text-foreground font-semibold">{c.label}</span>
+                        )}
+                      </span>
+                    ))}
+                  </nav>
+                )}
+
+                <div className={`flex-1 overflow-y-auto overscroll-contain pb-[calc(1.25rem+var(--sai-bottom))] ${item ? 'px-4 pt-3 lg:mx-auto lg:w-full lg:max-w-[1400px] lg:px-8' : ''}`}>
+                  {/* 1 — Painel: Seleção de Matéria / Código / Estatuto com HomeCards e Hero no topo que rola junto */}
+                  {!item ? (
+                    <VisuaisPassoItens
+                      categoria={categoria}
+                      onSelectCategoria={(cat) => {
+                        setCategoria(cat);
+                        setBusca('');
+                        setFiltro('todos');
+                      }}
+                      filtro={filtro}
+                      setFiltro={setFiltro}
+                      busca={busca}
+                      setBusca={setBusca}
+                      carregando={carregando}
+                      carregandoMaterias={carregandoMaterias}
+                      lista={lista}
+                      limiteLista={limiteLista}
+                      setLimiteLista={setLimiteLista}
+                      gerando={gerando}
+                      gerandoKey={gerandoKey}
+                      prontos={prontos}
+                      favoritos={favoritos}
+                      recentesCount={recentes.length}
+                      totalCount={categoria === 'materias' ? (areas.length || MATERIAS.length) : itensDaCategoria(categoria).length}
+                      onEscolherItem={(i) => {
+                        setArtigo('');
+                        setBuscaArtigo('');
+                        setFiltro('todos');
+                        setItem(i);
+                      }}
+                      alternarFavorito={alternarFavorito}
+                      onBack={voltar}
+                      onClose={onClose}
+                    />
+                  ) : (
+                    /* 2 — Tópicos da matéria ou Artigos da lei/código/estatuto */
                   <VisuaisPassoDetalhes
                     categoria={categoria}
                     filtro={filtro}
@@ -646,7 +680,8 @@ export default function VisuaisJuridicosSheet({
                   />
                 )}
               </div>
-            </motion.div>
+            </div>
+          </motion.div>
           </>
         )}
       </AnimatePresence>
