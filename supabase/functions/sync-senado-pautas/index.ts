@@ -42,24 +42,44 @@ serve(async (req) => {
                 const sessoes = Array.isArray(sessoesRaw) ? sessoesRaw : [sessoesRaw]
                 
                 for (const sessao of sessoes.filter(Boolean)) {
-                    const dataSessao = sessao.Data // "2024-09-17"
+                    const dataSessao = sessao.Data // "2026-09-17"
                     const horaStr = sessao.Hora // "14:00"
                     const horaInicio = dataSessao && horaStr ? `${dataSessao}T${horaStr}:00` : ''
                     
                     const materiasRaw = sessao.Materias?.Materia
                     const materiasArray = Array.isArray(materiasRaw) ? materiasRaw : [materiasRaw].filter(Boolean)
-                    const pauta = materiasArray.map((m: any) => `${m.DescricaoIdentificacaoMateria || m.Identificacao || ''} - ${m.Ementa || ''}`).join('\n\n')
+                    
+                    const partesDesc: string[] = []
+                    
+                    if (sessao.Evento?.DescricaoEvento) {
+                        partesDesc.push(`**Finalidade:**\n${sessao.Evento.DescricaoEvento}`)
+                    }
+
+                    const req = sessao.Evento?.OrigemAutor?.Requerimento
+                    if (req) {
+                        const autor = req.NomeAutor ? ` (Autoria: ${req.NomeAutor})` : ''
+                        const aprov = req.DataAprovacao ? ` - Aprovado em ${req.DataAprovacao}` : ''
+                        partesDesc.push(`**Requerimento(s):**\n${req.Origem || 'Requerimento'}${autor}${aprov}`)
+                    }
+
+                    if (materiasArray.length > 0) {
+                        const materiasText = materiasArray.map((m: any) => `${m.DescricaoIdentificacaoMateria || m.Identificacao || ''} - ${m.Ementa || ''}`).join('\n\n')
+                        partesDesc.push(`**Ordem do Dia / Matérias:**\n${materiasText}`)
+                    }
+
+                    const pauta = partesDesc.length > 0 ? partesDesc.join('\n\n') : 'Sem pauta cadastrada'
+                    const urlRegistro = `https://www25.senado.leg.br/web/atividade/sessao-plenaria/-/pauta/${sessao.CodigoSessao}`
 
                     eventosFormatados.push({
                         codigo_sessao: `PLEN-${sessao.CodigoSessao}`,
-                        titulo: sessao.TipoSessao || 'Sessão Plenária',
-                        descricao: pauta || 'Sem pauta cadastrada',
+                        titulo: sessao.TipoSessao ? sessao.TipoSessao.trim() : 'Sessão Plenária',
+                        descricao: pauta,
                         hora_inicio: horaInicio,
                         hora_fim: '',
                         local: sessao.LocalSessao || 'Plenário do Senado Federal',
                         orgaos: 'Plenário',
                         situacao: sessao.SituacaoSessao || 'Agendada',
-                        url_registro: ''
+                        url_registro: urlRegistro
                     })
                 }
             }
@@ -85,7 +105,7 @@ serve(async (req) => {
                 const dataStr = evento.data
                 const horaStr = evento.hora
                 const horaInicio = dataStr && horaStr ? `${dataStr}T${horaStr}` : ''
-                const titulo = [evento.tipo, evento.descricaoSessao, evento.finalidade].filter(Boolean).join(' ')
+                const titulo = [evento.tipo, evento.descricaoSessao].filter(Boolean).join(' ')
                 
                 const orgaosRaw = evento.colegiados?.colegiado
                 const orgaosArray = Array.isArray(orgaosRaw) ? orgaosRaw : [orgaosRaw].filter(Boolean)
@@ -98,15 +118,28 @@ serve(async (req) => {
                 } else if (videosRaw?.url) {
                     urlRegistro = videosRaw.url
                 }
+                if (!urlRegistro && evento.codigo) {
+                    urlRegistro = `https://legis.senado.leg.br/comissoes/reuniao?codereuniao=${evento.codigo}`
+                }
+
+                const partesComissao: string[] = []
+                if (evento.finalidade) {
+                    partesComissao.push(`**Finalidade:**\n${evento.finalidade}`)
+                }
 
                 const materiasRaw = evento.materias?.materia
                 const materiasArray = Array.isArray(materiasRaw) ? materiasRaw : [materiasRaw].filter(Boolean)
-                const pauta = materiasArray.map((m: any) => m.descricao).join('\n\n')
+                if (materiasArray.length > 0) {
+                    const pautaMaterias = materiasArray.map((m: any) => m.descricao).join('\n\n')
+                    partesComissao.push(`**Pauta da Comissão:**\n${pautaMaterias}`)
+                }
+
+                const descricaoFinal = partesComissao.length > 0 ? partesComissao.join('\n\n') : (evento.descricaoSessao || 'Sem pauta cadastrada')
 
                 eventosFormatados.push({
                     codigo_sessao: `COM-${evento.codigo}`,
                     titulo: titulo || 'Reunião de Comissão',
-                    descricao: pauta,
+                    descricao: descricaoFinal,
                     hora_inicio: horaInicio,
                     hora_fim: evento.dataHoraFim || '',
                     local: evento.local || 'Não especificado',

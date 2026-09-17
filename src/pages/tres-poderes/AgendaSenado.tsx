@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar as CalendarIcon, MapPin, Clock, Info, X, RotateCw } from 'lucide-react';
+import { ArrowLeft, Calendar as CalendarIcon, MapPin, Clock, Info, X, RotateCw, FileText, ExternalLink, Bookmark } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { haptic } from '@/lib/nativeHaptics';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
@@ -85,15 +85,70 @@ const getCorSituacao = (situacao: string) => {
 
 const formatarDescricao = (texto: string) => {
   if (!texto) return null;
+
+  // Se o texto possui seções estruturadas geradas pelo sincronizador (**Finalidade:**, etc)
+  if (texto.includes('**Finalidade:**') || texto.includes('**Requerimento(s):**') || texto.includes('**Ordem do Dia') || texto.includes('**Pauta')) {
+    const secoes = texto.split(/\n\n(?=\*\*)/);
+    return (
+      <div className="flex flex-col gap-3">
+        {secoes.map((secao, idx) => {
+          if (secao.startsWith('**Finalidade:**')) {
+            const conteudo = secao.replace('**Finalidade:**', '').trim();
+            return (
+              <div key={idx} className="bg-sky-500/10 border border-sky-500/20 rounded-xl p-3.5">
+                <span className="text-[10px] font-extrabold text-sky-400 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                  <Info className="w-3.5 h-3.5" /> Finalidade da Sessão
+                </span>
+                <p className="text-[13px] text-white/90 leading-relaxed font-medium">
+                  {conteudo}
+                </p>
+              </div>
+            );
+          }
+          if (secao.startsWith('**Requerimento(s):**')) {
+            const conteudo = secao.replace('**Requerimento(s):**', '').trim();
+            return (
+              <div key={idx} className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3.5">
+                <span className="text-[10px] font-extrabold text-emerald-400 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5" /> Requerimento Oficial
+                </span>
+                <p className="text-[13px] text-emerald-100/90 leading-relaxed font-semibold">
+                  {conteudo}
+                </p>
+              </div>
+            );
+          }
+          if (secao.startsWith('**Ordem do Dia') || secao.startsWith('**Pauta')) {
+            const linhas = secao.split('\n');
+            const titulo = linhas[0].replace(/\*\*/g, '').trim();
+            const conteudo = linhas.slice(1).join('\n').trim();
+            return (
+              <div key={idx} className="bg-white/5 border border-white/10 rounded-xl p-3.5">
+                <span className="text-[10px] font-extrabold text-amber-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                  <Bookmark className="w-3.5 h-3.5" /> {titulo}
+                </span>
+                <div className="text-[12px] text-white/80 leading-relaxed whitespace-pre-line">
+                  {conteudo}
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <p key={idx} className="text-[13px] text-white/70 leading-relaxed text-justify mb-2">
+              {secao.replace(/\*\*/g, '')}
+            </p>
+          );
+        })}
+      </div>
+    );
+  }
   
   // Captura horários sozinhos (ex: 18h20) ou intervalos (ex: 17h30 - 18h20) 
-  // O espaço antes é mantido, mas envolvemos o horário em tags ** para processar
   const regexHorarios = /(\s+)(\d{1,2}h(?:\d{2})?(?:\s*-\s*\d{1,2}h(?:\d{2})?)?)\s+/g;
   const formatted = texto.replace(regexHorarios, '\n\n**$2** ');
   
   const linhasRaw = formatted.split(/\n+/).map(l => l.trim()).filter(l => l.length > 0);
-  
-  // Remove linhas idênticas duplicadas (as APIs costumam repetir a pauta no mesmo campo)
   const linhas = linhasRaw.filter((linha, index) => {
     return linhasRaw.indexOf(linha) === index;
   });
@@ -399,6 +454,13 @@ const AgendaSenado = () => {
                       </p>
                     </div>
                   )}
+
+                  {/* Resumo da Pauta/Finalidade sempre visível no card */}
+                  {evento.descricao && evento.descricao !== 'Sem pauta cadastrada' && (
+                    <p className="text-[12px] text-white/60 line-clamp-2 mt-2 leading-relaxed">
+                      {evento.descricao.replace(/\*\*.*?\*\*/g, '').trim()}
+                    </p>
+                  )}
                 </div>
               </div>
             ))
@@ -488,26 +550,51 @@ const AgendaSenado = () => {
                   </div>
                 )}
 
-                {/* Ações / API Extra */}
+                {/* Ações / Documentos Oficiais */}
                 <div className="pt-5 flex flex-col gap-3">
-                  {eventoSelecionado.urlRegistro && (
+                  {eventoSelecionado.urlRegistro ? (
+                    eventoSelecionado.urlRegistro.includes('youtube') || eventoSelecionado.urlRegistro.includes('video') ? (
+                      <>
+                        <a 
+                          href={eventoSelecionado.urlRegistro}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-3.5 rounded-xl font-bold text-sm transition-colors shadow-lg shadow-red-600/20"
+                        >
+                          Assistir Transmissão (TV Senado)
+                        </a>
+                        <a 
+                          href="https://www25.senado.leg.br/web/atividade/sessao-plenaria"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-700 text-white py-3.5 rounded-xl font-bold text-sm transition-colors border border-sky-500/20"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                          Acessar Pauta e Documentos (PDF)
+                        </a>
+                      </>
+                    ) : (
+                      <a 
+                        href={eventoSelecionado.urlRegistro}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white py-3.5 px-4 rounded-xl font-bold text-sm transition-all shadow-lg shadow-sky-600/20 active:scale-[0.99]"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        Acessar Pauta Oficial, Ordem do Dia e Documentos (PDF)
+                      </a>
+                    )
+                  ) : (
                     <a 
-                      href={eventoSelecionado.urlRegistro}
+                      href="https://www25.senado.leg.br/web/atividade/sessao-plenaria"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-3.5 rounded-xl font-bold text-sm transition-colors"
+                      className="w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white py-3.5 rounded-xl font-bold text-sm transition-colors border border-white/10"
                     >
-                      Assistir Transmissão (TV Senado)
+                      <ExternalLink className="w-4 h-4" />
+                      Acessar Pauta no Portal do Senado
                     </a>
                   )}
-                  <a 
-                    href="https://www12.senado.leg.br/noticias/agenda"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white py-3.5 rounded-xl font-bold text-sm transition-colors border border-white/10"
-                  >
-                    Acessar Pauta e Documentos (PDF)
-                  </a>
                 </div>
 
                 {/* Spacer final */}
