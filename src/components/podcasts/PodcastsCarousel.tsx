@@ -59,7 +59,7 @@ const PodcastsCarousel = () => {
           <div 
             key={podcast.id}
             onClick={() => navigate(`/tres-poderes/stf/podcast/${podcast.youtube_video_id}`)}
-            className="snap-start flex-none w-[280px] sm:w-[320px] rounded-xl overflow-hidden bg-[#1A1A1D] border border-white/5 relative group cursor-pointer shadow-lg active:scale-95 transition-transform"
+            className="snap-start flex-none w-[240px] sm:w-[280px] rounded-xl overflow-hidden bg-[#1A1A1D] border border-white/5 relative group cursor-pointer shadow-lg active:scale-95 transition-transform"
           >
             {/* Thumbnail Box */}
             <div className="relative aspect-video w-full bg-black/50 overflow-hidden">
@@ -70,16 +70,16 @@ const PodcastsCarousel = () => {
                 loading="lazy"
               />
               <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                <PlayCircle className="w-12 h-12 text-white/90 drop-shadow-lg scale-90 group-hover:scale-100 transition-transform" strokeWidth={1.5} />
+                <PlayCircle className="w-10 h-10 text-white/90 drop-shadow-lg scale-90 group-hover:scale-100 transition-transform" strokeWidth={1.5} />
               </div>
             </div>
             
             {/* Info Box */}
             <div className="p-3">
-              <h4 className="text-white text-[14px] font-semibold line-clamp-2 leading-tight mb-1">
+              <h4 className="font-body text-white/90 text-[13px] font-medium line-clamp-2 leading-snug mb-1">
                 {podcast.title}
               </h4>
-              <p className="text-white/50 text-[11px] font-medium">
+              <p className="font-sans text-white/40 text-[11px]">
                 {new Date(podcast.published_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
               </p>
             </div>

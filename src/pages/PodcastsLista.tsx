@@ -73,10 +73,10 @@ const PodcastsLista = () => {
               </div>
               
               <div className="flex-1 flex flex-col justify-center overflow-hidden">
-                <h3 className="text-white text-[14px] font-semibold line-clamp-2 leading-snug mb-1.5">
+                <h3 className="font-body text-white/90 text-[14px] font-medium line-clamp-2 leading-snug mb-1.5">
                   {podcast.title}
                 </h3>
-                <div className="flex items-center gap-1.5 text-white/40 text-[11px]">
+                <div className="flex items-center gap-1.5 text-white/40 text-[11px] font-sans">
                   <Calendar className="w-3 h-3" />
                   <span>
                     {new Date(podcast.published_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
