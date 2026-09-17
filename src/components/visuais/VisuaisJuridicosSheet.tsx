@@ -36,8 +36,13 @@ import {
   type Filtro,
   VisuaisPassoItens,
   VisuaisPassoDetalhes,
+  VisuaisPastasView,
   VisuaisPastaSoloView,
+  ITEM_CORES,
+  EstrelaFavorito,
 } from './chunks';
+import HomeCard from '@/components/vademecum/home/HomeCard';
+import { iconeDoItem } from '@/lib/visuaisJuridicos/icones';
 
 export interface VisuaisJuridicosSheetProps {
   open: boolean;
@@ -144,6 +149,8 @@ export default function VisuaisJuridicosSheet({
   const [gateOpen, setGateOpen] = useState(false);
   const [filtro, setFiltro] = useState<Filtro>('todos');
   const [pastaAtiva, setPastaAtiva] = useState<string | null>(null);
+  const [materiaPasta, setMateriaPasta] = useState<string | null>(null);
+  const [topicoPasta, setTopicoPasta] = useState<string | null>(null);
   const [favoritos, setFavoritos] = useState<string[]>(() => listarFavoritos());
   const [recentes, setRecentes] = useState<string[]>(() => listarRecentes());
 
@@ -485,6 +492,12 @@ export default function VisuaisJuridicosSheet({
   const voltar = () => {
     if (pastaAtiva) {
       setPastaAtiva(null);
+    } else if (topicoPasta) {
+      setTopicoPasta(null);
+    } else if (materiaPasta) {
+      setMateriaPasta(null);
+    } else if (filtro !== 'todos') {
+      setFiltro('todos');
     } else if (tema) {
       setTema(null);
       setBuscaArtigo('');
@@ -498,6 +511,11 @@ export default function VisuaisJuridicosSheet({
 
   const getTitle = () => {
     if (pastaAtiva) return pastaAtiva;
+    if (topicoPasta) return topicoPasta;
+    if (materiaPasta) return materiaPasta;
+    if (filtro === 'pastas') return 'PASTAS DE MATÉRIAS';
+    if (filtro === 'favoritos') return 'MEUS FAVORITOS';
+    if (filtro === 'recentes') return 'HISTÓRICO RECENTE';
     if (!item) return 'VISUAIS JURÍDICOS';
     if (tema) return tema.tema;
     return item?.label ?? 'VISUAIS JURÍDICOS';
@@ -510,6 +528,11 @@ export default function VisuaisJuridicosSheet({
       ).length;
       return `Pasta de PDFs · ${count} PDF${count !== 1 ? 's' : ''} disponível${count !== 1 ? 'is' : ''}`;
     }
+    if (topicoPasta) return `Temas de ${topicoPasta} · ${materiaPasta}`;
+    if (materiaPasta) return `Tópicos e matérias de ${materiaPasta}`;
+    if (filtro === 'pastas') return 'Escolha a matéria para ver as pastas de tópicos';
+    if (filtro === 'favoritos') return `${favoritos.length} item(ns) salvo(s) como favorito`;
+    if (filtro === 'recentes') return `${recentes.length} item(ns) consultado(s) recentemente`;
     if (!item) return 'Escolha uma matéria, código ou estatuto para estudar';
     if (categoria === 'materias') {
       return tema ? `Subtemas de ${tema.tema} — escolha um para gerar` : 'Escolha o tópico para ver os subtemas';
@@ -520,33 +543,71 @@ export default function VisuaisJuridicosSheet({
   const trilha = useMemo(() => {
     const c: Array<{ label: string; onClick?: () => void }> = [
       {
-        label: 'Painel',
+        label: 'Início',
         onClick: () => {
           setPastaAtiva(null);
+          setMateriaPasta(null);
+          setTopicoPasta(null);
+          setFiltro('todos');
           setTema(null);
           setItem(null);
         },
       },
     ];
 
-    if (pastaAtiva) {
+    if (filtro === 'pastas') {
       c.push({
         label: 'Pastas',
-        onClick: () => setPastaAtiva(null),
+        onClick: materiaPasta
+          ? () => {
+              setMateriaPasta(null);
+              setTopicoPasta(null);
+            }
+          : undefined,
       });
+
+      if (materiaPasta) {
+        c.push({
+          label: materiaPasta,
+          onClick: topicoPasta ? () => setTopicoPasta(null) : undefined,
+        });
+      }
+
+      if (topicoPasta) {
+        c.push({
+          label: topicoPasta,
+        });
+      }
+
+      const last = c[c.length - 1];
+      if (last) last.onClick = undefined;
+      return c;
+    }
+
+    if (filtro !== 'todos' && !item) {
+      const labelFiltro = filtro === 'favoritos' ? 'Favoritos' : 'Recentes';
+      c.push({
+        label: labelFiltro,
+      });
+      return c;
+    }
+
+    if (pastaAtiva) {
       c.push({
         label: pastaAtiva,
       });
       return c;
     }
 
-    c.push({
-      label: CATEGORIA_INFO[categoria]?.label ?? 'Matérias',
-      onClick: () => {
-        setTema(null);
-        setItem(null);
-      },
-    });
+    if (filtro === 'todos') {
+      c.push({
+        label: CATEGORIA_INFO[categoria]?.label ?? 'Matérias',
+        onClick: () => {
+          setTema(null);
+          setItem(null);
+        },
+      });
+    }
 
     if (item) {
       c.push({
@@ -558,7 +619,7 @@ export default function VisuaisJuridicosSheet({
     const last = c[c.length - 1];
     if (last) last.onClick = undefined;
     return c;
-  }, [categoria, item, tema, pastaAtiva]);
+  }, [categoria, item, tema, pastaAtiva, filtro, materiaPasta, topicoPasta]);
 
   if (!open) return null;
 
@@ -588,8 +649,8 @@ export default function VisuaisJuridicosSheet({
               </div>
 
               <div className="relative z-10 flex h-full flex-col overflow-hidden">
-                {/* Cabeçalho fixo padrão apenas quando estiver visualizando detalhes de uma matéria/código OU tela solo de pasta */}
-                {(item || pastaAtiva) && (
+                {/* Cabeçalho fixo padrão apenas quando em detalhes, tela solo de pasta OU abas solo (pastas, favoritos, recentes) */}
+                {(item || pastaAtiva || filtro !== 'todos') && (
                   emPagina ? (
                     <PageHeader title={getTitle()} subtitle={getSubtitle()} onBack={voltar} />
                   ) : (
@@ -613,7 +674,7 @@ export default function VisuaisJuridicosSheet({
                   )
                 )}
 
-                {(item || pastaAtiva) && (
+                {(item || pastaAtiva || filtro !== 'todos') && (
                   <nav
                     aria-label="Trilha de navegação"
                     className="flex items-center gap-1 overflow-x-auto whitespace-nowrap px-5 pb-2 pt-1 text-[12px] font-body text-muted-foreground lg:mx-auto lg:w-full lg:max-w-[1200px] lg:px-8"
@@ -633,7 +694,7 @@ export default function VisuaisJuridicosSheet({
                   </nav>
                 )}
 
-                <div className={`flex-1 overflow-y-auto overscroll-contain pb-[calc(1.25rem+var(--sai-bottom))] ${(item || pastaAtiva) ? 'px-4 pt-3 lg:mx-auto lg:w-full lg:max-w-[1400px] lg:px-8' : ''}`}>
+                <div className={`flex-1 overflow-y-auto overscroll-contain pb-[calc(1.25rem+var(--sai-bottom))] ${(item || pastaAtiva || filtro !== 'todos') ? 'px-4 pt-3 lg:mx-auto lg:w-full lg:max-w-[1400px] lg:px-8' : ''}`}>
                   {/* 1 — Tela Solo da Pasta de PDFs */}
                   {pastaAtiva ? (
                     <VisuaisPastaSoloView
@@ -646,8 +707,100 @@ export default function VisuaisJuridicosSheet({
                       }}
                       onBack={() => setPastaAtiva(null)}
                     />
+                  ) : filtro === 'pastas' ? (
+                    /* 2 — Tela Solo de Pastas Hierárquica em 3 Níveis (Materia -> Topicos -> Temas) */
+                    <div className="w-full pb-12">
+                      <VisuaisPastasView
+                        prontos={prontos}
+                        catalogoItens={lista}
+                        categoria={categoria}
+                        materiaAtiva={materiaPasta}
+                        topicoAtivo={topicoPasta}
+                        onSelectMateria={(mat) => {
+                          setMateriaPasta(mat);
+                          setTopicoPasta(null);
+                        }}
+                        onSelectTopico={(top) => {
+                          setTopicoPasta(top);
+                        }}
+                        onEscolherItem={(i) => {
+                          setArtigo('');
+                          setBuscaArtigo('');
+                          setItem(i);
+                        }}
+                      />
+                    </div>
+                  ) : filtro === 'favoritos' || filtro === 'recentes' ? (
+                    /* 3 — Tela Solo de Favoritos / Recentes (sem painel vermelho no topo) */
+                    <div className="w-full pb-12 space-y-4">
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2 md:gap-4">
+                        {lista.slice(0, limiteLista).map((i, idx) => {
+                          const Icon = iconeDoItem(i.key, i.label, i.sub);
+                          const cor = ITEM_CORES[idx % ITEM_CORES.length];
+                          const favorito = favoritos.includes(i.key);
+                          const isPronto = Boolean(prontos[i.key]);
+
+                          return (
+                            <motion.div
+                              key={i.key}
+                              initial={{ opacity: 0, y: 12 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: Math.min(idx * 0.02, 0.2), duration: 0.28 }}
+                              className="relative group"
+                            >
+                              <HomeCard
+                                icon={Icon}
+                                label={i.label}
+                                sublabel={i.sub || ''}
+                                color={cor}
+                                delay={0}
+                                badge={isPronto ? 'PRONTO' : undefined}
+                                className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm min-h-[96px] h-[96px]"
+                                iconClassName="w-7 h-7"
+                                iconStrokeWidth={1.5}
+                                onClick={() => {
+                                  setArtigo('');
+                                  setBuscaArtigo('');
+                                  setItem(i);
+                                }}
+                              />
+                              <div className="absolute top-2 right-2 z-20">
+                                <EstrelaFavorito ativo={favorito} onToggle={() => alternarFavorito(i.key)} />
+                              </div>
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+
+                      {!lista.length && (
+                        <div className="py-16 text-center space-y-2">
+                          <p className="font-['Plus_Jakarta_Sans',sans-serif] font-bold text-white text-base">
+                            {filtro === 'favoritos'
+                              ? 'Nenhum favorito salvo ainda'
+                              : 'Nenhum histórico recente'}
+                          </p>
+                          <p className="font-['Plus_Jakarta_Sans',sans-serif] text-xs text-muted-foreground max-w-sm mx-auto">
+                            {filtro === 'favoritos'
+                              ? 'Marque matérias ou códigos com a estrela para reuni-los nesta tela.'
+                              : 'Os conteúdos que você abrir recentemente serão organizados automaticamente nesta tela.'}
+                          </p>
+                        </div>
+                      )}
+
+                      {lista.length > limiteLista && (
+                        <div className="pt-2 pb-6">
+                          <button
+                            type="button"
+                            onClick={() => setLimiteLista((l) => l + 30)}
+                            className="w-full py-3.5 rounded-xl bg-secondary/50 font-display text-sm font-bold text-primary active:scale-95 transition-transform hover:bg-secondary/70"
+                          >
+                            Mostrar mais opções...
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   ) : !item ? (
-                    /* 2 — Painel: Seleção de Matéria / Código / Estatuto com HomeCards e Hero no topo que rola junto */
+                    /* 4 — Painel Principal: Seleção de Matéria / Código / Estatuto com HomeCards e Hero no topo que rola junto */
                     <VisuaisPassoItens
                       categoria={categoria}
                       onSelectCategoria={(cat) => {
@@ -684,7 +837,7 @@ export default function VisuaisJuridicosSheet({
                       onClose={onClose}
                     />
                   ) : (
-                    /* 2 — Tópicos da matéria ou Artigos da lei/código/estatuto */
+                    /* 5 — Tópicos da matéria ou Artigos da lei/código/estatuto */
                   <VisuaisPassoDetalhes
                     categoria={categoria}
                     filtro={filtro}
