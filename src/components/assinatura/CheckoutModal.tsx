@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, CreditCard, ShieldCheck, User, MapPin, Smartphone, ArrowRight, CheckCircle2, Copy, X, ChevronLeft, Clock, ChevronDown } from "lucide-react";
+import { Loader2, CreditCard, ShieldCheck, User, MapPin, Smartphone, ArrowRight, CheckCircle2, Copy, X, ChevronLeft, Clock, ChevronDown, QrCode } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -139,7 +139,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   const [pixExpiryTime, setPixExpiryTime] = useState<number | null>(null);
   const isProcessingRef = useRef(false);
 
-  const isPix = plan === 'anual_pix';
+  const [activePlan, setActivePlan] = useState<'mensal' | 'anual' | 'anual_pix'>('anual');
+
+  useEffect(() => {
+    if (plan) {
+      setActivePlan(plan);
+    }
+  }, [plan]);
+
+  const isPix = activePlan === 'anual_pix';
 
   useEffect(() => {
     if (open) {
@@ -151,9 +159,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
       setAddressInfo('');
       setVerifyingPayment(false);
       isProcessingRef.current = false;
+      if (plan) setActivePlan(plan);
       setFormData(prev => ({ ...prev, name: userName || '', cardName: userName || '' }));
     }
-  }, [open, userName]);
+  }, [open, userName, plan]);
 
   // ViaCEP integration
   useEffect(() => {
@@ -292,12 +301,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     setLoading(true);
     try {
       const payload: any = {
-        plan,
+        plan: activePlan,
         email: userEmail,
         name: formData.name,
         cpfCnpj: formData.cpf.replace(/\D/g, ''),
         phone: formData.phone.replace(/\D/g, ''),
-        installmentCount: plan === 'anual' ? installmentCount : 1
+        installmentCount: activePlan === 'anual' ? installmentCount : 1
       };
 
       if (!isPix) {
@@ -429,9 +438,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   };
 
   const getPlanInfo = () => {
-    if (plan === 'mensal') return { title: 'Mensal', price: 'R$ 29,90', sub: '/ mês' };
-    if (plan === 'anual') return { title: 'Anual', price: 'R$ 199,90', sub: '/ ano' };
-    if (plan === 'anual_pix') return { title: 'Promoção', price: 'R$ 149,90', sub: '/ ano' };
+    if (activePlan === 'mensal') return { title: 'Mensal', price: 'R$ 29,90', sub: '/ mês' };
+    if (activePlan === 'anual') return { title: 'Anual', price: 'R$ 199,90', sub: '/ ano' };
+    if (activePlan === 'anual_pix') return { title: plan === 'anual_pix' ? 'Promoção' : 'Anual no PIX', price: 'R$ 149,90', sub: '/ ano' };
     return { title: '', price: '', sub: '' };
   };
 
@@ -473,7 +482,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
             
             {/* Plan Info Card - Hidden on Step 2 as requested */}
             {step !== 2 && (
-              <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-sm p-5 mb-6 flex flex-col items-center justify-center relative overflow-hidden shadow-xl">
+              <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-sm p-5 mb-4 flex flex-col items-center justify-center relative overflow-hidden shadow-xl">
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
                   VOCÊ ESTÁ ASSINANDO:
                 </p>
@@ -484,14 +493,44 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                   <span className="font-display text-4xl font-black text-foreground">{planInfo.price}</span>
                   <span className="text-sm font-semibold text-muted-foreground">{planInfo.sub}</span>
                 </div>
-                {plan === 'anual' && (
-                  <p className="text-xs text-emerald-400 font-bold mt-1">ou 12x de R$ 17,45</p>
+                {activePlan === 'anual' && (
+                  <p className="text-xs text-emerald-400 font-bold mt-1">ou 12x de R$ 16,65</p>
                 )}
-                {plan === 'anual_pix' && (
+                {activePlan === 'anual_pix' && (
                   <span className="absolute top-0 right-0 bg-emerald-500/80 backdrop-blur-md text-white font-black text-[9px] px-2 py-0.5 rounded-bl-lg tracking-wider">
-                    DESCONTO APLICADO
+                    DESCONTO PIX ATIVADO
                   </span>
                 )}
+              </div>
+            )}
+
+            {/* Alternador de Método de Pagamento (Cartão vs PIX) para Planos Anuais */}
+            {step === 1 && (plan === 'anual' || plan === 'anual_pix') && (
+              <div className="grid grid-cols-2 gap-2 p-1.5 bg-black/50 rounded-2xl border border-white/10 mb-5">
+                <button
+                  type="button"
+                  onClick={() => setActivePlan('anual')}
+                  className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                    activePlan === 'anual'
+                      ? 'bg-primary text-white shadow-[0_0_20px_rgba(224,31,71,0.5)] border border-red-400/30'
+                      : 'text-muted-foreground hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <CreditCard className="w-4 h-4" />
+                  <span>Cartão (12x)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActivePlan('anual_pix')}
+                  className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                    activePlan === 'anual_pix'
+                      ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] border border-emerald-400/30'
+                      : 'text-muted-foreground hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <QrCode className="w-4 h-4" />
+                  <span>PIX à vista</span>
+                </button>
               </div>
             )}
 
@@ -766,7 +805,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                       </div>
                     </div>
 
-                    {plan === 'anual' && (
+                    {activePlan === 'anual' && (
                       <div className="space-y-1">
                         <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Parcelamento</Label>
                         <div className="relative">

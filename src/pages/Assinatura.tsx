@@ -145,7 +145,11 @@ export default function Assinatura() {
       })
       .catch(() => {});
       
-    if (!session) { toast.error('Faça login para assinar'); return; }
+    if (!session) { 
+      toast.info('Faça login ou cadastre-se para assinar'); 
+      navigate('/login', { state: { returnTo: '/assinatura' } });
+      return; 
+    }
     setCheckoutPlan(plano);
   };
 
@@ -187,52 +191,54 @@ export default function Assinatura() {
         />
 
         <Sheet open={paymentMethodSheetOpen} onOpenChange={setPaymentMethodSheetOpen}>
-          <SheetContent side="bottom" className="rounded-none sm:rounded-t-3xl px-6 pb-12 pt-12 bg-background border-border relative">
-            <div className="absolute inset-0 pointer-events-none opacity-20">
-              <ShapeGrid />
-            </div>
-            <SheetHeader className="mb-8 text-left shrink-0 relative z-10">
-              <SheetTitle className="text-3xl font-display font-black text-foreground leading-tight uppercase">Escolha como<br/>prefere pagar.</SheetTitle>
-              <SheetDescription className="text-[13px] font-medium mt-2 text-muted-foreground">
-                Acesso imediato ao plano Anual. Selecione a forma de pagamento abaixo.
-              </SheetDescription>
-            </SheetHeader>
-            <div className="flex flex-col gap-4 relative z-10">
-              <Button
-                variant="outline"
-                className="h-auto py-5 flex items-center justify-start gap-4 px-5 border-2 border-primary/30 hover:border-primary hover:bg-primary/5 transition-all rounded-3xl group"
-                onClick={() => {
-                  setPaymentMethodSheetOpen(false);
-                  startPurchase('anual');
-                }}
-              >
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <CreditCard className="w-6 h-6 text-primary" />
-                </div>
-                <div className="flex flex-col items-start text-left flex-1">
-                  <span className="font-bold text-lg text-foreground">Cartão de Crédito</span>
-                  <span className="text-[11px] font-bold text-primary">Até 12x de R$ 16,65</span>
-                </div>
-                <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors group-hover:translate-x-1" />
-              </Button>
+          <SheetContent side="bottom" className="rounded-t-3xl px-6 pb-12 pt-10 bg-background border-border">
+            <div className="relative">
+              <div className="absolute inset-0 pointer-events-none opacity-20 -z-10">
+                <ShapeGrid />
+              </div>
+              <SheetHeader className="mb-8 text-left shrink-0 relative z-10">
+                <SheetTitle className="text-3xl font-display font-black text-foreground leading-tight uppercase">Escolha como<br/>prefere pagar.</SheetTitle>
+                <SheetDescription className="text-[13px] font-medium mt-2 text-muted-foreground">
+                  Acesso imediato ao plano Anual. Selecione a forma de pagamento abaixo.
+                </SheetDescription>
+              </SheetHeader>
+              <div className="flex flex-col gap-4 relative z-10">
+                <Button
+                  variant="outline"
+                  className="h-auto py-5 flex items-center justify-start gap-4 px-5 border-2 border-primary/30 hover:border-primary hover:bg-primary/5 transition-all rounded-3xl group"
+                  onClick={() => {
+                    setPaymentMethodSheetOpen(false);
+                    startPurchase('anual');
+                  }}
+                >
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <CreditCard className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="flex flex-col items-start text-left flex-1">
+                    <span className="font-bold text-lg text-foreground">Cartão de Crédito</span>
+                    <span className="text-[11px] font-bold text-primary">Até 12x de R$ 16,65</span>
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors group-hover:translate-x-1" />
+                </Button>
 
-              <Button
-                variant="outline"
-                className="h-auto py-5 flex items-center justify-start gap-4 px-5 border-2 border-border/80 hover:border-emerald-500 hover:bg-emerald-500/5 transition-all rounded-3xl group"
-                onClick={() => {
-                  setPaymentMethodSheetOpen(false);
-                  startPurchase('anual_pix');
-                }}
-              >
-                <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
-                  <QrCode className="w-6 h-6 text-emerald-500" />
-                </div>
-                <div className="flex flex-col items-start text-left flex-1">
-                  <span className="font-bold text-lg text-foreground">PIX</span>
-                  <span className="text-[11px] font-bold text-muted-foreground">R$ 199,90 à vista</span>
-                </div>
-                <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-500 transition-colors group-hover:translate-x-1" />
-              </Button>
+                <Button
+                  variant="outline"
+                  className="h-auto py-5 flex items-center justify-start gap-4 px-5 border-2 border-border/80 hover:border-emerald-500 hover:bg-emerald-500/5 transition-all rounded-3xl group"
+                  onClick={() => {
+                    setPaymentMethodSheetOpen(false);
+                    startPurchase('anual_pix');
+                  }}
+                >
+                  <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
+                    <QrCode className="w-6 h-6 text-emerald-500" />
+                  </div>
+                  <div className="flex flex-col items-start text-left flex-1">
+                    <span className="font-bold text-lg text-foreground">PIX</span>
+                    <span className="text-[11px] font-bold text-muted-foreground">R$ 199,90 à vista</span>
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-500 transition-colors group-hover:translate-x-1" />
+                </Button>
+              </div>
             </div>
           </SheetContent>
         </Sheet>
@@ -315,7 +321,7 @@ export default function Assinatura() {
                   if (tab === 'promocao') {
                      startPurchase('anual_pix');
                   } else if (tab === 'anual') {
-                     setPaymentMethodSheetOpen(true);
+                     startPurchase('anual');
                   } else {
                      startPurchase(tab);
                   }
