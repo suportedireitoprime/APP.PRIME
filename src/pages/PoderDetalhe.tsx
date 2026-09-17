@@ -108,6 +108,29 @@ const PoderDetalhe = () => {
                  </h1>
               </div>
            </div>
+
+           {/* Botões de Ação Rapida */}
+           <div className="flex gap-2 mt-4 ml-4">
+              <button
+                onClick={() => { haptic.selection(); toast({ title: 'Em breve', description: 'Módulo de Informativo em desenvolvimento.' }); }}
+                className="flex flex-col items-center justify-center py-2 px-4 rounded-xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] min-w-[72px]"
+              >
+                <ScrollText className="w-4 h-4 text-[#FACC15]" strokeWidth={2} />
+                <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
+                  Informativo
+                </span>
+              </button>
+              
+              <button
+                onClick={() => { haptic.selection(); toast({ title: 'Em breve', description: 'Módulo de Ministros em desenvolvimento.' }); }}
+                className="flex flex-col items-center justify-center py-2 px-4 rounded-xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] min-w-[72px]"
+              >
+                <Users className="w-4 h-4 text-[#34D399]" strokeWidth={2} />
+                <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
+                  Ministros
+                </span>
+              </button>
+           </div>
         </div>
 
         {/* Removido os 4 cards originais quadrados do header */}
