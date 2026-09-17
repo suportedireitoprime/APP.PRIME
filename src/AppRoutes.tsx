@@ -586,10 +586,11 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
     return <Navigate to="/auth" replace state={{ from: location.pathname }} />;
   }
 
-  // Removido o bloqueio estrito `if (!initialCheckDone) return null;` para 
-  // permitir que a UI principal (Home) renderize de forma otimista, eliminando a
-  // tela preta e o "engasgo" de dezenas de nós DOM sendo montados de uma vez
-  // após o timeout do Supabase. O cache ou a flag justSignedUp já resolvem 99% dos casos.
+  // Se a rota exige triagem concluída e o usuário ainda não possui confirmação em cache nem checagem finalizada,
+  // exibe um container escuro mínimo temporário para não vazar a interface restrita antes da validação (Item 21).
+  if (requireOnboarding && cachedDone !== '1' && !initialCheckDone && location.pathname !== '/onboarding') {
+    return <div className="min-h-dvh bg-[#0d0f12]" />;
+  }
 
   // Redireciona para /onboarding se a triagem está pendente, MAS apenas quando
   // NÃO estamos já em /onboarding (senão o <Onboarding /> nunca renderizaria
@@ -598,13 +599,26 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
     return <Navigate to="/onboarding" replace />;
   }
 
-  // Check Trial Expiration
+  // Check Trial Expiration (com proteção contra fraude de relógio local - Item 26)
   if (user && !profileLoading && profile) {
     const createdAt = new Date(user.created_at);
     const trialEndsAt = user.user_metadata?.trial_ends_at 
       ? new Date(user.user_metadata.trial_ends_at) 
       : new Date(createdAt.getTime() + 3 * 24 * 60 * 60 * 1000);
-    const isTrialActive = Date.now() < trialEndsAt.getTime();
+
+    const nowMs = Date.now();
+    let maxKnownTime = createdAt.getTime();
+    try {
+      const saved = localStorage.getItem('direitoprime:time:max');
+      if (saved) maxKnownTime = Math.max(maxKnownTime, Number(saved));
+    } catch {}
+
+    const isClockTampered = nowMs < maxKnownTime;
+    if (!isClockTampered) {
+      try { localStorage.setItem('direitoprime:time:max', String(nowMs)); } catch {}
+    }
+
+    const isTrialActive = !isClockTampered && nowMs < trialEndsAt.getTime();
 
     const cleanPath = (location.pathname || '').replace(/\/+$/, '') || '/';
     const isAllowedPath = 

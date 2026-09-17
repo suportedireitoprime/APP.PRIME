@@ -127,20 +127,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
           return true;
         }
 
-        // 2.5 Verifica se o usuário está no período de teste de 3 dias (baseado na criação da conta)
-        const createdAt = new Date(user.created_at);
-        const trialEndsAt = user.user_metadata?.trial_ends_at 
-          ? new Date(user.user_metadata.trial_ends_at) 
-          : new Date(createdAt.getTime() + 3 * 24 * 60 * 60 * 1000);
-
-        if (trialEndsAt > new Date()) {
-          persist({
-            isPremium: true, loading: false, plano: 'Teste de 3 Dias', startedAt: createdAt.toISOString(), expiresAt: trialEndsAt.toISOString(), source: null, status: 'SUBSCRIPTION_STATE_ACTIVE', isAdminOverride: false, isTrial: true,
-          });
-          return true;
-        }
-
-        // 3. Avaliar as respostas em ordem de prioridade
+        // 3. Avaliar as respostas em ordem de prioridade (Lojas primeiro: Play Store, Apple, Asaas)
         if (playRes.data) {
           persist({
             isPremium: true, loading: false,
@@ -165,6 +152,32 @@ export function useSubscription(options: Options = {}): SubscriptionState {
             isPremium: true, loading: false,
             plano: l.plano, expiresAt: l.expires_at, startedAt: l.started_at, source: 'asaas',
             status: l.status, isAdminOverride: false, isTrial: false,
+          });
+          return true;
+        }
+
+        // 4. Se não há assinatura de loja ativa, verifica período de teste (Trial de 3 dias)
+        // com proteção anti-fraude contra manipulação do relógio local (Item 26)
+        const createdAt = new Date(user.created_at);
+        const trialEndsAt = user.user_metadata?.trial_ends_at 
+          ? new Date(user.user_metadata.trial_ends_at) 
+          : new Date(createdAt.getTime() + 3 * 24 * 60 * 60 * 1000);
+
+        const nowMs = Date.now();
+        let maxKnownTime = createdAt.getTime();
+        try {
+          const saved = localStorage.getItem('direitoprime:time:max');
+          if (saved) maxKnownTime = Math.max(maxKnownTime, Number(saved));
+        } catch {}
+
+        const isClockTampered = nowMs < maxKnownTime;
+        if (!isClockTampered) {
+          try { localStorage.setItem('direitoprime:time:max', String(nowMs)); } catch {}
+        }
+
+        if (!isClockTampered && trialEndsAt.getTime() > nowMs) {
+          persist({
+            isPremium: true, loading: false, plano: 'Teste de 3 Dias', startedAt: createdAt.toISOString(), expiresAt: trialEndsAt.toISOString(), source: null, status: 'SUBSCRIPTION_STATE_ACTIVE', isAdminOverride: false, isTrial: true,
           });
           return true;
         }

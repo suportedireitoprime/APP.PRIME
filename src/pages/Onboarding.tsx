@@ -1,4 +1,4 @@
-import { useState, useEffect, startTransition } from 'react';
+import { useState, useEffect, useCallback, startTransition } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -22,15 +22,23 @@ const Onboarding = () => {
   const [pedirNotificacoes, setPedirNotificacoes] = useState(false);
   const [pedirTrial, setPedirTrial] = useState(false);
   
-  // 24 hours countdown in seconds
-  const [timeLeft, setTimeLeft] = useState(24 * 60 * 60 - 1);
+  // 24 hours countdown in seconds baseado no momento de criação do usuário (Item 24)
+  const calculatePromoTimeLeft = useCallback((): number => {
+    const baseTime = user?.created_at ? new Date(user.created_at).getTime() : Date.now();
+    const expiresAt = baseTime + 24 * 60 * 60 * 1000;
+    const diff = Math.floor((expiresAt - Date.now()) / 1000);
+    return Math.max(0, Math.min(diff, 24 * 60 * 60 - 1));
+  }, [user?.created_at]);
+
+  const [timeLeft, setTimeLeft] = useState<number>(calculatePromoTimeLeft);
 
   useEffect(() => {
+    setTimeLeft(calculatePromoTimeLeft());
     const timer = setInterval(() => {
       setTimeLeft(prev => (prev > 0 ? prev - 1 : 0));
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [calculatePromoTimeLeft]);
 
   // SEO & Título dinâmico da Triagem
   useEffect(() => {
@@ -117,7 +125,10 @@ const Onboarding = () => {
 
   const fecharPromo = () => {
     setPedirPromo(false);
-    setPedirTrial(true);
+    // Intervalo para liberação do scroll lock antes de abrir o próximo modal (Item 22)
+    setTimeout(() => {
+      setPedirTrial(true);
+    }, 200);
   };
 
   const resgatarPromo = () => {
@@ -135,7 +146,10 @@ const Onboarding = () => {
 
   const concluirTrial = () => {
     setPedirTrial(false);
-    setPedirNotificacoes(true);
+    // Intervalo para liberação do scroll lock antes de abrir o próximo modal (Item 22)
+    setTimeout(() => {
+      setPedirNotificacoes(true);
+    }, 200);
   };
 
   const concluirNotificacoes = (granted: boolean) => {

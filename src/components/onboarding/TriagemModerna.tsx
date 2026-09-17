@@ -136,15 +136,40 @@ const AREAS = [
 
 const FAIXAS = ['18 a 24 anos', '25 a 30 anos', '31 a 40 anos', '41 anos ou mais'];
 
+const TRIAGEM_DRAFT_KEY = 'triagem_draft';
+
+function loadTriagemDraft(): Partial<CadastroResult & { step: 1 | 2 | 3 | 4 | 5 }> | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.sessionStorage.getItem(TRIAGEM_DRAFT_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function TriagemModerna({ initialName = '', onComplete, previewMode = false }: TriagemModernaProps) {
-  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
-  const [persona, setPersona] = useState<'faculdade' | 'oab' | 'concurso' | 'advogado'>('oab');
-  const [dores, setDores] = useState<string[]>(['leis-desatualizadas', 'lei-dificil']);
-  const [areas, setAreas] = useState<string[]>(['Direito Constitucional', 'Direito Penal', 'Direito Civil']);
-  const [nome, setNome] = useState(initialName);
-  const [whatsapp, setWhatsapp] = useState('');
-  const [faixa, setFaixa] = useState('25 a 30 anos');
+  const draft = React.useMemo(() => loadTriagemDraft(), []);
+
+  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(draft?.step ?? 1);
+  const [persona, setPersona] = useState<'faculdade' | 'oab' | 'concurso' | 'advogado'>(draft?.persona ?? 'oab');
+  const [dores, setDores] = useState<string[]>(draft?.dores ?? ['leis-desatualizadas', 'lei-dificil']);
+  const [areas, setAreas] = useState<string[]>(draft?.areas ?? ['Direito Constitucional', 'Direito Penal', 'Direito Civil']);
+  const [nome, setNome] = useState(draft?.nome ?? initialName);
+  const [whatsapp, setWhatsapp] = useState(draft?.whatsapp ?? '');
+  const [faixa, setFaixa] = useState(draft?.faixa ?? '25 a 30 anos');
   const [calculatingPhase, setCalculatingPhase] = useState(0);
+
+  // Salva rascunho temporário no sessionStorage para evitar perda em rotação/split-screen
+  useEffect(() => {
+    if (step >= 5) return;
+    try {
+      window.sessionStorage.setItem(
+        TRIAGEM_DRAFT_KEY,
+        JSON.stringify({ step, persona, dores, areas, nome, whatsapp, faixa })
+      );
+    } catch {}
+  }, [step, persona, dores, areas, nome, whatsapp, faixa]);
 
   // Animação de análise neural da IA no Step 5 com fallback garantido contra timeout/congelamento
   useEffect(() => {
@@ -154,6 +179,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
     const finishStep = () => {
       if (isFinished) return;
       isFinished = true;
+      try { window.sessionStorage.removeItem(TRIAGEM_DRAFT_KEY); } catch {}
       haptic.success();
       const selectedPersonaObj = PERSONAS.find(p => p.id === persona);
       onComplete({
@@ -214,19 +240,51 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
     );
   };
 
-  const nextStep = () => {
+  const nextStep = React.useCallback(() => {
     if (step === 3 && areas.length === 0) {
       toast.error('Selecione ao menos 1 matéria prioritária para continuar.');
       return;
     }
     haptic.impact('light');
     setStep(prev => (Math.min(prev + 1, 5) as 1 | 2 | 3 | 4 | 5));
-  };
+  }, [step, areas.length]);
 
-  const prevStep = () => {
+  const prevStep = React.useCallback(() => {
     haptic.impact('light');
     setStep(prev => (Math.max(prev - 1, 1) as 1 | 2 | 3 | 4 | 5));
-  };
+  }, []);
+
+  // Atalhos de teclado no desktop para navegação rápida (Enter, Esc, 1-4)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isInput = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
+      if (isInput) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          nextStep();
+        }
+        return;
+      }
+
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        nextStep();
+      } else if (e.key === 'Escape' || e.key === 'ArrowLeft') {
+        if (step > 1) {
+          e.preventDefault();
+          prevStep();
+        }
+      } else if (step === 1) {
+        if (e.key === '1') { haptic.selection(); setPersona('faculdade'); }
+        else if (e.key === '2') { haptic.selection(); setPersona('oab'); }
+        else if (e.key === '3') { haptic.selection(); setPersona('concurso'); }
+        else if (e.key === '4') { haptic.selection(); setPersona('advogado'); }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [step, nextStep, prevStep]);
 
   return (
     <div className="fixed inset-0 z-[9999] bg-[#0A0C10] text-white flex flex-col overflow-hidden select-none">
@@ -285,7 +343,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
       </header>
 
       {/* Conteúdo Principal com Rolagem Suave */}
-      <main className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden px-4 pb-[calc(6rem+var(--sai-bottom,0px))] max-w-xl mx-auto w-full">
+      <main className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden px-4 pb-[calc(6rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] max-w-xl mx-auto w-full">
         <AnimatePresence mode="wait">
           {/* PASSO 1: PERSONA */}
           {step === 1 && (
@@ -636,7 +694,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
 
       {/* Footer Fixo com Botão de Ação */}
       {step < 5 && (
-        <footer className="fixed bottom-0 inset-x-0 z-30 p-4 bg-gradient-to-t from-[#0A0C10] via-[#0A0C10]/95 to-transparent pb-[calc(1rem+var(--sai-bottom,0px))]">
+        <footer className="fixed bottom-0 inset-x-0 z-30 p-4 bg-gradient-to-t from-[#0A0C10] via-[#0A0C10]/95 to-transparent pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
           <div className="max-w-xl mx-auto w-full">
             <button
               type="button"
