@@ -172,8 +172,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (Capacitor.isNativePlatform()) {
       CapacitorApp.addListener('appStateChange', async (state) => {
         if (state.isActive) {
-          // Força refresh da sessão caso o JWT tenha expirado em background
-          try { await supabase.auth.getSession(); } catch {}
+          // Força refresh explícito da sessão caso o JWT tenha expirado em background
+          try {
+            const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+            if (!refreshError && refreshData?.session) {
+              if (isMounted) {
+                startTransition(() => {
+                  setSession(refreshData.session);
+                  setUser(refreshData.session.user);
+                });
+              }
+            } else {
+              // Fallback gracioso para getSession()
+              const { data: sessionData } = await supabase.auth.getSession();
+              if (isMounted && sessionData?.session) {
+                startTransition(() => {
+                  setSession(sessionData.session);
+                  setUser(sessionData.session.user);
+                });
+              }
+            }
+          } catch (err) {
+            console.warn('[Auth] Erro ao sincronizar sessão após retorno do background:', err);
+          }
         }
       }).then((l) => {
         if (isMounted) appStateListener = l;
@@ -230,7 +251,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = useCallback(async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const cleanEmail = email.trim().toLowerCase();
+    const { error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
     return { error: error as Error | null };
   }, []);
 
@@ -311,8 +333,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [user?.id]);
 
   const resetPassword = useCallback(async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+    const cleanEmail = email.trim().toLowerCase();
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const isLocalOrNative =
+      Capacitor.isNativePlatform() ||
+      origin.includes('localhost') ||
+      origin.includes('capacitor://');
+    const redirectTo = isLocalOrNative
+      ? 'https://direitoprime.com/reset-password'
+      : `${origin}/reset-password`;
+
+    const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
+      redirectTo,
     });
     return { error: error as Error | null };
   }, []);

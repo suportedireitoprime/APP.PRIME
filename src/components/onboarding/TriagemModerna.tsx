@@ -25,12 +25,21 @@ import personaEstudante from '@/assets/onboarding/persona-estudante.webp';
 import personaOAB from '@/assets/onboarding/persona-oab-homem.webp';
 import personaConcurseiro from '@/assets/onboarding/persona-concurseiro.webp';
 import personaAdvogado from '@/assets/onboarding/persona-advogado.webp';
+import { toast } from 'sonner';
 import type { CadastroResult } from './CadastroOnboardingOverlay';
 
 export interface TriagemModernaProps {
   initialName?: string;
   onComplete: (data: CadastroResult) => void;
   previewMode?: boolean;
+}
+
+function maskPhone(val: string): string {
+  const digits = val.replace(/\D/g, '').slice(0, 11);
+  if (digits.length <= 2) return digits.length > 0 ? `(${digits}` : '';
+  if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
 
 const PERSONAS = [
@@ -137,34 +146,53 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
   const [faixa, setFaixa] = useState('25 a 30 anos');
   const [calculatingPhase, setCalculatingPhase] = useState(0);
 
-  // Animação de análise neural da IA no Step 5
+  // Animação de análise neural da IA no Step 5 com fallback garantido contra timeout/congelamento
   useEffect(() => {
     if (step !== 5) return;
-    
-    haptic.impact('medium');
-    const t1 = setTimeout(() => setCalculatingPhase(1), 500);
-    const t2 = setTimeout(() => setCalculatingPhase(2), 1100);
-    const t3 = setTimeout(() => setCalculatingPhase(3), 1600);
-    const t4 = setTimeout(() => {
-      haptic.notification('success');
+
+    let isFinished = false;
+    const finishStep = () => {
+      if (isFinished) return;
+      isFinished = true;
+      haptic.success();
       const selectedPersonaObj = PERSONAS.find(p => p.id === persona);
       onComplete({
         persona,
         personaLabel: selectedPersonaObj?.label || 'Direito',
         faixa,
         nome: nome.trim() || 'Doutor(a)',
-        areas,
+        areas: areas.length > 0 ? areas : ['Direito Constitucional'],
         interesses: ['leis', 'leis-comentadas', 'questoes', 'resumos'],
         dores,
         whatsapp: whatsapp.trim() ? whatsapp.replace(/\D/g, '') : null,
       });
-    }, 2200);
+    };
+
+    haptic.impact('medium');
+    const t1 = setTimeout(() => setCalculatingPhase(1), 500);
+    const t2 = setTimeout(() => setCalculatingPhase(2), 1100);
+    const t3 = setTimeout(() => setCalculatingPhase(3), 1600);
+    const t4 = setTimeout(() => finishStep(), 2200);
+
+    // Fallback de segurança de 2.5s se a aba ou app for desacelerada pelo sistema
+    const fallbackTimer = setTimeout(() => {
+      finishStep();
+    }, 2500);
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        finishStep();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
 
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
       clearTimeout(t4);
+      clearTimeout(fallbackTimer);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
     };
   }, [step, persona, dores, areas, nome, whatsapp, faixa, onComplete]);
 
@@ -181,12 +209,16 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
     haptic.selection();
     setAreas(prev => 
       prev.includes(area) 
-        ? (prev.length > 1 ? prev.filter(x => x !== area) : prev) 
+        ? prev.filter(x => x !== area) 
         : [...prev, area]
     );
   };
 
   const nextStep = () => {
+    if (step === 3 && areas.length === 0) {
+      toast.error('Selecione ao menos 1 matéria prioritária para continuar.');
+      return;
+    }
     haptic.impact('light');
     setStep(prev => (Math.min(prev + 1, 5) as 1 | 2 | 3 | 4 | 5));
   };
@@ -508,8 +540,9 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                     <input
                       type="tel"
                       value={whatsapp}
-                      onChange={e => setWhatsapp(e.target.value)}
+                      onChange={e => setWhatsapp(maskPhone(e.target.value))}
                       placeholder="(11) 99999-9999"
+                      maxLength={15}
                       className="w-full h-12 rounded-xl bg-neutral-900/80 border border-white/15 pl-11 pr-4 text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
                     />
                   </div>
@@ -608,7 +641,8 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
             <button
               type="button"
               onClick={nextStep}
-              className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl bg-primary text-primary-foreground font-display font-black text-base tracking-wider uppercase flex items-center justify-center gap-2 active:scale-[0.98] transition-transform shadow-[0_8px_30px_rgba(224,31,71,0.35)] cursor-pointer"
+              disabled={step === 3 && areas.length === 0}
+              className={`btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl bg-primary text-primary-foreground font-display font-black text-base tracking-wider uppercase flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-[0_8px_30px_rgba(224,31,71,0.35)] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none`}
             >
               <span>{step === 4 ? 'FINALIZAR E LIBERAR ACESSO' : 'CONTINUAR'}</span>
               <ArrowRight className="w-5 h-5 stroke-[2.5]" />

@@ -15,7 +15,7 @@ export type CadastroResult = {
 type Props = {
   open: boolean;
   onFinished: (r: CadastroResult) => void;
-  onFormFinished?: (r: CadastroResult) => void;
+  onFormFinished?: (r: CadastroResult) => Promise<void> | void;
   previewMode?: boolean;
   initialName?: string;
   playerRefExternal?: unknown;
@@ -30,8 +30,14 @@ export default function CadastroOnboardingOverlay({
 }: Props) {
   if (!open) return null;
 
-  const handleComplete = (r: CadastroResult) => {
-    if (onFormFinished) onFormFinished(r);
+  const handleComplete = async (r: CadastroResult) => {
+    if (onFormFinished) {
+      try {
+        await onFormFinished(r);
+      } catch (err) {
+        console.error('[Onboarding] Erro ao persistir dados da triagem:', err);
+      }
+    }
     onFinished(r);
   };
 

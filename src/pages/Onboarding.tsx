@@ -37,42 +37,77 @@ const Onboarding = () => {
     document.title = 'Personalizar Perfil | Direito Prime';
   }, []);
 
-  // Prevenir Loop Infinito
+  // Prevenir Loop Infinito sincronizando com a fonte de verdade do banco
   useEffect(() => {
+    let isMounted = true;
     if (user) {
-      const alreadyDone = localStorage.getItem(`onboarding_completed:${user.id}`);
-      if (alreadyDone === '1') {
-        navigate('/', { replace: true });
+      // Se acabou de se cadastrar no fluxo de onboarding, permite concluir sem desvio prematuro
+      if (typeof window !== 'undefined' && window.sessionStorage.getItem('just_signed_up') === '1') {
+        return;
       }
+
+      const checkStatus = async () => {
+        try {
+          const { data } = await supabase
+            .from('profiles')
+            .select('onboarding_completed_at')
+            .eq('id', user.id)
+            .maybeSingle();
+
+          if (!isMounted) return;
+
+          if (data?.onboarding_completed_at) {
+            try { localStorage.setItem(`onboarding_completed:${user.id}`, '1'); } catch {}
+            navigate('/', { replace: true });
+          } else {
+            // Se no banco ainda não foi concluído, limpa flags locais obsoletas para não criar loop
+            try { localStorage.removeItem(`onboarding_completed:${user.id}`); } catch {}
+          }
+        } catch {
+          const alreadyDone = localStorage.getItem(`onboarding_completed:${user.id}`);
+          if (alreadyDone === '1' && isMounted) {
+            navigate('/', { replace: true });
+          }
+        }
+      };
+
+      void checkStatus();
     }
+    return () => {
+      isMounted = false;
+    };
   }, [user, navigate]);
 
-  const salvarNoBanco = async (r: CadastroResult) => {
+  const salvarNoBanco = async (r: CadastroResult): Promise<void> => {
     if (!user) return;
 
-    try { localStorage.setItem(`onboarding_completed:${user.id}`, '1'); } catch {}
-    import('idb-keyval').then(({ set }) => set(`onboarding_completed:${user.id}`, '1')).catch(() => {});
-    try { window.sessionStorage.removeItem('just_signed_up'); } catch {}
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          status_perfil: r.persona,
+          faixa_etaria: r.faixa,
+          perfil_tipos: r.persona ? [r.persona] : null,
+          perfil_contexto: r.personaLabel || '',
+          display_name: r.nome || null,
+          areas_interesse: r.areas || [],
+          interesses: r.interesses || [],
+          whatsapp_number: r.whatsapp || null,
+          onboarding_completed_at: new Date().toISOString(),
+        })
+        .eq('id', user.id);
 
-    const savePromise = supabase
-      .from('profiles')
-      .update({
-        status_perfil: r.persona,
-        faixa_etaria: r.faixa,
-        perfil_tipos: r.persona ? [r.persona] : null,
-        perfil_contexto: r.personaLabel || '',
-        display_name: r.nome || null,
-        areas_interesse: r.areas || [],
-        interesses: r.interesses || [],
-        dores: r.dores || [],
-        whatsapp_number: r.whatsapp || null,
-        onboarding_completed_at: new Date().toISOString(),
-      } as any)
-      .eq('id', user.id);
-
-    savePromise.then(({ error }) => {
-      if (error) toast.error('Erro ao salvar no banco. Ajuste depois em Perfil.');
-    });
+      if (error) {
+        console.error('[Onboarding] Erro ao salvar perfil:', error);
+        toast.error('Erro ao salvar no banco. Ajuste depois em Perfil.');
+      } else {
+        try { localStorage.setItem(`onboarding_completed:${user.id}`, '1'); } catch {}
+        import('idb-keyval').then(({ set }) => set(`onboarding_completed:${user.id}`, '1')).catch(() => {});
+        try { window.sessionStorage.removeItem('just_signed_up'); } catch {}
+      }
+    } catch (err) {
+      console.error('[Onboarding] Falha inesperada ao salvar perfil:', err);
+    }
   };
 
   const finalizar = () => {
