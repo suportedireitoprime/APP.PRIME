@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   ArrowLeft, Calendar as CalendarIcon, MapPin, Clock, Info, X, 
   RotateCw, FileText, ExternalLink, Bookmark, Radio, Tv, Users, 
@@ -187,16 +187,37 @@ const formatarDescricao = (texto: string) => {
 
 const AgendaSenado = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab');
+
   const [dataSelecionada, setDataSelecionada] = useState(() => {
     return getLocalDateString();
   });
-  const [abaAtiva, setAbaAtiva] = useState<'pauta' | 'aovivo' | 'resultados' | 'senadores'>('pauta');
+  const [abaAtiva, setAbaAtiva] = useState<'pauta' | 'aovivo' | 'resultados' | 'senadores'>(() => {
+    if (tabParam && ['pauta', 'aovivo', 'resultados', 'senadores'].includes(tabParam)) {
+      return tabParam as 'pauta' | 'aovivo' | 'resultados' | 'senadores';
+    }
+    return 'pauta';
+  });
   const [diasTimeline, setDiasTimeline] = useState<Date[]>([]);
   const [eventos, setEventos] = useState<EventoSenado[]>([]);
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [eventoSelecionado, setEventoSelecionado] = useState<EventoSenado | null>(null);
+
+  // Sincronizar aba ativa quando o parâmetro da URL mudar
+  useEffect(() => {
+    if (tabParam && ['pauta', 'aovivo', 'resultados', 'senadores'].includes(tabParam)) {
+      setAbaAtiva(tabParam as 'pauta' | 'aovivo' | 'resultados' | 'senadores');
+    }
+  }, [tabParam]);
+
+  const handleMudarAba = (tabId: 'pauta' | 'aovivo' | 'resultados' | 'senadores') => {
+    haptic.selection();
+    setAbaAtiva(tabId);
+    setSearchParams({ tab: tabId }, { replace: true });
+  };
 
   // Ref para rolar a linha do tempo até o dia selecionado (hoje) ao montar
   const timelineRef = useRef<HTMLDivElement>(null);
@@ -380,8 +401,7 @@ const AgendaSenado = () => {
               <button
                 key={tab.id}
                 onClick={() => {
-                  haptic.selection();
-                  setAbaAtiva(tab.id);
+                  handleMudarAba(tab.id);
                 }}
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-xl font-bold text-xs transition-all whitespace-nowrap min-h-[44px] ${
                   isAtiva
@@ -701,9 +721,8 @@ const AgendaSenado = () => {
                   <button 
                     type="button"
                     onClick={() => {
-                      haptic.selection();
                       setEventoSelecionado(null);
-                      setAbaAtiva('aovivo');
+                      handleMudarAba('aovivo');
                     }}
                     className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-3.5 rounded-xl font-bold text-sm transition-colors shadow-lg shadow-red-600/20 min-h-[48px]"
                   >

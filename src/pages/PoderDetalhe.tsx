@@ -1,5 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, FileText, Globe, Headphones, PlaySquare, CalendarDays, ScanEye, Rss, ArrowLeft, Users, ScrollText, Video } from 'lucide-react';
+import { 
+  Globe, Headphones, CalendarDays, ScanEye, Rss, ArrowLeft, 
+  Users, ScrollText, Video, Tv, CheckCircle2 
+} from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { useGoBack } from '@/hooks/useGoBack';
 import ShapeGrid from '@/components/ui/ShapeGrid';
@@ -11,7 +14,16 @@ import camaraImg from '@/assets/poderes/camara.webp';
 import senadoImg from '@/assets/poderes/senado.webp';
 import { toast } from '@/hooks/use-toast';
 
-const PODERES_DATA: Record<string, any> = {
+interface PoderItem {
+  titulo: string;
+  sigla: string;
+  img: string;
+  color: string;
+  solidColor: string;
+  description: string;
+}
+
+const PODERES_DATA: Record<string, PoderItem> = {
   stf: {
     titulo: 'Supremo Tribunal Federal',
     sigla: 'STF',
@@ -63,7 +75,6 @@ const PoderDetalhe = () => {
     );
   }
 
-
   return (
     <div className="flex-1 flex flex-col min-h-screen bg-background pb-safe">
       {/* Hero Header (Igual ao HomeHeaderHero) */}
@@ -97,7 +108,7 @@ const PoderDetalhe = () => {
         {/* Título Principal com a Cor Predominante */}
         <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[100px] ml-4 sm:ml-6 mb-4">
            <div className="flex items-center gap-3">
-              {/* Linha vertical (substitui o fundo vermelho padrão) */}
+              {/* Linha vertical */}
               <div className="w-[3px] h-10 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]" style={{ backgroundColor: poder.solidColor }} />
               <div className="flex flex-col">
                  <p className="font-body text-white/90 text-[10px] sm:text-[11px] font-bold tracking-[0.2em] uppercase drop-shadow-md mb-0.5">
@@ -109,31 +120,57 @@ const PoderDetalhe = () => {
               </div>
            </div>
 
-           {/* Botões de Ação Rapida */}
+           {/* Botões de Ação Rápida */}
            <div className="flex gap-2 mt-4 ml-4">
-              <button
-                onClick={() => { haptic.selection(); navigate('/resumos-juridicos/jurisprudencia/stf'); }}
-                className="flex flex-col items-center justify-center py-2 px-4 rounded-xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] min-w-[72px]"
-              >
-                <ScrollText className="w-4 h-4 text-[#FACC15]" strokeWidth={2} />
-                <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
-                  Informativo
-                </span>
-              </button>
-              
-              <button
-                onClick={() => { haptic.selection(); navigate('/ferramentas/stf/biografias'); }}
-                className="flex flex-col items-center justify-center py-2 px-4 rounded-xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] min-w-[72px]"
-              >
-                <Users className="w-4 h-4 text-[#34D399]" strokeWidth={2} />
-                <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
-                  Ministros
-                </span>
-              </button>
+              {id === 'stf' && (
+                <>
+                  <button
+                    onClick={() => { haptic.selection(); navigate('/resumos-juridicos/jurisprudencia/stf'); }}
+                    className="flex flex-col items-center justify-center py-2 px-4 rounded-xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] min-w-[72px]"
+                  >
+                    <ScrollText className="w-4 h-4 text-[#FACC15]" strokeWidth={2} />
+                    <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
+                      Informativo
+                    </span>
+                  </button>
+                  
+                  <button
+                    onClick={() => { haptic.selection(); navigate('/ferramentas/stf/biografias'); }}
+                    className="flex flex-col items-center justify-center py-2 px-4 rounded-xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] min-w-[72px]"
+                  >
+                    <Users className="w-4 h-4 text-[#34D399]" strokeWidth={2} />
+                    <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
+                      Ministros
+                    </span>
+                  </button>
+                </>
+              )}
+
+              {id === 'senado' && (
+                <button
+                  onClick={() => { haptic.selection(); navigate('/tres-poderes/senado/agenda?tab=senadores'); }}
+                  className="flex flex-col items-center justify-center py-2 px-4 rounded-xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] min-w-[72px]"
+                >
+                  <Users className="w-4 h-4 text-[#22C55E]" strokeWidth={2} />
+                  <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
+                    Senadores
+                  </span>
+                </button>
+              )}
+
+              {id === 'camara' && (
+                <button
+                  onClick={() => { haptic.selection(); navigate('/radar/deputados'); }}
+                  className="flex flex-col items-center justify-center py-2 px-4 rounded-xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] min-w-[72px]"
+                >
+                  <Users className="w-4 h-4 text-[#0EA5E9]" strokeWidth={2} />
+                  <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
+                    Deputados
+                  </span>
+                </button>
+              )}
            </div>
         </div>
-
-        {/* Removido os 4 cards originais quadrados do header */}
       </div>
 
       {/* Área de Conteúdo abaixo do Hero (Grid Animado + Cards) */}
@@ -156,59 +193,136 @@ const PoderDetalhe = () => {
               </p>
            </div>
            
-           <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
-              <HomeCard
-                icon={CalendarDays}
-                label="PAUTA DO DIA"
-                sublabel="Sessões"
-                color="#FFFFFF"
-                iconStrokeWidth={1.5}
-                onClick={() => navigate(`/tres-poderes/${id}/agenda`)}
-                className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
-              />
-              <HomeCard
-                icon={ScanEye}
-                label="RADAR LEGISLATIVO"
-                sublabel="Projetos de Lei"
-                color="#FFFFFF"
-                iconStrokeWidth={1.5}
-                onClick={() => navigate(`/radar-360`)}
-                className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
-              />
-              {id === 'camara' && (
+           {id === 'senado' ? (
+             <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
+                <HomeCard
+                  icon={CalendarDays}
+                  label="PAUTA DO DIA"
+                  sublabel="Sessões & Calendário"
+                  color="#FFFFFF"
+                  iconStrokeWidth={1.5}
+                  onClick={() => { haptic.selection(); navigate('/tres-poderes/senado/agenda?tab=pauta'); }}
+                  className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
+                />
+                <HomeCard
+                  icon={Tv}
+                  label="SESSÕES AO VIVO"
+                  sublabel="TV Senado (Ao Vivo)"
+                  color="#FFFFFF"
+                  iconStrokeWidth={1.5}
+                  onClick={() => { haptic.selection(); navigate('/tres-poderes/senado/agenda?tab=aovivo'); }}
+                  className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
+                />
+                <HomeCard
+                  icon={CheckCircle2}
+                  label="RESULTADOS"
+                  sublabel="Deliberações & Votos"
+                  color="#FFFFFF"
+                  iconStrokeWidth={1.5}
+                  onClick={() => { haptic.selection(); navigate('/tres-poderes/senado/agenda?tab=resultados'); }}
+                  className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
+                />
                 <HomeCard
                   icon={Users}
-                  label="DEPUTADOS"
-                  sublabel="Lista oficial"
+                  label="81 SENADORES"
+                  sublabel="Bancadas & Comissões"
                   color="#FFFFFF"
                   iconStrokeWidth={1.5}
-                  onClick={() => navigate(`/radar/deputados`)}
+                  onClick={() => { haptic.selection(); navigate('/tres-poderes/senado/agenda?tab=senadores'); }}
                   className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
                 />
-              )}
-              {CARDS.map((item, index) => (
                 <HomeCard
-                  key={item.id}
-                  icon={item.icon}
-                  label={item.label}
-                  sublabel={item.id === 'portais' ? 'Serviços Oficiais' : 'Em breve'}
+                  icon={ScanEye}
+                  label="RADAR LEGISLATIVO"
+                  sublabel="Projetos de Lei"
                   color="#FFFFFF"
                   iconStrokeWidth={1.5}
-                  delay={(index + 1) * 0.05}
-                  onClick={() => {
-                    haptic.selection();
-                    if (item.id === 'portais') {
-                      navigate(`/tres-poderes/${id}/portais`);
-                    } else if (item.id === 'sessoes' && id === 'stf') {
-                      navigate(`/tres-poderes/stf/sessoes-ao-vivo`);
-                    } else {
-                      toast({ title: 'Em breve', description: `O módulo de ${item.label} está em desenvolvimento.` });
-                    }
-                  }}
+                  onClick={() => { haptic.selection(); navigate('/radar-360'); }}
                   className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
                 />
-              ))}
-           </div>
+                <HomeCard
+                  icon={Globe}
+                  label="PORTAIS"
+                  sublabel="Serviços Oficiais"
+                  color="#FFFFFF"
+                  iconStrokeWidth={1.5}
+                  onClick={() => { haptic.selection(); navigate('/tres-poderes/senado/portais'); }}
+                  className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
+                />
+                <HomeCard
+                  icon={Rss}
+                  label="BLOG"
+                  sublabel="Em breve"
+                  color="#FFFFFF"
+                  iconStrokeWidth={1.5}
+                  onClick={() => { haptic.selection(); toast({ title: 'Em breve', description: 'O módulo de BLOG está em desenvolvimento.' }); }}
+                  className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm opacity-80"
+                />
+                <HomeCard
+                  icon={Headphones}
+                  label="ÁUDIO AULAS"
+                  sublabel="Em breve"
+                  color="#FFFFFF"
+                  iconStrokeWidth={1.5}
+                  onClick={() => { haptic.selection(); toast({ title: 'Em breve', description: 'O módulo de ÁUDIO AULAS está em desenvolvimento.' }); }}
+                  className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm opacity-80"
+                />
+             </div>
+           ) : (
+             <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
+                <HomeCard
+                  icon={CalendarDays}
+                  label="PAUTA DO DIA"
+                  sublabel="Sessões"
+                  color="#FFFFFF"
+                  iconStrokeWidth={1.5}
+                  onClick={() => navigate(`/tres-poderes/${id}/agenda`)}
+                  className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
+                />
+                <HomeCard
+                  icon={ScanEye}
+                  label="RADAR LEGISLATIVO"
+                  sublabel="Projetos de Lei"
+                  color="#FFFFFF"
+                  iconStrokeWidth={1.5}
+                  onClick={() => navigate(`/radar-360`)}
+                  className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
+                />
+                {id === 'camara' && (
+                  <HomeCard
+                    icon={Users}
+                    label="DEPUTADOS"
+                    sublabel="Lista oficial"
+                    color="#FFFFFF"
+                    iconStrokeWidth={1.5}
+                    onClick={() => navigate(`/radar/deputados`)}
+                    className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
+                  />
+                )}
+                {CARDS.map((item, index) => (
+                  <HomeCard
+                    key={item.id}
+                    icon={item.icon}
+                    label={item.label}
+                    sublabel={item.id === 'portais' ? 'Serviços Oficiais' : 'Em breve'}
+                    color="#FFFFFF"
+                    iconStrokeWidth={1.5}
+                    delay={(index + 1) * 0.05}
+                    onClick={() => {
+                      haptic.selection();
+                      if (item.id === 'portais') {
+                        navigate(`/tres-poderes/${id}/portais`);
+                      } else if (item.id === 'sessoes' && id === 'stf') {
+                        navigate(`/tres-poderes/stf/sessoes-ao-vivo`);
+                      } else {
+                        toast({ title: 'Em breve', description: `O módulo de ${item.label} está em desenvolvimento.` });
+                      }
+                    }}
+                    className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
+                  />
+                ))}
+             </div>
+           )}
         </div>
 
         {/* Podcast Carousel para o STF (TV Justiça) */}
