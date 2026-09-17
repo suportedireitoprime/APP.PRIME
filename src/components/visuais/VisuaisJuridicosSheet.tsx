@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronRight, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -182,12 +183,9 @@ export default function VisuaisJuridicosSheet({
         const ordem = new Map(recentes.map((k, i) => [k, i]));
         return itens.filter((i) => ordem.has(chave(i))).sort((a, b) => ordem.get(chave(a))! - ordem.get(chave(b))!);
       }
-      if (filtro === 'prontos') {
-        return itens.filter((i) => Boolean(prontos[chave(i)]));
-      }
       return itens;
     },
-    [filtro, favoritos, recentes, prontos],
+    [filtro, favoritos, recentes],
   );
 
   const reset = useCallback(() => {
@@ -536,7 +534,7 @@ export default function VisuaisJuridicosSheet({
     return c;
   }, [categoria, item, tema]);
 
-  return (
+  const sheetContent = (
     <>
       <AnimatePresence>
         {open && (
@@ -718,4 +716,7 @@ export default function VisuaisJuridicosSheet({
       <PremiumGate open={gateOpen} onClose={() => setGateOpen(false)} feature="mapa_mental" />
     </>
   );
+
+  if (typeof document === 'undefined') return null;
+  return createPortal(sheetContent, document.body);
 }

@@ -1,4 +1,4 @@
-import { Brain, Layers, GitBranch, Network, BookOpen, Scale, Gavel, Star, Clock, Award, Sparkles } from 'lucide-react';
+import { Brain, Layers, GitBranch, Network, BookOpen, Scale, Gavel, Star, Clock, Award, Folder, Sparkles } from 'lucide-react';
 import type { VisualCategoria, VisualTipo } from '@/lib/visuaisJuridicos/types';
 import type { ArtigoLei } from '@/data/mockData';
 
@@ -39,13 +39,13 @@ export const CATEGORIAS: VisualCategoria[] = ['materias', 'codigos', 'estatutos'
 
 export const norm = (v: string) => v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-export type Filtro = 'todos' | 'favoritos' | 'recentes' | 'prontos';
+export type Filtro = 'todos' | 'favoritos' | 'recentes' | 'pastas';
 
 export const FILTROS: { id: Filtro; label: string; Icone: typeof Layers }[] = [
   { id: 'todos', label: 'Todos', Icone: Layers },
   { id: 'favoritos', label: 'Favoritos', Icone: Star },
   { id: 'recentes', label: 'Recentes', Icone: Clock },
-  { id: 'prontos', label: 'Prontos', Icone: Sparkles },
+  { id: 'pastas', label: 'Pastas', Icone: Folder },
 ];
 
 /** Cabeçalhos estruturais (PARTE GERAL, TÍTULO, CAPÍTULO…) não são artigos. */

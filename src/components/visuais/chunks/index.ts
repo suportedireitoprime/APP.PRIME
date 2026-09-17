@@ -6,3 +6,5 @@ export * from './VisuaisPassoCategorias';
 export * from './VisuaisPassoItens';
 export * from './VisuaisPassoDetalhes';
 export * from './VisuaisHeroPanel';
+export * from './VisuaisPdfModal';
+export * from './VisuaisPastasView';

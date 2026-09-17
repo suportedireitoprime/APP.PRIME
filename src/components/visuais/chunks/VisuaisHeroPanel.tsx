@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, X, BookOpen, Scale, Award, Layers, Star, Clock, Sparkles } from 'lucide-react';
+import { ArrowLeft, X, Layers, Star, Clock, Folder, Sparkles } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import type { VisualCategoria } from '@/lib/visuaisJuridicos/types';
 import type { Filtro } from './visuaisConstants';
@@ -9,29 +9,17 @@ import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
 
 interface VisuaisHeroPanelProps {
   categoria: VisualCategoria;
-  onSelectCategoria: (c: VisualCategoria) => void;
   filtro: Filtro;
   setFiltro: (f: Filtro) => void;
   busca: string;
   setBusca: (b: string) => void;
-  prontosCount?: number;
+  pastasCount?: number;
   favoritosCount?: number;
   recentesCount?: number;
   totalCount?: number;
   onBack: () => void;
   onClose: () => void;
 }
-
-const CATEGORIAS_PAINEL: Array<{
-  id: VisualCategoria;
-  label: string;
-  icone: typeof BookOpen;
-  cor: string;
-}> = [
-  { id: 'materias', label: 'Matérias', icone: BookOpen, cor: '#38bdf8' },
-  { id: 'codigos', label: 'Códigos', icone: Scale, cor: '#ef4444' },
-  { id: 'estatutos', label: 'Estatutos', icone: Award, cor: '#10b981' },
-];
 
 const FILTROS_HERO: Array<{
   id: Filtro;
@@ -42,17 +30,16 @@ const FILTROS_HERO: Array<{
   { id: 'todos', label: 'Todos', icon: Layers, color: '#38BDF8' },
   { id: 'favoritos', label: 'Favoritos', icon: Star, color: '#FACC15' },
   { id: 'recentes', label: 'Recentes', icon: Clock, color: '#A78BFA' },
-  { id: 'prontos', label: 'Prontos', icon: Sparkles, color: '#34D399' },
+  { id: 'pastas', label: 'Pastas', icon: Folder, color: '#F59E0B' },
 ];
 
 export function VisuaisHeroPanel({
   categoria,
-  onSelectCategoria,
   filtro,
   setFiltro,
   busca,
   setBusca,
-  prontosCount,
+  pastasCount,
   favoritosCount,
   recentesCount,
   totalCount,
@@ -74,7 +61,7 @@ export function VisuaisHeroPanel({
         aria-hidden="true"
       />
 
-      {/* Imagem de Capa do Painel à Direita (estilo HomeHeaderHero) */}
+      {/* Imagem de Capa do Painel à Direita */}
       <img
         src={heroEstudanteImg}
         alt=""
@@ -111,8 +98,8 @@ export function VisuaisHeroPanel({
         </div>
       </div>
 
-      {/* Header superior: Voltar (esquerda) e Fechar (direita) */}
-      <header className="relative z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] px-4 sm:px-6 flex items-center justify-between pointer-events-auto">
+      {/* Header superior: Voltar (esquerda) e Fechar (direita) colados no topo da safe area */}
+      <header className="relative z-20 pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] px-4 sm:px-6 flex items-center justify-between pointer-events-auto">
         <button
           onClick={() => {
             haptic.light();
@@ -149,40 +136,8 @@ export function VisuaisHeroPanel({
         </p>
       </div>
 
-      {/* Seletor de Categoria: Matérias | Códigos | Estatutos */}
-      <div className="relative z-10 px-4 sm:px-6 pt-3">
-        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 shadow-lg">
-          {CATEGORIAS_PAINEL.map((cat) => {
-            const ativa = categoria === cat.id;
-            const Icone = cat.icone;
-            return (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => {
-                  haptic.selection();
-                  onSelectCategoria(cat.id);
-                }}
-                className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2 px-2 rounded-xl font-display text-[12px] sm:text-[13px] font-bold uppercase tracking-wider transition-all duration-200 ${
-                  ativa
-                    ? 'bg-zinc-800 text-white shadow-md border border-white/15'
-                    : 'text-white/70 hover:text-white hover:bg-white/[0.06]'
-                }`}
-              >
-                <Icone
-                  className="w-4 h-4 shrink-0"
-                  style={{ color: ativa ? cat.cor : undefined }}
-                  strokeWidth={ativa ? 2.4 : 1.8}
-                />
-                <span className="truncate">{cat.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 4 Funções de Ação / Filtros (Todos, Favoritos, Recentes, Prontos) */}
-      <div className="relative z-10 px-4 sm:px-6 pt-2.5 pb-2">
+      {/* 4 Funções de Ação / Filtros (Todos, Favoritos, Recentes, Pastas) */}
+      <div className="relative z-10 px-4 sm:px-6 pt-3 pb-2">
         <div className="grid grid-cols-4 gap-2">
           {FILTROS_HERO.map((item) => {
             const Icon = item.icon;
@@ -192,8 +147,8 @@ export function VisuaisHeroPanel({
                 ? favoritosCount
                 : item.id === 'recentes'
                   ? recentesCount
-                  : item.id === 'prontos'
-                    ? prontosCount
+                  : item.id === 'pastas'
+                    ? pastasCount
                     : totalCount;
 
             return (

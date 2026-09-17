@@ -210,6 +210,26 @@ export async function exportarPdf(content: VisualContent, estilo: VisualEstilo, 
   };
 }
 
+/** Gera o arquivo PDF como Blob e URL para visualização direta no leitor de PDF. */
+export async function gerarPdfBlob(content: VisualContent, estilo: VisualEstilo = 'limpo'): Promise<{ blob: Blob; url: string }> {
+  const { canvas } = await renderCanvas(content, estilo);
+  const w = canvas.width / 2;
+  const h = canvas.height / 2;
+  const data = canvas.toDataURL('image/png');
+
+  const Doc = (
+    <Document>
+      <Page size={[w, h]} style={{ margin: 0, padding: 0 }}>
+        <Image src={data} style={{ width: w, height: h }} />
+      </Page>
+    </Document>
+  );
+
+  const blob = await pdf(Doc).toBlob();
+  const url = URL.createObjectURL(blob);
+  return { blob, url };
+}
+
 /** Exporta o visual em PNG de alta resolução. */
 export async function exportarPng(content: VisualContent, estilo: VisualEstilo, nome: string) {
   const { canvas } = await renderCanvas(content, estilo);
