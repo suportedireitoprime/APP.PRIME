@@ -6,6 +6,7 @@ import { toast } from '@/hooks/use-toast';
 import JurisBlogCarousel from '@/components/vademecum/blog/JurisBlogCarousel';
 import HeroOrnaments from '@/components/vademecum/home/HeroOrnaments';
 import HomeCard from '@/components/vademecum/home/HomeCard';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 import { heroFigures } from '@/assets/hero-figures';
 import { assetUrl } from '@/lib/assetUrl';
 import { prefetchRoute } from '@/lib/routePrefetch';
@@ -223,7 +224,8 @@ const Jurisprudencia = () => {
   };
 
   return (
-    <div className="w-full min-h-dvh bg-background pb-[calc(var(--sai-bottom)+5rem)] lg:pb-12">
+    <div className="w-full min-h-dvh bg-background pb-[calc(var(--sai-bottom)+5rem)] lg:pb-12 relative">
+      <ShapeGrid />
       {/* Painel verde (mirror do painel amarelo do início) */}
       <div
         className="bg-hero-panel relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[calc(var(--sai-top)+0.5rem)]"
