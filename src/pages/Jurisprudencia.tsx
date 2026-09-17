@@ -8,6 +8,8 @@ import HeroOrnaments from '@/components/vademecum/home/HeroOrnaments';
 import HomeCard from '@/components/vademecum/home/HomeCard';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import jurisprudenciaHeroImg from '@/assets/jurisprudencia-hero.jpg';
+import HomeBrandBanner from '@/components/vademecum/home/HomeBrandBanner';
+import VadeMecumQuickActions from '@/components/vademecum/home/chunks/VadeMecumQuickActions';
 import { prefetchRoute } from '@/lib/routePrefetch';
 import { fetchSumulas } from '@/services/sumulasService';
 import { fetchPesquisasProntas } from '@/services/pesquisasProntasService';
@@ -226,17 +228,13 @@ const Jurisprudencia = () => {
             <div className="absolute inset-0 opacity-10" style={{
               backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px)',
               backgroundSize: '24px 24px'
-            }} />
-          </div>
-        </div>
-
-        {/* Glow decorativo opcional para ajudar no verde */}
+            }        {/* Glow decorativo opcional para ajudar no verde */}
         <div className="absolute -top-16 -left-10 w-56 h-56 rounded-full bg-emerald-400/15 blur-3xl pointer-events-none z-[2]" />
 
         {/* Header com voltar */}
-        <div className="relative flex items-center justify-between px-4 pb-2 lg:hidden">
+        <div className="relative z-10 flex items-center justify-between px-4 pb-2 lg:hidden pt-4">
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate(-1)}
             aria-label="Voltar"
             className="w-11 h-11 rounded-full bg-black/25 hover:bg-black/35 backdrop-blur-sm flex items-center justify-center transition-colors"
           >
@@ -245,31 +243,37 @@ const Jurisprudencia = () => {
           <div className="w-11 h-11" />
         </div>
 
+        {/* Logo à esquerda */}
+        <div className="relative z-10 pt-2 sm:pt-6 flex-1 flex flex-col justify-start min-h-[80px]">
+          <HomeBrandBanner />
+        </div>
 
-        {/* Hero */}
-        <div className="relative px-6 pb-8 pt-6 flex flex-col items-center text-center lg:mx-auto lg:w-full lg:max-w-[1500px] lg:flex-row lg:items-end lg:justify-between lg:gap-12 lg:px-12 lg:pb-12 lg:pt-12 lg:text-left 2xl:px-16">
-          <div className="flex flex-col items-center lg:items-start">
-            <div className="relative w-[76px] h-[76px] rounded-full p-[2px] bg-[conic-gradient(from_140deg,hsl(158_60%_55%),hsl(168_45%_30%),hsl(150_70%_45%),hsl(158_60%_55%))] shadow-[0_10px_30px_-8px_rgba(0,0,0,0.7)]">
-              <div className="w-full h-full rounded-full bg-emerald-950/70 border border-white/15 backdrop-blur-sm flex items-center justify-center">
-                <Gavel className="w-8 h-8 text-emerald-200" strokeWidth={2} />
-              </div>
-            </div>
-            <p className="mt-4 font-display uppercase tracking-[0.24em] text-[11px] text-emerald-200/80">
+        {/* Hero Title & Desc */}
+        <div className="relative z-10 px-6 pb-4 pt-4 flex flex-col items-start text-left lg:mx-auto lg:w-full lg:max-w-[1500px]">
+          <div className="flex flex-col items-start">
+            <p className="font-display uppercase tracking-[0.24em] text-[11px] text-emerald-200/80 drop-shadow-md">
               Coleções
             </p>
-            <h1 className="mt-1 font-display uppercase tracking-wider text-white text-[28px] leading-tight font-bold drop-shadow lg:text-[40px]">
+            <h1 className="mt-1 font-display uppercase tracking-wider text-white text-[28px] leading-tight font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] lg:text-[40px]">
               Jurisprudência
             </h1>
-            <p className="mt-2 text-white/90 text-[16px] leading-relaxed max-w-md font-body lg:max-w-xl lg:text-[17px]">
+            <p className="mt-1 text-white/90 text-[14px] leading-relaxed max-w-[280px] font-body lg:max-w-xl lg:text-[17px] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
               Súmulas vinculantes, do STF, do STJ e coletâneas prontas — em um só lugar.
             </p>
           </div>
+        </div>
 
-          {/* Busca */}
+        {/* 4 Botões de Ação Rápida */}
+        <div className="relative z-10 px-3 sm:px-5 pb-3">
+          <VadeMecumQuickActions />
+        </div>
+
+        {/* Busca */}
+        <div className="relative z-10 px-4 sm:px-6 w-full pb-5">
           <form
             onSubmit={submitBusca}
             data-track="jurisprudencia_search_form"
-            className="mt-5 w-full max-w-md flex items-center gap-2 rounded-full bg-white/95 pl-4 pr-1 py-1 shadow-lg shadow-emerald-950/30 lg:mt-0 lg:max-w-xl lg:shrink-0"
+            className="w-full flex items-center gap-2 rounded-full bg-white/95 pl-4 pr-1 py-1 shadow-lg shadow-emerald-950/30 lg:max-w-xl lg:shrink-0"
           >
             <Search className="w-5 h-5 text-emerald-800/70 shrink-0" />
             <input
@@ -294,51 +298,9 @@ const Jurisprudencia = () => {
         initial="hidden"
         animate="show"
         className="max-w-2xl mx-auto px-4 py-6 space-y-6 lg:max-w-[1500px] lg:px-12 lg:py-10 lg:space-y-10 2xl:px-16"
+      >lg:px-12 lg:py-10 lg:space-y-10 2xl:px-16"
       >
-        {/* Acesso Rápido */}
-        <style>{`
-          @keyframes icon-shine-mask {
-            0% { -webkit-mask-position: 250% center; mask-position: 250% center; }
-            100% { -webkit-mask-position: -250% center; mask-position: -250% center; }
-          }
-        `}</style>
-        <div className="grid grid-cols-4 gap-2 sm:gap-3 w-full">
-          {/* Favoritos */}
-          <motion.button variants={itemVariants} whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }} onClick={() => navigate('/vade-mecum/favoritos')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-secondary border border-border/40 hover:bg-secondary/80 transition-colors w-full group" data-track="quick_access_favoritos">
-            <div className="relative w-5 h-5 shrink-0">
-              <Heart className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
-              <Heart className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
-            </div>
-            <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Favoritos</span>
-          </motion.button>
-          
-          {/* Anotações */}
-          <motion.button variants={itemVariants} whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }} onClick={() => toast({ title: 'Em breve', description: 'Suas anotações estarão aqui em breve.' })} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-secondary border border-border/40 hover:bg-secondary/80 transition-colors w-full group" data-track="quick_access_anotacoes">
-            <div className="relative w-5 h-5 shrink-0">
-              <NotebookPen className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
-              <NotebookPen className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
-            </div>
-            <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Anotações</span>
-          </motion.button>
-
-          {/* Radares */}
-          <motion.button variants={itemVariants} whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }} onClick={() => navigate('/radares')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-secondary border border-border/40 hover:bg-secondary/80 transition-colors w-full group" data-track="quick_access_radares">
-            <div className="relative w-5 h-5 shrink-0">
-              <Radar className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
-              <Radar className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
-            </div>
-            <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Radares</span>
-          </motion.button>
-
-          {/* Histórico */}
-          <motion.button variants={itemVariants} whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }} onClick={() => navigate('/vade-mecum/recentes')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-secondary border border-border/40 hover:bg-secondary/80 transition-colors w-full group" data-track="quick_access_historico">
-            <div className="relative w-5 h-5 shrink-0">
-              <History className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
-              <History className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
-            </div>
-            <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Histórico</span>
-          </motion.button>
-        </div>
+        {/* Acesso Rápido - Removido (Movido para dentro do painel de topo) */}
 
         {(() => {
           const sumulas = CATEGORIAS.filter(
