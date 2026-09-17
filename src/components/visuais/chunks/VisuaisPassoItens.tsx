@@ -140,7 +140,7 @@ export function VisuaisPassoItens({
                 sublabel={i.sub || ''}
                 color={cor}
                 delay={0}
-                badge={favorito ? '★' : isPronto ? 'PRONTO' : undefined}
+                badge={isPronto ? 'PRONTO' : undefined}
                 className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm min-h-[96px] h-[96px]"
                 iconClassName="w-7 h-7"
                 iconStrokeWidth={1.5}

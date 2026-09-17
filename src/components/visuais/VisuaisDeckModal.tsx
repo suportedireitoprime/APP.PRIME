@@ -14,6 +14,7 @@ export interface VisuaisDeckModalProps {
   onEscolherTipo?: (tipo: VisualTipo) => void;
   title?: string;
   subtitle?: string;
+  initialTipo?: VisualTipo;
 }
 
 export interface VisualDeckItem {
@@ -119,11 +120,24 @@ export const VisuaisDeckModal = memo(({
   onEscolherTipo,
   title,
   subtitle,
+  initialTipo,
 }: VisuaisDeckModalProps) => {
   useBodyScrollLock(open);
 
   // Mapa Mental é o índice 0 (padrão solicitado)
   const [ativo, setAtivo] = useState(0);
+
+  useEffect(() => {
+    if (open) {
+      if (initialTipo) {
+        const idx = VISUAIS_ITEMS.findIndex((item) => item.tipo === initialTipo);
+        if (idx !== -1) setAtivo(idx);
+      } else {
+        setAtivo(0);
+      }
+    }
+  }, [open, initialTipo]);
+
   const [paused, setPaused] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);

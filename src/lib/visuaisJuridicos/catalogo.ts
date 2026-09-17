@@ -36,11 +36,11 @@ export const MATERIAS: CatalogoItem[] = [
   contexto: `Matéria jurídica brasileira: ${label}. Panorama geral dos institutos centrais da disciplina.`,
 }));
 
-export const CODIGOS: CatalogoItem[] = LEIS_CATALOG.filter((l) => l.tipo === 'codigo').map((l) => ({
+export const CODIGOS: CatalogoItem[] = LEIS_CATALOG.filter((l) => l.tipo === 'codigo' || l.tipo === 'constituicao').map((l) => ({
   key: `lei:${l.id}`,
   label: l.nome,
   sub: `${l.sigla} — ${l.descricao}`,
-  contexto: `${l.nome} (${l.sigla}) — ${l.descricao}. Código da legislação brasileira vigente.`,
+  contexto: `${l.nome} (${l.sigla}) — ${l.descricao}. Código ou norma fundamental da legislação brasileira vigente.`,
   leiId: l.id,
   tabela: l.tabela_nome,
 }));

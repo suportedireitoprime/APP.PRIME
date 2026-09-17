@@ -113,7 +113,7 @@ export default function VisuaisJuridicosSheet({
       (i) =>
         slugTema(i.label) === itemSlugInicial ||
         i.key === itemSlugInicial ||
-        (i as any).leiId === itemSlugInicial ||
+        i.leiId === itemSlugInicial ||
         norm(i.label) === norm(itemSlugInicial.replace(/-/g, ' ')),
     );
     if (hit && hit.key !== item?.key) {
@@ -663,6 +663,7 @@ export default function VisuaisJuridicosSheet({
         }}
         title="VISUAIS JURÍDICOS"
         subtitle={pendingTarget ? `Escolha o formato para ${pendingTarget.rotulo}` : 'Escolha o formato'}
+        initialTipo={tipo}
       />
 
       <GeracaoAnimacaoOverlay

@@ -62,7 +62,7 @@ export function VisuaisPassoDetalhes({
 }: VisuaisPassoDetalhesProps) {
   return (
     <div className="space-y-2">
-      <div className="sticky top-0 z-10 -mx-1 space-y-4 bg-background px-1 pb-3 pt-0.5">
+      <div className="sticky top-0 z-10 -mx-1 space-y-3 bg-background/95 backdrop-blur-md px-1 pb-3 pt-0.5">
         <VisuaisAbasFiltro valor={filtro} onChange={setFiltro} />
         <VisuaisBarraBusca
           valor={buscaArtigo}
@@ -70,9 +70,9 @@ export function VisuaisPassoDetalhes({
           placeholder={
             categoria === 'materias'
               ? tema
-                ? 'Pesquisar subtema'
-                : 'Pesquisar tópico'
-              : 'Pesquisar artigo (ex.: 121)'
+                ? `Pesquisar subtema de ${tema.tema}...`
+                : 'Pesquisar tópico ou princípio...'
+              : 'Pesquisar artigo (ex.: 121, homicídio...)'
           }
         />
       </div>

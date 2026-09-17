@@ -82,7 +82,7 @@ export const EMALTA_CATS: EmAltaCat[] = [
   { id: 'ea-resumos',     label: 'Resumos',        sublabel: 'Anotações',   icon: NotebookPen, color: 'hsl(var(--primary))', route: '/resumos-juridicos' },
   { id: 'ea-videoaulas',  label: 'Videoaulas',     sublabel: 'Aulas',       icon: Video,       color: 'hsl(var(--primary))', route: '/videoaulas' },
   { id: 'ea-audioaulas',  label: 'Audioaulas',     sublabel: 'Podcasts',    icon: Headphones,  color: 'hsl(var(--primary))', route: '/audioaulas' },
-  { id: 'ea-mapas',       label: 'Mapas Mentais',  sublabel: 'Esquemas',    icon: Brain,       color: 'hsl(var(--primary))', route: '/assistente' },
+  { id: 'ea-mapas',       label: 'Mapas Mentais',  sublabel: 'Esquemas',    icon: Brain,       color: 'hsl(var(--primary))', route: '/visuais' },
   { id: 'ea-dicionario',  label: 'Dicionário',     sublabel: 'Termos',      icon: BookA,       color: 'hsl(var(--primary))', route: '/ferramentas/dicionario' },
 ];
 
@@ -105,13 +105,13 @@ export const shuffle = <T,>(arr: T[]): T[] => {
 
 export type Tab = 'agenda' | 'estudos' | 'faculdade' | 'documentos' | 'categorias' | 'emalta' | 'areas';
 
-export const TABS_HOME: { id: Tab; label: string; icon: any }[] = [
+export const TABS_HOME: { id: Tab; label: string; icon: LucideIcon }[] = [
   { id: 'agenda',     label: 'Pendências',     icon: CalendarCheck },
   { id: 'estudos',    label: 'Estudos',    icon: GraduationCap },
   { id: 'faculdade',  label: 'Gráficos',  icon: PieChart },
 ];
 
-export const TABS_VADEMECUM: { id: Tab; label: string; icon: any }[] = [
+export const TABS_VADEMECUM: { id: Tab; label: string; icon: LucideIcon }[] = [
   { id: 'categorias', label: 'Categorias', icon: LayoutGrid },
   { id: 'emalta',     label: 'Em Alta',     icon: Flame },
   { id: 'areas',      label: 'Áreas',       icon: Scale },

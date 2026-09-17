@@ -36,7 +36,7 @@ async function lerResumos<T extends Record<string, unknown>>(
     try {
       const { getResumosCatalog } = await import('@/services/resumosCatalog');
       const catalog = await getResumosCatalog();
-      const rows: any[] = [];
+      const rows: Array<Record<string, unknown>> = [];
       for (const c of catalog) {
         for (const t of c.temas) {
           if (t.subtemas && t.subtemas.length > 0) {
@@ -109,6 +109,25 @@ export async function fetchTemasResumos(area: string): Promise<TemaResumo[]> {
   const lista = [...map.entries()]
     .sort((a, b) => a[1].ordem - b[1].ordem || a[0].localeCompare(b[0], 'pt-BR'))
     .map(([tema, v]) => ({ tema, total: v.total }));
+  if (lista.length === 0) {
+    const { DESAFIOS_DECKS_CATALOGO } = await import('@/config/flashcardsDesafiosDecks');
+    const areaInfo = DESAFIOS_DECKS_CATALOGO.find(
+      (d) =>
+        normStr(d.area) === normAreaKey ||
+        normStr(d.slug) === normAreaKey ||
+        normAreaKey.includes(normStr(d.slug)) ||
+        normStr(d.area).includes(normAreaKey),
+    );
+    if (areaInfo?.decks?.length) {
+      const fallbackList = areaInfo.decks.map((dk) => ({
+        tema: dk.tema,
+        total: dk.subtitulo ? dk.subtitulo.split(/,| e /i).length : 1,
+      }));
+      temasCache.set(normAreaKey, fallbackList);
+      return fallbackList;
+    }
+  }
+
   temasCache.set(normAreaKey, lista);
   return lista;
 }
@@ -145,6 +164,35 @@ export async function fetchSubtemasResumos(area: string, tema: string): Promise<
   const lista = [...map.entries()]
     .sort((a, b) => a[1].ordem - b[1].ordem || a[0].localeCompare(b[0], 'pt-BR'))
     .map(([subtema, v]) => ({ subtema, total: v.total }));
+
+  if (lista.length === 0) {
+    const normTemaKey = normStr(tema);
+    const { DESAFIOS_DECKS_CATALOGO } = await import('@/config/flashcardsDesafiosDecks');
+    const areaInfo = DESAFIOS_DECKS_CATALOGO.find(
+      (d) =>
+        normStr(d.area) === normStr(area) ||
+        normStr(d.slug) === normStr(area) ||
+        normStr(area).includes(normStr(d.slug)),
+    );
+    const deck = areaInfo?.decks?.find(
+      (dk) => normStr(dk.tema) === normTemaKey || normTemaKey.includes(normStr(dk.tema)),
+    );
+    if (deck?.subtitulo) {
+      const parts = deck.subtitulo
+        .split(/,| e /i)
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (parts.length > 0) {
+        const fallbackSubtemas = parts.map((subtema) => ({
+          subtema: subtema.charAt(0).toUpperCase() + subtema.slice(1),
+          total: 1,
+        }));
+        subtemasCache.set(ck, fallbackSubtemas);
+        return fallbackSubtemas;
+      }
+    }
+  }
+
   subtemasCache.set(ck, lista);
   return lista;
 }
