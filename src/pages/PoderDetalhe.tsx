@@ -16,7 +16,7 @@ const PODERES_DATA: Record<string, any> = {
     titulo: 'Supremo Tribunal Federal',
     sigla: 'STF',
     img: stfImg,
-    color: 'rgba(234, 179, 8, 0.45)', // Yellow-500
+    color: 'rgba(225, 29, 72, 0.45)', // Rose-600 (looks purple on this image)
     solidColor: '#EAB308',
     description: 'A mais alta instância do poder judiciário brasileiro.',
   },
@@ -112,7 +112,7 @@ const PoderDetalhe = () => {
            {/* Botões de Ação Rapida */}
            <div className="flex gap-2 mt-4 ml-4">
               <button
-                onClick={() => { haptic.selection(); toast({ title: 'Em breve', description: 'Módulo de Informativo em desenvolvimento.' }); }}
+                onClick={() => { haptic.selection(); navigate('/resumos-juridicos/jurisprudencia/stf'); }}
                 className="flex flex-col items-center justify-center py-2 px-4 rounded-xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] min-w-[72px]"
               >
                 <ScrollText className="w-4 h-4 text-[#FACC15]" strokeWidth={2} />
@@ -122,7 +122,7 @@ const PoderDetalhe = () => {
               </button>
               
               <button
-                onClick={() => { haptic.selection(); toast({ title: 'Em breve', description: 'Módulo de Ministros em desenvolvimento.' }); }}
+                onClick={() => { haptic.selection(); navigate('/ferramentas/stf/biografias'); }}
                 className="flex flex-col items-center justify-center py-2 px-4 rounded-xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] min-w-[72px]"
               >
                 <Users className="w-4 h-4 text-[#34D399]" strokeWidth={2} />
