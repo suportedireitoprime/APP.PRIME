@@ -30,24 +30,24 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
   return (
     <div className="w-full flex flex-col gap-4 px-4 pt-2 pb-4">
       {/* Menu de Alternância (Toggle) */}
-      <div className="flex p-1 bg-card/60 rounded-full border border-border/50 relative z-20 shadow-inner max-w-sm mx-auto w-full">
+      <div className="flex p-1.5 bg-neutral-950/80 rounded-full border border-white/10 relative z-20 shadow-inner max-w-sm mx-auto w-full backdrop-blur-md">
         <button
           type="button"
           onClick={() => {
             Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
             onSelectPlan('mensal');
           }}
-          className={`relative z-10 flex-1 py-2 text-[11px] sm:text-xs font-bold uppercase tracking-wider rounded-full transition-all duration-300 ${
+          className={`relative z-10 flex-1 py-2.5 sm:py-3 text-xs sm:text-sm font-black uppercase tracking-wider rounded-full transition-colors duration-200 cursor-pointer select-none ${
             activePlan === 'mensal' 
-              ? 'text-foreground' 
-              : 'text-muted-foreground hover:text-foreground'
+              ? 'text-white' 
+              : 'text-neutral-400 hover:text-white'
           }`}
         >
           {activePlan === 'mensal' && (
             <motion.div
               layoutId="pricing-tab"
-              className="absolute inset-0 bg-background rounded-full border border-border shadow-md -z-10"
-              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+              className="absolute inset-0 bg-gradient-to-r from-red-600 via-primary to-rose-600 rounded-full shadow-[0_0_20px_rgba(224,31,71,0.55)] border border-red-400/40 -z-10"
+              transition={{ type: "spring", bounce: 0.15, duration: 0.45 }}
             />
           )}
           Mensal
@@ -59,17 +59,17 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
             Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
             onSelectPlan(isNewUser ? 'promocao' : 'anual');
           }}
-          className={`relative z-10 flex-1 py-2 text-[11px] sm:text-xs font-bold uppercase tracking-wider rounded-full transition-all duration-300 ${
+          className={`relative z-10 flex-1 py-2.5 sm:py-3 text-xs sm:text-sm font-black uppercase tracking-wider rounded-full transition-colors duration-200 cursor-pointer select-none ${
             (activePlan === 'anual' || activePlan === 'promocao')
-              ? 'text-foreground' 
-              : 'text-muted-foreground hover:text-foreground'
+              ? 'text-white' 
+              : 'text-neutral-400 hover:text-white'
           }`}
         >
           {(activePlan === 'anual' || activePlan === 'promocao') && (
             <motion.div
               layoutId="pricing-tab"
-              className="absolute inset-0 bg-background rounded-full border border-border shadow-md -z-10"
-              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+              className="absolute inset-0 bg-gradient-to-r from-red-600 via-primary to-rose-600 rounded-full shadow-[0_0_20px_rgba(224,31,71,0.55)] border border-red-400/40 -z-10"
+              transition={{ type: "spring", bounce: 0.15, duration: 0.45 }}
             />
           )}
           Anual

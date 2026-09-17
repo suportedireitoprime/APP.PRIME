@@ -267,75 +267,51 @@ const AprenderModulo = () => {
           }
         }
 
-        // Revalidação em paralelo com suporte a UUID e slug
+        // 1. Identifica e resolve o módulo (por UUID ou slug)
         const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(moduloId);
+        let rawMod: any = null;
 
-        let [joinRes, rawAulasRes] = await Promise.all([
-          isUuid
-            ? supabase
-                .from('aprender_modulos')
-                .select('id, titulo, resumo, ordem, area_id, aprender_areas(id, nome, slug)')
-                .eq('id', moduloId)
-                .maybeSingle()
-            : supabase
-                .from('aprender_modulos')
-                .select('id, titulo, resumo, ordem, area_id, aprender_areas(id, nome, slug)')
-                .eq('slug', moduloId)
-                .maybeSingle(),
-          isUuid
-            ? supabase
-                .from('aprender_aulas')
-                .select('id, titulo, objetivo, duracao_est_min, ordem, status')
-                .eq('modulo_id', moduloId)
-                .order('ordem')
-            : Promise.resolve({ data: [] }),
-        ]);
+        if (isUuid) {
+          const { data: byId } = await supabase
+            .from('aprender_modulos')
+            .select('id, titulo, resumo, ordem, area_id, aprender_areas(id, nome, slug)')
+            .eq('id', moduloId)
+            .maybeSingle();
+          rawMod = byId;
+        } else {
+          const { data: bySlug } = await supabase
+            .from('aprender_modulos')
+            .select('id, titulo, resumo, ordem, area_id, aprender_areas(id, nome, slug)')
+            .eq('slug', moduloId)
+            .maybeSingle();
+          rawMod = bySlug;
+        }
+
+        // Fallback por busca de título se não achou por slug
+        if (!rawMod && !isUuid) {
+          const searchTitle = (modulo?.titulo || routeState?.modulo?.titulo || moduloId.replace(/-/g, ' ')).trim();
+          const { data: byTitle } = await supabase
+            .from('aprender_modulos')
+            .select('id, titulo, resumo, ordem, area_id, aprender_areas(id, nome, slug)')
+            .ilike('titulo', `%${searchTitle}%`)
+            .limit(1);
+          if (byTitle && byTitle.length > 0) rawMod = byTitle[0];
+        }
 
         if (cancelled) return;
 
-        let rawMod: any = joinRes.data;
-        let rawAulas: any[] = (rawAulasRes.data ?? []) as any[];
-
-        // 🛡️ RECOVERY FALLBACK: Se o módulo foi recriado (UUID mudou) ou retornou 0 aulas
-        if (!rawMod || rawAulas.length === 0) {
-          let foundMod: any = null;
-
-          // 1. Tenta buscar por slug igual ao moduloId
-          if (!foundMod) {
-            const { data: bySlug } = await supabase
-              .from('aprender_modulos')
-              .select('id, titulo, resumo, ordem, area_id, aprender_areas(id, nome, slug)')
-              .eq('slug', moduloId)
-              .maybeSingle();
-            if (bySlug) foundMod = bySlug;
-          }
-
-          // 2. Tenta buscar pelo título do módulo
-          const searchTitle = (rawMod?.titulo || modulo?.titulo || routeState?.modulo?.titulo || '').trim();
-          if (!foundMod && searchTitle) {
-            const { data: byTitle } = await supabase
-              .from('aprender_modulos')
-              .select('id, titulo, resumo, ordem, area_id, aprender_areas(id, nome, slug)')
-              .ilike('titulo', `%${searchTitle}%`)
-              .limit(1);
-            if (byTitle && byTitle.length > 0) foundMod = byTitle[0];
-          }
-
-          // 3. Se encontrou o módulo real no banco, busca as aulas publicadas dele
-          if (foundMod) {
-            rawMod = foundMod;
-            const { data: freshAulas } = await supabase
-              .from('aprender_aulas')
-              .select('id, titulo, objetivo, duracao_est_min, ordem, status')
-              .eq('modulo_id', foundMod.id)
-              .order('ordem');
-            if (freshAulas && freshAulas.length > 0) {
-              rawAulas = freshAulas;
-            }
-          }
+        // 2. Busca as aulas do módulo usando o ID real
+        let rawAulas: any[] = [];
+        if (rawMod?.id) {
+          const { data: modAulas } = await supabase
+            .from('aprender_aulas')
+            .select('id, titulo, objetivo, duracao_est_min, ordem, status')
+            .eq('modulo_id', rawMod.id)
+            .order('ordem');
+          rawAulas = (modAulas ?? []) as any[];
         }
 
-        // --- Geração Automática de Ementa (Plano de Aulas) ---
+        // 3. Geração Automática de Ementa (Plano de Aulas) se o módulo não tiver aulas
         if (rawMod && rawAulas.length === 0) {
           setIsGeneratingSyllabus(true);
           try {
@@ -343,14 +319,14 @@ const AprenderModulo = () => {
               body: { moduloId: rawMod.id }
             });
             if (genError) throw genError;
-            
-            // Tenta buscar novamente após gerar
+
+            // Busca novamente após gerar
             const { data: generatedAulas } = await supabase
               .from('aprender_aulas')
               .select('id, titulo, objetivo, duracao_est_min, ordem, status')
               .eq('modulo_id', rawMod.id)
               .order('ordem');
-              
+
             if (generatedAulas && generatedAulas.length > 0) {
               rawAulas = generatedAulas;
             }
@@ -586,6 +562,48 @@ const AprenderModulo = () => {
   const areaVisual = modulo ? areaIconFor(modulo.areaSlug) : null;
   const AreaIconComp = areaVisual?.Icon;
   const palette = useMemo(() => getAreaThemePalette(modulo?.areaSlug || modulo?.areaNome), [modulo]);
+
+  const handleGerarAulasManual = async () => {
+    if (!modulo?.id || isGeneratingSyllabus) return;
+    try {
+      haptic.impact('medium');
+      setIsGeneratingSyllabus(true);
+      const { error: genError } = await supabase.functions.invoke('aprender-modulo-gerar-aulas', {
+        body: { moduloId: modulo.id }
+      });
+      if (genError) throw genError;
+
+      const { data: freshAulas } = await supabase
+        .from('aprender_aulas')
+        .select('id, titulo, objetivo, duracao_est_min, ordem, status')
+        .eq('modulo_id', modulo.id)
+        .order('ordem');
+
+      if (freshAulas && freshAulas.length > 0) {
+        const novasAulas: AulaItem[] = freshAulas.map((a) => ({
+          id: a.id,
+          titulo: a.titulo,
+          objetivo: a.objetivo,
+          duracaoMin: a.duracao_est_min || 15,
+          ordem: a.ordem,
+          status: a.status,
+          concluida: false,
+          pct: 0,
+          totalBlocos: 0,
+          blocosConcluidos: 0,
+        }));
+        setAulas(novasAulas);
+        setCachedModuloData(modulo.id, uid, {
+          modulo,
+          aulas: novasAulas,
+        });
+      }
+    } catch (err) {
+      console.error('Erro ao gerar trilha de aulas:', err);
+    } finally {
+      setIsGeneratingSyllabus(false);
+    }
+  };
 
   const handleVoltar = () => {
     haptic.light();
@@ -973,23 +991,49 @@ const AprenderModulo = () => {
                 </div>
 
                 {aulas.length === 0 ? (
-                  <div className="p-8 rounded-2xl border border-border bg-card/60 text-center space-y-3">
-                    <p className="text-sm font-medium text-muted-foreground">Aulas deste tópico em breve!</p>
-                    {totalFlashcards > 0 && (
-                      <div className="pt-1">
+                  <div className="p-8 rounded-2xl border border-border bg-card/60 text-center space-y-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto text-primary">
+                      <Sparkles className="w-6 h-6" />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-base font-semibold text-white">Trilha de Aulas Pronta para Gerar</h3>
+                      <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+                        Gere a grade pedagógica completa de aulas interativas com teoria profunda, jurisprudência e fixação para este módulo.
+                      </p>
+                    </div>
+                    <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                      <button
+                        type="button"
+                        disabled={isGeneratingSyllabus}
+                        onClick={handleGerarAulasManual}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs sm:text-sm font-semibold shadow-lg hover:bg-primary/90 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+                      >
+                        {isGeneratingSyllabus ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            <span>Gerando aulas com IA...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-4 h-4" />
+                            <span>Gerar Aulas deste Módulo com IA</span>
+                          </>
+                        )}
+                      </button>
+                      {totalFlashcards > 0 && (
                         <button
                           type="button"
                           onClick={() => {
                             try { haptic.light(); } catch {}
                             setActiveTab('flashcards');
                           }}
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-medium shadow-md hover:bg-primary/90 transition-all cursor-pointer"
+                          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card border border-border text-foreground text-xs sm:text-sm font-medium hover:bg-muted transition-all cursor-pointer"
                         >
-                          <FlashcardsIcon className="w-4 h-4" />
-                          <span>Estudar {totalFlashcards} Flashcards deste módulo</span>
+                          <FlashcardsIcon className="w-4 h-4 text-emerald-400" />
+                          <span>Estudar {totalFlashcards} Flashcards</span>
                         </button>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 ) : (
                   <div className="relative space-y-4 ml-3 sm:ml-4">
@@ -1077,6 +1121,11 @@ const AprenderModulo = () => {
                                 <span className="text-[9px] sm:text-[10px] font-medium uppercase tracking-wider text-primary bg-primary/10 px-1.5 py-0.5 rounded text-center leading-none border border-primary/20">
                                   {aula.pct}%
                                 </span>
+                              ) : (aula.totalBlocos || 0) === 0 ? (
+                                <span className="text-[8px] sm:text-[9px] font-medium uppercase tracking-wider text-primary bg-primary/10 px-1.5 py-0.5 rounded text-center leading-none border border-primary/20 flex items-center gap-0.5">
+                                  <Sparkles className="w-2 h-2 shrink-0" />
+                                  <span>Gerar</span>
+                                </span>
                               ) : null}
                             </div>
 
@@ -1093,13 +1142,17 @@ const AprenderModulo = () => {
                                       ? 'text-emerald-400 font-medium'
                                       : (aula.pct || 0) > 0
                                       ? 'text-primary font-medium'
+                                      : (aula.totalBlocos || 0) === 0
+                                      ? 'text-primary/90 font-medium'
                                       : 'text-muted-foreground'
                                   )}>
                                     {aula.concluida
                                       ? 'Aula Concluída'
                                       : (aula.pct || 0) > 0
                                       ? `${aula.blocosConcluidos || 0} de ${aula.totalBlocos || 0} páginas`
-                                      : `0 de ${aula.totalBlocos || 0} páginas`}
+                                      : (aula.totalBlocos || 0) > 0
+                                      ? `0 de ${aula.totalBlocos} páginas`
+                                      : 'Toque para gerar e estudar'}
                                   </span>
                                   <div className="flex items-center gap-1.5">
                                     {cachedAulas.has(aula.id) && (
