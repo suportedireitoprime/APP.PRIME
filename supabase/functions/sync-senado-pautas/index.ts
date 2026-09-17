@@ -20,65 +20,104 @@ serve(async (req) => {
 
     // Data de hoje e próximos 7 dias
     const today = new Date()
-    const nextWeek = new Date()
-    nextWeek.setDate(today.getDate() + 7)
-
-    const start = today.toISOString().split('T')[0].replace(/-/g, '')
-    const end = nextWeek.toISOString().split('T')[0].replace(/-/g, '')
-
-    const url = `https://legis.senado.leg.br/dadosabertos/comissao/agenda/${start}/${end}`
-    console.log(`Buscando eventos do Senado (Sincronização): ${url}`)
-
-    const response = await fetch(url, {
-      headers: {
-        'Accept': 'application/json'
-      }
-    })
-
-    if (!response.ok) {
-      throw new Error(`Erro na API do Senado: ${response.status} ${response.statusText}`)
+    const datesToFetch: string[] = []
+    for(let i = 0; i < 8; i++) {
+        const d = new Date(today)
+        d.setDate(today.getDate() + i)
+        datesToFetch.push(d.toISOString().split('T')[0].replace(/-/g, ''))
     }
 
-    const data = await response.json()
-    const reunioesRaw = data?.AgendaReuniao?.reunioes?.reuniao || []
-    const reunioes = Array.isArray(reunioesRaw) ? reunioesRaw : [reunioesRaw]
+    const eventosFormatados: any[] = []
 
-    const eventosFormatados = reunioes.filter(Boolean).map((evento: any) => {
-      const dataStr = evento.data
-      const horaStr = evento.hora
-      const horaInicio = dataStr && horaStr ? `${dataStr}T${horaStr}` : ''
-      const horaFim = evento.dataHoraFim || ''
+    console.log("Iniciando busca de Pautas do Plenário...")
+    // 1. Fetch Plenário (1 request por dia)
+    for (const dateStr of datesToFetch) {
+        try {
+            const urlPlenario = `https://legis.senado.leg.br/dadosabertos/plenario/agenda/dia/${dateStr}`
+            const resP = await fetch(urlPlenario, { headers: { 'Accept': 'application/json' } })
+            if (resP.ok) {
+                const dataP = await resP.json()
+                const sessoesRaw = dataP?.AgendaPlenario?.Sessoes?.Sessao || []
+                const sessoes = Array.isArray(sessoesRaw) ? sessoesRaw : [sessoesRaw]
+                
+                for (const sessao of sessoes.filter(Boolean)) {
+                    const dataSessao = sessao.Data // "2024-09-17"
+                    const horaStr = sessao.Hora // "14:00"
+                    const horaInicio = dataSessao && horaStr ? `${dataSessao}T${horaStr}:00` : ''
+                    
+                    const materiasRaw = sessao.Materias?.Materia
+                    const materiasArray = Array.isArray(materiasRaw) ? materiasRaw : [materiasRaw].filter(Boolean)
+                    const pauta = materiasArray.map((m: any) => `${m.DescricaoIdentificacaoMateria || m.Identificacao || ''} - ${m.Ementa || ''}`).join('\n\n')
 
-      const titulo = [evento.tipo, evento.descricaoSessao, evento.finalidade].filter(Boolean).join(' ')
+                    eventosFormatados.push({
+                        codigo_sessao: `PLEN-${sessao.CodigoSessao}`,
+                        titulo: sessao.TipoSessao || 'Sessão Plenária',
+                        descricao: pauta || 'Sem pauta cadastrada',
+                        hora_inicio: horaInicio,
+                        hora_fim: '',
+                        local: sessao.LocalSessao || 'Plenário do Senado Federal',
+                        orgaos: 'Plenário',
+                        situacao: sessao.SituacaoSessao || 'Agendada',
+                        url_registro: ''
+                    })
+                }
+            }
+        } catch (err) {
+            console.error(`Erro ao buscar plenário para ${dateStr}:`, err)
+        }
+    }
 
-      const orgaosRaw = evento.colegiados?.colegiado
-      const orgaosArray = Array.isArray(orgaosRaw) ? orgaosRaw : [orgaosRaw].filter(Boolean)
-      const orgaosStr = orgaosArray.map((o: any) => o.nome || o.sigla).join(', ')
+    console.log("Iniciando busca de Pautas das Comissões...")
+    // 2. Fetch Comissões
+    const startComissao = datesToFetch[0]
+    const endComissao = datesToFetch[datesToFetch.length - 1]
+    const urlComissao = `https://legis.senado.leg.br/dadosabertos/comissao/agenda/${startComissao}/${endComissao}`
+    
+    try {
+        const resC = await fetch(urlComissao, { headers: { 'Accept': 'application/json' } })
+        if (resC.ok) {
+            const dataC = await resC.json()
+            const reunioesRaw = dataC?.AgendaReuniao?.reunioes?.reuniao || []
+            const reunioes = Array.isArray(reunioesRaw) ? reunioesRaw : [reunioesRaw]
 
-      const videosRaw = evento.videos?.video || evento.videos
-      let urlRegistro = ''
-      if (Array.isArray(videosRaw)) {
-         urlRegistro = videosRaw[0]?.url || ''
-      } else if (videosRaw?.url) {
-         urlRegistro = videosRaw.url
-      }
+            for (const evento of reunioes.filter(Boolean)) {
+                const dataStr = evento.data
+                const horaStr = evento.hora
+                const horaInicio = dataStr && horaStr ? `${dataStr}T${horaStr}` : ''
+                const titulo = [evento.tipo, evento.descricaoSessao, evento.finalidade].filter(Boolean).join(' ')
+                
+                const orgaosRaw = evento.colegiados?.colegiado
+                const orgaosArray = Array.isArray(orgaosRaw) ? orgaosRaw : [orgaosRaw].filter(Boolean)
+                const orgaosStr = orgaosArray.map((o: any) => o.nome || o.sigla).join(', ')
 
-      const materiasRaw = evento.materias?.materia
-      const materiasArray = Array.isArray(materiasRaw) ? materiasRaw : [materiasRaw].filter(Boolean)
-      const pauta = materiasArray.map((m: any) => m.descricao).join('\n\n')
+                const videosRaw = evento.videos?.video || evento.videos
+                let urlRegistro = ''
+                if (Array.isArray(videosRaw)) {
+                    urlRegistro = videosRaw[0]?.url || ''
+                } else if (videosRaw?.url) {
+                    urlRegistro = videosRaw.url
+                }
 
-      return {
-        codigo_sessao: String(evento.codigo),
-        titulo: titulo || 'Sessão do Senado',
-        descricao: pauta,
-        hora_inicio: horaInicio,
-        hora_fim: horaFim,
-        local: evento.local || 'Não especificado',
-        orgaos: orgaosStr,
-        situacao: evento.situacao || 'Desconhecida',
-        url_registro: urlRegistro
-      }
-    })
+                const materiasRaw = evento.materias?.materia
+                const materiasArray = Array.isArray(materiasRaw) ? materiasRaw : [materiasRaw].filter(Boolean)
+                const pauta = materiasArray.map((m: any) => m.descricao).join('\n\n')
+
+                eventosFormatados.push({
+                    codigo_sessao: `COM-${evento.codigo}`,
+                    titulo: titulo || 'Reunião de Comissão',
+                    descricao: pauta,
+                    hora_inicio: horaInicio,
+                    hora_fim: evento.dataHoraFim || '',
+                    local: evento.local || 'Não especificado',
+                    orgaos: orgaosStr,
+                    situacao: evento.situacao || 'Desconhecida',
+                    url_registro: urlRegistro
+                })
+            }
+        }
+    } catch (err) {
+        console.error(`Erro ao buscar comissões:`, err)
+    }
 
     if (eventosFormatados.length === 0) {
       return new Response(JSON.stringify({ message: "Nenhum evento encontrado para sincronizar." }), {

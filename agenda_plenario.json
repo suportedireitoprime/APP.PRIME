@@ -1,0 +1,167 @@
+{
+  "AgendaPlenario": {
+    "noNamespaceSchemaLocation": "https://legis.senado.leg.br/dadosabertos/dados/AgendaPlenariov2.xsd",
+    "Metadados": {
+      "Versao": "17/09/2026 04:45:05",
+      "VersaoServico": "2",
+      "DataVersaoServico": "2019-10-15",
+      "DescricaoDataSet": "Retorna a Agenda do dia nos Plenários do Senado e Congresso."
+    },
+    "Sessoes": {
+      "Sessao": [
+        {
+          "DiaUtil": "17",
+          "Data": "2024-09-17",
+          "DiaSemana": "terça-feira",
+          "Mes": "Setembro",
+          "Horario": "14 horas ",
+          "Hora": "14:00",
+          "NumeroSessao": "135ª SESSÃO ",
+          "TipoSessao": "SESSÃO DELIBERATIVA ORDINÁRIA ",
+          "LocalSessao": "Plenário do Senado Federal",
+          "CodigoSessao": "429708",
+          "Casa": "SF",
+          "SessaoLegislativa": "2",
+          "Legislatura": "57",
+          "CodigoSituacaoSessao": "40",
+          "SituacaoSessao": "Encerrada",
+          "Realizada": {
+            "Status": "Sim"
+          },
+          "PautaConfirmada": "Sim",
+          "TipoPresenca": "S",
+          "DescricaoTipoPresenca": "Semipresencial",
+          "Oradores": {
+            "TipoOrador": [
+              {
+                "DescricaoTipoOrador": "Oradores Inscritos",
+                "CodigoTipoOrador": "13",
+                "OradorSessao": {
+                  "Orador": [
+                    {
+                      "Ordem": "1",
+                      "Parlamentar": "Senador Jorge Kajuru",
+                      "IndicadorCancelado": "N"
+                    },
+                    {
+                      "Ordem": "2",
+                      "Parlamentar": "Senador Paulo Paim",
+                      "IndicadorCancelado": "N"
+                    },
+                    {
+                      "Ordem": "4",
+                      "Parlamentar": "Senador Esperidião Amin",
+                      "IndicadorCancelado": "N"
+                    },
+                    {
+                      "Ordem": "5",
+                      "Parlamentar": "Senador Marcos do Val",
+                      "IndicadorCancelado": "N"
+                    },
+                    {
+                      "Ordem": "7",
+                      "Parlamentar": "Senador Izalci Lucas",
+                      "IndicadorCancelado": "N"
+                    },
+                    {
+                      "Ordem": "9",
+                      "Parlamentar": "Senador Rogério Carvalho",
+                      "IndicadorCancelado": "N"
+                    },
+                    {
+                      "Ordem": "10",
+                      "Parlamentar": "Senador Marcos Rogério",
+                      "IndicadorCancelado": "N"
+                    },
+                    {
+                      "Ordem": "11",
+                      "Parlamentar": "Senador Omar Aziz",
+                      "IndicadorCancelado": "N"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "Materias": {
+            "Materia": [
+              {
+                "CodigoMateria": "163489",
+                "Identificacao": "PROJETO DE LEI Nº 1.754, DE 2024 (SUBSTITUTIVO DA CÂMARA DOS DEPUTADOS AO PROJETO DE LEI DO SENADO Nº 580, DE 2007)\n\n",
+                "SiglaMateria": "PL",
+                "NumeroMateria": "01754",
+                "AnoMateria": "2024",
+                "DescricaoObjetivoProcesso": "Substitutivo",
+                "DescricaoIdentificacaoMateria": "PL 1754/2024 (Substitutivo-CD)",
+                "SiglaCasaIniciadora": "CN",
+                "Ementa": "Altera as Leis nºs 8.212, de 24 de julho de 1991, e 8.213, de 24 de julho de 1991, para dispor sobre a condição de segurado especial dos associados em cooperativas.",
+                "Parecer": "Parecer nº 46, de 2024, da Comissão de Assuntos Sociais, Relator: Senador Flávio Arns, favorável ao projeto, na forma do Substitutivo da Câmara dos Deputados. \n",
+                "Apreciacao": "Discussão, em turno único",
+                "ApreciacaoPapeleta": "Discussão, em turno único, do Projeto de Lei n° 1.754, de 2024 (Substitutivo da Câmara dos Deputados ao Projeto de Lei do Senado nº 580, de 2007), do Senador Neuto de Conto, que",
+                "EmentaPapeleta": "altera as Leis nºs 8.212, de 24 de julho de 1991, e 8.213, de 24 de julho de 1991, para dispor sobre a condição de segurado especial dos associados em cooperativas.",
+                "NomeAutor": "Neuto de Conto",
+                "TipoPauta": "R",
+                "SequenciaOrdem": "1"
+              },
+              {
+                "CodigoMateria": "165299",
+                "Identificacao": "REQUERIMENTO Nº 627, DE 2024\n\n",
+                "SiglaMateria": "RQS",
+                "NumeroMateria": "00627",
+                "AnoMateria": "2024",
+                "DescricaoIdentificacaoMateria": "RQS 627/2024",
+                "SiglaCasaIniciadora": "SF",
+                "Ementa": "Solicita urgência para o Projeto de Lei nº 1.725, de 2024, que institui o Programa Acredita no Primeiro Passo e o Programa de Mobilização de Capital Privado Externo e Proteção Cambial - Programa Eco Invest Brasil - e dá outras providências.\n",
+                "Apreciacao": "Votação, em turno único",
+                "ApreciacaoPapeleta": "Votação, em turno único, do Requerimento nº 627, de 2024, de Líder, que\n\n",
+                "EmentaPapeleta": "solicita urgência para o Projeto de Lei nº 1.725, de 2024, que institui o Programa Acredita no Primeiro Passo e o Programa de Mobilização de Capital Privado Externo e Proteção Cambial - Programa Eco Invest Brasil - e dá outras providências.\n",
+                "NomeAutor": "Otto Alencar",
+                "TipoPauta": "E",
+                "DescricaoTipoPauta": "Extrapauta",
+                "SequenciaOrdem": "1"
+              },
+              {
+                "CodigoMateria": "136220",
+                "Identificacao": "PROJETO DE LEI Nº 2.123, DE 2019\n\n",
+                "SiglaMateria": "PL",
+                "NumeroMateria": "02123",
+                "AnoMateria": "2019",
+                "DescricaoObjetivoProcesso": "Revisora",
+                "DescricaoIdentificacaoMateria": "PL 2123/2019",
+                "SiglaCasaIniciadora": "CD",
+                "Ementa": "Altera a Lei nº 10.753, de 30 de outubro de 2003, que institui a Política Nacional do Livro, para incluir especificações a respeito da ficha de catalogação de obras estrangeiras traduzidas.",
+                "Parecer": "Parecer nº 110, de 2019, da Comissão de Educação, Cultura e Esporte, Relator: Senador Izalci Lucas, favorável ao projeto, com a Emenda nº 1, que apresenta.",
+                "Apreciacao": "Discussão, em turno único",
+                "ApreciacaoPapeleta": "Discussão, em turno único, do Projeto de Lei nº 2.123, de 2019 (nº 2.469/2015, na Casa de origem), do Deputado Samuel Moreira, que",
+                "EmentaPapeleta": "altera a Lei nº 10.753, de 30 de outubro de 2003, que institui a Política Nacional do Livro, para incluir especificações a respeito da ficha de catalogação de obras estrangeiras traduzidas.",
+                "NomeAutor": "Samuel Moreira",
+                "TipoPauta": "O",
+                "DescricaoTipoPauta": "Pauta",
+                "SequenciaOrdem": "2"
+              },
+              {
+                "CodigoMateria": "165343",
+                "Identificacao": "MENSAGEM Nº 47, DE 2024\n\n",
+                "SiglaMateria": "MSF",
+                "NumeroMateria": "00047",
+                "AnoMateria": "2024",
+                "DescricaoIdentificacaoMateria": "MSF 47/2024",
+                "SiglaCasaIniciadora": "CN",
+                "Origem": "nº 1049 de 2024, na origem",
+                "Ementa": "Solicita, nos termos do art. 52, incisos V, VII e VIII, da Constituição Federal, autorização para contratação de operação de crédito externo, com a garantia da República Federativa do Brasil, no valor de US$ 50,000,000.00 (cinquenta milhões de dólares dos Estados Unidos da América), de principal, entre o Estado do Piauí e o Banco Internacional para Reconstrução e Desenvolvimento - BIRD, cujos recursos destinam-se ao Projeto Piauí: Pilares de Crescimento e Inclusão Social II.",
+                "Parecer": "Parecer nº 166, de 2024, de Plenário, Relator: Senador Jaques Wagner, favorável à matéria, nos termos do Projeto de Resolução n° 39, de 2024, que apresenta.",
+                "Apreciacao": "Discussão, em turno único",
+                "ApreciacaoPapeleta": "Mensagem nº 47, de 2024 (nº 1.049/2024, na origem), de iniciativa da Presidência da República, que",
+                "EmentaPapeleta": "solicita, nos termos do art. 52, incisos V, VII e VIII, da Constituição Federal, autorização para contratação de operação de crédito externo, com a garantia da República Federativa do Brasil, no valor de US$ 50,000,000.00 (cinquenta milhões de dólares dos Estados Unidos da América), de principal, entre o Estado do Piauí e o Banco Internacional para Reconstrução e Desenvolvimento - BIRD, cujos recursos destinam-se ao Projeto Piauí: Pilares de Crescimento e Inclusão Social II.",
+                "NomeAutor": "Presidência da República",
+                "TipoPauta": "O",
+                "DescricaoTipoPauta": "Pauta",
+                "SequenciaOrdem": "3"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
