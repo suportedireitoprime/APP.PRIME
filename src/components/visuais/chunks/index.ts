@@ -8,3 +8,4 @@ export * from './VisuaisPassoDetalhes';
 export * from './VisuaisHeroPanel';
 export * from './VisuaisPdfModal';
 export * from './VisuaisPastasView';
+export * from './VisuaisPastaSoloView';

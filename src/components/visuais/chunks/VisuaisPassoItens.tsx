@@ -30,6 +30,7 @@ interface VisuaisPassoItensProps {
   recentesCount?: number;
   totalCount?: number;
   onEscolherItem: (item: CatalogoItem) => void;
+  onSelectPasta?: (pastaNome: string) => void;
   alternarFavorito: (key: string) => void;
   onBack: () => void;
   onClose: () => void;
@@ -65,6 +66,7 @@ export function VisuaisPassoItens({
   recentesCount,
   totalCount,
   onEscolherItem,
+  onSelectPasta,
   alternarFavorito,
   onBack,
   onClose,
@@ -88,37 +90,39 @@ export function VisuaisPassoItens({
         onClose={onClose}
       />
 
-      {/* ── Botão de Alternância de Categoria: Fora do Painel, Embaixo ── */}
-      <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto pt-4 pb-2">
-        <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-zinc-900/90 border border-white/10 backdrop-blur-md shadow-lg max-w-[500px] mx-auto">
-          {CATEGORIAS_PAINEL.map((cat) => {
-            const ativa = categoria === cat.id;
-            const Icone = cat.icone;
-            return (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => {
-                  haptic.selection();
-                  onSelectCategoria(cat.id);
-                }}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl font-display text-[12px] sm:text-[13px] font-bold uppercase tracking-wider transition-all duration-200 ${
-                  ativa
-                    ? 'bg-zinc-800 text-white shadow-md border border-white/15'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.04]'
-                }`}
-              >
-                <Icone
-                  className="w-4 h-4 shrink-0 transition-transform duration-200"
-                  style={{ color: ativa ? cat.cor : undefined }}
-                  strokeWidth={ativa ? 2.4 : 1.8}
-                />
-                <span className="truncate">{cat.label}</span>
-              </button>
-            );
-          })}
+      {/* ── Botão de Alternância de Categoria: Fora do Painel, Embaixo (apenas para estudo normal) ── */}
+      {filtro !== 'pastas' && (
+        <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto pt-4 pb-2">
+          <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-zinc-900/90 border border-white/10 backdrop-blur-md shadow-lg max-w-[500px] mx-auto">
+            {CATEGORIAS_PAINEL.map((cat) => {
+              const ativa = categoria === cat.id;
+              const Icone = cat.icone;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => {
+                    haptic.selection();
+                    onSelectCategoria(cat.id);
+                  }}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl font-display text-[12px] sm:text-[13px] font-bold uppercase tracking-wider transition-all duration-200 ${
+                    ativa
+                      ? 'bg-zinc-800 text-white shadow-md border border-white/15'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.04]'
+                  }`}
+                >
+                  <Icone
+                    className="w-4 h-4 shrink-0 transition-transform duration-200"
+                    style={{ color: ativa ? cat.cor : undefined }}
+                    strokeWidth={ativa ? 2.4 : 1.8}
+                  />
+                  <span className="truncate">{cat.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ── Conteúdo Abaixo do Seletor (Cards de Estudo OU Fichário de Pastas de PDFs) ── */}
       <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto pt-2 pb-12 space-y-4">
@@ -129,6 +133,7 @@ export function VisuaisPassoItens({
             catalogoItens={lista}
             categoria={categoria}
             onEscolherItem={onEscolherItem}
+            onSelectPasta={onSelectPasta || (() => {})}
           />
         ) : (
           /* Grade Padrão de Matérias, Códigos e Estatutos */

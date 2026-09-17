@@ -36,6 +36,7 @@ import {
   type Filtro,
   VisuaisPassoItens,
   VisuaisPassoDetalhes,
+  VisuaisPastaSoloView,
 } from './chunks';
 
 export interface VisuaisJuridicosSheetProps {
@@ -142,6 +143,7 @@ export default function VisuaisJuridicosSheet({
   const [aberto, setAberto] = useState<VisualRecord | null>(null);
   const [gateOpen, setGateOpen] = useState(false);
   const [filtro, setFiltro] = useState<Filtro>('todos');
+  const [pastaAtiva, setPastaAtiva] = useState<string | null>(null);
   const [favoritos, setFavoritos] = useState<string[]>(() => listarFavoritos());
   const [recentes, setRecentes] = useState<string[]>(() => listarRecentes());
 
@@ -200,6 +202,7 @@ export default function VisuaisJuridicosSheet({
     setTema(null);
     setSubtemas([]);
     setFiltro('todos');
+    setPastaAtiva(null);
     setDeckOpen(false);
     setPendingTarget(null);
   }, [tipoInicial, categoriaInicial]);
@@ -480,7 +483,9 @@ export default function VisuaisJuridicosSheet({
   };
 
   const voltar = () => {
-    if (tema) {
+    if (pastaAtiva) {
+      setPastaAtiva(null);
+    } else if (tema) {
       setTema(null);
       setBuscaArtigo('');
     } else if (item) {
@@ -492,12 +497,19 @@ export default function VisuaisJuridicosSheet({
   };
 
   const getTitle = () => {
+    if (pastaAtiva) return pastaAtiva;
     if (!item) return 'VISUAIS JURÍDICOS';
     if (tema) return tema.tema;
     return item?.label ?? 'VISUAIS JURÍDICOS';
   };
 
   const getSubtitle = () => {
+    if (pastaAtiva) {
+      const count = Object.values(prontos).filter(
+        (v) => (v.item_label || 'Geral').toLowerCase() === pastaAtiva.toLowerCase(),
+      ).length;
+      return `Pasta de PDFs · ${count} PDF${count !== 1 ? 's' : ''} disponível${count !== 1 ? 'is' : ''}`;
+    }
     if (!item) return 'Escolha uma matéria, código ou estatuto para estudar';
     if (categoria === 'materias') {
       return tema ? `Subtemas de ${tema.tema} — escolha um para gerar` : 'Escolha o tópico para ver os subtemas';
@@ -510,18 +522,32 @@ export default function VisuaisJuridicosSheet({
       {
         label: 'Painel',
         onClick: () => {
-          setTema(null);
-          setItem(null);
-        },
-      },
-      {
-        label: CATEGORIA_INFO[categoria]?.label ?? 'Matérias',
-        onClick: () => {
+          setPastaAtiva(null);
           setTema(null);
           setItem(null);
         },
       },
     ];
+
+    if (pastaAtiva) {
+      c.push({
+        label: 'Pastas',
+        onClick: () => setPastaAtiva(null),
+      });
+      c.push({
+        label: pastaAtiva,
+      });
+      return c;
+    }
+
+    c.push({
+      label: CATEGORIA_INFO[categoria]?.label ?? 'Matérias',
+      onClick: () => {
+        setTema(null);
+        setItem(null);
+      },
+    });
+
     if (item) {
       c.push({
         label: item.label,
@@ -532,7 +558,7 @@ export default function VisuaisJuridicosSheet({
     const last = c[c.length - 1];
     if (last) last.onClick = undefined;
     return c;
-  }, [categoria, item, tema]);
+  }, [categoria, item, tema, pastaAtiva]);
 
   if (!open) return null;
 
@@ -562,8 +588,8 @@ export default function VisuaisJuridicosSheet({
               </div>
 
               <div className="relative z-10 flex h-full flex-col overflow-hidden">
-                {/* Cabeçalho fixo padrão apenas quando estiver visualizando detalhes de uma matéria/código */}
-                {item && (
+                {/* Cabeçalho fixo padrão apenas quando estiver visualizando detalhes de uma matéria/código OU tela solo de pasta */}
+                {(item || pastaAtiva) && (
                   emPagina ? (
                     <PageHeader title={getTitle()} subtitle={getSubtitle()} onBack={voltar} />
                   ) : (
@@ -587,7 +613,7 @@ export default function VisuaisJuridicosSheet({
                   )
                 )}
 
-                {item && (
+                {(item || pastaAtiva) && (
                   <nav
                     aria-label="Trilha de navegação"
                     className="flex items-center gap-1 overflow-x-auto whitespace-nowrap px-5 pb-2 pt-1 text-[12px] font-body text-muted-foreground lg:mx-auto lg:w-full lg:max-w-[1200px] lg:px-8"
@@ -607,9 +633,21 @@ export default function VisuaisJuridicosSheet({
                   </nav>
                 )}
 
-                <div className={`flex-1 overflow-y-auto overscroll-contain pb-[calc(1.25rem+var(--sai-bottom))] ${item ? 'px-4 pt-3 lg:mx-auto lg:w-full lg:max-w-[1400px] lg:px-8' : ''}`}>
-                  {/* 1 — Painel: Seleção de Matéria / Código / Estatuto com HomeCards e Hero no topo que rola junto */}
-                  {!item ? (
+                <div className={`flex-1 overflow-y-auto overscroll-contain pb-[calc(1.25rem+var(--sai-bottom))] ${(item || pastaAtiva) ? 'px-4 pt-3 lg:mx-auto lg:w-full lg:max-w-[1400px] lg:px-8' : ''}`}>
+                  {/* 1 — Tela Solo da Pasta de PDFs */}
+                  {pastaAtiva ? (
+                    <VisuaisPastaSoloView
+                      pastaNome={pastaAtiva}
+                      prontos={prontos}
+                      catalogoItens={lista}
+                      onEscolherItem={(i) => {
+                        setPastaAtiva(null);
+                        setItem(i);
+                      }}
+                      onBack={() => setPastaAtiva(null)}
+                    />
+                  ) : !item ? (
+                    /* 2 — Painel: Seleção de Matéria / Código / Estatuto com HomeCards e Hero no topo que rola junto */
                     <VisuaisPassoItens
                       categoria={categoria}
                       onSelectCategoria={(cat) => {
@@ -637,6 +675,9 @@ export default function VisuaisJuridicosSheet({
                         setBuscaArtigo('');
                         setFiltro('todos');
                         setItem(i);
+                      }}
+                      onSelectPasta={(nomePasta) => {
+                        setPastaAtiva(nomePasta);
                       }}
                       alternarFavorito={alternarFavorito}
                       onBack={voltar}
