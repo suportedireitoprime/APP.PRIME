@@ -217,9 +217,9 @@ export function TrialExpiredModal() {
             <button
               onClick={() => {
                 try { Haptics.impact({ style: ImpactStyle.Medium }).catch(() => {}); } catch(e){}
-                window.location.href = '/assinatura';
+                navigate('/assinatura?preview=plans', { replace: true });
               }}
-              className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display font-black text-base tracking-wider bg-primary text-primary-foreground active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/30 group"
+              className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display font-black text-base tracking-wider bg-primary text-primary-foreground active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/30 group cursor-pointer"
             >
               <span>DESTRAVAR MEU ACESSO</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -227,8 +227,11 @@ export function TrialExpiredModal() {
 
             <button
               type="button"
-              onClick={() => { window.location.href = '/assinatura'; }}
-              className="w-full text-xs font-semibold text-muted-foreground hover:text-foreground py-1.5 transition-colors flex items-center justify-center gap-1"
+              onClick={() => {
+                try { Haptics.impact({ style: ImpactStyle.Light }).catch(() => {}); } catch(e){}
+                navigate('/assinatura?preview=plans', { replace: true });
+              }}
+              className="w-full text-xs font-semibold text-muted-foreground hover:text-foreground py-1.5 transition-colors flex items-center justify-center gap-1 cursor-pointer"
             >
               Conhecer outros planos e formas de pagamento
             </button>

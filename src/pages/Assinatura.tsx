@@ -111,11 +111,16 @@ export default function Assinatura() {
   const handleBack = () => {
     if (showWelcome) return closeWelcome();
     if (devSheetOpen) return setDevSheetOpen(false);
-    if (searchParams.get('preview') === 'plans') return navigate('/planos/ativos', { replace: true });
+    if (searchParams.get('preview') === 'plans') {
+      if (isPremium && !isTrial) return navigate('/planos/ativos', { replace: true });
+      return navigate('/', { replace: true });
+    }
     
     const stateFrom = (location.state as { from?: string } | undefined)?.from;
-    if (stateFrom) return navigate(stateFrom, { replace: true });
-    goBack();
+    if (stateFrom && stateFrom !== '/assinatura' && stateFrom !== '/planos/ativos') {
+      return navigate(stateFrom, { replace: true });
+    }
+    navigate('/', { replace: true });
   };
 
   useEffect(() => {
@@ -144,7 +149,7 @@ export default function Assinatura() {
     setCheckoutPlan(plano);
   };
 
-  const previewPlans = showDevToggle && searchParams.get('preview') === 'plans';
+  const previewPlans = searchParams.get('preview') === 'plans' || searchParams.get('planos') === '1' || (location.state as { previewPlans?: boolean } | null)?.previewPlans;
 
   if (!subLoading && (isPremium && !isTrial) && !showWelcome && !previewPlans) {
     return <Navigate to="/planos/ativos" replace />;

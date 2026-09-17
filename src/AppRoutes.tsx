@@ -461,11 +461,13 @@ preloadImage.src = brasaoImg;
 preloadImage.decoding = 'async';
 import { TrialExpiredModal } from "@/components/TrialExpiredModal";
 import { isAdminEmail } from "@/lib/adminEmails";
+import { useSubscription } from "@/hooks/useSubscription";
 
 function ProtectedRoute({ children, requireOnboarding = true }: { children: React.ReactNode; requireOnboarding?: boolean }) {
   const { user, loading } = useAuth();
   const location = useLocation();
   const { data: profile, isLoading: profileLoading } = useProfileSummary();
+  const { isPremium: isSubPremium, isTrial: isSubTrial } = useSubscription();
 
   // Leitura síncrona do cache — não bloqueia o paint.
   const cacheKey = user ? `onboarding_completed:${user.id}` : null;
@@ -600,18 +602,25 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
   if (user && !profileLoading && profile) {
     const createdAt = new Date(user.created_at);
     const diffDays = Math.ceil((Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
-    const isAllowedPath = [
-      '/', 
-      '/assinatura', 
-      '/planos-ativos', 
-      '/perfil', 
-      '/configuracoes', 
-      '/suporte', 
-      '/opiniao', 
-      '/onboarding'
-    ].includes(location.pathname);
+    const cleanPath = (location.pathname || '').replace(/\/+$/, '') || '/';
+    const isAllowedPath = 
+      cleanPath === '/' ||
+      cleanPath === '/assinatura' ||
+      cleanPath.startsWith('/assinatura/') ||
+      cleanPath === '/planos/ativos' ||
+      cleanPath === '/planos-ativos' ||
+      cleanPath.startsWith('/planos/') ||
+      cleanPath.startsWith('/perfil') ||
+      cleanPath.startsWith('/configuracoes') ||
+      cleanPath.startsWith('/suporte') ||
+      cleanPath.startsWith('/opiniao') ||
+      cleanPath.startsWith('/onboarding') ||
+      cleanPath.startsWith('/termos') ||
+      cleanPath.startsWith('/privacidade');
     
-    if (!profile.isPremium && !isAdminEmail(user.email) && diffDays > 3 && !isAllowedPath) {
+    const isUserPremium = !!profile.isPremium || (isSubPremium && !isSubTrial) || isAdminEmail(user.email);
+
+    if (!isUserPremium && diffDays > 3 && !isAllowedPath) {
       return (
         <>
           {children}
