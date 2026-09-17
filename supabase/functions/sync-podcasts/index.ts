@@ -3,7 +3,7 @@ import { createClient } from "npm:@supabase/supabase-js@2.45.1";
 
 // ID da Playlist de Podcast (Se não fornecida no ENV, busca da TV Justiça)
 // Vamos permitir que isso seja injetado via Variaveis de Ambiente do Supabase.
-const DEFAULT_PLAYLIST_ID = 'PLRjG-T4rZ9zGg2y-1jYwT21QyI-8rVlS-'; // Placeholder
+const DEFAULT_PLAYLIST_ID = 'PLippyY19Z47uVfUBc_DlZrQpnnqmnPkT0';
 
 console.log("Hello from sync-podcasts!");
 
