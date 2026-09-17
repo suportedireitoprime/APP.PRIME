@@ -1,12 +1,20 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar as CalendarIcon, MapPin, Clock, Info, X, RotateCw, FileText, ExternalLink, Bookmark } from 'lucide-react';
+import { 
+  ArrowLeft, Calendar as CalendarIcon, MapPin, Clock, Info, X, 
+  RotateCw, FileText, ExternalLink, Bookmark, Radio, Tv, Users, 
+  CheckCircle2, CalendarPlus, Download 
+} from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { haptic } from '@/lib/nativeHaptics';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+import { SenadoAoVivo } from '@/components/tres-poderes/senado/SenadoAoVivo';
+import { SenadoResultados } from '@/components/tres-poderes/senado/SenadoResultados';
+import { SenadoresLista } from '@/components/tres-poderes/senado/SenadoresLista';
+import { downloadICS, getGoogleCalendarUrl } from '@/lib/calendarExport';
 
 const getLocalDateString = (d: Date = new Date()) => {
   const year = d.getFullYear();
@@ -182,6 +190,7 @@ const AgendaSenado = () => {
   const [dataSelecionada, setDataSelecionada] = useState(() => {
     return getLocalDateString();
   });
+  const [abaAtiva, setAbaAtiva] = useState<'pauta' | 'aovivo' | 'resultados' | 'senadores'>('pauta');
   const [diasTimeline, setDiasTimeline] = useState<Date[]>([]);
   const [eventos, setEventos] = useState<EventoSenado[]>([]);
   const [loading, setLoading] = useState(false);
@@ -314,170 +323,253 @@ const AgendaSenado = () => {
             <ArrowLeft className="w-6 h-6 stroke-[2.4]" />
           </button>
           
-          <div className="flex-1 flex flex-col items-center justify-center">
+          <div className="flex-1 flex flex-col items-center justify-center text-center">
             <span className="text-[10px] font-bold text-sky-500 uppercase tracking-widest leading-none mb-1">
-              Pauta do Dia
+              {abaAtiva === 'pauta' && 'Pauta do Dia'}
+              {abaAtiva === 'aovivo' && 'TV Senado Ao Vivo'}
+              {abaAtiva === 'resultados' && 'Deliberações & Votações'}
+              {abaAtiva === 'senadores' && '81 Parlamentares'}
             </span>
             <h1 className="text-base font-bold text-white leading-none">
               Senado Federal
             </h1>
           </div>
           
-          <button 
-            onClick={() => {
-              haptic.selection();
-              syncAndRefresh();
-            }}
-            disabled={syncing}
-            className="w-12 h-12 flex items-center justify-center -mr-3 text-white/70 hover:text-white transition-colors"
-            title="Sincronizar Pautas"
-          >
-            <RotateCw className={`w-5 h-5 ${syncing ? 'animate-spin text-sky-400' : ''}`} />
-          </button>
+          <div className="flex items-center gap-1 -mr-2">
+            {abaAtiva === 'pauta' ? (
+              <>
+                <a
+                  href="https://legis.senado.leg.br/dadosabertos/plenario/agenda/atual/iCal"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 flex items-center justify-center text-white/70 hover:text-white transition-colors rounded-xl bg-white/5 hover:bg-white/10"
+                  title="Baixar Calendário Oficial (.ics)"
+                  onClick={() => haptic.selection()}
+                >
+                  <Download className="w-4 h-4" />
+                </a>
+                <button 
+                  onClick={() => {
+                    haptic.selection();
+                    syncAndRefresh();
+                  }}
+                  disabled={syncing}
+                  className="w-10 h-10 flex items-center justify-center text-white/70 hover:text-white transition-colors rounded-xl bg-white/5 hover:bg-white/10"
+                  title="Sincronizar Pautas"
+                >
+                  <RotateCw className={`w-4 h-4 ${syncing ? 'animate-spin text-sky-400' : ''}`} />
+                </button>
+              </>
+            ) : (
+              <div className="w-10" />
+            )}
+          </div>
         </div>
 
-        {/* Timeline Horizontal */}
-        <div className="pb-3 w-full border-t border-white/5 pt-3 bg-black/20">
-          <ScrollArea className="w-full whitespace-nowrap" ref={timelineRef}>
-            <div className="flex items-center w-max space-x-2 px-4 py-2">
-              {diasTimeline.map((d, idx) => {
-                const dateKey = getLocalDateString(d);
-                const isSelected = dateKey === dataSelecionada;
-                const isToday = dateKey === getLocalDateString();
-                return (
-                  <button
-                    key={idx}
-                    id={`date-btn-${dateKey}`}
-                    onClick={() => {
-                      if (!isSelected) {
-                        haptic.selection();
-                        setDataSelecionada(dateKey);
-                      }
-                    }}
-                    className={`flex flex-col items-center justify-center p-2 rounded-xl border transition-all duration-300 ${
-                      isSelected 
-                        ? 'bg-sky-500/20 border-sky-500 text-sky-400 scale-[1.15] shadow-lg shadow-sky-500/20 z-10 mx-2 min-w-[65px] h-[70px]' 
-                        : 'bg-white/5 border-transparent text-white/50 hover:bg-white/10 min-w-[60px] h-[60px]'
-                    }`}
-                  >
-                    <span className="text-[10px] uppercase font-bold tracking-wider mb-1">
-                      {isToday ? 'HOJE' : getDiaDaSemana(d)}
-                    </span>
-                    <span className={`text-sm font-black ${isSelected ? 'text-sky-400' : 'text-white/80'}`}>
-                      {formataDataTimeline(d)}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-            <ScrollBar orientation="horizontal" className="hidden" />
-          </ScrollArea>
-        </div>
-      </div>
-
-      {/* Lista de Eventos (Scrollável) */}
-      <div className="flex-1 overflow-y-auto pb-24 z-10">
-        <div className="p-4 space-y-4">
-          {loading ? (
-            Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="bg-white/5 rounded-2xl p-4 border border-white/5">
-                <Skeleton className="h-5 w-3/4 bg-white/10 mb-3" />
-                <Skeleton className="h-4 w-1/2 bg-white/10 mb-4" />
-                <div className="flex gap-2">
-                  <Skeleton className="h-6 w-20 bg-white/10 rounded-md" />
-                  <Skeleton className="h-6 w-32 bg-white/10 rounded-md" />
-                </div>
-              </div>
-            ))
-          ) : erro ? (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-6 text-center">
-              <p className="text-red-400 text-sm mb-4">{erro}</p>
-              <button 
-                onClick={() => fetchAgenda(dataSelecionada)}
-                className="bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-colors"
-              >
-                Tentar Novamente
-              </button>
-            </div>
-          ) : eventos.length === 0 ? (
-            <div className="text-center text-white/50 py-12 px-6 flex flex-col items-center">
-              <CalendarIcon className="w-12 h-12 opacity-20 mb-3" />
-              <p className="text-sm max-w-xs mb-4">Nenhuma sessão ou reunião agendada para este dia no Senado Federal.</p>
+        {/* Abas de Navegação */}
+        <div className="px-3 py-2 border-t border-white/5 bg-black/40 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          {[
+            { id: 'pauta' as const, label: 'Pauta', icon: CalendarIcon },
+            { id: 'aovivo' as const, label: 'Ao Vivo', icon: Tv, badge: 'LIVE' },
+            { id: 'resultados' as const, label: 'Resultados', icon: CheckCircle2 },
+            { id: 'senadores' as const, label: '81 Senadores', icon: Users },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isAtiva = abaAtiva === tab.id;
+            return (
               <button
-                onClick={() => syncAndRefresh()}
-                disabled={syncing}
-                className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all"
-              >
-                <RotateCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin text-sky-400' : ''}`} />
-                {syncing ? 'Sincronizando...' : 'Atualizar com dados oficiais'}
-              </button>
-            </div>
-          ) : (
-            eventos.map((evento) => (
-              <div 
-                key={evento.id} 
+                key={tab.id}
                 onClick={() => {
                   haptic.selection();
-                  setEventoSelecionado(evento);
+                  setAbaAtiva(tab.id);
                 }}
-                className="bg-[#111111]/80 backdrop-blur-sm rounded-2xl border border-white/5 overflow-hidden transition-all duration-300 relative group active:scale-[0.98] cursor-pointer hover:border-white/10"
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl font-bold text-xs transition-all whitespace-nowrap min-h-[44px] ${
+                  isAtiva
+                    ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/25 scale-[1.02]'
+                    : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
+                }`}
               >
-                {/* Linha colorida lateral (opcional) */}
-                <div className={`absolute left-0 top-0 bottom-0 w-1 ${evento.situacao?.toUpperCase().includes('CONVOCADA') ? 'bg-amber-500' : 'bg-white/20'}`} />
+                <Icon className="w-3.5 h-3.5" />
+                <span>{tab.label}</span>
+                {tab.badge && (
+                  <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded-full ${
+                    isAtiva ? 'bg-red-500 text-white animate-pulse' : 'bg-red-500/20 text-red-400'
+                  }`}>
+                    {tab.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
 
-                <div className="p-4 pl-5">
-                  <div className="flex items-start justify-between gap-3 mb-2">
-                    <h3 className="font-black text-[13px] sm:text-[14px] text-white uppercase tracking-wide leading-tight">
-                      {evento.titulo}
-                    </h3>
-                    {evento.situacao && (
-                      <span className={`text-[9px] sm:text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded whitespace-nowrap flex-shrink-0 border ${getCorSituacao(evento.situacao)}`}>
-                        {evento.situacao}
+        {/* Timeline Horizontal (visível apenas na aba Pauta) */}
+        {abaAtiva === 'pauta' && (
+          <div className="pb-3 w-full border-t border-white/5 pt-3 bg-black/20">
+            <ScrollArea className="w-full whitespace-nowrap" ref={timelineRef}>
+              <div className="flex items-center w-max space-x-2 px-4 py-2">
+                {diasTimeline.map((d, idx) => {
+                  const dateKey = getLocalDateString(d);
+                  const isSelected = dateKey === dataSelecionada;
+                  const isToday = dateKey === getLocalDateString();
+                  return (
+                    <button
+                      key={idx}
+                      id={`date-btn-${dateKey}`}
+                      onClick={() => {
+                        if (!isSelected) {
+                          haptic.selection();
+                          setDataSelecionada(dateKey);
+                        }
+                      }}
+                      className={`flex flex-col items-center justify-center p-2 rounded-xl border transition-all duration-300 ${
+                        isSelected 
+                          ? 'bg-sky-500/20 border-sky-500 text-sky-400 scale-[1.15] shadow-lg shadow-sky-500/20 z-10 mx-2 min-w-[65px] h-[70px]' 
+                          : 'bg-white/5 border-transparent text-white/50 hover:bg-white/10 min-w-[60px] h-[60px]'
+                      }`}
+                    >
+                      <span className="text-[10px] uppercase font-bold tracking-wider mb-1">
+                        {isToday ? 'HOJE' : getDiaDaSemana(d)}
                       </span>
-                    )}
+                      <span className={`text-sm font-black ${isSelected ? 'text-sky-400' : 'text-white/80'}`}>
+                        {formataDataTimeline(d)}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              <ScrollBar orientation="horizontal" className="hidden" />
+            </ScrollArea>
+          </div>
+        )}
+      </div>
+
+      {/* Visualização da Pauta do Dia */}
+      {abaAtiva === 'pauta' && (
+        <div className="flex-1 overflow-y-auto pb-24 z-10">
+          <div className="p-4 space-y-4">
+            {loading ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="bg-white/5 rounded-2xl p-4 border border-white/5">
+                  <Skeleton className="h-5 w-3/4 bg-white/10 mb-3" />
+                  <Skeleton className="h-4 w-1/2 bg-white/10 mb-4" />
+                  <div className="flex gap-2">
+                    <Skeleton className="h-6 w-20 bg-white/10 rounded-md" />
+                    <Skeleton className="h-6 w-32 bg-white/10 rounded-md" />
                   </div>
-                  
-                  {/* Info básica sempre visível */}
-                  <div className="flex flex-wrap items-center gap-3 mt-1">
-                    <div className="flex items-center gap-1.5 text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-md">
-                      <Clock className="w-3.5 h-3.5" />
-                      <span className="text-[12px] font-bold">
-                        {evento.horaInicio ? formatHora(evento.horaInicio) : '--:--'}
-                        {evento.horaFim ? ` às ${formatHora(evento.horaFim)}` : ''}
-                      </span>
+                </div>
+              ))
+            ) : erro ? (
+              <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-6 text-center">
+                <p className="text-red-400 text-sm mb-4">{erro}</p>
+                <button 
+                  onClick={() => fetchAgenda(dataSelecionada)}
+                  className="bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-colors"
+                >
+                  Tentar Novamente
+                </button>
+              </div>
+            ) : eventos.length === 0 ? (
+              <div className="text-center text-white/50 py-12 px-6 flex flex-col items-center">
+                <CalendarIcon className="w-12 h-12 opacity-20 mb-3" />
+                <p className="text-sm max-w-xs mb-4">Nenhuma sessão ou reunião agendada para este dia no Senado Federal.</p>
+                <button
+                  onClick={() => syncAndRefresh()}
+                  disabled={syncing}
+                  className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all"
+                >
+                  <RotateCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin text-sky-400' : ''}`} />
+                  {syncing ? 'Sincronizando...' : 'Atualizar com dados oficiais'}
+                </button>
+              </div>
+            ) : (
+              eventos.map((evento) => (
+                <div 
+                  key={evento.id} 
+                  onClick={() => {
+                    haptic.selection();
+                    setEventoSelecionado(evento);
+                  }}
+                  className="bg-[#111111]/80 backdrop-blur-sm rounded-2xl border border-white/5 overflow-hidden transition-all duration-300 relative group active:scale-[0.98] cursor-pointer hover:border-white/10"
+                >
+                  {/* Linha colorida lateral */}
+                  <div className={`absolute left-0 top-0 bottom-0 w-1 ${evento.situacao?.toUpperCase().includes('CONVOCADA') ? 'bg-amber-500' : 'bg-white/20'}`} />
+
+                  <div className="p-4 pl-5">
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      <h3 className="font-black text-[13px] sm:text-[14px] text-white uppercase tracking-wide leading-tight">
+                        {evento.titulo}
+                      </h3>
+                      {evento.situacao && (
+                        <span className={`text-[9px] sm:text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded whitespace-nowrap flex-shrink-0 border ${getCorSituacao(evento.situacao)}`}>
+                          {evento.situacao}
+                        </span>
+                      )}
                     </div>
                     
-                    {evento.local && (
-                      <div className="flex items-center gap-1.5 text-white/60">
-                        <MapPin className="w-3.5 h-3.5" />
-                        <span className="text-[12px] line-clamp-1">{evento.local}</span>
+                    {/* Info básica sempre visível */}
+                    <div className="flex flex-wrap items-center gap-3 mt-1">
+                      <div className="flex items-center gap-1.5 text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-md">
+                        <Clock className="w-3.5 h-3.5" />
+                        <span className="text-[12px] font-bold">
+                          {evento.horaInicio ? formatHora(evento.horaInicio) : '--:--'}
+                          {evento.horaFim ? ` às ${formatHora(evento.horaFim)}` : ''}
+                        </span>
+                      </div>
+                      
+                      {evento.local && (
+                        <div className="flex items-center gap-1.5 text-white/60">
+                          <MapPin className="w-3.5 h-3.5" />
+                          <span className="text-[12px] line-clamp-1">{evento.local}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Explicação Curta sempre visível no card */}
+                    {getLegenda(evento.titulo) && (
+                      <div className="mt-2 flex items-start gap-1.5 bg-white/5 border border-white/10 rounded-md p-2">
+                        <Info className="w-3.5 h-3.5 text-sky-400 flex-shrink-0 mt-0.5" />
+                        <p className="text-[11px] sm:text-[12px] text-white/70 leading-tight font-medium">
+                          <span className="font-bold text-sky-400/90 mr-1.5 uppercase tracking-wider">O que é isso?</span>
+                          {getLegenda(evento.titulo)?.descricao}
+                        </p>
                       </div>
                     )}
-                  </div>
 
-                  {/* Explicação Curta sempre visível no card */}
-                  {getLegenda(evento.titulo) && (
-                    <div className="mt-2 flex items-start gap-1.5 bg-white/5 border border-white/10 rounded-md p-2">
-                      <Info className="w-3.5 h-3.5 text-sky-400 flex-shrink-0 mt-0.5" />
-                      <p className="text-[11px] sm:text-[12px] text-white/70 leading-tight font-medium">
-                        <span className="font-bold text-sky-400/90 mr-1.5 uppercase tracking-wider">O que é isso?</span>
-                        {getLegenda(evento.titulo)?.descricao}
+                    {/* Resumo da Pauta/Finalidade sempre visível no card */}
+                    {evento.descricao && evento.descricao !== 'Sem pauta cadastrada' && (
+                      <p className="text-[12px] text-white/60 line-clamp-2 mt-2 leading-relaxed">
+                        {evento.descricao.replace(/\*\*.*?\*\*/g, '').trim()}
                       </p>
-                    </div>
-                  )}
-
-                  {/* Resumo da Pauta/Finalidade sempre visível no card */}
-                  {evento.descricao && evento.descricao !== 'Sem pauta cadastrada' && (
-                    <p className="text-[12px] text-white/60 line-clamp-2 mt-2 leading-relaxed">
-                      {evento.descricao.replace(/\*\*.*?\*\*/g, '').trim()}
-                    </p>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))
-          )}
+              ))
+            )}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Visualização TV Senado Ao Vivo */}
+      {abaAtiva === 'aovivo' && (
+        <div className="flex-1 overflow-y-auto pb-24 z-10 p-4 max-w-5xl mx-auto w-full">
+          <SenadoAoVivo />
+        </div>
+      )}
+
+      {/* Visualização Resultados e Deliberações */}
+      {abaAtiva === 'resultados' && (
+        <div className="flex-1 overflow-y-auto pb-24 z-10 p-4 max-w-5xl mx-auto w-full">
+          <SenadoResultados />
+        </div>
+      )}
+
+      {/* Visualização 81 Senadores */}
+      {abaAtiva === 'senadores' && (
+        <div className="flex-1 overflow-y-auto pb-24 z-10 p-4 max-w-6xl mx-auto w-full">
+          <SenadoresLista />
+        </div>
+      )}
 
       {/* Modal Bottom Sheet / Dialog Responsivo: Detalhes do Evento */}
       <div className={`fixed inset-0 z-50 flex flex-col justify-end sm:justify-center sm:items-center sm:p-6 transition-all duration-300 ${eventoSelecionado ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
@@ -563,49 +655,82 @@ const AgendaSenado = () => {
                   </div>
                 )}
 
-                {/* Ações / Documentos Oficiais */}
-                <div className="pt-5 flex flex-col gap-3">
+                {/* Ações / Calendário / Transmissão / Documentos Oficiais */}
+                <div className="pt-4 flex flex-col gap-2.5">
+                  {/* Exportação para Calendário */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        haptic.impact();
+                        downloadICS({
+                          title: eventoSelecionado.titulo,
+                          description: `${eventoSelecionado.descricao ? eventoSelecionado.descricao.replace(/\*\*/g, '') : ''}\n\nLocal: ${eventoSelecionado.local || 'Senado Federal'}\nÓrgãos: ${eventoSelecionado.orgaos || ''}`,
+                          location: eventoSelecionado.local || 'Senado Federal, Brasília - DF',
+                          startTime: eventoSelecionado.horaInicio,
+                          endTime: eventoSelecionado.horaFim,
+                          url: eventoSelecionado.urlRegistro || 'https://www25.senado.leg.br/web/atividade/sessao-plenaria'
+                        });
+                      }}
+                      className="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white py-3 px-3 rounded-xl font-bold text-xs transition-all active:scale-[0.98] min-h-[48px]"
+                    >
+                      <Download className="w-4 h-4 text-sky-400" />
+                      <span>Baixar iCal (.ics)</span>
+                    </button>
+
+                    <a 
+                      href={getGoogleCalendarUrl({
+                        title: eventoSelecionado.titulo,
+                        description: `${eventoSelecionado.descricao ? eventoSelecionado.descricao.replace(/\*\*/g, '') : ''}\n\nLocal: ${eventoSelecionado.local || 'Senado Federal'}\nÓrgãos: ${eventoSelecionado.orgaos || ''}`,
+                        location: eventoSelecionado.local || 'Senado Federal, Brasília - DF',
+                        startTime: eventoSelecionado.horaInicio,
+                        endTime: eventoSelecionado.horaFim,
+                        url: eventoSelecionado.urlRegistro || 'https://www25.senado.leg.br/web/atividade/sessao-plenaria'
+                      })}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => haptic.selection()}
+                      className="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white py-3 px-3 rounded-xl font-bold text-xs transition-all active:scale-[0.98] min-h-[48px]"
+                    >
+                      <CalendarPlus className="w-4 h-4 text-emerald-400" />
+                      <span>Google Calendar</span>
+                    </a>
+                  </div>
+
+                  {/* Assistir TV Senado ao vivo */}
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      haptic.selection();
+                      setEventoSelecionado(null);
+                      setAbaAtiva('aovivo');
+                    }}
+                    className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-3.5 rounded-xl font-bold text-sm transition-colors shadow-lg shadow-red-600/20 min-h-[48px]"
+                  >
+                    <Tv className="w-4 h-4" />
+                    <span>Assistir Transmissão Ao Vivo (TV Senado)</span>
+                  </button>
+
+                  {/* Pauta Oficial e Documentos */}
                   {eventoSelecionado.urlRegistro ? (
-                    eventoSelecionado.urlRegistro.includes('youtube') || eventoSelecionado.urlRegistro.includes('video') ? (
-                      <>
-                        <a 
-                          href={eventoSelecionado.urlRegistro}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-3.5 rounded-xl font-bold text-sm transition-colors shadow-lg shadow-red-600/20"
-                        >
-                          Assistir Transmissão (TV Senado)
-                        </a>
-                        <a 
-                          href="https://www25.senado.leg.br/web/atividade/sessao-plenaria"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-full flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-700 text-white py-3.5 rounded-xl font-bold text-sm transition-colors border border-sky-500/20"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                          Acessar Pauta e Documentos (PDF)
-                        </a>
-                      </>
-                    ) : (
-                      <a 
-                        href={eventoSelecionado.urlRegistro}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white py-3.5 px-4 rounded-xl font-bold text-sm transition-all shadow-lg shadow-sky-600/20 active:scale-[0.99]"
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                        Acessar Pauta Oficial, Ordem do Dia e Documentos (PDF)
-                      </a>
-                    )
+                    <a 
+                      href={eventoSelecionado.urlRegistro}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-700 text-white py-3.5 px-4 rounded-xl font-bold text-sm transition-all border border-sky-500/20 shadow-lg shadow-sky-600/20 active:scale-[0.99] min-h-[48px]"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      <span>Acessar Pauta Oficial, Ordem do Dia e Documentos (PDF)</span>
+                    </a>
                   ) : (
                     <a 
                       href="https://www25.senado.leg.br/web/atividade/sessao-plenaria"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white py-3.5 rounded-xl font-bold text-sm transition-colors border border-white/10"
+                      className="w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white py-3.5 rounded-xl font-bold text-sm transition-colors border border-white/10 min-h-[48px]"
                     >
                       <ExternalLink className="w-4 h-4" />
-                      Acessar Pauta no Portal do Senado
+                      <span>Acessar Pauta no Portal do Senado</span>
                     </a>
                   )}
                 </div>
