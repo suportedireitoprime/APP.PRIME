@@ -1,14 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, Search, Shield, Landmark, Scale, ChevronRight, Gavel, FileText, ListChecks, Heart, NotebookPen, Radar, History } from 'lucide-react';
+import { ArrowLeft, Shield, Landmark, Scale, ChevronRight, Gavel, FileText, ListChecks, Heart, NotebookPen, Radar, History } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import JurisBlogCarousel from '@/components/vademecum/blog/JurisBlogCarousel';
 import HeroOrnaments from '@/components/vademecum/home/HeroOrnaments';
 import HomeCard from '@/components/vademecum/home/HomeCard';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import jurisprudenciaHeroImg from '@/assets/jurisprudencia-hero.jpg';
-import HomeBrandBanner from '@/components/vademecum/home/HomeBrandBanner';
 import VadeMecumQuickActions from '@/components/vademecum/home/chunks/VadeMecumQuickActions';
 import { prefetchRoute } from '@/lib/routePrefetch';
 import { fetchSumulas } from '@/services/sumulasService';
@@ -129,7 +128,6 @@ const itemVariants = {
 const Jurisprudencia = () => {
   useTrackArea("jurisprudencia_aberta");
   const navigate = useNavigate();
-  const [query, setQuery] = useState('');
 
   const abrir = (id: string) => {
     track('jurisprudencia_category_opened', { category_id: id });
@@ -165,13 +163,7 @@ const Jurisprudencia = () => {
     if (slug) navigate(`/jurisprudencia/${slug}`);
   };
 
-  const submitBusca = (e: React.FormEvent) => {
-    e.preventDefault();
-    const q = query.trim();
-    if (!q) return;
-    track('jurisprudencia_search_submitted', { query_length: q.length, query_terms: q.split(/\s+/).length });
-    navigate(`/jurisprudencia/sumulas-stf?q=${encodeURIComponent(q)}`);
-  };
+
 
   return (
     <div className="w-full min-h-dvh bg-background pb-[calc(var(--sai-bottom)+5rem)] lg:pb-12 relative">
@@ -238,7 +230,7 @@ const Jurisprudencia = () => {
         {/* Header com voltar */}
         <div className="relative z-10 flex items-center justify-between px-4 pb-2 lg:hidden pt-4">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate('/vademecum')}
             aria-label="Voltar"
             className="w-11 h-11 rounded-full bg-black/25 hover:bg-black/35 backdrop-blur-sm flex items-center justify-center transition-colors"
           >
@@ -248,53 +240,35 @@ const Jurisprudencia = () => {
         </div>
 
         {/* Logo à esquerda */}
-        <div className="relative z-10 pt-2 sm:pt-6 flex-1 flex flex-col justify-start min-h-[80px]">
-          <HomeBrandBanner />
-        </div>
-
-        {/* Hero Title & Desc */}
-        <div className="relative z-10 px-6 pb-4 pt-4 flex flex-col items-start text-left lg:mx-auto lg:w-full lg:max-w-[1500px]">
-          <div className="flex flex-col items-start">
-            <p className="font-display uppercase tracking-[0.24em] text-[11px] text-emerald-200/80 drop-shadow-md">
-              Coleções
-            </p>
-            <h1 className="mt-1 font-display uppercase tracking-wider text-white text-[28px] leading-tight font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] lg:text-[40px]">
+        <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[100px]">
+          <div className="flex flex-col items-center text-center gap-1 z-[10] relative w-[42%] max-w-[160px] ml-2 sm:ml-4">
+            <div className="relative h-[75px] mb-1 flex items-center justify-center">
+              <Gavel className="w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] text-[#fcd34d] drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]" strokeWidth={1.5} />
+            </div>
+            <h1 className="font-serif italic text-white text-[18px] sm:text-[20px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] whitespace-nowrap">
               Jurisprudência
             </h1>
-            <p className="mt-1 text-white/90 text-[14px] leading-relaxed max-w-[280px] font-body lg:max-w-xl lg:text-[17px] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-              Súmulas vinculantes, do STF, do STJ e coletâneas prontas — em um só lugar.
+            <p className="font-body text-white/95 text-[9px] sm:text-[10px] font-bold tracking-[0.25em] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mt-1">
+              Súmulas e Teses
             </p>
+            
+            <div className="mt-3 flex items-center text-left gap-2 w-full justify-center">
+              <div className="w-[2px] h-7 bg-white/40 rounded-full" />
+              <p className="font-serif italic text-white/80 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                Decisões que<br/>mudam o jogo.
+              </p>
+            </div>
           </div>
         </div>
 
+
+
         {/* 4 Botões de Ação Rápida */}
-        <div className="relative z-10 px-3 sm:px-5 pb-3">
+        <div className="relative z-10 px-3 sm:px-5 pb-8 sm:pb-10">
           <VadeMecumQuickActions />
         </div>
 
-        {/* Busca */}
-        <div className="relative z-10 px-4 sm:px-6 w-full pb-5">
-          <form
-            onSubmit={submitBusca}
-            data-track="jurisprudencia_search_form"
-            className="w-full flex items-center gap-2 rounded-full bg-white/95 pl-4 pr-1 py-1 shadow-lg shadow-emerald-950/30 lg:max-w-xl lg:shrink-0"
-          >
-            <Search className="w-5 h-5 text-emerald-800/70 shrink-0" />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar jurisprudência"
-              className="flex-1 bg-transparent outline-none text-[16px] text-emerald-950 placeholder:text-emerald-800/50 py-2.5"
-            />
-            <button
-              type="submit"
-              className="rounded-full bg-emerald-700 hover:bg-emerald-800 text-white text-[13px] font-display uppercase tracking-wider font-bold px-5 min-h-11 transition-colors"
-            >
-              Buscar
-            </button>
-          </form>
-        </div>
-
+        {/* Busca Removida */}
       </div>
 
       <motion.div 
@@ -302,7 +276,6 @@ const Jurisprudencia = () => {
         initial="hidden"
         animate="show"
         className="max-w-2xl mx-auto px-4 py-6 space-y-6 lg:max-w-[1500px] lg:px-12 lg:py-10 lg:space-y-10 2xl:px-16"
-      >lg:px-12 lg:py-10 lg:space-y-10 2xl:px-16"
       >
         {/* Acesso Rápido - Removido (Movido para dentro do painel de topo) */}
 
