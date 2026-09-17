@@ -1,10 +1,11 @@
-import { Scale, Brain, Library, Sparkles, Briefcase, CheckCircle2, ShieldCheck, Headphones, Gavel, Globe, BookOpen, Zap, FileText, Bell, BarChart3, Bookmark, MessageSquare, Tv, Map, Gamepad2, GraduationCap, Newspaper, Landmark, Search, Mic, PenTool, Trophy, Layers, FolderOpen, Podcast } from "lucide-react";
+import { Scale, Brain, Library, Sparkles, Briefcase, CheckCircle2, ShieldCheck, Headphones, Gavel, Globe, BookOpen, Zap, FileText, Bell, BarChart3, Bookmark, MessageSquare, Tv, Map, Gamepad2, GraduationCap, Newspaper, Landmark, Search, Mic, PenTool, Trophy, Layers, FolderOpen, Podcast, Star, Crown } from "lucide-react";
 
 const CATEGORIZED_FEATURES = [
   {
     category: "Vade Mecum Inteligente",
     icon: Scale,
-    badge: "Legislação Completa",
+    badge: "O Mais Completo",
+    highlight: true,
     features: [
       "Todas as leis federais atualizadas",
       "Busca por termo, número ou assunto",
@@ -19,7 +20,8 @@ const CATEGORIZED_FEATURES = [
   {
     category: "IA Jurídica (Horus)",
     icon: Brain,
-    badge: "Inteligência Artificial",
+    badge: "Exclusivo",
+    highlight: true,
     features: [
       "Assistente 24h no WhatsApp",
       "Tira-dúvidas ilimitado sobre leis",
@@ -34,7 +36,8 @@ const CATEGORIZED_FEATURES = [
   {
     category: "Biblioteca Jurídica",
     icon: Library,
-    badge: "+200 Títulos",
+    badge: "+200 Títulos Premium",
+    highlight: true,
     features: [
       "+200 livros e ebooks jurídicos",
       "Resumos dos temas mais cobrados",
@@ -47,39 +50,10 @@ const CATEGORIZED_FEATURES = [
     ]
   },
   {
-    category: "Kit de Estudos",
-    icon: Sparkles,
-    badge: "Aceleração & Fixação",
-    features: [
-      "Narração nativa com voz humana",
-      "Milhares de Flashcards integrados",
-      "Mapas mentais da legislação",
-      "Simulados comentados por banca",
-      "Grifos virtuais sincronizados",
-      "Anotações salvas por artigo",
-      "Planos de estudo personalizados",
-      "Questões com gabarito comentado"
-    ]
-  },
-  {
-    category: "Ferramentas Pro",
-    icon: Briefcase,
-    badge: "Ecossistema Completo",
-    features: [
-      "Radar de novas leis em tempo real",
-      "App iOS, Android, Web e Desktop",
-      "Offline Premium sem internet",
-      "Zero anúncios e interrupções",
-      "Suporte prioritário exclusivo",
-      "Acesso antecipado a novidades",
-      "Boletins legislativos diários",
-      "Exportação de grifos e notas"
-    ]
-  },
-  {
     category: "Questões & Simulados",
     icon: GraduationCap,
-    badge: "Banco Completo",
+    badge: "Essencial",
+    highlight: true,
     features: [
       "Milhares de questões comentadas",
       "Simulados por cargo e banca",
@@ -89,6 +63,21 @@ const CATEGORIZED_FEATURES = [
       "Estatísticas de desempenho",
       "Revisão espaçada automática",
       "Questões por área e matéria"
+    ]
+  },
+  {
+    category: "Kit de Estudos",
+    icon: Sparkles,
+    badge: "Aceleração",
+    features: [
+      "Narração nativa com voz humana",
+      "Milhares de Flashcards integrados",
+      "Mapas mentais da legislação",
+      "Simulados comentados por banca",
+      "Grifos virtuais sincronizados",
+      "Anotações salvas por artigo",
+      "Planos de estudo personalizados",
+      "Questões com gabarito comentado"
     ]
   },
   {
@@ -137,9 +126,39 @@ const CATEGORIZED_FEATURES = [
     ]
   },
   {
+    category: "Peças e Petições",
+    icon: FileText,
+    badge: "IA Generativa",
+    features: [
+      "Gerador de petições iniciais",
+      "Editor jurídico completo",
+      "Modelos por área e ação",
+      "Revisão inteligente por IA",
+      "Formatação ABNT automática",
+      "Fundamentação legal sugerida",
+      "Exportação em PDF",
+      "Histórico de peças salvas"
+    ]
+  },
+  {
+    category: "Resumos Jurídicos",
+    icon: BookOpen,
+    badge: "Estudo Dirigido",
+    features: [
+      "Resumos por matéria e lei",
+      "Resumos de jurisprudência",
+      "Texto otimizado para fixação",
+      "Organização por temas",
+      "Áudio dos resumos narrados",
+      "Favoritar e compartilhar",
+      "Atualização automática",
+      "Ideal para revisão final"
+    ]
+  },
+  {
     category: "Podcasts Jurídicos",
     icon: Podcast,
-    badge: "Ouça em Qualquer Lugar",
+    badge: "Em Qualquer Lugar",
     features: [
       "Episódios sobre legislação",
       "Comentários de atualidades",
@@ -184,7 +203,7 @@ const CATEGORIZED_FEATURES = [
   {
     category: "Três Poderes Ao Vivo",
     icon: Landmark,
-    badge: "Acompanhe em Tempo Real",
+    badge: "Tempo Real",
     features: [
       "Agenda da Câmara dos Deputados",
       "Pauta do Senado Federal",
@@ -212,33 +231,18 @@ const CATEGORIZED_FEATURES = [
     ]
   },
   {
-    category: "Peças e Petições",
-    icon: FileText,
-    badge: "IA Generativa",
+    category: "Ferramentas Pro",
+    icon: Briefcase,
+    badge: "Ecossistema",
     features: [
-      "Gerador de petições iniciais",
-      "Editor jurídico completo",
-      "Modelos por área e ação",
-      "Revisão inteligente por IA",
-      "Formatação ABNT automática",
-      "Fundamentação legal sugerida",
-      "Exportação em PDF",
-      "Histórico de peças salvas"
-    ]
-  },
-  {
-    category: "Resumos Jurídicos",
-    icon: BookOpen,
-    badge: "Estudo Dirigido",
-    features: [
-      "Resumos por matéria e lei",
-      "Resumos de jurisprudência",
-      "Texto otimizado para fixação",
-      "Organização por temas",
-      "Áudio dos resumos narrados",
-      "Favoritar e compartilhar",
-      "Atualização automática",
-      "Ideal para revisão final"
+      "Radar de novas leis em tempo real",
+      "App iOS, Android, Web e Desktop",
+      "Offline Premium sem internet",
+      "Zero anúncios e interrupções",
+      "Suporte prioritário exclusivo",
+      "Acesso antecipado a novidades",
+      "Boletins legislativos diários",
+      "Exportação de grifos e notas"
     ]
   },
   {
@@ -380,50 +384,54 @@ const CATEGORIZED_FEATURES = [
 
 export function FeaturesList({ tabKey: _tabKey }: { tabKey: string }) {
   return (
-    <div className="mx-4 rounded-3xl p-4 sm:p-5 bg-card/60 border border-border/80 backdrop-blur-md shadow-xl">
-      <div className="text-center mb-4">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-black uppercase tracking-widest mb-1.5">
-          <ShieldCheck className="w-3.5 h-3.5" />
-          Acesso Total Ilimitado
+    <div className="mx-4 rounded-3xl p-5 sm:p-7 bg-card/60 border border-border/80 backdrop-blur-md shadow-2xl overflow-hidden relative">
+      {/* Elemento de brilho no fundo */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-primary/20 blur-[80px] pointer-events-none rounded-full" />
+
+      <div className="text-center mb-6 relative z-10">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 to-primary/20 border border-amber-500/30 text-amber-500 text-[11px] font-black uppercase tracking-widest mb-3 shadow-[0_0_15px_rgba(245,158,11,0.15)]">
+          <Crown className="w-3.5 h-3.5 fill-amber-500/50" />
+          O Maior Ecossistema Jurídico do Brasil
         </div>
-        <h3 className="font-display text-base sm:text-lg font-black text-foreground uppercase tracking-wider">
-          Tudo o que você desbloqueia
+        <h3 className="font-display text-lg sm:text-xl font-black text-white uppercase tracking-wider mb-2">
+          Acesso Premium Desbloqueado
         </h3>
-        <p className="text-[11px] text-muted-foreground font-medium mt-0.5">
-          +200 funcionalidades em 25 módulos completos
+        <p className="text-[12.5px] sm:text-[13.5px] text-zinc-400 font-medium max-w-md mx-auto leading-relaxed">
+          Sua assinatura inclui <strong className="text-white font-bold">+200 ferramentas exclusivas</strong> divididas em 25 módulos. O arsenal definitivo para a sua aprovação e atuação prática.
         </p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 relative z-10">
         {CATEGORIZED_FEATURES.map((cat, i) => {
           const Icon = cat.icon;
           const isLastOdd = i === CATEGORIZED_FEATURES.length - 1 && CATEGORIZED_FEATURES.length % 2 !== 0;
+          
           return (
             <div 
               key={i} 
-              className={`rounded-2xl border border-white/5 bg-black/30 p-3 sm:p-3.5 flex flex-col transition-all hover:border-white/10 hover:bg-black/40 ${
+              className={`rounded-2xl border ${cat.highlight ? 'border-primary/40 bg-gradient-to-b from-primary/10 to-transparent shadow-[0_0_20px_rgba(var(--primary),0.07)]' : 'border-white/5 bg-black/30'} p-3.5 sm:p-4 flex flex-col transition-all duration-300 hover:border-white/20 hover:bg-black/50 ${
                 isLastOdd ? 'md:col-span-2' : ''
               }`}
             >
               {/* Cabeçalho */}
-              <div className="flex items-center justify-between gap-2 pb-2 mb-1.5 border-b border-white/5">
+              <div className={`flex items-center justify-between gap-2 pb-2.5 mb-2.5 border-b ${cat.highlight ? 'border-primary/20' : 'border-white/5'}`}>
                 <div className="flex items-center gap-2">
-                  <Icon className="w-4 h-4 text-primary shrink-0" />
-                  <h4 className="font-display font-black text-[12px] sm:text-[13px] text-foreground tracking-wide leading-tight">
+                  <Icon className={`w-4 h-4 shrink-0 ${cat.highlight ? 'text-primary' : 'text-zinc-400'}`} />
+                  <h4 className={`font-display font-black text-[12px] sm:text-[13px] tracking-wide leading-tight ${cat.highlight ? 'text-white' : 'text-zinc-200'}`}>
                     {cat.category}
                   </h4>
                 </div>
-                <span className="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-white/5 text-muted-foreground border border-white/5 whitespace-nowrap">
+                <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full whitespace-nowrap ${cat.highlight ? 'bg-primary/20 text-primary border border-primary/30' : 'bg-white/5 text-zinc-400 border border-white/10'}`}>
                   {cat.badge}
                 </span>
               </div>
 
               {/* Lista compacta em grid 2 colunas */}
-              <ul className="grid grid-cols-2 gap-x-2 gap-y-1 flex-1">
+              <ul className="grid grid-cols-2 gap-x-2.5 gap-y-1.5 flex-1">
                 {cat.features.map((feat, idx) => (
-                  <li key={idx} className="flex items-center gap-1 min-w-0">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
-                    <span className="font-body text-[10.5px] sm:text-[11px] text-muted-foreground leading-tight font-medium truncate">
+                  <li key={idx} className="flex items-center gap-1.5 min-w-0">
+                    <CheckCircle2 className={`w-3 h-3 shrink-0 ${cat.highlight ? 'text-primary' : 'text-emerald-500/80'}`} />
+                    <span className="font-body text-[10.5px] sm:text-[11px] text-zinc-400 leading-tight font-medium truncate">
                       {feat}
                     </span>
                   </li>
