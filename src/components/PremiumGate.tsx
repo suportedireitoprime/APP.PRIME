@@ -14,6 +14,8 @@ import { BENEFICIOS_PREMIUM } from '@/lib/premiumBeneficios';
 import { track } from '@/lib/analyticsEvents';
 import { logAreaEvent } from '@/lib/appEvents';
 import { haptic } from '@/lib/nativeHaptics';
+import { useAuth } from '@/hooks/useAuth';
+import { TrialExpiredModal } from '@/components/TrialExpiredModal';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
 import horusOwlAsset from '@/assets/horus/horus-owl.png.asset.json';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
@@ -303,6 +305,15 @@ const PremiumGate = ({
   const shownTitle = title ?? info.title;
   const shownDesc = description ?? info.description;
   const [showBenefits, setShowBenefits] = useState(false);
+  const { user } = useAuth();
+
+  // Verifica se o trial expirou
+  const isTrialExpired = useMemo(() => {
+    if (!user?.user_metadata?.trial_start) return false;
+    const trialStart = new Date(user.user_metadata.trial_start).getTime();
+    const nowMs = Date.now();
+    return nowMs > trialStart + (3 * 24 * 60 * 60 * 1000); // 3 dias
+  }, [user]);
 
   // Player de demonstração de narração
   const [isPlayingDemo, setIsPlayingDemo] = useState(false);
@@ -409,6 +420,10 @@ const PremiumGate = ({
     onClose();
     navigate('/assinatura?plano=anual&trial=1');
   };
+
+  if (isTrialExpired && open) {
+    return <TrialExpiredModal open={open} onClose={onClose} />;
+  }
 
   const content = (
     <AnimatePresence>

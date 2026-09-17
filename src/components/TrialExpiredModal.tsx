@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -50,7 +51,12 @@ const SLOTS = [
   { x: -62, y: -25, rotate: -8, scale: 0.9, opacity: 0.85, z: 40 },
 ];
 
-export function TrialExpiredModal() {
+interface TrialExpiredModalProps {
+  open?: boolean;
+  onClose?: () => void;
+}
+
+export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -107,7 +113,7 @@ export function TrialExpiredModal() {
     };
   }, []);
 
-  if (isAdmin) {
+  if (isAdmin || !open) {
     return null;
   }
 
@@ -125,10 +131,20 @@ export function TrialExpiredModal() {
           setCheckoutPlan(null);
           refreshSubscription();
           queryClient.invalidateQueries();
+          if (onClose) onClose();
         }}
       />
 
       <div className="relative mx-auto w-full max-w-md pt-24 sm:pt-28">
+        {onClose && (
+          <button
+            onClick={onClose}
+            aria-label="Fechar"
+            className="absolute -top-12 right-0 p-2.5 rounded-full bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        )}
         {/* Horus mascote em cima do cartão, na parte de cima */}
         <div className="absolute -top-[82px] sm:-top-[92px] left-4 sm:left-7 z-30 flex items-end pointer-events-none">
           <motion.div
@@ -157,7 +173,7 @@ export function TrialExpiredModal() {
             className="relative -top-5 -left-1 max-w-[205px] sm:max-w-[235px] bg-white text-neutral-950 rounded-2xl px-3.5 py-2 shadow-2xl border-2 border-neutral-900 pointer-events-auto"
           >
             <p className="text-[12px] sm:text-[13px] font-black leading-snug text-neutral-900">
-              Seu passe livre terminou! A jornada continua? 🚀
+              {firstName}, a jornada continua? 🚀
             </p>
             <span
               className="absolute -bottom-2 left-4 w-0 h-0 pointer-events-none"
