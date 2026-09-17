@@ -408,9 +408,7 @@ export function FeaturesList({ tabKey: _tabKey }: { tabKey: string }) {
               {/* Cabeçalho */}
               <div className="flex items-center justify-between gap-2 pb-2 mb-1.5 border-b border-white/5">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
-                    <Icon className="w-3.5 h-3.5 text-primary" />
-                  </div>
+                  <Icon className="w-4 h-4 text-primary shrink-0" />
                   <h4 className="font-display font-black text-[12px] sm:text-[13px] text-foreground tracking-wide leading-tight">
                     {cat.category}
                   </h4>
