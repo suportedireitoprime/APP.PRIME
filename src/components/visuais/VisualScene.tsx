@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { pdf, Document, Page, Image } from '@react-pdf/renderer';
+import { pdf, Document, Page, Image as PdfImage } from '@react-pdf/renderer';
 import { buildScene, PALETA, type Scene, type SceneNode } from '@/lib/visuaisJuridicos/layout';
 import type { VisualContent, VisualEstilo } from '@/lib/visuaisJuridicos/types';
 
@@ -131,7 +131,7 @@ async function renderCanvas(content: VisualContent, estilo: VisualEstilo) {
   const blob = new Blob([markup], { type: 'image/svg+xml;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   try {
-    const img = new Image();
+    const img = new window.Image();
     await new Promise<void>((resolve, reject) => {
       img.onload = () => resolve();
       img.onerror = () => reject(new Error('falha ao renderizar'));
@@ -195,7 +195,7 @@ export async function exportarPdf(content: VisualContent, estilo: VisualEstilo, 
   const Doc = (
     <Document>
       <Page size={[w, h]} style={{ margin: 0, padding: 0 }}>
-        <Image src={data} style={{ width: w, height: h }} />
+        <PdfImage src={data} style={{ width: w, height: h }} />
       </Page>
     </Document>
   );
@@ -220,7 +220,7 @@ export async function gerarPdfBlob(content: VisualContent, estilo: VisualEstilo 
   const Doc = (
     <Document>
       <Page size={[w, h]} style={{ margin: 0, padding: 0 }}>
-        <Image src={data} style={{ width: w, height: h }} />
+        <PdfImage src={data} style={{ width: w, height: h }} />
       </Page>
     </Document>
   );
