@@ -228,7 +228,11 @@ const Jurisprudencia = () => {
             <div className="absolute inset-0 opacity-10" style={{
               backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px)',
               backgroundSize: '24px 24px'
-            }        {/* Glow decorativo opcional para ajudar no verde */}
+            }} />
+          </div>
+        </div>
+
+        {/* Glow decorativo opcional para ajudar no verde */}
         <div className="absolute -top-16 -left-10 w-56 h-56 rounded-full bg-emerald-400/15 blur-3xl pointer-events-none z-[2]" />
 
         {/* Header com voltar */}
