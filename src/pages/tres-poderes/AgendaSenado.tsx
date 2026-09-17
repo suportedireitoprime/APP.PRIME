@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 
 interface EventoSenado {
-  id: number;
+  id: string | number;
   titulo: string;
   descricao: string;
   horaInicio: string;
@@ -148,18 +148,34 @@ const AgendaSenado = () => {
       setLoading(true);
       setErro(null);
       
-      const { data: result, error } = await supabase.functions.invoke('agenda-senado', {
-        body: { dataInicio: data, dataFim: data }
-      });
+      const startOfDay = `${data}T00:00:00-03:00`;
+      const endOfDay = `${data}T23:59:59-03:00`;
+
+      const { data: result, error } = await supabase
+        .from('senado_pautas')
+        .select('*')
+        .gte('inicio', startOfDay)
+        .lte('inicio', endOfDay)
+        .order('inicio', { ascending: true });
 
       if (error) throw error;
       
-      if (result && result.eventos) {
-        setEventos(result.eventos);
+      if (result && result.length > 0) {
+        setEventos(result.map(r => ({
+          id: r.id,
+          titulo: r.titulo || r.sessao || '',
+          descricao: r.descricao || '',
+          horaInicio: r.inicio,
+          horaFim: r.fim || '',
+          local: r.local || '',
+          orgaos: r.orgaos || '',
+          situacao: r.situacao || '',
+          urlRegistro: r.registro || '',
+        })));
       } else {
         setEventos([]);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Erro ao buscar agenda do Senado:", err);
       setErro("Não foi possível carregar a pauta. Tente novamente mais tarde.");
     } finally {
