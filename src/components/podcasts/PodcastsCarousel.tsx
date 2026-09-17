@@ -35,11 +35,22 @@ const PodcastsCarousel = () => {
 
   return (
     <div className="w-full mt-8 mb-4">
-      <div className="px-4 mb-3 flex items-center justify-between">
-        <h3 className="font-display text-white text-[16px] font-bold flex items-center gap-2 tracking-widest uppercase">
-          <span className="w-1 h-5 rounded-full bg-red-500" />
-          Podcasts TV Justiça
-        </h3>
+      <div className="px-4 mb-3 flex items-start justify-between">
+        <div>
+          <h3 className="font-sans text-white text-[16px] font-bold flex items-center gap-2">
+            <span className="w-1 h-5 rounded-full bg-red-500" />
+            Podcasts TV Justiça
+          </h3>
+          <p className="font-body text-white/50 text-[12.5px] leading-snug ml-3 mt-0.5">
+            Episódios completos e atualizados
+          </p>
+        </div>
+        <button 
+          onClick={() => navigate('/tres-poderes/stf/podcasts')}
+          className="text-[12px] font-semibold text-white/70 bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full active:scale-95 transition-transform mt-0.5"
+        >
+          Ver todos
+        </button>
       </div>
       
       {/* Carrossel Horizontal Nativo com Snap */}
