@@ -47,7 +47,7 @@ export interface Scene {
 }
 
 const W = 1100;
-const PAD = 56;
+const PAD = 20;
 const FOOTER_H = 112;
 
 

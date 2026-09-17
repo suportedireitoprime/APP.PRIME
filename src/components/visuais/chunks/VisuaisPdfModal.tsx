@@ -213,19 +213,19 @@ export function VisuaisPdfModal({ open, registro, onClose }: VisuaisPdfModalProp
         </div>
       </header>
 
-      {/* Content Area */}
-      <div className="flex-1 relative flex flex-col items-center justify-center p-2 sm:p-4 overflow-hidden">
+      {/* Content Area — 100% sangrado sem margens */}
+      <div className="flex-1 relative w-full h-full overflow-hidden bg-neutral-950 p-0 m-0">
         {modo === 'pdf' && pdfUrl ? (
           <iframe
-            src={`${pdfUrl}#toolbar=1&navpanes=0`}
+            src={`${pdfUrl}#toolbar=0&navpanes=0&view=FitH`}
             title={registro.titulo}
-            className="w-full h-full rounded-xl border border-white/10 shadow-2xl bg-neutral-900"
+            className="w-full h-full border-0 m-0 p-0 block bg-neutral-900"
           />
         ) : (
           /* Modo Visual em Alta Resolução (Instantâneo 0ms, sempre funciona e zoomável) */
           <div
             ref={wrapRef}
-            className="w-full h-full overflow-auto rounded-xl border border-white/10 bg-[#09090b] flex items-center justify-center p-2 sm:p-6 shadow-inner relative"
+            className="w-full h-full overflow-auto p-0 m-0 flex items-start justify-center"
           >
             <div
               style={{
@@ -233,7 +233,7 @@ export function VisuaisPdfModal({ open, registro, onClose }: VisuaisPdfModalProp
                 maxWidth: `${Math.max(100, zoom * 100)}%`,
                 transition: 'width 0.15s ease-out',
               }}
-              className="mx-auto flex items-center justify-center"
+              className="w-full mx-auto"
             >
               <VisualScene content={content} estilo="limpo" />
             </div>

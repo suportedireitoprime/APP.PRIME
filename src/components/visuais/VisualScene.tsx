@@ -195,7 +195,7 @@ export async function exportarPdf(content: VisualContent, estilo: VisualEstilo, 
   const Doc = (
     <Document>
       <Page size={[w, h]} style={{ margin: 0, padding: 0 }}>
-        <PdfImage src={data} style={{ width: w, height: h }} />
+        <PdfImage src={data} style={{ width: '100%', height: '100%', margin: 0, padding: 0, objectFit: 'fill' }} />
       </Page>
     </Document>
   );
@@ -220,7 +220,7 @@ export async function gerarPdfBlob(content: VisualContent, estilo: VisualEstilo 
   const Doc = (
     <Document>
       <Page size={[w, h]} style={{ margin: 0, padding: 0 }}>
-        <PdfImage src={data} style={{ width: w, height: h }} />
+        <PdfImage src={data} style={{ width: '100%', height: '100%', margin: 0, padding: 0, objectFit: 'fill' }} />
       </Page>
     </Document>
   );
