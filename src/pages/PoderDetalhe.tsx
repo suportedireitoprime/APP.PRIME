@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, FileText, Globe, Headphones, PlaySquare, CalendarDays, ScanEye, Rss, ArrowLeft, Users, ScrollText } from 'lucide-react';
+import { ChevronLeft, FileText, Globe, Headphones, PlaySquare, CalendarDays, ScanEye, Rss, ArrowLeft, Users, ScrollText, Video } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { useGoBack } from '@/hooks/useGoBack';
 import ShapeGrid from '@/components/ui/ShapeGrid';
