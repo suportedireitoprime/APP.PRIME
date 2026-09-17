@@ -534,28 +534,21 @@ export default function VisuaisJuridicosSheet({
     return c;
   }, [categoria, item, tema]);
 
+  if (!open) return null;
+
   const sheetContent = (
     <>
-      <AnimatePresence>
-        {open && (
-          <>
-            {!emPagina && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={onClose}
-                className="fixed inset-0 z-[99] bg-black/80 backdrop-blur-sm"
-              />
-            )}
-            <motion.div
-              initial={emPagina ? { opacity: 0 } : { opacity: 0, scale: 0.98 }}
-              animate={emPagina ? { opacity: 1 } : { opacity: 1, scale: 1 }}
-              exit={emPagina ? { opacity: 0 } : { opacity: 0, scale: 0.98 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[100] flex h-[100dvh] flex-col overflow-hidden bg-[#0D0D0D] text-foreground shadow-2xl"
-            >
-              {/* Fundo animado quadrado padrão do aplicativo (ShapeGrid) */}
+      <div className="fixed inset-0 z-[100] isolate">
+      {!emPagina && (
+        <div
+          onClick={onClose}
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-0"
+        />
+      )}
+      <div
+        className="fixed inset-0 flex h-[100dvh] flex-col overflow-hidden bg-[#0D0D0D] text-foreground shadow-2xl z-10"
+      >
+        {/* Fundo animado quadrado padrão do aplicativo (ShapeGrid) */}
               <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
                 <ShapeGrid
                   speed={0.5}
@@ -679,10 +672,8 @@ export default function VisuaisJuridicosSheet({
                 )}
               </div>
             </div>
-          </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
 
       {/* ── Deck 3D Modal: Escolha do formato (Mapa Mental, Infográfico, Fluxograma, Diagrama) ao gerar ── */}
       <VisuaisDeckModal

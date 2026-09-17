@@ -11,7 +11,7 @@ import {
   Search,
 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
-import type { VisualRecord, VisualCategoria } from '@/lib/visuaisJuridicos/types';
+import type { VisualRecord, VisualCategoria, VisualContent } from '@/lib/visuaisJuridicos/types';
 import type { CatalogoItem } from '@/lib/visuaisJuridicos/catalogo';
 import { MATERIAS } from '@/lib/visuaisJuridicos/catalogo';
 import { VisuaisPdfModal } from './VisuaisPdfModal';
@@ -332,14 +332,16 @@ export function VisuaisPastasView({
       )}
 
       {/* Modal de Exibição Direta do PDF */}
-      <VisuaisPdfModal
-        open={modalPdfOpen}
-        registro={registroPdf}
-        onClose={() => {
-          setModalPdfOpen(false);
-          setRegistroPdf(null);
-        }}
-      />
+      {modalPdfOpen && registroPdf && (
+        <VisuaisPdfModal
+          open={modalPdfOpen}
+          registro={registroPdf}
+          onClose={() => {
+            setModalPdfOpen(false);
+            setRegistroPdf(null);
+          }}
+        />
+      )}
     </div>
   );
 }
