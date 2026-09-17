@@ -141,6 +141,7 @@ const Configuracoes = lazy(() => import("./pages/Configuracoes.tsx"));
 const AgendaCamara = lazy(() => import("./pages/tres-poderes/AgendaCamara.tsx"));
 const AgendaSenado = lazy(() => import("./pages/tres-poderes/AgendaSenado.tsx"));
 const AgendaSTF = lazy(() => import("./pages/tres-poderes/AgendaSTF.tsx"));
+const SessoesAoVivo = lazy(() => import("./pages/tres-poderes/SessoesAoVivo.tsx"));
 const RadarDeputados = lazy(() => import("./pages/RadarDeputados.tsx"));
 const RadarSTF = lazy(() => import("./pages/RadarSTF.tsx"));
 const RadarVotacoes = lazy(() => import("./pages/RadarVotacoes.tsx"));
@@ -1297,6 +1298,7 @@ function AnimatedRoutes() {
           <Route path="/tres-poderes/camara/agenda" element={<ProtectedRoute><PageTransition><AgendaCamara /></PageTransition></ProtectedRoute>} />
           <Route path="/tres-poderes/senado/agenda" element={<ProtectedRoute><PageTransition><AgendaSenado /></PageTransition></ProtectedRoute>} />
           <Route path="/tres-poderes/stf/agenda" element={<ProtectedRoute><PageTransition><AgendaSTF /></PageTransition></ProtectedRoute>} />
+          <Route path="/tres-poderes/stf/sessoes-ao-vivo" element={<ProtectedRoute><PageTransition><SessoesAoVivo /></PageTransition></ProtectedRoute>} />
           <Route path="/tres-poderes/:poderId/portais" element={<ProtectedRoute><PageTransition><PortaisPoder /></PageTransition></ProtectedRoute>} />
           <Route path="/tres-poderes/stf/podcast/:videoId" element={<PageTransition><PodcastPlayer /></PageTransition>} />
           <Route path="/tres-poderes/stf/podcasts" element={<PageTransition><PodcastsLista /></PageTransition>} />

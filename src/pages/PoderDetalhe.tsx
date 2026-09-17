@@ -16,17 +16,17 @@ const PODERES_DATA: Record<string, any> = {
     titulo: 'Supremo Tribunal Federal',
     sigla: 'STF',
     img: stfImg,
-    color: 'rgba(225, 29, 72, 0.45)', // Rose-600
-    solidColor: '#E11D48',
+    color: 'rgba(234, 179, 8, 0.45)', // Yellow-500
+    solidColor: '#EAB308',
     description: 'A mais alta instância do poder judiciário brasileiro.',
   },
   senado: {
     titulo: 'Senado Federal',
     sigla: 'Senado',
     img: senadoImg,
-    color: 'rgba(16, 185, 129, 0.45)', // Emerald-500
-    solidColor: '#10B981',
-    description: 'A câmara alta do legislativo e representante dos estados.',
+    color: 'rgba(34, 197, 94, 0.45)', // Green-500
+    solidColor: '#22C55E',
+    description: 'Câmara alta do poder legislativo.',
   },
   camara: {
     titulo: 'Câmara dos Deputados',
@@ -42,7 +42,7 @@ const CARDS = [
   { id: 'blog', label: 'BLOG', icon: Rss, color: '#FACC15' },
   { id: 'portais', label: 'PORTAIS', icon: Globe, color: '#34D399' },
   { id: 'audio', label: 'ÁUDIO AULAS', icon: Headphones, color: '#F87171' },
-  { id: 'video', label: 'VÍDEO AULAS', icon: PlaySquare, color: '#A78BFA' },
+  { id: 'sessoes', label: 'SESSÕES AO VIVO', icon: Video, color: '#A78BFA' },
 ];
 
 const PoderDetalhe = () => {
@@ -176,6 +176,8 @@ const PoderDetalhe = () => {
                     haptic.selection();
                     if (item.id === 'portais') {
                       navigate(`/tres-poderes/${id}/portais`);
+                    } else if (item.id === 'sessoes' && id === 'stf') {
+                      navigate(`/tres-poderes/stf/sessoes-ao-vivo`);
                     } else {
                       toast({ title: 'Em breve', description: `O módulo de ${item.label} está em desenvolvimento.` });
                     }
