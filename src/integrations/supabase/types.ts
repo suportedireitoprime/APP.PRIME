@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -39,6 +39,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      senado_pautas: {
+        Row: {
+          codigo_sessao: string
+          created_at: string
+          descricao: string | null
+          hora_fim: string | null
+          hora_inicio: string | null
+          id: string
+          local: string | null
+          orgaos: string | null
+          situacao: string | null
+          titulo: string | null
+          updated_at: string
+          url_registro: string | null
+        }
+        Insert: {
+          codigo_sessao: string
+          created_at?: string
+          descricao?: string | null
+          hora_fim?: string | null
+          hora_inicio?: string | null
+          id?: string
+          local?: string | null
+          orgaos?: string | null
+          situacao?: string | null
+          titulo?: string | null
+          updated_at?: string
+          url_registro?: string | null
+        }
+        Update: {
+          codigo_sessao?: string
+          created_at?: string
+          descricao?: string | null
+          hora_fim?: string | null
+          hora_inicio?: string | null
+          id?: string
+          local?: string | null
+          orgaos?: string | null
+          situacao?: string | null
+          titulo?: string | null
+          updated_at?: string
+          url_registro?: string | null
+        }
+        Relationships: []
+      }
       admin_alertas: {
         Row: {
           created_at: string

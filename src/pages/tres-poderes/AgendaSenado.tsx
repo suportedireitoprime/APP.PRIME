@@ -1,12 +1,31 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar as CalendarIcon, MapPin, Clock, Info, X } from 'lucide-react';
+import { ArrowLeft, Calendar as CalendarIcon, MapPin, Clock, Info, X, RotateCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { haptic } from '@/lib/nativeHaptics';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+
+const getLocalDateString = (d: Date = new Date()) => {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const formatHora = (str?: string) => {
+  if (!str) return '--:--';
+  if (str.includes('T')) {
+    const timePart = str.split('T')[1];
+    const match = timePart.match(/^(\d{2}:\d{2})/);
+    if (match) return match[1];
+  }
+  const match = str.match(/(\d{2}:\d{2})/);
+  if (match) return match[1];
+  return str;
+};
 
 interface EventoSenado {
   id: string | number;
@@ -106,11 +125,12 @@ const formatarDescricao = (texto: string) => {
 const AgendaSenado = () => {
   const navigate = useNavigate();
   const [dataSelecionada, setDataSelecionada] = useState(() => {
-    return new Date().toISOString().split('T')[0];
+    return getLocalDateString();
   });
   const [diasTimeline, setDiasTimeline] = useState<Date[]>([]);
   const [eventos, setEventos] = useState<EventoSenado[]>([]);
   const [loading, setLoading] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [eventoSelecionado, setEventoSelecionado] = useState<EventoSenado | null>(null);
 
@@ -143,34 +163,30 @@ const AgendaSenado = () => {
     }
   }, [diasTimeline, dataSelecionada]);
 
-  const fetchAgenda = async (data: string) => {
+  const fetchAgenda = async (data: string, silent = false) => {
     try {
-      setLoading(true);
+      if (!silent) setLoading(true);
       setErro(null);
-      
-      const startOfDay = `${data}T00:00:00-03:00`;
-      const endOfDay = `${data}T23:59:59-03:00`;
 
       const { data: result, error } = await supabase
         .from('senado_pautas')
         .select('*')
-        .gte('inicio', startOfDay)
-        .lte('inicio', endOfDay)
-        .order('inicio', { ascending: true });
+        .ilike('hora_inicio', `${data}%`)
+        .order('hora_inicio', { ascending: true });
 
       if (error) throw error;
       
       if (result && result.length > 0) {
         setEventos(result.map(r => ({
           id: r.id,
-          titulo: r.titulo || r.sessao || '',
+          titulo: r.titulo || 'Sessão do Senado',
           descricao: r.descricao || '',
-          horaInicio: r.inicio,
-          horaFim: r.fim || '',
+          horaInicio: r.hora_inicio || '',
+          horaFim: r.hora_fim || '',
           local: r.local || '',
           orgaos: r.orgaos || '',
           situacao: r.situacao || '',
-          urlRegistro: r.registro || '',
+          urlRegistro: r.url_registro || '',
         })));
       } else {
         setEventos([]);
@@ -179,7 +195,19 @@ const AgendaSenado = () => {
       console.error("Erro ao buscar agenda do Senado:", err);
       setErro("Não foi possível carregar a pauta. Tente novamente mais tarde.");
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
+    }
+  };
+
+  const syncAndRefresh = async () => {
+    try {
+      setSyncing(true);
+      await supabase.functions.invoke('sync-senado-pautas');
+      await fetchAgenda(dataSelecionada, true);
+    } catch (err) {
+      console.error("Erro ao sincronizar pautas:", err);
+    } finally {
+      setSyncing(false);
     }
   };
 
@@ -229,7 +257,17 @@ const AgendaSenado = () => {
             </h1>
           </div>
           
-          <div className="w-12 h-12" />
+          <button 
+            onClick={() => {
+              haptic.selection();
+              syncAndRefresh();
+            }}
+            disabled={syncing}
+            className="w-12 h-12 flex items-center justify-center -mr-3 text-white/70 hover:text-white transition-colors"
+            title="Sincronizar Pautas"
+          >
+            <RotateCw className={`w-5 h-5 ${syncing ? 'animate-spin text-sky-400' : ''}`} />
+          </button>
         </div>
 
         {/* Timeline Horizontal */}
@@ -237,16 +275,17 @@ const AgendaSenado = () => {
           <ScrollArea className="w-full whitespace-nowrap" ref={timelineRef}>
             <div className="flex items-center w-max space-x-2 px-4 py-2">
               {diasTimeline.map((d, idx) => {
-                const isSelected = d.toISOString().split('T')[0] === dataSelecionada;
-                const isToday = d.toISOString().split('T')[0] === new Date().toISOString().split('T')[0];
+                const dateKey = getLocalDateString(d);
+                const isSelected = dateKey === dataSelecionada;
+                const isToday = dateKey === getLocalDateString();
                 return (
                   <button
                     key={idx}
-                    id={`date-btn-${d.toISOString().split('T')[0]}`}
+                    id={`date-btn-${dateKey}`}
                     onClick={() => {
                       if (!isSelected) {
                         haptic.selection();
-                        setDataSelecionada(d.toISOString().split('T')[0]);
+                        setDataSelecionada(dateKey);
                       }
                     }}
                     className={`flex flex-col items-center justify-center p-2 rounded-xl border transition-all duration-300 ${
@@ -289,7 +328,7 @@ const AgendaSenado = () => {
               <p className="text-red-400 text-sm mb-4">{erro}</p>
               <button 
                 onClick={() => fetchAgenda(dataSelecionada)}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-bold"
+                className="bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-colors"
               >
                 Tentar Novamente
               </button>
@@ -297,7 +336,15 @@ const AgendaSenado = () => {
           ) : eventos.length === 0 ? (
             <div className="text-center text-white/50 py-12 px-6 flex flex-col items-center">
               <CalendarIcon className="w-12 h-12 opacity-20 mb-3" />
-              <p>Nenhuma sessão ou reunião agendada para este dia no Senado Federal.</p>
+              <p className="text-sm max-w-xs mb-4">Nenhuma sessão ou reunião agendada para este dia no Senado Federal.</p>
+              <button
+                onClick={() => syncAndRefresh()}
+                disabled={syncing}
+                className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all"
+              >
+                <RotateCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin text-sky-400' : ''}`} />
+                {syncing ? 'Sincronizando...' : 'Atualizar com dados oficiais'}
+              </button>
             </div>
           ) : (
             eventos.map((evento) => (
@@ -329,8 +376,8 @@ const AgendaSenado = () => {
                     <div className="flex items-center gap-1.5 text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-md">
                       <Clock className="w-3.5 h-3.5" />
                       <span className="text-[12px] font-bold">
-                        {evento.horaInicio ? new Date(evento.horaInicio).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '--:--'}
-                        {evento.horaFim ? ` às ${new Date(evento.horaFim).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}` : ''}
+                        {evento.horaInicio ? formatHora(evento.horaInicio) : '--:--'}
+                        {evento.horaFim ? ` às ${formatHora(evento.horaFim)}` : ''}
                       </span>
                     </div>
                     
@@ -398,8 +445,8 @@ const AgendaSenado = () => {
                   <div className="flex items-center gap-1.5 text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1.5 rounded-md">
                     <Clock className="w-4 h-4" />
                     <span className="text-[13px] font-bold">
-                      {eventoSelecionado.horaInicio ? new Date(eventoSelecionado.horaInicio).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '--:--'}
-                      {eventoSelecionado.horaFim ? ` às ${new Date(eventoSelecionado.horaFim).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}` : ''}
+                      {eventoSelecionado.horaInicio ? formatHora(eventoSelecionado.horaInicio) : '--:--'}
+                      {eventoSelecionado.horaFim ? ` às ${formatHora(eventoSelecionado.horaFim)}` : ''}
                     </span>
                   </div>
                   
