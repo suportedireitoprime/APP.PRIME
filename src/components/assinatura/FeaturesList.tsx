@@ -384,20 +384,17 @@ const CATEGORIZED_FEATURES = [
 
 export function FeaturesList({ tabKey: _tabKey }: { tabKey: string }) {
   return (
-    <div className="mx-4 rounded-3xl p-5 sm:p-7 bg-card/60 border border-border/80 backdrop-blur-md shadow-2xl overflow-hidden relative">
-      {/* Elemento de brilho no fundo */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-primary/20 blur-[80px] pointer-events-none rounded-full" />
-
+    <div className="mx-4 rounded-3xl p-5 sm:p-7 bg-card/60 border border-border/80 backdrop-blur-md shadow-xl overflow-hidden relative">
       <div className="text-center mb-6 relative z-10">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 to-primary/20 border border-amber-500/30 text-amber-500 text-[11px] font-black uppercase tracking-widest mb-3 shadow-[0_0_15px_rgba(245,158,11,0.15)]">
-          <Crown className="w-3.5 h-3.5 fill-amber-500/50" />
-          O Maior Ecossistema Jurídico do Brasil
+        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-black uppercase tracking-widest mb-3">
+          <Crown className="w-3.5 h-3.5" />
+          O Maior Ecossistema Jurídico de Estudos
         </div>
         <h3 className="font-display text-lg sm:text-xl font-black text-white uppercase tracking-wider mb-2">
           Acesso Premium Desbloqueado
         </h3>
-        <p className="text-[12.5px] sm:text-[13.5px] text-zinc-400 font-medium max-w-md mx-auto leading-relaxed">
-          Sua assinatura inclui <strong className="text-white font-bold">+200 ferramentas exclusivas</strong> divididas em 25 módulos. O arsenal definitivo para a sua aprovação e atuação prática.
+        <p className="text-[12.5px] sm:text-[13px] text-zinc-400 font-medium max-w-[90%] mx-auto leading-relaxed">
+          Sua assinatura inclui <strong className="text-white font-bold">+200 ferramentas exclusivas</strong> em 25 módulos. O arsenal definitivo para sua aprovação.
         </p>
       </div>
       
@@ -409,7 +406,7 @@ export function FeaturesList({ tabKey: _tabKey }: { tabKey: string }) {
           return (
             <div 
               key={i} 
-              className={`rounded-2xl border ${cat.highlight ? 'border-primary/40 bg-gradient-to-b from-primary/10 to-transparent shadow-[0_0_20px_rgba(var(--primary),0.07)]' : 'border-white/5 bg-black/30'} p-3.5 sm:p-4 flex flex-col transition-all duration-300 hover:border-white/20 hover:bg-black/50 ${
+              className={`rounded-2xl border ${cat.highlight ? 'border-primary/30 bg-primary/5' : 'border-white/5 bg-black/20'} p-3.5 sm:p-4 flex flex-col transition-all duration-300 hover:border-white/10 hover:bg-black/40 ${
                 isLastOdd ? 'md:col-span-2' : ''
               }`}
             >
@@ -421,7 +418,7 @@ export function FeaturesList({ tabKey: _tabKey }: { tabKey: string }) {
                     {cat.category}
                   </h4>
                 </div>
-                <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full whitespace-nowrap ${cat.highlight ? 'bg-primary/20 text-primary border border-primary/30' : 'bg-white/5 text-zinc-400 border border-white/10'}`}>
+                <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full whitespace-nowrap ${cat.highlight ? 'bg-primary/10 text-primary border border-primary/20' : 'bg-white/5 text-zinc-400 border border-white/5'}`}>
                   {cat.badge}
                 </span>
               </div>
@@ -430,7 +427,7 @@ export function FeaturesList({ tabKey: _tabKey }: { tabKey: string }) {
               <ul className="grid grid-cols-2 gap-x-2.5 gap-y-1.5 flex-1">
                 {cat.features.map((feat, idx) => (
                   <li key={idx} className="flex items-center gap-1.5 min-w-0">
-                    <CheckCircle2 className={`w-3 h-3 shrink-0 ${cat.highlight ? 'text-primary' : 'text-emerald-500/80'}`} />
+                    <CheckCircle2 className={`w-3 h-3 shrink-0 ${cat.highlight ? 'text-primary' : 'text-emerald-500/70'}`} />
                     <span className="font-body text-[10.5px] sm:text-[11px] text-zinc-400 leading-tight font-medium truncate">
                       {feat}
                     </span>
