@@ -373,24 +373,31 @@ const Jurisprudencia = () => {
           };
           const gridClass = 'grid grid-cols-2 gap-3 lg:gap-4 2xl:grid-cols-3';
           const listClass = 'space-y-3 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-4 2xl:grid-cols-3';
-          const tituloClass =
-            'px-1 text-[13px] uppercase tracking-widest text-muted-foreground font-body font-semibold col-span-full mb-1 lg:text-[12px]';
+          
+          const SectionTitle = ({ title }: { title: string }) => (
+            <motion.div variants={itemVariants} className="flex items-center gap-2 px-1 mb-2 mt-4 col-span-full">
+              <div className="w-[3px] h-4 bg-primary rounded-full" />
+              <h2 className="text-[13px] uppercase tracking-widest text-muted-foreground font-body font-semibold">
+                {title}
+              </h2>
+            </motion.div>
+          );
           return (
             <>
               <section className={listClass}>
-                <motion.p variants={itemVariants} className={tituloClass}>Súmulas</motion.p>
+                <SectionTitle title="Súmulas" />
                 {sumulas.map(renderListCard)}
               </section>
               <section className={gridClass}>
-                <motion.p variants={itemVariants} className={tituloClass}>Jurisprudências prontas</motion.p>
+                <SectionTitle title="Jurisprudências Prontas" />
                 {prontas.map(renderGridCard)}
               </section>
               <section className={gridClass}>
-                <motion.p variants={itemVariants} className={tituloClass}>Informativos</motion.p>
+                <SectionTitle title="Informativos" />
                 {informativos.map(renderGridCard)}
               </section>
               <section className={gridClass}>
-                <motion.p variants={itemVariants} className={tituloClass}>Jurisprudência em Teses</motion.p>
+                <SectionTitle title="Jurisprudência em Teses" />
                 {teses.map(renderGridCard)}
               </section>
             </>
