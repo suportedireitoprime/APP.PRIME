@@ -4,6 +4,7 @@ import { haptic } from '@/lib/nativeHaptics';
 import { useGoBack } from '@/hooks/useGoBack';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import HomeCard from '@/components/vademecum/home/HomeCard';
+import PodcastsCarousel from '@/components/podcasts/PodcastsCarousel';
 
 import stfImg from '@/assets/poderes/stf.webp';
 import camaraImg from '@/assets/poderes/camara.webp';
@@ -184,6 +185,13 @@ const PoderDetalhe = () => {
               ))}
            </div>
         </div>
+
+        {/* Podcast Carousel para o STF (TV Justiça) */}
+        {id === 'stf' && (
+          <div className="relative z-10 w-full mt-4">
+            <PodcastsCarousel />
+          </div>
+        )}
       </div>
     </div>
   );
