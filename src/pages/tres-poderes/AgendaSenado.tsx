@@ -270,6 +270,17 @@ const AgendaSenado = () => {
     fetchAgenda(dataSelecionada);
   }, [dataSelecionada]);
 
+  // Suporte para fechar modal com tecla Esc no desktop
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && eventoSelecionado) {
+        setEventoSelecionado(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [eventoSelecionado]);
+
   const formataDataTimeline = (d: Date) => {
     const dia = d.getDate().toString().padStart(2, '0');
     const mes = (d.getMonth() + 1).toString().padStart(2, '0');
@@ -468,26 +479,28 @@ const AgendaSenado = () => {
         </div>
       </div>
 
-      {/* Modal Bottom Sheet: Detalhes do Evento */}
-      <div className={`fixed inset-0 z-50 flex flex-col justify-end transition-all duration-300 ${eventoSelecionado ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setEventoSelecionado(null)} />
+      {/* Modal Bottom Sheet / Dialog Responsivo: Detalhes do Evento */}
+      <div className={`fixed inset-0 z-50 flex flex-col justify-end sm:justify-center sm:items-center sm:p-6 transition-all duration-300 ${eventoSelecionado ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        <div className="absolute inset-0 bg-black/75 backdrop-blur-sm transition-opacity" onClick={() => setEventoSelecionado(null)} />
         
         <div 
-          className={`relative bg-[#0d0f12] border-t border-white/10 w-full rounded-t-3xl flex flex-col transition-transform duration-300 ${eventoSelecionado ? 'translate-y-0' : 'translate-y-full'}`}
-          style={{ height: '95vh', maxHeight: '95vh' }}
+          className={`relative bg-[#0d0f12] border-t sm:border border-white/10 w-full sm:max-w-2xl rounded-t-3xl sm:rounded-3xl flex flex-col transition-all duration-300 shadow-2xl z-10 ${eventoSelecionado ? 'translate-y-0 sm:scale-100' : 'translate-y-full sm:scale-95'}`}
+          style={{ height: '90vh', maxHeight: '90vh' }}
         >
-          {/* Header Draggable area */}
-          <div className="flex-none p-4 pb-2 w-full pt-3 relative" onClick={() => setEventoSelecionado(null)}>
-            <div className="w-12 h-1.5 bg-white/20 rounded-full mx-auto flex-shrink-0" />
+          {/* Header area com botão de fechar responsivo */}
+          <div className="flex-none p-4 pb-2 w-full pt-4 relative flex items-center justify-between">
+            <div className="w-12 h-1.5 bg-white/20 rounded-full mx-auto sm:hidden cursor-pointer" onClick={() => setEventoSelecionado(null)} />
             <button 
-              className="absolute right-4 top-3 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+              type="button"
+              aria-label="Fechar detalhes da sessão"
+              className="absolute right-4 top-3 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-90 text-white transition-all cursor-pointer z-30 shadow-md shadow-black/50"
               onClick={(e) => {
                 e.stopPropagation();
                 haptic.selection();
                 setEventoSelecionado(null);
               }}
             >
-              <X className="w-5 h-5" />
+              <X className="w-6 h-6 stroke-[2.4]" />
             </button>
           </div>
 
