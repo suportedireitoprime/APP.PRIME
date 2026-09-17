@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+import { evolution } from '../_shared/evolution.ts';
 
 /**
  * Webhook do Asaas — mantém as assinaturas MENSAIS migradas do app antigo
@@ -136,6 +137,36 @@ Deno.serve(async (req) => {
         origem: 'asaas',
         updated_at: new Date().toISOString(),
       }, { onConflict: 'user_id' });
+    }
+
+    // Item 50: Envio de recibo/confirmação via WhatsApp quando pagamento confirmado
+    if (pago && legacy.claimed_user_id) {
+      // Fire-and-forget para não atrasar a resposta do webhook
+      (async () => {
+        try {
+          const { data: profile } = await admin.from('profiles')
+            .select('display_name, telefone, whatsapp_number')
+            .eq('id', legacy.claimed_user_id)
+            .maybeSingle();
+
+          const phone = profile?.whatsapp_number || profile?.telefone;
+          if (!phone) return;
+
+          const nome = profile?.display_name?.split(' ')[0] || 'Assinante';
+          const valor = payment.value ? `R$ ${Number(payment.value).toFixed(2).replace('.', ',')}` : '';
+          const planoLabel = legacy.tipo === 'anual' ? 'Anual' : legacy.tipo === 'vitalicio' ? 'Vitalício' : 'Mensal';
+
+          const msg = `${nome}, seu pagamento${valor ? ` de ${valor}` : ''} do plano *${planoLabel}* foi confirmado! ✅
+
+Seu acesso ao *Direito Prime* está ativo. Bons estudos! 📚
+
+Acesse: https://app.suportedireitoprimeoficial.com`;
+
+          await evolution.sendText(phone, msg);
+        } catch (e) {
+          console.warn('WhatsApp receipt failed (non-blocking):', String((e as Error)?.message || e).slice(0, 200));
+        }
+      })();
     }
 
     return new Response(JSON.stringify({ ok: true, event }), {

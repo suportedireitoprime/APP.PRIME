@@ -57,10 +57,18 @@ Deno.serve(async (req) => {
 
     // 1. Check or Create Customer
     let customerId = '';
-    const userEmail = email || user.email;
+    const userEmail = (email || user.email || '').trim().toLowerCase();
     const finalCpfCnpj = cpfCnpj || creditCardHolderInfo?.cpfCnpj;
-    const searchRes = await asaasRequest(`/customers?email=${encodeURIComponent(userEmail)}`, 'GET');
+    let searchRes = await asaasRequest(`/customers?email=${encodeURIComponent(userEmail)}`, 'GET');
     
+    // Item 49: Fallback — se não encontrou por email, tenta por CPF sanitizado
+    if ((!searchRes.data || searchRes.data.length === 0) && finalCpfCnpj) {
+      const sanitizedCpf = String(finalCpfCnpj).replace(/\D/g, '');
+      if (sanitizedCpf.length >= 11) {
+        searchRes = await asaasRequest(`/customers?cpfCnpj=${encodeURIComponent(sanitizedCpf)}`, 'GET');
+      }
+    }
+
     if (searchRes.data && searchRes.data.length > 0) {
       customerId = searchRes.data[0].id;
       // Optionally update customer if CPF is provided now but was missing

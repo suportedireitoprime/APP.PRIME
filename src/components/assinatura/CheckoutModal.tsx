@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, CreditCard, ShieldCheck, User, MapPin, Smartphone, ArrowRight, CheckCircle2, Copy, X, ChevronLeft, Clock, ChevronDown, QrCode } from "lucide-react";
+import { Loader2, CreditCard, ShieldCheck, User, MapPin, Smartphone, ArrowRight, CheckCircle2, Copy, X, ChevronLeft, Clock, ChevronDown, QrCode, RefreshCw } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -137,7 +137,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   const [pixData, setPixData] = useState<{ qrCode: string; payload: string } | null>(null);
   const [pixTimeLeft, setPixTimeLeft] = useState<number>(600);
   const [pixExpiryTime, setPixExpiryTime] = useState<number | null>(null);
+  const [verifyCooldown, setVerifyCooldown] = useState<number>(0);
   const isProcessingRef = useRef(false);
+  const hasWarnedExpiryRef = useRef(false);
 
   const [activePlan, setActivePlan] = useState<'mensal' | 'anual' | 'anual_pix'>('anual');
 
@@ -158,6 +160,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
       setInstallmentCount(1);
       setAddressInfo('');
       setVerifyingPayment(false);
+      setVerifyCooldown(0);
+      hasWarnedExpiryRef.current = false;
       isProcessingRef.current = false;
       if (plan) setActivePlan(plan);
       setFormData(prev => ({ ...prev, name: userName || '', cardName: userName || '' }));
@@ -276,13 +280,27 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     return () => clearInterval(timer);
   }, [step, pixData, pixExpiryTime]);
 
+  // Item 47: PIX expirado — mantém no step 3 com badge expirado e botão de regenerar
   useEffect(() => {
-    if (step === 3 && pixTimeLeft === 0) {
-      toast.error('O código PIX expirou. Por favor, gere novamente.');
-      setStep(1);
-      setPixData(null);
+    if (step === 3 && pixTimeLeft === 0 && !hasWarnedExpiryRef.current) {
+      hasWarnedExpiryRef.current = true;
+      toast.error('O código PIX expirou. Gere um novo abaixo.');
     }
   }, [pixTimeLeft, step]);
+
+  // Item 48: Cooldown countdown de 5s para anti-spam no botão de verificação
+  useEffect(() => {
+    if (verifyCooldown <= 0) return;
+    const t = setInterval(() => {
+      setVerifyCooldown(prev => {
+        if (prev <= 1) { clearInterval(t); return 0; }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(t);
+  }, [verifyCooldown]);
+
+  const pixExpired = step === 3 && pixTimeLeft === 0;
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -459,6 +477,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   };
 
   const handleVerifyPayment = async () => {
+    if (verifyCooldown > 0) return;
     setVerifyingPayment(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -475,11 +494,21 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         }
       }
       toast('Pagamento ainda não confirmado. Aguarde alguns segundos e tente novamente.', { icon: '⏳' });
+      setVerifyCooldown(5);
     } catch {
       toast.error('Erro ao verificar pagamento.');
     } finally {
       setVerifyingPayment(false);
     }
+  };
+
+  // Item 47: Regenerar QR Code PIX com dados já preenchidos
+  const handleRegeneratePixQr = () => {
+    hasWarnedExpiryRef.current = false;
+    setPixData(null);
+    setPixTimeLeft(600);
+    setPixExpiryTime(null);
+    processCheckout();
   };
 
   const getPlanInfo = () => {
@@ -897,41 +926,66 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                     animate={{ opacity: 1, y: 0 }}
                     className="flex flex-col items-center justify-center space-y-6 pt-4"
                   >
-                    <div className="w-64 h-64 bg-white p-3 rounded-[2rem] border-4 border-emerald-500/20 shadow-2xl relative overflow-hidden">
+                    <div className="w-64 h-64 bg-white p-3 rounded-[2rem] border-4 shadow-2xl relative overflow-hidden" style={{ borderColor: pixExpired ? 'rgba(239,68,68,0.3)' : 'rgba(16,185,129,0.2)' }}>
                       <div className="absolute inset-0 bg-emerald-500/5 mix-blend-overlay"></div>
-                      <img src={`data:image/jpeg;base64,${pixData.qrCode}`} alt="QR Code PIX" className="w-full h-full object-contain relative z-10" />
+                      <img src={`data:image/jpeg;base64,${pixData.qrCode}`} alt="QR Code PIX" className={`w-full h-full object-contain relative z-10 transition-opacity duration-300 ${pixExpired ? 'opacity-20' : ''}`} />
+                      {pixExpired && (
+                        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 rounded-[1.75rem]">
+                          <Clock className="w-10 h-10 text-red-400 mb-2" />
+                          <span className="text-red-400 font-black text-sm uppercase tracking-wider">Expirado</span>
+                        </div>
+                      )}
                     </div>
                     
                     <div className="text-center space-y-2">
-                      <h4 className="font-display font-black text-2xl text-emerald-500 tracking-tight">
-                        PIX Gerado com Sucesso
+                      <h4 className={`font-display font-black text-2xl tracking-tight ${pixExpired ? 'text-red-400' : 'text-emerald-500'}`}>
+                        {pixExpired ? 'QR Code Expirado' : 'PIX Gerado com Sucesso'}
                       </h4>
                       <p className="text-sm font-medium text-muted-foreground px-4">
-                        Escaneie o QR code ou copie a chave abaixo para finalizar sua assinatura em poucos segundos.
+                        {pixExpired
+                          ? 'O código expirou. Gere um novo QR Code com um clique abaixo.'
+                          : 'Escaneie o QR code ou copie a chave abaixo para finalizar sua assinatura em poucos segundos.'}
                       </p>
-                      <p className="text-[12px] font-medium text-emerald-400 mt-2 bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-lg mx-6 leading-tight">
-                        Pode fechar esta tela ou o app. O acesso será liberado automaticamente após a compensação.
-                      </p>
-                      <div className="inline-flex items-center justify-center bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono font-bold text-lg px-4 py-1.5 rounded-full mt-2 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-                        ⏱ Expira em {formatTime(pixTimeLeft)}
-                      </div>
+                      {!pixExpired && (
+                        <p className="text-[12px] font-medium text-emerald-400 mt-2 bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-lg mx-6 leading-tight">
+                          Pode fechar esta tela ou o app. O acesso será liberado automaticamente após a compensação.
+                        </p>
+                      )}
+                      {!pixExpired && (
+                        <div className="inline-flex items-center justify-center bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono font-bold text-lg px-4 py-1.5 rounded-full mt-2 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                          ⏱ Expira em {formatTime(pixTimeLeft)}
+                        </div>
+                      )}
                     </div>
 
-                    <Button onClick={copyPix} variant="outline" className="w-full h-14 rounded-2xl font-bold border-2 border-white/10 bg-black/30 backdrop-blur-md hover:bg-black/50 flex items-center gap-2 text-base shadow-xl">
-                      <Copy className="w-5 h-5" />
-                      Copiar Código PIX
-                    </Button>
+                    {pixExpired ? (
+                      <Button
+                        onClick={handleRegeneratePixQr}
+                        disabled={loading}
+                        className="w-full h-14 rounded-2xl font-black bg-primary hover:bg-primary/90 text-white text-base transition-transform active:scale-95 shadow-[0_8px_30px_rgba(224,31,71,0.4)] flex items-center justify-center gap-2"
+                      >
+                        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <RefreshCw className="w-5 h-5" />}
+                        {loading ? 'Gerando...' : 'Gerar Novo QR Code PIX'}
+                      </Button>
+                    ) : (
+                      <Button onClick={copyPix} variant="outline" className="w-full h-14 rounded-2xl font-bold border-2 border-white/10 bg-black/30 backdrop-blur-md hover:bg-black/50 flex items-center gap-2 text-base shadow-xl">
+                        <Copy className="w-5 h-5" />
+                        Copiar Código PIX
+                      </Button>
+                    )}
                     
-                    <div className="pt-4 w-full">
-                       <Button 
-                         onClick={handleVerifyPayment}
-                         disabled={verifyingPayment}
-                         className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black h-14 rounded-2xl text-base transition-transform active:scale-95 shadow-[0_10px_30px_rgba(16,185,129,0.3)]"
-                       >
-                         {verifyingPayment ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Clock className="w-5 h-5 mr-2" />}
-                         {verifyingPayment ? 'Verificando...' : 'Já realizei o pagamento'}
-                       </Button>
-                    </div>
+                    {!pixExpired && (
+                      <div className="pt-4 w-full">
+                         <Button 
+                           onClick={handleVerifyPayment}
+                           disabled={verifyingPayment || verifyCooldown > 0}
+                           className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black h-14 rounded-2xl text-base transition-transform active:scale-95 shadow-[0_10px_30px_rgba(16,185,129,0.3)]"
+                         >
+                           {verifyingPayment ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Clock className="w-5 h-5 mr-2" />}
+                           {verifyingPayment ? 'Verificando...' : verifyCooldown > 0 ? `Aguarde ${verifyCooldown}s para verificar` : 'Já realizei o pagamento'}
+                         </Button>
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
