@@ -338,9 +338,6 @@ export default function Assinatura() {
                 </span>
               </Button>
 
-              <p className="text-[11px] text-muted-foreground text-center leading-tight px-4">
-                Renovação automática. Você tem controle total e pode cancelar quando quiser através da loja.
-              </p>
             </div>
 
             <FeaturesList tabKey={tab} />
