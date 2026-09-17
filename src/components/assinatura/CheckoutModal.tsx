@@ -194,28 +194,73 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     }
   }, [formData.cep]);
 
-  // PIX Polling e Timer
+  // Item 40: PIX Realtime + Polling com Backoff Progressivo (5s, 8s, 11s, 14s, 15s)
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (step === 3 && pixData) {
-      interval = setInterval(async () => {
+    if (step !== 3 || !pixData) return;
+
+    let isMounted = true;
+    let pollTimer: ReturnType<typeof setTimeout> | null = null;
+    let delay = 5000;
+
+    const handleSuccess = () => {
+      if (!isMounted) return;
+      toast.success("Pagamento confirmado via PIX!");
+      onSuccess();
+      onOpenChange(false);
+    };
+
+    // 1. Escuta Realtime na tabela asaas_subscriptions
+    let channel: any = null;
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!isMounted || !session?.user?.id) return;
+      const uid = session.user.id;
+
+      channel = supabase
+        .channel(`pix-pay-${uid}-${Date.now()}`)
+        .on('postgres_changes' as any, {
+          event: '*',
+          schema: 'public',
+          table: 'asaas_subscriptions',
+          filter: `user_id=eq.${uid}`,
+        }, (payload: any) => {
+          if (payload?.new?.status === 'ACTIVE' || payload?.new?.status === 'ACTIVE_GRACE') {
+            handleSuccess();
+          }
+        })
+        .subscribe();
+    });
+
+    // 2. Polling de contingência com backoff progressivo
+    const pollCheck = async () => {
+      if (!isMounted) return;
+      try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user?.id) {
-           const { data } = await supabase.from('asaas_subscriptions')
-             .select('status')
-             .eq('user_id', session.user.id)
-             .maybeSingle();
-           
-           if (data?.status === 'ACTIVE') {
-             clearInterval(interval);
-             toast.success("Pagamento confirmado via PIX!");
-             onSuccess();
-             onOpenChange(false);
-           }
+          const { data } = await supabase.from('asaas_subscriptions')
+            .select('status')
+            .eq('user_id', session.user.id)
+            .maybeSingle();
+
+          if (data?.status === 'ACTIVE' || data?.status === 'ACTIVE_GRACE') {
+            handleSuccess();
+            return;
+          }
         }
-      }, 4000); // Check every 4 seconds
-    }
-    return () => clearInterval(interval);
+      } catch {}
+
+      if (isMounted) {
+        delay = Math.min(delay + 3000, 15000);
+        pollTimer = setTimeout(pollCheck, delay);
+      }
+    };
+
+    pollTimer = setTimeout(pollCheck, delay);
+
+    return () => {
+      isMounted = false;
+      if (pollTimer) clearTimeout(pollTimer);
+      if (channel) supabase.removeChannel(channel);
+    };
   }, [step, pixData, onSuccess, onOpenChange]);
 
   // PIX Expiration Timer — stable interval, uses absolute time to survive background states

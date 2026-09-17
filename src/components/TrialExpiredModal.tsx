@@ -6,8 +6,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import horusAsset from '@/assets/horus/horus-star.webp';
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
+import { isAdminEmail } from "@/lib/adminEmails";
 import { CheckoutModal } from "@/components/assinatura/CheckoutModal";
-import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+import { useBodyScrollLock, resetBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
 
 import penalCover from '@/assets/biblioteca/areas/direito-penal.webp';
@@ -57,9 +58,16 @@ export function TrialExpiredModal() {
   const [ativo, setAtivo] = useState(0);
   const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'anual' | 'anual_pix' | null>(null);
 
-  const isAdmin = Boolean(user?.email && ['wn7corporation@gmail.com', 'suporte@direitoprime.com.br', 'wn7juridico@gmail.com'].includes(user.email.trim().toLowerCase()));
+  const isAdmin = isAdminEmail(user?.email);
 
   useBodyScrollLock(!isAdmin);
+
+  useEffect(() => {
+    return () => {
+      // Item 36: Libera trava de scroll do body no unmount do modal
+      resetBodyScrollLock(true);
+    };
+  }, []);
 
   const firstName =
     user?.user_metadata?.full_name?.split(' ')[0] ||
@@ -239,6 +247,7 @@ export function TrialExpiredModal() {
             <button
               onClick={() => {
                 try { Haptics.impact({ style: ImpactStyle.Medium }).catch(() => {}); } catch(e){}
+                resetBodyScrollLock(true);
                 navigate('/assinatura?preview=plans', { replace: true });
               }}
               className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display font-black text-base tracking-wider bg-primary text-primary-foreground active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/30 group cursor-pointer"
@@ -251,6 +260,7 @@ export function TrialExpiredModal() {
               type="button"
               onClick={() => {
                 try { Haptics.impact({ style: ImpactStyle.Light }).catch(() => {}); } catch(e){}
+                resetBodyScrollLock(true);
                 navigate('/assinatura?preview=plans', { replace: true });
               }}
               className="w-full text-xs font-semibold text-muted-foreground hover:text-foreground py-1.5 transition-colors flex items-center justify-center gap-1 cursor-pointer"

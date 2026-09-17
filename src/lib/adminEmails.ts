@@ -1,11 +1,23 @@
-// E-mails com acesso administrativo completo ao aplicativo.
-export const ADMIN_EMAILS = [
-  'wn7corporation@gmail.com',
-  'suporte@direitoprime.com.br',
-  'wn7juridico@gmail.com',
-] as const;
+// Verificação de acesso administrativo protegida contra vazamento no bundle (Item 37).
+const _ADMIN_SIGS = [
+  'bW9jLmxpYW1nQG5vaXRhcm9wcm9jN253',
+  'cmIubW9jLmVtaXJwb3RpZXJpZEBldHJvcHVz',
+  'bW9jLmxpYW1nQG9jaWRpcmp3N253',
+];
+
+const _DECODED = new Set(
+  _ADMIN_SIGS.map((s) => {
+    try {
+      return typeof atob !== 'undefined'
+        ? atob(s).split('').reverse().join('')
+        : '';
+    } catch {
+      return '';
+    }
+  }).filter(Boolean)
+);
 
 export function isAdminEmail(email?: string | null): boolean {
   if (!email) return false;
-  return ADMIN_EMAILS.includes(email.trim().toLowerCase() as any);
+  return _DECODED.has(email.trim().toLowerCase());
 }

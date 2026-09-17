@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { isAdminEmail } from '@/lib/adminEmails';
 
 interface SubscriptionState {
   isPremium: boolean;
@@ -14,12 +15,6 @@ interface SubscriptionState {
   isTrial: boolean;
   refresh: () => void;
 }
-
-const ADMIN_EMAILS = new Set([
-  'wn7corporation@gmail.com',
-  'suporte@direitoprime.com.br',
-  'wn7juridico@gmail.com',
-]);
 
 // Evita repetir o resgate de assinatura legada a cada montagem do hook.
 const claimedOnce = new Set<string>();
@@ -42,9 +37,9 @@ export function useSubscription(options: Options = {}): SubscriptionState {
   // premium quando o dispositivo está sem rede.
   const cacheKey = user ? `direitoprime:sub:${user.id}` : null;
   const emailLower = (user?.email || '').toLowerCase();
-  const isAdminEmail = ADMIN_EMAILS.has(emailLower);
+  const isAdmin = isAdminEmail(emailLower);
   const [state, setState] = useState<Omit<SubscriptionState, 'refresh'>>(() => {
-    if (isAdminEmail) {
+    if (isAdmin) {
       const startedAt = new Date();
       const expiresAt = new Date(startedAt);
       expiresAt.setFullYear(expiresAt.getFullYear() + 100);
@@ -138,9 +133,9 @@ export function useSubscription(options: Options = {}): SubscriptionState {
 
         if (cancelled) return true;
 
-        // 2. Atalho incondicional para e-mails administradores
+        // 2. Atalho incondicional para administradores
         const email = (user.email || '').toLowerCase();
-        if (ADMIN_EMAILS.has(email)) {
+        if (isAdminEmail(email)) {
           const startedAt = new Date();
           const expiresAt = new Date(startedAt);
           expiresAt.setFullYear(expiresAt.getFullYear() + 100);

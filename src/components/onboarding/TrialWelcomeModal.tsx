@@ -35,6 +35,11 @@ export default function TrialWelcomeModal({ onDone }: Props) {
           set('direitoprime:device:trial_claimed', user.id);
         }).catch(() => {});
       } catch {}
+
+      // Item 35: Agenda notificações locais e registros no banco (24h e 6h antes do fim)
+      import('@/lib/trialReminders').then(({ scheduleTrialReminder }) => {
+        scheduleTrialReminder('anual').catch(() => {});
+      }).catch(() => {});
     } catch (e) {
       console.error(e);
     } finally {

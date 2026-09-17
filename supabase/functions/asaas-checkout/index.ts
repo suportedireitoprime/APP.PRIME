@@ -85,7 +85,8 @@ Deno.serve(async (req) => {
     const today = new Date().toISOString().split('T')[0];
 
     const isCreditCard = !!creditCard;
-    const billingType = plan === 'anual_pix' ? 'PIX' : (isCreditCard ? 'CREDIT_CARD' : 'UNDEFINED');
+    const isPixPlan = plan === 'anual_pix' || plan === 'anual_regular_pix' || plan === 'promocao';
+    const billingType = isPixPlan ? 'PIX' : (isCreditCard ? 'CREDIT_CARD' : 'UNDEFINED');
     const isInstallment = installmentCount && installmentCount > 1 && plan === 'anual';
     
     let sub: any;
@@ -132,11 +133,13 @@ Deno.serve(async (req) => {
         subPayload.value = 29.90;
         subPayload.cycle = 'MONTHLY';
         subPayload.description = 'Mensal Estudos Jurídicos';
-      } else if (plan === 'anual') {
+      } else if (plan === 'anual' || plan === 'anual_regular_pix') {
+        // Item 39: Preço do Plano Anual Regular no PIX (R$ 199,90 à vista)
         subPayload.value = 199.90;
         subPayload.cycle = 'YEARLY';
         subPayload.description = 'Anual Estudos Jurídicos';
-      } else if (plan === 'anual_pix') {
+      } else if (plan === 'anual_pix' || plan === 'promocao') {
+        // Item 39: Promoção de Boas-Vindas no PIX (R$ 149,90)
         subPayload.value = 149.90;
         subPayload.cycle = 'YEARLY';
         subPayload.description = 'Promoção Estudos Jurídicos';
@@ -151,9 +154,17 @@ Deno.serve(async (req) => {
       invoiceUrl = sub.invoiceUrl;
     }
 
-    if (!invoiceUrl || plan === 'anual_pix') {
+    if (!invoiceUrl || isPixPlan || billingType === 'PIX') {
       if (!isInstallment) {
-        const payRes = await asaasRequest(`/subscriptions/${sub.id}/payments`, 'GET');
+        // Item 38: Retry com backoff caso o Asaas ainda esteja gerando o primeiro pagamento de forma assíncrona
+        let payRes = await asaasRequest(`/subscriptions/${sub.id}/payments`, 'GET');
+        let retries = 0;
+        while ((!payRes.data || payRes.data.length === 0) && retries < 4) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          payRes = await asaasRequest(`/subscriptions/${sub.id}/payments`, 'GET');
+          retries++;
+        }
+
         if (payRes.data && payRes.data.length > 0) {
           const payment = payRes.data[0];
           invoiceUrl = invoiceUrl || payment.invoiceUrl;
