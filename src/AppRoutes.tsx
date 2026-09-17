@@ -599,12 +599,18 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
     return <Navigate to="/onboarding" replace />;
   }
 
-  // Check Trial Expiration (com proteção contra fraude de relógio local - Item 26)
+  // Check Trial Expiration (com proteção contra fraude de relógio local - Item 26, Item 27, Item 29 e Item 31)
   if (user && !profileLoading && profile) {
     const createdAt = new Date(user.created_at);
-    const trialEndsAt = user.user_metadata?.trial_ends_at 
-      ? new Date(user.user_metadata.trial_ends_at) 
-      : new Date(createdAt.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const maxAllowedTrialMs = createdAt.getTime() + 3 * 24 * 60 * 60 * 1000;
+    let trialEndsAt = new Date(maxAllowedTrialMs);
+
+    if (user.user_metadata?.trial_ends_at) {
+      const metaTrial = new Date(user.user_metadata.trial_ends_at);
+      if (!isNaN(metaTrial.getTime()) && metaTrial.getTime() <= maxAllowedTrialMs) {
+        trialEndsAt = metaTrial;
+      }
+    }
 
     const nowMs = Date.now();
     let maxKnownTime = createdAt.getTime();
@@ -618,11 +624,19 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
       try { localStorage.setItem('direitoprime:time:max', String(nowMs)); } catch {}
     }
 
-    const isTrialActive = !isClockTampered && nowMs < trialEndsAt.getTime();
+    let isDeviceAbuse = false;
+    try {
+      const claimedUser = localStorage.getItem('direitoprime:device:trial_claimed');
+      if (claimedUser && claimedUser !== user.id) {
+        isDeviceAbuse = true;
+      }
+    } catch {}
+
+    const isTrialActive = !isClockTampered && !isDeviceAbuse && nowMs < trialEndsAt.getTime();
 
     const cleanPath = (location.pathname || '').replace(/\/+$/, '') || '/';
+    // Item 29: Home ('/') não é isenta de bloqueio pós-trial. Apenas telas de assinatura, planos, perfil, configurações e termos são permitidas sem plano ativo.
     const isAllowedPath = 
-      cleanPath === '/' ||
       cleanPath === '/assinatura' ||
       cleanPath.startsWith('/assinatura/') ||
       cleanPath === '/planos/ativos' ||

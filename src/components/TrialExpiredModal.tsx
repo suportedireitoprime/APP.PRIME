@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import horusAsset from '@/assets/horus/horus-star.webp';
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
 import { CheckoutModal } from "@/components/assinatura/CheckoutModal";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
@@ -50,6 +52,8 @@ const SLOTS = [
 export function TrialExpiredModal() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const { refresh: refreshSubscription } = useSubscription();
   const [ativo, setAtivo] = useState(0);
   const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'anual' | 'anual_pix' | null>(null);
 
@@ -72,12 +76,27 @@ export function TrialExpiredModal() {
   }, []);
 
   useEffect(() => {
+    let audio: HTMLAudioElement | null = null;
     const timeout = setTimeout(() => {
-      const audio = new Audio(somTeclado);
-      audio.volume = 0.4;
-      audio.play().catch(() => {});
+      // Item 34: Verificar se o documento está visível e respeitar preferência de áudio mudo
+      if (typeof document !== 'undefined' && document.visibilityState !== 'visible') {
+        return;
+      }
+      try {
+        const isMuted = typeof localStorage !== 'undefined' && localStorage.getItem('direitoprime:sound:muted') === 'true';
+        if (isMuted) return;
+        audio = new Audio(somTeclado);
+        audio.volume = 0.35;
+        audio.play().catch(() => {});
+      } catch {}
     }, 350);
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+      if (audio) {
+        audio.pause();
+        audio = null;
+      }
+    };
   }, []);
 
   if (isAdmin) {
@@ -94,7 +113,10 @@ export function TrialExpiredModal() {
         userEmail={user?.email || ''}
         userName={user?.user_metadata?.full_name || user?.user_metadata?.name || ''}
         onSuccess={() => {
-          window.location.reload();
+          // Item 30: Atualização reativa sem reload completo da janela
+          setCheckoutPlan(null);
+          refreshSubscription();
+          queryClient.invalidateQueries();
         }}
       />
 

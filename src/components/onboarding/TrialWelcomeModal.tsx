@@ -28,6 +28,13 @@ export default function TrialWelcomeModal({ onDone }: Props) {
       if (error) {
         console.error('Failed to update trial_ends_at:', error);
       }
+      try {
+        localStorage.setItem('direitoprime:device:trial_claimed', user.id);
+        localStorage.setItem('direitoprime:device:trial_claimed_at', String(Date.now()));
+        import('idb-keyval').then(({ set }) => {
+          set('direitoprime:device:trial_claimed', user.id);
+        }).catch(() => {});
+      } catch {}
     } catch (e) {
       console.error(e);
     } finally {

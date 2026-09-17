@@ -6,18 +6,36 @@ export function TrialCountdownBanner({ expiresAt }: { expiresAt: string | null }
 
   useEffect(() => {
     if (!expiresAt) return;
+
+    // Item 33: Normalizar timestamp UTC absoluto evitando distorções de fuso horário local (Acre, Manaus, Brasília)
+    const parseToUtcMs = (dateStr: string): number => {
+      if (!dateStr) return 0;
+      if (/^\d+$/.test(dateStr)) return Number(dateStr);
+      const normalized = dateStr.includes('T') && !dateStr.endsWith('Z') && !/[+-]\d{2}:\d{2}$/.test(dateStr)
+        ? `${dateStr}Z`
+        : dateStr;
+      const parsed = Date.parse(normalized);
+      return isNaN(parsed) ? new Date(dateStr).getTime() : parsed;
+    };
+
     const update = () => {
-      const diff = new Date(expiresAt).getTime() - Date.now();
-      if (diff <= 0) {
+      const expiresMs = parseToUtcMs(expiresAt);
+      const nowMs = Date.now();
+      const diffSec = Math.floor((expiresMs - nowMs) / 1000);
+      if (isNaN(diffSec) || diffSec <= 0) {
         setTimeLeft('Seu teste expirou');
         return;
       }
-      const totalHours = Math.floor(diff / (1000 * 60 * 60));
-      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      if (totalHours > 24) {
-        setTimeLeft(`${totalHours}h restantes`);
-      } else {
+      const totalHours = Math.floor(diffSec / 3600);
+      const mins = Math.floor((diffSec % 3600) / 60);
+      if (totalHours >= 24) {
+        const days = Math.floor(totalHours / 24);
+        const remHours = totalHours % 24;
+        setTimeLeft(`${days}d ${remHours}h restantes`);
+      } else if (totalHours > 0) {
         setTimeLeft(`${totalHours}h ${mins}m restantes`);
+      } else {
+        setTimeLeft(`${mins}m restantes`);
       }
     };
     update();

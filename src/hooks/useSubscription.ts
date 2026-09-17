@@ -92,9 +92,32 @@ export function useSubscription(options: Options = {}): SubscriptionState {
       setState({ isPremium: false, loading: false, plano: null, expiresAt: null, startedAt: null, source: null, status: null, isAdminOverride: false, isTrial: false });
       return;
     }
-    // Offline: mantém o snapshot em cache (já hidratado no useState).
+    // Offline: mantém o snapshot em cache (já hidratado no useState), mas
+    // valida estritamente a expiração do trial para evitar bypass desligando a rede (Item 32).
     if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-      setState(prev => ({ ...prev, loading: false }));
+      setState(prev => {
+        if (prev.isTrial && prev.expiresAt) {
+          const expiresMs = new Date(prev.expiresAt).getTime();
+          const nowMs = Date.now();
+          let maxKnownTime = nowMs;
+          try {
+            const saved = localStorage.getItem('direitoprime:time:max');
+            if (saved) maxKnownTime = Math.max(nowMs, Number(saved));
+          } catch {}
+
+          if (nowMs >= expiresMs || maxKnownTime >= expiresMs) {
+            return {
+              ...prev,
+              isPremium: false,
+              loading: false,
+              plano: null,
+              isTrial: false,
+              status: 'EXPIRED',
+            };
+          }
+        }
+        return { ...prev, loading: false };
+      });
       return;
     }
     let cancelled = false;
@@ -127,7 +150,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
           return true;
         }
 
-        // 3. Avaliar as respostas em ordem de prioridade (Lojas primeiro: Play Store, Apple, Asaas)
+        // 3. Avaliar as respostas em ordem de prioridade (Lojas primeiro: Play Store, Apple, Asaas - Item 28)
         if (playRes.data) {
           persist({
             isPremium: true, loading: false,
@@ -157,11 +180,19 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         }
 
         // 4. Se não há assinatura de loja ativa, verifica período de teste (Trial de 3 dias)
-        // com proteção anti-fraude contra manipulação do relógio local (Item 26)
+        // com proteção anti-fraude contra manipulação do relógio local (Item 26),
+        // capping estrito contra manipulação de user_metadata.trial_ends_at (Item 27)
+        // e prevenção contra criação de múltiplas contas no mesmo dispositivo (Item 31).
         const createdAt = new Date(user.created_at);
-        const trialEndsAt = user.user_metadata?.trial_ends_at 
-          ? new Date(user.user_metadata.trial_ends_at) 
-          : new Date(createdAt.getTime() + 3 * 24 * 60 * 60 * 1000);
+        const maxAllowedTrialMs = createdAt.getTime() + 3 * 24 * 60 * 60 * 1000;
+        let trialEndsAt = new Date(maxAllowedTrialMs);
+
+        if (user.user_metadata?.trial_ends_at) {
+          const metaTrial = new Date(user.user_metadata.trial_ends_at);
+          if (!isNaN(metaTrial.getTime()) && metaTrial.getTime() <= maxAllowedTrialMs) {
+            trialEndsAt = metaTrial;
+          }
+        }
 
         const nowMs = Date.now();
         let maxKnownTime = createdAt.getTime();
@@ -175,7 +206,20 @@ export function useSubscription(options: Options = {}): SubscriptionState {
           try { localStorage.setItem('direitoprime:time:max', String(nowMs)); } catch {}
         }
 
-        if (!isClockTampered && trialEndsAt.getTime() > nowMs) {
+        let isDeviceAbuse = false;
+        try {
+          const claimedUser = localStorage.getItem('direitoprime:device:trial_claimed');
+          if (claimedUser && claimedUser !== user.id) {
+            isDeviceAbuse = true;
+          }
+        } catch {}
+
+        if (!isClockTampered && !isDeviceAbuse && trialEndsAt.getTime() > nowMs) {
+          try {
+            localStorage.setItem('direitoprime:device:trial_claimed', user.id);
+            import('idb-keyval').then(({ set }) => set('direitoprime:device:trial_claimed', user.id)).catch(() => {});
+          } catch {}
+
           persist({
             isPremium: true, loading: false, plano: 'Teste de 3 Dias', startedAt: createdAt.toISOString(), expiresAt: trialEndsAt.toISOString(), source: null, status: 'SUBSCRIPTION_STATE_ACTIVE', isAdminOverride: false, isTrial: true,
           });
