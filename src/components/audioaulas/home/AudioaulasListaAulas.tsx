@@ -59,12 +59,12 @@ const LinhaAula = React.memo(function LinhaAula({
             )}
           </span>
         </span>
-        <div className="min-w-0 flex-1">
-          <p className={`text-sm font-semibold truncate ${ativo ? 'text-primary' : 'text-foreground'}`}>
+        <div className="min-w-0 flex-1 py-1">
+          <p className={`text-sm font-semibold break-words text-left ${ativo ? 'text-primary' : 'text-foreground'}`}>
             {typeof indice === 'number' ? `${indice}. ` : ''}
             {a.titulo}
           </p>
-          <p className="text-xs text-muted-foreground truncate">
+          <p className="text-xs text-muted-foreground break-words mt-0.5 text-left">
             {a.url_audio ? a.tema || a.area : 'Áudio em breve'}
           </p>
         </div>
