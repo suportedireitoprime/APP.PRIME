@@ -11,6 +11,7 @@ import { pushRecente } from '@/lib/leisRecentes';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import DesktopSidebar from '@/components/vademecum/desktop/DesktopSidebar';
 import VadeMecumDesktopTabs from '@/components/vademecum/desktop/VadeMecumDesktopTabs';
+import VadeMecumDesktopHeroBanner from '@/components/vademecum/desktop/VadeMecumDesktopHeroBanner';
 import { lazyWithRetry } from '@/utils/lazyWithRetry';
 const ShapeGrid = lazyWithRetry(() => import('@/components/ui/ShapeGrid'));
 
@@ -144,10 +145,14 @@ const VadeMecum = () => {
             }} 
           />
           <div className="flex-1 min-w-0 overflow-y-auto">
-            <VadeMecumDesktopTabs activeTabId="vademecum" />
-            
             <div className="px-8 py-6 2xl:px-14">
-              {renderContent()}
+              <VadeMecumDesktopHeroBanner 
+                typingHint="Buscar na legislação..."
+                onSearchClick={() => setBuscaOpen(true)}
+              />
+              <div className="mt-8">
+                {renderContent()}
+              </div>
             </div>
           </div>
         </div>

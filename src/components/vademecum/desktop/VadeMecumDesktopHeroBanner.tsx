@@ -1,6 +1,6 @@
-import { Search, GraduationCap, Layers, HelpCircle, Sparkles, Book, Library, FileText, MonitorPlay, Headphones, ChevronRight, MessageSquare, Bell } from 'lucide-react';
+import { Search, Heart, NotebookPen, Radar, History, LayoutGrid, Scale, ChevronRight, Bookmark, Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import heroBannerAsset from '@/assets/desktop-hero-banner.jpg';
+import heroBannerAsset from '@/assets/covers/vademecum-judge.webp';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
 import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
 import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
@@ -15,7 +15,7 @@ interface Props {
   unreadCount?: number;
 }
 
-const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNotifClick, unreadCount = 0 }: Props) => {
+const VadeMecumDesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNotifClick, unreadCount = 0 }: Props) => {
   const navigate = useNavigate();
 
   return (
@@ -86,7 +86,7 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
         <div className="relative z-10 w-full flex-1 p-10 pt-24 flex flex-col justify-end pointer-events-none">
           <div className="max-w-xl w-full pointer-events-auto">
             <h2 className="text-4xl font-display font-extrabold text-white mb-6 drop-shadow-md uppercase tracking-tight">
-              O QUE VOCÊ QUER ESTUDAR HOJE?
+              O QUE VOCÊ QUER PESQUISAR HOJE?
             </h2>
             
             {/* Barra de Pesquisa Estilo Mobile */}
@@ -94,23 +94,21 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
               onClick={onSearchClick}
               className="w-full h-14 bg-background/80 backdrop-blur-md rounded-2xl flex items-center px-4 gap-3 shadow-lg border border-border/50 hover:bg-background/90 transition-colors mb-8 group"
             >
-              <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                <Search className="w-4 h-4 text-primary" />
-              </div>
+              <Search className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
               <span className="text-muted-foreground font-body text-sm text-left flex-1">{typingHint}</span>
             </button>
 
             {/* 4 Botões Rápidos */}
             <div className="grid grid-cols-4 gap-4">
               {[
-                { label: 'Aprender', icon: GraduationCap, route: '/aprender' },
-                { label: 'Flashcards', icon: Layers, route: '/flashcards' },
-                { label: 'Questões', icon: HelpCircle, route: '/questoes' },
-                { label: 'Me Explique', icon: Sparkles, route: '/assistente-horus' }
+                { label: 'Favoritos', icon: Heart, route: '/vade-mecum/favoritos' },
+                { label: 'Anotações', icon: NotebookPen, route: '/vade-mecum/anotacoes' },
+                { label: 'Radares', icon: Radar, route: '/radares' },
+                { label: 'Histórico', icon: History, route: '/vade-mecum/recentes' }
               ].map((btn, i) => (
                 <button
                   key={i}
-                  onClick={() => navigate(btn.route)}
+                  onClick={() => btn.route === '/vade-mecum/anotacoes' ? null : navigate(btn.route)}
                   className="flex flex-col items-center justify-center gap-2 bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/10 rounded-2xl p-4 transition-all hover:scale-105 group/btn shadow-lg"
                 >
                   <btn.icon className="w-7 h-7 text-white/90 group-hover/btn:text-white transition-colors drop-shadow-md" />
@@ -138,12 +136,11 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
 
           <div className="flex flex-col gap-0 border-y border-white/10 divide-y divide-white/10 mt-2">
             {[
-              { label: 'Vade Mecum', icon: Book, route: '/vade-mecum' },
-              { label: 'Biblioteca', icon: Library, route: '/bibliotecas' },
-              { label: 'Resumos', icon: FileText, route: '/aprender/resumos' },
-              { label: 'Videoaulas', icon: MonitorPlay, route: '/aprender/videos' },
-              { label: 'Audioaulas', icon: Headphones, route: '/aprender/audios' },
-              { label: 'Chat (Hórus)', icon: MessageSquare, route: '/assistente-horus' }
+              { label: 'Constituição & Códigos', icon: LayoutGrid, route: '/vade-mecum/categorias' },
+              { label: 'Áreas do Direito', icon: Scale, route: '/vade-mecum/areas' },
+              { label: 'Meus Favoritos', icon: Bookmark, route: '/vade-mecum/favoritos' },
+              { label: 'Acessados Recentemente', icon: History, route: '/vade-mecum/recentes' },
+              { label: 'Radares Legislativos', icon: Radar, route: '/radares' }
             ].map((link, i) => (
               <button
                 key={i}
@@ -164,5 +161,5 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
   );
 };
 
-export default DesktopHeroBanner;
+export default VadeMecumDesktopHeroBanner;
 
