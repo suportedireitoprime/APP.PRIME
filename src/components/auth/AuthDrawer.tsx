@@ -25,6 +25,12 @@ import { toastErroAuth } from './authUtils';
 import { SocialButtons } from './SocialButtons';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
+import { pickAsset, srcOf } from '@/lib/assetUrl';
+
+const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
+
 export type AuthMode = 'login' | 'signup' | 'forgot' | null;
 
 interface AuthDrawerProps {
@@ -314,16 +320,13 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
 
                 <div className="flex flex-col items-center text-center mt-6 pt-4 pb-2">
                   <div className="relative h-[60px] mb-2">
-                    <picture>
-                      <source srcSet="/logo-prime.webp" type="image/webp" />
-                      <img
-                        src="/logo-prime.webp"
-                        alt="Direito Prime"
-                        loading="eager"
-                        decoding="async"
-                        className="w-auto h-[60px] object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]"
-                      />
-                    </picture>
+                    <img
+                      src={primeLogo}
+                      alt="Direito Prime"
+                      loading="eager"
+                      decoding="async"
+                      className="w-auto h-[60px] object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]"
+                    />
                   </div>
                   <h1 className="font-serif italic text-white text-[18px] sm:text-[20px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)]">
                     Estudos Jurídicos

@@ -124,12 +124,16 @@ const IndexDesktop = () => {
         <DesktopOnboardingOverlay />
         
         <DesktopSidebar activeTab={activeTab} onTabChange={setActiveTab} />
-        
-        <div className="flex flex-col flex-1 min-w-0">
-          <DesktopTopHeader onAssistenteClick={() => setAssistenteOpen(true)} />
+          <div className="flex flex-col flex-1 min-w-0 relative">
           
-          <div className="flex-1 min-w-0 overflow-y-auto">
-            <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border">
+          <div className="absolute top-0 left-0 right-0 z-40 pointer-events-none">
+            <div className="pointer-events-auto">
+              <DesktopTopHeader onAssistenteClick={() => setAssistenteOpen(true)} isTransparent={activeTab === 'legislacao'} />
+            </div>
+          </div>
+          
+          <div className="flex-1 min-w-0 overflow-y-auto relative z-10">
+            <div className={`sticky top-[104px] z-30 border-b border-border transition-colors duration-300 ${activeTab === 'legislacao' ? 'bg-transparent border-transparent' : 'bg-background/95 backdrop-blur-md'}`}>
               <div className="flex items-center gap-1 px-8 h-12">
                 {DESKTOP_TABS.map((tab) => {
                   const Icon = tab.icon;
@@ -157,33 +161,38 @@ const IndexDesktop = () => {
                         isActive
                           ? 'text-primary bg-primary/10'
                           : 'text-foreground/60 hover:text-foreground hover:bg-secondary/60'
-                      }`}
+                      } ${activeTab === 'legislacao' && !isActive ? 'text-white/70 hover:text-white hover:bg-white/10' : ''} ${activeTab === 'legislacao' && isActive ? 'text-white bg-white/20' : ''}`}
                     >
                       <Icon className="w-4 h-4" />
                       <span>{tab.label}</span>
-                      {isActive && <motion.div layoutId="desktop-tab-indicator" className="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full" />}
+                      {isActive && <motion.div layoutId="desktop-tab-indicator" className={`absolute bottom-0 left-3 right-3 h-0.5 rounded-full ${activeTab === 'legislacao' ? 'bg-white' : 'bg-primary'}`} />}
                     </motion.button>
                   );
                 })}
               </div>
               <DesktopBreadcrumb />
             </div>
-            <div className="px-8 py-6 2xl:px-14">
+            
+            <div className={`px-8 py-6 2xl:px-14 relative z-20 ${activeTab !== 'legislacao' ? 'pt-[104px]' : ''}`}>
               <div key={activeTab} className="animate-fade-in">
                 {activeTab === 'legislacao' && (
                   <>
-                    <div className="mb-6 -mx-8 -mt-6 2xl:-mx-14">
+                    {/* A capa começa no topo absoluto da tela puxando -152px (104 do header + 48 das tabs) */}
+                    <div className="mb-0 -mx-8 2xl:-mx-14 -mt-[152px] relative z-0 pointer-events-auto">
                       <DesktopHeroBanner typingHint={typingHint} onSearchClick={() => setSearchOpen(true)} />
                     </div>
 
-                    <div className="mb-8">
+                    {/* Carrossel Flutuante (sobrepondo o painel vermelho) */}
+                    <div className="relative z-30 mb-8 -mx-8 2xl:-mx-14 -mt-[70px]">
+                      <HomeNoticiasCarousel />
+                    </div>
+
+                    <div className="mb-10">
                       <DesktopEstudosGrid
                         onChatClick={() => setAssistenteOpen(true)}
                         onFerramentasClick={() => setActiveTab('ferramentas')}
                       />
                     </div>
-                    <div className="mb-10 -mx-8 2xl:-mx-14"><HomeNoticiasCarousel /></div>
-
                   </>
                 )}
 

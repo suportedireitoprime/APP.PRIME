@@ -23,31 +23,38 @@ const BACKDROP_ICONS = [
 interface Props {
   onSearchClick?: () => void;
   onAssistenteClick?: () => void;
+  isTransparent?: boolean;
 }
 
-const DesktopTopHeader = memo(({ onAssistenteClick }: Props) => {
+const DesktopTopHeader = memo(({ onAssistenteClick, isTransparent }: Props) => {
   const navigate = useNavigate();
   const [notifOpen, setNotifOpen] = useState(false);
   const unreadCount = useUnreadNotifCount();
 
   return (
-    <div className="sticky top-0 z-40 w-full overflow-hidden border-b border-primary/30" style={{ height: 104 }}>
-      {/* Degradê amarelo subindo do rodapé */}
-      <div className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/35 to-transparent pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-transparent pointer-events-none" />
+    <div className={`w-full overflow-hidden ${isTransparent ? 'bg-transparent border-none' : 'border-b border-primary/30'}`} style={{ height: 104 }}>
+      {!isTransparent && (
+        <>
+          {/* Degradê amarelo subindo do rodapé */}
+          <div className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/35 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-transparent pointer-events-none" />
+        </>
+      )}
 
       {/* Elementos jurídicos decorativos */}
-      <div className="absolute inset-0 pointer-events-none">
-        {BACKDROP_ICONS.map(({ Icon, top, left, size, rot }, i) => (
-          <div
-            key={i}
-            className="absolute text-primary-foreground/15"
-            style={{ top, left, transform: `rotate(${rot}deg)` }}
-          >
-            <Icon size={size} strokeWidth={1.5} />
-          </div>
-        ))}
-      </div>
+      {!isTransparent && (
+        <div className="absolute inset-0 pointer-events-none">
+          {BACKDROP_ICONS.map(({ Icon, top, left, size, rot }, i) => (
+            <div
+              key={i}
+              className="absolute text-primary-foreground/15"
+              style={{ top, left, transform: `rotate(${rot}deg)` }}
+            >
+              <Icon size={size} strokeWidth={1.5} />
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Conteúdo */}
       <div className="relative z-10 h-full max-w-7xl mx-auto px-8 xl:px-12 flex items-center gap-6">
