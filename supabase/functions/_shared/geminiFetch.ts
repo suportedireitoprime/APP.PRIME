@@ -13,9 +13,12 @@
 //   (do isolate) para não continuar chamando e sofrer restrição.
 // - A marcação é apenas em memória do isolate: reinicia sozinha e não persiste.
 
+import { getVertexAuth } from "./gcpAuth.ts";
+
 const PRIMARY = Deno.env.get("GEMINI_API_KEY") ?? "";
 const AUDIO_KEY = Deno.env.get("GEMINI_AUDIO_API_KEY") ?? "";
 const RESERVA = Deno.env.get("GEMINI_API_KEY_RESERVA") ?? "";
+const GCP_SERVICE_ACCOUNT = Deno.env.get("GCP_SERVICE_ACCOUNT");
 
 const COOLDOWN_MS = 60 * 60 * 1000; // 1 hora
 let reservaExhaustedUntil = 0;
@@ -77,11 +80,39 @@ export async function geminiFetch(
     return fetch(url, init);
   }
 
+  // INTERCEPTAÇÃO: Se houver Service Account configurada, tentar Vertex AI primeiro!
+  if (GCP_SERVICE_ACCOUNT) {
+    try {
+      const { token, projectId } = await getVertexAuth(GCP_SERVICE_ACCOUNT);
+      const region = "us-central1"; // Padrão GCP AI
+      
+      // Extrair o modelo e o método da URL original
+      // URL original ex: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=X
+      const match = url.match(/models\/([^:]+):([^?]+)/);
+      if (match) {
+        const model = match[1];
+        let action = match[2];
+        if (action === 'streamGenerateContent') action = 'streamGenerateContent?alt=sse';
+        
+        const vertexUrl = `https://${region}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${region}/publishers/google/models/${model}:${action}`;
+        
+        const headers = new Headers(init?.headers);
+        headers.set('Authorization', `Bearer ${token}`);
+        
+        const vertexRes = await fetch(vertexUrl, { ...init, headers });
+        if (vertexRes.ok) {
+          return vertexRes;
+        }
+        console.warn(`[geminiFetch] Vertex AI falhou HTTP ${vertexRes.status} para ${model}. Fazendo fallback para AI Studio.`);
+      }
+    } catch (err: any) {
+      console.warn(`[geminiFetch] Erro ao preparar Vertex AI: ${err.message}. Fazendo fallback para AI Studio.`);
+    }
+  }
+
   const isAudioReq = url.includes("tts") || url.includes("speech") || url.includes("audio");
 
-  // Monta a fila de chaves a tentar, respeitando a separação Texto vs. Áudio:
-  // - Para Áudio: GEMINI_AUDIO_API_KEY -> URL Key -> GEMINI_API_KEY -> RESERVA
-  // - Para Texto: URL Key -> GEMINI_API_KEY -> RESERVA
+  // Monta a fila de chaves a tentar (AI Studio Legacy)
   const urlKey = extractKey(url);
   const candidates: string[] = [];
   const pushUnique = (k: string) => { if (k && !candidates.includes(k)) candidates.push(k); };
@@ -94,7 +125,6 @@ export async function geminiFetch(
   if (RESERVA && Date.now() >= reservaExhaustedUntil) pushUnique(RESERVA);
 
   if (candidates.length === 0) {
-    // Sem nenhuma chave — devolve a resposta da URL original para o chamador tratar.
     return fetch(url, init);
   }
 
