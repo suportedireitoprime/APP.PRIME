@@ -1,9 +1,13 @@
 import { Search, GraduationCap, Layers, HelpCircle, Sparkles, Book, Library, FileText, MonitorPlay, Headphones, ChevronRight, MessageSquare, Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import heroBannerAsset from '@/assets/desktop-hero-banner.jpg';
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
+import { pickAsset, srcOf } from '@/lib/assetUrl';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
-import primeLogo from '@/assets/logo-direitoprime-v2.png';
 import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
+
+const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 
 interface Props {
   typingHint?: string;
