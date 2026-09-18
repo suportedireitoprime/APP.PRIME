@@ -24,7 +24,7 @@ import AtualizacaoTab from '@/components/vademecum/outros/AtualizacaoTab';
 import DesktopEstudosGrid from '@/components/desktop/DesktopEstudosGrid';
 import NoticiasJuridicasCarousel from '@/components/vademecum/blog/NoticiasJuridicasCarousel';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import HomeAprenderCarousel from '@/components/vademecum/home/carousel/HomeAprenderCarousel';
+import HomeAprenderCarousel from '@/components/vademecum/home/aprender/HomeAprenderCarousel';
 import HomeTresPoderes from '@/components/vademecum/home/sections/HomeTresPoderes';
 import HomeApresentacoesTimeline from '@/components/vademecum/home/sections/HomeApresentacoesTimeline';
 import NotificationsSheet, { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
