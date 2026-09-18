@@ -16,6 +16,7 @@ import senadoHeroAsset from '@/assets/radar/senado-hero.webp';
 const senadoHero = senadoHeroAsset;
 
 import DesktopHeroBanner from '@/components/vademecum/desktop/DesktopHeroBanner';
+import DesktopRadarLeisCarousel from '@/components/vademecum/desktop/DesktopRadarLeisCarousel';
 import DesktopTopHeader from '@/components/vademecum/desktop/DesktopTopHeader';
 import DesktopOnboardingOverlay from '@/components/desktop/DesktopOnboardingOverlay';
 import DesktopBreadcrumb from '@/components/vademecum/desktop/DesktopBreadcrumb';
@@ -148,6 +149,10 @@ const IndexDesktop = () => {
                         onNotifClick={() => setNotifOpen(true)}
                         unreadCount={unreadCount}
                       />
+                    </div>
+
+                    <div className="relative z-30 mb-8 mt-6 max-w-[1600px] mx-auto">
+                      <DesktopRadarLeisCarousel />
                     </div>
 
                     <div className="relative z-30 mb-8 mt-6">

@@ -7,7 +7,6 @@ import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
 import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
-import DesktopRadarLeisCarousel from './DesktopRadarLeisCarousel';
 
 const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 
@@ -20,15 +19,13 @@ interface Props {
 
 const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNotifClick, unreadCount = 0 }: Props) => {
   const navigate = useNavigate();
-
   const { items, handleItemClick } = useAprenderItems();
 
   return (
-    <div className="relative w-full max-w-[1600px] mx-auto z-20 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
-      {/* COLUNA ESQUERDA: CAPA PRINCIPAL + CARROSSEL DE NOTÍCIAS */}
-      <div className="flex flex-col gap-6">
-        <div className="relative h-[380px] rounded-3xl overflow-hidden shadow-2xl flex flex-col group">
-        {/* Imagem de Fundo */}
+    <div className="relative w-full max-w-[1600px] mx-auto z-20 grid grid-cols-1 lg:grid-cols-[1fr_310px] gap-6">
+      {/* COLUNA ESQUERDA: CAPA PRINCIPAL (HERO) */}
+      <div className="relative h-[380px] rounded-3xl overflow-hidden shadow-2xl flex flex-col group bg-zinc-950 border border-white/10">
+        {/* Imagem de Fundo (A CAPA) */}
         <img
           src={heroBannerAsset}
           alt="Estudos Jurídicos - Capa"
@@ -41,11 +38,14 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
         {/* Overlay vermelho com recorte poligonal cobrindo parte da esquerda */}
         <div 
           className="absolute inset-0 z-[1] pointer-events-none"
-          style={{ filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.8)) drop-shadow(8px 0 10px rgba(0,0,0,0.95))' }}
+          style={{ filter: 'drop-shadow(20px 0 25px rgba(0,0,0,0.85))' }}
         >
           <div 
             className="absolute inset-0 overflow-hidden"
-            style={{ clipPath: 'polygon(0 0, 55% 0, 35% 100%, 0% 100%)' }}
+            style={{ 
+              clipPath: 'polygon(0 0, 52% 0, 36% 100%, 0% 100%)',
+              WebkitClipPath: 'polygon(0 0, 52% 0, 36% 100%, 0% 100%)',
+            }}
           >
             <div className="absolute inset-0 bg-hero-panel" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" />
@@ -55,19 +55,22 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
               backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px)',
               backgroundSize: '24px 24px'
             }} />
-            
-            {/* CARROSSEL DE DECKS DO APRENDER DENTRO DO PAINEL VERMELHO */}
-            <div className="absolute bottom-5 left-6 xl:left-8 pointer-events-auto z-20 flex flex-col items-center w-[270px] xl:w-[310px]">
-              <div className="transform scale-[0.78] xl:scale-[0.88] origin-bottom w-full pb-3 flex justify-center">
-                <AprenderDeckStacked items={items} onItemClick={handleItemClick} />
-              </div>
-              <button onClick={() => navigate('/aprender')} className="relative flex items-center justify-center gap-2 font-display text-white text-[13px] font-bold uppercase tracking-widest py-2.5 w-full rounded-xl bg-red-900/80 hover:bg-red-950/90 transition-all border border-red-700/50 overflow-hidden group shadow-[0_8px_30px_rgba(153,27,27,0.3)]">
-                <span className="relative z-10">Acessar</span>
-                <ChevronRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform relative z-10" />
-                <div className="absolute inset-0 -translate-x-[150%] bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-shimmer" />
-              </button>
-            </div>
           </div>
+        </div>
+
+        {/* CARROSSEL DE DECKS DO APRENDER NO LADO ESQUERDO DO PAINEL */}
+        <div className="absolute bottom-5 left-5 xl:left-8 pointer-events-auto z-20 flex flex-col items-center w-[250px] xl:w-[280px]">
+          <div className="transform scale-[0.74] xl:scale-[0.82] origin-bottom w-full pb-2 flex justify-center">
+            <AprenderDeckStacked items={items} onItemClick={handleItemClick} />
+          </div>
+          <button 
+            onClick={() => navigate('/aprender')} 
+            className="relative flex items-center justify-center gap-2 font-display text-white text-[13px] font-bold uppercase tracking-widest py-2.5 w-full rounded-xl bg-red-900/80 hover:bg-red-950/90 transition-all border border-red-700/50 overflow-hidden group shadow-[0_8px_30px_rgba(153,27,27,0.3)]"
+          >
+            <span className="relative z-10">Acessar</span>
+            <ChevronRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform relative z-10" />
+            <div className="absolute inset-0 -translate-x-[150%] bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-shimmer" />
+          </button>
         </div>
 
         {/* HEADER INTERNO (Logo + Título + Notificações) */}
@@ -101,17 +104,16 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
         </div>
 
         {/* CONTEÚDO (Logo, Busca e Botões) */}
-        <div className="absolute inset-0 z-10 flex flex-col pt-24 pb-6 px-8 pointer-events-none">
-          
+        <div className="absolute inset-0 z-10 flex flex-col pt-20 pb-6 px-8 pointer-events-none">
           {/* LADO DIREITO: Busca e Botões Rápidos */}
-          <div className="w-[55%] h-full flex flex-col justify-end ml-auto pointer-events-auto">
-            <h2 className="text-[32px] 2xl:text-4xl text-right font-display font-extrabold text-white mb-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] uppercase tracking-tight">
+          <div className="w-[52%] h-full flex flex-col justify-end ml-auto pointer-events-auto">
+            <h2 className="text-[28px] xl:text-[32px] 2xl:text-4xl text-right font-display font-extrabold text-white mb-5 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] uppercase tracking-tight">
               O QUE VOCÊ QUER ESTUDAR HOJE?
             </h2>
             
             <button 
               onClick={onSearchClick}
-              className="w-full h-14 bg-background/90 backdrop-blur-md rounded-2xl flex items-center px-4 gap-3 shadow-2xl border border-border/50 hover:bg-background transition-colors mb-6 group"
+              className="w-full h-14 bg-background/90 backdrop-blur-md rounded-2xl flex items-center px-4 gap-3 shadow-2xl border border-border/50 hover:bg-background transition-colors mb-5 group"
             >
               <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
                 <Search className="w-4 h-4 text-primary" />
@@ -140,25 +142,21 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
         </div>
       </div>
 
-        {/* CARROSSEL OFICIAL DO RADAR DE LEIS NO DESKTOP (SEM FUNDO VERMELHO) */}
-        <DesktopRadarLeisCarousel />
-      </div>
-
       {/* COLUNA DIREITA: ACESSO RÁPIDO */}
-      <div className="bg-hero-panel rounded-3xl relative z-20 flex flex-col p-6 shadow-2xl overflow-hidden border border-white/10 h-full">
+      <div className="bg-hero-panel rounded-3xl relative z-20 flex flex-col p-6 shadow-2xl overflow-hidden border border-white/10 h-[380px]">
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent pointer-events-none" />
         <div className="absolute inset-0 opacity-20 pointer-events-none" style={{
           backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px)',
           backgroundSize: '24px 24px'
         }} />
         
-        <div className="relative z-10 flex-1 flex flex-col">
-          <h3 className="text-white font-display font-bold text-base mb-6 flex items-center gap-2 opacity-95">
+        <div className="relative z-10 flex-1 flex flex-col justify-between">
+          <h3 className="text-white font-display font-bold text-base mb-2 flex items-center gap-2 opacity-95">
             <span className="w-1 h-4 bg-white rounded-full"></span>
             ACESSO RÁPIDO
           </h3>
 
-          <div className="flex flex-col gap-0 border-y border-white/10 divide-y divide-white/10 mt-2">
+          <div className="flex flex-col divide-y divide-white/10">
             {[
               { label: 'Vade Mecum', icon: Book, route: '/vade-mecum' },
               { label: 'Biblioteca', icon: Library, route: '/bibliotecas' },
@@ -170,13 +168,13 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
               <button
                 key={i}
                 onClick={() => navigate(link.route)}
-                className="w-full flex items-center gap-4 px-3 py-4 hover:bg-white/10 transition-colors text-white font-body group"
+                className="w-full flex items-center gap-3.5 px-2.5 py-2.5 hover:bg-white/10 rounded-xl transition-colors text-white font-body group"
               >
-                <div className="w-10 h-10 rounded-xl bg-black/20 flex items-center justify-center shrink-0 group-hover:bg-black/30 transition-colors border border-white/5 shadow-inner">
-                  <link.icon className="w-5 h-5 text-white/90 group-hover:text-white" />
+                <div className="w-8 h-8 rounded-lg bg-black/20 flex items-center justify-center shrink-0 group-hover:bg-black/30 transition-colors border border-white/5 shadow-inner">
+                  <link.icon className="w-4 h-4 text-white/90 group-hover:text-white" />
                 </div>
-                <span className="font-semibold tracking-wide text-[15px] drop-shadow-sm flex-1 text-left opacity-95 group-hover:opacity-100 transition-opacity">{link.label}</span>
-                <ChevronRight className="w-5 h-5 text-white/30 group-hover:text-white/80 transition-colors" />
+                <span className="font-semibold tracking-wide text-[14px] drop-shadow-sm flex-1 text-left opacity-95 group-hover:opacity-100 transition-opacity">{link.label}</span>
+                <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white/80 transition-colors" />
               </button>
             ))}
           </div>
@@ -187,4 +185,3 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
 };
 
 export default DesktopHeroBanner;
-
