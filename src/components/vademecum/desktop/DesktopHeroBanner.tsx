@@ -1,4 +1,5 @@
 import { Sparkles, MessageSquare, Layers, HelpCircle, GraduationCap, Bell, Search, Book, Library, FileText, MonitorPlay, Headphones, ChevronRight, Bot } from 'lucide-react';
+import { AprenderCarousel3D, useAprenderItems } from '@/components/vademecum/home/aprender/chunks';
 import { useNavigate } from 'react-router-dom';
 import heroBannerAsset from '@/assets/desktop-hero-banner.jpg';
 import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
