@@ -2,11 +2,8 @@ import { Search, GraduationCap, Layers, HelpCircle, Sparkles, Book, Library, Fil
 import { useNavigate } from 'react-router-dom';
 import heroBannerAsset from '@/assets/desktop-hero-banner.jpg';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
-import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
-import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
-import { pickAsset, srcOf } from '@/lib/assetUrl';
-
-const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
+import primeLogo from '@/assets/logo-direitoprime-v2.png';
+import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
 
 interface Props {
   typingHint?: string;
@@ -82,17 +79,24 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
           </button>
         </div>
 
-        {/* CONTEÚDO ESQUERDA */}
-        <div className="relative z-10 w-full flex-1 p-10 pt-24 flex flex-col justify-end pointer-events-none">
-          <div className="max-w-xl w-full pointer-events-auto">
-            <h2 className="text-4xl font-display font-extrabold text-white mb-6 drop-shadow-md uppercase tracking-tight">
+        {/* CONTEÚDO ESQUERDA (Carrossel) & DIREITA (Busca e Botões) */}
+        <div className="absolute inset-0 z-10 flex pt-24 pb-6 px-8 pointer-events-none">
+          {/* LADO ESQUERDO: Carrossel (dentro da área vermelha) */}
+          <div className="w-[48%] h-full flex flex-col justify-end pointer-events-auto pr-4">
+            <div className="transform scale-95 origin-bottom-left w-[105%]">
+              <HomeNoticiasCarousel />
+            </div>
+          </div>
+          
+          {/* LADO DIREITO: Busca e Botões Rápidos */}
+          <div className="flex-1 h-full flex flex-col justify-end pl-8 pointer-events-auto">
+            <h2 className="text-[32px] 2xl:text-4xl text-right font-display font-extrabold text-white mb-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] uppercase tracking-tight">
               O QUE VOCÊ QUER ESTUDAR HOJE?
             </h2>
             
-            {/* Barra de Pesquisa Estilo Mobile */}
             <button 
               onClick={onSearchClick}
-              className="w-full h-14 bg-background/80 backdrop-blur-md rounded-2xl flex items-center px-4 gap-3 shadow-lg border border-border/50 hover:bg-background/90 transition-colors mb-8 group"
+              className="w-full h-14 bg-background/90 backdrop-blur-md rounded-2xl flex items-center px-4 gap-3 shadow-2xl border border-border/50 hover:bg-background transition-colors mb-6 group"
             >
               <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
                 <Search className="w-4 h-4 text-primary" />
@@ -100,8 +104,7 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
               <span className="text-muted-foreground font-body text-sm text-left flex-1">{typingHint}</span>
             </button>
 
-            {/* 4 Botões Rápidos */}
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-4 gap-3">
               {[
                 { label: 'Aprender', icon: GraduationCap, route: '/aprender' },
                 { label: 'Flashcards', icon: Layers, route: '/flashcards' },
@@ -111,10 +114,10 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
                 <button
                   key={i}
                   onClick={() => navigate(btn.route)}
-                  className="flex flex-col items-center justify-center gap-2 bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/10 rounded-2xl p-4 transition-all hover:scale-105 group/btn shadow-lg"
+                  className="flex flex-col items-center justify-center gap-2 bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/10 rounded-2xl p-3 transition-all hover:scale-105 group/btn shadow-xl"
                 >
-                  <btn.icon className="w-7 h-7 text-white/90 group-hover/btn:text-white transition-colors drop-shadow-md" />
-                  <span className="text-white text-xs font-semibold font-body tracking-wide drop-shadow-md">{btn.label}</span>
+                  <btn.icon className="w-6 h-6 text-white/90 group-hover/btn:text-white transition-colors drop-shadow-md" />
+                  <span className="text-white text-[11px] font-semibold font-body tracking-wide drop-shadow-md">{btn.label}</span>
                 </button>
               ))}
             </div>

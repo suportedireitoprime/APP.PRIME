@@ -151,7 +151,7 @@ const IndexDesktop = () => {
                     </div>
 
                     <div className="relative z-30 mb-8 -mx-8 2xl:-mx-14 mt-6">
-                      <HomeNoticiasCarousel />
+                      <HomeAprenderCarousel />
                     </div>
 
                     <div className="mb-10">
@@ -162,7 +162,6 @@ const IndexDesktop = () => {
                     </div>
 
                     <div className="space-y-12 max-w-[1600px] mx-auto pb-16 pt-8">
-                      <HomeAprenderCarousel />
                       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
                         <HomeTresPoderes />
                         <HomeApresentacoesTimeline />
