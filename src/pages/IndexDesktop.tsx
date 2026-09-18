@@ -164,7 +164,7 @@ const IndexDesktop = () => {
                       }}
                       className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-body font-medium transition-colors focus-visible:outline-none ${
                         isActive
-                          ? 'text-white bg-[#E50914] shadow-md shadow-red-900/20'
+                          ? 'text-white bg-hero-panel shadow-md shadow-black/20'
                           : 'text-foreground/60 hover:text-foreground hover:bg-secondary/60'
                       }`}
                     >
