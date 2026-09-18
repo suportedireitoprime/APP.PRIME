@@ -1,7 +1,6 @@
 import { Sparkles, MessageSquare, Layers, HelpCircle, GraduationCap, Bell, Search, Book, Library, FileText, MonitorPlay, Headphones, ChevronRight, Bot, ListChecks } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
-import { AprenderCarousel3D, useAprenderItems } from '@/components/vademecum/home/aprender/chunks';
-import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
+import { AprenderDeckStacked, useAprenderItems } from '@/components/vademecum/home/aprender/chunks';
 import { useNavigate } from 'react-router-dom';
 import heroBannerAsset from '@/assets/desktop-hero-banner.jpg';
 import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
@@ -58,9 +57,9 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
             }} />
             
             {/* CARROSSEL DE DECKS DO APRENDER DENTRO DO PAINEL VERMELHO */}
-            <div className="absolute bottom-6 left-8 pointer-events-auto z-20 flex flex-col items-center w-[300px]">
-              <div className="transform scale-[0.8] origin-bottom w-full pb-2">
-                <AprenderCarousel3D items={items} onItemClick={handleItemClick} />
+            <div className="absolute bottom-5 left-6 xl:left-8 pointer-events-auto z-20 flex flex-col items-start w-[260px] xl:w-[300px]">
+              <div className="transform scale-[0.75] xl:scale-[0.85] origin-bottom-left w-full pb-3">
+                <AprenderDeckStacked items={items} onItemClick={handleItemClick} />
               </div>
               <button onClick={() => navigate('/aprender')} className="relative flex items-center justify-center gap-2 font-display text-white text-[13px] font-bold uppercase tracking-widest py-2.5 w-full rounded-xl bg-red-900/80 hover:bg-red-950/90 transition-all border border-red-700/50 overflow-hidden group shadow-[0_8px_30px_rgba(153,27,27,0.3)]">
                 <span className="relative z-10">Acessar</span>
