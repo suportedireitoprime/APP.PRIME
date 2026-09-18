@@ -19,7 +19,7 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
         <img
           src={heroBannerAsset}
           alt="Estudos Jurídicos - Capa"
-          className="absolute inset-0 w-full h-full object-cover object-right z-0 pointer-events-none transition-transform duration-700 group-hover:scale-105"
+          className="absolute inset-0 w-full h-full object-cover object-[25%_center] z-0 pointer-events-none transition-transform duration-700 group-hover:scale-105"
           loading="eager"
           decoding="async"
           fetchPriority="high"
@@ -32,7 +32,7 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
         >
           <div 
             className="absolute inset-0 overflow-hidden"
-            style={{ clipPath: 'polygon(0 0, 70% 0, 50% 100%, 0% 100%)' }}
+            style={{ clipPath: 'polygon(0 0, 55% 0, 35% 100%, 0% 100%)' }}
           >
             <div className="absolute inset-0 bg-hero-panel" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" />

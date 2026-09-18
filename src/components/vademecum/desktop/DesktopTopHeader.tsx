@@ -63,11 +63,8 @@ const DesktopTopHeader = memo(({ onAssistenteClick, isTransparent }: Props) => {
           onClick={() => navigate('/')}
           className="flex items-center gap-3 shrink-0 group"
         >
-          <div className="relative">
-            <div className="absolute inset-0 blur-xl bg-primary/40 rounded-full scale-125" />
-            <div className="relative w-14 h-14 rounded-2xl overflow-hidden shadow-xl border-2 border-primary-foreground/20 bg-background/40">
-              <img src={primeLogo} alt="Estudos Jurídicos" className="w-full h-full object-contain" />
-            </div>
+          <div className="relative w-14 h-14">
+            <img src={primeLogo} alt="Estudos Jurídicos" className="w-full h-full object-contain drop-shadow-md" />
           </div>
           <div className="flex flex-col items-start leading-none justify-center mt-1">
             <span className="font-serif italic text-3xl font-bold text-white tracking-tight drop-shadow-sm">
