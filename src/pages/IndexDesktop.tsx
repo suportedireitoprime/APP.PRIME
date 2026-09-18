@@ -138,37 +138,8 @@ const IndexDesktop = () => {
             </div>
             
             <div className={`sticky top-0 z-40 border-b border-white/5 transition-colors duration-300 bg-[#121212]/95 backdrop-blur-md shadow-xl shadow-black/60`}>
-              {/* Search discreto acima das tabs */}
-              <div className="px-8 pt-3 pb-1 flex justify-end items-center gap-3">
-                <button
-                  onClick={() => setSearchOpen(true)}
-                  className="flex items-center h-8 px-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-white/50 w-64 transition-colors"
-                >
-                  <Search className="w-3.5 h-3.5 mr-2 shrink-0 text-white/40" />
-                  <span className="truncate">{typingHint}</span>
-                </button>
-                <button
-                  onClick={() => setAssistenteOpen(true)}
-                  className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors"
-                  title="Assistente Horus"
-                >
-                  <Bird className="w-4 h-4 text-white/70" />
-                </button>
-                <button
-                  onClick={() => setNotifOpen(true)}
-                  className="relative w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors"
-                  title="Notificações"
-                >
-                  <Bell className="w-4 h-4 text-white/70" />
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-[#E50914] text-white text-[9px] font-black flex items-center justify-center border-2 border-[#121212]">
-                      {unreadCount > 99 ? '99+' : unreadCount}
-                    </span>
-                  )}
-                </button>
-              </div>
-
-              <div className="flex items-center gap-2 px-8 h-12 pb-2">
+              {/* Tabs primeiro */}
+              <div className="flex items-center gap-2 px-8 h-12 pt-2">
                 {DESKTOP_TABS.map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
@@ -202,6 +173,36 @@ const IndexDesktop = () => {
                     </motion.button>
                   );
                 })}
+              </div>
+
+              {/* Search + ícones ABAIXO das tabs */}
+              <div className="px-8 pt-1 pb-2 flex justify-end items-center gap-3">
+                <button
+                  onClick={() => setSearchOpen(true)}
+                  className="flex items-center h-8 px-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-white/50 w-64 transition-colors"
+                >
+                  <Search className="w-3.5 h-3.5 mr-2 shrink-0 text-white/40" />
+                  <span className="truncate">{typingHint}</span>
+                </button>
+                <button
+                  onClick={() => setAssistenteOpen(true)}
+                  className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors"
+                  title="Assistente Horus"
+                >
+                  <Bird className="w-4 h-4 text-white/70" />
+                </button>
+                <button
+                  onClick={() => setNotifOpen(true)}
+                  className="relative w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors"
+                  title="Notificações"
+                >
+                  <Bell className="w-4 h-4 text-white/70" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-[#E50914] text-white text-[9px] font-black flex items-center justify-center border-2 border-[#121212]">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
+                </button>
               </div>
               <DesktopBreadcrumb />
             </div>
