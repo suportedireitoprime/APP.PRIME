@@ -182,8 +182,7 @@ const IndexDesktop = () => {
               <div key={activeTab} className="animate-fade-in">
                 {activeTab === 'legislacao' && (
                   <>
-                    {/* A capa começa no topo absoluto da tela puxando -152px (104 do header + 48 das tabs) */}
-                    <div className="mb-0 -mx-8 2xl:-mx-14 -mt-[152px] relative z-0 pointer-events-auto">
+                    <div className="mb-8 mt-4 relative z-0 pointer-events-auto">
                       <DesktopHeroBanner typingHint={typingHint} onSearchClick={() => setSearchOpen(true)} />
                     </div>
 

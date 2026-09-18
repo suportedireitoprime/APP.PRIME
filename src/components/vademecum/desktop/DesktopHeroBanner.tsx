@@ -12,14 +12,14 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
   const navigate = useNavigate();
 
   return (
-    <div className="relative w-full overflow-hidden shadow-2xl shadow-black/60 z-20 grid grid-cols-[1fr_300px]">
+    <div className="relative w-full max-w-[1600px] mx-auto z-20 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
       {/* COLUNA ESQUERDA: CAPA PRINCIPAL */}
-      <div className="relative min-h-[380px] bg-[#050505] flex flex-col justify-end">
+      <div className="relative min-h-[380px] rounded-3xl overflow-hidden shadow-2xl bg-[#050505] flex flex-col justify-end group">
         {/* Imagem de Fundo */}
         <img
           src={heroBannerAsset}
           alt="Estudos Jurídicos - Capa"
-          className="absolute inset-0 w-full h-full object-cover object-right z-0 pointer-events-none"
+          className="absolute inset-0 w-full h-full object-cover object-right z-0 pointer-events-none transition-transform duration-700 group-hover:scale-105"
           loading="eager"
           decoding="async"
           fetchPriority="high"
@@ -32,9 +32,9 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
         >
           <div 
             className="absolute inset-0 overflow-hidden"
-            style={{ clipPath: 'polygon(0 0, 65% 0, 45% 100%, 0% 100%)' }}
+            style={{ clipPath: 'polygon(0 0, 70% 0, 50% 100%, 0% 100%)' }}
           >
-            <div className="absolute inset-0 bg-[#E50914]" />
+            <div className="absolute inset-0 bg-hero-panel" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -50,17 +50,19 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
         <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/20 to-transparent z-[1] pointer-events-none" />
 
         {/* CONTEÚDO ESQUERDA */}
-        <div className="relative z-10 w-full h-full p-12 flex flex-col justify-end pt-[140px] pointer-events-none">
-          <div className="max-w-xl w-full pointer-events-auto mt-auto mb-4">
+        <div className="relative z-10 w-full h-full p-10 flex flex-col justify-end pointer-events-none">
+          <div className="max-w-xl w-full pointer-events-auto">
             <h2 className="text-3xl font-display font-bold text-white mb-6 drop-shadow-md">O que você quer estudar hoje?</h2>
             
-            {/* Barra de Pesquisa */}
+            {/* Barra de Pesquisa Estilo Mobile */}
             <button 
               onClick={onSearchClick}
-              className="w-full h-14 bg-white rounded-xl flex items-center px-6 gap-4 shadow-xl hover:bg-zinc-50 transition-colors mb-8 group border border-white/20"
+              className="w-full h-14 bg-background/80 backdrop-blur-md rounded-2xl flex items-center px-4 gap-3 shadow-lg border border-border/50 hover:bg-background/90 transition-colors mb-8 group"
             >
-              <Search className="w-6 h-6 text-zinc-400 group-hover:text-[#E50914] transition-colors" />
-              <span className="text-zinc-500 font-body text-lg text-left flex-1">{typingHint}</span>
+              <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
+                <Search className="w-4 h-4 text-primary" />
+              </div>
+              <span className="text-muted-foreground font-body text-sm text-left flex-1">{typingHint}</span>
             </button>
 
             {/* 4 Botões Rápidos */}
@@ -74,9 +76,9 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
                 <button
                   key={i}
                   onClick={() => navigate(btn.route)}
-                  className="flex flex-col items-center justify-center gap-2 bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/10 rounded-xl p-4 transition-all hover:scale-105 group shadow-lg"
+                  className="flex flex-col items-center justify-center gap-2 bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/10 rounded-2xl p-4 transition-all hover:scale-105 group/btn shadow-lg"
                 >
-                  <btn.icon className="w-7 h-7 text-white/90 group-hover:text-white transition-colors drop-shadow-md" />
+                  <btn.icon className="w-7 h-7 text-white/90 group-hover/btn:text-white transition-colors drop-shadow-md" />
                   <span className="text-white text-xs font-semibold font-body tracking-wide drop-shadow-md">{btn.label}</span>
                 </button>
               ))}
@@ -86,20 +88,20 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
       </div>
 
       {/* COLUNA DIREITA: ACESSO RÁPIDO */}
-      <div className="bg-[#E50914] relative z-20 flex flex-col p-8 pt-[124px] border-l border-white/10 shadow-[-10px_0_20px_rgba(0,0,0,0.5)]">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.1),transparent_80%)] pointer-events-none" />
-        <div className="absolute inset-0 opacity-10 pointer-events-none" style={{
+      <div className="bg-hero-panel rounded-3xl relative z-20 flex flex-col p-6 shadow-2xl overflow-hidden border border-white/10">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 opacity-20 pointer-events-none" style={{
           backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px)',
           backgroundSize: '24px 24px'
         }} />
         
-        <div className="relative z-10 flex-1 flex flex-col justify-end mb-4">
-          <h3 className="text-white font-display font-bold text-base mb-5 flex items-center gap-2 opacity-90">
+        <div className="relative z-10 flex-1 flex flex-col">
+          <h3 className="text-white font-display font-bold text-base mb-6 flex items-center gap-2 opacity-95">
             <span className="w-1 h-4 bg-white rounded-full"></span>
             ACESSO RÁPIDO
           </h3>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2.5">
             {[
               { label: 'Vade Mecum', icon: Book, route: '/vade-mecum' },
               { label: 'Biblioteca', icon: Library, route: '/bibliotecas' },
@@ -110,12 +112,12 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
               <button
                 key={i}
                 onClick={() => navigate(link.route)}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-colors text-white font-body group"
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/15 transition-colors text-white font-body group"
               >
-                <div className="w-8 h-8 rounded-lg bg-black/20 flex items-center justify-center shrink-0 group-hover:bg-black/30 transition-colors">
+                <div className="w-8 h-8 rounded-lg bg-black/20 flex items-center justify-center shrink-0 group-hover:bg-black/30 transition-colors border border-white/5">
                   <link.icon className="w-4 h-4 text-white/90 group-hover:text-white" />
                 </div>
-                <span className="font-medium tracking-wide text-sm">{link.label}</span>
+                <span className="font-semibold tracking-wide text-sm drop-shadow-sm">{link.label}</span>
               </button>
             ))}
           </div>
