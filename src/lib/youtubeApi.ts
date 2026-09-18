@@ -33,8 +33,13 @@ export interface CanalData {
 
 export async function fetchCanalData(channelHandle: string): Promise<CanalData> {
   try {
+    let handle = channelHandle;
+    if (handle === 'camara') handle = '@camaradosdeputadosoficial';
+    else if (handle === 'senado') handle = '@tvsenado';
+    else if (handle === 'stf') handle = '@STF_oficial';
+    
     const { data, error } = await supabase.functions.invoke('youtube-canal', {
-      body: { handle: channelHandle }
+      body: { handle }
     });
 
     if (error || !data || data.error) {
