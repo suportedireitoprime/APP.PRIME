@@ -160,10 +160,10 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
             {[
               { label: 'Vade Mecum', icon: Book, route: '/vade-mecum' },
               { label: 'Biblioteca', icon: Library, route: '/bibliotecas' },
-              { label: 'Dicionário', icon: BookA, route: '/dicionario' },
-              { label: 'Resumos', icon: FileText, route: '/aprender/resumos' },
-              { label: 'Videoaulas', icon: MonitorPlay, route: '/aprender/videos' },
-              { label: 'Audioaulas', icon: Headphones, route: '/aprender/audios' }
+              { label: 'Dicionário', icon: BookA, route: '/ferramentas/dicionario' },
+              { label: 'Resumos', icon: FileText, route: '/resumos-juridicos' },
+              { label: 'Videoaulas', icon: MonitorPlay, route: '/videoaulas/painel' },
+              { label: 'Audioaulas', icon: Headphones, route: '/audioaulas' }
             ].map((link, i) => (
               <button
                 key={i}

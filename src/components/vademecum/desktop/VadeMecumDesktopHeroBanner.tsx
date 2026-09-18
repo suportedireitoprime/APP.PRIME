@@ -136,7 +136,7 @@ const VadeMecumDesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClic
 
           <div className="flex flex-col gap-0 border-y border-white/10 divide-y divide-white/10 mt-2">
             {[
-              { label: 'Dicionário Jurídico', icon: BookA, route: '/dicionario' },
+              { label: 'Dicionário Jurídico', icon: BookA, route: '/ferramentas/dicionario' },
               { label: 'Constituição & Códigos', icon: LayoutGrid, route: '/vade-mecum/categorias' },
               { label: 'Áreas do Direito', icon: Scale, route: '/vade-mecum/areas' },
               { label: 'Meus Favoritos', icon: Bookmark, route: '/vade-mecum/favoritos' },
