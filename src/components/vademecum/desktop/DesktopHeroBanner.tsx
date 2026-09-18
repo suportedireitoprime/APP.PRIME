@@ -12,7 +12,7 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
     <div 
       className="relative w-full overflow-hidden bg-hero-panel shadow-2xl shadow-black/60 z-20 flex flex-col justify-end pb-8" 
       style={{ 
-        minHeight: '380px', // slightly taller to accommodate the floating carousel
+        minHeight: '540px', // Compensando o pt-152px para manter a área visual
         backgroundColor: '#050505',
         transform: 'translateZ(0)'
       }}
@@ -57,12 +57,12 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
       <div className="relative z-10 flex flex-col justify-end h-full px-12 xl:px-20 2xl:px-28 w-full pt-[152px]">
         <div className="flex w-full items-end justify-between gap-12 max-w-[1600px] mx-auto">
           
-          <div className="flex-1 max-w-[650px] space-y-6 pt-12 pb-4">
+          <div className="flex-1 max-w-[650px] space-y-5 pt-10 pb-4">
             <div className="space-y-3">
-              <h2 className="font-serif italic text-5xl xl:text-[54px] font-bold text-white leading-[1.05] tracking-tight drop-shadow-md">
+              <h2 className="font-serif italic text-[42px] xl:text-5xl font-bold text-white leading-[1.05] tracking-tight drop-shadow-md">
                 Estudos Jurídicos
               </h2>
-              <p className="text-white/80 text-base xl:text-lg font-body leading-relaxed max-w-lg">
+              <p className="text-white/80 text-sm xl:text-base font-body leading-relaxed max-w-lg">
                 Pesquise por legislação, jurisprudência, resumos e materiais de estudo.
               </p>
             </div>
@@ -70,19 +70,19 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
             {/* Search bar inside the red panel area */}
             <button
               onClick={onSearchClick}
-              className="group relative w-full flex items-center h-[60px] pl-6 pr-32 rounded-[24px] bg-[#1a0a0d]/90 backdrop-blur-md border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)] shadow-primary/20 hover:border-primary/50 transition-colors text-left"
+              className="group relative w-full flex items-center h-[48px] pl-5 pr-28 rounded-2xl bg-[#1a0a0d]/90 backdrop-blur-md border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)] shadow-primary/20 hover:border-primary/50 transition-colors text-left"
             >
-              <Search className="w-5 h-5 text-white/50 shrink-0 mr-3 group-hover:text-primary transition-colors" />
-              <span className="text-white/70 text-base font-body truncate">
+              <Search className="w-4 h-4 text-white/50 shrink-0 mr-3 group-hover:text-primary transition-colors" />
+              <span className="text-white/70 text-sm font-body truncate">
                 {typingHint}
                 <span className="animate-pulse text-primary">|</span>
               </span>
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 h-11 px-6 rounded-[18px] bg-primary text-white font-display font-bold text-sm flex items-center gap-2 shadow-lg shadow-primary/40 group-hover:bg-[#ff3344] transition-colors">
+              <span className="absolute right-1.5 top-1/2 -translate-y-1/2 h-9 px-4 rounded-xl bg-primary text-white font-display font-bold text-xs flex items-center gap-2 shadow-lg shadow-primary/40 group-hover:bg-[#ff3344] transition-colors">
                 Pesquisar
               </span>
             </button>
             
-            <p className="text-white/60 text-sm font-body flex items-center gap-2">
+            <p className="text-white/50 text-xs font-body flex items-center gap-2">
               <span className="text-primary text-[10px]">★</span> +10.000 alunos já estudam com a gente
             </p>
           </div>

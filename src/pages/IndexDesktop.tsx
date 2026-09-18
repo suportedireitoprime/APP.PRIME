@@ -133,8 +133,8 @@ const IndexDesktop = () => {
           </div>
           
           <div className="flex-1 min-w-0 overflow-y-auto relative z-10">
-            <div className={`sticky top-[104px] z-30 border-b border-border transition-colors duration-300 ${activeTab === 'legislacao' ? 'bg-transparent border-transparent' : 'bg-background/95 backdrop-blur-md'}`}>
-              <div className="flex items-center gap-1 px-8 h-12">
+            <div className={`sticky top-[104px] z-30 border-b border-border transition-colors duration-300 bg-card/95 backdrop-blur-md`}>
+              <div className="flex items-center gap-2 px-8 h-14">
                 {DESKTOP_TABS.map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
@@ -161,11 +161,11 @@ const IndexDesktop = () => {
                         isActive
                           ? 'text-primary bg-primary/10'
                           : 'text-foreground/60 hover:text-foreground hover:bg-secondary/60'
-                      } ${activeTab === 'legislacao' && !isActive ? 'text-white/70 hover:text-white hover:bg-white/10' : ''} ${activeTab === 'legislacao' && isActive ? 'text-white bg-white/20' : ''}`}
+                      }`}
                     >
                       <Icon className="w-4 h-4" />
                       <span>{tab.label}</span>
-                      {isActive && <motion.div layoutId="desktop-tab-indicator" className={`absolute bottom-0 left-3 right-3 h-0.5 rounded-full ${activeTab === 'legislacao' ? 'bg-white' : 'bg-primary'}`} />}
+                      {isActive && <motion.div layoutId="desktop-tab-indicator" className="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full" />}
                     </motion.button>
                   );
                 })}
