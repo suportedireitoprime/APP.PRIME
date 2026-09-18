@@ -3,7 +3,7 @@ import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate } from 'react-router-dom';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { motion } from 'framer-motion';
-import { Scale, Gavel, BookOpenText, GraduationCap, Library, MessageSquare } from 'lucide-react';
+import { Scale, Gavel, BookOpenText, GraduationCap, Library, MessageSquare, Search, Bell, Bird } from 'lucide-react';
 import heroImageAsset from '@/assets/hero-vademecum.webp';
 const heroImage = heroImageAsset;
 import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
@@ -27,6 +27,7 @@ import ShapeGrid from '@/components/ui/ShapeGrid';
 import HomeAprenderCarousel from '@/components/vademecum/home/aprender/HomeAprenderCarousel';
 import HomeTresPoderes from '@/components/vademecum/home/sections/HomeTresPoderes';
 import HomeApresentacoesTimeline from '@/components/vademecum/home/sections/HomeApresentacoesTimeline';
+import NotificationsSheet, { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
 
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 
@@ -66,7 +67,9 @@ const IndexDesktop = () => {
   const [searchQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
   const [assistenteOpen, setAssistenteOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
   const [typingHint, setTypingHint] = useState('');
+  const unreadCount = useUnreadNotifCount();
 
   useHotkeys('mod+k', (e) => { e.preventDefault(); setSearchOpen(true); }, { enableOnFormTags: true });
   useHotkeys('escape', () => { setSearchOpen(false); setAssistenteOpen(false); });
@@ -136,13 +139,32 @@ const IndexDesktop = () => {
             
             <div className={`sticky top-0 z-40 border-b border-white/5 transition-colors duration-300 bg-[#121212]/95 backdrop-blur-md shadow-xl shadow-black/60`}>
               {/* Search discreto acima das tabs */}
-              <div className="px-8 pt-3 pb-1 flex justify-end">
+              <div className="px-8 pt-3 pb-1 flex justify-end items-center gap-3">
                 <button
                   onClick={() => setSearchOpen(true)}
                   className="flex items-center h-8 px-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-white/50 w-64 transition-colors"
                 >
                   <Search className="w-3.5 h-3.5 mr-2 shrink-0 text-white/40" />
                   <span className="truncate">{typingHint}</span>
+                </button>
+                <button
+                  onClick={() => setAssistenteOpen(true)}
+                  className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors"
+                  title="Assistente Horus"
+                >
+                  <Bird className="w-4 h-4 text-white/70" />
+                </button>
+                <button
+                  onClick={() => setNotifOpen(true)}
+                  className="relative w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors"
+                  title="Notificações"
+                >
+                  <Bell className="w-4 h-4 text-white/70" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-[#E50914] text-white text-[9px] font-black flex items-center justify-center border-2 border-[#121212]">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
                 </button>
               </div>
 
@@ -288,6 +310,7 @@ const IndexDesktop = () => {
             <SearchOverlay open={searchOpen} onClose={handleSearchClose} onSelectLei={handleSearchSelectLei} />
             <AssistenteOverlay open={assistenteOpen} onClose={handleAssistenteClose} />
           </Suspense>
+          <NotificationsSheet open={notifOpen} onClose={() => setNotifOpen(false)} />
         </div>
       </div>
     </div>

@@ -21,7 +21,7 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
       <img
         src={heroBannerAsset}
         alt="Estudos Jurídicos - Capa"
-        className="absolute inset-0 w-full h-full object-cover object-center z-0 pointer-events-none"
+        className="absolute inset-0 w-full h-full object-cover object-right z-0 pointer-events-none"
         loading="eager"
         decoding="async"
         fetchPriority="high"
