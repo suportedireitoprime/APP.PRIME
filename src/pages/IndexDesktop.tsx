@@ -130,7 +130,7 @@ const IndexDesktop = () => {
         <DesktopOnboardingOverlay />
         
         <DesktopSidebar activeTab={activeTab} onTabChange={setActiveTab} />
-          <div className="flex flex-col flex-1 min-w-0 relative">
+          <div className="flex flex-col flex-1 min-w-0 relative overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
           
             <div className={`border-b border-white/5 transition-colors duration-300 bg-transparent`}>
 
@@ -150,7 +150,9 @@ const IndexDesktop = () => {
                       />
                     </div>
 
-
+                    <div className="relative z-30 mb-8 -mx-8 2xl:-mx-14 mt-6">
+                      <HomeAprenderCarousel />
+                    </div>
 
                     <div className="mb-10">
                       <DesktopEstudosGrid
@@ -160,7 +162,6 @@ const IndexDesktop = () => {
                     </div>
 
                     <div className="space-y-12 max-w-[1600px] mx-auto pb-16 pt-8">
-                      <HomeAprenderCarousel />
                       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
                         <HomeTresPoderes />
                         <HomeApresentacoesTimeline />

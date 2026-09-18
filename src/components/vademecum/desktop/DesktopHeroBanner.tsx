@@ -51,6 +51,13 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
               backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px)',
               backgroundSize: '24px 24px'
             }} />
+            
+            {/* CARROSSEL DE NOTÍCIAS DENTRO DO PAINEL VERMELHO */}
+            <div className="absolute bottom-6 left-8 right-0 pointer-events-auto z-20 flex flex-col justify-end w-[150%]">
+              <div className="transform scale-95 origin-bottom-left">
+                <HomeNoticiasCarousel />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -123,12 +130,7 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
           </div>
         </div>
       </div>
-
-      {/* CARROSSEL DE NOTÍCIAS ABAIXO DA CAPA */}
-      <div className="relative z-30 pt-4">
-        <HomeNoticiasCarousel />
-      </div>
-    </div> {/* FIM COLUNA ESQUERDA */}
+    </div>
 
       {/* COLUNA DIREITA: ACESSO RÁPIDO */}
       <div className="bg-hero-panel rounded-3xl relative z-20 flex flex-col p-6 shadow-2xl overflow-hidden border border-white/10 h-full">
