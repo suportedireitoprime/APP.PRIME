@@ -19,9 +19,9 @@ const VadeMecumDesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClic
   const navigate = useNavigate();
 
   return (
-    <div className="relative w-full max-w-[1600px] mx-auto z-20 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
+    <div className="relative w-full max-w-[1600px] mx-auto z-20 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 h-[380px]">
       {/* COLUNA ESQUERDA: CAPA PRINCIPAL */}
-      <div className="relative min-h-[420px] rounded-3xl overflow-hidden shadow-2xl flex flex-col group">
+      <div className="relative h-full rounded-3xl overflow-hidden shadow-2xl flex flex-col group">
         {/* Imagem de Fundo */}
         <img
           src={heroBannerAsset}
@@ -83,8 +83,8 @@ const VadeMecumDesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClic
         </div>
 
         {/* CONTEÚDO ESQUERDA */}
-        <div className="relative z-10 w-full flex-1 p-10 pt-24 flex flex-col justify-end pointer-events-none">
-          <div className="max-w-xl w-full pointer-events-auto">
+        <div className="absolute inset-0 z-10 flex flex-col pt-24 pb-6 px-8 pointer-events-none">
+          <div className="w-[55%] h-full flex flex-col justify-end ml-auto pointer-events-auto">
             <h2 className="text-4xl font-display font-extrabold text-white mb-6 drop-shadow-md uppercase tracking-tight">
               O QUE VOCÊ QUER PESQUISAR HOJE?
             </h2>
@@ -121,7 +121,7 @@ const VadeMecumDesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClic
       </div>
 
       {/* COLUNA DIREITA: ACESSO RÁPIDO */}
-      <div className="bg-hero-panel rounded-3xl relative z-20 flex flex-col p-6 shadow-2xl overflow-hidden border border-white/10">
+      <div className="bg-hero-panel rounded-3xl relative z-20 flex flex-col p-6 shadow-2xl overflow-hidden border border-white/10 h-full">
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent pointer-events-none" />
         <div className="absolute inset-0 opacity-20 pointer-events-none" style={{
           backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px)',

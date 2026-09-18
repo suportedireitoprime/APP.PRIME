@@ -112,7 +112,7 @@ const VadeMecum = () => {
 
   if (isDesktop) {
     return (
-      <div className="min-h-dvh bg-zinc-950 flex flex-col theme-vademecum relative overflow-hidden">
+      <div className="min-h-dvh bg-hero-panel flex flex-col theme-vademecum relative overflow-hidden">
         {gridReady && (
           <div className="absolute inset-0 z-0 opacity-60">
             <Suspense fallback={null}>

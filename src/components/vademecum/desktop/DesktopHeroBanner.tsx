@@ -16,9 +16,9 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
   const navigate = useNavigate();
 
   return (
-    <div className="relative w-full max-w-[1600px] mx-auto z-20 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
+    <div className="relative w-full max-w-[1600px] mx-auto z-20 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 h-[380px]">
       {/* COLUNA ESQUERDA: CAPA PRINCIPAL */}
-      <div className="relative min-h-[420px] rounded-3xl overflow-hidden shadow-2xl flex flex-col group">
+      <div className="relative h-full rounded-3xl overflow-hidden shadow-2xl flex flex-col group">
         {/* Imagem de Fundo */}
         <img
           src={heroBannerAsset}
@@ -79,17 +79,11 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
           </button>
         </div>
 
-        {/* CONTEÚDO ESQUERDA (Carrossel) & DIREITA (Busca e Botões) */}
-        <div className="absolute inset-0 z-10 flex pt-24 pb-6 px-8 pointer-events-none">
-          {/* LADO ESQUERDO: Carrossel (dentro da área vermelha) */}
-          <div className="w-[48%] h-full flex flex-col justify-end pointer-events-auto pr-4">
-            <div className="transform scale-95 origin-bottom-left w-[105%]">
-              <HomeNoticiasCarousel />
-            </div>
-          </div>
+        {/* CONTEÚDO (Logo, Busca e Botões) */}
+        <div className="absolute inset-0 z-10 flex flex-col pt-24 pb-6 px-8 pointer-events-none">
           
           {/* LADO DIREITO: Busca e Botões Rápidos */}
-          <div className="flex-1 h-full flex flex-col justify-end pl-8 pointer-events-auto">
+          <div className="w-[55%] h-full flex flex-col justify-end ml-auto pointer-events-auto">
             <h2 className="text-[32px] 2xl:text-4xl text-right font-display font-extrabold text-white mb-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] uppercase tracking-tight">
               O QUE VOCÊ QUER ESTUDAR HOJE?
             </h2>
@@ -126,7 +120,7 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
       </div>
 
       {/* COLUNA DIREITA: ACESSO RÁPIDO */}
-      <div className="bg-hero-panel rounded-3xl relative z-20 flex flex-col p-6 shadow-2xl overflow-hidden border border-white/10">
+      <div className="bg-hero-panel rounded-3xl relative z-20 flex flex-col p-6 shadow-2xl overflow-hidden border border-white/10 h-full">
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent pointer-events-none" />
         <div className="absolute inset-0 opacity-20 pointer-events-none" style={{
           backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px)',
