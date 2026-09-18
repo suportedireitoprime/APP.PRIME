@@ -1,5 +1,8 @@
+import { supabase } from '@/integrations/supabase/client';
+
 /**
  * Serviço para integração com a API do YouTube
+
  * 
  * NOTA: Para funcionar na prática com playlists e vídeos "Ao Vivo" de forma
  * confiável, é necessário obter uma YouTube Data API v3 Key no Google Cloud
@@ -27,8 +30,6 @@ export interface CanalData {
   ultimosVideos: YoutubeVideo[];
   playlists: YoutubePlaylist[];
 }
-
-import { supabase } from './supabase'; // Certifique-se de importar o supabase (ajustaremos a importação se necessário)
 
 export async function fetchCanalData(channelHandle: string): Promise<CanalData> {
   try {
