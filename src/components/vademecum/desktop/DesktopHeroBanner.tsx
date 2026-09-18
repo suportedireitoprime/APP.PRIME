@@ -1,6 +1,7 @@
 import { Sparkles, MessageSquare, Layers, HelpCircle, GraduationCap, Bell, Search, Book, Library, FileText, MonitorPlay, Headphones, ChevronRight, Bot, ListChecks } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { AprenderCarousel3D, useAprenderItems } from '@/components/vademecum/home/aprender/chunks';
+import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
 import { useNavigate } from 'react-router-dom';
 import heroBannerAsset from '@/assets/desktop-hero-banner.jpg';
 import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
@@ -139,7 +140,12 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
           </div>
         </div>
       </div>
-    </div>
+
+        {/* CARROSSEL DE LEIS NO VÃO DO DESKTOP */}
+        <div className="relative z-20 w-full rounded-3xl overflow-hidden shadow-2xl bg-hero-panel border border-white/10 py-6">
+           <HomeNoticiasCarousel />
+        </div>
+      </div>
 
       {/* COLUNA DIREITA: ACESSO RÁPIDO */}
       <div className="bg-hero-panel rounded-3xl relative z-20 flex flex-col p-6 shadow-2xl overflow-hidden border border-white/10 h-full">

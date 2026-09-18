@@ -22,9 +22,9 @@ import DesktopBreadcrumb from '@/components/vademecum/desktop/DesktopBreadcrumb'
 import DesktopSidebar from '@/components/vademecum/desktop/DesktopSidebar';
 import AtualizacaoTab from '@/components/vademecum/outros/AtualizacaoTab';
 import DesktopEstudosGrid from '@/components/desktop/DesktopEstudosGrid';
-import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
+import NoticiasJuridicasCarousel from '@/components/vademecum/blog/NoticiasJuridicasCarousel';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import HomeAprenderCarousel from '@/components/vademecum/home/aprender/HomeAprenderCarousel';
+import HomeAprenderCarousel from '@/components/vademecum/home/carousel/HomeAprenderCarousel';
 import HomeTresPoderes from '@/components/vademecum/home/sections/HomeTresPoderes';
 import HomeApresentacoesTimeline from '@/components/vademecum/home/sections/HomeApresentacoesTimeline';
 import NotificationsSheet, { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
@@ -151,7 +151,10 @@ const IndexDesktop = () => {
                     </div>
 
                     <div className="relative z-30 mb-8 mt-6">
-                      <HomeNoticiasCarousel />
+                      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start w-full max-w-[1600px] mx-auto">
+                        <NoticiasJuridicasCarousel />
+                        <HomeAprenderCarousel />
+                      </div>
                     </div>
 
                     <div className="mb-10">
