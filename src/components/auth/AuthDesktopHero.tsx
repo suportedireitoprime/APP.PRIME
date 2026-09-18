@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import DesktopQrLogin from '@/components/auth/DesktopQrLogin';
 import authJudgeScene from '@/assets/auth-judge-scene.webp';
 import themisAuthYellow from '@/assets/themis-auth-yellow.webp';
+import logoImg from '@/assets/bundled/logo-direitoprime-v2.webp';
 
 export const AuthDesktopHero: React.FC = () => {
   return (
@@ -50,7 +51,7 @@ export const AuthDesktopHero: React.FC = () => {
           className="flex flex-col items-start text-left max-w-lg"
         >
           <img
-            src="/logo-prime.webp"
+            src={logoImg}
             alt="Logo Direito Prime"
             className="w-24 h-24 xl:w-32 xl:h-32 object-contain drop-shadow-2xl mb-6"
           />

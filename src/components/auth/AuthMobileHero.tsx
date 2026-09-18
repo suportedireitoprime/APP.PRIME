@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { HelpCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import authJudgeScene from '@/assets/auth-judge-scene.webp';
+import logoImg from '@/assets/bundled/logo-direitoprime-v2.webp';
 import type { AuthMode } from './AuthDrawer';
 
 interface AuthMobileHeroProps {
@@ -76,7 +77,7 @@ export const AuthMobileHero: React.FC<AuthMobileHeroProps> = ({
           {/* Logo e Tipografia */}
           <div className="flex flex-col items-center justify-center gap-4">
             <img
-              src="/logo-prime.webp"
+              src={logoImg}
               alt="Logo Direito Prime"
               className="w-24 h-24 xl:w-32 xl:h-32 object-contain relative z-10"
             />

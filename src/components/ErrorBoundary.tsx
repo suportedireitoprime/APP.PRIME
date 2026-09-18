@@ -27,9 +27,27 @@ export class ErrorBoundary extends Component<Props, State> {
 
     if (isChunkLoadFailed) {
       const reloadCount = parseInt(sessionStorage.getItem('chunk_reload') || '0', 10);
-      if (reloadCount < 1) {
-        sessionStorage.setItem('chunk_reload', '1');
-        window.location.reload();
+      if (reloadCount < 2) {
+        sessionStorage.setItem('chunk_reload', String(reloadCount + 1));
+        
+        // Remove Service Workers para forçar atualização do index.html
+        if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then((regs) => {
+            for (const reg of regs) {
+              reg.unregister();
+            }
+            // Força cache bust na URL
+            const url = new URL(window.location.href);
+            url.searchParams.set('v', Date.now().toString());
+            window.location.href = url.toString();
+          }).catch(() => {
+            window.location.reload();
+          });
+        } else {
+          const url = new URL(window.location.href);
+          url.searchParams.set('v', Date.now().toString());
+          window.location.href = url.toString();
+        }
         return;
       }
     } else {
