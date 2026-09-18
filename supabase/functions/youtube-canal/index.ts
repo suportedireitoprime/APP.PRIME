@@ -72,6 +72,7 @@ Deno.serve(async (req) => {
         .map((item: any) => ({
           id: item.id.videoId,
           title: item.snippet.title,
+          description: item.snippet.description || '',
           thumbnail: item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url,
           publishedAt: item.snippet.publishedAt,
         }));

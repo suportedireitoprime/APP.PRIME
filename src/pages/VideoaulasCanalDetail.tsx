@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { fetchCanalData, CanalData } from '@/lib/youtubeApi';
-import { Play, ListVideo, Radio, AlertCircle, X } from 'lucide-react';
+import { Play, ListVideo, Radio, AlertCircle, X, Info } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 export default function VideoaulasCanalDetail() {
@@ -11,7 +11,7 @@ export default function VideoaulasCanalDetail() {
   const [data, setData] = useState<CanalData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
+  const [playingVideo, setPlayingVideo] = useState<YoutubeVideo | null>(null);
 
   const canalNomes: Record<string, string> = {
     'stf': 'Supremo Tribunal Federal',
@@ -36,9 +36,9 @@ export default function VideoaulasCanalDetail() {
     loadData();
   }, [id]);
 
-  const openVideo = (videoId: string) => {
+  const openVideo = (video: YoutubeVideo) => {
     haptic.selection();
-    setPlayingVideoId(videoId);
+    setPlayingVideo(video);
   };
 
   const openPlaylist = (playlistId: string) => {
@@ -78,7 +78,7 @@ export default function VideoaulasCanalDetail() {
                   </div>
                   <div className="mx-auto max-w-3xl sm:px-6 lg:max-w-[1200px]">
                     <div 
-                      onClick={() => openVideo(data.aoVivo!.id)}
+                      onClick={() => openVideo(data.aoVivo!)}
                       className="relative cursor-pointer group sm:rounded-2xl overflow-hidden border-y sm:border border-border/80 bg-card shadow-sm hover:border-red-500/50 hover:shadow-lg transition-all"
                     >
                       <div className="w-full bg-muted h-[200px] sm:h-[300px]">
@@ -89,11 +89,11 @@ export default function VideoaulasCanalDetail() {
                         </div>
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
                         <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 bg-black/40 backdrop-blur-sm p-3 rounded-xl border border-white/10">
-                          <h3 className="text-white font-bold text-base sm:text-lg leading-tight line-clamp-2 drop-shadow-md">
+                          <p className="font-sans text-white font-bold text-base sm:text-lg leading-tight line-clamp-2 drop-shadow-md">
                             {data.aoVivo.title}
-                          </h3>
+                          </p>
                           {data.aoVivo.description && (
-                            <p className="text-white/80 text-[11px] sm:text-xs mt-1 line-clamp-2 leading-relaxed">
+                            <p className="font-sans text-white/80 text-[11px] sm:text-xs mt-1 line-clamp-2 leading-relaxed">
                               {data.aoVivo.description}
                             </p>
                           )}
@@ -121,7 +121,7 @@ export default function VideoaulasCanalDetail() {
                   {data.ultimosVideos.map(video => (
                     <div
                       key={video.id}
-                      onClick={() => openVideo(video.id)}
+                      onClick={() => openVideo(video)}
                       className="group cursor-pointer rounded-xl bg-card border border-border/60 overflow-hidden hover:border-primary/50 transition-colors shadow-sm hover:shadow-md flex items-center h-[100px] sm:h-[120px]"
                     >
                       <div className="h-full aspect-video relative overflow-hidden bg-muted shrink-0">
@@ -133,10 +133,10 @@ export default function VideoaulasCanalDetail() {
                         </div>
                       </div>
                       <div className="p-3 flex-1 min-w-0 flex flex-col justify-center h-full">
-                        <h3 className="text-[13px] sm:text-sm font-semibold text-foreground line-clamp-2 leading-tight mb-1.5">
+                        <p className="font-sans text-[13px] sm:text-sm font-semibold text-foreground line-clamp-2 leading-tight mb-1.5">
                           {video.title}
-                        </h3>
-                        <p className="text-[11px] text-muted-foreground">
+                        </p>
+                        <p className="font-sans text-[11px] text-muted-foreground">
                           {new Date(video.publishedAt).toLocaleDateString('pt-BR')}
                         </p>
                       </div>
@@ -168,9 +168,9 @@ export default function VideoaulasCanalDetail() {
                         </div>
                       </div>
                       <div className="min-w-0 flex-1 pr-2">
-                        <h3 className="text-[12px] sm:text-sm font-semibold text-foreground line-clamp-2 leading-tight group-hover:text-primary transition-colors">
+                        <p className="font-sans text-[12px] sm:text-sm font-semibold text-foreground line-clamp-2 leading-tight group-hover:text-primary transition-colors">
                           {pl.title}
-                        </h3>
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -182,27 +182,44 @@ export default function VideoaulasCanalDetail() {
       </main>
 
       {/* Video Modal */}
-      {playingVideoId && (
-        <div className="fixed inset-0 z-[100] flex flex-col bg-black/95 backdrop-blur-xl animate-in fade-in duration-200">
-          <div className="flex items-center justify-end p-4">
+      {playingVideo && (
+        <div className="fixed inset-0 z-[100] flex flex-col bg-black/95 backdrop-blur-xl animate-in fade-in duration-200 overflow-y-auto pb-safe">
+          <div className="flex items-center justify-end p-4 pt-safe shrink-0">
             <button
-              onClick={() => setPlayingVideoId(null)}
+              onClick={() => setPlayingVideo(null)}
               className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
             >
               <X className="w-6 h-6" />
             </button>
           </div>
-          <div className="flex-1 flex items-center justify-center p-4">
-            <div className="w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border border-white/10">
+          <div className="w-full max-w-5xl mx-auto flex flex-col gap-4">
+            <div className="w-full aspect-video bg-black shadow-2xl border-y sm:border border-white/10 sm:rounded-xl overflow-hidden shrink-0">
               <iframe
                 width="100%"
                 height="100%"
-                src={`https://www.youtube.com/embed/${playingVideoId}?autoplay=1&playsinline=1`}
-                title="YouTube video player"
+                src={`https://www.youtube.com/embed/${playingVideo.id}?autoplay=1&playsinline=1`}
+                title={playingVideo.title}
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               ></iframe>
+            </div>
+            
+            <div className="px-4 pb-12 w-full flex-1">
+              <p className="font-sans text-white font-bold text-lg sm:text-xl leading-tight mb-2">
+                {playingVideo.title}
+              </p>
+              {playingVideo.description && (
+                <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                  <div className="flex items-center gap-2 text-white/60 mb-2">
+                    <Info className="w-4 h-4" />
+                    <span className="font-sans text-xs uppercase tracking-wider font-semibold">Descrição do Vídeo</span>
+                  </div>
+                  <p className="font-sans text-white/80 text-sm leading-relaxed whitespace-pre-wrap">
+                    {playingVideo.description}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
