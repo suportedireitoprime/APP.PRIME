@@ -57,13 +57,13 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
             
             {/* CARROSSEL DE DECKS DO APRENDER DENTRO DO PAINEL VERMELHO */}
             <div className="absolute bottom-6 left-8 pointer-events-auto z-20 flex flex-col items-center w-[300px]">
-              <div className="transform scale-[0.8] origin-bottom w-full -mb-6">
+              <div className="transform scale-[0.8] origin-bottom w-full pb-2">
                 <AprenderCarousel3D items={items} onItemClick={handleItemClick} />
               </div>
-              <button onClick={() => navigate('/aprender')} className="relative flex items-center justify-center gap-2 font-display text-white text-[13px] font-bold uppercase tracking-widest py-2.5 w-full rounded-xl bg-white/10 hover:bg-white/20 transition-all border border-white/20 overflow-hidden group shadow-lg">
+              <button onClick={() => navigate('/aprender')} className="relative flex items-center justify-center gap-2 font-display text-white text-[13px] font-bold uppercase tracking-widest py-2.5 w-full rounded-xl bg-red-900/80 hover:bg-red-950/90 transition-all border border-red-700/50 overflow-hidden group shadow-[0_8px_30px_rgba(153,27,27,0.3)]">
                 <span className="relative z-10">Acessar</span>
                 <ChevronRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform relative z-10" />
-                <div className="absolute inset-0 -translate-x-[150%] bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-shimmer" />
+                <div className="absolute inset-0 -translate-x-[150%] bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-shimmer" />
               </button>
             </div>
           </div>
