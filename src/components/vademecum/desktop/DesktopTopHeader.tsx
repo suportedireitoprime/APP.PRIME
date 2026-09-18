@@ -69,11 +69,11 @@ const DesktopTopHeader = memo(({ onAssistenteClick, isTransparent }: Props) => {
               <img src={primeLogo} alt="Estudos Jurídicos" className="w-full h-full object-contain" />
             </div>
           </div>
-          <div className="flex flex-col items-start leading-tight">
-            <span className="font-display text-xl font-bold text-white tracking-tight drop-shadow-sm uppercase">
+          <div className="flex flex-col items-start leading-none justify-center mt-1">
+            <span className="font-serif italic text-3xl font-bold text-white tracking-tight drop-shadow-sm">
               Estudos Jurídicos
             </span>
-            <span className="font-body text-[11px] uppercase tracking-[0.24em] text-white/90">
+            <span className="font-body text-[10px] uppercase tracking-[0.24em] text-white/80 mt-1 pl-1">
               Uso Profissional
             </span>
           </div>

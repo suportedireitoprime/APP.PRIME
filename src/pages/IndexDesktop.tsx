@@ -23,6 +23,9 @@ import DesktopSidebar from '@/components/vademecum/desktop/DesktopSidebar';
 import AtualizacaoTab from '@/components/vademecum/outros/AtualizacaoTab';
 import DesktopEstudosGrid from '@/components/desktop/DesktopEstudosGrid';
 import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
+import HomePilulasCarousel from '@/components/vademecum/home/HomePilulasCarousel';
+import HomeTresPoderes from '@/components/vademecum/home/HomeTresPoderes';
+import ApresentacaoVideoCard from '@/components/vademecum/home/ApresentacaoVideoCard';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
@@ -124,16 +127,14 @@ const IndexDesktop = () => {
         <DesktopOnboardingOverlay />
         
         <DesktopSidebar activeTab={activeTab} onTabChange={setActiveTab} />
-          <div className="flex flex-col flex-1 min-w-0 relative">
-          
-          <div className="absolute top-0 left-0 right-0 z-40 pointer-events-none">
+          <div className="flex flex-col flex-1 min-w-0 bg-background">
+          <div className="flex-1 min-w-0 overflow-y-auto relative z-10">
+            
             <div className="pointer-events-auto">
               <DesktopTopHeader onAssistenteClick={() => setAssistenteOpen(true)} isTransparent={activeTab === 'legislacao'} />
             </div>
-          </div>
-          
-          <div className="flex-1 min-w-0 overflow-y-auto relative z-10">
-            <div className={`sticky top-[104px] z-30 border-b border-border transition-colors duration-300 bg-card/95 backdrop-blur-md`}>
+            
+            <div className={`sticky top-0 z-40 border-b border-border transition-colors duration-300 bg-card/95 backdrop-blur-md`}>
               <div className="flex items-center gap-2 px-8 h-14">
                 {DESKTOP_TABS.map((tab) => {
                   const Icon = tab.icon;
@@ -173,12 +174,12 @@ const IndexDesktop = () => {
               <DesktopBreadcrumb />
             </div>
             
-            <div className={`px-8 py-6 2xl:px-14 relative z-20 ${activeTab !== 'legislacao' ? 'pt-[104px]' : ''}`}>
+            <div className={`px-8 py-6 2xl:px-14 relative z-20 ${activeTab !== 'legislacao' ? 'pt-[104px]' : 'pt-6'}`}>
               <div key={activeTab} className="animate-fade-in">
                 {activeTab === 'legislacao' && (
                   <>
-                    {/* A capa começa no topo absoluto da tela puxando -152px (104 do header + 48 das tabs) */}
-                    <div className="mb-0 -mx-8 2xl:-mx-14 -mt-[152px] relative z-0 pointer-events-auto">
+                    {/* A capa começa no topo absoluto da tela puxando -184px (104 do header + 56 das tabs + 24 de padding) */}
+                    <div className="mb-0 -mx-8 2xl:-mx-14 -mt-[184px] relative z-0 pointer-events-auto">
                       <DesktopHeroBanner typingHint={typingHint} onSearchClick={() => setSearchOpen(true)} />
                     </div>
 
@@ -192,6 +193,18 @@ const IndexDesktop = () => {
                         onChatClick={() => setAssistenteOpen(true)}
                         onFerramentasClick={() => setActiveTab('ferramentas')}
                       />
+                    </div>
+
+                    <div className="mb-10 -mx-4">
+                      <HomePilulasCarousel />
+                    </div>
+
+                    <div className="mb-10 max-w-5xl">
+                      <HomeTresPoderes />
+                    </div>
+
+                    <div className="mb-10 max-w-5xl">
+                      <ApresentacaoVideoCard />
                     </div>
                   </>
                 )}

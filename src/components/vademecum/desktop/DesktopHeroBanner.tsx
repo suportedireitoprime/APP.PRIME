@@ -12,7 +12,7 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
     <div 
       className="relative w-full overflow-hidden bg-hero-panel shadow-2xl shadow-black/60 z-20 flex flex-col justify-end pb-8" 
       style={{ 
-        minHeight: '540px', // Compensando o pt-152px para manter a área visual
+        minHeight: '380px', // Reduzido já que removemos o texto grande
         backgroundColor: '#050505',
         transform: 'translateZ(0)'
       }}
@@ -34,7 +34,7 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
       >
         <div 
           className="absolute inset-0 overflow-hidden"
-          style={{ clipPath: 'polygon(0 0, 55% 0, 42% 100%, 0% 100%)' }} // Wider on desktop
+          style={{ clipPath: 'polygon(0 0, 55% 0, 42% 100%, 0% 100%)' }}
         >
           <div className="absolute inset-0 bg-hero-panel" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" />
@@ -49,24 +49,14 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
         </div>
       </div>
 
-      {/* Overlay escuro sutil sobre a imagem na direita para não conflitar com botões/carrossel */}
       <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/20 to-transparent z-[1] pointer-events-none" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent z-[1] pointer-events-none" />
 
       {/* Conteúdo Central */}
-      <div className="relative z-10 flex flex-col justify-end h-full px-12 xl:px-20 2xl:px-28 w-full pt-[152px]">
+      <div className="relative z-10 flex flex-col justify-end h-full px-12 xl:px-20 2xl:px-28 w-full pt-[184px]">
         <div className="flex w-full items-end justify-between gap-12 max-w-[1600px] mx-auto">
           
-          <div className="flex-1 max-w-[650px] space-y-5 pt-10 pb-4">
-            <div className="space-y-3">
-              <h2 className="font-serif italic text-[42px] xl:text-5xl font-bold text-white leading-[1.05] tracking-tight drop-shadow-md">
-                Estudos Jurídicos
-              </h2>
-              <p className="text-white/80 text-sm xl:text-base font-body leading-relaxed max-w-lg">
-                Pesquise por legislação, jurisprudência, resumos e materiais de estudo.
-              </p>
-            </div>
-
+          <div className="flex-1 max-w-[650px] space-y-4 pt-10 pb-4">
             {/* Search bar inside the red panel area */}
             <button
               onClick={onSearchClick}
