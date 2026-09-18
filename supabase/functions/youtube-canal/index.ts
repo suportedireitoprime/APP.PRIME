@@ -53,29 +53,28 @@ Deno.serve(async (req) => {
       aoVivo = {
         id: liveItem.id.videoId,
         title: liveItem.snippet.title,
+        description: liveItem.snippet.description || '',
         thumbnail: liveItem.snippet.thumbnails?.high?.url || liveItem.snippet.thumbnails?.default?.url,
         publishedAt: liveItem.snippet.publishedAt,
       };
     }
 
-    // 3. Buscar últimos vídeos da playlist de uploads
+    // 3. Buscar últimos vídeos (Apenas transmissões ao vivo passadas)
     let ultimosVideos = [];
-    if (uploadsPlaylistId) {
-      const uploadsUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsPlaylistId}&maxResults=10&key=${YOUTUBE_API_KEY}`;
-      const uploadsRes = await fetch(uploadsUrl);
-      const uploadsData = await uploadsRes.json();
+    const pastLivesUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=completed&type=video&order=date&maxResults=10&key=${YOUTUBE_API_KEY}`;
+    const pastLivesRes = await fetch(pastLivesUrl);
+    const pastLivesData = await pastLivesRes.json();
 
-      if (uploadsData.items) {
-        ultimosVideos = uploadsData.items
-          .filter((item: any) => !aoVivo || item.snippet.resourceId.videoId !== aoVivo.id)
-          .slice(0, 5)
-          .map((item: any) => ({
-            id: item.snippet.resourceId.videoId,
-            title: item.snippet.title,
-            thumbnail: item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url,
-            publishedAt: item.snippet.publishedAt,
-          }));
-      }
+    if (pastLivesData.items) {
+      ultimosVideos = pastLivesData.items
+        .filter((item: any) => !aoVivo || item.id.videoId !== aoVivo.id)
+        .slice(0, 5)
+        .map((item: any) => ({
+          id: item.id.videoId,
+          title: item.snippet.title,
+          thumbnail: item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url,
+          publishedAt: item.snippet.publishedAt,
+        }));
     }
 
     // 4. Buscar playlists do canal

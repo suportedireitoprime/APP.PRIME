@@ -14,6 +14,7 @@ const YOUTUBE_API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY || '';
 export interface YoutubeVideo {
   id: string;
   title: string;
+  description?: string;
   thumbnail: string;
   publishedAt: string;
 }

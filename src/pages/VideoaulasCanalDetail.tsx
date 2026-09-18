@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { fetchCanalData, CanalData } from '@/lib/youtubeApi';
-import { Play, ListVideo, Radio, AlertCircle } from 'lucide-react';
+import { Play, ListVideo, Radio, AlertCircle, X } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 export default function VideoaulasCanalDetail() {
@@ -11,6 +11,7 @@ export default function VideoaulasCanalDetail() {
   const [data, setData] = useState<CanalData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
 
   const canalNomes: Record<string, string> = {
     'stf': 'Supremo Tribunal Federal',
@@ -37,8 +38,7 @@ export default function VideoaulasCanalDetail() {
 
   const openVideo = (videoId: string) => {
     haptic.selection();
-    // Simples redirecionamento ou abertura do player, vamos apenas abrir o YT por enquanto
-    window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
+    setPlayingVideoId(videoId);
   };
 
   const openPlaylist = (playlistId: string) => {
@@ -88,10 +88,15 @@ export default function VideoaulasCanalDetail() {
                           Ao Vivo
                         </div>
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-                        <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4">
+                        <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 bg-black/40 backdrop-blur-sm p-3 rounded-xl border border-white/10">
                           <h3 className="text-white font-bold text-base sm:text-lg leading-tight line-clamp-2 drop-shadow-md">
                             {data.aoVivo.title}
                           </h3>
+                          {data.aoVivo.description && (
+                            <p className="text-white/80 text-[11px] sm:text-xs mt-1 line-clamp-2 leading-relaxed">
+                              {data.aoVivo.description}
+                            </p>
+                          )}
                         </div>
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
                           <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-600/90 flex items-center justify-center backdrop-blur-sm shadow-xl">
@@ -112,14 +117,14 @@ export default function VideoaulasCanalDetail() {
                     Últimos Vídeos
                   </h2>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div className="flex flex-col gap-3">
                   {data.ultimosVideos.map(video => (
                     <div
                       key={video.id}
                       onClick={() => openVideo(video.id)}
-                      className="group cursor-pointer rounded-xl bg-card border border-border/60 overflow-hidden hover:border-primary/50 transition-colors shadow-sm hover:shadow-md flex flex-col"
+                      className="group cursor-pointer rounded-xl bg-card border border-border/60 overflow-hidden hover:border-primary/50 transition-colors shadow-sm hover:shadow-md flex items-center h-[100px] sm:h-[120px]"
                     >
-                      <div className="h-[100px] sm:h-[140px] w-full relative overflow-hidden bg-muted">
+                      <div className="h-full aspect-video relative overflow-hidden bg-muted shrink-0">
                         <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
                           <div className="w-10 h-10 rounded-full bg-primary/90 flex items-center justify-center backdrop-blur-sm">
@@ -127,11 +132,11 @@ export default function VideoaulasCanalDetail() {
                           </div>
                         </div>
                       </div>
-                      <div className="p-2.5 flex-1 flex flex-col justify-between">
-                        <h3 className="text-[12px] sm:text-sm font-semibold text-foreground line-clamp-2 leading-tight mb-1">
+                      <div className="p-3 flex-1 min-w-0 flex flex-col justify-center h-full">
+                        <h3 className="text-[13px] sm:text-sm font-semibold text-foreground line-clamp-2 leading-tight mb-1.5">
                           {video.title}
                         </h3>
-                        <p className="text-[10px] text-muted-foreground mt-1">
+                        <p className="text-[11px] text-muted-foreground">
                           {new Date(video.publishedAt).toLocaleDateString('pt-BR')}
                         </p>
                       </div>
@@ -175,6 +180,33 @@ export default function VideoaulasCanalDetail() {
           )}
         {/* Remover a tag extra </div> que fechava o container antigo */}
       </main>
+
+      {/* Video Modal */}
+      {playingVideoId && (
+        <div className="fixed inset-0 z-[100] flex flex-col bg-black/95 backdrop-blur-xl animate-in fade-in duration-200">
+          <div className="flex items-center justify-end p-4">
+            <button
+              onClick={() => setPlayingVideoId(null)}
+              className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+          <div className="flex-1 flex items-center justify-center p-4">
+            <div className="w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border border-white/10">
+              <iframe
+                width="100%"
+                height="100%"
+                src={`https://www.youtube.com/embed/${playingVideoId}?autoplay=1&playsinline=1`}
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
