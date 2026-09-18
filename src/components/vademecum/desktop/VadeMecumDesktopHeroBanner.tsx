@@ -1,4 +1,4 @@
-import { Search, Heart, NotebookPen, Radar, History, LayoutGrid, Scale, ChevronRight, Bookmark, Bell } from 'lucide-react';
+import { Search, Heart, NotebookPen, Radar, History, LayoutGrid, Scale, ChevronRight, Bookmark, Bell, BookA } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import heroBannerAsset from '@/assets/covers/vademecum-judge.webp';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
@@ -136,11 +136,11 @@ const VadeMecumDesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClic
 
           <div className="flex flex-col gap-0 border-y border-white/10 divide-y divide-white/10 mt-2">
             {[
+              { label: 'Dicionário Jurídico', icon: BookA, route: '/dicionario' },
               { label: 'Constituição & Códigos', icon: LayoutGrid, route: '/vade-mecum/categorias' },
               { label: 'Áreas do Direito', icon: Scale, route: '/vade-mecum/areas' },
               { label: 'Meus Favoritos', icon: Bookmark, route: '/vade-mecum/favoritos' },
-              { label: 'Acessados Recentemente', icon: History, route: '/vade-mecum/recentes' },
-              { label: 'Radares Legislativos', icon: Radar, route: '/radares' }
+              { label: 'Acessados Recentemente', icon: History, route: '/vade-mecum/recentes' }
             ].map((link, i) => (
               <button
                 key={i}

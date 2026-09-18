@@ -1,4 +1,4 @@
-import { Sparkles, MessageSquare, Layers, HelpCircle, GraduationCap, Bell, Search, Book, Library, FileText, MonitorPlay, Headphones, ChevronRight, Bot, ListChecks } from 'lucide-react';
+import { Sparkles, MessageSquare, Layers, HelpCircle, GraduationCap, Bell, Search, Book, Library, FileText, MonitorPlay, Headphones, ChevronRight, Bot, ListChecks, BookA } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { AprenderDeckStacked, useAprenderItems } from '@/components/vademecum/home/aprender/chunks';
 import { useNavigate } from 'react-router-dom';
@@ -160,10 +160,10 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
             {[
               { label: 'Vade Mecum', icon: Book, route: '/vade-mecum' },
               { label: 'Biblioteca', icon: Library, route: '/bibliotecas' },
+              { label: 'Dicionário', icon: BookA, route: '/dicionario' },
               { label: 'Resumos', icon: FileText, route: '/aprender/resumos' },
               { label: 'Videoaulas', icon: MonitorPlay, route: '/aprender/videos' },
-              { label: 'Audioaulas', icon: Headphones, route: '/aprender/audios' },
-              { label: 'Assistente Hórus', icon: Bot, route: '/assistente-horus' }
+              { label: 'Audioaulas', icon: Headphones, route: '/aprender/audios' }
             ].map((link, i) => (
               <button
                 key={i}
