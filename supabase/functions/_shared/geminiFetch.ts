@@ -80,35 +80,8 @@ export async function geminiFetch(
     return fetch(url, init);
   }
 
-  // INTERCEPTAÇÃO: Se houver Service Account configurada, tentar Vertex AI primeiro!
-  if (GCP_SERVICE_ACCOUNT) {
-    try {
-      const { token, projectId } = await getVertexAuth(GCP_SERVICE_ACCOUNT);
-      const region = "us-central1"; // Padrão GCP AI
-      
-      // Extrair o modelo e o método da URL original
-      // URL original ex: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=X
-      const match = url.match(/models\/([^:]+):([^?]+)/);
-      if (match) {
-        const model = match[1];
-        let action = match[2];
-        if (action === 'streamGenerateContent') action = 'streamGenerateContent?alt=sse';
-        
-        const vertexUrl = `https://${region}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${region}/publishers/google/models/${model}:${action}`;
-        
-        const headers = new Headers(init?.headers);
-        headers.set('Authorization', `Bearer ${token}`);
-        
-        const vertexRes = await fetch(vertexUrl, { ...init, headers });
-        if (vertexRes.ok) {
-          return vertexRes;
-        }
-        console.warn(`[geminiFetch] Vertex AI falhou HTTP ${vertexRes.status} para ${model}. Fazendo fallback para AI Studio.`);
-      }
-    } catch (err: any) {
-      console.warn(`[geminiFetch] Erro ao preparar Vertex AI: ${err.message}. Fazendo fallback para AI Studio.`);
-    }
-  }
+  // Nota: Vertex AI via Service Account foi removido por causar timeouts.
+  // Os créditos GCP são consumidos pela API Key do AI Studio vinculada ao projeto.
 
   const isAudioReq = url.includes("tts") || url.includes("speech") || url.includes("audio");
 
