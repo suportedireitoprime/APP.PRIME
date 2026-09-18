@@ -36,7 +36,7 @@ export function useLeitorData(livroTabela: string, livroId: string, pdfUrl: stri
   const [resumeOcrPage, setResumeOcrPage] = useState<number | null>(null);
 
   useEffect(() => {
-    void pullLeituraProgress();
+    void pullLeituraProgress().catch(console.error);
   }, []);
 
   useEffect(() => {
@@ -143,7 +143,7 @@ export function useLeitorData(livroTabela: string, livroId: string, pdfUrl: stri
     const startPolling = () => {
       if (pollingId) return;
       pollingId = setInterval(() => {
-        if (!cancelled) void fetchLatest();
+        if (!cancelled) void fetchLatest().catch(console.error);
       }, 2500);
     };
 
@@ -165,7 +165,7 @@ export function useLeitorData(livroTabela: string, livroId: string, pdfUrl: stri
       )
       .subscribe();
 
-    (async () => {
+    void (async () => {
       try {
         const local = await getLocalLeituraNativa(livroTabela, livroId);
         if (cancelled) return;
@@ -218,7 +218,7 @@ export function useLeitorData(livroTabela: string, livroId: string, pdfUrl: stri
           body: { livro_id: livroId, livro_tabela: livroTabela, pdf_url: pdfUrl, titulo },
         });
         if (error) throw error;
-        void fetchLatest();
+        void fetchLatest().catch(console.error);
       } catch (e: any) {
         console.error('[LeitorNativo]', e);
         if (!cancelled) {
@@ -238,7 +238,7 @@ export function useLeitorData(livroTabela: string, livroId: string, pdfUrl: stri
           );
         }
       }
-    })();
+    })().catch(console.error);
 
     return () => {
       cancelled = true;

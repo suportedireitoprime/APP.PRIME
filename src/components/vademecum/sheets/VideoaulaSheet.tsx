@@ -66,7 +66,7 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
           console.error(e);
         }
       };
-      fetchTexto();
+      void fetchTexto().catch(console.error);
     }
   }, [tabelaNome, artigoNumero, artigoTexto]);
   const [resumoLoading, setResumoLoading] = useState(false);
@@ -113,13 +113,13 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
   /* ─── Nativo: PiP, tela acesa e proteção de tela ─── */
   useEffect(() => {
     const ativo = open && !!video;
-    void autoPip(ativo);            // minimiza em janelinha ao sair do app
-    void telaAcesa('videoaula', ativo);
-    void (ativo ? protegerTela('videoaula') : desprotegerTela('videoaula')); // conteúdo premium: sem print
+    void autoPip(ativo).catch(console.error);
+    void telaAcesa('videoaula', ativo).catch(console.error);
+    void (ativo ? protegerTela('videoaula') : desprotegerTela('videoaula')).catch(console.error);
     return () => {
-      void autoPip(false);
-      void telaAcesa('videoaula', false);
-      void desprotegerTela('videoaula');
+      void autoPip(false).catch(console.error);
+      void telaAcesa('videoaula', false).catch(console.error);
+      void desprotegerTela('videoaula').catch(console.error);
     };
   }, [open, video?.videoId]);
 
@@ -129,7 +129,7 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
       setUserId(data.user?.id || null);
       const meta: any = data.user?.user_metadata || {};
       setUserName(meta.display_name || meta.full_name || meta.name || data.user?.email?.split('@')[0] || 'Usuário');
-    });
+    }).catch(console.error);
   }, []);
 
   useEffect(() => {
@@ -141,9 +141,9 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
     setCurrentFcIdx(0); setFlipped(false);
     setPraticarOpen(false); setPraticarMode(null);
     setChatOpen(false); setChatMessages([]);
-    loadResumo();
-    loadReactionState();
-    loadComentarios();
+    void loadResumo().catch(console.error);
+    void loadReactionState().catch(console.error);
+    void loadComentarios().catch(console.error);
   }, [open, video?.videoId]);
 
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatMessages]);

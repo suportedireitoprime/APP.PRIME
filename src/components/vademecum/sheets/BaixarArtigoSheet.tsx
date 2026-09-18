@@ -83,7 +83,8 @@ const BaixarArtigoSheet = ({ open, onClose, artigo, tabelaNome, leiLabel }: Prop
           { tabela_codigo: tabelaNome, numero_artigo: artigo.numero, tipo, conteudo: data.reply },
           { onConflict: 'tabela_codigo,numero_artigo,tipo' }
         )
-        .then(() => {});
+        .then(() => {})
+        .catch(console.error);
       return data.reply as string;
     } catch {
       return undefined;

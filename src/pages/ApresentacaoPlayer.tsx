@@ -101,7 +101,7 @@ const ApresentacaoPlayer = () => {
 
   useEffect(() => {
     const abort = new AbortController();
-    (async () => {
+    void (async () => {
       if (!id) return;
       const { data: { user } } = await supabase.auth.getUser();
       if (abort.signal.aborted) return;
@@ -149,7 +149,7 @@ const ApresentacaoPlayer = () => {
           toast.error('Erro ao carregar a apresentação.');
         }
       }
-    })();
+    })().catch(console.error);
 
     return () => {
       abort.abort();
@@ -277,7 +277,7 @@ const ApresentacaoPlayer = () => {
   }, [slides]);
 
   useEffect(() => {
-    carregarDuracoes();
+    void carregarDuracoes().catch(console.error);
   }, [carregarDuracoes]);
 
   const irPara = async (novoIdx: number) => {

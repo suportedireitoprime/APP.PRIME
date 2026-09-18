@@ -24,7 +24,7 @@ const PodcastPlayer = () => {
       }
       setLoading(false);
     };
-    fetchPodcast();
+    void fetchPodcast().catch(console.error);
   }, [videoId]);
 
   const handleShare = async () => {

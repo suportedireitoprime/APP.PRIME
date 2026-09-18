@@ -266,20 +266,24 @@ export function useSubscription(options: Options = {}): SubscriptionState {
       }
     };
 
-    (async () => {
-      const found = await fetchOnce();
-      // Polling curto para cobrir latência entre validate-purchase e leitura
-      if (!found && pollOnMount && !pollActivated.current) {
-        pollActivated.current = true;
-        const tick = async () => {
-          if (cancelled) return;
-          attempts += 1;
-          const ok = await fetchOnce();
-          if (!ok && attempts < 6 && !cancelled) {
-            pollTimer = setTimeout(tick, 1000);
-          }
-        };
-        pollTimer = setTimeout(tick, 1000);
+    void (async () => {
+      try {
+        const found = await fetchOnce();
+        // Polling curto para cobrir latência entre validate-purchase e leitura
+        if (!found && pollOnMount && !pollActivated.current) {
+          pollActivated.current = true;
+          const tick = async () => {
+            if (cancelled) return;
+            attempts += 1;
+            const ok = await fetchOnce();
+            if (!ok && attempts < 6 && !cancelled) {
+              pollTimer = setTimeout(() => void tick().catch(console.error), 1000);
+            }
+          };
+          pollTimer = setTimeout(() => void tick().catch(console.error), 1000);
+        }
+      } catch (err) {
+        console.error('Erro não tratado no fetch de subscription:', err);
       }
     })();
 
@@ -296,7 +300,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
     // Ao voltar do segundo plano: revalida com a loja e reconsulta. Cobre
     // renovações e o caso de concluir a compra fora do app.
     let removeAppListener: (() => void) | null = null;
-    (async () => {
+    void (async () => {
       try {
         const { Capacitor } = await import('@capacitor/core');
         if (!Capacitor.isNativePlatform()) return;
@@ -307,11 +311,11 @@ export function useSubscription(options: Options = {}): SubscriptionState {
             const { syncEntitlements } = await import('@/lib/billing');
             await syncEntitlements();
           } catch { /* ignore */ }
-          if (!cancelled) fetchOnce(true);
+          if (!cancelled) void fetchOnce(true).catch(console.error);
         });
         removeAppListener = () => { handle.remove(); };
       } catch { /* plugin ausente: ignora */ }
-    })();
+    })().catch(console.error);
 
     return () => {
       cancelled = true;
