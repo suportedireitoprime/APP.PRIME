@@ -1,6 +1,6 @@
 import { useState, useEffect, memo } from 'react';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
-import { Scale, BookOpen, FileText, Newspaper, Landmark, Shield, ScrollText, Gavel, Settings, PanelLeftClose, Radar, RefreshCw, Bell, Info, LogOut, BookMarked, HeartPulse, Lock, User as UserIcon, Clapperboard, Mail, Wrench, FileSignature, BookOpenText, Mic, CloudDownload, BellRing, CreditCard, LifeBuoy, MessageSquare, MicVocal, CalendarDays, Library, HardDrive, Route as RouteIcon, FileUp, Heart } from 'lucide-react';
+import { Scale, BookOpen, FileText, Newspaper, Landmark, Shield, ScrollText, Gavel, Settings, PanelLeftClose, Radar, RefreshCw, Bell, Info, LogOut, BookMarked, HeartPulse, Lock, User as UserIcon, Clapperboard, Mail, Wrench, FileSignature, BookOpenText, Mic, CloudDownload, BellRing, CreditCard, LifeBuoy, MessageSquare, MicVocal, CalendarDays, Library, HardDrive, Route as RouteIcon, FileUp, Heart, Menu } from 'lucide-react';
 import { abrirAtalhoBiblioteca } from '@/components/biblioteca/BibliotecaBottomNav';
 import { tipoToSlug } from '@/lib/legislacaoSlugs';
 import { getLeisPorTipo } from '@/data/leisCatalog';
@@ -77,7 +77,7 @@ const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) =>
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
   const isAdmin = isAdminEmail(user?.email);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [suporteOpen, setSuporteOpen] = useState(false);
   const [catSheet, setCatSheet] = useState<{ tipo: string; label: string; color?: string } | null>(null);
   const [profile, setProfile] = useState<{ display_name?: string; perfil_tipos?: string[] } | null>(null);
@@ -173,19 +173,23 @@ const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) =>
       {/* Header � user profile */}
       <div className="p-3 border-b border-border">
         {collapsed ? (
-          <button
-            onClick={() => setCollapsed(false)}
-            className="w-11 h-11 rounded-2xl overflow-hidden bg-primary/15 flex items-center justify-center border-2 border-primary/40 mx-auto"
-            title="Expandir menu"
-            aria-label="Expandir menu lateral"
-            aria-expanded={false}
-          >
-            {avatarUrl ? (
-              <img src={avatarUrl} alt={displayName} onError={() => setAvatarBroken(true)} className="w-full h-full object-cover" />
-            ) : (
-              <span className="font-display text-lg font-bold text-primary">{initial}</span>
-            )}
-          </button>
+          <div className="flex flex-col items-center gap-3">
+            <button
+              onClick={() => setCollapsed(false)}
+              className="w-10 h-10 rounded-lg hover:bg-secondary flex items-center justify-center transition-colors shrink-0"
+              title="Expandir menu"
+              aria-label="Expandir menu lateral"
+            >
+              <Menu className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
+            </button>
+            <div className="w-11 h-11 rounded-2xl overflow-hidden bg-primary/15 flex items-center justify-center border-2 border-primary/40 mx-auto">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt={displayName} onError={() => setAvatarBroken(true)} className="w-full h-full object-cover" />
+              ) : (
+                <span className="font-display text-lg font-bold text-primary">{initial}</span>
+              )}
+            </div>
+          </div>
         ) : (
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-2xl overflow-hidden bg-primary/15 flex items-center justify-center border-2 border-primary/40 shrink-0">
