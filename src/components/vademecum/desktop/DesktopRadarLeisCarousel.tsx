@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef, useCallback, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Scale, ChevronRight, ChevronLeft, Calendar, FileText } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Calendar, FileText } from 'lucide-react';
 import { getResenhaOfflineOrCache, prefetchResenha, getResenhaCache, type ResenhaItem } from '@/services/atualizacaoService';
 import LeiOrdinariaDetail from '@/components/vademecum/artigo/LeiOrdinariaDetail';
 import type { LeiOrdinaria } from '@/services/legislacaoService';
 import brasaoImg from '@/assets/brasao-republica.webp';
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const TIPO_BADGES: Record<string, string> = {
   'Lei': 'bg-amber-500/10 text-amber-300 border-amber-500/25',
@@ -109,27 +111,20 @@ export const DesktopRadarLeisCarousel = memo(() => {
   };
 
   return (
-    <section className="relative z-20 w-full rounded-2xl overflow-hidden bg-transparent border border-white/10 p-4 sm:p-5 backdrop-blur-md">
-      {/* Background sutil vazado sem fundo cinza */}
-      <div className="absolute inset-0 bg-gradient-to-r from-white/[0.015] via-transparent to-white/[0.015] pointer-events-none" />
-
+    <section className="relative z-20 w-full px-5 pb-5 pt-2">
       {/* HEADER DO RADAR DE LEIS */}
-      <div className="relative z-10 flex items-center justify-between gap-4 mb-3.5 pb-3 border-b border-white/5">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center shadow-inner text-white">
-            <Scale className="w-4 h-4 text-amber-400" />
-          </div>
+      <div className="relative z-10 flex items-center justify-between gap-4 mb-3.5 pb-3">
+        <div className="flex items-start gap-3">
           <div>
-            <div className="flex items-center gap-2">
-              <h3 className="font-display text-white text-[16px] font-bold uppercase tracking-widest flex items-center gap-2">
-                RADAR DE LEIS
-              </h3>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9.5px] font-bold font-body bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+            <h3 className="font-display text-white text-[16px] font-bold uppercase tracking-widest flex items-center gap-2 mb-1">
+              <span className="w-1 h-5 rounded-full bg-white" />
+              RADAR DE LEIS
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9.5px] font-bold font-body bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 ml-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 DOU AO VIVO
               </span>
-            </div>
-            <p className="font-body text-zinc-400 text-[11.5px] mt-0.5">
+            </h3>
+            <p className="font-body text-zinc-400 text-[11.5px] ml-3">
               Últimas publicações normativas e atos do Diário Oficial da União
             </p>
           </div>
@@ -195,7 +190,7 @@ export const DesktopRadarLeisCarousel = memo(() => {
           ))
         ) : items.length === 0 ? (
           <div className="w-full py-8 flex flex-col items-center justify-center text-center">
-            <Scale className="w-7 h-7 text-zinc-500 mb-1.5" />
+            <FileText className="w-7 h-7 text-zinc-500 mb-1.5" />
             <p className="text-zinc-400 font-body text-xs">Nenhum ato legislativo encontrado no momento.</p>
             <button
               onClick={() => navigate('/radar-360')}
@@ -256,11 +251,36 @@ export const DesktopRadarLeisCarousel = memo(() => {
       </div>
 
       {/* MODAL DETALHE DA LEI */}
-      {selectedLei && (
-        <LeiOrdinariaDetail
-          lei={selectedLei}
-          onBack={() => setSelectedLei(null)}
-        />
+      {createPortal(
+        <AnimatePresence>
+          {selectedLei && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className="fixed inset-0 z-[100] bg-black/85"
+                onClick={() => setSelectedLei(null)}
+              />
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
+                className="fixed z-[101] inset-x-0 mx-auto top-[4vh] bottom-[4vh] bg-background border border-border rounded-2xl flex flex-col w-[880px] max-w-[92vw] shadow-2xl overflow-hidden"
+              >
+                <div className="flex-1 overflow-y-auto pb-6 relative">
+                  <LeiOrdinariaDetail
+                    lei={selectedLei}
+                    onBack={() => setSelectedLei(null)}
+                  />
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>,
+        document.body
       )}
     </section>
   );
