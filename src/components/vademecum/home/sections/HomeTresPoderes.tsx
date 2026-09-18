@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { haptic } from '@/lib/nativeHaptics';
+import { ChevronRight } from 'lucide-react';
 
 import stfImg from '@/assets/poderes/stf.webp';
 import camaraImg from '@/assets/poderes/camara.webp';
@@ -92,6 +93,9 @@ const HomeTresPoderes = () => {
                   {poder.titulo}
                 </h4>
               </div>
+
+              {/* Setinha Pro Lado */}
+              <ChevronRight className="relative z-10 w-6 h-6 text-white/60 group-hover:text-white transition-colors shrink-0 drop-shadow-md" strokeWidth={2} />
             </button>
           ))}
         </div>

@@ -23,6 +23,7 @@ export interface YoutubeVideo {
 export interface YoutubePlaylist {
   id: string;
   title: string;
+  description?: string;
   thumbnail: string;
   itemCount: number;
 }
@@ -57,6 +58,22 @@ export async function fetchCanalData(channelHandle: string): Promise<CanalData> 
   } catch (error) {
     console.error("Erro fatal ao invocar Edge Function youtube-canal:", error);
     return mockFetchCanalData(channelHandle);
+  }
+}
+
+export async function fetchAoVivo(): Promise<{ id: string; video: YoutubeVideo }[]> {
+  try {
+    const { data, error } = await supabase.functions.invoke('youtube-aovivo');
+    
+    if (error || !data || data.error) {
+      console.warn("⚠️ Erro ou fallback ao invocar Edge Function youtube-aovivo:", error || data?.error);
+      return [];
+    }
+
+    return data.aoVivo || [];
+  } catch (error) {
+    console.error("Erro fatal ao invocar Edge Function youtube-aovivo:", error);
+    return [];
   }
 }
 
@@ -99,12 +116,14 @@ async function mockFetchCanalData(handle: string): Promise<CanalData> {
       {
         id: 'pl1',
         title: `Comissões Parlamentares - ${nome}`,
+        description: 'Transmissões das reuniões e comissões',
         thumbnail: 'https://i.ytimg.com/vi/placeholder/mqdefault.jpg',
         itemCount: 42
       },
       {
         id: 'pl2',
         title: `Sessões Plenárias 2026 - ${nome}`,
+        description: 'Sessões plenárias ocorridas durante 2026',
         thumbnail: 'https://i.ytimg.com/vi/placeholder/mqdefault.jpg',
         itemCount: 156
       }

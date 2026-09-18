@@ -90,7 +90,7 @@ Deno.serve(async (req) => {
 
     // 4. Buscar playlists do canal
     let playlists = [];
-    const playlistsUrl = `https://www.googleapis.com/youtube/v3/playlists?part=snippet,contentDetails&channelId=${channelId}&maxResults=5&key=${YOUTUBE_API_KEY}`;
+    const playlistsUrl = `https://www.googleapis.com/youtube/v3/playlists?part=snippet,contentDetails&channelId=${channelId}&maxResults=50&key=${YOUTUBE_API_KEY}`;
     const playlistsRes = await fetch(playlistsUrl);
     const playlistsData = await playlistsRes.json();
 
@@ -98,6 +98,7 @@ Deno.serve(async (req) => {
       playlists = playlistsData.items.map((item: any) => ({
         id: item.id,
         title: item.snippet.title,
+        description: item.snippet.description || '',
         thumbnail: item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url,
         itemCount: item.contentDetails?.itemCount || 0,
       }));

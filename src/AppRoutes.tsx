@@ -231,17 +231,11 @@ const VideoaulasLeiSeca = lazy(() => import('./pages/VideoaulasLeiSeca'));
 const VideoaulasLeiSecaCategoria = lazy(() => import('./pages/VideoaulasLeiSecaCategoria'));
 const VideoaulasLeiSecaArtigos = lazy(() => import('./pages/VideoaulasLeiSecaArtigos'));
 const Videoaulas = lazy(routePrefetch.videoaulas);
-const VideoaulasCategorias = lazy(routePrefetch.videoaulasCategorias);
 const VideoaulasCanalDetail = lazy(() => import("./pages/VideoaulasCanalDetail.tsx"));
 const VideoaulasCatalogo = lazy(routePrefetch.videoaulasCatalogo);
 const VideoaulasArea = lazy(routePrefetch.videoaulasArea);
-const VideoaulasPraticar = lazy(() => import('@/pages/VideoaulasPraticar'));
-const VideoaulasAnotacoes = lazy(() => import('@/pages/VideoaulasAnotacoes'));
-const VideoaulasConquistas = lazy(routePrefetch.videoaulasConquistas);
-const VideoaulaView = lazy(routePrefetch.videoaulaView);
 const VideoaulasLista = lazy(routePrefetch.videoaulasLista);
-const VideoaulasTrilhas = lazy(routePrefetch.videoaulasTrilhas);
-const VideoaulasCatalogoTrilha = lazy(routePrefetch.videoaulasCatalogoTrilha);
+const VideoaulaView = lazy(routePrefetch.videoaulaView);
 
 const VideoaulasConcurso = lazy(() => import("./pages/VideoaulasConcurso.tsx"));
 const AprenderDesempenho = lazy(() => import("./pages/AprenderDesempenho.tsx"));
@@ -1152,18 +1146,14 @@ function AnimatedRoutes() {
           <Route path="/videoaulas" element={<Navigate to="/videoaulas/painel" replace />} />
           <Route path="/videoaulas/painel" element={<ProtectedRoute><VideoaulasRouteWrapper><PageTransition instant><Videoaulas /></PageTransition></VideoaulasRouteWrapper></ProtectedRoute>} />
           <Route path="/videoaulas/favoritos" element={<ProtectedRoute><PageTransition instant><VideoaulasLista modo="favoritos" /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/recentes" element={<ProtectedRoute><PageTransition instant><VideoaulasLista modo="recentes" /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/trilhas" element={<ProtectedRoute><PageTransition instant><VideoaulasTrilhas /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/:catalogo/trilha" element={<ProtectedRoute><PageTransition instant><VideoaulasCatalogoTrilha /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/praticar" element={<ProtectedRoute><PageTransition instant><VideoaulasPraticar /></PageTransition></ProtectedRoute>} />
+          
           <Route path="/videoaulas/lei-seca" element={<ProtectedRoute><PageTransition instant><VideoaulasLeiSeca /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/lei-seca/categoria/:categoriaId" element={<ProtectedRoute><PageTransition instant><VideoaulasLeiSecaCategoria /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/lei-seca/lei/:leiId" element={<ProtectedRoute><PageTransition instant><VideoaulasLeiSecaArtigos /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/anotacoes" element={<ProtectedRoute><PageTransition instant><VideoaulasAnotacoes /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/categorias" element={<ProtectedRoute><PageTransition instant><VideoaulasCategorias /></PageTransition></ProtectedRoute>} />
+          
           <Route path="/videoaulas/canal/:id" element={<ProtectedRoute><PageTransition instant><VideoaulasCanalDetail /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/concurso/:id" element={<ProtectedRoute><PageTransition instant><VideoaulasConcurso /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/conquistas" element={<ProtectedRoute><PageTransition instant><VideoaulasConquistas /></PageTransition></ProtectedRoute>} />
+          
           <Route path="/videoaulas/:catalogo" element={<ProtectedRoute><PageTransition instant><VideoaulasCatalogo /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/:catalogo/:area" element={<ProtectedRoute><PageTransition instant><VideoaulasArea /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/:catalogo/:area/:videoId" element={<ProtectedRoute><VideoaulaView /></ProtectedRoute>} />

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Scale, BookOpen, BookText, Landmark, Building2, Building } from 'lucide-react';
+import { Scale, BookOpen, BookText, Landmark, Building2, Building, ChevronRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { motion } from 'framer-motion';
 
@@ -35,9 +35,11 @@ export const VideoaulasCategoriasGrid = React.memo(function VideoaulasCategorias
           haptic.selection();
           navigate(item.route);
         }}
-        className="group flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl border border-border/80 bg-card/60 transition-colors backdrop-blur-md hover:bg-card hover:border-primary/50 hover:shadow-lg focus-visible:outline-none gap-2 text-center"
+        className="group relative flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl border border-border/80 bg-card/60 transition-colors backdrop-blur-md hover:bg-card hover:border-primary/50 hover:shadow-lg focus-visible:outline-none gap-2 text-center"
       >
-        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center sm:h-12 sm:w-12">
+        <ChevronRight className="absolute top-2 right-2 w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors" />
+        
+        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center sm:h-12 sm:w-12 mt-1">
           <Icon className="h-7 w-7 sm:h-8 sm:w-8 transition-transform group-hover:scale-110" strokeWidth={1.9} style={{ color: item.color }} />
         </div>
 

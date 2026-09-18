@@ -593,7 +593,7 @@ Regras:
 
     async function gatewayGenerate(): Promise<any | null> {
       const endpoint = body.stream ? 'streamGenerateContent?alt=sse&' : 'generateContent?';
-      const r = await geminiFetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:${endpoint}key=${GEMINI_API_KEY}`, {
+      const r = await geminiFetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:${endpoint}key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(geminiBody)
@@ -607,7 +607,7 @@ Regras:
       
       if (body.stream) {
         if (!body.isPreWarm && _callerUserId) {
-          logAiCall({ functionName: 'assistente-juridica', kind: 'text', model: 'gemini-3.1-flash-lite', userId: _callerUserId, outputUnits: 150, triggerType: 'auto', durationMs: Date.now() - _t0 }).catch(() => {});
+          logAiCall({ functionName: 'assistente-juridica', kind: 'text', model: 'gemini-3.7-flash', userId: _callerUserId, outputUnits: 150, triggerType: 'auto', durationMs: Date.now() - _t0 }).catch(() => {});
         }
         return new Response(r.body, {
           status: 200,
@@ -618,23 +618,31 @@ Regras:
       return await r.json();
     }
 
-    for (let attempt = 0; attempt < 3; attempt++) {
+    const MAX_ATTEMPTS = 5;
+    const ALL_MODELS = ["gemini-3.1-flash-lite", "gemini-3.6-flash", "gemini-3.7-flash", "gemini-3.8-flash"];
+
+    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
       let data: any = null;
       let fatal = false;
 
+      // Backoff exponencial entre tentativas (0ms, 1s, 2s, 4s, 8s)
+      if (attempt > 0) {
+        await new Promise(r => setTimeout(r, Math.min(1000 * Math.pow(2, attempt - 1), 8000)));
+      }
+
       if (!geminiDisabled) {
         const keyToUse = geminiKeys[attempt % geminiKeys.length];
-        const modelsToTry = ["gemini-3.1-flash-lite"];
-        const modelToUse = modelsToTry[attempt % modelsToTry.length];
+        const modelToUse = ALL_MODELS[attempt % ALL_MODELS.length];
         
         const endpoint = body.stream ? 'streamGenerateContent?alt=sse&' : 'generateContent?';
+        console.log(`[assistente-juridica] Tentativa ${attempt + 1}/${MAX_ATTEMPTS} com modelo ${modelToUse}`);
         const res = await geminiFetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:${endpoint}key=${keyToUse}`,
           { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(geminiBody) }
         );
         if (res.ok) {
           if (body.stream) {
             if (!body.isPreWarm && _callerUserId) {
-              logAiCall({ functionName: 'assistente-juridica', kind: 'text', model: 'gemini-3.1-flash-lite', userId: _callerUserId, outputUnits: 150, triggerType: 'auto', durationMs: Date.now() - _t0 }).catch(() => {});
+              logAiCall({ functionName: 'assistente-juridica', kind: 'text', model: modelToUse, userId: _callerUserId, outputUnits: 150, triggerType: 'auto', durationMs: Date.now() - _t0 }).catch(() => {});
             }
             return new Response(res.body, {
               status: 200,
@@ -645,15 +653,19 @@ Regras:
         } else {
           const errText = await res.text();
           _lastErr = `[HTTP ${res.status}] ${errText.slice(0, 200)}`;
-          console.error(`[assistente-juridica] Erro Gemini HTTP ${res.status}: ${errText.slice(0, 300)}`);
+          console.error(`[assistente-juridica] Erro Gemini HTTP ${res.status} (modelo: ${modelToUse}): ${errText.slice(0, 300)}`);
           const invalidKey = res.status === 400 && /API_KEY_INVALID|API key not valid/i.test(errText);
           const noQuota = res.status === 429 || res.status === 403;
           if (invalidKey || noQuota) {
-            console.error('Gemini indisponível ou chave inválida, tentando Gemini API:', errText.slice(0, 200));
+            console.error('Gemini indisponível ou chave inválida, tentando gateway:', errText.slice(0, 200));
             geminiDisabled = true;
           } else {
             const isUnavailable = res.status === 503 || errText.includes('UNAVAILABLE') || res.status === 404;
-            if (!isUnavailable || attempt === 2) { console.error('Gemini API error:', errText); fatal = true; }
+            if (!isUnavailable) { 
+              console.error('Gemini API error fatal:', errText); 
+              fatal = true; 
+            }
+            // 503/UNAVAILABLE: apenas continua para próxima tentativa com outro modelo
           }
         }
       }
@@ -661,7 +673,10 @@ Regras:
       if (!data && geminiDisabled) {
         data = await gatewayGenerate();
         if (data instanceof Response) return data;
-        if (!data) fatal = true;
+        if (!data) {
+          // Gateway também falhou — continua tentando se não for última tentativa
+          if (attempt === MAX_ATTEMPTS - 1) fatal = true;
+        }
         else _lastErr = "";
       }
 
@@ -771,7 +786,7 @@ Regras:
     await logAiCall({
       functionName: "assistente-juridica",
       kind: "text",
-      model: "gemini-3.1-flash-lite",
+      model: "gemini-multi-fallback",
       triggerType: "manual",
       inputUnits: _lastUsage?.promptTokenCount ?? 0,
       outputUnits: _lastUsage?.candidatesTokenCount ?? 0,
@@ -791,7 +806,7 @@ Regras:
       try {
         const parsed = JSON.parse(reply);
         if (!parsed?.titulo || !Array.isArray(parsed?.filhos)) {
-          return new Response(JSON.stringify({ error: 'Falha ao gerar mapa mental após 3 tentativas. Tente novamente.' }), {
+          return new Response(JSON.stringify({ error: 'Falha ao gerar mapa mental após 5 tentativas. Tente novamente.' }), {
             status: 422, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           });
         }

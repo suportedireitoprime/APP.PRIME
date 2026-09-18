@@ -304,7 +304,7 @@ export function useArtigoCommentsAndAi({
               setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
               setAiGeneratingMode(null);
             }
-          }, 35000); // Failsafe de 35s
+          }, 55000); // Failsafe de 55s (backend tem até 5 tentativas com backoff)
 
           stepInterval = setInterval(() => {
             if (aiAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) {

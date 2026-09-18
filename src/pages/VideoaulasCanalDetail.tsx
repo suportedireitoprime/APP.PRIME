@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { fetchCanalData, CanalData } from '@/lib/youtubeApi';
-import { Play, ListVideo, Radio, AlertCircle, X, Info } from 'lucide-react';
+import { fetchCanalData, CanalData, YoutubeVideo } from '@/lib/youtubeApi';
+import { Search, Play, ListVideo, Radio, AlertCircle, X, Info } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 export default function VideoaulasCanalDetail() {
@@ -12,6 +12,7 @@ export default function VideoaulasCanalDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [playingVideo, setPlayingVideo] = useState<YoutubeVideo | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const canalNomes: Record<string, string> = {
     'stf': 'Supremo Tribunal Federal',
@@ -45,6 +46,15 @@ export default function VideoaulasCanalDetail() {
     haptic.selection();
     window.open(`https://www.youtube.com/playlist?list=${playlistId}`, '_blank');
   };
+
+  const filteredVideos = data?.ultimosVideos.filter(v => 
+    v.title.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
+
+  const filteredPlaylists = data?.playlists.filter(p => 
+    p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()))
+  ) || [];
 
   return (
     <div className="flex h-full min-h-screen flex-col bg-background">
@@ -109,16 +119,41 @@ export default function VideoaulasCanalDetail() {
                 </section>
               )}
 
-              {/* Últimos Vídeos */}
-              <section className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:max-w-[1200px]">
-                <div className="flex items-center gap-2 mb-3">
-                  <Play className="w-4 h-4 text-primary" />
-                  <h2 className="text-[13px] font-extrabold text-foreground uppercase tracking-widest">
-                    Últimos Vídeos
-                  </h2>
+              {/* Busca */}
+              <section className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:max-w-[1200px] mt-4 mb-8">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Search className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                  <input
+                    type="text"
+                    className="block w-full pl-10 pr-3 py-3 border border-border/80 rounded-xl leading-5 bg-card placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm shadow-sm transition-shadow"
+                    placeholder="Pesquisar vídeos ou playlists..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  {searchQuery && (
+                    <button 
+                      onClick={() => setSearchQuery('')}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
                 </div>
-                <div className="flex flex-col gap-3">
-                  {data.ultimosVideos.map(video => (
+              </section>
+
+              {/* Últimos Vídeos */}
+              {filteredVideos.length > 0 && (
+                <section className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:max-w-[1200px]">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Play className="w-4 h-4 text-primary" />
+                    <h2 className="text-[13px] font-extrabold text-foreground uppercase tracking-widest">
+                      Últimos Vídeos
+                    </h2>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    {filteredVideos.map(video => (
                     <div
                       key={video.id}
                       onClick={() => openVideo(video)}
@@ -144,38 +179,46 @@ export default function VideoaulasCanalDetail() {
                   ))}
                 </div>
               </section>
+              )}
 
               {/* Playlists */}
+              {filteredPlaylists.length > 0 && (
               <section className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:max-w-[1200px]">
-                <div className="flex items-center gap-2 mb-3 mt-2">
+                <div className="flex items-center gap-2 mb-3 mt-4">
                   <ListVideo className="w-4 h-4 text-primary" />
                   <h2 className="text-[13px] font-extrabold text-foreground uppercase tracking-widest">
                     Playlists Oficiais
                   </h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {data.playlists.map(pl => (
+                  {filteredPlaylists.map(pl => (
                     <div
                       key={pl.id}
                       onClick={() => openPlaylist(pl.id)}
                       className="group flex gap-3 p-2 cursor-pointer rounded-xl bg-card border border-border/60 hover:border-primary/50 transition-colors shadow-sm hover:shadow-md items-center"
                     >
-                      <div className="relative w-24 h-16 shrink-0 rounded-lg overflow-hidden bg-muted">
+                      <div className="relative w-24 h-16 sm:w-28 sm:h-20 shrink-0 rounded-lg overflow-hidden bg-muted">
                         <img src={pl.thumbnail} alt={pl.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                        <div className="absolute inset-y-0 right-0 w-8 bg-black/80 flex flex-col items-center justify-center text-white backdrop-blur-sm">
-                          <ListVideo className="w-3.5 h-3.5 mb-0.5" />
-                          <span className="text-[9px] font-bold">{pl.itemCount}</span>
+                        <div className="absolute inset-y-0 right-0 w-8 sm:w-10 bg-black/80 flex flex-col items-center justify-center text-white backdrop-blur-sm">
+                          <ListVideo className="w-3.5 h-3.5 sm:w-4 sm:h-4 mb-0.5" />
+                          <span className="text-[9px] sm:text-[10px] font-bold">{pl.itemCount}</span>
                         </div>
                       </div>
-                      <div className="min-w-0 flex-1 pr-2">
-                        <p className="font-sans text-[12px] sm:text-sm font-semibold text-foreground line-clamp-2 leading-tight group-hover:text-primary transition-colors">
+                      <div className="min-w-0 flex-1 pr-2 flex flex-col justify-center">
+                        <p className="font-sans text-[13px] sm:text-sm font-semibold text-foreground line-clamp-2 leading-tight group-hover:text-primary transition-colors">
                           {pl.title}
                         </p>
+                        {pl.description && (
+                          <p className="font-sans text-[11px] sm:text-[12px] text-muted-foreground mt-1 line-clamp-1">
+                            {pl.description}
+                          </p>
+                        )}
                       </div>
                     </div>
                   ))}
                 </div>
               </section>
+              )}
             </div>
           )}
         {/* Remover a tag extra </div> que fechava o container antigo */}
