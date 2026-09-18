@@ -10,9 +10,9 @@ interface Props {
 const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Props) => {
   return (
     <div 
-      className="relative w-full overflow-hidden bg-hero-panel shadow-2xl shadow-black/60 z-20 flex flex-col justify-end pb-8" 
+      className="relative w-full overflow-hidden bg-hero-panel shadow-2xl shadow-black/60 z-20 flex flex-col justify-end pb-4" 
       style={{ 
-        minHeight: '380px', // Reduzido já que removemos o texto grande
+        minHeight: '260px', // Reduzido conforme pedido
         backgroundColor: '#050505',
         transform: 'translateZ(0)'
       }}
@@ -34,7 +34,7 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
       >
         <div 
           className="absolute inset-0 overflow-hidden"
-          style={{ clipPath: 'polygon(0 0, 55% 0, 42% 100%, 0% 100%)' }}
+          style={{ clipPath: 'polygon(0 0, 36% 0, 24% 100%, 0% 100%)' }}
         >
           <div className="absolute inset-0 bg-hero-panel" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" />
@@ -50,7 +50,6 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
       </div>
 
       <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/20 to-transparent z-[1] pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent z-[1] pointer-events-none" />
 
       {/* Conteúdo Central */}
       <div className="relative z-10 flex flex-col justify-end h-full px-12 xl:px-20 2xl:px-28 w-full pt-[184px]">

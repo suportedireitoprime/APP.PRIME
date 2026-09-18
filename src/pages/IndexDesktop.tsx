@@ -23,10 +23,10 @@ import DesktopSidebar from '@/components/vademecum/desktop/DesktopSidebar';
 import AtualizacaoTab from '@/components/vademecum/outros/AtualizacaoTab';
 import DesktopEstudosGrid from '@/components/desktop/DesktopEstudosGrid';
 import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
-import HomePilulasCarousel from '@/components/vademecum/home/HomePilulasCarousel';
-import HomeTresPoderes from '@/components/vademecum/home/HomeTresPoderes';
-import ApresentacaoVideoCard from '@/components/vademecum/home/ApresentacaoVideoCard';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+import HomeAprenderCarousel from '@/components/vademecum/home/aprender/HomeAprenderCarousel';
+import HomeTresPoderes from '@/components/vademecum/home/sections/HomeTresPoderes';
+import HomeApresentacoesTimeline from '@/components/vademecum/home/sections/HomeApresentacoesTimeline';
 
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 
@@ -48,7 +48,7 @@ const HERO_CONFIG: Record<string, { image: string; title: string }> = {
 
 type Tab = 'legislacao' | 'noticias' | 'ferramentas';
 
-const DESKTOP_TABS: { id: string; label: string; icon: any }[] = [
+const DESKTOP_TABS: { id: string; label: string; icon: React.ElementType }[] = [
   { id: 'legislacao', label: 'Legislação', icon: Scale },
   { id: 'biblioteca', label: 'Biblioteca', icon: Library },
   { id: 'ferramentas', label: 'Ferramentas', icon: Gavel },
@@ -127,14 +127,14 @@ const IndexDesktop = () => {
         <DesktopOnboardingOverlay />
         
         <DesktopSidebar activeTab={activeTab} onTabChange={setActiveTab} />
-          <div className="flex flex-col flex-1 min-w-0 bg-background">
+          <div className="flex flex-col flex-1 min-w-0 relative">
+          
           <div className="flex-1 min-w-0 overflow-y-auto relative z-10">
-            
             <div className="pointer-events-auto">
               <DesktopTopHeader onAssistenteClick={() => setAssistenteOpen(true)} isTransparent={activeTab === 'legislacao'} />
             </div>
             
-            <div className={`sticky top-0 z-40 border-b border-border transition-colors duration-300 bg-card/95 backdrop-blur-md`}>
+            <div className={`sticky top-0 z-40 border-b border-white/5 transition-colors duration-300 bg-[#121212]/95 backdrop-blur-md shadow-xl shadow-black/60`}>
               <div className="flex items-center gap-2 px-8 h-14">
                 {DESKTOP_TABS.map((tab) => {
                   const Icon = tab.icon;
@@ -174,11 +174,11 @@ const IndexDesktop = () => {
               <DesktopBreadcrumb />
             </div>
             
-            <div className={`px-8 py-6 2xl:px-14 relative z-20 ${activeTab !== 'legislacao' ? 'pt-[104px]' : 'pt-6'}`}>
+            <div className={`px-8 py-6 2xl:px-14 relative z-20 ${activeTab !== 'legislacao' ? 'pt-[104px]' : ''}`}>
               <div key={activeTab} className="animate-fade-in">
                 {activeTab === 'legislacao' && (
                   <>
-                    {/* A capa começa no topo absoluto da tela puxando -184px (104 do header + 56 das tabs + 24 de padding) */}
+                    {/* A capa começa no topo absoluto da tela puxando -152px (104 do header + 48 das tabs) */}
                     <div className="mb-0 -mx-8 2xl:-mx-14 -mt-[184px] relative z-0 pointer-events-auto">
                       <DesktopHeroBanner typingHint={typingHint} onSearchClick={() => setSearchOpen(true)} />
                     </div>
@@ -195,16 +195,10 @@ const IndexDesktop = () => {
                       />
                     </div>
 
-                    <div className="mb-10 -mx-4">
-                      <HomePilulasCarousel />
-                    </div>
-
-                    <div className="mb-10 max-w-5xl">
+                    <div className="space-y-12 max-w-[1600px] mx-auto pb-16 pt-8">
+                      <HomeAprenderCarousel />
                       <HomeTresPoderes />
-                    </div>
-
-                    <div className="mb-10 max-w-5xl">
-                      <ApresentacaoVideoCard />
+                      <HomeApresentacoesTimeline />
                     </div>
                   </>
                 )}
