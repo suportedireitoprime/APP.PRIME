@@ -132,48 +132,7 @@ const IndexDesktop = () => {
         <DesktopSidebar activeTab={activeTab} onTabChange={setActiveTab} />
           <div className="flex flex-col flex-1 min-w-0 relative">
           
-          <div className="flex-1 min-w-0 overflow-y-auto relative z-10">
-            <div className="pointer-events-auto relative z-[100]">
-              <DesktopTopHeader onAssistenteClick={() => setAssistenteOpen(true)} isTransparent={activeTab === 'legislacao'} />
-            </div>
-            
             <div className={`border-b border-white/5 transition-colors duration-300 bg-transparent`}>
-              {/* Tabs primeiro */}
-              <div className="flex items-center gap-2 px-8 h-12 pt-2">
-                {DESKTOP_TABS.map((tab) => {
-                  const Icon = tab.icon;
-                  const isActive = activeTab === tab.id;
-                  return (
-                    <motion.button
-                      key={tab.id}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => {
-                        const ROUTES: Record<string, string> = {
-                          noticias: '/noticias',
-                          ferramentas: '/ferramentas',
-                          biblioteca: '/bibliotecas',
-                          aprender: '/aprender',
-                          chat: '/assistente-horus',
-                          vademecum: '/vade-mecum',
-                        };
-                        if (ROUTES[tab.id]) {
-                          navigate(ROUTES[tab.id]);
-                          return;
-                        }
-                        setActiveTab(tab.id as Tab);
-                      }}
-                      className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-body font-medium transition-colors focus-visible:outline-none ${
-                        isActive
-                          ? 'text-white bg-hero-panel shadow-md shadow-black/20'
-                          : 'text-foreground/60 hover:text-foreground hover:bg-secondary/60'
-                      }`}
-                    >
-                      <Icon className="w-4 h-4" />
-                      <span>{tab.label}</span>
-                    </motion.button>
-                  );
-                })}
-              </div>
 
               <DesktopBreadcrumb />
             </div>
@@ -183,7 +142,12 @@ const IndexDesktop = () => {
                 {activeTab === 'legislacao' && (
                   <>
                     <div className="mb-8 mt-4 relative z-0 pointer-events-auto">
-                      <DesktopHeroBanner typingHint={typingHint} onSearchClick={() => setSearchOpen(true)} />
+                      <DesktopHeroBanner 
+                        typingHint={typingHint} 
+                        onSearchClick={() => setSearchOpen(true)} 
+                        onNotifClick={() => setNotifOpen(true)}
+                        unreadCount={unreadCount}
+                      />
                     </div>
 
                     <div className="relative z-30 mb-8 -mx-8 2xl:-mx-14 mt-6">
@@ -275,7 +239,6 @@ const IndexDesktop = () => {
                 )}
               </div>
             </div>
-          </div>
 
           <Suspense fallback={null}>
             <SearchOverlay open={searchOpen} onClose={handleSearchClose} onSelectLei={handleSearchSelectLei} />

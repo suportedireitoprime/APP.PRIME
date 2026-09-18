@@ -1,20 +1,27 @@
-import { Search, GraduationCap, Layers, HelpCircle, Sparkles, Book, Library, FileText, MonitorPlay, Headphones, ChevronRight, MessageSquare } from 'lucide-react';
+import { Search, GraduationCap, Layers, HelpCircle, Sparkles, Book, Library, FileText, MonitorPlay, Headphones, ChevronRight, MessageSquare, Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import heroBannerAsset from '@/assets/desktop-hero-banner.jpg';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
+import { pickAsset, srcOf } from '@/lib/assetUrl';
+
+const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 
 interface Props {
   typingHint?: string;
   onSearchClick?: () => void;
+  onNotifClick?: () => void;
+  unreadCount?: number;
 }
 
-const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Props) => {
+const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNotifClick, unreadCount = 0 }: Props) => {
   const navigate = useNavigate();
 
   return (
     <div className="relative w-full max-w-[1600px] mx-auto z-20 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
       {/* COLUNA ESQUERDA: CAPA PRINCIPAL */}
-      <div className="relative min-h-[380px] rounded-3xl overflow-hidden shadow-2xl bg-[#050505] flex flex-col justify-end group">
+      <div className="relative min-h-[420px] rounded-3xl overflow-hidden shadow-2xl flex flex-col group">
         {/* Imagem de Fundo */}
         <img
           src={heroBannerAsset}
@@ -36,8 +43,6 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
           >
             <div className="absolute inset-0 bg-hero-panel" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             <HeroMotifs />
             
             <div className="absolute inset-0 opacity-10" style={{
@@ -47,10 +52,38 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
           </div>
         </div>
 
-        <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/20 to-transparent z-[1] pointer-events-none" />
+        {/* HEADER INTERNO (Logo + Título + Notificações) */}
+        <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-8 py-6 pointer-events-none">
+          <div className="flex items-center gap-3 shrink-0 pointer-events-auto">
+            <div className="relative w-12 h-12">
+              <img src={primeLogo} alt="Estudos Jurídicos" className="w-full h-full object-contain drop-shadow-md" />
+            </div>
+            <div className="flex flex-col items-start leading-none justify-center mt-1">
+              <span className="font-serif italic text-2xl font-bold text-white tracking-tight drop-shadow-sm">
+                Estudos Jurídicos
+              </span>
+              <span className="font-body text-[9px] uppercase tracking-[0.24em] text-white/80 mt-1 pl-1">
+                Uso Profissional
+              </span>
+            </div>
+          </div>
+
+          <button
+            onClick={onNotifClick}
+            className="relative shrink-0 w-11 h-11 rounded-xl bg-white/10 backdrop-blur-md border border-white/25 hover:bg-white/20 hover:border-white/40 flex items-center justify-center transition-colors pointer-events-auto group/notif shadow-lg"
+            aria-label="Notificações"
+          >
+            <Bell className="w-5 h-5 text-white drop-shadow-md group-hover/notif:scale-110 transition-transform" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full border-2 border-[#1E1E22] shadow-sm animate-pulse-slow">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            )}
+          </button>
+        </div>
 
         {/* CONTEÚDO ESQUERDA */}
-        <div className="relative z-10 w-full h-full p-10 flex flex-col justify-end pointer-events-none">
+        <div className="relative z-10 w-full flex-1 p-10 pt-24 flex flex-col justify-end pointer-events-none">
           <div className="max-w-xl w-full pointer-events-auto">
             <h2 className="text-3xl font-display font-bold text-white mb-6 drop-shadow-md">O que você quer estudar hoje?</h2>
             
