@@ -49,7 +49,7 @@ const HERO_CONFIG: Record<string, { image: string; title: string }> = {
 type Tab = 'legislacao' | 'noticias' | 'ferramentas';
 
 const DESKTOP_TABS: { id: string; label: string; icon: React.ElementType }[] = [
-  { id: 'legislacao', label: 'Legislação', icon: Scale },
+  { id: 'legislacao', label: 'Início', icon: Scale },
   { id: 'biblioteca', label: 'Biblioteca', icon: Library },
   { id: 'ferramentas', label: 'Ferramentas', icon: Gavel },
   { id: 'aprender', label: 'Aprender', icon: GraduationCap },
@@ -130,12 +130,23 @@ const IndexDesktop = () => {
           <div className="flex flex-col flex-1 min-w-0 relative">
           
           <div className="flex-1 min-w-0 overflow-y-auto relative z-10">
-            <div className="pointer-events-auto">
+            <div className="pointer-events-auto relative z-[100]">
               <DesktopTopHeader onAssistenteClick={() => setAssistenteOpen(true)} isTransparent={activeTab === 'legislacao'} />
             </div>
             
             <div className={`sticky top-0 z-40 border-b border-white/5 transition-colors duration-300 bg-[#121212]/95 backdrop-blur-md shadow-xl shadow-black/60`}>
-              <div className="flex items-center gap-2 px-8 h-14">
+              {/* Search discreto acima das tabs */}
+              <div className="px-8 pt-3 pb-1 flex justify-end">
+                <button
+                  onClick={() => setSearchOpen(true)}
+                  className="flex items-center h-8 px-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-white/50 w-64 transition-colors"
+                >
+                  <Search className="w-3.5 h-3.5 mr-2 shrink-0 text-white/40" />
+                  <span className="truncate">{typingHint}</span>
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2 px-8 h-12 pb-2">
                 {DESKTOP_TABS.map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
@@ -160,13 +171,12 @@ const IndexDesktop = () => {
                       }}
                       className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-body font-medium transition-colors focus-visible:outline-none ${
                         isActive
-                          ? 'text-primary bg-primary/10'
+                          ? 'text-white bg-[#E50914] shadow-md shadow-red-900/20'
                           : 'text-foreground/60 hover:text-foreground hover:bg-secondary/60'
                       }`}
                     >
                       <Icon className="w-4 h-4" />
                       <span>{tab.label}</span>
-                      {isActive && <motion.div layoutId="desktop-tab-indicator" className="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full" />}
                     </motion.button>
                   );
                 })}
@@ -183,8 +193,7 @@ const IndexDesktop = () => {
                       <DesktopHeroBanner typingHint={typingHint} onSearchClick={() => setSearchOpen(true)} />
                     </div>
 
-                    {/* Carrossel Flutuante (sobrepondo o painel vermelho) */}
-                    <div className="relative z-30 mb-8 -mx-8 2xl:-mx-14 -mt-[70px]">
+                    <div className="relative z-30 mb-8 -mx-8 2xl:-mx-14 mt-6">
                       <HomeNoticiasCarousel />
                     </div>
 
@@ -197,8 +206,10 @@ const IndexDesktop = () => {
 
                     <div className="space-y-12 max-w-[1600px] mx-auto pb-16 pt-8">
                       <HomeAprenderCarousel />
-                      <HomeTresPoderes />
-                      <HomeApresentacoesTimeline />
+                      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
+                        <HomeTresPoderes />
+                        <HomeApresentacoesTimeline />
+                      </div>
                     </div>
                   </>
                 )}

@@ -56,21 +56,7 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
         <div className="flex w-full items-end justify-between gap-12 max-w-[1600px] mx-auto">
           
           <div className="flex-1 max-w-[650px] space-y-4 pt-10 pb-4">
-            {/* Search bar inside the red panel area */}
-            <button
-              onClick={onSearchClick}
-              className="group relative w-full flex items-center h-[48px] pl-5 pr-28 rounded-2xl bg-[#1a0a0d]/90 backdrop-blur-md border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)] shadow-primary/20 hover:border-primary/50 transition-colors text-left"
-            >
-              <Search className="w-4 h-4 text-white/50 shrink-0 mr-3 group-hover:text-primary transition-colors" />
-              <span className="text-white/70 text-sm font-body truncate">
-                {typingHint}
-                <span className="animate-pulse text-primary">|</span>
-              </span>
-              <span className="absolute right-1.5 top-1/2 -translate-y-1/2 h-9 px-4 rounded-xl bg-primary text-white font-display font-bold text-xs flex items-center gap-2 shadow-lg shadow-primary/40 group-hover:bg-[#ff3344] transition-colors">
-                Pesquisar
-              </span>
-            </button>
-            
+
             <p className="text-white/50 text-xs font-body flex items-center gap-2">
               <span className="text-primary text-[10px]">★</span> +10.000 alunos já estudam com a gente
             </p>
