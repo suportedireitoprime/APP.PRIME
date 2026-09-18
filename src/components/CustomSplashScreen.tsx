@@ -1,5 +1,10 @@
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
+import { pickAsset, srcOf } from '@/lib/assetUrl';
+
+const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 
 export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
   const text = "Estudos Jurídicos";
@@ -45,7 +50,7 @@ export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
       {/* Logo Central com aceleração de hardware */}
       <div className="mb-6 relative z-10 flex flex-col items-center anim-splash-logo-gpu">
         <img
-          src="/logo-prime.webp"
+          src={primeLogo}
           alt="Direito Prime"
           className="w-36 h-36 sm:w-44 sm:h-44 object-contain"
           decoding="async"
