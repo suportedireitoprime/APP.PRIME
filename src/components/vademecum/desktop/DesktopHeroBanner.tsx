@@ -1,4 +1,4 @@
-import { Search, GraduationCap, Layers, HelpCircle, Sparkles, Book, Library, FileText, MonitorPlay, Headphones } from 'lucide-react';
+import { Search, GraduationCap, Layers, HelpCircle, Sparkles, Book, Library, FileText, MonitorPlay, Headphones, ChevronRight, MessageSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import heroBannerAsset from '@/assets/desktop-hero-banner.jpg';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
@@ -101,23 +101,25 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
             ACESSO RÁPIDO
           </h3>
 
-          <div className="flex flex-col gap-2.5">
+          <div className="flex flex-col gap-0 border-y border-white/10 divide-y divide-white/10 mt-2">
             {[
               { label: 'Vade Mecum', icon: Book, route: '/vade-mecum' },
               { label: 'Biblioteca', icon: Library, route: '/bibliotecas' },
               { label: 'Resumos', icon: FileText, route: '/aprender/resumos' },
               { label: 'Videoaulas', icon: MonitorPlay, route: '/aprender/videos' },
-              { label: 'Audioaulas', icon: Headphones, route: '/aprender/audios' }
+              { label: 'Audioaulas', icon: Headphones, route: '/aprender/audios' },
+              { label: 'Chat (Hórus)', icon: MessageSquare, route: '/assistente-horus' }
             ].map((link, i) => (
               <button
                 key={i}
                 onClick={() => navigate(link.route)}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/15 transition-colors text-white font-body group"
+                className="w-full flex items-center gap-4 px-3 py-4 hover:bg-white/10 transition-colors text-white font-body group"
               >
-                <div className="w-8 h-8 rounded-lg bg-black/20 flex items-center justify-center shrink-0 group-hover:bg-black/30 transition-colors border border-white/5">
-                  <link.icon className="w-4 h-4 text-white/90 group-hover:text-white" />
+                <div className="w-10 h-10 rounded-xl bg-black/20 flex items-center justify-center shrink-0 group-hover:bg-black/30 transition-colors border border-white/5 shadow-inner">
+                  <link.icon className="w-5 h-5 text-white/90 group-hover:text-white" />
                 </div>
-                <span className="font-semibold tracking-wide text-sm drop-shadow-sm">{link.label}</span>
+                <span className="font-semibold tracking-wide text-[15px] drop-shadow-sm flex-1 text-left opacity-95 group-hover:opacity-100 transition-opacity">{link.label}</span>
+                <ChevronRight className="w-5 h-5 text-white/30 group-hover:text-white/80 transition-colors" />
               </button>
             ))}
           </div>
