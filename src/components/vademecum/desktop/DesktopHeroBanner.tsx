@@ -7,7 +7,7 @@ import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
 import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
-import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
+import DesktopRadarLeisCarousel from './DesktopRadarLeisCarousel';
 
 const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 
@@ -57,8 +57,8 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
             }} />
             
             {/* CARROSSEL DE DECKS DO APRENDER DENTRO DO PAINEL VERMELHO */}
-            <div className="absolute bottom-5 left-6 xl:left-8 pointer-events-auto z-20 flex flex-col items-start w-[260px] xl:w-[300px]">
-              <div className="transform scale-[0.75] xl:scale-[0.85] origin-bottom-left w-full pb-3">
+            <div className="absolute bottom-5 left-6 xl:left-8 pointer-events-auto z-20 flex flex-col items-center w-[270px] xl:w-[310px]">
+              <div className="transform scale-[0.78] xl:scale-[0.88] origin-bottom w-full pb-3 flex justify-center">
                 <AprenderDeckStacked items={items} onItemClick={handleItemClick} />
               </div>
               <button onClick={() => navigate('/aprender')} className="relative flex items-center justify-center gap-2 font-display text-white text-[13px] font-bold uppercase tracking-widest py-2.5 w-full rounded-xl bg-red-900/80 hover:bg-red-950/90 transition-all border border-red-700/50 overflow-hidden group shadow-[0_8px_30px_rgba(153,27,27,0.3)]">
@@ -140,10 +140,8 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
         </div>
       </div>
 
-        {/* CARROSSEL DE LEIS NO VÃO DO DESKTOP */}
-        <div className="relative z-20 w-full rounded-3xl overflow-hidden shadow-2xl bg-hero-panel border border-white/10 py-6">
-           <HomeNoticiasCarousel />
-        </div>
+        {/* CARROSSEL OFICIAL DO RADAR DE LEIS NO DESKTOP (SEM FUNDO VERMELHO) */}
+        <DesktopRadarLeisCarousel />
       </div>
 
       {/* COLUNA DIREITA: ACESSO RÁPIDO */}
