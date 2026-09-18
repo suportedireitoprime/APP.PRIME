@@ -23,7 +23,7 @@ export const MODELS = {
 // Modelos de texto permitidos com fallback gracioso.
 export const TEXT_MODEL_FALLBACKS = [
   "gemini-2.5-flash",
-  "gemini-2.0-flash",
+  "gemini-3.1-flash-lite",
 ] as const;
 
 export const ALLOWED_TEXT_MODELS = new Set<string>([

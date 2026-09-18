@@ -587,13 +587,27 @@ Regras:
     let _lastUsage: any = null;
     let _lastErr = "";
     const _t0 = Date.now();
+
+    // Diagnóstico: verificar se GCP_SERVICE_ACCOUNT está acessível
+    const _gcpSa = Deno.env.get("GCP_SERVICE_ACCOUNT");
+    if (_gcpSa) {
+      try {
+        const parsed = JSON.parse(_gcpSa);
+        _lastErr += `[DIAG] SA OK: project=${parsed.project_id}, email=${parsed.client_email?.slice(0,20)}... | `;
+      } catch (e: any) {
+        _lastErr += `[DIAG] SA PARSE ERROR: ${e.message?.slice(0, 100)} | raw start: ${_gcpSa.slice(0, 50)} | `;
+      }
+    } else {
+      _lastErr += `[DIAG] GCP_SERVICE_ACCOUNT is NULL/EMPTY | `;
+    }
+
     // Se as chaves diretas do Gemini estiverem ausentes/invalidas, caímos para o
     // Gemini API (mesmo modelo, cobrança pela plataforma).
     let geminiDisabled = geminiKeys.length === 0;
 
     async function gatewayGenerate(): Promise<any | null> {
       const endpoint = body.stream ? 'streamGenerateContent?alt=sse&' : 'generateContent?';
-      const r = await geminiFetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:${endpoint}key=${GEMINI_API_KEY}`, {
+      const r = await geminiFetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:${endpoint}key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(geminiBody)
@@ -607,7 +621,7 @@ Regras:
       
       if (body.stream) {
         if (!body.isPreWarm && _callerUserId) {
-          logAiCall({ functionName: 'assistente-juridica', kind: 'text', model: 'gemini-3.7-flash', userId: _callerUserId, outputUnits: 150, triggerType: 'auto', durationMs: Date.now() - _t0 }).catch(() => {});
+          logAiCall({ functionName: 'assistente-juridica', kind: 'text', model: 'gemini-3.1-flash-lite', userId: _callerUserId, outputUnits: 150, triggerType: 'auto', durationMs: Date.now() - _t0 }).catch(() => {});
         }
         return new Response(r.body, {
           status: 200,
@@ -619,7 +633,7 @@ Regras:
     }
 
     const MAX_ATTEMPTS = 5;
-    const ALL_MODELS = ["gemini-1.5-flash", "gemini-1.5-flash-002", "gemini-1.5-flash-8b", "gemini-1.5-pro"];
+    const ALL_MODELS = ["gemini-3.1-flash-lite"];
 
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
       let data: any = null;

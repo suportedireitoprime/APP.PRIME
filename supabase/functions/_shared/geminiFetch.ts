@@ -71,6 +71,27 @@ function extractKey(url: string): string {
   return m ? decodeURIComponent(m[1]) : "";
 }
 
+function rewriteToVertex(url: string, projectId: string, location = 'us-central1'): string {
+  const match = url.match(/models\/([^:]+):([^?]+)/);
+  if (!match) return url;
+  
+  let modelId = match[1];
+  // O Vertex AI usa nomenclaturas fixas corporativas, não suporta as versões 'lite' ou '2.5' do AI Studio ainda.
+  if (modelId.includes('3.1') || modelId.includes('2.5') || modelId.includes('1.5-flash')) {
+    modelId = 'gemini-1.5-flash-002'; 
+  } else if (modelId.includes('pro')) {
+    modelId = 'gemini-1.5-pro-002';
+  }
+
+  let method = match[2];
+  // Remove o 'key=' da query string, pois o Vertex AI exige apenas o Bearer Token
+  if (method.includes('key=')) {
+    method = method.replace(/([?&])key=[^&]*&?/, '$1').replace(/[?&]$/, '');
+  }
+  
+  return `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/${modelId}:${method}`;
+}
+
 export async function geminiFetch(
   url: string,
   init?: RequestInit,
@@ -80,12 +101,50 @@ export async function geminiFetch(
     return fetch(url, init);
   }
 
-  // Nota: Vertex AI via Service Account foi removido por causar timeouts.
-  // Os créditos GCP são consumidos pela API Key do AI Studio vinculada ao projeto.
-
   const isAudioReq = url.includes("tts") || url.includes("speech") || url.includes("audio");
 
-  // Monta a fila de chaves a tentar (AI Studio Legacy)
+  // Tenta autenticação via Service Account (Bearer Token) usando os créditos do Google Cloud
+  // Usa o MESMO endpoint generativelanguage.googleapis.com mas com Bearer em vez de API Key
+  if (!isAudioReq && GCP_SERVICE_ACCOUNT) {
+    try {
+      console.log(`[geminiFetch] GCP_SERVICE_ACCOUNT encontrada (${GCP_SERVICE_ACCOUNT.length} chars). Tentando Bearer Token...`);
+      const { token, projectId } = await getVertexAuth(GCP_SERVICE_ACCOUNT);
+      
+      // Remove o parâmetro key= da URL (Bearer Token substitui)
+      let bearerUrl = url.replace(/([?&])key=[^&]*&?/, '$1').replace(/[?&]$/, '');
+      // Se a URL não tem mais query string, garante que não fica com '?' solto
+      if (bearerUrl.endsWith('?') || bearerUrl.endsWith('&')) {
+        bearerUrl = bearerUrl.slice(0, -1);
+      }
+      
+      console.log(`[geminiFetch] Bearer URL: ${bearerUrl}`);
+      
+      const headers = new Headers(init?.headers);
+      headers.set('Authorization', `Bearer ${token}`);
+      headers.set('x-goog-user-project', projectId);
+      headers.delete('x-goog-api-key');
+      if (headers.get('Content-Type')?.includes('application/json')) {
+         headers.set('Content-Type', 'application/json');
+      }
+
+      const bearerInit = { ...init, headers };
+      const response = await fetch(bearerUrl, bearerInit);
+      
+      if (response.ok) {
+        console.log(`[geminiFetch] ✅ Bearer Token respondeu OK!`);
+        return response;
+      }
+      const errText = await readBodySafely(response);
+      console.warn(`[geminiFetch] ❌ Bearer Token falhou HTTP ${response.status}:`, errText.slice(0, 500));
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error(`[geminiFetch] ❌ Exceção na autenticação Service Account:`, msg);
+    }
+  } else if (!GCP_SERVICE_ACCOUNT) {
+    console.warn(`[geminiFetch] GCP_SERVICE_ACCOUNT não configurada — Bearer Token desativado.`);
+  }
+
+  // Fallback para as chaves do AI Studio (Legacy)
   const urlKey = extractKey(url);
   const candidates: string[] = [];
   const pushUnique = (k: string) => { if (k && !candidates.includes(k)) candidates.push(k); };
@@ -112,14 +171,12 @@ export async function geminiFetch(
     const exhausted = isQuotaExhausted(response.status, bodyText);
     const keyProblem = isKeyProblem(response.status, bodyText);
 
-    // Marca a reserva gratuita como esgotada para não continuar tentando por 1h.
     if (exhausted && key === RESERVA) {
       reservaExhaustedUntil = Date.now() + COOLDOWN_MS;
       console.warn("[geminiFetch] Reserva gratuita esgotada — cooldown de 1h ativado.");
     }
 
     lastResponse = response;
-    // Continua para a próxima chave em problema de quota OU de chave inválida.
     if (!exhausted && !keyProblem) return response;
     console.warn(`[geminiFetch] Chave #${i + 1} falhou (${exhausted ? "quota" : "chave inválida"}) — tentando próxima.`);
   }
