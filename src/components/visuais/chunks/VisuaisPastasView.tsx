@@ -8,56 +8,20 @@ import {
   Download,
   Loader2,
   FolderOpen,
+  Mic,
 } from 'lucide-react';
+import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { haptic } from '@/lib/nativeHaptics';
 import type { VisualRecord, VisualCategoria, VisualContent } from '@/lib/visuaisJuridicos/types';
 import type { CatalogoItem } from '@/lib/visuaisJuridicos/catalogo';
 import { MATERIAS } from '@/lib/visuaisJuridicos/catalogo';
 import { VisuaisPdfModal } from './VisuaisPdfModal';
+import { VisuaisPdfCard } from './VisuaisPdfCard';
 import { exportarPdf } from '../VisualScene';
 import { toast } from 'sonner';
+import { extrairHierarquiaVisual, type HierarquiaVisual } from '@/lib/visuaisJuridicos/hierarquia';
 
-export interface HierarquiaVisual {
-  materia: string;
-  topico: string;
-  tema: string;
-}
-
-/**
- * Extrai a hierarquia do visual: Matéria -> Tópico -> Tema
- * Exemplo: "Direito Administrativo — Bens Públicos · Bens de Domínio Privado do Estado"
- * Matéria: "Direito Administrativo"
- * Tópico: "Bens Públicos"
- * Tema: "Bens de Domínio Privado do Estado"
- */
-export function extrairHierarquiaVisual(visual: VisualRecord): HierarquiaVisual {
-  const rotulo = visual.item_label || visual.titulo || 'Geral';
-  let materia = rotulo;
-  let topico = '';
-  let tema = visual.titulo || '';
-
-  if (rotulo.includes('—')) {
-    const partes = rotulo.split('—').map((s) => s.trim());
-    materia = partes[0] || 'Geral';
-    const resto = partes.slice(1).join('—').trim();
-
-    if (resto.includes('·')) {
-      const subpartes = resto.split('·').map((s) => s.trim());
-      topico = subpartes[0] || 'Geral';
-      if (!tema || tema === rotulo) {
-        tema = subpartes.slice(1).join('·').trim();
-      }
-    } else {
-      topico = resto || 'Geral';
-    }
-  }
-
-  return {
-    materia: materia.trim(),
-    topico: (topico || 'Geral').trim(),
-    tema: (tema || visual.titulo || 'Visual').trim(),
-  };
-}
+export type { HierarquiaVisual };
 
 interface VisuaisPastasViewProps {
   prontos: Record<string, VisualRecord>;
@@ -82,6 +46,11 @@ export function VisuaisPastasView({
   const [registroPdf, setRegistroPdf] = useState<VisualRecord | null>(null);
   const [modalPdfOpen, setModalPdfOpen] = useState(false);
   const [baixandoKey, setBaixandoKey] = useState<string | null>(null);
+
+  // Reconhecimento de Voz nativo/web
+  const voice = useVoiceInput((text) => {
+    setBusca(text);
+  });
 
   // Lista todos os registros prontos
   const todosProntos = useMemo(() => Object.values(prontos), [prontos]);
@@ -215,22 +184,43 @@ export function VisuaisPastasView({
 
   return (
     <div className="w-full space-y-4">
-      {/* Barra de Pesquisa Adaptativa por Nível */}
+      {/* Barra de Pesquisa Adaptativa por Nível com Pesquisa por Voz */}
       <div className="relative">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
         <input
           type="text"
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
           placeholder={
-            topicoAtivo
-              ? `Buscar temas em ${topicoAtivo}...`
-              : materiaAtiva
-                ? `Buscar tópicos em ${materiaAtiva}...`
-                : 'Buscar pasta por matéria ou código...'
+            voice.listening
+              ? 'Ouvindo sua voz...'
+              : topicoAtivo
+                ? `Buscar temas em ${topicoAtivo}...`
+                : materiaAtiva
+                  ? `Buscar tópicos em ${materiaAtiva}...`
+                  : 'Buscar pasta por matéria ou código...'
           }
-          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-zinc-900/80 border border-white/10 text-white text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:border-red-500/50 transition-colors font-['Plus_Jakarta_Sans',sans-serif]"
+          className={`w-full pl-10 pr-12 py-2.5 rounded-xl bg-zinc-900/80 border text-white text-sm placeholder:text-muted-foreground/60 focus:outline-none transition-all font-['Plus_Jakarta_Sans',sans-serif] ${
+            voice.listening
+              ? 'border-red-500 shadow-md shadow-red-500/20 ring-1 ring-red-500/50'
+              : 'border-white/10 focus:border-red-500/50'
+          }`}
         />
+        <button
+          type="button"
+          onClick={() => {
+            haptic.light();
+            voice.toggle();
+          }}
+          aria-label={voice.listening ? 'Parar gravação de voz' : 'Pesquisar por voz'}
+          className={`absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg flex items-center justify-center transition-all active:scale-95 ${
+            voice.listening
+              ? 'bg-red-600 text-white animate-pulse shadow-md shadow-red-600/40 ring-2 ring-red-400'
+              : 'text-zinc-400 hover:text-white hover:bg-white/5'
+          }`}
+        >
+          <Mic className="w-4 h-4" />
+        </button>
       </div>
 
       {/* ── NÍVEL 3: Arquivos / Temas do Tópico ── */}
@@ -239,53 +229,15 @@ export function VisuaisPastasView({
           {arquivosFiltrados.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
               {arquivosFiltrados.map((arquivo, idx) => (
-                <motion.div
+                <VisuaisPdfCard
                   key={arquivo.id || idx}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: Math.min(idx * 0.03, 0.25) }}
-                  className="p-4 rounded-2xl bg-gradient-to-b from-[#2a0b0e] to-[#140506] border border-red-500/30 hover:border-red-500/60 transition-all flex flex-col justify-between gap-3 group shadow-lg shadow-black/40"
-                >
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-red-500/20 border border-red-500/30 flex items-center justify-center shrink-0">
-                        <FileText className="w-4 h-4 text-red-400" />
-                      </div>
-                      <span className="px-2 py-0.5 rounded-full bg-red-500/20 border border-red-500/40 text-[10px] font-bold text-red-300 uppercase tracking-wider font-['Plus_Jakarta_Sans',sans-serif]">
-                        {arquivo.tipo.replace('_', ' ')}
-                      </span>
-                    </div>
-
-                    <p className="font-bold text-sm sm:text-base text-white leading-snug font-['Plus_Jakarta_Sans',sans-serif] tracking-normal break-words">
-                      {arquivo.titulo}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-2 pt-2 border-t border-white/5">
-                    <button
-                      type="button"
-                      onClick={() => handleAbrirPdf(arquivo)}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-bold active:scale-95 transition-all shadow-md"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>Ver PDF</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleBaixarPdf(arquivo)}
-                      disabled={baixandoKey === arquivo.id}
-                      className="w-10 h-10 rounded-xl bg-secondary hover:bg-secondary/80 flex items-center justify-center text-white active:scale-95 transition-transform"
-                      aria-label="Baixar PDF"
-                    >
-                      {baixandoKey === arquivo.id ? (
-                        <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                      ) : (
-                        <Download className="w-4 h-4" />
-                      )}
-                    </button>
-                  </div>
-                </motion.div>
+                  arquivo={arquivo}
+                  index={idx}
+                  materia={materiaAtiva}
+                  onAbrir={handleAbrirPdf}
+                  onBaixar={handleBaixarPdf}
+                  baixando={baixandoKey === arquivo.id}
+                />
               ))}
             </div>
           ) : (

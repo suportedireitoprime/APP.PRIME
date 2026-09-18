@@ -513,12 +513,12 @@ export default function VisuaisJuridicosSheet({
     if (pastaAtiva) return pastaAtiva;
     if (topicoPasta) return topicoPasta;
     if (materiaPasta) return materiaPasta;
-    if (filtro === 'pastas') return 'PASTAS DE MATÉRIAS';
-    if (filtro === 'favoritos') return 'MEUS FAVORITOS';
-    if (filtro === 'recentes') return 'HISTÓRICO RECENTE';
-    if (!item) return 'VISUAIS JURÍDICOS';
+    if (filtro === 'pastas') return 'Pastas de Matérias';
+    if (filtro === 'favoritos') return 'Meus Favoritos';
+    if (filtro === 'recentes') return 'Histórico Recente';
+    if (!item) return 'Visuais Jurídicos';
     if (tema) return tema.tema;
-    return item?.label ?? 'VISUAIS JURÍDICOS';
+    return item?.label ?? 'Visuais Jurídicos';
   };
 
   const getSubtitle = () => {
@@ -652,10 +652,22 @@ export default function VisuaisJuridicosSheet({
                 {/* Cabeçalho fixo padrão apenas quando em detalhes, tela solo de pasta OU abas solo (pastas, favoritos, recentes) */}
                 {(item || pastaAtiva || filtro !== 'todos') && (
                   emPagina ? (
-                    <PageHeader title={getTitle()} subtitle={getSubtitle()} onBack={voltar} />
+                    <PageHeader
+                      title={
+                        <span className="font-['Plus_Jakarta_Sans',sans-serif] font-bold text-[16px] sm:text-[18px] text-white tracking-normal normal-case">
+                          {getTitle()}
+                        </span>
+                      }
+                      subtitle={getSubtitle()}
+                      onBack={voltar}
+                    />
                   ) : (
                     <PageHeader
-                      title={getTitle()}
+                      title={
+                        <span className="font-['Plus_Jakarta_Sans',sans-serif] font-bold text-[16px] sm:text-[18px] text-white tracking-normal normal-case">
+                          {getTitle()}
+                        </span>
+                      }
                       subtitle={getSubtitle()}
                       onBack={voltar}
                       rightAction={
@@ -675,23 +687,36 @@ export default function VisuaisJuridicosSheet({
                 )}
 
                 {(item || pastaAtiva || filtro !== 'todos') && (
-                  <nav
-                    aria-label="Trilha de navegação"
-                    className="flex items-center gap-1 overflow-x-auto whitespace-nowrap px-5 pb-2 pt-1 text-[12px] font-body text-muted-foreground lg:mx-auto lg:w-full lg:max-w-[1200px] lg:px-8"
-                  >
-                    {trilha.map((c, i) => (
-                      <span key={`${c.label}-${i}`} className="flex items-center gap-1 shrink-0">
-                        {i > 0 && <ChevronRight className="h-3 w-3 opacity-50" />}
-                        {c.onClick ? (
-                          <button onClick={c.onClick} className="hover:text-foreground active:scale-95 transition">
-                            {c.label}
-                          </button>
-                        ) : (
-                          <span className="text-foreground font-semibold">{c.label}</span>
-                        )}
-                      </span>
-                    ))}
-                  </nav>
+                  <div className="w-full border-b border-white/5 bg-black/20 backdrop-blur-xs">
+                    <nav
+                      aria-label="Trilha de navegação cronológica"
+                      className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth whitespace-nowrap px-4 sm:px-6 py-2 text-xs font-['Plus_Jakarta_Sans',sans-serif] text-muted-foreground lg:mx-auto lg:w-full lg:max-w-[1400px]"
+                    >
+                      {trilha.map((c, i) => (
+                        <React.Fragment key={`${c.label}-${i}`}>
+                          {i > 0 && (
+                            <ChevronRight className="w-3.5 h-3.5 text-red-500 shrink-0 stroke-[2.5]" />
+                          )}
+                          {c.onClick ? (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                haptic.selection();
+                                c.onClick?.();
+                              }}
+                              className="px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/10 text-zinc-300 hover:text-white transition-all text-[11px] sm:text-xs font-medium border border-white/5 active:scale-95 shrink-0"
+                            >
+                              {c.label}
+                            </button>
+                          ) : (
+                            <span className="px-2.5 py-1 rounded-lg bg-red-500/15 border border-red-500/30 text-red-200 text-[11px] sm:text-xs font-bold shrink-0 max-w-[200px] sm:max-w-[320px] truncate shadow-xs">
+                              {c.label}
+                            </span>
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </nav>
+                  </div>
                 )}
 
                 <div className={`flex-1 overflow-y-auto overscroll-contain pb-[calc(1.25rem+var(--sai-bottom))] ${(item || pastaAtiva || filtro !== 'todos') ? 'px-4 pt-3 lg:mx-auto lg:w-full lg:max-w-[1400px] lg:px-8' : ''}`}>

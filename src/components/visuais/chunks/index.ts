@@ -9,3 +9,4 @@ export * from './VisuaisHeroPanel';
 export * from './VisuaisPdfModal';
 export * from './VisuaisPastasView';
 export * from './VisuaisPastaSoloView';
+export * from './VisuaisPdfCard';

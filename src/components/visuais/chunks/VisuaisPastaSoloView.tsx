@@ -2,17 +2,17 @@ import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   FolderOpen,
-  FileText,
-  Download,
-  Eye,
   Sparkles,
   Search,
+  Mic,
 } from 'lucide-react';
+import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { haptic } from '@/lib/nativeHaptics';
 import type { VisualRecord, VisualContent } from '@/lib/visuaisJuridicos/types';
 import type { CatalogoItem } from '@/lib/visuaisJuridicos/catalogo';
 import { MATERIAS } from '@/lib/visuaisJuridicos/catalogo';
 import { VisuaisPdfModal } from './VisuaisPdfModal';
+import { VisuaisPdfCard } from './VisuaisPdfCard';
 import { exportarPdf } from '../VisualScene';
 import { toast } from 'sonner';
 
@@ -34,6 +34,11 @@ export function VisuaisPastaSoloView({
   const [registroPdf, setRegistroPdf] = useState<VisualRecord | null>(null);
   const [modalPdfOpen, setModalPdfOpen] = useState(false);
   const [baixandoKey, setBaixandoKey] = useState<string | null>(null);
+
+  // Reconhecimento de Voz
+  const voice = useVoiceInput((text) => {
+    setBuscaPdf(text);
+  });
 
   // Todos os arquivos prontos desta pasta
   const todosArquivos = useMemo(() => {
@@ -85,17 +90,40 @@ export function VisuaisPastaSoloView({
 
   return (
     <div className="w-full space-y-4 pb-12">
-      {/* Barra de Busca de PDFs na Pasta */}
+      {/* Barra de Busca de PDFs na Pasta com Pesquisa por Voz */}
       {todosArquivos.length > 0 && (
         <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
           <input
             type="text"
             value={buscaPdf}
             onChange={(e) => setBuscaPdf(e.target.value)}
-            placeholder={`Buscar em ${todosArquivos.length} PDF(s) desta pasta...`}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-zinc-900/80 border border-white/10 text-white text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:border-amber-500/50 transition-colors"
+            placeholder={
+              voice.listening
+                ? 'Ouvindo sua voz...'
+                : `Buscar em ${todosArquivos.length} PDF(s) desta pasta...`
+            }
+            className={`w-full pl-10 pr-12 py-2.5 rounded-xl bg-zinc-900/80 border text-white text-sm placeholder:text-muted-foreground/60 focus:outline-none transition-all font-['Plus_Jakarta_Sans',sans-serif] ${
+              voice.listening
+                ? 'border-red-500 shadow-md shadow-red-500/20 ring-1 ring-red-500/50'
+                : 'border-white/10 focus:border-red-500/50'
+            }`}
           />
+          <button
+            type="button"
+            onClick={() => {
+              haptic.light();
+              voice.toggle();
+            }}
+            aria-label={voice.listening ? 'Parar gravação de voz' : 'Pesquisar por voz'}
+            className={`absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg flex items-center justify-center transition-all active:scale-95 ${
+              voice.listening
+                ? 'bg-red-600 text-white animate-pulse shadow-md shadow-red-600/40 ring-2 ring-red-400'
+                : 'text-zinc-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <Mic className="w-4 h-4" />
+          </button>
         </div>
       )}
 
@@ -103,49 +131,15 @@ export function VisuaisPastaSoloView({
       {arquivosFiltrados.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
           {arquivosFiltrados.map((arquivo, idx) => (
-            <motion.div
-              key={arquivo.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: Math.min(idx * 0.03, 0.25) }}
-              className="p-4 rounded-2xl bg-zinc-900/80 border border-white/10 hover:border-red-500/40 transition-all flex flex-col justify-between gap-3 group shadow-lg shadow-black/40"
-            >
-              <div className="space-y-2">
-                <div className="flex items-center justify-between gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-red-500/20 border border-red-500/30 flex items-center justify-center shrink-0">
-                    <FileText className="w-4 h-4 text-red-400" />
-                  </div>
-                  <span className="px-2 py-0.5 rounded-full bg-secondary text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                    {arquivo.tipo.replace('_', ' ')}
-                  </span>
-                </div>
-
-                <h3 className="font-bold text-sm sm:text-base text-white line-clamp-2 leading-tight font-['Plus_Jakarta_Sans',sans-serif] tracking-wide">
-                  {arquivo.titulo}
-                </h3>
-              </div>
-
-              <div className="flex items-center gap-2 pt-2 border-t border-white/5">
-                <button
-                  type="button"
-                  onClick={() => handleAbrirPdf(arquivo)}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-bold active:scale-95 transition-all shadow-md"
-                >
-                  <Eye className="w-3.5 h-3.5" />
-                  <span>Ver PDF</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleBaixarPdf(arquivo)}
-                  disabled={baixandoKey === arquivo.id}
-                  className="w-10 h-10 rounded-xl bg-secondary/80 hover:bg-secondary flex items-center justify-center text-white active:scale-95 transition-transform shrink-0"
-                  aria-label="Baixar PDF"
-                >
-                  <Download className="w-4 h-4" />
-                </button>
-              </div>
-            </motion.div>
+            <VisuaisPdfCard
+              key={arquivo.id || idx}
+              arquivo={arquivo}
+              index={idx}
+              materia={pastaNome}
+              onAbrir={handleAbrirPdf}
+              onBaixar={handleBaixarPdf}
+              baixando={baixandoKey === arquivo.id}
+            />
           ))}
         </div>
       ) : (
