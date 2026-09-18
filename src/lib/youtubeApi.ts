@@ -15,6 +15,7 @@ export interface YoutubeVideo {
   id: string;
   title: string;
   description?: string;
+  channelTitle?: string;
   thumbnail: string;
   publishedAt: string;
 }

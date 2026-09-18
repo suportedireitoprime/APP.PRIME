@@ -46,36 +46,46 @@ Deno.serve(async (req) => {
     const liveUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${YOUTUBE_API_KEY}`;
     const liveRes = await fetch(liveUrl);
     const liveData = await liveRes.json();
-
-    let aoVivo = null;
-    if (liveData.items && liveData.items.length > 0) {
-      const liveItem = liveData.items[0];
-      aoVivo = {
-        id: liveItem.id.videoId,
-        title: liveItem.snippet.title,
-        description: liveItem.snippet.description || '',
-        thumbnail: liveItem.snippet.thumbnails?.high?.url || liveItem.snippet.thumbnails?.default?.url,
-        publishedAt: liveItem.snippet.publishedAt,
-      };
-    }
+    const liveId = (liveData.items && liveData.items.length > 0) ? liveData.items[0].id.videoId : null;
 
     // 3. Buscar últimos vídeos (Apenas transmissões ao vivo passadas)
-    let ultimosVideos = [];
-    const pastLivesUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=completed&type=video&order=date&maxResults=10&key=${YOUTUBE_API_KEY}`;
+    const pastLivesUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=completed&type=video&order=date&maxResults=5&key=${YOUTUBE_API_KEY}`;
     const pastLivesRes = await fetch(pastLivesUrl);
     const pastLivesData = await pastLivesRes.json();
+    const pastLiveIds = pastLivesData.items ? pastLivesData.items.map((item: any) => item.id.videoId) : [];
 
-    if (pastLivesData.items) {
-      ultimosVideos = pastLivesData.items
-        .filter((item: any) => !aoVivo || item.id.videoId !== aoVivo.id)
-        .slice(0, 5)
-        .map((item: any) => ({
-          id: item.id.videoId,
-          title: item.snippet.title,
-          description: item.snippet.description || '',
-          thumbnail: item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url,
-          publishedAt: item.snippet.publishedAt,
-        }));
+    // Juntar todos os IDs para buscar os dados completos
+    let videoIds = [];
+    if (liveId) videoIds.push(liveId);
+    if (pastLiveIds.length > 0) videoIds.push(...pastLiveIds);
+
+    let aoVivo = null;
+    let ultimosVideos = [];
+
+    if (videoIds.length > 0) {
+      // 4. Buscar detalhes completos dos vídeos (para ter a descrição completa e channelTitle)
+      const videosUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoIds.join(',')}&key=${YOUTUBE_API_KEY}`;
+      const videosRes = await fetch(videosUrl);
+      const videosData = await videosRes.json();
+
+      if (videosData.items) {
+        videosData.items.forEach((item: any) => {
+          const videoObj = {
+            id: item.id,
+            title: item.snippet.title,
+            description: item.snippet.description || '',
+            channelTitle: item.snippet.channelTitle || '',
+            thumbnail: item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url,
+            publishedAt: item.snippet.publishedAt,
+          };
+
+          if (item.id === liveId) {
+            aoVivo = videoObj;
+          } else if (ultimosVideos.length < 5) {
+            ultimosVideos.push(videoObj);
+          }
+        });
+      }
     }
 
     // 4. Buscar playlists do canal

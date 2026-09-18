@@ -183,17 +183,17 @@ export default function VideoaulasCanalDetail() {
 
       {/* Video Modal */}
       {playingVideo && (
-        <div className="fixed inset-0 z-[100] flex flex-col bg-black/95 backdrop-blur-xl animate-in fade-in duration-200 overflow-y-auto pb-safe">
-          <div className="flex items-center justify-end p-4 pt-safe shrink-0">
+        <div className="fixed inset-0 z-[100] flex flex-col bg-[#0f0f0f] animate-in fade-in duration-200 overflow-y-auto pb-safe">
+          <div className="fixed top-2 right-2 sm:top-4 sm:right-4 z-[110] pt-safe pr-safe">
             <button
               onClick={() => setPlayingVideo(null)}
-              className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
+              className="p-2 bg-black/50 hover:bg-black/80 rounded-full text-white transition-colors border border-white/20 backdrop-blur-md shadow-lg"
             >
               <X className="w-6 h-6" />
             </button>
           </div>
-          <div className="w-full max-w-5xl mx-auto flex flex-col gap-4">
-            <div className="w-full aspect-video bg-black shadow-2xl border-y sm:border border-white/10 sm:rounded-xl overflow-hidden shrink-0">
+          <div className="w-full max-w-5xl mx-auto flex flex-col">
+            <div className="w-full aspect-video bg-black shadow-2xl sm:rounded-b-xl overflow-hidden shrink-0 sticky top-0 z-[105]">
               <iframe
                 width="100%"
                 height="100%"
@@ -205,12 +205,22 @@ export default function VideoaulasCanalDetail() {
               ></iframe>
             </div>
             
-            <div className="px-4 pb-12 w-full flex-1">
-              <p className="font-sans text-white font-bold text-lg sm:text-xl leading-tight mb-2">
+            <div className="px-4 pt-5 pb-12 w-full flex-1">
+              <p className="font-sans text-white font-bold text-lg sm:text-xl leading-tight mb-3">
                 {playingVideo.title}
               </p>
+              
+              {playingVideo.channelTitle && (
+                <div className="flex items-center gap-3 mb-4">
+                   <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white font-bold text-sm border border-white/20 shrink-0">
+                     {playingVideo.channelTitle.charAt(0)}
+                   </div>
+                   <span className="font-sans text-white/95 font-semibold text-[15px]">{playingVideo.channelTitle}</span>
+                </div>
+              )}
+
               {playingVideo.description && (
-                <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                <div className="bg-white/5 rounded-xl p-4 border border-white/10 mt-2">
                   <div className="flex items-center gap-2 text-white/60 mb-2">
                     <Info className="w-4 h-4" />
                     <span className="font-sans text-xs uppercase tracking-wider font-semibold">Descrição do Vídeo</span>
