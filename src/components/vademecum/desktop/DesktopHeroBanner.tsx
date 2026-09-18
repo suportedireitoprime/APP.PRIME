@@ -65,7 +65,7 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
           </div>
           <button 
             onClick={() => navigate('/aprender')} 
-            className="relative flex items-center justify-center gap-2 font-display text-white text-[13px] font-bold uppercase tracking-widest py-2.5 w-full rounded-xl bg-red-900/80 hover:bg-red-950/90 transition-all border border-red-700/50 overflow-hidden group shadow-[0_8px_30px_rgba(153,27,27,0.3)]"
+            className="relative flex items-center justify-center gap-2 font-display text-white text-[13px] font-bold uppercase tracking-widest py-2.5 w-[85%] mx-auto rounded-xl bg-red-900/80 hover:bg-red-950/90 transition-all border border-red-700/50 overflow-hidden group shadow-[0_8px_30px_rgba(153,27,27,0.3)]"
           >
             <span className="relative z-10">Acessar</span>
             <ChevronRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform relative z-10" />

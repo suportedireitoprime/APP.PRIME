@@ -19,6 +19,22 @@ export const AprenderDeckStacked = memo(({ items, onItemClick }: AprenderDeckSta
     }
   }, [items]);
 
+  // Auto-play interval
+  useEffect(() => {
+    if (isHovered || !cards || cards.length === 0) return;
+    
+    const interval = setInterval(() => {
+      setCards((prev) => {
+        const newCards = [...prev];
+        const first = newCards.shift();
+        if (first) newCards.push(first);
+        return newCards;
+      });
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [isHovered, cards?.length]);
+
   const handleCardClick = (item: AprenderItem, index: number, e: React.MouseEvent) => {
     e.stopPropagation();
     if (index === 0) {
@@ -42,20 +58,20 @@ export const AprenderDeckStacked = memo(({ items, onItemClick }: AprenderDeckSta
    */
   const getCardTransform = (index: number) => {
     if (index === 0) {
-      return { x: 0, y: 0, rotate: 0, scale: 1, zIndex: 30, opacity: 1 };
+      return { x: 0, y: 0, rotate: 0, scale: 1.1, zIndex: 30, opacity: 1 };
     }
 
     // Alterna: Ímpares vão para a DIREITA, Pares vão para a ESQUERDA
     const isRight = index % 2 === 1;
-    const step = Math.ceil(index / 2); // 1 para index 1 e 2; 2 para index 3 e 4
+    const step = Math.ceil(index / 2); // 1 para index 1 e 2; 2 para index 3 e 4; 3 para index 5 e 6
 
     const spreadFactor = isHovered ? 1.25 : 1.0;
-    const baseOffset = step === 1 ? 34 : 62;
+    const baseOffset = step === 1 ? 34 : step === 2 ? 62 : 86;
     const x = (isRight ? baseOffset : -baseOffset) * spreadFactor;
-    const rotate = (isRight ? (step === 1 ? 5 : 9) : (step === 1 ? -5 : -9)) * (isHovered ? 1.2 : 1.0);
-    const scale = Math.max(0.85, 1 - step * 0.07);
+    const rotate = (isRight ? (step === 1 ? 5 : step === 2 ? 9 : 12) : (step === 1 ? -5 : step === 2 ? -9 : -12)) * (isHovered ? 1.2 : 1.0);
+    const scale = Math.max(0.75, 1 - step * 0.08);
     const zIndex = 30 - index;
-    const opacity = Math.max(0.65, 1 - step * 0.16);
+    const opacity = Math.max(0.4, 1 - step * 0.2);
 
     return { x, y: step * -2, rotate, scale, zIndex, opacity };
   };
@@ -67,7 +83,7 @@ export const AprenderDeckStacked = memo(({ items, onItemClick }: AprenderDeckSta
       onMouseLeave={() => setIsHovered(false)}
     >
       <AnimatePresence>
-        {cards.slice(0, 5).reverse().map((item, reverseIdx, arr) => {
+        {cards.slice(0, 7).reverse().map((item, reverseIdx, arr) => {
           const i = arr.length - 1 - reverseIdx;
           const isFront = i === 0;
           const transform = getCardTransform(i);
