@@ -205,7 +205,5 @@
     "vite-plugin-compression": "^0.5.1",
     "vitest": "^3.2.4"
   },
-  "resolutions": {
-    "sql.js": "1.10.1"
-  }
+  "packageManager": "pnpm@9.15.4"
 }

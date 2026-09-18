@@ -1,17 +1,18 @@
 import { useState, useEffect, useRef, useCallback, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Scale, ChevronRight, ChevronLeft, Calendar, FileText, ExternalLink, Loader2 } from 'lucide-react';
+import { Scale, ChevronRight, ChevronLeft, Calendar, FileText } from 'lucide-react';
 import { getResenhaOfflineOrCache, prefetchResenha, getResenhaCache, type ResenhaItem } from '@/services/atualizacaoService';
 import LeiOrdinariaDetail from '@/components/vademecum/artigo/LeiOrdinariaDetail';
 import type { LeiOrdinaria } from '@/services/legislacaoService';
+import brasaoImg from '@/assets/brasao-republica.webp';
 
 const TIPO_BADGES: Record<string, string> = {
-  'Lei': 'bg-amber-500/15 text-amber-300 border-amber-500/30',
-  'Lei Ordinária': 'bg-amber-500/15 text-amber-300 border-amber-500/30',
-  'Lei Complementar': 'bg-violet-500/15 text-violet-300 border-violet-500/30',
-  'Decreto': 'bg-sky-500/15 text-sky-300 border-sky-500/30',
-  'Medida Provisória': 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
-  'Outro': 'bg-zinc-700/30 text-zinc-300 border-zinc-600/30',
+  'Lei': 'bg-amber-500/10 text-amber-300 border-amber-500/25',
+  'Lei Ordinária': 'bg-amber-500/10 text-amber-300 border-amber-500/25',
+  'Lei Complementar': 'bg-violet-500/10 text-violet-300 border-violet-500/25',
+  'Decreto': 'bg-sky-500/10 text-sky-300 border-sky-500/25',
+  'Medida Provisória': 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25',
+  'Outro': 'bg-zinc-700/20 text-zinc-300 border-zinc-600/25',
 };
 
 function cleanText(t: string | null): string | null {
@@ -103,118 +104,108 @@ export const DesktopRadarLeisCarousel = memo(() => {
   const scroll = (direction: 'left' | 'right') => {
     const el = scrollerRef.current;
     if (!el) return;
-    const amount = direction === 'left' ? -420 : 420;
+    const amount = direction === 'left' ? -380 : 380;
     el.scrollBy({ left: amount, behavior: 'smooth' });
   };
 
-  // Data em destaque
-  const latestDateText = items.length > 0 && items[0].data_dou
-    ? formatDate(items[0].data_dou)
-    : new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-
   return (
-    <section className="relative z-20 w-full rounded-3xl overflow-hidden shadow-2xl bg-[#121316]/95 border border-white/10 p-6 backdrop-blur-xl">
-      {/* Background sutil grafite/zinc com gradiente premium */}
-      <div className="absolute inset-0 bg-gradient-to-r from-white/[0.02] via-transparent to-white/[0.02] pointer-events-none" />
-      <div 
-        className="absolute inset-0 opacity-15 pointer-events-none" 
-        style={{
-          backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.25) 1px, transparent 1px)',
-          backgroundSize: '24px 24px'
-        }} 
-      />
+    <section className="relative z-20 w-full rounded-2xl overflow-hidden bg-transparent border border-white/10 p-4 sm:p-5 backdrop-blur-md">
+      {/* Background sutil vazado sem fundo cinza */}
+      <div className="absolute inset-0 bg-gradient-to-r from-white/[0.015] via-transparent to-white/[0.015] pointer-events-none" />
 
       {/* HEADER DO RADAR DE LEIS */}
-      <div className="relative z-10 flex items-center justify-between gap-4 mb-5 pb-4 border-b border-white/5">
+      <div className="relative z-10 flex items-center justify-between gap-4 mb-3.5 pb-3 border-b border-white/5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-white/[0.06] border border-white/10 flex items-center justify-center shadow-inner text-white">
-            <Scale className="w-5 h-5 text-amber-400" />
+          <div className="w-9 h-9 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center shadow-inner text-white">
+            <Scale className="w-4 h-4 text-amber-400" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-display text-white text-[17px] font-bold uppercase tracking-widest flex items-center gap-2">
+              <h3 className="font-display text-white text-[16px] font-bold uppercase tracking-widest flex items-center gap-2">
                 RADAR DE LEIS
               </h3>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold font-body bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9.5px] font-bold font-body bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 DOU AO VIVO
               </span>
             </div>
-            <p className="font-body text-zinc-400 text-[12px] mt-0.5">
+            <p className="font-body text-zinc-400 text-[11.5px] mt-0.5">
               Últimas publicações normativas e atos do Diário Oficial da União
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           {/* Controles de navegação por seta */}
-          <div className="flex items-center gap-1 mr-2">
+          <div className="flex items-center gap-1 mr-1">
             <button
               onClick={() => scroll('left')}
-              className="w-8 h-8 rounded-full bg-white/[0.05] hover:bg-white/[0.12] border border-white/10 flex items-center justify-center text-zinc-300 hover:text-white transition-colors"
+              className="w-7 h-7 rounded-full bg-white/[0.05] hover:bg-white/[0.12] border border-white/10 flex items-center justify-center text-zinc-300 hover:text-white transition-colors"
               title="Anterior"
               aria-label="Rolar para a esquerda"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => scroll('right')}
-              className="w-8 h-8 rounded-full bg-white/[0.05] hover:bg-white/[0.12] border border-white/10 flex items-center justify-center text-zinc-300 hover:text-white transition-colors"
+              className="w-7 h-7 rounded-full bg-white/[0.05] hover:bg-white/[0.12] border border-white/10 flex items-center justify-center text-zinc-300 hover:text-white transition-colors"
               title="Próximo"
               aria-label="Rolar para a direita"
             >
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
           <button
             type="button"
             onClick={() => navigate('/radar-360')}
-            className="group inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/[0.07] hover:bg-white/[0.15] active:scale-95 border border-white/15 hover:border-white/30 text-[12.5px] font-semibold text-white transition-all shadow-md"
+            className="group inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] active:scale-95 border border-white/10 hover:border-white/20 text-[11.5px] font-semibold text-white transition-all shadow-sm"
           >
             <span>Ver todas</span>
-            <ChevronRight className="w-4 h-4 text-zinc-400 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
+            <ChevronRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>
       </div>
 
-      {/* LISTA / CARROSSEL DE LEIS (CARDS CINZAS) */}
+      {/* LISTA / CARROSSEL DE LEIS (CARDS VAZADOS E COMPACTOS COM BRASÃO) */}
       <div
         ref={scrollerRef}
-        className="relative z-10 flex gap-4 overflow-x-auto pb-2 pt-1 scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        className="relative z-10 flex gap-3.5 overflow-x-auto pb-1 pt-0.5 scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
         {loading ? (
-          /* Skeletons cinzas */
+          /* Skeletons vazados */
           Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="w-[330px] h-[195px] shrink-0 rounded-2xl bg-zinc-800/50 border border-white/5 p-4 flex flex-col justify-between animate-pulse"
+              className="w-[290px] h-[155px] shrink-0 rounded-2xl bg-transparent border border-white/10 p-3.5 flex flex-col justify-between animate-pulse"
             >
               <div className="flex justify-between items-center">
-                <div className="h-5 w-24 bg-white/10 rounded-full" />
-                <div className="h-4 w-16 bg-white/10 rounded-md" />
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-white/10" />
+                  <div className="h-4 w-16 bg-white/10 rounded-full" />
+                </div>
+                <div className="h-3 w-12 bg-white/10 rounded" />
               </div>
-              <div className="space-y-2 my-auto">
-                <div className="h-5 w-3/4 bg-white/10 rounded" />
+              <div className="space-y-1.5 my-auto">
+                <div className="h-4 w-3/4 bg-white/10 rounded" />
                 <div className="h-3 w-full bg-white/10 rounded" />
-                <div className="h-3 w-5/6 bg-white/10 rounded" />
               </div>
-              <div className="h-8 w-full bg-white/10 rounded-xl" />
+              <div className="h-6 w-full bg-white/10 rounded-lg" />
             </div>
           ))
         ) : items.length === 0 ? (
-          <div className="w-full py-10 flex flex-col items-center justify-center text-center">
-            <Scale className="w-8 h-8 text-zinc-500 mb-2" />
-            <p className="text-zinc-400 font-body text-sm">Nenhum ato legislativo encontrado no momento.</p>
+          <div className="w-full py-8 flex flex-col items-center justify-center text-center">
+            <Scale className="w-7 h-7 text-zinc-500 mb-1.5" />
+            <p className="text-zinc-400 font-body text-xs">Nenhum ato legislativo encontrado no momento.</p>
             <button
               onClick={() => navigate('/radar-360')}
-              className="mt-3 text-xs text-amber-400 hover:underline font-semibold"
+              className="mt-2 text-xs text-amber-400 hover:underline font-semibold"
             >
               Abrir Radar 360 Completo
             </button>
           </div>
         ) : (
-          items.slice(0, 15).map((item) => {
+          items.slice(0, 20).map((item) => {
             const badgeClass = TIPO_BADGES[item.tipo_ato] || TIPO_BADGES['Outro'];
             const dateFormatted = formatDate(item.data_dou || item.data_publicacao);
 
@@ -222,15 +213,18 @@ export const DesktopRadarLeisCarousel = memo(() => {
               <div
                 key={item.id}
                 onClick={() => handleOpenDetail(item)}
-                className="group snap-start w-[330px] h-[195px] shrink-0 rounded-2xl bg-zinc-800/80 hover:bg-zinc-800/95 border border-white/10 hover:border-white/25 p-4 flex flex-col justify-between transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-0.5 cursor-pointer"
+                className="group snap-start w-[290px] h-[155px] shrink-0 rounded-2xl bg-transparent hover:bg-white/[0.04] border border-white/15 hover:border-white/30 p-3.5 flex flex-col justify-between transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-0.5 cursor-pointer backdrop-blur-sm"
               >
-                {/* TOPO: Tipo de Ato + Data */}
+                {/* TOPO: Brasão + Badge de Tipo + Data */}
                 <div className="flex items-center justify-between gap-2">
-                  <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${badgeClass}`}>
-                    {item.tipo_ato}
-                  </span>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <img src={brasaoImg} alt="Brasão da República" className="w-6 h-6 shrink-0 object-contain drop-shadow" />
+                    <span className={`px-2 py-0.5 rounded-full text-[10.5px] font-semibold border truncate ${badgeClass}`}>
+                      {item.tipo_ato}
+                    </span>
+                  </div>
                   {dateFormatted && (
-                    <span className="flex items-center gap-1 text-[11.5px] font-body text-zinc-400">
+                    <span className="flex items-center gap-1 text-[11px] font-body text-zinc-400 shrink-0">
                       <Calendar className="w-3 h-3 text-zinc-500" />
                       {dateFormatted}
                     </span>
@@ -238,21 +232,21 @@ export const DesktopRadarLeisCarousel = memo(() => {
                 </div>
 
                 {/* CENTRO: Título / Número da Lei + Ementa Prévia */}
-                <div className="my-auto py-1">
-                  <h4 className="font-display font-bold text-[14.5px] text-white group-hover:text-amber-300 transition-colors line-clamp-1 leading-snug">
+                <div className="my-auto py-0.5">
+                  <h4 className="font-display font-bold text-[13.5px] text-white group-hover:text-amber-300 transition-colors line-clamp-1 leading-snug">
                     {item.numero_ato}
                   </h4>
-                  <p className="font-body text-[12px] text-zinc-300/90 line-clamp-2 mt-1 leading-relaxed">
+                  <p className="font-body text-[11.5px] text-zinc-400 line-clamp-2 mt-0.5 leading-snug">
                     {item.ementa || 'Sem ementa disponível.'}
                   </p>
                 </div>
 
-                {/* RODAPÉ: Botão de Ver Lei */}
-                <div className="pt-2 border-t border-white/5">
-                  <div className="w-full py-1.5 px-3 rounded-xl bg-white/[0.08] group-hover:bg-white/[0.14] border border-white/10 group-hover:border-white/25 flex items-center justify-center gap-1.5 text-[12px] font-semibold text-white transition-all">
-                    <FileText className="w-3.5 h-3.5 text-zinc-300 group-hover:text-amber-300 transition-colors" />
+                {/* RODAPÉ: Botão Vazado de Ver Lei */}
+                <div className="pt-1.5 border-t border-white/5">
+                  <div className="w-full py-1 px-2.5 rounded-lg bg-white/[0.03] group-hover:bg-white/[0.1] border border-white/10 group-hover:border-white/20 flex items-center justify-center gap-1.5 text-[11px] font-semibold text-zinc-300 group-hover:text-white transition-all">
+                    <FileText className="w-3 h-3 text-zinc-400 group-hover:text-amber-300 transition-colors" />
                     <span>Ver lei completa</span>
-                    <ChevronRight className="w-3.5 h-3.5 text-zinc-400 group-hover:translate-x-0.5 transition-transform" />
+                    <ChevronRight className="w-3 h-3 text-zinc-500 group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </div>
               </div>
@@ -264,8 +258,8 @@ export const DesktopRadarLeisCarousel = memo(() => {
       {/* MODAL DETALHE DA LEI */}
       {selectedLei && (
         <LeiOrdinariaDetail
-          item={selectedLei}
-          onClose={() => setSelectedLei(null)}
+          lei={selectedLei}
+          onBack={() => setSelectedLei(null)}
         />
       )}
     </section>

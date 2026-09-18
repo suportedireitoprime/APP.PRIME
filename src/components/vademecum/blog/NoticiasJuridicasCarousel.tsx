@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
-import { Clock, ArrowUpRight, Newspaper, ChevronRight } from 'lucide-react';
+import { Clock, ArrowUpRight, Newspaper, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -98,6 +98,13 @@ export default function NoticiasJuridicasCarousel({ titleClassName = 'px-5' }: P
     window.setTimeout(() => { userInteractingRef.current = false; }, 4000);
   };
 
+  const scroll = (direction: 'left' | 'right') => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+    const amount = direction === 'left' ? -340 : 340;
+    scroller.scrollBy({ left: amount, behavior: 'smooth' });
+  };
+
   if (items.length === 0) return null;
 
   return (
@@ -113,14 +120,34 @@ export default function NoticiasJuridicasCarousel({ titleClassName = 'px-5' }: P
               notícias do mundo jurídico em tempo real
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => navigate('/noticias')}
-            className="shrink-0 mt-0.5 inline-flex items-center gap-0.5 text-[12.5px] font-semibold text-primary active:opacity-70"
-          >
-            Ver mais
-            <ChevronRight className="w-3.5 h-3.5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 mr-1">
+              <button
+                onClick={() => scroll('left')}
+                className="w-7 h-7 rounded-full bg-white/[0.05] hover:bg-white/[0.12] border border-white/10 flex items-center justify-center text-zinc-300 hover:text-white transition-colors"
+                title="Anterior"
+                aria-label="Rolar notícias para a esquerda"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => scroll('right')}
+                className="w-7 h-7 rounded-full bg-white/[0.05] hover:bg-white/[0.12] border border-white/10 flex items-center justify-center text-zinc-300 hover:text-white transition-colors"
+                title="Próximo"
+                aria-label="Rolar notícias para a direita"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => navigate('/noticias')}
+              className="shrink-0 mt-0.5 inline-flex items-center gap-0.5 text-[12.5px] font-semibold text-primary active:opacity-70 hover:underline"
+            >
+              Ver mais
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -129,7 +156,7 @@ export default function NoticiasJuridicasCarousel({ titleClassName = 'px-5' }: P
         onScroll={onScroll}
         onPointerDown={pauseAutoplay}
         onTouchStart={pauseAutoplay}
-        className="flex gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-1 px-[7.5%] md:px-[4%] lg:px-[3%] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        className="flex gap-3.5 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-1 px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
         {items.map((n, i) => {
           const isActive = i === activeIndex;
@@ -142,7 +169,7 @@ export default function NoticiasJuridicasCarousel({ titleClassName = 'px-5' }: P
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: Math.min(i * 0.04, 0.2) }}
-              className="snap-center shrink-0 w-[85%] md:w-[46%] lg:w-[31%] active:scale-[0.99] text-left"
+              className="snap-start shrink-0 w-[270px] sm:w-[295px] lg:w-[315px] active:scale-[0.99] text-left"
             >
               <div
                 className={`relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 bg-card ${

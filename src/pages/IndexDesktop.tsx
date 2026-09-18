@@ -25,7 +25,6 @@ import AtualizacaoTab from '@/components/vademecum/outros/AtualizacaoTab';
 import DesktopEstudosGrid from '@/components/desktop/DesktopEstudosGrid';
 import NoticiasJuridicasCarousel from '@/components/vademecum/blog/NoticiasJuridicasCarousel';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import HomeAprenderCarousel from '@/components/vademecum/home/aprender/HomeAprenderCarousel';
 import HomeTresPoderes from '@/components/vademecum/home/sections/HomeTresPoderes';
 import HomeApresentacoesTimeline from '@/components/vademecum/home/sections/HomeApresentacoesTimeline';
 import NotificationsSheet, { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
@@ -155,11 +154,8 @@ const IndexDesktop = () => {
                       <DesktopRadarLeisCarousel />
                     </div>
 
-                    <div className="relative z-30 mb-8 mt-6">
-                      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start w-full max-w-[1600px] mx-auto">
-                        <NoticiasJuridicasCarousel />
-                        <HomeAprenderCarousel />
-                      </div>
+                    <div className="relative z-30 mb-8 mt-6 max-w-[1600px] mx-auto">
+                      <NoticiasJuridicasCarousel />
                     </div>
 
                     <div className="mb-10">
