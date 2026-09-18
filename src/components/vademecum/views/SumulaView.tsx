@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { ArrowLeft, BadgeCheck, Ban, ChevronRight, Gavel, Loader2, Scale, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { SUMULA_TRIBUNAIS, type Sumula } from '@/services/sumulasService';
@@ -39,6 +40,12 @@ const SumulaView: React.FC<SumulaViewProps> = ({
       String(s.numero).includes(q)
     );
   }, [sumulas, searchSumulas]);
+
+  const listVirtualizer = useWindowVirtualizer({
+    count: filteredSumulas.length,
+    estimateSize: () => 90,
+    overscan: 5,
+  });
 
   const highlightText = (text: string) => text;
 
@@ -85,48 +92,65 @@ const SumulaView: React.FC<SumulaViewProps> = ({
               <p className="text-muted-foreground text-sm">Carregando jurisprudência...</p>
             </div>
           ) : (
-            <div className="space-y-2">
-              {filteredSumulas.map((sumula, i) => (
-                <motion.button
-                  key={sumula.id}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: Math.min(i * 0.01, 0.5) }}
-                  onClick={() => setOpenSumula(sumula)}
-                  className="w-full text-left rounded-2xl bg-card hover:bg-secondary/60 transition-all group flex overflow-hidden min-h-[82px]"
-                >
+            <div className="relative w-full" style={{ height: `${listVirtualizer.getTotalSize()}px` }}>
+              {listVirtualizer.getVirtualItems().map((virtualRow) => {
+                const sumula = filteredSumulas[virtualRow.index];
+                const i = virtualRow.index;
+                return (
                   <div
-                    className="w-1.5 rounded-l-2xl shrink-0"
-                    style={{ backgroundColor: sumula.situacao === 'cancelada' ? '#c2274a' : (tribunalInfo?.iconColor || 'hsl(var(--primary))') }}
-                  />
-                  <div className="flex items-center gap-3 p-4 flex-1 min-w-0">
-                    <div className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
-                      <Scale className="w-4 h-4 text-primary-light" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <h4 className="font-display text-[15px] font-bold text-primary-light">
-                          Súmula {selectedTribunal === 'STF_VINCULANTE' ? 'Vinculante ' : ''}{sumula.numero}
-                        </h4>
-                        {sumula.situacao === 'cancelada' && (
-                          <span className="text-[10px] bg-destructive/15 text-destructive px-2 py-0.5 rounded-full font-semibold flex items-center gap-1">
-                            <Ban className="w-3 h-3" /> Cancelada
-                          </span>
-                        )}
-                        {sumula.situacao === 'vigente' && (
-                          <span className="text-[10px] bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full font-semibold flex items-center gap-1">
-                            <BadgeCheck className="w-3 h-3" /> Vigente
-                          </span>
-                        )}
+                    key={sumula.id}
+                    data-index={virtualRow.index}
+                    ref={listVirtualizer.measureElement}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      transform: `translateY(${virtualRow.start}px)`,
+                    }}
+                    className="pb-2"
+                  >
+                    <motion.button
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: Math.min(i * 0.01, 0.5) }}
+                      onClick={() => setOpenSumula(sumula)}
+                      className="w-full text-left rounded-2xl bg-card hover:bg-secondary/60 transition-all group flex overflow-hidden min-h-[82px]"
+                    >
+                      <div
+                        className="w-1.5 rounded-l-2xl shrink-0"
+                        style={{ backgroundColor: sumula.situacao === 'cancelada' ? '#c2274a' : (tribunalInfo?.iconColor || 'hsl(var(--primary))') }}
+                      />
+                      <div className="flex items-center gap-3 p-4 flex-1 min-w-0">
+                        <div className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
+                          <Scale className="w-4 h-4 text-primary-light" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <h4 className="font-display text-[15px] font-bold text-primary-light">
+                              Súmula {selectedTribunal === 'STF_VINCULANTE' ? 'Vinculante ' : ''}{sumula.numero}
+                            </h4>
+                            {sumula.situacao === 'cancelada' && (
+                              <span className="text-[10px] bg-destructive/15 text-destructive px-2 py-0.5 rounded-full font-semibold flex items-center gap-1">
+                                <Ban className="w-3 h-3" /> Cancelada
+                              </span>
+                            )}
+                            {sumula.situacao === 'vigente' && (
+                              <span className="text-[10px] bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full font-semibold flex items-center gap-1">
+                                <BadgeCheck className="w-3 h-3" /> Vigente
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[13px] leading-relaxed line-clamp-2 text-foreground/80">
+                            {searchSumulas ? highlightText(sumula.enunciado) : sumula.enunciado}
+                          </p>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0 mt-3 transition-colors" />
                       </div>
-                      <p className="text-[13px] leading-relaxed line-clamp-2 text-foreground/80">
-                        {searchSumulas ? highlightText(sumula.enunciado) : sumula.enunciado}
-                      </p>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0 mt-3 transition-colors" />
+                    </motion.button>
                   </div>
-                </motion.button>
-              ))}
+                );
+              })}
               {filteredSumulas.length === 0 && !loadingSumulas && (
                 <p className="text-center text-muted-foreground py-8">Nenhuma jurisprudência encontrada.</p>
               )}

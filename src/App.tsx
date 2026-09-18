@@ -59,11 +59,11 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { RecordingProvider } from "@/contexts/RecordingContext";
 import { UniversalMediaPlayerProvider } from "@/contexts/UniversalMediaPlayerProvider";
-import GlobalLeisCantadasMiniPlayer from "@/components/leis-cantadas/GlobalLeisCantadasMiniPlayer";
-import GlobalAudioaulasMiniPlayer from "@/components/audioaulas/GlobalAudioaulasMiniPlayer";
-import { GlobalResumoMiniPlayer } from "./components/biblioteca/GlobalResumoMiniPlayer.tsx";
-import ResumoLivroAudioSheet from "./components/biblioteca/ResumoLivroAudioSheet.tsx";
-import GlobalVideoaulaMiniPlayer from "@/components/videoaulas/GlobalVideoaulaMiniPlayer";
+const GlobalLeisCantadasMiniPlayer = lazy(() => import("@/components/leis-cantadas/GlobalLeisCantadasMiniPlayer"));
+const GlobalAudioaulasMiniPlayer = lazy(() => import("@/components/audioaulas/GlobalAudioaulasMiniPlayer"));
+const GlobalResumoMiniPlayer = lazy(() => import("./components/biblioteca/GlobalResumoMiniPlayer.tsx").then(m => ({ default: m.GlobalResumoMiniPlayer })));
+const ResumoLivroAudioSheet = lazy(() => import("./components/biblioteca/ResumoLivroAudioSheet.tsx"));
+const GlobalVideoaulaMiniPlayer = lazy(() => import("@/components/videoaulas/GlobalVideoaulaMiniPlayer"));
 const GeofencePresenceBanner = lazy(() => import("@/components/GeofencePresenceBanner"));
 const ReminderInAppBanner = lazy(() => import("@/components/ReminderInAppBanner"));
 const InAppPushPopup = lazy(() => import("@/components/ui/InAppPushPopup"));
@@ -151,13 +151,13 @@ function AppWarmupInitializer() {
 }
 
 const LazyMediaPlayers = () => (
-  <>
+  <Suspense fallback={null}>
     <GlobalLeisCantadasMiniPlayer />
     <GlobalAudioaulasMiniPlayer />
     <GlobalResumoMiniPlayer />
     <ResumoLivroAudioSheet />
     <GlobalVideoaulaMiniPlayer />
-  </>
+  </Suspense>
 );
 
 import { MotionConfig } from "framer-motion";

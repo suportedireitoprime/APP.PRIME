@@ -1,4 +1,4 @@
-import { registerPlugin } from '@capacitor/core';
+import { Capacitor, registerPlugin } from '@capacitor/core';
 import type { PluginListenerHandle } from '@capacitor/core';
 
 export interface NativeBookItem {
@@ -60,4 +60,21 @@ export interface NativeHomePlugin {
   ): Promise<PluginListenerHandle>;
 }
 
-export const NativeHome = registerPlugin<NativeHomePlugin>('NativeHome');
+const RawNativeHome = registerPlugin<NativeHomePlugin>('NativeHome');
+
+export const NativeHome: NativeHomePlugin = {
+  async showHome(options) {
+    if (!Capacitor.isPluginAvailable('NativeHome')) return { success: false };
+    return RawNativeHome.showHome(options);
+  },
+  async hideHome() {
+    if (!Capacitor.isPluginAvailable('NativeHome')) return { success: false };
+    return RawNativeHome.hideHome();
+  },
+  async addListener(eventName: string, listenerFunc: (...args: unknown[]) => void) {
+    if (!Capacitor.isPluginAvailable('NativeHome')) {
+      return { remove: async () => {} } as unknown as PluginListenerHandle & Promise<PluginListenerHandle>;
+    }
+    return RawNativeHome.addListener(eventName, listenerFunc);
+  }
+};

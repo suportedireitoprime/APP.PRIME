@@ -120,11 +120,14 @@ const IndexDesktop = () => {
           hoverTrailAmount={5}
         />
       </div>
-      <div className="relative z-10 flex flex-col h-full w-full min-h-0">
+      <div className="relative z-10 flex h-full w-full min-h-0">
         <DesktopOnboardingOverlay />
-        <DesktopTopHeader onAssistenteClick={() => setAssistenteOpen(true)} />
-        <div className="flex flex-1 min-h-0">
-          <DesktopSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+        
+        <DesktopSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+        
+        <div className="flex flex-col flex-1 min-w-0">
+          <DesktopTopHeader onAssistenteClick={() => setAssistenteOpen(true)} />
+          
           <div className="flex-1 min-w-0 overflow-y-auto">
             <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border">
               <div className="flex items-center gap-1 px-8 h-12">

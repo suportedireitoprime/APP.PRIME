@@ -7,7 +7,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { supabase } from '@/integrations/supabase/client';
 import { AuthAjudaSheet } from '@/components/auth/AuthAjudaSheet';
-import { AuthDecorations } from '@/components/auth/AuthDecorations';
 import { AuthDrawer, type AuthMode } from '@/components/auth/AuthDrawer';
 import { AuthDesktopHero } from '@/components/auth/AuthDesktopHero';
 import { AuthMobileHero } from '@/components/auth/AuthMobileHero';
@@ -174,8 +173,6 @@ const Auth = () => {
           onOpenAjuda={() => setAjudaOpen(true)}
         />
       )}
-
-      <AuthDecorations />
 
       {/* Botão de voltar */}
       <button

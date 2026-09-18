@@ -1,5 +1,6 @@
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@/components/ui/drawer';
 import { X } from 'lucide-react';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 type LegalKind = 'privacidade' | 'termos';
 
@@ -15,6 +16,7 @@ const TITLES: Record<LegalKind, string> = {
 };
 
 export function LegalSheet({ open, onOpenChange, kind }: Props) {
+  useBodyScrollLock(open, 'legal-sheet');
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="h-[92vh] bg-[#141414] border-white/10">

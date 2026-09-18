@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { ArrowLeft, Calendar, ChevronRight, Loader2, ScrollText, Scale, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ANOS_DECRETOS, type LeiOrdinaria } from '@/services/legislacaoService';
@@ -38,6 +39,12 @@ const DecretoView: React.FC<DecretoViewProps> = ({
       d.ementa.toLowerCase().includes(q)
     );
   }, [decretos, searchDecretos]);
+
+  const listVirtualizer = useWindowVirtualizer({
+    count: filteredDecretos.length,
+    estimateSize: () => 90,
+    overscan: 5,
+  });
 
   if (openDecreto) {
     return (
@@ -89,40 +96,57 @@ const DecretoView: React.FC<DecretoViewProps> = ({
               <p className="text-muted-foreground text-sm">Carregando decretos...</p>
             </div>
           ) : (
-            <div className="space-y-2">
-              {filteredDecretos.map((dec, i) => (
-                <motion.button
-                  key={dec.id}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.015 }}
-                  onClick={() => setOpenDecreto(dec)}
-                  className="w-full text-left rounded-2xl bg-card hover:bg-secondary/60 transition-all group flex overflow-hidden min-h-[82px]"
-                >
-                  <div className="w-1.5 bg-primary rounded-l-2xl shrink-0" />
-                  <div className="flex items-center gap-3 p-4 flex-1 min-w-0">
-                    <div className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
-                      <ScrollText className="w-4 h-4 text-primary-light" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <h4 className="font-display text-[15px] font-bold text-primary-light">
-                          {dec.numero_lei}
-                        </h4>
-                        {dec.data_publicacao && (
-                          <span className="text-muted-foreground text-[10px] bg-secondary px-2 py-0.5 rounded-full">
-                            {dec.data_publicacao}
-                          </span>
-                        )}
+            <div className="relative w-full" style={{ height: `${listVirtualizer.getTotalSize()}px` }}>
+              {listVirtualizer.getVirtualItems().map((virtualRow) => {
+                const dec = filteredDecretos[virtualRow.index];
+                const i = virtualRow.index;
+                return (
+                  <div
+                    key={dec.id}
+                    data-index={virtualRow.index}
+                    ref={listVirtualizer.measureElement}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      transform: `translateY(${virtualRow.start}px)`,
+                    }}
+                    className="pb-2"
+                  >
+                    <motion.button
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i < 10 ? i * 0.015 : 0 }}
+                      onClick={() => setOpenDecreto(dec)}
+                      className="w-full text-left rounded-2xl bg-card hover:bg-secondary/60 transition-all group flex overflow-hidden min-h-[82px]"
+                    >
+                      <div className="w-1.5 bg-primary rounded-l-2xl shrink-0" />
+                      <div className="flex items-center gap-3 p-4 flex-1 min-w-0">
+                        <div className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
+                          <ScrollText className="w-4 h-4 text-primary-light" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <h4 className="font-display text-[15px] font-bold text-primary-light">
+                              {dec.numero_lei}
+                            </h4>
+                            {dec.data_publicacao && (
+                              <span className="text-muted-foreground text-[10px] bg-secondary px-2 py-0.5 rounded-full">
+                                {dec.data_publicacao}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[13px] leading-relaxed line-clamp-2 text-foreground/80">
+                            {dec.ementa}
+                          </p>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0 mt-3 transition-colors" />
                       </div>
-                      <p className="text-[13px] leading-relaxed line-clamp-2 text-foreground/80">
-                        {dec.ementa}
-                      </p>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0 mt-3 transition-colors" />
+                    </motion.button>
                   </div>
-                </motion.button>
-              ))}
+                );
+              })}
               {filteredDecretos.length === 0 && (
                 <p className="text-center text-muted-foreground py-8">Nenhum decreto encontrado.</p>
               )}

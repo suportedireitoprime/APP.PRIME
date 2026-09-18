@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect, useCallback, useRef, useLayoutEffe
 import { useNavigate } from 'react-router-dom';
 import { Search, BookOpen, LayoutGrid, History, Mic, MicOff, Camera, X as XIcon, Heart, ListMusic, StickyNote, Radar, ArrowUp, ArrowLeft, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { useSubscription } from '@/hooks/useSubscription';
 import PremiumGate from '@/components/PremiumGate';
@@ -426,6 +427,12 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
 
   const leiAccent = getLeiColor(selectedLeiId, tipo);
 
+  const idxVirtualizer = useWindowVirtualizer({
+    count: capituloGroups.length,
+    estimateSize: () => 200,
+    overscan: 2,
+  });
+
   const overlayLabels: Record<string, { label: string; icon: typeof Heart; desc: string }> = {
     fav: { label: 'Favoritos', icon: Heart, desc: 'Aqui ficam os artigos que você marcou com o coração. Favoritar facilita o acesso rápido aos dispositivos que você mais consulta.' },
     playlist: { label: 'Playlist', icon: ListMusic, desc: 'Ouça as narrações dos artigos desta lei. Ideal para estudar enquanto faz outras atividades — basta gerar as narrações na tela de Narração.' },
@@ -616,28 +623,54 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                       </div>
                     );
                   }
-                  return capituloGroups.map((tGroup, ti) => (
-                    <div key={ti} className="space-y-3">
-                      {stripRe(tGroup.titulo) && !/^T[ÍI]TULO\s+[ÚU]NICO$/i.test(stripRe(tGroup.titulo)) && (
-                        <p className="text-primary text-[11px] font-bold uppercase tracking-wider">{stripRe(tGroup.titulo)}</p>
-                      )}
-                      {tGroup.capitulos.map((cap, ci) => {
-                        const displayCap = cap.capitulo === '__sem_capitulo__' ? null : stripRe(cap.capitulo);
+                  return (
+                    <div
+                      style={{
+                        height: `${idxVirtualizer.getTotalSize()}px`,
+                        width: '100%',
+                        position: 'relative',
+                      }}
+                    >
+                      {idxVirtualizer.getVirtualItems().map((virtualRow) => {
+                        const tGroup = capituloGroups[virtualRow.index];
                         return (
-                          <div key={ci} className="space-y-2">
-                            {displayCap && <p className="text-foreground/80 text-xs font-semibold px-0.5 line-clamp-2">{displayCap}</p>}
-                            <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-2">
-                              {cap.artigos.map(a => (
-                                <button key={a.id} onClick={() => openArtigoWithRecent(a)} className="aspect-square rounded-xl bg-secondary/70 hover:bg-primary hover:text-primary-foreground active:scale-95 transition-all text-foreground font-bold text-sm md:text-base flex items-center justify-center border border-border/40" title={`Art. ${a.numero}`}>
-                                  {formatNumero(a.numero)}
-                                </button>
-                              ))}
+                          <div
+                            key={virtualRow.key}
+                            data-index={virtualRow.index}
+                            ref={idxVirtualizer.measureElement}
+                            style={{
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              width: '100%',
+                              transform: `translateY(${virtualRow.start}px)`,
+                            }}
+                          >
+                            <div className="space-y-3 pb-5">
+                              {stripRe(tGroup.titulo) && !/^T[ÍI]TULO\s+[ÚU]NICO$/i.test(stripRe(tGroup.titulo)) && (
+                                <p className="text-primary text-[11px] font-bold uppercase tracking-wider">{stripRe(tGroup.titulo)}</p>
+                              )}
+                              {tGroup.capitulos.map((cap, ci) => {
+                                const displayCap = cap.capitulo === '__sem_capitulo__' ? null : stripRe(cap.capitulo);
+                                return (
+                                  <div key={ci} className="space-y-2">
+                                    {displayCap && <p className="text-foreground/80 text-xs font-semibold px-0.5 line-clamp-2">{displayCap}</p>}
+                                    <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-2">
+                                      {cap.artigos.map(a => (
+                                        <button key={a.id} onClick={() => openArtigoWithRecent(a)} className="aspect-square rounded-xl bg-secondary/70 hover:bg-primary hover:text-primary-foreground active:scale-95 transition-all text-foreground font-bold text-sm md:text-base flex items-center justify-center border border-border/40" title={`Art. ${a.numero}`}>
+                                          {formatNumero(a.numero)}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </div>
+                                );
+                              })}
                             </div>
                           </div>
                         );
                       })}
                     </div>
-                  ));
+                  );
                 })()}
               </div>
             ) : activeTab === 'rec' ? (

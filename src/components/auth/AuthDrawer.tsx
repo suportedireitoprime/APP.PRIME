@@ -1,5 +1,6 @@
 import React, { useState, useEffect, startTransition } from 'react';
 import { Capacitor } from '@capacitor/core';
+import { App } from '@capacitor/app';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -22,6 +23,7 @@ import { LegalSheet } from '@/components/auth/LegalSheet';
 import { track } from '@/lib/analyticsEvents';
 import { toastErroAuth } from './authUtils';
 import { SocialButtons } from './SocialButtons';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 export type AuthMode = 'login' | 'signup' | 'forgot' | null;
 
@@ -32,6 +34,8 @@ interface AuthDrawerProps {
 }
 
 export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }) => {
+  useBodyScrollLock(mode !== null, 'auth-drawer');
+  
   const {
     signIn,
     signUp,
@@ -72,6 +76,29 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
       import('@/components/onboarding/NotificacoesPermissaoStep').catch(() => {});
     }
   }, [mode]);
+
+  useEffect(() => {
+    // Reset de loading infinito caso o usuário retorne ao app/janela e a sessão ainda não esteja pronta
+    const resetLoaders = () => {
+      setGoogleLoading(false);
+      setAppleLoading(false);
+    };
+
+    window.addEventListener('focus', resetLoaders);
+    let appListener: { remove: () => void } | null = null;
+    if (Capacitor.isNativePlatform()) {
+      App.addListener('appStateChange', ({ isActive }) => {
+        if (isActive) resetLoaders();
+      }).then(l => appListener = l);
+    }
+
+    return () => {
+      window.removeEventListener('focus', resetLoaders);
+      if (appListener) {
+        appListener.remove();
+      }
+    };
+  }, []);
 
   const handleGoogle = async () => {
     setGoogleLoading(true);
@@ -140,8 +167,8 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
     const cleanEmail = email.trim().toLowerCase();
     const cleanDisplayName = displayName.trim();
 
-    if (mode === 'signup') {
-      toastErroAuth('Novos cadastros são permitidos exclusivamente via Google ou Apple.');
+    if (mode === 'signup' && (!cleanEmail || !password || !displayName)) {
+      toastErroAuth('Preencha e-mail, senha e seu nome.');
       return;
     }
 
@@ -175,14 +202,20 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
         const { error } = await signIn(cleanEmail, password);
         if (error) throw error;
         track('login_success', { method: 'email' });
-      } else {
-        toastErroAuth('Novos cadastros são permitidos exclusivamente via Google ou Apple.');
-        return;
+      } else if (mode === 'signup') {
+        const { error } = await signUp(cleanEmail, password, cleanDisplayName);
+        if (error) throw error;
+        track('signup_success', { method: 'email' });
       }
     } catch (err: unknown) {
       const errorMsg = (err as Error).message ?? 'unknown';
-      track(`${mode}_failed`, { erro: errorMsg });
-      toastErroAuth(errorMsg);
+      if (errorMsg.toLowerCase().includes('already registered')) {
+        toast.error('Essa conta já tem cadastro. Faça login.');
+        setMode('login');
+      } else {
+        track(`${mode}_failed`, { erro: errorMsg });
+        toastErroAuth(errorMsg);
+      }
     } finally {
       setSubmitting(false);
     }
@@ -249,15 +282,16 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                 {mode === 'forgot' && 'Não se preocupe, vamos recuperar.'}
               </p>
             </div>
-            {showEmailForm && mode !== 'forgot' && (
-              <button
-                onClick={() => setShowEmailForm(false)}
-                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-white/10"
-                aria-label="Voltar"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-            )}
+            <button
+              onClick={onClose}
+              className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-white/10"
+              aria-label="Fechar"
+            >
+              <ArrowLeft className="w-5 h-5 hidden" />
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
           </div>
 
           <AnimatePresence mode="wait">
@@ -278,20 +312,28 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                   mode="signup"
                 />
 
-                {/* Informação sobre cadastro exclusivo com Google e Apple */}
-                <div className="p-4 rounded-2xl bg-white/[0.04] border border-white/10 flex items-start gap-3 mt-4">
-                  <div className="w-8 h-8 rounded-xl bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
-                    <ShieldCheck className="w-4 h-4 text-primary" />
+                <div className="flex flex-col items-center text-center mt-6 pt-4 pb-2">
+                  <div className="relative h-[60px] mb-2">
+                    <picture>
+                      <source srcSet="/logo-prime.webp" type="image/webp" />
+                      <img
+                        src="/logo-prime.webp"
+                        alt="Direito Prime"
+                        loading="eager"
+                        decoding="async"
+                        className="w-auto h-[60px] object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]"
+                      />
+                    </picture>
                   </div>
-                  <div className="space-y-1 text-left">
-                    <p className="text-xs font-bold text-white">Cadastro Exclusivo via Google ou Apple</p>
-                    <p className="text-[11.5px] text-white/60 leading-relaxed font-body">
-                      Para sua segurança e prevenção de contas duplicadas, o cadastro de novas contas é realizado exclusivamente através do Google ou Apple.
-                    </p>
-                  </div>
+                  <h1 className="font-serif italic text-white text-[18px] sm:text-[20px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)]">
+                    Estudos Jurídicos
+                  </h1>
+                  <p className="font-body text-white/95 text-[9px] sm:text-[10px] font-bold tracking-[0.25em] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mt-1">
+                    USO PROFISSIONAL
+                  </p>
                 </div>
 
-                <p className="text-[11px] leading-relaxed font-body text-white/50 text-center px-2">
+                <p className="text-[11px] leading-relaxed font-body text-white/50 text-center px-2 mt-4">
                   Ao criar sua conta, você concorda com os{' '}
                   <button
                     type="button"
@@ -310,22 +352,6 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                   </button>
                   .
                 </p>
-
-                {/* Opção para usuários existentes que criaram conta com e-mail */}
-                <div className="pt-4 border-t border-white/10 text-center space-y-2">
-                  <p className="text-xs text-white/50">Já possui uma conta criada anteriormente com e-mail?</p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMode('login');
-                      setShowEmailForm(true);
-                    }}
-                    className="w-full py-3.5 px-4 rounded-2xl font-body font-semibold text-sm bg-white/5 border border-white/10 text-white flex items-center justify-center gap-2 hover:bg-white/10 active:scale-[0.99] transition-all cursor-pointer"
-                  >
-                    <Mail className="w-4 h-4 text-white/70" />
-                    Entrar com e-mail e senha
-                  </button>
-                </div>
               </motion.div>
             ) : !showEmailForm && mode !== 'forgot' ? (
               <motion.div
@@ -362,16 +388,7 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                   Entrar com e-mail e senha
                 </button>
 
-                <div className="pt-4 border-t border-white/10 text-center">
-                  <p className="text-xs text-white/50">Não possui uma conta?</p>
-                  <button
-                    type="button"
-                    onClick={() => setMode('signup')}
-                    className="mt-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
-                  >
-                    Cadastre-se com Google ou Apple
-                  </button>
-                </div>
+
               </motion.div>
             ) : (
               <motion.form
@@ -530,19 +547,7 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                       Esqueceu sua senha?
                     </button>
 
-                    <div className="pt-3 border-t border-white/10 text-center">
-                      <p className="text-xs text-white/50">Não possui uma conta?</p>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setMode('signup');
-                          setShowEmailForm(false);
-                        }}
-                        className="mt-1.5 text-sm font-semibold text-primary hover:text-primary/80 transition-colors cursor-pointer"
-                      >
-                        Cadastre-se com Google ou Apple
-                      </button>
-                    </div>
+
                   </div>
                 )}
 

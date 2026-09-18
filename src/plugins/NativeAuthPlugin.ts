@@ -2,6 +2,7 @@ import { registerPlugin, PluginListenerHandle, Capacitor } from '@capacitor/core
 
 export interface NativeAuthResponse {
   success: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   session?: string | Record<string, any>;
 }
 

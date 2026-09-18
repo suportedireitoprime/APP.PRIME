@@ -38,23 +38,29 @@ export const SocialButtons: React.FC<SocialButtonsProps> = ({
       <button
         onClick={onGoogle}
         disabled={googleLoading || appleLoading}
-        className="w-full flex items-center justify-center gap-3 h-14 bg-white text-zinc-900 rounded-2xl font-bold transition-all hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-md active:scale-[0.99]"
+        className={`relative w-full flex items-center justify-center gap-3 h-14 bg-white text-zinc-900 rounded-2xl font-bold transition-all hover:bg-gray-100 disabled:opacity-90 disabled:cursor-not-allowed shadow-md active:scale-[0.99] overflow-hidden`}
       >
-        {googleLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <GoogleIcon />}
-        <span className="text-sm font-semibold tracking-wide">
+        <GoogleIcon />
+        <span className="text-sm font-semibold tracking-wide relative z-10">
           {isSignup ? 'Cadastrar com Google' : 'Entrar com Google'}
         </span>
+        {googleLoading && (
+          <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-black/10 to-transparent skew-x-12" />
+        )}
       </button>
 
       <button
         onClick={onApple}
         disabled={appleLoading || googleLoading}
-        className="w-full flex items-center justify-center gap-3 h-14 bg-white text-zinc-900 rounded-2xl font-bold transition-all hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-md active:scale-[0.99]"
+        className={`relative w-full flex items-center justify-center gap-3 h-14 bg-white text-zinc-900 rounded-2xl font-bold transition-all hover:bg-gray-100 disabled:opacity-90 disabled:cursor-not-allowed shadow-md active:scale-[0.99] overflow-hidden`}
       >
-        {appleLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <AppleIcon />}
-        <span className="text-sm font-semibold tracking-wide">
+        <AppleIcon />
+        <span className="text-sm font-semibold tracking-wide relative z-10">
           {isSignup ? 'Cadastrar com Apple' : 'Entrar com Apple'}
         </span>
+        {appleLoading && (
+          <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-black/10 to-transparent skew-x-12" />
+        )}
       </button>
     </div>
   );

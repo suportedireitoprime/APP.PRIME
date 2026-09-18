@@ -49,6 +49,9 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
         className="absolute inset-0 w-full h-full object-cover object-center"
         width={1920}
         height={512}
+        loading="eager"
+        decoding="async"
+        fetchPriority="high"
       />
       <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-background/40" />
       <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />

@@ -1,4 +1,4 @@
-import { registerPlugin } from '@capacitor/core';
+import { Capacitor, registerPlugin } from '@capacitor/core';
 import type { PluginListenerHandle } from '@capacitor/core';
 
 export interface NativeFlashcardItem {
@@ -41,4 +41,27 @@ export interface NativeFlashcardsPlugin {
   ): Promise<PluginListenerHandle>;
 }
 
-export const NativeFlashcards = registerPlugin<NativeFlashcardsPlugin>('NativeFlashcardsPlugin');
+const RawNativeFlashcards = registerPlugin<NativeFlashcardsPlugin>('NativeFlashcardsPlugin');
+
+export const NativeFlashcards: NativeFlashcardsPlugin = {
+  async openHub(options) {
+    if (!Capacitor.isPluginAvailable('NativeFlashcardsPlugin')) return { success: false };
+    return RawNativeFlashcards.openHub(options);
+  },
+  async openSession(options) {
+    if (!Capacitor.isPluginAvailable('NativeFlashcardsPlugin')) return { success: false };
+    return RawNativeFlashcards.openSession(options);
+  },
+  async closeSession() {
+    if (!Capacitor.isPluginAvailable('NativeFlashcardsPlugin')) return { success: false };
+    return RawNativeFlashcards.closeSession();
+  },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  addListener: async (eventName: any, listenerFunc: any): Promise<PluginListenerHandle> => {
+    if (!Capacitor.isPluginAvailable('NativeFlashcardsPlugin')) {
+      return { remove: async () => {} } as unknown as PluginListenerHandle;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (RawNativeFlashcards as any).addListener(eventName, listenerFunc);
+  }
+};

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { ChevronDown, FileText, Heart, History, Loader2, Search } from "lucide-react";
 import ResumosBottomNav from "@/components/resumos/ResumosBottomNav";
 import ResumoJuridicoReaderSheet, { ResumoRow } from "@/components/resumos-juridicos/ResumoJuridicoReaderSheet";
@@ -34,6 +35,12 @@ export default function ResumosJuridicosLista({ modo }: { modo: "favoritos" | "r
  r.area.toLowerCase().includes(t)
  );
  }, [refs, q]);
+
+ const listVirtualizer = useWindowVirtualizer({
+ count: filtered.length,
+ estimateSize: () => 74,
+ overscan: 5,
+ });
 
  const abrir = async (ref: ResumoRef) => {
  // 1) Fast-path do IndexedDB: abertura instantânea (0ms)
@@ -123,14 +130,30 @@ export default function ResumosJuridicosLista({ modo }: { modo: "favoritos" | "r
  {modo === "favoritos" ? "Nenhum resumo favoritado." : "Nenhum resumo aberto ainda."}
  </div>
  ) : (
- filtered.map((r, i) => (
- <motion.button
+ <div className="relative w-full" style={{ height: `${listVirtualizer.getTotalSize()}px` }}>
+ {listVirtualizer.getVirtualItems().map((virtualRow) => {
+ const r = filtered[virtualRow.index];
+ const i = virtualRow.index;
+ return (
+ <div
  key={r.id}
+ data-index={virtualRow.index}
+ ref={listVirtualizer.measureElement}
+ style={{
+ position: 'absolute',
+ top: 0,
+ left: 0,
+ width: '100%',
+ transform: `translateY(${virtualRow.start}px)`,
+ }}
+ className="pb-2"
+ >
+ <motion.button
  initial={{ opacity: 0, y: 4 }}
  animate={{ opacity: 1, y: 0 }}
  transition={{ delay: Math.min(i * 0.01, 0.2) }}
  onClick={() => abrir(r)}
- className="flex items-center gap-3 p-4 rounded-xl bg-card border border-border hover:border-primary/40 transition-all text-left"
+ className="w-full flex items-center gap-3 p-4 rounded-xl bg-card border border-border hover:border-primary/40 transition-all text-left"
  >
  <FileText className="w-6 h-6 shrink-0" style={{ color: "#22D3EE" }} strokeWidth={1.7} />
  <div className="flex-1 min-w-0">
@@ -143,7 +166,10 @@ export default function ResumosJuridicosLista({ modo }: { modo: "favoritos" | "r
  </div>
  {loadingId === r.id && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />}
  </motion.button>
- ))
+ </div>
+ );
+ })}
+ </div>
  )}
  </div>
 

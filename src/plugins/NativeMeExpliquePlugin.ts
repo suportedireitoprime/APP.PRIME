@@ -1,4 +1,4 @@
-import { registerPlugin } from '@capacitor/core';
+import { Capacitor, registerPlugin } from '@capacitor/core';
 
 export interface NativeMeExpliquePluginInterface {
   verificarPermissoes(): Promise<{ camera: boolean; microfone: boolean }>;
@@ -6,7 +6,7 @@ export interface NativeMeExpliquePluginInterface {
   vibrarFeedback(options?: { tipo?: 'click' | 'heavy' }): Promise<void>;
 }
 
-export const NativeMeExpliquePlugin = registerPlugin<NativeMeExpliquePluginInterface>('NativeMeExpliquePlugin', {
+const RawNativeMeExpliquePlugin = registerPlugin<NativeMeExpliquePluginInterface>('NativeMeExpliquePlugin', {
   web: () => ({
     async verificarPermissoes() {
       return { camera: true, microfone: true };
@@ -19,3 +19,25 @@ export const NativeMeExpliquePlugin = registerPlugin<NativeMeExpliquePluginInter
     },
   }),
 });
+
+export const NativeMeExpliquePlugin: NativeMeExpliquePluginInterface = {
+  async verificarPermissoes() {
+    if (!Capacitor.isPluginAvailable('NativeMeExpliquePlugin')) {
+      return { camera: true, microfone: true };
+    }
+    return RawNativeMeExpliquePlugin.verificarPermissoes();
+  },
+  async alternarLanterna() {
+    if (!Capacitor.isPluginAvailable('NativeMeExpliquePlugin')) {
+      return { ligada: false };
+    }
+    return RawNativeMeExpliquePlugin.alternarLanterna();
+  },
+  async vibrarFeedback(options) {
+    if (!Capacitor.isPluginAvailable('NativeMeExpliquePlugin')) {
+      if ('vibrate' in navigator) navigator.vibrate(20);
+      return;
+    }
+    return RawNativeMeExpliquePlugin.vibrarFeedback(options);
+  }
+};

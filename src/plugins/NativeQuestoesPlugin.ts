@@ -1,4 +1,4 @@
-import { registerPlugin } from '@capacitor/core';
+import { Capacitor, registerPlugin } from '@capacitor/core';
 import type { PluginListenerHandle } from '@capacitor/core';
 
 export interface NativeQuestaoItem {
@@ -45,4 +45,23 @@ export interface NativeQuestoesPlugin {
   ): Promise<PluginListenerHandle>;
 }
 
-export const NativeQuestoes = registerPlugin<NativeQuestoesPlugin>('NativeQuestoesPlugin');
+const RawNativeQuestoes = registerPlugin<NativeQuestoesPlugin>('NativeQuestoesPlugin');
+
+export const NativeQuestoes: NativeQuestoesPlugin = {
+  async openSession(options) {
+    if (!Capacitor.isPluginAvailable('NativeQuestoesPlugin')) return { success: false };
+    return RawNativeQuestoes.openSession(options);
+  },
+  async closeSession() {
+    if (!Capacitor.isPluginAvailable('NativeQuestoesPlugin')) return { success: false };
+    return RawNativeQuestoes.closeSession();
+  },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  addListener: async (eventName: any, listenerFunc: any): Promise<PluginListenerHandle> => {
+    if (!Capacitor.isPluginAvailable('NativeQuestoesPlugin')) {
+      return { remove: async () => {} } as unknown as PluginListenerHandle;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (RawNativeQuestoes as any).addListener(eventName, listenerFunc);
+  }
+};

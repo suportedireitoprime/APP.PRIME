@@ -1,4 +1,4 @@
-import { registerPlugin } from '@capacitor/core';
+import { Capacitor, registerPlugin } from '@capacitor/core';
 import type { PluginListenerHandle } from '@capacitor/core';
 
 export interface NativeVideoaulaItem {
@@ -31,4 +31,27 @@ export interface NativeVideoaulasPlugin {
   ): Promise<PluginListenerHandle>;
 }
 
-export const NativeVideoaulas = registerPlugin<NativeVideoaulasPlugin>('NativeVideoaulasPlugin');
+const RawNativeVideoaulas = registerPlugin<NativeVideoaulasPlugin>('NativeVideoaulasPlugin');
+
+export const NativeVideoaulas: NativeVideoaulasPlugin = {
+  async openHub(options) {
+    if (!Capacitor.isPluginAvailable('NativeVideoaulasPlugin')) return { success: false };
+    return RawNativeVideoaulas.openHub(options);
+  },
+  async openVideo(options) {
+    if (!Capacitor.isPluginAvailable('NativeVideoaulasPlugin')) return { success: false };
+    return RawNativeVideoaulas.openVideo(options);
+  },
+  async closeVideo() {
+    if (!Capacitor.isPluginAvailable('NativeVideoaulasPlugin')) return { success: false };
+    return RawNativeVideoaulas.closeVideo();
+  },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  addListener: async (eventName: any, listenerFunc: any): Promise<PluginListenerHandle> => {
+    if (!Capacitor.isPluginAvailable('NativeVideoaulasPlugin')) {
+      return { remove: async () => {} } as unknown as PluginListenerHandle;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (RawNativeVideoaulas as any).addListener(eventName, listenerFunc);
+  }
+};

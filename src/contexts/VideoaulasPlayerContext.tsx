@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { registrarMidia, clearMediaSession } from '@/lib/mediaSession';
 import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { notifyMediaPlay, subscribeMediaPlay } from '@/lib/mediaCoordinator';
@@ -81,6 +82,53 @@ export const VideoaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
       }
     });
   }, []);
+
+  // Mantém processo vivo em background (limitado pelo OS) enquanto a videoaula toca
+  useEffect(() => {
+    let taskId: string | null = null;
+    let cancelado = false;
+
+    const setupTask = async () => {
+      if (!tocando || typeof window === 'undefined' || !Capacitor.isNativePlatform()) return;
+      try {
+        const { App } = await import('@capacitor/app');
+        const { BackgroundTask } = await import('@capawesome/capacitor-background-task');
+
+        const listener = await App.addListener('appStateChange', async ({ isActive }) => {
+          if (cancelado) return;
+          if (!isActive && tocando) {
+            taskId = await BackgroundTask.beforeExit(async () => {
+              if (taskId) {
+                BackgroundTask.finish({ taskId });
+                taskId = null;
+              }
+            });
+          } else if (isActive && taskId) {
+            BackgroundTask.finish({ taskId });
+            taskId = null;
+          }
+        });
+
+        return () => {
+          cancelado = true;
+          listener.remove();
+          if (taskId) {
+            BackgroundTask.finish({ taskId });
+            taskId = null;
+          }
+        };
+      } catch (e) {
+        console.warn('[VideoaulasPlayerContext] Erro ao iniciar background task:', e);
+      }
+    };
+
+    const cleanupPromise = setupTask();
+
+    return () => {
+      cancelado = true;
+      cleanupPromise.then(cleanup => cleanup?.());
+    };
+  }, [tocando]);
 
   const tocarVideo = useCallback((aula: AulaVideo) => {
     notifyMediaPlay('videoaula');

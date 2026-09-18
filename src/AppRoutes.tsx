@@ -88,7 +88,7 @@ function ForceUpdateWrapper() {
 }
 
 // Eagerly loaded (critical path)
-import PersistentHome from "./components/PersistentHome.tsx";
+const PersistentHome = lazy(() => import("./components/PersistentHome.tsx"));
 const Index = lazy(() => import("./pages/Index.tsx"));
 const Auth = lazy(() => import("./pages/Auth.tsx"));
 const Landing = lazy(() => import('@/pages/Landing'));
@@ -339,8 +339,8 @@ function ResumosJuridicosRouteWrapper({ children }: { children: React.ReactNode 
   if (isDesktop) return <ResumosJuridicosDesktop />;
   return <>{children}</>;
 }
-import FlashcardsRouteWrapper from "@/components/flashcards/FlashcardsRouteWrapper";
-import VideoaulasRouteWrapper from "@/components/videoaulas/VideoaulasRouteWrapper";
+const FlashcardsRouteWrapper = lazy(() => import("@/components/flashcards/FlashcardsRouteWrapper"));
+const VideoaulasRouteWrapper = lazy(() => import("@/components/videoaulas/VideoaulasRouteWrapper"));
 const LeiSecaPlayer = lazy(routePrefetch.leiSecaPlayer);
 const LeiSecaLembretes = lazy(routePrefetch.leiSecaLembretes);
 
@@ -459,7 +459,7 @@ const AssistenteHorus = lazy(() => import("./pages/AssistenteHorus.tsx"));
 const preloadImage = new Image();
 preloadImage.src = brasaoImg;
 preloadImage.decoding = 'async';
-import { TrialExpiredModal } from "@/components/TrialExpiredModal";
+const TrialExpiredModal = lazy(() => import("@/components/TrialExpiredModal").then(m => ({ default: m.TrialExpiredModal })));
 import { isAdminEmail } from "@/lib/adminEmails";
 import { useSubscription } from "@/hooks/useSubscription";
 
@@ -658,13 +658,15 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
       return (
         <>
           {children}
-          <TrialExpiredModal 
-            open={true} 
-            onClose={() => {
-              // Quando o usuário fecha o modal de tempo expirado, volta para a tela anterior
-              window.history.back();
-            }} 
-          />
+          <Suspense fallback={null}>
+            <TrialExpiredModal 
+              open={true} 
+              onClose={() => {
+                // Quando o usuário fecha o modal de tempo expirado, volta para a tela anterior
+                window.history.back();
+              }} 
+            />
+          </Suspense>
         </>
       );
     }

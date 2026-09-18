@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, X as XIcon, ChevronLeft, ChevronRight, Check, Brain, Layers, RotateCcw } from 'lucide-react';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 export interface Questao { pergunta: string; alternativas: string[]; correta: number; comentario: string; }
 export interface Flashcard { frente: string; verso: string; comentario: string; }
@@ -31,6 +32,7 @@ interface VideoaulaPraticarSheetProps {
 }
 
 export const VideoaulaPraticarSheet = ({ open, onClose, mode, setMode, openMode, questoes, questoesLoading, flashcards, flashcardsLoading, currentQIdx, selectedAlt, setSelectedAlt, answered, currentFcIdx, flipped, setFlipped, handleResponder, handleNextQuestion, handleNextFc, handlePrevFc }: VideoaulaPraticarSheetProps) => {
+  useBodyScrollLock(open, 'videoaula-praticar-sheet');
   const currentQ = questoes[currentQIdx];
   const currentFc = flashcards[currentFcIdx];
 

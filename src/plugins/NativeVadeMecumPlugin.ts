@@ -1,4 +1,4 @@
-import { registerPlugin, type PluginListenerHandle } from '@capacitor/core';
+import { Capacitor, registerPlugin, type PluginListenerHandle } from '@capacitor/core';
 
 export interface OpenArtigoOptions {
   id: string;
@@ -27,4 +27,19 @@ export interface NativeVadeMecumPluginInterface {
   ): Promise<PluginListenerHandle>;
 }
 
-export const NativeVadeMecumPlugin = registerPlugin<NativeVadeMecumPluginInterface>('NativeVadeMecumPlugin');
+const RawNativeVadeMecumPlugin = registerPlugin<NativeVadeMecumPluginInterface>('NativeVadeMecumPlugin');
+
+export const NativeVadeMecumPlugin: NativeVadeMecumPluginInterface = {
+  async openArtigo(options) {
+    if (!Capacitor.isPluginAvailable('NativeVadeMecumPlugin')) return;
+    return RawNativeVadeMecumPlugin.openArtigo(options);
+  },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  addListener: async (eventName: any, listenerFunc: any): Promise<PluginListenerHandle> => {
+    if (!Capacitor.isPluginAvailable('NativeVadeMecumPlugin')) {
+      return { remove: async () => {} } as unknown as PluginListenerHandle;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (RawNativeVadeMecumPlugin as any).addListener(eventName, listenerFunc);
+  }
+};
