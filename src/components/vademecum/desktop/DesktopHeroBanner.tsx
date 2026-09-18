@@ -1,4 +1,5 @@
-import { Sparkles, MessageSquare, Layers, HelpCircle, GraduationCap, Bell, Search, Book, Library, FileText, MonitorPlay, Headphones, ChevronRight, Bot } from 'lucide-react';
+import { Sparkles, MessageSquare, Layers, HelpCircle, GraduationCap, Bell, Search, Book, Library, FileText, MonitorPlay, Headphones, ChevronRight, Bot, ListChecks } from 'lucide-react';
+import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { AprenderCarousel3D, useAprenderItems } from '@/components/vademecum/home/aprender/chunks';
 import { useNavigate } from 'react-router-dom';
 import heroBannerAsset from '@/assets/desktop-hero-banner.jpg';
@@ -120,17 +121,17 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
 
             <div className="grid grid-cols-4 gap-3">
               {[
-                { label: 'Aprender', icon: GraduationCap, route: '/aprender' },
-                { label: 'Flashcards', icon: Layers, route: '/flashcards' },
-                { label: 'Questões', icon: HelpCircle, route: '/questoes' },
-                { label: 'Chat Jurídico', icon: MessageSquare, route: '/chat-juridico' }
+                { label: 'Aprender', icon: GraduationCap, route: '/aprender', color: '#FACC15' },
+                { label: 'Flashcards', icon: FlashcardsIcon, route: '/flashcards', color: '#34D399' },
+                { label: 'Questões', icon: ListChecks, route: '/questoes', color: '#F87171' },
+                { label: 'Chat Jurídico', icon: MessageSquare, route: '/chat-juridico', color: '#F97316' }
               ].map((btn, i) => (
                 <button
                   key={i}
                   onClick={() => navigate(btn.route)}
                   className="flex flex-col items-center justify-center gap-2 bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/10 rounded-2xl p-3 transition-all hover:scale-105 group/btn shadow-xl"
                 >
-                  <btn.icon className="w-6 h-6 text-white/90 group-hover/btn:text-white transition-colors drop-shadow-md" />
+                  <btn.icon style={{ color: btn.color }} className="w-6 h-6 transition-colors drop-shadow-md brightness-90 group-hover/btn:brightness-110" />
                   <span className="text-white text-[11px] font-semibold font-body tracking-wide drop-shadow-md">{btn.label}</span>
                 </button>
               ))}
