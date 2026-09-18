@@ -14,10 +14,11 @@ interface Props {
   onOpenChange?: (open: boolean) => void;
   /** Quando false, o carrossel não avança automaticamente. */
   autoplay?: boolean;
+  /** Estilo visual do carrossel */
+  variant?: 'default' | 'hero';
 }
 
-
-function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: Props) {
+function HomeNoticiasCarousel({ onOpenChange, autoplay = true, variant = 'default' }: Props) {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const autoplayRef = useRef<number | null>(null);
   const userInteractingRef = useRef(false);
@@ -125,8 +126,8 @@ function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: Props) {
   }
 
   return (
-    <div className="space-y-2.5">
-      <CarouselHeaderTitle kind="noticia" />
+    <div className={`space-y-2.5 ${variant === 'hero' ? 'max-w-[340px]' : ''}`}>
+      {variant === 'default' && <CarouselHeaderTitle kind="noticia" />}
 
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
@@ -138,7 +139,9 @@ function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: Props) {
           ref={scrollerRef}
           onPointerDown={pauseAutoplay}
           onTouchStart={pauseAutoplay}
-          className="flex gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-1 px-[7.5%] md:px-[4%] lg:px-[3%] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          className={`flex overflow-x-auto snap-x snap-mandatory scroll-smooth pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${
+            variant === 'hero' ? 'gap-4 px-0' : 'gap-3 md:gap-4 px-[7.5%] md:px-[4%] lg:px-[3%]'
+          }`}
         >
           {feed.map((item, i) => (
             <CarouselMediaCard
@@ -147,12 +150,13 @@ function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: Props) {
               isActive={i === activeIndex}
               index={i}
               onOpen={handleOpen}
+              variant={variant}
             />
           ))}
         </motion.div>
       </AnimatePresence>
 
-      <CarouselDots total={feed.length} activeIndex={activeIndex} />
+      {variant === 'default' && <CarouselDots total={feed.length} activeIndex={activeIndex} />}
 
       <NoticiaViewerSheet noticia={selectedNoticia} onClose={() => setSelectedNoticia(null)} />
     </div>

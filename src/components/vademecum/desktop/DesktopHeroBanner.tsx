@@ -53,9 +53,9 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
             }} />
             
             {/* CARROSSEL DE NOTÍCIAS DENTRO DO PAINEL VERMELHO */}
-            <div className="absolute bottom-6 left-8 right-0 pointer-events-auto z-20 flex flex-col justify-end w-[150%]">
+            <div className="absolute bottom-6 left-8 pointer-events-auto z-20 flex flex-col justify-end w-[320px]">
               <div className="transform scale-95 origin-bottom-left">
-                <HomeNoticiasCarousel />
+                <HomeNoticiasCarousel variant="hero" />
               </div>
             </div>
           </div>

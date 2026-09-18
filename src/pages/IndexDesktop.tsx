@@ -126,11 +126,11 @@ const IndexDesktop = () => {
           hoverTrailAmount={5}
         />
       </div>
-      <div className="relative z-10 flex h-full w-full min-h-0">
+      <div className="relative z-10 flex h-full w-full min-h-0 overflow-hidden">
         <DesktopOnboardingOverlay />
         
         <DesktopSidebar activeTab={activeTab} onTabChange={setActiveTab} />
-          <div className="flex flex-col flex-1 min-w-0 relative overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+          <div className="flex flex-col flex-1 h-full min-w-0 relative overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
           
             <div className={`border-b border-white/5 transition-colors duration-300 bg-transparent`}>
 

@@ -11,9 +11,10 @@ interface CarouselMediaCardProps {
   isActive: boolean;
   index: number;
   onOpen: (item: FeedItem) => void;
+  variant?: 'default' | 'hero';
 }
 
-const CarouselMediaCard = ({ item, isActive, index, onOpen }: CarouselMediaCardProps) => {
+const CarouselMediaCard = ({ item, isActive, index, onOpen, variant = 'default' }: CarouselMediaCardProps) => {
   const isB = item.kind === 'blog';
   const c = isB ? TEMA_COLORS[(item.data as BlogPost).tema] : null;
   const rawImg = isB
@@ -32,10 +33,14 @@ const CarouselMediaCard = ({ item, isActive, index, onOpen }: CarouselMediaCardP
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: Math.min(index * 0.04, 0.2) }}
-      className="snap-center shrink-0 w-[85%] md:w-[46%] lg:w-[31%] active:scale-[0.99] text-left"
+      className={`snap-center shrink-0 active:scale-[0.99] text-left ${
+        variant === 'hero' ? 'w-[320px] max-w-[85vw]' : 'w-[85%] md:w-[46%] lg:w-[31%]'
+      }`}
     >
       <div
-        className={`relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 transform-gpu will-change-transform ${
+        className={`relative w-full overflow-hidden rounded-2xl transition-all duration-300 transform-gpu will-change-transform ${
+          variant === 'hero' ? 'h-[180px]' : 'h-[140px]'
+        } ${
           isActive ? 'opacity-100 scale-100 shadow-lg' : 'opacity-85 scale-[0.98]'
         }`}
         style={isB && c ? { background: c.bg } : undefined}
