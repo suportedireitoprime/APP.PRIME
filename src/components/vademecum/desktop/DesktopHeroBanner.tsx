@@ -16,9 +16,10 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
   const navigate = useNavigate();
 
   return (
-    <div className="relative w-full max-w-[1600px] mx-auto z-20 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 h-[380px]">
-      {/* COLUNA ESQUERDA: CAPA PRINCIPAL */}
-      <div className="relative h-full rounded-3xl overflow-hidden shadow-2xl flex flex-col group">
+    <div className="relative w-full max-w-[1600px] mx-auto z-20 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
+      {/* COLUNA ESQUERDA: CAPA PRINCIPAL + CARROSSEL DE NOTÍCIAS */}
+      <div className="flex flex-col gap-6">
+        <div className="relative h-[380px] rounded-3xl overflow-hidden shadow-2xl flex flex-col group">
         {/* Imagem de Fundo */}
         <img
           src={heroBannerAsset}
@@ -118,6 +119,12 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
           </div>
         </div>
       </div>
+
+      {/* CARROSSEL DE NOTÍCIAS ABAIXO DA CAPA */}
+      <div className="relative z-30 pt-4">
+        <HomeNoticiasCarousel />
+      </div>
+    </div> {/* FIM COLUNA ESQUERDA */}
 
       {/* COLUNA DIREITA: ACESSO RÁPIDO */}
       <div className="bg-hero-panel rounded-3xl relative z-20 flex flex-col p-6 shadow-2xl overflow-hidden border border-white/10 h-full">

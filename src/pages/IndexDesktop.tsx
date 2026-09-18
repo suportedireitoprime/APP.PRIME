@@ -150,9 +150,7 @@ const IndexDesktop = () => {
                       />
                     </div>
 
-                    <div className="relative z-30 mb-8 -mx-8 2xl:-mx-14 mt-6">
-                      <HomeNoticiasCarousel />
-                    </div>
+
 
                     <div className="mb-10">
                       <DesktopEstudosGrid
