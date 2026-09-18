@@ -232,6 +232,7 @@ const VideoaulasLeiSecaCategoria = lazy(() => import('./pages/VideoaulasLeiSecaC
 const VideoaulasLeiSecaArtigos = lazy(() => import('./pages/VideoaulasLeiSecaArtigos'));
 const Videoaulas = lazy(routePrefetch.videoaulas);
 const VideoaulasCategorias = lazy(routePrefetch.videoaulasCategorias);
+const VideoaulasCanalDetail = lazy(() => import("./pages/VideoaulasCanalDetail.tsx"));
 const VideoaulasCatalogo = lazy(routePrefetch.videoaulasCatalogo);
 const VideoaulasArea = lazy(routePrefetch.videoaulasArea);
 const VideoaulasPraticar = lazy(() => import('@/pages/VideoaulasPraticar'));
@@ -1160,6 +1161,7 @@ function AnimatedRoutes() {
           <Route path="/videoaulas/lei-seca/lei/:leiId" element={<ProtectedRoute><PageTransition instant><VideoaulasLeiSecaArtigos /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/anotacoes" element={<ProtectedRoute><PageTransition instant><VideoaulasAnotacoes /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/categorias" element={<ProtectedRoute><PageTransition instant><VideoaulasCategorias /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/canal/:id" element={<ProtectedRoute><PageTransition instant><VideoaulasCanalDetail /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/concurso/:id" element={<ProtectedRoute><PageTransition instant><VideoaulasConcurso /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/conquistas" element={<ProtectedRoute><PageTransition instant><VideoaulasConquistas /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/:catalogo" element={<ProtectedRoute><PageTransition instant><VideoaulasCatalogo /></PageTransition></ProtectedRoute>} />

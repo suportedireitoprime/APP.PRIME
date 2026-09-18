@@ -21,8 +21,7 @@ async function nativeGet(key: string): Promise<string | null> {
 }
 
 async function nativeSet(key: string, value: string): Promise<void> {
-  // Signature: set(key, value, sync=false, access=null)
-  await SecureStorage.set(key, value, false, false);
+  await SecureStorage.set(key, value);
 }
 
 async function nativeRemove(key: string): Promise<void> {

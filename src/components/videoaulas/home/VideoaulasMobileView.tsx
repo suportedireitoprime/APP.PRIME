@@ -4,7 +4,8 @@ import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { VideoaulasHero } from './VideoaulasHero';
 import { VideoaulasSearchCard } from './VideoaulasSearchCard';
 import { VideoaulasAtalhos } from './VideoaulasAtalhos';
-import { VideoaulasListaAreas } from './VideoaulasListaAreas';
+import { VideoaulasCategoriasGrid } from './VideoaulasCategoriasGrid';
+import { VideoaulasAoVivoBar } from './VideoaulasAoVivoBar';
 import { VideoaulasBuscaDrawer } from './VideoaulasBuscaDrawer';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
 import VideoaulasDesempenhoSheet from '@/components/videoaulas/VideoaulasDesempenhoSheet';
@@ -46,13 +47,9 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
 
           <VideoaulasAtalhos />
 
-          <VideoaulasListaAreas
-            loading={state.loading}
-            lista={state.lista}
-            emAndamentoCount={state.emAndamentoCount}
-            filtro={state.filtro}
-            setFiltro={state.setFiltro}
-          />
+          <VideoaulasCategoriasGrid />
+
+          <VideoaulasAoVivoBar />
         </div>
       </div>
 

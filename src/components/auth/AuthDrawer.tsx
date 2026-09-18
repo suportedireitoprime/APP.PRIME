@@ -506,10 +506,16 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                   <button
                     type="submit"
                     disabled={submitting || googleLoading || appleLoading}
-                    className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:pointer-events-none mt-2 cursor-pointer"
+                    className="relative w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-80 disabled:pointer-events-none mt-2 cursor-pointer overflow-hidden"
                   >
                     {submitting ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <>
+                        <span className="opacity-90">
+                          {mode === 'login' ? 'Acessando...' : 'Enviando...'}
+                        </span>
+                        {/* Shimmer / Reflexo Animado */}
+                        <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+                      </>
                     ) : (
                       <>
                         {mode === 'login' && 'Acessar'}
@@ -524,14 +530,18 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                   <button
                     type="submit"
                     disabled={submitting || googleLoading || appleLoading}
-                    className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:pointer-events-none mt-2 cursor-pointer"
+                    className="relative w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-80 disabled:pointer-events-none mt-2 cursor-pointer overflow-hidden"
                   >
                     {submitting ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <>
+                        <span className="opacity-90">Acessando...</span>
+                        {/* Shimmer / Reflexo Animado */}
+                        <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+                      </>
                     ) : (
                       <>
-                        Redefinir Senha
-                        <CheckCircle className="w-5 h-5" />
+                        Entrar com a nova senha
+                        <ArrowRight className="w-5 h-5" />
                       </>
                     )}
                   </button>

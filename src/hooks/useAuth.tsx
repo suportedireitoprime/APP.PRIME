@@ -143,14 +143,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }).catch(() => {});
     });
 
-    const sessionTimeout = new Promise<{ data: { session: Session | null } }>((resolve) =>
-      setTimeout(() => resolve({ data: { session: initialSession } }), 4000),
-    );
-    
-    Promise.race([supabase.auth.getSession(), sessionTimeout])
+    // getSession com timeout de 15s — se estourar, preserva o que já está em cache.
+    let didTimeout = false;
+    const timer = setTimeout(() => {
+      didTimeout = true;
+      if (isMounted) {
+        console.warn('[Auth] getSession timeout (15s). Mantendo sessão em cache.');
+        startTransition(() => { setLoading(false); });
+      }
+    }, 15000);
+
+    supabase.auth.getSession()
       .then((result) => {
-        if (!isMounted) return;
-        // Se vier nulo por timeout ou conexão lenta, preserva initialSession em cache
+        clearTimeout(timer);
+        if (!isMounted || didTimeout) return;
         const currentSession = result?.data?.session ?? initialSession ?? null;
         startTransition(() => {
           setSession(currentSession);
@@ -159,11 +165,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
       })
       .catch((err) => {
+        clearTimeout(timer);
         console.error('[Auth] Erro ao recuperar sessão', err);
-        if (isMounted) {
-          setSession(initialSession ?? null);
-          setUser(initialSession?.user ?? null);
-          setLoading(false);
+        if (isMounted && !didTimeout) {
+          startTransition(() => { setLoading(false); });
         }
       });
 
@@ -244,6 +249,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       isMounted = false;
+      clearTimeout(timer);
       subscription.unsubscribe();
       appListener?.remove();
       appStateListener?.remove();
@@ -252,8 +258,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(async (email: string, password: string) => {
     const cleanEmail = email.trim().toLowerCase();
-    const { error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
-    return { error: error as Error | null };
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 20000);
+      const result = await Promise.race([
+        supabase.auth.signInWithPassword({ email: cleanEmail, password }),
+        new Promise<never>((_, reject) => {
+          controller.signal.addEventListener('abort', () =>
+            reject(new Error('O servidor demorou demais para responder. Verifique sua conexão e tente novamente.'))
+          );
+        }),
+      ]);
+      clearTimeout(timeout);
+      return { error: result.error as Error | null };
+    } catch (err) {
+      return { error: err as Error };
+    }
   }, []);
 
   const signUp = useCallback(async (email: string, password: string, displayName?: string) => {

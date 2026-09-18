@@ -131,8 +131,20 @@ const AnimatedRoutes = lazy(() => import("./AppRoutes"));
 
 import { CustomSplashScreen } from "@/components/CustomSplashScreen";
 
+import heroEstudanteImg from '@/assets/covers/hero-estudante-v3.jpg';
+
 function AppBootSplash() {
   const [show, setShow] = useState(true);
+  
+  // Preload agressivo da imagem principal da Home durante o Splash/Auth
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const img = new Image();
+      img.decoding = 'async';
+      img.fetchPriority = 'high';
+      img.src = heroEstudanteImg;
+    }
+  }, []);
   
   return (
     <AnimatePresence>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, ListVideo, BarChart3, Scale } from 'lucide-react';
+import { Play, ListVideo, BarChart3, Heart } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { motion } from 'framer-motion';
 
@@ -89,14 +89,14 @@ export const VideoaulasAtalhos = React.memo(function VideoaulasAtalhos() {
           }}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => { haptic.selection(); navigate('/videoaulas/lei-seca'); }}
+          onClick={() => { haptic.selection(); navigate('/videoaulas/favoritos'); }}
           className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-amber-500/50 transition-colors gap-2 text-center focus-visible:outline-none"
         >
           <div className="relative w-10 h-10 flex items-center justify-center">
-            <Scale className="w-7 h-7 sm:w-8 sm:h-8 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" strokeWidth={2} />
+            <Heart className="w-7 h-7 sm:w-8 sm:h-8 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" strokeWidth={2} />
           </div>
           <div>
-            <p className="text-[11px] sm:text-xs font-extrabold text-foreground leading-tight">Lei Seca</p>
+            <p className="text-[11px] sm:text-xs font-extrabold text-foreground leading-tight">Favoritos</p>
           </div>
         </motion.button>
       </motion.section>
