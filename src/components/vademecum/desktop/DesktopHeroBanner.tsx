@@ -1,4 +1,4 @@
-import { Search, GraduationCap, Layers, HelpCircle, Sparkles, Book, Library, FileText, MonitorPlay, Headphones, ChevronRight, MessageSquare, Bell } from 'lucide-react';
+import { Sparkles, MessageSquare, Layers, HelpCircle, GraduationCap, Bell, Search, Book, Library, FileText, MonitorPlay, Headphones, ChevronRight, Bot } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import heroBannerAsset from '@/assets/desktop-hero-banner.jpg';
 import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
@@ -18,6 +18,8 @@ interface Props {
 
 const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNotifClick, unreadCount = 0 }: Props) => {
   const navigate = useNavigate();
+
+  const { items, handleItemClick } = useAprenderItems();
 
   return (
     <div className="relative w-full max-w-[1600px] mx-auto z-20 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
@@ -52,11 +54,16 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
               backgroundSize: '24px 24px'
             }} />
             
-            {/* CARROSSEL DE NOTÍCIAS DENTRO DO PAINEL VERMELHO */}
-            <div className="absolute bottom-6 left-8 pointer-events-auto z-20 flex flex-col justify-end w-[320px]">
-              <div className="transform scale-95 origin-bottom-left">
-                <HomeNoticiasCarousel variant="hero" />
+            {/* CARROSSEL DE DECKS DO APRENDER DENTRO DO PAINEL VERMELHO */}
+            <div className="absolute bottom-6 left-8 pointer-events-auto z-20 flex flex-col items-center w-[300px]">
+              <div className="transform scale-[0.8] origin-bottom w-full -mb-6">
+                <AprenderCarousel3D items={items} onItemClick={handleItemClick} />
               </div>
+              <button onClick={() => navigate('/aprender')} className="relative flex items-center justify-center gap-2 font-display text-white text-[13px] font-bold uppercase tracking-widest py-2.5 w-full rounded-xl bg-white/10 hover:bg-white/20 transition-all border border-white/20 overflow-hidden group shadow-lg">
+                <span className="relative z-10">Acessar</span>
+                <ChevronRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform relative z-10" />
+                <div className="absolute inset-0 -translate-x-[150%] bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-shimmer" />
+              </button>
             </div>
           </div>
         </div>
@@ -115,7 +122,7 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
                 { label: 'Aprender', icon: GraduationCap, route: '/aprender' },
                 { label: 'Flashcards', icon: Layers, route: '/flashcards' },
                 { label: 'Questões', icon: HelpCircle, route: '/questoes' },
-                { label: 'Me Explique', icon: Sparkles, route: '/assistente-horus' }
+                { label: 'Chat Jurídico', icon: MessageSquare, route: '/chat-juridico' }
               ].map((btn, i) => (
                 <button
                   key={i}
@@ -153,7 +160,7 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
               { label: 'Resumos', icon: FileText, route: '/aprender/resumos' },
               { label: 'Videoaulas', icon: MonitorPlay, route: '/aprender/videos' },
               { label: 'Audioaulas', icon: Headphones, route: '/aprender/audios' },
-              { label: 'Chat (Hórus)', icon: MessageSquare, route: '/assistente-horus' }
+              { label: 'Assistente Hórus', icon: Bot, route: '/assistente-horus' }
             ].map((link, i) => (
               <button
                 key={i}

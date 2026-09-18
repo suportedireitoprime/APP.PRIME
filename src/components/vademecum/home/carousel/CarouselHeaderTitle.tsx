@@ -13,10 +13,10 @@ const CarouselHeaderTitle = ({ kind = 'noticia' }: CarouselHeaderTitleProps) => 
       <div>
         <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 pointer-events-auto uppercase tracking-widest">
           <span className="w-1 h-5 rounded-full bg-primary" />
-          NOTÍCIAS JURÍDICAS
+          RADAR DE LEIS
         </h3>
         <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3 pointer-events-auto whitespace-nowrap truncate">
-          notícias do mundo jurídico em tempo real
+          {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
         </p>
       </div>
       <button
