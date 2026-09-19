@@ -1,4 +1,5 @@
 import { pdf } from '@react-pdf/renderer';
+import { baixarBlob } from '@/lib/nativo/baixarArquivo';
 import React from 'react';
 import { PeticaoPdfDoc, PeticaoPdfInput } from '@/components/pdf/PeticaoPdfDoc';
 import brasaoUrl from '@/assets/juris-brasao.webp';
@@ -48,15 +49,5 @@ export async function gerarPeticaoPDF(input: PeticaoPdfInput) {
 
   const filename = `peticao-inicial-${slug(input.titulo)}.pdf`;
 
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  
-  setTimeout(() => {
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }, 100);
+  await baixarBlob(blob, filename);
 }

@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Loader2, CreditCard, ShieldCheck, User, MapPin, Smartphone, ArrowRight, CheckCircle2, Copy, X, ChevronLeft, Clock, ChevronDown, QrCode, RefreshCw } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
+import { isFuture, addMonths } from 'date-fns';
+import { openBrowserUrl } from '@/lib/nativeBrowser';
 import { motion, AnimatePresence } from "framer-motion";
 
 interface CheckoutModalProps {
@@ -423,7 +425,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
           onOpenChange(false);
         } else {
           if (data?.invoiceUrl) {
-             window.open(data.invoiceUrl, '_blank');
+             openBrowserUrl(data.invoiceUrl);
              onSuccess();
              onOpenChange(false);
           } else {
@@ -431,7 +433,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
           }
         }
       } else if (data?.invoiceUrl) {
-        window.open(data.invoiceUrl, '_blank');
+        openBrowserUrl(data.invoiceUrl);
         onSuccess();
         onOpenChange(false);
       } else {

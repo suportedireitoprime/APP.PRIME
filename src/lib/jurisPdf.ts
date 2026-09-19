@@ -1,5 +1,6 @@
 import { pdf } from '@react-pdf/renderer';
 import React from 'react';
+import { baixarBlob } from '@/lib/nativo/baixarArquivo';
 import { JurisPdfDoc, JurisPdfInput } from '@/components/pdf/JurisPdfDoc';
 import brasaoUrl from '@/assets/juris-brasao.webp';
 import coverArtUrl from '@/assets/juris-cover-art.webp';
@@ -48,15 +49,5 @@ export async function gerarJurisprudenciaPDF(data: JurisPdfInput) {
 
   const filename = `jurisprudencia-${slug(data.tribunal)}-${slug(data.titulo)}.pdf`;
 
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  
-  setTimeout(() => {
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }, 100);
+  await baixarBlob(blob, filename);
 }

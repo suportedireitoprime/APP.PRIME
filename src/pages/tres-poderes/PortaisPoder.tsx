@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Browser } from '@capacitor/browser';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { openBrowserUrl } from '@/lib/nativeBrowser';
 import { ArrowLeft, Globe, ExternalLink, X, Lightbulb, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
@@ -46,7 +48,7 @@ const PortaisPoder = () => {
       await Browser.open({ url, presentationStyle: 'fullscreen' });
     } catch (e) {
       console.error('Error opening browser:', e);
-      window.open(url, '_blank');
+      openBrowserUrl(url);
     }
   };
 

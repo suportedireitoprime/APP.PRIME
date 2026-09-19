@@ -1,4 +1,5 @@
 import { pdf } from '@react-pdf/renderer';
+import { baixarBlob } from '@/lib/nativo/baixarArquivo';
 import React from 'react';
 import { ArtigoPdfDoc, ArtigoPdfInput } from '@/components/pdf/ArtigoPdfDoc';
 import brasaoUrl from '@/assets/brasao-republica.webp';
@@ -76,16 +77,5 @@ export async function gerarArtigoPDF(data: ArtigoPdfInput) {
   const filename = `${slug(data.leiLabel)}-art-${slug(data.numero)}-${data.modo}.pdf`;
 
   // Download via native browser API (works well enough in Capacitor PWA or triggers browser download)
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  
-  // Cleanup
-  setTimeout(() => {
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }, 100);
+  await baixarBlob(blob, filename);
 }

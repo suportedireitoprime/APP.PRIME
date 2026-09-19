@@ -1,6 +1,7 @@
 import { pdf } from '@react-pdf/renderer';
 import React from 'react';
 import { Document, Page, View, Text, Image, StyleSheet } from '@react-pdf/renderer';
+import { baixarBlob } from '@/lib/nativo/baixarArquivo';
 import { toPng } from 'html-to-image';
 import { toast } from 'sonner';
 
@@ -148,17 +149,7 @@ export async function exportMindMapPdf(
 
     const fileName = `mapa-mental-${artigo.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()}.pdf`;
     
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    
-    setTimeout(() => {
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }, 100);
+    await baixarBlob(blob, fileName);
 
     toast.success('PDF exportado!', { id: toastId });
   } catch (err) {
