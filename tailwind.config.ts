@@ -87,7 +87,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['"Barlow"', 'system-ui', 'sans-serif'],
+        display: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
         body: ['"Barlow"', 'system-ui', 'sans-serif'],
         legal: ['"Barlow"', 'Georgia', 'serif'],
       },
