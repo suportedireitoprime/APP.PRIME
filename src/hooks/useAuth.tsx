@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, startTransition, ReactNode, useCallback } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { removeNativePushToken } from '@/lib/nativePush';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
@@ -343,7 +344,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch {}
 
-    await Promise.all([
+    // Limpa caches locais de Sessão e Cache do Capacitor
+    await Promise.allSettled([
+      removeNativePushToken(),
       firebaseLogout,
       supabase.auth.signOut(),
     ]);

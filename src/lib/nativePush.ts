@@ -3,8 +3,8 @@ import { FirebaseMessaging } from '@capacitor-firebase/messaging';
 import { supabase } from '@/integrations/supabase/client';
 import { DEFAULT_PUSH_CHANNEL_ID, configurarCanaisDeNotificacao } from '@/lib/nativeNotificationChannels';
 
-const PENDING_TOKEN_KEY = 'oab_na_risca_pending_push_token';
-const INSTALL_ID_KEY = 'oab_na_risca_install_id';
+const PENDING_TOKEN_KEY = 'direitoprime_pending_push_token';
+const INSTALL_ID_KEY = 'direitoprime_install_id';
 
 function getInstallId(): string {
   try {
@@ -120,10 +120,8 @@ export function trackPushOpenFromUrl() {
     if (!campaignId) return;
     trackPush(campaignId, 'opened', { source: 'url_param', url: window.location.pathname });
     params.delete('_pc');
-    const clean =
-      window.location.pathname +
-      (params.toString() ? `?${params.toString()}` : '') +
-      window.location.hash;
+    const newSearch = params.toString() ? `?${params.toString()}` : '';
+    const clean = window.location.pathname + newSearch + window.location.hash;
     window.history.replaceState({}, '', clean);
   } catch { /* métrica nunca quebra o app */ }
 }
@@ -238,7 +236,8 @@ export async function ensureNativePushListeners() {
             // Convertido: navegou pra dentro do app
             if (campaignId) {
               window.setTimeout(() => trackPush(campaignId, 'converted', { url: path }), 500);
-            }
+            // Remove URL pendente para evitar loops e zombie redirects
+            window.setTimeout(() => { delete (window as any)._pendingPushUrl; }, 2000);
           }
         } catch (e) {
           console.warn('Push navigation failed', e);
@@ -283,6 +282,11 @@ export async function ensureNativePushListeners() {
     } catch (e) {
       console.warn('cold-start push recovery failed', e);
     }
+
+    // Limpa o Badge (ícone numérico vermelho) ao abrir o app
+    try {
+      await FirebaseMessaging.removeAllDeliveredNotifications();
+    } catch { /* Ignora se plugin não suportar */ }
 
     // Reenvia eventos que ficaram pendentes em execuções anteriores.
     flushPendingPushEvents();
@@ -348,3 +352,21 @@ export async function unsubscribeFromTopic(topicName: string) {
   if (!Capacitor.isNativePlatform()) return;
   try { await FirebaseMessaging.unsubscribeFromTopic({ topic: topicName }); } catch (e) { console.warn(e); }
 }
+
+export async function removeNativePushToken() {
+  if (!Capacitor.isNativePlatform()) return;
+  try {
+    // 1. Remove do Supabase
+    const { token } = await FirebaseMessaging.getToken();
+    if (token) {
+      await supabase.from('device_tokens').delete().match({ token });
+    }
+    // 2. Remove topic All
+    await unsubscribeFromTopic('all');
+    // 3. Remove cache e notifs
+    window.localStorage.removeItem(PENDING_TOKEN_KEY);
+    await FirebaseMessaging.removeAllDeliveredNotifications();
+  } catch (e) {
+    console.warn('Push cleanup failed', e);
+  }
+}
