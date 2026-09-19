@@ -123,6 +123,7 @@ export class SessaoMeExplique {
   }
 
   async iniciar() {
+    console.log('[MeExplique] iniciar() chamado, video?', !!this.opcoes.video, 'streamVideo?', !!this.opcoes.streamVideo, 'promptInicial?', !!this.opcoes.promptInicial);
     this.opcoes.onStatus("conectando");
     this.garantirSaida(); // Item 7: Acorda o AudioContext sincronicamente no clique
 
@@ -138,6 +139,7 @@ export class SessaoMeExplique {
             : "Precisamos do microfone para a conversa ao vivo com o professor.")
       );
     }
+    console.log('[MeExplique] Permissões OK. Abrindo stream...');
 
     if (this.opcoes.streamVideo) {
       // Preview já está no ar: só abrimos o microfone.
@@ -155,10 +157,13 @@ export class SessaoMeExplique {
       this.streamProprio = true;
       this.stream = await this.abrirMicrofone();
     }
+    console.log('[MeExplique] Stream aberto. Conectando WebSocket...');
 
     await this.conectar();
+    console.log('[MeExplique] WebSocket conectado e setupComplete recebido! pronto=', this.pronto);
     this.garantirSaida();
     await this.iniciarAudio();
+    console.log('[MeExplique] Áudio iniciado. Enviando prompt inicial...');
     if (this.opcoes.video) this.iniciarFrames();
 
     // Se houver prompt inicial (livro, termo, dúvida), envia logo após conectar para o professor começar falando.
@@ -259,15 +264,18 @@ export class SessaoMeExplique {
       };
 
       ws.onopen = () => {
+        console.log('[MeExplique] WebSocket OPEN. Enviando setup...');
         // Se o token já trava a configuração, basta o modelo; senão enviamos o
         // setup completo devolvido pela edge function.
         // O BidiGenerateContent em v1alpha exige o sufixo -exp ou -alpha para o modelo 2.0
         let modelId = this.opcoes.modelo;
         const setup = this.opcoes.setup ?? { model: `models/${modelId}` };
+        console.log('[MeExplique] Setup payload:', JSON.stringify(setup).slice(0, 300));
         ws.send(JSON.stringify({ setup }));
       };
 
       ws.onmessage = (evento) => {
+        console.log('[MeExplique] WS message recebida (tipo:', typeof evento.data, ', length:', typeof evento.data === 'string' ? evento.data.length : 'blob', ')');
         void this.receber(evento.data, () => {
           if (resolvido) return;
           resolvido = true;
@@ -277,12 +285,14 @@ export class SessaoMeExplique {
         });
       };
 
-      ws.onerror = () => {
+      ws.onerror = (e) => {
+        console.error('[MeExplique] WS ERROR:', e);
         if (!this.pronto) falhar("Não foi possível conectar ao professor ao vivo.");
         else this.opcoes.onErro("Conexão instável com o professor ao vivo.");
       };
 
       ws.onclose = (evento) => {
+        console.warn('[MeExplique] WS CLOSE: code=', evento.code, 'reason=', evento.reason, 'pronto=', this.pronto, 'encerrada=', this.encerrada);
         this.pronto = false;
         if (!resolvido) {
           falhar(
@@ -322,6 +332,7 @@ export class SessaoMeExplique {
     }
 
     if (msg.setupComplete) {
+      console.log('[MeExplique] setupComplete recebido!');
       onSetup?.();
       return;
     }
