@@ -162,13 +162,7 @@ export class SessaoMeExplique {
     if (this.opcoes.video) this.iniciarFrames();
 
     // Se houver prompt inicial (livro, termo, dúvida), envia logo após conectar para o professor começar falando.
-    window.setTimeout(() => {
-      if (this.opcoes.promptInicial) {
-        this.enviarTexto(this.opcoes.promptInicial, true);
-      } else if (this.opcoes.video && this.opcoes.video.videoWidth > 0) {
-        this.enviarTexto(ABERTURA, true);
-      }
-    }, 700);
+    this.despacharPromptInicial();
   }
 
   private get restricoesAudio() {
@@ -385,6 +379,10 @@ export class SessaoMeExplique {
 
   private tocar(b64: string) {
     const ctx = this.garantirSaida();
+    // Força resume se suspended (mobile browsers bloqueiam até interação)
+    if (ctx.state === 'suspended') {
+      void ctx.resume().catch(() => undefined);
+    }
     const bytes = bytesFromBase64(b64);
     const amostras = new Int16Array(bytes.buffer, bytes.byteOffset, Math.floor(bytes.byteLength / 2));
     if (amostras.length === 0) return;
@@ -521,9 +519,52 @@ export class SessaoMeExplique {
     return this.micAtivo;
   }
 
+  /**
+   * Despacha o prompt inicial com retry: tenta até 5 vezes com 600ms de intervalo
+   * para garantir que o WebSocket esteja pronto e o AudioContext de saída respondido.
+   */
+  private despacharPromptInicial(tentativa = 0) {
+    const texto = this.opcoes.promptInicial
+      ?? (this.opcoes.video && this.opcoes.video.videoWidth > 0 ? ABERTURA : null);
+    if (!texto) return;
+
+    const MAX_TENTATIVAS = 5;
+    const INTERVALO = 600;
+    const delay = tentativa === 0 ? 800 : INTERVALO;
+
+    window.setTimeout(() => {
+      if (this.encerrada) return;
+
+      // Garante AudioContext de saída ativo (critical em mobile)
+      this.garantirSaida();
+
+      if (this.pronto && this.ws?.readyState === WebSocket.OPEN) {
+        console.log('[MeExplique] Enviando promptInicial (tentativa', tentativa + 1, '):', texto.slice(0, 60), '...');
+        this.ws.send(
+          JSON.stringify({
+            clientContent: {
+              turns: [{ role: "user", parts: [{ text: texto }] }],
+              turnComplete: true,
+            },
+          }),
+        );
+        // NÃO usar silencioso: queremos que o status mude para "falando" para feedback visual
+        this.opcoes.onStatus("falando");
+      } else if (tentativa < MAX_TENTATIVAS) {
+        console.warn('[MeExplique] WS não pronto ainda, retry', tentativa + 1, '/', MAX_TENTATIVAS);
+        this.despacharPromptInicial(tentativa + 1);
+      } else {
+        console.error('[MeExplique] Falha ao enviar promptInicial após', MAX_TENTATIVAS, 'tentativas.');
+      }
+    }, delay);
+  }
+
   /** Envia um turno de texto e pede resposta imediata (voz). */
   enviarTexto(texto: string, silencioso = false) {
-    if (!this.pronto || this.ws?.readyState !== WebSocket.OPEN) return;
+    if (!this.pronto || this.ws?.readyState !== WebSocket.OPEN) {
+      console.warn('[MeExplique] enviarTexto ignorado: pronto=', this.pronto, 'ws=', this.ws?.readyState);
+      return;
+    }
     this.garantirSaida();
     this.ws.send(
       JSON.stringify({
