@@ -9,7 +9,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
-const MODELO_LIVE = "gemini-3.1-flash-live-preview";
+const MODELO_LIVE = "gemini-3.8-live";
 
 const gerarInstrucao = (nome: string, formato: string, modo = "camera", contexto = "") => {
   if (modo === "livro") {
