@@ -69,11 +69,19 @@ export function useAprenderHome(uid: string | null, activeTab: 'aulas' | 'flashc
         return;
       }
       const next = res as unknown as AprenderHomeData;
-      memoData = next;
+      const safeNext: AprenderHomeData = {
+        areas: next?.areas || [],
+        emAndamento: next?.emAndamento || [],
+        proxima: next?.proxima || null,
+        totalAulas: next?.totalAulas || 0,
+        totalConcluidas: next?.totalConcluidas || 0,
+        pctGeral: next?.pctGeral || 0,
+      };
+      memoData = safeNext;
       memoUid = uid;
-      setData(next);
+      setData(safeNext);
       setLoading(false);
-      writeAprenderHomeLocal(uid, next);
+      writeAprenderHomeLocal(uid, safeNext);
     })();
 
     return () => {
@@ -83,12 +91,12 @@ export function useAprenderHome(uid: string | null, activeTab: 'aulas' | 'flashc
 
   // Aquecimento leve em segundo plano após render inicial
   useEffect(() => {
-    if (painted.current || !data.areas.length) return;
+    if (painted.current || !(data?.areas?.length)) return;
     painted.current = true;
     const handle = onIdle(() => {
       warmAprenderCache(uid);
-      prefetchAreaCovers(data.areas);
-      [...data.emAndamento.slice(0, 4), ...(data.proxima ? [data.proxima] : [])].forEach((a) =>
+      prefetchAreaCovers(data.areas || []);
+      [...(data.emAndamento || []).slice(0, 4), ...(data.proxima ? [data.proxima] : [])].forEach((a) =>
         prefetchAprenderAula(a.aulaId),
       );
     }, 1500);
@@ -99,8 +107,8 @@ export function useAprenderHome(uid: string | null, activeTab: 'aulas' | 'flashc
   }, [data, uid]);
 
   const continuar: AprenderHomeAula[] = useMemo(() => {
-    if (data.emAndamento.length) return data.emAndamento;
-    return data.proxima ? [data.proxima] : [];
+    if (data?.emAndamento?.length) return data.emAndamento;
+    return data?.proxima ? [data.proxima] : [];
   }, [data]);
 
   const isAulas = activeTab === 'aulas';
@@ -118,17 +126,18 @@ export function useAprenderHome(uid: string | null, activeTab: 'aulas' | 'flashc
   }, [flashAreas]);
 
   const emAndamentoCount = useMemo(() => {
+    const areas = data?.areas || [];
     if (isFlashcards) {
-      return data.areas.filter((a) => {
+      return areas.filter((a) => {
         const p = (flashAreaProgressoMap.get(a.slug) || 0) + (flashAreaProgressoMap.get(a.nome.toLowerCase()) || 0);
         return p > 0;
       }).length;
     }
-    return data.areas.filter((a) => a.pct > 0).length;
-  }, [data.areas, isFlashcards, flashAreaProgressoMap]);
+    return areas.filter((a) => a.pct > 0).length;
+  }, [data?.areas, isFlashcards, flashAreaProgressoMap]);
 
   const areasOrdenadas = useMemo(() => {
-    const lista = [...data.areas];
+    const lista = [...(data?.areas || [])];
     if (isFlashcards) {
       lista.sort((a, b) => {
         const aProg = (flashAreaProgressoMap.get(a.slug) || 0) + (flashAreaProgressoMap.get(a.nome.toLowerCase()) || 0);
