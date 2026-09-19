@@ -12,14 +12,14 @@ import InstagramSlide from '@/components/admin/InstagramSlide';
 import InstagramFlashcardSlide from '@/components/admin/InstagramFlashcardSlide';
 
 // Imagens padrão de filósofos
-import cicero from '@/assets/filosofos/cicero.webp';
-import aquino from '@/assets/filosofos/aquino.webp';
-import montesquieu from '@/assets/filosofos/montesquieu.webp';
-import kant from '@/assets/filosofos/kant.webp';
-import platao from '@/assets/filosofos/platao.webp';
-import aristoteles from '@/assets/filosofos/aristoteles.webp';
+import aristoteles from '../../docs/filosofos/Aristóteles.webp';
+import kant from '../../docs/filosofos/Immanuel Kant.webp';
+import platao from '../../docs/filosofos/Platão.webp';
+import aquino from '../../docs/filosofos/Tomás de Aquino.webp';
+import socrates from '../../docs/filosofos/Sócrates.webp';
+import descartes from '../../docs/filosofos/René Descartes.webp';
 
-const FALLBACK_IMAGES = [platao, aristoteles, cicero, aquino, kant, montesquieu];
+const FALLBACK_IMAGES = [platao, aristoteles, socrates, aquino, kant, descartes];
 
 type Slide = {
   type: 'cover' | 'content' | 'flashcard';

@@ -1,17 +1,29 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import cicero from '@/assets/filosofos/cicero.webp';
-import aquino from '@/assets/filosofos/aquino.webp';
-import montesquieu from '@/assets/filosofos/montesquieu.webp';
-import kant from '@/assets/filosofos/kant.webp';
-import kelsen from '@/assets/filosofos/kelsen.webp';
-import platao from '@/assets/filosofos/platao.webp';
-import aristoteles from '@/assets/filosofos/aristoteles.webp';
-import rousseau from '@/assets/filosofos/rousseau.webp';
-import locke from '@/assets/filosofos/locke.webp';
-import beccaria from '@/assets/filosofos/beccaria.webp';
-import ruibarbosa from '@/assets/filosofos/ruibarbosa.webp';
-import hegel from '@/assets/filosofos/hegel.webp';
+const modules = import.meta.glob('../../../docs/filosofos/*.webp', { eager: true, import: 'default' });
+
+const QUOTES_DB: Record<string, {name: string, quote: string, epoca: string}> = {
+  'aristoteles': { name: 'Aristóteles', epoca: 'Grécia Antiga · séc. IV a.C.', quote: 'A lei é a razão livre da paixão.' },
+  'friedrich nietzsche': { name: 'Friedrich Nietzsche', epoca: 'Modernidade · séc. XIX', quote: 'Aquele que tem um porquê para viver pode suportar quase qualquer como.' },
+  'nietzsche': { name: 'Friedrich Nietzsche', epoca: 'Modernidade · séc. XIX', quote: 'Aquele que tem um porquê para viver pode suportar quase qualquer como.' },
+  'immanuel kant': { name: 'Immanuel Kant', epoca: 'Modernidade · séc. XVIII–XIX', quote: 'Age como se a máxima de tua ação devesse tornar-se uma lei universal.' },
+  'kant': { name: 'Immanuel Kant', epoca: 'Modernidade · séc. XVIII–XIX', quote: 'Age como se a máxima de tua ação devesse tornar-se uma lei universal.' },
+  'platao': { name: 'Platão', epoca: 'Grécia Antiga · séc. IV a.C.', quote: 'O que faz a justiça é que cada um faça a sua parte.' },
+  'rene descartes': { name: 'René Descartes', epoca: 'Modernidade · séc. XVII', quote: 'Penso, logo existo.' },
+  'descartes': { name: 'René Descartes', epoca: 'Modernidade · séc. XVII', quote: 'Penso, logo existo.' },
+  'santo agostinho': { name: 'Santo Agostinho', epoca: 'Idade Média · séc. IV-V', quote: 'Uma lei injusta não é lei alguma.' },
+  'agostinho': { name: 'Santo Agostinho', epoca: 'Idade Média · séc. IV-V', quote: 'Uma lei injusta não é lei alguma.' },
+  'simone de beauvoir': { name: 'Simone de Beauvoir', epoca: 'Contemporâneo · séc. XX', quote: 'Que a liberdade seja a nossa própria substância.' },
+  'beauvoir': { name: 'Simone de Beauvoir', epoca: 'Contemporâneo · séc. XX', quote: 'Que a liberdade seja a nossa própria substância.' },
+  'seneca': { name: 'Sêneca', epoca: 'Roma Antiga · séc. I d.C.', quote: 'Nenhuma lei agrada a todos.' },
+  'socrates': { name: 'Sócrates', epoca: 'Grécia Antiga · séc. V a.C.', quote: 'É melhor sofrer uma injustiça do que cometê-la.' },
+  'tomas de aquino': { name: 'Tomás de Aquino', epoca: 'Idade Média · séc. XIII', quote: 'A lei é uma ordenação da razão para o bem comum.' },
+  'aquino': { name: 'Tomás de Aquino', epoca: 'Idade Média · séc. XIII', quote: 'A lei é uma ordenação da razão para o bem comum.' },
+};
+
+const normalizeName = (name: string) => {
+  return name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+};
 
 type Filosofo = {
   nome: string;
@@ -20,20 +32,16 @@ type Filosofo = {
   img: string;
 };
 
-const FILOSOFOS: Filosofo[] = [
-  { nome: 'Platão', epoca: 'Grécia Antiga · séc. IV a.C.', frase: 'A justiça consiste em cada um cumprir o que lhe é próprio.', img: platao },
-  { nome: 'Aristóteles', epoca: 'Grécia Antiga · séc. IV a.C.', frase: 'A lei é a razão desprovida de paixão.', img: aristoteles },
-  { nome: 'Cícero', epoca: 'Roma Antiga · séc. I a.C.', frase: 'A justiça é a rainha das virtudes.', img: cicero },
-  { nome: 'Tomás de Aquino', epoca: 'Idade Média · séc. XIII', frase: 'A lei é uma ordenação da razão para o bem comum.', img: aquino },
-  { nome: 'John Locke', epoca: 'Iluminismo · séc. XVII', frase: 'Onde não há lei, não há liberdade.', img: locke },
-  { nome: 'Montesquieu', epoca: 'Iluminismo · séc. XVIII', frase: 'Para não abusar do poder, é necessário que o poder detenha o poder.', img: montesquieu },
-  { nome: 'Cesare Beccaria', epoca: 'Iluminismo · séc. XVIII', frase: 'É melhor prevenir os delitos do que puni-los.', img: beccaria },
-  { nome: 'Jean-Jacques Rousseau', epoca: 'Iluminismo · séc. XVIII', frase: 'A lei é a expressão da vontade geral.', img: rousseau },
-  { nome: 'Immanuel Kant', epoca: 'Modernidade · séc. XVIII–XIX', frase: 'Age de tal modo que a máxima da tua ação possa ser uma lei universal.', img: kant },
-  { nome: 'Georg Hegel', epoca: 'Idealismo · séc. XIX', frase: 'O direito é a existência da vontade livre.', img: hegel },
-  { nome: 'Rui Barbosa', epoca: 'Brasil · séc. XIX–XX', frase: 'A justiça atrasada não é justiça; é injustiça qualificada e manifesta.', img: ruibarbosa },
-  { nome: 'Hans Kelsen', epoca: 'Contemporâneo · séc. XX', frase: 'A norma fundamental é o pressuposto lógico de toda ordem jurídica.', img: kelsen },
-];
+const FILOSOFOS: Filosofo[] = Object.entries(modules).map(([path, img]) => {
+  const filename = path.split('/').pop()?.replace('.webp', '') || '';
+  const normalizedKey = normalizeName(filename);
+  const info = QUOTES_DB[normalizedKey] || { 
+    name: filename.replace(/_/g, ' '), 
+    epoca: 'Filosofia',
+    quote: 'A sabedoria começa na reflexão.' 
+  };
+  return { nome: info.name, epoca: info.epoca, frase: info.quote, img: img as string };
+});
 
 // Pré-carrega todas as imagens no import do módulo para exibição instantânea.
 if (typeof window !== 'undefined') {

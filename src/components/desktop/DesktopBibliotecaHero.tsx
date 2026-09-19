@@ -2,35 +2,42 @@ import { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import cicero from '@/assets/filosofos/cicero.webp';
-import aquino from '@/assets/filosofos/aquino.webp';
-import montesquieu from '@/assets/filosofos/montesquieu.webp';
-import kant from '@/assets/filosofos/kant.webp';
-import kelsen from '@/assets/filosofos/kelsen.webp';
-import platao from '@/assets/filosofos/platao.webp';
-import aristoteles from '@/assets/filosofos/aristoteles.webp';
-import rousseau from '@/assets/filosofos/rousseau.webp';
-import locke from '@/assets/filosofos/locke.webp';
-import beccaria from '@/assets/filosofos/beccaria.webp';
-import ruibarbosa from '@/assets/filosofos/ruibarbosa.webp';
-import hegel from '@/assets/filosofos/hegel.webp';
+const modules = import.meta.glob('../../../docs/filosofos/*.webp', { eager: true, import: 'default' });
+
+const QUOTES_DB: Record<string, {name: string, quote: string}> = {
+  'aristoteles': { name: 'Aristóteles', quote: 'A lei é a razão livre da paixão.' },
+  'friedrich nietzsche': { name: 'Friedrich Nietzsche', quote: 'Aquele que tem um porquê para viver pode suportar quase qualquer como.' },
+  'nietzsche': { name: 'Friedrich Nietzsche', quote: 'Aquele que tem um porquê para viver pode suportar quase qualquer como.' },
+  'immanuel kant': { name: 'Immanuel Kant', quote: 'Age como se a máxima de tua ação devesse tornar-se uma lei universal.' },
+  'kant': { name: 'Immanuel Kant', quote: 'Age como se a máxima de tua ação devesse tornar-se uma lei universal.' },
+  'platao': { name: 'Platão', quote: 'O que faz a justiça é que cada um faça a sua parte.' },
+  'rene descartes': { name: 'René Descartes', quote: 'Penso, logo existo.' },
+  'descartes': { name: 'René Descartes', quote: 'Penso, logo existo.' },
+  'santo agostinho': { name: 'Santo Agostinho', quote: 'Uma lei injusta não é lei alguma.' },
+  'agostinho': { name: 'Santo Agostinho', quote: 'Uma lei injusta não é lei alguma.' },
+  'simone de beauvoir': { name: 'Simone de Beauvoir', quote: 'Que a liberdade seja a nossa própria substância.' },
+  'beauvoir': { name: 'Simone de Beauvoir', quote: 'Que a liberdade seja a nossa própria substância.' },
+  'seneca': { name: 'Sêneca', quote: 'Nenhuma lei agrada a todos.' },
+  'socrates': { name: 'Sócrates', quote: 'É melhor sofrer uma injustiça do que cometê-la.' },
+  'tomas de aquino': { name: 'Tomás de Aquino', quote: 'A lei é uma ordenação da razão para o bem comum.' },
+  'aquino': { name: 'Tomás de Aquino', quote: 'A lei é uma ordenação da razão para o bem comum.' },
+};
+
+const normalizeName = (name: string) => {
+  return name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+};
 
 type Filosofo = { nome: string; img: string };
 
-const FILOSOFOS: Filosofo[] = [
-  { nome: 'Platão', img: platao },
-  { nome: 'Aristóteles', img: aristoteles },
-  { nome: 'Cícero', img: cicero },
-  { nome: 'Tomás de Aquino', img: aquino },
-  { nome: 'John Locke', img: locke },
-  { nome: 'Montesquieu', img: montesquieu },
-  { nome: 'Cesare Beccaria', img: beccaria },
-  { nome: 'Jean-Jacques Rousseau', img: rousseau },
-  { nome: 'Immanuel Kant', img: kant },
-  { nome: 'Georg Hegel', img: hegel },
-  { nome: 'Rui Barbosa', img: ruibarbosa },
-  { nome: 'Hans Kelsen', img: kelsen },
-];
+const FILOSOFOS: Filosofo[] = Object.entries(modules).map(([path, img]) => {
+  const filename = path.split('/').pop()?.replace('.webp', '') || '';
+  const normalizedKey = normalizeName(filename);
+  const info = QUOTES_DB[normalizedKey] || { 
+    name: filename.replace(/_/g, ' '), 
+    quote: 'A sabedoria começa na reflexão.' 
+  };
+  return { nome: info.name, img: img as string };
+});
 
 if (typeof window !== 'undefined') {
   FILOSOFOS.forEach((f) => {
