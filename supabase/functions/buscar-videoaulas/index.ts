@@ -32,6 +32,7 @@ function norm(s: string): string {
 }
 
 // Verifica se o título menciona explicitamente o artigo/súmula pedido
+// Verifica se o título menciona explicitamente o artigo/súmula pedido
 function titleMatchesArticle(titulo: string, numero: string, isSumula: boolean = false): boolean {
   const n = norm(numero).replace(/\s+/g, '');
   if (!n) return true;
@@ -39,10 +40,10 @@ function titleMatchesArticle(titulo: string, numero: string, isSumula: boolean =
   
   if (isSumula) {
     const patterns = [
-      new RegExp(`\\bsumula\\s*0*${n}\\b`),
+      new RegExp(`\\bsumula\\s*(?:vinculante)?\\s*(?:n|no|num|numero)?\\.?\\s*0*${n}\\b`),
+      new RegExp(`\\bsv\\s*(?:n|no|num|numero)?\\.?\\s*0*${n}\\b`),
       new RegExp(`\\bs\\.?\\s*0*${n}\\b`),
       new RegExp(`\\bsum\\.?\\s*0*${n}\\b`),
-      new RegExp(`\\bsv\\.?\\s*0*${n}\\b`),
     ];
     if (patterns.some((r) => r.test(t))) return true;
     return new RegExp(`(?:^|\\s|#)0*${n}(?:\\s|$|[^0-9])`).test(t);
@@ -59,19 +60,29 @@ function titleMatchesArticle(titulo: string, numero: string, isSumula: boolean =
 }
 
 function buildQuery(artigoNumero: string, leiNome?: string, isSumula: boolean = false) {
-  // Extrai apenas o número do artigo, ex: "Art. 87" -> "87"
   const matchNum = artigoNumero.match(/\d+/);
   const numStr = matchNum ? matchNum[0] : artigoNumero;
 
   let lei = (leiNome || (isSumula ? 'Súmula' : 'legislação brasileira')).trim();
-  // Transforma nomes de tabela como "codigo_penal" em "codigo penal" para busca mais semântica
   lei = lei.replace(/_/g, ' ');
 
   if (isSumula) {
-    // Para súmulas: "Súmula Vinculante 14" explicação
-    return `"${lei} ${numStr}" explicação aula`;
+    const isVinculante = /vinculante/i.test(lei);
+    const isStf = /stf/i.test(lei);
+    const isStj = /stj/i.test(lei);
+
+    if (isVinculante) {
+      return `"Súmula Vinculante ${numStr}" aula explicação`;
+    }
+    if (isStj) {
+      return `"Súmula ${numStr}" STJ aula explicação`;
+    }
+    if (isStf) {
+      return `"Súmula ${numStr}" STF aula explicação`;
+    }
+    return `Súmula ${numStr} ${lei} aula explicação`;
   }
-  // Query mais específica com aspas para forçar a lei exata (ex: "Código Penal")
+
   return `"artigo ${numStr}" "${lei}" explicação aula`;
 }
 
@@ -79,6 +90,7 @@ async function searchList(
   params: Record<string, string>,
   key: string,
   maxResults = 10,
+  isSumula = false,
 ): Promise<string[]> {
   const url = new URL('https://www.googleapis.com/youtube/v3/search');
   url.searchParams.set('part', 'snippet');
@@ -86,7 +98,9 @@ async function searchList(
   url.searchParams.set('maxResults', String(maxResults));
   url.searchParams.set('relevanceLanguage', 'pt');
   url.searchParams.set('regionCode', 'BR');
-  url.searchParams.set('videoDuration', 'medium');
+  if (!isSumula) {
+    url.searchParams.set('videoDuration', 'medium');
+  }
   url.searchParams.set('key', key);
   Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
 
@@ -228,10 +242,18 @@ Deno.serve(async (req) => {
     let dateIds: string[] = [];
     try {
       [viewIds, ratingIds, dateIds] = await Promise.all([
-        searchList({ q, order: 'viewCount' }, YOUTUBE_API_KEY, 10),
-        searchList({ q, order: 'rating' }, YOUTUBE_API_KEY, 10),
-        searchList({ q, order: 'date', publishedAfter }, YOUTUBE_API_KEY, 10),
+        searchList({ q, order: 'viewCount' }, YOUTUBE_API_KEY, 10, isSumula),
+        searchList({ q, order: 'rating' }, YOUTUBE_API_KEY, 10, isSumula),
+        searchList({ q, order: 'date', publishedAfter }, YOUTUBE_API_KEY, 10, isSumula),
       ]);
+
+      // Fallback para Súmula caso a query com aspas não retorne resultados
+      if (isSumula && viewIds.length === 0 && ratingIds.length === 0) {
+        const numClean = artigoNumero.replace(/\D/g, '');
+        const fallbackQ = `Sumula Vinculante ${numClean} STF aula explicacao`;
+        const fallbackIds = await searchList({ q: fallbackQ, order: 'relevance' }, YOUTUBE_API_KEY, 10, true);
+        viewIds = fallbackIds;
+      }
     } catch (err: any) {
       if (err?.message === 'QUOTA_EXCEEDED') {
         if (cached?.videos && Array.isArray(cached.videos) && cached.videos.length > 0) {

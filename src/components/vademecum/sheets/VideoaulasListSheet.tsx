@@ -148,12 +148,45 @@ const VideoaulasListSheet = ({ open, onClose, tabelaNome, artigoNumero, leiNome,
     return 'codigo_penal';
   }, [tabelaNome, leiNome]);
 
+  const isSumula = useMemo(() => {
+    const l = (leiNome || '').toLowerCase();
+    const t = (cleanTabela || '').toLowerCase();
+    return t.includes('sumula') || l.includes('súmula') || l.includes('sumula');
+  }, [leiNome, cleanTabela]);
+
   const friendlyLeiNome = useMemo(() => {
-    if (leiNome && leiNome !== tabelaNome) return leiNome;
+    if (leiNome && leiNome !== tabelaNome) {
+      // Se for "Súmulas Vinculantes", singulariza para exibição limpa
+      if (/s[uú]mulas\s+vinculantes/i.test(leiNome)) return 'Súmula Vinculante';
+      return leiNome;
+    }
+    if (cleanTabela.includes('sumula_vinculante') || cleanTabela.includes('sumulas_vinculantes')) return 'Súmula Vinculante';
+    if (cleanTabela.includes('sumulas_stf') || cleanTabela.includes('sumula_stf')) return 'Súmula STF';
+    if (cleanTabela.includes('sumulas_stj') || cleanTabela.includes('sumula_stj')) return 'Súmula STJ';
+    if (cleanTabela.includes('sumulas_tst') || cleanTabela.includes('sumula_tst')) return 'Súmula TST';
     if (cleanTabela.includes('penal')) return 'Código Penal';
     if (cleanTabela.includes('cf') || cleanTabela.includes('constituicao')) return 'Constituição Federal';
     return cleanTabela.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
   }, [leiNome, cleanTabela, tabelaNome]);
+
+  const headerSubtitle = useMemo(() => {
+    if (isSumula) {
+      if (friendlyLeiNome.toLowerCase().includes('súmula') || friendlyLeiNome.toLowerCase().includes('sumula')) {
+        return `${friendlyLeiNome} nº ${cleanNum}`;
+      }
+      return `Súmula nº ${cleanNum} — ${friendlyLeiNome}`;
+    }
+    const numInt = parseInt(cleanNum, 10);
+    const artPrefix = !isNaN(numInt) && numInt >= 1 && numInt <= 9 ? `Art. ${cleanNum}º` : `Art. ${cleanNum}`;
+    return `${artPrefix} — ${friendlyLeiNome}`;
+  }, [isSumula, friendlyLeiNome, cleanNum]);
+
+  const youtubeFallbackQuery = useMemo(() => {
+    if (isSumula) {
+      return `${friendlyLeiNome} ${cleanNum} explicacao aula`;
+    }
+    return `Artigo ${cleanNum} ${friendlyLeiNome} aula explicacao`;
+  }, [isSumula, friendlyLeiNome, cleanNum]);
 
   useEffect(() => {
     if (!open) return;
@@ -261,9 +294,9 @@ const VideoaulasListSheet = ({ open, onClose, tabelaNome, artigoNumero, leiNome,
                   <Play className="w-5 h-5 text-white fill-white" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-heading text-base font-bold text-foreground truncate">Videoaulas</h3>
-                  <p className="text-xs text-foreground/70 truncate">
-                    Art. {cleanNum}º — {friendlyLeiNome}
+                  <h3 className="font-sans text-[15px] font-bold tracking-wide text-foreground truncate">Videoaulas</h3>
+                  <p className="font-sans text-xs font-medium text-foreground/80 tracking-normal truncate">
+                    {headerSubtitle}
                   </p>
                 </div>
               </div>
@@ -286,18 +319,18 @@ const VideoaulasListSheet = ({ open, onClose, tabelaNome, artigoNumero, leiNome,
               {loading && videos.length === 0 && (
                 <div className="px-6 py-14 text-center flex flex-col items-center gap-3">
                   <div className="w-10 h-10 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-                  <p className="text-sm text-foreground/70">Buscando as melhores videoaulas para você…</p>
+                  <p className="font-sans text-sm text-foreground/70">Buscando as melhores videoaulas para você…</p>
                 </div>
               )}
 
               {!loading && error && videos.length === 0 && (
                 <div className="text-center py-10 px-4">
-                  <p className="text-sm text-destructive mb-4">{error}</p>
+                  <p className="font-sans text-sm text-destructive mb-4">{error}</p>
                   <a
-                    href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`Artigo ${cleanNum} ${friendlyLeiNome} aula explicacao`)}`}
+                    href={`https://www.youtube.com/results?search_query=${encodeURIComponent(youtubeFallbackQuery)}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white font-semibold text-xs shadow-md hover:bg-primary/90 transition-all"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white font-semibold text-xs tracking-wide shadow-md hover:bg-primary/90 transition-all"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Pesquisar no YouTube
@@ -310,15 +343,17 @@ const VideoaulasListSheet = ({ open, onClose, tabelaNome, artigoNumero, leiNome,
                   <div className="w-12 h-12 rounded-2xl bg-secondary flex items-center justify-center mb-3 text-muted-foreground">
                     <Video className="w-6 h-6" />
                   </div>
-                  <p className="text-sm font-semibold text-foreground mb-1">Nenhuma videoaula catalogada no momento</p>
-                  <p className="text-xs text-foreground/60 mb-5 max-w-xs">
-                    Você pode assistir a aulas diretamente deste artigo no YouTube:
+                  <p className="font-sans text-sm font-semibold text-foreground mb-1">Nenhuma videoaula catalogada no momento</p>
+                  <p className="font-sans text-xs text-foreground/70 mb-5 max-w-xs">
+                    {isSumula
+                      ? 'Você pode assistir a aulas diretamente desta súmula no YouTube:'
+                      : 'Você pode assistir a aulas diretamente deste artigo no YouTube:'}
                   </p>
                   <a
-                    href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`Artigo ${cleanNum} ${friendlyLeiNome} aula explicacao`)}`}
+                    href={`https://www.youtube.com/results?search_query=${encodeURIComponent(youtubeFallbackQuery)}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs shadow-lg shadow-red-600/20 active:scale-95 transition-all"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs tracking-wide shadow-lg shadow-red-600/20 active:scale-95 transition-all"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Assistir no YouTube
@@ -330,7 +365,7 @@ const VideoaulasListSheet = ({ open, onClose, tabelaNome, artigoNumero, leiNome,
                 <>
                   {stale && (
                     <div className="mb-3 px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
-                      <p className="text-[11px] text-yellow-200/90">Mostrando resultados recomendados.</p>
+                      <p className="font-sans text-[11px] text-yellow-200/90">Mostrando resultados recomendados.</p>
                     </div>
                   )}
 
@@ -367,15 +402,15 @@ const VideoaulasListSheet = ({ open, onClose, tabelaNome, artigoNumero, leiNome,
                             <div className="flex-1 min-w-0 py-0.5 flex flex-col justify-between">
                               <div>
                                 <div
-                                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold border ${meta.badge} mb-1`}
+                                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9.5px] font-bold tracking-wide border ${meta.badge} mb-1`}
                                 >
                                   <Icon className="w-3 h-3" />
                                   {meta.label}
                                 </div>
-                                <p className="text-xs font-bold text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+                                <p className="font-sans text-[13px] font-semibold text-foreground/95 line-clamp-2 leading-relaxed tracking-normal group-hover:text-primary transition-colors">
                                   {v.titulo}
                                 </p>
-                                <p className="text-[11px] text-foreground/60 mt-1 truncate">{v.canal}</p>
+                                <p className="font-sans text-[11px] text-foreground/60 mt-1 truncate">{v.canal}</p>
                               </div>
                               <div className="flex items-center gap-3 mt-1.5 text-[10px] text-foreground/50">
                                 <span className="flex items-center gap-1">
