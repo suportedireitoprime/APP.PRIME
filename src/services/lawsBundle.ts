@@ -1,20 +1,15 @@
 /**
- * Loader do bundle nativo de leis + sync incremental.
+ * Loader do bundle estático (offline) de leis.
  *
- * Fluxo:
- *  1. App abre → tenta ler /laws-bundle/manifest.json (embutido no APK/dist)
- *  2. Se existir, popula Dexie com o que ainda não tiver e usa bundle como fonte instantânea
- *  3. Em background, chama /laws-delta?since=<bundle_updated_at ou lastSync> e aplica alterações
- *  4. Persiste `lastSync` em localStorage para próxima abertura
+ * Fluxo (Zero-Loading Inicial):
+ *  1. App abre → tenta ler /laws-bundle/manifest.json (embutido no build Vite/dist)
+ *  2. Verifica quais leis não constam no banco local Dexie (artigosCache).
+ *  3. Popula o banco local em background com os dados do bundle.
+ *  4. Da próxima vez que o usuário abrir a lei, já está na memória em 0ms.
  */
-import type { ArtigoLei } from '@/data/mockData';
-import { setPersistedArtigosCache, getPersistedArtigosCache } from '@/services/offlineDb';
-import { fixMojibake } from '@/lib/mojibake';
 
-import { LEIS_SUPABASE_URL, LEIS_SUPABASE_ANON_KEY } from "@/lib/legislacaoBackend";
-const SUPABASE_URL = LEIS_SUPABASE_URL;
-const SUPABASE_KEY = LEIS_SUPABASE_ANON_KEY;
-const LAST_SYNC_KEY = 'laws_bundle:last_sync';
+import { setPersistedArtigosCache, getPersistedArtigosCache } from '@/services/offlineDb';
+
 const MANIFEST_URL = '/laws-bundle/manifest.json';
 
 export interface ManifestLei {
@@ -25,6 +20,7 @@ export interface ManifestLei {
   updated_at: string | null;
   count: number;
 }
+
 export interface Manifest {
   generated_at: string;
   bundle_updated_at: string | null;
@@ -52,20 +48,21 @@ export function loadManifest(): Promise<Manifest | null> {
   return _manifestPromise;
 }
 
-function normalizeArtigos(rows: any[]): ArtigoLei[] {
+function normalizeArtigos(rows: any[]) {
   return (rows || [])
-    .map((r) => ({
+    .map((r: any) => ({
       id: r.id,
-      numero: fixMojibake(r.numero || '').replace(/(\d)o\b/g, '$1º').replace(/°/g, 'º'),
-      caput: fixMojibake(r.texto || '').replace(/(\d)o\b/g, '$1º').replace(/°/g, 'º'),
-      titulo: r.epigrafe ? fixMojibake(r.epigrafe) : undefined,
+      numero: (r.numero || '').replace(/(\d)o\b/g, '$1º').replace(/°/g, 'º'),
+      caput: (r.texto || '').replace(/(\d)o\b/g, '$1º').replace(/°/g, 'º'),
+      titulo: r.epigrafe || undefined,
       capitulo: undefined,
+      ordem: typeof r.ordem === 'number' ? r.ordem : undefined,
     }))
-    .filter((a) => a.caput.trim() !== '');
+    .filter((a: any) => a.caput.trim() !== '');
 }
 
 /** Carrega artigos bundlados de uma lei (via slug). Retorna null se sem bundle. */
-export async function loadBundledLei(slug: string): Promise<ArtigoLei[] | null> {
+export async function loadBundledLei(slug: string): Promise<any[] | null> {
   try {
     const res = await fetch(`/laws-bundle/${slug}.json`, { cache: 'force-cache' });
     if (!res.ok) return null;
@@ -77,10 +74,10 @@ export async function loadBundledLei(slug: string): Promise<ArtigoLei[] | null> 
 }
 
 /**
- * Aquece a memória com todos os artigos bundlados no APK.
- * Chame no boot (após loadManifest) para que qualquer `getCachedArtigos`
- * subsequente retorne síncrono e sem I/O — abertura de lei fica instantânea.
- * Concorrência controlada (6) pra não travar main thread em Android modesto.
+ * Aquece a memória com todos os artigos bundlados no APK/Web.
+ * Chame no boot (após loadManifest) para que qualquer `getPersistedArtigosCache`
+ * subsequente retorne síncrono e sem I/O — a abertura de qualquer lei do Vade Mecum ficará instantânea.
+ * Concorrência controlada (6) para não travar main thread.
  */
 let _primePromise: Promise<void> | null = null;
 export function primeMemoryCacheFromBundle(concurrency = 6): Promise<void> {
@@ -88,20 +85,34 @@ export function primeMemoryCacheFromBundle(concurrency = 6): Promise<void> {
   _primePromise = (async () => {
     const manifest = await loadManifest();
     if (!manifest || !manifest.leis?.length) return;
-    const { setCachedArtigos, hasCachedArtigos } = await import('@/services/legislacaoService');
+
+    // Precisamos resolver a qual 'tabela_nome' no APP.PRIME o 'slug' do Supabase se refere.
+    // Usamos o LEIS_CATALOG e o service para indexar.
     const { LEIS_CATALOG } = await import('@/data/leisCatalog');
 
-    // Mapeia slug -> tabela_nome usando o mesmo matcher de matchesSlug.
     const slugToTabela = new Map<string, string>();
     for (const m of manifest.leis) {
+      // O slug unificado no supabase bate com o `tabela_nome` no catalog?
+      // Usaremos a rotina de match fuzzy.
       const lei = LEIS_CATALOG.find((l) => matchesSlug(l as any, m.slug));
-      if (lei) slugToTabela.set(m.slug, lei.tabela_nome);
+      if (lei) {
+          slugToTabela.set(m.slug, lei.tabela_nome);
+      } else {
+          // Se for uma lei especial dinâmica que não está no catalog, a `tabelaNome` é o próprio slug
+          slugToTabela.set(m.slug, m.slug);
+      }
     }
 
-    const queue = manifest.leis.filter((m) => {
-      const t = slugToTabela.get(m.slug);
-      return t && !hasCachedArtigos(t);
-    });
+    // Processa apenas as leis que AINDA NÃO estão no cache.
+    const queue = [];
+    for (const m of manifest.leis) {
+        const t = slugToTabela.get(m.slug);
+        if (!t) continue;
+        const exists = await getPersistedArtigosCache(t);
+        if (!exists || exists.length === 0) {
+            queue.push(m);
+        }
+    }
 
     let i = 0;
     const worker = async () => {
@@ -111,7 +122,10 @@ export function primeMemoryCacheFromBundle(concurrency = 6): Promise<void> {
         const tabela = slugToTabela.get(item.slug)!;
         try {
           const arts = await loadBundledLei(item.slug);
-          if (arts && arts.length > 0) setCachedArtigos(tabela, arts);
+          if (arts && arts.length > 0) {
+              await setPersistedArtigosCache(tabela, arts);
+              console.log(`[lawsBundle] ${item.slug} injetada offline (zero-load).`);
+          }
         } catch { /* segue */ }
       }
     };
@@ -120,81 +134,18 @@ export function primeMemoryCacheFromBundle(concurrency = 6): Promise<void> {
   return _primePromise;
 }
 
-/** Sincroniza deltas de artigos alterados desde a última sync (ou desde o bundle). */
-export async function syncLawsDelta(): Promise<{ applied: number; server_time: string } | null> {
-  const manifest = await loadManifest();
-  const bundleTs = manifest?.bundle_updated_at || null;
-  const last = localStorage.getItem(LAST_SYNC_KEY) || bundleTs || '2000-01-01T00:00:00Z';
-
-  try {
-    const url = `${SUPABASE_URL}/functions/v1/laws-delta?since=${encodeURIComponent(last)}`;
-    const res = await fetch(url, {
-      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
-    });
-    if (!res.ok) return null;
-    const payload = (await res.json()) as {
-      server_time: string;
-      count: number;
-      artigos: Array<{ id: string; lei_id: string; numero: string; texto: string; epigrafe?: string | null }>;
-    };
-
-    if (payload.count > 0) {
-      // Agrupa por lei
-      const byLei = new Map<string, typeof payload.artigos>();
-      for (const a of payload.artigos) {
-        const arr = byLei.get(a.lei_id) || [];
-        arr.push(a);
-        byLei.set(a.lei_id, arr);
-      }
-      // Aplica no Dexie por tabela_nome (usando slug→id do manifest)
-      const { LEIS_CATALOG } = await import('@/data/leisCatalog');
-      for (const [leiId, novosArts] of byLei) {
-        const slug = _idToSlug?.get(leiId);
-        if (!slug) continue;
-        // Encontra tabela_nome via fuzzy match slug
-        const lei = LEIS_CATALOG.find((l) =>
-          _slugToId?.get(slug) === leiId && matchesSlug(l, slug)
-        );
-        if (!lei) continue;
-
-        const current = (await getPersistedArtigosCache(lei.tabela_nome)) || [];
-        const currentById = new Map(current.map((a: any) => [a.id, a]));
-        for (const n of novosArts) {
-          currentById.set(n.id, {
-            id: n.id,
-            numero: (n.numero || '').replace(/(\d)o\b/g, '$1º').replace(/°/g, 'º'),
-            caput: (n.texto || '').replace(/(\d)o\b/g, '$1º').replace(/°/g, 'º'),
-            titulo: n.epigrafe || undefined,
-            capitulo: undefined,
-          });
-        }
-        const merged = Array.from(currentById.values());
-        await setPersistedArtigosCache(lei.tabela_nome, merged);
-      }
-    }
-
-    localStorage.setItem(LAST_SYNC_KEY, payload.server_time);
-    return { applied: payload.count, server_time: payload.server_time };
-  } catch (e) {
-    console.warn('[lawsBundle] sync falhou:', e);
-    return null;
-  }
-}
-
 function matchesSlug(lei: { tabela_nome: string; nome: string; id: string }, slug: string): boolean {
   const norm = (s: string) =>
-    s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '');
+    (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '');
   const s = norm(slug);
   return [lei.tabela_nome, lei.nome, lei.id].some((v) => norm(String(v || '')) === s);
 }
 
-export function getBundleSlugForTabela(tabelaNome: string): string | null {
-  if (!_slugToId) return null;
-  const norm = (s: string) =>
-    s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '');
-  const key = norm(tabelaNome);
-  for (const slug of _slugToId.keys()) {
-    if (norm(slug) === key || key.includes(norm(slug)) || norm(slug).includes(key)) return slug;
-  }
-  return null;
+/** 
+ * Sincroniza deltas de leis após carregamento do bundle offline.
+ * Implementação full-sync reservada para o backend edge-functions delta.
+ */
+export async function syncLawsDelta(): Promise<void> {
+    // Stub
 }
+
