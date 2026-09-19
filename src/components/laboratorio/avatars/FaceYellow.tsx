@@ -15,6 +15,25 @@ export const FaceYellow = ({ viseme, volume }: { viseme: string; volume: number 
           <stop offset="70%" stopColor="#ffeb3b" />
           <stop offset="100%" stopColor="#fbc02d" />
         </radialGradient>
+        <style>{`
+          .idle-blink {
+            animation: blink 4s infinite;
+          }
+          .idle-look {
+            animation: lookAround 8s infinite;
+          }
+          @keyframes blink {
+            0%, 96% { transform: scale(1, 1); }
+            98% { transform: scale(1, 0.1); }
+            100% { transform: scale(1, 1); }
+          }
+          @keyframes lookAround {
+            0%, 20% { transform: translateX(0px); }
+            25%, 45% { transform: translateX(-3px); }
+            50%, 70% { transform: translateX(3px); }
+            75%, 100% { transform: translateX(0px); }
+          }
+        `}</style>
       </defs>
       
       {/* Ondas Sonoras no Fundo (movidas levemente para cobrir o corpo todo se precisar, ou só a cabeça) */}
@@ -50,12 +69,12 @@ export const FaceYellow = ({ viseme, volume }: { viseme: string; volume: number 
       </g>
 
       {/* Braço Direito (Explicando / Animado) */}
-      <g className="transition-transform duration-100" style={{ transform: `rotate(${-volume * 25}deg)`, transformOrigin: '65px 100px' }}>
+      <g className="transition-transform duration-100" style={{ transform: `rotate(${-volume * 20}deg)`, transformOrigin: '65px 100px' }}>
         {/* Manga */}
         <path d="M 65 90 Q 90 100 82 125" fill="none" stroke="#212121" strokeWidth="16" strokeLinecap="round" />
         
-        {/* Luva Direita (apontando) */}
-        <g style={{ transform: `translateY(${-volume * 5}px)`, transition: 'transform 0.1s' }}>
+        {/* Luva Direita (apontando) com expressão no pulso */}
+        <g style={{ transform: `translateY(${-volume * 10}px) rotate(${volume * 40}deg)`, transition: 'transform 0.1s', transformOrigin: '80px 125px' }}>
           {/* Punho gordinho */}
           <ellipse cx="80" cy="125" rx="14" ry="5.5" fill="#e0e0e0" transform="rotate(-15 80 125)" />
           <ellipse cx="81" cy="122" rx="14" ry="5.5" fill="#ffffff" transform="rotate(-15 81 122)" />
@@ -63,22 +82,26 @@ export const FaceYellow = ({ viseme, volume }: { viseme: string; volume: number 
           {/* Palma */}
           <circle cx="82" cy="112" r="11" fill="#ffffff" />
           
-          {/* Dedo indicador grosso apontando para cima */}
-          <g className="transition-transform duration-100" style={{ transform: `rotate(${volume * 15}deg)`, transformOrigin: '82px 105px' }}>
+          {/* Dedo indicador grosso apontando para cima (com balanço extra) */}
+          <g className="transition-transform duration-100" style={{ transform: `rotate(${volume * 20}deg)`, transformOrigin: '82px 105px' }}>
             <rect x="77.5" y="85" width="9" height="25" rx="4.5" fill="#ffffff" />
           </g>
 
           {/* Outros dedos dobrados contra a palma */}
-          <rect x="84" y="103" width="13" height="7.5" rx="3.75" fill="#ffffff" transform="rotate(15 84 103)" />
-          <rect x="85" y="111" width="11" height="7" rx="3.5" fill="#ffffff" transform="rotate(20 85 111)" />
-          <rect x="84" y="118" width="10" height="6" rx="3" fill="#ffffff" transform="rotate(25 84 118)" />
+          <g className="transition-transform duration-100" style={{ transform: `translateX(${volume * 2}px)` }}>
+            <rect x="84" y="103" width="13" height="7.5" rx="3.75" fill="#ffffff" transform="rotate(15 84 103)" />
+            <rect x="85" y="111" width="11" height="7" rx="3.5" fill="#ffffff" transform="rotate(20 85 111)" />
+            <rect x="84" y="118" width="10" height="6" rx="3" fill="#ffffff" transform="rotate(25 84 118)" />
+          </g>
 
           {/* Polegar sobreposto na frente */}
           <ellipse cx="75" cy="110" rx="4.5" ry="8.5" fill="#ffffff" transform="rotate(-30 75 110)" />
 
           {/* Sombras/Linhas separando os dedos dobrados */}
-          <path d="M 85 110 Q 90 110 94 112" stroke="#bdbdbd" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-          <path d="M 86 117 Q 89 117 92 119" stroke="#bdbdbd" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+          <g className="transition-transform duration-100" style={{ transform: `translateX(${volume * 2}px)` }}>
+            <path d="M 85 110 Q 90 110 94 112" stroke="#bdbdbd" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+            <path d="M 86 117 Q 89 117 92 119" stroke="#bdbdbd" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+          </g>
           <path d="M 74 115 Q 77 110 80 108" stroke="#bdbdbd" strokeWidth="1.5" fill="none" strokeLinecap="round" />
         </g>
       </g>
@@ -103,22 +126,31 @@ export const FaceYellow = ({ viseme, volume }: { viseme: string; volume: number 
           <polygon points="50,15 85,25 50,35 15,25" fill="#424242" />
           {/* Botão central */}
           <circle cx="50" cy="25" r="3" fill="#ffb300" />
-          {/* Franja/Tassel animada (balança com a fala) */}
-          <path d="M 50 25 Q 70 25 80 40 L 82 45 L 78 45 Z" fill="#ffb300" className="transition-transform duration-100" style={{ transform: `rotate(${-volume * 20}deg)`, transformOrigin: '50px 25px' }} />
+          {/* Franja/Tassel animada para o LADO ESQUERDO */}
+          <path d="M 50 25 Q 30 25 20 40 L 18 45 L 22 45 Z" fill="#ffb300" className="transition-transform duration-100" style={{ transform: `rotate(${volume * 20}deg)`, transformOrigin: '50px 25px' }} />
         </g>
 
         {/* Sobrancelhas */}
         <path d="M 28 33 Q 35 28 42 33" fill="none" stroke="#f57f17" strokeWidth="3" strokeLinecap="round" className="transition-all duration-100" style={{ transform: `translateY(${browOffset}px)` }} />
         <path d="M 58 33 Q 65 28 72 33" fill="none" stroke="#f57f17" strokeWidth="3" strokeLinecap="round" className="transition-all duration-100" style={{ transform: `translateY(${browOffset}px)` }} />
 
-        {/* Olhos */}
-        <g className="transition-all duration-75" style={{ transform: `scale(1, ${Math.max(0.1, eyeScale)})`, transformOrigin: '35px 40px' }}>
-          <ellipse cx="35" cy="40" rx="4.5" ry="8.5" fill="#3e2723" />
-          <circle cx="34" cy="36" r="2" fill="#fff" />
+        {/* Olhos com animações Idle (piscar e olhar para os lados) misturadas com o scale do áudio */}
+        <g className="idle-blink" style={{ transformOrigin: '35px 40px' }}>
+          <g className="transition-all duration-75" style={{ transform: `scale(1, ${Math.max(0.1, eyeScale)})`, transformOrigin: '35px 40px' }}>
+            <g className="idle-look">
+              <ellipse cx="35" cy="40" rx="4.5" ry="8.5" fill="#3e2723" />
+              <circle cx="34" cy="36" r="2" fill="#fff" />
+            </g>
+          </g>
         </g>
-        <g className="transition-all duration-75" style={{ transform: `scale(1, ${Math.max(0.1, eyeScale)})`, transformOrigin: '65px 40px' }}>
-          <ellipse cx="65" cy="40" rx="4.5" ry="8.5" fill="#3e2723" />
-          <circle cx="64" cy="36" r="2" fill="#fff" />
+        
+        <g className="idle-blink" style={{ transformOrigin: '65px 40px' }}>
+          <g className="transition-all duration-75" style={{ transform: `scale(1, ${Math.max(0.1, eyeScale)})`, transformOrigin: '65px 40px' }}>
+            <g className="idle-look">
+              <ellipse cx="65" cy="40" rx="4.5" ry="8.5" fill="#3e2723" />
+              <circle cx="64" cy="36" r="2" fill="#fff" />
+            </g>
+          </g>
         </g>
         
         {/* Boca 3 Camadas */}
