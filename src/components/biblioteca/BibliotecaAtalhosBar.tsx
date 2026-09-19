@@ -21,8 +21,13 @@ import { Capacitor } from '@capacitor/core';
 import { toast } from 'sonner';
 import { FileUp, X, Lock } from 'lucide-react';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
-import { saveCustomPdf, listCustomPdfs, removeCustomPdf, getCustomPdf, type CustomPdfRecord } from '@/services/bibliotecaPersonalizadosDb';
-
+import { uploadCustomPdfWithCover, listCustomPdfs, removeCustomPdf, subscribeCustomPdfs, type CustomPdfRecord } from '@/services/bibliotecaPersonalizadosDb';
+import { extractFirstPageAsCover } from '@/lib/pdfCoverExtractor';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 type Tab = 'favoritos' | 'recentes' | 'leitura' | 'personalizado';
 
 interface Props {
@@ -632,21 +637,36 @@ function OfflineRow({
 }
 
 function PersonalizadoLista({ onOpen }: { onOpen: (titulo: string, url: string) => void }) {
-  const [customPdfsList, setCustomPdfsList] = useState<Omit<CustomPdfRecord, 'data'>[]>([]);
+  const [customPdfsList, setCustomPdfsList] = useState<CustomPdfRecord[]>([]);
   const gate = useGatedFeature('pdf_personalizado', 'default');
   
-  const loadCustomPdfs = async () => {
-    try {
-      const list = await listCustomPdfs();
-      setCustomPdfsList(list);
-    } catch {}
-  };
-
+  // Modal states
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [pdfTitle, setPdfTitle] = useState('');
+  const [pdfAuthor, setPdfAuthor] = useState('');
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  
   useEffect(() => {
-    loadCustomPdfs();
+    setCustomPdfsList(listCustomPdfs());
+    return subscribeCustomPdfs(() => {
+      setCustomPdfsList(listCustomPdfs());
+    });
   }, []);
 
-  const handleUploadPdf = async () => {
+  const resetModal = () => {
+    setModalOpen(false);
+    setSelectedFile(null);
+    setPdfTitle('');
+    setPdfAuthor('');
+    setCoverPreview(null);
+    setIsProcessing(false);
+    setIsUploading(false);
+  };
+
+  const handleUploadClick = async () => {
     gate.run(async () => {
       try {
         const { FilePicker } = await import('@capawesome/capacitor-file-picker');
@@ -654,38 +674,76 @@ function PersonalizadoLista({ onOpen }: { onOpen: (titulo: string, url: string) 
           types: ['application/pdf'],
           readData: true,
         });
-        const file = result.files[0];
-        if (file && file.data) {
-          const t = file.name || 'PDF Personalizado';
-          const d = `data:application/pdf;base64,${file.data}`;
-          const id = crypto.randomUUID();
-          await saveCustomPdf(id, t, d);
-          await loadCustomPdfs();
-          onOpen(t, d);
+        const fileData = result.files[0];
+        if (fileData && fileData.data) {
+          // Converter base64 para File
+          const byteCharacters = atob(fileData.data);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: 'application/pdf' });
+          const file = new File([blob], fileData.name || 'documento.pdf', { type: 'application/pdf' });
+          
+          setSelectedFile(file);
+          setPdfTitle(file.name.replace(/\.[^/.]+$/, "")); // remove extensão
+          setModalOpen(true);
+          
+          // Extrair capa em background para preview
+          setIsProcessing(true);
+          try {
+            const cover = await extractFirstPageAsCover(await file.arrayBuffer());
+            setCoverPreview(cover);
+          } catch (e) {
+            console.warn('Preview da capa falhou', e);
+          } finally {
+            setIsProcessing(false);
+          }
         }
       } catch (e) {
-        console.log('User cancelled or error picking file', e);
+        console.log('Cancelado ou erro ao selecionar arquivo', e);
       }
     });
   };
 
-  const handleOpenCustomPdf = async (id: string, titulo: string) => {
-    const record = await getCustomPdf(id);
-    if (record) {
-      onOpen(record.titulo, record.data);
+  const handleConfirmUpload = async () => {
+    if (!selectedFile || !pdfTitle.trim()) return;
+    setIsUploading(true);
+    try {
+      const id = crypto.randomUUID();
+      const record = await uploadCustomPdfWithCover(selectedFile, id, pdfTitle.trim(), pdfAuthor.trim());
+      setCustomPdfsList(listCustomPdfs());
+      resetModal();
+      toast.success('PDF salvo na nuvem com sucesso!');
+      if (record.pdfUrl) {
+        onOpen(record.titulo, record.pdfUrl);
+      }
+    } catch (e: any) {
+      toast.error(e.message || 'Erro ao enviar PDF');
+      setIsUploading(false);
+    }
+  };
+
+  const handleOpenCustomPdf = async (pdf: CustomPdfRecord) => {
+    if (pdf.pdfUrl) {
+      onOpen(pdf.titulo, pdf.pdfUrl);
+    } else {
+      toast.error('URL do PDF não encontrada.');
     }
   };
 
   const handleDeleteCustomPdf = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     await removeCustomPdf(id);
-    await loadCustomPdfs();
+    setCustomPdfsList(listCustomPdfs());
+    toast.success('PDF removido com sucesso');
   };
 
   return (
     <div className="space-y-6 pt-1">
       <button
-        onClick={handleUploadPdf}
+        onClick={handleUploadClick}
         className="w-full flex items-center justify-between p-4 rounded-2xl bg-card hover:bg-secondary/50 border border-border/50 shadow-sm transition-colors relative overflow-hidden group"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -698,7 +756,7 @@ function PersonalizadoLista({ onOpen }: { onOpen: (titulo: string, url: string) 
               Adicionar PDF
               {!gate.isPremium && <Lock className="w-3 h-3 text-muted-foreground" />}
             </p>
-            <p className="text-[12px] text-muted-foreground mt-0.5">Leia seus próprios PDFs no app</p>
+            <p className="text-[12px] text-muted-foreground mt-0.5">Sincronizado na nuvem</p>
           </div>
         </div>
         <ChevronRight className="w-5 h-5 text-muted-foreground relative z-10" />
@@ -707,19 +765,26 @@ function PersonalizadoLista({ onOpen }: { onOpen: (titulo: string, url: string) 
       {customPdfsList.length > 0 && (
         <div className="mt-3 space-y-2">
           {customPdfsList.map(pdf => (
-            <div key={pdf.id} className="flex items-center justify-between p-3 rounded-xl bg-card/50 border border-border/40">
-              <button 
-                onClick={() => handleOpenCustomPdf(pdf.id, pdf.titulo)}
-                className="flex-1 text-left min-w-0"
-              >
+            <div key={pdf.id} className="flex items-center gap-3 p-3 rounded-xl bg-card/50 border border-border/40 hover:bg-card/80 transition-colors cursor-pointer" onClick={() => handleOpenCustomPdf(pdf)}>
+              <div className="w-12 h-16 rounded-md overflow-hidden bg-muted shrink-0 border border-border/50">
+                {pdf.capaUrl ? (
+                  <img src={pdf.capaUrl} alt="" className="w-full h-full object-cover" loading="lazy" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <BookOpen className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-foreground truncate">{pdf.titulo}</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
+                {pdf.autor && <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{pdf.autor}</p>}
+                <p className="text-[10px] text-muted-foreground/70 mt-1 uppercase tracking-wider font-semibold">
                   Salvo em {new Date(pdf.createdAt).toLocaleDateString()}
                 </p>
-              </button>
+              </div>
               <button
                 onClick={(e) => handleDeleteCustomPdf(e, pdf.id)}
-                className="p-2 text-muted-foreground hover:text-red-500 transition-colors ml-2"
+                className="p-3 text-muted-foreground hover:text-red-500 transition-colors shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -728,6 +793,73 @@ function PersonalizadoLista({ onOpen }: { onOpen: (titulo: string, url: string) 
         </div>
       )}
       {gate.gateNode}
+
+      <Dialog open={modalOpen} onOpenChange={(o) => !o && resetModal()}>
+        <DialogContent className="sm:max-w-md w-[90vw] rounded-2xl p-6 border-border/60 bg-background/95 backdrop-blur-xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold">Salvar na Nuvem</DialogTitle>
+            <DialogDescription className="text-[13px] text-muted-foreground">
+              Preencha os dados para salvar o PDF na sua conta. Ele estará disponível em qualquer dispositivo.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex gap-4 items-start py-4">
+            <div className="w-20 h-28 shrink-0 rounded-lg overflow-hidden bg-muted border border-border/50 relative flex flex-col items-center justify-center shadow-inner">
+              {coverPreview ? (
+                <img src={coverPreview} alt="Capa" className="w-full h-full object-cover" />
+              ) : (
+                <>
+                  {isProcessing ? <Loader2 className="w-6 h-6 text-muted-foreground animate-spin mb-2" /> : <BookOpen className="w-6 h-6 text-muted-foreground mb-2" />}
+                  <span className="text-[9px] text-muted-foreground font-semibold uppercase tracking-wider text-center px-1">
+                    {isProcessing ? 'Extraindo Capa...' : 'Sem Capa'}
+                  </span>
+                </>
+              )}
+            </div>
+
+            <div className="flex-1 space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="titulo" className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Título do PDF</Label>
+                <Input
+                  id="titulo"
+                  value={pdfTitle}
+                  onChange={(e) => setPdfTitle(e.target.value)}
+                  placeholder="Ex: Resumo de Penal"
+                  className="h-10 text-sm rounded-xl"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="autor" className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Autor (Opcional)</Label>
+                <Input
+                  id="autor"
+                  value={pdfAuthor}
+                  onChange={(e) => setPdfAuthor(e.target.value)}
+                  placeholder="Nome do autor ou professor"
+                  className="h-10 text-sm rounded-xl"
+                  autoComplete="off"
+                />
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="mt-2 sm:justify-between flex-row gap-2">
+            <Button variant="ghost" onClick={resetModal} disabled={isUploading} className="rounded-xl h-12 flex-1 sm:flex-none">
+              Cancelar
+            </Button>
+            <Button onClick={handleConfirmUpload} disabled={isUploading || !pdfTitle.trim()} className="rounded-xl h-12 font-bold px-8 flex-1 sm:flex-none">
+              {isUploading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Salvando...
+                </>
+              ) : (
+                'Salvar PDF'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
