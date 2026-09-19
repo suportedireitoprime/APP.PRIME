@@ -84,7 +84,7 @@ const LeiCapitulosGrid: React.FC<LeiCapitulosGridProps> = ({
                 </div>
               </motion.button>
               {isCapExpanded && (
-                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="pl-3 mt-2 space-y-2">
+                <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="pl-3 mt-2 space-y-2">
                   {capGroup.artigos.map((artigo, i) => (
                     <ArtigoCard key={artigo.id} artigo={artigo} index={i} onClick={() => setOpenArtigo(artigo)} accentColor={leiAccent} tags={{ favorito: isArtigoFav(artigo), grifado: grifadoNumeros.has(artigo.numero), anotado: anotadoNumeros.has(artigo.numero) }} />
                   ))}
@@ -150,7 +150,7 @@ const LeiCapitulosGrid: React.FC<LeiCapitulosGridProps> = ({
               </div>
             </motion.button>
             {isTitExpanded && (
-              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="pl-4 mt-2 space-y-2">
+              <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="pl-4 mt-2 space-y-2">
                 {hasRealCapitulos ? (
                   tGroup.capitulos.map((capGroup, ci) => {
                     const capKey = `${tGroup.titulo}__${capGroup.capitulo}`;
@@ -195,7 +195,7 @@ const LeiCapitulosGrid: React.FC<LeiCapitulosGridProps> = ({
                           </div>
                         </button>
                         {isCapExpanded && (
-                          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="pl-3 mt-2 space-y-2">
+                          <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="pl-3 mt-2 space-y-2">
                             {capGroup.artigos.map((artigo, i) => (
                               <ArtigoCard key={artigo.id} artigo={artigo} index={i} onClick={() => setOpenArtigo(artigo)} accentColor={leiAccent} tags={{ favorito: isArtigoFav(artigo), grifado: grifadoNumeros.has(artigo.numero), anotado: anotadoNumeros.has(artigo.numero) }} />
                             ))}

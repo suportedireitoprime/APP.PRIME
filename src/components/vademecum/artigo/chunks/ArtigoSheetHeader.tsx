@@ -225,9 +225,9 @@ export const ArtigoSheetHeader = memo(function ArtigoSheetHeader({
       <AnimatePresence>
         {showFontControls && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
             className="overflow-hidden px-4 pb-2"
           >
             <div className="flex items-center justify-between gap-3 px-4 py-2 rounded-2xl bg-secondary/80 border border-border backdrop-blur-md">
@@ -281,9 +281,9 @@ export const ArtigoSheetHeader = memo(function ArtigoSheetHeader({
       <AnimatePresence>
         {showSharePanel && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
             className="px-5 pb-2 overflow-hidden"
           >
             <ShareButtons
@@ -329,9 +329,9 @@ export const ArtigoSheetHeader = memo(function ArtigoSheetHeader({
       <AnimatePresence>
         {magicMode && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
             className="px-5 pb-2 overflow-hidden"
           >
             <div className="flex items-center gap-3 flex-wrap py-1.5">

@@ -1,3 +1,4 @@
+import React from 'react';
 import { ChevronRight, Heart, Highlighter, StickyNote } from 'lucide-react';
 import type { ArtigoLei } from '@/data/mockData';
 
@@ -152,13 +153,13 @@ const ArtigoCard = ({ artigo, index, onClick, highlightText, isHighlighted, with
           } catch {}
           onClick();
         }}
-        className={`group w-full min-h-[84px] text-left px-3 py-2.5 rounded-2xl bg-card/70 border transition-colors active:scale-[0.997] relative overflow-hidden flex items-stretch gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+        className={`group w-full min-h-[84px] text-left px-3 py-2.5 rounded-2xl bg-card/70 border transition-transform duration-75 active:scale-[0.97] touch-manipulation relative overflow-hidden flex items-stretch gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
           isHighlighted
             ? 'border-primary ring-2 ring-primary shadow-[0_0_20px_4px_hsl(var(--primary)/0.3)]'
             : isADCT
               ? 'border-sky-400/40 hover:border-sky-300/60 hover:bg-card'
               : 'border-border/60 hover:border-amber-400/40 hover:bg-card'
-        } ${isFastScrolling ? 'shadow-none transition-none' : ''}`}
+        } ${isFastScrolling ? 'shadow-none transition-none active:scale-100' : ''}`}
       >
         {withShine && !isFastScrolling && (
           <span
@@ -217,4 +218,15 @@ const ArtigoCard = ({ artigo, index, onClick, highlightText, isHighlighted, with
   );
 };
 
-export default ArtigoCard;
+const areEqual = (prev: ArtigoCardProps, next: ArtigoCardProps) => {
+  return (
+    prev.artigo.id === next.artigo.id &&
+    prev.isHighlighted === next.isHighlighted &&
+    prev.isFastScrolling === next.isFastScrolling &&
+    prev.tags?.favorito === next.tags?.favorito &&
+    prev.tags?.grifado === next.tags?.grifado &&
+    prev.tags?.anotado === next.tags?.anotado
+  );
+};
+
+export default React.memo(ArtigoCard, areEqual);
