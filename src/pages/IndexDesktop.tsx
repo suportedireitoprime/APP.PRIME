@@ -150,11 +150,11 @@ const IndexDesktop = () => {
                       />
                     </div>
 
-                    <div className="relative z-30 mb-8 mt-6 max-w-[1600px] mx-auto">
+                    <div className="relative z-30 mb-8 mt-6 w-full max-w-none 3xl:max-w-[2200px] mx-auto">
                       <DesktopRadarLeisCarousel />
                     </div>
 
-                    <div className="relative z-30 mb-8 mt-6 max-w-[1600px] mx-auto">
+                    <div className="relative z-30 mb-8 mt-6 w-full max-w-none 3xl:max-w-[2200px] mx-auto">
                       <NoticiasJuridicasCarousel />
                     </div>
 
@@ -165,7 +165,7 @@ const IndexDesktop = () => {
                       />
                     </div>
 
-                    <div className="space-y-12 max-w-[1600px] mx-auto pb-16 pt-8">
+                    <div className="space-y-12 w-full max-w-none 3xl:max-w-[2200px] mx-auto pb-16 pt-8">
                       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
                         <HomeTresPoderes />
                         <HomeApresentacoesTimeline />
@@ -176,7 +176,7 @@ const IndexDesktop = () => {
 
                 {activeTab === 'noticias' && <AtualizacaoTab searchQuery={searchQuery} />}
                 {activeTab === 'ferramentas' && (
-                  <div className="mx-auto w-full max-w-[1600px]">
+                  <div className="mx-auto w-full max-w-none 3xl:max-w-[2200px]">
                     <div className="mb-6 flex items-end justify-between gap-4">
                       <div>
                         <h2 className="font-display text-xl text-foreground mb-1">Ferramentas</h2>

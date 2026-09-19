@@ -25,6 +25,7 @@ import {
   Bot,
   CalendarDays,
   Gamepad2,
+  Camera,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -50,6 +51,14 @@ export type DesktopToolGroup = {
  * garantindo que nenhuma função fique acessível só no mobile.
  */
 export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
+  {
+    id: 'inteligencia_artificial',
+    label: 'Inteligência Artificial',
+    hint: 'Ferramentas de IA generativa',
+    tools: [
+      { id: 'me-explique', label: 'Me Explique', desc: 'Seu tutor jurídico por voz', icon: Camera, route: '/me-explique', color: '#E11D48' },
+    ],
+  },
   {
     id: 'monitoramento',
     label: 'Monitoramento',

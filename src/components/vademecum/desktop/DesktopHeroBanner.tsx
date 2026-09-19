@@ -22,7 +22,7 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
   const { items, handleItemClick } = useAprenderItems();
 
   return (
-    <div className="relative w-full max-w-[1600px] mx-auto z-20 grid grid-cols-1 lg:grid-cols-[1fr_310px] gap-6">
+    <div className="relative w-full max-w-none 3xl:max-w-[2200px] mx-auto z-20 grid grid-cols-1 lg:grid-cols-[1fr_310px] xl:grid-cols-[1fr_340px] gap-6">
       {/* COLUNA ESQUERDA: CAPA PRINCIPAL (HERO) */}
       <div className="relative h-[380px] rounded-3xl overflow-hidden shadow-2xl flex flex-col group bg-zinc-950 border border-white/10">
         {/* Imagem de Fundo (A CAPA) */}
@@ -106,8 +106,8 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
         {/* CONTEÚDO (Logo, Busca e Botões) */}
         <div className="absolute inset-0 z-10 flex flex-col pt-20 pb-6 px-8 pointer-events-none">
           {/* LADO DIREITO: Busca e Botões Rápidos */}
-          <div className="w-[52%] h-full flex flex-col justify-end ml-auto pointer-events-auto">
-            <h2 className="text-[28px] xl:text-[32px] 2xl:text-4xl text-right font-display font-extrabold text-white mb-5 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] uppercase tracking-tight">
+          <div className="w-full sm:w-[60%] lg:w-[55%] h-full flex flex-col justify-end ml-auto pointer-events-auto">
+            <h2 className="text-[28px] xl:text-[34px] 2xl:text-4xl text-right font-display font-extrabold text-white mb-5 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] uppercase tracking-tight leading-tight">
               O QUE VOCÊ QUER ESTUDAR HOJE?
             </h2>
             
