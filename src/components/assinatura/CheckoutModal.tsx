@@ -7,7 +7,7 @@ import { Loader2, CreditCard, ShieldCheck, User, MapPin, Smartphone, ArrowRight,
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 import { isFuture, addMonths } from 'date-fns';
-import { openBrowserUrl } from '@/lib/nativeBrowser';
+import { openExternal } from '@/lib/nativeBrowser';
 import { motion, AnimatePresence } from "framer-motion";
 
 interface CheckoutModalProps {
@@ -425,7 +425,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
           onOpenChange(false);
         } else {
           if (data?.invoiceUrl) {
-             openBrowserUrl(data.invoiceUrl);
+             openExternal(data.invoiceUrl);
              onSuccess();
              onOpenChange(false);
           } else {
@@ -433,7 +433,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
           }
         }
       } else if (data?.invoiceUrl) {
-        openBrowserUrl(data.invoiceUrl);
+        openExternal(data.invoiceUrl);
         onSuccess();
         onOpenChange(false);
       } else {

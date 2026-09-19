@@ -4,7 +4,7 @@ import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { fetchCanalData, CanalData, YoutubeVideo } from '@/lib/youtubeApi';
 import { Search, Play, ListVideo, Radio, AlertCircle, X, Info } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
-import { openBrowserUrl } from '@/lib/nativeBrowser';
+import { openExternal } from '@/lib/nativeBrowser';
 
 export default function VideoaulasCanalDetail() {
   const { id } = useParams<{ id: string }>();
@@ -45,7 +45,7 @@ export default function VideoaulasCanalDetail() {
 
   const openPlaylist = (playlistId: string) => {
     haptic.selection();
-    openBrowserUrl(`https://www.youtube.com/playlist?list=${playlistId}`);
+    openExternal(`https://www.youtube.com/playlist?list=${playlistId}`);
   };
 
   const filteredVideos = data?.ultimosVideos.filter(v => 

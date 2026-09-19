@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ArrowLeft, RefreshCw, ExternalLink, Loader2, ShieldAlert, Copy, Check } from 'lucide-react';
-import { openBrowserUrl } from '@/lib/nativeBrowser';
+import { openExternal } from '@/lib/nativeBrowser';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { logPdfEvent } from '@/lib/pdfTelemetry';
@@ -74,7 +74,7 @@ const InAppWebView = ({ url, titulo, onClose, autoFallback = false }: InAppWebVi
         return;
       } catch {}
     }
-    openBrowserUrl(url);
+    openExternal(url);
   };
 
   const copyUrl = async () => {
