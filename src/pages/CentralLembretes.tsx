@@ -99,19 +99,26 @@ export default function CentralLembretes() {
         </div>
       </div>
 
-      <NovoLembreteMenuDialog 
-        open={menuCriar} 
-        onOpenChange={setMenuCriar} 
-        onSelectHorario={() => setSheetHorario(true)} 
-      />
+      {menuCriar && (
+        <NovoLembreteMenuDialog 
+          open={menuCriar} 
+          onOpenChange={setMenuCriar} 
+          onSelectHorario={() => {
+            setMenuCriar(false);
+            setSheetHorario(true);
+          }} 
+        />
+      )}
 
-      <NovoLembreteSheet 
-        open={sheetHorario} 
-        onOpenChange={setSheetHorario} 
-        travarTipo={true}
-        tipoInicial="geral"
-        onSalvo={recarregar} 
-      />
+      {sheetHorario && (
+        <NovoLembreteSheet 
+          open={sheetHorario} 
+          onOpenChange={setSheetHorario} 
+          travarTipo={true}
+          tipoInicial="geral"
+          onSalvo={recarregar} 
+        />
+      )}
     </div>
   );
 }
