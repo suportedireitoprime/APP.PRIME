@@ -139,6 +139,7 @@ export function AdminHojeCards() {
   const [totaisOpen, setTotaisOpen] = useState(false);
   const [totais, setTotais] = useState<any>(null);
   const [totaisLoading, setTotaisLoading] = useState(false);
+  const isFetching = useRef(false);
   const [provOpen, setProvOpen] = useState<string | null>(null);
   const [provRows, setProvRows] = useState<Row[]>([]);
   const [provLoading, setProvLoading] = useState(false);
@@ -199,42 +200,62 @@ export function AdminHojeCards() {
   }, []);
 
   const load = useCallback(async () => {
-    const datas = getDatasPeriodo(periodo);
-    
-    // Fetch metrics and trials for all dates in the period
-    const metricasPromises = datas.map(d => supabase.rpc('admin_metricas_dia' as any, { _dia: isoDate(d) }));
-    const list5mPromise = supabase.rpc('admin_lista_dia' as any, { _tipo: 'online5m', _dia: isoDate(datas[0]) }); // only makes sense for 'hoje', but we pass datas[0] anyway
-    const listOnlinePromise = supabase.rpc('admin_lista_dia' as any, { _tipo: 'online', _dia: isoDate(datas[0]) });
-    const trialPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));
+    if (isFetching.current) return;
+    isFetching.current = true;
+    try {
+      const datas = getDatasPeriodo(periodo);
+      
+      const metricasPromises = datas.map(d => supabase.rpc('admin_metricas_dia' as any, { _dia: isoDate(d) }));
+      const list5mPromise = supabase.rpc('admin_lista_dia' as any, { _tipo: 'online5m', _dia: isoDate(datas[0]) });
+      const listOnlinePromise = supabase.rpc('admin_lista_dia' as any, { _tipo: 'online', _dia: isoDate(datas[0]) });
+      const trialPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));
 
-    const metricasResults = await Promise.all(metricasPromises);
-    const { data: list5m } = await list5mPromise;
-    const { data: listOnline } = await listOnlinePromise;
-    const trialResults = await Promise.all(trialPromises);
-    
-    let totalCadastros = 0;
-    let totalPaywall = 0;
-    let totalViuPlanos = 0;
-    let totalTrial = 0;
-    let totalTrialValor = 0;
+      const [metricasResults, list5mResult, listOnlineResult, trialResults] = await Promise.allSettled([
+        Promise.allSettled(metricasPromises),
+        list5mPromise,
+        listOnlinePromise,
+        Promise.allSettled(trialPromises)
+      ]);
+      
+      const list5m = list5mResult.status === 'fulfilled' ? list5mResult.value.data : [];
+      const listOnline = listOnlineResult.status === 'fulfilled' ? listOnlineResult.value.data : [];
+      
+      let totalCadastros = 0;
+      let totalPaywall = 0;
+      let totalViuPlanos = 0;
+      let totalTrial = 0;
+      let totalTrialValor = 0;
 
-    metricasResults.forEach(({ data }) => {
-      const m = (data as any) || {};
-      totalCadastros += m.cadastros || 0;
-      totalTrial += m.trial || 0;
-    });
+      if (metricasResults.status === 'fulfilled') {
+        metricasResults.value.forEach((res) => {
+          if (res.status === 'fulfilled') {
+            const m = (res.value.data as any) || {};
+            totalCadastros += m.cadastros || 0;
+            totalTrial += m.trial || 0;
+          }
+        });
+      }
 
     try {
-      const minDate = datas[datas.length - 1];
+      const tzOffsetMin = new Date().getTimezoneOffset();
+      
+      const minDate = new Date(datas[datas.length - 1]);
+      minDate.setHours(0, 0, 0, 0);
+      minDate.setMinutes(minDate.getMinutes() - tzOffsetMin); // Transforma meia-noite local no UTC exato da busca
+
       const maxDate = new Date(datas[0]);
       maxDate.setDate(maxDate.getDate() + 1);
+      maxDate.setHours(0, 0, 0, 0);
+      maxDate.setMinutes(maxDate.getMinutes() - tzOffsetMin);
       
-      const { data: events } = await supabase
+      const { data: events, error } = await supabase
         .from('app_events')
         .select('user_id, id, email, event_name')
         .in('event_name', ['trial_click', 'assinatura_aberta'])
         .gte('created_at', minDate.toISOString())
         .lt('created_at', maxDate.toISOString());
+        
+      if (error) throw error;
         
       if (events) {
         const vpEvents = events.filter((e: any) => e.event_name === 'trial_click');
@@ -251,12 +272,16 @@ export function AdminHojeCards() {
     }
 
     const allTrialUsers = new Set<string>();
-    trialResults.forEach(({ data }) => {
-      const trials = (data as any[]) || [];
-      trials.forEach(r => {
-        if (r.user_id) allTrialUsers.add(r.user_id);
+    if (trialResults.status === 'fulfilled') {
+      trialResults.value.forEach((res) => {
+        if (res.status === 'fulfilled') {
+          const trials = (res.value.data as any[]) || [];
+          trials.forEach(r => {
+            if (r.user_id) allTrialUsers.add(r.user_id);
+          });
+        }
       });
-    });
+    }
 
     if (allTrialUsers.size > 0) {
       try {
@@ -318,6 +343,9 @@ export function AdminHojeCards() {
     } else {
       setSeenCounts({ online5m: 0, online: 0, cadastros: 0, paywall: 0, viu_planos: 0, trial: 0 });
     }
+  } finally {
+    isFetching.current = false;
+  }
   }, [periodo, getDatasPeriodo]);
 
 
