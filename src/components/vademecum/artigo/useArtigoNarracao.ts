@@ -294,17 +294,18 @@ export function useArtigoNarracao({
       const timings = narracaoTimingsRef.current;
       if (timings && timings.length) {
         let idx = -1;
+        const syncTime = t + 0.150; // Offset para antecipar o grifo e bater com o áudio falado (corrige percepção de atraso)
         const start = Math.max(0, narracaoActiveIdxRef.current);
         for (let i = start; i < timings.length; i++) {
-          if (t >= timings[i].start && t < timings[i].end) { idx = i; break; }
-          if (timings[i].start > t) break;
+          if (syncTime >= timings[i].start && syncTime < timings[i].end) { idx = i; break; }
+          if (timings[i].start > syncTime) break;
         }
         if (idx === -1) {
           for (let i = 0; i < timings.length; i++) {
-            if (t >= timings[i].start && t < timings[i].end) { idx = i; break; }
+            if (syncTime >= timings[i].start && syncTime < timings[i].end) { idx = i; break; }
           }
         }
-        if (idx === -1 && t >= (timings[timings.length - 1]?.end ?? 0)) {
+        if (idx === -1 && syncTime >= (timings[timings.length - 1]?.end ?? 0)) {
           idx = timings.length - 1;
         }
         if (idx !== narracaoActiveIdxRef.current) {
@@ -337,7 +338,9 @@ export function useArtigoNarracao({
       stopProgressTracking();
     }
 
-    const audio = new Audio(audioUrl);
+    const audio = narracaoAudioRef.current || new Audio();
+    narracaoAudioRef.current = audio;
+    audio.src = audioUrl;
     audio.preload = 'auto';
     // Item 18: Aplica a velocidade de reprodução customizada persistida no storage (0.75x a 2.0x)
     audio.playbackRate = playbackRate;
@@ -346,8 +349,8 @@ export function useArtigoNarracao({
       const d = audio.duration;
       if (Number.isFinite(d) && d > 0) setNarracaoDuration(d);
     };
-    audio.addEventListener('loadedmetadata', syncDuration);
-    audio.addEventListener('durationchange', syncDuration);
+    audio.onloadedmetadata = syncDuration;
+    audio.ondurationchange = syncDuration;
 
     const clearAudioState = () => {
       setNarracaoPlaying(false);
@@ -357,7 +360,7 @@ export function useArtigoNarracao({
       if (narracaoRingRef.current) narracaoRingRef.current.style.strokeDashoffset = `${RING_CIRCUMFERENCE}`;
       if (narracaoTimeRef.current) narracaoTimeRef.current.textContent = '0:00';
       stopProgressTracking();
-      narracaoAudioRef.current = null;
+      // Mantém a instância em narracaoAudioRef.current destrancada para autoplays subsequentes
       clearMediaSession();
     };
 
@@ -427,6 +430,13 @@ export function useArtigoNarracao({
 
   // ─── gerarNarracao ───
   const gerarNarracao = useCallback(async (options?: { autoplay?: boolean; silent?: boolean; forceRegenerate?: boolean }) => {
+    // Hack síncrono para destrancar a reprodução de áudio em Safari/iOS/Android
+    // O evento de toque no botão aciona esta função síncronamente.
+    // Tocando um áudio vazio aqui, permitimos que a tag de áudio possa tocar via script (assíncrono) depois!
+    if (!narracaoAudioRef.current) narracaoAudioRef.current = new Audio();
+    narracaoAudioRef.current.src = 'data:audio/mp3;base64,//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq';
+    try { narracaoAudioRef.current.play().catch(() => {}); } catch (e) {}
+
     if (!artigo) return;
 
     if (!tabelaNome) {
