@@ -61,7 +61,7 @@ export function useVideoaulaView({ catalogoId, videoId, userId, setTocandoState 
         }`;
 
         const [aulaRes, progRes, favRes] = await Promise.all([
-          supabase.from(catalogo.tabela as any).select(cols).eq('video_id', videoId).maybeSingle(),
+          supabase.from(catalogo.tabela as any).select(cols).eq('video_id', videoId).limit(1).maybeSingle(),
           userId
             ? supabase
                 .from('videoaulas_progresso')
@@ -69,6 +69,7 @@ export function useVideoaulaView({ catalogoId, videoId, userId, setTocandoState 
                 .eq('user_id', userId)
                 .eq('tabela', catalogo.tabela)
                 .eq('video_id', videoId)
+                .limit(1)
                 .maybeSingle()
             : Promise.resolve({ data: null, error: null }),
           userId
@@ -78,6 +79,7 @@ export function useVideoaulaView({ catalogoId, videoId, userId, setTocandoState 
                 .eq('user_id', userId)
                 .eq('tabela', catalogo.tabela)
                 .eq('video_id', videoId)
+                .limit(1)
                 .maybeSingle()
             : Promise.resolve({ data: null, error: null }),
         ]);

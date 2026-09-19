@@ -39,7 +39,7 @@ const MateriaRow = ({ area, icon, onOpen, onPrefetch, overrideLabel, overrideTot
       onFocus={onPrefetch}
       onTouchStart={onPrefetch}
       style={{ '--area-accent': accentColor } as React.CSSProperties}
-      className="group flex w-full items-center gap-3 rounded-2xl border border-border/80 bg-card p-3.5 text-left transition-all hover:bg-muted/70 hover:shadow-lg focus-visible:outline-none sm:p-4"
+      className="group flex w-full items-center gap-3 rounded-2xl border border-border/80 bg-card p-3.5 text-left transition-all hover:bg-muted/70 hover:shadow-lg focus-visible:outline-none sm:p-4 will-change-transform"
     >
       {icon ? (
         <div className="relative flex h-12 w-12 shrink-0 items-center justify-center sm:h-14 sm:w-14">

@@ -428,7 +428,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
       {/* ÁREA DO CHAT: Transcrição em Tempo Real e Histórico de Conversa */}
       <section
         ref={chatScrollRef}
-        className="relative z-10 flex-1 px-4 py-2 overflow-y-auto space-y-3 scroll-smooth max-h-[35vh] w-full md:max-w-xl md:mr-auto md:ml-4 lg:ml-8"
+        className="relative z-10 flex-1 px-4 py-2 overflow-y-auto space-y-3 scroll-smooth max-h-[35vh] w-full md:max-w-xl md:mx-auto"
       >
         {falas.length === 0 && !falaParcial && status === 'conectando' && (
           <div className="flex flex-col items-center justify-center h-full text-center p-6 space-y-2 text-zinc-500">
@@ -500,7 +500,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
 
       {/* RODAPÉ: Chips com Sugestões, Microfone e Input de Texto */}
       <footer className="relative z-20 bg-zinc-950/90 border-t border-white/10 px-3 pt-2 pb-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] backdrop-blur-md">
-        <div className="w-full md:max-w-xl md:mr-auto md:ml-1 lg:ml-5 space-y-2">
+        <div className="w-full md:max-w-xl md:mx-auto space-y-2">
           {/* Sugestões Rápidas em Carrossel Horizontal */}
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
             {sugestoes.map((sug, idx) => (

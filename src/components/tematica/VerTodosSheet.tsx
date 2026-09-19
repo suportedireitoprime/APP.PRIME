@@ -98,7 +98,7 @@ export default function VerTodosSheet({ open, titulo, eyebrow, obras, onAbrir, o
                   <p className="text-sm">Nada encontrado.</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 pb-8">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 pb-[calc(2rem+var(--sai-bottom))]">
                   {lista.map((obra) => (
                     <button
                       key={obra.id}

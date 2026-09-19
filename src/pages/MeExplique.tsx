@@ -90,26 +90,7 @@ export default function MeExplique() {
         />
       </div>
 
-      {/* Tag do Tempo Restante — Localizada exatamente embaixo da capa */}
-      <div className="relative z-20 w-full max-w-4xl mx-auto px-4 -mt-4 sm:-mt-5 flex justify-end">
-        <div
-          className={`flex items-center gap-2 rounded-2xl border px-3.5 py-1.5 backdrop-blur-md shadow-xl transition-colors ${
-            cota.limiteAtingido
-              ? 'border-red-500/40 bg-zinc-900/95 text-red-300'
-              : 'border-amber-500/35 bg-zinc-900/95 text-amber-300'
-          }`}
-        >
-          <Clock className="h-4 w-4 shrink-0 text-amber-400" />
-          <div className="text-right">
-            <span className="block font-mono text-xs sm:text-sm font-bold leading-none">
-              {cota.tempoFormatado}
-            </span>
-            <span className="block text-[9px] font-medium text-zinc-400 leading-none mt-0.5">
-              {cota.limiteAtingido ? 'Esgotado' : 'Restantes hoje'}
-            </span>
-          </div>
-        </div>
-      </div>
+
 
       {/* Conteúdo Principal */}
       <main className="relative z-10 flex-1 w-full max-w-4xl mx-auto px-4 pt-3 pb-5 space-y-5">
@@ -178,32 +159,7 @@ export default function MeExplique() {
           />
         </div>
 
-        {/* Card Persuasivo de Rodapé com Cota Compartilhada */}
-        <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4 flex items-center justify-between gap-3 shadow-lg">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/25">
-              <Clock className="h-5 w-5" />
-            </div>
-            <div>
-              <h4 className="font-sans text-xs font-bold text-white">
-                Cota Diária de {cota.isPremium ? '5 Minutos' : '1 Minuto (Degustação)'}
-              </h4>
-              <p className="text-[11px] text-zinc-400 leading-snug mt-0.5">
-                Tempo compartilhado entre todas as modalidades e renovado à meia-noite.
-              </p>
-            </div>
-          </div>
 
-          {!cota.isPremium && (
-            <button
-              type="button"
-              onClick={() => setGateAberto(true)}
-              className="shrink-0 flex items-center gap-1.5 rounded-xl bg-amber-500 px-3 py-1.5 text-xs font-bold text-black shadow hover:bg-amber-400 active:scale-95 transition-all cursor-pointer"
-            >
-              <Crown className="h-3.5 w-3.5" /> Liberar 5 min
-            </button>
-          )}
-        </div>
       </main>
 
       {/* Modal de Limite de Tempo Compartilhado */}

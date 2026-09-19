@@ -27,9 +27,9 @@ import { AulaPreviaScreen, type PreviaAula } from '@/components/aprender/AulaPre
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import pageTurnSound from '@/assets/page-turn.mp3';
-import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { normalizarMarkdown } from '@/lib/markdown';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 export const getAtoInfo = (idx: number, totalSlides: number) => {
   const lim1 = Math.max(1, Math.round(totalSlides * 0.33));
@@ -262,18 +262,7 @@ const AprenderAula = () => {
   }, [currentIdx]);
 
   // Lock de Overscroll e Scroll no Body (Item 8) - A aula deve ser 100% contida sem elasticidade vertical
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    document.body.style.overscrollBehavior = 'none';
-    document.documentElement.style.overflow = 'hidden';
-    document.documentElement.style.overscrollBehavior = 'none';
-    return () => {
-      document.body.style.overflow = '';
-      document.body.style.overscrollBehavior = '';
-      document.documentElement.style.overflow = '';
-      document.documentElement.style.overscrollBehavior = '';
-    };
-  }, []);
+  useBodyScrollLock(true);
 
   // Gestos Touch (Mobile / Tablet)
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -666,6 +655,7 @@ const AprenderAula = () => {
                       src="/images/gamificacao/direito_penal_prisao_vazado.webp"
                       alt=""
                       loading="eager"
+                      fetchPriority="high"
                       decoding="async"
                       className="w-72 h-72 sm:w-96 sm:h-96 md:w-[440px] md:h-[440px] object-contain"
                     />

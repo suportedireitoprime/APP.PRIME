@@ -125,6 +125,7 @@ export class SessaoMeExplique {
   private canvas = document.createElement("canvas");
   /** true quando a própria sessão abriu a câmera (sem preview externo). */
   private streamProprio = true;
+  private fontes: AudioBufferSourceNode[] = [];
 
   private pronto = false;
   private micAtivo = true;
@@ -463,16 +464,23 @@ export class SessaoMeExplique {
 
     const inicio = Math.max(ctx.currentTime + 0.04, this.proximaFala);
     fonte.start(inicio);
+    this.fontes.push(fonte);
+    fonte.onended = () => {
+      this.fontes = this.fontes.filter((f) => f !== fonte);
+    };
+    
     this.proximaFala = inicio + buffer.duration;
     this.opcoes.onStatus("falando");
   }
 
   private pararFala() {
     this.proximaFala = 0;
-    if (this.ctxSaida) {
-      void this.ctxSaida.close().catch(() => undefined);
-      this.ctxSaida = null;
-    }
+    this.fontes.forEach((fonte) => {
+      try {
+        fonte.stop();
+      } catch (e) {}
+    });
+    this.fontes = [];
   }
 
   // ----- áudio de entrada -----

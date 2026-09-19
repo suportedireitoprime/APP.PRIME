@@ -11,6 +11,7 @@ import LeiOrdinariaView from '@/components/vademecum/views/LeiOrdinariaView';
 import DecretoView from '@/components/vademecum/views/DecretoView';
 import SumulaView from '@/components/vademecum/views/SumulaView';
 import LeiDetailView from '@/components/vademecum/views/LeiDetailView';
+import { resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 const TIPO_CONFIG: Record<string, { label: string; icon: React.ElementType; bg: string }> = {
   constituicao: { label: 'Constituição', icon: Landmark, bg: 'from-amber-500/90 to-amber-700/80' },
@@ -57,9 +58,7 @@ const CategoriaLegislacao = () => {
 
   useEffect(() => {
     return () => {
-      document.body.style.overflow = '';
-      document.body.style.touchAction = '';
-      document.documentElement.style.overflow = '';
+      resetBodyScrollLock(true);
     };
   }, []);
 

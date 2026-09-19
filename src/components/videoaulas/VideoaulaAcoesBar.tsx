@@ -94,12 +94,12 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
           {extras}
         </div>
       ) : (
-        <div className="relative z-10 bg-card/95 backdrop-blur shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)] w-full pb-[calc(1.5rem+var(--sai-bottom))] rounded-t-2xl border-t border-border">
+        <div className="relative z-10 bg-card/95 backdrop-blur shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)] w-full pb-[calc(1.25rem+var(--sai-bottom))] rounded-t-2xl border-t border-border">
           <div className="max-w-2xl mx-auto px-2 py-2">
             <div className="grid grid-cols-5 items-stretch">
               <button
                 onClick={() => { haptic.selection(); setSeletor("resumos"); }}
-                className="flex flex-col items-center justify-center gap-1 py-2 rounded-xl transition-all text-muted-foreground hover:bg-muted/50"
+                className="flex flex-col items-center justify-center gap-1 py-1.5 rounded-xl transition-all text-muted-foreground hover:bg-muted/50"
               >
                 <BookOpenText className="w-7 h-7 sm:w-8 sm:h-8 drop-shadow-md" strokeWidth={1.2} />
                 <span className="font-body text-[10px] sm:text-[12px] font-medium leading-tight text-center drop-shadow-sm">Resumos</span>
@@ -107,7 +107,7 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
 
               <button
                 onClick={() => { haptic.selection(); if (onOpenAnotacoes) onOpenAnotacoes(); }}
-                className="flex flex-col items-center justify-center gap-1 py-2 rounded-xl transition-all text-muted-foreground hover:bg-muted/50"
+                className="flex flex-col items-center justify-center gap-1 py-1.5 rounded-xl transition-all text-muted-foreground hover:bg-muted/50"
               >
                 <PenTool className="w-7 h-7 sm:w-8 sm:h-8 drop-shadow-md" strokeWidth={1.2} />
                 <span className="font-body text-[10px] sm:text-[12px] font-medium leading-tight text-center drop-shadow-sm">Anotações</span>
@@ -115,7 +115,7 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
               
               <button
                 onClick={guard(() => { haptic.light(); setAba("questoes"); })}
-                className="relative flex flex-col items-center justify-end gap-1 py-2"
+                className="relative flex flex-col items-center justify-end gap-1 py-1.5"
               >
                 <span className="absolute -top-9 left-1/2 -translate-x-1/2 w-[72px] h-[72px] rounded-full flex items-center justify-center overflow-hidden bg-card shadow-[0_10px_26px_rgba(0,0,0,0.6)] transition-transform active:scale-[0.95] border border-border">
                   <ListChecks className="relative w-9 h-9 text-primary drop-shadow-lg" strokeWidth={1.2} />
@@ -126,7 +126,7 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
 
               <button
                 onClick={guard(() => { haptic.light(); setAba("flashcards"); })}
-                className="flex flex-col items-center justify-center gap-1 py-2 rounded-xl transition-all text-muted-foreground hover:bg-muted/50"
+                className="flex flex-col items-center justify-center gap-1 py-1.5 rounded-xl transition-all text-muted-foreground hover:bg-muted/50"
               >
                 <RefreshCw className="w-7 h-7 sm:w-8 sm:h-8 drop-shadow-md" strokeWidth={1.2} />
                 <span className="font-body text-[10px] sm:text-[12px] font-medium leading-tight text-center drop-shadow-sm">Flashcards</span>
@@ -134,7 +134,7 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
 
               <button
                 onClick={() => { haptic.selection(); setMaisOpen(true); }}
-                className="flex flex-col items-center justify-center gap-1 py-2 rounded-xl transition-all text-muted-foreground hover:bg-muted/50"
+                className="flex flex-col items-center justify-center gap-1 py-1.5 rounded-xl transition-all text-muted-foreground hover:bg-muted/50"
               >
                 <div className="w-7 h-7 sm:w-8 sm:h-8 flex gap-0.5 items-center justify-center drop-shadow-md">
                   <div className="w-1.5 h-1.5 rounded-full bg-current" />

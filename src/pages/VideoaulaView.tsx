@@ -265,7 +265,7 @@ const VideoaulaView = () => {
       {/* Footer Fixo de Ações APENAS para Telas Mobile */}
       <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden pointer-events-none">
         <div className="pointer-events-auto">
-          <Suspense fallback={<div className="h-[76px] bg-hero-panel rounded-t-2xl border-t border-white/10" />}>
+          <Suspense fallback={<div className="h-[96px] bg-hero-panel rounded-t-2xl border-t border-white/10 pb-[calc(1.25rem+var(--sai-bottom))]" />}>
             <VideoaulaAcoesBar input={input} onOpenAnotacoes={() => setShowAnotacoes(true)} />
           </Suspense>
         </div>

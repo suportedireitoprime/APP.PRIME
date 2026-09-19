@@ -4,6 +4,8 @@
  * e sincronizado com o Supabase, permitindo retomada precisa ("Continuar de onde parou").
  */
 
+import { get as idbGet, set as idbSet, del as idbDel } from 'idb-keyval';
+
 export interface LocalAulaProgress {
   aulaId: string;
   currentIdx: number;
@@ -15,25 +17,23 @@ export interface LocalAulaProgress {
 
 const STORAGE_PREFIX = 'aprender_aula_progresso_';
 
-export function getLocalAulaProgress(aulaId: string): LocalAulaProgress | null {
+export async function getLocalAulaProgress(aulaId: string): Promise<LocalAulaProgress | null> {
   if (typeof window === 'undefined' || !aulaId) return null;
   try {
-    const raw = localStorage.getItem(`${STORAGE_PREFIX}${aulaId}`);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as LocalAulaProgress;
-    return parsed;
+    const data = await idbGet<LocalAulaProgress>(`${STORAGE_PREFIX}${aulaId}`);
+    return data ?? null;
   } catch (err) {
-    console.warn('Erro ao carregar progresso local da aula:', err);
+    console.warn('Erro ao carregar progresso local da aula (IDB):', err);
     return null;
   }
 }
 
-export function saveLocalAulaProgress(
+export async function saveLocalAulaProgress(
   aulaId: string,
   currentIdx: number,
   total: number,
   concluida = false
-): void {
+): Promise<void> {
   if (typeof window === 'undefined' || !aulaId) return;
   try {
     const blocosConcluidos = concluida ? total : Math.min(currentIdx + 1, total);
@@ -45,17 +45,17 @@ export function saveLocalAulaProgress(
       concluida,
       updatedAt: Date.now(),
     };
-    localStorage.setItem(`${STORAGE_PREFIX}${aulaId}`, JSON.stringify(data));
+    await idbSet(`${STORAGE_PREFIX}${aulaId}`, data);
   } catch (err) {
-    console.warn('Erro ao salvar progresso local da aula:', err);
+    console.warn('Erro ao salvar progresso local da aula (IDB):', err);
   }
 }
 
-export function clearLocalAulaProgress(aulaId: string): void {
+export async function clearLocalAulaProgress(aulaId: string): Promise<void> {
   if (typeof window === 'undefined' || !aulaId) return;
   try {
-    localStorage.removeItem(`${STORAGE_PREFIX}${aulaId}`);
+    await idbDel(`${STORAGE_PREFIX}${aulaId}`);
   } catch (err) {
-    console.warn('Erro ao limpar progresso local da aula:', err);
+    console.warn('Erro ao limpar progresso local da aula (IDB):', err);
   }
 }

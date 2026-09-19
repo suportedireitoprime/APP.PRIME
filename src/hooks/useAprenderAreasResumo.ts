@@ -26,18 +26,23 @@ export function useAprenderAreasResumo() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data: areasData } = await supabase
-        .from('aprender_areas')
-        .select('id, slug, nome, cor')
-        .neq('slug', 'livros')
-        .order('ordem');
-      const lista = (areasData ?? []) as any[];
+      const [
+        { data: areasData },
+        { data: aulasData }
+      ] = await Promise.all([
+        supabase
+          .from('aprender_areas')
+          .select('id, slug, nome, cor')
+          .neq('slug', 'livros')
+          .order('ordem'),
+        supabase
+          .from('aprender_aulas')
+          .select('id, modulo:aprender_modulos!inner(area_id)')
+          .eq('status', 'published')
+      ]);
 
-      const { data: aulasData } = await supabase
-        .from('aprender_aulas')
-        .select('id, modulo:aprender_modulos!inner(area_id)')
-        .eq('status', 'published');
-      const aulas = (aulasData ?? []) as any[];
+      const lista = (areasData ?? []) as Record<string, unknown>[];
+      const aulas = (aulasData ?? []) as { id: string; modulo: { area_id: string } }[];
 
       const porArea = new Map<string, string[]>();
       aulas.forEach((a) => {
@@ -49,13 +54,13 @@ export function useAprenderAreasResumo() {
       });
 
       let concluidasSet = new Set<string>();
-      if (user && aulas.length) {
+      if (user?.id && aulas.length) {
         const { data: prog } = await supabase
           .from('aprender_progresso_aula')
           .select('aula_id, concluida_em')
           .eq('user_id', user.id)
           .in('aula_id', aulas.map((a) => a.id));
-        concluidasSet = new Set((prog ?? []).filter((p: any) => p.concluida_em).map((p: any) => p.aula_id));
+        concluidasSet = new Set((prog ?? []).filter((p: Record<string, unknown>) => p.concluida_em).map((p: Record<string, unknown>) => p.aula_id as string));
       }
 
       const resumo: AreaResumo[] = lista
@@ -80,7 +85,7 @@ export function useAprenderAreasResumo() {
       setLoading(false);
     })();
     return () => { cancelled = true; };
-  }, [user?.id]);
+  }, [user]);
 
   return { areas, loading };
 }

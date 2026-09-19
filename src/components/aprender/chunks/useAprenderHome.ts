@@ -63,7 +63,19 @@ export function useAprenderHome(uid: string | null, activeTab: 'aulas' | 'flashc
     }
 
     (async () => {
-      const { data: res, error } = await supabase.rpc('aprender_home_resumo');
+      const timeoutPromise = new Promise<{ timeout: true }>((resolve) =>
+        setTimeout(() => resolve({ timeout: true }), 10000)
+      );
+      
+      const fetchPromise = supabase.rpc('aprender_home_resumo');
+      
+      const raced = await Promise.race([fetchPromise, timeoutPromise]);
+      if ('timeout' in raced) {
+        if (!cancelled) setLoading(false);
+        return;
+      }
+      
+      const { data: res, error } = raced as any;
       if (cancelled || error || !res) {
         if (!cancelled) setLoading(false);
         return;

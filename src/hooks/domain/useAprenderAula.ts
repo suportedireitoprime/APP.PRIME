@@ -173,26 +173,26 @@ export function useAprenderAula(aulaId: string | undefined, user: any) {
   useEffect(() => {
     if (!aulaId) return;
 
-    // 1. Verificação local instantânea (0ms)
-    const local = getLocalAulaProgress(aulaId);
-    let initialSavedBlocks = local?.blocosConcluidos ?? 0;
-    let initialSavedIdx = local?.currentIdx ?? 0;
-    let initialConcluida = local?.concluida ?? false;
-
-    if (initialSavedBlocks > 0) {
-      setProgressoSalvo(initialSavedBlocks);
-      if (initialConcluida) {
-        setFinalizada(true);
-      } else if (initialSavedIdx > 0) {
-        const pct = total > 0 ? Math.round(((initialSavedIdx + 1) / total) * 100) : 0;
-        setSavedPosition({ page: initialSavedIdx + 1, idx: initialSavedIdx, pct });
-        setModalRetomarOpen(true);
-      }
-    }
-
-    // 2. Sincronização com Supabase (se autenticado)
-    if (!user) return;
+    // 1. Verificação local (IDB)
     (async () => {
+      const local = await getLocalAulaProgress(aulaId);
+      let initialSavedBlocks = local?.blocosConcluidos ?? 0;
+      let initialSavedIdx = local?.currentIdx ?? 0;
+      let initialConcluida = local?.concluida ?? false;
+
+      if (initialSavedBlocks > 0) {
+        setProgressoSalvo(initialSavedBlocks);
+        if (initialConcluida) {
+          setFinalizada(true);
+        } else if (initialSavedIdx > 0) {
+          const pct = total > 0 ? Math.round(((initialSavedIdx + 1) / total) * 100) : 0;
+          setSavedPosition({ page: initialSavedIdx + 1, idx: initialSavedIdx, pct });
+          setModalRetomarOpen(true);
+        }
+      }
+
+      // 2. Sincronização com Supabase (se autenticado)
+      if (!user) return;
       try {
         const { data } = await supabase
           .from('aprender_progresso_aula')
@@ -270,8 +270,8 @@ export function useAprenderAula(aulaId: string | undefined, user: any) {
 
     const isConcluida = concluida || (total > 0 && targetBlocks >= total);
 
-    // 1. Salva localmente instantâneo (0ms)
-    saveLocalAulaProgress(aulaId, targetIdx, total, isConcluida);
+    // 1. Salva localmente (IDB async)
+    void saveLocalAulaProgress(aulaId, targetIdx, total, isConcluida);
 
     // 2. Salva no Supabase
     if (user) {
@@ -378,7 +378,7 @@ export function useAprenderAula(aulaId: string | undefined, user: any) {
     setConexoes({});
     setFinalizada(false);
     startedAt.current = Date.now();
-    if (aulaId) clearLocalAulaProgress(aulaId);
+    if (aulaId) void clearLocalAulaProgress(aulaId);
   };
 
   const comecarAula = () => {
@@ -389,7 +389,7 @@ export function useAprenderAula(aulaId: string | undefined, user: any) {
     setConexoes({});
     startedAt.current = Date.now();
     setMostrarPrevia(false);
-    if (aulaId) clearLocalAulaProgress(aulaId);
+    if (aulaId) void clearLocalAulaProgress(aulaId);
   };
 
   const continuarAula = (idx: number) => {
@@ -413,7 +413,7 @@ export function useAprenderAula(aulaId: string | undefined, user: any) {
     setFlipped({});
     setConexoes({});
     startedAt.current = Date.now();
-    if (aulaId) clearLocalAulaProgress(aulaId);
+    if (aulaId) void clearLocalAulaProgress(aulaId);
     if (user && aulaId) {
       void supabase.from('aprender_progresso_aula').upsert({
         user_id: user.id,

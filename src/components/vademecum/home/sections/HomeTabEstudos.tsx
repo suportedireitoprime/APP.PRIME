@@ -14,13 +14,12 @@ import { AprenderCarouselSkeleton } from '@/components/vademecum/home/aprender/c
 import { GRID_CATS, EMALTA_CATS, Cat } from './homeSectionsData';
 import { useState } from 'react';
 
-// Função para decidir e persistir o carrossel no localStorage para evitar trocas erráticas
-function getAndToggleCarouselType(): 'noticias' | 'livros' {
-  const saved = localStorage.getItem('app_next_top_carousel') as 'noticias' | 'livros' | null;
-  const current = saved === 'livros' ? 'livros' : 'noticias';
-  const next = current === 'noticias' ? 'livros' : 'noticias';
-  localStorage.setItem('app_next_top_carousel', next);
-  return current;
+// Função para decidir o carrossel de forma determinística (por horário)
+// Isso evita trocas erráticas a cada navegação, garantindo que o cache funcione e o carregamento seja instantâneo.
+function getTopCarouselType(): 'noticias' | 'livros' {
+  const hour = new Date().getHours();
+  // Das 00:00 às 17:59 exibe Notícias. Das 18:00 às 23:59 exibe Livros.
+  return (hour >= 18 || hour < 6) ? 'livros' : 'noticias';
 }
 
 interface HomeTabEstudosProps {
@@ -47,7 +46,7 @@ const HomeTabEstudos = ({
   const navigate = useNavigate();
 
   const [topCarousel] = useState<'noticias' | 'livros'>(() => {
-    return getAndToggleCarouselType();
+    return getTopCarouselType();
   });
 
   return (

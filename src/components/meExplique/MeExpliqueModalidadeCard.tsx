@@ -26,7 +26,7 @@ const MeExpliqueModalidadeCard: React.FC<Props> = ({
         haptic.selection();
         onClick();
       }}
-      className="group relative flex h-[105px] min-h-[105px] w-full min-w-0 flex-row items-center justify-between overflow-hidden p-3.5 pr-8 rounded-2xl shadow-sm hover:shadow-md transition-all focus-visible:outline-none text-left active:scale-[0.97] border border-border/80 bg-zinc-900/80 hover:bg-zinc-800/80 cursor-pointer select-none"
+      className="group relative flex h-auto min-h-[105px] w-full min-w-0 flex-row items-center justify-between overflow-hidden p-3.5 pr-8 rounded-2xl shadow-sm hover:shadow-md transition-all focus-visible:outline-none text-left active:scale-[0.97] border border-border/80 bg-zinc-900/80 hover:bg-zinc-800/80 cursor-pointer select-none"
     >
       {/* Seta ou Badge à Direita */}
       <div className="absolute top-1/2 -translate-y-1/2 right-2.5 z-10">
@@ -49,12 +49,12 @@ const MeExpliqueModalidadeCard: React.FC<Props> = ({
           />
         </div>
 
-        <div className="flex-1 min-w-0 flex flex-col justify-center">
-          <p className="line-clamp-2 font-display text-[14px] xs:text-[15px] sm:text-[16px] font-bold leading-tight tracking-tighter text-foreground">
+        <div className="flex-1 min-w-0 flex flex-col justify-center py-1">
+          <p className="font-display text-[14px] xs:text-[15px] sm:text-[16px] font-bold leading-tight tracking-tight text-foreground break-words">
             {label}
           </p>
           {sublabel && (
-            <p className="font-body text-[11px] xs:text-[11.5px] leading-snug mt-0.5 line-clamp-1 text-muted-foreground">
+            <p className="font-body text-[11px] xs:text-[11.5px] leading-snug mt-1 text-muted-foreground break-words">
               {sublabel}
             </p>
           )}

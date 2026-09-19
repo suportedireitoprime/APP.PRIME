@@ -141,6 +141,27 @@ const MeExpliqueHeroPanel: React.FC<Props> = ({ onVoltar, onOpenConfig }) => {
           style={{ width: `${cota.porcentagemRestante}%` }}
         />
       </div>
+
+      {/* Tag do Tempo Restante — Localizada dentro da capa, embaixo */}
+      <div className="absolute z-20 right-4 bottom-4 flex justify-end">
+        <div
+          className={`flex items-center gap-2 rounded-2xl border px-3 py-1 backdrop-blur-md shadow-xl transition-colors ${
+            cota.limiteAtingido
+              ? 'border-red-500/40 bg-black/60 text-red-300'
+              : 'border-amber-500/35 bg-black/60 text-amber-300'
+          }`}
+        >
+          <Clock className="h-4 w-4 shrink-0 text-amber-400" />
+          <div className="text-right">
+            <span className="block font-mono text-xs font-bold leading-none">
+              {cota.tempoFormatado}
+            </span>
+            <span className="block text-[9px] font-medium text-white/70 leading-none mt-0.5">
+              {cota.limiteAtingido ? 'Esgotado' : 'Restantes hoje'}
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

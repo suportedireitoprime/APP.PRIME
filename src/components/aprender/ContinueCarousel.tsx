@@ -115,7 +115,7 @@ const ContinueCarousel = ({ aulas, onOpen }: Props) => {
         </motion.div>
       ) : (
         <motion.div 
-          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-3 pb-2 -mx-3 px-3 sm:mx-0 sm:px-0"
+          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-3 pb-2 -mx-3 px-3 sm:mx-0 sm:px-0 will-change-transform"
           initial="hidden"
           animate="show"
           variants={{

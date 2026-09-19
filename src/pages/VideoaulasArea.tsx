@@ -123,7 +123,7 @@ const VideoaulasArea = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] pb-[calc(1.25rem+var(--sai-bottom)+80px)]">
+    <div className="min-h-screen bg-[#0A0A0A] pb-[calc(1.25rem+var(--sai-bottom))]">
       <PageHeader
         title={nomeArea}
         subtitle={loading ? 'Carregando…' : `${aulas.length} aulas`}
@@ -232,8 +232,6 @@ const VideoaulasArea = () => {
         )}
       </AnimatePresence>
 
-      {/* Menu de Rodapé Exclusivo da Área */}
-      <AreaBottomNav currentTab={aba} onSelectTab={setAba} />
     </div>
   );
 };
