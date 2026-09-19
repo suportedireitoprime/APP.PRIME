@@ -392,13 +392,13 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
                         
                         <div className="absolute top-3 left-3 flex items-center gap-1.5">
-                          <span className="text-[7px] sm:text-[8px] font-bold tracking-widest px-1.5 py-0.5 rounded bg-black/40 backdrop-blur-md text-white/90 uppercase">
+                          <span className="text-[9px] sm:text-[10px] font-bold tracking-widest px-2 py-1 rounded-md bg-black/50 backdrop-blur-md text-white/95 uppercase">
                             {p.tag}
                           </span>
                         </div>
 
                         <div className="absolute bottom-1.5 left-2 right-2 flex items-center justify-between">
-                          <span className="font-bold text-[10px] sm:text-xs text-white uppercase drop-shadow">
+                          <span className="font-bold text-xs sm:text-sm text-white uppercase drop-shadow">
                             {p.label}
                           </span>
                           {isSelected && (
@@ -460,7 +460,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
-                          <h3 className="font-semibold text-[11px] sm:text-xs text-white/90 leading-snug">
+                          <h3 className="font-semibold text-xs sm:text-sm text-white/90 leading-snug">
                             {d.title}
                           </h3>
                           <div className={`w-4 h-4 rounded-md border flex items-center justify-center shrink-0 transition-colors ${
@@ -513,7 +513,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                           : 'border-white/10 bg-neutral-900/60 text-neutral-300 hover:border-white/20'
                       }`}
                     >
-                      <span className="font-semibold text-xs truncate pr-2">
+                      <span className="font-semibold text-sm truncate pr-2">
                         {area}
                       </span>
                       <span className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 text-[10px] ${
@@ -557,7 +557,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
               <div className="space-y-4 pt-2">
                 {/* Campo de Nome */}
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-neutral-300">
+                  <label className="block text-sm font-semibold text-neutral-300">
                     Qual é o seu nome?
                   </label>
                   <div className="relative">
@@ -567,14 +567,14 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                       value={nome}
                       onChange={e => setNome(e.target.value)}
                       placeholder="Seu nome"
-                      className="w-full h-12 rounded-xl bg-neutral-900/80 border border-white/15 pl-11 pr-4 text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                      className="w-full h-[52px] rounded-xl bg-neutral-900/80 border border-white/15 pl-11 pr-4 text-base text-white placeholder:text-neutral-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                     />
                   </div>
                 </div>
 
                 {/* Faixa Etária */}
                 <div className="space-y-1.5 pt-1">
-                  <label className="block text-xs font-semibold text-neutral-300">
+                  <label className="block text-sm font-semibold text-neutral-300">
                     Faixa etária:
                   </label>
                   <div className="grid grid-cols-2 gap-2">
@@ -586,7 +586,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                           haptic.selection();
                           setFaixa(f);
                         }}
-                        className={`py-2 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        className={`min-h-[48px] py-3 px-3 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                           faixa === f
                             ? 'bg-primary text-white border border-primary/40 shadow-sm'
                             : 'bg-white/5 border border-white/10 text-neutral-400 hover:text-white'

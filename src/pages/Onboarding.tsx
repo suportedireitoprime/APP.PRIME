@@ -100,7 +100,7 @@ const Onboarding = () => {
           display_name: r.nome || null,
           areas_interesse: r.areas || [],
           interesses: r.interesses || [],
-          whatsapp_number: r.whatsapp || null,
+          telefone: r.whatsapp || null,
           onboarding_completed_at: new Date().toISOString(),
         })
         .eq('id', user.id);
