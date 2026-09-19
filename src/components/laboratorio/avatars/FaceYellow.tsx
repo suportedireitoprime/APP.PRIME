@@ -68,66 +68,70 @@ export const FaceYellow = ({ viseme, volume }: { viseme: string; volume: number 
         </g>
       </g>
 
-      {/* Braço Direito (Explicando / Animado) */}
-      <g className="transition-transform duration-100" style={{ transform: `rotate(${-volume * 20}deg)`, transformOrigin: '65px 100px' }}>
+      {/* Braço Direito (Segurando Martelo da Justiça) */}
+      <g className="transition-transform duration-100" style={{ transform: `rotate(${-volume * 15}deg)`, transformOrigin: '65px 100px' }}>
         {/* Manga */}
         <path d="M 65 90 Q 90 100 82 125" fill="none" stroke="#212121" strokeWidth="16" strokeLinecap="round" />
         
-        {/* Luva Direita (apontando) com expressão no pulso */}
-        <g style={{ transform: `translateY(${-volume * 10}px) rotate(${volume * 40}deg)`, transition: 'transform 0.1s', transformOrigin: '80px 125px' }}>
-          {/* Punho gordinho */}
-          <ellipse cx="80" cy="125" rx="14" ry="5.5" fill="#e0e0e0" transform="rotate(-15 80 125)" />
-          <ellipse cx="81" cy="122" rx="14" ry="5.5" fill="#ffffff" transform="rotate(-15 81 122)" />
+        {/* Mão Direita e Martelo */}
+        <g style={{ transform: `translateY(${-volume * 5}px) rotate(${volume * 30}deg)`, transition: 'transform 0.1s', transformOrigin: '80px 125px' }}>
           
-          {/* Palma */}
-          <circle cx="82" cy="112" r="11" fill="#ffffff" />
+          {/* Cabo do Martelo */}
+          <rect x="78" y="100" width="6" height="40" rx="2" fill="#795548" transform="rotate(-20 80 120)" />
+          {/* Cabeça do Martelo */}
+          <g transform="rotate(-20 80 120)">
+            <rect x="68" y="95" width="26" height="12" rx="2" fill="#5D4037" />
+            <rect x="66" y="97" width="30" height="8" rx="1" fill="#4E342E" />
+          </g>
+
+          {/* Mão (Luva Branca) segurando o cabo */}
+          <circle cx="82" cy="120" r="9" fill="#ffffff" />
+          {/* Dedos envolvendo o cabo */}
+          <rect x="75" y="115" width="12" height="5" rx="2.5" fill="#ffffff" transform="rotate(-20 75 115)" />
+          <rect x="76" y="120" width="12" height="5" rx="2.5" fill="#ffffff" transform="rotate(-20 76 120)" />
+          <rect x="78" y="125" width="12" height="5" rx="2.5" fill="#ffffff" transform="rotate(-20 78 125)" />
           
-          {/* Dedo indicador grosso apontando para cima (com balanço extra) */}
-          <g className="transition-transform duration-100" style={{ transform: `rotate(${volume * 20}deg)`, transformOrigin: '82px 105px' }}>
-            <rect x="77.5" y="85" width="9" height="25" rx="4.5" fill="#ffffff" />
-          </g>
-
-          {/* Outros dedos dobrados contra a palma */}
-          <g className="transition-transform duration-100" style={{ transform: `translateX(${volume * 2}px)` }}>
-            <rect x="84" y="103" width="13" height="7.5" rx="3.75" fill="#ffffff" transform="rotate(15 84 103)" />
-            <rect x="85" y="111" width="11" height="7" rx="3.5" fill="#ffffff" transform="rotate(20 85 111)" />
-            <rect x="84" y="118" width="10" height="6" rx="3" fill="#ffffff" transform="rotate(25 84 118)" />
-          </g>
-
-          {/* Polegar sobreposto na frente */}
-          <ellipse cx="75" cy="110" rx="4.5" ry="8.5" fill="#ffffff" transform="rotate(-30 75 110)" />
-
-          {/* Sombras/Linhas separando os dedos dobrados */}
-          <g className="transition-transform duration-100" style={{ transform: `translateX(${volume * 2}px)` }}>
-            <path d="M 85 110 Q 90 110 94 112" stroke="#bdbdbd" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-            <path d="M 86 117 Q 89 117 92 119" stroke="#bdbdbd" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-          </g>
-          <path d="M 74 115 Q 77 110 80 108" stroke="#bdbdbd" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+          {/* Polegar na frente */}
+          <ellipse cx="85" cy="116" rx="3.5" ry="6" fill="#ffffff" transform="rotate(10 85 116)" />
+          
+          {/* Punho */}
+          <ellipse cx="80" cy="130" rx="12" ry="5" fill="#e0e0e0" transform="rotate(-20 80 130)" />
+          <ellipse cx="81" cy="128" rx="12" ry="5" fill="#ffffff" transform="rotate(-20 81 128)" />
         </g>
       </g>
 
-      {/* Corpo (Beca de formatura) */}
+      {/* Corpo (Toga de Juiz) */}
       <g className="transition-transform duration-100" style={{ transform: `scale(1, ${1 + volume * 0.02})`, transformOrigin: '50px 180px' }}>
         <path d="M 35 90 Q 20 130 15 180 L 85 180 Q 80 130 65 90 Z" fill="#212121" />
-        {/* Detalhe da gola da beca */}
-        <path d="M 35 90 L 50 115 L 65 90" fill="#424242" />
-        <path d="M 50 115 L 50 180" stroke="#424242" strokeWidth="3" />
+        {/* Colarinho branco (jabot) típico de magistrados */}
+        <path d="M 40 90 L 60 90 L 55 110 L 50 115 L 45 110 Z" fill="#ffffff" />
+        {/* Linhas do jabot */}
+        <path d="M 45 90 L 45 110" stroke="#eeeeee" strokeWidth="1" />
+        <path d="M 50 90 L 50 115" stroke="#e0e0e0" strokeWidth="1.5" />
+        <path d="M 55 90 L 55 110" stroke="#eeeeee" strokeWidth="1" />
+        <path d="M 50 115 L 50 180" stroke="#111111" strokeWidth="4" />
       </g>
 
       {/* Cabeça e Efeito de amassar (squash & stretch) */}
       <g style={{ transform: `translateY(${bounce}px) scale(${1 + volume * 0.08}, ${1 - volume * 0.08})`, transformOrigin: '50px 95px', transition: 'transform 0.1s' }}>
         <circle cx="50" cy="50" r="45" fill="url(#skinYellow)" />
         
-        {/* Chapéu de Formatura (Capelo) - Maior e Animado */}
-        <g className="transition-transform duration-100" style={{ transform: `translateY(${-35 + volume * 4}px) scale(1.35) rotate(${volume * 8}deg)`, transformOrigin: '50px 30px' }}>
-          {/* Base cilíndrica */}
-          <path d="M 35 40 Q 50 45 65 40 L 65 30 Q 50 35 35 30 Z" fill="#212121" />
-          {/* Topo do chapéu (losango) */}
-          <polygon points="50,15 85,25 50,35 15,25" fill="#424242" />
-          {/* Botão central */}
-          <circle cx="50" cy="25" r="3" fill="#ffb300" />
-          {/* Franja/Tassel animada para o LADO ESQUERDO */}
-          <path d="M 50 25 Q 30 25 20 40 L 18 45 L 22 45 Z" fill="#ffb300" className="transition-transform duration-100" style={{ transform: `rotate(${volume * 20}deg)`, transformOrigin: '50px 25px' }} />
+        {/* Peruca de Juiz (Magistrate Wig) */}
+        <g className="transition-transform duration-100" style={{ transform: `translateY(${-35 + volume * 4}px) scale(1.15) rotate(${volume * 3}deg)`, transformOrigin: '50px 30px' }}>
+          {/* Base da peruca */}
+          <path d="M 15 50 Q 10 20 50 10 Q 90 20 85 50 Q 80 65 75 60 L 75 40 Q 50 25 25 40 L 25 60 Q 20 65 15 50 Z" fill="#f5f5f5" />
+          {/* Rolos laterais esquerdos */}
+          <circle cx="20" cy="45" r="7" fill="#eeeeee" stroke="#e0e0e0" strokeWidth="1" />
+          <circle cx="22" cy="55" r="7" fill="#eeeeee" stroke="#e0e0e0" strokeWidth="1" />
+          <circle cx="25" cy="65" r="7" fill="#eeeeee" stroke="#e0e0e0" strokeWidth="1" />
+          {/* Rolos laterais direitos */}
+          <circle cx="80" cy="45" r="7" fill="#eeeeee" stroke="#e0e0e0" strokeWidth="1" />
+          <circle cx="78" cy="55" r="7" fill="#eeeeee" stroke="#e0e0e0" strokeWidth="1" />
+          <circle cx="75" cy="65" r="7" fill="#eeeeee" stroke="#e0e0e0" strokeWidth="1" />
+          {/* Linhas da peruca no topo */}
+          <path d="M 30 20 Q 50 15 70 20" fill="none" stroke="#e0e0e0" strokeWidth="2" />
+          <path d="M 35 25 Q 50 20 65 25" fill="none" stroke="#e0e0e0" strokeWidth="2" />
+          <path d="M 40 30 Q 50 25 60 30" fill="none" stroke="#e0e0e0" strokeWidth="2" />
         </g>
 
         {/* Sobrancelhas */}

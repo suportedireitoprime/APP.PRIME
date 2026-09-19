@@ -97,6 +97,22 @@ function paraPcm16(amostras: Float32Array, taxaOrigem: number): Uint8Array {
   return new Uint8Array(buffer);
 }
 
+let sharedAudioContext: AudioContext | null = null;
+
+export function wakeUpAudioContext() {
+  try {
+    if (!sharedAudioContext) {
+      const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      sharedAudioContext = new Ctx({ sampleRate: TAXA_SAIDA });
+    }
+    if (sharedAudioContext.state === "suspended") {
+      void sharedAudioContext.resume().catch(() => undefined);
+    }
+  } catch (e) {
+    console.warn("[MeExplique] Falha no wakeUpAudioContext", e);
+  }
+}
+
 export class SessaoMeExplique {
   private ws: WebSocket | null = null;
   private stream: MediaStream | null = null;
@@ -378,17 +394,36 @@ export class SessaoMeExplique {
     }
   }
 
+  private analyserSaida: AnalyserNode | null = null;
+  private dataArraySaida: Uint8Array | null = null;
+
   // ----- áudio de saída -----
 
   private garantirSaida() {
     if (!this.ctxSaida) {
-      const Ctx =
-        window.AudioContext ||
-        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      this.ctxSaida = new Ctx({ sampleRate: TAXA_SAIDA });
+      if (!sharedAudioContext) wakeUpAudioContext();
+      this.ctxSaida = sharedAudioContext!;
+      
+      // Cria o analyser uma vez por sessão se necessário, mas o ctxSaida já é global.
+      this.analyserSaida = this.ctxSaida.createAnalyser();
+      this.analyserSaida.fftSize = 256;
+      this.analyserSaida.connect(this.ctxSaida.destination);
+      this.dataArraySaida = new Uint8Array(this.analyserSaida.frequencyBinCount);
     }
-    if (this.ctxSaida.state === "suspended") void this.ctxSaida.resume();
+    if (this.ctxSaida.state === "suspended") {
+      void this.ctxSaida.resume().catch(() => undefined);
+    }
     return this.ctxSaida;
+  }
+
+  getVolume(): number {
+    if (!this.analyserSaida || !this.dataArraySaida) return 0;
+    this.analyserSaida.getByteFrequencyData(this.dataArraySaida);
+    let sum = 0;
+    for (let i = 0; i < this.dataArraySaida.length; i++) {
+      sum += this.dataArraySaida[i];
+    }
+    return (sum / this.dataArraySaida.length) / 255;
   }
 
   private tocar(b64: string) {
@@ -407,7 +442,11 @@ export class SessaoMeExplique {
 
     const fonte = ctx.createBufferSource();
     fonte.buffer = buffer;
-    fonte.connect(ctx.destination);
+    if (this.analyserSaida) {
+      fonte.connect(this.analyserSaida);
+    } else {
+      fonte.connect(ctx.destination);
+    }
 
     const inicio = Math.max(ctx.currentTime + 0.04, this.proximaFala);
     fonte.start(inicio);

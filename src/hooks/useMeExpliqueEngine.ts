@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect, RefObject } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useSubscription } from '@/hooks/useSubscription';
 import { haptic, telaAcesa } from '@/lib/nativo';
-import { SessaoMeExplique, type FalaTranscrita, type StatusLive } from '@/lib/meExplique/liveClient';
+import { SessaoMeExplique, wakeUpAudioContext, type FalaTranscrita, type StatusLive } from '@/lib/meExplique/liveClient';
 import { CameraMeExplique, type RecursosCamera } from '@/lib/meExplique/camera';
 import { type FalaSalva } from '@/components/meExplique/TranscricaoSheet';
 import { type MeExpliqueConfig, DEFAULT_CONFIG } from '@/components/meExplique/MeExpliqueConfigSheet';
@@ -23,6 +23,10 @@ export function useMeExpliqueEngine(videoRef: RefObject<HTMLVideoElement>) {
     return () => {
       isMounted.current = false;
       if (focoTimerRef.current) window.clearTimeout(focoTimerRef.current);
+      if (sessaoRef.current) {
+        sessaoRef.current.encerrar();
+        sessaoRef.current = null;
+      }
     };
   }, []);
 
@@ -197,6 +201,7 @@ export function useMeExpliqueEngine(videoRef: RefObject<HTMLVideoElement>) {
   }, [abrirPreview]);
 
   const iniciar = useCallback(async () => {
+    wakeUpAudioContext(); // Item 7: Acorda o AudioContext sincronicamente no evento de clique
     if (tempoRestante <= 0) {
       setLimiteModal(true);
       return;

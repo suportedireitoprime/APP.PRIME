@@ -24,6 +24,7 @@ import { useMeExpliqueCota } from '@/hooks/useMeExpliqueCota';
 import { haptic, telaAcesa } from '@/lib/nativo';
 import PremiumGate from '@/components/PremiumGate';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+import { FaceYellow } from '@/components/laboratorio/avatars/FaceYellow';
 
 interface Props {
   modo: 'livro' | 'termo' | 'lei' | 'livre';
@@ -78,6 +79,9 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
   const [falas, setFalas] = useState<FalaTranscrita[]>([]);
   const [falaParcial, setFalaParcial] = useState<FalaTranscrita | null>(null);
   const [inputTexto, setInputTexto] = useState('');
+  
+  const [viseme, setViseme] = useState('X');
+  const [volume, setVolume] = useState(0);
 
   const sessaoRef = useRef<SessaoMeExplique | null>(null);
   const isMounted = useRef(true);
@@ -89,6 +93,39 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
     const seg = segundos % 60;
     return `${min}:${seg < 10 ? '0' : ''}${seg}`;
   };
+
+  // Simulação de Visemes + Extração de Volume em Tempo Real
+  useEffect(() => {
+    if (status !== 'falando') {
+      setViseme('X');
+      setVolume(0);
+      return;
+    }
+
+    let animationFrameId: number;
+    let lastTime = 0;
+
+    const update = (time: number) => {
+      if (!sessaoRef.current) return;
+      const currentVolume = sessaoRef.current.getVolume();
+      setVolume(currentVolume);
+
+      if (time - lastTime > 100) {
+        lastTime = time;
+        if (currentVolume > 0.05) {
+          const visemes = ['A', 'E', 'I', 'O', 'U', 'C', 'D', 'F', 'L', 'M', 'P', 'S'];
+          setViseme(visemes[Math.floor(Math.random() * visemes.length)]);
+        } else {
+          setViseme('X');
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(update);
+    };
+
+    animationFrameId = requestAnimationFrame(update);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [status]);
 
   // Mantém a tela acesa durante a conversa ao vivo
   useEffect(() => {
@@ -270,7 +307,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
       </div>
 
       {/* Header Superior com Tempo e Botão Voltar */}
-      <header className="relative z-20 flex items-center justify-between px-4 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-3 bg-zinc-950/80 backdrop-blur-md border-b border-white/10">
+      <header className="relative z-20 flex items-center justify-between px-4 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-3 bg-transparent">
         <div className="flex items-center gap-3 min-w-0">
           <button
             type="button"
@@ -285,22 +322,12 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
             <ArrowLeft className="w-5 h-5" />
           </button>
 
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                {modo === 'livro' ? 'Livro' : modo === 'termo' ? 'Termo' : modo === 'lei' ? 'Lei' : 'Voz'}
-              </span>
-              <span className="text-[11px] font-bold text-zinc-400">Gemini Live</span>
-            </div>
-            <h1 className="text-sm sm:text-base font-black text-white truncate max-w-[200px] xs:max-w-[240px] sm:max-w-[320px]">
-              {contexto}
-            </h1>
-          </div>
+          {/* Título Removido conforme solicitação */}
         </div>
 
         {/* Cota Diária de Tempo Restante */}
         <div className="flex items-center gap-2 shrink-0">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-900 border border-amber-500/30 text-amber-400 text-xs font-mono font-bold shadow-inner">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-900/80 border border-amber-500/30 text-amber-400 text-xs font-mono font-bold shadow-inner backdrop-blur-md">
             <Clock className="w-3.5 h-3.5" />
             <span>{formatarTempo(cota.tempoRestante)}</span>
           </div>
@@ -318,9 +345,9 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
         </div>
       </header>
 
-      {/* ÁREA CENTRAL: O ORBE SONORO (A Bolinha Animada que fala e reage em tempo real) */}
-      <section className="relative z-10 flex flex-col items-center justify-center pt-4 pb-2 px-4 shrink-0">
-        <div className="relative flex items-center justify-center w-40 h-40 sm:w-44 sm:h-44">
+      {/* ÁREA CENTRAL: O AVATAR E EFEITOS SONOROS */}
+      <section className="relative z-10 flex flex-col items-center justify-end px-4 shrink-0 pb-0 mt-auto">
+        <div className="relative flex items-end justify-center w-56 h-56 sm:w-64 sm:h-64">
           {/* Anéis de Ondas Sonoras Expansivas (Somente quando falando) */}
           <AnimatePresence>
             {status === 'falando' && (
@@ -337,12 +364,6 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
                   transition={{ repeat: Infinity, duration: 1.8, delay: 0.5, ease: 'easeOut' }}
                   className="absolute inset-0 rounded-full border border-rose-500/40 pointer-events-none"
                 />
-                <motion.div
-                  initial={{ scale: 0.9, opacity: 0.6 }}
-                  animate={{ scale: [1, 1.25, 1.45], opacity: [0.6, 0.2, 0] }}
-                  transition={{ repeat: Infinity, duration: 1.8, delay: 1.0, ease: 'easeOut' }}
-                  className="absolute inset-0 rounded-full border border-purple-500/40 pointer-events-none"
-                />
               </>
             )}
           </AnimatePresence>
@@ -358,110 +379,49 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
 
           {/* Halo Glow com Blur Dinâmico */}
           <div
-            className={`absolute -inset-4 rounded-full blur-2xl transition-all duration-700 pointer-events-none ${
+            className={`absolute -inset-4 rounded-full blur-3xl transition-all duration-700 pointer-events-none ${
               status === 'falando'
-                ? 'bg-gradient-to-tr from-amber-500/40 via-rose-600/40 to-purple-600/40 opacity-90 scale-110'
+                ? 'bg-gradient-to-tr from-amber-500/40 via-rose-600/40 to-purple-600/40 opacity-70 scale-110'
                 : status === 'ouvindo'
-                ? 'bg-emerald-500/30 opacity-70 scale-100'
+                ? 'bg-emerald-500/30 opacity-50 scale-100'
                 : status === 'conectando'
-                ? 'bg-amber-500/25 opacity-60 animate-pulse'
-                : 'bg-zinc-700/20 opacity-30'
+                ? 'bg-amber-500/25 opacity-40 animate-pulse'
+                : 'bg-zinc-700/20 opacity-20'
             }`}
           />
 
-          {/* A BOLINHA ANIMADA PRINCIPAL (O Orbe 3D) */}
-          <motion.div
-            animate={
-              status === 'falando'
-                ? {
-                    scale: [1, 1.08, 0.97, 1.1, 1],
-                    rotate: [0, 45, 90, 180, 360],
-                  }
-                : status === 'ouvindo'
-                ? {
-                    scale: [1, 1.04, 1],
-                    rotate: 0,
-                  }
-                : status === 'conectando'
-                ? {
-                    rotate: 360,
-                    scale: [0.96, 1.02, 0.96],
-                  }
-                : { scale: 1, rotate: 0 }
-            }
-            transition={
-              status === 'falando'
-                ? {
-                    scale: { repeat: Infinity, duration: 1.4, ease: 'easeInOut' },
-                    rotate: { repeat: Infinity, duration: 8, ease: 'linear' },
-                  }
-                : status === 'conectando'
-                ? {
-                    rotate: { repeat: Infinity, duration: 2.5, ease: 'linear' },
-                    scale: { repeat: Infinity, duration: 1.8, ease: 'easeInOut' },
-                  }
-                : { repeat: Infinity, duration: 2.5, ease: 'easeInOut' }
-            }
-            className={`relative w-28 h-28 sm:w-32 sm:h-32 rounded-full shadow-2xl flex items-center justify-center overflow-hidden border ${
-              status === 'falando'
-                ? 'border-amber-300/80 shadow-[0_0_50px_rgba(245,158,11,0.5)]'
-                : status === 'ouvindo'
-                ? 'border-emerald-400/80 shadow-[0_0_40px_rgba(16,185,129,0.4)]'
-                : 'border-white/20 shadow-[0_0_25px_rgba(255,255,255,0.1)]'
-            }`}
-            style={{
-              background:
-                status === 'falando'
-                  ? 'radial-gradient(circle at 30% 30%, #FBBF24, #E11D48 60%, #7C3AED 95%)'
-                  : status === 'ouvindo'
-                  ? 'radial-gradient(circle at 30% 30%, #34D399, #059669 65%, #064E3B 95%)'
-                  : status === 'conectando'
-                  ? 'radial-gradient(circle at 30% 30%, #FACC15, #D97706 70%, #451A03 95%)'
-                  : 'radial-gradient(circle at 30% 30%, #71717A, #3F3F46 70%, #18181B 95%)',
-            }}
-          >
-            {/* Efeito de Reflexo / Vidro 3D */}
-            <div className="absolute top-1 left-2 w-14 h-8 bg-white/30 rounded-full blur-[2px] -rotate-45 pointer-events-none" />
+          {/* O AVATAR FACEYELLOW */}
+          <div className="relative w-full h-full z-10 flex items-end justify-center overflow-visible pb-2">
+            <FaceYellow viseme={viseme} volume={volume} />
+            
+            {/* Botão de Microfone Flutuante na barriga/pé do Avatar */}
+            <button
+              type="button"
+              onClick={alternarMic}
+              className={`absolute bottom-4 sm:bottom-6 -right-2 sm:right-0 w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border shadow-2xl active:scale-95 transition-all cursor-pointer z-50 backdrop-blur-md ${
+                micAtivo
+                  ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 hover:bg-emerald-500/30'
+                  : 'bg-zinc-800/80 text-zinc-400 border-zinc-700'
+              }`}
+              title={micAtivo ? 'Microfone Ativo (toque para silenciar)' : 'Microfone Mutado (toque para abrir)'}
+              aria-label="Microfone"
+            >
+              {micAtivo ? <Mic className="w-5 h-5 animate-pulse" /> : <MicOff className="w-5 h-5 text-red-400" />}
+            </button>
 
-            {/* Equalizador / Ondinhas no centro da bolinha */}
-            <div className="relative z-10 flex items-center gap-1">
-              {status === 'falando' ? (
-                <>
-                  <motion.span
-                    animate={{ height: ['8px', '28px', '12px'] }}
-                    transition={{ repeat: Infinity, duration: 0.35, ease: 'easeInOut' }}
-                    className="w-1.5 bg-white rounded-full shadow"
-                  />
-                  <motion.span
-                    animate={{ height: ['14px', '38px', '18px'] }}
-                    transition={{ repeat: Infinity, duration: 0.45, delay: 0.1, ease: 'easeInOut' }}
-                    className="w-1.5 bg-white rounded-full shadow"
-                  />
-                  <motion.span
-                    animate={{ height: ['20px', '46px', '10px'] }}
-                    transition={{ repeat: Infinity, duration: 0.4, delay: 0.2, ease: 'easeInOut' }}
-                    className="w-1.5 bg-white rounded-full shadow"
-                  />
-                  <motion.span
-                    animate={{ height: ['12px', '34px', '16px'] }}
-                    transition={{ repeat: Infinity, duration: 0.42, delay: 0.15, ease: 'easeInOut' }}
-                    className="w-1.5 bg-white rounded-full shadow"
-                  />
-                  <motion.span
-                    animate={{ height: ['6px', '24px', '10px'] }}
-                    transition={{ repeat: Infinity, duration: 0.38, delay: 0.25, ease: 'easeInOut' }}
-                    className="w-1.5 bg-white rounded-full shadow"
-                  />
-                </>
-              ) : status === 'ouvindo' ? (
-                <Mic className="w-8 h-8 text-white drop-shadow-md animate-pulse" />
-              ) : status === 'conectando' ? (
-                <Loader2 className="w-8 h-8 text-white animate-spin" />
-              ) : (
-                <Volume2 className="w-8 h-8 text-white/60" />
-              )}
-            </div>
-          </motion.div>
+            {/* Ícone sobreposto para status conectando/ouvindo */}
+            {status !== 'falando' && (
+              <div className="absolute top-4 left-4 bg-zinc-900/80 backdrop-blur border border-white/10 p-2 rounded-full shadow-xl">
+                {status === 'ouvindo' ? (
+                  <MessageSquare className="w-4 h-4 text-emerald-400 animate-bounce" />
+                ) : status === 'conectando' ? (
+                  <Loader2 className="w-4 h-4 text-amber-400 animate-spin" />
+                ) : (
+                  <Volume2 className="w-4 h-4 text-zinc-500" />
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Badge Informativo do Status da Voz */}
@@ -508,7 +468,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
       {/* ÁREA DO CHAT: Transcrição em Tempo Real e Histórico de Conversa */}
       <section
         ref={chatScrollRef}
-        className="relative z-10 flex-1 px-4 py-2 overflow-y-auto space-y-3 scroll-smooth"
+        className="relative z-10 flex-1 px-4 py-2 overflow-y-auto space-y-3 scroll-smooth max-h-[35vh]"
       >
         {falas.length === 0 && !falaParcial && status === 'conectando' && (
           <div className="flex flex-col items-center justify-center h-full text-center p-6 space-y-2 text-zinc-500">
@@ -595,23 +555,8 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
           ))}
         </div>
 
-        {/* Linha de Controle: Botão Microfone + Campo de Digitação */}
+        {/* Linha de Controle: Campo de Digitação */}
         <div className="flex items-center gap-2">
-          {/* Botão de Microfone */}
-          <button
-            type="button"
-            onClick={alternarMic}
-            className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border shadow-md active:scale-95 transition-all cursor-pointer ${
-              micAtivo
-                ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 hover:bg-emerald-500/30'
-                : 'bg-zinc-800 text-zinc-400 border-zinc-700'
-            }`}
-            title={micAtivo ? 'Microfone Ativo (toque para silenciar)' : 'Microfone Mutado (toque para abrir)'}
-            aria-label="Microfone"
-          >
-            {micAtivo ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5 text-red-400" />}
-          </button>
-
           {/* Input de Texto para quem prefere digitar ou enviar pergunta complementar */}
           <div className="relative flex-1 flex items-center">
             <input

@@ -339,6 +339,24 @@ const BottomNav = () => {
             <Pill className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/pilulas') ? 'scale-110' : ''}`} strokeWidth={1.2} />
             <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Pílulas</span>
           </motion.button>
+
+          {/* Slot 6: Me Explique (Apenas Desktop) */}
+          <motion.button
+            whileTap={{ scale: 0.90 }}
+            transition={{ type: "spring", stiffness: 450, damping: 25 }}
+            onPointerDown={() => prefetchRoute('me-explique')}
+            onMouseEnter={() => prefetchRoute('me-explique')}
+            onClick={() => { haptic.selection(); navigate('/me-explique'); }}
+            data-track="bottom_nav_click"
+            data-track-destino="me-explique"
+            className={`hidden md:flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-colors ${
+              path.startsWith('/me-explique') ? 'text-amber-400 bg-amber-500/10 ring-1 ring-amber-500/25 shadow-sm' : 'text-white/80 hover:bg-white/10 hover:text-amber-300'
+            }`}
+            aria-label="Me Explique"
+          >
+            <Bot className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/me-explique') ? 'scale-110 text-amber-400' : ''}`} strokeWidth={1.2} />
+            <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Me Explique</span>
+          </motion.button>
         </div>
       </div>
     </div>
