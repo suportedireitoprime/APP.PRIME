@@ -17,7 +17,7 @@ export const BibliotecaAcervosRoleta: React.FC<BibliotecaAcervosRoletaProps> = (
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <span className="w-1 h-7 rounded-full bg-primary shrink-0" aria-hidden />
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight truncate">
+            <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground leading-tight truncate normal-case">
               Acervos de Livros
             </h2>
             <p className="text-[12px] sm:text-[13px] text-zinc-400 mt-0.5 line-clamp-1">
@@ -59,7 +59,7 @@ export const BibliotecaAcervosRoleta: React.FC<BibliotecaAcervosRoletaProps> = (
               {/* Informações da coleção do lado direito */}
               <div className="flex-1 min-w-0 py-0.5">
                 {count ? (
-                  <span className="text-[10.5px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/25 inline-flex items-center w-fit mb-1.5">
+                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-white/10 text-zinc-300 border border-white/15 inline-flex items-center w-fit mb-1.5">
                     {count} {count === 1 ? 'livro' : 'livros'}
                   </span>
                 ) : (
@@ -67,7 +67,7 @@ export const BibliotecaAcervosRoleta: React.FC<BibliotecaAcervosRoletaProps> = (
                     {c.eyebrow || 'Coleção'}
                   </span>
                 )}
-                <h3 className="text-[15.5px] sm:text-[16.5px] font-bold text-white group-hover:text-primary transition-colors leading-snug truncate">
+                <h3 className="text-[15.5px] sm:text-[16.5px] font-semibold tracking-tight text-white group-hover:text-primary transition-colors leading-snug truncate normal-case">
                   {c.label}
                 </h3>
                 <p className="text-[12px] sm:text-[12.5px] text-zinc-400 line-clamp-2 mt-1 leading-relaxed">
