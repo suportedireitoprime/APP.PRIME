@@ -73,8 +73,22 @@ export async function speakNative(text: string, opts?: { lang?: string; rate?: n
       });
       return true;
     } catch (e) {
-      console.warn('[nativeTts] failed', e);
-      return false;
+      console.warn('[nativeTts] failed with lang', lang, e);
+      try {
+        // Fallback: Tenta rodar a engine sem especificar o idioma,
+        // permitindo que o sistema use o idioma padrão do aparelho (resolve falha no TTS)
+        await (await getTTS()).speak({
+          text: cleanText,
+          rate,
+          pitch: 1.0,
+          volume: 1.0,
+          category: 'playback',
+        });
+        return true;
+      } catch (e2) {
+        console.warn('[nativeTts] fallback without lang also failed', e2);
+        return false;
+      }
     }
   }
   // Web fallback
@@ -88,18 +102,28 @@ export async function speakNative(text: string, opts?: { lang?: string; rate?: n
 
       // Escolhe uma voz PT-BR se ela já estiver carregada; se não estiver, usa a voz padrão.
       const voices = window.speechSynthesis.getVoices();
-      const preferida =
+      let preferida =
         voices.find((v) => v.lang?.toLowerCase().startsWith('pt-br')) ||
         voices.find((v) => v.lang?.toLowerCase().startsWith('pt'));
+      
+      // Fallback pra qualquer voz existente se o aparelho não tiver português instalado
+      if (!preferida && voices.length > 0) {
+        preferida = voices.find((v) => v.lang?.toLowerCase().startsWith('en')) || voices[0];
+      }
+
       const chunks = chunkText(cleanText);
       let chunkIndex = 0;
       let stopped = false;
 
       const makeUtterance = (chunk: string) => {
         const utterance = new SpeechSynthesisUtterance(chunk);
-        utterance.lang = lang;
+        if (preferida) {
+          utterance.voice = preferida;
+          utterance.lang = preferida.lang; // Força a linguagem da voz escolhida para evitar mute
+        } else {
+          utterance.lang = lang;
+        }
         utterance.rate = rate;
-        if (preferida) utterance.voice = preferida;
         return utterance;
       };
 
