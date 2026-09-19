@@ -180,26 +180,6 @@ export const isAvifSupported = (): boolean => {
   return false;
 };
 
-/**
- * Pré-carrega uma única imagem na memória.
- */
-export function prefetchImage(url: string | null | undefined) {
-  if (!url || typeof window === 'undefined') return;
-  const img = new Image();
-  img.src = url;
-}
-
-/**
- * Pré-carrega múltiplas imagens na memória.
- */
-export function prefetchImages(urls: (string | null | undefined)[]) {
-  if (typeof window === 'undefined' || !urls?.length) return;
-  urls.filter(Boolean).forEach((url) => {
-    const img = new Image();
-    img.src = url!;
-  });
-}
-
 const proxied = (url: string, w: number, quality?: number) => {
   const format = isAvifSupported() ? 'avif' : 'webp';
   const effectiveQ = quality ?? getAdaptiveQuality(getQualityForWidth(w));
