@@ -91,11 +91,11 @@ const BibliotecaHero = ({ children }: Props) => {
           key={currentPhil.img}
           src={currentPhil.img}
           alt={currentPhil.name}
-          initial={{ opacity: 0, scale: 1.05 }}
+          initial={{ opacity: 0, scale: 1.03 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1.2 }}
-          className="absolute inset-0 w-full h-full object-cover object-[32%_center] md:object-center z-0 pointer-events-none translate-x-[12%] md:translate-x-[8%]"
+          className="absolute right-[-5%] md:right-0 bottom-0 h-[90%] md:h-[95%] w-auto object-contain object-bottom z-0 pointer-events-none"
         />
       </AnimatePresence>
 
