@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => ({
     },
     watch: {
       usePolling: false,
-      ignored: ["**/android/**", "**/ios/**", "**/*.csv", "**/*.xlsx", "**/*.xml", "**/new_penal_extracted/**", "**/xlsx.js", "**/dist/**", "**/build-assets/**", "**/.git/**"]
+      ignored: ["**/android/**", "**/ios/**", "**/*.csv", "**/*.xlsx", "**/*.xml", "**/new_penal_extracted/**", "**/xlsx.js", "**/dist/**", "**/build-assets/**", "**/.git/**", "**/public/laws-bundle/**"]
     },
     warmup: {
       clientFiles: ["./src/main.tsx", "./src/App.tsx", "./src/AppRoutes.tsx", "./src/index.css"],
@@ -41,14 +41,14 @@ export default defineConfig(({ mode }) => ({
       algorithm: "gzip",
       ext: ".gz",
       threshold: 1024,
-      filter: (file: string) => /\.(js|mjs|css|html|svg)$/i.test(file) || (/\.json$/i.test(file) && !file.includes("offline-bundle")),
+      filter: (file: string) => /\.(js|mjs|css|html|svg)$/i.test(file) || (/\.json$/i.test(file) && !file.includes("laws-bundle")),
       deleteOriginFile: false,
     }),
     mode !== "development" && !process.env.SKIP_PRECOMPRESS && viteCompression({
       algorithm: "brotliCompress",
       ext: ".br",
       threshold: 1024,
-      filter: (file: string) => /\.(js|mjs|css|html|svg)$/i.test(file) || (/\.json$/i.test(file) && !file.includes("offline-bundle")),
+      filter: (file: string) => /\.(js|mjs|css|html|svg)$/i.test(file) || (/\.json$/i.test(file) && !file.includes("laws-bundle")),
       deleteOriginFile: false,
       compressionOptions: { params: { [/* zlib.constants.BROTLI_PARAM_QUALITY */ 1]: 9 } },
     }),

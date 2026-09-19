@@ -236,6 +236,7 @@ export async function ensureNativePushListeners() {
             // Convertido: navegou pra dentro do app
             if (campaignId) {
               window.setTimeout(() => trackPush(campaignId, 'converted', { url: path }), 500);
+            }
             // Remove URL pendente para evitar loops e zombie redirects
             window.setTimeout(() => { delete (window as any)._pendingPushUrl; }, 2000);
           }
