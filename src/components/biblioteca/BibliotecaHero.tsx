@@ -1,9 +1,35 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, HardDrive, BookMarked, Heart, Route as RouteIcon, FileUp } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { abrirAtalhoBiblioteca } from './BibliotecaBottomNav';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
-import heroEstudanteImg from '@/assets/covers/hero-estudante-v3.jpg';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// Imagens dos filósofos
+import aristotelesImg from '@/assets/filosofos/aristoteles.webp';
+import nietzscheImg from '@/assets/filosofos/nietzsche.webp';
+import kantImg from '@/assets/filosofos/kant.webp';
+import plataoImg from '@/assets/filosofos/platao.webp';
+import descartesImg from '@/assets/filosofos/descartes.webp';
+import agostinhoImg from '@/assets/filosofos/agostinho.webp';
+import beauvoirImg from '@/assets/filosofos/beauvoir.webp';
+import senecaImg from '@/assets/filosofos/seneca.webp';
+import socratesImg from '@/assets/filosofos/socrates.webp';
+import aquinoImg from '@/assets/filosofos/aquino.webp';
+
+const PHILOSOPHERS = [
+  { name: 'Aristóteles', quote: 'A lei é a razão livre da paixão.', img: aristotelesImg },
+  { name: 'Friedrich Nietzsche', quote: 'Aquele que tem um porquê para viver pode suportar quase qualquer como.', img: nietzscheImg },
+  { name: 'Immanuel Kant', quote: 'Age como se a máxima de tua ação devesse tornar-se uma lei universal.', img: kantImg },
+  { name: 'Platão', quote: 'O que faz a justiça é que cada um faça a sua parte.', img: plataoImg },
+  { name: 'René Descartes', quote: 'Penso, logo existo.', img: descartesImg },
+  { name: 'Santo Agostinho', quote: 'Uma lei injusta não é lei alguma.', img: agostinhoImg },
+  { name: 'Simone de Beauvoir', quote: 'Que a liberdade seja a nossa própria substância.', img: beauvoirImg },
+  { name: 'Sêneca', quote: 'Nenhuma lei agrada a todos.', img: senecaImg },
+  { name: 'Sócrates', quote: 'É melhor sofrer uma injustiça do que cometê-la.', img: socratesImg },
+  { name: 'Tomás de Aquino', quote: 'A lei é uma ordenação da razão para o bem comum.', img: aquinoImg },
+];
 
 interface Props {
   onBuscar?: () => void;
@@ -12,6 +38,19 @@ interface Props {
 
 const BibliotecaHero = ({ children }: Props) => {
   const navigate = useNavigate();
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    // Pré-carrega a próxima imagem para evitar flickering
+    const nextIndex = (currentIndex + 1) % PHILOSOPHERS.length;
+    const img = new Image();
+    img.src = PHILOSOPHERS[nextIndex].img;
+
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % PHILOSOPHERS.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, [currentIndex]);
 
   const ACTIONS = [
     { id: 'leitura' as const, label: 'Leitura', icon: BookMarked, color: '#818cf8' },
@@ -29,6 +68,8 @@ const BibliotecaHero = ({ children }: Props) => {
     abrirAtalhoBiblioteca(id);
   };
 
+  const currentPhil = PHILOSOPHERS[currentIndex];
+
   return (
     <div
       className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20"
@@ -44,16 +85,19 @@ const BibliotecaHero = ({ children }: Props) => {
         aria-hidden="true"
       />
 
-      {/* Imagem Fixa Genérica sem ser de filósofos */}
-      <img
-        src={heroEstudanteImg}
-        alt=""
-        aria-hidden="true"
-        loading="eager"
-        decoding="async"
-        fetchPriority="high"
-        className="absolute inset-0 w-full h-full object-cover object-[32%_center] md:object-center z-0 pointer-events-none translate-x-[12%] md:translate-x-[8%]"
-      />
+      {/* Imagem de Fundo (Carrossel) */}
+      <AnimatePresence>
+        <motion.img
+          key={currentPhil.img}
+          src={currentPhil.img}
+          alt={currentPhil.name}
+          initial={{ opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.2 }}
+          className="absolute inset-0 w-full h-full object-cover object-[32%_center] md:object-center z-0 pointer-events-none translate-x-[12%] md:translate-x-[8%]"
+        />
+      </AnimatePresence>
 
       {/* Overlay vermelho com gradiente estilo menu e sombra */}
       <div 
@@ -99,29 +143,36 @@ const BibliotecaHero = ({ children }: Props) => {
         </div>
       </header>
 
-      {/* Conteúdo idêntico à altura da Home */}
+      {/* Conteúdo idêntico à altura da Home (Textos animando) */}
       <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[100px]">
-        <div className="flex flex-col items-center text-center gap-1 z-[10] relative w-[42%] max-w-[160px] ml-2 sm:ml-4">
-          {/* Espaçador invisível para simular a altura da Logo e manter alinhamento vertical exato com a Home */}
-          <div className="h-[75px] mb-1 w-full" />
+        <div className="flex flex-col items-center text-center gap-1 z-[10] relative w-[48%] max-w-[200px] ml-2 sm:ml-4">
+          <div className="h-[65px] mb-1 w-full" />
           
-          <h1 className="font-serif italic text-white text-[18px] sm:text-[20px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] whitespace-nowrap">
-            Biblioteca Jurídica
-          </h1>
-          <p className="font-body text-white/95 text-[9px] sm:text-[10px] font-bold tracking-[0.25em] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mt-1">
-            ACERVO COMPLETO
-          </p>
-          
-          <div className="mt-3 flex items-center text-left gap-2 w-full justify-center">
-            <div className="w-[2px] h-7 bg-white/40 rounded-full shrink-0" />
-            <p className="font-serif italic text-white/80 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-              Leis, códigos e<br/>trilhas de estudo.
-            </p>
-          </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentPhil.name}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.6 }}
+              className="flex flex-col items-center w-full"
+            >
+              <h1 className="font-serif italic text-white text-[16px] sm:text-[18px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] whitespace-nowrap">
+                {currentPhil.name}
+              </h1>
+              
+              <div className="mt-2 flex items-center text-left gap-2 w-full justify-center">
+                <div className="w-[2px] h-auto self-stretch bg-white/40 rounded-full shrink-0 min-h-[24px]" />
+                <p className="font-serif italic text-white/90 text-[10px] sm:text-[11px] leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                  "{currentPhil.quote}"
+                </p>
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
 
-      <div className="relative z-10 px-3 sm:px-5 pt-2 pb-2">
+      <div className="relative z-10 px-3 sm:px-5 pt-4 pb-2">
         <div className="grid grid-cols-4 gap-2 mx-1 mt-1">
           {ACTIONS.map((a) => {
             const Icon = a.icon;
