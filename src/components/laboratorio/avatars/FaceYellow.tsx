@@ -9,7 +9,7 @@ export const FaceYellow = ({ viseme, volume }: { viseme: string; volume: number 
   const bounce = volume * 3;
 
   return (
-    <svg viewBox="-20 -40 140 220" className="w-full h-full drop-shadow-2xl overflow-visible">
+    <svg viewBox="-10 -35 120 165" preserveAspectRatio="xMidYMax slice" className="w-full h-full drop-shadow-2xl overflow-visible">
       <defs>
         <radialGradient id="skinYellow" cx="50%" cy="50%" r="50%">
           <stop offset="70%" stopColor="#ffeb3b" />
