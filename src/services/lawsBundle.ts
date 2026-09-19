@@ -9,6 +9,7 @@
  */
 
 import { setPersistedArtigosCache, getPersistedArtigosCache } from '@/services/offlineDb';
+import { LEIS_CATALOG } from '@/data/leisCatalog';
 
 const MANIFEST_URL = '/laws-bundle/manifest.json';
 
@@ -139,6 +140,19 @@ function matchesSlug(lei: { tabela_nome: string; nome: string; id: string }, slu
     (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '');
   const s = norm(slug);
   return [lei.tabela_nome, lei.nome, lei.id].some((v) => norm(String(v || '')) === s);
+}
+
+export function getBundleSlugForTabela(tabelaNome: string): string | null {
+  if (!tabelaNome || !_slugToId) return null;
+  if (_slugToId.has(tabelaNome)) return tabelaNome;
+
+  const lei = LEIS_CATALOG.find(l => l.tabela_nome === tabelaNome);
+  if (!lei) return null;
+
+  for (const slug of Array.from(_slugToId.keys())) {
+    if (matchesSlug(lei as any, slug)) return slug;
+  }
+  return null;
 }
 
 /** 
