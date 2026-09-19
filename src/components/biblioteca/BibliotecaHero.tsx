@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, HardDrive, BookMarked, Heart, Route as RouteIcon, FileUp } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { abrirAtalhoBiblioteca } from './BibliotecaBottomNav';
-import socratesImg from '@/assets/filosofos/socrates.webp';
 
 // Filósofos — mesmas imagens do FilosofosPanel
 import cicero from '@/assets/filosofos/cicero.webp';
@@ -37,8 +36,6 @@ const FILOSOFOS: Filosofo[] = [
   { nome: 'Hans Kelsen', epoca: 'Contemporâneo · séc. XX', frase: 'A norma fundamental é o pressuposto lógico de toda ordem jurídica.', img: kelsen },
 ];
 
-// Pré-carregamento global removido para otimizar TTI
-
 import { App } from '@capacitor/app';
 
 interface Props {
@@ -60,7 +57,6 @@ const BibliotecaHero = ({ children }: Props) => {
         if (isAppActive) {
           setIdx((i) => {
             const next = (i + 1) % FILOSOFOS.length;
-            // Pré-carrega a PRÓXIMA imagem
             const nextImg = new Image();
             nextImg.src = FILOSOFOS[(next + 1) % FILOSOFOS.length].img;
             return next;
@@ -101,59 +97,18 @@ const BibliotecaHero = ({ children }: Props) => {
 
   return (
     <div
-      className="relative overflow-hidden rounded-b-[36px] border-b border-amber-900/50 shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20 bg-hero-panel-brown"
+      className="relative overflow-hidden rounded-b-[36px] border-b border-amber-900/50 shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20 bg-[#2b160a]"
       style={{
         transform: 'translateZ(0)',
         isolation: 'isolate',
         contain: 'paint',
       }}
     >
-      {/* Texturas */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,200,150,0.15),transparent_60%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
+      {/* Base Dark/Brown for the right side behind the image */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#1f1007] to-[#3a1d0d]" />
 
-      {/* Ornamentos SVG — Pilha de livros */}
-      <svg
-        aria-hidden
-        viewBox="0 0 200 200"
-        className="pointer-events-none absolute -left-3 -top-2 w-16 h-16 text-amber-400/20"
-      >
-        <g fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="30" y="140" width="140" height="24" rx="3" />
-          <rect x="45" y="112" width="120" height="24" rx="3" />
-          <rect x="35" y="84" width="130" height="24" rx="3" />
-          <line x1="55" y1="152" x2="55" y2="158" />
-          <line x1="70" y1="124" x2="70" y2="130" />
-          <line x1="60" y1="96" x2="60" y2="102" />
-        </g>
-      </svg>
-
-      {/* Ornamento SVG — Martelo */}
-      <svg
-        aria-hidden
-        viewBox="0 0 200 200"
-        className="pointer-events-none absolute right-2 top-3 w-14 h-14 text-amber-400/15"
-      >
-        <g fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="30" y="40" width="90" height="30" rx="4" transform="rotate(-25 75 55)" />
-          <line x1="95" y1="95" x2="160" y2="160" />
-          <rect x="120" y="150" width="60" height="14" rx="3" />
-        </g>
-      </svg>
-
-      {/* Ornamento SVG — Livro aberto */}
-      <svg
-        aria-hidden
-        viewBox="0 0 200 200"
-        className="pointer-events-none absolute left-4 bottom-24 w-10 h-10 text-amber-400/10"
-      >
-        <g fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M20 60 L100 80 L180 60 L180 160 L100 180 L20 160 Z" />
-          <line x1="100" y1="80" x2="100" y2="180" />
-        </g>
-      </svg>
-
-      <div className="pointer-events-none absolute top-[var(--sai-top)] bottom-0 right-0 w-[48%] select-none overflow-hidden">
+      {/* Imagem do filósofo na direita */}
+      <div className="pointer-events-none absolute inset-0 flex justify-end z-0">
         <AnimatePresence initial={false} mode="wait">
           <motion.img
             key={atual.nome}
@@ -166,13 +121,70 @@ const BibliotecaHero = ({ children }: Props) => {
             animate={{ opacity: 0.92, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: -20, scale: 0.98 }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
-            className="absolute -right-2 -top-2 h-[100%] w-auto object-contain object-top opacity-90 drop-shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
+            className="h-full w-auto object-cover object-top opacity-90 drop-shadow-[0_8px_24px_rgba(0,0,0,0.6)] translate-x-[15%]"
           />
         </AnimatePresence>
       </div>
 
-      {/* Gradient removed as background is now handled by bg-hero-panel-brown */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+      {/* Overlay marrom com corte diagonal estilo Home */}
+      <div 
+        className="absolute inset-0 z-[1] pointer-events-none"
+        style={{ filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.8)) drop-shadow(8px 0 10px rgba(0,0,0,0.95))' }}
+      >
+        <div 
+          className="absolute inset-0 overflow-hidden bg-hero-panel-brown"
+          style={{ clipPath: 'polygon(0 0, 58% 0, 44% 100%, 0% 100%)' }}
+        >
+          {/* Texturas internas do corte diagonal */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,200,150,0.15),transparent_60%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
+
+          {/* Grid Pattern Background */}
+          <div className="absolute inset-0 opacity-5" style={{
+            backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.6) 1px, transparent 1px)',
+            backgroundSize: '24px 24px'
+          }} />
+
+          {/* Ornamentos SVG */}
+          <svg
+            aria-hidden
+            viewBox="0 0 200 200"
+            className="pointer-events-none absolute -left-3 -top-2 w-16 h-16 text-amber-400/20"
+          >
+            <g fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="30" y="140" width="140" height="24" rx="3" />
+              <rect x="45" y="112" width="120" height="24" rx="3" />
+              <rect x="35" y="84" width="130" height="24" rx="3" />
+              <line x1="55" y1="152" x2="55" y2="158" />
+              <line x1="70" y1="124" x2="70" y2="130" />
+              <line x1="60" y1="96" x2="60" y2="102" />
+            </g>
+          </svg>
+
+          <svg
+            aria-hidden
+            viewBox="0 0 200 200"
+            className="pointer-events-none absolute right-[45%] top-3 w-14 h-14 text-amber-400/15"
+          >
+            <g fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="30" y="40" width="90" height="30" rx="4" transform="rotate(-25 75 55)" />
+              <line x1="95" y1="95" x2="160" y2="160" />
+              <rect x="120" y="150" width="60" height="14" rx="3" />
+            </g>
+          </svg>
+
+          <svg
+            aria-hidden
+            viewBox="0 0 200 200"
+            className="pointer-events-none absolute left-4 bottom-24 w-10 h-10 text-amber-400/10"
+          >
+            <g fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 60 L100 80 L180 60 L180 160 L100 180 L20 160 Z" />
+              <line x1="100" y1="80" x2="100" y2="180" />
+            </g>
+          </svg>
+        </div>
+      </div>
 
       <div className="px-4 pb-2 pt-2 flex items-center justify-between relative z-30">
         <button
@@ -191,7 +203,7 @@ const BibliotecaHero = ({ children }: Props) => {
         </button>
       </div>
 
-      <div className="relative px-4 pt-1 pb-5 flex flex-col gap-4">
+      <div className="relative z-20 px-4 pt-1 pb-5 flex flex-col gap-4">
         <div className="max-w-[58%] xs:max-w-[62%] flex flex-col">
           <p className="text-[10px] uppercase tracking-[0.28em] text-amber-300/90 font-bold">
             Pensadores do Direito
