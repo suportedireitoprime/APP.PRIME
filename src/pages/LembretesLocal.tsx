@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { MapPin, Plus, Trash2, Loader2, Search, Navigation2, Map as MapIcon, Clock, Info, ChevronRight, LocateFixed } from 'lucide-react';
 import { Geolocation } from '@capacitor/geolocation';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import LembretesBottomNav from '@/components/lembretes/LembretesBottomNav';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';

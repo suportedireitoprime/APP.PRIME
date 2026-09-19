@@ -1038,18 +1038,9 @@ function AnimatedRoutes() {
           <Route path="/novidades" element={<ProtectedRoute><PageTransition><Novidades /></PageTransition></ProtectedRoute>} />
           <Route path="/anotacoes" element={<ProtectedRoute><PageTransition><Anotacoes /></PageTransition></ProtectedRoute>} />
           <Route path="/configuracoes" element={<ProtectedRoute><PageTransition><Configuracoes /></PageTransition></ProtectedRoute>} />
-          <Route path="/ajustes/seguranca" element={<ProtectedRoute><PageTransition><Seguranca /></PageTransition></ProtectedRoute>} />
           <Route path="/lembretes" element={<ProtectedRoute><PageTransition><CentralLembretes /></PageTransition></ProtectedRoute>} />
-          <Route path="/central-lembretes" element={<Navigate to="/lembretes" replace />} />
-          <Route path="/ajustes/lembretes" element={<ProtectedRoute><PageTransition><Lembretes /></PageTransition></ProtectedRoute>} />
-          <Route path="/meus-lembretes" element={<ProtectedRoute><PageTransition><MeusLembretes /></PageTransition></ProtectedRoute>} />
           <Route path="/lembretes/local" element={<ProtectedRoute><PageTransition><LembretesLocal /></PageTransition></ProtectedRoute>} />
-          <Route path="/lembretes/preferencias" element={<ProtectedRoute><PageTransition><PreferenciasLembretes /></PageTransition></ProtectedRoute>} />
-          <Route path="/lembretes/meus" element={<ProtectedRoute><PageTransition><LembretesMeus /></PageTransition></ProtectedRoute>} />
-          <Route path="/lembretes/videoaulas" element={<ProtectedRoute><PageTransition><LembretesVideoaulas /></PageTransition></ProtectedRoute>} />
-          <Route path="/lembretes/resumos" element={<ProtectedRoute><PageTransition><LembretesResumos /></PageTransition></ProtectedRoute>} />
-          <Route path="/lembretes/leitura" element={<ProtectedRoute><PageTransition><LembretesLeitura /></PageTransition></ProtectedRoute>} />
-          <Route path="/lembretes/questoes" element={<ProtectedRoute><PageTransition><LembretesQuestoesTab /></PageTransition></ProtectedRoute>} />
+          <Route path="/ajustes/seguranca" element={<ProtectedRoute><PageTransition><Seguranca /></PageTransition></ProtectedRoute>} />
           <Route path="/anotacoes/audio" element={<ProtectedRoute><PageTransition><AnotacoesAudio /></PageTransition></ProtectedRoute>} />
           <Route path="/ajustes/excluir-conta" element={<ProtectedRoute><PageTransition><ExcluirConta /></PageTransition></ProtectedRoute>} />
           <Route path="/radar/deputados" element={<ProtectedRoute><PageTransition><RadarDeputados /></PageTransition></ProtectedRoute>} />
