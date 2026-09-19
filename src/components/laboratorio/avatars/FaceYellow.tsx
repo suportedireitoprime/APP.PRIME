@@ -17,19 +17,24 @@ export const FaceYellow = ({ viseme, volume }: { viseme: string; volume: number 
         </radialGradient>
       </defs>
       
-      <g style={{ transform: `translateY(${bounce}px)`, transition: 'transform 0.1s' }}>
+      {/* Ondas Sonoras no Fundo */}
+      <circle cx="50" cy="50" r="45" fill="none" stroke="#fbc02d" strokeWidth="2" className="transition-all duration-100" style={{ transform: `scale(${1 + volume * 0.8})`, opacity: Math.max(0, 0.8 - volume), transformOrigin: '50px 50px' }} />
+      <circle cx="50" cy="50" r="45" fill="none" stroke="#ffeb3b" strokeWidth="4" className="transition-all duration-100" style={{ transform: `scale(${1 + volume * 0.4})`, opacity: Math.max(0, 0.6 - volume), transformOrigin: '50px 50px' }} />
+
+      {/* Efeito de amassar (squash & stretch) com base no chão (Y=95) */}
+      <g style={{ transform: `translateY(${bounce}px) scale(${1 + volume * 0.08}, ${1 - volume * 0.08})`, transformOrigin: '50px 95px', transition: 'transform 0.1s' }}>
         <circle cx="50" cy="50" r="45" fill="url(#skinYellow)" />
         
-        {/* Chapéu de Formatura (Capelo) */}
-        <g className="transition-transform duration-100" style={{ transform: 'translateY(-30px)' }}>
+        {/* Chapéu de Formatura (Capelo) - Maior e Animado */}
+        <g className="transition-transform duration-100" style={{ transform: `translateY(${-35 + volume * 4}px) scale(1.35) rotate(${volume * 8}deg)`, transformOrigin: '50px 30px' }}>
           {/* Base cilíndrica */}
           <path d="M 35 40 Q 50 45 65 40 L 65 30 Q 50 35 35 30 Z" fill="#212121" />
           {/* Topo do chapéu (losango) */}
           <polygon points="50,15 85,25 50,35 15,25" fill="#424242" />
           {/* Botão central */}
           <circle cx="50" cy="25" r="3" fill="#ffb300" />
-          {/* Franja/Tassel */}
-          <path d="M 50 25 Q 70 25 80 40 L 82 45 L 78 45 Z" fill="#ffb300" />
+          {/* Franja/Tassel animada (balança com a fala) */}
+          <path d="M 50 25 Q 70 25 80 40 L 82 45 L 78 45 Z" fill="#ffb300" className="transition-transform duration-100" style={{ transform: `rotate(${-volume * 20}deg)`, transformOrigin: '50px 25px' }} />
         </g>
 
         {/* Sobrancelhas */}
