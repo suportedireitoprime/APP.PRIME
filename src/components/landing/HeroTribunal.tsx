@@ -151,13 +151,13 @@ const HeroTribunal = ({ onAcessar, onConhecer }: Props) => {
 
       {/* Conteúdo */}
       <div
-        className="relative z-10 flex-1 flex flex-col items-center justify-center text-center gap-5 px-5 sm:px-8 py-16 md:py-20 max-w-4xl mx-auto w-full"
-        style={{ paddingTop: 'calc(6rem + var(--sai-top))' }}
+        className="relative z-10 flex-1 flex flex-col items-center justify-center text-center gap-3 sm:gap-4 px-5 sm:px-8 pb-10 md:pb-12 max-w-4xl mx-auto w-full"
+        style={{ paddingTop: 'calc(5.5rem + var(--sai-top))' }}
       >
         <h1
           className="lp-title lp-sheen font-legal font-black leading-[1.05] tracking-tight"
           style={{
-            fontSize: 'clamp(2rem, 5.8vw, 4.2rem)',
+            fontSize: 'clamp(2rem, 4.8vw, 3.8rem)',
             transform: `translate(${parallax.x * 7}px, ${parallax.y * 4}px)`,
             transition: 'transform 0.35s ease-out',
             color: 'hsl(40 30% 98%)',
@@ -184,7 +184,7 @@ const HeroTribunal = ({ onAcessar, onConhecer }: Props) => {
         </h1>
 
         <p
-          className="lp-pop max-w-2xl text-base sm:text-lg md:text-xl font-medium leading-relaxed"
+          className="lp-pop max-w-2xl text-[15px] sm:text-base md:text-lg font-medium leading-relaxed"
           style={{
             animationDelay: '0.8s',
             color: 'hsl(40 20% 96%)',

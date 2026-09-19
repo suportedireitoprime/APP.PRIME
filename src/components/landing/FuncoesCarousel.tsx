@@ -120,7 +120,7 @@ export default function FuncoesCarousel() {
 
   return (
     <div
-      className="lp-pop mt-4 sm:mt-6 -mx-5 sm:-mx-8 w-[calc(100%+2.5rem)] sm:w-[calc(100%+4rem)] space-y-2"
+      className="lp-pop mt-3 sm:mt-4 -mx-5 sm:-mx-8 w-[calc(100%+2.5rem)] sm:w-[calc(100%+4rem)] space-y-2"
       style={{ animationDelay: '1.4s' }}
     >
       <div
@@ -146,7 +146,7 @@ export default function FuncoesCarousel() {
               <motion.div
                 animate={isActive ? { scale: [0.985, 1.025, 1] } : { scale: 0.955 }}
                 transition={{ duration: isActive ? 0.65 : 0.3, ease: 'easeOut' }}
-                className={`relative flex h-full min-h-[10.75rem] flex-col overflow-hidden rounded-[1.15rem] px-3.5 py-3.5 backdrop-blur-md transition-opacity duration-300 ${
+                className={`relative flex h-full min-h-[9rem] sm:min-h-[10.5rem] flex-col overflow-hidden rounded-[1.15rem] p-3 sm:px-3.5 sm:py-3.5 backdrop-blur-md transition-opacity duration-300 ${
                   isActive ? 'opacity-100' : 'opacity-65'
                 }`}
                 style={{
