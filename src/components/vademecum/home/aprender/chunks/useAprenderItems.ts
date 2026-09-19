@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FAST_PILLS_ITEMS } from '@/components/vademecum/home/sections/homeSectionsData';
 import { AprenderItem } from './aprenderCarouselTypes';
