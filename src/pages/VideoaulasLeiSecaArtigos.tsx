@@ -78,10 +78,30 @@ const VideoaulasLeiSecaArtigos = () => {
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Buscar por número ou texto..."
-            className="w-full h-12 pl-11 pr-4 rounded-2xl bg-card border border-border text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/40"
+            placeholder="Buscar por número (ex: 121) ou palavras..."
+            className="w-full h-12 pl-11 pr-10 rounded-2xl bg-card border border-border text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-rose-500/40 text-[15px]"
           />
+          {q && (
+            <button
+              onClick={() => setQ('')}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold px-2 py-0.5 rounded-lg bg-muted text-muted-foreground hover:text-foreground"
+            >
+              Limpar
+            </button>
+          )}
         </div>
+
+        {/* Resumo e Faixa Rápida de Artigos */}
+        {!isLoading && artigosFiltrados.length > 0 && (
+          <div className="flex items-center justify-between px-1">
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              {artigosFiltrados.length} {artigosFiltrados.length === 1 ? 'artigo disponível' : 'artigos disponíveis'}
+            </span>
+            <span className="text-[11px] text-rose-400 font-medium flex items-center gap-1">
+              <PlayCircle className="w-3.5 h-3.5" /> Toque para ver aulas
+            </span>
+          </div>
+        )}
 
         <div className="space-y-3">
           {isLoading && (
@@ -97,28 +117,41 @@ const VideoaulasLeiSecaArtigos = () => {
                 haptic.selection();
                 setOpenArtigo(art);
               }}
-              className="w-full text-left rounded-3xl bg-card hover:bg-secondary/60 transition-all border border-border/80 group flex items-stretch min-h-[72px] active:scale-[0.99] shadow-sm"
+              className="w-full text-left rounded-3xl bg-card hover:bg-secondary/60 transition-all border border-border/80 hover:border-rose-500/40 group flex items-stretch min-h-[72px] active:scale-[0.99] shadow-sm"
             >
               <div className="w-16 flex flex-col items-center justify-center shrink-0 p-2">
-                <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center border border-rose-500/20 group-hover:bg-rose-500 group-hover:border-rose-500 transition-colors">
-                  <span className="text-[14px] font-bold text-rose-400 group-hover:text-white transition-colors">
+                <div className="w-11 h-11 rounded-2xl bg-rose-500/10 flex items-center justify-center border border-rose-500/20 group-hover:bg-rose-500 group-hover:border-rose-500 transition-all">
+                  <span className="text-[13px] font-black text-rose-400 group-hover:text-white transition-colors">
                     {getNumeroCurto(art.numero)}
                   </span>
                 </div>
               </div>
-              <div className="p-4 flex flex-col justify-center min-w-0 flex-1">
-                <p className="text-[14.5px] font-medium leading-snug text-foreground/90 line-clamp-2">
+              <div className="py-3.5 pr-2 flex flex-col justify-center min-w-0 flex-1">
+                <span className="text-[11.5px] font-bold text-rose-400/90 uppercase tracking-wide">
+                  {art.numero || `Artigo ${art.id}`}
+                </span>
+                <p className="text-[14px] font-medium leading-snug text-foreground/90 line-clamp-2 mt-0.5">
                   {art.caput}
                 </p>
               </div>
-              <div className="w-14 flex items-center justify-center shrink-0">
-                <PlayCircle className="w-6 h-6 text-rose-500/50 group-hover:text-rose-400 transition-colors" />
+              <div className="w-12 flex items-center justify-center shrink-0 pr-3">
+                <div className="w-8 h-8 rounded-full bg-rose-500/10 flex items-center justify-center group-hover:bg-rose-500/20 transition-colors">
+                  <PlayCircle className="w-4.5 h-4.5 text-rose-400" />
+                </div>
               </div>
             </button>
           ))}
 
           {!isLoading && artigosFiltrados.length === 0 && (
-            <p className="text-muted-foreground text-sm text-center py-10">Nenhum artigo encontrado.</p>
+            <div className="py-16 text-center space-y-2">
+              <p className="text-muted-foreground text-sm font-medium">Nenhum artigo encontrado para a busca.</p>
+              <button
+                onClick={() => setQ('')}
+                className="text-xs text-rose-400 font-bold hover:underline"
+              >
+                Limpar filtro e ver todos
+              </button>
+            </div>
           )}
         </div>
       </div>
