@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useId } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, ArrowLeft, Bot } from "lucide-react";
+import { Sparkles, ArrowLeft, Bot, Cat } from "lucide-react";
 import { CITACOES_JURIDICAS } from "@/lib/citacoes-juridicas";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -226,7 +226,7 @@ export const GeracaoAnimacaoOverlay = ({
             )}
             <div className="relative rounded-3xl border border-rose-500/20 bg-[#0e0407]/95 px-6 pt-16 pb-6 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
               <div className="absolute -top-10 left-1/2 -translate-x-1/2 flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-br from-rose-500 to-rose-700 shadow-[0_0_30px_rgba(244,63,94,0.5)] border-4 border-[#0e0407]">
-                <Bot className="w-10 h-10 text-white" />
+                <Cat className="w-10 h-10 text-white" />
               </div>
 
               <div className="relative mx-auto mb-5 h-32 w-32">

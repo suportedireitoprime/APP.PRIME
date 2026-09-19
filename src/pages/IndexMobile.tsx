@@ -47,71 +47,8 @@ const IndexMobile = () => {
   const unreadCount = useUnreadNotifCount();
   useHideSplashScreen(250, Boolean(profileSummary !== undefined || !Capacitor.isNativePlatform()));
 
-  // Invocação Híbrida: Se estiver rodando no Nativo puro (iOS/Android Capacitor), tenta
-  // exibir a View Swift/Compose por cima. A UI React continua montando atrás.
-  useEffect(() => {
-    let active = true;
-    const handles: Array<{ remove: () => Promise<void> }> = [];
-
-    if (typeof window !== 'undefined' && Capacitor.isNativePlatform()) {
-      import('@/plugins/NativeHomePlugin').then(async ({ NativeHome }) => {
-        if (!active) return;
-        NativeHome.showHome({
-          data: {
-            nome: profileSummary?.displayName || 'Usuário',
-            iniciais: (profileSummary?.displayName || 'DP').slice(0, 2).toUpperCase(),
-            perfilLabel: 'Estudando pra OAB',
-            avatarUrl: profileSummary?.avatarUrl || '',
-            unreadCount: unreadCount || 0,
-            livros: [
-              { id: 'livro_1', titulo: 'Como as Democracias Morrem', autor: 'Steven Levitsky', ano: 2018 },
-              { id: 'livro_2', titulo: 'O Último Dia de um Condenado', autor: 'Victor Hugo', ano: 1829 },
-              { id: 'livro_3', titulo: 'Dos Delitos e das Penas', autor: 'Cesare Beccaria', ano: 1764 },
-              { id: 'livro_4', titulo: 'O Caso dos Exploradores de Cavernas', autor: 'Lon L. Fuller', ano: 1949 },
-            ]
-          }
-        })
-          .then(() => {
-            if (active) {
-              setBottomNavHidden(true);
-              window.dispatchEvent(new CustomEvent('direitoprime:bottom-nav-visibility', { detail: { hidden: true } }));
-            }
-          })
-          .catch(e => console.warn('NativeHome not bound, fallback to React', e));
-
-        try {
-          const h1 = await NativeHome.addListener('onNavigate', (info) => {
-            navigate(info.route);
-          });
-          const h2 = await NativeHome.addListener('onSearch', () => {
-            setSearchOpen(true);
-          });
-          const h3 = await NativeHome.addListener('onOpenSidebar', () => {
-            setMenuOpen(true);
-          });
-
-          if (!active) {
-            void h1.remove();
-            void h2.remove();
-            void h3.remove();
-          } else {
-            handles.push(h1, h2, h3);
-          }
-        } catch (err) {
-          console.warn('[IndexMobile] NativeHome listeners error:', err);
-        }
-      });
-    }
-    return () => {
-      active = false;
-      handles.forEach(h => { void h.remove().catch(() => {}); });
-      if (typeof window !== 'undefined' && Capacitor.isNativePlatform()) {
-        import('@/plugins/NativeHomePlugin').then(({ NativeHome }) => NativeHome.hideHome().catch(() => {}));
-        setBottomNavHidden(false);
-        window.dispatchEvent(new CustomEvent('direitoprime:bottom-nav-visibility', { detail: { hidden: false } }));
-      }
-    };
-  }, [navigate, profileSummary?.displayName, profileSummary?.avatarUrl, unreadCount]);
+  // Invocação Híbrida desativada: A View Nativa (Swift/Compose) sobrepunha a UI e ocultava o menu de rodapé (BottomNav).
+  // Agora o app renderizará o layout React padrão com o BottomNav para garantir a UX correta no mobile nativo.
 
   const location = useLocation();
   const [, setActiveTab] = useState<Tab>('legislacao');

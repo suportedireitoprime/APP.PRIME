@@ -118,7 +118,7 @@ export const DesktopRadarLeisCarousel = memo(() => {
           <div>
             <h3 className="font-display text-white text-[16px] font-bold uppercase tracking-widest flex items-center gap-2 mb-1">
               <span className="w-1 h-5 rounded-full bg-white" />
-              RADAR DE LEIS
+              NOTÍCIAS JURÍDICAS
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9.5px] font-bold font-body bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 ml-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 DOU AO VIVO

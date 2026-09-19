@@ -13,7 +13,7 @@ const CarouselHeaderTitle = ({ kind = 'noticia' }: CarouselHeaderTitleProps) => 
       <div>
         <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 pointer-events-auto uppercase tracking-widest">
           <span className="w-1 h-5 rounded-full bg-primary" />
-          RADAR DE LEIS
+          NOTÍCIAS JURÍDICAS
         </h3>
         <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3 pointer-events-auto whitespace-nowrap truncate">
           {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}

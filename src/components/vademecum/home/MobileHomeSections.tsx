@@ -29,7 +29,7 @@ import HomeTabEstudos from './sections/HomeTabEstudos';
 import HomeCategorySheet from './sections/HomeCategorySheet';
 import HomeAreasModal from './sections/HomeAreasModal';
 
-const HomeNoticiasCarousel = lazyWithRetry(() => import('@/components/vademecum/home/HomeNoticiasCarousel'));
+import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
 const VoiceCaptureOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/VoiceCaptureOverlay'));
 const AgendaMobileTab = lazyWithRetry(() => import('@/components/vademecum/tabs/AgendaMobileTab'));
 const GraficosMobileTab = lazyWithRetry(() => import('@/components/vademecum/tabs/GraficosMobileTab'));
