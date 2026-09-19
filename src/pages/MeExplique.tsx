@@ -90,8 +90,29 @@ export default function MeExplique() {
         />
       </div>
 
+      {/* Tag do Tempo Restante — Localizada exatamente embaixo da capa */}
+      <div className="relative z-20 w-full max-w-4xl mx-auto px-4 -mt-4 sm:-mt-5 flex justify-end">
+        <div
+          className={`flex items-center gap-2 rounded-2xl border px-3.5 py-1.5 backdrop-blur-md shadow-xl transition-colors ${
+            cota.limiteAtingido
+              ? 'border-red-500/40 bg-zinc-900/95 text-red-300'
+              : 'border-amber-500/35 bg-zinc-900/95 text-amber-300'
+          }`}
+        >
+          <Clock className="h-4 w-4 shrink-0 text-amber-400" />
+          <div className="text-right">
+            <span className="block font-mono text-xs sm:text-sm font-bold leading-none">
+              {cota.tempoFormatado}
+            </span>
+            <span className="block text-[9px] font-medium text-zinc-400 leading-none mt-0.5">
+              {cota.limiteAtingido ? 'Esgotado' : 'Restantes hoje'}
+            </span>
+          </div>
+        </div>
+      </div>
+
       {/* Conteúdo Principal */}
-      <main className="relative z-10 flex-1 w-full max-w-4xl mx-auto px-4 py-5 space-y-5">
+      <main className="relative z-10 flex-1 w-full max-w-4xl mx-auto px-4 pt-3 pb-5 space-y-5">
         {/* Título de Seção Estilo Home/Vade Mecum com Barra Lateral Vermelha */}
         <div className="flex items-center gap-2 px-1">
           <span className="w-1 h-5 rounded-full bg-[#E11D48]" />

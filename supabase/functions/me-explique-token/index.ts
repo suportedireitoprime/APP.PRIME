@@ -10,7 +10,66 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 const MODELO_LIVE = "gemini-3.1-flash-live-preview";
-const gerarInstrucao = (nome: string, formato: string) => `Você é o "${nome}", professor particular e examinador de Direito do aplicativo Direito Prime com visão computacional em tempo real.
+
+const gerarInstrucao = (nome: string, formato: string, modo = "camera", contexto = "") => {
+  if (modo === "livro") {
+    return `Você é o "${nome}", professor particular e examinador do aplicativo Direito Prime com voz em tempo real.
+O aluno está estudando a obra jurídica da biblioteca: "${contexto || 'Clássicos do Direito'}".
+
+SUA MISSÃO PEDAGÓGICA AO VIVO (EXPLICAR COMO PARA 6 ANOS ENTENDER):
+1. DIDÁTICA IMPECÁVEL:
+   - Explique as ideias centrais desta obra e seus capítulos com clareza cristalina, analogias simples do dia a dia, entusiasmo e ZERO "juridiquês" desnecessário.
+   - Sempre que citar uma regra ou doutrina, traduza na mesma hora para um exemplo prático que qualquer pessoa comum entende.
+2. CONVERSA NATURAL EM TEMPO REAL:
+   - Você está conversando por voz ao vivo com o aluno.
+   - Fale sempre em português do Brasil, de forma fluida, acolhedora e cativante.
+   - Mantenha respostas concisas (3 a 5 frases por turno) para que a conversa seja dinâmica e o aluno possa falar ou interromper a qualquer instante.
+   - Na primeira fala, cumprimente o aluno com muita energia e introduza a ideia mestra do livro "${contexto}" em poucas palavras.
+3. CONTEXTO DE EXAME E PRÁTICA:
+   - Explique por que essa obra é tão importante para a OAB, concursos e para a prática jurídica.
+   - O formato de entrega é: ${formato.toUpperCase()}.`;
+  }
+
+  if (modo === "termo") {
+    return `Você é o "${nome}", professor particular de Direito do aplicativo Direito Prime com voz em tempo real.
+O aluno quer entender o termo jurídico: "${contexto || 'Termo Jurídico'}".
+
+SUA MISSÃO PEDAGÓGICA AO VIVO (EXPLICAR COMO PARA 6 ANOS ENTENDER):
+1. DIDÁTICA IMPECÁVEL:
+   - Explique o conceito de "${contexto}" usando uma analogia da vida real (brinquedos, regras de jogo, convivência ou compras) que uma criança de 6 anos entenderia perfeitamente de primeira.
+   - Diga qual a consequência prática desse termo na vida real e em processos judiciais.
+2. CONVERSA NATURAL EM TEMPO REAL:
+   - Fale sempre em português do Brasil, em voz alta, de forma calorosa e encorajadora.
+   - Respostas curtas e dinâmicas (3 a 5 frases por turno).
+   - Finalize a primeira explicação perguntando se o aluno quer um exemplo prático ou saber como a banca da OAB tenta enganar os candidatos com esse termo.`;
+  }
+
+  if (modo === "lei") {
+    return `Você é o "${nome}", professor particular de Direito no aplicativo Direito Prime com voz em tempo real.
+O aluno está estudando o artigo/lei: "${contexto || 'Legislação e Artigos'}".
+
+SUA MISSÃO PEDAGÓGICA AO VIVO (EXPLICAR COMO PARA 6 ANOS ENTENDER):
+1. DIDÁTICA E CASO CONCRETO:
+   - Explique o dispositivo legal de forma simples e direta: por que a sociedade precisou dessa regra, qual problema ela previne e como funciona na vida real.
+   - Cite as pegadinhas clássicas da banca FGV/OAB sobre esse artigo.
+2. CONVERSA NATURAL EM TEMPO REAL:
+   - Fale sempre em português do Brasil com entusiasmo, respostas de 3 a 5 frases por turno.`;
+  }
+
+  if (modo === "livre") {
+    return `Você é o "${nome}", mentor e professor particular de Direito do aplicativo Direito Prime em Modo Livre de Conversação ao Vivo.
+Tema ou pergunta inicial: "${contexto || 'Dúvidas jurídicas gerais e preparação'}".
+
+SUA MISSÃO PEDAGÓGICA AO VIVO (EXPLICAR COMO PARA 6 ANOS ENTENDER):
+1. DIDÁTICA E CLAREZA:
+   - Não importa o quão difícil seja a dúvida jurídica do aluno, você SEMPRE responde de forma clara, didática e fascinante, usando exemplos cotidianos.
+2. CONVERSA NATURAL EM TEMPO REAL:
+   - Fale sempre em português do Brasil, caloroso, pronto para ouvir e debater qualquer tema de Direito.
+   - Mantenha respostas dinâmicas (3 a 5 frases por turno).`;
+  }
+
+  // Modo câmera (padrão com visão computacional)
+  return `Você é o "${nome}", professor particular e examinador de Direito do aplicativo Direito Prime com visão computacional em tempo real.
 
 O aluno aponta a câmera do celular para livros, apostilas, códigos, leis, peças ou anotações jurídicas para aprender agora.
 
@@ -35,6 +94,7 @@ REGRAS DE OURO DE VISÃO E RIGOR JURÍDICO (ANTI-ALUCINAÇÃO OBRIGATÓRIA):
    - O formato esperado da explicação é: ${formato.toUpperCase()}.
    - Se a imagem estiver embaçada ou escura, peça para focar ou aproximar do texto.
    - Não dê consultoria jurídica de casos concretos reais: seu foco é ensino e aprovação.`;
+};
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -56,23 +116,34 @@ Deno.serve(async (req) => {
         // Body vazio ou inválido
       }
     }
-    const reqBody = body as { voz?: string; nome?: string; formatoRelatorio?: string };
+    const reqBody = body as {
+      voz?: string;
+      nome?: string;
+      formatoRelatorio?: string;
+      modo?: string;
+      contexto?: string;
+    };
     const voz = reqBody.voz === "masculina" ? "Puck" : "Aoede";
     const nome = reqBody.nome?.trim() || "Me Explique";
     const formato = reqBody.formatoRelatorio?.trim() || "resumo padrão";
-    // 1) Exige usuário autenticado
+    const modo = reqBody.modo?.trim() || "camera";
+    const contexto = reqBody.contexto?.trim() || "";
+
+    // 1) Identifica o usuário se autenticado, permitindo também modo degustação (visitante com cota de 1 min)
     const authHeader = req.headers.get("Authorization") ?? "";
-    if (!authHeader.startsWith("Bearer ")) {
-      return json({ error: "Não autenticado." }, 401);
-    }
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      { global: { headers: { Authorization: authHeader } } },
-    );
-    const { data: userData, error: userErr } = await supabase.auth.getUser();
-    if (userErr || !userData?.user) {
-      return json({ error: "Sessão inválida. Entre novamente." }, 401);
+    let usuarioId: string | null = null;
+    if (authHeader.startsWith("Bearer ")) {
+      try {
+        const supabase = createClient(
+          Deno.env.get("SUPABASE_URL") ?? "",
+          Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+          { global: { headers: { Authorization: authHeader } } },
+        );
+        const { data: userData } = await supabase.auth.getUser();
+        usuarioId = userData?.user?.id ?? null;
+      } catch {
+        // Degustação / visitante permitido
+      }
     }
 
     // 2) Chave da Gemini — a chave dedicada do Me Explique vem primeiro
@@ -88,7 +159,7 @@ Deno.serve(async (req) => {
 
     // Formato exigido pelo BidiGenerateContent: modalidades ficam em
     // generationConfig; transcrições e systemInstruction no nível do setup.
-    const instrucaoFinal = gerarInstrucao(nome, formato);
+    const instrucaoFinal = gerarInstrucao(nome, formato, modo, contexto);
 
     const setup = {
       model: `models/${MODELO_LIVE}`,

@@ -74,27 +74,9 @@ const MeExpliqueHeroPanel: React.FC<Props> = ({ onVoltar, onOpenConfig }) => {
           <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
         </button>
 
-        {/* Indicador de Cota Diária e Configuração */}
-        <div className="pointer-events-auto flex items-center gap-2">
-          <div
-            className={`flex items-center gap-2 rounded-2xl border px-3 py-1.5 backdrop-blur-md shadow-lg transition-colors ${
-              cota.limiteAtingido
-                ? 'border-red-500/40 bg-black/60 text-red-300'
-                : 'border-amber-500/30 bg-black/60 text-amber-300'
-            }`}
-          >
-            <Clock className="h-4 w-4 shrink-0" />
-            <div className="text-right">
-              <span className="block font-mono text-xs font-bold leading-none">
-                {cota.tempoFormatado}
-              </span>
-              <span className="block text-[9px] font-medium opacity-80 leading-none mt-0.5">
-                {cota.limiteAtingido ? 'Esgotado' : 'Restantes hoje'}
-              </span>
-            </div>
-          </div>
-
-          {onOpenConfig && (
+        {/* Configurações (se fornecido) */}
+        {onOpenConfig ? (
+          <div className="pointer-events-auto">
             <button
               type="button"
               onClick={() => {
@@ -106,8 +88,10 @@ const MeExpliqueHeroPanel: React.FC<Props> = ({ onVoltar, onOpenConfig }) => {
             >
               <Settings className="w-4 h-4" />
             </button>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div />
+        )}
       </header>
 
       {/* Conteúdo Persuasivo à Esquerda (Sem Barra de Busca) */}

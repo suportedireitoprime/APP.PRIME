@@ -51,6 +51,8 @@ export interface OpcoesLive {
   onErro: (mensagem: string) => void;
   /** Frames por segundo enviados ao modelo (limite recomendado: 1). */
   fps?: number;
+  /** Prompt inicial em texto enviado assim que a sessão ao vivo estiver pronta. */
+  promptInicial?: string;
 }
 
 
@@ -124,13 +126,17 @@ export class SessaoMeExplique {
     this.opcoes.onStatus("conectando");
     this.garantirSaida(); // Item 7: Acorda o AudioContext sincronicamente no clique
 
-    // Nativo (Android/iOS): garante RECORD_AUDIO (e CAMERA, se o preview ainda
-    // não abriu) antes do getUserMedia, senão a WebView devolve NotAllowedError.
-    const precisaCamera = !this.opcoes.streamVideo;
+    // Nativo (Android/iOS): garante RECORD_AUDIO (e CAMERA apenas se vídeo for solicitado).
+    const precisaCamera = !this.opcoes.streamVideo && Boolean(this.opcoes.video);
     const { garantirPermissoesMidia } = await import("@/lib/nativo/permissoesMidia");
     const permissoes = await garantirPermissoesMidia(precisaCamera, true);
     if ((precisaCamera && !permissoes.camera) || !permissoes.microfone) {
-      throw new Error(permissoes.motivo ?? "Precisamos da câmera e do microfone para explicar o conteúdo.");
+      throw new Error(
+        permissoes.motivo ??
+          (precisaCamera
+            ? "Precisamos da câmera e do microfone para explicar o conteúdo."
+            : "Precisamos do microfone para a conversa ao vivo com o professor.")
+      );
     }
 
     if (this.opcoes.streamVideo) {
@@ -145,7 +151,7 @@ export class SessaoMeExplique {
       this.opcoes.video.playsInline = true;
       await this.opcoes.video.play().catch(() => undefined);
     } else {
-      // Sessão apenas com áudio, sem vídeo/câmera.
+      // Sessão apenas com áudio (livros, termos, livre, leis).
       this.streamProprio = true;
       this.stream = await this.abrirMicrofone();
     }
@@ -155,12 +161,14 @@ export class SessaoMeExplique {
     await this.iniciarAudio();
     if (this.opcoes.video) this.iniciarFrames();
 
-    // Depois de 900ms, pede que o professor comente o que está vendo (ou o que recebeu em texto).
+    // Se houver prompt inicial (livro, termo, dúvida), envia logo após conectar para o professor começar falando.
     window.setTimeout(() => {
-      if (this.opcoes.video && this.opcoes.video.videoWidth > 0) {
+      if (this.opcoes.promptInicial) {
+        this.enviarTexto(this.opcoes.promptInicial, true);
+      } else if (this.opcoes.video && this.opcoes.video.videoWidth > 0) {
         this.enviarTexto(ABERTURA, true);
       }
-    }, 900);
+    }, 700);
   }
 
   private get restricoesAudio() {
