@@ -325,6 +325,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
       <audio
         ref={audioRef}
         preload="auto"
+        playsInline
         onTimeUpdate={(e) => setTempo(e.currentTarget.currentTime)}
         onLoadedMetadata={(e) => setDur(e.currentTarget.duration || 0)}
         onPlay={() => setTocando(true)}

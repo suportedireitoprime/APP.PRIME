@@ -330,6 +330,7 @@ export default function ModoAulaAula() {
             onPause={() => setTocando(false)}
             onPlay={() => setTocando(true)}
             preload="metadata"
+            playsInline
           />
         </div>
       )}

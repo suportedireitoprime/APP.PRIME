@@ -198,6 +198,7 @@ export const LeisCantadasPlayerProvider: React.FC<{ children: React.ReactNode }>
       {children}
       <audio
         ref={audioRef}
+        playsInline
         onEnded={() => pular(1)}
         onPause={() => setTocando(false)}
         onPlay={() => setTocando(true)}

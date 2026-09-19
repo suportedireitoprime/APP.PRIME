@@ -546,8 +546,8 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
         )}
       </AnimatePresence>
 
-      <audio ref={audioRef} onEnded={onEnded} preload="auto" />
-      <audio ref={bgAudioRef} src="/news-bg.mp3" preload="auto" loop />
+      <audio ref={audioRef} onEnded={onEnded} preload="auto" playsInline />
+      <audio ref={bgAudioRef} src="/news-bg.mp3" preload="auto" loop playsInline />
     </div>
   );
 }

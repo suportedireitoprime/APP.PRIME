@@ -70,6 +70,12 @@
 	<string>O aplicativo precisa de acesso ao microfone para pesquisas por voz.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>O aplicativo precisa de acesso à galeria para enviar imagens de perfil e anexos.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>O aplicativo precisa de acesso para salvar arquivos e fotos na sua galeria.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
 </dict>

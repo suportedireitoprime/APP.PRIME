@@ -553,6 +553,7 @@ const ApresentacaoPlayer = () => {
         onPlay={(e) => { e.currentTarget.playbackRate = velocidade; if (usaA) setTocando(true); }} 
         onLoadedMetadata={(e) => { e.currentTarget.playbackRate = velocidade; }} 
         preload="auto" 
+        playsInline
         className="hidden" 
       />
       <audio 
@@ -561,6 +562,7 @@ const ApresentacaoPlayer = () => {
         onPlay={(e) => { e.currentTarget.playbackRate = velocidade; if (!usaA) setTocando(true); }} 
         onLoadedMetadata={(e) => { e.currentTarget.playbackRate = velocidade; }} 
         preload="auto" 
+        playsInline
         className="hidden" 
       />
 

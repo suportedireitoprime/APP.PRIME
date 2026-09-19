@@ -323,6 +323,7 @@ export const PilulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
           onEnded={skipToMain}
           onError={skipToMain}
           preload="auto"
+          playsInline
         />
       )}
       {livro && (
@@ -337,6 +338,7 @@ export const PilulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
           }}
           onEnded={() => setIsPlaying(false)}
           preload="metadata"
+          playsInline
         />
       )}
     </Ctx.Provider>

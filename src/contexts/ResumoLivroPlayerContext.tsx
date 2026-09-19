@@ -226,7 +226,7 @@ export const ResumoLivroPlayerProvider: React.FC<{ children: React.ReactNode }> 
       }}
     >
       {children}
-      <audio ref={audioRef} className="hidden" />
+      <audio ref={audioRef} playsInline className="hidden" />
     </Ctx.Provider>
   );
 };

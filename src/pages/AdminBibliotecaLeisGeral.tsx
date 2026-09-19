@@ -586,7 +586,7 @@ function DetalheLeiSheet({
                           {art.texto?.slice(0, 200)}
                         </p>
                         {temNarr && (
-                          <audio controls src={audio} className="mt-2 h-8 w-full max-w-xs" preload="none" />
+                          <audio controls src={audio} className="mt-2 h-8 w-full max-w-xs" preload="none" playsInline />
                         )}
                       </div>
                       <Button

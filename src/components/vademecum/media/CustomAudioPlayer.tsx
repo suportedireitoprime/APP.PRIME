@@ -59,6 +59,7 @@ export function CustomAudioPlayer({ src, title }: CustomAudioPlayerProps) {
       <audio
         ref={audioRef}
         src={src}
+        playsInline
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={() => setIsPlaying(false)}
