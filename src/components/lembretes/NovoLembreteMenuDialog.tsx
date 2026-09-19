@@ -47,7 +47,8 @@ export default function NovoLembreteMenuDialog({ open, onOpenChange, onSelectHor
             <button
               onClick={() => {
                 onOpenChange(false);
-                navigate('/lembretes/local');
+                // Atraso de 50ms para permitir o unmount do Radix antes de iniciar a transição de rota do Framer Motion
+                setTimeout(() => navigate('/lembretes/local'), 50);
               }}
               className="w-full text-left p-4 rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-white/5 hover:border-white/20 transition active:scale-[0.98] flex items-center gap-4 group"
             >
