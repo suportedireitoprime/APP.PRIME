@@ -107,7 +107,7 @@ const BibliotecaHero = ({ children }: Props) => {
       {/* Base Dark/Brown for the right side behind the image */}
       <div className="absolute inset-0 bg-gradient-to-r from-[#1f1007] to-[#3a1d0d]" />
 
-      {/* Imagem do filósofo na direita */}
+      {/* Imagem do filósofo na direita redimensionada */}
       <div className="pointer-events-none absolute inset-0 flex justify-end z-0">
         <AnimatePresence initial={false} mode="wait">
           <motion.img
@@ -121,7 +121,7 @@ const BibliotecaHero = ({ children }: Props) => {
             animate={{ opacity: 0.92, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: -20, scale: 0.98 }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
-            className="h-full w-auto object-cover object-top opacity-90 drop-shadow-[0_8px_24px_rgba(0,0,0,0.6)] translate-x-[15%]"
+            className="absolute bottom-0 right-[-5%] h-[85%] w-auto object-contain object-bottom opacity-90 drop-shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
           />
         </AnimatePresence>
       </div>
@@ -132,11 +132,11 @@ const BibliotecaHero = ({ children }: Props) => {
         style={{ filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.8)) drop-shadow(8px 0 10px rgba(0,0,0,0.95))' }}
       >
         <div 
-          className="absolute inset-0 overflow-hidden bg-hero-panel-brown"
+          className="absolute inset-0 overflow-hidden bg-[#3b1d0d]"
           style={{ clipPath: 'polygon(0 0, 58% 0, 44% 100%, 0% 100%)' }}
         >
-          {/* Texturas internas do corte diagonal */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,200,150,0.15),transparent_60%)]" />
+          {/* Texturas internas do corte diagonal ajustadas para marrom */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.05),transparent_60%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
 
           {/* Grid Pattern Background */}
@@ -186,24 +186,27 @@ const BibliotecaHero = ({ children }: Props) => {
         </div>
       </div>
 
-      <div className="px-4 pb-2 pt-2 flex items-center justify-between relative z-30">
-        <button
-          onClick={() => { haptic.selection(); navigate('/'); }}
-          aria-label="Voltar"
-          className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:scale-95"
-        >
-          <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
-        </button>
-        <button
-          onClick={() => { haptic.selection(); navigate('/biblioteca-offline'); }}
-          aria-label="Armazenamento Offline"
-          className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:scale-95"
-        >
-          <HardDrive className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
-        </button>
-      </div>
+      {/* Header Buttons absoluto no topo para poupar altura */}
+      <header className="absolute top-0 right-0 left-0 z-30 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
+        <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center justify-between">
+          <button
+            onClick={() => { haptic.selection(); navigate('/'); }}
+            aria-label="Voltar"
+            className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:scale-95"
+          >
+            <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
+          </button>
+          <button
+            onClick={() => { haptic.selection(); navigate('/biblioteca-offline'); }}
+            aria-label="Armazenamento Offline"
+            className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:scale-95"
+          >
+            <HardDrive className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
+          </button>
+        </div>
+      </header>
 
-      <div className="relative z-20 px-4 pt-1 pb-5 flex flex-col gap-4">
+      <div className="relative z-20 px-4 pt-16 sm:pt-20 pb-5 flex flex-col gap-4">
         <div className="max-w-[58%] xs:max-w-[62%] flex flex-col">
           <p className="text-[10px] uppercase tracking-[0.28em] text-amber-300/90 font-bold">
             Pensadores do Direito
