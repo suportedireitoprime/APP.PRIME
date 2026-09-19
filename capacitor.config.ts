@@ -73,9 +73,9 @@ const config: CapacitorConfig = {
       iconColor: '#c9a84c',
     },
     Keyboard: {
-      // NÃO usar resizeOnFullScreen — o @capacitor-community/safe-area já cuida
-      // do resize do WebView quando o teclado abre.
-      resize: 'none',
+      // Usando 'body' para garantir que o teclado comprima a WebView, empurrando
+      // componentes como inputs de chat para cima, sem os sobrepor.
+      resize: 'body',
     },
     // Edge-to-edge / safe-area (Android 15+ / SDK 35+):
     // O @capacitor-community/safe-area popula env(safe-area-inset-*) e

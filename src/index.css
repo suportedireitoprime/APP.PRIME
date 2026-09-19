@@ -124,6 +124,11 @@ body {
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   background-color: #0D0D0D !important;
+  overscroll-behavior-y: none;
+  /* Limitação de UX para Tablets/iPads (Bug 6) - impede a tela de se esticar infinitamente */
+  max-width: 1024px;
+  margin: 0 auto;
+  position: relative;
 }
 
 body {
