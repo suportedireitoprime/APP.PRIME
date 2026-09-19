@@ -92,7 +92,8 @@ const Onboarding = () => {
     try {
       const { error } = await supabase
         .from('profiles')
-        .update({
+        .upsert({
+          id: user.id,
           status_perfil: r.persona,
           faixa_etaria: r.faixa,
           perfil_tipos: r.persona ? [r.persona] : null,
@@ -102,8 +103,7 @@ const Onboarding = () => {
           interesses: r.interesses || [],
           telefone: r.whatsapp || null,
           onboarding_completed_at: new Date().toISOString(),
-        })
-        .eq('id', user.id);
+        });
 
       if (error) {
         console.error('[Onboarding] Erro ao salvar perfil:', error);
@@ -146,15 +146,7 @@ const Onboarding = () => {
 
   const concluirTrial = () => {
     setPedirTrial(false);
-    // Intervalo para liberação do scroll lock antes de abrir o próximo modal (Item 22)
-    setTimeout(() => {
-      setPedirNotificacoes(true);
-    }, 200);
-  };
-
-  const concluirNotificacoes = (granted: boolean) => {
-    setPedirNotificacoes(false);
-    toast.success(granted ? 'Notificações ativadas. Seja bem-vindo(a)!' : 'Seja bem-vindo(a)!');
+    toast.success('Seja bem-vindo(a)!');
     startTransition(() => {
       navigate('/', { replace: true });
     });
@@ -184,7 +176,7 @@ const Onboarding = () => {
       />
 
       <AnimatePresence mode="wait">
-        {!pedirPromo && !pedirTrial && !pedirNotificacoes ? (
+        {!pedirPromo && !pedirTrial ? (
           <motion.div key="onboarding-flow" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}>
             <CadastroOnboardingOverlay 
               open 
@@ -193,13 +185,9 @@ const Onboarding = () => {
               initialName={initialName} 
             />
           </motion.div>
-        ) : pedirTrial && !pedirPromo ? (
+        ) : (
           <motion.div key="trial-step" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}>
             <TrialWelcomeModal onDone={concluirTrial} />
-          </motion.div>
-        ) : (
-          <motion.div key="notificacoes-step" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}>
-            <NotificacoesPermissaoStep onDone={concluirNotificacoes} />
           </motion.div>
         )}
       </AnimatePresence>

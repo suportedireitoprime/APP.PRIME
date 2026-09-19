@@ -89,6 +89,7 @@ const ForceUpdateScreen = lazy(() => import("@/components/ForceUpdateScreen"));
 import { useAppUpdateStore } from "@/lib/appUpdateStore";
 import { scheduleAppWarmup } from "@/services/appWarmupService";
 import { scheduleBackgroundImageWarmup } from "@/services/imageBackgroundSync";
+import { GlobalDelayedPrompts } from "@/components/GlobalDelayedPrompts";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -234,6 +235,7 @@ const App = () => (
                   <OfflineWatcher />
                   <AppWarmupInitializer />
                   <NativeBackButtonHandler />
+                  <GlobalDelayedPrompts />
                   
                   <Suspense fallback={null}>
                     <GeofencePresenceBanner />
