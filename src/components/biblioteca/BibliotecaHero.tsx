@@ -6,30 +6,39 @@ import { abrirAtalhoBiblioteca } from './BibliotecaBottomNav';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Imagens dos filósofos
-import aristotelesImg from '@/assets/filosofos/aristoteles.webp';
-import nietzscheImg from '@/assets/filosofos/nietzsche.webp';
-import kantImg from '@/assets/filosofos/kant.webp';
-import plataoImg from '@/assets/filosofos/platao.webp';
-import descartesImg from '@/assets/filosofos/descartes.webp';
-import agostinhoImg from '@/assets/filosofos/agostinho.webp';
-import beauvoirImg from '@/assets/filosofos/beauvoir.webp';
-import senecaImg from '@/assets/filosofos/seneca.webp';
-import socratesImg from '@/assets/filosofos/socrates.webp';
-import aquinoImg from '@/assets/filosofos/aquino.webp';
+// Carrega dinamicamente qualquer imagem .webp que estiver na pasta docs/filosofos
+const modules = import.meta.glob('../../../docs/filosofos/*.webp', { eager: true, import: 'default' });
 
-const PHILOSOPHERS = [
-  { name: 'Aristóteles', quote: 'A lei é a razão livre da paixão.', img: aristotelesImg },
-  { name: 'Friedrich Nietzsche', quote: 'Aquele que tem um porquê para viver pode suportar quase qualquer como.', img: nietzscheImg },
-  { name: 'Immanuel Kant', quote: 'Age como se a máxima de tua ação devesse tornar-se uma lei universal.', img: kantImg },
-  { name: 'Platão', quote: 'O que faz a justiça é que cada um faça a sua parte.', img: plataoImg },
-  { name: 'René Descartes', quote: 'Penso, logo existo.', img: descartesImg },
-  { name: 'Santo Agostinho', quote: 'Uma lei injusta não é lei alguma.', img: agostinhoImg },
-  { name: 'Simone de Beauvoir', quote: 'Que a liberdade seja a nossa própria substância.', img: beauvoirImg },
-  { name: 'Sêneca', quote: 'Nenhuma lei agrada a todos.', img: senecaImg },
-  { name: 'Sócrates', quote: 'É melhor sofrer uma injustiça do que cometê-la.', img: socratesImg },
-  { name: 'Tomás de Aquino', quote: 'A lei é uma ordenação da razão para o bem comum.', img: aquinoImg },
-];
+const QUOTES_DB: Record<string, {name: string, quote: string}> = {
+  'aristoteles': { name: 'Aristóteles', quote: 'A lei é a razão livre da paixão.' },
+  'nietzsche': { name: 'Friedrich Nietzsche', quote: 'Aquele que tem um porquê para viver pode suportar quase qualquer como.' },
+  'kant': { name: 'Immanuel Kant', quote: 'Age como se a máxima de tua ação devesse tornar-se uma lei universal.' },
+  'platao': { name: 'Platão', quote: 'O que faz a justiça é que cada um faça a sua parte.' },
+  'descartes': { name: 'René Descartes', quote: 'Penso, logo existo.' },
+  'agostinho': { name: 'Santo Agostinho', quote: 'Uma lei injusta não é lei alguma.' },
+  'beauvoir': { name: 'Simone de Beauvoir', quote: 'Que a liberdade seja a nossa própria substância.' },
+  'seneca': { name: 'Sêneca', quote: 'Nenhuma lei agrada a todos.' },
+  'socrates': { name: 'Sócrates', quote: 'É melhor sofrer uma injustiça do que cometê-la.' },
+  'aquino': { name: 'Tomás de Aquino', quote: 'A lei é uma ordenação da razão para o bem comum.' },
+};
+
+const PHILOSOPHERS = Object.entries(modules).map(([path, img]) => {
+  const filename = path.split('/').pop()?.replace('.webp', '') || '';
+  const info = QUOTES_DB[filename.toLowerCase()] || { 
+    name: filename.charAt(0).toUpperCase() + filename.slice(1), 
+    quote: 'A sabedoria começa na reflexão.' 
+  };
+  return { ...info, img: img as string };
+});
+
+// Fallback se a pasta estiver vazia
+if (PHILOSOPHERS.length === 0) {
+  PHILOSOPHERS.push({
+    name: 'Biblioteca Jurídica',
+    quote: 'O acervo completo de leis e trilhas de estudo.',
+    img: ''
+  });
+}
 
 interface Props {
   onBuscar?: () => void;
@@ -95,7 +104,7 @@ const BibliotecaHero = ({ children }: Props) => {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1.2 }}
-          className="absolute right-[-5%] md:right-0 bottom-0 h-[90%] md:h-[95%] w-auto object-contain object-bottom z-0 pointer-events-none"
+          className="absolute right-0 md:right-[5%] bottom-0 h-[70%] sm:h-[75%] md:h-[80%] w-auto object-contain object-bottom z-0 pointer-events-none"
         />
       </AnimatePresence>
 
