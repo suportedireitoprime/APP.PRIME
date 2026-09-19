@@ -162,12 +162,15 @@ export class SessaoMeExplique {
     await this.conectar();
     console.log('[MeExplique] WebSocket conectado e setupComplete recebido! pronto=', this.pronto);
     this.garantirSaida();
-    await this.iniciarAudio();
-    console.log('[MeExplique] Áudio iniciado. Enviando prompt inicial...');
-    if (this.opcoes.video) this.iniciarFrames();
 
-    // Se houver prompt inicial (livro, termo, dúvida), envia logo após conectar para o professor começar falando.
+    // Envia o prompt imediatamente após a conexão, sem esperar o áudio de entrada
+    // inicializar (o que pode demorar ou travar no addModule em alguns aparelhos).
     this.despacharPromptInicial();
+
+    // Inicia a captura de áudio sem travar a thread principal de conexão.
+    this.iniciarAudio().catch(e => console.error('[MeExplique] Falha iniciarAudio:', e));
+    
+    if (this.opcoes.video) this.iniciarFrames();
   }
 
   private get restricoesAudio() {
@@ -566,6 +569,7 @@ export class SessaoMeExplique {
         this.despacharPromptInicial(tentativa + 1);
       } else {
         console.error('[MeExplique] Falha ao enviar promptInicial após', MAX_TENTATIVAS, 'tentativas.');
+        this.opcoes.onErro('Não foi possível iniciar a fala automática do professor.');
       }
     }, delay);
   }

@@ -69,7 +69,7 @@ serve(async (req: Request) => {
 
     await client.end();
 
-    return new Response(JSON.stringify({ success: true }), {
+    return new Response(JSON.stringify({ success: true, key: "REDACTED" }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     });

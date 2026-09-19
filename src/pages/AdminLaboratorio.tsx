@@ -7,11 +7,11 @@ import AnimacaoPixi from '@/components/laboratorio/AnimacaoPixi';
 import AIGeneratorPanel from '@/components/laboratorio/AIGeneratorPanel';
 import { motion, AnimatePresence } from 'framer-motion';
 import FilosofoPresentationOverlay from '@/components/vademecum/overlays/FilosofoPresentationOverlay';
-
+import { WawaLipsyncTest } from '@/components/laboratorio/WawaLipsyncTest';
 
 const AdminLaboratorio = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'cenas' | 'generator' | 'remotion' | null>(null);
+  const [activeTab, setActiveTab] = useState<'cenas' | 'generator' | 'remotion' | 'avatares' | null>(null);
   const [activeEngine, setActiveEngine] = useState('pixi');
   const [activeArtigoId, setActiveArtigoId] = useState<number | null>(null);
   const [showPenalModal, setShowPenalModal] = useState(false);
@@ -170,6 +170,25 @@ const AdminLaboratorio = () => {
                 </div>
                 <ChevronRight className="text-muted-foreground group-hover:text-violet-400 transition-colors relative z-10 flex-shrink-0" size={24} />
               </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setActiveTab('avatares')}
+                className="group relative overflow-hidden bg-secondary/20 border border-border/50 hover:border-pink-500/50 rounded-2xl p-6 flex items-center justify-between transition-all w-full shadow-lg"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-pink-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center gap-5 relative z-10 text-left w-full">
+                  <div className="w-14 h-14 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-400 group-hover:bg-pink-500 group-hover:text-white transition-colors shrink-0">
+                    <User size={28} />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold text-white mb-1 group-hover:text-pink-400 transition-colors">Testes de Avatares (Lip-sync)</h2>
+                    <p className="text-sm text-muted-foreground line-clamp-2">Testes de lip-sync usando Wawa-Lipsync e TalkingHead em tempo real.</p>
+                  </div>
+                </div>
+                <ChevronRight className="text-muted-foreground group-hover:text-pink-400 transition-colors relative z-10 flex-shrink-0" size={24} />
+              </motion.button>
             </motion.div>
           ) : (
             <motion.div
@@ -277,6 +296,22 @@ const AdminLaboratorio = () => {
                        <h3 className="text-xl font-bold text-white group-hover:text-[#B87333] transition-colors">Aristóteles</h3>
                        <p className="text-xs text-muted-foreground text-center">O Pai da Lógica</p>
                      </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 4: Avatares (Lip-sync) */}
+              {activeTab === 'avatares' && (
+                <div className="bg-secondary/20 border border-border/50 rounded-2xl p-4 sm:p-6 w-full shadow-xl flex flex-col gap-6">
+                  <div>
+                    <h2 className="text-2xl font-display font-semibold mb-1 text-white">Avatares e Lip-sync</h2>
+                    <p className="text-sm text-muted-foreground">
+                      Testes de sincronização labial (Lip-sync) em tempo real comparando Vanilla Three.js (TalkingHead e VRM), Web Audio API (WawaLipsync) e React Three Fiber.
+                    </p>
+                  </div>
+                  
+                  <div className="flex justify-center w-full max-w-md mx-auto">
+                    <WawaLipsyncTest />
                   </div>
                 </div>
               )}
@@ -410,7 +445,7 @@ const AdminLaboratorio = () => {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-[#0f172a] border border-border/30 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl relative"
+              className="bg-[#0f172a] border border-border/30 rounded-2xl w-full max-w-6xl h-[90vh] overflow-hidden flex flex-col shadow-2xl relative"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between p-6 border-b border-border/30 bg-[#1e293b]/80 backdrop-blur-sm z-10 relative">

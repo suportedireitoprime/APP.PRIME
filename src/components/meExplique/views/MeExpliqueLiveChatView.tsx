@@ -82,6 +82,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
   const sessaoRef = useRef<SessaoMeExplique | null>(null);
   const isMounted = useRef(true);
   const chatScrollRef = useRef<HTMLDivElement>(null);
+  const iniciandoRef = useRef(false);
 
   const formatarTempo = (segundos: number) => {
     const min = Math.floor(segundos / 60);
@@ -136,6 +137,9 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
       return;
     }
 
+    if (iniciandoRef.current || sessaoRef.current) return;
+    iniciandoRef.current = true;
+
     sessaoRef.current?.encerrar();
     sessaoRef.current = null;
 
@@ -146,13 +150,19 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
 
     try {
       // 1) Solicita ephemeral token ao backend com instrução customizada para o modo
-      const { data, error } = await supabase.functions.invoke('me-explique-token', {
+      const chamador = supabase.functions.invoke('me-explique-token', {
         body: {
           modo,
           contexto,
           formatoRelatorio: 'didática 6 anos ao vivo',
         },
       });
+
+      const timeoutPromise = new Promise<{ data: any, error: any }>((_, reject) => {
+        setTimeout(() => reject(new Error('A conexão demorou demais. Verifique sua internet.')), 12000);
+      });
+
+      const { data, error } = await Promise.race([chamador, timeoutPromise]);
 
       if (error) throw new Error(error.message);
       const resposta = data as {
@@ -218,6 +228,8 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
       const msg = err instanceof Error ? err.message : 'Falha ao iniciar áudio ao vivo.';
       setErro(msg);
       setStatus('erro');
+    } finally {
+      iniciandoRef.current = false;
     }
   }, [cota, modo, contexto, promptInicialPersonalizado]);
 
