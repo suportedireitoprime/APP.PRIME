@@ -1,4 +1,6 @@
 import { createStore, get, set, del, entries } from 'idb-keyval';
+import { Capacitor } from '@capacitor/core';
+import { blobParaBase64 } from '@/lib/nativo/baixarArquivo';
 import { supabase } from '@/integrations/supabase/client';
 
 const audioStore = createStore('prime_vademecum_audio_cache_v1', 'narracoes');
@@ -34,7 +36,22 @@ export async function getCachedAudio(
     entry.lastAccessed = Date.now();
     void set(key, entry, audioStore).catch(() => {});
 
-    const blobUrl = URL.createObjectURL(entry.blob);
+    let blobUrl = '';
+    
+    if (Capacitor.isNativePlatform()) {
+      const { Filesystem, Directory } = await import('@capacitor/filesystem');
+      try {
+        const { data } = await Filesystem.readFile({
+          path: `aud_${btoa(key).replace(/=/g,'')}.txt`,
+          directory: Directory.Data
+        });
+        blobUrl = `data:${entry.mimeType};base64,${data}`;
+      } catch {
+        blobUrl = URL.createObjectURL(entry.blob);
+      }
+    } else {
+      blobUrl = URL.createObjectURL(entry.blob);
+    }
     return {
       blobUrl,
       wordTimings: entry.wordTimings,
@@ -72,6 +89,20 @@ export async function saveCachedAudio(
       mimeType: blob.type || 'audio/wav',
     };
 
+    if (Capacitor.isNativePlatform()) {
+      const { Filesystem, Directory } = await import('@capacitor/filesystem');
+      try {
+        const b64 = await blobParaBase64(blob);
+        await Filesystem.writeFile({
+          path: `aud_${btoa(key).replace(/=/g,'')}.txt`,
+          data: b64,
+          directory: Directory.Data
+        });
+      } catch (e) {
+        console.warn('Falha FS Audio', e);
+      }
+    }
+
     await set(key, entry, audioStore);
   } catch (err) {
     console.warn('[audioOfflineCache] Falha ao salvar áudio no IndexedDB:', err);
@@ -97,6 +128,12 @@ async function enforceLruQuota(incomingBytes: number): Promise<void> {
 
     for (const [key, item] of sorted) {
       if (totalSize + incomingBytes <= MAX_AUDIO_CACHE_BYTES) break;
+      if (Capacitor.isNativePlatform()) {
+        try {
+          const { Filesystem, Directory } = await import('@capacitor/filesystem');
+          await Filesystem.deleteFile({ path: `aud_${btoa(key).replace(/=/g,'')}.txt`, directory: Directory.Data });
+        } catch {}
+      }
       await del(key, audioStore);
       totalSize -= item.size || 0;
     }

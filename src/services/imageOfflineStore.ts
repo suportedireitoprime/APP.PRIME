@@ -1,4 +1,6 @@
 import { createStore, get, set, del, keys, entries, clear, UseStore } from 'idb-keyval';
+import { Capacitor } from '@capacitor/core';
+import { blobParaBase64 } from '@/lib/nativo/baixarArquivo';
 
 /**
  * Interface dos registros de imagem no IndexedDB
@@ -22,6 +24,17 @@ function getMediaStore(): UseStore {
 
 // Cache síncrono em memória de Object URLs ativas para retorno a 0ms
 const memoryObjectUrlMap = new Map<string, string>();
+const MAX_MEMORY_URLS = 50;
+
+function enforceMemoryLimit() {
+  if (memoryObjectUrlMap.size > MAX_MEMORY_URLS) {
+    const oldestKey = memoryObjectUrlMap.keys().next().value;
+    if (oldestKey) {
+      try { URL.revokeObjectURL(memoryObjectUrlMap.get(oldestKey)!); } catch {}
+      memoryObjectUrlMap.delete(oldestKey);
+    }
+  }
+}
 
 // Limite máximo de imagens mantidas no IndexedDB (Item 39 - LRU)
 const MAX_CACHED_IMAGES = 300;
@@ -61,11 +74,26 @@ export async function getImageOfflineUrl(remoteUrl: string | null | undefined): 
     if (!store) return null;
 
     const record = await get<CachedImageRecord>(key, store);
-    if (!record || !record.blob) return null;
+    let objectUrl = '';
 
-    // Cria object URL seguro e cacheia na memória
-    const objectUrl = URL.createObjectURL(record.blob);
+    if (Capacitor.isNativePlatform()) {
+      const { Filesystem, Directory } = await import('@capacitor/filesystem');
+      try {
+        const { data } = await Filesystem.readFile({
+          path: `img_${btoa(key).replace(/=/g,'')}.txt`,
+          directory: Directory.Data
+        });
+        objectUrl = `data:${record.mimeType};base64,${data}`;
+      } catch {
+        // Fallback: file may be lost or not synced, try using indexeddb blob
+        objectUrl = URL.createObjectURL(record.blob);
+      }
+    } else {
+      objectUrl = URL.createObjectURL(record.blob);
+    }
+    
     memoryObjectUrlMap.set(key, objectUrl);
+    enforceMemoryLimit();
 
     // Atualiza o timestamp de acesso (LRU) sem bloquear a execução
     const updatedRecord: CachedImageRecord = {
@@ -103,12 +131,26 @@ export async function saveImageOffline(remoteUrl: string, blob: Blob): Promise<s
     await set(key, record, store);
 
     // Se já existia uma object URL antiga para esta chave, revoga para não vazar memória
-    if (memoryObjectUrlMap.has(key)) {
-      try { URL.revokeObjectURL(memoryObjectUrlMap.get(key)!); } catch {}
+    if (Capacitor.isNativePlatform()) {
+      const { Filesystem, Directory } = await import('@capacitor/filesystem');
+      try {
+        const b64 = await blobParaBase64(blob);
+        await Filesystem.writeFile({
+          path: `img_${btoa(key).replace(/=/g,'')}.txt`,
+          data: b64,
+          directory: Directory.Data
+        });
+      } catch (e) {
+        console.warn('Falha FS Img', e);
+      }
     }
 
-    const objectUrl = URL.createObjectURL(blob);
+    const objectUrl = Capacitor.isNativePlatform() 
+      ? `data:${record.mimeType};base64,${await blobParaBase64(blob)}`
+      : URL.createObjectURL(blob);
+      
     memoryObjectUrlMap.set(key, objectUrl);
+    enforceMemoryLimit();
 
     // Verifica descarte LRU em background (Item 39)
     checkAndPruneCache().catch(() => {});
@@ -189,6 +231,13 @@ async function checkAndPruneCache(): Promise<void> {
       if (memoryObjectUrlMap.has(k)) {
         try { URL.revokeObjectURL(memoryObjectUrlMap.get(k)!); } catch {}
         memoryObjectUrlMap.delete(k);
+      }
+      // Filesystem cleanup if native
+      if (Capacitor.isNativePlatform()) {
+        try {
+          const { Filesystem, Directory } = await import('@capacitor/filesystem');
+          await Filesystem.deleteFile({ path: `img_${btoa(k).replace(/=/g,'')}.txt`, directory: Directory.Data });
+        } catch {}
       }
       await del(k, store);
     }

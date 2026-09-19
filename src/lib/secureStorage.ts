@@ -7,26 +7,39 @@
  * migration step required at boot.
  */
 import { Capacitor } from '@capacitor/core';
+import { localDb } from '@/services/localDb';
 import { SecureStorage } from '@aparajita/capacitor-secure-storage';
 
 const isNative = Capacitor.isNativePlatform();
 
 async function nativeGet(key: string): Promise<string | null> {
   try {
-    const v = await SecureStorage.get(key);
-    return v == null ? null : String(v);
+    const v = await localDb.getKv(key);
+    if (v != null) return String(v);
+    
+    // Migração transparente do SecureStorage antigo para o localDb
+    try {
+      const oldV = await SecureStorage.get(key);
+      if (oldV != null) {
+        await localDb.setKv(key, String(oldV));
+        await SecureStorage.remove(key);
+        return String(oldV);
+      }
+    } catch {}
+    
+    return null;
   } catch {
     return null;
   }
 }
 
 async function nativeSet(key: string, value: string): Promise<void> {
-  await SecureStorage.set(key, value);
+  await localDb.setKv(key, value);
 }
 
 async function nativeRemove(key: string): Promise<void> {
   try {
-    await SecureStorage.remove(key);
+    await localDb.delKv(key);
   } catch {
     /* noop */
   }
