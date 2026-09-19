@@ -29,29 +29,9 @@ export default defineConfig(({ mode }) => ({
     // O plugin gerava um segundo build + polyfills (~40–60 KB no bundle
     // inicial) que ninguém usava. Se algum dia precisar suportar navegador
     // antigo, reintroduza aqui.
-    // Emit precompressed .gz and .br artifacts alongside each JS/CSS/HTML/SVG.
-    // Static hosts (Netlify, Cloudflare Pages, Nginx) will serve these
-    // directly when the client sends Accept-Encoding: br/gzip, cutting
-    // transfer size ~70–85%. Skip in dev so HMR stays fast.
-    // Skip precompression for native (Capacitor) builds: the WebView reads files
-    // straight from the APK's assets folder with no Accept-Encoding negotiation,
-    // so shipping both `foo.js` and `foo.js.gz` only wastes space AND makes
-    // Android's Asset Merger fail with "Duplicate resources" (it strips .gz).
-    mode !== "development" && !process.env.SKIP_PRECOMPRESS && viteCompression({
-      algorithm: "gzip",
-      ext: ".gz",
-      threshold: 1024,
-      filter: (file: string) => /\.(js|mjs|css|html|svg)$/i.test(file),
-      deleteOriginFile: false,
-    }),
-    mode !== "development" && !process.env.SKIP_PRECOMPRESS && viteCompression({
-      algorithm: "brotliCompress",
-      ext: ".br",
-      threshold: 1024,
-      filter: (file: string) => /\.(js|mjs|css|html|svg)$/i.test(file),
-      deleteOriginFile: false,
-      compressionOptions: { params: { [/* zlib.constants.BROTLI_PARAM_QUALITY */ 1]: 9 } },
-    }),
+    // Compressão pre-build desativada para evitar o erro "[vite:compression] EMFILE: too many open files"
+    // Hosts modernos (Vercel, Cloudflare Pages, GitHub Pages) já comprimem on-the-fly (Brotli/Gzip) no Edge.
+    // Para Capacitor (nativo), a compressão também já era ignorada.
   ].filter(Boolean),
   resolve: {
     alias: {
