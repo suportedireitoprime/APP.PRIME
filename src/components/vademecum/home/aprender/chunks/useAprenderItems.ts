@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FAST_PILLS_ITEMS } from '@/components/vademecum/home/sections/homeSectionsData';
 import { AprenderItem } from './aprenderCarouselTypes';
 import { getAreaCover } from '@/lib/areasDireitoCovers';
+import { cdnImg, prefetchImages } from '@/lib/cdnImg';
 
 const APRENDER_AREAS = [
   {
@@ -233,6 +234,14 @@ export function useAprenderItems() {
       };
     });
   }, []);
+
+  // PRÉ-AQUECIMENTO DE CACHE (PREFETCH) NA MONTAGEM DA ABA "APRENDER" PARA CARREGAMENTO 0MS
+  useEffect(() => {
+    if (items && items.length > 0) {
+      const urlsToPrefetch = items.map(item => item.image).filter(Boolean);
+      prefetchImages(urlsToPrefetch);
+    }
+  }, [items]);
 
   const handleItemClick = useCallback(
     (item: { id: string }) => {
