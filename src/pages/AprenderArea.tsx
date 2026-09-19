@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams, useSearchParams } from 'react-rout
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
@@ -158,8 +159,22 @@ const AprenderArea = () => {
   }, [area?.nome, slug]);
 
   const modulosOrdenados = useMemo(() => {
-    return [...modulos].sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
-  }, [modulos]);
+    if (modulos.length > 0) {
+      return [...modulos].sort((a, b) => (a.ordem || 0) - (b.ordem || 0)).map(m => ({ ...m, isPendente: false }));
+    }
+    const pendentes = data?.pendentes ?? [];
+    if (pendentes.length > 0) {
+      return [...pendentes].sort((a, b) => (a.ordem || 0) - (b.ordem || 0)).map(p => ({
+         id: p.id,
+         titulo: p.titulo,
+         resumo: p.resumo,
+         ordem: p.ordem,
+         total_aulas: p.total_aulas,
+         isPendente: true
+      }));
+    }
+    return [];
+  }, [modulos, data?.pendentes]);
 
   // Busca lista oficial de áreas de flashcards com contagens e slugs
   const { data: flashcardsAreasResumo } = useFlashcardsResumoAreas();
@@ -331,9 +346,9 @@ const AprenderArea = () => {
       }
     }
 
-    return modulosOrdenados.map((m, idx) => {
+    return modulosOrdenados.map((m: any, idx) => {
       const list = aulas.filter((a) => a.modulo_id === m.id);
-      const total = list.length;
+      const total = m.isPendente ? (m.total_aulas || 0) : list.length;
       const concluidas = list.filter((a) => progresso[a.id]?.concluida).length;
       const somaPct = list.reduce(
         (s, a) => s + (progresso[a.id]?.concluida ? 100 : progresso[a.id]?.pct || 0),
@@ -381,8 +396,38 @@ const AprenderArea = () => {
         displayLabel: total === 1 ? 'aula' : 'aulas',
         displayPct: pct,
         onPrefetch: warmModulo,
-        onClick: () => {
+        onClick: async () => {
           try { haptic.light(); } catch {}
+
+          if (m.isPendente) {
+            toast.loading(`Iniciando geração de "${m.titulo}"...`, { id: 'geracao-pendente' });
+            
+            // Buscar subtemas e criar módulo via RPC bypassando o RLS de cliente
+            const areaBusca = officialFlashcardArea || data?.area?.nome || effectiveAreaName;
+            
+            const geradorSlug = m.titulo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "") + "-" + Date.now();
+            
+            const { data: result, error } = await supabase.rpc('criar_modulo_com_aulas_draft', {
+              p_area_id: data?.area?.id,
+              p_titulo: m.titulo,
+              p_resumo: m.resumo,
+              p_ordem: m.ordem || 1,
+              p_area_nome: areaBusca,
+              p_slug: geradorSlug
+            });
+
+            if (error || !result?.id) {
+              console.error("ERRO AO CRIAR MÓDULO VIA RPC", error);
+              toast.error(`Erro ao criar o módulo: ${error?.message || 'Acesso negado'}`, { id: 'geracao-pendente' });
+              return;
+            }
+            
+            toast.dismiss('geracao-pendente');
+            // Navegar para a página do Módulo que agora possui as aulas rascunho mapeadas
+            navigate(`/aprender/modulo/${result.id}`);
+            return;
+          }
+
           warmModulo();
           const destTab = activeTab === 'questoes' ? '?tab=questoes' : '';
           navigate(`/aprender/modulo/${m.id}${destTab}`, {

@@ -18,6 +18,7 @@ export type PendenteRow = {
   titulo: string;
   ordem: number;
   resumo: string | null;
+  total_aulas?: number;
 };
 export type ProgressoMap = Record<string, { concluida: boolean; pct: number }>;
 
@@ -125,18 +126,42 @@ export async function fetchAprenderAreaFromNetwork(
     }
   }
 
-  const { data: sugestoes } = await supabase
-    .from('aprender_sumario_sugerido')
-    .select('id, titulo_melhorado, titulo_original, resumo_capitulo, ordem, aula_id')
-    .eq('area_id', a.id)
-    .is('aula_id', null)
-    .order('ordem');
-  const pendentes: PendenteRow[] = (sugestoes ?? []).map((s: any) => ({
-    id: s.id,
-    titulo: s.titulo_melhorado || s.titulo_original || 'Aula',
-    ordem: Number(s.ordem) || 0,
-    resumo: s.resumo_capitulo ?? null,
-  }));
+  const { data: temasResumos } = await supabase.rpc('get_resumos_temas_counts', { p_area: a.nome });
+  
+  const pendentes: PendenteRow[] = [];
+  
+  if (temasResumos && temasResumos.length > 0) {
+    temasResumos.forEach((t: any, i: number) => {
+      // Verifica se já existe um módulo com esse título para evitar duplicação
+      const jaExiste = mods?.some((m: any) => m.titulo.toLowerCase() === t.tema.toLowerCase());
+      if (!jaExiste) {
+        pendentes.push({
+          id: `pendente_${i}_${Date.now()}`,
+          titulo: t.tema,
+          ordem: t.ordem_tema || (i + 1),
+          resumo: `${t.total} aulas mapeadas a partir dos resumos`,
+          total_aulas: t.total,
+        });
+      }
+    });
+  } else {
+    // Fallback pra sumario sugerido se não houver resumos (retrocompatibilidade)
+    const { data: sugestoes } = await supabase
+      .from('aprender_sumario_sugerido')
+      .select('id, titulo_melhorado, titulo_original, resumo_capitulo, ordem, aula_id')
+      .eq('area_id', a.id)
+      .is('aula_id', null)
+      .order('ordem');
+    (sugestoes ?? []).forEach((s: any) => {
+      pendentes.push({
+        id: s.id,
+        titulo: s.titulo_melhorado || s.titulo_original || 'Aula',
+        ordem: Number(s.ordem) || 0,
+        resumo: s.resumo_capitulo ?? null,
+        total_aulas: 1,
+      });
+    });
+  }
 
   return {
     area: a as AreaRow,

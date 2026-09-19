@@ -184,7 +184,7 @@ const Onboarding = () => {
       />
 
       <AnimatePresence mode="wait">
-        {!pedirTrial && !pedirNotificacoes ? (
+        {!pedirPromo && !pedirTrial && !pedirNotificacoes ? (
           <motion.div key="onboarding-flow" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}>
             <CadastroOnboardingOverlay 
               open 
@@ -193,7 +193,7 @@ const Onboarding = () => {
               initialName={initialName} 
             />
           </motion.div>
-        ) : pedirTrial ? (
+        ) : pedirTrial && !pedirPromo ? (
           <motion.div key="trial-step" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}>
             <TrialWelcomeModal onDone={concluirTrial} />
           </motion.div>

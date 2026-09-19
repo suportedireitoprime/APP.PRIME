@@ -216,6 +216,34 @@ export function AdminHojeCards() {
         listOnlinePromise,
         Promise.allSettled(trialPromises)
       ]);
+
+      // === DIAGNÓSTICO ADMIN ===
+      console.group('[AdminHoje] Diagnóstico de RPCs');
+      if (list5mResult.status === 'fulfilled') {
+        const { data, error } = list5mResult.value;
+        console.log('online5m →', { data, error });
+      } else {
+        console.error('online5m REJECTED →', list5mResult.reason);
+      }
+      if (listOnlineResult.status === 'fulfilled') {
+        const { data, error } = listOnlineResult.value;
+        console.log('online →', { data, error });
+      } else {
+        console.error('online REJECTED →', listOnlineResult.reason);
+      }
+      if (metricasResults.status === 'fulfilled') {
+        metricasResults.value.forEach((res, i) => {
+          if (res.status === 'fulfilled') {
+            console.log(`metricas_dia[${i}] →`, { data: res.value.data, error: res.value.error });
+          } else {
+            console.error(`metricas_dia[${i}] REJECTED →`, res.reason);
+          }
+        });
+      } else {
+        console.error('metricas REJECTED →', metricasResults.reason);
+      }
+      console.groupEnd();
+      // === FIM DIAGNÓSTICO ===
       
       const list5m = list5mResult.status === 'fulfilled' ? list5mResult.value.data : [];
       const listOnline = listOnlineResult.status === 'fulfilled' ? listOnlineResult.value.data : [];

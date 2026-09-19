@@ -297,23 +297,7 @@ const AprenderAula = () => {
   }, [currentIdx, total, podeAvancar, goToPage, feedbackPergunta, sumarioOpen, blocos, flipped, playFlipSound, setFlipped, avaliarFlashcard]);
 
   if (isGenerating) {
-    return (
-      <div className="min-h-screen bg-[#0D0D0D] p-6 flex flex-col items-center justify-center text-center">
-        <div className="relative mb-8">
-          <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 animate-pulse" />
-          <Brain className="w-20 h-20 text-primary relative z-10 animate-bounce" />
-        </div>
-        <h2 className="text-2xl font-bold text-white mb-3">Nossa IA está construindo a sua aula sob medida.</h2>
-        <p className="text-neutral-400 text-base max-w-md mx-auto">
-          Estamos buscando o contexto, analisando os tópicos e gerando um material didático incrivelmente rico. Isso leva cerca de 30 a 60 segundos...
-        </p>
-        <div className="mt-8 flex gap-2">
-          <div className="w-3 h-3 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]"></div>
-          <div className="w-3 h-3 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]"></div>
-          <div className="w-3 h-3 rounded-full bg-primary animate-bounce"></div>
-        </div>
-      </div>
-    );
+    return <LoadingAula />;
   }
 
   if (loading) {
@@ -534,7 +518,7 @@ const AprenderAula = () => {
 
           {/* Direita: O Slide da Aula (Centralizado) */}
           <div
-            className="flex-1 flex flex-col items-center h-full relative overflow-hidden"
+            className="flex-1 flex flex-col items-center h-full relative overflow-hidden min-h-0"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
             onMouseDown={handleMouseDown}
@@ -542,7 +526,7 @@ const AprenderAula = () => {
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseLeave}
           >
-            <div className="flex-1 w-full max-w-2xl mx-auto flex flex-col pt-3 pb-[100px] relative overflow-hidden px-4 md:px-8">
+            <div className="flex-1 w-full max-w-2xl mx-auto flex flex-col pt-3 pb-[100px] relative overflow-hidden px-4 md:px-8 min-h-0">
               {/* Setas Flutuantes Laterais para Navegação Rápida em Telas Maiores */}
               {currentIdx > 0 && (
                 <button
@@ -613,7 +597,7 @@ const AprenderAula = () => {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -direction * 35 }}
                     transition={{ duration: 0.28, ease: [0.25, 1, 0.5, 1] }}
-                    className="flex-1 flex flex-col overflow-hidden select-text relative z-10"
+                    className="flex-1 flex flex-col overflow-hidden select-text relative z-10 min-h-0"
                   >
                     {/* Conteúdo com scroll interno delimitado à página atual */}
                     <div

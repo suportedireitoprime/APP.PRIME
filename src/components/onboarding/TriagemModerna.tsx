@@ -152,12 +152,12 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
   const draft = React.useMemo(() => loadTriagemDraft(), []);
 
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(draft?.step ?? 1);
-  const [persona, setPersona] = useState<'faculdade' | 'oab' | 'concurso' | 'advogado'>(draft?.persona ?? 'oab');
-  const [dores, setDores] = useState<string[]>(draft?.dores ?? ['leis-desatualizadas', 'lei-dificil']);
-  const [areas, setAreas] = useState<string[]>(draft?.areas ?? ['Direito Constitucional', 'Direito Penal', 'Direito Civil']);
+  const [persona, setPersona] = useState<'faculdade' | 'oab' | 'concurso' | 'advogado' | null>(draft?.persona ?? null);
+  const [dores, setDores] = useState<string[]>(draft?.dores ?? []);
+  const [areas, setAreas] = useState<string[]>(draft?.areas ?? []);
   const [nome, setNome] = useState(draft?.nome ?? initialName);
   const [whatsapp, setWhatsapp] = useState(draft?.whatsapp ?? '');
-  const [faixa, setFaixa] = useState(draft?.faixa ?? '25 a 30 anos');
+  const [faixa, setFaixa] = useState(draft?.faixa ?? '');
   const [calculatingPhase, setCalculatingPhase] = useState(0);
 
   // Salva rascunho temporário no sessionStorage para evitar perda em rotação/split-screen
@@ -183,9 +183,9 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
       haptic.success();
       const selectedPersonaObj = PERSONAS.find(p => p.id === persona);
       onComplete({
-        persona,
+        persona: persona || 'oab',
         personaLabel: selectedPersonaObj?.label || 'Direito',
-        faixa,
+        faixa: faixa || '25 a 30 anos',
         nome: nome.trim() || 'Doutor(a)',
         areas: areas.length > 0 ? areas : ['Direito Constitucional'],
         interesses: ['leis', 'leis-comentadas', 'questoes', 'resumos'],
@@ -240,14 +240,17 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
     );
   };
 
+  const canContinue = 
+    (step === 1 && persona !== null) ||
+    (step === 2 && dores.length > 0) ||
+    (step === 3 && areas.length > 0) ||
+    (step === 4 && nome.trim().length > 0 && faixa !== '');
+
   const nextStep = React.useCallback(() => {
-    if (step === 3 && areas.length === 0) {
-      toast.error('Selecione ao menos 1 matéria prioritária para continuar.');
-      return;
-    }
+    if (!canContinue) return;
     haptic.impact('light');
     setStep(prev => (Math.min(prev + 1, 5) as 1 | 2 | 3 | 4 | 5));
-  }, [step, areas.length]);
+  }, [step, canContinue]);
 
   const prevStep = React.useCallback(() => {
     haptic.impact('light');
@@ -319,13 +322,13 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
             </div>
           )}
 
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-display font-black tracking-widest uppercase text-white/90">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-bold tracking-widest uppercase text-white/90">
             <Sparkles className="w-3.5 h-3.5 text-primary" />
             <span>DIREITO PRIME PRO</span>
           </div>
 
           <div className="text-right">
-            <span className="font-display font-black text-xs text-primary tracking-wider">
+            <span className="font-bold text-xs text-primary tracking-wider">
               {step < 5 ? `${step} / 4` : '100%'}
             </span>
           </div>
@@ -356,10 +359,10 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
               className="space-y-4 pt-2"
             >
               <div className="space-y-1 text-center">
-                <span className="text-[11px] font-display font-black tracking-widest text-primary uppercase">
+                <span className="text-[11px] font-bold tracking-widest text-primary uppercase">
                   ETAPA 1 • SEU MOMENTO ATUAL
                 </span>
-                <h1 className="text-2xl sm:text-3xl font-display font-black text-white leading-tight tracking-tight">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight tracking-tight">
                   Qual é o seu objetivo principal?
                 </h1>
                 <p className="text-xs sm:text-sm text-neutral-400 max-w-sm mx-auto leading-relaxed">
@@ -367,9 +370,8 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <div className="grid grid-cols-2 gap-2 sm:gap-3 pt-2">
                 {PERSONAS.map(p => {
-                  const Icon = p.icon;
                   const isSelected = persona === p.id;
                   return (
                     <button
@@ -379,26 +381,24 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                         haptic.selection();
                         setPersona(p.id);
                       }}
-                      className={`relative flex flex-col text-left p-3.5 rounded-2xl border-2 transition-all duration-200 overflow-hidden cursor-pointer active:scale-[0.98] ${
+                      className={`relative flex flex-col text-left p-0 rounded-2xl border-2 transition-all duration-200 overflow-hidden cursor-pointer active:scale-[0.98] ${
                         isSelected
-                          ? 'border-primary bg-primary/10 shadow-[0_0_24px_rgba(224,31,71,0.25)] ring-1 ring-primary'
-                          : 'border-white/10 bg-neutral-900/60 hover:border-white/20'
+                          ? 'border-primary bg-primary/20 shadow-[0_0_24px_rgba(224,31,71,0.25)] ring-1 ring-primary'
+                          : 'border-transparent bg-neutral-900/60 hover:border-white/20'
                       }`}
                     >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-white">
-                          <Icon className="w-4 h-4" />
-                        </div>
-                        <span className="text-[9px] font-display font-black tracking-wider px-2 py-0.5 rounded-full bg-white/10 text-white/80 uppercase">
-                          {p.tag}
-                        </span>
-                      </div>
-
-                      <div className="relative w-full h-24 rounded-xl overflow-hidden mb-2.5">
+                      <div className="relative w-full h-28 sm:h-36 rounded-xl overflow-hidden">
                         <img src={p.cover} alt={p.label} className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
+                        
+                        <div className="absolute top-3 left-3 flex items-center gap-1.5">
+                          <span className="text-[7px] sm:text-[8px] font-bold tracking-widest px-1.5 py-0.5 rounded bg-black/40 backdrop-blur-md text-white/90 uppercase">
+                            {p.tag}
+                          </span>
+                        </div>
+
                         <div className="absolute bottom-1.5 left-2 right-2 flex items-center justify-between">
-                          <span className="font-display font-black text-xs text-white uppercase drop-shadow">
+                          <span className="font-bold text-[10px] sm:text-xs text-white uppercase drop-shadow">
                             {p.label}
                           </span>
                           {isSelected && (
@@ -408,10 +408,6 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                           )}
                         </div>
                       </div>
-
-                      <p className="text-[11px] text-neutral-400 line-clamp-2 leading-relaxed">
-                        {p.desc}
-                      </p>
                     </button>
                   );
                 })}
@@ -430,10 +426,10 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
               className="space-y-4 pt-2"
             >
               <div className="space-y-1 text-center">
-                <span className="text-[11px] font-display font-black tracking-widest text-primary uppercase">
+                <span className="text-[11px] font-bold tracking-widest text-primary uppercase">
                   ETAPA 2 • SEUS DESAFIOS
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-display font-black text-white leading-tight tracking-tight">
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight tracking-tight">
                   O que mais atrapalha seus estudos hoje?
                 </h2>
                 <p className="text-xs sm:text-sm text-neutral-400 max-w-sm mx-auto leading-relaxed">
@@ -450,38 +446,29 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                       key={d.id}
                       type="button"
                       onClick={() => toggleDor(d.id)}
-                      className={`w-full flex items-start gap-3.5 p-3.5 rounded-2xl border transition-all duration-200 text-left cursor-pointer active:scale-[0.99] ${
+                      className={`w-full flex items-center gap-3 p-2.5 sm:p-3 rounded-2xl border transition-all duration-200 text-left cursor-pointer active:scale-[0.99] ${
                         isSelected
                           ? 'border-emerald-500/70 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.15)]'
                           : 'border-white/10 bg-neutral-900/60 hover:border-white/20'
                       }`}
                     >
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
+                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
                         isSelected ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/30' : 'bg-white/10 text-white/80'
                       }`}>
-                        <Icon className="w-5 h-5" />
+                        <Icon className="w-4 h-4" />
                       </div>
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
-                          <h3 className="font-display font-bold text-sm text-white leading-snug">
+                          <h3 className="font-semibold text-[11px] sm:text-xs text-white/90 leading-snug">
                             {d.title}
                           </h3>
-                          <div className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-colors ${
+                          <div className={`w-4 h-4 rounded-md border flex items-center justify-center shrink-0 transition-colors ${
                             isSelected ? 'bg-emerald-500 border-emerald-400 text-white' : 'border-white/20'
                           }`}>
-                            {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                            {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
                           </div>
                         </div>
-                        <p className="text-xs text-neutral-400 mt-0.5 leading-relaxed">
-                          {d.desc}
-                        </p>
-                        {isSelected && (
-                          <div className="mt-1.5 inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-400">
-                            <Sparkles className="w-3 h-3 shrink-0" />
-                            <span>{d.beneficio}</span>
-                          </div>
-                        )}
                       </div>
                     </button>
                   );
@@ -501,10 +488,10 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
               className="space-y-4 pt-2"
             >
               <div className="space-y-1 text-center">
-                <span className="text-[11px] font-display font-black tracking-widest text-primary uppercase">
+                <span className="text-[11px] font-bold tracking-widest text-primary uppercase">
                   ETAPA 3 • MATÉRIAS PRIORITÁRIAS
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-display font-black text-white leading-tight tracking-tight">
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight tracking-tight">
                   Quais ramos você mais precisa estudar?
                 </h2>
                 <p className="text-xs sm:text-sm text-neutral-400 max-w-sm mx-auto leading-relaxed">
@@ -526,7 +513,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                           : 'border-white/10 bg-neutral-900/60 text-neutral-300 hover:border-white/20'
                       }`}
                     >
-                      <span className="font-display font-bold text-xs truncate pr-2">
+                      <span className="font-semibold text-xs truncate pr-2">
                         {area}
                       </span>
                       <span className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 text-[10px] ${
@@ -556,10 +543,10 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
               className="space-y-4 pt-2"
             >
               <div className="space-y-1 text-center">
-                <span className="text-[11px] font-display font-black tracking-widest text-primary uppercase">
+                <span className="text-[11px] font-bold tracking-widest text-primary uppercase">
                   ETAPA 4 • PERSONALIZAÇÃO
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-display font-black text-white leading-tight tracking-tight">
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight tracking-tight">
                   Seu espaço está quase pronto.
                 </h2>
                 <p className="text-xs sm:text-sm text-neutral-400 max-w-sm mx-auto leading-relaxed">
@@ -571,7 +558,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                 {/* Campo de Nome */}
                 <div className="space-y-1.5">
                   <label className="block text-xs font-semibold text-neutral-300">
-                    Seu nome ou como prefere ser chamado(a):
+                    Qual é o seu nome?
                   </label>
                   <div className="relative">
                     <User className="absolute left-3.5 top-3.5 w-5 h-5 text-neutral-400" />
@@ -579,35 +566,10 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                       type="text"
                       value={nome}
                       onChange={e => setNome(e.target.value)}
-                      placeholder="Ex: Dra. Juliana ou Carlos"
+                      placeholder="Seu nome"
                       className="w-full h-12 rounded-xl bg-neutral-900/80 border border-white/15 pl-11 pr-4 text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                     />
                   </div>
-                </div>
-
-                {/* Campo de WhatsApp (Opcional) */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-xs font-semibold text-neutral-300">
-                      WhatsApp para alertas de novas leis:
-                    </label>
-                    <span className="text-[10px] text-neutral-400 uppercase font-semibold">Opcional</span>
-                  </div>
-                  <div className="relative">
-                    <Phone className="absolute left-3.5 top-3.5 w-5 h-5 text-neutral-400" />
-                    <input
-                      type="tel"
-                      value={whatsapp}
-                      onChange={e => setWhatsapp(maskPhone(e.target.value))}
-                      placeholder="(11) 99999-9999"
-                      maxLength={15}
-                      className="w-full h-12 rounded-xl bg-neutral-900/80 border border-white/15 pl-11 pr-4 text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
-                    />
-                  </div>
-                  <p className="text-[10px] text-neutral-500 flex items-center gap-1.5 pl-1">
-                    <Lock className="w-3 h-3" />
-                    <span>Seus dados ficam 100% seguros. Não enviamos spam.</span>
-                  </p>
                 </div>
 
                 {/* Faixa Etária */}
@@ -655,12 +617,12 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                   transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
                 />
                 <div className="absolute inset-2 rounded-full bg-neutral-900 border border-white/10 flex items-center justify-center shadow-2xl">
-                  <Sparkles className="w-9 h-9 text-primary animate-pulse" />
+                  <img src={horusAsset} alt="Horus" className="w-10 h-10 object-contain drop-shadow-md animate-pulse" />
                 </div>
               </div>
 
               <div className="space-y-2 max-w-sm">
-                <h3 className="font-display font-black text-2xl text-white tracking-wide uppercase">
+                <h3 className="font-extrabold text-xl sm:text-2xl text-white tracking-wide uppercase">
                   Personalizando Seu Espaço...
                 </h3>
                 <AnimatePresence mode="wait">
@@ -693,21 +655,27 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
       </main>
 
       {/* Footer Fixo com Botão de Ação */}
-      {step < 5 && (
-        <footer className="fixed bottom-0 inset-x-0 z-30 p-4 bg-gradient-to-t from-[#0A0C10] via-[#0A0C10]/95 to-transparent pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
-          <div className="max-w-xl mx-auto w-full">
-            <button
-              type="button"
-              onClick={nextStep}
-              disabled={step === 3 && areas.length === 0}
-              className={`btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl bg-primary text-primary-foreground font-display font-black text-base tracking-wider uppercase flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-[0_8px_30px_rgba(224,31,71,0.35)] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none`}
-            >
-              <span>{step === 4 ? 'FINALIZAR E LIBERAR ACESSO' : 'CONTINUAR'}</span>
-              <ArrowRight className="w-5 h-5 stroke-[2.5]" />
-            </button>
-          </div>
-        </footer>
-      )}
+      <AnimatePresence>
+        {step < 5 && canContinue && (
+          <motion.footer 
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-0 inset-x-0 z-30 p-4 bg-gradient-to-t from-[#0A0C10] via-[#0A0C10]/95 to-transparent pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]"
+          >
+            <div className="max-w-xl mx-auto w-full">
+              <button
+                type="button"
+                onClick={nextStep}
+                className={`btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl bg-primary text-primary-foreground font-bold text-base tracking-wider uppercase flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-[0_8px_30px_rgba(224,31,71,0.35)] cursor-pointer`}
+              >
+                <span>{step === 4 ? 'FINALIZAR E LIBERAR ACESSO' : 'CONTINUAR'}</span>
+                <ArrowRight className="w-5 h-5 stroke-[2.5]" />
+              </button>
+            </div>
+          </motion.footer>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
