@@ -421,6 +421,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
                 )}
               </div>
             )}
+          </div>
         </div>
       </section>
 
