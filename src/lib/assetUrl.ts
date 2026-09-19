@@ -12,7 +12,7 @@ import { Capacitor } from '@capacitor/core';
  */
 const CDN_HOST =
   (import.meta.env.VITE_LOVABLE_ASSETS_HOST as string | undefined)?.replace(/\/+$/, '') ||
-  'https://slide-canvas-magic-77.lovable.app';
+  'https://direitoprime.com.br';
 
 const isNative = (() => {
   try {

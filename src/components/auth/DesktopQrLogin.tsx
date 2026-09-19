@@ -11,7 +11,7 @@ import { callDesktopLink } from '@/lib/desktopLinkApi';
 // abre a rota /desktop-link/:token via deep link (Android App Links + intent
 // filter para direitoprime://). Sem o app, abre a mesma rota no navegador e a
 // versão web mostra o mesmo botão "Confirmar login".
-const APP_LINK_FALLBACK = 'https://present-whisper-glow.lovable.app';
+const APP_LINK_FALLBACK = 'https://direitoprime.com.br';
 
 /** Domínio que o celular vai abrir — usa a própria origem do desktop quando possível. */
 function appLinkBase(): string {

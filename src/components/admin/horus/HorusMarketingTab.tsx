@@ -47,7 +47,7 @@ const TEMPLATES: Template[] = [
     color: '#DC2626',
     titulo: 'Bora manter a sequência',
     publico_alvo: 'all',
-    mensagem: '🔥 E aí, {{nome}}!\n\nTua constância nos estudos tá impressionante. Não perde o ritmo hoje!\n\nQue tal *10 minutinhos* revisando o que viu ontem? Já ajuda muito a fixar.\n\nAbre o app e continua de onde parou 👇\nhttps://vade-mecum-brilhante.lovable.app',
+    mensagem: '🔥 E aí, {{nome}}!\n\nTua constância nos estudos tá impressionante. Não perde o ritmo hoje!\n\nQue tal *10 minutinhos* revisando o que viu ontem? Já ajuda muito a fixar.\n\nAbre o app e continua de onde parou 👇\nhttps://direitoprime.com.br',
   },
   {
     id: 'novidade-lei',
@@ -57,7 +57,7 @@ const TEMPLATES: Template[] = [
     color: '#3B82F6',
     titulo: 'Nova lei no radar',
     publico_alvo: 'all',
-    mensagem: '📢 Alerta legislativo, {{nome}}!\n\nUma nova lei foi publicada e pode impactar teus estudos.\n\n*Confere agora* pra ficar por dentro antes da galera:\nhttps://vade-mecum-brilhante.lovable.app\n\nQualquer dúvida, é só me perguntar por aqui 😉',
+    mensagem: '📢 Alerta legislativo, {{nome}}!\n\nUma nova lei foi publicada e pode impactar teus estudos.\n\n*Confere agora* pra ficar por dentro antes da galera:\nhttps://direitoprime.com.br\n\nQualquer dúvida, é só me perguntar por aqui 😉',
   },
   {
     id: 'promo-premium',
@@ -67,7 +67,7 @@ const TEMPLATES: Template[] = [
     color: '#A855F7',
     titulo: 'Oferta especial Premium',
     publico_alvo: 'free',
-    mensagem: '👑 {{nome}}, oferta exclusiva pra você!\n\nQuer *acesso ilimitado* a:\n• Todos os resumos jurídicos\n• Videoaulas premium\n• Narrações dos artigos\n• Sem anúncios\n\n🎁 Assina agora com condição especial:\nhttps://vade-mecum-brilhante.lovable.app\n\nDúvidas? Manda aqui!',
+    mensagem: '👑 {{nome}}, oferta exclusiva pra você!\n\nQuer *acesso ilimitado* a:\n• Todos os resumos jurídicos\n• Videoaulas premium\n• Narrações dos artigos\n• Sem anúncios\n\n🎁 Assina agora com condição especial:\nhttps://direitoprime.com.br\n\nDúvidas? Manda aqui!',
   },
   {
     id: 'retomar-leitura',
@@ -77,7 +77,7 @@ const TEMPLATES: Template[] = [
     color: '#10B981',
     titulo: 'Aquele livro tá te esperando',
     publico_alvo: 'all',
-    mensagem: '📖 Ei {{nome}}!\n\nAquele livro que você começou tá esperando você voltar 😊\n\nSó *10 páginas por dia* e em pouco tempo você termina. Bora?\n\nAbre pelo app e continua de onde parou 👇\nhttps://vade-mecum-brilhante.lovable.app',
+    mensagem: '📖 Ei {{nome}}!\n\nAquele livro que você começou tá esperando você voltar 😊\n\nSó *10 páginas por dia* e em pouco tempo você termina. Bora?\n\nAbre pelo app e continua de onde parou 👇\nhttps://direitoprime.com.br',
   },
   {
     id: 'dica-estudo',
@@ -97,7 +97,7 @@ const TEMPLATES: Template[] = [
     color: 'hsl(348 78% 38%)',
     titulo: 'Seu Premium está acabando',
     publico_alvo: 'premium',
-    mensagem: '⏰ Oi {{nome}}!\n\nTeu plano Premium tá chegando ao fim em breve.\n\nRenova agora pra continuar aproveitando:\n• Resumos ilimitados\n• Videoaulas exclusivas\n• Narrações completas\n\n👉 https://vade-mecum-brilhante.lovable.app\n\nQualquer dúvida, tô por aqui!',
+    mensagem: '⏰ Oi {{nome}}!\n\nTeu plano Premium tá chegando ao fim em breve.\n\nRenova agora pra continuar aproveitando:\n• Resumos ilimitados\n• Videoaulas exclusivas\n• Narrações completas\n\n👉 https://direitoprime.com.br\n\nQualquer dúvida, tô por aqui!',
   },
   {
     id: 'em-branco',

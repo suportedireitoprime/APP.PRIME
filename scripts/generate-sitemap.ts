@@ -2,7 +2,7 @@
 import { writeFileSync } from "fs";
 import { resolve } from "path";
 
-const BASE_URL = "https://slide-canvas-magic-77.lovable.app";
+const BASE_URL = "https://direitoprime.com.br";
 
 interface SitemapEntry {
   path: string;

@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://slide-canvas-magic-77.lovable.app/sitemap.xml
+Sitemap: https://direitoprime.com.br/sitemap.xml
