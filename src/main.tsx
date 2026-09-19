@@ -24,26 +24,7 @@ function preloadImage(url: string) {
 preloadImage(primeLogoUrl);
 preloadImage(horusOwlUrl);
 
-// Monkey-patch no window.scrollTo para compatibilidade com o lock do viewport no iOS/Mobile.
-// Como movemos o scroll principal do <body> para a div #root para ocultar a barra branca nativa,
-// precisamos redirecionar as chamadas window.scrollTo({top: 0}) para o #root.
-const originalScrollTo = window.scrollTo;
-window.scrollTo = function(...args: any[]) {
-  const root = document.getElementById("root");
-  if (root) {
-    if (args.length === 1 && typeof args[0] === 'object' && args[0] !== null) {
-      root.scrollTo(args[0]);
-    } else if (args.length === 2 && typeof args[0] === 'number' && typeof args[1] === 'number') {
-      root.scrollTo(args[0], args[1]);
-    } else {
-      root.scrollTop = 0;
-    }
-  } else {
-    if (args.length > 0) {
-      (originalScrollTo as any).apply(window, args);
-    }
-  }
-};
+
 
 createRoot(document.getElementById("root")!).render(<App />);
 
