@@ -43,6 +43,89 @@ export const getAtoInfo = (idx: number, totalSlides: number) => {
   return { numero: 3, nome: 'Ato III · Fixação Ativa', cor: 'text-emerald-400', badgeBg: 'bg-emerald-500/10 border-emerald-500/20' };
 };
 
+const GeneratingScreen = () => {
+  const [progress, setProgress] = useState(0);
+  const [step, setStep] = useState(0);
+
+  const steps = [
+    'Buscando referências na base...',
+    'Analisando legislação e jurisprudência...',
+    'Gerando conteúdo estruturado...',
+    'Montando exercícios de fixação...',
+    'Finalizando os últimos detalhes...',
+  ];
+
+  useEffect(() => {
+    // Fake progress até 95% ou 99% em ~12 segundos
+    const duration = 12000;
+    const interval = 100;
+    const increment = 95 / (duration / interval);
+    
+    const timer = setInterval(() => {
+      setProgress(p => {
+        const next = p + increment;
+        return next > 95 ? 95 : next;
+      });
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    if (progress < 15) setStep(0);
+    else if (progress < 35) setStep(1);
+    else if (progress < 60) setStep(2);
+    else if (progress < 85) setStep(3);
+    else setStep(4);
+  }, [progress]);
+
+  return (
+    <div className="min-h-screen bg-[#0D0D0D] p-6 text-center flex items-center justify-center flex-col gap-8 relative overflow-hidden">
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
+        <ShapeGrid
+          speed={0.5}
+          squareSize={40}
+          direction="diagonal"
+          borderColor="rgba(255, 255, 255, 0.04)"
+          hoverFillColor="rgba(255, 255, 255, 0.08)"
+          shape="square"
+          hoverTrailAmount={5}
+        />
+      </div>
+
+      <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center animate-pulse shadow-[0_0_20px_hsl(var(--primary)/0.25)] relative z-10">
+        <BookOpen className="w-8 h-8 text-primary" />
+      </div>
+      
+      <div className="max-w-xs w-full space-y-4 relative z-10">
+        <h2 className="text-xl font-bold text-white mb-8 font-legal tracking-tight">Preparando sua aula</h2>
+        
+        <div className="space-y-4 text-left mb-8">
+          {steps.map((s, i) => (
+            <div key={i} className={`flex items-center gap-3 text-[13px] font-medium transition-all duration-300 ${i === step ? 'text-white' : i < step ? 'text-emerald-400' : 'text-neutral-600'}`}>
+              {i < step ? (
+                 <CheckCircle2 className="w-[18px] h-[18px] text-emerald-400 shrink-0" />
+              ) : i === step ? (
+                 <div className="w-[18px] h-[18px] rounded-full border-2 border-primary border-t-transparent animate-spin shrink-0" />
+              ) : (
+                 <div className="w-[18px] h-[18px] rounded-full border-2 border-neutral-700 shrink-0" />
+              )}
+              <span className="leading-snug">{s}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="pt-4">
+          <div className="h-1.5 w-full bg-neutral-800 rounded-full overflow-hidden shadow-inner">
+             <div className="h-full bg-primary transition-all duration-100 ease-out" style={{ width: `${progress}%` }} />
+          </div>
+          <p className="text-[11px] font-bold text-neutral-500 mt-2 text-right">{Math.round(progress)}%</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const AprenderAula = () => {
   useTrackArea("aprender_aula_iniciada");
   const navigate = useNavigate();
@@ -297,12 +380,7 @@ const AprenderAula = () => {
   }, [currentIdx, total, podeAvancar, goToPage, feedbackPergunta, sumarioOpen, blocos, flipped, playFlipSound, setFlipped, avaliarFlashcard]);
 
   if (isGenerating) {
-    return (
-      <div className="min-h-screen bg-[#0D0D0D] p-6 text-center flex items-center justify-center flex-col gap-4">
-        <Brain className="w-12 h-12 text-primary animate-pulse" />
-        <p className="text-neutral-400 text-lg">Aguarde, a IA está estruturando sua aula...</p>
-      </div>
-    );
+    return <GeneratingScreen />;
   }
 
   if (loading) {
