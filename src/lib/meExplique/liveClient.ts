@@ -288,7 +288,20 @@ export class SessaoMeExplique {
         // setup completo devolvido pela edge function.
         // O BidiGenerateContent em v1alpha exige o sufixo -exp ou -alpha para o modelo 2.0
         let modelId = this.opcoes.modelo;
-        const setup = this.opcoes.setup ?? { model: `models/${modelId}` };
+        const setup: any = this.opcoes.setup ?? { model: `models/${modelId}` };
+        
+        // Força voz masculina (Charon)
+        setup.generationConfig = {
+          ...setup.generationConfig,
+          speechConfig: {
+            voiceConfig: {
+              prebuiltVoiceConfig: {
+                voiceName: "Charon"
+              }
+            }
+          }
+        };
+
         console.log('[MeExplique] Setup payload:', JSON.stringify(setup).slice(0, 300));
         ws.send(JSON.stringify({ setup }));
       };

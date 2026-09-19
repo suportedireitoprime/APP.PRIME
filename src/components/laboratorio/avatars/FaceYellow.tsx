@@ -118,7 +118,7 @@ export const FaceYellow = ({ viseme, volume }: { viseme: string; volume: number 
         <circle cx="50" cy="50" r="45" fill="url(#skinYellow)" />
         
         {/* Peruca de Juiz (Magistrate Wig) */}
-        <g className="transition-transform duration-100" style={{ transform: `translateY(${-35 + volume * 4}px) scale(1.15) rotate(${volume * 3}deg)`, transformOrigin: '50px 30px' }}>
+        <g className="transition-transform duration-100" style={{ transform: `translateY(${-40 + volume * 4}px) scale(1.35) rotate(${volume * 3}deg)`, transformOrigin: '50px 30px' }}>
           {/* Base da peruca */}
           <path d="M 15 50 Q 10 20 50 10 Q 90 20 85 50 Q 80 65 75 60 L 75 40 Q 50 25 25 40 L 25 60 Q 20 65 15 50 Z" fill="#f5f5f5" />
           {/* Rolos laterais esquerdos */}
@@ -159,7 +159,7 @@ export const FaceYellow = ({ viseme, volume }: { viseme: string; volume: number 
         </g>
         
         {/* Boca 3 Camadas */}
-        <g className="transition-all duration-100">
+        <g>
           <path d={mouth.lips} fill="#3e2723" />
           <path d={mouth.opening} fill="#1a0000" />
           <path d={mouth.tongue} fill="#e57373" />

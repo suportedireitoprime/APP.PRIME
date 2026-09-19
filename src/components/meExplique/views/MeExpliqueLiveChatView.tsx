@@ -347,7 +347,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
 
       {/* ÁREA CENTRAL: O AVATAR E EFEITOS SONOROS */}
       <section className="relative z-10 flex flex-col items-center justify-end px-4 shrink-0 mt-auto pb-4">
-        <div className="relative flex items-end justify-center w-60 h-60 sm:w-72 sm:h-72 translate-y-4">
+        <div className="relative flex items-end justify-center w-52 h-52 sm:w-60 sm:h-60 translate-y-4">
           {/* Anéis de Ondas Sonoras Expansivas (Somente quando falando) */}
           <AnimatePresence>
             {status === 'falando' && (
@@ -428,7 +428,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
       {/* ÁREA DO CHAT: Transcrição em Tempo Real e Histórico de Conversa */}
       <section
         ref={chatScrollRef}
-        className="relative z-10 flex-1 px-4 py-2 overflow-y-auto space-y-3 scroll-smooth max-h-[35vh]"
+        className="relative z-10 flex-1 px-4 py-2 overflow-y-auto space-y-3 scroll-smooth max-h-[35vh] w-full md:max-w-xl md:mr-auto md:ml-4 lg:ml-8"
       >
         {falas.length === 0 && !falaParcial && status === 'conectando' && (
           <div className="flex flex-col items-center justify-center h-full text-center p-6 space-y-2 text-zinc-500">
@@ -499,45 +499,47 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
       </section>
 
       {/* RODAPÉ: Chips com Sugestões, Microfone e Input de Texto */}
-      <footer className="relative z-20 bg-zinc-950/90 border-t border-white/10 px-3 pt-2 pb-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] space-y-2 backdrop-blur-md">
-        {/* Sugestões Rápidas em Carrossel Horizontal */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-          {sugestoes.map((sug, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => handleEnviarMensagem(sug)}
-              className="shrink-0 px-3 py-1.5 rounded-xl bg-zinc-900 border border-white/10 text-[11px] font-medium text-zinc-300 hover:text-white hover:border-amber-500/40 active:scale-95 transition-all cursor-pointer shadow-sm"
-            >
-              <Sparkles className="w-3 h-3 inline mr-1 text-amber-400" />
-              {sug}
-            </button>
-          ))}
-        </div>
+      <footer className="relative z-20 bg-zinc-950/90 border-t border-white/10 px-3 pt-2 pb-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] backdrop-blur-md">
+        <div className="w-full md:max-w-xl md:mr-auto md:ml-1 lg:ml-5 space-y-2">
+          {/* Sugestões Rápidas em Carrossel Horizontal */}
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+            {sugestoes.map((sug, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => handleEnviarMensagem(sug)}
+                className="shrink-0 px-3 py-1.5 rounded-xl bg-zinc-900 border border-white/10 text-[11px] font-medium text-zinc-300 hover:text-white hover:border-amber-500/40 active:scale-95 transition-all cursor-pointer shadow-sm"
+              >
+                <Sparkles className="w-3 h-3 inline mr-1 text-amber-400" />
+                {sug}
+              </button>
+            ))}
+          </div>
 
-        {/* Linha de Controle: Campo de Digitação */}
-        <div className="flex items-center gap-2">
-          {/* Input de Texto para quem prefere digitar ou enviar pergunta complementar */}
-          <div className="relative flex-1 flex items-center">
-            <input
-              type="text"
-              value={inputTexto}
-              onChange={(e) => setInputTexto(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleEnviarMensagem();
-              }}
-              placeholder="Fale no microfone ou digite aqui..."
-              className="w-full h-12 rounded-2xl bg-zinc-900 border border-white/10 pl-4 pr-12 text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500/50"
-            />
-            <button
-              type="button"
-              onClick={() => handleEnviarMensagem()}
-              disabled={!inputTexto.trim()}
-              className="absolute right-2 w-8 h-8 rounded-xl bg-amber-500 disabled:opacity-30 text-black flex items-center justify-center active:scale-95 transition-all cursor-pointer"
-              aria-label="Enviar"
-            >
-              <Send className="w-4 h-4" />
-            </button>
+          {/* Linha de Controle: Campo de Digitação */}
+          <div className="flex items-center gap-2">
+            {/* Input de Texto para quem prefere digitar ou enviar pergunta complementar */}
+            <div className="relative flex-1 flex items-center">
+              <input
+                type="text"
+                value={inputTexto}
+                onChange={(e) => setInputTexto(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleEnviarMensagem();
+                }}
+                placeholder="Fale no microfone ou digite aqui..."
+                className="w-full h-12 rounded-2xl bg-zinc-900 border border-white/10 pl-4 pr-12 text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500/50"
+              />
+              <button
+                type="button"
+                onClick={() => handleEnviarMensagem()}
+                disabled={!inputTexto.trim()}
+                className="absolute right-2 w-8 h-8 rounded-xl bg-amber-500 disabled:opacity-30 text-black flex items-center justify-center active:scale-95 transition-all cursor-pointer"
+                aria-label="Enviar"
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </footer>
