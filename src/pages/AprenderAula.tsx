@@ -297,7 +297,12 @@ const AprenderAula = () => {
   }, [currentIdx, total, podeAvancar, goToPage, feedbackPergunta, sumarioOpen, blocos, flipped, playFlipSound, setFlipped, avaliarFlashcard]);
 
   if (isGenerating) {
-    return <LoadingAula />;
+    return (
+      <div className="min-h-screen bg-[#0D0D0D] p-6 text-center flex items-center justify-center flex-col gap-4">
+        <Brain className="w-12 h-12 text-primary animate-pulse" />
+        <p className="text-neutral-400 text-lg">Aguarde, a IA está estruturando sua aula...</p>
+      </div>
+    );
   }
 
   if (loading) {

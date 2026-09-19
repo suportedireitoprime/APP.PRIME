@@ -7,15 +7,21 @@ import HomeTresPoderes from './HomeTresPoderes';
 import HomeLeiSecaBar from './HomeLeiSecaBar';
 import HomeApresentacoesTimeline from './HomeApresentacoesTimeline';
 import { toast } from '@/hooks/use-toast';
-const HomeNoticiasCarousel = lazyWithRetry(() => import('@/components/vademecum/home/HomeNoticiasCarousel'));
-const HomeLivrosCarousel = lazyWithRetry(() => import('@/components/ferramentas/FerramentasLivrosCarrossel'));
+import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
+import HomeLivrosCarousel from '@/components/ferramentas/FerramentasLivrosCarrossel';
 const HomeAprenderCarousel = lazyWithRetry(() => import('@/components/vademecum/home/aprender/HomeAprenderCarousel'));
 import { AprenderCarouselSkeleton } from '@/components/vademecum/home/aprender/chunks';
 import { GRID_CATS, EMALTA_CATS, Cat } from './homeSectionsData';
 import { useState } from 'react';
 
-// Variável fora do ciclo de vida para alternar sempre que o componente montar novamente (ex: voltou de uma aba)
-let nextTopCarousel: 'noticias' | 'livros' = 'noticias';
+// Função para decidir e persistir o carrossel no localStorage para evitar trocas erráticas
+function getAndToggleCarouselType(): 'noticias' | 'livros' {
+  const saved = localStorage.getItem('app_next_top_carousel') as 'noticias' | 'livros' | null;
+  const current = saved === 'livros' ? 'livros' : 'noticias';
+  const next = current === 'noticias' ? 'livros' : 'noticias';
+  localStorage.setItem('app_next_top_carousel', next);
+  return current;
+}
 
 interface HomeTabEstudosProps {
   emAltaLeis?: boolean;
@@ -41,9 +47,7 @@ const HomeTabEstudos = ({
   const navigate = useNavigate();
 
   const [topCarousel] = useState<'noticias' | 'livros'>(() => {
-    const current = nextTopCarousel;
-    nextTopCarousel = current === 'noticias' ? 'livros' : 'noticias';
-    return current;
+    return getAndToggleCarouselType();
   });
 
   return (
