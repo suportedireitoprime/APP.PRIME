@@ -101,19 +101,23 @@ const BibliotecaHero = ({ children }: Props) => {
 
       {/* Conteúdo idêntico à altura da Home */}
       <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[100px]">
-        <div className="flex flex-col px-4 sm:px-6">
-          <div className="flex items-center gap-2 mb-1.5 opacity-90 drop-shadow-sm">
-            <span className="text-[10px] font-extrabold uppercase tracking-[0.25em] text-white/80">
-              ACERVO DIGITAL
-            </span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-black text-white leading-none tracking-tight drop-shadow-md">
-            BIBLIOTECA <br />
-            <span className="text-white/90">PRIME</span>
+        <div className="flex flex-col items-center text-center gap-1 z-[10] relative w-[42%] max-w-[160px] ml-2 sm:ml-4">
+          {/* Espaçador invisível para simular a altura da Logo e manter alinhamento vertical exato com a Home */}
+          <div className="h-[75px] mb-1 w-full" />
+          
+          <h1 className="font-serif italic text-white text-[18px] sm:text-[20px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] whitespace-nowrap">
+            Biblioteca Jurídica
           </h1>
-          <p className="mt-2 text-xs sm:text-sm text-white/80 font-medium max-w-[200px] leading-snug drop-shadow-sm">
-            Todas as leis, códigos e trilhas de estudos organizadas para você.
+          <p className="font-body text-white/95 text-[9px] sm:text-[10px] font-bold tracking-[0.25em] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mt-1">
+            ACERVO COMPLETO
           </p>
+          
+          <div className="mt-3 flex items-center text-left gap-2 w-full justify-center">
+            <div className="w-[2px] h-7 bg-white/40 rounded-full shrink-0" />
+            <p className="font-serif italic text-white/80 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+              Leis, códigos e<br/>trilhas de estudo.
+            </p>
+          </div>
         </div>
       </div>
 
