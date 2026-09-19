@@ -68,35 +68,36 @@ export const FaceYellow = ({ viseme, volume }: { viseme: string; volume: number 
         </g>
       </g>
 
-      {/* Braço Direito (Segurando Martelo da Justiça) */}
+      {/* Braço Direito (Segurando Martelo da Justiça de forma frontal) */}
       <g className="transition-transform duration-100" style={{ transform: `rotate(${-volume * 15}deg)`, transformOrigin: '65px 100px' }}>
-        {/* Manga */}
-        <path d="M 65 90 Q 90 100 82 125" fill="none" stroke="#212121" strokeWidth="16" strokeLinecap="round" />
+        {/* Manga (Dobrada para frente) */}
+        <path d="M 65 95 Q 100 95 90 125" fill="none" stroke="#212121" strokeWidth="18" strokeLinecap="round" />
         
         {/* Mão Direita e Martelo */}
-        <g style={{ transform: `translateY(${-volume * 5}px) rotate(${volume * 30}deg)`, transition: 'transform 0.1s', transformOrigin: '80px 125px' }}>
+        <g style={{ transform: `translateY(${-volume * 5}px) rotate(${volume * 30}deg)`, transition: 'transform 0.1s', transformOrigin: '90px 125px' }}>
           
-          {/* Cabo do Martelo */}
-          <rect x="78" y="100" width="6" height="40" rx="2" fill="#795548" transform="rotate(-20 80 120)" />
+          {/* Cabo do Martelo (em um ângulo mais natural) */}
+          <rect x="85" y="90" width="8" height="45" rx="3" fill="#795548" transform="rotate(15 89 112)" />
           {/* Cabeça do Martelo */}
-          <g transform="rotate(-20 80 120)">
-            <rect x="68" y="95" width="26" height="12" rx="2" fill="#5D4037" />
-            <rect x="66" y="97" width="30" height="8" rx="1" fill="#4E342E" />
+          <g transform="rotate(15 89 112)">
+            <rect x="75" y="85" width="28" height="14" rx="3" fill="#5D4037" />
+            <rect x="73" y="88" width="32" height="8" rx="2" fill="#4E342E" />
           </g>
 
-          {/* Mão (Luva Branca) segurando o cabo */}
-          <circle cx="82" cy="120" r="9" fill="#ffffff" />
-          {/* Dedos envolvendo o cabo */}
-          <rect x="75" y="115" width="12" height="5" rx="2.5" fill="#ffffff" transform="rotate(-20 75 115)" />
-          <rect x="76" y="120" width="12" height="5" rx="2.5" fill="#ffffff" transform="rotate(-20 76 120)" />
-          <rect x="78" y="125" width="12" height="5" rx="2.5" fill="#ffffff" transform="rotate(-20 78 125)" />
+          {/* Mão (Luva Branca) segurando o cabo pela frente */}
+          <circle cx="90" cy="125" r="10" fill="#ffffff" />
           
-          {/* Polegar na frente */}
-          <ellipse cx="85" cy="116" rx="3.5" ry="6" fill="#ffffff" transform="rotate(10 85 116)" />
+          {/* Dedos dobrados na frente do cabo */}
+          <rect x="82" y="118" width="14" height="6" rx="3" fill="#ffffff" transform="rotate(15 82 118)" />
+          <rect x="83" y="124" width="14" height="6" rx="3" fill="#ffffff" transform="rotate(15 83 124)" />
+          <rect x="85" y="130" width="14" height="6" rx="3" fill="#ffffff" transform="rotate(15 85 130)" />
+          
+          {/* Polegar fechando a pegada, cruzando o cabo */}
+          <ellipse cx="96" cy="118" rx="4" ry="8" fill="#ffffff" transform="rotate(-30 96 118)" />
           
           {/* Punho */}
-          <ellipse cx="80" cy="130" rx="12" ry="5" fill="#e0e0e0" transform="rotate(-20 80 130)" />
-          <ellipse cx="81" cy="128" rx="12" ry="5" fill="#ffffff" transform="rotate(-20 81 128)" />
+          <ellipse cx="90" cy="138" rx="13" ry="5.5" fill="#e0e0e0" transform="rotate(15 90 138)" />
+          <ellipse cx="90" cy="135" rx="13" ry="5.5" fill="#ffffff" transform="rotate(15 90 135)" />
         </g>
       </g>
 

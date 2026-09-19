@@ -346,8 +346,8 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
       </header>
 
       {/* ÁREA CENTRAL: O AVATAR E EFEITOS SONOROS */}
-      <section className="relative z-10 flex flex-col items-center justify-end px-4 shrink-0 pb-0 mt-auto">
-        <div className="relative flex items-end justify-center w-56 h-56 sm:w-64 sm:h-64">
+      <section className="relative z-10 flex flex-col items-center justify-end px-4 shrink-0 mt-auto pb-4">
+        <div className="relative flex items-end justify-center w-60 h-60 sm:w-72 sm:h-72 translate-y-4">
           {/* Anéis de Ondas Sonoras Expansivas (Somente quando falando) */}
           <AnimatePresence>
             {status === 'falando' && (
@@ -394,11 +394,11 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
           <div className="relative w-full h-full z-10 flex items-end justify-center overflow-visible pb-2">
             <FaceYellow viseme={viseme} volume={volume} />
             
-            {/* Botão de Microfone Flutuante na barriga/pé do Avatar */}
+            {/* Botão de Microfone Centralizado na Toga do Avatar */}
             <button
               type="button"
               onClick={alternarMic}
-              className={`absolute bottom-4 sm:bottom-6 -right-2 sm:right-0 w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border shadow-2xl active:scale-95 transition-all cursor-pointer z-50 backdrop-blur-md ${
+              className={`absolute bottom-6 left-1/2 -translate-x-1/2 w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border shadow-2xl active:scale-95 transition-all cursor-pointer z-50 backdrop-blur-md ${
                 micAtivo
                   ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 hover:bg-emerald-500/30'
                   : 'bg-zinc-800/80 text-zinc-400 border-zinc-700'
@@ -421,47 +421,6 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
                 )}
               </div>
             )}
-          </div>
-        </div>
-
-        {/* Badge Informativo do Status da Voz */}
-        <div className="mt-2 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900/90 border border-white/10 shadow-lg">
-            <span
-              className={`w-2 h-2 rounded-full ${
-                status === 'falando'
-                  ? 'bg-amber-400 animate-ping'
-                  : status === 'ouvindo'
-                  ? 'bg-emerald-400 animate-pulse'
-                  : status === 'conectando'
-                  ? 'bg-yellow-400 animate-pulse'
-                  : 'bg-zinc-500'
-              }`}
-            />
-            <span className="text-[12px] font-bold text-white tracking-wide">
-              {status === 'falando'
-                ? 'Professor falando ao vivo...'
-                : status === 'ouvindo'
-                ? 'Ouvindo você... (fale ou pergunte)'
-                : status === 'conectando'
-                ? 'Iniciando áudio em tempo real...'
-                : status === 'erro'
-                ? 'Conexão interrompida'
-                : 'Sessão finalizada'}
-            </span>
-          </div>
-
-          {/* Miniatura do Livro se houver capa */}
-          {capa && (
-            <div className="flex items-center justify-center gap-2 mt-1.5 opacity-80">
-              <img
-                src={capa}
-                alt={contexto}
-                className="w-5 h-7 object-cover rounded shadow border border-white/20"
-              />
-              <span className="text-[11px] text-zinc-400 truncate max-w-[250px]">{contexto}</span>
-            </div>
-          )}
         </div>
       </section>
 
