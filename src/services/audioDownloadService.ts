@@ -67,8 +67,16 @@ export async function removeAllAudios() {
 }
 
 export async function estimateAudiosSize(): Promise<{ count: number; bytes: number }> {
-  const all: any[] = await db.narracoes.toArray().catch(() => []);
-  const bytes: number = all.reduce((sum: number, r: any) => sum + (r?.audioBlob?.size || 0), 0);
-  return { count: all.length, bytes };
+  let count = 0;
+  let bytes = 0;
+  try {
+    await db.narracoes.each((row: any) => {
+      count++;
+      if (row?.audioBlob?.size) bytes += row.audioBlob.size;
+    });
+  } catch (e) {
+    console.warn('[estimateAudiosSize] falhou', e);
+  }
+  return { count, bytes };
 }
 

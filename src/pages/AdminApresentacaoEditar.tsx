@@ -357,20 +357,27 @@ const AdminApresentacaoEditar = () => {
       },
     });
   };
+  const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const excluir = async (a: Apres) => {
+    if (loadingId) return;
+    setLoadingId(a.id);
     try {
       await call({ acao: 'apres-excluir', apresentacao_id: a.id });
       setLista((prev) => prev.filter((x) => x.id !== a.id));
       toast.success('Apresentação removida');
     } catch (e) { toast.error(e instanceof Error ? e.message : 'Erro'); }
+    finally { setLoadingId(null); }
   };
 
   const alternarPublicacao = async (a: Apres) => {
+    if (loadingId) return;
+    setLoadingId(a.id);
     try {
       await call({ acao: 'apres-publicar', apresentacao_id: a.id, publicada: !a.publicada });
       setLista((prev) => prev.map((x) => (x.id === a.id ? { ...x, publicada: !a.publicada } : x)));
     } catch (e) { toast.error(e instanceof Error ? e.message : 'Erro'); }
+    finally { setLoadingId(null); }
   };
 
   const pct = job ? Math.round((job.feitos / Math.max(job.total, 1)) * 100) : 0;
@@ -705,10 +712,10 @@ const AdminApresentacaoEditar = () => {
                   {[a.origem?.toUpperCase(), a.area, a.tema].filter(Boolean).join(' · ')} · {a.total_slides} slides · {a.status}
                 </span>
               </span>
-              <button onClick={() => alternarPublicacao(a)} className="p-2 text-muted-foreground hover:text-primary transition" aria-label="Publicar">
+              <button disabled={loadingId === a.id} onClick={() => alternarPublicacao(a)} className="p-2 text-muted-foreground hover:text-primary transition disabled:opacity-50" aria-label="Publicar">
                 {a.publicada ? <Eye className="w-4 h-4 text-primary" /> : <EyeOff className="w-4 h-4" />}
               </button>
-              <button onClick={() => excluir(a)} className="p-2 text-destructive hover:opacity-80 transition" aria-label="Excluir">
+              <button disabled={loadingId === a.id} onClick={() => excluir(a)} className="p-2 text-destructive hover:opacity-80 transition disabled:opacity-50" aria-label="Excluir">
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>

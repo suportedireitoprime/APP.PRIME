@@ -54,9 +54,10 @@ export function useAssistenteHorus() {
 
   useEffect(() => {
     let channel: ReturnType<typeof supabase.channel> | null = null;
+    let isMounted = true;
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user || !isMounted) return;
       channel = supabase
         .channel(`horus-whatsapp-user-${user.id}`)
         .on(
@@ -74,7 +75,10 @@ export function useAssistenteHorus() {
         )
         .subscribe();
     })();
-    return () => { if (channel) supabase.removeChannel(channel); };
+    return () => { 
+      isMounted = false;
+      if (channel) supabase.removeChannel(channel); 
+    };
   }, [loadStatus]);
 
   const prefs: NotifPrefs = useMemo(
