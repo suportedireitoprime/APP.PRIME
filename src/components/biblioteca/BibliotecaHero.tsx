@@ -168,27 +168,29 @@ const BibliotecaHero = ({ children }: Props) => {
         <div className="flex flex-col items-center text-center gap-1 z-[10] relative w-[48%] max-w-[200px] ml-2 sm:ml-4">
           <div className="h-[65px] mb-1 w-full" />
           
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentPhil.name}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.6 }}
-              className="flex flex-col items-center w-full"
-            >
-              <h1 className="font-serif italic text-white text-[16px] sm:text-[18px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] whitespace-nowrap">
-                {currentPhil.name}
-              </h1>
-              
-              <div className="mt-2 flex items-center text-left gap-2 w-full justify-center">
-                <div className="w-[2px] h-auto self-stretch bg-white/40 rounded-full shrink-0 min-h-[24px]" />
-                <p className="font-serif italic text-white/90 text-[10px] sm:text-[11px] leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                  "{currentPhil.quote}"
-                </p>
-              </div>
-            </motion.div>
-          </AnimatePresence>
+          <div className="h-[90px] w-full flex flex-col items-center">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentPhil.name}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.6 }}
+                className="flex flex-col items-center w-full"
+              >
+                <h1 className="font-serif italic text-white text-[16px] sm:text-[18px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] whitespace-nowrap">
+                  {currentPhil.name}
+                </h1>
+                
+                <div className="mt-2 flex items-center text-left gap-2 w-full justify-center">
+                  <div className="w-[2px] h-auto self-stretch bg-white/40 rounded-full shrink-0 min-h-[24px]" />
+                  <p className="font-serif italic text-white/90 text-[10px] sm:text-[11px] leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                    "{currentPhil.quote}"
+                  </p>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
       </div>
 
