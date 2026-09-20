@@ -283,7 +283,7 @@ const MeuEspaco = () => {
         await syncQueue.enqueue({ kind: 'table.update', table: 'profiles', match: { id: user.id }, values: { bio: val } });
       } catch (e) { console.error("Falha syncQueue:", e); toast.error("Falha ao agendar edição offline."); }
     }
-    qc.invalidateQueries({ queryKey: ['profile-summary', user.id] });
+    qc.setQueryData(['profile-summary', user.id], (old: any) => old ? { ...old, bio: val } : old);
     haptic.success();
   };
 
@@ -307,7 +307,7 @@ const MeuEspaco = () => {
           await syncQueue.enqueue({ kind: 'table.update', table: 'profiles', match: { id: user.id }, values: { capa_id: id } });
         } catch (e) { console.error("Falha syncQueue:", e); toast.error("Falha ao agendar edição offline."); }
       }
-      qc.invalidateQueries({ queryKey: ['profile-summary', user.id] });
+      qc.setQueryData(['profile-summary', user.id], (old: any) => old ? { ...old, capaId: id } : old);
     }
   };
 

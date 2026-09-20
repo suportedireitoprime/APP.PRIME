@@ -112,14 +112,29 @@ export default function STFBiografias() {
     setSelectedMinistro(ministro);
     setLoadingDetails(true);
 
-    const { data } = await supabase
-      .from('stf_ministros')
-      .select('biografia, curriculo, artigos_revistas, livros, datas_historicas, diversos, dados_e_datas')
-      .eq('id', ministro.id)
-      .single();
+    let finalData: any = null;
+    try {
+      const { get, set } = await import('idb-keyval');
+      const cacheKey = `ministro_detalhes_${ministro.id}`;
+      const cached = await get(cacheKey);
+      if (cached) finalData = cached;
+      else {
+        const { data } = await supabase
+          .from('stf_ministros')
+          .select('biografia, curriculo, artigos_revistas, livros, datas_historicas, diversos, dados_e_datas')
+          .eq('id', ministro.id)
+          .single();
+        if (data) {
+          finalData = data;
+          await set(cacheKey, data);
+        }
+      }
+    } catch (e) {
+      console.warn("Offline cache fall:", e);
+    }
 
-    if (data) {
-      setSelectedMinistro(prev => prev ? { ...prev, ...data } : null);
+    if (finalData) {
+      setSelectedMinistro(prev => prev ? { ...prev, ...finalData } : null);
       setExpandedTimeline({});
     }
     setLoadingDetails(false);

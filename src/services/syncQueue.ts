@@ -63,8 +63,9 @@ async function applyOp(op: SyncOp): Promise<{ ok: true } | { ok: false; error: s
       return { ok: false, error: msg, permanent };
     }
     return { ok: true };
-  } catch (e: any) {
-    return { ok: false, error: String(e?.message ?? e) };
+  } catch (e: unknown) {
+    const err = e as { message?: string };
+    return { ok: false, error: String(err?.message ?? e) };
   }
 }
 

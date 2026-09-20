@@ -238,8 +238,9 @@ export async function startLeituraNativaPrefetch(opts?: { wifiOnly?: boolean }) 
     await Promise.all(Array.from({ length: CONC }, worker));
     await Preferences.set({ key: KEY_DONE, value: '1' });
     emit({ status: 'complete', done: alvos.length });
-  } catch (e: any) {
-    emit({ status: 'error', errorMsg: e?.message || 'erro' });
+  } catch (e: unknown) {
+    const err = e as { message?: string };
+    emit({ status: 'error', errorMsg: err?.message || 'erro' });
   } finally {
     running = false;
   }

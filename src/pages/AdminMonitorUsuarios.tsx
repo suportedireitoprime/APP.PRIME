@@ -106,22 +106,22 @@ const AdminMonitorUsuarios = () => {
     const [r5, rToday, rWeek, rMonth, rSignups, rTrial, rTotal, rPremium] = await Promise.all([
       supabase
         .from('user_activity_log')
-        .select('*')
+        .select('id, user_id, email, display_name, last_seen_at, os_name, os_version')
         .gte('last_seen_at', fiveMinAgo)
         .order('last_seen_at', { ascending: false }),
       supabase
         .from('user_activity_log')
-        .select('*')
+        .select('id, user_id, email, display_name, last_seen_at, os_name, os_version')
         .gte('last_seen_at', startOfDay.toISOString())
         .order('last_seen_at', { ascending: false }),
       supabase
         .from('user_activity_log')
-        .select('*')
+        .select('id, user_id, email, display_name, last_seen_at, os_name, os_version')
         .gte('last_seen_at', startOfWeek.toISOString())
         .order('last_seen_at', { ascending: false }),
       supabase
         .from('user_activity_log')
-        .select('*')
+        .select('id, user_id, email, display_name, last_seen_at, os_name, os_version')
         .gte('last_seen_at', startOfMonth.toISOString())
         .order('last_seen_at', { ascending: false }),
       supabase
