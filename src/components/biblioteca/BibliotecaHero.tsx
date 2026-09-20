@@ -115,7 +115,7 @@ const BibliotecaHero = ({ children }: Props) => {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1.2 }}
-          className="absolute right-0 md:right-[2%] bottom-0 h-[92%] sm:h-[95%] md:h-[100%] w-auto object-contain object-bottom z-0 pointer-events-none"
+          className="absolute top-0 bottom-0 right-0 h-full w-auto object-contain object-right-bottom z-0 pointer-events-none drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]"
         />
       </AnimatePresence>
 
