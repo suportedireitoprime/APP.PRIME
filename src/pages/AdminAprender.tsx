@@ -27,45 +27,46 @@ const AdminAprender = () => {
 
   useEffect(() => {
     if (!isAdmin) return;
-    (async () => {
-      // Base agora é LIVROS (biblioteca_estudos) → OCR (biblioteca_leitura_nativa)
-      // → sumário sugerido (aprender_sumario_sugerido) → aulas geradas.
-      const [livros, ocrRows, ocrConteudoMd, ocrConteudoRefinado, sugestoes, aulas] = await Promise.all([
-        fetchAllRows<{ id: string; area: string }>(() =>
-          supabase.from('biblioteca_estudos').select('id, area') as any,
-        ),
-        fetchAllRows<{ id: string; livro_id: string; livro_tabela: string; status: string; refino_status: string }>(() =>
-          supabase.from('biblioteca_leitura_nativa')
-            .select('id, livro_id, livro_tabela, status, refino_status')
-            .in('livro_tabela', ['biblioteca_estudos', 'areas']) as any,
-        ),
-        fetchAllRows<{ id: string }>(() =>
-          supabase.from('biblioteca_leitura_nativa')
-            .select('id')
-            .in('livro_tabela', ['biblioteca_estudos', 'areas'])
-            .not('conteudo_md', 'is', null) as any,
-        ),
-        fetchAllRows<{ id: string }>(() =>
-          supabase.from('biblioteca_leitura_nativa')
-            .select('id')
-            .in('livro_tabela', ['biblioteca_estudos', 'areas'])
-            .not('conteudo_md_refinado', 'is', null) as any,
-        ),
-        fetchAllRows<{ livro_id: string; aula_id: string | null }>(() =>
-          supabase.from('aprender_sumario_sugerido').select('livro_id, aula_id') as any,
-        ),
-        fetchAllRows<{ id: string; status: string; livro_origem_id: string | null }>(() =>
-          supabase.from('aprender_aulas').select('id, status, livro_origem_id') as any,
-        ),
-      ]);
+    const carregarEstatisticas = async () => {
+      try {
+        // Base agora é LIVROS (biblioteca_estudos) → OCR (biblioteca_leitura_nativa)
+        // → sumário sugerido (aprender_sumario_sugerido) → aulas geradas.
+        const [livros, ocrRows, ocrConteudoMd, ocrConteudoRefinado, sugestoes, aulas] = await Promise.all([
+          fetchAllRows<{ id: string; area: string }>(() =>
+            supabase.from('biblioteca_estudos').select('id, area') as Promise<{ data: { id: string; area: string }[] | null }>,
+          ),
+          fetchAllRows<{ id: string; livro_id: string; livro_tabela: string; status: string; refino_status: string }>(() =>
+            supabase.from('biblioteca_leitura_nativa')
+              .select('id, livro_id, livro_tabela, status, refino_status')
+              .in('livro_tabela', ['biblioteca_estudos', 'areas']) as Promise<{ data: { id: string; livro_id: string; livro_tabela: string; status: string; refino_status: string }[] | null }>,
+          ),
+          fetchAllRows<{ id: string }>(() =>
+            supabase.from('biblioteca_leitura_nativa')
+              .select('id')
+              .in('livro_tabela', ['biblioteca_estudos', 'areas'])
+              .not('conteudo_md', 'is', null) as Promise<{ data: { id: string }[] | null }>,
+          ),
+          fetchAllRows<{ id: string }>(() =>
+            supabase.from('biblioteca_leitura_nativa')
+              .select('id')
+              .in('livro_tabela', ['biblioteca_estudos', 'areas'])
+              .not('conteudo_md_refinado', 'is', null) as Promise<{ data: { id: string }[] | null }>,
+          ),
+          fetchAllRows<{ livro_id: string; aula_id: string | null }>(() =>
+            supabase.from('aprender_sumario_sugerido').select('livro_id, aula_id') as Promise<{ data: { livro_id: string; aula_id: string | null }[] | null }>,
+          ),
+          fetchAllRows<{ id: string; status: string; livro_origem_id: string | null }>(() =>
+            supabase.from('aprender_aulas').select('id, status, livro_origem_id') as Promise<{ data: { id: string; status: string; livro_origem_id: string | null }[] | null }>,
+          ),
+        ]);
 
       // OCR por livro base id, mapeando pra área via biblioteca_estudos
       const livroToArea = new Map<string, string>();
-      (livros ?? []).forEach((l: any) => livroToArea.set(l.id, l.area));
+      (livros ?? []).forEach((l: { id: string; area: string }) => livroToArea.set(l.id, l.area));
 
       const idsComConteudo = new Set([...ocrConteudoMd, ...ocrConteudoRefinado].map((r) => r.id));
       const ocrByLivro = new Map<string, { nativa_id: string; pronto: boolean }>();
-      (ocrRows ?? []).forEach((o: any) => {
+      (ocrRows ?? []).forEach((o: { id: string; livro_id: string; status: string; refino_status: string }) => {
         ocrByLivro.set(o.livro_id, {
           nativa_id: o.id,
           pronto: o.status === 'pronto' || o.refino_status === 'pronto' || idsComConteudo.has(o.id),
@@ -80,7 +81,7 @@ const AdminAprender = () => {
       });
 
       const aulaStatusById = new Map<string, string>();
-      (aulas ?? []).forEach((a: any) => aulaStatusById.set(a.id, a.status));
+      (aulas ?? []).forEach((a: { id: string; status: string }) => aulaStatusById.set(a.id, a.status));
 
       const byArea = new Map<string, AreaStat>();
       const ensure = (area: string) => {
@@ -92,14 +93,14 @@ const AdminAprender = () => {
         return cur;
       };
 
-      (livros ?? []).forEach((l: any) => {
+      (livros ?? []).forEach((l: { id: string; area: string }) => {
         const cur = ensure(l.area);
         cur.livros += 1;
         const ocr = ocrByLivro.get(l.id);
         if (ocr?.pronto) cur.ocrProntos += 1;
       });
 
-      (sugestoes ?? []).forEach((s: any) => {
+      (sugestoes ?? []).forEach((s: { livro_id: string; aula_id: string | null }) => {
         const area = nativaToArea.get(s.livro_id);
         if (!area) return;
         const cur = ensure(area);
@@ -112,7 +113,13 @@ const AdminAprender = () => {
 
       setStats(Array.from(byArea.values()).sort((a, b) => a.area.localeCompare(b.area)));
       setLoading(false);
-    })();
+      } catch (err) {
+        console.error('Erro ao carregar estatísticas:', err);
+        setLoading(false);
+      }
+    };
+    
+    void carregarEstatisticas();
   }, [isAdmin]);
 
   const filtered = useMemo(

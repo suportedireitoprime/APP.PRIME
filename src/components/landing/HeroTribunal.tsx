@@ -104,6 +104,8 @@ const HeroTribunal = ({ onAcessar, onConhecer }: Props) => {
             src={laurel}
             alt=""
             aria-hidden="true"
+            loading="lazy"
+            decoding="async"
             className="absolute top-0 lp-fall"
             style={{
               left: `${(i * 8.5 + 3) % 100}%`,
@@ -122,6 +124,8 @@ const HeroTribunal = ({ onAcessar, onConhecer }: Props) => {
         src={laurel}
         alt=""
         aria-hidden="true"
+        loading="lazy"
+        decoding="async"
         className="pointer-events-none absolute left-[7%] top-[26%] w-10 md:w-14 lp-float"
         style={{ transform: `translate(${parallax.x * 44}px, ${parallax.y * 22}px)`, opacity: 0.75 }}
       />
@@ -129,6 +133,8 @@ const HeroTribunal = ({ onAcessar, onConhecer }: Props) => {
         src={scales}
         alt=""
         aria-hidden="true"
+        loading="lazy"
+        decoding="async"
         className="pointer-events-none absolute right-[9%] top-[38%] w-12 md:w-20 lp-float"
         style={{
           transform: `translate(${parallax.x * 62}px, ${parallax.y * 30}px)`,
@@ -141,6 +147,8 @@ const HeroTribunal = ({ onAcessar, onConhecer }: Props) => {
         src={scales}
         alt=""
         aria-hidden="true"
+        loading="lazy"
+        decoding="async"
         className="pointer-events-none absolute bottom-[24%] left-[18%] w-8 md:w-12 lp-float"
         style={{
           transform: `translate(${parallax.x * 30}px, ${parallax.y * 16}px)`,

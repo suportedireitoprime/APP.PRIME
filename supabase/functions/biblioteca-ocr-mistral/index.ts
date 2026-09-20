@@ -101,10 +101,24 @@ serve(async (req) => {
 
     // Padrão: OCR (comportamento existente, retro-compatível)
     const body = raw as Body;
-    const { livro_id, livro_tabela, pdf_url, force, titulo } = body;
-    if (!livro_id || !livro_tabela || !pdf_url) {
+    const { livro_id, pdf_url, force, titulo } = body;
+    const rawTabela = body.livro_tabela;
+    if (!livro_id || !rawTabela || !pdf_url) {
       return json({ error: "livro_id, livro_tabela e pdf_url são obrigatórios" }, 400);
     }
+    const TABLE_MAP: Record<string, string> = {
+      areas: "biblioteca_estudos",
+      classicos: "biblioteca_classicos",
+      oab: "biblioteca_oab",
+      "fora-da-toga": "biblioteca_fora_da_toga",
+      fora_da_toga: "biblioteca_fora_da_toga",
+      lideranca: "biblioteca_lideranca",
+      portugues: "biblioteca_portugues",
+      pesquisa: "biblioteca_pesquisa_cientifica",
+      oratoria: "biblioteca_oratoria",
+    };
+    const livro_tabela = TABLE_MAP[rawTabela] || rawTabela;
+    body.livro_tabela = livro_tabela;
 
     // A abertura do leitor não pode ficar presa esperando OCR+upload+refino.
     // Disparamos a extração em background e respondemos 2xx rapidamente; o app

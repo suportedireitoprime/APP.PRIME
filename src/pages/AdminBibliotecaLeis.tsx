@@ -34,7 +34,7 @@ interface Snapshot {
   status: string;
   data_ultima_alteracao_detectada: string | null;
   verificado_em: string;
-  ultimo_diff: any;
+  ultimo_diff: Record<string, unknown> | null;
 }
 
 interface ImpactoRow {
@@ -78,29 +78,34 @@ export default function AdminBibliotecaLeis() {
     Object.values(concluidos).forEach(c => { m[c.slug] = c.artigos; });
     return m;
   }, [concluidos]);
-  const [verPreview, setVerPreview] = useState<{ slug: string; nome: string; artigos: any[] } | null>(null);
+  const [verPreview, setVerPreview] = useState<{ slug: string; nome: string; artigos: Record<string, unknown>[] } | null>(null);
   const [carregandoPreview, setCarregandoPreview] = useState(false);
 
 
   const load = async () => {
-    setLoading(true);
-    const [leisRes, snapsRes, impRes] = await Promise.all([
-      supabase.from('vade_mecum_leis').select('id, slug, nome, nome_curto, categoria, planalto_url, total_artigos, updated_at').order('categoria').order('ordem' as any),
-      supabase.from('vade_mecum_lei_snapshots' as any).select('*'),
-      supabase.from('radar_impactos_leis' as any)
-        .select('*, vade_mecum_leis(nome, slug)')
-        .order('created_at', { ascending: false })
-        .limit(100),
-    ]);
-    setLeis((leisRes.data as any) ?? []);
-    const map: Record<string, Snapshot> = {};
-    ((snapsRes.data as any[]) ?? []).forEach((s: any) => { map[s.lei_id] = s; });
-    setSnaps(map);
-    setImpactos((impRes.data as any) ?? []);
-    setLoading(false);
+    try {
+      setLoading(true);
+      const [leisRes, snapsRes, impRes] = await Promise.all([
+        supabase.from('vade_mecum_leis').select('id, slug, nome, nome_curto, categoria, planalto_url, total_artigos, updated_at').order('categoria').order('ordem' as any),
+        supabase.from('vade_mecum_lei_snapshots' as any).select('*'),
+        supabase.from('radar_impactos_leis' as any)
+          .select('*, vade_mecum_leis(nome, slug)')
+          .order('created_at', { ascending: false })
+          .limit(100),
+      ]);
+      setLeis((leisRes.data as unknown as LeiRow[]) ?? []);
+      const map: Record<string, Snapshot> = {};
+      ((snapsRes.data as unknown as Snapshot[]) ?? []).forEach((s: Snapshot) => { map[s.lei_id] = s; });
+      setSnaps(map);
+      setImpactos((impRes.data as unknown as ImpactoRow[]) ?? []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { void load(); }, []);
 
   // --- Fase 1: Auditoria ---
   // Cruza catálogo (id) ↔ Supabase (slug) por (a) slug igual ao id do catálogo,
@@ -162,8 +167,9 @@ export default function AdminBibliotecaLeis() {
       else if (data?.primeira_verificacao) toast.success('Snapshot inicial salvo');
       else toast.success('Sem alterações');
       await load();
-    } catch (e: any) {
-      toast.error(`Falha: ${e?.message ?? e}`);
+    } catch (e: unknown) {
+      const err = e as Error;
+      toast.error(`Falha: ${err?.message ?? String(err)}`);
     } finally {
       setVerificando(null);
     }
@@ -198,16 +204,16 @@ export default function AdminBibliotecaLeis() {
         // Lemos o Response anexado em error.context para mostrar o motivo real ao admin.
         let motivo = error.message ?? String(error);
         try {
-          const ctx: any = (error as any).context;
+          const ctx: Record<string, unknown> = (error as { context?: Record<string, unknown> }).context || {};
           if (ctx && typeof ctx.json === 'function') {
-            const j = await ctx.json();
-            if (j?.error) motivo = j.error;
+            const j = await (ctx.json as () => Promise<Record<string, unknown>>)();
+            if (j?.error) motivo = String(j.error);
             if (j?.totalmente_revogada) motivo = `⚠️ ${motivo}`;
           }
         } catch { /* ignore */ }
         throw new Error(motivo);
       }
-      const n = (data as any)?.artigos ?? 0;
+      const n = (data as { artigos?: number })?.artigos ?? 0;
       const nome = bootstrap?.nome ?? leis.find(l => l.slug === slug)?.nome ?? slug;
       setConcluidos(prev => {
         const next = { ...prev, [slug]: { slug, nome, artigos: n, quando: new Date().toISOString() } };
@@ -216,8 +222,9 @@ export default function AdminBibliotecaLeis() {
       });
       toast.success(`OK · ${n} artigos`);
       await load();
-    } catch (e: any) {
-      toast.error(String(e?.message ?? e), { duration: 8000 });
+    } catch (e: unknown) {
+      const err = e as Error;
+      toast.error(String(err?.message ?? String(err)), { duration: 8000 });
     } finally {
       setPopulando(null);
     }
@@ -239,7 +246,7 @@ export default function AdminBibliotecaLeis() {
     if (!categoria) {
       const { data } = await supabase.from('vade_mecum_leis')
         .select('categoria').eq('slug', slug).maybeSingle();
-      categoria = (data as any)?.categoria;
+      categoria = (data as { categoria: string })?.categoria;
     }
     if (!categoria) { toast.error('Categoria da lei não encontrada'); return; }
     navigate(`/legislacao/${tipoToSlug(categoria)}/${slug}`);
@@ -254,9 +261,10 @@ export default function AdminBibliotecaLeis() {
       if (!lei) throw new Error('Lei não encontrada');
       const { data: arts } = await supabase.from('vade_mecum_artigos')
         .select('numero, texto, ordem').eq('lei_id', lei.id).order('ordem').limit(500);
-      setVerPreview({ slug, nome, artigos: (arts as any[]) ?? [] });
-    } catch (e: any) {
-      toast.error(`Falha: ${e?.message ?? e}`);
+      setVerPreview({ slug, nome, artigos: (arts as Record<string, unknown>[]) ?? [] });
+    } catch (e: unknown) {
+      const err = e as Error;
+      toast.error(`Falha: ${err?.message ?? String(err)}`);
       setVerPreview(null);
     } finally {
       setCarregandoPreview(false);
@@ -276,8 +284,9 @@ export default function AdminBibliotecaLeis() {
       }).eq('id', imp.id);
       toast.success('Aplicado!', { id: 'ap' });
       await load();
-    } catch (e: any) {
-      toast.error(`Falha: ${e?.message ?? e}`, { id: 'ap' });
+    } catch (e: unknown) {
+      const err = e as Error;
+      toast.error(`Falha: ${err?.message ?? String(err)}`, { id: 'ap' });
     }
   };
 

@@ -274,6 +274,111 @@ Deno.serve(async (req) => {
       return json({ found });
     }
 
+    if (action === 'recent_payments') {
+      try {
+        await resolveAsaasBase();
+        
+        const reqMonth = req.month; // 1-indexed
+        const reqYear = req.year;
+        
+        let targetMonth, targetYear;
+        const now = new Date();
+        if (reqMonth && reqYear) {
+          targetMonth = parseInt(reqMonth) - 1;
+          targetYear = parseInt(reqYear);
+        } else {
+          targetMonth = now.getMonth();
+          targetYear = now.getFullYear();
+        }
+
+        const startOfMonth = new Date(targetYear, targetMonth, 1);
+        startOfMonth.setHours(0, 0, 0, 0);
+        const endOfMonth = new Date(targetYear, targetMonth + 1, 0, 23, 59, 59, 999);
+        
+        const dateStrGe = startOfMonth.toISOString().split('T')[0];
+        const dateStrLe = endOfMonth.toISOString().split('T')[0];
+
+        // 1. Fetch ALL pagamentos recebidos/confirmados do mês selecionado
+        let allPayments: any[] = [];
+        let pOffset = 0;
+        while (true) {
+          const paymentsRes = await fetch(`${ASAAS_BASE}/payments?status=RECEIVED,CONFIRMED&limit=100&offset=${pOffset}&paymentDate[ge]=${dateStrGe}&paymentDate[le]=${dateStrLe}`, {
+            headers: { access_token: ASAAS_KEY, 'Content-Type': 'application/json' },
+          });
+          if (!paymentsRes.ok) throw new Error(`Asaas error: ${await paymentsRes.text()}`);
+          const page = await paymentsRes.json();
+          allPayments = allPayments.concat(page.data || []);
+          if (!page.hasMore) break;
+          pOffset += 100;
+          await new Promise((r) => setTimeout(r, 250));
+        }
+        
+        const recurringPayments = allPayments.filter((p: any) => p.subscription);
+
+        // 2. Fetch ALL assinaturas ativas
+        let activeSubs: any[] = [];
+        let sOffset = 0;
+        while (true) {
+          const subsRes = await fetch(`${ASAAS_BASE}/subscriptions?status=ACTIVE&limit=100&offset=${sOffset}`, {
+            headers: { access_token: ASAAS_KEY, 'Content-Type': 'application/json' },
+          });
+          if (!subsRes.ok) throw new Error(`Asaas error: ${await subsRes.text()}`);
+          const page = await subsRes.json();
+          activeSubs = activeSubs.concat(page.data || []);
+          if (!page.hasMore) break;
+          sOffset += 100;
+          await new Promise((r) => setTimeout(r, 250));
+        }
+
+        // 3. Totais e consolidação
+        let recebidoMes = 0;
+        recurringPayments.forEach((p: any) => { recebidoMes += p.value; });
+
+        let aReceberMes = 0;
+        let assinaturasNoMes: any[] = [];
+
+        activeSubs.forEach((s: any) => {
+          if (s.nextDueDate) {
+            const dueDate = new Date(s.nextDueDate);
+            dueDate.setHours(0, 0, 0, 0);
+            
+            // Se a data de vencimento for no mês selecionado
+            if (dueDate >= startOfMonth && dueDate <= endOfMonth) {
+              aReceberMes += s.value;
+              assinaturasNoMes.push({
+                id: s.id,
+                customer: s.customer,
+                value: s.value,
+                billingType: s.billingType,
+                nextDueDate: s.nextDueDate,
+              });
+            }
+          }
+        });
+
+        // 4. Preparar lista de pagamentos do mês selecionado
+        const receivedPayments = recurringPayments.map((p: any) => {
+          return {
+            id: p.id,
+            customer: p.customer,
+            value: p.value,
+            billingType: p.billingType,
+            paymentDate: p.paymentDate || p.confirmedDate,
+            subscription: p.subscription
+          }
+        });
+
+        return json({ 
+          recebidoMes, 
+          aReceberMes, 
+          subscriptions: assinaturasNoMes,
+          receivedPayments
+        });
+      } catch (e) {
+        return json({ error: String(e) }, 500);
+      }
+    }
+
     if (action === 'sync') {
       const sources: string[] = body.sources ?? ['asaas', 'old'];
       const apply: boolean = body.apply === true;

@@ -21,9 +21,10 @@ interface LivroCardProps {
   livro: LivroUnificado;
   onClick: () => void;
   priority?: boolean;
+  onPrefetch?: () => void;
 }
 
-const LivroCard = memo(function LivroCard({ livro, onClick, priority }: LivroCardProps) {
+const LivroCard = memo(function LivroCard({ livro, onClick, priority, onPrefetch }: LivroCardProps) {
   const capaUrl = useBibliotecaCapa(livro.capa, 300);
   const isDownloaded = useIsPdfCached(livro.download);
   // Cálculo de estimativa de tempo (fallback pseudo-realista até termos dados do backend)
@@ -34,6 +35,8 @@ const LivroCard = memo(function LivroCard({ livro, onClick, priority }: LivroCar
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.97 }}
       onClick={onClick}
+      onPointerEnter={onPrefetch}
+      onTouchStart={onPrefetch}
       aria-label={`Abrir livro ${livro.titulo}${livro.autor ? ` de ${livro.autor}` : ''}`}
       className="flex-shrink-0 w-[120px] snap-start group text-left relative rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/80 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
     >

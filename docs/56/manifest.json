@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Fila de prompts para o Google Flow",
+  "version": "1.4.1",
+  "description": "Enfileira prompts no Google Flow com design-padrão fixo, reforça imagens impactantes/contextuais e exporta imagens da fila com arroba e logo.",
+  "permissions": [
+    "downloads",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://flow.google.com/*",
+    "https://labs.google/*",
+    "https://generativelanguage.googleapis.com/*",
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://flow.google.com/*",
+        "https://labs.google/fx/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "panel.css"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ]
+}

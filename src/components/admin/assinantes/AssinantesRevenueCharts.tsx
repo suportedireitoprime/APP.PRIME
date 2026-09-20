@@ -84,22 +84,22 @@ export function AssinantesRevenueCharts({
 }: AssinantesRevenueChartsProps) {
   return (
     <>
-      <section className="rounded-2xl overflow-hidden border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-amber-400/5 to-transparent p-4 md:p-5">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center">
-              <CircleDollarSign className="w-5 h-5 text-amber-500" />
+      <section className="rounded-2xl border border-border bg-card p-4 md:p-5">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center">
+              <CircleDollarSign className="w-5 h-5 text-foreground" />
             </div>
             <div>
-              <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
                 Receita recorrente estimada
               </div>
-              <div className="text-xs text-muted-foreground">
+              <div className="text-xs text-muted-foreground mt-0.5">
                 com base em {revenue.paying} assinante(s) pagante(s)
               </div>
             </div>
           </div>
-          <span className="text-[10px] px-2 py-1 rounded-full bg-background/60 text-muted-foreground">
+          <span className="text-[10px] px-2 py-1 rounded-md bg-muted text-muted-foreground font-medium">
             BRL
           </span>
         </div>
@@ -108,26 +108,26 @@ export function AssinantesRevenueCharts({
             label="MRR"
             value={fmtBRL(revenue.mrr)}
             hint="mensal"
-            accent="from-amber-500 to-orange-500"
+            accent="bg-foreground"
             onClick={() => setModalDetails('mrr')}
           />
           <RevenueCard
             label="ARR"
             value={fmtBRL(revenue.arr)}
             hint="anualizado"
-            accent="from-emerald-500 to-teal-500"
+            accent="bg-muted-foreground/30"
           />
           <RevenueCard
             label="Ticket médio"
             value={fmtBRL(revenue.avgTicket)}
             hint="por assinante/mês"
-            accent="from-blue-500 to-cyan-500"
+            accent="bg-muted-foreground/30"
           />
           <RevenueCard
             label="Bruto acumulado"
             value={fmtBRL(grossAccumulated)}
             hint="ciclos vendidos"
-            accent="from-purple-500 to-fuchsia-500"
+            accent="bg-muted-foreground/30"
             onClick={() => setModalDetails('gross')}
           />
         </div>
@@ -137,8 +137,9 @@ export function AssinantesRevenueCharts({
       {timeline.length > 0 && (
         <section className="rounded-2xl border border-border bg-card p-4">
           <div className="flex items-center gap-2 mb-3">
-            <TrendingUp className="w-4 h-4 text-primary" />
-            <h2 className="text-sm font-semibold">Evolução Play (últimos 30 dias)</h2>
+            <TrendingUp className="w-4 h-4 text-muted-foreground" />
+            <h2 className="text-sm font-medium text-muted-foreground">Evolução Play (últimos 30 dias)</h2>
+
           </div>
           <div className="h-56 -ml-2">
             <ResponsiveContainer width="100%" height="100%">

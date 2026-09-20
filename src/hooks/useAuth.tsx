@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, startTransition, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState, startTransition, ReactNode, useCallback, useMemo } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { removeNativePushToken } from '@/lib/nativePush';
@@ -497,8 +497,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
 
+  const contextValue = useMemo(() => ({
+    user, session, loading, signIn, signUp, signInWithGoogle, signInWithApple, signOut, resetPassword, verifyOtp, updatePassword
+  }), [user, session, loading, signIn, signUp, signInWithGoogle, signInWithApple, signOut, resetPassword, verifyOtp, updatePassword]);
+
   return (
-    <AuthContext.Provider value={{ user, session, loading, signIn, signUp, signInWithGoogle, signInWithApple, signOut, resetPassword, verifyOtp, updatePassword }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

@@ -189,6 +189,25 @@ export const COLECOES: ColecaoConfig[] = [
 
 export const findColecao = (id: string) => COLECOES.find((c) => c.id === id);
 
+export function resolveLivroTabela(tabelaOrColecaoId: string): string {
+  if (!tabelaOrColecaoId) return '';
+  const colecao = COLECOES.find((c) => c.id === tabelaOrColecaoId || c.table === tabelaOrColecaoId);
+  return colecao?.table || tabelaOrColecaoId;
+}
+
+export function getCandidateTabelas(tabelaOrColecaoId: string): string[] {
+  if (!tabelaOrColecaoId) return [];
+  const colecao = COLECOES.find((c) => c.id === tabelaOrColecaoId || c.table === tabelaOrColecaoId);
+  if (colecao) {
+    const list = [colecao.table, colecao.id];
+    if (colecao.table.startsWith('biblioteca_')) {
+      list.push(colecao.table.replace(/^biblioteca_/, ''));
+    }
+    return Array.from(new Set(list));
+  }
+  return [tabelaOrColecaoId];
+}
+
 /** Retorna coleções visíveis. Admin vê todas; usuário comum não vê as `adminOnly`. */
 export const getColecoesVisiveis = (isAdmin: boolean): ColecaoConfig[] =>
   isAdmin ? COLECOES : COLECOES.filter((c) => !c.adminOnly);

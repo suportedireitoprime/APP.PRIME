@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { pushLeituraProgress } from '@/lib/leituraProgressSync';
-import { Maximize2, Minimize2 } from 'lucide-react';
+import { Maximize2, Minimize2, AlertCircle, RefreshCcw, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -33,9 +33,10 @@ import { LeitorTocDrawerMobile } from './leitor/LeitorTocDrawerMobile';
 interface Props {
   livroId: string;
   livroTabela: string;
-  pdfUrl: string;
+  pdfUrl?: string | null;
   titulo: string;
   onClose: () => void;
+  onOpenPdf?: () => void;
   autor?: string | null;
   ano?: string | null;
   editora?: string | null;
@@ -50,6 +51,7 @@ const LeitorNativo = ({
   pdfUrl,
   titulo,
   onClose,
+  onOpenPdf,
   autor,
   ano,
   editora,
@@ -69,7 +71,8 @@ const LeitorNativo = ({
     totalPaginas,
     refinoStatus,
     resumeOcrPage,
-  } = useLeitorData(livroTabela, livroId, pdfUrl, titulo, autor, capa);
+    recarregar,
+  } = useLeitorData(livroTabela, livroId, pdfUrl || '', titulo, autor, capa);
 
   const { paginas, tocItems, chapterRanges } = useLeitorPaginas(conteudo, capitulos, sumario);
   const { bookmarks, toggleBookmark, removeBookmark } = useLeitorBookmarks(livroTabela, livroId);
@@ -504,9 +507,32 @@ const LeitorNativo = ({
           </div>
         )}
         {status === 'erro' && (
-          <div className="flex flex-col items-center justify-center h-full gap-3 px-6 text-center">
-            <p className="text-sm font-semibold">Não foi possível preparar a leitura.</p>
-            <p className="text-xs opacity-60 max-w-md">{erro}</p>
+          <div className="flex flex-col items-center justify-center h-full gap-4 px-6 text-center">
+            <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400">
+              <AlertCircle className="w-6 h-6" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm font-bold text-white">Não foi possível preparar a leitura nativa</p>
+              <p className="text-xs text-zinc-400 max-w-md">{erro || 'Erro ao processar o conteúdo do livro.'}</p>
+            </div>
+            <div className="flex items-center gap-3 mt-2">
+              <button
+                onClick={recarregar}
+                className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-semibold transition active:scale-95 flex items-center gap-2 border border-white/10"
+              >
+                <RefreshCcw className="w-3.5 h-3.5" />
+                Tentar novamente
+              </button>
+              {onOpenPdf && (
+                <button
+                  onClick={onOpenPdf}
+                  className="px-4 py-2 rounded-xl bg-primary text-black text-xs font-semibold transition active:scale-95 flex items-center gap-2 hover:bg-primary/90"
+                >
+                  <BookOpen className="w-3.5 h-3.5" />
+                  Ler em PDF
+                </button>
+              )}
+            </div>
           </div>
         )}
         {status === 'pronto' && currentPage && (

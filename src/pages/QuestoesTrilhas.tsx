@@ -42,6 +42,21 @@ export default function QuestoesTrilhas() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [novasMaterias, setNovasMaterias] = useState<string[]>([]);
   const [isMateriasSheetOpen, setIsMateriasSheetOpen] = useState(false);
+  
+  // Lazy Render
+  const [visibleAreasCount, setVisibleAreasCount] = useState(15);
+  const areasObserverTarget = document.createElement('div'); // Fake ref, usaremos ID
+
+  useEffect(() => {
+    if (!isMateriasSheetOpen) return;
+    const el = document.getElementById('areas-lazy-sentinel');
+    if (!el) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) setVisibleAreasCount(p => p + 10);
+    }, { rootMargin: '300px' });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [isMateriasSheetOpen, visibleAreasCount]);
   const [novaMeta, setNovaMeta] = useState(10);
   const [novosDias, setNovosDias] = useState<string[]>(['seg', 'ter', 'qua', 'qui', 'sex']);
   const [novoHorario, setNovoHorario] = useState('20:00');
@@ -372,7 +387,7 @@ export default function QuestoesTrilhas() {
             
             <div className="flex-1 overflow-y-auto px-4 py-4 pb-[100px]">
               <div className="space-y-2">
-                {areas.map(a => {
+                {areas.slice(0, visibleAreasCount).map(a => {
                   const { icon: Icon, color } = visualDaArea(a.area);
                   const isSel = novasMaterias.includes(a.area);
                   return (
@@ -402,6 +417,10 @@ export default function QuestoesTrilhas() {
                     </button>
                   );
                 })}
+                {/* Sentinela do Lazy Render */}
+                {visibleAreasCount < areas.length && (
+                  <div id="areas-lazy-sentinel" className="w-full h-10" />
+                )}
               </div>
             </div>
             

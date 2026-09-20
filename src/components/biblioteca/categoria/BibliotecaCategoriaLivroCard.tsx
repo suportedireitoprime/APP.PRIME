@@ -12,6 +12,7 @@ interface BibliotecaCategoriaLivroCardProps {
   priority?: boolean;
   badge?: LivroBadgeInfo;
   index?: number;
+  onPrefetch?: () => void;
 }
 
 export const BibliotecaCategoriaLivroCard = memo(function BibliotecaCategoriaLivroCard({
@@ -20,6 +21,7 @@ export const BibliotecaCategoriaLivroCard = memo(function BibliotecaCategoriaLiv
   priority,
   badge,
   index = 0,
+  onPrefetch,
 }: BibliotecaCategoriaLivroCardProps) {
   const capaUrl = useBibliotecaCapa(livro.capa, 300);
   const pct = badge?.progresso ? Math.round(badge.progresso * 100) : 0;
@@ -38,6 +40,8 @@ export const BibliotecaCategoriaLivroCard = memo(function BibliotecaCategoriaLiv
       whileHover={{ scale: 1.015 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
+      onPointerEnter={onPrefetch}
+      onTouchStart={onPrefetch}
       aria-label={`Abrir livro ${livro.titulo}${livro.autor ? ` de ${livro.autor}` : ''}`}
       className="group flex items-stretch gap-3 p-2.5 rounded-2xl bg-card border border-border hover:border-primary/40 hover:bg-secondary/40 transition-colors text-left w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 relative overflow-hidden"
     >

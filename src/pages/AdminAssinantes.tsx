@@ -23,6 +23,8 @@ import { AssinantesFunnelModal } from '@/components/admin/assinantes/AssinantesF
 import { AssinantesRevenueCharts } from '@/components/admin/assinantes/AssinantesRevenueCharts';
 import { AssinantesRevenueModal } from '@/components/admin/assinantes/AssinantesRevenueModal';
 import { AssinantesListView } from '@/components/admin/assinantes/AssinantesListView';
+import { AssinantesRecorrentesModal } from '@/components/admin/assinantes/AssinantesRecorrentesModal';
+import { Filter, CreditCard } from 'lucide-react';
 
 const AdminAssinantes = () => {
   const navigate = useNavigate();
@@ -47,6 +49,7 @@ const AdminAssinantes = () => {
   // Modais
   const [modalDetails, setModalDetails] = useState<'mrr' | 'gross' | null>(null);
   const [funnelStage, setFunnelStage] = useState<'assinatura_aberta' | 'trial_click' | 'start_trial' | 'purchase' | null>(null);
+  const [showRecorrentes, setShowRecorrentes] = useState(false);
 
   // Filtros do funil
   const [funnelPlatform, setFunnelPlatform] = useState<'asaas' | 'play' | 'apple'>('asaas');
@@ -56,11 +59,33 @@ const AdminAssinantes = () => {
     setLoading(true);
     setError(null);
     const d = customDays !== undefined ? customDays : funnelDays;
+
+    // Garantir que temos o token do usuário logado (não a anon key)
+    const { data: sessionData } = await supabase.auth.getSession();
+    const accessToken = sessionData?.session?.access_token;
+    if (!accessToken) {
+      setError('Erro: Sessão expirada. Faça login novamente.');
+      setLoading(false);
+      return;
+    }
+
     const { data: res, error: err } = await supabase.functions.invoke('play-billing', {
       body: { fn: 'reporting', sync: syncPlay, funnelDays: d },
+      headers: { Authorization: `Bearer ${accessToken}` },
     });
     if (err) {
-      setError(err.message ?? 'Erro ao carregar dados locais');
+      let msg = err.message ?? 'Erro ao carregar dados locais';
+      if ((err as any).context && typeof (err as any).context.clone === 'function') {
+        try {
+          const body = await (err as any).context.clone().json();
+          msg = body.error || JSON.stringify(body);
+        } catch {
+          try {
+            msg = await (err as any).context.clone().text();
+          } catch {}
+        }
+      }
+      setError(`Erro: ${msg}`);
     } else {
       setData(res as Payload);
       setLegacyData((res as Payload).legacy ?? []);
@@ -234,12 +259,19 @@ const AdminAssinantes = () => {
         if (r.source === 'asaas' && r.observacao) {
           const obs = parseObservacao(r.observacao);
           if (obs && typeof obs.value === 'number') {
-            sticker = obs.value;
-            const prodId = r.product_id?.toLowerCase() ?? '';
-            if (prodId.includes('anual')) monthly = sticker / 12;
-            else if (prodId.includes('semestral')) monthly = sticker / 6;
-            else if (prodId.includes('vitalicio')) monthly = 0;
-            else monthly = sticker;
+            // Apenas contabilizar assinaturas pagas com cartão
+            if (obs.billingType === 'CREDIT_CARD') {
+              sticker = obs.value;
+              const prodId = r.product_id?.toLowerCase() ?? '';
+              if (prodId.includes('anual')) monthly = sticker / 12;
+              else if (prodId.includes('semestral')) monthly = sticker / 6;
+              else if (prodId.includes('vitalicio')) monthly = 0;
+              else monthly = sticker;
+            } else {
+              // Zera se for PIX ou Boleto para não somar no MRR
+              monthly = 0;
+              sticker = 0;
+            }
           }
         }
 
@@ -396,48 +428,59 @@ const AdminAssinantes = () => {
         )}
 
         {viewMode === 'dashboard' && (
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              onClick={() => setViewMode('asaas')}
-              className="flex items-center justify-between p-2.5 rounded-xl border border-blue-500/20 bg-blue-500/10 hover:bg-blue-500/20 transition-colors text-left group"
-            >
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-blue-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Crown className="w-4 h-4 text-blue-500" />
+          <div className="space-y-3">
+            <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider ml-1">Funções</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <button
+                onClick={() => document.getElementById('funnel-section')?.scrollIntoView({ behavior: 'smooth' })}
+                className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/50 hover:bg-muted/30 transition-colors gap-2"
+              >
+                <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
+                  <Filter className="w-5 h-5" />
                 </div>
-                <div>
-                  <div className="font-bold text-foreground">Asaas</div>
+                <span className="text-xs font-semibold text-center">Funil de<br/>Conversão</span>
+              </button>
+              
+              <button
+                onClick={() => setShowRecorrentes(true)}
+                className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/50 hover:bg-muted/30 transition-colors gap-2"
+              >
+                <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                  <CreditCard className="w-5 h-5" />
                 </div>
-              </div>
-            </button>
+                <span className="text-xs font-semibold text-center">Assinantes<br/>Recorrentes</span>
+              </button>
 
-            <button
-              onClick={() => setViewMode('play')}
-              className="flex items-center justify-between p-2.5 rounded-xl border border-[#3DDC84]/20 bg-[#3DDC84]/10 hover:bg-[#3DDC84]/20 transition-colors text-left group"
-            >
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-[#3DDC84]/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <PlayCircle className="w-4 h-4 text-[#3DDC84]" />
+              <button
+                onClick={() => setViewMode('asaas')}
+                className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/50 hover:bg-muted/30 transition-colors gap-2"
+              >
+                <div className="w-10 h-10 rounded-full bg-foreground/10 flex items-center justify-center text-foreground">
+                  <Crown className="w-5 h-5" />
                 </div>
-                <div>
-                  <div className="font-bold text-foreground">Google Play</div>
-                </div>
-              </div>
-            </button>
+                <span className="text-xs font-semibold text-center">Filtrar<br/>Asaas</span>
+              </button>
 
-            <button
-              onClick={() => setViewMode('apple')}
-              className="flex items-center justify-between p-2.5 rounded-xl border border-zinc-500/20 bg-zinc-500/10 hover:bg-zinc-500/20 transition-colors text-left group"
-            >
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-zinc-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Smartphone className="w-4 h-4 text-zinc-400" />
+              <button
+                onClick={() => setViewMode('play')}
+                className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/50 hover:bg-muted/30 transition-colors gap-2"
+              >
+                <div className="w-10 h-10 rounded-full bg-foreground/10 flex items-center justify-center text-foreground">
+                  <PlayCircle className="w-5 h-5" />
                 </div>
-                <div>
-                  <div className="font-bold text-foreground">Apple</div>
+                <span className="text-xs font-semibold text-center">Filtrar<br/>Google Play</span>
+              </button>
+
+              <button
+                onClick={() => setViewMode('apple')}
+                className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/50 hover:bg-muted/30 transition-colors gap-2"
+              >
+                <div className="w-10 h-10 rounded-full bg-foreground/10 flex items-center justify-center text-foreground">
+                  <Smartphone className="w-5 h-5" />
                 </div>
-              </div>
-            </button>
+                <span className="text-xs font-semibold text-center">Filtrar<br/>Apple</span>
+              </button>
+            </div>
           </div>
         )}
 
@@ -508,6 +551,15 @@ const AdminAssinantes = () => {
         funnelMetrics={funnelMetrics}
         combinedRows={combinedRows}
       />
+
+      {showRecorrentes && (
+        <AssinantesRecorrentesModal
+          onClose={() => setShowRecorrentes(false)}
+          fmtBRL={fmtBRL}
+          fmtDateTime={fmtDateTime}
+          combinedRows={combinedRows}
+        />
+      )}
     </div>
   );
 };

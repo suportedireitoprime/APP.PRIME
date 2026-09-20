@@ -159,6 +159,10 @@ html {
   touch-action: manipulation;
 }
 
+button, a, input, select, textarea, [role="button"], [role="tab"], .cursor-pointer {
+  touch-action: manipulation;
+}
+
 /* As otimizações extremas de remoção de backdrop-blur foram removidas 
    a pedido do usuário para preservar a estética de "vidro" (glassmorphism) 
    nos cards de Aprender, Flashcards, etc. */

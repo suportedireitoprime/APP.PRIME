@@ -98,21 +98,31 @@ export function AssinantesFunnelModal({
                       <div className="flex items-center gap-2 flex-wrap">
                         <div className="font-medium text-sm break-all">{ev.email || 'Usuário Anônimo'}</div>
                         {ev.count > 1 && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-500/20 text-blue-500 font-bold">
+                          <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-semibold">
                             {ev.count} vezes
                           </span>
                         )}
-                        {isConcluded ? (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#3DDC84] text-black font-extrabold uppercase tracking-wider">
-                            Concluído ({match.source})
-                          </span>
-                        ) : (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-muted/80 text-muted-foreground font-bold uppercase tracking-wider">
-                            Não Concluído
-                          </span>
-                        )}
                       </div>
-                      <div className="text-[11px] text-muted-foreground">ID: {ev.user_id || 'Não logado'}</div>
+
+                      {/* Origem do acesso */}
+                      <div className="mt-1">
+                        <span className="text-[10px] uppercase font-semibold text-muted-foreground bg-muted border border-border/50 px-2 py-0.5 rounded">
+                          {ev.metadata?.feature ? `Banner / Modal: ${String(ev.metadata.feature).replace(/_/g, ' ')}` : 'Menu Lateral'}
+                        </span>
+                      </div>
+
+                      <div className="flex flex-col gap-1 mt-2">
+                        {isConcluded ? (
+                          <div className="text-[10px] font-bold text-emerald-500 tracking-wider">
+                            ASSINATURA ATIVA
+                          </div>
+                        ) : (
+                          <div className="text-[10px] font-bold text-muted-foreground tracking-wider">
+                            NÃO CONCLUÍDO
+                          </div>
+                        )}
+                        <div className="text-[10px] text-muted-foreground/60 break-all">ID: {ev.user_id || '—'}</div>
+                      </div>
 
                       {match && match.order_id && (
                         <div className="text-[10px] text-amber-500 mt-1 truncate">

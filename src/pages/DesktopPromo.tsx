@@ -72,6 +72,13 @@ const DesktopPromo = () => {
   const { user } = useAuth();
   const [scanning, setScanning] = useState(false);
   const [copied, setCopied] = useState(false);
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    };
+  }, []);
   const [selectedDuration, setSelectedDuration] = useState('session');
   const [history, setHistory] = useState<any[]>([]);
 
@@ -109,7 +116,8 @@ const DesktopPromo = () => {
       await copiarTexto(`https://${SITE_URL}`);
       setCopied(true);
       toast.success('Endereço copiado');
-      setTimeout(() => setCopied(false), 1800);
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1800);
     } catch {
       toast.error('Não consegui copiar');
     }

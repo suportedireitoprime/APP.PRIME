@@ -51,7 +51,7 @@ export function QuestoesMateriaSheet({ materia, aberto, onOpenChange }: Questoes
       setCarregando(false);
     });
     return () => { cancelado = true; };
-  }, [aberto, materia, f.assuntos, f.anos]);
+  }, [aberto, materia, f.assuntos.join(','), f.anos.join(',')]);
 
   const { assuntosPrincipais, contagensAssuntos, mapaInverso } = useMemo(() => {
     const principais = new Set<string>();

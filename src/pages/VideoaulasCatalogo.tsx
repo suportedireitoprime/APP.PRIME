@@ -166,7 +166,7 @@ const VideoaulasCatalogo = () => {
           haptic.selection();
           navigate(`/videoaulas/${catalogo.id}/${slugify(area.nome)}`);
         }}
-        className="group flex w-full items-center gap-3.5 rounded-2xl border border-border/80 bg-card/75 p-3.5 text-left transition-all backdrop-blur-md hover:bg-card hover:border-[#E3262F]/40 hover:shadow-lg active:scale-[0.98] focus-visible:outline-none"
+        className="group flex w-full items-center gap-3.5 rounded-2xl border border-border/80 bg-card/75 p-3.5 text-left transition-all backdrop-blur-md hover:bg-card hover:border-primary/40 hover:shadow-lg active:scale-[0.98] focus-visible:outline-none"
       >
         <div
           className="relative flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-2xl border transition-transform duration-200 group-hover:scale-105"
@@ -190,7 +190,7 @@ const VideoaulasCatalogo = () => {
             {simplificarNomeArea(area.nome)}
           </h3>
           <div className="mt-1 flex items-center gap-2">
-            <p className="text-[12px] font-semibold text-[#E3262F]">
+            <p className="text-[12px] font-semibold text-muted-foreground">
               {area.total} {area.total === 1 ? 'aula' : 'aulas'}
             </p>
             {pct > 0 && (
@@ -202,7 +202,7 @@ const VideoaulasCatalogo = () => {
           {pct > 0 && (
             <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-muted/60">
               <div
-                className="h-full rounded-full bg-[#E3262F] transition-all"
+                className="h-full rounded-full bg-primary transition-all"
                 style={{ width: `${pct}%` }}
               />
             </div>

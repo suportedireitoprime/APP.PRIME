@@ -302,22 +302,19 @@ export const handler = (async (req) => {
         status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-    const anon = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_ANON_KEY')!,
-      { global: { headers: { Authorization: authHeader } } },
-    );
-    const { data: claims, error: cErr } = await anon.auth.getClaims(authHeader.replace('Bearer ', ''));
-    if (cErr || !claims?.claims?.sub) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
+    const jwt = authHeader.replace('Bearer ', '');
     const admin = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     );
-    const { data: isAdmin } = await admin.rpc('is_admin_user', { _user_id: claims.claims.sub });
+    const { data: userResponse, error: cErr } = await admin.auth.getUser(jwt);
+    if (cErr || !userResponse?.user?.id) {
+      return new Response(JSON.stringify({ error: `Unauthorized: ${cErr?.message || 'Token inválido'}` }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    const userId = userResponse.user.id;
+    const { data: isAdmin } = await admin.rpc('is_admin_user', { _user_id: userId });
     if (!isAdmin) {
       return new Response(JSON.stringify({ error: 'Forbidden' }), {
         status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },

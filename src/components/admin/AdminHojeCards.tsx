@@ -278,7 +278,7 @@ export function AdminHojeCards() {
       
       const { data: events, error } = await supabase
         .from('app_events')
-        .select('user_id, id, email, event_name')
+        .select('user_id, id, email, event_name, profiles!left(is_premium)')
         .in('event_name', ['trial_click', 'assinatura_aberta'])
         .gte('created_at', minDate.toISOString())
         .lt('created_at', maxDate.toISOString());
@@ -286,8 +286,11 @@ export function AdminHojeCards() {
       if (error) throw error;
         
       if (events) {
-        const vpEvents = events.filter((e: any) => e.event_name === 'trial_click');
-        const pwEvents = events.filter((e: any) => e.event_name === 'assinatura_aberta');
+        // Filtrar apenas quem NÃO é premium
+        const filteredEvents = events.filter((e: any) => e.profiles?.is_premium !== true);
+        
+        const vpEvents = filteredEvents.filter((e: any) => e.event_name === 'trial_click');
+        const pwEvents = filteredEvents.filter((e: any) => e.event_name === 'assinatura_aberta');
         
         const uniqueVp = new Set(vpEvents.map((e: any) => e.email || e.user_id || 'anonymous'));
         totalViuPlanos = uniqueVp.size;
@@ -299,41 +302,28 @@ export function AdminHojeCards() {
       console.error(err);
     }
 
-    const allTrialUsers = new Set<string>();
-    if (trialResults.status === 'fulfilled') {
-      trialResults.value.forEach((res) => {
-        if (res.status === 'fulfilled') {
-          const trials = (res.value.data as any[]) || [];
-          trials.forEach(r => {
-            if (r.user_id) allTrialUsers.add(r.user_id);
-          });
-        }
-      });
-    }
-
-    if (allTrialUsers.size > 0) {
-      try {
-        const { data: enriched } = await supabase.functions.invoke('admin-play-trials', { body: { user_ids: Array.from(allTrialUsers) } });
-        if (enriched && Array.isArray(enriched)) {
-          const map = new Map(enriched.map((e: any) => [e.user_id, e]));
-          allTrialUsers.forEach(uid => {
-            const sub = map.get(uid);
-            if (sub) {
-              if (sub.product_id?.includes('mensal')) {
-                totalTrialValor += 29.90;
-              } else {
-                totalTrialValor += 199.90;
-              }
-            } else {
-              totalTrialValor += 199.90;
-            }
-          });
-        } else {
-          totalTrialValor += (allTrialUsers.size * 199.90);
-        }
-      } catch (err) {
-        totalTrialValor += (allTrialUsers.size * 199.90);
+    try {
+      const minDateStr = new Date(datas[datas.length - 1]);
+      minDateStr.setHours(0, 0, 0, 0);
+      
+      const maxDateStr = new Date(datas[0]);
+      maxDateStr.setDate(maxDateStr.getDate() + 1);
+      maxDateStr.setHours(0, 0, 0, 0);
+      
+      // Buscar novas assinaturas no legacy_subscribers (Asaas)
+      const { data: assinaturas } = await supabase
+        .from('legacy_subscribers')
+        .select('id, created_at, email, tipo, status')
+        .gte('created_at', minDateStr.toISOString())
+        .lt('created_at', maxDateStr.toISOString());
+        
+      if (assinaturas) {
+        totalTrial = assinaturas.length;
+        // Se a gente não tem a info de valor no legacy_subscribers, vamos estimar como mensal na dúvida ou ver pelo webhook
+        totalTrialValor = assinaturas.length * 29.90; 
       }
+    } catch (err) {
+      console.error("Erro ao buscar assinaturas Asaas:", err);
     }
 
     totalViuPlanos = Math.max(totalViuPlanos, totalTrial);
@@ -371,6 +361,8 @@ export function AdminHojeCards() {
     } else {
       setSeenCounts({ online5m: 0, online: 0, cadastros: 0, paywall: 0, viu_planos: 0, trial: 0 });
     }
+  } catch (err) {
+    console.error('Erro em AdminHojeCards load():', err);
   } finally {
     isFetching.current = false;
   }
@@ -435,13 +427,45 @@ export function AdminHojeCards() {
             };
           });
         }
-        
         const trialPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));
         const trialResults = await Promise.all(trialPromises);
         trialResults.forEach(({ data }) => {
           const trials = ((data as any[]) || []).map(r => ({ ...r, subtitle: 'Clicou no plano (Iniciou teste)' }));
           allLists = allLists.concat(trials);
         });
+      } else if (id === 'trial') {
+        const minDate = new Date(datas[datas.length - 1]);
+        minDate.setHours(0, 0, 0, 0);
+        
+        const maxDate = new Date(datas[0]);
+        maxDate.setDate(maxDate.getDate() + 1);
+        maxDate.setHours(0, 0, 0, 0);
+        
+        const { data: assinaturas } = await supabase
+          .from('legacy_subscribers')
+          .select('id, created_at, email, tipo, status, claimed_user_id, asaas_customer_id, nome')
+          .gte('created_at', minDate.toISOString())
+          .lt('created_at', maxDate.toISOString())
+          .order('created_at', { ascending: false })
+          .limit(500);
+
+        if (assinaturas) {
+          allLists = assinaturas.map((e: any) => {
+            return {
+              key: e.id,
+              user_id: e.claimed_user_id || null,
+              title: e.nome || e.email?.split('@')[0] || 'Usuário',
+              email: e.email,
+              subtitle: `Assinou via Asaas (${e.status})`,
+              at: e.created_at,
+              acessos: null,
+              avatar_url: null,
+              is_premium: true,
+              planValue: 29.90,
+              planTag: { plano: 'Assinatura', status: e.status, expires_at: null },
+            };
+          });
+        }
       } else {
         listPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: id, _dia: isoDate(d) }));
         let extraPromises: Promise<any>[] = [];
@@ -461,24 +485,27 @@ export function AdminHojeCards() {
               profiles:user_id ( display_name, is_premium ),
               users:user_id ( email, raw_user_meta_data )
             `)
-            .eq('event_name', 'trial_click')
+            .in('event_name', ['trial_click', 'assinatura_aberta'])
             .gte('created_at', minDate.toISOString())
             .lt('created_at', maxDate.toISOString());
             
           if (vpEvents) {
-            const vpMapped = vpEvents.map((e: any) => {
-              const uemail = e.users?.email || e.email || 'Visitante';
-              return {
-                key: e.id,
-                user_id: e.user_id,
-                title: e.profiles?.display_name || uemail.split('@')[0],
-                email: uemail,
-                subtitle: 'Abriu planos (Clicou)',
-                at: e.created_at,
-                acessos: null,
-                avatar_url: e.users?.raw_user_meta_data?.avatar_url || e.users?.raw_user_meta_data?.picture,
-                is_premium: e.profiles?.is_premium || false,
-              };
+            // Remove Premium do Modal
+            const vpMapped = vpEvents
+              .filter((e: any) => e.profiles?.is_premium !== true)
+              .map((e: any) => {
+                const uemail = e.users?.email || e.email || 'Visitante';
+                return {
+                  key: e.id,
+                  user_id: e.user_id,
+                  title: e.profiles?.display_name || uemail.split('@')[0],
+                  email: uemail,
+                  subtitle: 'Abriu planos (Clicou)',
+                  at: e.created_at,
+                  acessos: null,
+                  avatar_url: e.users?.raw_user_meta_data?.avatar_url || e.users?.raw_user_meta_data?.picture,
+                  is_premium: false,
+                };
             });
             allLists = allLists.concat(vpMapped);
           }
@@ -516,52 +543,13 @@ export function AdminHojeCards() {
         acessos: typeof r.acessos === 'number' ? r.acessos : null,
         avatarUrl: r.avatar_url,
         isPremium: r.is_premium,
+        planValue: r.planValue,
+        planTag: r.planTag,
       })).filter(r => r.email !== 'wn7corporation@gmail.com' && r.email !== 'suporte@direitoprime.com.br' && r.email !== 'wn7juridico@gmail.com');
 
       if (id === 'trial' && list.length > 0) {
-        const userIds = list.map(r => r.userId).filter(Boolean);
-        try {
-          const { data: enriched } = await supabase.functions.invoke('admin-play-trials', { body: { user_ids: userIds } });
-          if (enriched && Array.isArray(enriched)) {
-            const map = new Map(enriched.map((e: any) => [e.user_id, e]));
-            list.forEach(r => {
-              const sub = map.get(r.userId);
-              if (sub) {
-                const isAnual = sub.product_id?.includes('anual');
-                const isMensal = sub.product_id?.includes('mensal');
-                const plano = isAnual ? 'Anual' : isMensal ? 'Mensal' : (sub.product_id || 'Plano');
-                let status = 'Ativo';
-                if (sub.status === 'SUBSCRIPTION_STATE_CANCELED') status = 'Cancelado';
-                else if (sub.status === 'SUBSCRIPTION_STATE_ACTIVE') status = 'Ativo';
-                else if (sub.status) status = sub.status.replace('SUBSCRIPTION_STATE_', '');
-                
-                let expiresStr = null;
-                if (sub.expires_at) {
-                  const d = new Date(sub.expires_at);
-                  const dia = d.getDate().toString().padStart(2, '0');
-                  const mes = (d.getMonth() + 1).toString().padStart(2, '0');
-                  const ano = d.getFullYear().toString().slice(2);
-                  const h = d.getHours().toString().padStart(2, '0');
-                  const m = d.getMinutes().toString().padStart(2, '0');
-                  expiresStr = `${dia}/${mes}/${ano} ${h}:${m}`;
-                }
-                
-                r.planValue = isMensal ? 29.90 : 199.90;
-                r.planTag = { plano, status, expires_at: expiresStr };
-                r.googleId = sub.linked_purchase_token || sub.purchase_token || sub.order_id;
-                
-                if (status === 'Ativo') {
-                  r.isPremium = true;
-                }
-              } else {
-                r.planValue = 199.90;
-                r.planTag = { plano: 'Anual', status: 'Ativo', expires_at: null };
-              }
-            });
-          }
-        } catch (err) {
-          console.error("Falha ao enriquecer trials", err);
-        }
+        // Agora tratamos "trial" como "Assinou via Asaas". Não vamos chamar o endpoint antigo de Google/Apple.
+        // Já mapeamos o isPremium e o planValue na lista acima.
       }
 
       setRows(list);
@@ -634,8 +622,6 @@ export function AdminHojeCards() {
   }, [openCard]);
 
 
-
-
   const selecionarPeriodo = (p: PeriodoId) => {
     setPeriodo(p);
     setOpen(null); // Fechar a aba atual se mudar o período
@@ -654,8 +640,8 @@ export function AdminHojeCards() {
     { id: 'online', label: 'Online hoje', icon: Radio },
     { id: 'cadastros', label: 'Cadastrados', icon: UserPlus },
     { id: 'paywall', label: 'Tela de Assinaturas', icon: Sparkles },
-    { id: 'viu_planos', label: 'Viu planos', icon: Check },
-    { id: 'trial', label: 'Iniciou teste', icon: DollarSign },
+    { id: 'viu_planos', label: 'Checkout', icon: Check },
+    { id: 'trial', label: 'Assinou', icon: DollarSign },
   ];
 
   const titles: Record<CardId, string> = {
@@ -663,8 +649,8 @@ export function AdminHojeCards() {
     online: 'Online',
     cadastros: 'Cadastrados',
     paywall: 'Entraram em Assinaturas',
-    viu_planos: 'Clicaram nos Planos',
-    trial: 'Iniciaram assinatura teste',
+    viu_planos: 'Abriram Checkout',
+    trial: 'Assinaram',
   };
 
   const rotuloPeriodo = {

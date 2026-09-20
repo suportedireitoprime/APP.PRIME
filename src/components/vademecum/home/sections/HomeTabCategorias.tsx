@@ -32,7 +32,7 @@ const HomeTabCategorias = ({ onOpenCategory }: HomeTabCategoriasProps) => {
         </p>
       </div>
       <div className="h-[1.5px] bg-border/70 w-full -mt-2" />
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-4">
         {CATEGORIA_CATS.map((c, i) => (
           <HomeCard
             key={c.id}

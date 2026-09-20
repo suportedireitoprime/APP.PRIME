@@ -148,6 +148,7 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
   };
 
   const [copied, setCopied] = useState(false);
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [activeTab, setActiveTab] = useState('sumula');
   const [aiLoading, setAiLoading] = useState(false);
   const [aiContent, setAiContent] = useState<{ explicacao?: string; exemplo?: string; termos?: string } | null>(null);
@@ -321,6 +322,9 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
         narracaoAudioRef.current.pause();
         narracaoAudioRef.current = null;
       }
+      if (copyTimeoutRef.current) {
+        clearTimeout(copyTimeoutRef.current);
+      }
       stopProgressTracking();
     };
   }, [stopProgressTracking]);
@@ -330,7 +334,8 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
       await copiarTexto(`${sumulaTitulo}\n\n${sumula.enunciado}`);
       setCopied(true);
       toast.success('Enunciado copiado para a área de transferência');
-      setTimeout(() => setCopied(false), 2000);
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+      copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error('Falha ao copiar');
     }

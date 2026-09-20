@@ -32,6 +32,8 @@ const RED_BADGE_STYLE = 'bg-[#ff2d55]/15 text-[#ff2d55] border-[#ff2d55]/35';
 
 // Funções ordenadas rigorosamente pela frequência de acesso dos estudantes e operadores do Direito
 const FUNCOES: FuncaoItem[] = [
+  { id: 'aprender', label: 'Estudos', icon: GraduationCap, route: '/aprender', prefetchKey: 'aprender' },
+  { id: 'questoes', label: 'Praticar', icon: ListChecks, route: '/questoes', prefetchKey: 'questoes' },
   {
     id: 'legislacao',
     label: 'Legislação & Vade Mecum',
@@ -50,9 +52,7 @@ const FUNCOES: FuncaoItem[] = [
       { id: 'legislacao-estadual', label: 'Legislação Estadual', route: '/legislacao-estadual', icon: Compass },
     ],
   },
-  { id: 'questoes', label: 'Questões', icon: ListChecks, route: '/questoes', prefetchKey: 'questoes' },
   { id: 'flashcards', label: 'Flashcards', icon: Layers, route: '/flashcards', prefetchKey: 'flashcards' },
-  { id: 'aprender', label: 'Aprender', icon: GraduationCap, route: '/aprender', prefetchKey: 'aprender' },
   { id: 'me-explique', label: 'Me Explique', icon: Camera, route: '/me-explique', prefetchKey: 'meExplique', badge: 'IA', badgeColor: RED_BADGE_STYLE },
   { id: 'chat-juridico', label: 'Chat Jurídico', icon: MessageCircle, route: 'chat', badge: 'IA', badgeColor: RED_BADGE_STYLE },
   { id: 'resumos', label: 'Resumos Jurídicos', icon: FileText, route: '/resumos-juridicos', prefetchKey: 'resumosJuridicos' },
@@ -121,9 +121,9 @@ export function SideMenuFuncoes({ onNavigate }: SideMenuFuncoesProps) {
                 <AnimatePresence initial={false}>
                   {legislacaoAberta && (
                     <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
+                      initial={{ y: -5, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: -5, opacity: 0 }}
                       transition={{ duration: 0.08, ease: [0.16, 1, 0.3, 1] }}
                       className="overflow-hidden bg-background/50 border-t border-border/40 divide-y divide-border/30"
                     >

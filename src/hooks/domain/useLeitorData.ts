@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { getLocalLeituraNativa, cacheLeituraOnDemand } from '@/services/leituraNativaPrefetch';
 import { pullLeituraProgress, pushLeituraProgress } from '@/lib/leituraProgressSync';
+import { resolveLivroTabela, getCandidateTabelas } from '@/lib/bibliotecaColecoes';
 
 export type Registro = {
   status: 'pendente' | 'processando' | 'pronto' | 'erro';
@@ -34,13 +35,23 @@ export function useLeitorData(livroTabela: string, livroId: string, pdfUrl: stri
   const [refinoStatus, setRefinoStatus] = useState<Registro['refino_status']>(null);
 
   const [resumeOcrPage, setResumeOcrPage] = useState<number | null>(null);
+  const [reloadTick, setReloadTick] = useState(0);
+
+  const canonicalTabela = resolveLivroTabela(livroTabela);
+  const candidates = useMemo(() => getCandidateTabelas(livroTabela), [livroTabela]);
+
+  const recarregar = useCallback(() => {
+    setStatus('processando');
+    setErro(null);
+    setReloadTick((t) => t + 1);
+  }, []);
 
   useEffect(() => {
     void pullLeituraProgress().catch(console.error);
   }, []);
 
   useEffect(() => {
-    const key = LOCAL_KEY(livroTabela, livroId);
+    const key = LOCAL_KEY(canonicalTabela, livroId);
     try {
       const prev = JSON.parse(localStorage.getItem(key) || '{}');
       localStorage.setItem(
@@ -56,8 +67,8 @@ export function useLeitorData(livroTabela: string, livroId: string, pdfUrl: stri
       );
       window.dispatchEvent(new CustomEvent('biblioteca:tracking', { detail: { key } }));
     } catch {}
-    pushLeituraProgress(livroTabela, livroId, 800);
-  }, [livroTabela, livroId, titulo, autor, capa]);
+    pushLeituraProgress(canonicalTabela, livroId, 800);
+  }, [canonicalTabela, livroId, titulo, autor, capa]);
 
   useEffect(() => {
     let cancelled = false;
@@ -107,7 +118,9 @@ export function useLeitorData(livroTabela: string, livroId: string, pdfUrl: stri
         if (!restoredIndex) {
           restoredIndex = true;
           try {
-            const saved = JSON.parse(localStorage.getItem(LOCAL_KEY(livroTabela, livroId)) || '{}');
+            const saved =
+              JSON.parse(localStorage.getItem(LOCAL_KEY(canonicalTabela, livroId)) || '{}') ||
+              JSON.parse(localStorage.getItem(LOCAL_KEY(livroTabela, livroId)) || '{}');
             if (typeof saved.ocrPage === 'number' && saved.ocrPage > 0) {
               setResumeOcrPage(saved.ocrPage);
             } else if (typeof saved.index === 'number' && saved.index > 0) {
@@ -133,8 +146,11 @@ export function useLeitorData(livroTabela: string, livroId: string, pdfUrl: stri
       const { data, error } = await supabase
         .from('biblioteca_leitura_nativa')
         .select('*')
-        .eq('livro_tabela', livroTabela)
-        .eq('livro_id', livroId)
+        .in('livro_tabela', candidates)
+        .eq('livro_id', String(livroId))
+        .order('status', { ascending: false })
+        .order('updated_at', { ascending: false })
+        .limit(1)
         .maybeSingle();
       if (!error && data) await applyRow(data);
       return data;
@@ -148,7 +164,7 @@ export function useLeitorData(livroTabela: string, livroId: string, pdfUrl: stri
     };
 
     const channel = supabase
-      .channel(`leitura-nativa-${livroTabela}-${livroId}`)
+      .channel(`leitura-nativa-${canonicalTabela}-${livroId}`)
       .on(
         'postgres_changes',
         {
@@ -160,14 +176,18 @@ export function useLeitorData(livroTabela: string, livroId: string, pdfUrl: stri
         (payload) => {
           if (cancelled) return;
           const row: any = payload.new;
-          if (row?.livro_tabela === livroTabela) applyRow(row);
+          if (candidates.includes(row?.livro_tabela)) applyRow(row);
         }
       )
       .subscribe();
 
     void (async () => {
       try {
-        const local = await getLocalLeituraNativa(livroTabela, livroId);
+        let local = await getLocalLeituraNativa(canonicalTabela, livroId);
+        if (!local && canonicalTabela !== livroTabela) {
+          local = await getLocalLeituraNativa(livroTabela, livroId);
+        }
+
         if (cancelled) return;
         const hasLocalContent = !!local?.conteudo_md;
         const localPronto = hasLocalContent && (local as any).refino_status === 'pronto';
@@ -175,12 +195,12 @@ export function useLeitorData(livroTabela: string, livroId: string, pdfUrl: stri
 
         if (localPronto) {
           setStatus('pronto');
-          setConteudo(local.conteudo_md);
-          setSumario((local.sumario_json as any) || []);
+          setConteudo(local!.conteudo_md);
+          setSumario((local!.sumario_json as any) || []);
           setCapitulos(((local as any).capitulos_json as any[]) || []);
-          setTotalPaginas(local.total_paginas ?? null);
+          setTotalPaginas(local!.total_paginas ?? null);
           try {
-            const saved = JSON.parse(localStorage.getItem(LOCAL_KEY(livroTabela, livroId)) || '{}');
+            const saved = JSON.parse(localStorage.getItem(LOCAL_KEY(canonicalTabela, livroId)) || '{}');
             if (typeof saved.ocrPage === 'number' && saved.ocrPage > 0) setResumeOcrPage(saved.ocrPage);
           } catch {}
           return;
@@ -206,7 +226,7 @@ export function useLeitorData(livroTabela: string, livroId: string, pdfUrl: stri
         if (cancelled) return;
 
         if (existing && (existing.status === 'pronto' || existing.conteudo_md_refinado || existing.conteudo_md || existing.conteudo_md_refinado_url || existing.conteudo_md_url)) {
-          cacheLeituraOnDemand(livroTabela, livroId);
+          cacheLeituraOnDemand(canonicalTabela, livroId);
           if (existing.refino_status === 'processando') startPolling();
           return;
         }
@@ -215,14 +235,21 @@ export function useLeitorData(livroTabela: string, livroId: string, pdfUrl: stri
         startPolling();
 
         const { error } = await supabase.functions.invoke('biblioteca-ocr-mistral', {
-          body: { livro_id: livroId, livro_tabela: livroTabela, pdf_url: pdfUrl, titulo },
+          body: { livro_id: String(livroId), livro_tabela: canonicalTabela, pdf_url: pdfUrl, titulo },
         });
         if (error) throw error;
         void fetchLatest().catch(console.error);
       } catch (e: any) {
         console.error('[LeitorNativo]', e);
         if (!cancelled) {
-          const { data: check } = await supabase.from('biblioteca_leitura_nativa').select('status').eq('livro_id', livroId).eq('livro_tabela', livroTabela).maybeSingle();
+          const { data: check } = await supabase
+            .from('biblioteca_leitura_nativa')
+            .select('status')
+            .in('livro_tabela', candidates)
+            .eq('livro_id', String(livroId))
+            .order('status', { ascending: false })
+            .limit(1)
+            .maybeSingle();
           if (check?.status === 'processando') return;
           
           setStatus('erro');
@@ -245,7 +272,7 @@ export function useLeitorData(livroTabela: string, livroId: string, pdfUrl: stri
       if (pollingId) clearInterval(pollingId);
       supabase.removeChannel(channel);
     };
-  }, [livroId, livroTabela, pdfUrl]);
+  }, [livroId, canonicalTabela, livroTabela, candidates, pdfUrl, titulo, reloadTick]);
 
   return {
     status,
@@ -258,6 +285,7 @@ export function useLeitorData(livroTabela: string, livroId: string, pdfUrl: stri
     totalEtapas,
     totalPaginas,
     refinoStatus,
-    resumeOcrPage
+    resumeOcrPage,
+    recarregar,
   };
 }

@@ -34,6 +34,14 @@ export const DocumentarioSettingsModal: React.FC<Props> = ({
   onCustomAudioFileChange,
 }) => {
   const [copied, setCopied] = useState(false);
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    };
+  }, []);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const getFullScript = () => {
@@ -48,7 +56,8 @@ export const DocumentarioSettingsModal: React.FC<Props> = ({
     const script = getFullScript();
     navigator.clipboard.writeText(script).then(() => {
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+      copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
     });
   };
 

@@ -36,6 +36,13 @@ const AdminAtualizacao = () => {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(DEFAULT_REPO);
   const [copied, setCopied] = useState<string | null>(null);
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     const saved = localStorage.getItem(REPO_STORAGE_KEY);
@@ -64,7 +71,8 @@ const AdminAtualizacao = () => {
       document.body.removeChild(ta);
     }
     setCopied(key);
-    setTimeout(() => setCopied(null), 1500);
+    if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    copyTimeoutRef.current = setTimeout(() => setCopied(null), 1500);
   };
 
   const links = buildLinks(repo);

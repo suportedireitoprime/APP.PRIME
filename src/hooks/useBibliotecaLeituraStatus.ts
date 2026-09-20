@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { COLECOES, normalizeLivro, type ColecaoConfig, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
+import { COLECOES, normalizeLivro, resolveLivroTabela, type ColecaoConfig, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
 
 export interface LeituraNativaStatus {
   status?: string | null;             // pendente | processando | pronto | erro
@@ -67,10 +67,15 @@ export function useBibliotecaLeituraStatus() {
       .limit(5000);
     const statusMap = new Map<string, LeituraNativaStatus>();
     for (const s of (statusRows as any[]) ?? []) {
+      const canonical = resolveLivroTabela(s.livro_tabela);
+      statusMap.set(`${canonical}::${s.livro_id}`, s);
       statusMap.set(`${s.livro_tabela}::${s.livro_id}`, s);
     }
     for (const it of allLivros) {
-      it.leitura = statusMap.get(`${it.colecao.table}::${it.id}`) ?? null;
+      it.leitura =
+        statusMap.get(`${it.colecao.table}::${it.id}`) ??
+        statusMap.get(`${it.colecao.id}::${it.id}`) ??
+        null;
     }
     CACHE = allLivros;
     try { sessionStorage.setItem(SS_KEY, JSON.stringify(allLivros)); } catch { /* quota */ }
@@ -89,15 +94,15 @@ export function useBibliotecaLeituraStatus() {
         { event: '*', schema: 'public', table: 'biblioteca_leitura_nativa' },
         (payload: any) => {
           const s = payload.new ?? payload.old;
-          if (!s?.livro_id || !s?.livro_tabela) return;
+          const canonical = resolveLivroTabela(s.livro_tabela);
           setItems((prev) => prev.map((it) =>
-            it.colecao.table === s.livro_tabela && String(it.id) === String(s.livro_id)
+            (it.colecao.table === s.livro_tabela || it.colecao.table === canonical || it.colecao.id === s.livro_tabela) && String(it.id) === String(s.livro_id)
               ? { ...it, leitura: { ...(it.leitura ?? {}), ...s } }
               : it
           ));
           if (CACHE) {
             CACHE = CACHE.map((it) =>
-              it.colecao.table === s.livro_tabela && String(it.id) === String(s.livro_id)
+              (it.colecao.table === s.livro_tabela || it.colecao.table === canonical || it.colecao.id === s.livro_tabela) && String(it.id) === String(s.livro_id)
                 ? { ...it, leitura: { ...(it.leitura ?? {}), ...s } }
                 : it
             );

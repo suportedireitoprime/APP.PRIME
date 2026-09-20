@@ -148,7 +148,7 @@ export const BibliotecaCategoriaDesktopView: React.FC<BibliotecaCategoriaDesktop
             </div>
 
             {isLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div
                     key={i}
@@ -179,7 +179,7 @@ export const BibliotecaCategoriaDesktopView: React.FC<BibliotecaCategoriaDesktop
                   ))}
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
                 {livrosVisiveis.map((l, i) => (
                   <BibliotecaCategoriaLivroCard
                     key={`${colecao.id}-${l.id}`}

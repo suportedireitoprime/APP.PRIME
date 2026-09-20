@@ -34,12 +34,12 @@ export function AssinantesFunnelCard({
     <section className="bg-card rounded-2xl border border-border p-2.5 md:p-4 relative overflow-hidden">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-blue-500/10 rounded-xl">
-              <Filter className="w-5 h-5 text-blue-500" />
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-muted rounded-xl">
+              <Filter className="w-5 h-5 text-foreground" />
             </div>
             <div>
-              <h2 className="font-black text-base leading-tight">Funil de Conversão</h2>
+              <h2 className="font-semibold text-base leading-tight">Funil de Conversão</h2>
               <select
                 value={funnelDays}
                 onChange={(e) => {
@@ -58,7 +58,7 @@ export function AssinantesFunnelCard({
 
           <button
             onClick={() => navigate('/admin/funil')}
-            className="sm:hidden text-[10px] font-semibold px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 transition-colors border border-blue-500/20 ml-2"
+            className="sm:hidden text-[10px] font-semibold px-2.5 py-1 rounded-full bg-muted text-foreground hover:bg-muted/80 transition-colors border border-border ml-2"
           >
             Ver completo
           </button>
@@ -70,7 +70,7 @@ export function AssinantesFunnelCard({
               onClick={() => setFunnelPlatform('asaas')}
               className={`text-[10px] px-2.5 py-1 rounded-full font-medium transition-colors ${
                 funnelPlatform === 'asaas'
-                  ? 'bg-blue-500 text-white shadow-sm'
+                  ? 'bg-foreground text-background shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
@@ -80,7 +80,7 @@ export function AssinantesFunnelCard({
               onClick={() => setFunnelPlatform('play')}
               className={`text-[10px] px-2.5 py-1 rounded-full font-medium transition-colors ${
                 funnelPlatform === 'play'
-                  ? 'bg-[#3DDC84] text-white shadow-sm'
+                  ? 'bg-foreground text-background shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
@@ -90,7 +90,7 @@ export function AssinantesFunnelCard({
               onClick={() => setFunnelPlatform('apple')}
               className={`text-[10px] px-2.5 py-1 rounded-full font-medium transition-colors ${
                 funnelPlatform === 'apple'
-                  ? 'bg-zinc-700 text-white shadow-sm'
+                  ? 'bg-foreground text-background shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >

@@ -31,7 +31,7 @@ const HomeAreasModal = ({ open, onClose, onSelectArea }: HomeAreasModalProps) =>
         </div>
       </div>
       <div className="flex-1 overflow-y-auto px-4 pb-[calc(var(--sai-bottom)+24px)] pt-4">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-4">
           {AREA_CATS.map((c, i) => (
             <HomeCard
               key={c.id}

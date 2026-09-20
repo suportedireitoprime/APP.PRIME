@@ -213,9 +213,10 @@ export function parseTextoCompleto(texto: string): ParsedLei {
 interface LeiOrdinariaDetailProps {
   lei: LeiOrdinaria;
   onBack: () => void;
+  isEmbedded?: boolean;
 }
 
-const LeiOrdinariaDetail = ({ lei, onBack }: LeiOrdinariaDetailProps) => {
+const LeiOrdinariaDetail = ({ lei, onBack, isEmbedded = false }: LeiOrdinariaDetailProps) => {
   const [openArtigo, setOpenArtigo] = useState<{ numero: string; texto: string } | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   
@@ -235,20 +236,22 @@ const LeiOrdinariaDetail = ({ lei, onBack }: LeiOrdinariaDetailProps) => {
   });
 
   return (
-    <div className="min-h-dvh bg-background pb-20 lg:pb-0">
-      <PageHeader
-        title={lei.numero_lei}
-        subtitle={lei.data_publicacao || undefined}
-        onBack={onBack}
-        leading={
-          <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
-            <FileText className="w-5 h-5 text-primary" />
-          </div>
-        }
-      />
+    <div className={isEmbedded ? "h-full bg-background relative" : "min-h-dvh bg-background pb-20 lg:pb-0"}>
+      {!isEmbedded && (
+        <PageHeader
+          title={lei.numero_lei}
+          subtitle={lei.data_publicacao || undefined}
+          onBack={onBack}
+          leading={
+            <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+              <FileText className="w-5 h-5 text-primary" />
+            </div>
+          }
+        />
+      )}
 
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-6">
+      <div className="max-w-[800px] mx-auto px-4 sm:px-6 md:px-8 py-6">
         {/* Brasão */}
         <div className="flex flex-col items-center text-center mb-6">
           <img src={brasaoImg} alt="Brasão da República" loading="eager" decoding="async" fetchPriority="high" className="w-16 h-16 mb-3" style={{ contain: 'paint layout' }} />

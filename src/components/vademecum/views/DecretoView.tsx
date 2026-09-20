@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
-import { ArrowLeft, Calendar, ChevronRight, Loader2, ScrollText, Scale, Search } from 'lucide-react';
+import { ArrowLeft, Calendar, ChevronRight, Loader2, ScrollText, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ANOS_DECRETOS, type LeiOrdinaria } from '@/services/legislacaoService';
 import LeiOrdinariaDetail from '@/components/vademecum/artigo/LeiOrdinariaDetail';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 interface DecretoViewProps {
   goBack: () => void;
@@ -31,6 +32,8 @@ const DecretoView: React.FC<DecretoViewProps> = ({
   openDecreto,
   setOpenDecreto,
 }) => {
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+
   const filteredDecretos = useMemo(() => {
     if (!searchDecretos) return decretos;
     const q = searchDecretos.toLowerCase();
@@ -46,7 +49,7 @@ const DecretoView: React.FC<DecretoViewProps> = ({
     overscan: 5,
   });
 
-  if (openDecreto) {
+  if (openDecreto && !isDesktop) {
     return (
       <LeiOrdinariaDetail
         lei={openDecreto}
@@ -57,11 +60,11 @@ const DecretoView: React.FC<DecretoViewProps> = ({
 
   if (selectedAnoDecreto) {
     return (
-      <div className="theme-vademecum min-h-dvh bg-background pb-20 lg:pb-0">
+      <div className="theme-vademecum min-h-dvh bg-background pb-20 lg:pb-0 flex flex-col">
         <div className={`bg-gradient-to-br ${config?.bg || 'from-primary to-primary/80'} px-4 pt-10 pb-6 sm:px-6 md:px-8`}>
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-[1600px] mx-auto">
             <button
-              onClick={() => { setSelectedAnoDecreto(null); setSearchDecretos(''); }}
+              onClick={() => { setSelectedAnoDecreto(null); setSearchDecretos(''); setOpenDecreto(null); }}
               className="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white font-medium transition-all text-sm px-3 py-1.5 rounded-lg mb-4 touch-manipulation select-none"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -79,77 +82,92 @@ const DecretoView: React.FC<DecretoViewProps> = ({
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-4 space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar por número ou ementa..."
-              value={searchDecretos}
-              onChange={(e) => setSearchDecretos(e.target.value)}
-              className="pl-10 bg-secondary border-border"
-            />
+        <div className="max-w-[1600px] mx-auto w-full px-4 sm:px-6 md:px-8 py-4 flex gap-6 items-start">
+          <div className={`w-full flex flex-col space-y-4 ${isDesktop && openDecreto ? 'lg:w-[380px] xl:w-[420px] shrink-0' : ''}`}>
+            <div className="relative shrink-0">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar por número ou ementa..."
+                value={searchDecretos}
+                onChange={(e) => setSearchDecretos(e.target.value)}
+                className="pl-10 bg-secondary border-border"
+              />
+            </div>
+
+            {loadingDecretos ? (
+              <div className="flex flex-col items-center justify-center py-16 gap-3">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                <p className="text-muted-foreground text-sm">Carregando decretos...</p>
+              </div>
+            ) : (
+              <div className="relative w-full" style={{ height: `${listVirtualizer.getTotalSize()}px` }}>
+                {listVirtualizer.getVirtualItems().map((virtualRow) => {
+                  const dec = filteredDecretos[virtualRow.index];
+                  const i = virtualRow.index;
+                  const isActive = openDecreto?.id === dec.id;
+                  return (
+                    <div
+                      key={dec.id}
+                      data-index={virtualRow.index}
+                      ref={listVirtualizer.measureElement}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        transform: `translateY(${virtualRow.start}px)`,
+                      }}
+                      className="pb-2"
+                    >
+                      <motion.button
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i < 10 ? i * 0.015 : 0 }}
+                        onClick={() => setOpenDecreto(dec)}
+                        className={`w-full text-left rounded-2xl transition-all group flex overflow-hidden min-h-[82px] ${isActive ? 'bg-primary shadow-md' : 'bg-card hover:bg-secondary/50 border border-transparent'}`}
+                      >
+                        <div className={`w-1.5 shrink-0 rounded-l-2xl ${isActive ? 'bg-primary-foreground' : 'bg-primary/50'}`} />
+                        <div className="flex items-center gap-3 p-4 flex-1 min-w-0">
+                          <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${isActive ? 'bg-primary-foreground/20' : 'bg-primary/10'}`}>
+                            <ScrollText className="w-4 h-4 text-primary-light" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <h4 className="font-display text-[15px] font-bold text-primary-light">
+                                {dec.numero_lei}
+                              </h4>
+                              {dec.data_publicacao && (
+                                <span className="text-muted-foreground text-[10px] bg-secondary px-2 py-0.5 rounded-full">
+                                  {dec.data_publicacao}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[13px] leading-relaxed line-clamp-2 text-foreground/80">
+                              {dec.ementa}
+                            </p>
+                          </div>
+                          <ChevronRight className={`w-4 h-4 shrink-0 mt-3 transition-colors ${isActive ? 'text-primary-foreground' : 'text-muted-foreground group-hover:text-primary'}`} />
+                        </div>
+                      </motion.button>
+                    </div>
+                  );
+                })}
+                {filteredDecretos.length === 0 && (
+                  <p className="text-center text-muted-foreground py-8">Nenhum decreto encontrado.</p>
+                )}
+              </div>
+            )}
           </div>
 
-          {loadingDecretos ? (
-            <div className="flex flex-col items-center justify-center py-16 gap-3">
-              <Loader2 className="w-8 h-8 text-primary animate-spin" />
-              <p className="text-muted-foreground text-sm">Carregando decretos...</p>
-            </div>
-          ) : (
-            <div className="relative w-full" style={{ height: `${listVirtualizer.getTotalSize()}px` }}>
-              {listVirtualizer.getVirtualItems().map((virtualRow) => {
-                const dec = filteredDecretos[virtualRow.index];
-                const i = virtualRow.index;
-                return (
-                  <div
-                    key={dec.id}
-                    data-index={virtualRow.index}
-                    ref={listVirtualizer.measureElement}
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      transform: `translateY(${virtualRow.start}px)`,
-                    }}
-                    className="pb-2"
-                  >
-                    <motion.button
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i < 10 ? i * 0.015 : 0 }}
-                      onClick={() => setOpenDecreto(dec)}
-                      className="w-full text-left rounded-2xl bg-card hover:bg-secondary/60 transition-all group flex overflow-hidden min-h-[82px]"
-                    >
-                      <div className="w-1.5 bg-primary rounded-l-2xl shrink-0" />
-                      <div className="flex items-center gap-3 p-4 flex-1 min-w-0">
-                        <div className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
-                          <ScrollText className="w-4 h-4 text-primary-light" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <h4 className="font-display text-[15px] font-bold text-primary-light">
-                              {dec.numero_lei}
-                            </h4>
-                            {dec.data_publicacao && (
-                              <span className="text-muted-foreground text-[10px] bg-secondary px-2 py-0.5 rounded-full">
-                                {dec.data_publicacao}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-[13px] leading-relaxed line-clamp-2 text-foreground/80">
-                            {dec.ementa}
-                          </p>
-                        </div>
-                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0 mt-3 transition-colors" />
-                      </div>
-                    </motion.button>
-                  </div>
-                );
-              })}
-              {filteredDecretos.length === 0 && (
-                <p className="text-center text-muted-foreground py-8">Nenhum decreto encontrado.</p>
-              )}
+          {isDesktop && openDecreto && (
+            <div className="flex-1 bg-card rounded-2xl border border-border overflow-hidden h-[calc(100vh-160px)] sticky top-6 shadow-xl relative z-10 flex flex-col">
+              <div className="h-full overflow-y-auto">
+                <LeiOrdinariaDetail
+                  lei={openDecreto}
+                  onBack={() => setOpenDecreto(null)}
+                  isEmbedded={true}
+                />
+              </div>
             </div>
           )}
         </div>
@@ -161,7 +179,7 @@ const DecretoView: React.FC<DecretoViewProps> = ({
   return (
     <div className="theme-vademecum min-h-dvh bg-background pb-20 lg:pb-0">
       <div className={`bg-gradient-to-br ${config?.bg || 'from-primary to-primary/80'} px-4 pt-10 pb-6 sm:px-6 md:px-8`}>
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-[1600px] mx-auto">
           <button
             onClick={goBack}
             className="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white font-medium transition-all text-sm px-3 py-1.5 rounded-lg mb-4 touch-manipulation select-none"
@@ -181,8 +199,8 @@ const DecretoView: React.FC<DecretoViewProps> = ({
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 py-6">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {ANOS_DECRETOS.map((ano, i) => (
             <motion.button
               key={ano}

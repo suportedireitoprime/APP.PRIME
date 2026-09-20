@@ -107,9 +107,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
   const isAdmin = isAdminEmail(userEmail);
 
   const highlightTrio: Item[] = [
-    { id: 'meu-espaco', label: 'Meu Espaço', icon: User },
     { id: 'planos',  label: isPremium ? 'Minha assinatura' : 'Planos',  icon: Gem },
-    { id: 'lembretes', label: 'Meus lembretes', icon: BellIcon },
   ];
 
   const handleItemClick = async (id: string) => {

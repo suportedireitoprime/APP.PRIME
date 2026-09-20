@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Capacitor } from '@capacitor/core';
 import { toast } from 'sonner';
 
-import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
+import { resolveLivroTabela, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import { formatarSobreLivro, estimarMinutosLeitura } from '@/lib/livroSobreFormat';
 import { useLivroPageCount } from '@/hooks/useLivroPageCount';
 import { useBibliotecaCapa } from '@/hooks/useBibliotecaAsset';
@@ -383,12 +383,12 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
             </Suspense>
           </ErrorBoundary>
         )}
-        {readerMode === 'nativa' && currentLivro.download && (
+        {readerMode === 'nativa' && (
           <LeitorNativo
             key="nativa-reader"
             livroId={String(currentLivro.id)}
-            livroTabela={currentLivro.colecaoId}
-            pdfUrl={currentLivro.download}
+            livroTabela={resolveLivroTabela(currentLivro.colecaoId)}
+            pdfUrl={currentLivro.download || currentLivro.link || ''}
             titulo={currentLivro.titulo}
             autor={currentLivro.autor}
             ano={currentLivro.anoLancamento}
@@ -397,6 +397,13 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
             curiosidades={currentLivro.curiosidades}
             capa={currentLivro.capa}
             onClose={() => setReaderMode(null)}
+            onOpenPdf={currentLivro.download ? () => {
+              void (async () => {
+                const url = await ensurePdfLocalUrl();
+                setPdfUrlForReader(url);
+                setReaderMode('pdf');
+              })();
+            } : undefined}
           />
         )}
         {readerMode === 'online' && currentLivro.link && (

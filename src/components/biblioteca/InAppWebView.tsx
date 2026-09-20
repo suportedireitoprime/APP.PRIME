@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ArrowLeft, RefreshCw, ExternalLink, Loader2, ShieldAlert, Copy, Check } from 'lucide-react';
 import { openExternal } from '@/lib/nativeBrowser';
@@ -26,8 +26,15 @@ const InAppWebView = ({ url, titulo, onClose, autoFallback = false }: InAppWebVi
   const [blocked, setBlocked] = useState(false);
   const [iframeKey, setIframeKey] = useState(0);
   const [copied, setCopied] = useState(false);
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const startedAtRef = useRef<number>(Date.now());
   const loadedRef = useRef(false);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    };
+  }, []);
 
   // Lock scroll da página de trás
   useBodyScrollLock(true);
@@ -58,9 +65,9 @@ const InAppWebView = ({ url, titulo, onClose, autoFallback = false }: InAppWebVi
       }
     }, 5000);
     return () => clearTimeout(t);
-  }, [iframeKey, url, titulo, autoFallback]);
+  }, [iframeKey, url, titulo, autoFallback, openExternalFallback]);
 
-  const openExternalFallback = async (reason: 'user' | 'auto' = 'user') => {
+  const openExternalFallback = useCallback(async (reason: 'user' | 'auto' = 'user') => {
     logPdfEvent({
       url,
       event: 'webview_fallback_external',
@@ -75,14 +82,15 @@ const InAppWebView = ({ url, titulo, onClose, autoFallback = false }: InAppWebVi
       } catch {}
     }
     openExternal(url);
-  };
+  }, [url, titulo]);
 
   const copyUrl = async () => {
     try {
       await copiarTexto(url);
       setCopied(true);
       toast.success('Link copiado');
-      setTimeout(() => setCopied(false), 2000);
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+      copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error('Não foi possível copiar');
     }
