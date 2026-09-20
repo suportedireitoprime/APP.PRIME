@@ -45,7 +45,7 @@ async function prefetchColecoes(qc: QueryClient) {
               if (colecao.orderBy) q = q.order(colecao.orderBy, { ascending: true, nullsFirst: false });
               
               const data = await withBundleFallback(
-                q.limit(2000).then((res: any) => {
+                q.limit(1000).then((res: any) => {
                   if (res.error) throw res.error;
                   return res.data;
                 }),

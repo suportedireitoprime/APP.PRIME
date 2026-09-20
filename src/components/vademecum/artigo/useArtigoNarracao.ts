@@ -201,14 +201,14 @@ export function useArtigoNarracao({
           tabelaNome.replace(/^[A-Z0-9]+_/, '').toUpperCase(),
         ]));
 
-        const { data: rows } = await supabase
+        const { data: row } = await supabase
           .from('narracoes_artigos')
           .select('audio_url, word_timings')
           .in('tabela_nome', aliases)
           .eq('artigo_numero', artigo.numero)
-          .limit(1);
+          .limit(1)
+          .maybeSingle();
 
-        const row = rows?.[0];
         if (row?.audio_url) {
           setNarracaoUrl(row.audio_url);
           if (Array.isArray(row.word_timings) && row.word_timings.length > 0) {
@@ -509,15 +509,16 @@ export function useArtigoNarracao({
           tabelaNome.replace(/^[A-Z0-9]+_/, '').toUpperCase(),
         ]));
 
-        const { data: rows } = await supabase
+        const { data: row } = await supabase
           .from('narracoes_artigos')
           .select('audio_url, word_timings')
           .in('tabela_nome', aliases)
           .eq('artigo_numero', artigo.numero)
-          .limit(1);
+          .limit(1)
+          .maybeSingle();
 
-        const cachedUrl = rows?.[0]?.audio_url || null;
-        const cachedTimings = Array.isArray(rows?.[0]?.word_timings) ? (rows![0].word_timings as any[]) : null;
+        const cachedUrl = row?.audio_url || null;
+        const cachedTimings = Array.isArray(row?.word_timings) ? (row!.word_timings as any[]) : null;
         if (cachedUrl) {
           audio_url = cachedUrl;
           word_timings = cachedTimings;

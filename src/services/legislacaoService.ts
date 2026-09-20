@@ -212,7 +212,7 @@ export async function fetchLeisOrdinariasPorAno(ano: number): Promise<LeiOrdinar
   const key = `leis:${ano}`;
   if (leisCache.has(key)) return leisCache.get(key)!;
   const res = await fetch(
-    `${supabaseUrl}/rest/v1/leis_ordinarias?ano=eq.${ano}&select=id,numero_lei,data_publicacao,ementa,url,ano,ordem,texto_completo&order=ordem.desc&limit=10000`,
+    `${supabaseUrl}/rest/v1/leis_ordinarias?ano=eq.${ano}&select=id,numero_lei,data_publicacao,ementa,url,ano,ordem,texto_completo&order=ordem.desc&limit=1000`,
     {
       headers: {
         apikey: supabaseKey,
@@ -235,7 +235,7 @@ export async function fetchDecretosPorAno(ano: number): Promise<LeiOrdinaria[]> 
   const key = `decretos:${ano}`;
   if (leisCache.has(key)) return leisCache.get(key)!;
   const res = await fetch(
-    `${supabaseUrl}/rest/v1/decretos?ano=eq.${ano}&select=id,numero_lei,data_publicacao,ementa,url,ano,ordem,texto_completo&order=ordem.desc&limit=10000`,
+    `${supabaseUrl}/rest/v1/decretos?ano=eq.${ano}&select=id,numero_lei,data_publicacao,ementa,url,ano,ordem,texto_completo&order=ordem.desc&limit=1000`,
     {
       headers: {
         apikey: supabaseKey,
