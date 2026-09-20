@@ -80,6 +80,9 @@ const ArtigoBottomSheet = ({
   ...rest
 }: ArtigoBottomSheetProps) => {
   const tabelaNome = propTabelaNome || tabela_nome || rest.tabela_nome || rest.tabelaNome || '';
+  // Estabiliza a referência de onClose para evitar re-execução de effects
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
   const artigo = useMemo(() => sanitizeArtigo(rawArtigo), [rawArtigo]);
   const breadcrumb = useMemo(() => {
     if (!rawBreadcrumb) return undefined;
@@ -426,9 +429,13 @@ const ArtigoBottomSheet = ({
     }
   }, [voiceGrifoActive, voicePhase]);
 
-  // Transfere para Activity nativa no Android
+  // Transfere para Activity nativa no Android (apenas na montagem inicial do artigo)
+  const nativeTransferredRef = useRef<string | null>(null);
   useEffect(() => {
     if (!artigo?.numero) return;
+    // Evita re-transferência quando highlights ou outros deps mudam
+    const artigoKey = `${artigo.id}-${artigo.numero}`;
+    if (nativeTransferredRef.current === artigoKey) return;
     let cancel = false;
 
     import('@capacitor/core')
@@ -436,6 +443,7 @@ const ArtigoBottomSheet = ({
         if (cancel) return;
         if (Capacitor.isNativePlatform()) {
           try {
+            nativeTransferredRef.current = artigoKey;
             const { NativeVadeMecumPlugin } = await import('@/plugins/NativeVadeMecumPlugin');
             await NativeVadeMecumPlugin.openArtigo({
               id: artigo.id,
@@ -445,17 +453,12 @@ const ArtigoBottomSheet = ({
               tabelaNome: tabelaNome || '',
               paragrafos: artigo.paragrafos || [],
               incisos: artigo.incisos || [],
-              highlights: highlights.map((h) => ({
-                id: h.id,
-                text: h.text,
-                color: h.color,
-                startOffset: h.startOffset,
-                endOffset: h.endOffset,
-              })),
+              highlights: [],
             });
-            onClose();
+            onCloseRef.current();
           } catch (e) {
             console.warn('Executando leitor web de fallback:', e);
+            nativeTransferredRef.current = null;
           }
         }
       })
@@ -464,7 +467,7 @@ const ArtigoBottomSheet = ({
     return () => {
       cancel = true;
     };
-  }, [artigo?.id, artigo?.numero, tabelaNome, onClose, highlights]);
+  }, [artigo?.id, artigo?.numero, tabelaNome]);
 
   useEffect(() => {
     setFocusedSegment(null);
@@ -742,7 +745,7 @@ const ArtigoBottomSheet = ({
 
   const tooltipHighlight = tooltipData ? highlights.find((h) => h.id === tooltipData.id) : null;
 
-  useBodyScrollLock(!!artigo);
+  // Removido: useBodyScrollLock duplicado — já chamado na linha 104 com lockId
 
   // Auto-scroll to first modified line
   useEffect(() => {
