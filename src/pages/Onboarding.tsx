@@ -205,7 +205,12 @@ const Onboarding = () => {
       {/* Modal de Checkout PIX R$ 149,90 */}
       <CheckoutModal
         open={!!checkoutPlan}
-        onOpenChange={(v) => { if (!v) setCheckoutPlan(null); }}
+        onOpenChange={(v) => { 
+          if (!v) {
+            setCheckoutPlan(null);
+            setPedirTrial(true);
+          }
+        }}
         plan={checkoutPlan}
         userEmail={userEmail}
         userName={initialName}
