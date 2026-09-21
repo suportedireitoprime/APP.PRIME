@@ -113,15 +113,15 @@ export function HorusPromoModal({ open, timeLeft, onClose, onRedeem }: HorusProm
                 Resgatar Desconto Agora
               </Button>
 
-              <button
+              <Button
                 onClick={(e) => {
                   e.stopPropagation();
                   onClose();
                 }}
-                className="mt-4 text-[13px] font-bold text-red-500 hover:text-red-400 underline underline-offset-4 decoration-red-500/30 transition-colors active:scale-[0.98]"
+                className="mt-3 relative overflow-hidden w-full h-14 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-2xl font-black text-base uppercase tracking-wider transition-all shadow-[0_8px_25px_rgba(239,68,68,0.35)] active:scale-[0.98] cursor-pointer"
               >
                 Quero perder o desconto
-              </button>
+              </Button>
             </motion.div>
           </motion.div>
         </>
