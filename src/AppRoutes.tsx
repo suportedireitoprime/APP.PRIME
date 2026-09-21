@@ -157,7 +157,6 @@ const LeiEstadualView = lazy(() => import("./pages/LeiEstadualView.tsx"));
 const ExplicacaoLei = lazy(() => import("./pages/ExplicacaoLei.tsx"));
 const RadarPLDetalhe = lazy(() => import("./pages/RadarPLDetalhe.tsx"));
 const NarracaoLei = lazy(() => import("./pages/NarracaoLei.tsx"));
-const VisualJuridico = lazy(() => import("./pages/VisualJuridico.tsx"));
 
 const Ferramentas = lazy(routePrefetch.ferramentas);
 const PeticaoInicial = lazy(() => import("./pages/PeticaoInicial.tsx"));
@@ -1081,7 +1080,6 @@ function AnimatedRoutes() {
           <Route path="/legislacao-estadual/:uf/lei/:slug" element={<ProtectedRoute><PageTransition><LeiEstadualView /></PageTransition></ProtectedRoute>} />
           <Route path="/explicacao-lei" element={<ProtectedRoute><PageTransition><ExplicacaoLei /></PageTransition></ProtectedRoute>} />
           <Route path="/narracao" element={<ProtectedRoute><PageTransition><NarracaoLei /></PageTransition></ProtectedRoute>} />
-          <Route path="/visuais/*" element={<ProtectedRoute><VisualJuridico /></ProtectedRoute>} />
 
           <Route path="/ferramentas" element={<ProtectedRoute><PageTransition instant><Ferramentas /></PageTransition></ProtectedRoute>} />
           <Route path="/documentos" element={<ProtectedRoute><PageTransition><Documentos /></PageTransition></ProtectedRoute>} />

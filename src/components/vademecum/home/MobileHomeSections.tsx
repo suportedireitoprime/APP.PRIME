@@ -6,7 +6,6 @@ import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { leiPath, tipoToSlug } from '@/lib/legislacaoSlugs';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
-import { TIPO_SLUG } from '@/lib/visuaisJuridicos/rotas';
 
 import {
   Cat,
@@ -34,7 +33,6 @@ const VoiceCaptureOverlay = lazyWithRetry(() => import('@/components/vademecum/o
 const AgendaMobileTab = lazyWithRetry(() => import('@/components/vademecum/tabs/AgendaMobileTab'));
 const GraficosMobileTab = lazyWithRetry(() => import('@/components/vademecum/tabs/GraficosMobileTab'));
 const JurisprudenciaSheet = lazyWithRetry(() => import('@/components/vademecum/sheets/JurisprudenciaSheet'));
-const VisuaisJuridicosSheet = lazyWithRetry(() => import('@/components/visuais/VisuaisJuridicosSheet'));
 const DocumentosSheet = lazyWithRetry(() => import('@/components/documentos/DocumentosSheet'));
 
 interface Props {
@@ -69,7 +67,6 @@ const MobileHomeSections = ({
   const navigate = useNavigate();
   const [juriOpen, setJuriOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState<Cat | AreaCat | CategoriaFormal | null>(null);
-  const [visuaisOpen, setVisuaisOpen] = useState(false);
   const [docPasta, setDocPasta] = useState<{ id: string; nome: string } | null>(null);
   const [areasOpen, setAreasOpen] = useState(false);
   const [categorySearch, setCategorySearch] = useState('');
@@ -88,11 +85,10 @@ const MobileHomeSections = ({
     onTabChange?.(tab);
   }, [tab, onTabChange]);
 
-  // Pré-aquecimento dos visuais jurídicos e imagens em idle
+  // Pré-aquecimento das imagens em idle
   useEffect(() => {
     const aquecer = () => {
-      import('@/components/visuais/VisuaisJuridicosSheet');
-      import('@/lib/visuaisJuridicos/cache').then((m) => m.prefetchVisuais());
+      // Outros pré-aquecimentos que não sejam de visuais
     };
     const w = window as any;
     if (typeof w.requestIdleCallback === 'function') {
@@ -218,7 +214,7 @@ const MobileHomeSections = ({
               setCategorySearch('');
               setCategoryOpen(cat);
             }}
-            onOpenVisuais={() => startTransition(() => setVisuaisOpen(true))}
+            onOpenVisuais={() => {}} // Feature removida
             onOpenAreas={() => startTransition(() => setAreasOpen(true))}
           />
         )}
@@ -249,21 +245,6 @@ const MobileHomeSections = ({
         )}
       </AnimatePresence>
 
-      {/* Visuais jurídicos */}
-      {visuaisOpen && (
-        <Suspense fallback={null}>
-          <VisuaisJuridicosSheet
-            open={visuaisOpen}
-            onClose={() => startTransition(() => setVisuaisOpen(false))}
-            onEscolherTipo={(t) => {
-              startTransition(() => {
-                setVisuaisOpen(false);
-                navigate(`/visuais/${TIPO_SLUG[t]}`);
-              });
-            }}
-          />
-        </Suspense>
-      )}
 
       {/* Documentos */}
       {docPasta && (
