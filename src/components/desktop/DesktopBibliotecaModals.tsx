@@ -30,6 +30,7 @@ export const DesktopBibliotecaModals: React.FC<DesktopBibliotecaModalsProps> = (
           <SearchOverlay
             open={searchOpen}
             onClose={onCloseSearch}
+            onSelectLei={() => {}}
           />
         )}
         {assistenteOpen && (
@@ -42,7 +43,7 @@ export const DesktopBibliotecaModals: React.FC<DesktopBibliotecaModalsProps> = (
           <LivroDetailSheet
             livro={livroAberto}
             open={!!livroAberto}
-            onOpenChange={(v) => { if (!v) onCloseLivro(); }}
+            onClose={onCloseLivro}
           />
         )}
       </Suspense>

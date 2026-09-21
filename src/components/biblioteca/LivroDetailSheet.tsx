@@ -292,7 +292,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
           open={open} 
           onClose={handleCloseSafe} 
           zIndex={1001} 
-          className={isDesktop ? "m-auto !inset-auto top-[7.5dvh] !h-[85dvh] max-w-[720px] rounded-3xl border border-border shadow-2xl" : "mt-[10dvh] !h-[90dvh] rounded-t-3xl shadow-[0_-8px_32px_-8px_rgba(0,0,0,0.5)]"}
+          className={isDesktop ? "left-0 right-0 mx-auto bottom-auto top-[7.5dvh] !h-[85dvh] max-w-[720px] rounded-3xl border border-border shadow-2xl" : "mt-[10dvh] !h-[90dvh] rounded-t-3xl shadow-[0_-8px_32px_-8px_rgba(0,0,0,0.5)]"}
         >
           <LivroFloatingActions
             fav={fav}
