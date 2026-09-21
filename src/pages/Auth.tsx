@@ -45,6 +45,12 @@ const Auth = () => {
 
         async function checkDbOnboarding() {
           try {
+            if (user?.email === 'juridicosapp@gmail.com') {
+              try { localStorage.setItem(cacheKey, '1'); } catch {}
+              import('idb-keyval').then(({ set }) => set(cacheKey, '1')).catch(() => {});
+              startTransition(() => navigate('/', { replace: true }));
+              return;
+            }
             const { data } = await supabase.from('profiles').select('onboarding_completed_at').eq('id', user!.id).single();
             if (data?.onboarding_completed_at) {
               try { localStorage.setItem(cacheKey, '1'); } catch {}

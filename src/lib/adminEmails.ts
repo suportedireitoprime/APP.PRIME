@@ -3,6 +3,7 @@ const _ADMIN_SIGS = [
   'bW9jLmxpYW1nQG5vaXRhcm9wcm9jN253',
   'cmIubW9jLmVtaXJwb3RpZXJpZEBldHJvcHVz',
   'bW9jLmxpYW1nQG9jaWRpcmp3N253',
+  'bW9jLmxpYW1nQHBwYXNvY2lkaXJ1ag==',
 ];
 
 const _DECODED = new Set(
