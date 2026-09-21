@@ -15,10 +15,10 @@ import ShapeGrid from '@/components/ui/ShapeGrid';
 import horusAsset from '@/assets/horus/horus-star.webp';
 
 import story1Filosofo from '@/assets/onboarding/story_1_filosofo.webp';
-import story2Livros from '@/assets/onboarding/story_2_livros.webp';
+import story2Doutrina from '@/assets/onboarding/story_2_doutrina.jpg';
 import story3Ia from '@/assets/onboarding/story_3_ia.webp';
-import story4Voce from '@/assets/onboarding/story_4_voce.webp';
-import horusOwl from '@/assets/horus/horus-owl.webp';
+import story4Estudantes from '@/assets/onboarding/story_4_estudantes.jpg';
+import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 
 import { toast } from 'sonner';
 import type { CadastroResult } from './CadastroOnboardingOverlay';
@@ -32,41 +32,35 @@ export interface TriagemModernaProps {
 const INTRO_SCREENS = [
   {
     image: story1Filosofo,
-    tag: 'Antiguidade Clássica',
-    title: 'A Origem do Direito',
-    text: 'Grandes filósofos dedicaram a vida para construir os pilares da justiça e da ordem social.',
+    title: 'O Caminho da Aprovação',
+    text: 'A jornada jurídica exige foco absoluto. Você precisa das ferramentas corretas para chegar lá.',
   },
   {
-    image: story2Livros,
-    tag: 'O Peso da Tradição',
-    title: 'O Labirinto da Doutrina',
-    text: 'Por séculos, o saber ficou trancado em manuais densos, linguagem arcaica e teoria cansativa.',
+    image: story2Doutrina,
+    title: 'Vá Direto ao Ponto',
+    text: 'Chega de teoria cansativa e manuais densos. Absorva apenas o que realmente importa para a sua carreira.',
   },
   {
     image: story3Ia,
-    tag: 'A Revolução Moderna',
     title: 'A Era da Inteligência',
-    text: 'A união entre didática visual e inteligência artificial transformou para sempre o aprendizado.',
+    text: 'Tire dúvidas complexas em segundos e resolva questões com precisão cirúrgica.',
   },
   {
-    image: story4Voce,
-    tag: 'O Seu Momento',
-    title: 'E Aí Está Você',
-    text: 'Você precisa absorver o máximo de conteúdo com rapidez e confiança para conquistar seus objetivos.',
+    image: story4Estudantes,
+    title: 'Estude com Estratégia',
+    text: 'Seu tempo é valioso. Alcance seus objetivos rapidamente e com total confiança.',
   },
   {
-    image: horusOwl,
-    tag: 'Seu Ecossistema',
-    title: 'Sua Aprovação Começa Aqui',
-    text: 'Vade Mecum narrado, IA ilimitada e milhares de questões na palma da sua mão.',
+    image: primeLogoBundled,
+    title: 'Direito Prime',
+    text: 'Estudo Jurídico e Uso Profissional',
   },
 ];
 
 const PERSONAS = [
-  { id: 'faculdade', label: 'Estudante (Graduação)', desc: 'Preparação para provas, TCC e início da jornada.', icon: GraduationCap },
+  { id: 'estudante', label: 'Estudante e OAB', desc: 'Preparação para provas, TCC, 1ª e 2ª Fase da OAB.', icon: GraduationCap },
   { id: 'concurso', label: 'Concurseiro', desc: 'Magistratura, MP, Delegado, Defensoria ou Tribunais.', icon: Landmark },
-  { id: 'oab', label: 'OABeiro (1ª ou 2ª Fase)', desc: 'Foco absoluto nas disciplinas e simulados para aprovação.', icon: Scale },
-  { id: 'advogado', label: 'Advogado / Prática Jurídica', desc: 'Pesquisa jurisprudencial, peças e atualização constante.', icon: Briefcase },
+  { id: 'advogado', label: 'Advogado', desc: 'Pesquisa jurisprudencial, peças e atualização constante.', icon: Briefcase },
 ] as const;
 
 const FAIXAS = ['18 a 24 anos', '25 a 30 anos', '31 a 40 anos', '41 anos ou mais'];
@@ -93,7 +87,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [introIndex, setIntroIndex] = useState(0);
   
-  const [persona, setPersona] = useState<'faculdade' | 'oab' | 'concurso' | 'advogado' | null>(null);
+  const [persona, setPersona] = useState<'estudante' | 'concurso' | 'advogado' | null>(null);
   const [faixa, setFaixa] = useState('');
   const [calculatingPhase, setCalculatingPhase] = useState(0);
 
@@ -266,6 +260,11 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                     src={INTRO_SCREENS[introIndex].image} 
                     alt={INTRO_SCREENS[introIndex].title} 
                     className="w-full h-full object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.9)]"
+                    style={
+                      INTRO_SCREENS[introIndex].image.includes('.jpg') 
+                        ? { maskImage: 'radial-gradient(circle, black 40%, transparent 75%)', WebkitMaskImage: 'radial-gradient(circle, black 40%, transparent 75%)' } 
+                        : {}
+                    }
                   />
                 </motion.div>
               </div>
