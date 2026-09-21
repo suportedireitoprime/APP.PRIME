@@ -12,6 +12,7 @@ import ShapeGrid from "@/components/ui/ShapeGrid";
 import { toast } from "@/hooks/use-toast";
 import { useTypewriter } from "@/hooks/useTypewriter";
 import { getAreaCover } from "@/lib/areasDireitoCovers";
+import { getAreaThemePalette } from "@/lib/areasDireitoIcons";
 import { ResumosMetodosDeck } from "@/components/resumos/ResumosMetodosDeck";
 import { cn } from "@/lib/utils";
 
@@ -28,6 +29,8 @@ export default function ResumosJuridicosSubtemas() {
   const decodedArea = decodeURIComponent(area || "");
   const decodedTema = decodeURIComponent(tema || "");
   const navigate = useNavigate();
+  
+  const palette = useMemo(() => getAreaThemePalette(decodedArea), [decodedArea]);
   
   const cacheKey = useMemo(() => `${decodedArea}:${decodedTema}`, [decodedArea, decodedTema]);
   const [rows, setRows] = useState<ResumoRow[]>(() => subtemasCache.get(cacheKey) || []);
@@ -274,11 +277,15 @@ export default function ResumosJuridicosSubtemas() {
                   <div className="absolute inset-0 rounded-t-2xl overflow-hidden pointer-events-none">
                     {ativo && <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/5 to-white/10 opacity-50" />}
                   </div>
-                  <span className={cn("relative z-10 transition-transform duration-300", ativo ? "scale-105 text-[#ef4444]" : "scale-100")}>{o.label}</span>
+                  <span className={cn("relative z-10 transition-transform duration-300", ativo ? "scale-105" : "scale-100")} style={{ color: ativo ? palette.primary : undefined }}>{o.label}</span>
                   {ativo && (
                     <motion.div 
                       layoutId="activeFolderTabSubtemas"
-                      className="absolute inset-0 rounded-t-2xl border-x border-t border-[#ef4444]/50 pointer-events-none shadow-[inset_0_2px_10px_rgba(239,68,68,0.15)]"
+                      className="absolute inset-0 rounded-t-2xl border-x border-t pointer-events-none"
+                      style={{
+                        borderColor: `${palette.primary}80`,
+                        boxShadow: `inset 0 2px 10px ${palette.primary}26`
+                      }}
                       initial={false}
                       transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                     />
@@ -287,7 +294,7 @@ export default function ResumosJuridicosSubtemas() {
               );
             })}
           </div>
-          <div className="w-full h-px bg-[#1A1A1A] relative z-20" style={{ boxShadow: "0 -1px 0 rgba(239,68,68,0.3)" }} />
+          <div className="w-full h-px bg-[#1A1A1A] relative z-20" style={{ boxShadow: `0 -1px 0 ${palette.primary}4D` }} />
         </div>
       </div>
 
@@ -303,7 +310,8 @@ export default function ResumosJuridicosSubtemas() {
             {q && (
               <button 
                 onClick={() => { haptic.selection(); setQ(""); }}
-                className="px-6 py-2.5 rounded-xl bg-[#ef4444] text-white font-bold text-sm hover:bg-[#ef4444]/90 active:scale-95 transition-all shadow-[0_4px_14px_rgba(239,68,68,0.3)]"
+                className="px-6 py-2.5 rounded-xl text-white font-bold text-sm active:scale-95 transition-all shadow-md"
+                style={{ backgroundColor: palette.primary, boxShadow: `0 4px 14px ${palette.primary}4D` }}
               >
                 Limpar Pesquisa
               </button>
@@ -364,13 +372,16 @@ export default function ResumosJuridicosSubtemas() {
                         openReader(r, "conceitos");
                       }}
                       className={cn(
-                        'relative min-h-[88px] sm:min-h-[104px] h-auto overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 p-3 sm:p-3.5 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
+                        'relative min-h-[72px] sm:min-h-[88px] h-auto overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 p-3 sm:p-3.5 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
                         isFav
-                          ? 'border-[#ef4444]/60 bg-card hover:border-[#ef4444] shadow-[#ef4444]/5'
-                          : 'border-border/50 bg-card/40 hover:border-[#ef4444]/50'
+                          ? 'bg-card shadow-sm'
+                          : 'border-border/50 bg-card/40'
                       )}
+                      style={{
+                        borderColor: isFav ? `${palette.primary}99` : undefined,
+                      }}
                     >
-                      <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-[#ef4444] to-[#7f1d1d] opacity-20 group-hover:opacity-100 transition-opacity" />
+                      <div className="absolute inset-y-0 left-0 w-1 opacity-20 group-hover:opacity-100 transition-opacity" style={{ background: `linear-gradient(to bottom, ${palette.primary}, transparent)` }} />
                       
                       <div className="flex flex-col items-center justify-center gap-2 shrink-0 w-[56px] sm:w-[64px] pl-1">
                         <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-white/5 border border-white/10 overflow-hidden shadow-inner shrink-0">
@@ -379,7 +390,7 @@ export default function ResumosJuridicosSubtemas() {
                       </div>
                       
                       <div className="min-w-0 flex-1 flex flex-col justify-center h-full py-1 pr-2">
-                        <h3 className="text-sm sm:text-base font-medium font-sans text-foreground break-words leading-snug line-clamp-3 group-hover:text-[#ef4444] transition-colors">
+                        <h3 className="text-sm sm:text-base font-medium font-sans text-foreground break-words leading-snug line-clamp-3 transition-colors" style={{ '--tw-text-opacity': '1' } as any}>
                           {r.subtema || r.tema}
                         </h3>
                       </div>
@@ -400,12 +411,12 @@ export default function ResumosJuridicosSubtemas() {
                           className="p-1 -mr-1 rounded-full hover:bg-secondary/50 active:scale-90 transition-transform"
                         >
                           {isFav ? (
-                            <Heart className="w-5 h-5" style={{ fill: RED, color: RED }} />
+                            <Heart className="w-5 h-5" style={{ fill: palette.primary, color: palette.primary }} />
                           ) : (
                             <Heart className="w-5 h-5 text-muted-foreground/50" />
                           )}
                         </div>
-                        <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-[#ef4444] transition-transform duration-300 group-hover:translate-x-0.5" />
+                        <ChevronRight className="w-4 h-4 text-muted-foreground/40 transition-transform duration-300 group-hover:translate-x-0.5" style={{ color: palette.primary }} />
                       </div>
                     </button>
                   </motion.div>

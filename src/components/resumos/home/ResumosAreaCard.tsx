@@ -18,9 +18,9 @@ export const ResumosAreaCard: React.FC<ResumosAreaCardProps> = ({ areaRow, onCli
         haptic.selection();
         onClick(areaRow.area);
       }}
-      className="w-full flex items-center gap-4 px-4 py-4 min-h-[96px] text-left hover:bg-secondary/20 active:scale-[0.98] transition-all rounded-2xl bg-card border border-border hover:border-[#ef4444]/40 shadow-sm group overflow-hidden relative"
+      className="w-full flex items-center gap-3.5 px-3 py-3 min-h-[80px] text-left hover:bg-secondary/20 active:scale-[0.98] transition-all rounded-2xl bg-card border border-border hover:border-[#ef4444]/40 shadow-sm group overflow-hidden relative"
     >
-      <div className="w-16 h-[88px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
+      <div className="w-14 h-[72px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
         <img
           src={getAreaCover(areaRow.area)?.cover}
           alt={displayArea}

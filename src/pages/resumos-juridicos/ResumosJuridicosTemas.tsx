@@ -237,11 +237,15 @@ export default function ResumosJuridicosTemas() {
                   <div className="absolute inset-0 rounded-t-2xl overflow-hidden pointer-events-none">
                     {ativo && <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/5 to-white/10 opacity-50" />}
                   </div>
-                  <span className={cn("relative z-10 transition-transform duration-300", ativo ? "scale-105 text-[#ef4444]" : "scale-100")}>{o.label}</span>
+                  <span className={cn("relative z-10 transition-transform duration-300", ativo ? "scale-105" : "scale-100")} style={{ color: ativo ? palette.primary : undefined }}>{o.label}</span>
                   {ativo && (
                     <motion.div 
                       layoutId="activeFolderTabTemas"
-                      className="absolute inset-0 rounded-t-2xl border-x border-t border-[#ef4444]/50 pointer-events-none shadow-[inset_0_2px_10px_rgba(239,68,68,0.15)]"
+                      className="absolute inset-0 rounded-t-2xl border-x border-t pointer-events-none"
+                      style={{
+                        borderColor: `${palette.primary}80`,
+                        boxShadow: `inset 0 2px 10px ${palette.primary}26`
+                      }}
                       initial={false}
                       transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                     />
@@ -250,7 +254,7 @@ export default function ResumosJuridicosTemas() {
               );
             })}
           </div>
-          <div className="w-full h-px bg-[#1A1A1A] relative z-20" style={{ boxShadow: "0 -1px 0 rgba(239,68,68,0.3)" }} />
+          <div className="w-full h-px bg-[#1A1A1A] relative z-20" style={{ boxShadow: `0 -1px 0 ${palette.primary}4D` }} />
         </div>
       </div>
 
@@ -265,7 +269,8 @@ export default function ResumosJuridicosTemas() {
             {q && (
               <button 
                 onClick={() => { haptic.selection(); setQ(""); }}
-                className="px-6 py-2.5 rounded-xl bg-[#ef4444] text-white font-bold text-sm hover:bg-[#ef4444]/90 active:scale-95 transition-all shadow-[0_4px_14px_rgba(239,68,68,0.3)]"
+                className="px-6 py-2.5 rounded-xl text-white font-bold text-sm active:scale-95 transition-all shadow-md"
+                style={{ backgroundColor: palette.primary, boxShadow: `0 4px 14px ${palette.primary}4D` }}
               >
                 Limpar Pesquisa
               </button>

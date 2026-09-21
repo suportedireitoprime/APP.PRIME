@@ -15,6 +15,8 @@ interface GeracaoAnimacaoOverlayProps {
   estTotalSec?: number;
   onCancel?: () => void;
   cancelLabel?: string;
+  inline?: boolean;
+  compact?: boolean;
 }
 
 const DEFAULT_STEPS = [
@@ -74,6 +76,8 @@ export const GeracaoAnimacaoOverlay = ({
   estTotalSec = 20,
   onCancel,
   cancelLabel = "Voltar",
+  inline = false,
+  compact = false,
 }: GeracaoAnimacaoOverlayProps) => {
   const gradId = useId();
   const [autoStepIdx, setAutoStepIdx] = useState(0);
@@ -195,17 +199,21 @@ export const GeracaoAnimacaoOverlay = ({
       ? "Termo jurídico"
       : "Filosofia do Direito";
 
-  return createPortal(
+  const content = (
     <AnimatePresence>
       {open && (
         <motion.div
           key="geracao-overlay"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          initial={inline ? { opacity: 0, height: 0 } : { opacity: 0 }}
+          animate={inline ? { opacity: 1, height: "auto" } : { opacity: 1 }}
+          exit={inline ? { opacity: 0, height: 0 } : { opacity: 0 }}
           transition={{ duration: 0.2 }}
-          style={{ zIndex: 2147483000 }}
-          className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center px-4 py-6 overflow-y-auto"
+          style={!inline ? { zIndex: 2147483000 } : undefined}
+          className={
+            inline
+              ? "w-full flex items-center justify-center py-10 px-2"
+              : "fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center px-4 py-6 overflow-y-auto"
+          }
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -278,43 +286,46 @@ export const GeracaoAnimacaoOverlay = ({
               </ol>
             </div>
 
-            <AnimatePresence mode="wait">
-              <motion.figure
-                key={fraseAtual.id + "-" + quoteIdx}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.4 }}
-                className="rounded-2xl border border-rose-500/15 bg-black/40 px-5 py-4 shadow-inner"
-              >
-                <div className="text-[10px] uppercase tracking-widest text-rose-300/70 mb-2 font-semibold">
-                  {badgeCategoria}
-                </div>
-                <blockquote className="text-[13px] leading-relaxed text-rose-50/90 italic">
-                  <span className="text-rose-400/60 mr-1 text-lg leading-none align-[-2px]">"</span>
-                  {fraseAtual.texto}
-                  <span className="text-rose-400/60 ml-0.5 text-lg leading-none align-[-2px]">"</span>
-                </blockquote>
-                {fraseAtual.legenda && (
-                  <figcaption className="mt-2 text-[11px] uppercase tracking-wider text-rose-300/80">
-                    — {fraseAtual.legenda}
-                  </figcaption>
-                )}
-                {/* Barra de progresso da narração da frase */}
-                <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-rose-500/10">
-                  <div
-                    className="h-full bg-gradient-to-r from-rose-300 to-rose-500 rounded-full"
-                    style={{ width: `${Math.round(audioProgress * 100)}%`, transition: 'width 0.15s linear' }}
-                  />
-                </div>
-              </motion.figure>
-            </AnimatePresence>
+            {!compact && (
+              <AnimatePresence mode="wait">
+                <motion.figure
+                  key={fraseAtual.id + "-" + quoteIdx}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.4 }}
+                  className="rounded-2xl border border-rose-500/15 bg-black/40 px-5 py-4 shadow-inner mt-4"
+                >
+                  <div className="text-[10px] uppercase tracking-widest text-rose-300/70 mb-2 font-semibold">
+                    {badgeCategoria}
+                  </div>
+                  <blockquote className="text-[13px] leading-relaxed text-rose-50/90 italic">
+                    <span className="text-rose-400/60 mr-1 text-lg leading-none align-[-2px]">"</span>
+                    {fraseAtual.texto}
+                    <span className="text-rose-400/60 ml-0.5 text-lg leading-none align-[-2px]">"</span>
+                  </blockquote>
+                  {fraseAtual.legenda && (
+                    <figcaption className="mt-2 text-[11px] uppercase tracking-wider text-rose-300/80">
+                      — {fraseAtual.legenda}
+                    </figcaption>
+                  )}
+                  {/* Barra de progresso da narração da frase */}
+                  <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-rose-500/10">
+                    <div
+                      className="h-full bg-gradient-to-r from-rose-300 to-rose-500 rounded-full"
+                      style={{ width: `${Math.round(audioProgress * 100)}%`, transition: 'width 0.15s linear' }}
+                    />
+                  </div>
+                </motion.figure>
+              </AnimatePresence>
+            )}
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>,
-    document.body
+    </AnimatePresence>
   );
+
+  return inline ? content : createPortal(content, document.body);
 };
 
 export default GeracaoAnimacaoOverlay;

@@ -29,6 +29,7 @@ import { normalizarResumo } from "@/lib/resumoNormalizer";
 import { removerEmojis } from "@/lib/textoSemEmoji";
 import { getAreaCover } from "@/lib/areasDireitoCovers";
 import ShapeGrid from "@/components/ui/ShapeGrid";
+import { GeracaoAnimacaoOverlay } from "@/components/vademecum/overlays/GeracaoAnimacaoOverlay";
 
 import {
   CornellContent,
@@ -195,6 +196,8 @@ export default function ResumoJuridicoReaderSheet({
   const [fav, setFav] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [bloqueadoLeitura, setBloqueadoLeitura] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Dados de Conceitos Aprofundados gerados pela IA (persistidos em resumo_metodologias)
   const [conceitosData, setConceitosData] = useState<{
@@ -353,6 +356,12 @@ export default function ResumoJuridicoReaderSheet({
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     if (!resumo?.id) return;
     sessionStorage.setItem(`resumo_scroll_${resumo.id}`, e.currentTarget.scrollTop.toString());
+    
+    setIsScrolling(true);
+    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    scrollTimeoutRef.current = setTimeout(() => {
+      setIsScrolling(false);
+    }, 600);
   };
 
   const incFont = () => setFontSize((s) => Math.min(26, s + 1));
@@ -454,17 +463,26 @@ export default function ResumoJuridicoReaderSheet({
 
   const isVisible = open && !!resumo;
 
-  // Atalho de teclado (Esc = Fechar leitor no Desktop)
+  // Atalhos de teclado (Esc = Fechar, Ctrl/Cmd+P = Baixar PDF)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isVisible) {
+      if (!isVisible) return;
+      if (e.key === "Escape") {
         e.preventDefault();
         handleClose();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "p") {
+        e.preventDefault();
+        if (gateDownload.blocked) {
+          gateDownload.openGate();
+          return;
+        }
+        void baixarPdf();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isVisible]);
+  }, [isVisible, gateDownload.blocked, gateDownload.openGate, baixarPdf]);
 
   if (bloqueadoLeitura) {
     return <>{gateResumo.gateNode}</>;
@@ -614,21 +632,20 @@ export default function ResumoJuridicoReaderSheet({
                         "
                       >
                         {gerando === "conceitos" || (!conceitosData && !erroGerar) ? (
-                          <div className="flex flex-col items-center justify-center py-20 px-4 text-center space-y-4 not-prose">
-                            <div className="relative">
-                              <div className="w-16 h-16 rounded-2xl bg-[#E11D48]/10 border border-[#E11D48]/30 flex items-center justify-center text-[#E11D48] shadow-lg shadow-[#E11D48]/20 animate-pulse">
-                                <Sparkles className="w-8 h-8" />
-                              </div>
-                              <Loader2 className="w-6 h-6 animate-spin text-[#E11D48] absolute -bottom-2 -right-2" />
-                            </div>
-                            <div className="space-y-1.5 max-w-sm">
-                              <h3 className="text-base font-semibold text-white tracking-wide uppercase font-display">
-                                Aprofundando conteúdo com IA
-                              </h3>
-                              <p className="text-xs text-white/90 leading-relaxed">
-                                Analisando doutrina, legislação e jurisprudência para estruturar o estudo completo ponto a ponto...
-                              </p>
-                            </div>
+                          <div className="w-full flex items-center justify-center py-10 not-prose">
+                            <GeracaoAnimacaoOverlay
+                              open={true}
+                              inline
+                              compact
+                              titulo="Aprofundando conteúdo com IA"
+                              steps={[
+                                "Analisando doutrina e legislação",
+                                "Buscando jurisprudência",
+                                "Gerando exemplos práticos",
+                                "Finalizando resumo",
+                              ]}
+                              estTotalSec={15}
+                            />
                           </div>
                         ) : content ? (
                           <ReactMarkdown
@@ -659,33 +676,19 @@ export default function ResumoJuridicoReaderSheet({
                         )}
                       </div>
                     ) : gerando === metodo ? (
-                      <div className="flex flex-col items-center justify-center py-20 px-4 text-center space-y-4 not-prose">
-                        <div className="relative">
-                          <div
-                            className={`w-16 h-16 rounded-2xl border flex items-center justify-center shadow-lg animate-pulse ${
-                              metodo === "cornell"
-                                ? "bg-[#38bdf8]/10 border-[#38bdf8]/30 text-[#38bdf8] shadow-[#38bdf8]/20"
-                                : "bg-[#fbbf24]/10 border-[#fbbf24]/30 text-[#fbbf24] shadow-[#fbbf24]/20"
-                            }`}
-                          >
-                            <Sparkles className="w-8 h-8" />
-                          </div>
-                          <Loader2
-                            className={`w-6 h-6 animate-spin absolute -bottom-2 -right-2 ${
-                              metodo === "cornell" ? "text-[#38bdf8]" : "text-[#fbbf24]"
-                            }`}
-                          />
-                        </div>
-                        <div className="space-y-1.5 max-w-sm">
-                          <h3 className="text-base font-bold text-white tracking-wide uppercase font-display">
-                            Gerando Método {metodo === "cornell" ? "Cornell" : "Feynman"} com IA
-                          </h3>
-                          <p className="text-xs text-white/90 leading-relaxed">
-                            {metodo === "cornell"
-                              ? "Organizando palavras-chave, perguntas de revisão e anotações para fixação ativa..."
-                              : "Decompondo conceitos complexos em linguagem simples, analogias e lacunas de estudo..."}
-                          </p>
-                        </div>
+                      <div className="w-full flex items-center justify-center py-10 not-prose">
+                        <GeracaoAnimacaoOverlay
+                          open={true}
+                          inline
+                          compact
+                          titulo={`Gerando Método ${metodo === "cornell" ? "Cornell" : "Feynman"} com IA`}
+                          steps={
+                            metodo === "cornell"
+                              ? ["Extraindo palavras-chave", "Gerando perguntas de revisão", "Estruturando anotações", "Pronto"]
+                              : ["Decompondo conceitos", "Criando linguagem simples", "Gerando analogias práticas", "Pronto"]
+                          }
+                          estTotalSec={10}
+                        />
                       </div>
                     ) : (
                       <div className="rounded-2xl border border-border p-6 text-center space-y-4 mt-4 bg-secondary/30">
@@ -717,9 +720,13 @@ export default function ResumoJuridicoReaderSheet({
             </div>
 
             {/* Ações flutuantes idênticas ao design system do app */}
-            <div className="pointer-events-none absolute bottom-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] right-4 flex flex-col items-end gap-3 z-20">
+            <div 
+              className={`pointer-events-none absolute bottom-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] right-4 flex flex-col items-end gap-3 z-20 transition-all duration-300 ${
+                isScrolling ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
+              }`}
+            >
               <AnimatePresence>
-                {fontOpen && (
+                {fontOpen && !isScrolling && (
                   <motion.div
                     key="font-controls"
                     initial={{ opacity: 0, scale: 0.95, y: 4 }}
@@ -749,7 +756,7 @@ export default function ResumoJuridicoReaderSheet({
                 )}
               </AnimatePresence>
 
-              <div className="pointer-events-auto flex flex-col gap-2.5 items-end">
+              <div className={`pointer-events-auto flex flex-col gap-2.5 items-end ${isScrolling ? "pointer-events-none" : ""}`}>
                 <button
                   onClick={() => setFontOpen((v) => !v)}
                   aria-label="Tamanho da fonte"

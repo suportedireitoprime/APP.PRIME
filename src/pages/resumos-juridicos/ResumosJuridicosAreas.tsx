@@ -3,6 +3,7 @@ import { Loader2 } from "lucide-react";
 import ShapeGrid from "@/components/ui/ShapeGrid";
 import ResumosHero from "@/components/resumos/ResumosHero";
 import { useResumosAreasData } from "@/components/resumos/hooks/useResumosAreasData";
+import { getAreaCover } from "@/lib/areasDireitoCovers";
 import { ResumosAreaChips } from "@/components/resumos/home/ResumosAreaChips";
 import { ResumosAreaCard } from "@/components/resumos/home/ResumosAreaCard";
 import { ResumosTemaCard } from "@/components/resumos/home/ResumosTemaCard";
@@ -73,6 +74,7 @@ export default function ResumosJuridicosAreas() {
                 <ResumosTemaCard
                   key={tema}
                   tema={tema}
+                  coverUrl={getAreaCover(activeTab)?.cover}
                   onClick={() =>
                     navigate(
                       `/resumos-juridicos/${encodeURIComponent(activeTab)}/${encodeURIComponent(tema)}`,
