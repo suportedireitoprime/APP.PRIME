@@ -19,7 +19,7 @@ const PlanosAtivos = () => {
   }
 
   return (
-    <div className="min-h-dvh bg-background pb-24">
+    <div className="min-h-dvh bg-background pb-[calc(6rem+var(--sai-bottom,0px))]">
       <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-md">
         <div className="max-w-3xl lg:max-w-5xl mx-auto">
           <PageHeader

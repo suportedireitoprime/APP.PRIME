@@ -78,7 +78,6 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
   const [micAtivo, setMicAtivo] = useState(true);
   const [falas, setFalas] = useState<FalaTranscrita[]>([]);
   const [falaParcial, setFalaParcial] = useState<FalaTranscrita | null>(null);
-  const [falaParcial, setFalaParcial] = useState<FalaTranscrita | null>(null);
   const [inputTexto, setInputTexto] = useState('');
   const [mostrarInput, setMostrarInput] = useState(false);
   

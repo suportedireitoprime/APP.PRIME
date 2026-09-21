@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useSubscription } from '@/hooks/useSubscription';
@@ -89,6 +89,46 @@ export function useFeatureLimit(
   const { user } = useAuth();
   const { isPremium } = useSubscription();
   const isAdmin = isAdminEmail(user?.email);
+
+  const isTrialExpired = useMemo(() => {
+    if (!user) return false;
+    if (isPremium) return false;
+
+    const createdAt = new Date(user.created_at);
+    const maxAllowedTrialMs = createdAt.getTime() + 3 * 24 * 60 * 60 * 1000;
+    let trialEndsAt = new Date(maxAllowedTrialMs);
+
+    if (user.user_metadata?.trial_ends_at) {
+      const metaTrial = new Date(user.user_metadata.trial_ends_at);
+      if (!isNaN(metaTrial.getTime()) && metaTrial.getTime() <= maxAllowedTrialMs) {
+        trialEndsAt = metaTrial;
+      }
+    } else if (user.user_metadata?.trial_start) {
+      const metaStart = new Date(user.user_metadata.trial_start).getTime();
+      trialEndsAt = new Date(metaStart + 3 * 24 * 60 * 60 * 1000);
+    }
+
+    const nowMs = Date.now();
+    let maxKnownTime = createdAt.getTime();
+    try {
+      const saved = localStorage.getItem('direitoprime:time:max');
+      if (saved) maxKnownTime = Math.max(maxKnownTime, Number(saved));
+    } catch {}
+
+    const isClockTampered = nowMs < maxKnownTime;
+    
+    let isDeviceAbuse = false;
+    try {
+      const claimedUser = localStorage.getItem('direitoprime:device:trial_claimed');
+      if (claimedUser && claimedUser !== user.id) {
+        isDeviceAbuse = true;
+      }
+    } catch {}
+
+    const isTrialActive = !isClockTampered && !isDeviceAbuse && trialEndsAt.getTime() > nowMs;
+    return !isTrialActive;
+  }, [user, isPremium]);
+
   const [config, setConfig] = useState<FeatureLimitConfig | null>(null);
   const [used, setUsed] = useState(0);
   const [scopeAlreadyUsed, setScopeAlreadyUsed] = useState(false);
@@ -141,7 +181,7 @@ export function useFeatureLimit(
   const remaining = Math.max(0, limit - used);
   const scopeBypass = !!(config?.scope_key && scope && scopeAlreadyUsed);
   const canUse =
-    isAdmin || isPremium || !enabled || scopeBypass || (limit > 0 && used < limit);
+    isAdmin || isPremium || (!isTrialExpired && (!enabled || scopeBypass || (limit > 0 && used < limit)));
   const blocked = !canUse;
 
   const register = useCallback(async (refKey?: string) => {
