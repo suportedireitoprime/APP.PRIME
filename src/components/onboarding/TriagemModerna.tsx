@@ -52,15 +52,15 @@ const INTRO_SCREENS = [
   },
   {
     image: primeLogoBundled,
-    title: 'Direito Prime',
-    text: 'Estudo Jurídico e Uso Profissional',
+    title: 'Estudos Jurídicos',
+    text: '',
   },
 ];
 
 const PERSONAS = [
-  { id: 'estudante', label: 'Estudante e OAB', desc: 'Preparação para provas, TCC, 1ª e 2ª Fase da OAB.', icon: GraduationCap, color: 'text-blue-400', bg: 'bg-blue-400/10' },
-  { id: 'concurso', label: 'Concurseiro', desc: 'Magistratura, MP, Delegado, Defensoria ou Tribunais.', icon: Landmark, color: 'text-amber-400', bg: 'bg-amber-400/10' },
-  { id: 'advogado', label: 'Advogado', desc: 'Pesquisa jurisprudencial, peças e atualização constante.', icon: Briefcase, color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
+  { id: 'estudante', label: 'Faculdade e OAB', icon: GraduationCap, color: 'text-blue-400', bg: 'bg-blue-400/10' },
+  { id: 'concurso', label: 'Concurseiro', icon: Landmark, color: 'text-amber-400', bg: 'bg-amber-400/10' },
+  { id: 'advogado', label: 'Advogado', icon: Briefcase, color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
 ] as const;
 
 const FAIXAS = ['18 a 24 anos', '25 a 30 anos', '31 a 40 anos', '41 anos ou mais'];
@@ -270,12 +270,14 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
               </div>
 
               <div className="space-y-3 px-2">
-                <h1 className="text-2xl sm:text-3xl font-body font-black text-white leading-tight uppercase tracking-wider">
+                <h1 className={`text-2xl sm:text-3xl font-black text-white leading-tight uppercase tracking-wider ${introIndex === INTRO_SCREENS.length - 1 ? 'font-display tracking-widest drop-shadow-md text-3xl' : 'font-body'}`}>
                   {INTRO_SCREENS[introIndex].title}
                 </h1>
-                <p className="text-sm sm:text-base text-neutral-300 font-medium leading-relaxed max-w-sm mx-auto">
-                  {INTRO_SCREENS[introIndex].text}
-                </p>
+                {INTRO_SCREENS[introIndex].text && (
+                  <p className="text-sm sm:text-base text-neutral-300 font-medium leading-relaxed max-w-sm mx-auto">
+                    {INTRO_SCREENS[introIndex].text}
+                  </p>
+                )}
               </div>
             </motion.div>
           )}
@@ -295,7 +297,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                   ETAPA 1 • SEU OBJETIVO
                 </span>
                 <h1 className="text-2xl sm:text-3xl font-bold text-white leading-snug tracking-normal">
-                  Qual é o seu foco no Direito?
+                  Quem é você?
                 </h1>
                 <p className="text-xs sm:text-sm text-neutral-400 max-w-sm mx-auto leading-relaxed">
                   Personalizaremos o ambiente para a sua necessidade.
@@ -324,13 +326,10 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isSelected ? 'bg-primary text-white shadow-md' : `${p.bg} ${p.color}`}`}>
                         <Icon className="w-5 h-5" />
                       </div>
-                      <div className="flex-1 min-w-0 pr-6">
+                      <div className="flex-1 min-w-0 pr-6 flex items-center">
                         <h3 className="font-display font-black text-lg uppercase tracking-normal text-white/95 truncate">
                           {p.label}
                         </h3>
-                        <p className="text-xs text-neutral-400 mt-0.5 line-clamp-2">
-                          {p.desc}
-                        </p>
                       </div>
                       {isSelected && (
                         <div className="absolute right-4 w-6 h-6 rounded-full bg-primary flex items-center justify-center shadow">
