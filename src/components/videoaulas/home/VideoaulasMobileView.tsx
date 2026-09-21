@@ -45,7 +45,7 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
         <div className="space-y-6 px-4 pt-6 sm:px-6 lg:space-y-8 lg:px-0 lg:pt-8">
           <VideoaulasSearchCard onOpenBusca={() => state.setDrawerBusca(true)} />
 
-          <VideoaulasAtalhos />
+          <VideoaulasAtalhos onShowDesempenho={() => state.setShowDesempenho(true)} />
 
           <VideoaulasCategoriasGrid />
 

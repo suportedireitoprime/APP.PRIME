@@ -4,7 +4,11 @@ import { Play, ListVideo, BarChart3, Heart } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { motion } from 'framer-motion';
 
-export const VideoaulasAtalhos = React.memo(function VideoaulasAtalhos() {
+interface VideoaulasAtalhosProps {
+  onShowDesempenho?: () => void;
+}
+
+export const VideoaulasAtalhos = React.memo(function VideoaulasAtalhos({ onShowDesempenho }: VideoaulasAtalhosProps) {
   const navigate = useNavigate();
 
   return (
@@ -35,7 +39,7 @@ export const VideoaulasAtalhos = React.memo(function VideoaulasAtalhos() {
           }}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => { haptic.selection(); navigate('/videoaulas/recentes'); }}
+          onClick={() => { haptic.selection(); navigate('/minhas-videoaulas'); }}
           className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-amber-500/50 transition-colors gap-2 text-center focus-visible:outline-none"
         >
           <div className="relative w-10 h-10 flex items-center justify-center">
@@ -53,7 +57,7 @@ export const VideoaulasAtalhos = React.memo(function VideoaulasAtalhos() {
           }}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => { haptic.selection(); navigate('/videoaulas/playlist'); }}
+          onClick={() => { haptic.selection(); navigate('/minhas-videoaulas'); }}
           className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-amber-500/50 transition-colors gap-2 text-center focus-visible:outline-none"
         >
           <div className="relative w-10 h-10 flex items-center justify-center">
@@ -71,7 +75,7 @@ export const VideoaulasAtalhos = React.memo(function VideoaulasAtalhos() {
           }}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => { haptic.selection(); navigate('/videoaulas/desempenho'); }}
+          onClick={() => { haptic.selection(); if (onShowDesempenho) { onShowDesempenho(); } else { navigate('/minhas-videoaulas'); } }}
           className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-amber-500/50 transition-colors gap-2 text-center focus-visible:outline-none"
         >
           <div className="relative w-10 h-10 flex items-center justify-center">
