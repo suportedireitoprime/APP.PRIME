@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Bell, CheckCheck, Scale, Newspaper, Video, BookOpen, ArrowRight, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -322,17 +323,30 @@ export default function NotificationsSheet({ open, onClose }: Props) {
     navigate(it.to);
   };
 
+  // Oculta a barra inferior (BottomNav) enquanto o painel de notificações estiver aberto
+  useEffect(() => {
+    if (!mounted) return;
+    window.dispatchEvent(
+      new CustomEvent('direitoprime:bottom-nav-visibility', { detail: { hidden: true } })
+    );
+    return () => {
+      window.dispatchEvent(
+        new CustomEvent('direitoprime:bottom-nav-visibility', { detail: { hidden: false } })
+      );
+    };
+  }, [mounted]);
+
   if (!mounted) return null;
 
-  return (
+  return createPortal(
     <>
       <div
-        className="fixed inset-0 z-[90] bg-black/60 transition-opacity duration-200"
+        className="fixed inset-0 z-[9990] bg-black/70 backdrop-blur-sm transition-opacity duration-200"
         style={{ opacity: entered ? 1 : 0 }}
         onClick={onClose}
       />
       <aside
-        className="fixed top-0 right-0 bottom-0 z-[91] w-full max-w-md bg-background border-l border-border/50 shadow-2xl flex flex-col will-change-transform"
+        className="fixed top-0 right-0 bottom-0 z-[9991] w-full max-w-md bg-background border-l border-border/50 shadow-2xl flex flex-col will-change-transform"
         style={{
           paddingTop: 'var(--sai-top)',
           paddingBottom: 'var(--sai-bottom)',
@@ -462,6 +476,7 @@ export default function NotificationsSheet({ open, onClose }: Props) {
           })}
         </div>
       </aside>
-    </>
+    </>,
+    document.body
   );
 }

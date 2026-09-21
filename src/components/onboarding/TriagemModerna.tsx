@@ -15,10 +15,11 @@ import ShapeGrid from '@/components/ui/ShapeGrid';
 import horusAsset from '@/assets/horus/horus-star.webp';
 import personaAdvogado from '@/assets/onboarding/persona-advogado.webp';
 
-// Imagens geradas
-import historia1 from '@/assets/onboarding/historia_direito_1.jpg';
-import historia2 from '@/assets/onboarding/historia_direito_2.jpg';
-import historia3 from '@/assets/onboarding/historia_direito_3.jpg';
+import story1Filosofo from '@/assets/onboarding/story_1_filosofo.webp';
+import story2Livros from '@/assets/onboarding/story_2_livros.webp';
+import story3Ia from '@/assets/onboarding/story_3_ia.webp';
+import story4Voce from '@/assets/onboarding/story_4_voce.webp';
+import horusOwl from '@/assets/horus/horus-owl.webp';
 
 import { toast } from 'sonner';
 import type { CadastroResult } from './CadastroOnboardingOverlay';
@@ -31,30 +32,35 @@ export interface TriagemModernaProps {
 
 const INTRO_SCREENS = [
   {
-    image: historia1,
-    title: 'A História do Direito',
-    text: 'Por séculos, o estudo do Direito foi marcado por livros densos e uma teoria desconectada da realidade prática.',
+    image: story1Filosofo,
+    tag: 'Antiguidade Clássica',
+    title: 'A Origem do Direito',
+    text: 'Grandes filósofos dedicaram a vida para construir os pilares da justiça e da ordem social.',
   },
   {
-    image: historia2,
-    title: 'Tempo Desperdiçado',
-    text: 'A doutrina tradicional toma o seu tempo. Você estuda horas a fio e sente que não aprendeu o necessário para avançar.',
+    image: story2Livros,
+    tag: 'O Peso da Tradição',
+    title: 'O Labirinto da Doutrina',
+    text: 'Por séculos, o saber ficou trancado em manuais densos, linguagem arcaica e teoria cansativa.',
   },
   {
-    image: historia3,
-    title: 'A Evolução do Aprendizado',
-    text: 'Nós unimos a inteligência artificial com a didática prática para mudar de vez a forma como você absorve o Direito.',
+    image: story3Ia,
+    tag: 'A Revolução Moderna',
+    title: 'A Era da Inteligência',
+    text: 'A união entre didática visual e inteligência artificial transformou para sempre o aprendizado.',
   },
   {
-    image: horusAsset,
-    title: 'Foco no que Importa',
-    text: 'Uma ferramenta que se adapta ao seu objetivo, entregando o conteúdo exato que você precisa para evoluir rápido.',
+    image: story4Voce,
+    tag: 'O Seu Momento',
+    title: 'E Aí Está Você',
+    text: 'Você precisa absorver o máximo de conteúdo com rapidez e confiança para conquistar seus objetivos.',
   },
   {
-    image: personaAdvogado,
-    title: 'Sua Prática, Elevada',
-    text: 'Desbloqueie agora o seu acesso à plataforma definitiva e transforme para sempre seus resultados jurídicos.',
-  }
+    image: horusOwl,
+    tag: 'Seu Ecossistema',
+    title: 'Sua Aprovação Começa Aqui',
+    text: 'Vade Mecum narrado, IA ilimitada e milhares de questões na palma da sua mão.',
+  },
 ];
 
 const PERSONAS = [
@@ -202,20 +208,32 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
               transition={{ duration: 0.3 }}
               className="flex flex-col items-center text-center space-y-6"
             >
-              <div className="w-full max-w-[280px] aspect-square rounded-2xl overflow-hidden shadow-2xl border border-white/10 relative">
-                {/* Imagens renderizadas sem bordas grossas, fundo escuro */}
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0A0C10]/80 z-10 pointer-events-none" />
-                <img 
+              {/* Imagem vazada sem fundo, sem caixa e sem borda */}
+              <div className="relative w-full max-w-[260px] sm:max-w-[280px] h-[230px] sm:h-[260px] flex items-center justify-center select-none pointer-events-none">
+                {/* Glow suave e difuso atrás da imagem vazada */}
+                <div className="absolute inset-6 rounded-full bg-primary/20 blur-3xl opacity-70 pointer-events-none" />
+                <motion.img 
+                  key={`img-${introIndex}`}
+                  initial={{ scale: 0.88, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.35, ease: 'easeOut' }}
                   src={INTRO_SCREENS[introIndex].image} 
                   alt={INTRO_SCREENS[introIndex].title} 
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.9)]"
                 />
               </div>
-              <div className="space-y-3 px-2">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight tracking-tight">
+
+              <div className="space-y-2.5 px-2">
+                {INTRO_SCREENS[introIndex].tag && (
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-rose-300">
+                    <Sparkles className="w-3 h-3 text-amber-400" />
+                    <span>{INTRO_SCREENS[introIndex].tag}</span>
+                  </div>
+                )}
+                <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight tracking-tight uppercase">
                   {INTRO_SCREENS[introIndex].title}
                 </h1>
-                <p className="text-sm sm:text-base text-neutral-400 leading-relaxed max-w-sm mx-auto">
+                <p className="text-sm sm:text-base text-neutral-300 font-medium leading-relaxed max-w-sm mx-auto">
                   {INTRO_SCREENS[introIndex].text}
                 </p>
               </div>
