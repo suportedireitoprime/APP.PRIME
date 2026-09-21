@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Clock, ShieldCheck, Zap } from "lucide-react";
+import { Check, Clock, ShieldCheck, Zap, Sparkles, CheckCircle2, ChevronRight, Info, Shield, Trophy } from "lucide-react";
 import { TypewriterText } from "@/components/ui/TypewriterText";
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { haptic } from '@/lib/nativeHaptics';
 
 interface PricingCardsProps {
   selectedPlan: 'mensal' | 'anual' | 'promocao';
@@ -34,7 +34,7 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
         <button
           type="button"
           onClick={() => {
-            Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
+            haptic.light();
             onSelectPlan('mensal');
           }}
           className={`relative z-10 flex-1 py-2.5 sm:py-3 text-xs sm:text-sm font-black uppercase tracking-wider rounded-full transition-colors duration-200 cursor-pointer select-none ${
@@ -56,7 +56,7 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
         <button
           type="button"
           onClick={() => {
-            Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
+            haptic.light();
             onSelectPlan(isNewUser ? 'promocao' : 'anual');
           }}
           className={`relative z-10 flex-1 py-2.5 sm:py-3 text-xs sm:text-sm font-black uppercase tracking-wider rounded-full transition-colors duration-200 cursor-pointer select-none ${

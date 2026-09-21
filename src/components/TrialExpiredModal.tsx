@@ -10,7 +10,8 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { isAdminEmail } from "@/lib/adminEmails";
 import { CheckoutModal } from "@/components/assinatura/CheckoutModal";
 import { useBodyScrollLock, resetBodyScrollLock } from "@/hooks/useBodyScrollLock";
-import { Haptics, ImpactStyle } from "@capacitor/haptics";
+import { haptic } from '@/lib/nativeHaptics';
+import { supabase } from '@/integrations/supabase/client';
 
 import penalCover from '@/assets/biblioteca/areas/direito-penal.webp';
 import civilCover from '@/assets/biblioteca/areas/direito-civil.webp';
@@ -262,7 +263,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
           <div className="w-full space-y-2.5 pt-2">
             <button
               onClick={() => {
-                try { Haptics.impact({ style: ImpactStyle.Medium }).catch(() => {}); } catch(e){}
+                haptic.medium();
                 resetBodyScrollLock(true);
                 navigate('/assinatura?preview=plans', { replace: true });
               }}
@@ -275,7 +276,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
             <button
               type="button"
               onClick={() => {
-                try { Haptics.impact({ style: ImpactStyle.Light }).catch(() => {}); } catch(e){}
+                haptic.light();
                 resetBodyScrollLock(true);
                 navigate('/assinatura?preview=plans', { replace: true });
               }}

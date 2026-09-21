@@ -11,8 +11,7 @@ const brasaoImg = brasaoImgAsset;
 import ArtigoBottomSheet from '@/components/vademecum/artigo/ArtigoBottomSheet';
 import type { LeiOrdinaria } from '@/services/legislacaoService';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
-import { Capacitor } from '@capacitor/core';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { haptic } from '@/lib/nativeHaptics';
 import { useRef } from 'react';
 export interface ParsedLei {
   titulo: string;
@@ -327,9 +326,7 @@ const LeiOrdinariaDetail = ({ lei, onBack, isEmbedded = false }: LeiOrdinariaDet
                               animate={{ opacity: 1 }}
                               transition={{ duration: 0.15 }}
                               onClick={() => {
-                                if (Capacitor.isNativePlatform()) {
-                                  Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
-                                }
+                                haptic.light();
                                 setOpenArtigo(art);
                               }}
                               aria-label={`Abrir ${art.numero}`}

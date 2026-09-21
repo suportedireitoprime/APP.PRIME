@@ -13,7 +13,7 @@ import { copiarTexto } from '@/lib/nativo/copiar';
 import { Capacitor } from '@capacitor/core';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { motion, AnimatePresence, useAnimation } from 'framer-motion';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { haptic } from '@/lib/nativeHaptics';
 import { PrimeImage } from '@/components/ui/PrimeImage';
 
 type Slide = { slide_index: number; imagem_url: string | null; audio_url: string | null; roteiro: string | null };
@@ -21,9 +21,7 @@ type Apres = { id: string; titulo: string; descricao: string | null; total_slide
 
 
 const playHaptic = () => {
-  if (Capacitor.isNativePlatform()) {
-    Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
-  }
+  haptic.light();
 };
 
 
