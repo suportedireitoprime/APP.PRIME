@@ -255,16 +255,21 @@ export function AdminHojeCards() {
       let totalTrial = 0;
       let totalTrialValor = 0;
 
+      let rawRpcResponse: any = null;
       if (metricasResults.status === 'fulfilled') {
         metricasResults.value.forEach((res) => {
           if (res.status === 'fulfilled') {
             const m = (res.value.data as any) || {};
+            rawRpcResponse = m;
             totalOnline5m = Math.max(totalOnline5m, m.online5m || 0);
             totalCadastros += m.cadastros || 0;
             totalTrial += m.trial || 0;
           }
         });
       }
+      
+      // Store raw response in a ref for debug rendering
+      (window as any)._adminRpcDebug = rawRpcResponse;
 
     try {
       const tzOffsetMin = new Date().getTimezoneOffset();
@@ -280,7 +285,7 @@ export function AdminHojeCards() {
       
       const { data: events, error } = await supabase
         .from('app_events')
-        .select('user_id, id, email, event_name, profiles!left(is_premium)')
+        .select('user_id, id, email, event_name')
         .in('event_name', ['trial_click', 'assinatura_aberta'])
         .gte('created_at', minDate.toISOString())
         .lt('created_at', maxDate.toISOString());
@@ -470,7 +475,17 @@ export function AdminHojeCards() {
         const trialPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));
         const trialResults = await Promise.all(trialPromises);
         trialResults.forEach(({ data }) => {
-          const trials = ((data as any[]) || []).map(r => ({ ...r, subtitle: 'Clicou no plano (Iniciou teste)' }));
+          const trials = ((data as any[]) || []).map(r => ({
+            key: r.id,
+            user_id: r.id,
+            title: r.nome || r.email?.split('@')[0] || 'Usuário',
+            email: r.email,
+            subtitle: 'Clicou no plano (Iniciou teste)',
+            at: r.created_at || r.last_seen,
+            is_premium: r.premium,
+            avatar_url: null,
+            acessos: null
+          }));
           allLists = allLists.concat(trials);
         });
       } else if (id === 'trial') {
@@ -557,12 +572,35 @@ export function AdminHojeCards() {
         ]);
         
         results.forEach(({ data }) => {
-          allLists = allLists.concat((data as any[]) || []);
+          const mapped = ((data as any[]) || []).map(r => ({
+            key: r.id,
+            user_id: r.id,
+            title: r.nome || r.email?.split('@')[0] || 'Usuário',
+            email: r.email,
+            provider: r.provider || (r.email ? 'email' : null),
+            subtitle: id === 'cadastros' ? 'Novo cadastro' : r.current_route || 'App aberto',
+            at: r.last_seen || r.created_at,
+            is_premium: r.premium,
+            avatar_url: r.avatar_url || null,
+            acessos: null
+          }));
+          allLists = allLists.concat(mapped);
         });
         
         if (id === 'paywall') {
           extraResults.forEach(({ data }) => {
-            const trials = ((data as any[]) || []).map(r => ({ ...r, subtitle: 'Abriu planos (Iniciou teste)' }));
+            const trials = ((data as any[]) || []).map(r => ({
+              key: r.id,
+              user_id: r.id,
+              title: r.nome || r.email?.split('@')[0] || 'Usuário',
+              email: r.email,
+              subtitle: 'Abriu planos (Iniciou teste)',
+              at: r.created_at || r.last_seen,
+              is_premium: r.premium,
+              avatar_url: r.avatar_url || null,
+              provider: r.provider || 'email',
+              acessos: null
+            }));
             allLists = allLists.concat(trials);
           });
         }
@@ -578,6 +616,7 @@ export function AdminHojeCards() {
         userId: r.user_id,
         title: r.title || 'Usuário',
         email: r.email || null,
+        provider: r.provider || null,
         subtitle: (id === 'online' || id === 'online5m') ? rotaParaFuncao(r.subtitle).label : r.subtitle,
         meta: hora(r.at),
         acessos: typeof r.acessos === 'number' ? r.acessos : null,
@@ -722,12 +761,12 @@ export function AdminHojeCards() {
         </select>
       </div>
 
-      <div className="grid grid-cols-6 gap-2 mb-3">
+      <div className="grid grid-cols-3 gap-2.5 mb-3">
         {CARDS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             onClick={() => openCard(id)}
-            className="relative rounded-2xl border border-border/60 bg-secondary/30 px-2.5 py-3 text-left hover:bg-secondary/60 active:bg-secondary transition-colors"
+            className="relative rounded-2xl border border-border/60 bg-secondary/30 p-3 text-left hover:bg-secondary/60 active:bg-secondary transition-colors"
           >
             {counts[id] - (seenCounts[id] || 0) > 0 && (
               <span className="absolute top-2 right-2 inline-flex items-center rounded-full bg-emerald-500/15 border border-emerald-500/40 px-1.5 py-[1px] font-body text-[10px] font-bold text-emerald-400 animate-pulse">
@@ -745,7 +784,6 @@ export function AdminHojeCards() {
             </div>
             <div className="font-body text-[10.5px] text-muted-foreground mt-1 leading-tight">{label}</div>
           </button>
-
         ))}
       </div>
 
@@ -814,12 +852,12 @@ export function AdminHojeCards() {
                     )}
                   >
                     {r.avatarUrl && r.avatarUrl !== 'null' ? (
-                      <div className="relative shrink-0 w-8 h-8 rounded-full overflow-hidden border border-border bg-primary/10 flex items-center justify-center">
+                      <div className="relative shrink-0 w-9 h-9 rounded-full overflow-hidden border border-border bg-primary/10 flex items-center justify-center">
                         <span className="font-display font-bold text-primary text-sm uppercase">{r.title.charAt(0)}</span>
                         <img src={r.avatarUrl} alt={r.title} referrerPolicy="no-referrer" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                       </div>
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
+                      <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
                         <span className="font-display font-bold text-primary text-sm uppercase">{r.title.charAt(0)}</span>
                       </div>
                     )}
@@ -843,13 +881,19 @@ export function AdminHojeCards() {
                           </span>
                         )}
                       </div>
-                      <div className="flex flex-col gap-1.5 mt-1">
-                        <div className="font-body text-[11px] text-muted-foreground truncate">
-                          {r.email && <span className="opacity-80">{r.email}</span>}
-                          {!r.planTag && r.subtitle && <span className="ml-1.5">{r.subtitle}</span>}
-                        </div>
+                      <div className="flex flex-col gap-0.5 mt-0.5">
+                        {r.email && (
+                          <div className="font-body text-xs text-muted-foreground/90 truncate">
+                            {r.email}
+                          </div>
+                        )}
+                        {!r.planTag && r.subtitle && (
+                          <div className="font-body text-[10.5px] text-muted-foreground/60 truncate">
+                            {r.subtitle}
+                          </div>
+                        )}
                         {r.planTag && (
-                          <div className="flex items-center gap-1.5 flex-wrap">
+                          <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
                             <span className="inline-flex items-center rounded-md bg-secondary border border-border/50 px-1.5 py-0.5 text-[9.5px] font-bold text-foreground">
                               {r.planTag.plano.toUpperCase()}
                             </span>

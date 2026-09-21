@@ -443,7 +443,6 @@ const ArtigoBottomSheet = ({
         if (cancel) return;
         if (Capacitor.isNativePlatform()) {
           try {
-            nativeTransferredRef.current = artigoKey;
             const { NativeVadeMecumPlugin } = await import('@/plugins/NativeVadeMecumPlugin');
             await NativeVadeMecumPlugin.openArtigo({
               id: artigo.id,
@@ -457,8 +456,9 @@ const ArtigoBottomSheet = ({
             });
             onCloseRef.current();
           } catch (e) {
-            console.warn('Executando leitor web de fallback:', e);
+            console.warn('Falha no plugin nativo, executando leitor web de fallback:', e);
             nativeTransferredRef.current = null;
+            // ATENÇÃO: NÃO fechamos a sheet aqui para que o usuário possa usar o leitor web
           }
         }
       })
