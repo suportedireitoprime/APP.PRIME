@@ -157,8 +157,15 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
     };
   }, [step]);
 
+  const playSlideSound = () => {
+    const audio = new Audio('/sounds/paper-slide.wav');
+    audio.volume = 0.4;
+    audio.play().catch(() => {});
+  };
+
   const nextIntro = () => {
     haptic.impact('light');
+    playSlideSound();
     if (introIndex < INTRO_SCREENS.length - 1) {
       setIntroIndex(prev => prev + 1);
     } else {
@@ -168,6 +175,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
 
   const prevIntro = () => {
     haptic.impact('light');
+    playSlideSound();
     if (introIndex > 0) {
       setIntroIndex(prev => prev - 1);
     }
@@ -181,11 +189,13 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
   const nextStep = React.useCallback(() => {
     if (!canContinue) return;
     haptic.impact('light');
+    playSlideSound();
     setStep(prev => (Math.min(prev + 1, 4) as 1 | 2 | 3 | 4));
   }, [canContinue]);
 
   const prevStep = React.useCallback(() => {
     haptic.impact('light');
+    playSlideSound();
     if (step === 2) {
       setStep(1);
     } else if (step === 3) {
@@ -260,14 +270,8 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                 </motion.div>
               </div>
 
-              <div className="space-y-2.5 px-2">
-                {INTRO_SCREENS[introIndex].tag && (
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-rose-300">
-                    <Sparkles className="w-3 h-3 text-amber-400" />
-                    <span>{INTRO_SCREENS[introIndex].tag}</span>
-                  </div>
-                )}
-                <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight tracking-tight uppercase">
+              <div className="space-y-3 px-2">
+                <h1 className="text-2xl sm:text-3xl font-body font-black text-white leading-tight uppercase tracking-wider">
                   {INTRO_SCREENS[introIndex].title}
                 </h1>
                 <p className="text-sm sm:text-base text-neutral-300 font-medium leading-relaxed max-w-sm mx-auto">
