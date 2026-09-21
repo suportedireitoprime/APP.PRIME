@@ -153,15 +153,13 @@ const Auth = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  if (loading) {
+  if (loading || user) {
     return (
       <main className="min-h-dvh flex items-center justify-center bg-[#0d0f12]">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </main>
     );
   }
-
-  if (user) return null;
 
   return (
     <main className="min-h-dvh w-full relative flex flex-col bg-[#0d0f12] overflow-hidden">

@@ -5,9 +5,10 @@ const COVER_POSITIONS = ['right', 'left', 'right', 'left'] as const;
 
 interface HeroCoverCarouselProps {
   covers: { url: string; preset?: string }[];
+  forcePosition?: 'right' | 'left';
 }
 
-const HeroCoverCarousel = ({ covers }: HeroCoverCarouselProps) => {
+const HeroCoverCarousel = ({ covers, forcePosition }: HeroCoverCarouselProps) => {
   const [coverIndex, setCoverIndex] = useState(() => {
     const len = covers?.length || 0;
     return len > 0 ? Math.floor(Math.random() * len) : 0;
@@ -59,7 +60,7 @@ const HeroCoverCarousel = ({ covers }: HeroCoverCarouselProps) => {
           if (safeLen === 0) return null;
           const current = covers[coverIndex % safeLen];
           if (!current) return null;
-          const pos = COVER_POSITIONS[coverIndex % COVER_POSITIONS.length];
+          const pos = forcePosition ? forcePosition : COVER_POSITIONS[coverIndex % COVER_POSITIONS.length];
           const posClass =
             pos === 'right'
               ? 'right-[2%] sm:right-[4%] left-auto origin-bottom-right'

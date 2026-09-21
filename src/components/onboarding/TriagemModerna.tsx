@@ -4,27 +4,22 @@ import {
   ArrowLeft, 
   ArrowRight, 
   Check, 
-  Sparkles, 
-  GraduationCap, 
-  Scale, 
-  Landmark, 
-  Briefcase,
-  FileWarning,
-  Highlighter,
-  Gavel,
-  Search,
-  Compass,
-  Lock,
-  Phone,
-  User,
+  Sparkles,
+  GraduationCap,
+  Scale,
+  Landmark,
+  Briefcase
 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import horusAsset from '@/assets/horus/horus-star.webp';
-import personaEstudante from '@/assets/onboarding/persona-estudante.webp';
-import personaOAB from '@/assets/onboarding/persona-oab-homem.webp';
-import personaConcurseiro from '@/assets/onboarding/persona-concurseiro.webp';
 import personaAdvogado from '@/assets/onboarding/persona-advogado.webp';
+
+// Imagens geradas
+import historia1 from '@/assets/onboarding/historia_direito_1.jpg';
+import historia2 from '@/assets/onboarding/historia_direito_2.jpg';
+import historia3 from '@/assets/onboarding/historia_direito_3.jpg';
+
 import { toast } from 'sonner';
 import type { CadastroResult } from './CadastroOnboardingOverlay';
 
@@ -34,163 +29,71 @@ export interface TriagemModernaProps {
   previewMode?: boolean;
 }
 
-function maskPhone(val: string): string {
-  const digits = val.replace(/\D/g, '').slice(0, 11);
-  if (digits.length <= 2) return digits.length > 0 ? `(${digits}` : '';
-  if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-  if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
-  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
-}
+const INTRO_SCREENS = [
+  {
+    image: historia1,
+    title: 'A História do Direito',
+    text: 'Por séculos, o estudo do Direito foi marcado por livros densos e uma teoria desconectada da realidade prática.',
+  },
+  {
+    image: historia2,
+    title: 'Tempo Desperdiçado',
+    text: 'A doutrina tradicional toma o seu tempo. Você estuda horas a fio e sente que não aprendeu o necessário para avançar.',
+  },
+  {
+    image: historia3,
+    title: 'A Evolução do Aprendizado',
+    text: 'Nós unimos a inteligência artificial com a didática prática para mudar de vez a forma como você absorve o Direito.',
+  },
+  {
+    image: horusAsset,
+    title: 'Foco no que Importa',
+    text: 'Uma ferramenta que se adapta ao seu objetivo, entregando o conteúdo exato que você precisa para evoluir rápido.',
+  },
+  {
+    image: personaAdvogado,
+    title: 'Sua Prática, Elevada',
+    text: 'Desbloqueie agora o seu acesso à plataforma definitiva e transforme para sempre seus resultados jurídicos.',
+  }
+];
 
 const PERSONAS = [
-  {
-    id: 'faculdade' as const,
-    label: 'Estudante de Direito',
-    tag: 'GRADUAÇÃO & ESTÁGIO',
-    desc: 'Preciso passar nas matérias, entender a teoria e me preparar desde a faculdade.',
-    cover: personaEstudante,
-    accent: '#F5C518',
-    icon: GraduationCap,
-  },
-  {
-    id: 'oab' as const,
-    label: 'Exame de Ordem (OAB)',
-    tag: '1ª E 2ª FASE',
-    desc: 'Foco absoluto nas 20 disciplinas, simulados e aprovação rápida na carteira da OAB.',
-    cover: personaOAB,
-    accent: '#E01F47',
-    icon: Scale,
-  },
-  {
-    id: 'concurso' as const,
-    label: 'Concurseiro(a)',
-    tag: 'CARREIRAS JURÍDICAS',
-    desc: 'Magistratura, MP, Delegado, Defensoria ou Tribunais: letra da lei na veia.',
-    cover: personaConcurseiro,
-    accent: '#10B981',
-    icon: Landmark,
-  },
-  {
-    id: 'advogado' as const,
-    label: 'Advogado(a) / Prática',
-    tag: 'ATUAÇÃO PROFISSIONAL',
-    desc: 'Consulta ágil de artigos, jurisprudência recente, teses e peças na rotina do escritório.',
-    cover: personaAdvogado,
-    accent: '#6366F1',
-    icon: Briefcase,
-  },
-];
-
-const DORES = [
-  {
-    id: 'leis-desatualizadas',
-    title: 'Leis desatualizadas & insegurança',
-    desc: 'Receio de ler um artigo que foi revogado ou alterado recentemente.',
-    icon: FileWarning,
-    beneficio: 'Garantia de 100% de vigência em tempo real.',
-  },
-  {
-    id: 'lei-dificil',
-    title: 'Artigos difíceis sem explicação prática',
-    desc: 'Juridiquês excessivo e doutrinas longas que travam a compreensão.',
-    icon: Highlighter,
-    beneficio: 'Explicações em português claro artigo por artigo com IA.',
-  },
-  {
-    id: 'material-espalhado',
-    title: 'Material disperso em várias abas',
-    desc: 'Lei num site, súmula em outro, anotações perdidas no caderno.',
-    icon: Search,
-    beneficio: 'Tudo integrado: texto, áudio, comentários e questões.',
-  },
-  {
-    id: 'falta-tempo',
-    title: 'Falta de tempo e rotina organizada',
-    desc: 'Dificuldade em manter constância e foco nos pontos que mais caem.',
-    icon: Compass,
-    beneficio: 'Resumos objetivos e pílulas de áudio para qualquer hora.',
-  },
-  {
-    id: 'jurisprudencia-lenta',
-    title: 'Demora para encontrar jurisprudência',
-    desc: 'Dificuldade de localizar súmulas e precedentes do STF e STJ.',
-    icon: Gavel,
-    beneficio: 'Radar jurisprudencial inteligente na ponta dos dedos.',
-  },
-];
-
-const AREAS = [
-  'Direito Constitucional',
-  'Direito Penal',
-  'Direito Civil',
-  'Processo Civil',
-  'Processo Penal',
-  'Direito Administrativo',
-  'Direito do Trabalho',
-  'Direito Tributário',
-  'Direito Empresarial',
-  'Consumidor',
-  'Direitos Humanos',
-  'Direito Ambiental',
-];
+  { id: 'faculdade', label: 'Estudante (Graduação)', desc: 'Preparação para provas, TCC e início da jornada.', icon: GraduationCap },
+  { id: 'concurso', label: 'Concurseiro', desc: 'Magistratura, MP, Delegado, Defensoria ou Tribunais.', icon: Landmark },
+  { id: 'oab', label: 'OABeiro (1ª ou 2ª Fase)', desc: 'Foco absoluto nas disciplinas e simulados para aprovação.', icon: Scale },
+  { id: 'advogado', label: 'Advogado / Prática Jurídica', desc: 'Pesquisa jurisprudencial, peças e atualização constante.', icon: Briefcase },
+] as const;
 
 const FAIXAS = ['18 a 24 anos', '25 a 30 anos', '31 a 40 anos', '41 anos ou mais'];
 
-const TRIAGEM_DRAFT_KEY = 'triagem_draft';
-
-function loadTriagemDraft(): Partial<CadastroResult & { step: 1 | 2 | 3 | 4 | 5 }> | null {
-  if (typeof window === 'undefined') return null;
-  try {
-    const raw = window.sessionStorage.getItem(TRIAGEM_DRAFT_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
 export default function TriagemModerna({ initialName = '', onComplete, previewMode = false }: TriagemModernaProps) {
-  const draft = React.useMemo(() => loadTriagemDraft(), []);
-
-  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(draft?.step ?? 1);
-  const [persona, setPersona] = useState<'faculdade' | 'oab' | 'concurso' | 'advogado' | null>(draft?.persona ?? null);
-  const [dores, setDores] = useState<string[]>(draft?.dores ?? []);
-  const [areas, setAreas] = useState<string[]>(draft?.areas ?? []);
-  const [nome, setNome] = useState(draft?.nome ?? initialName);
-  const [whatsapp, setWhatsapp] = useState(draft?.whatsapp ?? '');
-  const [faixa, setFaixa] = useState(draft?.faixa ?? '');
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+  const [introIndex, setIntroIndex] = useState(0);
+  
+  const [persona, setPersona] = useState<'faculdade' | 'oab' | 'concurso' | 'advogado' | null>(null);
+  const [faixa, setFaixa] = useState('');
   const [calculatingPhase, setCalculatingPhase] = useState(0);
 
-  // Salva rascunho temporário no sessionStorage para evitar perda em rotação/split-screen
+  // Animação de análise neural da IA no Step 4
   useEffect(() => {
-    if (step >= 5) return;
-    try {
-      window.sessionStorage.setItem(
-        TRIAGEM_DRAFT_KEY,
-        JSON.stringify({ step, persona, dores, areas, nome, whatsapp, faixa })
-      );
-    } catch {}
-  }, [step, persona, dores, areas, nome, whatsapp, faixa]);
-
-  // Animação de análise neural da IA no Step 5 com fallback garantido contra timeout/congelamento
-  useEffect(() => {
-    if (step !== 5) return;
+    if (step !== 4) return;
 
     let isFinished = false;
     const finishStep = () => {
       if (isFinished) return;
       isFinished = true;
-      try { window.sessionStorage.removeItem(TRIAGEM_DRAFT_KEY); } catch {}
       haptic.success();
       const selectedPersonaObj = PERSONAS.find(p => p.id === persona);
+      
       onComplete({
         persona: persona || 'oab',
         personaLabel: selectedPersonaObj?.label || 'Direito',
         faixa: faixa || '25 a 30 anos',
-        nome: nome.trim() || 'Doutor(a)',
-        areas: areas.length > 0 ? areas : ['Direito Constitucional'],
+        nome: initialName.trim() || 'Doutor(a)',
+        areas: ['Direito Constitucional'], // default já que removemos
         interesses: ['leis', 'leis-comentadas', 'questoes', 'resumos'],
-        dores,
-        whatsapp: whatsapp.trim() ? whatsapp.replace(/\D/g, '') : null,
+        dores: [],
+        whatsapp: null,
       });
     };
 
@@ -200,7 +103,6 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
     const t3 = setTimeout(() => setCalculatingPhase(3), 1600);
     const t4 = setTimeout(() => finishStep(), 2200);
 
-    // Fallback de segurança de 2.5s se a aba ou app for desacelerada pelo sistema
     const fallbackTimer = setTimeout(() => {
       finishStep();
     }, 2500);
@@ -220,78 +122,46 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
       clearTimeout(fallbackTimer);
       document.removeEventListener('visibilitychange', onVisibilityChange);
     };
-  }, [step, persona, dores, areas, nome, whatsapp, faixa, onComplete]);
+  }, [step, persona, faixa, onComplete, initialName]);
 
-  const toggleDor = (id: string) => {
-    haptic.selection();
-    setDores(prev => 
-      prev.includes(id) 
-        ? (prev.length > 1 ? prev.filter(x => x !== id) : prev) 
-        : [...prev, id]
-    );
+  const nextIntro = () => {
+    haptic.impact('light');
+    if (introIndex < INTRO_SCREENS.length - 1) {
+      setIntroIndex(prev => prev + 1);
+    } else {
+      setStep(2);
+    }
   };
 
-  const toggleArea = (area: string) => {
-    haptic.selection();
-    setAreas(prev => 
-      prev.includes(area) 
-        ? prev.filter(x => x !== area) 
-        : [...prev, area]
-    );
+  const prevIntro = () => {
+    haptic.impact('light');
+    if (introIndex > 0) {
+      setIntroIndex(prev => prev - 1);
+    }
   };
 
   const canContinue = 
-    (step === 1 && persona !== null) ||
-    (step === 2 && dores.length > 0) ||
-    (step === 3 && areas.length > 0) ||
-    (step === 4 && nome.trim().length > 0 && faixa !== '');
+    (step === 1) ||
+    (step === 2 && persona !== null) ||
+    (step === 3 && faixa !== '');
 
   const nextStep = React.useCallback(() => {
     if (!canContinue) return;
     haptic.impact('light');
-    setStep(prev => (Math.min(prev + 1, 5) as 1 | 2 | 3 | 4 | 5));
-  }, [step, canContinue]);
+    setStep(prev => (Math.min(prev + 1, 4) as 1 | 2 | 3 | 4));
+  }, [canContinue]);
 
   const prevStep = React.useCallback(() => {
     haptic.impact('light');
-    setStep(prev => (Math.max(prev - 1, 1) as 1 | 2 | 3 | 4 | 5));
-  }, []);
-
-  // Atalhos de teclado no desktop para navegação rápida (Enter, Esc, 1-4)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const isInput = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
-      if (isInput) {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          nextStep();
-        }
-        return;
-      }
-
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        nextStep();
-      } else if (e.key === 'Escape' || e.key === 'ArrowLeft') {
-        if (step > 1) {
-          e.preventDefault();
-          prevStep();
-        }
-      } else if (step === 1) {
-        if (e.key === '1') { haptic.selection(); setPersona('faculdade'); }
-        else if (e.key === '2') { haptic.selection(); setPersona('oab'); }
-        else if (e.key === '3') { haptic.selection(); setPersona('concurso'); }
-        else if (e.key === '4') { haptic.selection(); setPersona('advogado'); }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [step, nextStep, prevStep]);
+    if (step === 2) {
+      setStep(1);
+    } else if (step === 3) {
+      setStep(2);
+    }
+  }, [step]);
 
   return (
     <div className="fixed inset-0 z-[9999] bg-[#0A0C10] text-white flex flex-col overflow-hidden select-none">
-      {/* Fundo sutil com grid animado */}
       <div className="fixed inset-0 z-0 pointer-events-none opacity-25">
         <ShapeGrid
           speed={0.4}
@@ -304,74 +174,77 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
         />
       </div>
 
-      {/* Header com Progresso */}
-      <header className="relative z-20 w-full max-w-xl mx-auto px-4 pt-[calc(0.75rem+var(--sai-top,0px))] pb-3 flex flex-col gap-2.5">
-        <div className="flex items-center justify-between">
-          {step > 1 && step < 5 ? (
-            <button
-              type="button"
-              onClick={prevStep}
-              className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/80 active:scale-95 transition-transform cursor-pointer"
-              aria-label="Voltar etapa"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-          ) : (
-            <div className="w-10 h-10 flex items-center justify-center">
-              <img src={horusAsset} alt="Horus" className="w-7 h-7 object-contain drop-shadow-md" />
-            </div>
-          )}
-
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-bold tracking-widest uppercase text-white/90">
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
-            <span>DIREITO PRIME PRO</span>
+      {step < 4 && (
+        <header className="relative z-20 w-full max-w-xl mx-auto px-4 pt-[calc(0.75rem+var(--sai-top,0px))] pb-3 flex flex-col gap-2.5">
+          <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden relative">
+            <motion.div
+              className="h-full bg-gradient-to-r from-red-600 via-primary to-rose-500 rounded-full shadow-[0_0_12px_rgba(224,31,71,0.6)]"
+              initial={false}
+              animate={{ width: step === 1 ? `${((introIndex + 1) / 5) * 100}%` : `${(step / 3) * 100}%` }}
+              transition={{ duration: 0.35, ease: 'easeInOut' }}
+            />
           </div>
+        </header>
+      )}
 
-          <div className="text-right">
-            <span className="font-bold text-xs text-primary tracking-wider">
-              {step < 5 ? `${step} / 4` : '100%'}
-            </span>
-          </div>
-        </div>
-
-        {/* Barra de Progresso Fluida */}
-        <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden relative">
-          <motion.div
-            className="h-full bg-gradient-to-r from-red-600 via-primary to-rose-500 rounded-full shadow-[0_0_12px_rgba(224,31,71,0.6)]"
-            initial={{ width: '25%' }}
-            animate={{ width: `${(step / 4) * 100}%` }}
-            transition={{ duration: 0.35, ease: 'easeInOut' }}
-          />
-        </div>
-      </header>
-
-      {/* Conteúdo Principal com Rolagem Suave */}
-      <main className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden px-4 pb-[calc(6rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] max-w-xl mx-auto w-full">
+      <main className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden px-4 pb-[calc(6rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] max-w-xl mx-auto w-full flex flex-col justify-center">
         <AnimatePresence mode="wait">
-          {/* PASSO 1: PERSONA */}
+          
+          {/* PASSO 1: INTRO (Carrossel Persuasivo) */}
           {step === 1 && (
             <motion.div
-              key="step1"
+              key={`intro-${introIndex}`}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+              className="flex flex-col items-center text-center space-y-6"
+            >
+              <div className="w-full max-w-[280px] aspect-square rounded-2xl overflow-hidden shadow-2xl border border-white/10 relative">
+                {/* Imagens renderizadas sem bordas grossas, fundo escuro */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0A0C10]/80 z-10 pointer-events-none" />
+                <img 
+                  src={INTRO_SCREENS[introIndex].image} 
+                  alt={INTRO_SCREENS[introIndex].title} 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="space-y-3 px-2">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight tracking-tight">
+                  {INTRO_SCREENS[introIndex].title}
+                </h1>
+                <p className="text-sm sm:text-base text-neutral-400 leading-relaxed max-w-sm mx-auto">
+                  {INTRO_SCREENS[introIndex].text}
+                </p>
+              </div>
+            </motion.div>
+          )}
+
+          {/* PASSO 2: FOCO (Sem Imagens) */}
+          {step === 2 && (
+            <motion.div
+              key="step2"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.28 }}
-              className="space-y-4 pt-2"
+              className="space-y-6 pt-4 h-full flex flex-col"
             >
               <div className="space-y-1 text-center">
                 <span className="text-[11px] font-bold tracking-widest text-primary uppercase">
-                  ETAPA 1 • SEU MOMENTO ATUAL
+                  ETAPA 1 • SEU OBJETIVO
                 </span>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight tracking-tight">
-                  Qual é o seu objetivo principal?
+                <h1 className="text-2xl sm:text-3xl font-bold text-white leading-snug tracking-normal">
+                  Qual é o seu foco no Direito?
                 </h1>
                 <p className="text-xs sm:text-sm text-neutral-400 max-w-sm mx-auto leading-relaxed">
-                  Personalizaremos artigos, questões e recomendações de estudo sob medida para você.
+                  Personalizaremos o ambiente para a sua necessidade.
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 sm:gap-3 pt-2">
+              <div className="flex-1 flex flex-col gap-3 pt-2">
                 {PERSONAS.map(p => {
+                  const Icon = p.icon;
                   const isSelected = persona === p.id;
                   return (
                     <button
@@ -381,95 +254,28 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                         haptic.selection();
                         setPersona(p.id);
                       }}
-                      className={`relative flex flex-col text-left p-0 rounded-2xl border-2 transition-all duration-200 overflow-hidden cursor-pointer active:scale-[0.98] ${
+                      className={`w-full relative flex items-center gap-4 text-left p-4 min-h-[48px] rounded-2xl border-2 transition-all duration-200 overflow-hidden cursor-pointer active:scale-[0.98] ${
                         isSelected
                           ? 'border-primary bg-primary/20 shadow-[0_0_24px_rgba(224,31,71,0.25)] ring-1 ring-primary'
-                          : 'border-transparent bg-neutral-900/60 hover:border-white/20'
-                      }`}
-                    >
-                      <div className="relative w-full h-28 sm:h-36 rounded-xl overflow-hidden">
-                        <img src={p.cover} alt={p.label} className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
-                        
-                        <div className="absolute top-3 left-3 flex items-center gap-1.5">
-                          <span className="text-[9px] sm:text-[10px] font-bold tracking-widest px-2 py-1 rounded-md bg-black/50 backdrop-blur-md text-white/95 uppercase">
-                            {p.tag}
-                          </span>
-                        </div>
-
-                        <div className="absolute bottom-1.5 left-2 right-2 flex items-center justify-between">
-                          <span className="font-bold text-xs sm:text-sm text-white uppercase drop-shadow">
-                            {p.label}
-                          </span>
-                          {isSelected && (
-                            <span className="w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow">
-                              <Check className="w-3.5 h-3.5 text-white stroke-[3]" />
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </motion.div>
-          )}
-
-          {/* PASSO 2: DORES / DESAFIOS */}
-          {step === 2 && (
-            <motion.div
-              key="step2"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.28 }}
-              className="space-y-4 pt-2"
-            >
-              <div className="space-y-1 text-center">
-                <span className="text-[11px] font-bold tracking-widest text-primary uppercase">
-                  ETAPA 2 • SEUS DESAFIOS
-                </span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight tracking-tight">
-                  O que mais atrapalha seus estudos hoje?
-                </h2>
-                <p className="text-xs sm:text-sm text-neutral-400 max-w-sm mx-auto leading-relaxed">
-                  Selecione todas as opções que se aplicam. A IA cuidará de cada uma delas.
-                </p>
-              </div>
-
-              <div className="space-y-2.5 pt-1">
-                {DORES.map(d => {
-                  const Icon = d.icon;
-                  const isSelected = dores.includes(d.id);
-                  return (
-                    <button
-                      key={d.id}
-                      type="button"
-                      onClick={() => toggleDor(d.id)}
-                      className={`w-full flex items-center gap-3 p-2.5 sm:p-3 rounded-2xl border transition-all duration-200 text-left cursor-pointer active:scale-[0.99] ${
-                        isSelected
-                          ? 'border-emerald-500/70 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.15)]'
                           : 'border-white/10 bg-neutral-900/60 hover:border-white/20'
                       }`}
                     >
-                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
-                        isSelected ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/30' : 'bg-white/10 text-white/80'
-                      }`}>
-                        <Icon className="w-4 h-4" />
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isSelected ? 'bg-primary text-white shadow-md' : 'bg-white/10 text-white/80'}`}>
+                        <Icon className="w-5 h-5" />
                       </div>
-
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2">
-                          <h3 className="font-semibold text-xs sm:text-sm text-white/90 leading-snug">
-                            {d.title}
-                          </h3>
-                          <div className={`w-4 h-4 rounded-md border flex items-center justify-center shrink-0 transition-colors ${
-                            isSelected ? 'bg-emerald-500 border-emerald-400 text-white' : 'border-white/20'
-                          }`}>
-                            {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
-                          </div>
+                      <div className="flex-1 min-w-0 pr-6">
+                        <h3 className="font-bold text-base text-white/95 truncate">
+                          {p.label}
+                        </h3>
+                        <p className="text-xs text-neutral-400 mt-0.5 line-clamp-2">
+                          {p.desc}
+                        </p>
+                      </div>
+                      {isSelected && (
+                        <div className="absolute right-4 w-6 h-6 rounded-full bg-primary flex items-center justify-center shadow">
+                          <Check className="w-4 h-4 text-white stroke-[3]" />
                         </div>
-                      </div>
+                      )}
                     </button>
                   );
                 })}
@@ -477,7 +283,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
             </motion.div>
           )}
 
-          {/* PASSO 3: ÁREAS DE INTERESSE */}
+          {/* PASSO 3: IDADE */}
           {step === 3 && (
             <motion.div
               key="step3"
@@ -485,130 +291,50 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.28 }}
-              className="space-y-4 pt-2"
+              className="space-y-6 pt-4 flex flex-col h-full justify-center pb-20"
             >
               <div className="space-y-1 text-center">
                 <span className="text-[11px] font-bold tracking-widest text-primary uppercase">
-                  ETAPA 3 • MATÉRIAS PRIORITÁRIAS
+                  ETAPA 2 • PERFIL
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight tracking-tight">
-                  Quais ramos você mais precisa estudar?
+                <h2 className="text-2xl sm:text-3xl font-bold text-white leading-snug tracking-normal">
+                  Qual é a sua faixa etária?
                 </h2>
                 <p className="text-xs sm:text-sm text-neutral-400 max-w-sm mx-auto leading-relaxed">
-                  Essas disciplinas ficarão em destaque no seu Vade Mecum e nas trilhas interativas.
+                  Para adaptarmos a linguagem e a didática do conteúdo.
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-2.5 pt-2">
-                {AREAS.map(area => {
-                  const isSelected = areas.includes(area);
-                  return (
-                    <button
-                      key={area}
-                      type="button"
-                      onClick={() => toggleArea(area)}
-                      className={`flex items-center justify-between p-3 rounded-xl border transition-all text-left cursor-pointer active:scale-[0.98] ${
-                        isSelected
-                          ? 'border-primary bg-primary/15 shadow-[0_0_15px_rgba(224,31,71,0.2)] text-white'
-                          : 'border-white/10 bg-neutral-900/60 text-neutral-300 hover:border-white/20'
-                      }`}
-                    >
-                      <span className="font-semibold text-sm truncate pr-2">
-                        {area}
-                      </span>
-                      <span className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 text-[10px] ${
-                        isSelected ? 'bg-primary text-white' : 'border border-white/20'
-                      }`}>
-                        {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
-                      </span>
-                    </button>
-                  );
-                })}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
+                {FAIXAS.map(f => (
+                  <button
+                    key={f}
+                    type="button"
+                    onClick={() => {
+                      haptic.selection();
+                      setFaixa(f);
+                    }}
+                    className={`min-h-[56px] py-3 px-4 rounded-xl text-base font-bold transition-all cursor-pointer active:scale-[0.98] ${
+                      faixa === f
+                        ? 'bg-primary text-white border border-primary/40 shadow-[0_0_15px_rgba(224,31,71,0.3)]'
+                        : 'bg-neutral-900/80 border border-white/10 text-neutral-400 hover:border-white/20 hover:text-white'
+                    }`}
+                  >
+                    {f}
+                  </button>
+                ))}
               </div>
-
-              <p className="text-center text-[11px] text-neutral-400 pt-1">
-                {areas.length} {areas.length === 1 ? 'matéria selecionada' : 'matérias selecionadas'} (você poderá alterar a qualquer momento).
-              </p>
             </motion.div>
           )}
 
-          {/* PASSO 4: IDENTIDADE & CONTATO */}
+          {/* PASSO 4: ANÁLISE COM IA */}
           {step === 4 && (
             <motion.div
               key="step4"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.28 }}
-              className="space-y-4 pt-2"
-            >
-              <div className="space-y-1 text-center">
-                <span className="text-[11px] font-bold tracking-widest text-primary uppercase">
-                  ETAPA 4 • PERSONALIZAÇÃO
-                </span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight tracking-tight">
-                  Seu espaço está quase pronto.
-                </h2>
-                <p className="text-xs sm:text-sm text-neutral-400 max-w-sm mx-auto leading-relaxed">
-                  Como devemos te chamar dentro do Direito Prime?
-                </p>
-              </div>
-
-              <div className="space-y-4 pt-2">
-                {/* Campo de Nome */}
-                <div className="space-y-1.5">
-                  <label className="block text-sm font-semibold text-neutral-300">
-                    Qual é o seu nome?
-                  </label>
-                  <div className="relative">
-                    <User className="absolute left-3.5 top-3.5 w-5 h-5 text-neutral-400" />
-                    <input
-                      type="text"
-                      value={nome}
-                      onChange={e => setNome(e.target.value)}
-                      placeholder="Seu nome"
-                      className="w-full h-[52px] rounded-xl bg-neutral-900/80 border border-white/15 pl-11 pr-4 text-base text-white placeholder:text-neutral-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                    />
-                  </div>
-                </div>
-
-                {/* Faixa Etária */}
-                <div className="space-y-1.5 pt-1">
-                  <label className="block text-sm font-semibold text-neutral-300">
-                    Faixa etária:
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {FAIXAS.map(f => (
-                      <button
-                        key={f}
-                        type="button"
-                        onClick={() => {
-                          haptic.selection();
-                          setFaixa(f);
-                        }}
-                        className={`min-h-[48px] py-3 px-3 rounded-xl text-sm font-bold transition-all cursor-pointer ${
-                          faixa === f
-                            ? 'bg-primary text-white border border-primary/40 shadow-sm'
-                            : 'bg-white/5 border border-white/10 text-neutral-400 hover:text-white'
-                        }`}
-                      >
-                        {f}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* PASSO 5: ANÁLISE COM IA (1.8s) */}
-          {step === 5 && (
-            <motion.div
-              key="step5"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.35 }}
-              className="flex flex-col items-center justify-center text-center py-12 space-y-6"
+              className="flex flex-col items-center justify-center text-center py-12 space-y-6 h-full"
             >
               <div className="relative w-24 h-24">
                 <motion.div
@@ -623,7 +349,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
 
               <div className="space-y-2 max-w-sm">
                 <h3 className="font-extrabold text-xl sm:text-2xl text-white tracking-wide uppercase">
-                  Personalizando Seu Espaço...
+                  Liberando Seu Acesso...
                 </h3>
                 <AnimatePresence mode="wait">
                   <motion.p
@@ -634,9 +360,9 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                     className="text-xs sm:text-sm text-neutral-400 font-medium min-h-[2.5rem]"
                   >
                     {calculatingPhase === 0 && 'Analisando perfil e momento jurídico...'}
-                    {calculatingPhase === 1 && `Configurando Vade Mecum com foco em ${PERSONAS.find(p => p.id === persona)?.label}...`}
-                    {calculatingPhase === 2 && `Sincronizando ${areas.length} áreas jurídicas e questões comentadas...`}
-                    {calculatingPhase === 3 && 'Tudo pronto! Desbloqueando seu acesso PRO...'}
+                    {calculatingPhase === 1 && `Configurando Vade Mecum inteligente...`}
+                    {calculatingPhase === 2 && `Preparando promoção de boas vindas...`}
+                    {calculatingPhase === 3 && 'Tudo pronto! Entrando na plataforma...'}
                   </motion.p>
                 </AnimatePresence>
               </div>
@@ -654,9 +380,8 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
         </AnimatePresence>
       </main>
 
-      {/* Footer Fixo com Botão de Ação */}
       <AnimatePresence>
-        {step < 5 && canContinue && (
+        {step < 4 && (
           <motion.footer 
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
@@ -664,14 +389,30 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
             className="fixed bottom-0 inset-x-0 z-30 p-4 bg-gradient-to-t from-[#0A0C10] via-[#0A0C10]/95 to-transparent pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]"
           >
             <div className="max-w-xl mx-auto w-full">
-              <button
-                type="button"
-                onClick={nextStep}
-                className={`btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl bg-primary text-primary-foreground font-bold text-base tracking-wider uppercase flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-[0_8px_30px_rgba(224,31,71,0.35)] cursor-pointer`}
-              >
-                <span>{step === 4 ? 'FINALIZAR E LIBERAR ACESSO' : 'CONTINUAR'}</span>
-                <ArrowRight className="w-5 h-5 stroke-[2.5]" />
-              </button>
+              {step === 1 ? (
+                <button
+                  type="button"
+                  onClick={nextIntro}
+                  className={`btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl bg-primary text-primary-foreground font-bold text-base tracking-wider uppercase flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-[0_8px_30px_rgba(224,31,71,0.35)] cursor-pointer`}
+                >
+                  <span>{introIndex < 4 ? 'PRÓXIMO' : 'COMEÇAR AGORA'}</span>
+                  <ArrowRight className="w-5 h-5 stroke-[2.5]" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={nextStep}
+                  disabled={!canContinue}
+                  className={`relative overflow-hidden w-full h-14 rounded-2xl font-bold text-base tracking-wider uppercase flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-lg cursor-pointer ${
+                    canContinue 
+                      ? 'bg-primary text-primary-foreground shadow-[0_8px_30px_rgba(224,31,71,0.35)] btn-shine-loop' 
+                      : 'bg-white/10 text-white/40 cursor-not-allowed opacity-70'
+                  }`}
+                >
+                  <span>{step === 3 ? 'FINALIZAR E LIBERAR ACESSO' : 'CONTINUAR'}</span>
+                  <ArrowRight className="w-5 h-5 stroke-[2.5]" />
+                </button>
+              )}
             </div>
           </motion.footer>
         )}

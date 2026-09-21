@@ -118,8 +118,21 @@ const ResumosHero = ({
         aria-hidden="true"
       />
 
+      {/* Grid Pattern Background Animado (Para cobrir o fundo preto / lado direito) */}
+      <div className="absolute inset-0 opacity-40 pointer-events-none mix-blend-screen z-0">
+        <ShapeGrid 
+          speed={0.5} 
+          squareSize={40}
+          direction='diagonal'
+          borderColor='rgba(255, 255, 255, 0.08)'
+          hoverFillColor='rgba(255, 255, 255, 0.15)'
+          shape='square'
+          hoverTrailAmount={5}
+        />
+      </div>
+
       {/* Imagem de Fundo (Carrossel Original de Resumos) */}
-      <HeroCoverCarousel covers={FALLBACK_COVERS} />
+      <HeroCoverCarousel covers={FALLBACK_COVERS} forcePosition="right" />
 
       {/* Overlay vermelho com gradiente estilo menu e sombra */}
       <div 
@@ -135,19 +148,15 @@ const ResumosHero = ({
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
 
-          <HeroMotifs />
-
-          {/* Grid Pattern Background Animado */}
-          <div className="absolute inset-0 opacity-40 pointer-events-none mix-blend-screen">
-            <ShapeGrid 
-              speed={0.5} 
-              squareSize={40}
-              direction='diagonal'
-              borderColor='rgba(255, 255, 255, 0.08)'
-              hoverFillColor='rgba(255, 255, 255, 0.15)'
-              shape='square'
-              hoverTrailAmount={5}
-            />
+          {/* Wrapper com máscara para exibir SVGs apenas no lado direito do painel vermelho (atrás do texto fica limpo) */}
+          <div 
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              WebkitMaskImage: 'linear-gradient(to right, transparent 20%, black 46%)',
+              maskImage: 'linear-gradient(to right, transparent 20%, black 46%)'
+            }}
+          >
+            <HeroMotifs />
           </div>
         </div>
       </div>
