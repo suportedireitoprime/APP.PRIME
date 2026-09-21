@@ -260,8 +260,16 @@ export default function ResumosJuridicosTemas() {
             <Loader2 className="w-6 h-6 animate-spin mr-2" /> Carregando matérias...
           </div>
         ) : filteredTemas.length === 0 ? (
-          <div className="text-center py-24 text-muted-foreground">
-            <p className="font-semibold text-lg">Nenhuma matéria encontrada</p>
+          <div className="text-center py-24 text-muted-foreground flex flex-col items-center">
+            <p className="font-semibold text-lg mb-4">Nenhuma matéria encontrada</p>
+            {q && (
+              <button 
+                onClick={() => { haptic.selection(); setQ(""); }}
+                className="px-6 py-2.5 rounded-xl bg-[#ef4444] text-white font-bold text-sm hover:bg-[#ef4444]/90 active:scale-95 transition-all shadow-[0_4px_14px_rgba(239,68,68,0.3)]"
+              >
+                Limpar Pesquisa
+              </button>
+            )}
           </div>
         ) : (
           <div className="relative py-6 sm:py-10 w-full min-w-0 max-w-full overflow-hidden">

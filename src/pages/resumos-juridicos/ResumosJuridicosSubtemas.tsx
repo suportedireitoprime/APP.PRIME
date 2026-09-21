@@ -299,7 +299,15 @@ export default function ResumosJuridicosSubtemas() {
         ) : subtemasOrdenados.length === 0 ? (
           <div className="text-center py-24 text-muted-foreground flex flex-col items-center">
             <FileText className="w-10 h-10 opacity-20 mb-3" />
-            <p className="font-semibold text-lg">{ordem === "fav" ? "Nenhum favorito" : "Nenhum resumo encontrado"}</p>
+            <p className="font-semibold text-lg mb-4">{ordem === "fav" ? "Nenhum favorito" : "Nenhum resumo encontrado"}</p>
+            {q && (
+              <button 
+                onClick={() => { haptic.selection(); setQ(""); }}
+                className="px-6 py-2.5 rounded-xl bg-[#ef4444] text-white font-bold text-sm hover:bg-[#ef4444]/90 active:scale-95 transition-all shadow-[0_4px_14px_rgba(239,68,68,0.3)]"
+              >
+                Limpar Pesquisa
+              </button>
+            )}
           </div>
         ) : (
           <div className="relative py-6 sm:py-10 w-full min-w-0 max-w-full overflow-hidden">
@@ -466,9 +474,12 @@ export default function ResumosJuridicosSubtemas() {
                   metodosGerados={metodosGerados}
                   onSelectMetodo={(metodoId) => {
                     const r = modalResumo;
-                    setModalResumo(null);
-                    setMetodosGerados([]);
-                    openReader(r, metodoId);
+                    // Pequeno atraso para a animação do Modal não piscar instantaneamente
+                    setTimeout(() => {
+                      setModalResumo(null);
+                      setMetodosGerados([]);
+                      openReader(r, metodoId);
+                    }, 150);
                   }}
                 />
               </div>

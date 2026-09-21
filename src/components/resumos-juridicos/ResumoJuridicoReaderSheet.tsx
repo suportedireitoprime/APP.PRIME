@@ -78,6 +78,93 @@ const METODOS: { id: Metodo; label: string }[] = [
   { id: "feynman", label: "Feynman" },
 ];
 
+const markdownComponents = {
+  h1: ({ node, ...props }: any) => (
+    <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#E11D48] mt-8 mb-4 border-b border-[#E11D48]/20 pb-2.5 font-display leading-tight" {...props} />
+  ),
+  h2: ({ node, ...props }: any) => (
+    <h2 className="text-lg sm:text-xl font-bold tracking-tight text-[#E11D48] mt-7 mb-3 font-display leading-snug" {...props} />
+  ),
+  h3: ({ node, ...props }: any) => (
+    <h3 className="text-base sm:text-lg font-semibold tracking-tight text-[#E11D48] mt-5 mb-2 font-display leading-snug" {...props} />
+  ),
+  h4: ({ node, ...props }: any) => (
+    <h4 className="text-[14px] sm:text-base font-semibold tracking-tight text-[#E11D48] mt-4 mb-1.5 font-display leading-snug" {...props} />
+  ),
+  p: ({ node, ...props }: any) => (
+    <p className="my-3.5 text-foreground/90 leading-[1.8] text-[15px] sm:text-[16px]" {...props} />
+  ),
+  table: ({ node, ...props }: any) => (
+    <div className="my-6 w-full overflow-x-auto rounded-2xl border border-primary/20 bg-card/70 shadow-lg backdrop-blur-md">
+      <table className="w-full text-left text-xs md:text-sm border-collapse" {...props} />
+    </div>
+  ),
+  th: ({ node, ...props }: any) => (
+    <th className="bg-secondary/40 px-4 py-3.5 border-b border-border/50 text-slate-200 font-display font-bold text-sm tracking-wide uppercase" {...props} />
+  ),
+  td: ({ node, ...props }: any) => (
+    <td className="px-4 py-3 border-b border-border/30 text-foreground/90 font-body leading-relaxed" {...props} />
+  ),
+  blockquote: ({ node, children, ...props }: any) => {
+    const extractText = (c: any): string => {
+      if (typeof c === "string") return c;
+      if (Array.isArray(c)) return c.map(extractText).join("");
+      if (c?.props?.children) return extractText(c.props.children);
+      return "";
+    };
+    const text = extractText(children);
+    const alertMatch = text.match(/^\s*\[!(NOTE|IMPORTANT|WARNING|TIP|CAUTION)\]\s*/i);
+    if (alertMatch) {
+      const type = alertMatch[1].toUpperCase();
+      const alertConfig = {
+        IMPORTANT: { label: "Importante", icon: AlertCircle, bg: "bg-amber-500/10", border: "border-amber-500/40", text: "text-amber-400" },
+        WARNING: { label: "Atenção", icon: AlertTriangle, bg: "bg-rose-500/10", border: "border-rose-500/40", text: "text-rose-400" },
+        CAUTION: { label: "Cuidado", icon: AlertTriangle, bg: "bg-rose-500/10", border: "border-rose-500/40", text: "text-rose-400" },
+        TIP: { label: "Dica de Fixação", icon: Sparkles, bg: "bg-emerald-500/10", border: "border-emerald-500/40", text: "text-emerald-400" },
+        NOTE: { label: "Nota Explicativa", icon: Info, bg: "bg-sky-500/10", border: "border-sky-500/40", text: "text-sky-400" },
+      }[type] || { label: "Nota", icon: Info, bg: "bg-sky-500/10", border: "border-sky-500/40", text: "text-sky-400" };
+      const Icon = alertConfig.icon;
+      const cleanChildren = (ch: any): any => {
+        if (typeof ch === "string") return ch.replace(/^\s*\[!(NOTE|IMPORTANT|WARNING|TIP|CAUTION)\]\s*/i, "");
+        if (Array.isArray(ch)) return ch.map(cleanChildren);
+        if (ch?.props?.children) return { ...ch, props: { ...ch.props, children: cleanChildren(ch.props.children) } };
+        return ch;
+      };
+      return (
+        <div className={`my-5 rounded-2xl border ${alertConfig.border} ${alertConfig.bg} p-4 md:p-5 shadow-sm text-foreground/95 not-prose`}>
+          <div className={`flex items-center gap-2 mb-2 font-display font-bold text-xs uppercase tracking-wider ${alertConfig.text}`}>
+            <Icon className="w-4 h-4 shrink-0" />
+            <span>{alertConfig.label}</span>
+          </div>
+          <div className="text-foreground/90 text-sm md:text-[15px] leading-relaxed">
+            {cleanChildren(children)}
+          </div>
+        </div>
+      );
+    }
+    return (
+      <blockquote className="my-5 rounded-2xl border-l-4 border-primary bg-primary/10 p-4 md:p-5 shadow-sm text-foreground/95 not-italic" {...props}>
+        <div className="flex items-start gap-3">
+          <Quote className="w-5 h-5 text-primary shrink-0 mt-0.5" aria-hidden="true" />
+          <div className="text-foreground/90 leading-relaxed">{children}</div>
+        </div>
+      </blockquote>
+    );
+  },
+  pre: ({ node, ...props }: any) => (
+    <pre className="my-6 p-4 md:p-5 rounded-2xl bg-zinc-950/90 border border-border/80 text-slate-100 font-mono text-xs md:text-sm overflow-x-auto shadow-xl leading-relaxed tracking-wide" {...props} />
+  ),
+  code: ({ node, inline, ...props }: any) =>
+    inline ? (
+      <code className="px-1.5 py-0.5 rounded-md bg-secondary text-foreground font-mono text-xs font-semibold" {...props} />
+    ) : (
+      <code className="text-slate-100 font-mono text-xs md:text-sm" {...props} />
+    ),
+  hr: ({ node, ...props }: any) => (
+    <hr className="my-6 border-border/60" {...props} />
+  ),
+};
+
 export default function ResumoJuridicoReaderSheet({
   resumo,
   onClose,
@@ -95,7 +182,7 @@ export default function ResumoJuridicoReaderSheet({
   const isDesktop = useIsDesktop();
   const gateResumo = useGatedFeature('resumo_ver', 'resumo', { scope: resumo?.id ? String(resumo.id) : null });
   const gateDownload = useGatedFeature('resumo_download', 'resumo_download');
-  const coverUrl = useMemo(() => resumo?.area ? getAreaCover(resumo.area)?.cover : null, [resumo?.area]);
+  const coverUrl = useMemo(() => getAreaCover(resumo?.area || "default")?.cover || null, [resumo?.area]);
   const [fontSize, setFontSize] = useState(17);
   const [salvandoDrive, setSalvandoDrive] = useState(false);
   const [tab, setTab] = useState<Tab>("resumo");
@@ -179,7 +266,12 @@ export default function ResumoJuridicoReaderSheet({
     }
 
     if (scrollRef.current) {
-      scrollRef.current.scrollTo({ top: 0, behavior: "auto" });
+      const savedPos = sessionStorage.getItem(`resumo_scroll_${resumo.id}`);
+      if (savedPos) {
+        scrollRef.current.scrollTo({ top: parseInt(savedPos, 10), behavior: "auto" });
+      } else {
+        scrollRef.current.scrollTo({ top: 0, behavior: "auto" });
+      }
     }
     setTab(initialTab || "resumo");
     const targetMetodo = autoStartMetodo || defaultMetodo || initialMetodo || "conceitos";
@@ -258,6 +350,11 @@ export default function ResumoJuridicoReaderSheet({
     };
   }, [resumo?.id, initialTab, defaultMetodo, initialMetodo, autoStartMetodo, pregerarMetodos]);
 
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    if (!resumo?.id) return;
+    sessionStorage.setItem(`resumo_scroll_${resumo.id}`, e.currentTarget.scrollTop.toString());
+  };
+
   const incFont = () => setFontSize((s) => Math.min(26, s + 1));
   const decFont = () => setFontSize((s) => Math.max(13, s - 1));
 
@@ -286,6 +383,7 @@ export default function ResumoJuridicoReaderSheet({
 
   const toggleFav = () => {
     if (!resumo) return;
+    haptic.selection();
     const novo = resumosLocal.toggleFavorito({
       id: resumo.id,
       area: resumo.area,
@@ -294,10 +392,16 @@ export default function ResumoJuridicoReaderSheet({
     });
     setFav(novo);
     onFavoritoChange?.();
+    if (novo) toast.success("Adicionado aos favoritos!");
+    else toast.success("Removido dos favoritos");
   };
 
   const baixarPdf = async () => {
     if (!resumo || salvandoDrive) return;
+    if (!navigator.onLine) {
+      toast.error("Você precisa estar online para gerar o PDF.", { id: "baixar-pdf" });
+      return;
+    }
     setSalvandoDrive(true);
     toast.loading("Gerando PDF...", { id: "baixar-pdf" });
     try {
@@ -417,6 +521,7 @@ export default function ResumoJuridicoReaderSheet({
 
             <div
               ref={scrollRef}
+              onScroll={handleScroll}
               className="flex-1 overflow-y-auto pb-[calc(8rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative z-10"
             >
               {/* Header com estilo idêntico ao design do app / blog */}
@@ -520,7 +625,7 @@ export default function ResumoJuridicoReaderSheet({
                               <h3 className="text-base font-semibold text-white tracking-wide uppercase font-display">
                                 Aprofundando conteúdo com IA
                               </h3>
-                              <p className="text-xs text-white/60 leading-relaxed">
+                              <p className="text-xs text-white/90 leading-relaxed">
                                 Analisando doutrina, legislação e jurisprudência para estruturar o estudo completo ponto a ponto...
                               </p>
                             </div>
@@ -528,146 +633,7 @@ export default function ResumoJuridicoReaderSheet({
                         ) : content ? (
                           <ReactMarkdown
                             remarkPlugins={[remarkGfm]}
-                            components={{
-                              h1: ({ node, ...props }) => (
-                                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#E11D48] mt-8 mb-4 border-b border-[#E11D48]/20 pb-2.5 font-display leading-tight" {...props} />
-                              ),
-                              h2: ({ node, ...props }) => (
-                                <h2 className="text-lg sm:text-xl font-bold tracking-tight text-[#E11D48] mt-7 mb-3 font-display leading-snug" {...props} />
-                              ),
-                              h3: ({ node, ...props }) => (
-                                <h3 className="text-base sm:text-lg font-semibold tracking-tight text-[#E11D48] mt-5 mb-2 font-display leading-snug" {...props} />
-                              ),
-                              h4: ({ node, ...props }) => (
-                                <h4 className="text-[14px] sm:text-base font-semibold tracking-tight text-[#E11D48] mt-4 mb-1.5 font-display leading-snug" {...props} />
-                              ),
-                              p: ({ node, ...props }) => (
-                                <p className="my-3.5 text-foreground/90 leading-[1.8] text-[15px] sm:text-[16px]" {...props} />
-                              ),
-                              table: ({ node, ...props }) => (
-                                <div className="my-6 w-full overflow-x-auto rounded-2xl border border-primary/20 bg-card/70 shadow-lg backdrop-blur-md">
-                                  <table className="w-full text-left text-xs md:text-sm border-collapse" {...props} />
-                                </div>
-                              ),
-                              th: ({ node, ...props }) => (
-                                <th className="bg-secondary/40 px-4 py-3.5 border-b border-border/50 text-slate-200 font-display font-bold text-sm tracking-wide uppercase" {...props} />
-                              ),
-                              td: ({ node, ...props }) => (
-                                <td className="px-4 py-3 border-b border-border/30 text-foreground/90 font-body leading-relaxed" {...props} />
-                              ),
-                              blockquote: ({ node, children, ...props }: any) => {
-                                const extractText = (c: any): string => {
-                                  if (typeof c === "string") return c;
-                                  if (Array.isArray(c)) return c.map(extractText).join("");
-                                  if (c?.props?.children) return extractText(c.props.children);
-                                  return "";
-                                };
-
-                                const text = extractText(children);
-                                const alertMatch = text.match(/^\s*\[!(NOTE|IMPORTANT|WARNING|TIP|CAUTION)\]\s*/i);
-
-                                if (alertMatch) {
-                                  const type = alertMatch[1].toUpperCase();
-                                  const alertConfig = {
-                                    IMPORTANT: {
-                                      label: "Importante",
-                                      icon: AlertCircle,
-                                      bg: "bg-amber-500/10",
-                                      border: "border-amber-500/40",
-                                      text: "text-amber-400",
-                                    },
-                                    WARNING: {
-                                      label: "Atenção",
-                                      icon: AlertTriangle,
-                                      bg: "bg-rose-500/10",
-                                      border: "border-rose-500/40",
-                                      text: "text-rose-400",
-                                    },
-                                    CAUTION: {
-                                      label: "Cuidado",
-                                      icon: AlertTriangle,
-                                      bg: "bg-rose-500/10",
-                                      border: "border-rose-500/40",
-                                      text: "text-rose-400",
-                                    },
-                                    TIP: {
-                                      label: "Dica de Fixação",
-                                      icon: Sparkles,
-                                      bg: "bg-emerald-500/10",
-                                      border: "border-emerald-500/40",
-                                      text: "text-emerald-400",
-                                    },
-                                    NOTE: {
-                                      label: "Nota Explicativa",
-                                      icon: Info,
-                                      bg: "bg-sky-500/10",
-                                      border: "border-sky-500/40",
-                                      text: "text-sky-400",
-                                    },
-                                  }[type] || {
-                                    label: "Nota",
-                                    icon: Info,
-                                    bg: "bg-sky-500/10",
-                                    border: "border-sky-500/40",
-                                    text: "text-sky-400",
-                                  };
-
-                                  const Icon = alertConfig.icon;
-
-                                  const cleanChildren = (ch: any): any => {
-                                    if (typeof ch === "string") {
-                                      return ch.replace(/^\s*\[!(NOTE|IMPORTANT|WARNING|TIP|CAUTION)\]\s*/i, "");
-                                    }
-                                    if (Array.isArray(ch)) {
-                                      return ch.map(cleanChildren);
-                                    }
-                                    if (ch?.props?.children) {
-                                      return {
-                                        ...ch,
-                                        props: {
-                                          ...ch.props,
-                                          children: cleanChildren(ch.props.children),
-                                        },
-                                      };
-                                    }
-                                    return ch;
-                                  };
-
-                                  return (
-                                    <div className={`my-5 rounded-2xl border ${alertConfig.border} ${alertConfig.bg} p-4 md:p-5 shadow-sm text-foreground/95 not-prose`}>
-                                      <div className={`flex items-center gap-2 mb-2 font-display font-bold text-xs uppercase tracking-wider ${alertConfig.text}`}>
-                                        <Icon className="w-4 h-4 shrink-0" />
-                                        <span>{alertConfig.label}</span>
-                                      </div>
-                                      <div className="text-foreground/90 text-sm md:text-[15px] leading-relaxed">
-                                        {cleanChildren(children)}
-                                      </div>
-                                    </div>
-                                  );
-                                }
-
-                                return (
-                                  <blockquote className="my-5 rounded-2xl border-l-4 border-primary bg-primary/10 p-4 md:p-5 shadow-sm text-foreground/95 not-italic" {...props}>
-                                    <div className="flex items-start gap-3">
-                                      <Quote className="w-5 h-5 text-primary shrink-0 mt-0.5" aria-hidden="true" />
-                                      <div className="text-foreground/90 leading-relaxed">{children}</div>
-                                    </div>
-                                  </blockquote>
-                                );
-                              },
-                              pre: ({ node, ...props }) => (
-                                <pre className="my-6 p-4 md:p-5 rounded-2xl bg-zinc-950/90 border border-border/80 text-slate-100 font-mono text-xs md:text-sm overflow-x-auto shadow-xl leading-relaxed tracking-wide" {...props} />
-                              ),
-                              code: ({ node, inline, ...props }: any) =>
-                                inline ? (
-                                  <code className="px-1.5 py-0.5 rounded-md bg-secondary text-foreground font-mono text-xs font-semibold" {...props} />
-                                ) : (
-                                  <code className="text-slate-100 font-mono text-xs md:text-sm" {...props} />
-                                ),
-                              hr: ({ node, ...props }) => (
-                                <hr className="my-6 border-border/60" {...props} />
-                              ),
-                            }}
+                            components={markdownComponents}
                           >
                             {content}
                           </ReactMarkdown>
@@ -714,7 +680,7 @@ export default function ResumoJuridicoReaderSheet({
                           <h3 className="text-base font-bold text-white tracking-wide uppercase font-display">
                             Gerando Método {metodo === "cornell" ? "Cornell" : "Feynman"} com IA
                           </h3>
-                          <p className="text-xs text-white/60 leading-relaxed">
+                          <p className="text-xs text-white/90 leading-relaxed">
                             {metodo === "cornell"
                               ? "Organizando palavras-chave, perguntas de revisão e anotações para fixação ativa..."
                               : "Decompondo conceitos complexos em linguagem simples, analogias e lacunas de estudo..."}
