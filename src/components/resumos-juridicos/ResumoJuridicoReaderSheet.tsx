@@ -27,6 +27,8 @@ import CornellView from "./CornellView";
 import FeynmanView from "./FeynmanView";
 import { normalizarResumo } from "@/lib/resumoNormalizer";
 import { removerEmojis } from "@/lib/textoSemEmoji";
+import { getAreaCover } from "@/lib/areasDireitoCovers";
+import ShapeGrid from "@/components/ui/ShapeGrid";
 
 import {
   CornellContent,
@@ -93,6 +95,7 @@ export default function ResumoJuridicoReaderSheet({
   const isDesktop = useIsDesktop();
   const gateResumo = useGatedFeature('resumo_ver', 'resumo', { scope: resumo?.id ? String(resumo.id) : null });
   const gateDownload = useGatedFeature('resumo_download', 'resumo_download');
+  const coverUrl = useMemo(() => resumo?.area ? getAreaCover(resumo.area)?.cover : null, [resumo?.area]);
   const [fontSize, setFontSize] = useState(17);
   const [salvandoDrive, setSalvandoDrive] = useState(false);
   const [tab, setTab] = useState<Tab>("resumo");
@@ -443,9 +446,25 @@ export default function ResumoJuridicoReaderSheet({
                 : "fixed inset-0 z-[91] flex flex-col bg-card text-foreground shadow-2xl overflow-hidden pb-[var(--sai-bottom,0px)]"
             }
           >
+            {/* Background da Matéria (Capa + Gradiente + ShapeGrid) */}
+            <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden select-none">
+              {coverUrl && (
+                <img
+                  src={coverUrl}
+                  alt=""
+                  className="w-full h-full object-cover opacity-[0.14] blur-xl scale-105"
+                  aria-hidden="true"
+                />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-b from-[#0D0D0D]/60 via-[#0D0D0D]/85 to-[#0D0D0D]" />
+              <div className="absolute inset-0 opacity-[0.12]">
+                <ShapeGrid />
+              </div>
+            </div>
+
             <div
               ref={scrollRef}
-              className="flex-1 overflow-y-auto pb-[calc(8rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative"
+              className="flex-1 overflow-y-auto pb-[calc(8rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative z-10"
             >
               {/* Header com estilo idêntico ao design do app / blog */}
               <div className="sticky top-0 z-10 bg-card/95 backdrop-blur-md border-b border-border">
@@ -529,7 +548,8 @@ export default function ResumoJuridicoReaderSheet({
                         style={{ fontSize: `${fontSize}px` }}
                         className="
                           prose prose-sm md:prose-base max-w-none dark:prose-invert font-body
-                          prose-headings:font-body prose-headings:text-foreground
+                          prose-headings:font-body prose-headings:font-medium prose-headings:text-foreground
+                          [&_h1_strong]:font-medium [&_h2_strong]:font-medium [&_h3_strong]:font-medium [&_h4_strong]:font-medium
                           prose-p:text-foreground/90 prose-p:leading-[1.75] prose-p:my-3
                           prose-a:text-[#ef4444] prose-a:no-underline hover:prose-a:underline
                           prose-strong:text-foreground
@@ -546,7 +566,7 @@ export default function ResumoJuridicoReaderSheet({
                               <Loader2 className="w-6 h-6 animate-spin text-[#ef4444] absolute -bottom-2 -right-2" />
                             </div>
                             <div className="space-y-1.5 max-w-sm">
-                              <h3 className="text-base font-bold text-white tracking-wide uppercase font-display">
+                              <h3 className="text-base font-medium text-white tracking-wide uppercase font-display">
                                 Gerando conceitos com IA
                               </h3>
                               <p className="text-xs text-white/60 leading-relaxed">
@@ -560,13 +580,16 @@ export default function ResumoJuridicoReaderSheet({
                               remarkPlugins={[remarkGfm]}
                             components={{
                               h1: ({ node, ...props }) => (
-                                <h1 className="text-[17px] sm:text-[18px] font-bold text-foreground font-body tracking-tight mt-6 mb-2.5" {...props} />
+                                <h1 className="text-[17px] sm:text-[18px] font-medium [&_strong]:font-medium text-foreground font-body tracking-tight mt-6 mb-2.5" {...props} />
                               ),
                               h2: ({ node, ...props }) => (
-                                <h2 className="text-[15.5px] sm:text-[16.5px] font-bold text-foreground/95 font-body tracking-tight mt-5 mb-2" {...props} />
+                                <h2 className="text-[15.5px] sm:text-[16.5px] font-medium [&_strong]:font-medium text-foreground/95 font-body tracking-tight mt-5 mb-2" {...props} />
                               ),
                               h3: ({ node, ...props }) => (
-                                <h3 className="text-[14px] sm:text-[15px] font-semibold text-foreground/90 font-body tracking-tight mt-4 mb-1.5" {...props} />
+                                <h3 className="text-[14px] sm:text-[15px] font-medium [&_strong]:font-medium text-foreground/90 font-body tracking-tight mt-4 mb-1.5" {...props} />
+                              ),
+                              h4: ({ node, ...props }) => (
+                                <h4 className="text-[13.5px] sm:text-[14px] font-medium [&_strong]:font-medium text-foreground/85 font-body tracking-tight mt-3.5 mb-1" {...props} />
                               ),
                               p: ({ node, ...props }) => (
                                 <p className="my-3 text-foreground/90 leading-[1.75]" {...props} />
