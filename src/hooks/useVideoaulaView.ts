@@ -136,7 +136,7 @@ export function useVideoaulaView({ catalogoId, videoId, userId, setTocandoState 
         }
       } catch (error) {
         console.error("Erro ao carregar dados da aula:", error);
-        toast.error("Ocorreu um erro ao carregar os dados da aula. Tente novamente.");
+        toast.error(`Erro ao carregar aula: ${(error as any)?.message || (error as any)?.details || 'Falha na conexão'}. Tente novamente.`);
       }
     };
 
