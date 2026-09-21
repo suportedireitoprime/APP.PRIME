@@ -48,7 +48,7 @@ export const MeExpliqueTermosView: React.FC<Props> = ({ onVoltar }) => {
   const [areaAtiva, setAreaAtiva] = useState<string>('todas');
   const [termoAoVivo, setTermoAoVivo] = useState<string | null>(null);
 
-  const { termos: todosTermosDicionario, loading: carregandoDicionario } = useDicionarioJuridico();
+  const { data: todosTermosDicionario, isLoading: carregandoDicionario } = useDicionarioJuridico();
 
   const areas = ['todas', 'Penal', 'Civil', 'Constitucional', 'Processual'];
 
@@ -223,18 +223,18 @@ export const MeExpliqueTermosView: React.FC<Props> = ({ onVoltar }) => {
             >
               {/* Informação do Termo em 1 linha compacta */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-sm text-white truncate group-hover:text-amber-300 transition-colors">
+                <div className="flex items-start gap-2">
+                  <h3 className="font-display font-black tracking-wider text-sm sm:text-base text-white group-hover:text-amber-300 transition-colors">
                     {item.termo}
                   </h3>
                   {item.area && (
-                    <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-white/5 text-zinc-400 border border-white/10 shrink-0">
+                    <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-white/5 text-zinc-400 border border-white/10 shrink-0 mt-0.5">
                       {item.area}
                     </span>
                   )}
                 </div>
 
-                <p className="text-[11px] text-zinc-400 line-clamp-1 mt-0.5 leading-snug">
+                <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
                   {item.resumo}
                 </p>
               </div>

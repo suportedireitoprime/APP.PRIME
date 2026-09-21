@@ -78,7 +78,9 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
   const [micAtivo, setMicAtivo] = useState(true);
   const [falas, setFalas] = useState<FalaTranscrita[]>([]);
   const [falaParcial, setFalaParcial] = useState<FalaTranscrita | null>(null);
+  const [falaParcial, setFalaParcial] = useState<FalaTranscrita | null>(null);
   const [inputTexto, setInputTexto] = useState('');
+  const [mostrarInput, setMostrarInput] = useState(false);
   
   const [viseme, setViseme] = useState('X');
   const [volume, setVolume] = useState(0);
@@ -110,10 +112,13 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
       const currentVolume = sessaoRef.current.getVolume();
       setVolume(currentVolume);
 
-      if (time - lastTime > 100) {
+      if (time - lastTime > 60) {
         lastTime = time;
-        if (currentVolume > 0.05) {
-          const visemes = ['A', 'E', 'I', 'O', 'U', 'C', 'D', 'F', 'L', 'M', 'P', 'S'];
+        if (currentVolume > 0.15) {
+          const visemes = ['A', 'O', 'E', 'U', 'I'];
+          setViseme(visemes[Math.floor(Math.random() * visemes.length)]);
+        } else if (currentVolume > 0.03) {
+          const visemes = ['C', 'D', 'S', 'L', 'M', 'P', 'F'];
           setViseme(visemes[Math.floor(Math.random() * visemes.length)]);
         } else {
           setViseme('X');
@@ -217,13 +222,13 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
       let promptInicial = promptInicialPersonalizado;
       if (!promptInicial) {
         if (modo === 'livro') {
-          promptInicial = `Olá professor! Estou estudando o livro "${contexto}". Pode me cumprimentar com entusiasmo e me explicar a grande ideia desse livro de forma bem simples como se eu tivesse 6 anos?`;
+          promptInicial = `Olá professor! Estou estudando o livro "${contexto}". Pode me cumprimentar com entusiasmo como meu professor e me explicar a grande ideia desse livro de forma bem simples como se eu tivesse 6 anos?`;
         } else if (modo === 'termo') {
-          promptInicial = `Olá professor! Quero entender o que significa "${contexto}". Pode me explicar usando uma historinha ou exemplo do dia a dia como para uma criança de 6 anos?`;
+          promptInicial = `Olá professor! Quero entender o que significa "${contexto}". Pode se apresentar como meu professor e me explicar usando uma historinha ou exemplo do dia a dia como para uma criança de 6 anos?`;
         } else if (modo === 'lei') {
-          promptInicial = `Olá professor! Estou analisando "${contexto}". Me explique por que essa regra existe e como ela funciona na vida real de um jeito bem simples!`;
+          promptInicial = `Olá professor! Estou analisando "${contexto}". Se apresente como meu professor, me explique por que essa regra existe e como ela funciona na vida real de um jeito bem simples!`;
         } else {
-          promptInicial = `Olá professor! Pode se apresentar calorosamente como meu tutor do Me Explique e me perguntar qual assunto jurídico eu gostaria de desvendar hoje?`;
+          promptInicial = `Olá professor! Pode se apresentar calorosamente como meu professor e me perguntar qual assunto jurídico eu gostaria de desvendar hoje?`;
         }
       }
 
@@ -287,6 +292,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
 
     void haptic.medium();
     setInputTexto('');
+    setMostrarInput(false);
     setFalas((prev) => [...prev, { quem: 'aluno', texto: txt }]);
     sessaoRef.current.enviarTexto(txt);
   };
@@ -508,38 +514,60 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
                 key={idx}
                 type="button"
                 onClick={() => handleEnviarMensagem(sug)}
-                className="shrink-0 px-3 py-1.5 rounded-xl bg-zinc-900 border border-white/10 text-[11px] font-medium text-zinc-300 hover:text-white hover:border-amber-500/40 active:scale-95 transition-all cursor-pointer shadow-sm"
+                className="shrink-0 px-4 py-2 rounded-xl bg-zinc-900 border border-white/10 text-xs sm:text-sm font-medium text-zinc-300 hover:text-white hover:border-amber-500/40 active:scale-95 transition-all cursor-pointer shadow-sm"
               >
-                <Sparkles className="w-3 h-3 inline mr-1 text-amber-400" />
+                <Sparkles className="w-4 h-4 inline mr-1 text-amber-400" />
                 {sug}
               </button>
             ))}
           </div>
 
           {/* Linha de Controle: Campo de Digitação */}
-          <div className="flex items-center gap-2">
-            {/* Input de Texto para quem prefere digitar ou enviar pergunta complementar */}
-            <div className="relative flex-1 flex items-center">
-              <input
-                type="text"
-                value={inputTexto}
-                onChange={(e) => setInputTexto(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleEnviarMensagem();
-                }}
-                placeholder="Fale no microfone ou digite aqui..."
-                className="w-full h-12 rounded-2xl bg-zinc-900 border border-white/10 pl-4 pr-12 text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500/50"
-              />
+          <div className="flex items-center gap-2 justify-end mt-2">
+            {!mostrarInput ? (
               <button
                 type="button"
-                onClick={() => handleEnviarMensagem()}
-                disabled={!inputTexto.trim()}
-                className="absolute right-2 w-8 h-8 rounded-xl bg-amber-500 disabled:opacity-30 text-black flex items-center justify-center active:scale-95 transition-all cursor-pointer"
-                aria-label="Enviar"
+                onClick={() => setMostrarInput(true)}
+                className="w-12 h-12 rounded-full bg-zinc-900 border border-white/10 text-zinc-400 hover:text-white flex items-center justify-center shadow-lg active:scale-95 transition-all"
+                aria-label="Digitar mensagem"
               >
-                <Send className="w-4 h-4" />
+                <MessageSquare className="w-5 h-5" />
               </button>
-            </div>
+            ) : (
+              <motion.div 
+                initial={{ opacity: 0, width: 40 }}
+                animate={{ opacity: 1, width: '100%' }}
+                className="relative flex-1 flex items-center"
+              >
+                <input
+                  type="text"
+                  value={inputTexto}
+                  onChange={(e) => setInputTexto(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleEnviarMensagem();
+                  }}
+                  autoFocus
+                  placeholder="Digite sua pergunta..."
+                  className="w-full h-12 rounded-2xl bg-zinc-900 border border-white/10 pl-4 pr-20 text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500/50 shadow-inner"
+                />
+                <button
+                  type="button"
+                  onClick={() => setMostrarInput(false)}
+                  className="absolute right-12 p-2 text-zinc-500 hover:text-white"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleEnviarMensagem()}
+                  disabled={!inputTexto.trim()}
+                  className="absolute right-2 w-8 h-8 rounded-xl bg-amber-500 disabled:opacity-30 text-black flex items-center justify-center active:scale-95 transition-all cursor-pointer shadow-md"
+                  aria-label="Enviar"
+                >
+                  <Send className="w-4 h-4" />
+                </button>
+              </motion.div>
+            )}
           </div>
         </div>
       </footer>
