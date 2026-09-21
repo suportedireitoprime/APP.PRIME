@@ -20,7 +20,7 @@ import type { ArtigoLei } from '@/data/mockData';
 import ArtigoBottomSheet from '@/components/vademecum/artigo/ArtigoBottomSheet';
 import { buildArtigoBreadcrumbsMap } from '@/components/vademecum/artigo/artigoBreadcrumbs';
 import OcrScanner from '@/components/vademecum/grifos_ocr/OcrScanner';
-import GrafoOverlay from '@/components/vademecum/overlays/GrafoOverlay';
+
 import NovidadesPanel from '@/components/vademecum/panels/NovidadesPanel';
 import { FavPanel, PlaylistPanel, AnotacoesPanel } from '@/components/vademecum/panels/OverlayPanels';
 import RadarLegislacaoContent from '@/components/vademecum/outros/RadarLegislacaoContent';
@@ -876,7 +876,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
       )}
 
       {selectedTabelaNome && <OcrScanner open={ocrOpen} onClose={() => setOcrOpen(false)} leiNome={selectedLeiNome} leiSlug={selectedTabelaNome} />}
-      <GrafoOverlay open={showGrafo} onClose={() => setShowGrafo(false)} tabelaNome={selectedTabelaNome || ''} leiNome={selectedLeiNome} artigoNumero={openArtigo?.numero} />
+
 
       <AnimatePresence>
         {showScrollTop && (

@@ -1,8 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import viteCompression from "vite-plugin-compression";
-
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   // Base relativa ("./") permite empacotar para GitHub Pages (subpastas),
@@ -64,9 +62,6 @@ export default defineConfig(({ mode }) => ({
           // Ecossistema Capacitor Nativo
           if (id.includes("@capacitor") || id.includes("@capawesome") || id.includes("@capgo")) return "capacitor";
           
-          // Renderização Visual e 3D
-          if (id.includes("@react-three/fiber") || id.includes("@react-three/drei") || id.includes("@pixiv/three-vrm") || id.includes("pixi.js")) return "three-fiber";
-          if (id.includes("three")) return "three-core";
           if (id.includes("framer-motion")) return "motion";
           
           // Componentes da Interface (UI Framework)
@@ -76,7 +71,6 @@ export default defineConfig(({ mode }) => ({
           // Utilitários de Mídia e Listas Dinâmicas
           if (id.includes("remotion")) return "remotion";
           if (id.includes("embla-carousel") || id.includes("swiper") || id.includes("react-window") || id.includes("@tanstack/react-virtual")) return "lists-media";
-          if (id.includes("reactflow") || id.includes("@xyflow") || id.includes("dagre")) return "flow";
           if (id.includes("jspdf") || id.includes("react-pdf") || id.includes("pdfjs-dist")) return "pdf";
           if (id.includes("tesseract.js")) return "ocr";
           if (id.includes("recharts") || id.includes("d3-")) return "charts";

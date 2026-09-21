@@ -83,21 +83,22 @@ function ForceUpdateWrapper() {
 }
 
 // Eagerly loaded (critical path)
-const PersistentHome = lazy(() => import("./components/PersistentHome.tsx"));
-const Index = lazy(() => import("./pages/Index.tsx"));
-const Auth = lazy(() => import("./pages/Auth.tsx"));
-const Landing = lazy(() => import('@/pages/Landing'));
+import PersistentHome from "./components/PersistentHome.tsx";
+import Index from "./pages/Index.tsx";
+import Auth from "./pages/Auth.tsx";
+import Landing from "@/pages/Landing";
+import Onboarding from "./pages/Onboarding.tsx";
+
+// Lazy loaded
 const PilulasLista = lazy(() => import('@/pages/pilulas/PilulasLista'));
 const SmartLink = lazy(() => import("./pages/SmartLink.tsx"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword.tsx"));
-const Onboarding = lazy(() => import("./pages/Onboarding.tsx"));
 
 const QuestoesHistorico = lazy(() => import('@/pages/QuestoesHistorico'));
 const AdminFuncoes = lazy(() => import("./pages/AdminFuncoes.tsx"));
 const Boletins = lazy(() => import("./pages/Boletins.tsx"));
 const AdminPush = lazy(() => import("./pages/AdminPush.tsx"));
 const AdminPushSection = lazy(() => import("./pages/AdminPushSection.tsx"));
-const AdminLaboratorio = lazy(() => import("./pages/AdminLaboratorio.tsx"));
 const AdminPilulas = lazy(() => import("./pages/AdminPilulas.tsx"));
 const AdminResumoLivroAudioEditar = lazy(() => import("./pages/AdminResumoLivroAudioEditar.tsx"));
 const AdminErrosQuestoes = lazy(() => import("./pages/AdminErrosQuestoes.tsx"));
@@ -157,7 +158,7 @@ const ExplicacaoLei = lazy(() => import("./pages/ExplicacaoLei.tsx"));
 const RadarPLDetalhe = lazy(() => import("./pages/RadarPLDetalhe.tsx"));
 const NarracaoLei = lazy(() => import("./pages/NarracaoLei.tsx"));
 const VisualJuridico = lazy(() => import("./pages/VisualJuridico.tsx"));
-const GrafoArtigos = lazy(() => import("./pages/GrafoArtigos.tsx"));
+
 const Ferramentas = lazy(routePrefetch.ferramentas);
 const PeticaoInicial = lazy(() => import("./pages/PeticaoInicial.tsx"));
 const PeticaoInicialEditor = lazy(() => import("./pages/PeticaoInicialEditor.tsx"));
@@ -1081,7 +1082,7 @@ function AnimatedRoutes() {
           <Route path="/explicacao-lei" element={<ProtectedRoute><PageTransition><ExplicacaoLei /></PageTransition></ProtectedRoute>} />
           <Route path="/narracao" element={<ProtectedRoute><PageTransition><NarracaoLei /></PageTransition></ProtectedRoute>} />
           <Route path="/visuais/*" element={<ProtectedRoute><VisualJuridico /></ProtectedRoute>} />
-          <Route path="/grafo-artigos" element={<ProtectedRoute><PageTransition><GrafoArtigos /></PageTransition></ProtectedRoute>} />
+
           <Route path="/ferramentas" element={<ProtectedRoute><PageTransition instant><Ferramentas /></PageTransition></ProtectedRoute>} />
           <Route path="/documentos" element={<ProtectedRoute><PageTransition><Documentos /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/locais" element={<ProtectedRoute><PageTransition instant><LocaisJuridicos /></PageTransition></ProtectedRoute>} />
@@ -1232,7 +1233,6 @@ function AnimatedRoutes() {
           <Route path="/questoes/desempenho" element={<ProtectedRoute><PageTransition instant><QuestoesDesempenho /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/historico" element={<ProtectedRoute><PageTransition instant><QuestoesHistorico /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/questoes" element={<ProtectedRoute><PageTransition><AdminQuestoes /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin/laboratorio" element={<ProtectedRoute><PageTransition><AdminLaboratorio /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/pilulas" element={<ProtectedRoute><PageTransition><AdminPilulas /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/resumo-livro-audio" element={<ProtectedRoute><PageTransition><AdminResumoLivroAudioEditar /></PageTransition></ProtectedRoute>} />
 
@@ -1280,7 +1280,6 @@ function AnimatedRoutes() {
           <Route path="/admin-atualizacao" element={<ProtectedRoute><PageTransition><AdminAtualizacao /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-native-assets" element={<ProtectedRoute><PageTransition><AdminNativeAssets /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-aprender" element={<ProtectedRoute><PageTransition><AdminAprender /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-laboratorio" element={<ProtectedRoute><PageTransition><AdminLaboratorio /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-aprender/:area" element={<ProtectedRoute><PageTransition><AdminAprenderArea /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-jurisprudencia" element={<ProtectedRoute><PageTransition><AdminJurisprudencia /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-push" element={<ProtectedRoute><PageTransition><AdminPush /></PageTransition></ProtectedRoute>} />

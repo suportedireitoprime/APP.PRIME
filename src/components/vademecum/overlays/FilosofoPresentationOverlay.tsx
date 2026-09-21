@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { Capacitor } from '@capacitor/core';
-import { TextToSpeech } from '@capacitor-community/text-to-speech';
+import { speakNative, stopNative } from '@/lib/nativeTts';
 
 import {
   SocratesVideo,
@@ -120,22 +120,10 @@ export default function FilosofoPresentationOverlay({ open, personagemId, custom
 
             const ttsText = roteiro[i].text;
             
-            if (Capacitor.isNativePlatform()) {
-              TextToSpeech.stop().then(() => {
-                TextToSpeech.speak({
-                  text: ttsText,
-                  lang: 'pt-BR',
-                  rate: 1.15, 
-                  pitch: 1.0,
-                }).catch(e => console.error("TTS Native Error:", e));
+            if (Capacitor.isNativePlatform() || 'speechSynthesis' in window) {
+              stopNative().then(() => {
+                speakNative(ttsText, { lang: 'pt-BR', rate: 1.15 }).catch(e => console.error("TTS Error:", e));
               });
-            } else if ('speechSynthesis' in window) {
-              window.speechSynthesis.cancel();
-              const utterance = new SpeechSynthesisUtterance(ttsText);
-              utterance.lang = 'pt-BR';
-              utterance.rate = 1.15; 
-              utterance.pitch = 1.0;
-              window.speechSynthesis.speak(utterance);
             }
           }
         }
@@ -151,7 +139,7 @@ export default function FilosofoPresentationOverlay({ open, personagemId, custom
   useEffect(() => {
      if (!isPlaying) {
         if (Capacitor.isNativePlatform()) {
-           TextToSpeech.stop().catch(console.error);
+           stopNative().catch(console.error);
         } else if ('speechSynthesis' in window) {
            window.speechSynthesis.cancel();
         }
@@ -161,7 +149,7 @@ export default function FilosofoPresentationOverlay({ open, personagemId, custom
   const handleClose = () => {
     haptic.selection(); 
     if (Capacitor.isNativePlatform()) {
-       TextToSpeech.stop().catch(console.error);
+       stopNative().catch(console.error);
     } else if ('speechSynthesis' in window) {
        window.speechSynthesis.cancel();
     }

@@ -24,7 +24,6 @@ import { useMeExpliqueCota } from '@/hooks/useMeExpliqueCota';
 import { haptic, telaAcesa } from '@/lib/nativo';
 import PremiumGate from '@/components/PremiumGate';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import { FaceYellow } from '@/components/laboratorio/avatars/FaceYellow';
 
 interface Props {
   modo: 'livro' | 'termo' | 'lei' | 'livre';

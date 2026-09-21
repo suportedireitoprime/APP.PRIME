@@ -19,9 +19,7 @@ const AnotacoesSheet = lazyWithRetry(
 const PerguntarSheet = lazyWithRetry(
   () => import('@/components/vademecum/sheets/PerguntarSheet')
 );
-const GrafoOverlay = lazyWithRetry(
-  () => import('@/components/vademecum/overlays/GrafoOverlay')
-);
+
 const GrifoEraseSheet = lazyWithRetry(
   () => import('@/components/vademecum/sheets/GrifoEraseSheet')
 );
@@ -266,26 +264,7 @@ export const ArtigoOverlays = memo(function ArtigoOverlays({
           />
         )}
 
-        {tabelaNome && artigo && showGrafo && (
-          <GrafoOverlay
-            open={showGrafo}
-            onClose={() => setShowGrafo(false)}
-            tabelaNome={tabelaNome}
-            leiNome={tabelaNome}
-            artigoNumero={artigo.numero}
-            artigoTexto={[
-              artigo.caput,
-              ...(artigo.incisos?.map((x: any) =>
-                typeof x === 'string' ? x : x?.texto
-              ) || []),
-              ...(artigo.paragrafos?.map((x: any) =>
-                typeof x === 'string' ? x : x?.texto
-              ) || []),
-            ]
-              .filter(Boolean)
-              .join('\n\n')}
-          />
-        )}
+
 
         <PremiumGate
           open={showPremiumGate}

@@ -77,7 +77,6 @@ export function prefetchArtigoFuncoesChunks() {
       () => import('@/components/vademecum/sheets/VideoaulaSheet'),
       () => import('@/components/vademecum/sheets/LembretesArtigoSheet'),
       () => import('@/components/vademecum/sheets/BaixarArtigoSheet'),
-      () => import('@/components/vademecum/overlays/GrafoOverlay'),
       () => import('@/components/vademecum/sheets/GrifoFotoSheet'),
       () => import('@/components/vademecum/sheets/GrifoVoiceSheet'),
       () => import('@/components/vademecum/sheets/GrifoEraseSheet'),

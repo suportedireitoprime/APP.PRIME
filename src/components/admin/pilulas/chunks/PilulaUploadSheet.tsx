@@ -5,7 +5,7 @@ import { Loader2, Headphones, UploadCloud, CheckCircle2, AlertCircle, Copy, Link
 import { toast } from 'sonner';
 import { copiar } from '@/lib/nativo/copiar';
 import { CustomAudioPlayer } from '@/components/vademecum/media/CustomAudioPlayer';
-import GrafoOverlay from '@/components/vademecum/overlays/GrafoOverlay';
+
 import { SelectedItemType } from './pilulasConstants';
 
 interface PilulaUploadSheetProps {
@@ -304,17 +304,7 @@ export const PilulaUploadSheet: React.FC<PilulaUploadSheetProps> = ({
         </SheetContent>
       </Sheet>
 
-      {/* Visualizador de Grafo Modal */}
-      {selectedItem?.type === 'artigo' && (
-        <GrafoOverlay
-          open={grafoPreviewOpen}
-          onClose={() => setGrafoPreviewOpen(false)}
-          tabelaNome="vade_mecum_artigos"
-          artigoNumero={selectedItem.data.numero}
-          leiNome={selectedItem.data.lei_nome || "Código Penal"}
-          preloadedGraphData={selectedItem.data.audio_grafo}
-        />
-      )}
+
     </>
   );
 };

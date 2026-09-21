@@ -4,7 +4,7 @@ import { ArrowLeft, AlertCircle, List } from 'lucide-react';
 import { useResumoLivroPlayer } from '@/contexts/ResumoLivroPlayerContext';
 import { usePilulasPlayer } from '@/contexts/PilulasPlayerContext';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import GrafoOverlay from '@/components/vademecum/overlays/GrafoOverlay';
+
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
 import { usePilulaData } from './hooks/usePilulaData';
@@ -198,18 +198,7 @@ export default function PilulasPlayer() {
 
       {featurePilulas.gateNode}
       
-      {/* Grafo Overlay */}
-      {livro?.isCP && (
-        <GrafoOverlay 
-          open={isGraphOpen} 
-          onClose={() => setIsGraphOpen(false)} 
-          tabelaNome="vade_mecum_artigos"
-          leiNome="Código Penal"
-          artigoNumero={livro.numero}
-          artigoTexto={livro.sobre}
-          preloadedGraphData={livro.audio_grafo}
-        />
-      )}
+
 
       {/* Sheet Lei Seca */}
       <Sheet open={isTextOpen} onOpenChange={setIsTextOpen}>

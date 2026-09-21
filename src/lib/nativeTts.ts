@@ -19,6 +19,14 @@ async function waitForVoices(timeoutMs = 800): Promise<void> {
   });
 }
 
+export async function stopNative(): Promise<void> {
+  if (isNative()) {
+    try { await TextToSpeech.stop(); } catch {}
+  } else if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+}
+
 export async function speakNative(text: string, opts?: { lang?: string; rate?: number }): Promise<boolean> {
   const lang = opts?.lang ?? 'pt-BR';
   const rate = opts?.rate ?? 1.0;

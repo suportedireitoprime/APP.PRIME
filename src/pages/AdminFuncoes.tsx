@@ -373,15 +373,6 @@ const CATEGORIES: Category[] = [
     ],
   },
 
-  {
-    id: 'laboratorio',
-    title: 'Laboratório',
-    desc: 'Ambiente de testes, POCs e novas interfaces',
-    icon: Gamepad2,
-    items: [
-      { id: 'admin-laboratorio', label: 'Laboratório', icon: Gamepad2, desc: 'Provas de conceito de UI/UX, animações e mini-games', route: '/admin-laboratorio' },
-    ],
-  },
 ];
 
 const REPO_STORAGE_KEY = 'admin_github_repo';
