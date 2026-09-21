@@ -230,7 +230,7 @@ const Jurisprudencia = () => {
         {/* Header com voltar */}
         <div className="relative z-10 flex items-center justify-between px-4 pb-2 lg:hidden pt-4">
           <button
-            onClick={() => navigate('/vademecum')}
+            onClick={() => navigate('/vade-mecum')}
             aria-label="Voltar"
             className="w-11 h-11 rounded-full bg-black/25 hover:bg-black/35 backdrop-blur-sm flex items-center justify-center transition-colors"
           >

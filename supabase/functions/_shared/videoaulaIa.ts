@@ -13,42 +13,22 @@ export class GatewayError extends Error {
   }
 }
 
-/** Baixa as legendas do vídeo (sem cota da API do YouTube). */
+import { YoutubeTranscript } from "npm:youtube-transcript";
+
+/** Baixa as legendas do vídeo. */
 export async function fetchYoutubeTranscript(videoId: string): Promise<string> {
   try {
-    const html = await fetch(`https://www.youtube.com/watch?v=${videoId}&hl=pt`, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36",
-        "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
-      },
-    }).then((r) => r.text());
-    const m = html.match(/"captionTracks":(\[[^\]]+\])/);
-    if (!m) return "";
-    const tracks = JSON.parse(m[1].replace(/\\u0026/g, "&")) as Array<{
-      baseUrl: string;
-      languageCode?: string;
-    }>;
-    const pt = tracks.find((t) => t.languageCode?.startsWith("pt")) ?? tracks[0];
-    if (!pt?.baseUrl) return "";
-    const xml = await fetch(pt.baseUrl).then((r) => r.text());
-    return [...xml.matchAll(/<text[^>]*>([\s\S]*?)<\/text>/g)]
-      .map((mm) =>
-        mm[1]
-          .replace(/&amp;/g, "&")
-          .replace(/&#39;/g, "'")
-          .replace(/&quot;/g, '"')
-          .replace(/&lt;/g, "<")
-          .replace(/&gt;/g, ">")
-          .replace(/<[^>]+>/g, "")
-          .replace(/\s+/g, " ")
-          .trim(),
-      )
-      .join(" ")
-      .slice(0, 14000);
+    const list = await YoutubeTranscript.fetchTranscript(videoId, { lang: 'pt' });
+    return list.map((i) => i.text).join(' ').slice(0, 14000);
   } catch (e) {
-    console.warn("[videoaulaIa] falha transcricao", (e as Error)?.message);
-    return "";
+    try {
+      // Fallback sem parametro de linguagem
+      const listFallback = await YoutubeTranscript.fetchTranscript(videoId);
+      return listFallback.map((i) => i.text).join(' ').slice(0, 14000);
+    } catch (fallbackError) {
+      console.warn("[videoaulaIa] falha transcricao", (e as Error)?.message);
+      return "";
+    }
   }
 }
 
@@ -57,39 +37,23 @@ export async function fetchYoutubeTranscriptSegments(
   videoId: string,
 ): Promise<Array<{ text: string; start: number; dur: number }>> {
   try {
-    const html = await fetch(`https://www.youtube.com/watch?v=${videoId}&hl=pt`, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36",
-        "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
-      },
-    }).then((r) => r.text());
-    const m = html.match(/"captionTracks":(\[[^\]]+\])/);
-    if (!m) return [];
-    const tracks = JSON.parse(m[1].replace(/\\u0026/g, "&")) as Array<{
-      baseUrl: string;
-      languageCode?: string;
-    }>;
-    const pt = tracks.find((t) => t.languageCode?.startsWith("pt")) ?? tracks[0];
-    if (!pt?.baseUrl) return [];
-    const xml = await fetch(pt.baseUrl).then((r) => r.text());
-    return [...xml.matchAll(/<text start="([\d.]+)" dur="([\d.]+)"[^>]*>([\s\S]*?)<\/text>/g)].map(
-      (mm) => ({
-        start: Number(mm[1]) || 0,
-        dur: Number(mm[2]) || 0,
-        text: mm[3]
-          .replace(/&amp;/g, "&")
-          .replace(/&#39;/g, "'")
-          .replace(/&quot;/g, '"')
-          .replace(/&lt;/g, "<")
-          .replace(/&gt;/g, ">")
-          .replace(/<[^>]+>/g, "")
-          .replace(/\s+/g, " ")
-          .trim(),
-      }),
-    );
+    const list = await YoutubeTranscript.fetchTranscript(videoId, { lang: 'pt' });
+    return list.map((i) => ({
+      start: i.offset,
+      dur: i.duration,
+      text: i.text,
+    }));
   } catch {
-    return [];
+    try {
+      const listFallback = await YoutubeTranscript.fetchTranscript(videoId);
+      return listFallback.map((i) => ({
+        start: i.offset,
+        dur: i.duration,
+        text: i.text,
+      }));
+    } catch {
+      return [];
+    }
   }
 }
 

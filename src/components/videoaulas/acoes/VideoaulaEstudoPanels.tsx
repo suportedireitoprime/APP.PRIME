@@ -1,22 +1,58 @@
-import { AlertTriangle, Workflow, Sparkles, Scale } from "lucide-react";
-import FlashcardEleganteViewer from "@/components/flashcards/FlashcardEleganteViewer";
-import type { LeiCitada } from "./videoaulaAcoesTypes";
+import { AlertTriangle, Workflow, Sparkles, Scale, ChevronLeft, ChevronRight } from "lucide-react";
+import Flashcard3D from "@/components/flashcards/Flashcard3D";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export function FlashcardsPanel({
   cards,
 }: {
   cards: Array<{ frente: string; verso: string }>;
 }) {
+  const [index, setIndex] = useState(0);
+
   if (!cards.length) return <p className="text-sm text-muted-foreground">Sem flashcards.</p>;
-  const mapped = cards.map((c) => ({
-    pergunta: c.frente,
-    resposta: c.verso,
-    explicacao: null,
-    exemplo: null,
-    dica: null,
-    tema: null,
-  }));
-  return <FlashcardEleganteViewer cards={mapped} />;
+
+  const current = cards[index];
+
+  return (
+    <div className="flex flex-col items-center w-full max-w-sm mx-auto space-y-6">
+      <div className="w-full">
+        <Flashcard3D
+          flashcard={{
+            id: String(index),
+            pergunta: current.frente,
+            resposta: current.verso,
+          }}
+          hideControls={true}
+          deckName="Flashcards da Aula"
+        />
+      </div>
+
+      <div className="flex items-center justify-between w-full px-4">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setIndex((i) => Math.max(0, i - 1))}
+          disabled={index === 0}
+          className="rounded-full h-12 w-12 border-primary/20 bg-background/50 backdrop-blur-sm"
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </Button>
+        <span className="text-sm font-medium text-muted-foreground">
+          {index + 1} de {cards.length}
+        </span>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setIndex((i) => Math.min(cards.length - 1, i + 1))}
+          disabled={index === cards.length - 1}
+          className="rounded-full h-12 w-12 border-primary/20 bg-background/50 backdrop-blur-sm"
+        >
+          <ChevronRight className="h-6 w-6" />
+        </Button>
+      </div>
+    </div>
+  );
 }
 
 export function PegadinhasPanel({ itens }: { itens: Array<{ titulo: string; descricao: string; exemplo?: string }> }) {

@@ -40,7 +40,7 @@ const AprenderLembretesSheet = ({ open, onOpenChange }: Props) => {
 
   const goConfigure = () => {
     onOpenChange(false);
-    navigate('/preferencias-lembretes');
+    navigate('/lembretes');
   };
 
   return (

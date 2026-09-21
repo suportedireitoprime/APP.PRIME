@@ -47,7 +47,7 @@ const VideoaulasConcurso = () => {
       <PageHeader
         title={concurso.titulo}
         subtitle={`${concurso.disciplinas?.length || 0} disciplinas`}
-        onBack={() => navigate('/videoaulas/categorias')}
+        onBack={() => navigate('/videoaulas/painel')}
       />
 
       <div className="mx-auto max-w-md px-4 pt-6 space-y-4">
