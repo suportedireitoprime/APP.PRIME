@@ -81,7 +81,7 @@ export function CheckpointBlock({ payload }: { payload: CheckpointPayload }) {
               <ArrowRight className="h-5 w-5" />
             </div>
             <p className="text-[15px] font-medium text-neutral-400">
-              <span className="block text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-0.5">A seguir</span>
+              <span className="block text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-0.5">A seguir</span>
               {proximo}
             </p>
           </div>

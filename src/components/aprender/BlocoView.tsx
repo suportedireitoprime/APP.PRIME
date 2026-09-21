@@ -339,7 +339,7 @@ export const BlocoView = React.memo(function BlocoView({
             style={{ transformOrigin: 'top' }}
           />
           <p className="font-sans text-[18px] sm:text-[20px] md:text-[22px] leading-[1.7] italic text-neutral-300">"{texto}"</p>
-          {autor && <footer className="mt-4 text-[14px] sm:text-[15px] font-medium text-neutral-500">— {autor}</footer>}
+          {autor && <footer className="mt-4 text-[14px] sm:text-[15px] font-medium text-neutral-400">— {autor}</footer>}
           {fonte_url && (
             <a href={fonte_url} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block text-[13px] font-semibold text-primary hover:text-primary-light underline underline-offset-4 decoration-primary/30 hover:decoration-primary/80 transition-all">
               Acessar fonte original

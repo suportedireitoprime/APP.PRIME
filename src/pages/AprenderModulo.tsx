@@ -92,7 +92,7 @@ const SyllabusLoadingScreen = ({ syllabusStep }: { syllabusStep: number }) => {
       <h2 className="text-xl sm:text-2xl font-bold text-white mb-1 text-center">
         Gerando plano de estudos
       </h2>
-      <p className="text-neutral-500 text-sm mb-6 text-center">
+      <p className="text-neutral-400 text-sm mb-6 text-center">
         Isso leva de 10 a 30 segundos
       </p>
 

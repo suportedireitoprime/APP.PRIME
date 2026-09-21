@@ -283,7 +283,7 @@ export function ConexaoBlock({ pares, onCompleto }: Props) {
                         ? `${colorTheme.socket} text-white border-transparent shadow-[0_0_12px_rgba(255,255,255,0.4)]`
                         : aguardando
                         ? 'border-primary/60 bg-neutral-900 text-primary group-hover:border-primary group-hover:bg-primary/20'
-                        : 'border-white/20 bg-white/5 text-neutral-500'
+                        : 'border-white/20 bg-white/5 text-neutral-400'
                     }`}
                   >
                     {feito ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : '✕'}
@@ -336,7 +336,7 @@ export function ConexaoBlock({ pares, onCompleto }: Props) {
                   <div className="flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
                     <span className="font-bold text-[14px] sm:text-[15px] text-white">{p.termo}</span>
-                    <span className="text-neutral-500 text-xs font-semibold">→</span>
+                    <span className="text-neutral-400 text-xs font-semibold">→</span>
                     <span className="text-emerald-300/90 text-xs font-bold uppercase tracking-wider">Ligado</span>
                   </div>
                   <p className="text-[13px] sm:text-[14px] leading-relaxed text-neutral-300 pl-4">

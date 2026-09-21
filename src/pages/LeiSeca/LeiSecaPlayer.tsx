@@ -48,17 +48,7 @@ function playLeiSecaAcerto() {
 }
 
 export default function LeiSecaPlayer() {
-  const { data: profile } = useProfileSummary();
 
-  const parentRef = useRef<HTMLDivElement>(null);
-  const artigosList = artigosQ.data ?? [];
-  const virtualizer = useVirtualizer({
-    count: artigosList.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 150,
-  });
-
-  const dispatch = useSyncStore((s) => s.dispatch);
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const goBack = useGoBack();
@@ -101,6 +91,14 @@ export default function LeiSecaPlayer() {
     queryKey: ["lei-seca-artigos", licaoQ.data?.id],
     enabled: !!licaoQ.data && !!trilhaQ.data,
     queryFn: () => carregarArtigos(trilhaQ.data!.lei_slug, licaoQ.data!.artigos),
+  });
+
+  const parentRef = useRef<HTMLDivElement>(null);
+  const artigosList = artigosQ.data ?? [];
+  const virtualizer = useVirtualizer({
+    count: artigosList.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 150,
   });
 
   const artigoMap = useMemo(() => {

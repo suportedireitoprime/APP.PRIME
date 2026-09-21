@@ -121,7 +121,7 @@ const LeiOrdinariaView: React.FC<LeiOrdinariaViewProps> = ({
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i < 10 ? i * 0.015 : 0 }}
                       onClick={() => setOpenLeiOrd(lei)}
-                      className="w-full text-left rounded-2xl bg-card hover:bg-secondary/60 transition-all group flex overflow-hidden min-h-[82px]"
+                      className="w-full text-left rounded-2xl bg-card hover:bg-secondary/60 active:scale-[0.98] transition-all group flex overflow-hidden min-h-[82px]"
                     >
                       <div className="w-1.5 bg-primary rounded-l-2xl shrink-0" />
                       <div className="flex items-center gap-3 p-4 flex-1 min-w-0">
@@ -130,16 +130,16 @@ const LeiOrdinariaView: React.FC<LeiOrdinariaViewProps> = ({
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-0.5">
-                            <h4 className="font-display text-[15px] font-bold text-primary-light">
+                            <h4 className="font-display text-base font-bold text-primary-light">
                               {lei.numero_lei}
                             </h4>
                             {lei.data_publicacao && (
-                              <span className="text-muted-foreground text-[10px] bg-secondary px-2 py-0.5 rounded-full">
+                              <span className="text-muted-foreground text-xs bg-secondary px-2 py-0.5 rounded-full">
                                 {lei.data_publicacao}
                               </span>
                             )}
                           </div>
-                          <p className="text-[13px] leading-relaxed line-clamp-2 text-foreground/80">
+                          <p className="text-sm leading-relaxed line-clamp-2 text-foreground/80">
                             {lei.ementa}
                           </p>
                         </div>

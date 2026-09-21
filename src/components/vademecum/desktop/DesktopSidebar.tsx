@@ -103,7 +103,6 @@ const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) =>
   }, [user]);
 
   const handleItemClick = async (item: { id: string; route?: string }) => {
-    console.log('[DesktopSidebar] click', item.id, '� ', item.route ?? '(sem rota)');
     if (item.id === 'sair') {
       setLogoutPrompt(true);
       return;
@@ -171,7 +170,7 @@ const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) =>
   return (
     <>
     <aside className={`${collapsed ? 'w-[68px]' : 'w-[268px]'} shrink-0 sticky top-0 min-h-dvh bg-card border-r border-border flex flex-col`} style={{ transitionProperty: 'width', transitionDuration: '320ms', transitionTimingFunction: 'cubic-bezier(0.22, 0.61, 0.36, 1)' }}>
-      {/* Header � user profile */}
+      {/* Header – user profile */}
       <div className="p-3 border-b border-border">
         {collapsed ? (
           <div className="flex flex-col items-center gap-3">
@@ -265,7 +264,6 @@ const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) =>
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  console.log('[DesktopSidebar] seção click', item.id, '� ', route ?? '(tab)');
                   if (route) navigate(route);
                   else onTabChange(item.id as Tab);
                 }}

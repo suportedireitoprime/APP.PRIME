@@ -30,7 +30,7 @@ export function RecapBlock({ payload }: { payload: RecapPayload }) {
         {/* Header do Método Cornell */}
         <div className="bg-white/[0.03] px-4 py-3 border-b border-white/10 flex justify-between items-center">
           <span className="text-[10px] font-extrabold uppercase tracking-widest text-neutral-400">Método Cornell</span>
-          <span className="text-[10px] font-extrabold uppercase tracking-widest text-neutral-500">Resumo Estruturado</span>
+          <span className="text-[10px] font-extrabold uppercase tracking-widest text-neutral-400">Resumo Estruturado</span>
         </div>
 
         {/* Corpo: Duas colunas (Tópicos/Palavras-chave e Notas) */}

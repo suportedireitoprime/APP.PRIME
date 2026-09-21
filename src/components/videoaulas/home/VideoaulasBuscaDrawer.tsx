@@ -111,7 +111,7 @@ export const VideoaulasBuscaDrawer = React.memo(function VideoaulasBuscaDrawer({
 
         {areasDosResultados.length > 1 && (
           <div className="border-b border-white/10 shrink-0">
-            <div className="flex overflow-x-auto p-4 gap-2 no-scrollbar">
+            <div className="flex overflow-x-auto p-4 gap-2 snap-x snap-mandatory no-scrollbar">
               {areasDosResultados.map((cat) => (
                 <button
                   key={cat}

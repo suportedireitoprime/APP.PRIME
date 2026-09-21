@@ -133,16 +133,16 @@ const DecretoView: React.FC<DecretoViewProps> = ({
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-0.5">
-                              <h4 className="font-display text-[15px] font-bold text-primary-light">
+                              <h4 className="font-display text-base font-bold text-primary-light">
                                 {dec.numero_lei}
                               </h4>
                               {dec.data_publicacao && (
-                                <span className="text-muted-foreground text-[10px] bg-secondary px-2 py-0.5 rounded-full">
+                                <span className="text-muted-foreground text-xs bg-secondary px-2 py-0.5 rounded-full">
                                   {dec.data_publicacao}
                                 </span>
                               )}
                             </div>
-                            <p className="text-[13px] leading-relaxed line-clamp-2 text-foreground/80">
+                            <p className="text-sm leading-relaxed line-clamp-2 text-foreground/80">
                               {dec.ementa}
                             </p>
                           </div>

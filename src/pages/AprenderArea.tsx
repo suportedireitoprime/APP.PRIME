@@ -543,6 +543,12 @@ const AprenderArea = () => {
                   <div key={i} className="h-36 rounded-2xl bg-muted/40 animate-pulse border border-white/5" />
                 ))}
               </div>
+            ) : itemsToRender.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <BookOpenText className="w-12 h-12 text-white/20 mb-4" />
+                <h3 className="text-lg font-medium text-white/60 mb-2">Nenhum módulo encontrado</h3>
+                <p className="text-sm text-white/40">Esta área ainda não possui módulos disponíveis.</p>
+              </div>
             ) : (
               /* Trilha em Zigue-Zague Fluida com Caminho Serpenteante e Cards em Tamanho de Capa */
               <div className="relative py-6 sm:py-10 w-full min-w-0 max-w-full overflow-hidden">

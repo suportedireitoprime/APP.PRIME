@@ -119,7 +119,7 @@ const GeneratingScreen = () => {
           <div className="h-1.5 w-full bg-neutral-800 rounded-full overflow-hidden shadow-inner">
              <div className="h-full bg-primary transition-all duration-100 ease-out" style={{ width: `${progress}%` }} />
           </div>
-          <p className="text-[11px] font-bold text-neutral-500 mt-2 text-right">{Math.round(progress)}%</p>
+          <p className="text-[11px] font-bold text-neutral-400 mt-2 text-right">{Math.round(progress)}%</p>
         </div>
       </div>
     </div>

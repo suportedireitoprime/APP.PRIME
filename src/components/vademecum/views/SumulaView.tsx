@@ -127,21 +127,21 @@ const SumulaView: React.FC<SumulaViewProps> = ({
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-0.5">
-                            <h4 className="font-display text-[15px] font-bold text-primary-light">
+                            <h4 className="font-display text-base font-bold text-primary-light">
                               Súmula {selectedTribunal === 'STF_VINCULANTE' ? 'Vinculante ' : ''}{sumula.numero}
                             </h4>
                             {sumula.situacao === 'cancelada' && (
-                              <span className="text-[10px] bg-destructive/15 text-destructive px-2 py-0.5 rounded-full font-semibold flex items-center gap-1">
+                              <span className="text-xs bg-destructive/15 text-destructive px-2 py-0.5 rounded-full font-semibold flex items-center gap-1">
                                 <Ban className="w-3 h-3" /> Cancelada
                               </span>
                             )}
                             {sumula.situacao === 'vigente' && (
-                              <span className="text-[10px] bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full font-semibold flex items-center gap-1">
+                              <span className="text-xs bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full font-semibold flex items-center gap-1">
                                 <BadgeCheck className="w-3 h-3" /> Vigente
                               </span>
                             )}
                           </div>
-                          <p className="text-[13px] leading-relaxed line-clamp-2 text-foreground/80">
+                          <p className="text-sm leading-relaxed line-clamp-2 text-foreground/80">
                             {searchSumulas ? highlightText(sumula.enunciado) : sumula.enunciado}
                           </p>
                         </div>
