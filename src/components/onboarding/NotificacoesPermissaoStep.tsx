@@ -79,20 +79,27 @@ export default function NotificacoesPermissaoStep({
   
   const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024;
   const isNative = Capacitor.isNativePlatform();
-  const platformText = isNative ? 'no celular' : isDesktop ? 'no seu computador' : 'aqui';
+  // Se for desktop (sem ser nativo iPad/MacCatalyst), pula o step
+  const shouldSkip = isDesktop && !isNative;
+
+  const platformText = isNative ? 'no celular' : 'aqui';
 
   const firstName = user?.user_metadata?.full_name?.split(' ')[0] || user?.user_metadata?.name?.split(' ')[0] || '';
   const rawText = `Ei [Nome]! Ativa as notificações ${platformText} pra eu te avisar rapidão quando sair lei nova ou tiver novidade importante. Bora?`;
   const personalizedGuideText = rawText.replace('[Nome]!', firstName ? `${firstName}!` : '!');
 
   useEffect(() => {
+    if (shouldSkip) {
+      onDone(false);
+      return;
+    }
     marcarPedido();
     setBottomNavHidden(true);
     
     return () => { 
       setBottomNavHidden(false); 
     };
-  }, []);
+  }, [shouldSkip, onDone]);
 
   /** Push de boas-vindas: confirma na hora que está funcionando de verdade. */
   const enviarBoasVindas = async () => {
@@ -113,6 +120,8 @@ export default function NotificacoesPermissaoStep({
       });
     } catch (e) { console.warn('push de boas-vindas falhou', e); }
   };
+
+  if (shouldSkip) return null;
 
   const ativar = async () => {
     haptic.selection();
