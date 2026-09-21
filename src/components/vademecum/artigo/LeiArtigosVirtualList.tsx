@@ -1,5 +1,5 @@
 import React, { useRef, useState, useLayoutEffect, useEffect, useMemo } from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { Bookmark, X as XCloseIcon } from 'lucide-react';
 import ArtigoCard from '@/components/vademecum/artigo/ArtigoCard';
 import type { ArtigoLei } from '@/data/mockData';
@@ -124,9 +124,8 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
     return 10; // Mobile moderno
   }, []);
 
-  const artigosVirtualizer = useVirtualizer({
+  const artigosVirtualizer = useWindowVirtualizer({
     count: shouldVirtualizeArtigos ? visibleArtigos.length : 0,
-    getScrollElement: () => typeof document !== 'undefined' ? (document.getElementById('root') || document.body) : null,
     // Item 21: Dynamic estimateSize based on article text length for smoother scrollbar
     estimateSize: (index) => {
       const artigo = visibleArtigos[index];

@@ -95,6 +95,11 @@
 - **Validação Prática com Browser:** Sempre que construir uma nova interface de administração ou fluxo complexo de UI, utilize a tool `browser_subagent` (ou teste manual se necessário) para simular o clique do usuário final, conferindo se os "toasts" de sucesso aparecem e se não ocorrem erros ("Bucket not found", "Unhandled Rejection", etc) antes de considerar a tarefa como concluída.
 - **Sincronia com Edge Functions:** Toda vez que for fazer um novo ajuste, criar uma nova funcionalidade (no Frontend) ou realizar uma correção, VERIFIQUE OBRIGATORIAMENTE se é necessário também refletir ou adaptar essa alteração no Supabase (especialmente em Edge Functions) para que as mudanças de interface não quebrem a API e vice-versa.
 
+## 📋 Planejamento Obrigatório (Planning Mode Restrito)
+- **REGRA ABSOLUTA DE PLANEJAMENTO:** Toda vez que o usuário pedir qualquer coisa (mesmo o comando ou ajuste mais simples possível), você **DEVE** obrigatoriamente fazer uma análise prévia e criar um plano de implementação (`implementation_plan.md`). NUNCA pule essa etapa, independente da complexidade.
+- **Task Checklist:** Logo após a aprovação do plano (ou junto da execução), você **DEVE** sempre criar ou atualizar um arquivo `task.md` detalhando os passos em um checklist (`[ ]` / `[x]`).
+- **Objetivo:** Essa obrigação elimina o risco de esquecimentos, garante precisão na codificação e permite que o usuário valide a intenção técnica antes de qualquer código ser alterado. Você só está autorizado a codar *depois* que o plano for estabelecido.
+
 ## Diretivas Lovable (System Prompt)
 
 - **PERFECT ARCHITECTURE:** Always consider whether the code needs refactoring given the latest request. If it does, refactor the code to be more efficient and maintainable. Spaghetti code is your enemy.

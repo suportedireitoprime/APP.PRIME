@@ -95,10 +95,11 @@ export function useBuscaConteudo(
       return;
     }
 
-    let isMounted = true;
     setLoading(true);
-
-    async function buscar() {
+    let isMounted = true;
+    
+    // Item 22: Debounce agressivo na digitação para evitar N+1 requests
+    const timeoutId = setTimeout(async () => {
       try {
         let resultsOnline: ConteudoResultado[] = [];
         let errorOnline = null;
@@ -192,12 +193,11 @@ export function useBuscaConteudo(
       } finally {
         if (isMounted) setLoading(false);
       }
-    }
-
-    buscar();
+    }, 400); // 400ms debounce
 
     return () => {
       isMounted = false;
+      clearTimeout(timeoutId);
     };
   }, [termo, tipo, buscaIA]);
 

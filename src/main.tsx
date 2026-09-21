@@ -21,6 +21,10 @@ function preloadImage(url: string) {
   link.type = "image/webp";
   link.fetchPriority = "high";
   document.head.appendChild(link);
+  // Aquece também o cache de decode do browser
+  const img = new Image();
+  img.decoding = "async";
+  img.src = url;
 }
 preloadImage(primeLogoUrl);
 preloadImage(horusOwlUrl);
@@ -37,4 +41,12 @@ requestAnimationFrame(() => {
 });
 
 // Executa boot nativo secundário e não bloqueante (Crashlytics, Sync, Push etc)
-bootstrapIdleNative();
+const scheduleBoot = () => {
+  bootstrapIdleNative();
+};
+
+if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+  (window as any).requestIdleCallback(scheduleBoot, { timeout: 3000 });
+} else {
+  setTimeout(scheduleBoot, 1200);
+}

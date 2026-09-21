@@ -10,7 +10,7 @@ import brasaoImgAsset from '@/assets/brasao-republica.webp';
 const brasaoImg = brasaoImgAsset;
 import ArtigoBottomSheet from '@/components/vademecum/artigo/ArtigoBottomSheet';
 import type { LeiOrdinaria } from '@/services/legislacaoService';
-import { useVirtualizer } from '@tanstack/react-virtual';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { Capacitor } from '@capacitor/core';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { useRef } from 'react';
@@ -229,9 +229,8 @@ const LeiOrdinariaDetail = ({ lei, onBack, isEmbedded = false }: LeiOrdinariaDet
     lei.url?.startsWith('/') ? `https://www.planalto.gov.br${lei.url}` : 
     lei.url ? `https://www.planalto.gov.br/${lei.url}` : null;
 
-  const virtualizer = useVirtualizer({
+  const virtualizer = useWindowVirtualizer({
     count: parsed?.artigos.length ?? 0,
-    getScrollElement: () => typeof document !== 'undefined' ? (document.getElementById('root') || document.body) : null,
     estimateSize: () => 90, // altura estimada (68px min-h + padding)
     overscan: 10,
   });

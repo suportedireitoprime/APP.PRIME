@@ -910,6 +910,17 @@ function AnimatedRoutes() {
   const { data: profile } = useProfileSummary();
   const qc = useQueryClient();
 
+  // Safety: ensure body scroll/touch locks left over from bottom sheets or
+  // overlays are always cleared when navigating to a new route. Without this a stale
+  // `overflow:hidden` + `touchAction:none` on <body> can make the screen appear "frozen".
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, [location.pathname]);
+
   // Screen tracking unificado (page_view + screen_view + scroll + screen_exit).
   useScreenTracking();
 

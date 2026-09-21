@@ -48,8 +48,8 @@ const AvaliarAppSheet = ({ open, onClose, onFeedback }: Props) => {
     onClose();
     
     // Loga o clique intencional do usuário no botão de avaliar
-    import('@/lib/appEvents').then(({ logAreaEvent }) => {
-      logAreaEvent('avaliacao_loja_click');
+    import('@/lib/appEvents').then(({ logDb }) => {
+      logDb('avaliacao_loja_click');
     });
 
     // Se estiver no navegador (Dev), mostra uma simulação clara do que aconteceria

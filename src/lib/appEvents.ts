@@ -45,7 +45,7 @@ export function planValue(plano?: string | null): number {
   return PLAN_VALUE[plano] ?? 0;
 }
 
-async function logDb(event_name: string, metadata: Record<string, unknown> = {}) {
+export async function logDb(event_name: string, metadata: Record<string, unknown> = {}) {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     await supabase.from("app_events" as any).insert({

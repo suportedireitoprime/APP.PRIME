@@ -10,7 +10,9 @@
  * switch to IMMEDIATE mode (blocking) when the installed version is lower.
  */
 import { Capacitor } from '@capacitor/core';
+import { App as CapacitorApp } from '@capacitor/app';
 import { useAppUpdateStore } from '@/lib/appUpdateStore';
+import { supabase } from '@/integrations/supabase/client';
 
 // Google Play install status codes
 const INSTALL_STATUS_DOWNLOADED = 11;
@@ -30,19 +32,39 @@ export async function checkForAppUpdate(): Promise<void> {
   if (!Capacitor.isNativePlatform()) return;
 
   try {
+    const platform = Capacitor.getPlatform();
+    
+    // 1. Verificação da Trava de Versão (Remote Force Update via Supabase)
+    try {
+      const info = await CapacitorApp.getInfo();
+      const currentVersion = info.version; // ex: "1.4.0"
+      
+      const { data, error } = await supabase.functions.invoke('app-version-lock');
+      if (!error && data) {
+        const minAllowed = platform === 'ios' ? data.minIos : data.minAndroid;
+        if (minAllowed && compareVersions(currentVersion, minAllowed) < 0) {
+          // Versão atual é MENOR que a versão mínima exigida pelo servidor
+          useAppUpdateStore.getState().setUpdateRequired(true);
+          return; // Para a execução e trava o app
+        }
+      }
+    } catch (edgeError) {
+      console.warn('[AppUpdate] Fallback: Falha ao verificar Edge Function', edgeError);
+    }
+    // 2. Verificação Nativa nas Lojas (Google Play / App Store)
     const { AppUpdate, AppUpdateAvailability } = await import(
       '@capawesome/capacitor-app-update'
     );
 
-    const info = await AppUpdate.getAppUpdateInfo();
-    if (info.updateAvailability !== AppUpdateAvailability.UPDATE_AVAILABLE) return;
+    const storeInfo = await AppUpdate.getAppUpdateInfo();
+    if (storeInfo.updateAvailability !== AppUpdateAvailability.UPDATE_AVAILABLE) return;
 
-    if (Capacitor.getPlatform() === 'ios') {
+    if (platform === 'ios') {
       // iOS: Trigger our custom React blocking UI
       useAppUpdateStore.getState().setUpdateRequired(true);
     } else {
       // Android: Google Play native immediate/blocking UI
-      if (info.immediateUpdateAllowed) {
+      if (storeInfo.immediateUpdateAllowed) {
         await AppUpdate.performImmediateUpdate();
       }
     }

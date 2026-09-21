@@ -106,9 +106,22 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
     .join('') || 'U');
   const isAdmin = isAdminEmail(userEmail);
 
-  const highlightTrio: Item[] = [
-    { id: 'planos',  label: isPremium ? 'Minha assinatura' : 'Planos',  icon: Gem },
-  ];
+  const highlightTrio: Item[] = !isPremium ? [
+    { id: 'planos',  label: 'Minha assinatura',  icon: Gem },
+  ] : [];
+
+  const computedGroups = GROUPS.map(g => {
+    if (g.title === 'Conta' && isPremium) {
+      return {
+        ...g,
+        items: [
+          { id: 'planos', label: 'Minha assinatura', icon: Gem },
+          ...g.items
+        ]
+      };
+    }
+    return g;
+  });
 
   const handleItemClick = async (id: string) => {
     haptic.selection();
@@ -230,17 +243,19 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
               </div>
 
               {/* Perfil · Planos · Suporte como itens de lista (mesmo estilo de "Meus lembretes"). */}
-              <GroupCard>
-                {highlightTrio.map((it) => (
-                  <MenuRow
-                    key={it.id}
-                    icon={it.icon}
-                    label={it.label}
-                    variant={it.id === 'planos' ? 'gold' : undefined}
-                    onClick={() => handleItemClick(it.id)}
-                  />
-                ))}
-              </GroupCard>
+              {highlightTrio.length > 0 && (
+                <GroupCard>
+                  {highlightTrio.map((it) => (
+                    <MenuRow
+                      key={it.id}
+                      icon={it.icon}
+                      label={it.label}
+                      variant="gold"
+                      onClick={() => handleItemClick(it.id)}
+                    />
+                  ))}
+                </GroupCard>
+              )}
 
               {/* Seção de Funções & Recursos com menu suspenso de Legislação */}
               <SideMenuFuncoes
@@ -256,7 +271,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
               />
 
               {/* Regular groups */}
-              {GROUPS.map((g, idx) => (
+              {computedGroups.map((g, idx) => (
                 <React.Fragment key={g.title || `g-${idx}`}>
                   <GroupCard title={g.title}>
                     {g.items.map(item => (

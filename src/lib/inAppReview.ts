@@ -11,7 +11,7 @@
  */
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
-import { logAreaEvent } from './appEvents';
+import { logDb } from './appEvents';
 
 const K_LAST_SHOWN = 'iar_last_shown_ts';
 const K_EVENT_COUNT = 'iar_event_count';
@@ -66,8 +66,8 @@ export async function hasRated(): Promise<boolean> {
 
 async function markPrompted(): Promise<void> {
   const now = String(Date.now());
-  // Telemetria: sem isso não dá para saber se a mudança de gatilho ajudou.
-  logAreaEvent('avaliacao_prompt_exibido');
+  // Usar logDb direto para não sofrer o bloqueio de 1 por sessão do logAreaEvent
+  logDb('avaliacao_prompt_exibido');
   await set(K_PROMPTED, now);
   await set(K_LAST_SHOWN, now);
 }
@@ -86,17 +86,28 @@ export async function requestReviewNow(): Promise<boolean> {
     return true;
   } catch (e: any) {
     console.warn('[InAppReview] request failed', e);
-    logAreaEvent('avaliacao_prompt_erro', { error: e?.message || String(e) });
+    logDb('avaliacao_prompt_erro', { error: e?.message || String(e) });
     return false;
   }
 }
 
-/** Incrementa o contador de aberturas do app e retorna o novo valor. */
+/** Incrementa o contador de aberturas do app e retorna o novo valor. Evita contar duas vezes na mesma sessão. */
 export async function trackAppOpen(): Promise<number> {
   if (!Capacitor.isNativePlatform()) return 0;
+  
+  if (typeof window !== 'undefined' && window.sessionStorage.getItem('app_open_tracked')) {
+    const raw = await get(K_OPEN_COUNT);
+    return raw ? Number(raw) : 1;
+  }
+
   const raw = await get(K_OPEN_COUNT);
   const n = (raw ? Number(raw) : 0) + 1;
   await set(K_OPEN_COUNT, String(n));
+  
+  if (typeof window !== 'undefined') {
+    window.sessionStorage.setItem('app_open_tracked', '1');
+  }
+  
   return n;
 }
 
@@ -109,9 +120,9 @@ export async function maybeRequestOnSecondOpen(delayMs = 3500): Promise<void> {
   const opens = await trackAppOpen();
   if (await hasRated()) return;
 
-  // A lógica antiga maybeRequestOnSecondOpen está sendo substituída 
-  // pela nova lógica agressiva do Horus após 3 aberturas com 6h de intervalo.
-  // Vamos manter isso aqui apenas como backup se necessário, mas não será o fluxo principal.
+  if (opens === 2) {
+    setTimeout(() => { requestReviewNow(); }, delayMs);
+  }
 }
 
 /**
@@ -166,6 +177,6 @@ export async function maybeRequestReview(): Promise<void> {
     await markPrompted();
   } catch (e: any) {
     console.warn('[InAppReview] request skipped', e);
-    logAreaEvent('avaliacao_prompt_erro', { error: e?.message || String(e) });
+    logDb('avaliacao_prompt_erro', { error: e?.message || String(e) });
   }
 }

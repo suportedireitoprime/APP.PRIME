@@ -50,15 +50,19 @@ export default defineConfig(({ mode }) => ({
     chunkSizeWarningLimit: 1500,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-ui': ['lucide-react', 'framer-motion', 'clsx', 'tailwind-merge'],
-          'vendor-radix': ['@radix-ui/react-accordion', '@radix-ui/react-dialog', '@radix-ui/react-popover', '@radix-ui/react-slot', '@radix-ui/react-tabs'],
-          'vendor-supabase': ['@supabase/supabase-js'],
-          'vendor-query': ['@tanstack/react-query'],
-          'vendor-charts': ['recharts'],
-          'vendor-pdf': ['pdfjs-dist'],
-        }
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return;
+          if (id.includes("framer-motion")) return "motion";
+          if (id.includes("reactflow") || id.includes("@xyflow")) return "flow";
+          if (id.includes("jspdf") || id.includes("react-pdf") || id.includes("pdfjs-dist")) return "pdf";
+          if (id.includes("tesseract.js")) return "ocr";
+          if (id.includes("@tanstack/react-virtual")) return "virtual";
+          if (id.includes("recharts") || id.includes("d3-")) return "charts";
+          if (id.includes("dexie") || id.includes("idb-keyval")) return "storage";
+          if (id.includes("fuse.js")) return "search";
+          if (id.includes("lucide-react")) return "icons";
+          if (id.includes("three")) return "three";
+        },
       },
     },
   },
