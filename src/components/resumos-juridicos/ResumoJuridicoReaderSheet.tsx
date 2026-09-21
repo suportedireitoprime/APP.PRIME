@@ -2,11 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronDown,
-  Share2,
   Heart,
   FileDown,
-  Copy,
-  Check,
   Type,
   Minus,
   Plus,
@@ -40,9 +37,7 @@ import {
   cornellParaMarkdown,
   feynmanParaMarkdown,
 } from "./metodologias";
-import { copiarTexto } from '@/lib/nativo/copiar';
 import { abrirLink } from '@/lib/nativo';
-import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar';
 import { cn } from "@/lib/utils";
 import { haptic } from "@/lib/nativeHaptics";
 
@@ -74,8 +69,8 @@ interface Props {
 
 type Tab = "resumo" | "exemplos" | "termos";
 
-/** Vermelho oficial do app (mesmo do rodapé / início) */
-const RED = "#ef4444";
+/** Vermelho oficial do app (mesmo do painel de início / hero-panel) */
+const RED = "#E11D48";
 
 const METODOS: { id: Metodo; label: string }[] = [
   { id: "conceitos", label: "Conceitos" },
@@ -110,7 +105,6 @@ export default function ResumoJuridicoReaderSheet({
   const [gerando, setGerando] = useState<Metodo | null>(null);
   const [erroGerar, setErroGerar] = useState<string | null>(null);
   const [fontOpen, setFontOpen] = useState(false);
-  const [copiado, setCopiado] = useState(false);
   const [fav, setFav] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [bloqueadoLeitura, setBloqueadoLeitura] = useState(false);
@@ -196,7 +190,6 @@ export default function ResumoJuridicoReaderSheet({
     setFeynman(null);
     setErroGerar(null);
     setFontOpen(false);
-    setCopiado(false);
     setFav(resumosLocal.isFavorito(resumo.id));
 
     // Busca fallback básico em resumos_juridicos se necessário
@@ -303,37 +296,10 @@ export default function ResumoJuridicoReaderSheet({
     onFavoritoChange?.();
   };
 
-  const textoAtivo = () => {
-    if (!resumo) return "";
-    if (metodo === "conceitos" || !markdownAtivo) {
-      return resumoParaTexto({
-        ...resumo,
-        markdown: normalizarResumo(conceitosData?.markdown || basicData?.markdown || resumo.markdown),
-        exemplos: normalizarResumo(conceitosData?.exemplos || basicData?.exemplos || resumo.exemplos),
-        termos: normalizarResumo(conceitosData?.termos || basicData?.termos || resumo.termos),
-      });
-    }
-    const cabecalho = `${resumo.area} · ${resumo.tema}\n${resumo.subtema || ""}\nMétodo ${
-      metodo === "cornell" ? "Cornell" : "Feynman"
-    }\n\n`;
-    return cabecalho + markdownAtivo.replace(/[#*]/g, "");
-  };
-
-  const copiar = async () => {
-    if (!resumo) return;
-    try {
-      await copiarTexto(textoAtivo());
-      setCopiado(true);
-      setTimeout(() => setCopiado(false), 1800);
-    } catch {
-      /* noop */
-    }
-  };
-
   const baixarPdf = async () => {
     if (!resumo || salvandoDrive) return;
     setSalvandoDrive(true);
-    toast.loading("Preparando PDF no Google Drive...", { id: "salvar-drive-pdf" });
+    toast.loading("Gerando PDF...", { id: "baixar-pdf" });
     try {
       const dadosPdf =
         metodo !== "conceitos" && markdownAtivo
@@ -346,40 +312,19 @@ export default function ResumoJuridicoReaderSheet({
               markdown: markdownAtivo,
             }
           : {
-              ...resumo,
+              area: resumo.area,
+              tema: resumo.tema,
+              subtema: resumo.subtema || resumo.tema,
               markdown: normalizarResumo(conceitosData?.markdown || basicData?.markdown || resumo.markdown),
               exemplos: normalizarResumo(conceitosData?.exemplos || basicData?.exemplos || resumo.exemplos),
               termos: normalizarResumo(conceitosData?.termos || basicData?.termos || resumo.termos),
             };
 
-      const tituloDoc = `${resumo.tema} - ${resumo.subtema || resumo.tema}${
-        metodo !== "conceitos" ? ` (${metodo})` : ""
-      }`;
-
-      const resultado = await obterOuSalvarResumoNoDrive({
-        titulo: tituloDoc,
-        gerarBase64: async () => {
-          const { base64 } = await gerarResumoPdfBase64(dadosPdf);
-          return base64;
-        },
-      });
-
-      if (resultado?.link) {
-        toast.success(
-          resultado.reutilizado
-            ? "Abrindo PDF no Google Drive..."
-            : "PDF salvo no Google Drive! Abrindo...",
-          { id: "salvar-drive-pdf" }
-        );
-        await abrirLink(resultado.link);
-      } else {
-        toast.error("Não foi possível salvar no Google Drive agora. Tente novamente.", {
-          id: "salvar-drive-pdf",
-        });
-      }
+      await gerarResumoPdf(dadosPdf);
+      toast.success("PDF baixado com sucesso!", { id: "baixar-pdf" });
     } catch (err) {
-      console.error("Erro ao salvar PDF no Drive:", err);
-      toast.error("Falha ao salvar PDF no Google Drive.", { id: "salvar-drive-pdf" });
+      console.error("Erro ao gerar PDF:", err);
+      toast.error("Falha ao gerar PDF.", { id: "baixar-pdf" });
     } finally {
       setSalvandoDrive(false);
     }
@@ -533,7 +478,7 @@ export default function ResumoJuridicoReaderSheet({
                             <motion.span
                               layoutId="ficha-aba"
                               transition={{ type: "spring", stiffness: 420, damping: 34 }}
-                              className="absolute left-3 right-3 -bottom-[1px] h-[2px] rounded-full bg-[#ef4444]"
+                              className="absolute left-3 right-3 -bottom-[1px] h-[2px] rounded-full bg-[#E11D48]"
                             />
                           )}
                         </button>
@@ -556,9 +501,9 @@ export default function ResumoJuridicoReaderSheet({
                         style={{ fontSize: `${fontSize}px` }}
                         className="
                           prose prose-sm md:prose-base max-w-none dark:prose-invert font-body
-                          prose-headings:font-display prose-headings:text-foreground
+                          prose-headings:font-display prose-headings:text-[#E11D48]
                           prose-p:text-foreground/90 prose-p:leading-[1.8] prose-p:my-3.5
-                          prose-a:text-[#ef4444] prose-a:no-underline hover:prose-a:underline
+                          prose-a:text-[#E11D48] prose-a:no-underline hover:prose-a:underline
                           prose-strong:text-foreground
                           prose-ul:my-3 prose-li:my-1
                         "
@@ -566,10 +511,10 @@ export default function ResumoJuridicoReaderSheet({
                         {gerando === "conceitos" || (!conceitosData && !erroGerar) ? (
                           <div className="flex flex-col items-center justify-center py-20 px-4 text-center space-y-4 not-prose">
                             <div className="relative">
-                              <div className="w-16 h-16 rounded-2xl bg-[#ef4444]/10 border border-[#ef4444]/30 flex items-center justify-center text-[#ef4444] shadow-lg shadow-[#ef4444]/20 animate-pulse">
+                              <div className="w-16 h-16 rounded-2xl bg-[#E11D48]/10 border border-[#E11D48]/30 flex items-center justify-center text-[#E11D48] shadow-lg shadow-[#E11D48]/20 animate-pulse">
                                 <Sparkles className="w-8 h-8" />
                               </div>
-                              <Loader2 className="w-6 h-6 animate-spin text-[#ef4444] absolute -bottom-2 -right-2" />
+                              <Loader2 className="w-6 h-6 animate-spin text-[#E11D48] absolute -bottom-2 -right-2" />
                             </div>
                             <div className="space-y-1.5 max-w-sm">
                               <h3 className="text-base font-semibold text-white tracking-wide uppercase font-display">
@@ -585,16 +530,16 @@ export default function ResumoJuridicoReaderSheet({
                             remarkPlugins={[remarkGfm]}
                             components={{
                               h1: ({ node, ...props }) => (
-                                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white mt-8 mb-4 border-b border-border/50 pb-2.5 font-display leading-tight" {...props} />
+                                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#E11D48] mt-8 mb-4 border-b border-[#E11D48]/20 pb-2.5 font-display leading-tight" {...props} />
                               ),
                               h2: ({ node, ...props }) => (
-                                <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white/95 mt-7 mb-3 font-display leading-snug" {...props} />
+                                <h2 className="text-lg sm:text-xl font-bold tracking-tight text-[#E11D48] mt-7 mb-3 font-display leading-snug" {...props} />
                               ),
                               h3: ({ node, ...props }) => (
-                                <h3 className="text-base sm:text-lg font-semibold tracking-tight text-white/90 mt-5 mb-2 font-display leading-snug" {...props} />
+                                <h3 className="text-base sm:text-lg font-semibold tracking-tight text-[#E11D48] mt-5 mb-2 font-display leading-snug" {...props} />
                               ),
                               h4: ({ node, ...props }) => (
-                                <h4 className="text-[14px] sm:text-base font-semibold tracking-tight text-white/85 mt-4 mb-1.5 font-display leading-snug" {...props} />
+                                <h4 className="text-[14px] sm:text-base font-semibold tracking-tight text-[#E11D48] mt-4 mb-1.5 font-display leading-snug" {...props} />
                               ),
                               p: ({ node, ...props }) => (
                                 <p className="my-3.5 text-foreground/90 leading-[1.8] text-[15px] sm:text-[16px]" {...props} />
@@ -838,7 +783,7 @@ export default function ResumoJuridicoReaderSheet({
                 )}
               </AnimatePresence>
 
-              <div className="pointer-events-auto flex flex-col gap-2 items-end">
+              <div className="pointer-events-auto flex flex-col gap-2.5 items-end">
                 <button
                   onClick={() => setFontOpen((v) => !v)}
                   aria-label="Tamanho da fonte"
@@ -846,17 +791,6 @@ export default function ResumoJuridicoReaderSheet({
                   className="w-11 h-11 flex items-center justify-center rounded-full bg-card/95 backdrop-blur-md border border-border shadow-xl text-foreground hover:bg-secondary active:scale-95 transition-all"
                 >
                   <Type className="w-5 h-5" strokeWidth={2.5} />
-                </button>
-                <button
-                  onClick={copiar}
-                  aria-label="Copiar resumo"
-                  className="w-11 h-11 flex items-center justify-center rounded-full bg-card/95 backdrop-blur-md border border-border shadow-xl text-foreground hover:bg-secondary active:scale-95 transition-all"
-                >
-                  {copiado ? (
-                    <Check className="w-5 h-5 text-emerald-500" />
-                  ) : (
-                    <Copy className="w-5 h-5" />
-                  )}
                 </button>
                 <button
                   onClick={() => {
@@ -867,21 +801,14 @@ export default function ResumoJuridicoReaderSheet({
                     void baixarPdf();
                   }}
                   disabled={salvandoDrive}
-                  aria-label="Salvar PDF no Google Drive"
-                  className="w-11 h-11 flex items-center justify-center rounded-full bg-card/95 backdrop-blur-md border border-border shadow-xl text-foreground hover:bg-secondary active:scale-95 transition-all disabled:opacity-60"
+                  aria-label="Baixar em PDF"
+                  className="w-12 h-12 flex items-center justify-center rounded-full bg-[#E11D48] text-white shadow-2xl hover:brightness-110 active:scale-95 transition-all disabled:opacity-60"
                 >
                   {salvandoDrive ? (
-                    <Loader2 className="w-5 h-5 animate-spin text-[#ef4444]" />
+                    <Loader2 className="w-5 h-5 animate-spin text-white" />
                   ) : (
                     <FileDown className="w-5 h-5" />
                   )}
-                </button>
-                <button
-                  onClick={share}
-                  aria-label="Compartilhar"
-                  className="w-12 h-12 flex items-center justify-center rounded-full bg-primary text-primary-foreground shadow-2xl hover:brightness-110 active:scale-95 transition-all"
-                >
-                  <Share2 className="w-5 h-5" />
                 </button>
               </div>
             </div>

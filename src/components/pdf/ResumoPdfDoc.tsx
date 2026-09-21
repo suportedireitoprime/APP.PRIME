@@ -10,174 +10,126 @@ export type ResumoPdfInput = {
   termos?: string | null;
 };
 
-// Cores baseadas na paleta wine (Resumos)
+// Cores oficiais do app (paleta Direito Prime)
 const COLORS = {
-  paper: '#FDFCFB',
-  paperAlt: '#F5F3F0',
-  ink: '#1A1817',
-  inkSoft: '#4A4644',
-  wine: '#82132D',
-  wineDeep: '#4A0B1A',
-  wineSoft: '#FAF5F6',
+  pageBg: '#ffffff',
+  headerText: '#1a1a2e',
+  subText: '#888888',
+  redPrimary: '#E11D48',
+  ink: '#333333',
+  inkSoft: '#666666',
+  boxBg: '#f9fafb',
+  border: '#e5e7eb',
   gold: '#B69A5C',
-  line: '#EAE6E1',
-  white: '#FFFFFF',
-  graphite: '#16161A',
 };
 
 const styles = StyleSheet.create({
   page: {
-    backgroundColor: COLORS.paper,
-    fontFamily: 'Helvetica',
-  },
-  coverPage: {
-    backgroundColor: COLORS.graphite,
-    position: 'relative',
-    height: '100%',
-  },
-  coverWineLine: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    width: '100%',
-    height: 6,
-    backgroundColor: COLORS.wine,
-  },
-  coverHeader: {
-    paddingTop: 80,
-    paddingHorizontal: 40,
-  },
-  coverLabel: {
-    color: COLORS.gold,
-    fontSize: 10,
-    fontWeight: 'bold',
-    letterSpacing: 1.4,
-    marginBottom: 40,
-  },
-  coverTitle: {
-    color: COLORS.white,
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    lineHeight: 1.2,
-  },
-  coverSubtitle: {
-    color: COLORS.white,
-    fontSize: 14,
-    opacity: 0.8,
-  },
-  contentPage: {
     padding: 30,
-    paddingBottom: 50,
+    paddingBottom: 45,
+    fontFamily: 'Helvetica',
+    fontSize: 10,
+    backgroundColor: COLORS.pageBg,
+  },
+  header: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 4,
+    fontFamily: 'Helvetica-Bold',
+    color: COLORS.headerText,
+  },
+  subtitle: {
+    fontSize: 8,
+    textAlign: 'center',
+    color: COLORS.subText,
+    marginBottom: 16,
+  },
+  sectionBanner: {
+    backgroundColor: COLORS.redPrimary,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 3,
+    marginTop: 14,
+    marginBottom: 8,
+  },
+  sectionBannerText: {
+    color: '#ffffff',
+    fontSize: 9,
+    fontWeight: 'bold',
+    fontFamily: 'Helvetica-Bold',
+    letterSpacing: 0.8,
   },
   h1: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: 'bold',
-    color: COLORS.wine,
-    marginBottom: 8,
-    marginTop: 14,
-  },
-  h2: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: COLORS.wine,
+    fontFamily: 'Helvetica-Bold',
+    color: COLORS.redPrimary,
     marginBottom: 6,
     marginTop: 12,
   },
-  h3: {
-    fontSize: 12,
+  h2: {
+    fontSize: 10.5,
     fontWeight: 'bold',
-    color: COLORS.wine,
+    fontFamily: 'Helvetica-Bold',
+    color: COLORS.headerText,
     marginBottom: 4,
     marginTop: 10,
   },
+  h3: {
+    fontSize: 9.5,
+    fontWeight: 'bold',
+    fontFamily: 'Helvetica-Bold',
+    color: COLORS.headerText,
+    marginBottom: 3,
+    marginTop: 8,
+  },
   paragraph: {
-    fontSize: 10.5,
+    fontSize: 9.5,
     color: COLORS.ink,
     lineHeight: 1.5,
     marginBottom: 6,
     textAlign: 'justify',
   },
   quoteBox: {
-    backgroundColor: COLORS.wineSoft,
-    borderLeftWidth: 2,
-    borderLeftColor: COLORS.wine,
-    padding: 10,
-    marginTop: 8,
-    marginBottom: 8,
+    backgroundColor: COLORS.boxBg,
+    borderLeftWidth: 3,
+    borderLeftColor: COLORS.redPrimary,
+    padding: 8,
+    marginTop: 6,
+    marginBottom: 6,
+    borderRadius: 2,
   },
   quoteText: {
-    fontSize: 10,
+    fontSize: 9,
     fontStyle: 'italic',
-    color: COLORS.wineDeep,
-    lineHeight: 1.5,
+    color: COLORS.inkSoft,
+    lineHeight: 1.4,
   },
   liContainer: {
     flexDirection: 'row',
-    marginBottom: 4,
+    marginBottom: 3,
+    paddingLeft: 4,
   },
   liBullet: {
     width: 10,
-    fontSize: 10.5,
-    color: COLORS.gold,
+    fontSize: 9.5,
+    color: COLORS.redPrimary,
   },
   liText: {
     flex: 1,
-    fontSize: 10.5,
+    fontSize: 9.5,
     color: COLORS.ink,
     lineHeight: 1.5,
   },
-  sectionBanner: {
-    backgroundColor: COLORS.wine,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginTop: 18,
-    marginBottom: 12,
-  },
-  sectionBannerText: {
-    color: COLORS.white,
-    fontSize: 12,
-    fontWeight: 'bold',
-    letterSpacing: 1,
-  },
   footer: {
     position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 80,
-    backgroundColor: COLORS.paperAlt,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.line,
-    paddingTop: 16,
-    paddingHorizontal: 30,
-  },
-  footerApp: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: COLORS.wine,
-    textAlign: 'right',
-  },
-  footerDesc: {
-    fontSize: 7.5,
-    fontStyle: 'italic',
-    color: COLORS.inkSoft,
-    textAlign: 'right',
-    marginTop: 2,
-  },
-  footerLeftGroup: {
-    position: 'absolute',
+    bottom: 20,
     left: 30,
-    top: 16,
-  },
-  footerDocTitle: {
-    fontSize: 8,
-    color: COLORS.inkSoft,
-  },
-  footerPageNum: {
-    fontSize: 8,
-    color: COLORS.inkSoft,
-    marginTop: 4,
+    right: 30,
+    fontSize: 7.5,
+    color: '#999999',
+    textAlign: 'center',
   },
 });
 
@@ -251,14 +203,16 @@ export const ResumoPdfDoc: React.FC<ResumoPdfDocProps> = ({ data }) => {
   const titulo = data.subtema || data.tema || "Resumo";
   const subtitulo = [data.area, data.tema].filter(Boolean).join(" — ");
 
-  const renderSection = (label: string, content?: string | null) => {
+  const renderSection = (label: string, content?: string | null, showBanner = true) => {
     if (!content?.trim()) return null;
     const blocos = parseMarkdown(content);
     return (
-      <View>
-        <View style={styles.sectionBanner} wrap={false}>
-          <Text style={styles.sectionBannerText}>{label.toUpperCase()}</Text>
-        </View>
+      <View wrap>
+        {showBanner && (
+          <View style={styles.sectionBanner} wrap={false}>
+            <Text style={styles.sectionBannerText}>{label.toUpperCase()}</Text>
+          </View>
+        )}
         
         {blocos.map((b, i) => {
           if (b.tipo === 'h1') return <Text key={i} style={styles.h1}>{b.texto}</Text>;
@@ -285,35 +239,25 @@ export const ResumoPdfDoc: React.FC<ResumoPdfDocProps> = ({ data }) => {
     );
   };
 
-  const Footer = () => (
-    <View style={styles.footer} fixed>
-      <View style={styles.footerLeftGroup}>
-        <Text style={styles.footerDocTitle}>{titulo.toUpperCase().slice(0, 60)}</Text>
-        <Text style={styles.footerPageNum} render={({ pageNumber }) => (
-          String(pageNumber - 1).padStart(2, '0')
-        )} />
-      </View>
-      <Text style={styles.footerApp}>DIREITO PRIME</Text>
-      <Text style={styles.footerDesc}>— Estudos Jurídicos</Text>
-    </View>
-  );
-
   return (
     <Document>
-      <Page size="A4" style={[styles.page, styles.coverPage]}>
-        <View style={styles.coverHeader}>
-          <Text style={styles.coverLabel}>RESUMO JURÍDICO</Text>
-          <Text style={styles.coverTitle}>{titulo}</Text>
-          <Text style={styles.coverSubtitle}>{subtitulo}</Text>
-        </View>
-        <View style={styles.coverWineLine} />
-      </Page>
+      <Page size="A4" style={styles.page}>
+        <Text style={styles.header}>{titulo}</Text>
+        <Text style={styles.subtitle}>
+          {subtitulo ? `${subtitulo} — ` : ''}Resumo Jurídico — Direito Prime 2026
+        </Text>
 
-      <Page size="A4" style={[styles.page, styles.contentPage]}>
-        {renderSection("Resumo", data.markdown)}
-        {renderSection("Exemplos", data.exemplos)}
-        {renderSection("Termos", data.termos)}
-        <Footer />
+        {renderSection("Resumo", data.markdown, false)}
+        {renderSection("Exemplos Práticos", data.exemplos, true)}
+        {renderSection("Termos e Conceitos", data.termos, true)}
+
+        <Text
+          style={styles.footer}
+          render={({ pageNumber, totalPages }) =>
+            `Direito Prime — Resumo Jurídico — Página ${pageNumber} de ${totalPages}`
+          }
+          fixed
+        />
       </Page>
     </Document>
   );
