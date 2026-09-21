@@ -114,7 +114,7 @@ export function VisuaisPassoDetalhes({
                     />
                   </div>
                   <div className="flex-1 min-w-0 text-left">
-                    <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
+                    <p className="font-sans text-foreground text-[15.5px] sm:text-[16px] font-semibold leading-tight line-clamp-1">
                       {t.tema}
                     </p>
                     <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-1">
@@ -196,7 +196,7 @@ export function VisuaisPassoDetalhes({
                     />
                   </div>
                   <div className="flex-1 min-w-0 text-left">
-                    <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
+                    <p className="font-sans text-foreground text-[15.5px] sm:text-[16px] font-semibold leading-tight line-clamp-1">
                       {s.subtema}
                     </p>
                     <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-1">
@@ -244,7 +244,7 @@ export function VisuaisPassoDetalhes({
                     />
                   </div>
                   <div className="flex-1 min-w-0 text-left">
-                    <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
+                    <p className="font-sans text-foreground text-[15.5px] sm:text-[16px] font-semibold leading-tight line-clamp-1">
                       {tema.tema}
                     </p>
                     <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-1">
@@ -314,7 +314,7 @@ export function VisuaisPassoDetalhes({
                     />
                   </div>
                   <div className="flex-1 min-w-0 text-left">
-                    <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
+                    <p className="font-sans text-foreground text-[15.5px] sm:text-[16px] font-semibold leading-tight line-clamp-1">
                       Art. {a.numero}
                     </p>
                     <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-1">
