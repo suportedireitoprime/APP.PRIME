@@ -233,18 +233,18 @@ export const GeracaoAnimacaoOverlay = ({
                 {cancelLabel}
               </button>
             )}
-            <div className="relative rounded-3xl border border-rose-500/20 bg-[#0e0407]/95 px-6 pt-16 pb-6 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+            <div className={`relative rounded-3xl border border-rose-500/20 bg-[#0e0407]/95 px-6 pb-6 shadow-[0_20px_60px_rgba(0,0,0,0.6)] ${compact ? 'pt-10' : 'pt-16'}`}>
               <img
                 src={danceCatAsset}
                 alt="Carregando"
                 aria-hidden="true"
-                className="pointer-events-none absolute -top-16 left-1/2 -translate-x-1/2 h-28 w-28 drop-shadow-[0_10px_20px_rgba(244,63,94,0.6)] select-none object-contain"
+                className={`pointer-events-none absolute left-1/2 -translate-x-1/2 drop-shadow-[0_10px_20px_rgba(244,63,94,0.6)] select-none object-contain ${compact ? '-top-10 h-20 w-20' : '-top-16 h-28 w-28'}`}
               />
 
-              <div className="relative mx-auto mb-5 h-32 w-32">
+              <div className={`relative mx-auto mb-5 ${compact ? 'h-24 w-24' : 'h-32 w-32'}`}>
                 <svg className="absolute inset-0 h-full w-full -rotate-90" viewBox="0 0 100 100" role="presentation" aria-hidden="true">
-                  <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(244,63,94, 0.15)" strokeWidth="6" />
-                  <circle cx="50" cy="50" r="46" fill="none" stroke={`url(#${gradId})`} strokeWidth="6" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={circumference * (1 - pctInt / 100)} style={{ transition: "stroke-dashoffset 0.4s ease" }} />
+                  <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(244,63,94, 0.15)" strokeWidth={compact ? "8" : "6"} />
+                  <circle cx="50" cy="50" r="46" fill="none" stroke={`url(#${gradId})`} strokeWidth={compact ? "8" : "6"} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={circumference * (1 - pctInt / 100)} style={{ transition: "stroke-dashoffset 0.4s ease" }} />
                   <defs>
                     <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="1">
                       <stop offset="0%" stopColor="#fb7185" />
@@ -254,11 +254,11 @@ export const GeracaoAnimacaoOverlay = ({
                 </svg>
                 <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.8, repeat: Infinity, ease: "linear" }} className="absolute inset-0">
                   <svg viewBox="0 0 100 100" className="h-full w-full">
-                    <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(244,63,94, 0.9)" strokeWidth="6" strokeLinecap="round" strokeDasharray="18 260" />
+                    <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(244,63,94, 0.9)" strokeWidth={compact ? "8" : "6"} strokeLinecap="round" strokeDasharray="18 260" />
                   </svg>
                 </motion.div>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-3xl font-bold text-rose-50 tabular-nums">{pctInt}%</span>
+                  <span className={`${compact ? 'text-2xl' : 'text-3xl'} font-bold text-rose-50 tabular-nums`}>{pctInt}%</span>
                   <span className="text-[10px] uppercase tracking-widest text-rose-300/80 mt-0.5">
                     {stepIdx >= 3 ? "Concluído" : restante === 0 ? "Finalizando" : `~${mm}:${ss}`}
                   </span>

@@ -138,7 +138,7 @@ export function parseTextoCompleto(texto: string): ParsedLei {
   }
 
   const artigos: { numero: string; texto: string }[] = [];
-  const artPattern = /(?=Art\.\s*\d+[ºo°]?(?:-[A-Z])?\s+(?![\.…]{3}))/;
+  const artPattern = /(?=Art\.\s*\d+[ºo°]?\.?(?:-?[A-Z])?(?:[\s\—\-\–\.]+)(?![\.…]{3}))/i;
   const artParts = clean.split(artPattern).filter(s => s.trim());
 
   let assinatura = '';
@@ -152,9 +152,9 @@ export function parseTextoCompleto(texto: string): ParsedLei {
       continue;
     }
     
-    const numMatch = trimmed.match(/^(Art\.\s*\d+[ºo°]?(?:-[A-Z])?)/);
+    const numMatch = trimmed.match(/^(Art\.\s*\d+[ºo°]?\.?(?:-?[A-Z])?)/i);
     if (numMatch) {
-      const numero = numMatch[1];
+      const numero = numMatch[1].replace(/\.$/, '').trim();
       let textoArt = trimmed.substring(numMatch[0].length).trim();
       
       if (/^[\s\.…]{5,}/.test(textoArt) || /^\.{3,}/.test(textoArt.replace(/\s/g, ''))) {

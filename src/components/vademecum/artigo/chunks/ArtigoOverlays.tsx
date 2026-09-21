@@ -180,6 +180,7 @@ export const ArtigoOverlays = memo(function ArtigoOverlays({
         {aiGeneratingMode !== null && (
           <GeracaoAnimacaoOverlay
             open={aiGeneratingMode !== null}
+            compact={true}
             titulo={
               aiGeneratingMode === 'explicacao'
                 ? 'Gerando explicação com IA'
