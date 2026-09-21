@@ -4,50 +4,40 @@ import { ArrowLeft, Search, NotebookText, ChevronRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
 import { motion, AnimatePresence } from 'framer-motion';
+import HeroCoverCarousel from '@/components/vademecum/home/HeroCoverCarousel';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 
-// Carrega dinamicamente qualquer imagem .webp que estiver na pasta docs/filosofos
-const modules = import.meta.glob('../../../docs/filosofos/*.webp', { eager: true, import: 'default' });
+import { pickAsset, srcOf } from '@/lib/assetUrl';
+import cover2Asset from '@/assets/covers/cover-2.png.asset.json';
+import cover2Bundled from '@/assets/covers/cover-2.webp';
+import cover3Asset from '@/assets/covers/cover-3.png.asset.json';
+import cover3Bundled from '@/assets/covers/cover-3.webp';
+import cover4Asset from '@/assets/covers/cover-4.png.asset.json';
+import cover4Bundled from '@/assets/covers/cover-4.webp';
+import cover5Asset from '@/assets/covers/cover-5.png.asset.json';
+import cover5Bundled from '@/assets/covers/cover-5.webp';
+import cover6Asset from '@/assets/covers/cover-6.png.asset.json';
+import cover6Bundled from '@/assets/covers/cover-6.webp';
+import cover7Asset from '@/assets/covers/cover-7.png.asset.json';
+import cover7Bundled from '@/assets/covers/cover-7.webp';
+import cover8Asset from '@/assets/covers/cover-8.png.asset.json';
+import cover8Bundled from '@/assets/covers/cover-8.webp';
+import cover9Asset from '@/assets/covers/cover-9.png.asset.json';
+import cover9Bundled from '@/assets/covers/cover-9.webp';
+import cover10Asset from '@/assets/covers/cover-10.png.asset.json';
+import cover10Bundled from '@/assets/covers/cover-10.webp';
 
-const QUOTES_DB: Record<string, {name: string, quote: string}> = {
-  'aristoteles': { name: 'Aristóteles', quote: 'A lei é a razão livre da paixão.' },
-  'friedrich nietzsche': { name: 'Friedrich Nietzsche', quote: 'Aquele que tem um porquê para viver pode suportar quase qualquer como.' },
-  'nietzsche': { name: 'Friedrich Nietzsche', quote: 'Aquele que tem um porquê para viver pode suportar quase qualquer como.' },
-  'immanuel kant': { name: 'Immanuel Kant', quote: 'Age como se a máxima de tua ação devesse tornar-se uma lei universal.' },
-  'kant': { name: 'Immanuel Kant', quote: 'Age como se a máxima de tua ação devesse tornar-se uma lei universal.' },
-  'platao': { name: 'Platão', quote: 'O que faz a justiça é que cada um faça a sua parte.' },
-  'rene descartes': { name: 'René Descartes', quote: 'Penso, logo existo.' },
-  'descartes': { name: 'René Descartes', quote: 'Penso, logo existo.' },
-  'santo agostinho': { name: 'Santo Agostinho', quote: 'Uma lei injusta não é lei alguma.' },
-  'agostinho': { name: 'Santo Agostinho', quote: 'Uma lei injusta não é lei alguma.' },
-  'simone de beauvoir': { name: 'Simone de Beauvoir', quote: 'Que a liberdade seja a nossa própria substância.' },
-  'beauvoir': { name: 'Simone de Beauvoir', quote: 'Que a liberdade seja a nossa própria substância.' },
-  'seneca': { name: 'Sêneca', quote: 'Nenhuma lei agrada a todos.' },
-  'socrates': { name: 'Sócrates', quote: 'É melhor sofrer uma injustiça do que cometê-la.' },
-  'tomas de aquino': { name: 'Tomás de Aquino', quote: 'A lei é uma ordenação da razão para o bem comum.' },
-  'aquino': { name: 'Tomás de Aquino', quote: 'A lei é uma ordenação da razão para o bem comum.' },
-};
-
-const normalizeName = (name: string) => {
-  return name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
-};
-
-const PHILOSOPHERS = Object.entries(modules).map(([path, img]) => {
-  const filename = path.split('/').pop()?.replace('.webp', '') || '';
-  const normalizedKey = normalizeName(filename);
-  const info = QUOTES_DB[normalizedKey] || { 
-    name: filename.replace(/_/g, ' '), 
-    quote: 'A sabedoria começa na reflexão.' 
-  };
-  return { ...info, img: img as string };
-});
-
-if (PHILOSOPHERS.length === 0) {
-  PHILOSOPHERS.push({
-    name: 'Resumos Jurídicos',
-    quote: 'O conhecimento destilado.',
-    img: ''
-  });
-}
+const FALLBACK_COVERS = [
+  { url: pickAsset(cover2Bundled, srcOf(cover2Asset)), preset: 'ken-burns' },
+  { url: pickAsset(cover3Bundled, srcOf(cover3Asset)), preset: 'ken-burns' },
+  { url: pickAsset(cover4Bundled, srcOf(cover4Asset)), preset: 'ken-burns' },
+  { url: pickAsset(cover5Bundled, srcOf(cover5Asset)), preset: 'ken-burns' },
+  { url: pickAsset(cover6Bundled, srcOf(cover6Asset)), preset: 'ken-burns' },
+  { url: pickAsset(cover7Bundled, srcOf(cover7Asset)), preset: 'ken-burns' },
+  { url: pickAsset(cover8Bundled, srcOf(cover8Asset)), preset: 'ken-burns' },
+  { url: pickAsset(cover9Bundled, srcOf(cover9Asset)), preset: 'ken-burns' },
+  { url: pickAsset(cover10Bundled, srcOf(cover10Asset)), preset: 'ken-burns' },
+];
 
 const HINTS = [
   'Pesquise qualquer matéria...',
@@ -112,22 +102,6 @@ const ResumosHero = ({
   totalTemas = 527,
 }: Props) => {
   const navigate = useNavigate();
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    const nextIndex = (currentIndex + 1) % PHILOSOPHERS.length;
-    if (PHILOSOPHERS[nextIndex]?.img) {
-      const img = new Image();
-      img.src = PHILOSOPHERS[nextIndex].img;
-    }
-
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % PHILOSOPHERS.length);
-    }, 4500);
-    return () => clearInterval(timer);
-  }, [currentIndex]);
-
-  const currentPhil = PHILOSOPHERS[currentIndex];
 
   return (
     <div
@@ -144,21 +118,8 @@ const ResumosHero = ({
         aria-hidden="true"
       />
 
-      {/* Imagem de Fundo (Carrossel) */}
-      <AnimatePresence>
-        {currentPhil?.img && (
-          <motion.img
-            key={currentPhil.img}
-            src={currentPhil.img}
-            alt={currentPhil.name}
-            initial={{ opacity: 0, scale: 1.03 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.2 }}
-            className="absolute top-0 bottom-0 right-0 h-full w-auto object-contain object-right-bottom z-0 pointer-events-none drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]"
-          />
-        )}
-      </AnimatePresence>
+      {/* Imagem de Fundo (Carrossel Original de Resumos) */}
+      <HeroCoverCarousel covers={FALLBACK_COVERS} />
 
       {/* Overlay vermelho com gradiente estilo menu e sombra */}
       <div 
@@ -176,11 +137,18 @@ const ResumosHero = ({
 
           <HeroMotifs />
 
-          {/* Grid Pattern Background */}
-          <div className="absolute inset-0 opacity-10" style={{
-            backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px)',
-            backgroundSize: '24px 24px'
-          }} />
+          {/* Grid Pattern Background Animado */}
+          <div className="absolute inset-0 opacity-40 pointer-events-none mix-blend-screen">
+            <ShapeGrid 
+              speed={0.5} 
+              squareSize={40}
+              direction='diagonal'
+              borderColor='rgba(255, 255, 255, 0.08)'
+              hoverFillColor='rgba(255, 255, 255, 0.15)'
+              shape='square'
+              hoverTrailAmount={5}
+            />
+          </div>
         </div>
       </div>
 
