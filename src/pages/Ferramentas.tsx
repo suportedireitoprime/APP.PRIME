@@ -5,6 +5,7 @@ import { useFerramentasNavigation } from '@/components/ferramentas/useFerramenta
 import { FerramentasMobileList } from '@/components/ferramentas/FerramentasMobileList';
 import { FerramentasDesktopGrid } from '@/components/ferramentas/FerramentasDesktopGrid';
 import { FerramentasModals } from '@/components/ferramentas/FerramentasModals';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 
 const Ferramentas = () => {
   useTrackArea("ferramentas_aberta");
@@ -33,10 +34,21 @@ const Ferramentas = () => {
       mobileHeader={mobileHeader}
       wide
     >
-      <div className="px-4 sm:px-6 py-4 pb-[calc(7rem+var(--sai-bottom))] lg:hidden">
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <ShapeGrid 
+          speed={0.5} 
+          squareSize={40}
+          direction='diagonal'
+          borderColor='rgba(255, 255, 255, 0.05)'
+          hoverFillColor='rgba(255, 255, 255, 0.1)'
+          shape='square'
+          hoverTrailAmount={5}
+        />
+      </div>
+      <div className="px-4 sm:px-6 py-4 pb-[calc(7rem+var(--sai-bottom))] lg:hidden relative z-10">
         <FerramentasMobileList onToolClick={handleToolClick} />
       </div>
-      <div className="hidden lg:block">
+      <div className="hidden lg:block relative z-10">
         <FerramentasDesktopGrid onToolClick={handleToolClick} />
       </div>
 
