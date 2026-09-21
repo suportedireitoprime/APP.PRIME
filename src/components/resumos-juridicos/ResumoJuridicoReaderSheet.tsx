@@ -40,6 +40,8 @@ import {
 import { copiarTexto } from '@/lib/nativo/copiar';
 import { abrirLink } from '@/lib/nativo';
 import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar';
+import { cn } from "@/lib/utils";
+import { haptic } from "@/lib/nativeHaptics";
 
 export interface ResumoRow {
   id: string;
@@ -110,42 +112,19 @@ export default function ResumoJuridicoReaderSheet({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [bloqueadoLeitura, setBloqueadoLeitura] = useState(false);
 
-  // Busca sob demanda do markdown caso a lista tenha sido carregada em modo leve
-  const [fullData, setFullData] = useState<{
+  // Dados de Conceitos Aprofundados gerados pela IA (persistidos em resumo_metodologias)
+  const [conceitosData, setConceitosData] = useState<{
     markdown: string | null;
     exemplos: string | null;
     termos: string | null;
   } | null>(null);
-  const [loadingContent, setLoadingContent] = useState(false);
 
-  useEffect(() => {
-    if (!resumo?.id) {
-      setFullData(null);
-      setLoadingContent(false);
-      return;
-    }
-
-    if (!resumo.markdown) {
-      setLoadingContent(true);
-      supabase
-        .from("resumos_juridicos")
-        .select("markdown, exemplos, termos")
-        .eq("id", resumo.id)
-        .maybeSingle()
-        .then(({ data }) => {
-          if (data) {
-            setFullData(data);
-          }
-          setLoadingContent(false);
-        })
-        .catch(() => {
-          setLoadingContent(false);
-        });
-    } else {
-      setFullData(null);
-      setLoadingContent(false);
-    }
-  }, [resumo?.id, resumo?.markdown]);
+  // Fallback básico original de resumos_juridicos
+  const [basicData, setBasicData] = useState<{
+    markdown: string | null;
+    exemplos: string | null;
+    termos: string | null;
+  } | null>(null);
 
   const handleClose = () => {
     onClose?.();
@@ -164,49 +143,6 @@ export default function ResumoJuridicoReaderSheet({
     }
   }, [resumo?.id, gateResumo.loading, gateResumo.blocked]);
 
-  // Carrega metodologias já geradas para este resumo
-  useEffect(() => {
-    if (!resumo?.id) return;
-    const resumoId = resumo.id;
-    let ativo = true;
-    (async () => {
-      const { data } = await supabase
-        .from("resumo_metodologias")
-        .select("metodo, conteudo")
-        .eq("resumo_id", resumoId);
-      if (!ativo) return;
-      const existentes = new Set<string>();
-      for (const row of data || []) {
-        existentes.add(row.metodo);
-        if (row.metodo === "cornell") setCornell(row.conteudo as unknown as CornellContent);
-        if (row.metodo === "feynman") setFeynman(row.conteudo as unknown as FeynmanContent);
-        if (row.metodo === "conceitos") setFullData(row.conteudo as any);
-      }
-
-      // Se conceitos ainda não foi gerado no banco, gerar AUTOMATICAMENTE de forma padrão!
-      if (!existentes.has("conceitos")) {
-        void gerarMetodologia("conceitos", false);
-      }
-
-      // Gera em segundo plano os métodos que ainda não existem
-      if (!pregerarMetodos) return;
-      for (const alvo of ["cornell", "feynman"] as const) {
-        if (existentes.has(alvo)) continue;
-        supabase.functions
-          .invoke("gerar-metodologia", { body: { resumo_id: resumoId, metodo: alvo } })
-          .then(({ data: res }) => {
-            if (!ativo || !res?.conteudo) return;
-            if (alvo === "cornell") setCornell(res.conteudo as CornellContent);
-            else setFeynman(res.conteudo as FeynmanContent);
-          })
-          .catch(() => {});
-      }
-    })();
-    return () => {
-      ativo = false;
-    };
-  }, [resumo?.id, pregerarMetodos]);
-
   const gerarMetodologia = async (alvo: Metodo, force = false) => {
     if (!resumo || gerando) return;
     setGerando(alvo);
@@ -219,7 +155,7 @@ export default function ResumoJuridicoReaderSheet({
       if (data?.error) throw new Error(data.error);
       
       if (alvo === "conceitos") {
-        setFullData(data.conteudo);
+        setConceitosData(data.conteudo);
       } else if (alvo === "cornell") {
         setCornell(data.conteudo as CornellContent);
       } else {
@@ -232,18 +168,27 @@ export default function ResumoJuridicoReaderSheet({
     }
   };
 
+  // Carrega dados e metodologias ao abrir o resumo
   useEffect(() => {
     if (!resumo) {
       hasAutoStarted.current = null;
+      setConceitosData(null);
+      setBasicData(null);
+      setCornell(null);
+      setFeynman(null);
+      setGerando(null);
+      setErroGerar(null);
       return;
     }
+
     if (scrollRef.current) {
       scrollRef.current.scrollTo({ top: 0, behavior: "auto" });
     }
     setTab(initialTab || "resumo");
     const targetMetodo = autoStartMetodo || defaultMetodo || initialMetodo || "conceitos";
     setMetodo(targetMetodo);
-    setFullData(null);
+    setConceitosData(null);
+    setBasicData(null);
     setCornell(null);
     setFeynman(null);
     setErroGerar(null);
@@ -251,23 +196,78 @@ export default function ResumoJuridicoReaderSheet({
     setCopiado(false);
     setFav(resumosLocal.isFavorito(resumo.id));
 
-    if (autoStartMetodo) {
-      const lockKey = `${resumo.id}-${autoStartMetodo}`;
-      if (hasAutoStarted.current !== lockKey) {
-        hasAutoStarted.current = lockKey;
-        void gerarMetodologia(autoStartMetodo, true);
-      }
+    // Busca fallback básico em resumos_juridicos se necessário
+    if (!resumo.markdown) {
+      supabase
+        .from("resumos_juridicos")
+        .select("markdown, exemplos, termos")
+        .eq("id", resumo.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data) setBasicData(data);
+        });
     } else {
-      setGerando(null);
+      setBasicData({
+        markdown: resumo.markdown,
+        exemplos: resumo.exemplos,
+        termos: resumo.termos,
+      });
     }
-  }, [resumo?.id, initialTab, defaultMetodo, initialMetodo, autoStartMetodo]);
+
+    // Carrega metodologias existentes no Supabase
+    let ativo = true;
+    (async () => {
+      const { data } = await supabase
+        .from("resumo_metodologias")
+        .select("metodo, conteudo")
+        .eq("resumo_id", resumo.id);
+
+      if (!ativo) return;
+
+      const existentes = new Set<string>();
+      for (const row of data || []) {
+        existentes.add(row.metodo);
+        if (row.metodo === "cornell") setCornell(row.conteudo as unknown as CornellContent);
+        if (row.metodo === "feynman") setFeynman(row.conteudo as unknown as FeynmanContent);
+        if (row.metodo === "conceitos") setConceitosData(row.conteudo as any);
+      }
+
+      // Se o método inicial for conceitos e ainda NÃO tiver sido aprofundado, gera AUTOMATICAMENTE!
+      if (targetMetodo === "conceitos" && !existentes.has("conceitos")) {
+        void gerarMetodologia("conceitos", false);
+      } else if (targetMetodo === "cornell" && !existentes.has("cornell")) {
+        void gerarMetodologia("cornell", false);
+      } else if (targetMetodo === "feynman" && !existentes.has("feynman")) {
+        void gerarMetodologia("feynman", false);
+      }
+
+      // Pré-gerar métodos secundários em background se solicitado
+      if (pregerarMetodos) {
+        for (const alvo of ["cornell", "feynman"] as const) {
+          if (existentes.has(alvo)) continue;
+          supabase.functions
+            .invoke("gerar-metodologia", { body: { resumo_id: resumo.id, metodo: alvo } })
+            .then(({ data: res }) => {
+              if (!ativo || !res?.conteudo) return;
+              if (alvo === "cornell") setCornell(res.conteudo as CornellContent);
+              else setFeynman(res.conteudo as FeynmanContent);
+            })
+            .catch(() => {});
+        }
+      }
+    })();
+
+    return () => {
+      ativo = false;
+    };
+  }, [resumo?.id, initialTab, defaultMetodo, initialMetodo, autoStartMetodo, pregerarMetodos]);
 
   const incFont = () => setFontSize((s) => Math.min(26, s + 1));
   const decFont = () => setFontSize((s) => Math.max(13, s - 1));
 
-  const currentMarkdown = fullData?.markdown ?? (gerando === "conceitos" || !erroGerar ? null : resumo?.markdown);
-  const currentExemplos = fullData?.exemplos ?? (gerando === "conceitos" || !erroGerar ? null : resumo?.exemplos);
-  const currentTermos = fullData?.termos ?? (gerando === "conceitos" || !erroGerar ? null : resumo?.termos);
+  const currentMarkdown = conceitosData?.markdown ?? (erroGerar ? basicData?.markdown : null);
+  const currentExemplos = conceitosData?.exemplos ?? (erroGerar ? basicData?.exemplos : null);
+  const currentTermos = conceitosData?.termos ?? (erroGerar ? basicData?.termos : null);
 
   const rawContent =
     tab === "resumo" ? currentMarkdown : tab === "exemplos" ? currentExemplos : currentTermos;
@@ -305,9 +305,9 @@ export default function ResumoJuridicoReaderSheet({
     if (metodo === "conceitos" || !markdownAtivo) {
       return resumoParaTexto({
         ...resumo,
-        markdown: normalizarResumo(resumo.markdown),
-        exemplos: normalizarResumo(resumo.exemplos),
-        termos: normalizarResumo(resumo.termos),
+        markdown: normalizarResumo(conceitosData?.markdown || basicData?.markdown || resumo.markdown),
+        exemplos: normalizarResumo(conceitosData?.exemplos || basicData?.exemplos || resumo.exemplos),
+        termos: normalizarResumo(conceitosData?.termos || basicData?.termos || resumo.termos),
       });
     }
     const cabecalho = `${resumo.area} · ${resumo.tema}\n${resumo.subtema || ""}\nMétodo ${
@@ -344,9 +344,9 @@ export default function ResumoJuridicoReaderSheet({
             }
           : {
               ...resumo,
-              markdown: normalizarResumo(resumo.markdown),
-              exemplos: normalizarResumo(resumo.exemplos),
-              termos: normalizarResumo(resumo.termos),
+              markdown: normalizarResumo(conceitosData?.markdown || basicData?.markdown || resumo.markdown),
+              exemplos: normalizarResumo(conceitosData?.exemplos || basicData?.exemplos || resumo.exemplos),
+              termos: normalizarResumo(conceitosData?.termos || basicData?.termos || resumo.termos),
             };
 
       const tituloDoc = `${resumo.tema} - ${resumo.subtema || resumo.tema}${
@@ -512,6 +512,42 @@ export default function ResumoJuridicoReaderSheet({
               </div>
 
               <div className="space-y-4 px-4 pt-4 md:px-6 md:pt-6 max-w-4xl mx-auto w-full">
+                {/* Seletor de Metodologias no Topo do Leitor */}
+                <div className="flex items-center justify-center gap-1.5 p-1 bg-secondary/50 rounded-2xl border border-border/50 max-w-sm mx-auto">
+                  {METODOS.map((m) => {
+                    const isAtivo = metodo === m.id;
+                    return (
+                      <button
+                        key={m.id}
+                        type="button"
+                        onClick={() => {
+                          haptic.selection();
+                          setMetodo(m.id);
+                          if (m.id === "conceitos" && !conceitosData) {
+                            void gerarMetodologia("conceitos", false);
+                          } else if (m.id === "cornell" && !cornell) {
+                            void gerarMetodologia("cornell", false);
+                          } else if (m.id === "feynman" && !feynman) {
+                            void gerarMetodologia("feynman", false);
+                          }
+                        }}
+                        className={cn(
+                          "flex-1 py-1.5 px-3 rounded-xl text-xs font-display font-bold uppercase tracking-wider transition-all",
+                          isAtivo
+                            ? m.id === "conceitos"
+                              ? "bg-[#ef4444] text-white shadow-md shadow-[#ef4444]/20"
+                              : m.id === "cornell"
+                              ? "bg-[#38bdf8] text-zinc-950 shadow-md shadow-[#38bdf8]/20"
+                              : "bg-[#fbbf24] text-zinc-950 shadow-md shadow-[#fbbf24]/20"
+                            : "text-muted-foreground hover:text-white"
+                        )}
+                      >
+                        {m.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
                 {metodo === "conceitos" && abas.length > 1 && (
                   <div className="flex w-full mt-2 border-b border-border">
                     {abas.map((t) => {
@@ -562,7 +598,7 @@ export default function ResumoJuridicoReaderSheet({
                           prose-ul:my-3 prose-li:my-1
                         "
                       >
-                        {gerando === "conceitos" || (!fullData && !erroGerar) ? (
+                        {gerando === "conceitos" || (!conceitosData && !erroGerar) ? (
                           <div className="flex flex-col items-center justify-center py-20 px-4 text-center space-y-4 not-prose">
                             <div className="relative">
                               <div className="w-16 h-16 rounded-2xl bg-[#ef4444]/10 border border-[#ef4444]/30 flex items-center justify-center text-[#ef4444] shadow-lg shadow-[#ef4444]/20 animate-pulse">
@@ -580,57 +616,76 @@ export default function ResumoJuridicoReaderSheet({
                             </div>
                           </div>
                         ) : content ? (
-                          <ReactMarkdown
-                            remarkPlugins={[remarkGfm]}
-                            components={{
-                              h1: ({ node, ...props }) => (
-                                <h1 className="text-[17px] sm:text-[18px] font-medium [&_strong]:font-medium text-foreground font-body tracking-tight mt-6 mb-2.5" {...props} />
-                              ),
-                              h2: ({ node, ...props }) => (
-                                <h2 className="text-[15.5px] sm:text-[16.5px] font-medium [&_strong]:font-medium text-foreground/95 font-body tracking-tight mt-5 mb-2" {...props} />
-                              ),
-                              h3: ({ node, ...props }) => (
-                                <h3 className="text-[14px] sm:text-[15px] font-medium [&_strong]:font-medium text-foreground/90 font-body tracking-tight mt-4 mb-1.5" {...props} />
-                              ),
-                              h4: ({ node, ...props }) => (
-                                <h4 className="text-[13.5px] sm:text-[14px] font-medium [&_strong]:font-medium text-foreground/85 font-body tracking-tight mt-3.5 mb-1" {...props} />
-                              ),
-                              p: ({ node, ...props }) => (
-                                <p className="my-3 text-foreground/90 leading-[1.75]" {...props} />
-                              ),
-                              table: ({ node, ...props }) => (
-                                <div className="my-6 w-full overflow-x-auto rounded-2xl border border-primary/20 bg-card/70 shadow-lg backdrop-blur-md">
-                                  <table className="w-full text-left text-xs md:text-sm border-collapse" {...props} />
-                                </div>
-                              ),
-                              th: ({ node, ...props }) => (
-                                <th className="bg-secondary/40 px-4 py-3.5 border-b border-border/50 text-slate-200 font-display font-bold text-sm tracking-wide uppercase" {...props} />
-                              ),
-                              td: ({ node, ...props }) => (
-                                <td className="px-4 py-3 border-b border-border/30 text-foreground/90 font-body leading-relaxed" {...props} />
-                              ),
-                              blockquote: ({ node, children, ...props }) => (
-                                <blockquote className="my-5 rounded-r-2xl border-l-4 border-primary bg-primary/10 p-4 md:p-5 pl-11 shadow-sm text-foreground/95 relative not-italic" {...props}>
-                                  <Quote className="absolute left-3.5 top-4 h-4 w-4 text-primary" aria-hidden="true" />
-                                  {children}
-                                </blockquote>
-                              ),
-                              pre: ({ node, ...props }) => (
-                                <pre className="my-6 p-4 md:p-5 rounded-2xl bg-zinc-950/90 border border-border/80 text-slate-100 font-mono text-xs md:text-sm overflow-x-auto shadow-xl leading-relaxed tracking-wide" {...props} />
-                              ),
-                              code: ({ node, inline, ...props }: any) =>
-                                inline ? (
-                                  <code className="px-1.5 py-0.5 rounded-md bg-secondary text-foreground font-mono text-xs font-semibold" {...props} />
-                                ) : (
-                                  <code className="text-slate-100 font-mono text-xs md:text-sm" {...props} />
+                          <>
+                            <div className="flex items-center justify-between pb-3 mb-2 border-b border-border/40 not-prose">
+                              <div className="flex items-center gap-2">
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase bg-[#ef4444]/15 text-[#ef4444] border border-[#ef4444]/30">
+                                  <Sparkles className="w-3 h-3" /> Resumo Aprofundado
+                                </span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => gerarMetodologia("conceitos", true)}
+                                disabled={!!gerando}
+                                className="text-xs text-muted-foreground hover:text-white flex items-center gap-1.5 px-2.5 py-1 rounded-lg hover:bg-secondary/60 transition-colors"
+                                title="Regerar resumo aprofundado com IA"
+                              >
+                                <Sparkles className="w-3 h-3 text-[#ef4444]" />
+                                <span>Regerar com IA</span>
+                              </button>
+                            </div>
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
+                              components={{
+                                h1: ({ node, ...props }) => (
+                                  <h1 className="text-[17px] sm:text-[18px] font-medium [&_strong]:font-medium text-foreground font-body tracking-tight mt-6 mb-2.5" {...props} />
                                 ),
-                              hr: ({ node, ...props }) => (
-                                <hr className="my-6 border-border/60" {...props} />
-                              ),
-                            }}
-                          >
-                            {content}
-                          </ReactMarkdown>
+                                h2: ({ node, ...props }) => (
+                                  <h2 className="text-[15.5px] sm:text-[16.5px] font-medium [&_strong]:font-medium text-foreground/95 font-body tracking-tight mt-5 mb-2" {...props} />
+                                ),
+                                h3: ({ node, ...props }) => (
+                                  <h3 className="text-[14px] sm:text-[15px] font-medium [&_strong]:font-medium text-foreground/90 font-body tracking-tight mt-4 mb-1.5" {...props} />
+                                ),
+                                h4: ({ node, ...props }) => (
+                                  <h4 className="text-[13.5px] sm:text-[14px] font-medium [&_strong]:font-medium text-foreground/85 font-body tracking-tight mt-3.5 mb-1" {...props} />
+                                ),
+                                p: ({ node, ...props }) => (
+                                  <p className="my-3 text-foreground/90 leading-[1.75]" {...props} />
+                                ),
+                                table: ({ node, ...props }) => (
+                                  <div className="my-6 w-full overflow-x-auto rounded-2xl border border-primary/20 bg-card/70 shadow-lg backdrop-blur-md">
+                                    <table className="w-full text-left text-xs md:text-sm border-collapse" {...props} />
+                                  </div>
+                                ),
+                                th: ({ node, ...props }) => (
+                                  <th className="bg-secondary/40 px-4 py-3.5 border-b border-border/50 text-slate-200 font-display font-bold text-sm tracking-wide uppercase" {...props} />
+                                ),
+                                td: ({ node, ...props }) => (
+                                  <td className="px-4 py-3 border-b border-border/30 text-foreground/90 font-body leading-relaxed" {...props} />
+                                ),
+                                blockquote: ({ node, children, ...props }) => (
+                                  <blockquote className="my-5 rounded-r-2xl border-l-4 border-primary bg-primary/10 p-4 md:p-5 pl-11 shadow-sm text-foreground/95 relative not-italic" {...props}>
+                                    <Quote className="absolute left-3.5 top-4 h-4 w-4 text-primary" aria-hidden="true" />
+                                    {children}
+                                  </blockquote>
+                                ),
+                                pre: ({ node, ...props }) => (
+                                  <pre className="my-6 p-4 md:p-5 rounded-2xl bg-zinc-950/90 border border-border/80 text-slate-100 font-mono text-xs md:text-sm overflow-x-auto shadow-xl leading-relaxed tracking-wide" {...props} />
+                                ),
+                                code: ({ node, inline, ...props }: any) =>
+                                  inline ? (
+                                    <code className="px-1.5 py-0.5 rounded-md bg-secondary text-foreground font-mono text-xs font-semibold" {...props} />
+                                  ) : (
+                                    <code className="text-slate-100 font-mono text-xs md:text-sm" {...props} />
+                                  ),
+                                hr: ({ node, ...props }) => (
+                                  <hr className="my-6 border-border/60" {...props} />
+                                ),
+                              }}
+                            >
+                              {content}
+                            </ReactMarkdown>
+                          </>
                         ) : erroGerar ? (
                           <div className="rounded-2xl border border-border p-6 text-center space-y-4 mt-4 bg-secondary/30 not-prose">
                             <p className="text-sm text-destructive font-medium">{erroGerar}</p>

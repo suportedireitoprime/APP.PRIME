@@ -332,7 +332,7 @@ export default function ResumosJuridicosSubtemas() {
                       type="button"
                       onClick={() => {
                         haptic.selection();
-                        setModalResumo(r);
+                        openReader(r, "conceitos");
                       }}
                       className={cn(
                         'relative min-h-[120px] sm:min-h-[136px] h-auto overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 p-3 sm:p-3.5 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
@@ -443,11 +443,11 @@ export default function ResumosJuridicosSubtemas() {
                   coverUrl={getAreaCover(modalResumo.area)?.cover}
                   initialMetodo="conceitos"
                   metodosGerados={metodosGerados}
-                  onSelectMetodo={(metodoId, isGerado) => {
+                  onSelectMetodo={(metodoId) => {
                     const r = modalResumo;
                     setModalResumo(null);
                     setMetodosGerados([]);
-                    openReader(r, metodoId, !isGerado);
+                    openReader(r, metodoId);
                   }}
                 />
               </div>
