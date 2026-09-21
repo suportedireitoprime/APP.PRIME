@@ -24,17 +24,7 @@ import { useMeExpliqueCota } from '@/hooks/useMeExpliqueCota';
 import { haptic, telaAcesa } from '@/lib/nativo';
 import PremiumGate from '@/components/PremiumGate';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-
-const FaceYellow = ({ viseme, volume }: { viseme: string; volume: number }) => {
-  return (
-    <div 
-      className="w-32 h-32 rounded-full bg-amber-400 flex items-center justify-center text-4xl font-bold shadow-[0_0_40px_rgba(251,191,36,0.5)] transition-all duration-75" 
-      style={{ transform: `scale(${1 + volume * 0.2})` }}
-    >
-      {viseme === 'X' ? '😐' : viseme === 'O' ? '😮' : '🗣️'}
-    </div>
-  );
-};
+import { FaceYellow } from '@/components/laboratorio/avatars/FaceYellow';
 
 interface Props {
   modo: 'livro' | 'termo' | 'lei' | 'livre';
