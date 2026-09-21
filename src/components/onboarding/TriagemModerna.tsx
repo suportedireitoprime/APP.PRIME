@@ -17,7 +17,7 @@ import horusAsset from '@/assets/horus/horus-star.webp';
 import story1Filosofo from '@/assets/onboarding/story_1_filosofo.webp';
 import story2Doutrina from '@/assets/onboarding/story_2_doutrina.jpg';
 import story3Ia from '@/assets/onboarding/story_3_ia.webp';
-import story4Estudantes from '@/assets/onboarding/story_4_estudantes.jpg';
+import story4Socrates from '@/assets/onboarding/story_4_socrates.webp';
 import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 
 import { toast } from 'sonner';
@@ -46,7 +46,7 @@ const INTRO_SCREENS = [
     text: 'Tire dúvidas complexas em segundos e resolva questões com precisão cirúrgica.',
   },
   {
-    image: story4Estudantes,
+    image: story4Socrates,
     title: 'Estude com Estratégia',
     text: 'Seu tempo é valioso. Alcance seus objetivos rapidamente e com total confiança.',
   },
