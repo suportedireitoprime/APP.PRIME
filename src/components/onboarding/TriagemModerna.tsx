@@ -58,7 +58,7 @@ const INTRO_SCREENS = [
 ];
 
 const PERSONAS = [
-  { id: 'estudante', label: 'Faculdade e OAB', icon: GraduationCap, color: 'text-blue-400', bg: 'bg-blue-400/10' },
+  { id: 'faculdade', label: 'Faculdade e OAB', icon: GraduationCap, color: 'text-blue-400', bg: 'bg-blue-400/10' },
   { id: 'concurso', label: 'Concurseiro', icon: Landmark, color: 'text-amber-400', bg: 'bg-amber-400/10' },
   { id: 'advogado', label: 'Advogado', icon: Briefcase, color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
 ] as const;
@@ -86,8 +86,7 @@ const staggerItem = {
 export default function TriagemModerna({ initialName = '', onComplete, previewMode = false }: TriagemModernaProps) {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [introIndex, setIntroIndex] = useState(0);
-  
-  const [persona, setPersona] = useState<'estudante' | 'concurso' | 'advogado' | null>(null);
+  const [persona, setPersona] = useState<'faculdade' | 'concurso' | 'advogado' | null>(null);
   const [faixa, setFaixa] = useState('');
   const [calculatingPhase, setCalculatingPhase] = useState(0);
 
@@ -269,16 +268,34 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                 </motion.div>
               </div>
 
-              <div className="space-y-3 px-2">
-                <h1 className={`text-2xl sm:text-3xl font-black text-white leading-tight uppercase tracking-wider ${introIndex === INTRO_SCREENS.length - 1 ? 'font-display tracking-widest drop-shadow-md text-3xl' : 'font-body'}`}>
-                  {INTRO_SCREENS[introIndex].title}
-                </h1>
-                {INTRO_SCREENS[introIndex].text && (
-                  <p className="text-sm sm:text-base text-neutral-300 font-medium leading-relaxed max-w-sm mx-auto">
-                    {INTRO_SCREENS[introIndex].text}
-                  </p>
-                )}
-              </div>
+              {introIndex === INTRO_SCREENS.length - 1 ? (
+                <div className="flex flex-col items-center justify-center gap-1 w-full px-2 mt-2">
+                  <h1 className="font-serif italic font-bold text-[36px] sm:text-[40px] text-white tracking-tight leading-none drop-shadow-lg whitespace-nowrap mb-1">
+                    Estudos Jurídicos
+                  </h1>
+                  <span className="font-sans font-bold text-white/90 text-[11px] sm:text-xs tracking-[0.3em] uppercase drop-shadow-md whitespace-nowrap mb-6">
+                    Uso Profissional
+                  </span>
+                  
+                  <div className="flex items-center gap-3">
+                    <div className="w-[2px] h-9 bg-white/40 rounded-full"></div>
+                    <p className="font-serif italic text-white/90 text-sm sm:text-base text-left leading-tight">
+                      Domine as leis,<br/>imponha respeito.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3 px-2 mt-2">
+                  <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight uppercase tracking-wider font-body">
+                    {INTRO_SCREENS[introIndex].title}
+                  </h1>
+                  {INTRO_SCREENS[introIndex].text && (
+                    <p className="text-sm sm:text-base text-neutral-300 font-medium leading-relaxed max-w-sm mx-auto">
+                      {INTRO_SCREENS[introIndex].text}
+                    </p>
+                  )}
+                </div>
+              )}
             </motion.div>
           )}
 
