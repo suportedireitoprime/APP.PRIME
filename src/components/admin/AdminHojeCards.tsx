@@ -248,6 +248,7 @@ export function AdminHojeCards() {
       const list5m = list5mResult.status === 'fulfilled' ? list5mResult.value.data : [];
       const listOnline = listOnlineResult.status === 'fulfilled' ? listOnlineResult.value.data : [];
       
+      let totalOnline5m = 0;
       let totalCadastros = 0;
       let totalPaywall = 0;
       let totalViuPlanos = 0;
@@ -258,6 +259,7 @@ export function AdminHojeCards() {
         metricasResults.value.forEach((res) => {
           if (res.status === 'fulfilled') {
             const m = (res.value.data as any) || {};
+            totalOnline5m = Math.max(totalOnline5m, m.online5m || 0);
             totalCadastros += m.cadastros || 0;
             totalTrial += m.trial || 0;
           }
@@ -330,10 +332,9 @@ export function AdminHojeCards() {
     // Ensure paywall (Tela de Assinatura) is at least equal to viu_planos
     totalPaywall = Math.max(totalPaywall, totalViuPlanos);
 
-    // online and online5m only make sense for 'hoje' conceptually, but we sum them if it's multiple days? 
-    // Actually, distinct users online over 7 days is hard to calculate without a distinct query.
-    // For now, if not 'hoje', we'll just show 0 or the last known for online.
-    const count5m = periodo === 'hoje' ? ((list5m as any[]) || []).filter(r => r.email !== 'wn7corporation@gmail.com' && r.email !== 'suporte@direitoprime.com.br' && r.email !== 'wn7juridico@gmail.com').length : 0;
+    // online5m agora vem direto da RPC admin_metricas_dia; fallback para contagem da lista
+    const count5mFromList = periodo === 'hoje' ? ((list5m as any[]) || []).filter(r => r.email !== 'wn7corporation@gmail.com' && r.email !== 'suporte@direitoprime.com.br' && r.email !== 'wn7juridico@gmail.com').length : 0;
+    const count5m = periodo === 'hoje' ? Math.max(totalOnline5m, count5mFromList) : 0;
     const countOnline = periodo === 'hoje' ? ((listOnline as any[]) || []).filter(r => r.email !== 'wn7corporation@gmail.com' && r.email !== 'suporte@direitoprime.com.br' && r.email !== 'wn7juridico@gmail.com').length : 0;
 
     const novos: Record<CardId | 'trialValor', number> = { 
@@ -372,10 +373,49 @@ export function AdminHojeCards() {
   useEffect(() => {
     load();
     if (periodo === 'hoje') {
-      const t = setInterval(load, 30_000);
+      // Polling a cada 15s para manter Online 5 min responsivo
+      const t = setInterval(load, 15_000);
       return () => clearInterval(t);
     }
   }, [load, periodo]);
+
+  // Supabase Realtime: atualiza dashboard instantaneamente quando há mudanças
+  useEffect(() => {
+    if (periodo !== 'hoje') return;
+
+    const channel = supabase
+      .channel('admin-dashboard-realtime')
+      .on(
+        'postgres_changes' as any,
+        { event: '*', schema: 'public', table: 'user_activity_log' },
+        () => { void load(); }
+      )
+      .on(
+        'postgres_changes' as any,
+        { event: 'INSERT', schema: 'public', table: 'profiles' },
+        () => { void load(); }
+      )
+      .on(
+        'postgres_changes' as any,
+        { event: 'INSERT', schema: 'public', table: 'app_events' },
+        () => { void load(); }
+      )
+      .on(
+        'postgres_changes' as any,
+        { event: 'INSERT', schema: 'public', table: 'legacy_subscribers' },
+        () => { void load(); }
+      )
+      .on(
+        'postgres_changes' as any,
+        { event: 'INSERT', schema: 'public', table: 'play_subscriptions' },
+        () => { void load(); }
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [periodo, load]);
 
   const fetchRows = useCallback(async (id: CardId, date: Date) => {
     // If we have cached rows for this id and period is 'hoje', show them instantly
