@@ -1,8 +1,8 @@
 import { Capacitor } from '@capacitor/core';
 
+import { TextToSpeech } from '@capacitor-community/text-to-speech';
 
 const isNative = () => Capacitor.isNativePlatform();
-const getTTS = () => import('@capacitor-community/text-to-speech').then(m => m.TextToSpeech);
 let speechSessionId = 0;
 
 /** Aguarda `speechSynthesis.getVoices()` popular (alguns navegadores populam de forma assíncrona). */
@@ -63,7 +63,7 @@ export async function speakNative(text: string, opts?: { lang?: string; rate?: n
 
   if (isNative()) {
     try {
-      await (await getTTS()).speak({
+      await TextToSpeech.speak({
         text: cleanText,
         lang,
         rate,
@@ -77,7 +77,7 @@ export async function speakNative(text: string, opts?: { lang?: string; rate?: n
       try {
         // Fallback: Tenta rodar a engine sem especificar o idioma,
         // permitindo que o sistema use o idioma padrão do aparelho (resolve falha no TTS)
-        await (await getTTS()).speak({
+        await TextToSpeech.speak({
           text: cleanText,
           rate,
           pitch: 1.0,
@@ -178,10 +178,8 @@ export async function speakNative(text: string, opts?: { lang?: string; rate?: n
 export async function stopNativeSpeech(): Promise<void> {
   speechSessionId++;
   if (isNative()) {
-    try { await (await getTTS()).stop(); } catch {}
-    return;
-  }
-  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    try { await TextToSpeech.stop(); } catch {}
+  } else if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
     try { window.speechSynthesis.cancel(); } catch {}
   }
 }
