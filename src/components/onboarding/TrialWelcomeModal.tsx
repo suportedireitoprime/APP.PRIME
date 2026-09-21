@@ -62,10 +62,38 @@ const UNLOCKED_FEATURES = [
   },
   {
     icon: WifiOff,
-    title: 'Multiplataforma & Modo Offline',
+    title: 'Multiplataforma & Offline',
     metric: 'Sem Internet',
     desc: 'Estude no celular, tablet e desktop mesmo sem conexão à rede.',
     badgeColor: 'bg-violet-500/20 text-violet-200 border-violet-500/30',
+  },
+  {
+    icon: BookOpen,
+    title: 'Peças e Modelos Práticos',
+    metric: '+1.500 Peças',
+    desc: 'Acervo completo de peças editáveis para prática jurídica.',
+    badgeColor: 'bg-fuchsia-500/20 text-fuchsia-200 border-fuchsia-500/30',
+  },
+  {
+    icon: Sparkles,
+    title: 'Leis Cantadas',
+    metric: 'Memorização',
+    desc: 'Músicas criadas com IA para memorizar os artigos mais difíceis.',
+    badgeColor: 'bg-pink-500/20 text-pink-200 border-pink-500/30',
+  },
+  {
+    icon: Layers,
+    title: 'Simulados Inéditos',
+    metric: 'OAB e Concursos',
+    desc: 'Provas elaboradas pela nossa equipe de professores.',
+    badgeColor: 'bg-indigo-500/20 text-indigo-200 border-indigo-500/30',
+  },
+  {
+    icon: GraduationCap,
+    title: 'Raio-X das Bancas',
+    metric: 'Estatísticas',
+    desc: 'Análise detalhada do que mais cai em cada concurso.',
+    badgeColor: 'bg-cyan-500/20 text-cyan-200 border-cyan-500/30',
   },
 ];
 
@@ -164,7 +192,7 @@ export default function TrialWelcomeModal({ onDone }: Props) {
           transition={{ delay: 0.1, duration: 0.35 }}
           className="flex items-center justify-center mb-2"
         >
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-rose-200 text-[11px] sm:text-xs font-black uppercase tracking-widest shadow-inner">
+          <div className="inline-flex items-center gap-2 text-rose-300 text-[11px] sm:text-xs font-black uppercase tracking-[0.2em]">
             <Crown className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
             <span>Seu Presente de Boas-Vindas</span>
           </div>
@@ -185,58 +213,46 @@ export default function TrialWelcomeModal({ onDone }: Props) {
           </p>
         </motion.div>
 
-        {/* Barra de resumo de liberação */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.35 }}
-          className="mb-4 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md flex items-center justify-between gap-3 shadow-md"
-        >
-          <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-white/90">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-            <span>6 Módulos Premium 100% Desbloqueados</span>
-          </div>
-          <span className="text-[10px] sm:text-xs font-black tracking-wider uppercase px-2.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shrink-0">
-            Degustação Ativa
-          </span>
-        </motion.div>
-
-        {/* Catálogo de Funções com Métricas */}
+        {/* Catálogo de Funções com Métricas (Carrossel Automático) */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.25, duration: 0.4 }}
-          className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+          className="relative h-[280px] sm:h-[320px] overflow-hidden rounded-2xl"
+          style={{ maskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)' }}
         >
-          {UNLOCKED_FEATURES.map((feat, idx) => {
-            const Icon = feat.icon;
-            return (
-              <motion.div
-                key={feat.title}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25 + idx * 0.05, duration: 0.3 }}
-                className="group relative bg-black/40 border border-white/10 hover:border-white/20 rounded-2xl p-3.5 sm:p-4 flex items-start gap-3 backdrop-blur-md shadow-lg transition-all"
-              >
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-600/40 via-primary/30 to-black/60 border border-red-500/30 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-                  <Icon className="w-5 h-5 text-rose-200" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-1.5 mb-1">
-                    <h2 className="font-bold text-xs sm:text-sm text-white/95 leading-tight truncate">
-                      {feat.title}
-                    </h2>
-                    <span className={`text-[9px] sm:text-[10px] font-extrabold px-1.5 py-0.5 rounded border tracking-wider shrink-0 ${feat.badgeColor}`}>
-                      {feat.metric}
-                    </span>
+          <motion.div
+            animate={{ y: ['0%', '-50%'] }}
+            transition={{ repeat: Infinity, ease: 'linear', duration: 25 }}
+            className="flex flex-col gap-3 pb-3"
+          >
+            {[...UNLOCKED_FEATURES, ...UNLOCKED_FEATURES].map((feat, idx) => {
+              const Icon = feat.icon;
+              return (
+                <div
+                  key={`${feat.title}-${idx}`}
+                  className="bg-black/40 border border-white/10 rounded-2xl p-3.5 sm:p-4 flex items-start gap-3 backdrop-blur-md shadow-lg w-full"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-600/40 via-primary/30 to-black/60 border border-red-500/30 flex items-center justify-center shrink-0 shadow-inner">
+                    <Icon className="w-5 h-5 text-rose-200" />
                   </div>
-                  <p className="font-body text-[11px] sm:text-xs text-rose-100/70 leading-snug line-clamp-2">
-                    {feat.desc}
-                  </p>
+                  <div className="flex-1 min-w-0 flex flex-col justify-center">
+                    <div className="flex items-center justify-between gap-1.5 mb-1">
+                      <h2 className="font-body font-bold tracking-wide uppercase text-[11px] sm:text-xs text-white/95 leading-tight truncate">
+                        {feat.title}
+                      </h2>
+                      <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded border tracking-wider shrink-0 ${feat.badgeColor}`}>
+                        {feat.metric}
+                      </span>
+                    </div>
+                    <p className="font-body text-[11px] sm:text-xs text-rose-100/70 leading-snug line-clamp-2">
+                      {feat.desc}
+                    </p>
+                  </div>
                 </div>
-              </motion.div>
-            );
-          })}
+              );
+            })}
+          </motion.div>
         </motion.div>
       </div>
 
@@ -257,10 +273,6 @@ export default function TrialWelcomeModal({ onDone }: Props) {
               </>
             )}
           </Button>
-
-          <p className="font-body text-[11px] sm:text-xs text-rose-200/70 font-semibold uppercase tracking-widest mt-3 text-center">
-            Sem cartão de crédito · Sem compromisso
-          </p>
         </div>
       </div>
     </div>
