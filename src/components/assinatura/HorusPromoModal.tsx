@@ -74,8 +74,22 @@ export function HorusPromoModal({ open, timeLeft, onClose, onRedeem }: HorusProm
                 <X className="w-6 h-6" strokeWidth={2.4} />
               </button>
               
-              <div className="w-full flex items-center justify-center mb-1 -mt-4 pointer-events-none select-none">
-                <img src={horusOwl} alt="Horus" className="w-28 h-28 object-contain drop-shadow-2xl" />
+              <div className="relative w-full flex items-center justify-center mb-1 -mt-4 pointer-events-none select-none h-28">
+                {/* Glow pulsante atrás do Hórus */}
+                <motion.div 
+                  animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.6, 0.3] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                  className="absolute inset-x-12 inset-y-4 rounded-full bg-emerald-500/40 blur-3xl pointer-events-none" 
+                />
+                
+                {/* Hórus flutuando */}
+                <motion.div
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+                  className="relative z-10 w-28 h-28 flex items-center justify-center"
+                >
+                  <img src={horusOwl} alt="Horus" className="w-full h-full object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.9)]" />
+                </motion.div>
               </div>
               
               <h3 className="font-display text-2xl font-black text-white text-center mb-1">OFERTA EXCLUSIVA ANUAL</h3>

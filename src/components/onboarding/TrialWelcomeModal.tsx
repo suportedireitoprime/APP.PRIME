@@ -132,7 +132,11 @@ export default function TrialWelcomeModal({ onDone }: Props) {
           className="w-full h-full object-cover opacity-25 mix-blend-luminosity"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#8B0E23]/40 via-[#8B0E23]/80 to-[#0D0507]" />
-        <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-96 h-96 bg-red-500/25 rounded-full blur-3xl pointer-events-none" />
+        <motion.div 
+          animate={{ scale: [1, 1.15, 1], opacity: [0.25, 0.45, 0.25] }}
+          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute -top-16 left-1/2 -translate-x-1/2 w-96 h-96 bg-red-500/40 rounded-full blur-3xl pointer-events-none" 
+        />
       </div>
 
       {/* Conteúdo Principal com rolagem suave */}
@@ -144,10 +148,12 @@ export default function TrialWelcomeModal({ onDone }: Props) {
           transition={{ duration: 0.4 }}
           className="w-full flex items-center justify-center pt-2 mb-3 pointer-events-none"
         >
-          <img
+          <motion.img
+            animate={{ y: [0, -6, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
             src={primeLogoBundled}
             alt="Direito Prime"
-            className="h-10 sm:h-12 w-auto object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)]"
+            className="h-10 sm:h-12 w-auto object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)]"
           />
         </motion.div>
 
