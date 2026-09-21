@@ -62,6 +62,7 @@ interface Props {
   defaultMetodo?: Metodo;
   initialTab?: Tab;
   inline?: boolean;
+  autoStartMetodo?: Metodo | null;
 }
 
 type Tab = "resumo" | "exemplos" | "termos";
@@ -86,7 +87,9 @@ export default function ResumoJuridicoReaderSheet({
   defaultMetodo,
   initialTab,
   inline = false,
+  autoStartMetodo,
 }: Props) {
+  const hasAutoStarted = useRef<string | null>(null);
   const isDesktop = useIsDesktop();
   const gateResumo = useGatedFeature('resumo_ver', 'resumo', { scope: resumo?.id ? String(resumo.id) : null });
   const gateDownload = useGatedFeature('resumo_download', 'resumo_download');
@@ -146,21 +149,6 @@ export default function ResumoJuridicoReaderSheet({
     onOpenChange?.(false);
   };
 
-  useEffect(() => {
-    if (resumo && scrollRef.current) {
-      scrollRef.current.scrollTo({ top: 0, behavior: "auto" });
-      setTab(initialTab || "resumo");
-      setMetodo(defaultMetodo || initialMetodo || "conceitos");
-      setCornell(null);
-      setFeynman(null);
-      setGerando(null);
-      setErroGerar(null);
-      setFontOpen(false);
-      setCopiado(false);
-      setFav(resumosLocal.isFavorito(resumo.id));
-    }
-  }, [resumo?.id, initialTab, defaultMetodo, initialMetodo]);
-
   // Plano gratuito: 1 resumo por dia (o mesmo resumo não conta duas vezes).
   useEffect(() => {
     if (!resumo?.id || gateResumo.loading) return;
@@ -189,6 +177,7 @@ export default function ResumoJuridicoReaderSheet({
         existentes.add(row.metodo);
         if (row.metodo === "cornell") setCornell(row.conteudo as unknown as CornellContent);
         if (row.metodo === "feynman") setFeynman(row.conteudo as unknown as FeynmanContent);
+        if (row.metodo === "conceitos") setFullData(row.conteudo as any);
       }
 
       // Gera em segundo plano os métodos que ainda não existem
@@ -210,24 +199,60 @@ export default function ResumoJuridicoReaderSheet({
     };
   }, [resumo?.id, pregerarMetodos]);
 
-  const gerarMetodologia = async (alvo: Metodo) => {
-    if (!resumo || alvo === "conceitos" || gerando) return;
+  const gerarMetodologia = async (alvo: Metodo, force = false) => {
+    if (!resumo || gerando) return;
     setGerando(alvo);
     setErroGerar(null);
     try {
       const { data, error } = await supabase.functions.invoke("gerar-metodologia", {
-        body: { resumo_id: resumo.id, metodo: alvo },
+        body: { resumo_id: resumo.id, metodo: alvo, force },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      if (alvo === "cornell") setCornell(data.conteudo as CornellContent);
-      else setFeynman(data.conteudo as FeynmanContent);
+      
+      if (alvo === "conceitos") {
+        setFullData(data.conteudo);
+      } else if (alvo === "cornell") {
+        setCornell(data.conteudo as CornellContent);
+      } else {
+        setFeynman(data.conteudo as FeynmanContent);
+      }
     } catch (e: any) {
       setErroGerar(e?.message || "Não foi possível gerar agora. Tente novamente.");
     } finally {
       setGerando(null);
     }
   };
+
+  useEffect(() => {
+    if (!resumo) {
+      hasAutoStarted.current = null;
+      return;
+    }
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ top: 0, behavior: "auto" });
+    }
+    setTab(initialTab || "resumo");
+    const targetMetodo = autoStartMetodo || defaultMetodo || initialMetodo || "conceitos";
+    setMetodo(targetMetodo);
+    setFullData(null);
+    setCornell(null);
+    setFeynman(null);
+    setErroGerar(null);
+    setFontOpen(false);
+    setCopiado(false);
+    setFav(resumosLocal.isFavorito(resumo.id));
+
+    if (autoStartMetodo) {
+      const lockKey = `${resumo.id}-${autoStartMetodo}`;
+      if (hasAutoStarted.current !== lockKey) {
+        hasAutoStarted.current = lockKey;
+        void gerarMetodologia(autoStartMetodo, true);
+      }
+    } else {
+      setGerando(null);
+    }
+  }, [resumo?.id, initialTab, defaultMetodo, initialMetodo, autoStartMetodo]);
 
   const incFont = () => setFontSize((s) => Math.min(26, s + 1));
   const decFont = () => setFontSize((s) => Math.max(13, s - 1));
@@ -364,7 +389,7 @@ export default function ResumoJuridicoReaderSheet({
   };
 
   const abas = (["resumo", "exemplos", "termos"] as Tab[]).filter((t) =>
-    t === "resumo" ? !!resumo?.markdown : t === "exemplos" ? !!resumo?.exemplos : !!resumo?.termos
+    t === "resumo" ? !!currentMarkdown : t === "exemplos" ? !!currentExemplos : !!currentTermos
   );
 
   const isVisible = open && !!resumo;
@@ -512,9 +537,27 @@ export default function ResumoJuridicoReaderSheet({
                           prose-ul:my-3 prose-li:my-1
                         "
                       >
-                        {content ? (
-                          <ReactMarkdown
-                            remarkPlugins={[remarkGfm]}
+                        {gerando === "conceitos" && !fullData ? (
+                          <div className="flex flex-col items-center justify-center py-20 px-4 text-center space-y-4 not-prose">
+                            <div className="relative">
+                              <div className="w-16 h-16 rounded-2xl bg-[#ef4444]/10 border border-[#ef4444]/30 flex items-center justify-center text-[#ef4444] shadow-lg shadow-[#ef4444]/20 animate-pulse">
+                                <Sparkles className="w-8 h-8" />
+                              </div>
+                              <Loader2 className="w-6 h-6 animate-spin text-[#ef4444] absolute -bottom-2 -right-2" />
+                            </div>
+                            <div className="space-y-1.5 max-w-sm">
+                              <h3 className="text-base font-bold text-white tracking-wide uppercase font-display">
+                                Gerando conceitos com IA
+                              </h3>
+                              <p className="text-xs text-white/60 leading-relaxed">
+                                Aprofundando a matéria com fundamentação jurídica, exemplos práticos e termos-chave...
+                              </p>
+                            </div>
+                          </div>
+                        ) : content ? (
+                          <>
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
                             components={{
                               h1: ({ node, ...props }) => (
                                 <h1 className="text-[17px] sm:text-[18px] font-bold text-foreground font-body tracking-tight mt-6 mb-2.5" {...props} />
@@ -533,11 +576,8 @@ export default function ResumoJuridicoReaderSheet({
                                   <table className="w-full text-left text-xs md:text-sm border-collapse" {...props} />
                                 </div>
                               ),
-                              thead: ({ node, ...props }) => (
-                                <thead className="bg-primary/15 text-primary font-display font-bold border-b border-primary/20 uppercase tracking-wider text-[11px]" {...props} />
-                              ),
                               th: ({ node, ...props }) => (
-                                <th className="px-4 py-3 text-left font-bold" {...props} />
+                                <th className="bg-secondary/40 px-4 py-3.5 border-b border-border/50 text-slate-200 font-display font-bold text-sm tracking-wide uppercase" {...props} />
                               ),
                               td: ({ node, ...props }) => (
                                 <td className="px-4 py-3 border-b border-border/30 text-foreground/90 font-body leading-relaxed" {...props} />
@@ -564,13 +604,62 @@ export default function ResumoJuridicoReaderSheet({
                           >
                             {content}
                           </ReactMarkdown>
+                          
+                          <div className="mt-12 mb-6 border-t border-border/50 pt-8 flex flex-col items-center justify-center space-y-4 not-prose">
+                            <p className="text-[13px] sm:text-sm text-muted-foreground text-center max-w-sm">
+                              Deseja um material mais didático, contendo exemplos práticos, glossário de termos e alertas?
+                            </p>
+                            <button
+                              id="btn-gerar-conceitos"
+                              onClick={() => gerarMetodologia("conceitos", true)}
+                              disabled={!!gerando}
+                              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-display font-bold text-[13px] tracking-wide active:scale-95 transition disabled:opacity-60 bg-secondary/80 text-foreground hover:bg-secondary border border-border"
+                            >
+                              {gerando === "conceitos" ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 animate-spin text-[#ef4444]" /> GERANDO NOVO MATERIAL...
+                                </>
+                              ) : (
+                                <>
+                                  <Sparkles className="w-4 h-4 text-[#ef4444]" /> APROFUNDAR COM IA
+                                </>
+                              )}
+                            </button>
+                            {erroGerar && gerando === "conceitos" && (
+                              <p className="text-sm text-destructive font-medium">{erroGerar}</p>
+                            )}
+                          </div>
+                        </>
                         ) : loadingContent ? (
                           <div className="flex items-center justify-center py-16 text-muted-foreground gap-2">
                             <Loader2 className="w-5 h-5 animate-spin text-[#ef4444]" />
                             <span className="text-sm font-medium">Carregando resumo completo...</span>
                           </div>
                         ) : (
-                          <p className="text-muted-foreground">Sem conteúdo neste tópico.</p>
+                          <div className="rounded-2xl border border-border p-6 text-center space-y-4 mt-4 bg-secondary/30 not-prose">
+                            <p className="text-[14.5px] sm:text-[15px] text-foreground/85 font-body leading-relaxed max-w-md mx-auto">
+                              O conteúdo detalhado deste tópico ainda não foi gerado. Clique abaixo para produzir uma explicação didática com linha do tempo, tabela comparativa, alertas e tópicos essenciais.
+                            </p>
+                            {erroGerar && (
+                              <p className="text-sm text-destructive font-medium">{erroGerar}</p>
+                            )}
+                            <button
+                              id={`btn-gerar-${metodo}`}
+                              onClick={() => gerarMetodologia(metodo)}
+                              disabled={!!gerando}
+                              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-display font-bold text-sm tracking-wide active:scale-95 transition disabled:opacity-60 shadow-xl bg-[#ef4444] text-white hover:bg-[#ef4444]/90"
+                            >
+                              {gerando === "conceitos" ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 animate-spin" /> GERANDO...
+                                </>
+                              ) : (
+                                <>
+                                  <Sparkles className="w-4 h-4" /> GERAR CONCEITOS COM IA
+                                </>
+                              )}
+                            </button>
+                          </div>
                         )}
                       </article>
                     ) : (metodo === "cornell" && cornell) || (metodo === "feynman" && feynman) ? (
@@ -580,6 +669,35 @@ export default function ResumoJuridicoReaderSheet({
                         ) : (
                           <FeynmanView conteudo={feynman!} />
                         )}
+                      </div>
+                    ) : gerando === metodo ? (
+                      <div className="flex flex-col items-center justify-center py-20 px-4 text-center space-y-4 not-prose">
+                        <div className="relative">
+                          <div
+                            className={`w-16 h-16 rounded-2xl border flex items-center justify-center shadow-lg animate-pulse ${
+                              metodo === "cornell"
+                                ? "bg-[#38bdf8]/10 border-[#38bdf8]/30 text-[#38bdf8] shadow-[#38bdf8]/20"
+                                : "bg-[#fbbf24]/10 border-[#fbbf24]/30 text-[#fbbf24] shadow-[#fbbf24]/20"
+                            }`}
+                          >
+                            <Sparkles className="w-8 h-8" />
+                          </div>
+                          <Loader2
+                            className={`w-6 h-6 animate-spin absolute -bottom-2 -right-2 ${
+                              metodo === "cornell" ? "text-[#38bdf8]" : "text-[#fbbf24]"
+                            }`}
+                          />
+                        </div>
+                        <div className="space-y-1.5 max-w-sm">
+                          <h3 className="text-base font-bold text-white tracking-wide uppercase font-display">
+                            Gerando Método {metodo === "cornell" ? "Cornell" : "Feynman"} com IA
+                          </h3>
+                          <p className="text-xs text-white/60 leading-relaxed">
+                            {metodo === "cornell"
+                              ? "Organizando palavras-chave, perguntas de revisão e anotações para fixação ativa..."
+                              : "Decompondo conceitos complexos em linguagem simples, analogias e lacunas de estudo..."}
+                          </p>
+                        </div>
                       </div>
                     ) : (
                       <div className="rounded-2xl border border-border p-6 text-center space-y-4 mt-4 bg-secondary/30">
@@ -600,15 +718,7 @@ export default function ResumoJuridicoReaderSheet({
                               : "bg-[#fbbf24] text-zinc-950 hover:bg-[#fbbf24]/90"
                           }`}
                         >
-                          {gerando === metodo ? (
-                            <>
-                              <Loader2 className="w-4 h-4 animate-spin" /> GERANDO...
-                            </>
-                          ) : (
-                            <>
-                              <Sparkles className="w-4 h-4" /> GERAR COM IA
-                            </>
-                          )}
+                          <Sparkles className="w-4 h-4" /> GERAR {metodo === "cornell" ? "CORNELL" : "FEYNMAN"} COM IA
                         </button>
                       </div>
                     )}

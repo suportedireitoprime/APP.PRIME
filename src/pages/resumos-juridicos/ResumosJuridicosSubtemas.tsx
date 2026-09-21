@@ -13,6 +13,7 @@ import { toast } from "@/hooks/use-toast";
 import { useTypewriter } from "@/hooks/useTypewriter";
 import { getAreaCover } from "@/lib/areasDireitoCovers";
 import { ResumosMetodosDeck } from "@/components/resumos/ResumosMetodosDeck";
+import { cn } from "@/lib/utils";
 
 const RED = "#ef4444";
 
@@ -39,6 +40,28 @@ export default function ResumosJuridicosSubtemas() {
   
   const [ordem, setOrdem] = useState<Ordem>("crono");
   const [favs, setFavs] = useState<string[]>(() => resumosLocal.favoritos().map((f) => f.id));
+  const [metodosGerados, setMetodosGerados] = useState<Metodo[]>([]);
+  const [autoStartMetodo, setAutoStartMetodo] = useState<Metodo | null>(null);
+
+  useEffect(() => {
+    if (!modalResumo?.id) {
+      setMetodosGerados([]);
+      return;
+    }
+    let ativo = true;
+    supabase
+      .from('resumo_metodologias')
+      .select('metodo')
+      .eq('resumo_id', modalResumo.id)
+      .then(({ data }) => {
+        if (ativo && data) {
+          setMetodosGerados(data.map((d) => d.metodo as Metodo));
+        }
+      });
+    return () => {
+      ativo = false;
+    };
+  }, [modalResumo?.id]);
 
   const refreshFavs = () => setFavs(resumosLocal.favoritos().map((f) => f.id));
 
@@ -128,6 +151,28 @@ export default function ResumosJuridicosSubtemas() {
     return () => { cancelled = true; };
   }, [cacheKey, decodedArea, decodedTema]);
 
+  useEffect(() => {
+    if (!modalResumo) {
+      setMetodosGerados([]);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await (supabase as any)
+          .from("resumo_metodologias")
+          .select("metodo")
+          .eq("resumo_id", modalResumo.id);
+        if (!cancelled && data) {
+          setMetodosGerados(data.map((d: any) => d.metodo));
+        }
+      } catch {}
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [modalResumo]);
+
   const subtemasOrdenados = useMemo(() => {
     let result = rows;
     
@@ -155,15 +200,16 @@ export default function ResumosJuridicosSubtemas() {
 
   const placeholderText = useTypewriter(placeholderWords, 50, 20, 2500);
 
-  const openReader = (r: ResumoRow, metodoId: Metodo) => {
+  const openReader = (r: ResumoRow, metodo: Metodo, deveGerar?: boolean) => {
     resumosLocal.registrarRecente({
       id: r.id,
       area: r.area,
       tema: r.tema,
       subtema: r.subtema,
     });
-    setSelectedMetodo(metodoId);
     setSelected(r);
+    setSelectedMetodo(metodo);
+    setAutoStartMetodo(deveGerar ? metodo : null);
   };
 
   return (
@@ -235,9 +281,26 @@ export default function ResumosJuridicosSubtemas() {
             <p className="font-semibold text-lg">{ordem === "fav" ? "Nenhum favorito" : "Nenhum resumo encontrado"}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            <AnimatePresence mode="popLayout">
-              {subtemasOrdenados.map((r, i) => {
+          <div className="relative py-6 sm:py-10 w-full min-w-0 max-w-full overflow-hidden">
+            <div className="pointer-events-none fixed inset-0 flex items-center justify-center overflow-hidden z-0 select-none">
+              <img
+                src="/images/gamificacao/deusa_temis_vazada.webp"
+                alt=""
+                aria-hidden="true"
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                className="w-[320px] sm:w-[440px] md:w-[500px] max-w-[88vw] h-auto object-contain opacity-25 filter drop-shadow-[0_0_55px_rgba(234,179,8,0.28)] pointer-events-none"
+                style={{
+                  maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
+                  WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
+                }}
+              />
+            </div>
+
+            <div className="relative space-y-4 ml-3 sm:ml-4 pb-20 z-[2]">
+              <AnimatePresence mode="popLayout">
+                {subtemasOrdenados.map((r, i) => {
                 const numero = String(
                   ordem === "crono" ? i + 1 : rows.findIndex((s) => s.id === r.id) + 1
                 ).padStart(2, "0");
@@ -247,36 +310,52 @@ export default function ResumosJuridicosSubtemas() {
                   <motion.div
                     layout
                     key={r.id}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -10 }}
                     transition={{ duration: 0.2 }}
-                    className="flex flex-col rounded-2xl bg-card border border-border hover:border-[#ef4444]/40 transition-colors duration-300 shadow-sm group relative overflow-hidden"
+                    className="flex items-center gap-3 sm:gap-4"
                   >
+                    {/* Nó da Linha do Tempo */}
+                    <div
+                      className={cn(
+                        'w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 flex items-center justify-center text-xs font-bold shrink-0 transition-all shadow-md',
+                        isFav
+                          ? 'bg-[#ef4444]/20 text-[#ef4444] border-[#ef4444]'
+                          : 'bg-card text-muted-foreground border-border/80'
+                      )}
+                    >
+                      <span>{numero}</span>
+                    </div>
+
                     <button
                       type="button"
                       onClick={() => {
                         haptic.selection();
                         setModalResumo(r);
                       }}
-                      className="flex items-center gap-3 px-4 py-3 min-h-[84px] hover:bg-secondary/20 transition-all text-left w-full relative group"
+                      className={cn(
+                        'relative min-h-[120px] sm:min-h-[136px] h-auto overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 p-3 sm:p-3.5 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
+                        isFav
+                          ? 'border-[#ef4444]/60 bg-card hover:border-[#ef4444] shadow-[#ef4444]/5'
+                          : 'border-border/50 bg-card/40 hover:border-[#ef4444]/50'
+                      )}
                     >
                       <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-[#ef4444] to-[#7f1d1d] opacity-20 group-hover:opacity-100 transition-opacity" />
                       
-                      <span
-                        className="font-display font-bold text-[22px] shrink-0 w-8 tabular-nums opacity-80 group-hover:opacity-100 transition-opacity ml-1"
-                        style={{ color: RED }}
-                      >
-                        {numero}
-                      </span>
-                      
-                      <div className="flex-1 min-w-0 pr-2">
-                        <div className="font-sans font-semibold text-[15px] tracking-normal text-foreground leading-snug line-clamp-2">
-                          {r.subtema || r.tema}
+                      <div className="flex flex-col items-center justify-center gap-2 shrink-0 w-[64px] sm:w-[72px] pl-1">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center bg-white/5 border border-white/10 overflow-hidden shadow-inner shrink-0">
+                          <FileText className="w-6 h-6 sm:w-7 sm:h-7 text-white/80 group-hover:text-white transition-colors select-none" strokeWidth={1.8} aria-hidden="true" />
                         </div>
                       </div>
+                      
+                      <div className="min-w-0 flex-1 flex flex-col justify-center h-full py-1 pr-2">
+                        <h3 className="text-sm sm:text-base font-medium font-sans text-foreground break-words leading-snug line-clamp-3 group-hover:text-[#ef4444] transition-colors">
+                          {r.subtema || r.tema}
+                        </h3>
+                      </div>
 
-                      <div className="flex flex-col items-end gap-2 shrink-0">
+                      <div className="flex flex-col items-end gap-2 shrink-0 pr-1">
                         <div
                           onClick={(e) => {
                             e.stopPropagation();
@@ -297,13 +376,14 @@ export default function ResumosJuridicosSubtemas() {
                             <Heart className="w-5 h-5 text-muted-foreground/50" />
                           )}
                         </div>
-                        <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-transform duration-300 group-hover:translate-x-0.5" />
+                        <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-[#ef4444] transition-transform duration-300 group-hover:translate-x-0.5" />
                       </div>
                     </button>
                   </motion.div>
                 );
               })}
             </AnimatePresence>
+            </div>
           </div>
         )}
       </div>
@@ -362,10 +442,12 @@ export default function ResumosJuridicosSubtemas() {
                 <ResumosMetodosDeck
                   coverUrl={getAreaCover(modalResumo.area)?.cover}
                   initialMetodo="conceitos"
-                  onSelectMetodo={(metodoId) => {
+                  metodosGerados={metodosGerados}
+                  onSelectMetodo={(metodoId, isGerado) => {
                     const r = modalResumo;
                     setModalResumo(null);
-                    openReader(r, metodoId);
+                    setMetodosGerados([]);
+                    openReader(r, metodoId, !isGerado);
                   }}
                 />
               </div>
@@ -377,7 +459,11 @@ export default function ResumosJuridicosSubtemas() {
       <ResumoJuridicoReaderSheet
         resumo={selected}
         initialMetodo={selectedMetodo}
-        onClose={() => setSelected(null)}
+        autoStartMetodo={autoStartMetodo}
+        onClose={() => {
+          setSelected(null);
+          setAutoStartMetodo(null);
+        }}
         onFavoritoChange={refreshFavs}
       />
       </div>

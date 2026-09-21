@@ -46,8 +46,9 @@ const METODOS_ITEMS: MetodoDeckItem[] = [
 
 interface ResumosMetodosDeckProps {
   coverUrl?: string;
-  onSelectMetodo: (metodo: Metodo) => void;
+  onSelectMetodo: (metodo: Metodo, isGerado: boolean) => void;
   initialMetodo?: Metodo;
+  metodosGerados?: Metodo[];
 }
 
 const getSlot = (diff: number) => {
@@ -67,6 +68,7 @@ export const ResumosMetodosDeck: React.FC<ResumosMetodosDeckProps> = ({
   coverUrl,
   onSelectMetodo,
   initialMetodo = "conceitos",
+  metodosGerados = [],
 }) => {
   const [ativo, setAtivo] = useState(() => {
     const idx = METODOS_ITEMS.findIndex((m) => m.id === initialMetodo);
@@ -117,8 +119,9 @@ export const ResumosMetodosDeck: React.FC<ResumosMetodosDeckProps> = ({
 
   const handleConfirm = useCallback(() => {
     haptic.impact();
-    onSelectMetodo(activeItem.id);
-  }, [activeItem.id, onSelectMetodo]);
+    const isGerado = metodosGerados.includes(activeItem.id);
+    onSelectMetodo(activeItem.id, isGerado);
+  }, [activeItem.id, onSelectMetodo, metodosGerados]);
 
   return (
     <div className="flex flex-col items-center w-full select-none">
@@ -342,14 +345,15 @@ export const ResumosMetodosDeck: React.FC<ResumosMetodosDeckProps> = ({
       <button
         type="button"
         onClick={handleConfirm}
-        className="w-full mt-3.5 h-12 rounded-2xl font-bold text-sm tracking-wide text-white uppercase flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg"
+        className="w-full mt-3.5 h-12 rounded-2xl font-bold text-sm tracking-wide text-white flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg"
         style={{
           backgroundColor: activeItem.color,
           boxShadow: `0 8px 25px -4px ${activeItem.color}66`,
         }}
       >
-        <CheckCircle2 className="w-4 h-4" />
-        <span>Estudar com {activeItem.title}</span>
+        {metodosGerados.includes(activeItem.id) 
+          ? `ESTUDAR COM ${activeItem.title.toUpperCase()}`
+          : `GERAR ${activeItem.title.toUpperCase()} COM IA`}
       </button>
     </div>
   );

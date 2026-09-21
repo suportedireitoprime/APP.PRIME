@@ -159,21 +159,25 @@ const AprenderArea = () => {
   }, [area?.nome, slug]);
 
   const modulosOrdenados = useMemo(() => {
+    const list: any[] = [];
+    
     if (modulos.length > 0) {
-      return [...modulos].sort((a, b) => (a.ordem || 0) - (b.ordem || 0)).map(m => ({ ...m, isPendente: false }));
+      list.push(...modulos.map(m => ({ ...m, isPendente: false })));
     }
+    
     const pendentes = data?.pendentes ?? [];
     if (pendentes.length > 0) {
-      return [...pendentes].sort((a, b) => (a.ordem || 0) - (b.ordem || 0)).map(p => ({
+      list.push(...pendentes.map(p => ({
          id: p.id,
          titulo: p.titulo,
          resumo: p.resumo,
          ordem: p.ordem,
          total_aulas: p.total_aulas,
          isPendente: true
-      }));
+      })));
     }
-    return [];
+    
+    return list.sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
   }, [modulos, data?.pendentes]);
 
   // Busca lista oficial de áreas de flashcards com contagens e slugs
@@ -355,7 +359,7 @@ const AprenderArea = () => {
         0,
       );
       const pct = total ? Math.round(somaPct / total) : 0;
-      const numStr = String(m.ordem || idx + 1).padStart(2, '0');
+      const numStr = String(idx + 1).padStart(2, '0');
 
       const moduloAulas = list.map((a) => ({
         id: a.id,
@@ -374,7 +378,7 @@ const AprenderArea = () => {
             id: m.id,
             titulo: m.titulo,
             resumo: m.resumo,
-            ordem: m.ordem,
+            ordem: idx + 1,
             areaId: data?.area?.id ?? '',
             areaNome: data?.area?.nome ?? 'Direito',
             areaSlug: data?.area?.slug ?? slug ?? 'geral',

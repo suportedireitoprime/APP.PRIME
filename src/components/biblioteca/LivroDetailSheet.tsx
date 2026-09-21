@@ -20,7 +20,6 @@ import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar'
 import { haptic } from '@/lib/nativeHaptics';
 import { setDynamicOgImage, setDynamicJsonLdBook, removeDynamicJsonLdBook } from '@/lib/seoImageMeta';
 import { useBibliotecaFav } from '@/hooks/useBibliotecaFav';
-import { cacheLeituraOnDemand } from '@/services/leituraNativaPrefetch';
 
 import { PrimeBottomSheet } from '@/components/vademecum/overlays/PrimeBottomSheet';
 import { Network } from '@capacitor/network';
@@ -132,13 +131,6 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
       description: livro.sobre,
       isbn: (livro as any).isbn || null,
     });
-    
-    // PRE-WARMING: Inicia o cache em background assim que a sheet abre
-    const tabela = resolveLivroTabela(livro.colecaoId);
-    if (tabela) {
-      cacheLeituraOnDemand(tabela, livro.id).catch(() => {});
-    }
-
     return () => {
       removeDynamicJsonLdBook();
     };

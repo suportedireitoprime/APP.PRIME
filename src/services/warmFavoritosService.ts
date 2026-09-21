@@ -17,9 +17,6 @@ import { getFavoritos } from '@/lib/leisFavoritos';
 import { getRecentes } from '@/lib/leisRecentes';
 import { resumosLocal } from '@/lib/resumosLocal';
 import { supabase } from '@/integrations/supabase/client';
-import { getFavoritos as getBibFavs, getRecentes as getBibRecents } from '@/lib/bibliotecaTracking';
-import { resolveLivroTabela } from '@/lib/bibliotecaColecoes';
-import { cacheLeituraOnDemand } from '@/services/leituraNativaPrefetch';
 
 let prewarmStarted = false;
 const inFlightTables = new Set<string>();
@@ -166,22 +163,6 @@ export function prewarmFavoritosERecentesIdle(): void {
       } catch {
         /* noop */
       }
-    }
-
-    // 4) Coleta biblioteca (favoritos e recentes)
-    try {
-      const bibTodos = [...getBibFavs().slice(0, 5), ...getBibRecents().slice(0, 5)];
-      const bibUnicos = Array.from(new Map(bibTodos.map(l => [`${l.colecaoId}-${l.id}`, l])).values());
-      for (const livro of bibUnicos) {
-        const tabela = resolveLivroTabela(livro.colecaoId);
-        if (!tabela) continue;
-        try {
-          await cacheLeituraOnDemand(tabela, livro.id);
-          await new Promise((r) => setTimeout(r, 300));
-        } catch {}
-      }
-    } catch {
-      /* noop */
     }
   };
 

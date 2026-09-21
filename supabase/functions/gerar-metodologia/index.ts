@@ -6,6 +6,15 @@ const GATEWAY_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/cha
 const MODEL = 'gemini-3.1-flash-lite';
 
 const PROMPTS: Record<string, string> = {
+  conceitos: `Você é um professor de Direito brasileiro. Com base no Tema, Subtema e o TEXTO BÁSICO fornecidos, produza um RESUMO JURÍDICO APROFUNDADO e extremamente didático.
+Utilize o Texto Básico como FUNDAMENTO, mas expanda-o, adicione detalhes, explicações profundas e contexto essencial.
+Responda APENAS com JSON válido, sem markdown externo, no formato:
+{
+  "markdown": "Resumo completo e aprofundado em markdown com títulos (##), tópicos explicativos detalhados (inclusive para leigos), formatação e destaque dos pontos essenciais. SE NECESSÁRIO e aplicável, inclua uma linha do tempo (timeline) ou tabela comparativa. Use blocos de citação para alertas ou badges de atenção (ex: > [!WARNING] ou > [!IMPORTANT]).",
+  "exemplos": "2 a 4 exemplos práticos e claros em markdown (lista) que facilitem a compreensão.",
+  "termos": "Glossário em markdown com 4 a 8 termos técnicos e seus significados simples."
+}
+Português do Brasil, linguagem técnica e clara. Foque no essencial para concursos e prática jurídica, garantindo completude.`,
   cornell: `Você é um professor de Direito brasileiro. Produza um estudo no MÉTODO CORNELL sobre o conteúdo enviado.
 Responda APENAS com JSON válido, sem markdown, no formato:
 {
@@ -37,39 +46,57 @@ Deno.serve(async (req) => {
     if (!apiKey) return json({ error: 'GEMINI_API_KEY ausente' }, 500);
 
     const body = await req.json().catch(() => ({}));
-    const resumoId = typeof body?.resumo_id === 'string' ? body.resumo_id : '';
-    const metodo = body?.metodo === 'cornell' || body?.metodo === 'feynman' ? body.metodo : '';
-    if (!resumoId || !metodo) return json({ error: 'resumo_id e metodo (cornell|feynman) são obrigatórios' }, 400);
+    const resumoId = body?.resumo_id ? String(body.resumo_id) : '';
+    const metodo = ['conceitos', 'cornell', 'feynman'].includes(body?.metodo) ? body.metodo : '';
+    if (!resumoId || !metodo) return json({ error: 'resumo_id e metodo (conceitos|cornell|feynman) são obrigatórios' }, 400);
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     );
 
-    const { data: existente } = await supabase
-      .from('resumo_metodologias')
-      .select('conteudo')
-      .eq('resumo_id', resumoId)
-      .eq('metodo', metodo)
-      .maybeSingle();
-    if (existente?.conteudo) return json({ conteudo: existente.conteudo, cached: true });
+    const force = body?.force === true;
+
+    if (!force) {
+      const { data: existente } = await supabase
+        .from('resumo_metodologias')
+        .select('conteudo')
+        .eq('resumo_id', resumoId)
+        .eq('metodo', metodo)
+        .maybeSingle();
+
+      if (existente?.conteudo) {
+        return json({ conteudo: existente.conteudo, cached: true });
+      }
+    }
 
     const { data: resumo, error: erroResumo } = await supabase
       .from('resumos_juridicos')
-      .select('area, tema, subtema, markdown, exemplos, termos')
+      .select('tema, subtema, area, markdown, exemplos, termos')
       .eq('id', resumoId)
       .maybeSingle();
     if (erroResumo || !resumo) return json({ error: 'Resumo não encontrado' }, 404);
 
-    const material = [
-      `Área: ${resumo.area}`,
-      `Tema: ${resumo.tema}`,
-      resumo.subtema ? `Subtema: ${resumo.subtema}` : '',
-      '',
-      resumo.markdown || '',
-      resumo.exemplos ? `\n\nExemplos:\n${resumo.exemplos}` : '',
-      resumo.termos ? `\n\nTermos:\n${resumo.termos}` : '',
-    ].filter(Boolean).join('\n').slice(0, 24000);
+    let material = '';
+    if (metodo === 'conceitos') {
+      material = [
+        `Área: ${resumo.area}`,
+        `Tema: ${resumo.tema}`,
+        resumo.subtema ? `Subtema: ${resumo.subtema}` : '',
+        '',
+        resumo.markdown ? `TEXTO BÁSICO (Use como base para expandir e aprofundar):\n${resumo.markdown}` : '',
+      ].filter(Boolean).join('\n').slice(0, 24000);
+    } else {
+      material = [
+        `Área: ${resumo.area}`,
+        `Tema: ${resumo.tema}`,
+        resumo.subtema ? `Subtema: ${resumo.subtema}` : '',
+        '',
+        resumo.markdown || '',
+        resumo.exemplos ? `\n\nExemplos:\n${resumo.exemplos}` : '',
+        resumo.termos ? `\n\nTermos:\n${resumo.termos}` : '',
+      ].filter(Boolean).join('\n').slice(0, 24000);
+    }
 
     const resp = await fetch(GATEWAY_URL, {
       method: 'POST',
@@ -97,7 +124,7 @@ Deno.serve(async (req) => {
 
     const data = await resp.json();
     const raw: string = data?.choices?.[0]?.message?.content ?? '';
-    let conteudo: unknown;
+    let conteudo: any;
     try {
       conteudo = JSON.parse(raw);
     } catch {
@@ -110,6 +137,19 @@ Deno.serve(async (req) => {
       .from('resumo_metodologias')
       .upsert({ resumo_id: resumoId, metodo, conteudo, updated_at: new Date().toISOString() }, { onConflict: 'resumo_id,metodo' });
     if (erroInsert) console.error('erro ao salvar metodologia', erroInsert);
+
+    if (metodo === 'conceitos' && conteudo?.markdown) {
+      const { error: erroUpdateResumo } = await supabase
+        .from('resumos_juridicos')
+        .update({
+          markdown: conteudo.markdown,
+          exemplos: conteudo.exemplos || null,
+          termos: conteudo.termos || null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', resumoId);
+      if (erroUpdateResumo) console.error('erro ao atualizar resumos_juridicos', erroUpdateResumo);
+    }
 
     return json({ conteudo, cached: false });
   } catch (e) {
