@@ -1081,7 +1081,7 @@ function AnimatedRoutes() {
           <Route path="/explicacao-lei" element={<ProtectedRoute><PageTransition><ExplicacaoLei /></PageTransition></ProtectedRoute>} />
           <Route path="/narracao" element={<ProtectedRoute><PageTransition><NarracaoLei /></PageTransition></ProtectedRoute>} />
 
-          <Route path="/ferramentas" element={<ProtectedRoute><PageTransition instant><Ferramentas /></PageTransition></ProtectedRoute>} />
+          <Route path="/ferramentas" element={<ProtectedRoute><PageTransition><Ferramentas /></PageTransition></ProtectedRoute>} />
           <Route path="/documentos" element={<ProtectedRoute><PageTransition><Documentos /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/locais" element={<ProtectedRoute><PageTransition instant><LocaisJuridicos /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/dicionario" element={<ProtectedRoute><PageTransition instant><DicionarioJuridicoPage /></PageTransition></ProtectedRoute>} />
@@ -1108,7 +1108,7 @@ function AnimatedRoutes() {
 
           <Route path="/compartilhado" element={<ProtectedRoute><PageTransition><Compartilhado /></PageTransition></ProtectedRoute>} />
           <Route path="/estudos" element={<ProtectedRoute><PageTransition><EstudosRouter /></PageTransition></ProtectedRoute>} />
-          <Route path="/vade-mecum" element={<ProtectedRoute><PageTransition instant><VadeMecum /></PageTransition></ProtectedRoute>} />
+          <Route path="/vade-mecum" element={<ProtectedRoute><PageTransition><VadeMecum /></PageTransition></ProtectedRoute>} />
           <Route path="/vade-mecum/areas" element={<ProtectedRoute><PageTransition instant><VadeMecum /></PageTransition></ProtectedRoute>} />
           <Route path="/vade-mecum/categorias" element={<ProtectedRoute><PageTransition instant><VadeMecum /></PageTransition></ProtectedRoute>} />
           <Route path="/vade-mecum/codigos" element={<ProtectedRoute><PageTransition instant><VadeMecumCodigos /></PageTransition></ProtectedRoute>} />
