@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowLeft, 
@@ -74,6 +74,15 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
   const [faixa, setFaixa] = useState('');
   const [calculatingPhase, setCalculatingPhase] = useState(0);
 
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
+  const personaRef = useRef(persona);
+  personaRef.current = persona;
+  const faixaRef = useRef(faixa);
+  faixaRef.current = faixa;
+  const initialNameRef = useRef(initialName);
+  initialNameRef.current = initialName;
+
   // Animação de análise neural da IA no Step 4
   useEffect(() => {
     if (step !== 4) return;
@@ -83,14 +92,15 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
       if (isFinished) return;
       isFinished = true;
       haptic.success();
-      const selectedPersonaObj = PERSONAS.find(p => p.id === persona);
+      const currentPersona = personaRef.current;
+      const selectedPersonaObj = PERSONAS.find(p => p.id === currentPersona);
       
-      onComplete({
-        persona: persona || 'oab',
+      onCompleteRef.current?.({
+        persona: currentPersona || 'oab',
         personaLabel: selectedPersonaObj?.label || 'Direito',
-        faixa: faixa || '25 a 30 anos',
-        nome: initialName.trim() || 'Doutor(a)',
-        areas: ['Direito Constitucional'], // default já que removemos
+        faixa: faixaRef.current || '25 a 30 anos',
+        nome: initialNameRef.current.trim() || 'Doutor(a)',
+        areas: ['Direito Constitucional'],
         interesses: ['leis', 'leis-comentadas', 'questoes', 'resumos'],
         dores: [],
         whatsapp: null,
@@ -105,14 +115,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
 
     const fallbackTimer = setTimeout(() => {
       finishStep();
-    }, 2500);
-
-    const onVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        finishStep();
-      }
-    };
-    document.addEventListener('visibilitychange', onVisibilityChange);
+    }, 2600);
 
     return () => {
       clearTimeout(t1);
@@ -120,9 +123,8 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
       clearTimeout(t3);
       clearTimeout(t4);
       clearTimeout(fallbackTimer);
-      document.removeEventListener('visibilitychange', onVisibilityChange);
     };
-  }, [step, persona, faixa, onComplete, initialName]);
+  }, [step]);
 
   const nextIntro = () => {
     haptic.impact('light');

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useCallback } from 'react';
 import TriagemModerna from './TriagemModerna';
 
 export type CadastroResult = {
@@ -28,18 +28,25 @@ export default function CadastroOnboardingOverlay({
   previewMode,
   initialName,
 }: Props) {
-  if (!open) return null;
+  const onFinishedRef = useRef(onFinished);
+  onFinishedRef.current = onFinished;
+  const onFormFinishedRef = useRef(onFormFinished);
+  onFormFinishedRef.current = onFormFinished;
 
-  const handleComplete = async (r: CadastroResult) => {
-    if (onFormFinished) {
+  const handleComplete = useCallback((r: CadastroResult) => {
+    if (onFormFinishedRef.current) {
       try {
-        await onFormFinished(r);
+        void Promise.resolve(onFormFinishedRef.current(r)).catch((err) => {
+          console.error('[Onboarding] Erro ao persistir dados da triagem:', err);
+        });
       } catch (err) {
         console.error('[Onboarding] Erro ao persistir dados da triagem:', err);
       }
     }
-    onFinished(r);
-  };
+    onFinishedRef.current(r);
+  }, []);
+
+  if (!open) return null;
 
   return (
     <TriagemModerna

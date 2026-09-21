@@ -49,12 +49,13 @@ const Onboarding = () => {
   const [timeLeft, setTimeLeft] = useState<number>(calculatePromoTimeLeft);
 
   useEffect(() => {
+    if (!pedirPromo) return;
     setTimeLeft(calculatePromoTimeLeft());
     const timer = setInterval(() => {
       setTimeLeft(prev => (prev > 0 ? prev - 1 : 0));
     }, 1000);
     return () => clearInterval(timer);
-  }, [calculatePromoTimeLeft]);
+  }, [pedirPromo, calculatePromoTimeLeft]);
 
   // SEO & Título dinâmico da Triagem
   useEffect(() => {
@@ -102,7 +103,7 @@ const Onboarding = () => {
     };
   }, [user, navigate]);
 
-  const salvarNoBanco = async (r: CadastroResult): Promise<void> => {
+  const salvarNoBanco = useCallback(async (r: CadastroResult): Promise<void> => {
     if (!user) return;
 
     try {
@@ -133,39 +134,40 @@ const Onboarding = () => {
     } catch (err) {
       console.error('[Onboarding] Falha inesperada ao salvar perfil:', err);
     }
-  };
+  }, [user]);
 
-  const finalizar = () => {
+  const finalizar = useCallback(() => {
     // Marca o onboarding como concluído no fluxo e apresenta a promoção exclusiva
+    setTimeLeft(calculatePromoTimeLeft());
     setOnboardingFinished(true);
     setPedirPromo(true);
-  };
+  }, [calculatePromoTimeLeft]);
 
-  const fecharPromo = () => {
+  const fecharPromo = useCallback(() => {
     setPedirPromo(false);
     setPedirTrial(true);
-  };
+  }, []);
 
-  const resgatarPromo = () => {
+  const resgatarPromo = useCallback(() => {
     setCheckoutPlan('anual_pix');
-  };
+  }, []);
 
-  const concluirCheckout = () => {
+  const concluirCheckout = useCallback(() => {
     setCheckoutPlan(null);
     setPedirPromo(false);
     toast.success('Parabéns! Sua assinatura foi ativada.');
     startTransition(() => {
       navigate('/', { replace: true });
     });
-  };
+  }, [navigate]);
 
-  const concluirTrial = () => {
+  const concluirTrial = useCallback(() => {
     setPedirTrial(false);
     toast.success('Seja bem-vindo(a)!');
     startTransition(() => {
       navigate('/', { replace: true });
     });
-  };
+  }, [navigate]);
 
   const initialName = user?.user_metadata?.full_name || user?.user_metadata?.name || '';
   const userEmail = user?.email || '';
