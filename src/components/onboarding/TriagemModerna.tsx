@@ -13,7 +13,6 @@ import {
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import horusAsset from '@/assets/horus/horus-star.webp';
-import personaAdvogado from '@/assets/onboarding/persona-advogado.webp';
 
 import story1Filosofo from '@/assets/onboarding/story_1_filosofo.webp';
 import story2Livros from '@/assets/onboarding/story_2_livros.webp';
@@ -97,6 +96,14 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
   const [persona, setPersona] = useState<'faculdade' | 'oab' | 'concurso' | 'advogado' | null>(null);
   const [faixa, setFaixa] = useState('');
   const [calculatingPhase, setCalculatingPhase] = useState(0);
+
+  // Pré-carregamento da próxima imagem para carregamento 0ms
+  useEffect(() => {
+    if (step === 1 && introIndex < INTRO_SCREENS.length - 1) {
+      const img = new Image();
+      img.src = INTRO_SCREENS[introIndex + 1].image;
+    }
+  }, [step, introIndex]);
 
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
