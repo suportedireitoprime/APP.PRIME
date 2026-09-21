@@ -351,7 +351,9 @@ export const ResumosMetodosDeck: React.FC<ResumosMetodosDeckProps> = ({
           boxShadow: `0 8px 25px -4px ${activeItem.color}66`,
         }}
       >
-        {metodosGerados.includes(activeItem.id) 
+        {activeItem.id === "conceitos"
+          ? "ESTUDAR CONCEITOS APROFUNDADOS"
+          : metodosGerados.includes(activeItem.id) 
           ? `ESTUDAR COM ${activeItem.title.toUpperCase()}`
           : `GERAR ${activeItem.title.toUpperCase()} COM IA`}
       </button>

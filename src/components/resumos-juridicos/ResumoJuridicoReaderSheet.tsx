@@ -183,6 +183,11 @@ export default function ResumoJuridicoReaderSheet({
         if (row.metodo === "conceitos") setFullData(row.conteudo as any);
       }
 
+      // Se conceitos ainda não foi gerado no banco, gerar AUTOMATICAMENTE de forma padrão!
+      if (!existentes.has("conceitos")) {
+        void gerarMetodologia("conceitos", false);
+      }
+
       // Gera em segundo plano os métodos que ainda não existem
       if (!pregerarMetodos) return;
       for (const alvo of ["cornell", "feynman"] as const) {
@@ -260,9 +265,9 @@ export default function ResumoJuridicoReaderSheet({
   const incFont = () => setFontSize((s) => Math.min(26, s + 1));
   const decFont = () => setFontSize((s) => Math.max(13, s - 1));
 
-  const currentMarkdown = fullData?.markdown ?? resumo?.markdown;
-  const currentExemplos = fullData?.exemplos ?? resumo?.exemplos;
-  const currentTermos = fullData?.termos ?? resumo?.termos;
+  const currentMarkdown = fullData?.markdown ?? (gerando === "conceitos" || !erroGerar ? null : resumo?.markdown);
+  const currentExemplos = fullData?.exemplos ?? (gerando === "conceitos" || !erroGerar ? null : resumo?.exemplos);
+  const currentTermos = fullData?.termos ?? (gerando === "conceitos" || !erroGerar ? null : resumo?.termos);
 
   const rawContent =
     tab === "resumo" ? currentMarkdown : tab === "exemplos" ? currentExemplos : currentTermos;
@@ -557,7 +562,7 @@ export default function ResumoJuridicoReaderSheet({
                           prose-ul:my-3 prose-li:my-1
                         "
                       >
-                        {gerando === "conceitos" && !fullData ? (
+                        {gerando === "conceitos" || (!fullData && !erroGerar) ? (
                           <div className="flex flex-col items-center justify-center py-20 px-4 text-center space-y-4 not-prose">
                             <div className="relative">
                               <div className="w-16 h-16 rounded-2xl bg-[#ef4444]/10 border border-[#ef4444]/30 flex items-center justify-center text-[#ef4444] shadow-lg shadow-[#ef4444]/20 animate-pulse">
@@ -567,17 +572,16 @@ export default function ResumoJuridicoReaderSheet({
                             </div>
                             <div className="space-y-1.5 max-w-sm">
                               <h3 className="text-base font-medium text-white tracking-wide uppercase font-display">
-                                Gerando conceitos com IA
+                                Aprofundando resumo com IA
                               </h3>
                               <p className="text-xs text-white/60 leading-relaxed">
-                                Aprofundando a matéria com fundamentação jurídica, exemplos práticos e termos-chave...
+                                Gerando conteúdo detalhado, fundamentação jurídica, exemplos práticos e glossário de termos...
                               </p>
                             </div>
                           </div>
                         ) : content ? (
-                          <>
-                            <ReactMarkdown
-                              remarkPlugins={[remarkGfm]}
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
                             components={{
                               h1: ({ node, ...props }) => (
                                 <h1 className="text-[17px] sm:text-[18px] font-medium [&_strong]:font-medium text-foreground font-body tracking-tight mt-6 mb-2.5" {...props} />
@@ -627,63 +631,18 @@ export default function ResumoJuridicoReaderSheet({
                           >
                             {content}
                           </ReactMarkdown>
-                          
-                          <div className="mt-12 mb-6 border-t border-border/50 pt-8 flex flex-col items-center justify-center space-y-4 not-prose">
-                            <p className="text-[13px] sm:text-sm text-muted-foreground text-center max-w-sm">
-                              Deseja um material mais didático, contendo exemplos práticos, glossário de termos e alertas?
-                            </p>
+                        ) : erroGerar ? (
+                          <div className="rounded-2xl border border-border p-6 text-center space-y-4 mt-4 bg-secondary/30 not-prose">
+                            <p className="text-sm text-destructive font-medium">{erroGerar}</p>
                             <button
-                              id="btn-gerar-conceitos"
                               onClick={() => gerarMetodologia("conceitos", true)}
                               disabled={!!gerando}
-                              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-display font-bold text-[13px] tracking-wide active:scale-95 transition disabled:opacity-60 bg-secondary/80 text-foreground hover:bg-secondary border border-border"
+                              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-display font-bold text-sm tracking-wide active:scale-95 transition bg-[#ef4444] text-white hover:bg-[#ef4444]/90"
                             >
-                              {gerando === "conceitos" ? (
-                                <>
-                                  <Loader2 className="w-4 h-4 animate-spin text-[#ef4444]" /> GERANDO NOVO MATERIAL...
-                                </>
-                              ) : (
-                                <>
-                                  <Sparkles className="w-4 h-4 text-[#ef4444]" /> APROFUNDAR COM IA
-                                </>
-                              )}
-                            </button>
-                            {erroGerar && gerando === "conceitos" && (
-                              <p className="text-sm text-destructive font-medium">{erroGerar}</p>
-                            )}
-                          </div>
-                        </>
-                        ) : loadingContent ? (
-                          <div className="flex items-center justify-center py-16 text-muted-foreground gap-2">
-                            <Loader2 className="w-5 h-5 animate-spin text-[#ef4444]" />
-                            <span className="text-sm font-medium">Carregando resumo completo...</span>
-                          </div>
-                        ) : (
-                          <div className="rounded-2xl border border-border p-6 text-center space-y-4 mt-4 bg-secondary/30 not-prose">
-                            <p className="text-[14.5px] sm:text-[15px] text-foreground/85 font-body leading-relaxed max-w-md mx-auto">
-                              O conteúdo detalhado deste tópico ainda não foi gerado. Clique abaixo para produzir uma explicação didática com linha do tempo, tabela comparativa, alertas e tópicos essenciais.
-                            </p>
-                            {erroGerar && (
-                              <p className="text-sm text-destructive font-medium">{erroGerar}</p>
-                            )}
-                            <button
-                              id={`btn-gerar-${metodo}`}
-                              onClick={() => gerarMetodologia(metodo)}
-                              disabled={!!gerando}
-                              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-display font-bold text-sm tracking-wide active:scale-95 transition disabled:opacity-60 shadow-xl bg-[#ef4444] text-white hover:bg-[#ef4444]/90"
-                            >
-                              {gerando === "conceitos" ? (
-                                <>
-                                  <Loader2 className="w-4 h-4 animate-spin" /> GERANDO...
-                                </>
-                              ) : (
-                                <>
-                                  <Sparkles className="w-4 h-4" /> GERAR CONCEITOS COM IA
-                                </>
-                              )}
+                              <Sparkles className="w-4 h-4" /> TENTAR GERAR NOVAMENTE
                             </button>
                           </div>
-                        )}
+                        ) : null}
                       </article>
                     ) : (metodo === "cornell" && cornell) || (metodo === "feynman" && feynman) ? (
                       <div style={{ fontSize: `${fontSize}px` }}>

@@ -6,15 +6,21 @@ const GATEWAY_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/cha
 const MODEL = 'gemini-3.1-flash-lite';
 
 const PROMPTS: Record<string, string> = {
-  conceitos: `Você é um professor de Direito brasileiro. Com base no Tema, Subtema e o TEXTO BÁSICO fornecidos, produza um RESUMO JURÍDICO APROFUNDADO e extremamente didático.
-Utilize o Texto Básico como FUNDAMENTO, mas expanda-o, adicione detalhes, explicações profundas e contexto essencial.
+  conceitos: `Você é um jurista e professor de Direito de elite no Brasil. Com base no Tema, Subtema e o TEXTO BÁSICO fornecidos, produza um RESUMO JURÍDICO APROFUNDADO, COMPLETO, EXTENSO E EXTREMAMENTE DIDÁTICO.
+Não produza resumos superficiais ou curtos. Expanda substancialmente o conteúdo com:
+1. Conceitos doutrinários consolidados e aprofundados, fundamentação jurídica expressa (artigos de lei e CF/88), princípios aplicáveis e requisitos legais.
+2. Explicação da lógica e do propósito da norma com clareza para operadores do Direito e concurseiros.
+3. Desdobramentos práticos, divergências doutrinárias, exceções à regra e súmulas/jurisprudência pacificada (STF/STJ) se aplicável ao tema.
+4. Estrutura impecável com títulos limpos (##, ###), tópicos numerados ou com marcadores, destaques e alertas em blocos de citação (> [!NOTE], > [!IMPORTANT] ou > [!WARNING]).
+5. Tabelas comparativas ou esquemas em markdown sempre que ajudarem na fixação.
+
 Responda APENAS com JSON válido, sem markdown externo, no formato:
 {
-  "markdown": "Resumo completo e aprofundado em markdown com títulos (##), tópicos explicativos detalhados (inclusive para leigos), formatação e destaque dos pontos essenciais. SE NECESSÁRIO e aplicável, inclua uma linha do tempo (timeline) ou tabela comparativa. Use blocos de citação para alertas ou badges de atenção (ex: > [!WARNING] ou > [!IMPORTANT]).",
-  "exemplos": "2 a 4 exemplos práticos e claros em markdown (lista) que facilitem a compreensão.",
-  "termos": "Glossário em markdown com 4 a 8 termos técnicos e seus significados simples."
+  "markdown": "Resumo completo, extenso e aprofundado em markdown...",
+  "exemplos": "3 a 5 exemplos práticos minuciosos e contextualizados em markdown (casos concretos do cotidiano forense) que ilustrem perfeitamente a aplicação.",
+  "termos": "Glossário robusto em markdown com 5 a 10 termos técnicos essenciais e suas definições explicativas completas."
 }
-Português do Brasil, linguagem técnica e clara. Foque no essencial para concursos e prática jurídica, garantindo completude.`,
+Português do Brasil, rigor técnico e didática impecável.`,
   cornell: `Você é um professor de Direito brasileiro. Produza um estudo no MÉTODO CORNELL sobre o conteúdo enviado.
 Responda APENAS com JSON válido, sem markdown, no formato:
 {
