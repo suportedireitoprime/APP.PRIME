@@ -52,16 +52,38 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks(id) {
           if (!id.includes("node_modules")) return;
+          
+          // Core React (separação agressiva do react e do router)
+          if (id.includes("react-router-dom") || id.includes("react-router")) return "react-router";
+          if (id.includes("react-dom") || id.includes("/react/")) return "react-core";
+          
+          // Banco de dados e Cloud
+          if (id.includes("@supabase/supabase-js") || id.includes("@supabase/postgrest-js") || id.includes("@supabase/realtime-js") || id.includes("@supabase/gotrue-js") || id.includes("@supabase/storage-js")) return "supabase";
+          if (id.includes("firebase") || id.includes("@capacitor-firebase")) return "firebase";
+          
+          // Ecossistema Capacitor Nativo
+          if (id.includes("@capacitor") || id.includes("@capawesome") || id.includes("@capgo")) return "capacitor";
+          
+          // Renderização Visual e 3D
+          if (id.includes("@react-three/fiber") || id.includes("@react-three/drei") || id.includes("@pixiv/three-vrm") || id.includes("pixi.js")) return "three-fiber";
+          if (id.includes("three")) return "three-core";
           if (id.includes("framer-motion")) return "motion";
-          if (id.includes("reactflow") || id.includes("@xyflow")) return "flow";
+          
+          // Componentes da Interface (UI Framework)
+          if (id.includes("@radix-ui") || id.includes("sonner") || id.includes("cmdk") || id.includes("vaul")) return "ui-core";
+          if (id.includes("lucide-react")) return "icons";
+          
+          // Utilitários de Mídia e Listas Dinâmicas
+          if (id.includes("remotion")) return "remotion";
+          if (id.includes("embla-carousel") || id.includes("swiper") || id.includes("react-window") || id.includes("@tanstack/react-virtual")) return "lists-media";
+          if (id.includes("reactflow") || id.includes("@xyflow") || id.includes("dagre")) return "flow";
           if (id.includes("jspdf") || id.includes("react-pdf") || id.includes("pdfjs-dist")) return "pdf";
           if (id.includes("tesseract.js")) return "ocr";
-          if (id.includes("@tanstack/react-virtual")) return "virtual";
           if (id.includes("recharts") || id.includes("d3-")) return "charts";
-          if (id.includes("dexie") || id.includes("idb-keyval")) return "storage";
-          if (id.includes("fuse.js")) return "search";
-          if (id.includes("lucide-react")) return "icons";
-          if (id.includes("three")) return "three";
+          
+          // Cache e Pesquisa
+          if (id.includes("dexie") || id.includes("idb-keyval") || id.includes("@tanstack/react-query")) return "data-cache";
+          if (id.includes("fuse.js") || id.includes("minisearch")) return "search";
         },
       },
     },
