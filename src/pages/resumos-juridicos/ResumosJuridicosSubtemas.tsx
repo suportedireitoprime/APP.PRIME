@@ -244,13 +244,15 @@ export default function ResumosJuridicosSubtemas() {
             </button>
           </div>
 
-          <div className="flex w-full bg-secondary/80 rounded-full p-1 gap-1">
+          <div className="flex w-full relative px-1 sm:px-2 h-11 sm:h-12 mt-3 items-end">
             {([
               { id: "crono", label: "Cronológica" },
               { id: "alpha", label: "Alfabética" },
               { id: "fav", label: "Favoritos" },
-            ] as { id: Ordem; label: string }[]).map((o) => {
+            ] as const).map((o, index) => {
               const ativo = ordem === o.id;
+              // Efeito 3D de pastas: aba ativa vem para frente, inativas respeitam a ordem visual
+              const zIndex = ativo ? 30 : 20 - index;
               return (
                 <button
                   key={o.id}
@@ -258,15 +260,34 @@ export default function ResumosJuridicosSubtemas() {
                     haptic.selection();
                     setOrdem(o.id);
                   }}
-                  className={`flex-1 py-1.5 rounded-full text-[10px] sm:text-[11px] uppercase tracking-wider font-bold transition-all ${
-                    ativo ? 'bg-[#ef4444] text-white shadow-md scale-105' : 'text-muted-foreground hover:text-foreground active:scale-95'
-                  }`}
+                  className={cn(
+                    "relative flex-1 flex justify-center items-center rounded-t-2xl transition-all duration-300 ease-out border-x border-t border-white/5 font-bold text-[9px] sm:text-[10px] uppercase tracking-wider",
+                    ativo 
+                      ? "h-full bg-[#1A1A1A] text-white shadow-[0_-8px_20px_rgba(0,0,0,0.5)]" 
+                      : "h-[75%] bg-[#0A0A0A] text-muted-foreground hover:bg-[#121212] shadow-[inset_0_-4px_10px_rgba(0,0,0,0.8)] hover:text-white"
+                  )}
+                  style={{
+                    zIndex,
+                    marginLeft: index > 0 ? "-12px" : "0",
+                  }}
                 >
-                  {o.label}
+                  <div className="absolute inset-0 rounded-t-2xl overflow-hidden pointer-events-none">
+                    {ativo && <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/5 to-white/10 opacity-50" />}
+                  </div>
+                  <span className={cn("relative z-10 transition-transform duration-300", ativo ? "scale-105 text-[#ef4444]" : "scale-100")}>{o.label}</span>
+                  {ativo && (
+                    <motion.div 
+                      layoutId="activeFolderTabSubtemas"
+                      className="absolute inset-0 rounded-t-2xl border-x border-t border-[#ef4444]/50 pointer-events-none shadow-[inset_0_2px_10px_rgba(239,68,68,0.15)]"
+                      initial={false}
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
                 </button>
               );
             })}
           </div>
+          <div className="w-full h-px bg-[#1A1A1A] relative z-20" style={{ boxShadow: "0 -1px 0 rgba(239,68,68,0.3)" }} />
         </div>
       </div>
 
