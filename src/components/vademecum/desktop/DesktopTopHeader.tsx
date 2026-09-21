@@ -57,7 +57,7 @@ const DesktopTopHeader = memo(({ onAssistenteClick, isTransparent }: Props) => {
       )}
 
       {/* Conteúdo */}
-      <div className="relative z-10 h-full max-w-7xl mx-auto px-8 xl:px-12 flex items-center gap-6">
+      <div className="relative z-10 h-full w-full px-8 xl:px-14 flex items-center gap-6">
         {/* Logo + wordmark */}
         <button
           onClick={() => navigate('/')}

@@ -66,7 +66,7 @@ const DesktopBreadcrumb = () => {
       aria-label="Breadcrumb"
       className="relative z-30 w-full border-b border-border/60 bg-background/85 backdrop-blur-md"
     >
-      <ol className="mx-auto flex min-h-[52px] max-w-7xl items-center gap-2 px-8 xl:px-12 py-3 text-[13px] xl:text-sm font-body">
+      <ol className="flex min-h-[52px] w-full items-center gap-2 px-8 xl:px-14 py-3 text-[13px] xl:text-sm font-body">
         <li>
           <button
             onClick={() => navigate('/')}
