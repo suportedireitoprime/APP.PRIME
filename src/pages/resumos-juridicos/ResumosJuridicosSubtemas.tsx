@@ -335,7 +335,7 @@ export default function ResumosJuridicosSubtemas() {
                         openReader(r, "conceitos");
                       }}
                       className={cn(
-                        'relative min-h-[120px] sm:min-h-[136px] h-auto overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 p-3 sm:p-3.5 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
+                        'relative min-h-[88px] sm:min-h-[104px] h-auto overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 p-3 sm:p-3.5 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
                         isFav
                           ? 'border-[#ef4444]/60 bg-card hover:border-[#ef4444] shadow-[#ef4444]/5'
                           : 'border-border/50 bg-card/40 hover:border-[#ef4444]/50'
@@ -343,9 +343,9 @@ export default function ResumosJuridicosSubtemas() {
                     >
                       <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-[#ef4444] to-[#7f1d1d] opacity-20 group-hover:opacity-100 transition-opacity" />
                       
-                      <div className="flex flex-col items-center justify-center gap-2 shrink-0 w-[64px] sm:w-[72px] pl-1">
-                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center bg-white/5 border border-white/10 overflow-hidden shadow-inner shrink-0">
-                          <FileText className="w-6 h-6 sm:w-7 sm:h-7 text-white/80 group-hover:text-white transition-colors select-none" strokeWidth={1.8} aria-hidden="true" />
+                      <div className="flex flex-col items-center justify-center gap-2 shrink-0 w-[56px] sm:w-[64px] pl-1">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-white/5 border border-white/10 overflow-hidden shadow-inner shrink-0">
+                          <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-white/80 group-hover:text-white transition-colors select-none" strokeWidth={1.8} aria-hidden="true" />
                         </div>
                       </div>
                       
