@@ -272,23 +272,23 @@ export function AdminHojeCards() {
       (window as any)._adminRpcDebug = rawRpcResponse;
 
     try {
-      const tzOffsetMin = new Date().getTimezoneOffset();
+      // Usar a mesma lógica de data para tudo, sem subtrair offset manualmente,
+      // pois new Date().setHours(0) já cria a data local correta. O .toISOString()
+      // converte automaticamente para UTC correspondente à meia-noite local.
+      const minDateStr = new Date(datas[datas.length - 1]);
+      minDateStr.setHours(0, 0, 0, 0);
       
-      const minDate = new Date(datas[datas.length - 1]);
-      minDate.setHours(0, 0, 0, 0);
-      minDate.setMinutes(minDate.getMinutes() - tzOffsetMin); // Transforma meia-noite local no UTC exato da busca
+      const maxDateStr = new Date(datas[0]);
+      maxDateStr.setDate(maxDateStr.getDate() + 1);
+      maxDateStr.setHours(0, 0, 0, 0);
 
-      const maxDate = new Date(datas[0]);
-      maxDate.setDate(maxDate.getDate() + 1);
-      maxDate.setHours(0, 0, 0, 0);
-      maxDate.setMinutes(maxDate.getMinutes() - tzOffsetMin);
-      
+      // Buscar eventos de paywall e checkout
       const { data: events, error } = await supabase
         .from('app_events')
-        .select('user_id, id, email, event_name')
+        .select('user_id, id, email, event_name, profiles:user_id(is_premium)')
         .in('event_name', ['trial_click', 'assinatura_aberta'])
-        .gte('created_at', minDate.toISOString())
-        .lt('created_at', maxDate.toISOString());
+        .gte('created_at', minDateStr.toISOString())
+        .lt('created_at', maxDateStr.toISOString());
         
       if (error) throw error;
         
@@ -305,18 +305,7 @@ export function AdminHojeCards() {
         const uniquePw = new Set(pwEvents.map((e: any) => e.email || e.user_id || 'anonymous'));
         totalPaywall = uniquePw.size;
       }
-    } catch (err) {
-      console.error(err);
-    }
 
-    try {
-      const minDateStr = new Date(datas[datas.length - 1]);
-      minDateStr.setHours(0, 0, 0, 0);
-      
-      const maxDateStr = new Date(datas[0]);
-      maxDateStr.setDate(maxDateStr.getDate() + 1);
-      maxDateStr.setHours(0, 0, 0, 0);
-      
       // Buscar novas assinaturas no legacy_subscribers (Asaas)
       const { data: assinaturas } = await supabase
         .from('legacy_subscribers')
@@ -324,15 +313,18 @@ export function AdminHojeCards() {
         .gte('created_at', minDateStr.toISOString())
         .lt('created_at', maxDateStr.toISOString());
         
-      if (assinaturas) {
-        totalTrial = assinaturas.length;
+      if (assinaturas && assinaturas.length > 0) {
+        // Usa o maior entre o que veio da RPC e o legacy_subscribers
+        totalTrial = Math.max(totalTrial, assinaturas.length);
         // Se a gente não tem a info de valor no legacy_subscribers, vamos estimar como mensal na dúvida ou ver pelo webhook
-        totalTrialValor = assinaturas.length * 29.90; 
+        totalTrialValor = totalTrial * 29.90; 
       }
-    } catch (err) {
-      console.error("Erro ao buscar assinaturas Asaas:", err);
+
+    } catch (e) {
+      console.error('Error fetching today events/subscriptions', e);
     }
 
+    // Ensure viu_planos (Checkout) is at least equal to assinantes (trial)
     totalViuPlanos = Math.max(totalViuPlanos, totalTrial);
     // Ensure paywall (Tela de Assinatura) is at least equal to viu_planos
     totalPaywall = Math.max(totalPaywall, totalViuPlanos);
