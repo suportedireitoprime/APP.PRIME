@@ -210,17 +210,29 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
             >
               {/* Imagem vazada sem fundo, sem caixa e sem borda */}
               <div className="relative w-full max-w-[260px] sm:max-w-[280px] h-[230px] sm:h-[260px] flex items-center justify-center select-none pointer-events-none">
-                {/* Glow suave e difuso atrás da imagem vazada */}
-                <div className="absolute inset-6 rounded-full bg-primary/20 blur-3xl opacity-70 pointer-events-none" />
-                <motion.img 
-                  key={`img-${introIndex}`}
+                {/* Glow suave e difuso atrás da imagem vazada animado */}
+                <motion.div 
+                  animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                  className="absolute inset-6 rounded-full bg-primary/20 blur-3xl pointer-events-none" 
+                />
+                
+                {/* Wrapper para animação de entrada + img flutuando continuamente */}
+                <motion.div
+                  key={`img-container-${introIndex}`}
                   initial={{ scale: 0.88, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 0.35, ease: 'easeOut' }}
-                  src={INTRO_SCREENS[introIndex].image} 
-                  alt={INTRO_SCREENS[introIndex].title} 
-                  className="w-full h-full object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.9)]"
-                />
+                  className="w-full h-full absolute inset-0 flex items-center justify-center"
+                >
+                  <motion.img 
+                    animate={{ y: [0, -12, 0] }}
+                    transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+                    src={INTRO_SCREENS[introIndex].image} 
+                    alt={INTRO_SCREENS[introIndex].title} 
+                    className="w-full h-full object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.9)]"
+                  />
+                </motion.div>
               </div>
 
               <div className="space-y-2.5 px-2">
