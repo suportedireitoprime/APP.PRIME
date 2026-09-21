@@ -762,39 +762,53 @@ export function AdminHojeCards() {
       </div>
 
       <div className="grid grid-cols-3 gap-2 sm:gap-2.5 mb-3">
-        {CARDS.map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            onClick={() => openCard(id)}
-            className="group relative rounded-xl border border-border/60 bg-secondary/30 hover:bg-secondary/60 active:scale-[0.98] p-2.5 sm:p-3 text-left transition-all overflow-hidden flex flex-col justify-between min-h-[92px]"
-          >
-            <div className="flex items-center justify-between w-full">
-              <div className="w-6 h-6 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:bg-primary/20 transition-colors">
-                <Icon className="w-3.5 h-3.5" />
-              </div>
-              {counts[id] - (seenCounts[id] || 0) > 0 && (
-                <span className="inline-flex items-center rounded-full bg-emerald-500/15 border border-emerald-500/40 px-1.5 py-[1px] font-body text-[9.5px] font-bold text-emerald-400 animate-pulse">
-                  +{counts[id] - (seenCounts[id] || 0)}
-                </span>
-              )}
-            </div>
+        {CARDS.map(({ id, label, icon: Icon }) => {
+          const isZero = counts[id] === 0;
+          return (
+            <button
+              key={id}
+              onClick={() => openCard(id)}
+              className="group relative rounded-xl border border-border/60 bg-secondary/30 hover:bg-secondary/60 active:scale-[0.98] p-2.5 sm:p-3 text-left transition-all overflow-hidden flex flex-col justify-between min-h-[76px]"
+            >
+              <div className="flex items-start justify-between w-full">
+                <div className="w-6 h-6 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:bg-primary/20 transition-colors shrink-0">
+                  <Icon className="w-3.5 h-3.5" />
+                </div>
 
-            <div className="my-1">
-              <div className="font-['Plus_Jakarta_Sans',sans-serif] text-2xl sm:text-[26px] font-extrabold text-foreground tracking-tight leading-none tabular-nums">
-                {counts[id]}
+                <div className="text-right flex flex-col items-end">
+                  <div className="flex items-center gap-1">
+                    {counts[id] - (seenCounts[id] || 0) > 0 && (
+                      <span className="inline-flex items-center rounded-full bg-emerald-500/15 border border-emerald-500/40 px-1.5 py-[0.5px] font-body text-[9px] font-bold text-emerald-400 animate-pulse">
+                        +{counts[id] - (seenCounts[id] || 0)}
+                      </span>
+                    )}
+                    <span className={cn(
+                      "font-['Plus_Jakarta_Sans',sans-serif] text-xl sm:text-[22px] font-extrabold tracking-tight leading-none tabular-nums",
+                      isZero ? "text-zinc-600" : "text-foreground"
+                    )}>
+                      {counts[id]}
+                    </span>
+                  </div>
+                  {id === 'trial' && (
+                    <span className={cn(
+                      "block font-['Plus_Jakarta_Sans',sans-serif] text-[9.5px] font-bold mt-0.5 truncate",
+                      counts.trialValor === 0 ? "text-zinc-600" : "text-emerald-400"
+                    )}>
+                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(counts.trialValor)}
+                    </span>
+                  )}
+                </div>
               </div>
-              {id === 'trial' && (
-                <span className="block font-['Plus_Jakarta_Sans',sans-serif] text-[10.5px] text-emerald-400 font-bold mt-1 opacity-90 truncate">
-                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(counts.trialValor)}
-                </span>
-              )}
-            </div>
 
-            <div className="font-body text-[11px] text-muted-foreground leading-tight truncate">
-              {label}
-            </div>
-          </button>
-        ))}
+              <div className={cn(
+                "font-body text-[10.5px] sm:text-[11px] leading-tight truncate mt-2 font-medium",
+                isZero ? "text-muted-foreground/60" : "text-muted-foreground"
+              )}>
+                {label}
+              </div>
+            </button>
+          );
+        })}
       </div>
 
       <Sheet open={!!open} onOpenChange={(v) => !v && setOpen(null)}>
