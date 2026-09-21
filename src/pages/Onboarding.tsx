@@ -197,8 +197,8 @@ const Onboarding = () => {
     });
   }, [navigate]);
 
-  const initialName = user?.user_metadata?.full_name || user?.user_metadata?.name || '';
   const userEmail = user?.email || '';
+  const initialName = user?.user_metadata?.full_name || user?.user_metadata?.name || userEmail.split('@')[0] || '';
 
   return (
     <main className="min-h-dvh bg-black">

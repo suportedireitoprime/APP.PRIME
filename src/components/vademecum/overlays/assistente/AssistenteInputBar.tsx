@@ -31,6 +31,7 @@ interface AssistenteInputBarProps {
     toggle: () => void;
   };
   onToggleMic: () => void;
+  onInteract?: (e?: React.SyntheticEvent) => boolean | void;
 }
 
 export const AssistenteInputBar: React.FC<AssistenteInputBarProps> = ({
@@ -48,6 +49,7 @@ export const AssistenteInputBar: React.FC<AssistenteInputBarProps> = ({
   isDesktop,
   voice,
   onToggleMic,
+  onInteract,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -92,6 +94,12 @@ export const AssistenteInputBar: React.FC<AssistenteInputBarProps> = ({
             <textarea
               ref={textareaRef}
               value={input}
+              onFocus={(e) => {
+                if (onInteract) {
+                  const allowed = onInteract(e);
+                  if (allowed === false) e.target.blur();
+                }
+              }}
               onChange={(e) => {
                 setInput(e.target.value);
                 e.target.style.height = 'auto';
@@ -126,7 +134,8 @@ export const AssistenteInputBar: React.FC<AssistenteInputBarProps> = ({
               </button>
             ) : (
               <button
-                onClick={() => {
+                onClick={(e) => {
+                  if (onInteract && onInteract(e) === false) return;
                   haptic.selection();
                   onToggleMic();
                 }}

@@ -636,7 +636,27 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
       cleanPath.startsWith('/opiniao') ||
       cleanPath.startsWith('/onboarding') ||
       cleanPath.startsWith('/termos') ||
-      cleanPath.startsWith('/privacidade');
+      cleanPath.startsWith('/privacidade') ||
+      // Hubs principais liberados no primeiro clique (PremiumGate intercepta níveis mais profundos)
+      cleanPath === '/vade-mecum' ||
+      cleanPath === '/questoes' ||
+      cleanPath === '/blog' ||
+      cleanPath === '/ferramentas' ||
+      cleanPath === '/ferramentas/dicionario' ||
+      cleanPath === '/videoaulas' ||
+      cleanPath === '/audioaulas' ||
+      cleanPath === '/resumos-juridicos' ||
+      cleanPath === '/pilulas' ||
+      cleanPath === '/bibliotecas' ||
+      cleanPath === '/lei-seca' ||
+      cleanPath === '/flashcards' ||
+      cleanPath === '/me-explique' ||
+      cleanPath === '/radar-360' ||
+      cleanPath === '/boletins' ||
+      cleanPath === '/apresentacoes' ||
+      cleanPath === '/leis-cantadas' ||
+      cleanPath === '/legislacao' ||
+      cleanPath === '/legislacao-estadual';
     
     const isUserPremium = !!profile.isPremium || (isSubPremium && !isSubTrial) || isAdminEmail(user.email);
 

@@ -74,9 +74,16 @@ const Questoes = () => {
             />
           </div>
 
-          <div className="px-3.5 sm:px-6 lg:px-0 space-y-6">
+          <motion.div
+            variants={{
+              hidden: { opacity: 0 },
+              show: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.05 } }
+            }}
+            initial="hidden" animate="show"
+            className="px-3.5 sm:px-6 lg:px-0 space-y-6"
+          >
           {/* ── Card Principal com Botão "Filtro Rápido" ───────────────── */}
-          <div className="bg-card/60 border border-border/80 p-5 rounded-3xl backdrop-blur-md shadow-xl">
+          <motion.div variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }} className="bg-card/60 border border-border/80 p-5 rounded-3xl backdrop-blur-md shadow-xl">
             <div className="flex items-center gap-2">
               <span className="h-5 w-1 rounded-full bg-primary" />
               <h2 className="text-lg font-extrabold leading-tight text-foreground sm:text-xl">Praticar Questões</h2>
@@ -96,9 +103,12 @@ const Questoes = () => {
               <span className="tracking-wide text-white">Filtro Rápido</span>
               <ChevronRight className="h-6 w-6 text-white transition-transform group-hover:translate-x-1 drop-shadow-md" strokeWidth={2.5} />
             </motion.button>
-          </div>
+          </motion.div>
 
           {/* ── 4 Cards (Cadernos, Revisão, Desempenho, Histórico) ── */}
+          <motion.div
+            variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }}
+          >
           <motion.div
             variants={{
               hidden: { opacity: 0 },
@@ -133,11 +143,10 @@ const Questoes = () => {
               );
             })}
           </motion.div>
-
-
+          </motion.div>
 
           {/* ── Recursos (Simulado e Desafios) ───────────────────── */}
-          <section className="space-y-3 pt-2">
+          <motion.section variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }} className="space-y-3 pt-2">
             <div className="flex items-center gap-2">
               <span className="h-4 w-1 rounded-full bg-primary" />
               <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
@@ -175,10 +184,10 @@ const Questoes = () => {
                 </div>
               </motion.button>
             </div>
-          </section>
+          </motion.section>
 
           {/* ── Decks de Questões (Master Deck: Matérias em Trilhas) ───────────────────── */}
-          <section className="pt-2">
+          <motion.section variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }} className="pt-2">
             <div className="flex items-center gap-2 mb-2">
               <span className="h-4 w-1 rounded-full bg-primary" />
               <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
@@ -188,8 +197,8 @@ const Questoes = () => {
             {materiasAreas && materiasAreas.length > 0 && (
               <QuestoesMasterDeck areas={materiasAreas} />
             )}
-          </section>
-          </div>
+          </motion.section>
+          </motion.div>
         </div>
       </div>
 

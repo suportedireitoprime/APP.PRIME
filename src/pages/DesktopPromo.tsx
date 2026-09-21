@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
@@ -37,33 +37,23 @@ const SITE_URL = 'www.direitoprime.com.br';
 const steps = [
   {
     icon: Globe,
-    title: 'Acesse pelo computador',
+    title: 'Acesse o site pelo computador',
     text: (
       <>
-        No navegador do computador, abra{' '}
-        <span className="text-primary font-semibold">{SITE_URL}</span>.
+        Abra <span className="text-primary font-semibold">{SITE_URL}</span>.
       </>
     ),
   },
   {
     icon: QrCode,
-    title: 'Um QR-code vai aparecer na tela',
-    text: 'A tela de login do desktop já mostra um QR-code grande, pronto pra ser lido.',
+    title: 'Aparecerá um QR Code',
+    text: 'A tela de login exibirá um código.',
   },
   {
     icon: ScanLine,
-    title: 'Escaneie com o botão acima',
-    text: 'Aponte a câmera do celular pro QR na tela do computador. Você entra na hora, sem digitar senha.',
+    title: 'Escaneie aqui',
+    text: 'Aponte a câmera para entrar direto.',
   },
-];
-
-const benefits = [
-  'Estude de forma mais confortável na tela grande',
-  'Visualize artigos e anotações lado a lado',
-  'Mapas mentais e resumos em tela expandida',
-  'Navegação rápida com atalhos de teclado',
-  'Radar legislativo com dashboard completo',
-  'Biblioteca de livros com leitura imersiva',
 ];
 
 const DesktopPromo = () => {
@@ -173,94 +163,27 @@ const DesktopPromo = () => {
         />
       </div>
 
-      <div className="p-4 space-y-6 max-w-lg mx-auto pb-[calc(7rem+var(--sai-bottom))]">
-        {/* Hero */}
-        <div className="relative rounded-2xl overflow-hidden border border-border">
-          <img src={desktopImg} alt="Direito Prime no Desktop" className="w-full h-44 object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/40 to-transparent" />
-          <div className="absolute bottom-3 left-4 right-4 flex items-center gap-2">
-            <img
-              src={primeLogo}
-              alt="Direito Prime"
-              className="w-9 h-9 rounded-lg border border-primary/40"
-            />
-            <div>
-              <p className="font-display text-sm font-bold text-foreground">Direito Prime Desktop</p>
-              <p className="text-[10px] text-muted-foreground">{SITE_URL}</p>
-            </div>
+      <div className="p-4 space-y-5 max-w-sm mx-auto pb-[calc(7rem+var(--sai-bottom))] mt-6">
+        {/* Explicação principal */}
+        <div className="text-center space-y-2">
+          <div className="mx-auto w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+            <Monitor className="w-8 h-8 text-primary" />
           </div>
+          <h2 className="font-display text-2xl font-black text-foreground leading-tight">
+            Acesso ao Computador
+          </h2>
+          <p className="text-sm text-muted-foreground font-body leading-relaxed max-w-[260px] mx-auto">
+            Acesse <span className="font-bold text-foreground">www.direitoprime.com.br</span> no computador e escaneie o código na tela para entrar sem senha.
+          </p>
         </div>
 
-        {/* Explicação principal */}
-        <section className="rounded-2xl p-5 bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/25">
-          <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-[11px] font-body font-semibold uppercase tracking-wider text-primary">
-              Como entrar no desktop
-            </span>
-          </div>
-          <h2 className="font-display text-xl font-black text-foreground leading-tight">
-            Entre no computador escaneando um QR-code.
-          </h2>
-          <p className="mt-2 text-sm text-muted-foreground font-body leading-relaxed">
-            Sem digitar senha, sem esquecer login. Você abre o site no computador, aparece um
-            QR-code, e escaneia aqui pelo celular pra entrar direto.
-          </p>
-
-          {/* Endereço do site — destaque */}
-          <button
-            onClick={copySite}
-            className="mt-4 w-full flex items-center gap-3 p-3 rounded-xl bg-background/70 border border-primary/30 text-left hover:bg-background transition-colors"
-          >
-            <Globe className="w-5 h-5 text-primary shrink-0" />
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body">
-                Abra no computador
-              </p>
-              <p className="font-display text-base font-bold text-foreground truncate">
-                {SITE_URL}
-              </p>
-            </div>
-            {copied ? (
-              <Check className="w-4 h-4 text-primary" />
-            ) : (
-              <Copy className="w-4 h-4 text-muted-foreground" />
-            )}
-          </button>
-
-          {/* Seleção de tempo */}
-          <div className="mt-5 space-y-2">
-            <label className="text-[11px] font-body font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5" />
-              Tempo de acesso liberado
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              {[
-                { id: 'session', label: 'Até fechar' },
-                { id: '6h', label: '6 horas' },
-                { id: '24h', label: '24 horas' },
-              ].map((opt) => (
-                <button
-                  key={opt.id}
-                  onClick={() => setSelectedDuration(opt.id)}
-                  className={`py-2 px-1 rounded-lg border text-xs font-bold font-body transition-all ${
-                    selectedDuration === opt.id
-                      ? 'bg-primary/20 border-primary text-primary'
-                      : 'bg-background/50 border-border text-muted-foreground hover:bg-background/80'
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
+        <section className="rounded-3xl p-5 bg-card border border-border shadow-sm">
           {/* CTA principal — escanear */}
           <motion.button
             onClick={handleScan}
             disabled={scanning}
             whileTap={{ scale: 0.97 }}
-            className="mt-4 w-full flex items-center justify-center gap-3 py-4 rounded-full bg-primary text-primary-foreground font-display font-black text-base shadow-lg shadow-primary/30 disabled:opacity-60"
+            className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-primary text-primary-foreground font-display font-black text-base shadow-lg shadow-primary/20 disabled:opacity-60"
           >
             {scanning ? (
               <>
@@ -270,14 +193,57 @@ const DesktopPromo = () => {
             ) : (
               <>
                 <ScanLine className="w-5 h-5" />
-                Escanear acesso
+                Escanear Código
               </>
             )}
           </motion.button>
 
-          <div className="mt-3 flex items-center gap-2 justify-center text-[11px] text-muted-foreground font-body">
-            <ShieldCheck className="w-3.5 h-3.5 text-primary" />
-            Código válido por 3 minutos e único por acesso
+          <div className="mt-4 flex items-center justify-center gap-2">
+            <button
+              onClick={copySite}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-background border border-border hover:bg-muted transition-colors w-full justify-center"
+            >
+              {copied ? (
+                <Check className="w-4 h-4 text-primary" />
+              ) : (
+                <Copy className="w-4 h-4 text-muted-foreground" />
+              )}
+              <span className="font-display text-sm font-bold text-foreground truncate">
+                {SITE_URL}
+              </span>
+            </button>
+          </div>
+
+          {/* Seleção de tempo */}
+          <div className="mt-5 pt-5 border-t border-border/50">
+            <label className="text-[10px] font-body font-bold uppercase tracking-wider text-muted-foreground block mb-2 text-center">
+              Duração da Sessão
+            </label>
+            <div className="flex gap-2 justify-center">
+              {[
+                { id: 'session', label: 'Até fechar' },
+                { id: '6h', label: '6 horas' },
+                { id: '24h', label: '24 horas' },
+              ].map((opt) => (
+                <button
+                  key={opt.id}
+                  onClick={() => setSelectedDuration(opt.id)}
+                  className={`py-2 px-3 rounded-lg border text-xs font-bold font-body transition-all ${
+                    selectedDuration === opt.id
+                      ? 'bg-primary/20 border-primary text-primary'
+                      : 'bg-background border-border text-muted-foreground'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+          <div className="mt-4 flex items-center gap-2 justify-center text-[10px] text-muted-foreground font-body">
+            <ShieldCheck className="w-3 h-3 text-primary" />
+            Código válido por 3 minutos e único
           </div>
 
           {/* Histórico */}
@@ -303,51 +269,28 @@ const DesktopPromo = () => {
               </div>
             </div>
           )}
-        </section>
 
-        {/* Passo a passo */}
-        <section className="space-y-2">
-          <h3 className="font-display text-sm font-bold text-foreground px-1">Passo a passo</h3>
-          {steps.map((s, i) => (
-            <motion.div
-              key={s.title}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.06 }}
-              className="flex gap-3 p-4 rounded-2xl bg-card border border-border"
-            >
-              <div className="relative shrink-0">
-                <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
-                  <s.icon className="w-5 h-5 text-primary" />
+        {/* Passo a passo minimalista */}
+        <section className="space-y-2 mt-6">
+          <h3 className="font-display text-xs font-bold text-muted-foreground px-1 uppercase tracking-wider text-center mb-4">Passo a passo</h3>
+          <div className="grid grid-cols-3 gap-2">
+            {steps.map((s, i) => (
+              <motion.div
+                key={s.title}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.06 }}
+                className="flex flex-col items-center text-center p-3 rounded-2xl bg-card border border-border"
+              >
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                  <s.icon className="w-4 h-4 text-primary" />
                 </div>
-                <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-display font-black flex items-center justify-center">
-                  {i + 1}
-                </span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-display text-sm font-bold text-foreground">{s.title}</p>
-                <p className="text-xs text-muted-foreground font-body mt-0.5 leading-relaxed">
+                <p className="text-[10px] text-muted-foreground font-body leading-tight">
                   {s.text}
                 </p>
-              </div>
-            </motion.div>
-          ))}
-        </section>
-
-        {/* Benefícios */}
-        <section className="space-y-2">
-          <h3 className="font-display text-base font-bold text-foreground flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-primary" /> Por que usar no desktop
-          </h3>
-          {benefits.map((b) => (
-            <div
-              key={b}
-              className="flex items-start gap-3 p-3 rounded-xl bg-card border border-border"
-            >
-              <ChevronRight className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-              <p className="text-sm text-foreground font-body">{b}</p>
-            </div>
-          ))}
+              </motion.div>
+            ))}
+          </div>
         </section>
       </div>
     </div>

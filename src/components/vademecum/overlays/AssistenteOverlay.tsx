@@ -829,6 +829,14 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
               isDesktop={isDesktop}
               voice={voice}
               onToggleMic={toggleMic}
+              onInteract={(e) => {
+                if (!chatLimit.canUse) {
+                  e?.preventDefault();
+                  setGateFeature('chat_juridico');
+                  return false;
+                }
+                return true;
+              }}
             />
           </div>
 

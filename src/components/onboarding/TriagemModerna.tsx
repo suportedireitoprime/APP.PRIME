@@ -14,11 +14,14 @@ import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import horusAsset from '@/assets/horus/horus-star.webp';
 
+import historia1 from '@/assets/onboarding/historia_direito_1.jpg';
+import historia2 from '@/assets/onboarding/historia_direito_2.jpg';
+import historia3 from '@/assets/onboarding/historia_direito_3.jpg';
 import story1Filosofo from '@/assets/onboarding/story_1_filosofo.webp';
 import story2Doutrina from '@/assets/onboarding/story_2_doutrina.jpg';
 import story3Ia from '@/assets/onboarding/story_3_ia.webp';
 import story4Socrates from '@/assets/onboarding/story_4_socrates.webp';
-import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
+import story4Voce from '@/assets/onboarding/story_4_voce.webp';
 
 import { toast } from 'sonner';
 import type { CadastroResult } from './CadastroOnboardingOverlay';
@@ -31,29 +34,44 @@ export interface TriagemModernaProps {
 
 const INTRO_SCREENS = [
   {
+    image: historia1,
+    title: 'As Origens da Justiça',
+    text: 'Na antiguidade, o Direito começou como regras e tradições para manter a ordem nas primeiras civilizações.',
+  },
+  {
+    image: historia2,
+    title: 'Os Primeiros Códigos',
+    text: 'De Hamurábi aos Romanos, a humanidade passou a codificar suas leis, transformando a vontade em ciência jurídica.',
+  },
+  {
+    image: historia3,
+    title: 'A Evolução da Doutrina',
+    text: 'Ao longo dos séculos, grandes pensadores aprimoraram a argumentação e a equidade, moldando a Justiça.',
+  },
+  {
     image: story1Filosofo,
+    title: 'O Desafio Moderno',
+    text: 'Hoje, o volume de leis é colossal. O desafio não é mais encontrar a lei, mas compreendê-la com agilidade.',
+  },
+  {
+    image: story4Socrates,
     title: 'O Caminho da Aprovação',
     text: 'A jornada jurídica exige foco absoluto. Você precisa das ferramentas corretas para chegar lá.',
   },
   {
     image: story2Doutrina,
     title: 'Vá Direto ao Ponto',
-    text: 'Chega de teoria cansativa e manuais densos. Absorva apenas o que realmente importa para a sua carreira.',
+    text: 'Chega de teoria cansativa e manuais densos. Absorva apenas o que realmente importa.',
   },
   {
     image: story3Ia,
     title: 'A Era da Inteligência',
-    text: 'Tire dúvidas complexas em segundos e resolva questões com precisão cirúrgica.',
+    text: 'Tire dúvidas em segundos, estude com resumos de alta performance e resolva questões com precisão.',
   },
   {
-    image: story4Socrates,
-    title: 'Estude com Estratégia',
-    text: 'Seu tempo é valioso. Alcance seus objetivos rapidamente e com total confiança.',
-  },
-  {
-    image: primeLogoBundled,
-    title: 'Estudos Jurídicos',
-    text: '',
+    image: story4Voce,
+    title: 'Seu Legado Começa Agora',
+    text: 'Você está pronto para elevar seu nível e dominar o Direito de forma inteligente?',
   },
 ];
 
@@ -86,8 +104,9 @@ const staggerItem = {
 export default function TriagemModerna({ initialName = '', onComplete, previewMode = false }: TriagemModernaProps) {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [introIndex, setIntroIndex] = useState(0);
-  const [persona, setPersona] = useState<'faculdade' | 'concurso' | 'advogado' | null>(null);
+  const [nome, setNome] = useState(initialName || '');
   const [faixa, setFaixa] = useState('');
+  const [persona, setPersona] = useState<'faculdade' | 'concurso' | 'advogado' | null>(null);
   const [calculatingPhase, setCalculatingPhase] = useState(0);
 
   // Pré-carregamento da próxima imagem para carregamento 0ms
@@ -104,8 +123,8 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
   personaRef.current = persona;
   const faixaRef = useRef(faixa);
   faixaRef.current = faixa;
-  const initialNameRef = useRef(initialName);
-  initialNameRef.current = initialName;
+  const nomeRef = useRef(nome);
+  nomeRef.current = nome;
 
   // Animação de análise neural da IA no Step 4
   useEffect(() => {
@@ -123,7 +142,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
         persona: currentPersona || 'oab',
         personaLabel: selectedPersonaObj?.label || 'Direito',
         faixa: faixaRef.current || '25 a 30 anos',
-        nome: initialNameRef.current.trim() || 'Doutor(a)',
+        nome: nomeRef.current.trim() || 'Doutor(a)',
         areas: ['Direito Constitucional'],
         interesses: ['leis', 'leis-comentadas', 'questoes', 'resumos'],
         dores: [],
@@ -176,8 +195,8 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
 
   const canContinue = 
     (step === 1) ||
-    (step === 2 && persona !== null) ||
-    (step === 3 && faixa !== '');
+    (step === 2 && nome.trim().length > 1 && faixa !== '') ||
+    (step === 3 && persona !== null);
 
   const nextStep = React.useCallback(() => {
     if (!canContinue) return;
@@ -216,7 +235,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
             <motion.div
               className="h-full bg-gradient-to-r from-red-600 via-primary to-rose-500 rounded-full shadow-[0_0_12px_rgba(224,31,71,0.6)]"
               initial={false}
-              animate={{ width: step === 1 ? `${((introIndex + 1) / 5) * 100}%` : `${(step / 3) * 100}%` }}
+              animate={{ width: step === 1 ? `${((introIndex + 1) / 8) * 100}%` : `${(step / 3) * 100}%` }}
               transition={{ duration: 0.35, ease: 'easeInOut' }}
             />
           </div>
@@ -299,10 +318,72 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
             </motion.div>
           )}
 
-          {/* PASSO 2: FOCO (Sem Imagens) */}
+          {/* PASSO 2: NOME E IDADE */}
           {step === 2 && (
             <motion.div
               key="step2"
+              variants={staggerContainer}
+              initial="hidden"
+              animate="show"
+              exit="exit"
+              className="space-y-6 pt-4 flex flex-col h-full justify-center pb-12"
+            >
+              <motion.div variants={staggerItem} className="space-y-1 text-center">
+                <span className="text-[11px] font-bold tracking-widest text-primary uppercase">
+                  ETAPA 1 • PERFIL
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-bold text-white leading-snug tracking-normal">
+                  Como devemos chamar você?
+                </h2>
+                <p className="text-xs sm:text-sm text-neutral-400 max-w-sm mx-auto leading-relaxed">
+                  Confirme seu nome e selecione sua faixa etária.
+                </p>
+              </motion.div>
+
+              <motion.div variants={staggerItem} className="pt-2">
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-semibold text-neutral-300 ml-1">Seu Nome</label>
+                    <input
+                      type="text"
+                      value={nome}
+                      onChange={(e) => setNome(e.target.value)}
+                      placeholder="Ex: João Silva"
+                      className="w-full bg-neutral-900/80 border border-white/10 text-white placeholder-white/30 rounded-xl px-4 py-3.5 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all font-medium"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5 pt-2">
+                    <label className="text-sm font-semibold text-neutral-300 ml-1">Faixa Etária</label>
+                    <div className="grid grid-cols-2 gap-2.5">
+                      {FAIXAS.map(f => (
+                        <button
+                          key={f}
+                          type="button"
+                          onClick={() => {
+                            haptic.selection();
+                            setFaixa(f);
+                          }}
+                          className={`py-3 px-3 rounded-xl text-[13px] font-bold transition-all active:scale-[0.98] ${
+                            faixa === f
+                              ? 'bg-primary text-white border border-primary/40 shadow-[0_0_15px_rgba(224,31,71,0.3)]'
+                              : 'bg-neutral-900/80 border border-white/10 text-neutral-400 hover:border-white/20 hover:text-white'
+                          }`}
+                        >
+                          {f}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+
+          {/* PASSO 3: FOCO/PERSONA */}
+          {step === 3 && (
+            <motion.div
+              key="step3"
               variants={staggerContainer}
               initial="hidden"
               animate="show"
@@ -311,7 +392,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
             >
               <motion.div variants={staggerItem} className="space-y-1 text-center">
                 <span className="text-[11px] font-bold tracking-widest text-primary uppercase">
-                  ETAPA 1 • SEU OBJETIVO
+                  ETAPA 2 • SEU OBJETIVO
                 </span>
                 <h1 className="text-2xl sm:text-3xl font-bold text-white leading-snug tracking-normal">
                   Quem é você?
@@ -360,50 +441,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
             </motion.div>
           )}
 
-          {/* PASSO 3: IDADE */}
-          {step === 3 && (
-            <motion.div
-              key="step3"
-              variants={staggerContainer}
-              initial="hidden"
-              animate="show"
-              exit="exit"
-              className="space-y-6 pt-4 flex flex-col h-full justify-center pb-20"
-            >
-              <motion.div variants={staggerItem} className="space-y-1 text-center">
-                <span className="text-[11px] font-bold tracking-widest text-primary uppercase">
-                  ETAPA 2 • PERFIL
-                </span>
-                <h2 className="text-2xl sm:text-3xl font-bold text-white leading-snug tracking-normal">
-                  Qual é a sua faixa etária?
-                </h2>
-                <p className="text-xs sm:text-sm text-neutral-400 max-w-sm mx-auto leading-relaxed">
-                  Para adaptarmos a linguagem e a didática do conteúdo.
-                </p>
-              </motion.div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
-                {FAIXAS.map(f => (
-                  <motion.button
-                    variants={staggerItem}
-                    key={f}
-                    type="button"
-                    onClick={() => {
-                      haptic.selection();
-                      setFaixa(f);
-                    }}
-                    className={`min-h-[56px] py-3 px-4 rounded-xl text-base font-bold transition-all cursor-pointer active:scale-[0.98] ${
-                      faixa === f
-                        ? 'bg-primary text-white border border-primary/40 shadow-[0_0_15px_rgba(224,31,71,0.3)]'
-                        : 'bg-neutral-900/80 border border-white/10 text-neutral-400 hover:border-white/20 hover:text-white'
-                    }`}
-                  >
-                    {f}
-                  </motion.button>
-                ))}
-              </div>
-            </motion.div>
-          )}
+          {/* Antigo Passo 3 removido, pois foi mesclado com o Passo 2 */}
 
           {/* PASSO 4: ANÁLISE COM IA */}
           {step === 4 && (
@@ -473,7 +511,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                   onClick={nextIntro}
                   className={`btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl bg-primary text-primary-foreground font-bold text-base tracking-wider uppercase flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-[0_8px_30px_rgba(224,31,71,0.35)] cursor-pointer`}
                 >
-                  <span>{introIndex < 4 ? 'PRÓXIMO' : 'COMEÇAR AGORA'}</span>
+                  <span>{introIndex < 7 ? 'PRÓXIMO' : 'COMEÇAR AGORA'}</span>
                   <ArrowRight className="w-5 h-5 stroke-[2.5]" />
                 </button>
               ) : (
