@@ -58,9 +58,9 @@ const INTRO_SCREENS = [
 ];
 
 const PERSONAS = [
-  { id: 'estudante', label: 'Estudante e OAB', desc: 'Preparação para provas, TCC, 1ª e 2ª Fase da OAB.', icon: GraduationCap },
-  { id: 'concurso', label: 'Concurseiro', desc: 'Magistratura, MP, Delegado, Defensoria ou Tribunais.', icon: Landmark },
-  { id: 'advogado', label: 'Advogado', desc: 'Pesquisa jurisprudencial, peças e atualização constante.', icon: Briefcase },
+  { id: 'estudante', label: 'Estudante e OAB', desc: 'Preparação para provas, TCC, 1ª e 2ª Fase da OAB.', icon: GraduationCap, color: 'text-blue-400', bg: 'bg-blue-400/10' },
+  { id: 'concurso', label: 'Concurseiro', desc: 'Magistratura, MP, Delegado, Defensoria ou Tribunais.', icon: Landmark, color: 'text-amber-400', bg: 'bg-amber-400/10' },
+  { id: 'advogado', label: 'Advogado', desc: 'Pesquisa jurisprudencial, peças e atualização constante.', icon: Briefcase, color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
 ] as const;
 
 const FAIXAS = ['18 a 24 anos', '25 a 30 anos', '31 a 40 anos', '41 anos ou mais'];
@@ -321,11 +321,11 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                           : 'border-white/10 bg-neutral-900/60 hover:border-white/20'
                       }`}
                     >
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isSelected ? 'bg-primary text-white shadow-md' : 'bg-white/10 text-white/80'}`}>
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isSelected ? 'bg-primary text-white shadow-md' : `${p.bg} ${p.color}`}`}>
                         <Icon className="w-5 h-5" />
                       </div>
                       <div className="flex-1 min-w-0 pr-6">
-                        <h3 className="font-bold text-base text-white/95 truncate">
+                        <h3 className="font-display font-black text-lg uppercase tracking-normal text-white/95 truncate">
                           {p.label}
                         </h3>
                         <p className="text-xs text-neutral-400 mt-0.5 line-clamp-2">

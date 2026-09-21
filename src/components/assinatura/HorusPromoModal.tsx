@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Confetti } from "@/components/vademecum/ui_elements/Confetti";
 import { haptic } from "@/lib/nativeHaptics";
+import { useAuth } from "@/hooks/useAuth";
 import horusOwl from '@/assets/horus/horus-owl.webp';
 
 interface HorusPromoModalProps {
@@ -14,6 +15,9 @@ interface HorusPromoModalProps {
 }
 
 export function HorusPromoModal({ open, timeLeft, onClose, onRedeem }: HorusPromoModalProps) {
+  const { user } = useAuth();
+  const firstName = user?.user_metadata?.full_name?.split(' ')[0] || user?.user_metadata?.name?.split(' ')[0] || '';
+
   useEffect(() => {
     if (!open) return;
 
@@ -48,7 +52,7 @@ export function HorusPromoModal({ open, timeLeft, onClose, onRedeem }: HorusProm
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-neutral-950/60 backdrop-blur-xl"
             onClick={onClose}
           >
             <motion.div 
@@ -58,22 +62,6 @@ export function HorusPromoModal({ open, timeLeft, onClose, onRedeem }: HorusProm
               onClick={(e) => e.stopPropagation()}
               className="w-full max-w-sm bg-[#161b22] border border-white/10 rounded-3xl p-6 shadow-2xl relative overflow-hidden flex flex-col items-center"
             >
-              <button 
-                type="button"
-                aria-label="Fechar promoção"
-                className="absolute top-2 right-2 z-50 w-12 h-12 flex items-center justify-center rounded-full text-white/60 hover:text-white active:text-white hover:bg-white/10 active:bg-white/20 transition-all cursor-pointer touch-manipulation focus:outline-none"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onClose();
-                }}
-                onTouchEnd={(e) => {
-                  e.stopPropagation();
-                  onClose();
-                }}
-              >
-                <X className="w-6 h-6" strokeWidth={2.4} />
-              </button>
-              
               <div className="relative w-full flex items-center justify-center mb-1 -mt-4 pointer-events-none select-none h-28">
                 {/* Glow pulsante atrás do Hórus */}
                 <motion.div 
@@ -93,17 +81,21 @@ export function HorusPromoModal({ open, timeLeft, onClose, onRedeem }: HorusProm
               </div>
               
               <h3 className="font-display text-2xl font-black text-white text-center mb-1">OFERTA EXCLUSIVA ANUAL</h3>
-              <p className="text-sm text-center text-muted-foreground mb-4">
-                Você acabou de criar sua conta e ganhou um super desconto de boas-vindas no <span className="text-emerald-400 font-bold">PIX</span> válido por tempo limitado! Tenha acesso ao aplicativo todo e a todas as funções liberadas.
+              <p className="text-sm text-center text-muted-foreground mb-4 px-2">
+                <span className="font-bold text-white">{firstName ? `Ei ${firstName}! ` : 'Ei! '}</span>
+                Você ganhou um super desconto de boas-vindas no <span className="text-emerald-400 font-bold">PIX</span>. Libere agora o acesso total ao aplicativo antes que o tempo acabe.
               </p>
               
-              <motion.div 
-                animate={{ scale: [1, 1.05, 1] }}
-                transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-                className="font-display text-4xl font-black text-emerald-400 mb-5 tracking-wider drop-shadow-[0_0_15px_rgba(52,211,153,0.5)]"
-              >
-                {formatTime(timeLeft)}
-              </motion.div>
+              <div className="flex flex-col items-center justify-center mb-5">
+                <span className="text-[11px] font-black tracking-widest text-emerald-400 uppercase mb-1">TERMINA EM</span>
+                <motion.div 
+                  animate={{ scale: [1, 1.05, 1] }}
+                  transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                  className="font-display text-4xl font-black text-emerald-400 tracking-wider drop-shadow-[0_0_15px_rgba(52,211,153,0.5)] leading-none"
+                >
+                  {formatTime(timeLeft)}
+                </motion.div>
+              </div>
               
               <div className="bg-emerald-500/10 border border-emerald-500/20 w-full rounded-2xl p-4 text-center mb-4 relative overflow-hidden">
                  <div className="absolute top-0 right-0 bg-emerald-500 text-white font-black text-[9px] px-2 py-0.5 rounded-bl-lg tracking-wider">
@@ -120,6 +112,16 @@ export function HorusPromoModal({ open, timeLeft, onClose, onRedeem }: HorusProm
               >
                 Resgatar Desconto Agora
               </Button>
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClose();
+                }}
+                className="mt-4 text-[13px] font-bold text-red-500 hover:text-red-400 underline underline-offset-4 decoration-red-500/30 transition-colors active:scale-[0.98]"
+              >
+                Quero perder o desconto
+              </button>
             </motion.div>
           </motion.div>
         </>
