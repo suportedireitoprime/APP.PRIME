@@ -24,19 +24,30 @@ export default function AdminTriagem() {
 
   const fetchRespostas = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('id, display_name, status_perfil, faixa_etaria, areas_interesse, interesses, whatsapp_number, onboarding_completed_at')
-      .not('onboarding_completed_at', 'is', null)
-      .order('onboarding_completed_at', { ascending: false })
-      .limit(100);
+    try {
+      const { data, error } = await supabase.rpc('admin_get_respostas_triagem' as any);
       
-    if (error) {
-      toast.error('Erro ao buscar respostas: ' + error.message);
-    } else if (data) {
-      setRespostas(data);
+      if (!error && data) {
+        setRespostas((data as any[]) || []);
+      } else {
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('profiles')
+          .select('id, display_name, status_perfil, faixa_etaria, areas_interesse, interesses, whatsapp_number, onboarding_completed_at')
+          .not('onboarding_completed_at', 'is', null)
+          .order('onboarding_completed_at', { ascending: false })
+          .limit(100);
+          
+        if (fallbackError) {
+          toast.error('Erro ao buscar respostas: ' + fallbackError.message);
+        } else if (fallbackData) {
+          setRespostas(fallbackData);
+        }
+      }
+    } catch (err: any) {
+      toast.error('Erro ao buscar respostas: ' + (err.message || 'Erro inesperado'));
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const resetFirstSeen = () => {
