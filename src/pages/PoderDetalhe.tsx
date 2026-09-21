@@ -79,7 +79,7 @@ const PoderDetalhe = () => {
     <div className="flex-1 flex flex-col min-h-screen bg-background pb-safe">
       {/* Hero Header (Igual ao HomeHeaderHero) */}
       <div
-        className="relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] flex flex-col z-20 pb-6"
+        className="relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] flex flex-col z-20 pb-6"
         style={{ transform: 'translateZ(0)', backgroundColor: '#050505' }}
       >
         {/* Imagem e Degradês */}
@@ -182,7 +182,7 @@ const PoderDetalhe = () => {
            hoverFillColor={poder.solidColor} 
         />
         
-        <div className="relative z-10 px-4 py-8">
+        <div className="relative z-10 px-4 pt-8 pb-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
            <div className="mb-4">
               <h3 className="font-display text-white text-[16px] font-bold mb-1 flex items-center gap-2 uppercase tracking-widest">
                 <span className="w-1 h-5 rounded-full" style={{ backgroundColor: poder.solidColor }} />
