@@ -119,6 +119,7 @@ body {
 }
 
 #root {
+  width: 100%;
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
@@ -129,6 +130,15 @@ body {
   max-width: 1024px;
   margin: 0 auto;
   position: relative;
+}
+
+/* No desktop, a navegação lateral e o conteúdo devem ocupar toda a viewport.
+ * O limite de 1024px acima continua protegendo apenas tablets e iPads. */
+@media (min-width: 1025px) {
+  #root {
+    max-width: none;
+    margin: 0;
+  }
 }
 
 body {
