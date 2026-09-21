@@ -490,7 +490,7 @@ body {
 }
 
 @layer utilities {
-  /* .font-display customizada removida para utilizar a legível Plus Jakarta Sans do Tailwind */
+  .font-display { font-family: 'Bebas Neue', 'Barlow Condensed', system-ui, sans-serif; letter-spacing: 0.11em; }
   .font-body    { font-family: 'Barlow', system-ui, sans-serif; }
   .font-legal   { font-family: 'Barlow', Georgia, serif; }
 

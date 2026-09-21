@@ -128,10 +128,10 @@ export function VisuaisHeroPanel({
           <Sparkles className="w-3 h-3 text-amber-400" />
           <span>Mapas & Esquemas</span>
         </div>
-        <h1 className="font-display uppercase tracking-tight text-white text-[22px] sm:text-[25px] font-black leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
+        <h1 className="font-display uppercase tracking-widest text-white text-[20px] sm:text-[23px] font-black leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
           Visuais Jurídicos
         </h1>
-        <p className="font-sans font-medium text-white/90 text-[12px] sm:text-[13px] leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mt-1.5 line-clamp-2">
+        <p className="font-serif italic text-white/80 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mt-1 line-clamp-2">
           Domine os temas com resumos esquematizados e memorização ativa.
         </p>
       </div>

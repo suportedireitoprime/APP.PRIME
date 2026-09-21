@@ -40,7 +40,7 @@ export function VisuaisPassoTipos({ onSelectTipo, onEscolherTipo }: VisuaisPasso
               <span aria-hidden className="pointer-events-none absolute inset-0 icon-shine" />
             </div>
             <div className="flex-1 min-w-0 text-left">
-              <p className="font-sans text-foreground text-[15.5px] sm:text-[16px] font-semibold leading-tight line-clamp-1">
+              <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
                 {TIPO_INFO[t].label}
               </p>
               <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-2">
