@@ -72,6 +72,24 @@ const PERSONAS = [
 
 const FAIXAS = ['18 a 24 anos', '25 a 30 anos', '31 a 40 anos', '41 anos ou mais'];
 
+const staggerContainer = {
+  hidden: { opacity: 0, x: 20 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.28,
+      staggerChildren: 0.1,
+    },
+  },
+  exit: { opacity: 0, x: -20, transition: { duration: 0.2 } },
+};
+
+const staggerItem = {
+  hidden: { opacity: 0, y: 15 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } },
+};
+
 export default function TriagemModerna({ initialName = '', onComplete, previewMode = false }: TriagemModernaProps) {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [introIndex, setIntroIndex] = useState(0);
@@ -256,13 +274,13 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
           {step === 2 && (
             <motion.div
               key="step2"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.28 }}
+              variants={staggerContainer}
+              initial="hidden"
+              animate="show"
+              exit="exit"
               className="space-y-6 pt-4 h-full flex flex-col"
             >
-              <div className="space-y-1 text-center">
+              <motion.div variants={staggerItem} className="space-y-1 text-center">
                 <span className="text-[11px] font-bold tracking-widest text-primary uppercase">
                   ETAPA 1 • SEU OBJETIVO
                 </span>
@@ -272,14 +290,15 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                 <p className="text-xs sm:text-sm text-neutral-400 max-w-sm mx-auto leading-relaxed">
                   Personalizaremos o ambiente para a sua necessidade.
                 </p>
-              </div>
+              </motion.div>
 
               <div className="flex-1 flex flex-col gap-3 pt-2">
                 {PERSONAS.map(p => {
                   const Icon = p.icon;
                   const isSelected = persona === p.id;
                   return (
-                    <button
+                    <motion.button
+                      variants={staggerItem}
                       key={p.id}
                       type="button"
                       onClick={() => {
@@ -308,7 +327,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                           <Check className="w-4 h-4 text-white stroke-[3]" />
                         </div>
                       )}
-                    </button>
+                    </motion.button>
                   );
                 })}
               </div>
@@ -319,13 +338,13 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
           {step === 3 && (
             <motion.div
               key="step3"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.28 }}
+              variants={staggerContainer}
+              initial="hidden"
+              animate="show"
+              exit="exit"
               className="space-y-6 pt-4 flex flex-col h-full justify-center pb-20"
             >
-              <div className="space-y-1 text-center">
+              <motion.div variants={staggerItem} className="space-y-1 text-center">
                 <span className="text-[11px] font-bold tracking-widest text-primary uppercase">
                   ETAPA 2 • PERFIL
                 </span>
@@ -335,11 +354,12 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                 <p className="text-xs sm:text-sm text-neutral-400 max-w-sm mx-auto leading-relaxed">
                   Para adaptarmos a linguagem e a didática do conteúdo.
                 </p>
-              </div>
+              </motion.div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
                 {FAIXAS.map(f => (
-                  <button
+                  <motion.button
+                    variants={staggerItem}
                     key={f}
                     type="button"
                     onClick={() => {
@@ -353,7 +373,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                     }`}
                   >
                     {f}
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </motion.div>
