@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
-import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { ArtigoCP } from './pilulasConstants';
 
 interface PilulasArtigosListProps {
@@ -18,11 +18,11 @@ export const PilulasArtigosList: React.FC<PilulasArtigosListProps> = ({
 }) => {
   const listRef = useRef<HTMLDivElement>(null);
 
-  const virtualizer = useWindowVirtualizer({
+  const virtualizer = useVirtualizer({
     count: artigos.length,
-    estimateSize: () => 74,
-    scrollMargin: listRef.current?.offsetTop ?? 0,
-    overscan: 10,
+    getScrollElement: () => typeof document !== 'undefined' ? (document.getElementById('root') || document.body) : null,
+    estimateSize: () => 140, // Base height + padding
+    overscan: 5,
   });
 
   if (loading) {

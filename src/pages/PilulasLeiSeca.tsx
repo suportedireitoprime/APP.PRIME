@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search, Pill, BookOpen } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
-import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { haptic } from '@/lib/nativeHaptics';
 import { CONFIG_MAP, type LeiSecaSlug } from '@/pages/pilulas/data/leiSecaConfig';
@@ -55,10 +55,11 @@ export default function PilulasLeiSeca({ slug }: { slug: LeiSecaSlug }) {
     );
   }, [artigos, busca]);
 
-  const artigosVirtualizer = useWindowVirtualizer({
-    count: artigosFiltrados.length,
-    estimateSize: () => 128,
-    overscan: 6,
+  const artigosVirtualizer = useVirtualizer({
+    count: artigos.length,
+    getScrollElement: () => typeof document !== 'undefined' ? (document.getElementById('root') || document.body) : null,
+    estimateSize: () => 120,
+    overscan: 5,
   });
 
   return (

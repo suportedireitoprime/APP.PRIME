@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useWindowVirtualizer } from "@tanstack/react-virtual";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { ChevronDown, FileText, Heart, History, Loader2, Search } from "lucide-react";
 import ResumosBottomNav from "@/components/resumos/ResumosBottomNav";
 import ResumoJuridicoReaderSheet, { ResumoRow } from "@/components/resumos-juridicos/ResumoJuridicoReaderSheet";
@@ -36,11 +36,12 @@ export default function ResumosJuridicosLista({ modo }: { modo: "favoritos" | "r
  );
  }, [refs, q]);
 
- const listVirtualizer = useWindowVirtualizer({
- count: filtered.length,
- estimateSize: () => 74,
- overscan: 5,
- });
+ const listVirtualizer = useVirtualizer({
+    count: filtered.length,
+    getScrollElement: () => typeof document !== 'undefined' ? (document.getElementById('root') || document.body) : null,
+    estimateSize: () => 140,
+    overscan: 5,
+  });
 
  const abrir = async (ref: ResumoRef) => {
  // 1) Fast-path do IndexedDB: abertura instantânea (0ms)

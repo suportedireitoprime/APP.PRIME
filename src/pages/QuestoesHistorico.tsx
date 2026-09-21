@@ -8,7 +8,7 @@ import { formatDate, isToday, isYesterday, parseISO } from "@/lib/dateUtils";
 
 import { useGoBack } from '@/hooks/useGoBack';
 import { motion } from 'framer-motion';
-import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
 export default function QuestoesHistorico() {
   const navigate = useNavigate();
@@ -52,8 +52,9 @@ export default function QuestoesHistorico() {
     return flat;
   }, [agrupado]);
 
-  const virtualizer = useWindowVirtualizer({
+  const virtualizer = useVirtualizer({
     count: flatItens.length,
+    getScrollElement: () => typeof document !== 'undefined' ? (document.getElementById('root') || document.body) : null,
     estimateSize: (index) => flatItens[index].type === 'header' ? 36 : 142,
     overscan: 5,
   });
@@ -151,7 +152,7 @@ export default function QuestoesHistorico() {
 
                     <div className="flex justify-between items-center pt-1 mt-auto border-t border-border/50">
                       <span className="text-[10px] text-muted-foreground font-medium">
-                        {format(parseISO(sessao.dataUltimoAcesso), "HH:mm")}
+                        {formatDate(parseISO(sessao.dataUltimoAcesso), "HH:mm")}
                       </span>
                       
                       <div className="flex items-center gap-1.5 font-bold text-xs text-primary group-hover:scale-105 transition-transform">

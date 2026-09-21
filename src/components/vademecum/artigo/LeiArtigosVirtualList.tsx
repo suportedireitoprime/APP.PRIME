@@ -1,5 +1,5 @@
 import React, { useRef, useState, useLayoutEffect, useEffect, useMemo } from 'react';
-import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { Bookmark, X as XCloseIcon } from 'lucide-react';
 import ArtigoCard from '@/components/vademecum/artigo/ArtigoCard';
 import type { ArtigoLei } from '@/data/mockData';
@@ -96,8 +96,9 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
     const measureOffset = () => {
       if (rafId) cancelAnimationFrame(rafId);
       rafId = requestAnimationFrame(() => {
+        const scrollEl = document.getElementById('root') || document.body;
         const next = artigosListRef.current
-          ? artigosListRef.current.getBoundingClientRect().top + window.scrollY
+          ? artigosListRef.current.getBoundingClientRect().top + scrollEl.scrollTop
           : 0;
         setArtigosListOffset(next);
       });
@@ -123,8 +124,9 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
     return 10; // Mobile moderno
   }, []);
 
-  const artigosVirtualizer = useWindowVirtualizer({
+  const artigosVirtualizer = useVirtualizer({
     count: shouldVirtualizeArtigos ? visibleArtigos.length : 0,
+    getScrollElement: () => typeof document !== 'undefined' ? (document.getElementById('root') || document.body) : null,
     // Item 21: Dynamic estimateSize based on article text length for smoother scrollbar
     estimateSize: (index) => {
       const artigo = visibleArtigos[index];
@@ -140,7 +142,10 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
     // Item 25: Validate restored offset against total list height to prevent blank screen
     initialOffset: () => {
       const saved = virtualOffsetCache.get(listKey);
-      if (saved === undefined) return typeof window !== 'undefined' ? window.scrollY : 0;
+      if (saved === undefined) {
+        const scrollEl = typeof document !== 'undefined' ? document.getElementById('root') || document.body : null;
+        return scrollEl ? scrollEl.scrollTop : 0;
+      }
       const approxTotal = visibleArtigos.length * 120;
       const winHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
       const maxAllowed = Math.max(0, approxTotal - winHeight);
@@ -167,17 +172,16 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
   }, [shouldVirtualizeArtigos, artigosVirtualizer]);
 
   // Salva periodicamente o scroll offset da lista para restaurar na navegação de volta (Item 37)
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!shouldVirtualizeArtigos) return;
-    const saveOffset = () => {
-      virtualOffsetCache.set(listKey, window.scrollY);
+    const handleScroll = () => {
+      const scrollEl = document.getElementById('root') || document.body;
+      virtualOffsetCache.set(listKey, scrollEl.scrollTop);
     };
-    window.addEventListener('scroll', saveOffset, { passive: true });
-    return () => {
-      saveOffset();
-      window.removeEventListener('scroll', saveOffset);
-    };
-  }, [shouldVirtualizeArtigos, listKey]);
+    const scrollEl = document.getElementById('root') || window;
+    scrollEl.addEventListener('scroll', handleScroll, { passive: true });
+    return () => scrollEl.removeEventListener('scroll', handleScroll);
+  }, [listKey, shouldVirtualizeArtigos]);
 
   const handleResumeLastRead = () => {
     if (!lastReadArtigo) return;

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { ArrowLeft, Calendar, ChevronRight, Loader2, ScrollText, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ANOS_DECRETOS, type LeiOrdinaria } from '@/services/legislacaoService';
@@ -43,9 +43,10 @@ const DecretoView: React.FC<DecretoViewProps> = ({
     );
   }, [decretos, searchDecretos]);
 
-  const listVirtualizer = useWindowVirtualizer({
+  const listVirtualizer = useVirtualizer({
     count: filteredDecretos.length,
-    estimateSize: () => 90,
+    getScrollElement: () => typeof document !== 'undefined' ? (document.getElementById('root') || document.body) : null,
+    estimateSize: () => 120,
     overscan: 5,
   });
 

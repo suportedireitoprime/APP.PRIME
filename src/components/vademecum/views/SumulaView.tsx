@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { ArrowLeft, BadgeCheck, Ban, ChevronRight, Gavel, Loader2, Scale, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { SUMULA_TRIBUNAIS, type Sumula } from '@/services/sumulasService';
@@ -41,9 +41,10 @@ const SumulaView: React.FC<SumulaViewProps> = ({
     );
   }, [sumulas, searchSumulas]);
 
-  const listVirtualizer = useWindowVirtualizer({
+  const listVirtualizer = useVirtualizer({
     count: filteredSumulas.length,
-    estimateSize: () => 90,
+    getScrollElement: () => typeof document !== 'undefined' ? (document.getElementById('root') || document.body) : null,
+    estimateSize: () => 180,
     overscan: 5,
   });
 
