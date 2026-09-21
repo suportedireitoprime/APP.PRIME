@@ -323,7 +323,7 @@ export const VisuaisDeckModal = memo(({
 
             {/* Cabeçalho do Card Flutuante */}
             <div className="w-full text-center pr-8 pl-8 pt-1 mb-2">
-              <h2 className="font-display text-[20px] sm:text-[22px] font-black uppercase tracking-widest text-white leading-tight line-clamp-1">
+              <h2 className="font-display text-[20px] sm:text-[22px] font-black uppercase tracking-tight text-white leading-tight line-clamp-1">
                 {title || 'Visuais Jurídicos'}
               </h2>
               <p className="text-[12px] sm:text-[13px] text-zinc-400 font-medium leading-snug mt-1 line-clamp-1 px-4">
