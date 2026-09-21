@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,17 @@ interface HorusPromoModalProps {
 }
 
 export function HorusPromoModal({ open, timeLeft, onClose, onRedeem }: HorusPromoModalProps) {
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open, onClose]);
+
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
@@ -35,16 +47,23 @@ export function HorusPromoModal({ open, timeLeft, onClose, onRedeem }: HorusProm
             onClick={(e) => e.stopPropagation()}
             className="w-full max-w-sm bg-[#161b22] border border-white/10 rounded-3xl p-6 shadow-2xl relative overflow-hidden flex flex-col items-center"
           >
-            <Button 
-              size="icon" 
-              variant="ghost" 
-              className="absolute top-2 right-2 text-white/50 hover:text-white rounded-full z-10"
-              onClick={onClose}
+            <button 
+              type="button"
+              aria-label="Fechar promoção"
+              className="absolute top-2 right-2 z-50 w-12 h-12 flex items-center justify-center rounded-full text-white/60 hover:text-white active:text-white hover:bg-white/10 active:bg-white/20 transition-all cursor-pointer touch-manipulation focus:outline-none"
+              onClick={(e) => {
+                e.stopPropagation();
+                onClose();
+              }}
+              onTouchEnd={(e) => {
+                e.stopPropagation();
+                onClose();
+              }}
             >
-              <X className="w-5 h-5" />
-            </Button>
+              <X className="w-6 h-6" strokeWidth={2.4} />
+            </button>
             
-            <div className="w-full flex items-center justify-center mb-1 -mt-4">
+            <div className="w-full flex items-center justify-center mb-1 -mt-4 pointer-events-none select-none">
               <img src={horusOwl} alt="Horus" className="w-28 h-28 object-contain drop-shadow-2xl" />
             </div>
             

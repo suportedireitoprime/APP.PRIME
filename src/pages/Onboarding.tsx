@@ -21,14 +21,30 @@ const Onboarding = () => {
   const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'anual' | 'anual_pix' | null>(null);
   const [pedirNotificacoes, setPedirNotificacoes] = useState(false);
   const [pedirTrial, setPedirTrial] = useState(false);
+  const [onboardingFinished, setOnboardingFinished] = useState(false);
   
-  // 24 hours countdown in seconds baseado no momento de criação do usuário (Item 24)
+  // 24 hours countdown in seconds garantido a partir do início da promoção
   const calculatePromoTimeLeft = useCallback((): number => {
-    const baseTime = user?.created_at ? new Date(user.created_at).getTime() : Date.now();
-    const expiresAt = baseTime + 24 * 60 * 60 * 1000;
+    const key = user?.id ? `promo_24h_expires_${user.id}` : 'promo_24h_expires_guest';
+    let expiresAt = 0;
+    try {
+      const stored = localStorage.getItem(key);
+      if (stored) {
+        expiresAt = parseInt(stored, 10);
+      }
+    } catch {}
+
+    // Se não existir ou estiver expirado ao abrir pela primeira vez a triagem, define 24h
+    if (!expiresAt || expiresAt <= Date.now()) {
+      expiresAt = Date.now() + 24 * 60 * 60 * 1000;
+      try {
+        localStorage.setItem(key, String(expiresAt));
+      } catch {}
+    }
+
     const diff = Math.floor((expiresAt - Date.now()) / 1000);
-    return Math.max(0, Math.min(diff, 24 * 60 * 60 - 1));
-  }, [user?.created_at]);
+    return Math.max(0, diff);
+  }, [user?.id]);
 
   const [timeLeft, setTimeLeft] = useState<number>(calculatePromoTimeLeft);
 
@@ -102,6 +118,7 @@ const Onboarding = () => {
           areas_interesse: r.areas || [],
           interesses: r.interesses || [],
           telefone: r.whatsapp || null,
+          whatsapp_number: r.whatsapp || null,
           onboarding_completed_at: new Date().toISOString(),
         });
 
@@ -119,16 +136,14 @@ const Onboarding = () => {
   };
 
   const finalizar = () => {
-    // Apresenta a promoção exclusiva de boas-vindas logo após a triagem (R$ 149,90 no PIX)
+    // Marca o onboarding como concluído no fluxo e apresenta a promoção exclusiva
+    setOnboardingFinished(true);
     setPedirPromo(true);
   };
 
   const fecharPromo = () => {
     setPedirPromo(false);
-    // Intervalo para liberação do scroll lock antes de abrir o próximo modal (Item 22)
-    setTimeout(() => {
-      setPedirTrial(true);
-    }, 200);
+    setPedirTrial(true);
   };
 
   const resgatarPromo = () => {
@@ -176,7 +191,7 @@ const Onboarding = () => {
       />
 
       <AnimatePresence mode="wait">
-        {!pedirPromo && !pedirTrial ? (
+        {!onboardingFinished ? (
           <motion.div key="onboarding-flow" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}>
             <CadastroOnboardingOverlay 
               open 
@@ -185,11 +200,11 @@ const Onboarding = () => {
               initialName={initialName} 
             />
           </motion.div>
-        ) : (
+        ) : pedirTrial ? (
           <motion.div key="trial-step" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}>
             <TrialWelcomeModal onDone={concluirTrial} />
           </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
     </main>
   );
