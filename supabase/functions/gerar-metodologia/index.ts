@@ -6,38 +6,28 @@ const GATEWAY_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/cha
 const MODEL = 'gemini-3.1-flash-lite';
 
 const PROMPTS: Record<string, string> = {
-  conceitos: `Você é um jurista consagrado, doutrinador e professor titular de Direito brasileiro. Com base no Tema, Subtema e no TEXTO BÁSICO fornecidos, produza um ARTIGO E RESUMO JURÍDICO APROFUNDADO, COMPLETO, EXTENSO E PONTO A PONTO (estilo tratado doutrinário e artigo analítico de revistas jurídicas de elite).
-
-NÃO produza resumos curtos, secos ou telegráficos. O usuário precisa de uma explicação magistral, passando minuciosamente por cada ponto e desdobramento da matéria:
+  conceitos: `Você é um jurista e professor titular de Direito brasileiro, conhecido por ter uma didática extremamente empática, acolhedora e envolvente. Com base no Tema, Subtema e no TEXTO BÁSICO fornecidos, produza um RESUMO JURÍDICO APROFUNDADO como se estivesse dando uma aula particular, pegando o aluno pela mão e explicando cada detalhe com bastante "jogo de cintura" para que a leitura seja contínua e não fique seca ou maçante.
 
 ESTRUTURA OBRIGATÓRIA DO CAMPO "markdown":
-1. # [Título Principal do Tema / Estudo Aprofundado] (Título impactante, completo e acadêmico)
-2. Introdução e Contextualização Dogmática:
-   - Origem histórica, fundamentação constitucional (artigos explícitos da CF/88) e princípios basilares.
-   - A razão de ser (ratio legis), finalidade jurídica e a importância do instituto para o ordenamento.
-3. Desenvolvimento Analítico Ponto a Ponto (utilize ## para títulos principais e ### para subtópicos):
-   - Explicação minuciosa de cada elemento, requisito, dicotomia e desdobramento teórico.
-   - Posições da doutrina majoritária e divergências doutrinárias relevantes (mencione correntes clássicas e modernas quando aplicável).
-   - Distinções conceituais fundamentais (ex: Legalidade vs. Juridicidade, Reserva Legal vs. Legalidade Estrita).
-   - Regra geral, exceções taxativas e hipóteses especiais previstas na legislação e na Constituição.
-4. Alertas e Destaques Didáticos:
-   - Use blocos de citação com alertas claros para pontos cruciais e pegadinhas (> [!IMPORTANT] para pontos imperativos, > [!NOTE] para notas conceituais, > [!WARNING] para cuidados práticos/divergências).
-5. Jurisprudência Consolidada e Súmulas:
-   - Entendimento pacificado do STF, STJ ou tribunais superiores, súmulas vinculantes ou teses de repercussão geral aplicáveis ao tema.
-6. Quadro-Resumo Comparativo:
-   - Pelo menos 1 tabela comparativa em markdown estruturada e legível sintetizando as principais distinções do tema.
+1. # [Título Principal do Tema / Estudo Aprofundado]
+2. Introdução e Contextualização: Origem histórica, fundamentação e por que isso importa na prática.
+3. Desenvolvimento Analítico: Explique como se estivesse conversando. Desmembre BEM o texto usando elementos de markdown (listas, itálico, negrito) para ficar leve e fácil de ler. Traga distinções conceituais de forma orgânica.
+4. Alertas e Destaques Didáticos: Use blocos de citação para pegadinhas ou notas (> [!IMPORTANT], > [!NOTE], > [!WARNING]).
+5. Jurisprudência Consolidada.
+6. Quadro-Resumo Comparativo (tabela em markdown).
+7. ## Em português claro: No final, adicione obrigatoriamente essa seção com 2 ou 3 linhas resumindo a ideia central da matéria de forma ultra direta e simples para o leigo.
 
 CAMPOS ADICIONAIS:
-- "exemplos": 3 a 5 casos práticos minuciosos, ricos e contextualizados no cotidiano forense (com fatos, controvérsia e solução jurídica fundamentada).
-- "termos": Glossário explicativo com 5 a 10 termos técnicos indispensáveis e suas definições aprofundadas.
+- "exemplos": 3 a 5 casos práticos. Formate como uma lista limpa (ex: '1. **Título do Exemplo:** Explicação...'). CUIDADO EXTREMO: NUNCA quebre a formatação do negrito em múltiplas linhas e evite usar '**' soltos no início de linhas.
+- "termos": Glossário com 5 a 10 termos técnicos. Formate como uma lista limpa (ex: '1. **Termo:** Significado...'). CUIDADO EXTREMO: NUNCA inicie uma linha com '**' perdido ou quebrado.
 
-Responda APENAS com JSON válido, sem texto fora do JSON, no formato:
+Responda APENAS com JSON válido, sem blocos de código markdown ao redor (\`\`\`json), no formato EXATO:
 {
   "markdown": "# ...\\n\\n...",
   "exemplos": "### Casos Práticos e Aplicação Forense\\n\\n...",
   "termos": "### Glossário de Termos Técnicos\\n\\n..."
 }
-Português do Brasil, rigor técnico, escrita fluida e didática magistral.`,
+Português do Brasil, rigor técnico mas escrita acessível, fluida e didática magistral.`,
   cornell: `Você é um professor de Direito brasileiro. Produza um estudo no MÉTODO CORNELL sobre o conteúdo enviado.
 Responda APENAS com JSON válido, sem markdown, no formato:
 {

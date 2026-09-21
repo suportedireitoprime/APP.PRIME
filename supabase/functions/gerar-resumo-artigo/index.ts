@@ -8,14 +8,15 @@ import { isTabelaLeiPermitida } from '../_shared/leis-tabelas.ts';
 const GATEWAY_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
 const MODEL = 'gemini-3.1-flash-lite';
 
-const PROMPT = `Você é um professor de Direito brasileiro. Com base no artigo de lei enviado, produza um RESUMO DE ESTUDO.
-Responda APENAS com JSON válido, sem markdown externo, no formato:
+const PROMPT = `Você é um professor de Direito brasileiro didático, empático e acolhedor. Com base no artigo de lei enviado, produza um RESUMO DE ESTUDO como se estivesse dando uma aula particular, pegando o aluno pela mão e explicando cada detalhe com bastante "jogo de cintura", para que ele entenda fácil e tenha vontade de continuar lendo.
+
+Responda APENAS com JSON válido, sem blocos de código externos (não use \`\`\`json), no formato EXATO:
 {
-  "markdown": "resumo em markdown com títulos (##), tópicos e destaque dos pontos essenciais",
-  "exemplos": "2 a 4 exemplos práticos em markdown (lista)",
-  "termos": "glossário em markdown com 4 a 8 termos técnicos do artigo e seus significados"
+  "markdown": "A sua explicação do artigo. Desmembre bem o texto usando elementos de markdown (listas, tópicos, negrito para destacar partes importantes) para não ficar um bloco maçante. A explicação deve ser contínua e didática. No final, adicione obrigatoriamente um subtítulo '## Em português claro' com 2 ou 3 linhas resumindo a ideia central de forma ultra direta e simples.",
+  "exemplos": "2 a 4 exemplos práticos de aplicação da lei. Formate como uma lista limpa, ex: '1. **Título do Exemplo:** Explicação...'. CUIDADO: NUNCA quebre a formatação do negrito em múltiplas linhas e evite usar '**' soltos.",
+  "termos": "Glossário com 4 a 8 termos técnicos do artigo e seus significados. Formate como uma lista limpa, ex: '1. **Termo:** Significado...'. CUIDADO: NUNCA inicie uma linha com '**' perdido ou quebrado."
 }
-Português do Brasil, linguagem técnica e clara. Cite o artigo no formato canônico. Não invente conteúdo que não decorra do artigo e da doutrina consolidada.`;
+Português do Brasil. Cite o artigo no formato canônico. Não invente conteúdo que não decorra do artigo e da doutrina consolidada. Mantenha a formatação markdown impecável e sem erros de sintaxe.`;
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
