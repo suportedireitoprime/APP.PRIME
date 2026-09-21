@@ -137,7 +137,7 @@ const IndexDesktop = () => {
               <DesktopBreadcrumb />
             </div>
             
-            <div className={`px-8 py-6 2xl:px-14 relative z-20 ${activeTab !== 'legislacao' ? 'pt-[104px]' : ''}`}>
+            <div className={`px-4 lg:px-6 py-6 relative z-20 ${activeTab !== 'legislacao' ? 'pt-[104px]' : ''}`}>
               <div key={activeTab} className="animate-fade-in">
                 {activeTab === 'legislacao' && (
                   <>
