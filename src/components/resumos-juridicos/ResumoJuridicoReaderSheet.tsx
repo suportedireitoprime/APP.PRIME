@@ -13,6 +13,9 @@ import {
   Quote,
   Sparkles,
   Loader2,
+  AlertCircle,
+  AlertTriangle,
+  Info,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -512,42 +515,6 @@ export default function ResumoJuridicoReaderSheet({
               </div>
 
               <div className="space-y-4 px-4 pt-4 md:px-6 md:pt-6 max-w-4xl mx-auto w-full">
-                {/* Seletor de Metodologias no Topo do Leitor */}
-                <div className="flex items-center justify-center gap-1.5 p-1 bg-secondary/50 rounded-2xl border border-border/50 max-w-sm mx-auto">
-                  {METODOS.map((m) => {
-                    const isAtivo = metodo === m.id;
-                    return (
-                      <button
-                        key={m.id}
-                        type="button"
-                        onClick={() => {
-                          haptic.selection();
-                          setMetodo(m.id);
-                          if (m.id === "conceitos" && !conceitosData) {
-                            void gerarMetodologia("conceitos", false);
-                          } else if (m.id === "cornell" && !cornell) {
-                            void gerarMetodologia("cornell", false);
-                          } else if (m.id === "feynman" && !feynman) {
-                            void gerarMetodologia("feynman", false);
-                          }
-                        }}
-                        className={cn(
-                          "flex-1 py-1.5 px-3 rounded-xl text-xs font-display font-bold uppercase tracking-wider transition-all",
-                          isAtivo
-                            ? m.id === "conceitos"
-                              ? "bg-[#ef4444] text-white shadow-md shadow-[#ef4444]/20"
-                              : m.id === "cornell"
-                              ? "bg-[#38bdf8] text-zinc-950 shadow-md shadow-[#38bdf8]/20"
-                              : "bg-[#fbbf24] text-zinc-950 shadow-md shadow-[#fbbf24]/20"
-                            : "text-muted-foreground hover:text-white"
-                        )}
-                      >
-                        {m.label}
-                      </button>
-                    );
-                  })}
-                </div>
-
                 {metodo === "conceitos" && abas.length > 1 && (
                   <div className="flex w-full mt-2 border-b border-border">
                     {abas.map((t) => {
@@ -589,12 +556,10 @@ export default function ResumoJuridicoReaderSheet({
                         style={{ fontSize: `${fontSize}px` }}
                         className="
                           prose prose-sm md:prose-base max-w-none dark:prose-invert font-body
-                          prose-headings:font-body prose-headings:font-medium prose-headings:text-foreground
-                          [&_h1_strong]:font-medium [&_h2_strong]:font-medium [&_h3_strong]:font-medium [&_h4_strong]:font-medium
-                          prose-p:text-foreground/90 prose-p:leading-[1.75] prose-p:my-3
+                          prose-headings:font-display prose-headings:text-foreground
+                          prose-p:text-foreground/90 prose-p:leading-[1.8] prose-p:my-3.5
                           prose-a:text-[#ef4444] prose-a:no-underline hover:prose-a:underline
                           prose-strong:text-foreground
-                          prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/5 prose-blockquote:py-1 prose-blockquote:px-3 prose-blockquote:rounded-r
                           prose-ul:my-3 prose-li:my-1
                         "
                       >
@@ -607,85 +572,160 @@ export default function ResumoJuridicoReaderSheet({
                               <Loader2 className="w-6 h-6 animate-spin text-[#ef4444] absolute -bottom-2 -right-2" />
                             </div>
                             <div className="space-y-1.5 max-w-sm">
-                              <h3 className="text-base font-medium text-white tracking-wide uppercase font-display">
-                                Aprofundando resumo com IA
+                              <h3 className="text-base font-semibold text-white tracking-wide uppercase font-display">
+                                Aprofundando conteúdo com IA
                               </h3>
                               <p className="text-xs text-white/60 leading-relaxed">
-                                Gerando conteúdo detalhado, fundamentação jurídica, exemplos práticos e glossário de termos...
+                                Analisando doutrina, legislação e jurisprudência para estruturar o estudo completo ponto a ponto...
                               </p>
                             </div>
                           </div>
                         ) : content ? (
-                          <>
-                            <div className="flex items-center justify-between pb-3 mb-2 border-b border-border/40 not-prose">
-                              <div className="flex items-center gap-2">
-                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase bg-[#ef4444]/15 text-[#ef4444] border border-[#ef4444]/30">
-                                  <Sparkles className="w-3 h-3" /> Resumo Aprofundado
-                                </span>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() => gerarMetodologia("conceitos", true)}
-                                disabled={!!gerando}
-                                className="text-xs text-muted-foreground hover:text-white flex items-center gap-1.5 px-2.5 py-1 rounded-lg hover:bg-secondary/60 transition-colors"
-                                title="Regerar resumo aprofundado com IA"
-                              >
-                                <Sparkles className="w-3 h-3 text-[#ef4444]" />
-                                <span>Regerar com IA</span>
-                              </button>
-                            </div>
-                            <ReactMarkdown
-                              remarkPlugins={[remarkGfm]}
-                              components={{
-                                h1: ({ node, ...props }) => (
-                                  <h1 className="text-[17px] sm:text-[18px] font-medium [&_strong]:font-medium text-foreground font-body tracking-tight mt-6 mb-2.5" {...props} />
-                                ),
-                                h2: ({ node, ...props }) => (
-                                  <h2 className="text-[15.5px] sm:text-[16.5px] font-medium [&_strong]:font-medium text-foreground/95 font-body tracking-tight mt-5 mb-2" {...props} />
-                                ),
-                                h3: ({ node, ...props }) => (
-                                  <h3 className="text-[14px] sm:text-[15px] font-medium [&_strong]:font-medium text-foreground/90 font-body tracking-tight mt-4 mb-1.5" {...props} />
-                                ),
-                                h4: ({ node, ...props }) => (
-                                  <h4 className="text-[13.5px] sm:text-[14px] font-medium [&_strong]:font-medium text-foreground/85 font-body tracking-tight mt-3.5 mb-1" {...props} />
-                                ),
-                                p: ({ node, ...props }) => (
-                                  <p className="my-3 text-foreground/90 leading-[1.75]" {...props} />
-                                ),
-                                table: ({ node, ...props }) => (
-                                  <div className="my-6 w-full overflow-x-auto rounded-2xl border border-primary/20 bg-card/70 shadow-lg backdrop-blur-md">
-                                    <table className="w-full text-left text-xs md:text-sm border-collapse" {...props} />
-                                  </div>
-                                ),
-                                th: ({ node, ...props }) => (
-                                  <th className="bg-secondary/40 px-4 py-3.5 border-b border-border/50 text-slate-200 font-display font-bold text-sm tracking-wide uppercase" {...props} />
-                                ),
-                                td: ({ node, ...props }) => (
-                                  <td className="px-4 py-3 border-b border-border/30 text-foreground/90 font-body leading-relaxed" {...props} />
-                                ),
-                                blockquote: ({ node, children, ...props }) => (
-                                  <blockquote className="my-5 rounded-r-2xl border-l-4 border-primary bg-primary/10 p-4 md:p-5 pl-11 shadow-sm text-foreground/95 relative not-italic" {...props}>
-                                    <Quote className="absolute left-3.5 top-4 h-4 w-4 text-primary" aria-hidden="true" />
-                                    {children}
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                              h1: ({ node, ...props }) => (
+                                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white mt-8 mb-4 border-b border-border/50 pb-2.5 font-display leading-tight" {...props} />
+                              ),
+                              h2: ({ node, ...props }) => (
+                                <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white/95 mt-7 mb-3 font-display leading-snug" {...props} />
+                              ),
+                              h3: ({ node, ...props }) => (
+                                <h3 className="text-base sm:text-lg font-semibold tracking-tight text-white/90 mt-5 mb-2 font-display leading-snug" {...props} />
+                              ),
+                              h4: ({ node, ...props }) => (
+                                <h4 className="text-[14px] sm:text-base font-semibold tracking-tight text-white/85 mt-4 mb-1.5 font-display leading-snug" {...props} />
+                              ),
+                              p: ({ node, ...props }) => (
+                                <p className="my-3.5 text-foreground/90 leading-[1.8] text-[15px] sm:text-[16px]" {...props} />
+                              ),
+                              table: ({ node, ...props }) => (
+                                <div className="my-6 w-full overflow-x-auto rounded-2xl border border-primary/20 bg-card/70 shadow-lg backdrop-blur-md">
+                                  <table className="w-full text-left text-xs md:text-sm border-collapse" {...props} />
+                                </div>
+                              ),
+                              th: ({ node, ...props }) => (
+                                <th className="bg-secondary/40 px-4 py-3.5 border-b border-border/50 text-slate-200 font-display font-bold text-sm tracking-wide uppercase" {...props} />
+                              ),
+                              td: ({ node, ...props }) => (
+                                <td className="px-4 py-3 border-b border-border/30 text-foreground/90 font-body leading-relaxed" {...props} />
+                              ),
+                              blockquote: ({ node, children, ...props }: any) => {
+                                const extractText = (c: any): string => {
+                                  if (typeof c === "string") return c;
+                                  if (Array.isArray(c)) return c.map(extractText).join("");
+                                  if (c?.props?.children) return extractText(c.props.children);
+                                  return "";
+                                };
+
+                                const text = extractText(children);
+                                const alertMatch = text.match(/^\s*\[!(NOTE|IMPORTANT|WARNING|TIP|CAUTION)\]\s*/i);
+
+                                if (alertMatch) {
+                                  const type = alertMatch[1].toUpperCase();
+                                  const alertConfig = {
+                                    IMPORTANT: {
+                                      label: "Importante",
+                                      icon: AlertCircle,
+                                      bg: "bg-amber-500/10",
+                                      border: "border-amber-500/40",
+                                      text: "text-amber-400",
+                                    },
+                                    WARNING: {
+                                      label: "Atenção",
+                                      icon: AlertTriangle,
+                                      bg: "bg-rose-500/10",
+                                      border: "border-rose-500/40",
+                                      text: "text-rose-400",
+                                    },
+                                    CAUTION: {
+                                      label: "Cuidado",
+                                      icon: AlertTriangle,
+                                      bg: "bg-rose-500/10",
+                                      border: "border-rose-500/40",
+                                      text: "text-rose-400",
+                                    },
+                                    TIP: {
+                                      label: "Dica de Fixação",
+                                      icon: Sparkles,
+                                      bg: "bg-emerald-500/10",
+                                      border: "border-emerald-500/40",
+                                      text: "text-emerald-400",
+                                    },
+                                    NOTE: {
+                                      label: "Nota Explicativa",
+                                      icon: Info,
+                                      bg: "bg-sky-500/10",
+                                      border: "border-sky-500/40",
+                                      text: "text-sky-400",
+                                    },
+                                  }[type] || {
+                                    label: "Nota",
+                                    icon: Info,
+                                    bg: "bg-sky-500/10",
+                                    border: "border-sky-500/40",
+                                    text: "text-sky-400",
+                                  };
+
+                                  const Icon = alertConfig.icon;
+
+                                  const cleanChildren = (ch: any): any => {
+                                    if (typeof ch === "string") {
+                                      return ch.replace(/^\s*\[!(NOTE|IMPORTANT|WARNING|TIP|CAUTION)\]\s*/i, "");
+                                    }
+                                    if (Array.isArray(ch)) {
+                                      return ch.map(cleanChildren);
+                                    }
+                                    if (ch?.props?.children) {
+                                      return {
+                                        ...ch,
+                                        props: {
+                                          ...ch.props,
+                                          children: cleanChildren(ch.props.children),
+                                        },
+                                      };
+                                    }
+                                    return ch;
+                                  };
+
+                                  return (
+                                    <div className={`my-5 rounded-2xl border ${alertConfig.border} ${alertConfig.bg} p-4 md:p-5 shadow-sm text-foreground/95 not-prose`}>
+                                      <div className={`flex items-center gap-2 mb-2 font-display font-bold text-xs uppercase tracking-wider ${alertConfig.text}`}>
+                                        <Icon className="w-4 h-4 shrink-0" />
+                                        <span>{alertConfig.label}</span>
+                                      </div>
+                                      <div className="text-foreground/90 text-sm md:text-[15px] leading-relaxed">
+                                        {cleanChildren(children)}
+                                      </div>
+                                    </div>
+                                  );
+                                }
+
+                                return (
+                                  <blockquote className="my-5 rounded-2xl border-l-4 border-primary bg-primary/10 p-4 md:p-5 shadow-sm text-foreground/95 not-italic" {...props}>
+                                    <div className="flex items-start gap-3">
+                                      <Quote className="w-5 h-5 text-primary shrink-0 mt-0.5" aria-hidden="true" />
+                                      <div className="text-foreground/90 leading-relaxed">{children}</div>
+                                    </div>
                                   </blockquote>
+                                );
+                              },
+                              pre: ({ node, ...props }) => (
+                                <pre className="my-6 p-4 md:p-5 rounded-2xl bg-zinc-950/90 border border-border/80 text-slate-100 font-mono text-xs md:text-sm overflow-x-auto shadow-xl leading-relaxed tracking-wide" {...props} />
+                              ),
+                              code: ({ node, inline, ...props }: any) =>
+                                inline ? (
+                                  <code className="px-1.5 py-0.5 rounded-md bg-secondary text-foreground font-mono text-xs font-semibold" {...props} />
+                                ) : (
+                                  <code className="text-slate-100 font-mono text-xs md:text-sm" {...props} />
                                 ),
-                                pre: ({ node, ...props }) => (
-                                  <pre className="my-6 p-4 md:p-5 rounded-2xl bg-zinc-950/90 border border-border/80 text-slate-100 font-mono text-xs md:text-sm overflow-x-auto shadow-xl leading-relaxed tracking-wide" {...props} />
-                                ),
-                                code: ({ node, inline, ...props }: any) =>
-                                  inline ? (
-                                    <code className="px-1.5 py-0.5 rounded-md bg-secondary text-foreground font-mono text-xs font-semibold" {...props} />
-                                  ) : (
-                                    <code className="text-slate-100 font-mono text-xs md:text-sm" {...props} />
-                                  ),
-                                hr: ({ node, ...props }) => (
-                                  <hr className="my-6 border-border/60" {...props} />
-                                ),
-                              }}
-                            >
-                              {content}
-                            </ReactMarkdown>
-                          </>
+                              hr: ({ node, ...props }) => (
+                                <hr className="my-6 border-border/60" {...props} />
+                              ),
+                            }}
+                          >
+                            {content}
+                          </ReactMarkdown>
                         ) : erroGerar ? (
                           <div className="rounded-2xl border border-border p-6 text-center space-y-4 mt-4 bg-secondary/30 not-prose">
                             <p className="text-sm text-destructive font-medium">{erroGerar}</p>

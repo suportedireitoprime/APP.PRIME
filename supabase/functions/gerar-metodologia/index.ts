@@ -6,21 +6,38 @@ const GATEWAY_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/cha
 const MODEL = 'gemini-3.1-flash-lite';
 
 const PROMPTS: Record<string, string> = {
-  conceitos: `Você é um jurista e professor de Direito de elite no Brasil. Com base no Tema, Subtema e o TEXTO BÁSICO fornecidos, produza um RESUMO JURÍDICO APROFUNDADO, COMPLETO, EXTENSO E EXTREMAMENTE DIDÁTICO.
-Não produza resumos superficiais ou curtos. Expanda substancialmente o conteúdo com:
-1. Conceitos doutrinários consolidados e aprofundados, fundamentação jurídica expressa (artigos de lei e CF/88), princípios aplicáveis e requisitos legais.
-2. Explicação da lógica e do propósito da norma com clareza para operadores do Direito e concurseiros.
-3. Desdobramentos práticos, divergências doutrinárias, exceções à regra e súmulas/jurisprudência pacificada (STF/STJ) se aplicável ao tema.
-4. Estrutura impecável com títulos limpos (##, ###), tópicos numerados ou com marcadores, destaques e alertas em blocos de citação (> [!NOTE], > [!IMPORTANT] ou > [!WARNING]).
-5. Tabelas comparativas ou esquemas em markdown sempre que ajudarem na fixação.
+  conceitos: `Você é um jurista consagrado, doutrinador e professor titular de Direito brasileiro. Com base no Tema, Subtema e no TEXTO BÁSICO fornecidos, produza um ARTIGO E RESUMO JURÍDICO APROFUNDADO, COMPLETO, EXTENSO E PONTO A PONTO (estilo tratado doutrinário e artigo analítico de revistas jurídicas de elite).
 
-Responda APENAS com JSON válido, sem markdown externo, no formato:
+NÃO produza resumos curtos, secos ou telegráficos. O usuário precisa de uma explicação magistral, passando minuciosamente por cada ponto e desdobramento da matéria:
+
+ESTRUTURA OBRIGATÓRIA DO CAMPO "markdown":
+1. # [Título Principal do Tema / Estudo Aprofundado] (Título impactante, completo e acadêmico)
+2. Introdução e Contextualização Dogmática:
+   - Origem histórica, fundamentação constitucional (artigos explícitos da CF/88) e princípios basilares.
+   - A razão de ser (ratio legis), finalidade jurídica e a importância do instituto para o ordenamento.
+3. Desenvolvimento Analítico Ponto a Ponto (utilize ## para títulos principais e ### para subtópicos):
+   - Explicação minuciosa de cada elemento, requisito, dicotomia e desdobramento teórico.
+   - Posições da doutrina majoritária e divergências doutrinárias relevantes (mencione correntes clássicas e modernas quando aplicável).
+   - Distinções conceituais fundamentais (ex: Legalidade vs. Juridicidade, Reserva Legal vs. Legalidade Estrita).
+   - Regra geral, exceções taxativas e hipóteses especiais previstas na legislação e na Constituição.
+4. Alertas e Destaques Didáticos:
+   - Use blocos de citação com alertas claros para pontos cruciais e pegadinhas (> [!IMPORTANT] para pontos imperativos, > [!NOTE] para notas conceituais, > [!WARNING] para cuidados práticos/divergências).
+5. Jurisprudência Consolidada e Súmulas:
+   - Entendimento pacificado do STF, STJ ou tribunais superiores, súmulas vinculantes ou teses de repercussão geral aplicáveis ao tema.
+6. Quadro-Resumo Comparativo:
+   - Pelo menos 1 tabela comparativa em markdown estruturada e legível sintetizando as principais distinções do tema.
+
+CAMPOS ADICIONAIS:
+- "exemplos": 3 a 5 casos práticos minuciosos, ricos e contextualizados no cotidiano forense (com fatos, controvérsia e solução jurídica fundamentada).
+- "termos": Glossário explicativo com 5 a 10 termos técnicos indispensáveis e suas definições aprofundadas.
+
+Responda APENAS com JSON válido, sem texto fora do JSON, no formato:
 {
-  "markdown": "Resumo completo, extenso e aprofundado em markdown...",
-  "exemplos": "3 a 5 exemplos práticos minuciosos e contextualizados em markdown (casos concretos do cotidiano forense) que ilustrem perfeitamente a aplicação.",
-  "termos": "Glossário robusto em markdown com 5 a 10 termos técnicos essenciais e suas definições explicativas completas."
+  "markdown": "# ...\\n\\n...",
+  "exemplos": "### Casos Práticos e Aplicação Forense\\n\\n...",
+  "termos": "### Glossário de Termos Técnicos\\n\\n..."
 }
-Português do Brasil, rigor técnico e didática impecável.`,
+Português do Brasil, rigor técnico, escrita fluida e didática magistral.`,
   cornell: `Você é um professor de Direito brasileiro. Produza um estudo no MÉTODO CORNELL sobre o conteúdo enviado.
 Responda APENAS com JSON válido, sem markdown, no formato:
 {
@@ -117,6 +134,7 @@ Deno.serve(async (req) => {
           { role: 'user', content: material },
         ],
         response_format: { type: 'json_object' },
+        max_tokens: 8192,
       }),
     });
 
