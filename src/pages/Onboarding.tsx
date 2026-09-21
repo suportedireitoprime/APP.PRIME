@@ -107,24 +107,52 @@ const Onboarding = () => {
     if (!user) return;
 
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .upsert({
-          id: user.id,
-          status_perfil: r.persona,
-          faixa_etaria: r.faixa,
-          perfil_tipos: r.persona ? [r.persona] : null,
-          perfil_contexto: r.personaLabel || '',
-          display_name: r.nome || null,
-          areas_interesse: r.areas || [],
-          interesses: r.interesses || [],
-          telefone: r.whatsapp || null,
-          whatsapp_number: r.whatsapp || null,
-          onboarding_completed_at: new Date().toISOString(),
-        });
+      // 1. Tenta salvar via RPC Security Definer (à prova de falhas de RLS/sessão)
+      const { data: rpcData, error: rpcError } = await (supabase.rpc as unknown as (
+        fn: string,
+        args: Record<string, unknown>
+      ) => Promise<{ data: { success?: boolean; error?: string } | null; error: unknown }>)(
+        'completar_onboarding_perfil',
+        {
+          _user_id: user.id,
+          _status_perfil: r.persona,
+          _faixa_etaria: r.faixa,
+          _perfil_contexto: r.personaLabel || '',
+          _display_name: r.nome || null,
+          _areas_interesse: r.areas || [],
+          _interesses: r.interesses || [],
+          _whatsapp: r.whatsapp || null,
+        }
+      );
 
-      if (error) {
-        console.error('[Onboarding] Erro ao salvar perfil:', error);
+      let saveSuccess = !rpcError && rpcData?.success !== false;
+
+      // 2. Fallback: se a RPC falhar, tenta update direto
+      if (!saveSuccess) {
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({
+            status_perfil: r.persona,
+            faixa_etaria: r.faixa,
+            perfil_tipos: r.persona ? [r.persona] : null,
+            perfil_contexto: r.personaLabel || '',
+            display_name: r.nome || null,
+            areas_interesse: r.areas || [],
+            interesses: r.interesses || [],
+            telefone: r.whatsapp || null,
+            whatsapp_number: r.whatsapp || null,
+            onboarding_completed_at: new Date().toISOString(),
+          })
+          .eq('id', user.id);
+
+        saveSuccess = !updateError;
+        if (updateError) {
+          console.error('[Onboarding] Erro no fallback de update:', updateError);
+        }
+      }
+
+      if (!saveSuccess) {
+        console.error('[Onboarding] Não foi possível persistir perfil:', { rpcError });
         toast.error('Erro ao salvar no banco. Ajuste depois em Perfil.');
       } else {
         try { localStorage.setItem(`onboarding_completed:${user.id}`, '1'); } catch {}
