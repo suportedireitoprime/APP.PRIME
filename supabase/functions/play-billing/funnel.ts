@@ -33,12 +33,48 @@ export const handler = async (req: Request): Promise<Response> => {
 
     if (error) throw error;
 
-    return new Response(JSON.stringify({ funnel: funnelData ?? [] }), {
+    // Enrich with profile created_at and last_sign_in_at
+    const userIds = [...new Set((funnelData ?? []).map((e) => e.user_id).filter(Boolean))];
+    const profileCreatedMap = new Map<string, string>();
+    const lastSignInMap = new Map<string, string>();
+
+    if (userIds.length > 0) {
+      const { data: profiles } = await admin
+        .from('profiles')
+        .select('id, created_at')
+        .in('id', userIds);
+      (profiles ?? []).forEach((p: { id: string; created_at: string }) => {
+        profileCreatedMap.set(p.id, p.created_at);
+      });
+
+      // Fetch last_sign_in_at from auth (batched)
+      const chunkSize = 10;
+      for (let i = 0; i < userIds.length; i += chunkSize) {
+        const chunk = userIds.slice(i, i + chunkSize);
+        await Promise.all(chunk.map(async (id) => {
+          try {
+            const { data } = await admin.auth.admin.getUserById(id);
+            if (data?.user?.last_sign_in_at) {
+              lastSignInMap.set(id, data.user.last_sign_in_at);
+            }
+          } catch { /* ignore */ }
+        }));
+      }
+    }
+
+    const enriched = (funnelData ?? []).map((ev) => ({
+      ...ev,
+      profile_created_at: ev.user_id ? profileCreatedMap.get(ev.user_id) ?? null : null,
+      last_sign_in_at: ev.user_id ? lastSignInMap.get(ev.user_id) ?? null : null,
+    }));
+
+    return new Response(JSON.stringify({ funnel: enriched }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     });
-  } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message }), {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    return new Response(JSON.stringify({ error: message }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500,
     });

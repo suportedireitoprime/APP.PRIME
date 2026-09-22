@@ -1,5 +1,5 @@
 import React from 'react';
-import { XCircle, User } from 'lucide-react';
+import { XCircle, User, CalendarDays, Clock } from 'lucide-react';
 import { CombinedRow } from './assinantesTypes';
 
 interface AssinantesFunnelModalProps {
@@ -12,6 +12,54 @@ interface AssinantesFunnelModalProps {
     purchase: any[];
   } | null;
   combinedRows: CombinedRow[];
+}
+
+/** Retorna texto relativo como "há 2 dias", "há 3 meses", "novo hoje" */
+function timeAgo(iso: string | null): string {
+  if (!iso) return '';
+  const ms = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(ms / 60_000);
+  if (mins < 1) return 'agora';
+  if (mins < 60) return `há ${mins}min`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `há ${hours}h`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `há ${days}d`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `há ${months} mês${months > 1 ? 'es' : ''}`;
+  const years = Math.floor(months / 12);
+  return `há ${years} ano${years > 1 ? 's' : ''}`;
+}
+
+/** Retorna label de "idade" do cadastro: "Novo (hoje)", "Recente (3d)", "Antigo (2 meses)" */
+function accountAge(profileCreatedAt: string | null): { label: string; cls: string } | null {
+  if (!profileCreatedAt) return null;
+  const ms = Date.now() - new Date(profileCreatedAt).getTime();
+  const days = Math.floor(ms / (24 * 60 * 60 * 1000));
+  if (days === 0) return { label: 'Novo (hoje)', cls: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' };
+  if (days <= 3) return { label: `Novo (${days}d)`, cls: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' };
+  if (days <= 7) return { label: `Recente (${days}d)`, cls: 'bg-blue-500/20 text-blue-400 border-blue-500/30' };
+  if (days <= 30) return { label: `${days} dias`, cls: 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30' };
+  const months = Math.floor(days / 30);
+  if (months < 12) return { label: `${months} mês${months > 1 ? 'es' : ''}`, cls: 'bg-amber-500/20 text-amber-400 border-amber-500/30' };
+  const years = Math.floor(months / 12);
+  return { label: `${years} ano${years > 1 ? 's' : ''}`, cls: 'bg-rose-500/20 text-rose-400 border-rose-500/30' };
+}
+
+function fmtShortDateTime(iso: string | null): string {
+  if (!iso) return '—';
+  try {
+    return new Date(iso)
+      .toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+      .replace(',', ' ·');
+  } catch {
+    return '—';
+  }
 }
 
 export function AssinantesFunnelModal({
@@ -40,6 +88,12 @@ export function AssinantesFunnelModal({
     }, {})
   );
 
+  // Count new vs old users
+  const newUsers = aggregatedList.filter((ev) => {
+    const days = ev.profile_created_at ? Math.floor((Date.now() - new Date(ev.profile_created_at).getTime()) / (24 * 60 * 60 * 1000)) : null;
+    return days !== null && days <= 7;
+  }).length;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
       <div className="bg-card w-full max-w-lg rounded-2xl shadow-xl border border-border flex flex-col max-h-[85vh]">
@@ -56,6 +110,11 @@ export function AssinantesFunnelModal({
             </h3>
             <p className="text-xs text-muted-foreground">
               {uniqueCount} usuário(s) único(s) em {currentEvents.length} evento(s)
+              {newUsers > 0 && (
+                <span className="ml-2 text-emerald-400 font-semibold">
+                  · {newUsers} novo{newUsers > 1 ? 's' : ''} (≤7d)
+                </span>
+              )}
             </p>
           </div>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-muted text-muted-foreground">
@@ -76,6 +135,9 @@ export function AssinantesFunnelModal({
                   match.status === 'ACTIVE' ||
                   match.status === 'SUBSCRIPTION_STATE_ACTIVE') &&
                 match.source !== 'old';
+
+              const age = accountAge(ev.profile_created_at);
+              const lastAccess = ev.last_sign_in_at;
 
               return (
                 <div key={idx} className="p-3 rounded-lg border border-border bg-muted/30">
@@ -104,8 +166,30 @@ export function AssinantesFunnelModal({
                         )}
                       </div>
 
+                      {/* Cadastro + Último acesso */}
+                      <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                        {age && (
+                          <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${age.cls}`}>
+                            <CalendarDays className="w-3 h-3" />
+                            Cadastro: {age.label}
+                          </span>
+                        )}
+                        {ev.profile_created_at && !age && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full border border-border/50">
+                            <CalendarDays className="w-3 h-3" />
+                            Cadastro: {fmtShortDateTime(ev.profile_created_at)}
+                          </span>
+                        )}
+                        {lastAccess && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full border border-border/50">
+                            <Clock className="w-3 h-3" />
+                            Acesso: {timeAgo(lastAccess)}
+                          </span>
+                        )}
+                      </div>
+
                       {/* Origem do acesso */}
-                      <div className="mt-1">
+                      <div className="mt-1.5">
                         <span className="text-[10px] uppercase font-semibold text-muted-foreground bg-muted border border-border/50 px-2 py-0.5 rounded">
                           {ev.metadata?.feature ? `Banner / Modal: ${String(ev.metadata.feature).replace(/_/g, ' ')}` : 'Menu Lateral'}
                         </span>
