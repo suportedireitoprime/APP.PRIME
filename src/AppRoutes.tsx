@@ -623,8 +623,6 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
     const cleanPath = (location.pathname || '').replace(/\/+$/, '') || '/';
     // Item 29: Home ('/') não é isenta de bloqueio pós-trial. Apenas telas de assinatura, planos, perfil, configurações e termos são permitidas sem plano ativo.
     const isAllowedPath = 
-      cleanPath === '/' || // Permite visualizar o início do aplicativo
-      cleanPath === '/materias' || // Permite visualizar o catálogo
       cleanPath === '/assinatura' ||
       cleanPath.startsWith('/assinatura/') ||
       cleanPath === '/planos/ativos' ||
@@ -636,27 +634,7 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
       cleanPath.startsWith('/opiniao') ||
       cleanPath.startsWith('/onboarding') ||
       cleanPath.startsWith('/termos') ||
-      cleanPath.startsWith('/privacidade') ||
-      // Hubs principais liberados no primeiro clique (PremiumGate intercepta níveis mais profundos)
-      cleanPath === '/vade-mecum' ||
-      cleanPath === '/questoes' ||
-      cleanPath === '/blog' ||
-      cleanPath === '/ferramentas' ||
-      cleanPath === '/ferramentas/dicionario' ||
-      cleanPath === '/videoaulas' ||
-      cleanPath === '/audioaulas' ||
-      cleanPath === '/resumos-juridicos' ||
-      cleanPath === '/pilulas' ||
-      cleanPath === '/bibliotecas' ||
-      cleanPath === '/lei-seca' ||
-      cleanPath === '/flashcards' ||
-      cleanPath === '/me-explique' ||
-      cleanPath === '/radar-360' ||
-      cleanPath === '/boletins' ||
-      cleanPath === '/apresentacoes' ||
-      cleanPath === '/leis-cantadas' ||
-      cleanPath === '/legislacao' ||
-      cleanPath === '/legislacao-estadual';
+      cleanPath.startsWith('/privacidade');
     
     const isUserPremium = !!profile.isPremium || (isSubPremium && !isSubTrial) || isAdminEmail(user.email);
 
