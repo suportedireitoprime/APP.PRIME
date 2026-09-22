@@ -223,6 +223,20 @@ export function AdminHojeCards() {
       
       const list5m = list5mResult.status === 'fulfilled' ? list5mResult.value.data : [];
       const listOnline = listOnlineResult.status === 'fulfilled' ? listOnlineResult.value.data : [];
+
+      // Como o RPC admin_lista_dia não retorna created_at, precisamos buscar os perfis
+      const allUids = Array.from(new Set([
+        ...((list5m as any[]) || []).map(r => r.id),
+        ...((listOnline as any[]) || []).map(r => r.id)
+      ])).filter(Boolean);
+
+      let profilesDict: Record<string, string> = {};
+      if (allUids.length > 0) {
+        const { data: profs } = await supabase.from('profiles').select('id, created_at').in('id', allUids);
+        if (profs) {
+          profs.forEach(p => { profilesDict[p.id] = p.created_at; });
+        }
+      }
       
       let totalOnline5m = 0;
       let totalCadastros = 0;
@@ -539,6 +553,17 @@ export function AdminHojeCards() {
           Promise.all(listPromises),
           Promise.all(extraPromises)
         ]);
+
+        const allUids = Array.from(new Set(
+          results.flatMap(({ data }) => ((data as any[]) || []).map(r => r.id)).filter(Boolean)
+        ));
+        let profilesDict: Record<string, string> = {};
+        if (allUids.length > 0) {
+          const { data: profs } = await supabase.from('profiles').select('id, created_at').in('id', allUids);
+          if (profs) {
+            profs.forEach(p => { profilesDict[p.id] = p.created_at; });
+          }
+        }
         
         results.forEach(({ data }) => {
           const mapped = ((data as any[]) || []).map(r => ({
@@ -552,7 +577,7 @@ export function AdminHojeCards() {
             is_premium: r.premium,
             avatar_url: r.avatar_url || null,
             acessos: null,
-            created_at: r.created_at
+            created_at: profilesDict[r.id] || r.created_at
           }));
           allLists = allLists.concat(mapped);
         });
