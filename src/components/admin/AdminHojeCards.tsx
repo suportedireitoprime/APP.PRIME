@@ -528,6 +528,7 @@ export function AdminHojeCards() {
                   acessos: null,
                   avatar_url: e.users?.raw_user_meta_data?.avatar_url || e.users?.raw_user_meta_data?.picture,
                   is_premium: false,
+                  created_at: e.created_at
                 };
             });
             allLists = allLists.concat(vpMapped);
@@ -550,7 +551,8 @@ export function AdminHojeCards() {
             at: r.last_seen || r.created_at,
             is_premium: r.premium,
             avatar_url: r.avatar_url || null,
-            acessos: null
+            acessos: null,
+            created_at: r.created_at
           }));
           allLists = allLists.concat(mapped);
         });
@@ -567,7 +569,8 @@ export function AdminHojeCards() {
               is_premium: r.premium,
               avatar_url: r.avatar_url || null,
               provider: r.provider || 'email',
-              acessos: null
+              acessos: null,
+              created_at: r.created_at
             }));
             allLists = allLists.concat(trials);
           });
@@ -592,6 +595,7 @@ export function AdminHojeCards() {
         isPremium: r.is_premium,
         planValue: r.planValue,
         planTag: r.planTag,
+        created_at: r.created_at,
       })).filter(r => r.email !== 'wn7corporation@gmail.com' && r.email !== 'suporte@direitoprime.com.br' && r.email !== 'wn7juridico@gmail.com');
 
       if (id === 'trial' && list.length > 0) {
@@ -875,8 +879,18 @@ export function AdminHojeCards() {
                       </div>
                       <div className="flex flex-col gap-0.5 mt-0.5">
                         {r.email && (
-                          <div className="font-body text-xs text-muted-foreground/90 truncate">
+                          <div className="font-body text-xs text-muted-foreground/90 truncate flex items-center gap-2">
                             {r.email}
+                            {r.created_at && (
+                              <span className="text-[10px] text-muted-foreground/50">
+                                • {(() => {
+                                  const dias = Math.floor((new Date().getTime() - new Date(r.created_at).getTime()) / (1000 * 60 * 60 * 24));
+                                  if (dias === 0) return 'Hoje';
+                                  if (dias === 1) return 'Ontem';
+                                  return `${dias} dias`;
+                                })()}
+                              </span>
+                            )}
                           </div>
                         )}
                         {!r.planTag && r.subtitle && (
