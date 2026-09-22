@@ -541,8 +541,7 @@ export function AdminHojeCards() {
           supabase
             .from('asaas_subscriptions')
             .select(`
-              id, user_id, created_at, plano, status, asaas_customer_id, asaas_subscription_id,
-              profiles:user_id ( display_name, is_premium )
+              id, user_id, created_at, plano, status, asaas_customer_id, asaas_subscription_id
             `)
             .gte('created_at', minDate.toISOString())
             .lt('created_at', maxDate.toISOString())
@@ -550,8 +549,7 @@ export function AdminHojeCards() {
           supabase
             .from('play_subscriptions')
             .select(`
-              id, user_id, created_at, product_id, status,
-              profiles:user_id ( display_name, is_premium )
+              id, user_id, created_at, product_id, status
             `)
             .gte('created_at', minDate.toISOString())
             .lt('created_at', maxDate.toISOString())
@@ -587,12 +585,28 @@ export function AdminHojeCards() {
           });
         });
 
+        // Buscar nomes dos perfis manualmente já que não podemos fazer JOIN na tabela public
+        const subUids = Array.from(new Set([
+          ...(asaasRes.data || []).map((s: any) => s.user_id),
+          ...(playRes.data || []).map((s: any) => s.user_id)
+        ])).filter(Boolean) as string[];
+
+        const profNames = new Map<string, string>();
+        if (subUids.length > 0) {
+          const { data: profs } = await supabase.from('profiles').select('id, display_name').in('id', subUids);
+          if (profs) {
+            profs.forEach((p: any) => {
+              if (p.display_name) profNames.set(p.id, p.display_name);
+            });
+          }
+        }
+
         // Complementa com Asaas
         (asaasRes.data || []).forEach((s: any) => {
           const isVit = s.plano === 'vitalicio';
           const planValor = isVit ? 149.90 : 29.90;
           const planName = isVit ? 'Vitalício' : 'Mensal';
-          const profName = s.profiles?.display_name;
+          const profName = profNames.get(s.user_id);
 
           allLists.push({
             key: `asaas-${s.id}`,
@@ -614,7 +628,7 @@ export function AdminHojeCards() {
           const isAnualOrVit = s.product_id?.includes('anual') || s.product_id?.includes('vitalicio');
           const planValor = isAnualOrVit ? 199.90 : 29.90;
           const planName = isAnualOrVit ? 'Anual/Vitalício' : 'Mensal';
-          const profName = s.profiles?.display_name;
+          const profName = profNames.get(s.user_id);
 
           allLists.push({
             key: `play-${s.id}`,
