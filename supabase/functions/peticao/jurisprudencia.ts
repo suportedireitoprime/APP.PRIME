@@ -13,7 +13,10 @@
 // Retorna o mesmo shape consumido pelo StepJurisprudencia do editor:
 //   { jurisprudencias: [{ tribunal, tipo, numero, titulo, tese, ementa, link, ... }],
 //     fonte: 'corpus927' | 'web', usou_fallback, selecoes, tentativas }
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 import { geminiFetch } from '../_shared/geminiFetch.ts';
 
 const GEMINI_KEY = Deno.env.get('GEMINI_API_KEY') ?? '';

@@ -1,7 +1,10 @@
 // Boletim de Leis matinal (07h BRT). Consulta a resenha diária das últimas 24h.
 // Se não houver leis novas, apenas loga skipped (aparece como "não enviado" na timeline).
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });

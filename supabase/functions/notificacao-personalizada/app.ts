@@ -2,7 +2,10 @@
 // Título SEMPRE começa com o primeiro nome do usuário.
 // Cap: 1 envio por usuário por dia (controle via horus_outbound_log).
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 export const handler = (async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });

@@ -9,7 +9,10 @@
 // O plano cloud é PAGO (mensalidade por sessões concorrentes); a versão docker
 // open source é gratuita para self-host. Para usar, defina BROWSERLESS_URL +
 // BROWSERLESS_TOKEN e faça chamadas para /content ou /scrape.
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 import { geminiFetch } from "../_shared/geminiFetch.ts";
 
 interface Body {

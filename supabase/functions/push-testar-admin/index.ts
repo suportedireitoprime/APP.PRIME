@@ -1,7 +1,10 @@
 // Envia um push + WhatsApp de teste APENAS para os admins cadastrados.
 // Usado no botão "Testar admin" da linha do tempo de notificações programadas.
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 import { evolution } from "../_shared/evolution.ts";
 
 const ADMIN_EMAILS = ["wn7corporation@gmail.com", "suporte@direitoprime.com.br"];

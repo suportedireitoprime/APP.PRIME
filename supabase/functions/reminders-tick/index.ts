@@ -5,7 +5,10 @@
 // - Loga TODAS as tentativas em `reminder_dispatch_log` (auditoria).
 // - Quando todos os canais falham, insere um aviso em `avisos` pro usuário.
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 import { evolution } from '../_shared/evolution.ts';
 import { sanitizeFirstName } from '../_shared/nomeSanitizer.ts';
 import { generateLembreteText } from '../_shared/lembreteAiText.ts';

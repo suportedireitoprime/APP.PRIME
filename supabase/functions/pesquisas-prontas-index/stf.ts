@@ -1,7 +1,10 @@
 // Indexa TODAS as Pesquisas Prontas do STF via Firecrawl.
 // Executa em background (EdgeRuntime.waitUntil) e responde 202 imediatamente.
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 const FIRECRAWL_API_KEY = Deno.env.get('FIRECRAWL_API_KEY')!;
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;

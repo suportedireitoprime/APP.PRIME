@@ -3,7 +3,10 @@
 // 5 min depois, um push COMPLEMENTAR reforça no app.
 // Idempotência: 1 disparo por dia (via horus_outbound_log).
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 const SITE_URL = Deno.env.get("PUBLIC_SITE_URL") || "https://simple-calc-no-db.Gemini.app";
 const KIND = "noticias_dia";

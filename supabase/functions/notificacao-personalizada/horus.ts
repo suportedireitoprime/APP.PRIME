@@ -1,7 +1,10 @@
 // Mensagem personalizada via WhatsApp (Horus) no horário-pico do usuário.
 // Sempre começa com o primeiro nome. Cap 1 por dia por usuário.
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 import { evolution } from "../_shared/evolution.ts";
 
 export const handler = (async (req) => {

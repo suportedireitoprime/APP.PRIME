@@ -1,6 +1,9 @@
 // Envia lembrete de local via Horus (WhatsApp) para o próprio usuário autenticado.
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 import { evolution, toE164 } from "../_shared/evolution.ts";
 
 function json(body: unknown, status = 200) {

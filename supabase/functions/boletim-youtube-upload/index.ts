@@ -3,7 +3,10 @@
 // sobe como "não listado" no canal do usuário e salva youtube_video_id/youtube_url.
 // O MP4 é removido do Storage após upload bem-sucedido.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.100.0";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;

@@ -1,6 +1,9 @@
 // Grifar por voz: recebe áudio + linhas do artigo, usa Gemini para identificar
 // trechos e cores a grifar, retorna passages com line/start/end.
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 
 

@@ -5,7 +5,10 @@
 //   3) REFINADOR   — reescreve incorporando a crítica; entrega a versão final.
 // O retorno é compatível com o cliente atual (`texto`, `proxima`, `done`) e
 // inclui `iteracoes` para eventual auditoria/UX.
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 
 const MODEL = 'gemini-3.1-flash-lite';

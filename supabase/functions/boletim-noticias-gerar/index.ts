@@ -10,7 +10,10 @@
 // 5. Persiste em `boletins_juridicos` com tipo='noticias'.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.100.0";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 import { geminiFetch } from "../_shared/geminiFetch.ts";
 import {
   buscarImagemOpenverse,

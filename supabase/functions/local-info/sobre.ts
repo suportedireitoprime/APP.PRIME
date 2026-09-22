@@ -2,7 +2,10 @@
 // Retorna um resumo específico sobre um local jurídico (fórum, tribunal,
 // museu, OAB etc.) usando Gemini com google_search grounding. Foco no lugar
 // específico — não em definições genéricas.
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 import { geminiFetch } from '../_shared/geminiFetch.ts';
 
 interface Body {

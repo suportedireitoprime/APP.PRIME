@@ -1,7 +1,10 @@
 // Edge function: busca jurisprudência de um artigo no Corpus927 (Enfam/STJ)
 // com cache no Supabase. Público (sem JWT).
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 const CORPUS_BASE = 'https://corpus927.enfam.jus.br';
 const CACHE_TTL_DAYS = 30;

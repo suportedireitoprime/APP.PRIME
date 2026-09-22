@@ -3,7 +3,10 @@
 //   (sem parâmetros)                  -> categorias (subpastas do 1º nível)
 //   ?pasta=<id>&q=&pageToken=         -> conteúdo paginado de uma pasta
 //   ?arquivo=<id>                     -> bytes do arquivo (download/preview)
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 import { driveToken } from '../_shared/googleDrive.ts';
 
 const json = (body: unknown, status = 200) =>

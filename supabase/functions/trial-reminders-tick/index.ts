@@ -1,7 +1,10 @@
 // Tick a cada 15min. Envia lembretes de fim de trial via WhatsApp (Horus) e
 // registra a saída para o app exibir banner in-app.
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 import { evolution } from "../_shared/evolution.ts";
 
 Deno.serve(async (req) => {

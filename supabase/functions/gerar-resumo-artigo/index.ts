@@ -1,7 +1,10 @@
 // Gera (e salva) o resumo "Conceitos" de um artigo de lei.
 // O texto do artigo vem do app (base de leis fica em outro projeto Supabase),
 // mas a tabela é validada contra a allowlist para evitar lixo no cache.
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { isTabelaLeiPermitida } from '../_shared/leis-tabelas.ts';
 

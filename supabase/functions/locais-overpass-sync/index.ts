@@ -1,7 +1,10 @@
 // Sincroniza locais jurídicos do OpenStreetMap (Overpass API) para o Supabase.
 // Grátis. Uso administrativo. Chamada: { uf: "SP", categoria: "tribunais" }.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 const OVERPASS_URLS = [
   'https://overpass-api.de/api/interpreter',

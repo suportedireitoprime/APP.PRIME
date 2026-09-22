@@ -3,7 +3,10 @@
 // atualiza play_subscriptions para CANCELED + expires_at=now nos tokens
 // afetados. Também expira linhas ACTIVE cujo expires_at já passou.
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 const PACKAGE_NAME = Deno.env.get('ANDROID_PACKAGE_NAME') ?? '';
 const SERVICE_ACCOUNT_JSON = Deno.env.get('GOOGLE_PLAY_SERVICE_ACCOUNT_JSON') ?? '';

@@ -1,6 +1,9 @@
 // Gera as ferramentas de estudo de uma videoaula (flashcards, questões,
 // lei seca, resumos, pegadinhas, termos) a partir da transcrição do vídeo.
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { buildPrompt, type AulaCtx } from "./prompts.ts";
 import {

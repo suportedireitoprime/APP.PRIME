@@ -50,10 +50,10 @@ interface PushPayload {
   personalize?: boolean;
 }
 
-/** Retorna o primeiro nome capitalizado. Fallback "Estudante". */
+/** Retorna o primeiro nome capitalizado. Retorna string vazia se não houver. */
 function primeiroNome(raw?: string | null): string {
   const s = String(raw || "").trim();
-  if (!s) return "Estudante";
+  if (!s) return "";
   const first = s.split(/\s+/)[0];
   return first.charAt(0).toUpperCase() + first.slice(1).toLowerCase();
 }
@@ -255,14 +255,18 @@ Deno.serve(async (req) => {
         let perTitle = displayTitle;
         let perBody = payload.body;
         if (personalizeOn) {
-          const nome = nomeMap.get(r.user_id) || "Estudante";
+          const rawNome = nomeMap.get(r.user_id);
+          // Se tiver placeholder mas não tiver nome, tentamos um fallback mais suave ou removemos o placeholder (depende do texto).
+          // Por padrão, se usar fallback vazio, pode quebrar frases. Assumimos fallback "você" ou apenas string vazia.
+          const nomeFallback = rawNome || "Estudante"; 
+          
           if (hasPlaceholder) {
-            perTitle = renderPersonal(displayTitle, nome);
-            perBody = renderPersonal(payload.body, nome);
-          } else if (payload.personalize) {
-            // Prefixa nome no início do título se ainda não estiver lá.
-            const already = perTitle.toLowerCase().startsWith(nome.toLowerCase());
-            if (!already) perTitle = `${nome}, ${perTitle.charAt(0).toLowerCase()}${perTitle.slice(1)}`;
+            perTitle = renderPersonal(displayTitle, rawNome ? rawNome : "Estudante");
+            perBody = renderPersonal(payload.body, rawNome ? rawNome : "Estudante");
+          } else if (payload.personalize && rawNome) {
+            // Só prefixa o nome se a pessoa tiver nome cadastrado
+            const already = perTitle.toLowerCase().startsWith(rawNome.toLowerCase());
+            if (!already) perTitle = `${rawNome}, ${perTitle.charAt(0).toLowerCase()}${perTitle.slice(1)}`;
           }
         }
 

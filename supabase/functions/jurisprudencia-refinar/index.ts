@@ -2,7 +2,10 @@
 // Recebe { resultado_id, force? } — busca a linha, chama Gemini AI (gpt-5.5)
 // para estruturar/limpar o texto, e persiste em ementa_refinada / observacao_refinada.
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 import { assertTextModel } from '../_shared/ai-models.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;

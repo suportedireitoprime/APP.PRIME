@@ -3,7 +3,10 @@
 // chegou por qualquer motivo). Marca todas as linhas em play_subscriptions
 // como CANCELED e expira agora, disparando o realtime que o front assina.
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 const ADMIN_EMAILS = new Set([
   'wn7corporation@gmail.com',

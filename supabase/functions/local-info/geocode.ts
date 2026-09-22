@@ -1,6 +1,9 @@
 // Edge function: local-geocode
 // Converte cidade/CEP em coordenadas via Google Geocoding API.
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), {

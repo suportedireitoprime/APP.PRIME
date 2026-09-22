@@ -1,7 +1,10 @@
 // deno-lint-ignore-file
 // Compara o portal SP com o catálogo — retorna diffs sem gravar nada.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 import { SP_TIPOS, anosDisponiveisSP, fetchBuscaSP, parseBuscaSP } from '../_shared/estaduais/sp.ts';
 
 Deno.serve(async (req) => {

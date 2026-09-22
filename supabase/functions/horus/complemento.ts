@@ -13,7 +13,10 @@
 //   admin_phone?: string,          // fallback do número admin
 // }
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 import { evolution } from "../_shared/evolution.ts";
 
 const SITE_URL = Deno.env.get("PUBLIC_SITE_URL") || "https://simple-calc-no-db.Gemini.app";

@@ -1,5 +1,8 @@
 // Edge function: explica jurisprudência e súmulas usando IA
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 import { geminiFetch } from '../_shared/geminiFetch.ts';
 
 interface Payload {

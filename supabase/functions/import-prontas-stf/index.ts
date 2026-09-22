@@ -1,7 +1,10 @@
 // Edge function: importa o catálogo de Pesquisas Prontas do STF.
 // Faz scrape do HTML público e faz upsert em public.jurisprudencia_prontas.
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 import { DOMParser, Element } from 'https://deno.land/x/deno_dom@v0.1.45/deno-dom-wasm.ts';
 
 const STF_URL = 'https://portal.stf.jus.br/jurisprudencia/pesquisarJurisprudenciaFavorita.asp';
