@@ -269,17 +269,17 @@ export function AdminHojeCards() {
       if (error) throw error;
         
       if (events) {
-        // Filtrar apenas quem NÃO é premium
+        // Para "Tela de Assinaturas" (paywall), contar TODOS que abriram a tela,
+        // independente de ser premium ou não — o objetivo é medir interesse/visitas.
+        const allPwEvents = events.filter((e: any) => e.event_name === 'assinatura_aberta');
+        const uniquePw = new Set(allPwEvents.map((e: any) => e.email || e.user_id || 'anonymous'));
+        totalPaywall = uniquePw.size;
+
+        // Para "Checkout" (viu_planos/trial_click), filtrar apenas quem NÃO é premium
         const filteredEvents = events.filter((e: any) => e.profiles?.is_premium !== true);
-        
         const vpEvents = filteredEvents.filter((e: any) => e.event_name === 'trial_click');
-        const pwEvents = filteredEvents.filter((e: any) => e.event_name === 'assinatura_aberta');
-        
         const uniqueVp = new Set(vpEvents.map((e: any) => e.email || e.user_id || 'anonymous'));
         totalViuPlanos = uniqueVp.size;
-
-        const uniquePw = new Set(pwEvents.map((e: any) => e.email || e.user_id || 'anonymous'));
-        totalPaywall = uniquePw.size;
       }
 
       // Buscar novas assinaturas no legacy_subscribers (Asaas)
