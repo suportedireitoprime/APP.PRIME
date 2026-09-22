@@ -222,6 +222,7 @@ async function fetchSubscribersLocal(supabase: ReturnType<typeof createClient>) 
   const userIds = [...new Set((rows ?? []).map((r) => r.user_id).filter(Boolean))];
   const profilesMap = new Map<string, { display_name?: string; avatar_url?: string }>();
   const emailsMap = new Map<string, string>();
+  const lastSignInMap = new Map<string, string>();
   if (userIds.length > 0) {
     const { data: profiles } = await supabase
       .from('profiles')
@@ -238,6 +239,7 @@ async function fetchSubscribersLocal(supabase: ReturnType<typeof createClient>) 
           const { data } = await supabase.auth.admin.getUserById(id);
           if (data?.user) {
             if (data.user.email) emailsMap.set(id, data.user.email);
+            if (data.user.last_sign_in_at) lastSignInMap.set(id, data.user.last_sign_in_at);
             
             // Fallback for display_name and avatar from Auth Metadata (Google/Apple)
             const meta = data.user.user_metadata || {};
@@ -264,6 +266,7 @@ async function fetchSubscribersLocal(supabase: ReturnType<typeof createClient>) 
       display_name: p.display_name ?? null,
       avatar_url: p.avatar_url ?? null,
       email: emailsMap.get(r.user_id) ?? null,
+      last_sign_in_at: lastSignInMap.get(r.user_id) ?? null,
       is_test: isTest,
     };
   });

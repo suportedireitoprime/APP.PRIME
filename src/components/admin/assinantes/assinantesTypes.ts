@@ -14,6 +14,7 @@ export type LocalRow = {
   avatar_url: string | null;
   email: string | null;
   is_test: boolean;
+  last_sign_in_at: string | null;
 };
 
 export type LegacySubscriber = {
@@ -42,6 +43,7 @@ export type CombinedRow = {
   start_time: string | null;
   expires_at: string | null;
   observacao?: string | null;
+  last_sign_in_at?: string | null;
   raw?: any;
 };
 

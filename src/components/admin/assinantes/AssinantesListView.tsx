@@ -239,6 +239,11 @@ function SubscriberCard({
           )}
         </div>
         <div className="text-xs text-muted-foreground truncate font-medium">{r.email ?? '—'}</div>
+        {r.order_id && (
+          <div className="text-[10px] text-muted-foreground/70 font-mono truncate mt-0.5" title={r.order_id}>
+            🧾 {r.order_id}
+          </div>
+        )}
         <div className="text-xs text-muted-foreground flex flex-wrap items-center gap-1 mt-1 font-medium">
           <span className={`font-bold uppercase tracking-wider text-[10px] ${simplePlan === 'Mensal' ? 'text-primary' : 'text-foreground'}`}>
             {simplePlan}
@@ -264,6 +269,12 @@ function SubscriberCard({
             </>
           )}
         </div>
+        {r.last_sign_in_at && (
+          <div className="text-[10px] text-muted-foreground/60 mt-1 flex items-center gap-1">
+            <span className="opacity-70">👤</span>
+            Último acesso: {fmtDateTime(r.last_sign_in_at)}
+          </div>
+        )}
       </div>
       <span className={`text-[10px] px-2.5 py-1 rounded-md font-bold uppercase tracking-widest whitespace-nowrap shadow-sm ${badgeCls}`}>
         {badgeText}

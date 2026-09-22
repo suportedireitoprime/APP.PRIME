@@ -134,6 +134,7 @@ const AdminAssinantes = () => {
           avatar_url: r.avatar_url,
           start_time: r.start_time,
           expires_at: r.expires_at,
+          last_sign_in_at: r.last_sign_in_at ?? null,
           raw: r,
         });
       }
