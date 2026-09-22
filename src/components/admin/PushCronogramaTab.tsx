@@ -27,6 +27,7 @@ export default function PushCronogramaTab() {
   const [campanhas, setCampanhas] = useState<CampaignRow[]>([]);
   const [logs, setLogs] = useState<LogRow[]>([]);
   const [pushEvents, setPushEvents] = useState<any[]>([]);
+  const [boletinsData, setBoletinsData] = useState<any[]>([]);
   const [detalhe, setDetalhe] = useState<EventoBase | null>(null);
   const [testando, setTestando] = useState<string | null>(null);
   const [reportType, setReportType] = useState<"enviadas" | "abertas" | "entregues" | "falhas" | null>(null);
@@ -78,6 +79,7 @@ export default function PushCronogramaTab() {
       setPushEvents(eventsRes.data ?? []);
       
       const boletins = boletinsRes?.data ?? [];
+      setBoletinsData(boletins);
     } finally {
       setLoading(false);
     }
@@ -116,9 +118,9 @@ export default function PushCronogramaTab() {
       // Checar boletins para 09:00 e 21:00
       let boletim: any = null;
       if (ev.automation_key === "boletim_juridico_diario") {
-        boletim = boletins.find((b: any) => b.tipo !== "noticias" && b.status === "pronto");
+        boletim = boletinsData.find((b: any) => b.tipo !== "noticias" && b.status === "pronto");
       } else if (ev.automation_key === "boletim_noticias_diario") {
-        boletim = boletins.find((b: any) => b.tipo === "noticias" && b.status === "pronto");
+        boletim = boletinsData.find((b: any) => b.tipo === "noticias" && b.status === "pronto");
       }
 
       let status: EventoView["status"] = "previsto";
@@ -217,7 +219,7 @@ export default function PushCronogramaTab() {
 
     lista.sort((a, b) => a.hora * 60 + a.minuto - (b.hora * 60 + b.minuto));
     return lista;
-  }, [campanhas, logs]);
+  }, [campanhas, logs, boletinsData]);
 
   const resumo = useMemo(() => {
     let enviadas = 0,
