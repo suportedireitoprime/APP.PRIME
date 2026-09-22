@@ -15,7 +15,6 @@ import {
   padHora,
   PushCronogramaCalendario,
   PushCronogramaResumoCards,
-  PushCronogramaCapasGrid,
   PushCronogramaTimelineItem,
   PushCronogramaPreviewSheet,
   PushCronogramaReportSheet,
@@ -271,8 +270,7 @@ export default function PushCronogramaTab() {
       {/* 2. RESUMO DIÁRIO — DESTAQUE VISUAL DE SUCESSO & TAXAS */}
       <PushCronogramaResumoCards resumo={resumo} onSelectReport={setReportType} />
 
-      {/* 3. CAPAS PADRÃO — PRESETS DISPONÍVEIS */}
-      <PushCronogramaCapasGrid />
+      {/* 3. CAPAS PADRÃO — REMOVIDO A PEDIDO (Minimalismo) */}
 
       {/* 4. FILTROS & BARRA DE CONTROLE DA LINHA DO TEMPO */}
       <div className="flex items-center justify-between flex-wrap gap-2 pt-1">

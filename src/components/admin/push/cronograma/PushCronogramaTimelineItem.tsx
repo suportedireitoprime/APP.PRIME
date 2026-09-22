@@ -9,9 +9,6 @@ import {
   XCircle,
   Bell,
   Eye,
-  ChevronDown,
-  ChevronUp,
-  Flame,
   AlertCircle,
 } from "lucide-react";
 import { CanalBadge } from "./CanalBadge";
@@ -206,65 +203,9 @@ export function PushCronogramaTimelineItem({
             >
               <Eye className="w-3.5 h-3.5 text-primary" /> Visualizar & Testar
             </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-8 w-8 p-0 rounded-xl text-muted-foreground hover:text-foreground"
-              onClick={onToggleExpand}
-              title={isExpanded ? "Ocultar Template" : "Ver Template Persuasivo"}
-            >
-              {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </Button>
           </div>
         </div>
 
-        {/* TEMPLATE INLINE PERSUASIVO COM THUMBNAIL DA CAPA */}
-        <div
-          className={`mt-3 pt-3 border-t border-border/50 grid grid-cols-1 md:grid-cols-12 gap-3 transition-all ${
-            isExpanded ? "block" : "hidden md:grid"
-          }`}
-        >
-          {/* Prévia do Texto Persuasivo */}
-          <div className="md:col-span-8 bg-zinc-950/60 rounded-xl p-3 border border-border/60 space-y-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
-                <Flame className="w-3 h-3" /> Template de Alta Conversão ({ev.gatilho_mental})
-              </span>
-              <div className="flex gap-1">
-                {ev.tags_persuasao.map((tag, tIdx) => (
-                  <Badge key={tIdx} variant="secondary" className="text-[9px] py-0 px-1.5 bg-secondary/80">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-            <div className="text-xs font-bold text-foreground leading-snug">{ev.titulo_exemplo}</div>
-            <div className="text-[11px] text-zinc-300 leading-snug">{ev.corpo_exemplo}</div>
-          </div>
-
-          {/* Thumbnail da Capa Associada */}
-          <div className="md:col-span-4 relative rounded-xl overflow-hidden border border-border/60 bg-black aspect-video flex items-center justify-center group/capa">
-            <img
-              src={ev.realImage || ev.capa_default}
-              alt={ev.nome}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/capa:opacity-100 transition-opacity flex items-center justify-center gap-1.5 p-2">
-              <Button
-                size="sm"
-                variant="secondary"
-                className="h-7 text-[10px] px-2 bg-white/90 text-black hover:bg-white font-bold"
-                onClick={onVisualizarETestar}
-              >
-                Ver em Tela Cheia
-              </Button>
-            </div>
-            <Badge className="absolute bottom-1.5 left-1.5 bg-black/80 backdrop-blur-md text-[8px] text-white border-white/20">
-              Capa 16:9
-            </Badge>
-          </div>
-        </div>
       </Card>
     </div>
   );
