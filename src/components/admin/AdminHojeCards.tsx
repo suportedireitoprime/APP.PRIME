@@ -364,11 +364,13 @@ export function AdminHojeCards() {
     // Ensure paywall (Tela de Assinatura) is at least equal to viu_planos
     totalPaywall = Math.max(totalPaywall, totalViuPlanos);
 
-    // online5m agora vem direto da RPC admin_metricas_dia; fallback para contagem da lista
-    const count5mFromList = periodo === 'hoje' ? ((list5m as any[]) || []).filter(r => r.email !== 'wn7corporation@gmail.com' && r.email !== 'suporte@direitoprime.com.br' && r.email !== 'wn7juridico@gmail.com').length : 0;
+    const adminEmails = ['wn7corporation@gmail.com', 'suporte@direitoprime.com.br', 'wn7juridico@gmail.com'];
+    const count5mFromList = periodo === 'hoje' ? ((list5m as any[]) || []).filter(r => !adminEmails.includes(r.email)).length : 0;
     const count5m = periodo === 'hoje' ? Math.max(totalOnline5m, count5mFromList) : 0;
-    const countOnline = periodo === 'hoje' ? ((listOnline as any[]) || []).filter(r => r.email !== 'wn7corporation@gmail.com' && r.email !== 'suporte@direitoprime.com.br' && r.email !== 'wn7juridico@gmail.com').length : 0;
-
+    
+    // Para online (dia inteiro), pega o totalOnline extraído do RPC (se disponível) ou da lista
+    const countOnlineFromList = ((listOnline as any[]) || []).filter(r => !adminEmails.includes(r.email)).length;
+    const countOnline = Math.max(totalOnline, countOnlineFromList);
     const novos: Record<CardId | 'trialValor', number> = { 
       online5m: count5m, 
       online: countOnline, 
@@ -471,9 +473,11 @@ export function AdminHojeCards() {
       let listPromises: Promise<any>[] = [];
       
       if (id === 'viu_planos') {
-        const minDate = datas[datas.length - 1];
+        const minDate = new Date(datas[datas.length - 1]);
+        minDate.setHours(0, 0, 0, 0);
         const maxDate = new Date(datas[0]);
         maxDate.setDate(maxDate.getDate() + 1);
+        maxDate.setHours(0, 0, 0, 0);
         
         const { data: vpEvents } = await supabase
           .from('app_events')
@@ -651,9 +655,11 @@ export function AdminHojeCards() {
           // "Tela de assinaturas" also implicitly includes anyone who clicked a plan (viu_planos/trial)
           // But we will just pull the raw app_events for trial_click plus the trial list to make sure the counts reflect Math.max
           extraPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));
-          const minDate = datas[datas.length - 1];
+          const minDate = new Date(datas[datas.length - 1]);
+          minDate.setHours(0, 0, 0, 0);
           const maxDate = new Date(datas[0]);
           maxDate.setDate(maxDate.getDate() + 1);
+          maxDate.setHours(0, 0, 0, 0);
           
           const { data: vpEvents } = await supabase
             .from('app_events')
