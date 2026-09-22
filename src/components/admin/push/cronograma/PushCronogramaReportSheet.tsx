@@ -90,20 +90,24 @@ export function PushCronogramaReportSheet({ type, date, onClose }: PushCronogram
       const userIds = Array.from(new Set(list.filter((x) => x.user_id).map((x) => x.user_id)));
       if (userIds.length > 0) {
         const [{ data: profs }, { data: acts }] = await Promise.all([
-          supabase.from("profiles").select("id, display_name").in("id", userIds),
+          supabase.from("profiles").select("id, display_name, avatar_url").in("id", userIds),
           supabase.from("user_activity_log").select("user_id, email, display_name").in("user_id", userIds),
         ]);
 
-        const pMap = new Map(profs?.map((p) => [p.id, p.display_name]) ?? []);
+        const pMap = new Map(profs?.map((p) => [p.id, p]) ?? []);
         const actMap = new Map(acts?.map((a) => [a.user_id, a]) ?? []);
 
         list.forEach((item) => {
-          let n = pMap.get(item.user_id);
+          const p = pMap.get(item.user_id);
           const act = actMap.get(item.user_id);
+
+          let n = p?.display_name;
           if (!n && act?.display_name) n = act.display_name;
           if (!n && act?.email) n = act.email.split("@")[0];
 
           (item as any).display_name = n;
+          (item as any).email = act?.email;
+          (item as any).avatar_url = p?.avatar_url;
         });
       }
 
@@ -151,15 +155,30 @@ export function PushCronogramaReportSheet({ type, date, onClose }: PushCronogram
                   type === "falhas" ? "border-red-500/30 bg-red-500/5" : "border-border/70"
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-foreground truncate flex-1">
-                    {r.display_name || (r.user_id ? "Usuário" : "Aparelho Anônimo")}
-                  </span>
-                  <span className="text-xs text-muted-foreground font-mono ml-2 shrink-0">
-                    {new Date(r.created_at).toLocaleTimeString("pt-BR")}
+                <div className="flex items-center justify-between gap-3 mb-2">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    {r.avatar_url ? (
+                      <img src={r.avatar_url} alt={r.display_name || "Usuário"} className="w-9 h-9 rounded-full object-cover shrink-0 ring-1 ring-border/50" />
+                    ) : (
+                      <div className="w-9 h-9 rounded-full bg-secondary text-muted-foreground flex items-center justify-center font-bold text-[11px] shrink-0 ring-1 ring-border/50 uppercase">
+                        {r.display_name ? r.display_name.slice(0, 2) : (r.user_id ? "US" : "?")}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="font-bold text-foreground truncate text-[13px] leading-tight">
+                        {r.display_name || (r.user_id ? "Usuário Sem Nome" : "Aparelho Anônimo")}
+                      </div>
+                      <div className="text-[11px] text-muted-foreground truncate leading-tight mt-0.5">
+                        {r.email || (r.user_id ? "Sem e-mail" : "Não autenticado")}
+                      </div>
+                    </div>
+                  </div>
+                  <span className="text-[11px] text-muted-foreground font-mono shrink-0">
+                    {new Date(r.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                
+                <div className="flex items-center justify-between text-xs text-muted-foreground mt-1">
                   <span className="capitalize px-2 py-0.5 rounded-md bg-secondary text-[10px] font-bold text-foreground shrink-0">
                     {r.platform || "android"}
                   </span>
@@ -170,18 +189,31 @@ export function PushCronogramaReportSheet({ type, date, onClose }: PushCronogram
                   )}
                   {type === "abertas" && (
                     <span
-                      className={`flex items-center gap-1 font-medium ml-2 truncate ${
+                      className={`flex items-center justify-end gap-1 font-medium ml-2 truncate flex-1 text-right ${
                         r.metadata?.time_on_screen ? "text-emerald-400" : "text-muted-foreground"
                       }`}
                     >
                       <Clock className="w-3 h-3 shrink-0" />
                       <span className="truncate">
                         {r.metadata?.time_on_screen ? `+${r.metadata.time_on_screen}s em tela` : "Saiu logo em seguida"}
-                        {r.metadata?.routes && r.metadata.routes.length > 0 && ` • Rotas: ${r.metadata.routes.join(" → ")}`}
                       </span>
                     </span>
                   )}
                 </div>
+
+                {type === "abertas" && r.metadata?.routes && r.metadata.routes.length > 0 && (
+                  <div className="mt-2 text-[10.5px] text-muted-foreground flex items-center gap-1.5 flex-wrap px-1">
+                    <span className="font-semibold text-foreground/80">Jornada:</span>
+                    {r.metadata.routes.map((route: string, idx: number) => (
+                      <React.Fragment key={idx}>
+                        {idx > 0 && <span className="text-muted-foreground/40">➔</span>}
+                        <span className="bg-background/50 px-1.5 py-0.5 rounded border border-border/50 text-[10px] font-mono">
+                          {route === "/" ? "Início" : route.replace("/", "")}
+                        </span>
+                      </React.Fragment>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>
