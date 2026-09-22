@@ -227,8 +227,8 @@ export function AdminHojeCards() {
 
       // Como o RPC admin_lista_dia não retorna created_at, precisamos buscar os perfis
       const allUids = Array.from(new Set([
-        ...((list5m as any[]) || []).map(r => r.id),
-        ...((listOnline as any[]) || []).map(r => r.id)
+        ...((list5m as any[]) || []).map(r => r.user_id || r.id),
+        ...((listOnline as any[]) || []).map(r => r.user_id || r.id)
       ])).filter(Boolean);
 
       let profilesDict: Record<string, string> = {};
@@ -297,19 +297,63 @@ export function AdminHojeCards() {
         totalViuPlanos = uniqueVp.size;
       }
 
-      // Buscar novas assinaturas no legacy_subscribers (Asaas)
-      const { data: assinaturas } = await supabase
-        .from('legacy_subscribers')
-        .select('id, created_at, email, tipo, status')
-        .gte('created_at', minDateStr.toISOString())
-        .lt('created_at', maxDateStr.toISOString());
-        
-      if (assinaturas && assinaturas.length > 0) {
-        // Usa o maior entre o que veio da RPC e o legacy_subscribers
-        totalTrial = Math.max(totalTrial, assinaturas.length);
-        // Se a gente não tem a info de valor no legacy_subscribers, vamos estimar como mensal na dúvida ou ver pelo webhook
-        totalTrialValor = totalTrial * 29.90; 
+      // Buscar novas assinaturas no Asaas, Play Store e Legado
+      const [asaasRes, playRes, legRes] = await Promise.all([
+        supabase
+          .from('asaas_subscriptions')
+          .select('id, user_id, created_at, plano, status')
+          .gte('created_at', minDateStr.toISOString())
+          .lt('created_at', maxDateStr.toISOString()),
+        supabase
+          .from('play_subscriptions')
+          .select('id, user_id, created_at, product_id, status')
+          .gte('created_at', minDateStr.toISOString())
+          .lt('created_at', maxDateStr.toISOString()),
+        supabase
+          .from('legacy_subscribers')
+          .select('id, created_at, email, tipo, status, claimed_user_id')
+          .gte('created_at', minDateStr.toISOString())
+          .lt('created_at', maxDateStr.toISOString())
+      ]);
+
+      const subUsers = new Map<string, { plano: string; valor: number }>();
+
+      (asaasRes.data || []).forEach((s: any) => {
+        const uid = s.user_id || s.id;
+        const plano = s.plano || 'mensal';
+        const valor = plano === 'vitalicio' ? 149.90 : 29.90;
+        subUsers.set(uid, { plano, valor });
+      });
+
+      (playRes.data || []).forEach((s: any) => {
+        const uid = s.user_id || s.id;
+        const plano = s.product_id?.includes('anual') || s.product_id?.includes('vitalicio') ? 'vitalicio' : 'mensal';
+        const valor = plano === 'vitalicio' ? 199.90 : 29.90;
+        if (!subUsers.has(uid)) {
+          subUsers.set(uid, { plano, valor });
+        }
+      });
+
+      (legRes.data || []).forEach((s: any) => {
+        const uid = s.claimed_user_id || s.id;
+        const plano = s.tipo || 'mensal';
+        const valor = plano === 'vitalicio' ? 149.90 : plano === 'anual' ? 199.90 : 29.90;
+        if (!subUsers.has(uid)) {
+          subUsers.set(uid, { plano, valor });
+        }
+      });
+
+      totalTrial = Math.max(totalTrial, subUsers.size);
+
+      // Soma real da receita dos assinantes
+      let somaValores = 0;
+      subUsers.forEach(({ valor }) => {
+        somaValores += valor;
+      });
+      if (totalTrial > subUsers.size) {
+        somaValores += (totalTrial - subUsers.size) * 29.90;
       }
+      totalTrialValor = somaValores;
 
     } catch (e) {
       console.error('Error fetching today events/subscriptions', e);
@@ -398,6 +442,11 @@ export function AdminHojeCards() {
         { event: 'INSERT', schema: 'public', table: 'play_subscriptions' },
         () => { void load(); }
       )
+      .on(
+        'postgres_changes' as any,
+        { event: '*', schema: 'public', table: 'asaas_subscriptions' },
+        () => { void load(); }
+      )
       .subscribe();
 
     return () => {
@@ -478,32 +527,122 @@ export function AdminHojeCards() {
         const maxDate = new Date(datas[0]);
         maxDate.setDate(maxDate.getDate() + 1);
         maxDate.setHours(0, 0, 0, 0);
-        
-        const { data: assinaturas } = await supabase
-          .from('legacy_subscribers')
-          .select('id, created_at, email, tipo, status, claimed_user_id, asaas_customer_id, nome')
-          .gte('created_at', minDate.toISOString())
-          .lt('created_at', maxDate.toISOString())
-          .order('created_at', { ascending: false })
-          .limit(500);
 
-        if (assinaturas) {
-          allLists = assinaturas.map((e: any) => {
-            return {
-              key: e.id,
-              user_id: e.claimed_user_id || null,
-              title: e.nome || e.email?.split('@')[0] || 'Usuário',
-              email: e.email,
-              subtitle: `Assinou via Asaas (${e.status})`,
-              at: e.created_at,
+        // 1. Chamar admin_lista_dia para todos os dias do período
+        const rpcPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));
+
+        // 2. Buscar também diretamente no asaas_subscriptions, play_subscriptions e legacy_subscribers
+        const [rpcResults, asaasRes, playRes, legRes] = await Promise.all([
+          Promise.all(rpcPromises),
+          supabase
+            .from('asaas_subscriptions')
+            .select(`
+              id, user_id, created_at, plano, status, asaas_customer_id, asaas_subscription_id,
+              profiles:user_id ( display_name, is_premium )
+            `)
+            .gte('created_at', minDate.toISOString())
+            .lt('created_at', maxDate.toISOString())
+            .order('created_at', { ascending: false }),
+          supabase
+            .from('play_subscriptions')
+            .select(`
+              id, user_id, created_at, product_id, status,
+              profiles:user_id ( display_name, is_premium )
+            `)
+            .gte('created_at', minDate.toISOString())
+            .lt('created_at', maxDate.toISOString())
+            .order('created_at', { ascending: false }),
+          supabase
+            .from('legacy_subscribers')
+            .select('id, created_at, email, tipo, status, claimed_user_id, asaas_customer_id, nome')
+            .gte('created_at', minDate.toISOString())
+            .lt('created_at', maxDate.toISOString())
+            .order('created_at', { ascending: false })
+        ]);
+
+        // Processa os dados retornados pela RPC
+        rpcResults.forEach(({ data }) => {
+          ((data as any[]) || []).forEach(r => {
+            const isVit = r.subtitle?.toLowerCase().includes('vitalicio') || r.subtitle?.toLowerCase().includes('vitalício') || r.title?.toLowerCase().includes('vitalicio');
+            const planValor = isVit ? 149.90 : 29.90;
+            const planName = isVit ? 'Vitalício' : 'Mensal';
+            const uid = r.user_id || r.id;
+            allLists.push({
+              key: r.key || uid || r.email || Math.random().toString(),
+              user_id: uid,
+              title: r.title || r.nome || 'Assinante',
+              email: r.email || null,
+              subtitle: r.subtitle || `Assinatura ${planName}`,
+              at: r.at || r.created_at,
               acessos: null,
-              avatar_url: null,
+              avatar_url: r.avatar_url || null,
               is_premium: true,
-              planValue: 29.90,
-              planTag: { plano: 'Assinatura', status: e.status, expires_at: null },
-            };
+              planValue: planValor,
+              planTag: { plano: planName, status: 'ACTIVE', expires_at: null },
+            });
           });
-        }
+        });
+
+        // Complementa com Asaas
+        (asaasRes.data || []).forEach((s: any) => {
+          const isVit = s.plano === 'vitalicio';
+          const planValor = isVit ? 149.90 : 29.90;
+          const planName = isVit ? 'Vitalício' : 'Mensal';
+          const profName = s.profiles?.display_name;
+
+          allLists.push({
+            key: `asaas-${s.id}`,
+            user_id: s.user_id,
+            title: profName || 'Assinante Asaas',
+            email: null,
+            subtitle: `Assinou via Asaas (${planName} - ${s.status})`,
+            at: s.created_at,
+            acessos: null,
+            avatar_url: null,
+            is_premium: true,
+            planValue: planValor,
+            planTag: { plano: planName, status: s.status, expires_at: s.expires_at },
+          });
+        });
+
+        // Complementa com Play Store
+        (playRes.data || []).forEach((s: any) => {
+          const isAnualOrVit = s.product_id?.includes('anual') || s.product_id?.includes('vitalicio');
+          const planValor = isAnualOrVit ? 199.90 : 29.90;
+          const planName = isAnualOrVit ? 'Anual/Vitalício' : 'Mensal';
+          const profName = s.profiles?.display_name;
+
+          allLists.push({
+            key: `play-${s.id}`,
+            user_id: s.user_id,
+            title: profName || 'Assinante Play Store',
+            email: null,
+            subtitle: `Assinou via Google Play (${planName})`,
+            at: s.created_at,
+            acessos: null,
+            avatar_url: null,
+            is_premium: true,
+            planValue: planValor,
+            planTag: { plano: planName, status: s.status, expires_at: null },
+          });
+        });
+
+        // Complementa com Legados se houver
+        (legRes.data || []).forEach((e: any) => {
+          allLists.push({
+            key: `leg-${e.id}`,
+            user_id: e.claimed_user_id || null,
+            title: e.nome || e.email?.split('@')[0] || 'Usuário',
+            email: e.email,
+            subtitle: `Assinou via Asaas (${e.status})`,
+            at: e.created_at,
+            acessos: null,
+            avatar_url: null,
+            is_premium: true,
+            planValue: e.tipo === 'vitalicio' ? 149.90 : 29.90,
+            planTag: { plano: e.tipo || 'Assinatura', status: e.status, expires_at: null },
+          });
+        });
       } else {
         listPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: id, _dia: isoDate(d) }));
         let extraPromises: Promise<any>[] = [];
@@ -567,37 +706,45 @@ export function AdminHojeCards() {
         }
         
         results.forEach(({ data }) => {
-          const mapped = ((data as any[]) || []).map(r => ({
-            key: r.id,
-            user_id: r.id,
-            title: r.nome || r.email?.split('@')[0] || 'Usuário',
-            email: r.email,
-            provider: r.provider || (r.email ? 'email' : null),
-            subtitle: id === 'cadastros' ? 'Novo cadastro' : r.current_route || 'App aberto',
-            at: r.last_seen || r.created_at,
-            is_premium: r.premium,
-            avatar_url: r.avatar_url || null,
-            acessos: null,
-            created_at: profilesDict[r.id] || r.created_at
-          }));
+          const mapped = ((data as any[]) || []).map(r => {
+            const isGoogleAvatar = r.avatar_url?.includes('googleusercontent.com');
+            const uid = r.user_id || r.id;
+            return {
+              key: r.key || uid || r.email || Math.random().toString(),
+              user_id: uid,
+              title: r.title || r.nome || r.email?.split('@')[0] || 'Usuário',
+              email: r.email,
+              provider: isGoogleAvatar ? 'google' : (r.provider || (r.email ? 'email' : null)),
+              subtitle: (id === 'online' || id === 'online5m') ? rotaParaFuncao(r.subtitle || r.current_route).label : (id === 'cadastros' ? 'Novo cadastro' : r.subtitle || r.current_route || 'App aberto'),
+              at: r.at || r.last_seen || r.created_at,
+              is_premium: r.is_premium ?? r.premium ?? false,
+              avatar_url: r.avatar_url || null,
+              acessos: typeof r.acessos === 'number' ? r.acessos : null,
+              created_at: profilesDict[uid] || r.created_at || r.at
+            };
+          });
           allLists = allLists.concat(mapped);
         });
         
         if (id === 'paywall') {
           extraResults.forEach(({ data }) => {
-            const trials = ((data as any[]) || []).map(r => ({
-              key: r.id,
-              user_id: r.id,
-              title: r.nome || r.email?.split('@')[0] || 'Usuário',
-              email: r.email,
-              subtitle: 'Abriu planos (Iniciou teste)',
-              at: r.created_at || r.last_seen,
-              is_premium: r.premium,
-              avatar_url: r.avatar_url || null,
-              provider: r.provider || 'email',
-              acessos: null,
-              created_at: r.created_at
-            }));
+            const trials = ((data as any[]) || []).map(r => {
+              const isGoogleAvatar = r.avatar_url?.includes('googleusercontent.com');
+              const uid = r.user_id || r.id;
+              return {
+                key: r.key || uid || r.email || Math.random().toString(),
+                user_id: uid,
+                title: r.title || r.nome || r.email?.split('@')[0] || 'Usuário',
+                email: r.email,
+                subtitle: 'Abriu planos (Iniciou teste)',
+                at: r.at || r.created_at || r.last_seen,
+                is_premium: r.is_premium ?? r.premium ?? false,
+                avatar_url: r.avatar_url || null,
+                provider: isGoogleAvatar ? 'google' : (r.provider || 'email'),
+                acessos: null,
+                created_at: profilesDict[uid] || r.created_at || r.at
+              };
+            });
             allLists = allLists.concat(trials);
           });
         }
@@ -646,7 +793,7 @@ export function AdminHojeCards() {
       const ids = Array.from(new Set(list.map((r) => r.userId).filter(Boolean))) as string[];
       if (ids.length) {
         const { data: provs } = await supabase.rpc('admin_user_auth_providers' as any, { _ids: ids });
-        const map = new Map<string, string>(((provs as any[]) || []).map((p) => [p.user_id, p.provider]));
+        const map = new Map<string, string>(((provs as any[]) || []).map((p) => [p.user_id || p.id, p.provider]));
 
         // Fetch favorite function (most frequent initial_route in user_sessions)
         const { data: sessions } = await supabase.from('user_sessions')
@@ -667,11 +814,15 @@ export function AdminHojeCards() {
         }
 
         setRows((current) => {
-          const updated = current.map((r) => ({ 
-            ...r, 
-            provider: map.get(r.userId || r.key) || r.provider,
-            funcaoPreferida: mapFav.get(r.userId || r.key)
-          }));
+          const updated = current.map((r) => {
+            const rUid = r.userId || r.key;
+            const rProv = map.get(rUid) || (r.avatarUrl?.includes('googleusercontent.com') ? 'google' : r.provider);
+            return { 
+              ...r, 
+              provider: rProv,
+              funcaoPreferida: mapFav.get(rUid)
+            };
+          });
           if (periodo === 'hoje') rowsCache.current[id] = updated;
           return updated;
         });
@@ -740,11 +891,13 @@ export function AdminHojeCards() {
     '30d': 'Últimos 30 dias',
   }[periodo];
 
-  const filteredRows = rows.filter(r => {
-    if (filtroUser === 'gratuitos') return !r.isPremium;
-    if (filtroUser === 'assinantes') return r.isPremium;
-    return true;
-  });
+  const filteredRows = (open === 'online' || open === 'online5m')
+    ? rows.filter(r => {
+        if (filtroUser === 'gratuitos') return !r.isPremium;
+        if (filtroUser === 'assinantes') return r.isPremium;
+        return true;
+      })
+    : rows;
 
   return (
     <>
@@ -834,22 +987,24 @@ export function AdminHojeCards() {
               </button>
             </div>
 
-            <div className="flex bg-secondary/50 p-1 rounded-xl mt-4 w-full">
-              {(['todos', 'gratuitos', 'assinantes'] as const).map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setFiltroUser(t)}
-                  className={cn(
-                    'flex-1 text-[11.5px] font-semibold py-1.5 rounded-lg capitalize transition-all',
-                    filtroUser === t 
-                      ? 'bg-background shadow-sm text-foreground' 
-                      : 'text-muted-foreground hover:text-foreground'
-                  )}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
+            {(open === 'online' || open === 'online5m') && (
+              <div className="flex bg-secondary/50 p-1 rounded-xl mt-4 w-full">
+                {(['todos', 'gratuitos', 'assinantes'] as const).map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => setFiltroUser(t)}
+                    className={cn(
+                      'flex-1 text-[11.5px] font-semibold py-1.5 rounded-lg capitalize transition-all',
+                      filtroUser === t 
+                        ? 'bg-background shadow-sm text-foreground' 
+                        : 'text-muted-foreground hover:text-foreground'
+                    )}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+            )}
           </SheetHeader>
 
 

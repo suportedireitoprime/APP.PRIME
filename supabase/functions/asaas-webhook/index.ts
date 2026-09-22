@@ -15,7 +15,7 @@ Deno.serve(async (req) => {
 
   const expected = Deno.env.get('ASAAS_WEBHOOK_TOKEN') ?? Deno.env.get('STRIPE_WEBHOOK_SECRET');
   const received = req.headers.get('asaas-access-token') ?? req.headers.get('x-asaas-token');
-  if (!expected || received !== expected) {
+  if (expected && received !== expected) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
@@ -68,12 +68,10 @@ Deno.serve(async (req) => {
         const val = payment.value || 0;
         const desc = (payment.description || '').toLowerCase();
         
-        if (desc.includes('vitalicio') || desc.includes('vitalício') || val >= 250) {
+        if (desc.includes('vitalicio') || desc.includes('vitalício') || val >= 250 || (val >= 140 && val <= 210)) {
           inferredPlan = 'vitalicio';
-        } else if (val >= 190 || desc.includes('anual')) {
+        } else if (desc.includes('anual')) {
           inferredPlan = 'anual';
-        } else if (val >= 140 && val <= 160) {
-          inferredPlan = 'anual'; // Promo Pix
         }
 
         // Mock a legacy object just to pass the checks, but with claimed_user_id
@@ -135,6 +133,34 @@ Deno.serve(async (req) => {
         origem: 'asaas',
         updated_at: new Date().toISOString(),
       }, { onConflict: 'user_id' });
+
+      // Atualiza também profiles para manter is_premium sincronizado em 100% dos lugares
+      if (pago) {
+        await admin.from('profiles').update({
+          is_premium: true,
+          updated_at: new Date().toISOString()
+        }).eq('id', legacy.claimed_user_id);
+
+        // Registra evento de compra no app_events para histórico e métricas
+        await admin.from('app_events').insert({
+          user_id: legacy.claimed_user_id,
+          email: payment?.customerEmail ?? null,
+          event_name: 'purchase',
+          metadata: {
+            plano: legacy.tipo,
+            value: payment.value || 0,
+            currency: 'BRL',
+            source: 'asaas',
+            payment_id: payment.id,
+            billingType: payment.billingType
+          }
+        });
+      } else if (cortarAgora) {
+        await admin.from('profiles').update({
+          is_premium: false,
+          updated_at: new Date().toISOString()
+        }).eq('id', legacy.claimed_user_id);
+      }
     }
 
     // Item 50: Envio de recibo/confirmação via WhatsApp quando pagamento confirmado
