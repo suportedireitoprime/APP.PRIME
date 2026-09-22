@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { isAdminEmail } from '@/lib/adminEmails';
+import { UserDossieSheet } from '@/components/admin/UserDossieSheet';
 
 import {
   CombinedRow,
@@ -48,17 +49,21 @@ const AdminAssinantes = () => {
 
   // Modais
   const [modalDetails, setModalDetails] = useState<'mrr' | 'gross' | null>(null);
-  const [funnelStage, setFunnelStage] = useState<'assinatura_aberta' | 'trial_click' | 'start_trial' | 'purchase' | null>(null);
+  const [funnelStage, setFunnelStage] = useState<'assinatura_aberta' | 'subscription_started' | 'purchase' | null>(null);
   const [showRecorrentes, setShowRecorrentes] = useState(false);
+  const [dossieUser, setDossieUser] = useState<CombinedRow | null>(null);
 
   // Filtros do funil
   const [funnelPlatform, setFunnelPlatform] = useState<'asaas' | 'play' | 'apple'>('asaas');
-  const [funnelDays, setFunnelDays] = useState<number>(7);
+  const [funnelDate, setFunnelDate] = useState<Date>(() => {
+    const d = new Date();
+    d.setHours(0,0,0,0);
+    return d;
+  });
 
-  const load = async (syncPlay = false, customDays?: number) => {
+  const load = async (syncPlay = false) => {
     setLoading(true);
     setError(null);
-    const d = customDays !== undefined ? customDays : funnelDays;
 
     // Garantir que temos o token do usuário logado (não a anon key)
     const { data: sessionData } = await supabase.auth.getSession();
@@ -70,7 +75,7 @@ const AdminAssinantes = () => {
     }
 
     const { data: res, error: err } = await supabase.functions.invoke('play-billing', {
-      body: { fn: 'reporting', sync: syncPlay, funnelDays: d },
+      body: { fn: 'reporting', sync: syncPlay, funnelDays: 14 },
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     if (err) {
@@ -100,7 +105,15 @@ const AdminAssinantes = () => {
   const funnelMetrics = useMemo(() => {
     if (!data?.funnel) return null;
 
+    const startMs = funnelDate.getTime();
+    const endMs = startMs + 24 * 60 * 60 * 1000;
+
     const filteredEvents = data.funnel.filter((e: any) => {
+      if (e.created_at) {
+        const t = new Date(e.created_at).getTime();
+        if (t < startMs || t >= endMs) return false;
+      }
+
       if (e.event_name === 'assinatura_aberta') return true;
       const isWeb = e.metadata?.metodo === 'web' || e.metadata?.source === 'planos_page';
       if (funnelPlatform === 'asaas') return isWeb;
@@ -111,11 +124,10 @@ const AdminAssinantes = () => {
 
     return {
       assinatura_aberta: filteredEvents.filter((e: any) => e.event_name === 'assinatura_aberta'),
-      trial_click: filteredEvents.filter((e: any) => e.event_name === 'trial_click'),
-      start_trial: filteredEvents.filter((e: any) => e.event_name === 'start_trial'),
-      purchase: filteredEvents.filter((e: any) => e.event_name === 'purchase'),
+      subscription_started: filteredEvents.filter((e: any) => e.event_name === 'subscription_started' || e.event_name === 'checkout_started' || e.event_name === 'trial_click'),
+      purchase: filteredEvents.filter((e: any) => e.event_name === 'purchase' || e.event_name === 'asaas_payment_generated'),
     };
-  }, [data, funnelPlatform]);
+  }, [data, funnelPlatform, funnelDate]);
 
   const combinedRows = useMemo(() => {
     const list: CombinedRow[] = [];
@@ -179,22 +191,7 @@ const AdminAssinantes = () => {
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
     return platformRows.filter((r) => {
-      let matchesStatus = true;
-      if (statusFilter !== 'all') {
-        if (r.source === 'asaas') {
-          if (statusFilter === 'SUBSCRIPTION_STATE_ACTIVE' && r.status !== 'active') matchesStatus = false;
-          else if (statusFilter === 'SUBSCRIPTION_STATE_CANCELED' && r.status !== 'inactive') matchesStatus = false;
-          else if (
-            statusFilter !== 'SUBSCRIPTION_STATE_ACTIVE' &&
-            statusFilter !== 'SUBSCRIPTION_STATE_CANCELED' &&
-            r.status !== statusFilter
-          )
-            matchesStatus = false;
-        } else {
-          matchesStatus = r.status === statusFilter;
-        }
-      }
-      if (!matchesStatus) return false;
+      // statusFilter is now handled exclusively by AssinantesListView component
 
       if (dateFilter !== 'all') {
         const now = new Date();
@@ -220,7 +217,7 @@ const AdminAssinantes = () => {
         (v ?? '').toLowerCase().includes(term)
       );
     });
-  }, [platformRows, q, statusFilter, dateFilter]);
+  }, [platformRows, q, dateFilter]);
 
   const isActiveRecord = (r: CombinedRow) => {
     if (r.is_test) return false;
@@ -421,122 +418,70 @@ const AdminAssinantes = () => {
         }
       />
 
-      <div className="max-w-4xl mx-auto px-4 py-4 space-y-6">
+      <div className="max-w-7xl mx-auto px-4 py-4 space-y-6">
         {error && (
           <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
             {error}
           </div>
         )}
 
-        {viewMode === 'dashboard' && (
-          <div className="space-y-3">
-            <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider ml-1">Funções</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              <button
-                onClick={() => document.getElementById('funnel-section')?.scrollIntoView({ behavior: 'smooth' })}
-                className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/50 hover:bg-muted/30 transition-colors gap-2"
-              >
-                <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
-                  <Filter className="w-5 h-5" />
-                </div>
-                <span className="text-xs font-semibold text-center">Funil de<br/>Conversão</span>
-              </button>
-              
-              <button
-                onClick={() => setShowRecorrentes(true)}
-                className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/50 hover:bg-muted/30 transition-colors gap-2"
-              >
-                <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
-                  <CreditCard className="w-5 h-5" />
-                </div>
-                <span className="text-xs font-semibold text-center">Assinantes<br/>Recorrentes</span>
-              </button>
-
-              <button
-                onClick={() => setViewMode('asaas')}
-                className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/50 hover:bg-muted/30 transition-colors gap-2"
-              >
-                <div className="w-10 h-10 rounded-full bg-foreground/10 flex items-center justify-center text-foreground">
-                  <Crown className="w-5 h-5" />
-                </div>
-                <span className="text-xs font-semibold text-center">Filtrar<br/>Asaas</span>
-              </button>
-
-              <button
-                onClick={() => setViewMode('play')}
-                className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/50 hover:bg-muted/30 transition-colors gap-2"
-              >
-                <div className="w-10 h-10 rounded-full bg-foreground/10 flex items-center justify-center text-foreground">
-                  <PlayCircle className="w-5 h-5" />
-                </div>
-                <span className="text-xs font-semibold text-center">Filtrar<br/>Google Play</span>
-              </button>
-
-              <button
-                onClick={() => setViewMode('apple')}
-                className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/50 hover:bg-muted/30 transition-colors gap-2"
-              >
-                <div className="w-10 h-10 rounded-full bg-foreground/10 flex items-center justify-center text-foreground">
-                  <Smartphone className="w-5 h-5" />
-                </div>
-                <span className="text-xs font-semibold text-center">Filtrar<br/>Apple</span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {viewMode === 'dashboard' && (
-          <>
-            {funnelMetrics && (
-              <AssinantesFunnelCard
-                funnelMetrics={funnelMetrics}
-                funnelDays={funnelDays}
-                setFunnelDays={setFunnelDays}
-                onDaysChange={(days) => load(false, days)}
-                funnelPlatform={funnelPlatform}
-                setFunnelPlatform={setFunnelPlatform}
-                setFunnelStage={setFunnelStage}
-              />
-            )}
-
-            <AssinantesRevenueCharts
-              revenue={revenue}
-              grossAccumulated={grossAccumulated}
-              setModalDetails={setModalDetails}
-              timeline={timeline}
-              viewMode={viewMode}
-              loading={loading}
-              platformRowsCount={platformRows.length}
-              testsCount={testsCount}
-              activeChart={activeChart}
-              setActiveChart={setActiveChart}
-              currentMonthData={currentMonthData}
-              selectedMonthId={selectedMonthId}
-              setSelectedMonthId={setSelectedMonthId}
-              monthlyRevenueData={monthlyRevenueData}
-              currentMonthChartData={currentMonthChartData}
-              subsByMonth={subsByMonth}
+        <div className="flex flex-col gap-6 w-full mb-16">
+          {funnelMetrics && (
+            <AssinantesFunnelCard
+              funnelMetrics={funnelMetrics}
+              funnelDate={funnelDate}
+              setFunnelDate={setFunnelDate}
+              funnelPlatform={funnelPlatform}
+              setFunnelPlatform={setFunnelPlatform}
+              setFunnelStage={setFunnelStage}
             />
-          </>
-        )}
+          )}
 
-        {viewMode !== 'dashboard' && (
-          <AssinantesListView
-            q={q}
-            setQ={setQ}
-            statusFilter={statusFilter}
-            setStatusFilter={setStatusFilter}
-            dateFilter={dateFilter}
-            setDateFilter={setDateFilter}
-            loading={loading}
-            filtered={filtered}
-            fmtBRL={fmtBRL}
-            fmtDate={fmtDate}
-            fmtDateTime={fmtDateTime}
-            priceFor={priceFor}
-            parseObservacao={parseObservacao}
-          />
-        )}
+          <div className="bg-card rounded-2xl border border-border p-4 md:p-6 overflow-hidden flex flex-col">
+            <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6">
+              <h2 className="font-semibold text-lg flex items-center gap-2">
+                <Filter className="w-5 h-5 text-muted-foreground" />
+                Lista de Assinantes
+              </h2>
+              <div className="flex items-center gap-2 bg-muted/50 p-1 rounded-xl">
+                {[
+                  { id: 'asaas', label: 'Asaas' },
+                  { id: 'play', label: 'Play (Legado)' },
+                  { id: 'apple', label: 'Apple (Legado)' }
+                ].map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => setViewMode(p.id as any)}
+                    className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
+                      viewMode === p.id
+                        ? 'bg-foreground text-background shadow'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <AssinantesListView
+              q={q}
+              setQ={setQ}
+              statusFilter={statusFilter}
+              setStatusFilter={setStatusFilter}
+              dateFilter={dateFilter}
+              setDateFilter={setDateFilter}
+              loading={loading}
+              filtered={filtered}
+              fmtBRL={fmtBRL}
+              fmtDate={fmtDate}
+              fmtDateTime={fmtDateTime}
+              priceFor={priceFor}
+              parseObservacao={parseObservacao}
+              onSelectUser={setDossieUser}
+            />
+          </div>
+        </div>
       </div>
 
       <AssinantesRevenueModal
@@ -559,6 +504,17 @@ const AdminAssinantes = () => {
           fmtBRL={fmtBRL}
           fmtDateTime={fmtDateTime}
           combinedRows={combinedRows}
+        />
+      )}
+
+      {dossieUser && (
+        <UserDossieSheet
+          userId={dossieUser.raw?.user_id || undefined}
+          nome={dossieUser.display_name}
+          email={dossieUser.email ?? ''}
+          provider="email"
+          avatarUrl={dossieUser.avatar_url || undefined}
+          onClose={() => setDossieUser(null)}
         />
       )}
     </div>

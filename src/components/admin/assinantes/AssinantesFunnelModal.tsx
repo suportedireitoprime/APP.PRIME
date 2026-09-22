@@ -3,12 +3,11 @@ import { XCircle, User, CalendarDays, Clock } from 'lucide-react';
 import { CombinedRow } from './assinantesTypes';
 
 interface AssinantesFunnelModalProps {
-  funnelStage: 'assinatura_aberta' | 'trial_click' | 'start_trial' | 'purchase' | null;
+  funnelStage: 'assinatura_aberta' | 'subscription_started' | 'purchase' | null;
   onClose: () => void;
   funnelMetrics: {
     assinatura_aberta: any[];
-    trial_click: any[];
-    start_trial: any[];
+    subscription_started: any[];
     purchase: any[];
   } | null;
   combinedRows: CombinedRow[];
@@ -90,7 +89,8 @@ export function AssinantesFunnelModal({
 
   // Count new vs old users
   const newUsers = aggregatedList.filter((ev) => {
-    const days = ev.profile_created_at ? Math.floor((Date.now() - new Date(ev.profile_created_at).getTime()) / (24 * 60 * 60 * 1000)) : null;
+    const pDate = ev.profiles?.created_at || ev.profile_created_at;
+    const days = pDate ? Math.floor((Date.now() - new Date(pDate).getTime()) / (24 * 60 * 60 * 1000)) : null;
     return days !== null && days <= 7;
   }).length;
 
@@ -102,11 +102,9 @@ export function AssinantesFunnelModal({
             <h3 className="font-bold text-lg">
               {funnelStage === 'assinatura_aberta'
                 ? 'Acessaram a tela de Planos'
-                : funnelStage === 'trial_click'
-                ? 'Clicaram em Assinar / Ver Modal'
-                : funnelStage === 'start_trial'
-                ? 'Iniciaram Checkout / Teste Grátis'
-                : 'Pagamento Confirmado'}
+                : funnelStage === 'subscription_started'
+                ? 'Preencheram Informações'
+                : 'Geraram Pagamento'}
             </h3>
             <p className="text-xs text-muted-foreground">
               {uniqueCount} usuário(s) único(s) em {currentEvents.length} evento(s)
@@ -136,8 +134,27 @@ export function AssinantesFunnelModal({
                   match.status === 'SUBSCRIPTION_STATE_ACTIVE') &&
                 match.source !== 'old';
 
-              const age = accountAge(ev.profile_created_at);
+              const pDate = ev.profiles?.created_at || ev.profile_created_at;
+              const age = accountAge(pDate);
               const lastAccess = ev.last_sign_in_at;
+
+              let trialStatus = null;
+              if (pDate && ev.created_at) {
+                const diffDays = (new Date(ev.created_at).getTime() - new Date(pDate).getTime()) / (1000 * 60 * 60 * 24);
+                if (diffDays <= 3) {
+                  trialStatus = (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+                      Dentro dos 3 dias
+                    </span>
+                  );
+                } else {
+                  trialStatus = (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-rose-500/20 text-rose-400 border-rose-500/30">
+                      Após 3 dias ({Math.floor(diffDays)}d)
+                    </span>
+                  );
+                }
+              }
 
               return (
                 <div key={idx} className="p-3 rounded-lg border border-border bg-muted/30">
@@ -168,16 +185,17 @@ export function AssinantesFunnelModal({
 
                       {/* Cadastro + Último acesso */}
                       <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                        {trialStatus}
                         {age && (
                           <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${age.cls}`}>
                             <CalendarDays className="w-3 h-3" />
                             Cadastro: {age.label}
                           </span>
                         )}
-                        {ev.profile_created_at && !age && (
+                        {pDate && !age && (
                           <span className="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full border border-border/50">
                             <CalendarDays className="w-3 h-3" />
-                            Cadastro: {fmtShortDateTime(ev.profile_created_at)}
+                            Cadastro: {fmtShortDateTime(pDate)}
                           </span>
                         )}
                         {lastAccess && (

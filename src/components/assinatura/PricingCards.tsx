@@ -1,23 +1,24 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Clock, ShieldCheck, Zap, Sparkles, CheckCircle2, ChevronRight, Info, Shield, Trophy } from "lucide-react";
+import { Check, Clock, ShieldCheck, Zap, Sparkles, CheckCircle2, ChevronRight, Info, Shield, Trophy, Crown } from "lucide-react";
 import { TypewriterText } from "@/components/ui/TypewriterText";
 import { haptic } from '@/lib/nativeHaptics';
 
 interface PricingCardsProps {
-  selectedPlan: 'mensal' | 'anual' | 'promocao';
+  selectedPlan: 'mensal' | 'vitalicio' | 'promocao' | 'anual';
   isNewUser: boolean;
-  onSelectPlan: (plan: 'mensal' | 'anual' | 'promocao') => void;
+  onSelectPlan: (plan: 'mensal' | 'vitalicio' | 'promocao') => void;
 }
 
 export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingCardsProps) {
   // Define o card a ser exibido com base na seleção
-  const activePlan = selectedPlan === 'promocao' && !isNewUser ? 'anual' : selectedPlan;
+  const normalizedPlan = selectedPlan === 'anual' ? 'vitalicio' : selectedPlan;
+  const activePlan = normalizedPlan === 'promocao' && !isNewUser ? 'vitalicio' : normalizedPlan;
 
-  const anualMessages = [
-    "Acesso total por 1 ano inteiro",
-    "Economize mais de 50%",
-    "Sua carreira em outro nível",
-    "O plano mais escolhido"
+  const vitalicioMessages = [
+    "Acesso total permanente para sempre",
+    "Sem mensalidades ou renovações futuras",
+    "Pague uma única vez, use para sempre",
+    "Todas as atualizações e novas leis inclusas"
   ];
 
   const mensalMessages = [
@@ -57,22 +58,22 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
           type="button"
           onClick={() => {
             haptic.light();
-            onSelectPlan(isNewUser ? 'promocao' : 'anual');
+            onSelectPlan(isNewUser ? 'promocao' : 'vitalicio');
           }}
           className={`relative z-10 flex-1 py-2.5 sm:py-3 text-xs sm:text-sm font-black uppercase tracking-wider rounded-full transition-colors duration-200 cursor-pointer select-none ${
-            (activePlan === 'anual' || activePlan === 'promocao')
+            (activePlan === 'vitalicio' || activePlan === 'promocao')
               ? 'text-white' 
               : 'text-neutral-400 hover:text-white'
           }`}
         >
-          {(activePlan === 'anual' || activePlan === 'promocao') && (
+          {(activePlan === 'vitalicio' || activePlan === 'promocao') && (
             <motion.div
               layoutId="pricing-tab"
               className="absolute inset-0 bg-gradient-to-r from-red-600 via-primary to-rose-600 rounded-full shadow-[0_0_20px_rgba(224,31,71,0.55)] border border-red-400/40 -z-10"
               transition={{ type: "spring", bounce: 0.15, duration: 0.45 }}
             />
           )}
-          Anual
+          Vitalício
         </button>
       </div>
 
@@ -101,7 +102,7 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
                 <div>
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <Zap className="w-4 h-4 text-emerald-400 fill-emerald-400" />
-                    <h3 className="font-display font-black text-emerald-400 text-base uppercase tracking-wider">Anual PIX</h3>
+                    <h3 className="font-display font-black text-emerald-400 text-base uppercase tracking-wider">Vitalício PIX</h3>
                   </div>
                   <p className="font-body text-[11px] font-semibold text-muted-foreground line-through">De R$ 199,90</p>
                 </div>
@@ -109,24 +110,24 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
 
               <div className="flex items-baseline gap-1 mb-1">
                 <span className="font-display text-3xl font-black text-foreground">R$ 149,90</span>
-                <span className="text-[10px] font-bold text-muted-foreground">/ano</span>
+                <span className="text-[10px] font-bold text-muted-foreground">pagamento único</span>
               </div>
 
               <p className="text-[10px] font-bold text-emerald-500 mb-2 flex items-center gap-1">
                 <Clock className="w-3 h-3" />
-                Promoção válida por 24 horas
+                Promoção vitalícia válida por 24 horas
               </p>
               
               <div className="w-full pt-1 flex items-center justify-center">
-                <TypewriterText messages={["Equivale a apenas R$ 12,49 / mês", "Desconto exclusivo de boas-vindas", "Aproveite antes que acabe"]} className="text-[11px] font-bold text-emerald-400" />
+                <TypewriterText messages={["Acesso permanente no PIX", "Desconto exclusivo de boas-vindas", "Pague uma única vez"]} className="text-[11px] font-bold text-emerald-400" />
               </div>
             </button>
           )}
 
-          {activePlan === 'anual' && (
+          {activePlan === 'vitalicio' && (
             <button
               type="button"
-              onClick={() => onSelectPlan('anual')}
+              onClick={() => onSelectPlan('vitalicio')}
               className="relative w-full rounded-3xl border-2 transition-all duration-300 text-left p-4 overflow-hidden border-primary bg-primary/5 shadow-[0_0_40px_rgba(224,31,71,0.15)] ring-1 ring-primary/50"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent pointer-events-none" />
@@ -136,15 +137,16 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
                 <img src="/anual_premium.jpg" alt="" className="w-full h-full object-cover opacity-60 mix-blend-screen scale-125 translate-x-4 translate-y-1" loading="lazy" />
               </div>
 
-              <div className="absolute top-0 right-0 bg-primary text-primary-foreground font-black text-[9px] px-2.5 py-0.5 rounded-bl-xl tracking-wider z-10">
-                MAIS ESCOLHIDO
+              <div className="absolute top-0 right-0 bg-primary text-primary-foreground font-black text-[9px] px-2.5 py-0.5 rounded-bl-xl tracking-wider z-10 flex items-center gap-1">
+                <Crown className="w-3 h-3 fill-amber-300 text-amber-300" />
+                ACESSO VITALÍCIO
               </div>
 
               <div className="flex justify-between items-start mb-1.5 relative z-10">
                 <div>
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <ShieldCheck className="w-4 h-4 text-primary" />
-                    <h3 className="font-display font-black text-primary text-base uppercase tracking-wider shadow-black/50 drop-shadow-md">Plano Anual</h3>
+                    <h3 className="font-display font-black text-primary text-base uppercase tracking-wider shadow-black/50 drop-shadow-md">Plano Vitalício</h3>
                   </div>
                 </div>
               </div>
@@ -155,11 +157,11 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
               </div>
 
               <p className="text-[10px] font-bold text-muted-foreground mb-2 relative z-10 drop-shadow-md shadow-black/50">
-                ou R$ 199,90 à vista
+                ou R$ 199,90 à vista (pagamento único)
               </p>
               
               <div className="w-full pt-1 flex items-center justify-center relative z-10">
-                <TypewriterText messages={anualMessages} className="text-[11px] font-bold text-primary drop-shadow-md" />
+                <TypewriterText messages={vitalicioMessages} className="text-[11px] font-bold text-primary drop-shadow-md" />
               </div>
             </button>
           )}
@@ -203,3 +205,4 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
     </div>
   );
 }
+

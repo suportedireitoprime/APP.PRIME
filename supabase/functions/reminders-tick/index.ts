@@ -592,12 +592,42 @@ Deno.serve(async (req) => {
       }
     }
 
+    // ============ 5) campanhas_programadas ============
+    const pushFired: any[] = [];
+    try {
+      const { data: scheduledCampaigns } = await admin
+        .from('push_campaigns')
+        .select('*')
+        .eq('status', 'scheduled')
+        .lte('next_run_at', now.toISOString())
+        .limit(10);
+      
+      for (const c of scheduledCampaigns || []) {
+        await admin.from('push_campaigns').update({ status: 'sending' }).eq('id', c.id);
+        const payload = {
+          campaign_id: c.id,
+          title: c.title,
+          body: c.body,
+          url: c.url,
+          image: c.image_url,
+          emoji: c.emoji,
+          audience: c.audience,
+          personalize: c.personalize,
+          mirror_canal: c.mirror_canal,
+        };
+        const res = await sendPushAudienceWithRetry(payload);
+        pushFired.push({ id: c.id, ok: res.ok, attempts: res.attempts });
+      }
+    } catch (e) {
+      console.error('[reminders-tick] push programadas', e);
+    }
+
     return new Response(JSON.stringify({
       ok: true, fired: fired.length, backfilled: (needSchedule || []).length,
       article_fired: artFired.length, article_backfilled: (artNeed || []).length,
-      location_fired: locFired.length,
+      location_fired: locFired.length, push_fired: pushFired.length,
       whatsapp: waState, tokens_invalidados: tokensInvalidados,
-      details: fired, article_details: artFired, location_details: locFired,
+      details: fired, article_details: artFired, location_details: locFired, push_details: pushFired,
     }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   } catch (e: any) {
     console.error('[reminders-tick] fatal', e);

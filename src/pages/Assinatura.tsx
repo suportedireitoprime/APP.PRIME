@@ -45,7 +45,7 @@ export default function Assinatura() {
 
   const isNewUser = !!(session?.user?.created_at && (Date.now() - new Date(session.user.created_at).getTime() < 24 * 60 * 60 * 1000));
 
-  const [tab, setTab] = useState<'mensal' | 'anual' | 'promocao'>(isNewUser ? 'promocao' : 'anual');
+  const [tab, setTab] = useState<'mensal' | 'vitalicio' | 'promocao'>(isNewUser ? 'promocao' : 'vitalicio');
   const [showHorusPromo, setShowHorusPromo] = useState(false);
   const [hasClosedPromo, setHasClosedPromo] = useState(false);
   
@@ -106,7 +106,7 @@ export default function Assinatura() {
   
   const [devSheetOpen, setDevSheetOpen] = useState(false);
   const [paymentMethodSheetOpen, setPaymentMethodSheetOpen] = useState(false);
-  const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'anual' | 'anual_pix' | null>(null);
+  const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_pix' | null>(null);
 
   const handleBack = () => {
     if (showWelcome) return closeWelcome();
@@ -136,7 +136,7 @@ export default function Assinatura() {
     setDevSheetOpen(false);
   };
 
-  const startPurchase = async (plano: 'mensal' | 'anual' | 'anual_pix') => {
+  const startPurchase = async (plano: 'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_pix') => {
     track('subscription_started', { plano, metodo: 'asaas', source: 'planos_page' });
     import('@/lib/appEvents')
       .then(({ appEvents }) => {
@@ -199,7 +199,7 @@ export default function Assinatura() {
               <SheetHeader className="mb-8 text-left shrink-0 relative z-10">
                 <SheetTitle className="text-3xl font-display font-black text-foreground leading-tight uppercase">Escolha como<br/>prefere pagar.</SheetTitle>
                 <SheetDescription className="text-[13px] font-medium mt-2 text-muted-foreground">
-                  Acesso imediato ao plano Anual. Selecione a forma de pagamento abaixo.
+                  Acesso imediato ao plano Vitalício. Selecione a forma de pagamento abaixo.
                 </SheetDescription>
               </SheetHeader>
               <div className="flex flex-col gap-4 relative z-10">
@@ -208,7 +208,7 @@ export default function Assinatura() {
                   className="h-auto py-5 flex items-center justify-start gap-4 px-5 border-2 border-primary/30 hover:border-primary hover:bg-primary/5 transition-all rounded-3xl group"
                   onClick={() => {
                     setPaymentMethodSheetOpen(false);
-                    startPurchase('anual');
+                    startPurchase('vitalicio');
                   }}
                 >
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
@@ -216,7 +216,7 @@ export default function Assinatura() {
                   </div>
                   <div className="flex flex-col items-start text-left flex-1">
                     <span className="font-bold text-lg text-foreground">Cartão de Crédito</span>
-                    <span className="text-[11px] font-bold text-primary">Até 12x de R$ 16,65</span>
+                    <span className="text-[11px] font-bold text-primary">Até 12x de R$ 16,65 · Pagamento Único</span>
                   </div>
                   <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors group-hover:translate-x-1" />
                 </Button>
@@ -226,7 +226,7 @@ export default function Assinatura() {
                   className="h-auto py-5 flex items-center justify-start gap-4 px-5 border-2 border-border/80 hover:border-emerald-500 hover:bg-emerald-500/5 transition-all rounded-3xl group"
                   onClick={() => {
                     setPaymentMethodSheetOpen(false);
-                    startPurchase('anual_pix');
+                    startPurchase('vitalicio_pix');
                   }}
                 >
                   <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
@@ -234,7 +234,7 @@ export default function Assinatura() {
                   </div>
                   <div className="flex flex-col items-start text-left flex-1">
                     <span className="font-bold text-lg text-foreground">PIX</span>
-                    <span className="text-[11px] font-bold text-muted-foreground">R$ 199,90 à vista</span>
+                    <span className="text-[11px] font-bold text-muted-foreground">R$ 199,90 à vista · Acesso Permanente</span>
                   </div>
                   <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-500 transition-colors group-hover:translate-x-1" />
                 </Button>
@@ -247,7 +247,7 @@ export default function Assinatura() {
           open={showHorusPromo}
           timeLeft={timeLeft}
           onClose={() => { setShowHorusPromo(false); setHasClosedPromo(true); }}
-          onRedeem={() => { setShowHorusPromo(false); setHasClosedPromo(true); setTab('promocao'); startPurchase('anual_pix'); }}
+          onRedeem={() => { setShowHorusPromo(false); setHasClosedPromo(true); setTab('promocao'); startPurchase('vitalicio_pix'); }}
         />
 
         <AnimatePresence>
@@ -319,11 +319,11 @@ export default function Assinatura() {
               <Button
                 onClick={() => {
                   if (tab === 'promocao') {
-                     startPurchase('anual_pix');
-                  } else if (tab === 'anual') {
-                     startPurchase('anual');
+                     startPurchase('vitalicio_pix');
+                  } else if (tab === 'vitalicio') {
+                     setPaymentMethodSheetOpen(true);
                   } else {
-                     startPurchase(tab);
+                     startPurchase('mensal');
                   }
                 }}
                 className={`btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display text-lg font-black tracking-wider transition-all active:scale-[0.98] group ${
@@ -333,7 +333,7 @@ export default function Assinatura() {
                 }`}
               >
                 <span className="flex items-center justify-center gap-2">
-                  {tab === 'promocao' ? 'Assinar no PIX' : 'Assinar'}
+                  {tab === 'promocao' ? 'Garantir Vitalício no PIX' : tab === 'vitalicio' ? 'Garantir Acesso Vitalício' : 'Assinar Mensal'}
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </span>
               </Button>

@@ -369,7 +369,15 @@ export const handler = (async (req) => {
     let funnelQuery = admin
       .from('app_events')
       .select('event_name, email, created_at, user_id, metadata')
-      .in('event_name', ['assinatura_aberta', 'trial_click', 'start_trial', 'purchase']);
+      .in('event_name', [
+        'assinatura_aberta', 
+        'trial_click', 
+        'start_trial', 
+        'purchase', 
+        'subscription_started', 
+        'checkout_started', 
+        'asaas_payment_generated'
+      ]);
       
     if (funnelDays !== undefined) {
       const startDate = new Date();
@@ -379,7 +387,26 @@ export const handler = (async (req) => {
 
     const { data: funnelData } = await funnelQuery
       .order('created_at', { ascending: false })
-      .limit(5000);
+      .limit(50000);
+
+    if (funnelData && funnelData.length > 0) {
+      const userIds = [...new Set(funnelData.map((e: any) => e.user_id).filter(Boolean))];
+      if (userIds.length > 0) {
+        const { data: profilesData } = await admin
+          .from('profiles')
+          .select('id, created_at')
+          .in('id', userIds);
+        const profileMap: Record<string, string> = {};
+        (profilesData ?? []).forEach((p: any) => {
+          profileMap[p.id] = p.created_at;
+        });
+        funnelData.forEach((e: any) => {
+          if (e.user_id && profileMap[e.user_id]) {
+            e.profile_created_at = profileMap[e.user_id];
+          }
+        });
+      }
+    }
 
     return new Response(JSON.stringify({
       sync,

@@ -4,205 +4,174 @@ import { useNavigate } from 'react-router-dom';
 
 interface FunnelMetricsType {
   assinatura_aberta: any[];
-  trial_click: any[];
-  start_trial: any[];
+  subscription_started: any[];
   purchase: any[];
 }
 
 interface AssinantesFunnelCardProps {
   funnelMetrics: FunnelMetricsType;
-  funnelDays: number;
-  setFunnelDays: (days: number) => void;
-  onDaysChange: (days: number) => void;
+  funnelDate: Date;
+  setFunnelDate: (d: Date) => void;
   funnelPlatform: 'asaas' | 'play' | 'apple';
   setFunnelPlatform: (p: 'asaas' | 'play' | 'apple') => void;
-  setFunnelStage: (stage: 'assinatura_aberta' | 'trial_click' | 'start_trial' | 'purchase') => void;
+  setFunnelStage: (stage: 'assinatura_aberta' | 'subscription_started' | 'purchase') => void;
 }
 
 export function AssinantesFunnelCard({
   funnelMetrics,
-  funnelDays,
-  setFunnelDays,
-  onDaysChange,
+  funnelDate,
+  setFunnelDate,
   funnelPlatform,
   setFunnelPlatform,
   setFunnelStage,
 }: AssinantesFunnelCardProps) {
   const navigate = useNavigate();
 
+  const dias = Array.from({ length: 14 }, (_, i) => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() - i);
+    return d;
+  });
+
+  const isSameDay = (d1: Date, d2: Date) => 
+    d1.getDate() === d2.getDate() && 
+    d1.getMonth() === d2.getMonth() && 
+    d1.getFullYear() === d2.getFullYear();
+
   return (
     <section className="bg-card rounded-2xl border border-border p-2.5 md:p-4 relative overflow-hidden">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-        <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 mb-4">
+        <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-muted rounded-xl">
+            <div className="p-2 bg-muted rounded-xl shrink-0">
               <Filter className="w-5 h-5 text-foreground" />
             </div>
             <div>
-              <h2 className="font-semibold text-base leading-tight">Funil de Conversão</h2>
-              <select
-                value={funnelDays}
-                onChange={(e) => {
-                  const val = Number(e.target.value);
-                  setFunnelDays(val);
-                  onDaysChange(val);
-                }}
-                className="text-[10px] font-medium text-muted-foreground bg-transparent border-none outline-none p-0 focus:ring-0 cursor-pointer hover:text-foreground mt-0.5"
-              >
-                <option value={1}>Últimas 24h</option>
-                <option value={7}>Últimos 7 dias</option>
-                <option value={30}>Último mês</option>
-              </select>
+              <h2 className="font-semibold text-base leading-tight">Funil de Conversão (Planos)</h2>
             </div>
           </div>
 
           <button
             onClick={() => navigate('/admin/funil')}
-            className="sm:hidden text-[10px] font-semibold px-2.5 py-1 rounded-full bg-muted text-foreground hover:bg-muted/80 transition-colors border border-border ml-2"
+            className="sm:hidden text-[10px] font-semibold px-2.5 py-1 rounded-full bg-muted text-foreground hover:bg-muted/80 transition-colors border border-border shrink-0"
           >
             Ver completo
           </button>
         </div>
 
-        <div className="flex items-center gap-2 self-start sm:self-auto w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0 hide-scrollbar">
-          <div className="flex items-center bg-muted/50 rounded-full p-0.5 border border-border/50 shrink-0">
-            <button
-              onClick={() => setFunnelPlatform('asaas')}
-              className={`text-[10px] px-2.5 py-1 rounded-full font-medium transition-colors ${
-                funnelPlatform === 'asaas'
-                  ? 'bg-foreground text-background shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Asaas
-            </button>
-            <button
-              onClick={() => setFunnelPlatform('play')}
-              className={`text-[10px] px-2.5 py-1 rounded-full font-medium transition-colors ${
-                funnelPlatform === 'play'
-                  ? 'bg-foreground text-background shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Play
-            </button>
-            <button
-              onClick={() => setFunnelPlatform('apple')}
-              className={`text-[10px] px-2.5 py-1 rounded-full font-medium transition-colors ${
-                funnelPlatform === 'apple'
-                  ? 'bg-foreground text-background shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Apple
-            </button>
-          </div>
+        {/* Date Carousel */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 hide-scrollbar">
+          {dias.map((d, i) => {
+            const selected = isSameDay(d, funnelDate);
+            let label = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+            if (i === 0) label = 'Hoje';
+            else if (i === 1) label = 'Ontem';
 
-          <button
-            onClick={() => navigate('/admin/funil')}
-            className="hidden sm:block text-xs font-semibold px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 transition-colors border border-blue-500/20 shrink-0"
-          >
-            Ver completo
-          </button>
+            return (
+              <button
+                key={d.toISOString()}
+                onClick={() => setFunnelDate(d)}
+                className={`shrink-0 px-3 py-1.5 rounded-xl font-medium text-[11px] transition-colors border ${
+                  selected
+                    ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                    : 'bg-secondary/40 text-muted-foreground border-border/50 hover:bg-secondary/60 hover:text-foreground'
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      <div className="space-y-3">
-        <div
-          onClick={() => setFunnelStage('assinatura_aberta')}
-          className="relative cursor-pointer hover:bg-background/40 transition-colors rounded-xl border border-border p-2.5 flex justify-between items-center overflow-hidden"
-        >
-          <div className="absolute left-0 top-0 bottom-0 w-full bg-blue-500/10 pointer-events-none" />
-          <span className="text-sm font-medium relative z-10">1. Acessaram a tela de Planos</span>
-          <span className="font-bold text-blue-500 relative z-10">
-            {funnelMetrics.assinatura_aberta.length}
-          </span>
-        </div>
 
-        <div
-          onClick={() => setFunnelStage('trial_click')}
-          className="relative cursor-pointer hover:bg-background/40 transition-colors rounded-xl border border-border p-2.5 flex justify-between items-center overflow-hidden ml-4"
-        >
-          <div
-            className="absolute left-0 top-0 bottom-0 bg-blue-500/20 pointer-events-none transition-all"
-            style={{
-              width: funnelMetrics.assinatura_aberta.length
-                ? `${(funnelMetrics.trial_click.length / funnelMetrics.assinatura_aberta.length) * 100}%`
-                : '0%',
-            }}
-          />
-          <span className="text-sm font-medium relative z-10">2. Clicaram em Assinar / Ver Modal</span>
-          <div className="flex items-center gap-2.5 relative z-10">
-            {funnelMetrics.assinatura_aberta.length > 0 && (
-              <span className="text-xs text-muted-foreground">
-                {Math.min(
-                  100,
-                  Math.round(
-                    (funnelMetrics.trial_click.length / funnelMetrics.assinatura_aberta.length) * 100
-                  )
-                )}
-                %
-              </span>
-            )}
-            <span className="font-bold text-blue-500">{funnelMetrics.trial_click.length}</span>
+
+      <div className="flex flex-col gap-3 bg-card rounded-xl p-3 border border-border/50">
+        
+        {/* Step 1: Tela de Planos */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 text-[10px] font-bold shrink-0 border border-blue-500/20">
+                1
+              </div>
+              <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                Acessaram a Tela de Planos
+              </div>
+            </div>
+            <button
+              onClick={() => setFunnelStage('assinatura_aberta')}
+              className="text-lg font-black text-foreground hover:text-blue-500 transition-colors"
+            >
+              {funnelMetrics.assinatura_aberta.length}
+            </button>
           </div>
+          {funnelMetrics.assinatura_aberta.length > 0 && (
+             <div className="flex flex-col gap-1.5 ml-9">
+               <div className="flex justify-between items-center text-[10px] text-muted-foreground">
+                 <span>Conversão p/ info:</span>
+                 <span className="font-bold">{Math.min(100, Math.round((funnelMetrics.subscription_started.length / funnelMetrics.assinatura_aberta.length) * 100))}%</span>
+               </div>
+               <div className="w-full h-1 bg-muted rounded-full overflow-hidden">
+                 <div className="h-full bg-blue-500/50 rounded-full" style={{ width: `${(funnelMetrics.subscription_started.length / funnelMetrics.assinatura_aberta.length) * 100}%` }} />
+               </div>
+             </div>
+          )}
         </div>
 
-        <div
-          onClick={() => setFunnelStage('start_trial')}
-          className="relative cursor-pointer hover:bg-background/40 transition-colors rounded-xl border border-border p-2.5 flex justify-between items-center overflow-hidden ml-8"
-        >
-          <div
-            className="absolute left-0 top-0 bottom-0 bg-blue-500/30 pointer-events-none transition-all"
-            style={{
-              width: funnelMetrics.trial_click.length
-                ? `${(funnelMetrics.start_trial.length / funnelMetrics.trial_click.length) * 100}%`
-                : '0%',
-            }}
-          />
-          <span className="text-sm font-medium relative z-10">3. Iniciaram Checkout / Teste Grátis</span>
-          <div className="flex items-center gap-2.5 relative z-10">
-            {funnelMetrics.trial_click.length > 0 && (
-              <span className="text-xs text-muted-foreground">
-                {Math.min(
-                  100,
-                  Math.round(
-                    (funnelMetrics.start_trial.length / funnelMetrics.trial_click.length) * 100
-                  )
-                )}
-                %
-              </span>
-            )}
-            <span className="font-bold text-blue-500">{funnelMetrics.start_trial.length}</span>
+        <div className="w-[1px] h-3 bg-border/50 ml-3" />
+
+        {/* Step 2: Preencheram Info / Iniciaram Assinatura */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 text-[10px] font-bold shrink-0 border border-emerald-500/20">
+                2
+              </div>
+              <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                Preencheram Informações
+              </div>
+            </div>
+            <button
+              onClick={() => setFunnelStage('subscription_started')}
+              className="text-lg font-black text-foreground hover:text-emerald-500 transition-colors"
+            >
+              {funnelMetrics.subscription_started.length}
+            </button>
           </div>
+          {funnelMetrics.subscription_started.length > 0 && (
+             <div className="flex flex-col gap-1.5 ml-9">
+               <div className="flex justify-between items-center text-[10px] text-emerald-500/70">
+                 <span>Conversão p/ pagamento:</span>
+                 <span className="font-bold">{Math.min(100, Math.round((funnelMetrics.purchase.length / funnelMetrics.subscription_started.length) * 100))}%</span>
+               </div>
+               <div className="w-full h-1 bg-emerald-500/10 rounded-full overflow-hidden">
+                 <div className="h-full bg-emerald-500/50 rounded-full" style={{ width: `${(funnelMetrics.purchase.length / funnelMetrics.subscription_started.length) * 100}%` }} />
+               </div>
+             </div>
+          )}
         </div>
 
-        <div
-          onClick={() => setFunnelStage('purchase')}
-          className="relative cursor-pointer hover:bg-background/40 transition-colors rounded-xl border border-border p-2.5 flex justify-between items-center overflow-hidden ml-12"
-        >
-          <div
-            className="absolute left-0 top-0 bottom-0 bg-blue-500/40 pointer-events-none transition-all"
-            style={{
-              width: funnelMetrics.start_trial.length
-                ? `${(funnelMetrics.purchase.length / funnelMetrics.start_trial.length) * 100}%`
-                : '0%',
-            }}
-          />
-          <span className="text-sm font-medium relative z-10">4. Pagamento Confirmado</span>
-          <div className="flex items-center gap-2.5 relative z-10">
-            {funnelMetrics.start_trial.length > 0 && (
-              <span className="text-xs text-muted-foreground">
-                {Math.min(
-                  100,
-                  Math.round(
-                    (funnelMetrics.purchase.length / funnelMetrics.start_trial.length) * 100
-                  )
-                )}
-                %
-              </span>
-            )}
-            <span className="font-bold text-blue-500">{funnelMetrics.purchase.length}</span>
+        <div className="w-[1px] h-3 bg-border/50 ml-3" />
+
+        {/* Step 3: Geraram Pagamento */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500 text-[10px] font-bold shrink-0 border border-amber-500/20">
+                3
+              </div>
+              <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                Geraram Pagamento
+              </div>
+            </div>
+            <button
+              onClick={() => setFunnelStage('purchase')}
+              className="text-lg font-black text-foreground hover:text-amber-500 transition-colors"
+            >
+              {funnelMetrics.purchase.length}
+            </button>
           </div>
         </div>
       </div>

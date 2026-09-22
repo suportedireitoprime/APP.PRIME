@@ -24,6 +24,7 @@ interface Row {
   planValue?: number;
   planTag?: { plano: string, status: string, expires_at: string | null };
   googleId?: string | null;
+  created_at?: string | null;
 }
 
 const ProviderTag = ({ provider }: { provider?: string | null }) => {
@@ -602,10 +603,13 @@ export function AdminHojeCards() {
         }
       }
 
-      // Deduplicate by key (since same user could be online on multiple days)
+      // Deduplicate by user (since same user could be online on multiple days)
       const uniqueMap = new Map();
       allLists.forEach(r => {
-        if (!uniqueMap.has(r.key)) uniqueMap.set(r.key, r);
+        const dedupeKey = r.email || r.user_id || r.key;
+        if (!uniqueMap.has(dedupeKey)) {
+          uniqueMap.set(dedupeKey, r);
+        }
       });
       const list = Array.from(uniqueMap.values()).map((r) => ({
         key: r.key,
@@ -907,12 +911,20 @@ export function AdminHojeCards() {
                           <div className="font-body text-xs text-muted-foreground/90 truncate flex items-center gap-2">
                             {r.email}
                             {r.created_at && (
-                              <span className="text-[10px] text-muted-foreground/50">
-                                • {(() => {
+                              <span className={cn(
+                                "text-[10px] flex items-center gap-1",
+                                Math.floor((new Date().getTime() - new Date(r.created_at).getTime()) / (1000 * 60 * 60 * 24)) <= 7
+                                  ? "text-emerald-500 font-semibold bg-emerald-500/10 px-1.5 py-0.5 rounded-md"
+                                  : "text-muted-foreground/60"
+                              )}>
+                                {(() => {
                                   const dias = Math.floor((new Date().getTime() - new Date(r.created_at).getTime()) / (1000 * 60 * 60 * 24));
-                                  if (dias === 0) return 'Hoje';
-                                  if (dias === 1) return 'Ontem';
-                                  return `${dias} dias`;
+                                  if (dias === 0) return 'Cadastrado hoje';
+                                  if (dias === 1) return 'Cadastrado ontem';
+                                  if (dias <= 7) return `Cadastrado há ${dias} dias`;
+                                  if (dias > 365) return `Cadastrado há ${(dias/365).toFixed(1).replace('.0','')} anos`;
+                                  if (dias > 30) return `Cadastrado há ${Math.floor(dias/30)} meses`;
+                                  return `Cadastrado há ${dias} dias`;
                                 })()}
                               </span>
                             )}

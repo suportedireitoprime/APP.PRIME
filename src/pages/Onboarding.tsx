@@ -18,7 +18,7 @@ const Onboarding = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [pedirPromo, setPedirPromo] = useState(false);
-  const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'anual' | 'anual_pix' | null>(null);
+  const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_pix' | null>(null);
   const [pedirNotificacoes, setPedirNotificacoes] = useState(false);
   const [pedirTrial, setPedirTrial] = useState(false);
   const [onboardingFinished, setOnboardingFinished] = useState(false);
@@ -177,7 +177,7 @@ const Onboarding = () => {
   }, []);
 
   const resgatarPromo = useCallback(() => {
-    setCheckoutPlan('anual_pix');
+    setCheckoutPlan('vitalicio_pix');
   }, []);
 
   const concluirCheckout = useCallback(() => {

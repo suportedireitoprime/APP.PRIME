@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Search, FlaskConical, AlertTriangle, Clock, CheckCircle2, XCircle, Users } from 'lucide-react';
+import { Search, FlaskConical, AlertTriangle, Clock, CheckCircle2, XCircle, Users, Crown } from 'lucide-react';
 import { Row, STATUS_LABEL } from './assinantesTypes';
 import { avatarImg } from '@/lib/cdnImg';
 
@@ -17,6 +17,7 @@ interface AssinantesListViewProps {
   fmtDateTime: (iso: string | null) => string;
   priceFor: (sku: string | null) => { sticker: number } | null;
   parseObservacao: (obs: string | null) => { value?: number; billingType?: string } | null;
+  onSelectUser?: (r: Row) => void;
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -121,6 +122,7 @@ function SubscriberCard({
   priceFor,
   parseObservacao,
   group,
+  onClick,
 }: {
   r: Row;
   fmtBRL: (v: number) => string;
@@ -129,6 +131,7 @@ function SubscriberCard({
   priceFor: (sku: string | null) => { sticker: number } | null;
   parseObservacao: (obs: string | null) => { value?: number; billingType?: string } | null;
   group: GroupKey;
+  onClick?: (r: Row) => void;
 }) {
   const isAsaas = r.source === 'asaas';
   const asaasData = isAsaas ? parseObservacao(r.observacao ?? null) : null;
@@ -184,7 +187,10 @@ function SubscriberCard({
 
   return (
     <div
+      onClick={() => onClick && onClick(r)}
       className={`flex items-center gap-3 p-3 border-b last:border-0 transition-colors ${
+        onClick ? 'cursor-pointer' : ''
+      } ${
         isExpiredGroup
           ? 'border-rose-500/10 hover:bg-rose-500/5'
           : 'border-border hover:bg-muted/50'
@@ -217,6 +223,12 @@ function SubscriberCard({
           <span className={`text-[15px] font-semibold truncate tracking-tight ${isExpiredGroup ? 'text-muted-foreground' : ''}`}>
             {displayName}
           </span>
+          {simplePlan === 'Vitalício' && (
+            <div className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest bg-amber-500/10 text-amber-500 border border-amber-500/20 shadow-sm ml-1">
+              <Crown className="w-3 h-3 fill-amber-500/20" />
+              Vitalício
+            </div>
+          )}
           {r.source === 'play' && (
             <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest bg-[#3DDC84] text-black shadow-sm">
               Google Play
@@ -245,7 +257,7 @@ function SubscriberCard({
           </div>
         )}
         <div className="text-xs text-muted-foreground flex flex-wrap items-center gap-1 mt-1 font-medium">
-          <span className={`font-bold uppercase tracking-wider text-[10px] ${simplePlan === 'Mensal' ? 'text-primary' : 'text-foreground'}`}>
+          <span className={`font-bold uppercase tracking-wider text-[10px] ${simplePlan === 'Mensal' ? 'text-primary' : simplePlan === 'Vitalício' ? 'text-amber-500' : 'text-foreground'}`}>
             {simplePlan}
           </span>
           {valueStr && (
@@ -297,6 +309,7 @@ export const AssinantesListView: React.FC<AssinantesListViewProps> = ({
   fmtDateTime,
   priceFor,
   parseObservacao,
+  onSelectUser,
 }) => {
   const groups = useMemo(() => {
     const map: Record<GroupKey, Row[]> = {
@@ -341,26 +354,54 @@ export const AssinantesListView: React.FC<AssinantesListViewProps> = ({
     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
       {/* Mini Stats Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        <div className="rounded-xl border border-border bg-card p-3 flex flex-col items-center gap-1">
-          <Users className="w-4 h-4 text-muted-foreground" />
+        <button
+          onClick={() => setStatusFilter('all')}
+          className={`rounded-xl border bg-card p-3 flex flex-col items-center gap-1 transition-all ${
+            statusFilter === 'all' ? 'border-primary ring-1 ring-primary shadow-sm bg-primary/5' : 'border-border hover:bg-muted/50'
+          }`}
+        >
+          <Users className={`w-4 h-4 ${statusFilter === 'all' ? 'text-primary' : 'text-muted-foreground'}`} />
           <span className="text-lg font-bold">{stats.total}</span>
-          <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">Total</span>
-        </div>
-        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 flex flex-col items-center gap-1">
+          <span className={`text-[10px] uppercase tracking-widest font-semibold ${statusFilter === 'all' ? 'text-primary' : 'text-muted-foreground'}`}>
+            Total
+          </span>
+        </button>
+        <button
+          onClick={() => setStatusFilter('active')}
+          className={`rounded-xl border p-3 flex flex-col items-center gap-1 transition-all ${
+            statusFilter === 'active' 
+              ? 'border-emerald-500 ring-1 ring-emerald-500 shadow-sm bg-emerald-500/10' 
+              : 'border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10'
+          }`}
+        >
           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           <span className="text-lg font-bold text-emerald-400">{stats.active}</span>
           <span className="text-[10px] uppercase tracking-widest text-emerald-400/70 font-semibold">Ativos</span>
-        </div>
-        <div className="rounded-xl border border-rose-500/30 bg-rose-500/5 p-3 flex flex-col items-center gap-1">
+        </button>
+        <button
+          onClick={() => setStatusFilter('expired')}
+          className={`rounded-xl border p-3 flex flex-col items-center gap-1 transition-all ${
+            statusFilter === 'expired' 
+              ? 'border-rose-500 ring-1 ring-rose-500 shadow-sm bg-rose-500/10' 
+              : 'border-rose-500/30 bg-rose-500/5 hover:bg-rose-500/10'
+          }`}
+        >
           <XCircle className="w-4 h-4 text-rose-400" />
           <span className="text-lg font-bold text-rose-400">{stats.expired}</span>
           <span className="text-[10px] uppercase tracking-widest text-rose-400/70 font-semibold">Vencidos</span>
-        </div>
-        <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 flex flex-col items-center gap-1">
+        </button>
+        <button
+          onClick={() => setStatusFilter('attention')}
+          className={`rounded-xl border p-3 flex flex-col items-center gap-1 transition-all ${
+            statusFilter === 'attention' 
+              ? 'border-amber-500 ring-1 ring-amber-500 shadow-sm bg-amber-500/10' 
+              : 'border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10'
+          }`}
+        >
           <AlertTriangle className="w-4 h-4 text-amber-400" />
           <span className="text-lg font-bold text-amber-400">{stats.expiringSoon + stats.trial}</span>
           <span className="text-[10px] uppercase tracking-widest text-amber-400/70 font-semibold">Atenção</span>
-        </div>
+        </button>
       </div>
 
       {/* Search + Filters */}
@@ -374,16 +415,6 @@ export const AssinantesListView: React.FC<AssinantesListViewProps> = ({
             className="w-full pl-8 pr-3 py-2 rounded-lg border border-border bg-background text-sm"
           />
         </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-2 py-2 rounded-lg border border-border bg-background text-sm"
-        >
-          <option value="all">Status</option>
-          {Object.entries(STATUS_LABEL).map(([k, v]) => (
-            <option key={k} value={k}>{v.label}</option>
-          ))}
-        </select>
         <select
           value={dateFilter}
           onChange={(e) => setDateFilter(e.target.value)}
@@ -408,6 +439,10 @@ export const AssinantesListView: React.FC<AssinantesListViewProps> = ({
       {!loading &&
         filtered.length > 0 &&
         GROUP_ORDER.map((groupKey) => {
+          if (statusFilter === 'active' && groupKey !== 'active') return null;
+          if (statusFilter === 'expired' && groupKey !== 'expired') return null;
+          if (statusFilter === 'attention' && groupKey !== 'expiring_soon' && groupKey !== 'trial') return null;
+          
           const rows = groups[groupKey];
           if (rows.length === 0) return null;
           const config = GROUP_CONFIG[groupKey];
@@ -437,6 +472,7 @@ export const AssinantesListView: React.FC<AssinantesListViewProps> = ({
                   priceFor={priceFor}
                   parseObservacao={parseObservacao}
                   group={groupKey}
+                  onClick={onSelectUser}
                 />
               ))}
             </div>

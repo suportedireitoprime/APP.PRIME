@@ -7,15 +7,12 @@ import { evolution } from '../_shared/evolution.ts';
 
 /**
  * Webhook do Asaas — mantém as assinaturas MENSAIS migradas do app antigo
- * renovando automaticamente em public.asaas_subscriptions.
- *
- * Configure no painel do Asaas (Integrações → Webhooks) apontando para esta URL
- * e defina o token de autenticação igual ao secret ASAAS_WEBHOOK_TOKEN.
+ * renovando automaticamente em public.asaas_subscriptions e processa
+ * novas assinaturas Mensais e pagamentos Vitalícios.
  */
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
-  // Aceita o token dedicado ou, como alternativa, o secret já salvo pelo usuário.
   const expected = Deno.env.get('ASAAS_WEBHOOK_TOKEN') ?? Deno.env.get('STRIPE_WEBHOOK_SECRET');
   const received = req.headers.get('asaas-access-token') ?? req.headers.get('x-asaas-token');
   if (!expected || received !== expected) {
@@ -51,7 +48,6 @@ Deno.serve(async (req) => {
       legacy = data;
     }
     if (!legacy && customerId) {
-      // Assinaturas duplicadas do mesmo cliente no Asaas caem aqui
       const { data } = await admin.from('legacy_subscribers').select('*')
         .eq('asaas_customer_id', customerId).limit(1).maybeSingle();
       legacy = data;
@@ -72,12 +68,12 @@ Deno.serve(async (req) => {
         const val = payment.value || 0;
         const desc = (payment.description || '').toLowerCase();
         
-        if (val >= 190 || desc.includes('anual')) {
+        if (desc.includes('vitalicio') || desc.includes('vitalício') || val >= 250) {
+          inferredPlan = 'vitalicio';
+        } else if (val >= 190 || desc.includes('anual')) {
           inferredPlan = 'anual';
         } else if (val >= 140 && val <= 160) {
           inferredPlan = 'anual'; // Promo Pix
-        } else if (desc.includes('vitalicio') || val >= 250) {
-          inferredPlan = 'vitalicio';
         }
 
         // Mock a legacy object just to pass the checks, but with claimed_user_id
@@ -98,7 +94,6 @@ Deno.serve(async (req) => {
     }
 
     const pago = ['PAYMENT_CONFIRMED', 'PAYMENT_RECEIVED', 'PAYMENT_RECEIVED_IN_CASH'].includes(event);
-    // Atraso: 3 dias de carência a partir do vencimento antes de cortar o acesso
     const atrasado = event === 'PAYMENT_OVERDUE';
     const perdido = [
       'PAYMENT_DELETED', 'PAYMENT_REFUNDED',
@@ -106,7 +101,7 @@ Deno.serve(async (req) => {
       'SUBSCRIPTION_INACTIVATED', 'PAYMENT_RECEIVED_IN_CASH_UNDONE',
     ].includes(event);
 
-    // Renovação respeitando o ciclo do plano (mensal/semestral/anual) + margem
+    // Renovação respeitando o ciclo do plano (mensal/semestral/anual/vitalicio) + margem
     const diasCiclo = legacy.tipo === 'anual' ? 370
       : legacy.tipo === 'semestral' ? 190
       : 34;
@@ -119,13 +114,13 @@ Deno.serve(async (req) => {
         : null;
 
     const vitalicio = legacy.tipo === 'vitalicio';
-    // Já passou da carência? corta na hora. Senão o cron diário corta ao vencer.
+    // Se for vitalício, nunca corta por expiração ou carência de ciclo
     const cortarAgora = !vitalicio && (perdido || (atrasado && Date.now() > venc + CARENCIA_MS));
 
     if (legacy.id !== 'new_user') {
       await admin.from('legacy_subscribers').update({
         status: cortarAgora ? 'inactive' : 'active',
-        expires_at: proximo ?? legacy.expires_at,
+        expires_at: vitalicio ? null : (proximo ?? legacy.expires_at),
       }).eq('id', legacy.id);
     }
 
@@ -136,7 +131,7 @@ Deno.serve(async (req) => {
         status: cortarAgora ? 'CANCELED' : 'ACTIVE',
         asaas_customer_id: customerId ?? legacy.asaas_customer_id,
         asaas_subscription_id: subscriptionId ?? legacy.asaas_subscription_id,
-        expires_at: legacy.tipo === 'vitalicio' ? null : (proximo ?? legacy.expires_at),
+        expires_at: vitalicio ? null : (proximo ?? legacy.expires_at),
         origem: 'asaas',
         updated_at: new Date().toISOString(),
       }, { onConflict: 'user_id' });
@@ -144,7 +139,6 @@ Deno.serve(async (req) => {
 
     // Item 50: Envio de recibo/confirmação via WhatsApp quando pagamento confirmado
     if (pago && legacy.claimed_user_id) {
-      // Fire-and-forget para não atrasar a resposta do webhook
       (async () => {
         try {
           const { data: profile } = await admin.from('profiles')

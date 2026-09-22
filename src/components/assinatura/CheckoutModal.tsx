@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 interface CheckoutModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  plan: 'mensal' | 'anual' | 'anual_pix' | null;
+  plan: 'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_pix' | null;
   userEmail: string;
   userName: string;
   onSuccess: () => void;
@@ -143,7 +143,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   const isProcessingRef = useRef(false);
   const hasWarnedExpiryRef = useRef(false);
 
-  const [activePlan, setActivePlan] = useState<'mensal' | 'anual' | 'anual_pix'>('anual');
+  const [activePlan, setActivePlan] = useState<'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_pix'>('vitalicio');
 
   useEffect(() => {
     if (plan) {
@@ -151,7 +151,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     }
   }, [plan]);
 
-  const isPix = activePlan === 'anual_pix';
+  const isPix = activePlan === 'vitalicio_pix' || activePlan === 'anual_pix';
 
   useEffect(() => {
     if (open) {
@@ -371,7 +371,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         name: formData.name,
         cpfCnpj: formData.cpf.replace(/\D/g, ''),
         phone: formData.phone.replace(/\D/g, ''),
-        installmentCount: activePlan === 'anual' ? installmentCount : 1
+        installmentCount: (activePlan === 'vitalicio' || activePlan === 'anual') ? installmentCount : 1
       };
 
       if (!isPix) {
@@ -515,8 +515,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
 
   const getPlanInfo = () => {
     if (activePlan === 'mensal') return { title: 'Mensal', price: 'R$ 29,90', sub: '/ mês' };
-    if (activePlan === 'anual') return { title: 'Anual', price: 'R$ 199,90', sub: '/ ano' };
-    if (activePlan === 'anual_pix') return { title: plan === 'anual_pix' ? 'Promoção' : 'Anual no PIX', price: 'R$ 149,90', sub: '/ ano' };
+    if (activePlan === 'vitalicio' || activePlan === 'anual') return { title: 'Vitalício', price: 'R$ 199,90', sub: ' (Pagamento Único)' };
+    if (activePlan === 'vitalicio_pix' || activePlan === 'anual_pix') return { title: (plan === 'vitalicio_pix' || plan === 'anual_pix') ? 'Vitalício Promoção' : 'Vitalício no PIX', price: 'R$ 149,90', sub: ' (Pagamento Único)' };
     return { title: '', price: '', sub: '' };
   };
 
@@ -569,25 +569,25 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                   <span className="font-display text-4xl font-black text-foreground">{planInfo.price}</span>
                   <span className="text-sm font-semibold text-muted-foreground">{planInfo.sub}</span>
                 </div>
-                {activePlan === 'anual' && (
-                  <p className="text-xs text-emerald-400 font-bold mt-1">ou 12x de R$ 16,65</p>
+                {(activePlan === 'vitalicio' || activePlan === 'anual') && (
+                  <p className="text-xs text-emerald-400 font-bold mt-1">ou 12x de R$ 16,65 · Pagamento Único</p>
                 )}
-                {activePlan === 'anual_pix' && (
+                {(activePlan === 'vitalicio_pix' || activePlan === 'anual_pix') && (
                   <span className="absolute top-0 right-0 bg-emerald-500/80 backdrop-blur-md text-white font-black text-[9px] px-2 py-0.5 rounded-bl-lg tracking-wider">
-                    DESCONTO PIX ATIVADO
+                    DESCONTO PIX VITALÍCIO ATIVADO
                   </span>
                 )}
               </div>
             )}
 
-            {/* Alternador de Método de Pagamento (Cartão vs PIX) para Planos Anuais */}
-            {step === 1 && (plan === 'anual' || plan === 'anual_pix') && (
+            {/* Alternador de Método de Pagamento (Cartão vs PIX) para Planos Vitalício / Anual */}
+            {step === 1 && (plan === 'vitalicio' || plan === 'vitalicio_pix' || plan === 'anual' || plan === 'anual_pix') && (
               <div className="grid grid-cols-2 gap-2 p-1.5 bg-black/50 rounded-2xl border border-white/10 mb-5">
                 <button
                   type="button"
-                  onClick={() => setActivePlan('anual')}
+                  onClick={() => setActivePlan(plan === 'anual' || plan === 'anual_pix' ? 'anual' : 'vitalicio')}
                   className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                    activePlan === 'anual'
+                    (activePlan === 'vitalicio' || activePlan === 'anual')
                       ? 'bg-primary text-white shadow-[0_0_20px_rgba(224,31,71,0.5)] border border-red-400/30'
                       : 'text-muted-foreground hover:text-white hover:bg-white/5'
                   }`}
@@ -597,9 +597,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                 </button>
                 <button
                   type="button"
-                  onClick={() => setActivePlan('anual_pix')}
+                  onClick={() => setActivePlan(plan === 'anual' || plan === 'anual_pix' ? 'anual_pix' : 'vitalicio_pix')}
                   className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                    activePlan === 'anual_pix'
+                    (activePlan === 'vitalicio_pix' || activePlan === 'anual_pix')
                       ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] border border-emerald-400/30'
                       : 'text-muted-foreground hover:text-white hover:bg-white/5'
                   }`}
@@ -881,7 +881,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                       </div>
                     </div>
 
-                    {activePlan === 'anual' && (
+                    {(activePlan === 'vitalicio' || activePlan === 'anual') && (
                       <div className="space-y-1">
                         <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Parcelamento</Label>
                         <div className="relative">

@@ -126,18 +126,18 @@ export default function AdminAvaliacaoLoja() {
                 <tbody className="divide-y">
                   {eventos.map((ev) => (
                     <tr key={ev.id} className="hover:bg-muted/10 transition-colors">
-                      <td className="p-3 whitespace-nowrap text-muted-foreground text-xs">
+                      <td className="p-3 whitespace-nowrap text-muted-foreground text-xs align-top">
                         {new Date(ev.created_at).toLocaleString('pt-BR')}
                       </td>
-                      <td className="p-3">
-                        <div className="truncate max-w-[200px]" title={ev.email || ev.user_id}>
+                      <td className="p-3 align-top">
+                        <div className="break-all text-sm font-medium">
                           {ev.email || 'Usuário Desconhecido'}
                         </div>
                       </td>
-                      <td className="p-3 font-medium">
+                      <td className="p-3 font-medium align-top">
                         {getEventLabel(ev.event_name)}
                       </td>
-                      <td className="p-3 text-xs text-muted-foreground max-w-[200px] truncate">
+                      <td className="p-3 text-xs text-muted-foreground break-all align-top">
                         {ev.metadata ? JSON.stringify(ev.metadata) : '-'}
                       </td>
                     </tr>

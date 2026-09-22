@@ -23,9 +23,10 @@ Deno.serve(async (req) => {
 
     const body = await req.json();
     const { plan, email, name, cpfCnpj, creditCard, creditCardHolderInfo, phone, installmentCount } = body; 
-    // plan: 'mensal' | 'anual' | 'anual_pix'
+    // plan: 'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_pix' | 'promocao'
 
-    if (!['mensal', 'anual', 'anual_pix'].includes(plan)) {
+    const VALID_PLANS = ['mensal', 'vitalicio', 'vitalicio_pix', 'anual', 'anual_pix', 'anual_regular_pix', 'promocao'];
+    if (!VALID_PLANS.includes(plan)) {
       throw new Error('Plano inválido');
     }
 
@@ -93,40 +94,54 @@ Deno.serve(async (req) => {
     const today = new Date().toISOString().split('T')[0];
 
     const isCreditCard = !!creditCard;
-    const isPixPlan = plan === 'anual_pix' || plan === 'anual_regular_pix' || plan === 'promocao';
+    const isVitalicio = plan === 'vitalicio' || plan === 'vitalicio_pix';
+    const isPixPlan = plan === 'vitalicio_pix' || plan === 'anual_pix' || plan === 'anual_regular_pix' || plan === 'promocao';
     const billingType = isPixPlan ? 'PIX' : (isCreditCard ? 'CREDIT_CARD' : 'UNDEFINED');
-    const isInstallment = installmentCount && installmentCount > 1 && plan === 'anual';
+    const isInstallment = installmentCount && installmentCount > 1;
     
     let sub: any;
 
-    if (isInstallment || (plan === 'anual' && isCreditCard)) {
-      // Calculation of the total amount including Asaas credit card tax repass
-      let taxRate = 0;
+    if (isVitalicio || isInstallment || (plan === 'anual' && isCreditCard)) {
+      // Cobrança avulsa / parcelada via /payments (sem recorrência anual para Vitalício)
+      let baseValue = 199.90;
+      if (plan === 'vitalicio_pix' || plan === 'anual_pix' || plan === 'promocao') {
+        baseValue = 149.90;
+      }
+
+      let totalWithTax = baseValue;
       const num = installmentCount || 1;
-      if (num === 1) taxRate = 0.0339;
-      else if (num <= 6) taxRate = 0.0389;
-      else taxRate = 0.0439;
-      
-      const totalWithTax = (199.90 + 0.29) / (1 - taxRate);
+
+      if (isCreditCard) {
+        let taxRate = 0;
+        if (num === 1) taxRate = 0.0339;
+        else if (num <= 6) taxRate = 0.0389;
+        else taxRate = 0.0439;
+        
+        totalWithTax = Number(((baseValue + 0.29) / (1 - taxRate)).toFixed(2));
+      }
       
       const paymentPayload: any = {
         customer: customerId,
         billingType: billingType,
         dueDate: today,
-        description: `Anual Estudos Jurídicos${num > 1 ? ` (Parcelado em ${num}x)` : ''}`,
+        description: isVitalicio 
+          ? `Vitalício Estudos Jurídicos${num > 1 ? ` (Parcelado em ${num}x)` : ''}`
+          : `Anual Estudos Jurídicos${num > 1 ? ` (Parcelado em ${num}x)` : ''}`,
       };
 
       if (num > 1) {
         paymentPayload.installmentCount = num;
-        paymentPayload.totalValue = Number(totalWithTax.toFixed(2));
+        paymentPayload.totalValue = totalWithTax;
       } else {
-        paymentPayload.value = Number(totalWithTax.toFixed(2));
+        paymentPayload.value = totalWithTax;
       }
       paymentPayload.externalReference = user.id;
+
       if (isCreditCard) {
         paymentPayload.creditCard = creditCard;
         paymentPayload.creditCardHolderInfo = creditCardHolderInfo;
       }
+
       sub = await asaasRequest('/payments', 'POST', paymentPayload);
       invoiceUrl = sub.invoiceUrl;
     } else {
@@ -142,12 +157,10 @@ Deno.serve(async (req) => {
         subPayload.cycle = 'MONTHLY';
         subPayload.description = 'Mensal Estudos Jurídicos';
       } else if (plan === 'anual' || plan === 'anual_regular_pix') {
-        // Item 39: Preço do Plano Anual Regular no PIX (R$ 199,90 à vista)
         subPayload.value = 199.90;
         subPayload.cycle = 'YEARLY';
         subPayload.description = 'Anual Estudos Jurídicos';
       } else if (plan === 'anual_pix' || plan === 'promocao') {
-        // Item 39: Promoção de Boas-Vindas no PIX (R$ 149,90)
         subPayload.value = 149.90;
         subPayload.cycle = 'YEARLY';
         subPayload.description = 'Promoção Estudos Jurídicos';
@@ -163,8 +176,8 @@ Deno.serve(async (req) => {
     }
 
     if (!invoiceUrl || isPixPlan || billingType === 'PIX') {
-      if (!isInstallment) {
-        // Item 38: Retry com backoff caso o Asaas ainda esteja gerando o primeiro pagamento de forma assíncrona
+      const isDirectPayment = isVitalicio || isInstallment || sub?.object === 'payment';
+      if (!isDirectPayment && sub?.id?.startsWith('sub_')) {
         let payRes = await asaasRequest(`/subscriptions/${sub.id}/payments`, 'GET');
         let retries = 0;
         while ((!payRes.data || payRes.data.length === 0) && retries < 4) {
@@ -184,11 +197,11 @@ Deno.serve(async (req) => {
           }
         }
       } else {
-        // se for payment avulso PIX
-        if (billingType === 'PIX') {
-           const qrCodeRes = await asaasRequest(`/payments/${sub.id}/pixQrCode`, 'GET');
-           pixQrCode = qrCodeRes.encodedImage;
-           pixCopyPaste = qrCodeRes.payload;
+        // Pagamento avulso / parcelado direto
+        if (billingType === 'PIX' && sub?.id) {
+          const qrCodeRes = await asaasRequest(`/payments/${sub.id}/pixQrCode`, 'GET');
+          pixQrCode = qrCodeRes.encodedImage;
+          pixCopyPaste = qrCodeRes.payload;
         }
       }
     }

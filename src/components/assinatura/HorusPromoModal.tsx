@@ -92,10 +92,10 @@ export function HorusPromoModal({ open, timeLeft, onClose, onRedeem }: HorusProm
                 </motion.div>
               </div>
               
-              <h3 className="font-display text-2xl font-black text-white text-center mb-1">OFERTA EXCLUSIVA ANUAL</h3>
+              <h3 className="font-display text-2xl font-black text-white text-center mb-1">OFERTA EXCLUSIVA VITALÍCIO</h3>
               <p className="text-sm text-center text-muted-foreground mb-4 px-2">
                 <span className="font-bold text-white">{firstName ? `Ei ${firstName}! ` : 'Ei! '}</span>
-                Você ganhou um super desconto de boas-vindas no <span className="text-emerald-400 font-bold">PIX</span>. Libere agora o acesso total ao aplicativo antes que o tempo acabe.
+                Você ganhou um super desconto de boas-vindas no <span className="text-emerald-400 font-bold">PIX</span>. Libere agora o <span className="text-white font-bold">acesso vitalício permanente</span> antes que o tempo acabe.
               </p>
               
               <div className="flex items-center justify-center gap-2 mb-6">
@@ -111,18 +111,18 @@ export function HorusPromoModal({ open, timeLeft, onClose, onRedeem }: HorusProm
               
               <div className="w-full flex flex-col items-center justify-center mb-8 relative">
                  <div className="bg-emerald-500 text-white font-black text-[9px] px-2 py-0.5 rounded-full tracking-wider mb-2">
-                   PROMOÇÃO 24H
+                   PROMOÇÃO VITALÍCIA 24H
                  </div>
                  <div className="text-sm font-bold text-emerald-500/80 line-through">De R$ 199,90</div>
                  <div className="font-display text-5xl font-black text-emerald-400 drop-shadow-[0_0_15px_rgba(52,211,153,0.3)] my-1">R$ 149,90</div>
-                 <div className="text-xs font-semibold text-emerald-500/80">equivale a R$ 12,49 / mês</div>
+                 <div className="text-xs font-semibold text-emerald-500/80">pagamento único · acesso para sempre</div>
               </div>
 
               <Button 
                 className="btn-shine-loop relative overflow-hidden w-full h-14 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-2xl font-black text-base uppercase tracking-wider transition-all shadow-[0_8px_25px_rgba(16,185,129,0.35)] active:scale-[0.98] cursor-pointer"
                 onClick={onRedeem}
               >
-                Resgatar Desconto Agora
+                Garantir Acesso Vitalício
               </Button>
 
               <Button
