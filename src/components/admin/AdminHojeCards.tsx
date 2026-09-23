@@ -240,6 +240,7 @@ export function AdminHojeCards() {
       }
       
       let totalOnline5m = 0;
+      let totalOnline = 0;
       let totalCadastros = 0;
       let totalPaywall = 0;
       let totalViuPlanos = 0;
@@ -250,11 +251,15 @@ export function AdminHojeCards() {
       if (metricasResults.status === 'fulfilled') {
         metricasResults.value.forEach((res) => {
           if (res.status === 'fulfilled') {
-            if(res.value.error) console.error('RPC ERROR', res.value.error); const m = (res.value.data as any) || {};
+            if (res.value.error) console.error('RPC ERROR', res.value.error);
+            const m = (res.value.data as any) || {};
             rawRpcResponse = m;
             totalOnline5m = Math.max(totalOnline5m, m.online5m || 0);
+            totalOnline = Math.max(totalOnline, m.online || 0);
             totalCadastros += m.cadastros || 0;
             totalTrial += m.trial || 0;
+            totalPaywall = Math.max(totalPaywall, m.paywall || 0);
+            totalViuPlanos = Math.max(totalViuPlanos, m.checkout || 0);
           }
         });
       }
@@ -262,126 +267,120 @@ export function AdminHojeCards() {
       // Store raw response in a ref for debug rendering
       (window as any)._adminRpcDebug = rawRpcResponse;
 
-    try {
-      // Usar a mesma lógica de data para tudo, sem subtrair offset manualmente,
-      // pois new Date().setHours(0) já cria a data local correta. O .toISOString()
-      // converte automaticamente para UTC correspondente à meia-noite local.
-      const minDateStr = new Date(datas[datas.length - 1]);
-      minDateStr.setHours(0, 0, 0, 0);
+      try {
+        const minDateStr = new Date(datas[datas.length - 1]);
+        minDateStr.setHours(0, 0, 0, 0);
+        
+        const maxDateStr = new Date(datas[0]);
+        maxDateStr.setDate(maxDateStr.getDate() + 1);
+        maxDateStr.setHours(0, 0, 0, 0);
+
+        // Buscar eventos de paywall e checkout
+        const { data: events, error } = await supabase
+          .from('app_events')
+          .select('user_id, id, email, event_name')
+          .in('event_name', ['trial_click', 'assinatura_aberta', 'paywall_view'])
+          .gte('created_at', minDateStr.toISOString())
+          .lt('created_at', maxDateStr.toISOString());
+          
+        if (error) throw error;
+          
+        if (events) {
+          const allPwEvents = events.filter((e: any) => e.event_name === 'assinatura_aberta' || e.event_name === 'paywall_view');
+          const uniquePw = new Set(allPwEvents.map((e: any) => e.email || e.user_id || 'anonymous'));
+          totalPaywall = Math.max(totalPaywall, uniquePw.size);
+
+          const filteredEvents = events.filter((e: any) => e.profiles?.is_premium !== true);
+          const vpEvents = filteredEvents.filter((e: any) => e.event_name === 'trial_click');
+          const uniqueVp = new Set(vpEvents.map((e: any) => e.email || e.user_id || 'anonymous'));
+          totalViuPlanos = Math.max(totalViuPlanos, uniqueVp.size);
+        }
+
+        // Buscar novas assinaturas no Asaas, Play Store e Legado por data de criação/início
+        const [asaasRes, playRes, legRes] = await Promise.all([
+          supabase
+            .from('asaas_subscriptions')
+            .select('id, user_id, created_at, started_at, plano, status')
+            .or(`created_at.gte.${minDateStr.toISOString()},started_at.gte.${minDateStr.toISOString()}`)
+            .lt('created_at', maxDateStr.toISOString())
+            .eq('status', 'ACTIVE'),
+          supabase
+            .from('play_subscriptions')
+            .select('id, user_id, created_at, product_id, status')
+            .gte('created_at', minDateStr.toISOString())
+            .lt('created_at', maxDateStr.toISOString()),
+          supabase
+            .from('legacy_subscribers')
+            .select('id, created_at, email, tipo, status, claimed_user_id')
+            .gte('created_at', minDateStr.toISOString())
+            .lt('created_at', maxDateStr.toISOString())
+        ]);
+
+        const subUsers = new Map<string, { plano: string; valor: number }>();
+
+        (asaasRes.data || []).forEach((s: any) => {
+          const uid = s.user_id || s.id;
+          const plano = (s.plano || 'mensal').toLowerCase();
+          const valor = plano === 'vitalicio' ? 149.90 : plano === 'anual' ? 199.90 : 29.90;
+          subUsers.set(uid, { plano, valor });
+        });
+
+        (playRes.data || []).forEach((s: any) => {
+          const uid = s.user_id || s.id;
+          const plano = s.product_id?.includes('anual') ? 'anual' : s.product_id?.includes('vitalicio') ? 'vitalicio' : 'mensal';
+          const valor = plano === 'anual' ? 199.90 : plano === 'vitalicio' ? 149.90 : 29.90;
+          if (!subUsers.has(uid)) {
+            subUsers.set(uid, { plano, valor });
+          }
+        });
+
+        (legRes.data || []).forEach((s: any) => {
+          const uid = s.claimed_user_id || s.id;
+          const plano = s.tipo || 'mensal';
+          const valor = plano === 'vitalicio' ? 149.90 : plano === 'anual' ? 199.90 : 29.90;
+          if (!subUsers.has(uid)) {
+            subUsers.set(uid, { plano, valor });
+          }
+        });
+
+        totalTrial = Math.max(totalTrial, subUsers.size);
+
+        // Soma real da receita dos assinantes
+        let somaValores = 0;
+        subUsers.forEach(({ valor }) => {
+          somaValores += valor;
+        });
+        if (totalTrial > subUsers.size) {
+          somaValores += (totalTrial - subUsers.size) * 29.90;
+        }
+        totalTrialValor = somaValores;
+
+      } catch (e: any) {
+        console.error('Error fetching today events/subscriptions', e);
+      }
+
+      // Ensure viu_planos (Checkout) is at least equal to assinantes (trial)
+      totalViuPlanos = Math.max(totalViuPlanos, totalTrial);
+      // Ensure paywall (Tela de Assinatura) is at least equal to viu_planos
+      totalPaywall = Math.max(totalPaywall, totalViuPlanos);
+
+      const adminEmails = ['wn7corporation@gmail.com', 'suporte@direitoprime.com.br', 'wn7juridico@gmail.com'];
+      const count5mFromList = periodo === 'hoje' ? ((list5m as any[]) || []).filter(r => !adminEmails.includes(r.email)).length : 0;
+      const count5m = periodo === 'hoje' ? Math.max(totalOnline5m, count5mFromList) : 0;
       
-      const maxDateStr = new Date(datas[0]);
-      maxDateStr.setDate(maxDateStr.getDate() + 1);
-      maxDateStr.setHours(0, 0, 0, 0);
-
-      // Buscar eventos de paywall e checkout
-      const { data: events, error } = await supabase
-        .from('app_events')
-        .select('user_id, id, email, event_name')
-        .in('event_name', ['trial_click', 'assinatura_aberta'])
-        .gte('created_at', minDateStr.toISOString())
-        .lt('created_at', maxDateStr.toISOString());
-        
-      if (error) throw error;
-        
-      if (events) {
-        // Para "Tela de Assinaturas" (paywall), contar TODOS que abriram a tela,
-        // independente de ser premium ou não — o objetivo é medir interesse/visitas.
-        const allPwEvents = events.filter((e: any) => e.event_name === 'assinatura_aberta');
-        const uniquePw = new Set(allPwEvents.map((e: any) => e.email || e.user_id || 'anonymous'));
-        totalPaywall = uniquePw.size;
-
-        // Para "Checkout" (viu_planos/trial_click), filtrar apenas quem NÃO é premium
-        const filteredEvents = events.filter((e: any) => e.profiles?.is_premium !== true);
-        const vpEvents = filteredEvents.filter((e: any) => e.event_name === 'trial_click');
-        const uniqueVp = new Set(vpEvents.map((e: any) => e.email || e.user_id || 'anonymous'));
-        totalViuPlanos = uniqueVp.size;
-      }
-
-      // Buscar novas assinaturas no Asaas, Play Store e Legado
-      const [asaasRes, playRes, legRes] = await Promise.all([
-        supabase
-          .from('asaas_subscriptions')
-          .select('id, user_id, updated_at, plano, status')
-          .gte('updated_at', minDateStr.toISOString())
-          .lt('updated_at', maxDateStr.toISOString())
-          .eq('status', 'ACTIVE'),
-        supabase
-          .from('play_subscriptions')
-          .select('id, user_id, created_at, product_id, status')
-          .gte('created_at', minDateStr.toISOString())
-          .lt('created_at', maxDateStr.toISOString()),
-        supabase
-          .from('legacy_subscribers')
-          .select('id, created_at, email, tipo, status, claimed_user_id')
-          .gte('created_at', minDateStr.toISOString())
-          .lt('created_at', maxDateStr.toISOString())
-      ]);
-
-      const subUsers = new Map<string, { plano: string; valor: number }>();
-
-      (asaasRes.data || []).forEach((s: any) => {
-        const uid = s.user_id || s.id;
-        const plano = s.plano || 'mensal';
-        const valor = plano === 'vitalicio' ? 149.90 : 29.90;
-        subUsers.set(uid, { plano, valor });
-      });
-
-      (playRes.data || []).forEach((s: any) => {
-        const uid = s.user_id || s.id;
-        const plano = s.product_id?.includes('anual') || s.product_id?.includes('vitalicio') ? 'vitalicio' : 'mensal';
-        const valor = plano === 'vitalicio' ? 199.90 : 29.90;
-        if (!subUsers.has(uid)) {
-          subUsers.set(uid, { plano, valor });
-        }
-      });
-
-      (legRes.data || []).forEach((s: any) => {
-        const uid = s.claimed_user_id || s.id;
-        const plano = s.tipo || 'mensal';
-        const valor = plano === 'vitalicio' ? 149.90 : plano === 'anual' ? 199.90 : 29.90;
-        if (!subUsers.has(uid)) {
-          subUsers.set(uid, { plano, valor });
-        }
-      });
-
-      totalTrial = Math.max(totalTrial, subUsers.size);
-
-      // Soma real da receita dos assinantes
-      let somaValores = 0;
-      subUsers.forEach(({ valor }) => {
-        somaValores += valor;
-      });
-      if (totalTrial > subUsers.size) {
-        somaValores += (totalTrial - subUsers.size) * 29.90;
-      }
-      totalTrialValor = somaValores;
-
-    } catch (e) {
-      console.error('Error fetching today events/subscriptions', e);
-    }
-
-    // Ensure viu_planos (Checkout) is at least equal to assinantes (trial)
-    totalViuPlanos = Math.max(totalViuPlanos, totalTrial);
-    // Ensure paywall (Tela de Assinatura) is at least equal to viu_planos
-    totalPaywall = Math.max(totalPaywall, totalViuPlanos);
-
-    const adminEmails = ['wn7corporation@gmail.com', 'suporte@direitoprime.com.br', 'wn7juridico@gmail.com'];
-    const count5mFromList = periodo === 'hoje' ? ((list5m as any[]) || []).filter(r => !adminEmails.includes(r.email)).length : 0;
-    const count5m = periodo === 'hoje' ? Math.max(totalOnline5m, count5mFromList) : 0;
-    
-    // Para online (dia inteiro), pega o totalOnline extraído do RPC (se disponível) ou da lista
-    const countOnlineFromList = ((listOnline as any[]) || []).filter(r => !adminEmails.includes(r.email)).length;
-    const countOnline = Math.max(totalOnline, countOnlineFromList);
-    const novos: Record<CardId | 'trialValor', number> = { 
-      online5m: count5m, 
-      online: countOnline, 
-      cadastros: totalCadastros, 
-      paywall: totalPaywall,
-      viu_planos: totalViuPlanos,
-      trial: totalTrial,
-      trialValor: totalTrialValor
-    };
-    setCounts(novos);
+      // Para online (dia inteiro), pega o totalOnline extraído do RPC (se disponível) ou da lista
+      const countOnlineFromList = ((listOnline as any[]) || []).filter(r => !adminEmails.includes(r.email)).length;
+      const countOnline = Math.max(totalOnline, countOnlineFromList);
+      const novos: Record<CardId | 'trialValor', number> = {
+        online5m: count5m, 
+        online: countOnline, 
+        cadastros: totalCadastros, 
+        paywall: totalPaywall,
+        viu_planos: totalViuPlanos,
+        trial: totalTrial,
+        trialValor: totalTrialValor
+      };
+      setCounts(novos);
     
     if (periodo === 'hoje') {
       try {
@@ -542,9 +541,9 @@ export function AdminHojeCards() {
           supabase
             .from('asaas_subscriptions')
             .select(`
-              id, user_id, created_at, plano, status, asaas_customer_id, asaas_subscription_id
+              id, user_id, created_at, started_at, plano, status, asaas_customer_id, asaas_subscription_id
             `)
-            .gte('created_at', minDate.toISOString())
+            .or(`created_at.gte.${minDate.toISOString()},started_at.gte.${minDate.toISOString()}`)
             .lt('created_at', maxDate.toISOString())
             .order('created_at', { ascending: false }),
           supabase
@@ -563,13 +562,20 @@ export function AdminHojeCards() {
             .order('created_at', { ascending: false })
         ]);
 
-        // Processa os dados retornados pela RPC
+        const existingUserIds = new Set<string>();
+
+        // Processa os dados retornados pela RPC (já contém display_name, email e avatar)
         rpcResults.forEach(({ data }) => {
           ((data as any[]) || []).forEach(r => {
-            const isVit = r.subtitle?.toLowerCase().includes('vitalicio') || r.subtitle?.toLowerCase().includes('vitalício') || r.title?.toLowerCase().includes('vitalicio');
-            const planValor = isVit ? 149.90 : 29.90;
-            const planName = isVit ? 'Vitalício' : 'Mensal';
+            const subText = (r.subtitle || '').toLowerCase();
+            const titleText = (r.title || '').toLowerCase();
+            const isVit = subText.includes('vitalicio') || subText.includes('vitalício') || titleText.includes('vitalicio');
+            const isAnual = subText.includes('anual') || titleText.includes('anual');
+            const planValor = isVit ? 149.90 : isAnual ? 199.90 : 29.90;
+            const planName = isVit ? 'Vitalício' : isAnual ? 'Anual' : 'Mensal';
             const uid = r.user_id || r.id;
+            if (uid) existingUserIds.add(uid);
+
             allLists.push({
               key: r.key || uid || r.email || Math.random().toString(),
               user_id: uid,
@@ -586,56 +592,61 @@ export function AdminHojeCards() {
           });
         });
 
-        // Buscar nomes dos perfis manualmente já que não podemos fazer JOIN na tabela public
-        const subUids = Array.from(new Set([
+        // Buscar perfis para preencher nomes/emails de eventuais assinaturas não capturadas pela RPC
+        const missingUids = Array.from(new Set([
           ...(asaasRes.data || []).map((s: any) => s.user_id),
           ...(playRes.data || []).map((s: any) => s.user_id)
-        ])).filter(Boolean) as string[];
+        ])).filter(uid => Boolean(uid) && !existingUserIds.has(uid)) as string[];
 
-        const profNames = new Map<string, string>();
-        if (subUids.length > 0) {
-          const { data: profs } = await supabase.from('profiles').select('id, display_name').in('id', subUids);
+        const profMap = new Map<string, { name?: string; email?: string }>();
+        if (missingUids.length > 0) {
+          const { data: profs } = await supabase.from('profiles').select('id, display_name, email').in('id', missingUids);
           if (profs) {
             profs.forEach((p: any) => {
-              if (p.display_name) profNames.set(p.id, p.display_name);
+              profMap.set(p.id, { name: p.display_name, email: p.email });
             });
           }
         }
 
-        // Complementa com Asaas
+        // Complementa com Asaas faltantes
         (asaasRes.data || []).forEach((s: any) => {
-          const isVit = s.plano === 'vitalicio';
-          const planValor = isVit ? 149.90 : 29.90;
-          const planName = isVit ? 'Vitalício' : 'Mensal';
-          const profName = profNames.get(s.user_id);
+          if (s.user_id && existingUserIds.has(s.user_id)) return;
+          const planoLower = (s.plano || '').toLowerCase();
+          const isVit = planoLower === 'vitalicio';
+          const isAnual = planoLower === 'anual';
+          const planValor = isVit ? 149.90 : isAnual ? 199.90 : 29.90;
+          const planName = isVit ? 'Vitalício' : isAnual ? 'Anual' : 'Mensal';
+          const profInfo = profMap.get(s.user_id);
 
           allLists.push({
             key: `asaas-${s.id}`,
             user_id: s.user_id,
-            title: profName || 'Assinante Asaas',
-            email: null,
+            title: profInfo?.name || 'Assinante Asaas',
+            email: profInfo?.email || null,
             subtitle: `Assinou via Asaas (${planName} - ${s.status})`,
-            at: s.created_at,
+            at: s.created_at || s.started_at,
             acessos: null,
             avatar_url: null,
             is_premium: true,
             planValue: planValor,
             planTag: { plano: planName, status: s.status, expires_at: s.expires_at },
           });
+          if (s.user_id) existingUserIds.add(s.user_id);
         });
 
-        // Complementa com Play Store
+        // Complementa com Play Store faltantes
         (playRes.data || []).forEach((s: any) => {
+          if (s.user_id && existingUserIds.has(s.user_id)) return;
           const isAnualOrVit = s.product_id?.includes('anual') || s.product_id?.includes('vitalicio');
           const planValor = isAnualOrVit ? 199.90 : 29.90;
           const planName = isAnualOrVit ? 'Anual/Vitalício' : 'Mensal';
-          const profName = profNames.get(s.user_id);
+          const profInfo = profMap.get(s.user_id);
 
           allLists.push({
             key: `play-${s.id}`,
             user_id: s.user_id,
-            title: profName || 'Assinante Play Store',
-            email: null,
+            title: profInfo?.name || 'Assinante Play Store',
+            email: profInfo?.email || null,
             subtitle: `Assinou via Google Play (${planName})`,
             at: s.created_at,
             acessos: null,
@@ -644,6 +655,7 @@ export function AdminHojeCards() {
             planValue: planValor,
             planTag: { plano: planName, status: s.status, expires_at: null },
           });
+          if (s.user_id) existingUserIds.add(s.user_id);
         });
 
         // Complementa com Legados se houver
