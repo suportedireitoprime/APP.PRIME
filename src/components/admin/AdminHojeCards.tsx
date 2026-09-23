@@ -295,7 +295,7 @@ export function AdminHojeCards() {
             const m = (res.value.data as any) || {};
             rawRpcResponse = m;
             totalOnline5m = Math.max(totalOnline5m, m.online5m || 0);
-            totalOnline = Math.max(totalOnline, m.online || 0);
+            totalOnline = Math.max(totalOnline, m.online || 0, totalOnline5m);
             totalCadastros += m.cadastros || 0;
             totalTrial += m.trial || 0;
             totalPaywall = Math.max(totalPaywall, m.paywall || 0);
@@ -823,7 +823,7 @@ export function AdminHojeCards() {
         const allUids = Array.from(new Set(
           results.flatMap(({ data }) => ((data as any[]) || []).map(r => r.user_id || r.id)).filter(Boolean)
         ));
-        let profilesDict: Record<string, string> = {};
+        const profilesDict: Record<string, any> = {};
         if (allUids.length > 0) {
           const { data: profs } = await supabase.from('profiles').select('id, created_at').in('id', allUids);
           if (profs) {
