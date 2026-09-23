@@ -120,6 +120,8 @@ type Category = {
   icon: any;
   items?: Item[];
   route?: string;
+};
+
 const CATEGORIES: Category[] = [
   {
     id: 'assinaturas-financeiro',
@@ -333,12 +335,6 @@ const CATEGORIES: Category[] = [
       { id: 'praticar', label: 'Praticar', icon: Target, desc: 'Tiro ao alvo na lei seca (em testes, só admin)', route: '/praticar' },
     ],
   },
-];  icon: Wrench,
-    items: [
-      { id: 'paleta-cores', label: 'Paleta de Cores', icon: Palette, desc: 'Configurações visuais', route: '/configuracoes' },
-    ],
-  },
-
 ];
 
 const REPO_STORAGE_KEY = 'admin_github_repo';
