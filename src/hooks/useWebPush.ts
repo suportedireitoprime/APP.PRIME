@@ -47,7 +47,12 @@ export function useWebPush() {
       const reg =
         (await navigator.serviceWorker.getRegistration(SW_PATH)) ||
         (await navigator.serviceWorker.register(SW_PATH));
-      await navigator.serviceWorker.ready;
+
+      // Timeout defensivo de 3.5s para não travar caso o Service Worker não atinja 'ready'
+      const swReadyPromise = navigator.serviceWorker.ready;
+      const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 3500));
+      await Promise.race([swReadyPromise, timeoutPromise]);
+
       let sub = await reg.pushManager.getSubscription();
       if (!sub) {
         sub = await reg.pushManager.subscribe({

@@ -96,9 +96,13 @@ const Landing = () => {
     document.title = 'Direito Prime - A Plataforma Definitiva de Estudos Jurídicos';
   }, []);
 
-  // Se estiver rodando nativo no Android ou iOS, abre a Landing 100% Nativa (Compose/SwiftUI)
+  // Se estiver rodando nativo no Android ou iOS, abre a Landing 100% Nativa (Compose/SwiftUI) no primeiro boot
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
+      const alreadyChecked = typeof window !== 'undefined' && window.sessionStorage.getItem('native_landing_checked') === '1';
+      if (alreadyChecked) return;
+      try { window.sessionStorage.setItem('native_landing_checked', '1'); } catch {}
+
       import('@/plugins/NativeAuthPlugin').then(({ NativeAuth }) => {
         NativeAuth.openLanding().then((res) => {
           if (res?.success) {
@@ -111,14 +115,6 @@ const Landing = () => {
 
   const handleStart = useCallback((origem: string) => {
     trackStartJourney(origem);
-    if (Capacitor.isNativePlatform()) {
-      import('@/plugins/NativeAuthPlugin').then(({ NativeAuth }) => {
-        NativeAuth.openAuth({ mode: 'signup' }).then((res) => {
-          if (res?.success) navigate('/');
-        }).catch(() => navigate('/auth'));
-      }).catch(() => navigate('/auth'));
-      return;
-    }
     navigate('/auth');
   }, [navigate]);
 

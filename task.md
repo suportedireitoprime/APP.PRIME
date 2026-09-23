@@ -1,16 +1,16 @@
-# Correção de Explicações IA do Vade Mecum e Exibição Completa do Código Penal
+# Ajuste de Fluxo Inicial, Botão Acessar Agora e Destravamento de Notificações
 
-- [x] 1. Diagnóstico e Purga de Cache de Explicações IA (Art. 4º, Código Penal, Código Civil):
-  - [x] Sanitizar `aiCacheLocal.ts` para rejeitar e deletar automaticamente erros salvos (`prepayment credits`, `429`, `consegui gerar uma resposta`).
-  - [x] Implementar rotina de purga para apagar todas as explicações salvas do Código Penal e Código Civil no `localStorage` e `artigo_ai_cache`.
-  - [x] Proteger `useArtigoCommentsAndAi.ts` para nunca salvar mensagens de erro de IA no cache ou no Supabase.
-  - [x] Corrigir Edge Function `assistente-juridica` para retornar HTTP 503 com `{ error: ... }` quando a API falhar, impedindo que erros sejam tratados como respostas válidas.
-  - [x] Fazer deploy da Edge Function `assistente-juridica` no Supabase (`dnjrgpldcwcpoywamorr`).
-- [x] 2. Correção da Virtualização de Artigos (Exibição após Artigo 11 no Código Penal):
-  - [x] Substituir `useWindowVirtualizer` por `useVirtualizer` com `getScrollElement: () => document.getElementById('root') || document.body` em `LeiArtigosVirtualList.tsx`.
-  - [x] Ajustar cálculo de `scrollMargin` e posicionamento para rastrear o elemento correto de rolagem (`#root`).
-  - [x] Verificar e padronizar outros virtualizadores (`DecretoView`, `LeiOrdinariaView`, `SumulaView`, `LeiOrdinariaDetail`) para `useVirtualizer` com `#root` como scroll container e `scrollMargin`.
-- [x] 3. Validação e Entrega:
-  - [x] Executar `.\node_modules\.bin\tsc.CMD --noEmit` para garantir ausência de erros TypeScript.
-  - [x] Executar auto-commit e push automático para o GitHub.
-
+- [x] 1. Configurar início do aplicativo na Landing Page:
+  - [x] Ajustar `ProtectedRoute` em `AppRoutes.tsx` para redirecionar usuários não autenticados na raiz (`/`) para `/landing`.
+- [x] 2. Corrigir navegação do botão "Acessar agora" na Landing Page:
+  - [x] Simplificar `handleStart` em `Landing.tsx` para direcionar diretamente para `/auth`.
+  - [x] Garantir que na tela de Auth o usuário possa escolher entre criar conta e entrar, com botão de voltar para a Landing funcional.
+- [x] 3. Destravar o banner de permissão de notificações:
+  - [x] Adicionar timeout de segurança de 3.5s em `useWebPush.ts` para evitar congelamento em `navigator.serviceWorker.ready`.
+  - [x] Implementar timeout geral de 6s com `Promise.race` em `ativar()` dentro de `NotificacoesPermissaoStep.tsx`.
+  - [x] Corrigir verificação de permissão no Capacitor Firebase Messaging (`permStatus.receive !== 'granted'`).
+  - [x] Adicionar botão "Agora não, lembrar mais tarde" para permitir dispensa limpa.
+- [x] 4. Validação e Entrega:
+  - [x] Executar `.\node_modules\.bin\tsc.CMD --noEmit` para garantir integridade dos tipos.
+  - [x] Executar `.\node_modules\.bin\vite.CMD build` para testar empacotamento de produção.
+  - [x] Realizar auto-commit e push para o GitHub.

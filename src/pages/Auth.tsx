@@ -1,6 +1,6 @@
 import { useState, useEffect, startTransition } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
@@ -16,6 +16,7 @@ const Auth = () => {
   const { user, loading } = useAuth();
   const isDesktop = useIsDesktop();
   const navigate = useNavigate();
+  const location = useLocation();
   const [drawerMode, setDrawerMode] = useState<AuthMode>(null);
   const [ajudaOpen, setAjudaOpen] = useState(false);
 
@@ -105,29 +106,32 @@ const Auth = () => {
               console.warn('[Auth] NativeAuth.addListener não disponível:', err);
             });
 
-          NativeAuth.openAuth({ mode: 'login' })
-            .then(async (res) => {
-              if (res?.success && res.session) {
-                try {
-                  const sessionObj =
-                    typeof res.session === 'string' ? JSON.parse(res.session) : res.session;
-                  if (sessionObj?.access_token && sessionObj?.refresh_token) {
-                    await supabase.auth.setSession({
-                      access_token: sessionObj.access_token,
-                      refresh_token: sessionObj.refresh_token,
-                    });
+          const autoMode = (location.state as { autoOpenMode?: 'login' | 'signup' } | null)?.autoOpenMode;
+          if (autoMode) {
+            NativeAuth.openAuth({ mode: autoMode })
+              .then(async (res) => {
+                if (res?.success && res.session) {
+                  try {
+                    const sessionObj =
+                      typeof res.session === 'string' ? JSON.parse(res.session) : res.session;
+                    if (sessionObj?.access_token && sessionObj?.refresh_token) {
+                      await supabase.auth.setSession({
+                        access_token: sessionObj.access_token,
+                        refresh_token: sessionObj.refresh_token,
+                      });
+                    }
+                  } catch (e) {
+                    console.warn('[Auth] Erro ao restaurar sessão nativa:', e);
                   }
-                } catch (e) {
-                  console.warn('[Auth] Erro ao restaurar sessão nativa:', e);
+                  startTransition(() => {
+                    navigate('/', { replace: true });
+                  });
                 }
-                startTransition(() => {
-                  navigate('/', { replace: true });
-                });
-              }
-            })
-            .catch((err) => {
-              console.warn('[Auth] NativeAuth.openAuth não disponível:', err);
-            });
+              })
+              .catch((err) => {
+                console.warn('[Auth] NativeAuth.openAuth não disponível:', err);
+              });
+          }
         })
         .catch((err) => {
           console.warn('[Auth] Falha ao carregar NativeAuthPlugin:', err);
@@ -138,7 +142,7 @@ const Auth = () => {
         authHandle?.remove?.();
       };
     }
-  }, [navigate, user]);
+  }, [navigate, user, location.state]);
 
   // Pré-aquece a Home/Dashboard apenas após o pico inicial de carregamento e Splash
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, startTransition } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, Gavel, CalendarClock, Newspaper, ShieldCheck } from 'lucide-react';
@@ -123,28 +123,52 @@ export default function NotificacoesPermissaoStep({
 
   if (shouldSkip) return null;
 
+  const pular = () => {
+    haptic.light();
+    marcarResultado(false);
+    startTransition(() => {
+      onDone(false);
+    });
+  };
+
   const ativar = async () => {
     haptic.selection();
     setLoading(true);
     let granted = false;
     try {
-      if (Capacitor.isNativePlatform()) {
-        const { FirebaseMessaging } = await import('@capacitor-firebase/messaging');
-        let permStatus = await FirebaseMessaging.checkPermissions();
-        
-        if (permStatus.receive === 'prompt') {
-          permStatus = await FirebaseMessaging.requestPermissions();
+      // Timeout estrito de 6s para assegurar que a interface NUNCA fique congelada em "Ativando…"
+      const activationPromise = (async () => {
+        if (Capacitor.isNativePlatform()) {
+          const { FirebaseMessaging } = await import('@capacitor-firebase/messaging');
+          let permStatus = await FirebaseMessaging.checkPermissions();
+          
+          if (permStatus.receive !== 'granted') {
+            permStatus = await FirebaseMessaging.requestPermissions();
+          }
+          const isGranted = permStatus.receive === 'granted';
+          if (isGranted) {
+            try {
+              const { registerNativePushToken } = await import('@/lib/nativePush');
+              await registerNativePushToken(3500);
+            } catch (err) {
+              console.warn('[NotificacoesPermissaoStep] Falha ao registrar token nativo:', err);
+            }
+          }
+          return isGranted;
+        } else if (webSupported) {
+          return await subscribe();
         }
-        granted = permStatus.receive === 'granted';
-        if (granted) {
-          try {
-            const { registerNativePushToken } = await import('@/lib/nativePush');
-            await registerNativePushToken();
-          } catch {}
-        }
-      } else if (webSupported) {
-        granted = await subscribe();
-      }
+        return false;
+      })();
+
+      const timeoutPromise = new Promise<boolean>((resolve) => {
+        setTimeout(() => {
+          console.warn('[NotificacoesPermissaoStep] Timeout limite de 6s atingido na ativação');
+          resolve(false);
+        }, 6000);
+      });
+
+      granted = await Promise.race([activationPromise, timeoutPromise]);
     } catch (e) {
       console.warn('[NotificacoesPermissaoStep]', e);
     } finally {
@@ -154,8 +178,8 @@ export default function NotificacoesPermissaoStep({
         // Aguarda o token chegar ao banco antes de disparar o teste.
         window.setTimeout(() => { void enviarBoasVindas(); }, 2500);
       }
-      import('react').then(({ startTransition }) => {
-        startTransition(() => onDone(granted));
+      startTransition(() => {
+        onDone(granted);
       });
     }
   };
@@ -244,6 +268,14 @@ export default function NotificacoesPermissaoStep({
             <Button className="w-full h-14 text-base font-semibold" size="lg" onClick={ativar} disabled={loading}>
               {loading ? 'Ativando…' : 'Receber notificações'}
             </Button>
+            <button
+              type="button"
+              onClick={pular}
+              disabled={loading}
+              className="w-full py-2.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors text-center disabled:opacity-50"
+            >
+              Agora não, lembrar mais tarde
+            </button>
           </div>
         </motion.div>
       </div>
