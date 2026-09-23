@@ -27,6 +27,31 @@ interface Row {
   created_at?: string | null;
 }
 
+function formatTempoCadastro(createdAt?: string | null, fallbackSubtitle?: string | null): string {
+  if (createdAt) {
+    const dataCad = new Date(createdAt);
+    if (!isNaN(dataCad.getTime())) {
+      const agora = new Date();
+      const inicioHoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
+      const inicioCad = new Date(dataCad.getFullYear(), dataCad.getMonth(), dataCad.getDate());
+      const diffDias = Math.floor((inicioHoje.getTime() - inicioCad.getTime()) / (1000 * 60 * 60 * 24));
+
+      if (diffDias <= 0) return 'Cadastrado hoje';
+      if (diffDias === 1) return 'Cadastrado há 1 dia';
+      if (diffDias < 30) return `Cadastrado há ${diffDias} dias`;
+      const meses = Math.floor(diffDias / 30);
+      if (meses === 1) return 'Cadastrado há 1 mês';
+      if (meses < 12) return `Cadastrado há ${meses} meses`;
+      const anos = (diffDias / 365).toFixed(1).replace('.0', '');
+      return `Cadastrado há ${anos} ${anos === '1' ? 'ano' : 'anos'}`;
+    }
+  }
+  if (fallbackSubtitle && fallbackSubtitle !== 'Desconhecida' && fallbackSubtitle !== 'App aberto') {
+    return fallbackSubtitle;
+  }
+  return 'Cadastrado recentemente';
+}
+
 const ProviderTag = ({ provider }: { provider?: string | null }) => {
   if (!provider) return null;
   const p = provider.toLowerCase();
@@ -321,8 +346,11 @@ export function AdminHojeCards() {
         (asaasRes.data || []).forEach((s: any) => {
           const uid = s.user_id || s.id;
           const plano = (s.plano || 'mensal').toLowerCase();
-          const valor = plano === 'vitalicio' ? 149.90 : plano === 'anual' ? 199.90 : 29.90;
-          subUsers.set(uid, { plano, valor });
+          const isPromo = plano.includes('promocional') || plano.includes('promo');
+          const isAnual = plano.includes('anual');
+          const isVit = !isPromo && (plano.includes('vitalicio') || plano.includes('vitalício'));
+          const valor = (isAnual && isPromo) ? 149.90 : isAnual ? 199.90 : isVit ? 149.90 : 29.90;
+          subUsers.set(uid, { plano: (isAnual && isPromo) ? 'anual_promocional' : plano, valor });
         });
 
         (playRes.data || []).forEach((s: any) => {
@@ -569,10 +597,11 @@ export function AdminHojeCards() {
           ((data as any[]) || []).forEach(r => {
             const subText = (r.subtitle || '').toLowerCase();
             const titleText = (r.title || '').toLowerCase();
-            const isVit = subText.includes('vitalicio') || subText.includes('vitalício') || titleText.includes('vitalicio');
+            const isPromo = subText.includes('promocional') || subText.includes('promo') || titleText.includes('promocional');
             const isAnual = subText.includes('anual') || titleText.includes('anual');
-            const planValor = isVit ? 149.90 : isAnual ? 199.90 : 29.90;
-            const planName = isVit ? 'Vitalício' : isAnual ? 'Anual' : 'Mensal';
+            const isVit = !isPromo && (subText.includes('vitalicio') || subText.includes('vitalício') || titleText.includes('vitalicio'));
+            const planValor = (isAnual && isPromo) ? 149.90 : isAnual ? 199.90 : isVit ? 149.90 : 29.90;
+            const planName = (isAnual && isPromo) ? 'Anual Promocional' : isAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
             const uid = r.user_id || r.id;
             if (uid) existingUserIds.add(uid);
 
@@ -612,10 +641,11 @@ export function AdminHojeCards() {
         (asaasRes.data || []).forEach((s: any) => {
           if (s.user_id && existingUserIds.has(s.user_id)) return;
           const planoLower = (s.plano || '').toLowerCase();
-          const isVit = planoLower === 'vitalicio';
-          const isAnual = planoLower === 'anual';
-          const planValor = isVit ? 149.90 : isAnual ? 199.90 : 29.90;
-          const planName = isVit ? 'Vitalício' : isAnual ? 'Anual' : 'Mensal';
+          const isPromo = planoLower.includes('promocional') || planoLower.includes('promo');
+          const isAnual = planoLower.includes('anual');
+          const isVit = !isPromo && (planoLower === 'vitalicio' || planoLower.includes('vitalício'));
+          const planValor = (isAnual && isPromo) ? 149.90 : isAnual ? 199.90 : isVit ? 149.90 : 29.90;
+          const planName = (isAnual && isPromo) ? 'Anual Promocional' : isAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
           const profInfo = profMap.get(s.user_id);
 
           allLists.push({
@@ -728,7 +758,7 @@ export function AdminHojeCards() {
         ]);
 
         const allUids = Array.from(new Set(
-          results.flatMap(({ data }) => ((data as any[]) || []).map(r => r.id)).filter(Boolean)
+          results.flatMap(({ data }) => ((data as any[]) || []).map(r => r.user_id || r.id)).filter(Boolean)
         ));
         let profilesDict: Record<string, string> = {};
         if (allUids.length > 0) {
@@ -742,18 +772,20 @@ export function AdminHojeCards() {
           const mapped = ((data as any[]) || []).map(r => {
             const isGoogleAvatar = r.avatar_url?.includes('googleusercontent.com');
             const uid = r.user_id || r.id;
+            const routeLabel = r.subtitle ? rotaParaFuncao(r.subtitle).label : null;
+            const cleanSubtitle = (routeLabel && routeLabel !== 'Desconhecida') ? routeLabel : (id === 'cadastros' ? 'Novo cadastro' : null);
             return {
               key: r.key || uid || r.email || Math.random().toString(),
               user_id: uid,
               title: r.title || r.nome || r.email?.split('@')[0] || 'Usuário',
               email: r.email,
               provider: isGoogleAvatar ? 'google' : (r.provider || (r.email ? 'email' : null)),
-              subtitle: (id === 'online' || id === 'online5m') ? rotaParaFuncao(r.subtitle || r.current_route).label : (id === 'cadastros' ? 'Novo cadastro' : r.subtitle || r.current_route || 'App aberto'),
+              subtitle: cleanSubtitle,
               at: r.at || r.last_seen || r.created_at,
               is_premium: r.is_premium ?? r.premium ?? false,
               avatar_url: r.avatar_url || null,
               acessos: typeof r.acessos === 'number' ? r.acessos : null,
-              created_at: profilesDict[uid] || r.created_at || r.at
+              created_at: r.created_at || profilesDict[uid] || null
             };
           });
           allLists = allLists.concat(mapped);
@@ -1096,31 +1128,13 @@ export function AdminHojeCards() {
                       </div>
                       <div className="flex flex-col gap-0.5 mt-0.5">
                         {r.email && (
-                          <div className="font-body text-xs text-muted-foreground/90 truncate flex items-center gap-2">
+                          <div className="font-body text-xs text-muted-foreground/90 truncate">
                             {r.email}
-                            {r.created_at && (
-                              <span className={cn(
-                                "text-[10px] flex items-center gap-1",
-                                Math.floor((new Date().getTime() - new Date(r.created_at).getTime()) / (1000 * 60 * 60 * 24)) <= 7
-                                  ? "text-emerald-500 font-semibold bg-emerald-500/10 px-1.5 py-0.5 rounded-md"
-                                  : "text-muted-foreground/60"
-                              )}>
-                                {(() => {
-                                  const dias = Math.floor((new Date().getTime() - new Date(r.created_at).getTime()) / (1000 * 60 * 60 * 24));
-                                  if (dias === 0) return 'Cadastrado hoje';
-                                  if (dias === 1) return 'Cadastrado ontem';
-                                  if (dias <= 7) return `Cadastrado há ${dias} dias`;
-                                  if (dias > 365) return `Cadastrado há ${(dias/365).toFixed(1).replace('.0','')} anos`;
-                                  if (dias > 30) return `Cadastrado há ${Math.floor(dias/30)} meses`;
-                                  return `Cadastrado há ${dias} dias`;
-                                })()}
-                              </span>
-                            )}
                           </div>
                         )}
-                        {!r.planTag && r.subtitle && (
-                          <div className="font-body text-[10.5px] text-muted-foreground/60 truncate">
-                            {r.subtitle}
+                        {!r.planTag && (
+                          <div className="font-body text-[10.5px] text-muted-foreground/60 truncate flex items-center gap-1.5">
+                            {formatTempoCadastro(r.created_at, r.subtitle)}
                           </div>
                         )}
                         {r.planTag && (
