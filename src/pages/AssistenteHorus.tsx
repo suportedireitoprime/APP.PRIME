@@ -117,7 +117,11 @@ const AssistenteHorus = () => {
             transition={{ duration: 0.3, ease: 'easeOut' }}
             className="fixed inset-0 z-50"
           >
-            <HorusCallView onEncerrar={() => setIsCalling(false)} />
+            <HorusCallView 
+              onEncerrar={() => setIsCalling(false)} 
+              displayName={displayName}
+              profileName={profileName}
+            />
           </motion.div>
         )}
       </AnimatePresence>

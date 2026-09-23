@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Player, type PlayerRef } from '@remotion/player';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ArrowRight, Loader2 } from 'lucide-react';
@@ -21,9 +21,9 @@ type Props = {
   open: boolean;
   onFinished: () => void;
   initialName?: string;
-  /** Preview no admin â€” nÃ£o grava nada, botÃ£o fecha imediatamente. */
+  /** Preview no admin — não grava nada, botão fecha imediatamente. */
   previewMode?: boolean;
-  /** Ref exposto para o controller de narraÃ§Ã£o ler frame atual. */
+  /** Ref exposto para o controller de narração ler frame atual. */
   playerRefExternal?: React.MutableRefObject<PlayerRef | null>;
 };
 
@@ -48,7 +48,7 @@ export default function HorusOnboardingOverlay({
   const [saving, setSaving] = useState(false);
 
   const inputProps: HorusIntroProps = useMemo(
-    () => ({ owlSrc, nome: nome || 'vocÃª' }),
+    () => ({ owlSrc, nome: nome || 'você' }),
     [nome],
   );
 

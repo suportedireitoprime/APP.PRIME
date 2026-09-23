@@ -13,7 +13,7 @@ export type HorusCapabilityKey = 'texto' | 'audio' | 'pdf' | 'imagem';
 
 const LABELS: Record<HorusCapabilityKey, { title: string; desc: string; verb: string }> = {
   texto:  { title: 'Texto', desc: 'Enviar mensagens de texto', verb: 'mandar texto' },
-  audio:  { title: 'Ãudio', desc: 'Enviar Ã¡udios pra ele escutar e transcrever', verb: 'mandar Ã¡udio' },
+  audio:  { title: 'Áudio', desc: 'Enviar áudios pra ele escutar e transcrever', verb: 'mandar áudio' },
   pdf:    { title: 'PDF',   desc: 'Enviar PDFs pra ele ler, resumir e explicar', verb: 'mandar PDF' },
   imagem: { title: 'Imagem', desc: 'Enviar fotos pra ele analisar', verb: 'mandar imagem' },
 };
@@ -100,7 +100,7 @@ export default function HorusPremiumFeatureSheet({ open, onClose, capability }: 
                 </button>
               </div>
               {[
-                'Enviar Ã¡udio, PDF e imagem no WhatsApp',
+                'Enviar áudio, PDF e imagem no WhatsApp',
                 'Horus lÃª, transcreve e resume tudo pra vocÃª',
                 'Continua recebendo alertas e notificaÃ§Ãµes',
               ].map((t) => (

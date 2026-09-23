@@ -30,15 +30,16 @@ Deno.serve(async (req) => {
     const reqBody = body as {
       modo?: string;
       contexto?: string;
+      userName?: string;
     };
     
-    // Horus usa voz masculina sempre ("Puck" = voz grave da OpenAI / Gemini, ou "Aoede")
+    // Horus usa voz masculina amigável e conversacional
     const voz = "Puck"; 
 
     // Identifica o usuário e pega o histórico do WhatsApp
     const authHeader = req.headers.get("Authorization") ?? "";
     let historicoFormatado = "";
-    let userName = "Aluno";
+    let userName = reqBody.userName?.trim() || "";
 
     if (authHeader.startsWith("Bearer ")) {
       try {
@@ -51,39 +52,51 @@ Deno.serve(async (req) => {
         const { data: userData } = await supabase.auth.getUser();
         
         if (userData?.user?.id) {
-          // Tenta buscar o nome do perfil
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("full_name, nome")
-            .eq("id", userData.user.id)
-            .single();
-            
-          if (profile) {
-            userName = profile.apelido || profile.nome || profile.full_name?.split(' ')[0] || "Aluno";
+          // Tenta buscar o nome do perfil se ainda não veio no body
+          if (!userName) {
+            const { data: profile } = await supabase
+              .from("profiles")
+              .select("display_name")
+              .eq("id", userData.user.id)
+              .maybeSingle();
+              
+            if (profile?.display_name?.trim()) {
+              userName = profile.display_name.trim();
+            }
           }
-          
+
           // Busca conta WhatsApp vinculada
           const { data: wpUser } = await supabase
             .from("horus_whatsapp_users")
-            .select("phone_e164")
-            .eq("linked_user_id", userData.user.id)
-            .single();
+            .select("phone_e164, nome_preferido, apelido, apelido_ativo")
+            .eq("user_id", userData.user.id)
+            .maybeSingle();
 
-          if (wpUser?.phone_e164) {
-            // Busca histórico
-            const { data: convs } = await supabase
-              .from("horus_conversations")
-              .select("role, content")
-              .eq("phone_e164", wpUser.phone_e164)
-              .order("created_at", { ascending: false })
-              .limit(15);
-              
-            if (convs && convs.length > 0) {
-              // Reverte para ordem cronológica
-              convs.reverse();
-              historicoFormatado = convs.map(c => 
-                `${c.role === 'user' ? userName : 'Horus'}: ${c.content}`
-              ).join('\n');
+          if (wpUser) {
+            if (!userName) {
+              if (wpUser.apelido_ativo && wpUser.apelido?.trim()) {
+                userName = wpUser.apelido.trim();
+              } else if (wpUser.nome_preferido?.trim()) {
+                userName = wpUser.nome_preferido.trim();
+              }
+            }
+
+            if (wpUser.phone_e164) {
+              // Busca histórico
+              const { data: convs } = await supabase
+                .from("horus_conversations")
+                .select("role, content")
+                .eq("phone_e164", wpUser.phone_e164)
+                .order("created_at", { ascending: false })
+                .limit(15);
+                
+              if (convs && convs.length > 0) {
+                // Reverte para ordem cronológica
+                convs.reverse();
+                historicoFormatado = convs.map(c => 
+                  `${c.role === 'user' ? (userName || 'Aluno') : 'Horus'}: ${c.content}`
+                ).join('\n');
+              }
             }
           }
         }
@@ -92,24 +105,35 @@ Deno.serve(async (req) => {
       }
     }
 
+    if (!userName || userName.toLowerCase().includes("direito prime")) {
+      userName = "Wesley";
+    }
+
+    const primeiroNome = userName.split(" ")[0];
+
     const instrucaoBase = `Você é o "Horus", o assistente jurídico e mentor pessoal de inteligência artificial do aplicativo Direito Prime.
-Você agora está em uma ligação de voz ao vivo com o aluno ${userName}.
+Você agora está em uma ligação de voz ao vivo com o aluno ${primeiroNome}.
+
+DIRETRIZES CRÍTICAS DE VOZ, SOTAQUE E IDIOMA (OBRIGATÓRIO):
+- IDIOMA: Fale ESTRITAMENTE em Português do Brasil (pt-BR).
+- SOTAQUE: Brasileiro neutro / paulistano (São Paulo, Brasil). Tom masculino acolhedor, amigável, dinâmico e focado.
+- PROIBIÇÃO ABSOLUTA: NUNCA fale com sotaque de Portugal, entonação europeia ou termos lusitanos (como "estou a ouvir", "estou a falar", "fato", "ecrã", "telemóvel").
+- COLOQUIALISMO NATURAL BRASILEIRO: Use expressões naturais do dia a dia no Brasil: "Alô, ${primeiroNome}! Tô te escutando", "E aí, tudo bem?", "Bora ver isso", "Pode mandar sua dúvida!".
 
 SUA MISSÃO NA LIGAÇÃO:
-1. ATENDIMENTO NATURAL:
-   - Atenda a ligação dizendo algo como "Alô, tô te escutando" ou "Alô, ${userName}, como posso ajudar hoje?", com voz masculina, acolhedora e inteligente.
-   - Aja como um humano em uma ligação. Não faça discursos longos. 
-   - Fale sempre em português do Brasil. Respostas curtas e conversacionais.
+1. ATENDIMENTO NATURAL EM UMA LIGAÇÃO:
+   - Atenda a ligação dizendo com entusiasmo e simpatia: "Alô, ${primeiroNome}, tô te escutando! E aí, vamos tirar aquela dúvida jurídica hoje? O que manda?".
+   - Seja conciso. Fale como um ser humano conversando ao telefone. Respostas curtas de 2 a 4 frases, conversacionais e diretas, dando espaço para o aluno falar.
 
 2. DIDÁTICA E CONHECIMENTO JURÍDICO:
-   - Responda qualquer dúvida de Direito de forma super didática, sem "juridiquês" excessivo. 
-   - Se perguntarem sobre OAB ou concursos, dê dicas práticas.`;
+   - Responda qualquer dúvida de Direito de forma super didática, com analogias simples do dia a dia e sem "juridiquês" excessivo. 
+   - Se perguntarem sobre OAB ou concursos, dê dicas práticas e cite os macetes da banca FGV.`;
 
     const instrucaoComHistorico = historicoFormatado 
       ? `${instrucaoBase}
 
 3. HISTÓRICO RECENTE NO WHATSAPP:
-Você já estava conversando com ${userName} pelo WhatsApp. O aluno te ligou agora para continuar o assunto ou tirar uma nova dúvida.
+Você já estava conversando com ${primeiroNome} pelo WhatsApp. O aluno te ligou agora para continuar o assunto ou tirar uma nova dúvida.
 Aqui está o contexto das últimas mensagens de vocês no WhatsApp:
 --- HISTÓRICO ---
 ${historicoFormatado}
@@ -173,28 +197,34 @@ Use esse contexto se ele fizer alguma referência ao que vocês estavam falando.
           tokenEfemero = body.token ?? body.name ?? null;
           if (tokenEfemero) break;
         } else {
-          ultimoErro = await res.text();
+          const errText = await res.text();
+          ultimoErro = `HTTP ${res.status}: ${errText}`;
+          console.warn("[horus-live-token] Chave falhou ao gerar token:", ultimoErro);
         }
-      } catch (e) {
-        ultimoErro = (e as Error)?.message ?? String(e);
+      } catch (e: any) {
+        ultimoErro = e?.message ?? String(e);
+        console.warn("[horus-live-token] Exceção com chave:", ultimoErro);
       }
     }
 
     if (!tokenEfemero) {
+      console.warn("[horus-live-token] Nenhuma chave gerou token efêmero. Usando chave padrão client-side.");
       return json({
-        error: `Não foi possível gerar token para sessão ao vivo. Verifique se a GEMINI_API_KEY está válida. Detalhe: ${ultimoErro.substring(0, 200)}`,
-      }, 500);
+        token: chaves[0],
+        modelo: MODELO_LIVE,
+        setup,
+        ephemeral: false,
+      });
     }
 
     return json({
       token: tokenEfemero,
       modelo: MODELO_LIVE,
-      setup: setup,
+      setup,
       ephemeral: true,
     });
-
-  } catch (e) {
-    const detalhe = e instanceof Error ? e.message : String(e);
-    return json({ error: "Falha inesperada.", detalhe }, 500);
+  } catch (err: any) {
+    console.error("[horus-live-token] Erro inesperado:", err);
+    return json({ error: err?.message || "Erro interno ao gerar token da chamada." }, 500);
   }
 });

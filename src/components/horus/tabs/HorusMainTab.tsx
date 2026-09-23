@@ -1,4 +1,4 @@
-﻿import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Gavel, ShieldCheck, ShieldAlert, ChevronRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
@@ -37,7 +37,7 @@ export function HorusMainTab({
       exit={{ opacity: 0, y: -8 }}
       className="flex flex-col gap-6"
     >
-      {/* Hero com spotlight cinza degradÃª atrÃ¡s do Horus e do texto */}
+      {/* Hero com spotlight cinza degradê atrás do Horus e do texto */}
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
@@ -93,13 +93,13 @@ export function HorusMainTab({
 
         <div className="relative">
           <p className="font-display text-sm sm:text-base font-black tracking-[0.14em] text-white/70 uppercase">
-            Assistente jurÃ­dico
+            Assistente jurídico
           </p>
           <h2 className="font-display text-3xl sm:text-4xl font-black text-white leading-[0.95] mt-1.5 tracking-tight">
-            {displayName ? `OlÃ¡, ${displayName.split(' ')[0]}!` : (statusLoading ? 'OlÃ¡!' : 'OlÃ¡! Eu sou o Horus')}
+            {displayName ? `Olá, ${displayName.split(' ')[0]}!` : (statusLoading ? 'Olá!' : 'Olá! Eu sou o Horus')}
           </h2>
           <p className="font-body text-base sm:text-lg font-medium text-white/95 leading-snug mt-2.5 max-w-[300px]">
-            Seu assistente jurÃ­dico 24h no WhatsApp. Tire dÃºvidas de Direito para seus estudos a qualquer momento, sem fila e sem complicaÃ§Ã£o.
+            Seu assistente jurídico 24h no WhatsApp. Tire dúvidas de Direito para seus estudos a qualquer momento, sem fila e sem complicação.
           </p>
         </div>
       </motion.div>
@@ -136,7 +136,7 @@ export function HorusMainTab({
           </motion.span>
         </motion.button>
 
-        {/* Novo BotÃ£o: Ligar para o Horus */}
+        {/* Novo Botão: Ligar para o Horus */}
         <motion.button
           type="button"
           onClick={() => {
@@ -188,7 +188,7 @@ export function HorusMainTab({
               className="mx-auto flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/15 transition-colors"
             >
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-              <span className="font-body text-[11px] font-medium text-emerald-300 leading-none">Verificado â€¢â€¢â€¢â€¢ {lastDigits}</span>
+              <span className="font-body text-[11px] font-medium text-emerald-300 leading-none">Verificado •••• {lastDigits}</span>
             </motion.button>
           ) : (
             <motion.button
