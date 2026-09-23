@@ -1,11 +1,11 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Crown, Sparkles, Check, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { haptic } from '@/lib/nativeHaptics';
 import { motion } from 'framer-motion';
-import horusOwl from '@/assets/horus/horus-owl.png.asset.json';
+import horusOwl from '@/assets/horus/horus-owl.webp.asset.json';
 import PremiumFeaturesFullSheet from './PremiumFeaturesFullSheet';
 import { srcOf } from '@/lib/assetUrl';
 
@@ -13,7 +13,7 @@ export type HorusCapabilityKey = 'texto' | 'audio' | 'pdf' | 'imagem';
 
 const LABELS: Record<HorusCapabilityKey, { title: string; desc: string; verb: string }> = {
   texto:  { title: 'Texto', desc: 'Enviar mensagens de texto', verb: 'mandar texto' },
-  audio:  { title: 'Áudio', desc: 'Enviar áudios pra ele escutar e transcrever', verb: 'mandar áudio' },
+  audio:  { title: 'Ãudio', desc: 'Enviar Ã¡udios pra ele escutar e transcrever', verb: 'mandar Ã¡udio' },
   pdf:    { title: 'PDF',   desc: 'Enviar PDFs pra ele ler, resumir e explicar', verb: 'mandar PDF' },
   imagem: { title: 'Imagem', desc: 'Enviar fotos pra ele analisar', verb: 'mandar imagem' },
 };
@@ -78,11 +78,11 @@ export default function HorusPremiumFeatureSheet({ open, onClose, capability }: 
                 <span className="font-body text-[10px] font-bold text-amber-300 uppercase tracking-wider">Premium</span>
               </div>
               <SheetTitle className="font-display text-2xl font-black text-foreground">
-                {info.title} é do Premium
+                {info.title} Ã© do Premium
               </SheetTitle>
             </SheetHeader>
             <p className="font-body text-sm text-muted-foreground mt-2 max-w-[300px] mx-auto">
-              Pra {info.verb} pro Horus, você precisa ser assinante. Bora começar com <span className="font-semibold text-foreground">3 dias grátis</span>?
+              Pra {info.verb} pro Horus, vocÃª precisa ser assinante. Bora comeÃ§ar com <span className="font-semibold text-foreground">3 dias grÃ¡tis</span>?
             </p>
           </div>
 
@@ -100,9 +100,9 @@ export default function HorusPremiumFeatureSheet({ open, onClose, capability }: 
                 </button>
               </div>
               {[
-                'Enviar áudio, PDF e imagem no WhatsApp',
-                'Horus lê, transcreve e resume tudo pra você',
-                'Continua recebendo alertas e notificações',
+                'Enviar Ã¡udio, PDF e imagem no WhatsApp',
+                'Horus lÃª, transcreve e resume tudo pra vocÃª',
+                'Continua recebendo alertas e notificaÃ§Ãµes',
               ].map((t) => (
                 <div key={t} className="flex items-start gap-2">
                   <div className="mt-0.5 w-4 h-4 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
@@ -115,7 +115,7 @@ export default function HorusPremiumFeatureSheet({ open, onClose, capability }: 
 
             <div className="rounded-2xl bg-background/60 border border-border/50 p-3">
               <p className="font-body text-[11px] text-muted-foreground leading-relaxed">
-                No plano gratuito você continua podendo <span className="font-semibold text-foreground">mandar texto</span> pro Horus e receber notificações normalmente.
+                No plano gratuito vocÃª continua podendo <span className="font-semibold text-foreground">mandar texto</span> pro Horus e receber notificaÃ§Ãµes normalmente.
               </p>
             </div>
 
@@ -133,13 +133,13 @@ export default function HorusPremiumFeatureSheet({ open, onClose, capability }: 
                 }}
               >
                 <Crown className="w-4 h-4 mr-2" />
-                Começar 3 dias grátis
+                ComeÃ§ar 3 dias grÃ¡tis
               </Button>
               <button
                 onClick={() => { haptic.selection(); onClose(); }}
                 className="w-full h-11 rounded-2xl font-body text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
               >
-                Agora não
+                Agora nÃ£o
               </button>
             </div>
           </div>
@@ -150,3 +150,4 @@ export default function HorusPremiumFeatureSheet({ open, onClose, capability }: 
     </>
   );
 }
+

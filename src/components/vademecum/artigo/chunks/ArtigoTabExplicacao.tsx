@@ -1,10 +1,10 @@
-import React from 'react';
+﻿import React from 'react';
 import { ExternalLink, Loader2, Crown } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { TabsContent } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
-import horusOwlAsset from '@/assets/horus/horus-owl.png.asset.json';
+import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 import { type ModificationInfo } from '../artigoConstants';
 import type { ArtigoLei } from '@/data/mockData';
@@ -45,18 +45,18 @@ export const ArtigoTabExplicacao: React.FC<ArtigoTabExplicacaoProps> = ({
                 const parte = modificationInfo.parteModificada;
                 const tipo = modificationInfo.tipo.toLowerCase();
                 const lei = modificationInfo.leiNome;
-                if (/incluíd|acrescid/i.test(modificationInfo.tipo)) {
+                if (/incluÃ­d|acrescid/i.test(modificationInfo.tipo)) {
                   return parte === 'Artigo inteiro'
-                    ? `O ${artigo.numero} foi inteiramente incluído no ordenamento jurídico pela ${lei}.`
-                    : `O ${parte} do ${artigo.numero} foi incluído pela ${lei}. Na aba "Artigo", ele está destacado em roxo.`;
+                    ? `O ${artigo.numero} foi inteiramente incluÃ­do no ordenamento jurÃ­dico pela ${lei}.`
+                    : `O ${parte} do ${artigo.numero} foi incluÃ­do pela ${lei}. Na aba "Artigo", ele estÃ¡ destacado em roxo.`;
                 }
-                if (/alterad|redaç/i.test(modificationInfo.tipo)) {
+                if (/alterad|redaÃ§/i.test(modificationInfo.tipo)) {
                   return parte === 'Artigo inteiro'
-                    ? `Todo o ${artigo.numero} teve sua redação alterada pela ${lei}.`
-                    : `O ${parte} do ${artigo.numero} teve sua redação modificada pela ${lei}. Na aba "Artigo", o trecho está destacado em roxo.`;
+                    ? `Todo o ${artigo.numero} teve sua redaÃ§Ã£o alterada pela ${lei}.`
+                    : `O ${parte} do ${artigo.numero} teve sua redaÃ§Ã£o modificada pela ${lei}. Na aba "Artigo", o trecho estÃ¡ destacado em roxo.`;
                 }
                 if (/revogad/i.test(modificationInfo.tipo)) {
-                  return `Este dispositivo foi revogado pela ${lei} e não produz mais efeitos jurídicos.`;
+                  return `Este dispositivo foi revogado pela ${lei} e nÃ£o produz mais efeitos jurÃ­dicos.`;
                 }
                 return `O ${parte} do ${artigo.numero} foi ${tipo} pela ${lei}.`;
               })()}
@@ -82,7 +82,7 @@ export const ArtigoTabExplicacao: React.FC<ArtigoTabExplicacaoProps> = ({
             </p>
             {(() => {
               const leiMatch = modificationInfo.leiNome.match(
-                /(?:Lei(?:\s+Complementar)?|Decreto(?:-Lei)?|Emenda\s+Constitucional)\s+n[ºº]?\s*([\d.]+)/i
+                /(?:Lei(?:\s+Complementar)?|Decreto(?:-Lei)?|Emenda\s+Constitucional)\s+n[ÂºÂº]?\s*([\d.]+)/i
               );
               if (leiMatch) {
                 const num = leiMatch[1].replace(/\./g, '');
@@ -112,16 +112,16 @@ export const ArtigoTabExplicacao: React.FC<ArtigoTabExplicacaoProps> = ({
             <img src={horusOwl} alt="Horus" className="w-12 h-12 object-contain" />
           </div>
           <h4 className="font-display text-lg font-bold text-foreground mb-1.5">
-            Explicação com IA é Exclusivo Prime
+            ExplicaÃ§Ã£o com IA Ã© Exclusivo Prime
           </h4>
           <p className="text-xs text-muted-foreground max-w-xs mb-4 leading-relaxed">
-            Destrinche dispositivos complexos com explicações didáticas, linguagem clara e doutrina aplicada geradas pela nossa IA jurídica.
+            Destrinche dispositivos complexos com explicaÃ§Ãµes didÃ¡ticas, linguagem clara e doutrina aplicada geradas pela nossa IA jurÃ­dica.
           </p>
           <button
             onClick={() => openPremiumGate('explicacao')}
             className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-xs shadow-lg shadow-primary/30 active:scale-95 transition-all flex items-center gap-2"
           >
-            <Crown className="w-4 h-4 fill-current" /> Começar 3 dias grátis
+            <Crown className="w-4 h-4 fill-current" /> ComeÃ§ar 3 dias grÃ¡tis
           </button>
         </div>
       ) : (
@@ -130,7 +130,7 @@ export const ArtigoTabExplicacao: React.FC<ArtigoTabExplicacaoProps> = ({
             <div className="flex flex-col items-center justify-center py-12 gap-3">
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
               <p className="text-sm text-muted-foreground font-body">
-                Gerando explicação com IA...
+                Gerando explicaÃ§Ã£o com IA...
               </p>
             </div>
           ) : aiContent ? (
@@ -196,7 +196,7 @@ export const ArtigoTabExplicacao: React.FC<ArtigoTabExplicacaoProps> = ({
             })()
           ) : (
             <p className="text-muted-foreground text-sm text-center py-8">
-              Clique para gerar a explicação.
+              Clique para gerar a explicaÃ§Ã£o.
             </p>
           )}
         </div>
@@ -204,3 +204,4 @@ export const ArtigoTabExplicacao: React.FC<ArtigoTabExplicacaoProps> = ({
     </TabsContent>
   );
 };
+

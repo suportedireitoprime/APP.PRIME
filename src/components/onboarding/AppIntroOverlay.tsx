@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import { Player, type PlayerRef } from '@remotion/player';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Play } from 'lucide-react';
-import horusOwlAsset from '@/assets/horus/horus-owl.png.asset.json';
+import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 import {
@@ -34,7 +34,7 @@ export default function AppIntroOverlay({
   const [playing, setPlaying] = useState(false);
 
   const inputProps: AppIntroProps = useMemo(
-    () => ({ owlSrc, nome: nome || 'você' }),
+    () => ({ owlSrc, nome: nome || 'vocÃª' }),
     [nome]
   );
 
@@ -54,7 +54,7 @@ export default function AppIntroOverlay({
       try {
         p.play();
         setPlaying(true);
-        // Verificar se realmente tocou após 300ms
+        // Verificar se realmente tocou apÃ³s 300ms
         setTimeout(() => {
           if (!p.isPlaying()) {
             setShowPlayFallback(true);
@@ -108,7 +108,7 @@ export default function AppIntroOverlay({
         {/* Skip button */}
         <button
           onClick={handleSkip}
-          aria-label="Pular apresentação"
+          aria-label="Pular apresentaÃ§Ã£o"
           className="absolute top-4 right-4 z-20 w-11 h-11 rounded-full bg-white/10 backdrop-blur-md text-white flex items-center justify-center active:scale-95 transition"
           style={{ marginTop: 'var(--sai-top)' }}
         >
@@ -157,3 +157,4 @@ export default function AppIntroOverlay({
     </AnimatePresence>
   );
 }
+

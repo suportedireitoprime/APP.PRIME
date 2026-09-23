@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+﻿import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Capacitor } from '@capacitor/core';
 import {
@@ -17,7 +17,7 @@ import { haptic } from '@/lib/nativeHaptics';
 import { useAuth } from '@/hooks/useAuth';
 import { TrialExpiredModal } from '@/components/TrialExpiredModal';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
-import horusOwlAsset from '@/assets/horus/horus-owl.png.asset.json';
+import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 
 const horusOwl = pickAsset(horusOwlBundled, srcOf(horusOwlAsset));
@@ -32,7 +32,7 @@ export type PremiumFeatureKey =
   | 'questao_funcoes' | 'videoaula_funcoes'
   | 'chat_juridico' | 'chat_web' | 'chat_anexo' | 'pilulas' | 'default';
 
-/** `pitch` = argumento de persuasão específico da área; `horusQuote` = fala do mascote Horus. */
+/** `pitch` = argumento de persuasÃ£o especÃ­fico da Ã¡rea; `horusQuote` = fala do mascote Horus. */
 type FeatureInfo = {
   title: string;
   description: string;
@@ -43,234 +43,234 @@ type FeatureInfo = {
 
 const FEATURES: Record<PremiumFeatureKey, FeatureInfo> = {
   narracao: {
-    title: 'Narração com Voz Humana',
-    description: 'Escute qualquer artigo com narração ilimitada, com voz natural e de alta definição.',
-    pitch: 'Estude no trânsito, na academia ou onde quiser — o ordenamento jurídico inteiro narrado para você.',
-    horusQuote: 'Quer ouvir a lei com voz humana enquanto faz suas tarefas? No Prime você escuta qualquer artigo sem limites!',
+    title: 'NarraÃ§Ã£o com Voz Humana',
+    description: 'Escute qualquer artigo com narraÃ§Ã£o ilimitada, com voz natural e de alta definiÃ§Ã£o.',
+    pitch: 'Estude no trÃ¢nsito, na academia ou onde quiser â€” o ordenamento jurÃ­dico inteiro narrado para vocÃª.',
+    horusQuote: 'Quer ouvir a lei com voz humana enquanto faz suas tarefas? No Prime vocÃª escuta qualquer artigo sem limites!',
     icon: Volume2,
   },
   explicacao: {
-    title: 'Explicações com IA Jurídica',
-    description: 'A IA destrincha qualquer artigo em linguagem clara e didática.',
-    pitch: 'Nunca mais trave em um dispositivo confuso: explicação com base doutrinária instantânea na hora.',
-    horusQuote: 'Dispositivo confuso? Eu explico qualquer artigo para você em linguagem simples e descomplicada no Prime!',
+    title: 'ExplicaÃ§Ãµes com IA JurÃ­dica',
+    description: 'A IA destrincha qualquer artigo em linguagem clara e didÃ¡tica.',
+    pitch: 'Nunca mais trave em um dispositivo confuso: explicaÃ§Ã£o com base doutrinÃ¡ria instantÃ¢nea na hora.',
+    horusQuote: 'Dispositivo confuso? Eu explico qualquer artigo para vocÃª em linguagem simples e descomplicada no Prime!',
     icon: Sparkles,
   },
   exemplo: {
-    title: 'Exemplos Práticos Reais',
-    description: 'Veja a norma aplicada em casos do dia a dia e situações reais.',
-    pitch: 'Fixe o conteúdo com casos concretos — o que a banca e a prática jurídica cobram.',
-    horusQuote: 'Quer ver como a lei se aplica na prática? No Prime você tem exemplos reais e didáticos de cada artigo!',
+    title: 'Exemplos PrÃ¡ticos Reais',
+    description: 'Veja a norma aplicada em casos do dia a dia e situaÃ§Ãµes reais.',
+    pitch: 'Fixe o conteÃºdo com casos concretos â€” o que a banca e a prÃ¡tica jurÃ­dica cobram.',
+    horusQuote: 'Quer ver como a lei se aplica na prÃ¡tica? No Prime vocÃª tem exemplos reais e didÃ¡ticos de cada artigo!',
     icon: BookOpen,
   },
   termos: {
-    title: 'Termos Jurídicos Explicados',
-    description: 'Traduza o vocabulário técnico e juridiquês de cada artigo.',
-    pitch: 'Domine o juridiquês: cada termo do dispositivo explicado em segundos.',
-    horusQuote: 'Não deixe termos difíceis travarem seus estudos! Veja o significado instantâneo de cada palavra no Prime.',
+    title: 'Termos JurÃ­dicos Explicados',
+    description: 'Traduza o vocabulÃ¡rio tÃ©cnico e juridiquÃªs de cada artigo.',
+    pitch: 'Domine o juridiquÃªs: cada termo do dispositivo explicado em segundos.',
+    horusQuote: 'NÃ£o deixe termos difÃ­ceis travarem seus estudos! Veja o significado instantÃ¢neo de cada palavra no Prime.',
     icon: BookOpen,
   },
   perguntar: {
     title: 'Assistente IA 24h no Artigo',
-    description: 'Tire dúvidas específicas sobre o artigo com nossa assistente jurídica.',
-    pitch: 'Um tutor jurídico dedicado pronto para esclarecer qualquer dúvida na hora.',
-    horusQuote: 'Ficou com alguma dúvida sobre este artigo? Pergunte para nossa IA jurídica a qualquer momento no Prime!',
+    description: 'Tire dÃºvidas especÃ­ficas sobre o artigo com nossa assistente jurÃ­dica.',
+    pitch: 'Um tutor jurÃ­dico dedicado pronto para esclarecer qualquer dÃºvida na hora.',
+    horusQuote: 'Ficou com alguma dÃºvida sobre este artigo? Pergunte para nossa IA jurÃ­dica a qualquer momento no Prime!',
     icon: MessageCircle,
   },
   jurisprudencia: {
-    title: 'Jurisprudência do STF e STJ',
-    description: 'Súmulas vinculantes, temas de repercussão geral e acórdãos ligados ao artigo.',
-    pitch: 'Cite o tribunal certo na petição e na prova — entendimento atualizado ao lado da lei.',
+    title: 'JurisprudÃªncia do STF e STJ',
+    description: 'SÃºmulas vinculantes, temas de repercussÃ£o geral e acÃ³rdÃ£os ligados ao artigo.',
+    pitch: 'Cite o tribunal certo na petiÃ§Ã£o e na prova â€” entendimento atualizado ao lado da lei.',
     horusQuote: 'Entenda como os tribunais superiores decidem sobre este artigo. Exclusivo para assinantes Prime!',
     icon: Scale,
   },
   videoaula: {
     title: 'Videoaulas Artigo por Artigo',
-    description: 'Aulas didáticas em vídeo para aprofundar seu entendimento.',
-    pitch: 'Um curso completo acoplado ao Vade Mecum, direto no ponto sem enrolação.',
+    description: 'Aulas didÃ¡ticas em vÃ­deo para aprofundar seu entendimento.',
+    pitch: 'Um curso completo acoplado ao Vade Mecum, direto no ponto sem enrolaÃ§Ã£o.',
     horusQuote: 'Aprenda assistindo! Videoaulas completas gravadas para cada artigo no Prime.',
     icon: PlayCircle,
   },
   grafo: {
-    title: 'Grafo de Conexões',
-    description: 'Visualize as remissões e relações deste artigo com todo o ordenamento.',
-    pitch: 'Enxergue o sistema jurídico de forma visual e conectada.',
-    horusQuote: 'Veja como este artigo se conecta com toda a legislação brasileira de forma visual no Prime!',
+    title: 'Grafo de ConexÃµes',
+    description: 'Visualize as remissÃµes e relaÃ§Ãµes deste artigo com todo o ordenamento.',
+    pitch: 'Enxergue o sistema jurÃ­dico de forma visual e conectada.',
+    horusQuote: 'Veja como este artigo se conecta com toda a legislaÃ§Ã£o brasileira de forma visual no Prime!',
     icon: Network,
   },
   mapa_mental: {
     title: 'Mapas Mentais com IA',
-    description: 'Mapas gerados pela IA para revisão rápida.',
-    pitch: 'Revise um capítulo inteiro em 5 minutos na véspera da prova.',
-    horusQuote: 'Mapas mentais inteligentes para acelerar sua memorização visual!',
+    description: 'Mapas gerados pela IA para revisÃ£o rÃ¡pida.',
+    pitch: 'Revise um capÃ­tulo inteiro em 5 minutos na vÃ©spera da prova.',
+    horusQuote: 'Mapas mentais inteligentes para acelerar sua memorizaÃ§Ã£o visual!',
     icon: Map,
   },
   lembretes: {
     title: 'Lembretes Inteligentes',
-    description: 'Alertas de estudo por horário ou quando chegar na faculdade/trabalho.',
-    pitch: 'Sua rotina de estudo no automático — o app te cobra no momento certo.',
-    horusQuote: 'Receba lembretes automáticos para revisar este artigo no momento e local ideais!',
+    description: 'Alertas de estudo por horÃ¡rio ou quando chegar na faculdade/trabalho.',
+    pitch: 'Sua rotina de estudo no automÃ¡tico â€” o app te cobra no momento certo.',
+    horusQuote: 'Receba lembretes automÃ¡ticos para revisar este artigo no momento e local ideais!',
     icon: Bell,
   },
   baixar: {
     title: 'Baixar Artigo em PDF / Imagem',
     description: 'Exporte artigos comentados ou lei seca para imprimir ou estudar offline.',
-    pitch: 'Leve seu material para a audiência e para o offline, com os seus grifos e anotações.',
-    horusQuote: 'Baixe PDFs formatados e com alta resolução para levar para a audiência ou prova!',
+    pitch: 'Leve seu material para a audiÃªncia e para o offline, com os seus grifos e anotaÃ§Ãµes.',
+    horusQuote: 'Baixe PDFs formatados e com alta resoluÃ§Ã£o para levar para a audiÃªncia ou prova!',
     icon: Download,
   },
   anotacoes: {
-    title: 'Anotações Pessoais',
+    title: 'AnotaÃ§Ãµes Pessoais',
     description: 'Anote em cada artigo e sincronize na nuvem entre aparelhos.',
-    pitch: 'Monte o seu Vade Mecum comentado — anotações salvas para sempre, em qualquer aparelho.',
-    horusQuote: 'Mantenha suas anotações e comentários sincronizados em todos os seus aparelhos para sempre!',
+    pitch: 'Monte o seu Vade Mecum comentado â€” anotaÃ§Ãµes salvas para sempre, em qualquer aparelho.',
+    horusQuote: 'Mantenha suas anotaÃ§Ãµes e comentÃ¡rios sincronizados em todos os seus aparelhos para sempre!',
     icon: StickyNote,
   },
   grifo: {
     title: 'Grifos Ilimitados',
     description: 'Destaque pontos cruciais por toque manual, voz, foto ou com a IA.',
-    pitch: 'Marque o que a banca cobra e volte direto ao ponto na hora da revisão.',
-    horusQuote: 'Destaque o que mais cai nas provas com grifos manuais, por voz, foto ou inteligência artificial!',
+    pitch: 'Marque o que a banca cobra e volte direto ao ponto na hora da revisÃ£o.',
+    horusQuote: 'Destaque o que mais cai nas provas com grifos manuais, por voz, foto ou inteligÃªncia artificial!',
     icon: Highlighter,
   },
   flashcards: {
-    title: 'Flashcards de Memorização',
-    description: 'Cartões inteligentes gerados com algoritmo de repetição espaçada.',
-    pitch: 'Memorize prazos, exceções e requisitos legais sem esforço.',
-    horusQuote: 'Nunca mais esqueça prazos e regras: use os flashcards do Prime para memorizar!',
+    title: 'Flashcards de MemorizaÃ§Ã£o',
+    description: 'CartÃµes inteligentes gerados com algoritmo de repetiÃ§Ã£o espaÃ§ada.',
+    pitch: 'Memorize prazos, exceÃ§Ãµes e requisitos legais sem esforÃ§o.',
+    horusQuote: 'Nunca mais esqueÃ§a prazos e regras: use os flashcards do Prime para memorizar!',
     icon: Layers,
   },
   questoes: {
-    title: 'Questões OAB e Concursos',
-    description: 'Banco de questões com gabarito comentado e estatísticas por artigo.',
-    pitch: 'Treine no padrão das bancas a partir do artigo que você está estudando agora.',
-    horusQuote: 'Pratique com questões reais de concursos e da OAB ligadas diretamente ao artigo!',
+    title: 'QuestÃµes OAB e Concursos',
+    description: 'Banco de questÃµes com gabarito comentado e estatÃ­sticas por artigo.',
+    pitch: 'Treine no padrÃ£o das bancas a partir do artigo que vocÃª estÃ¡ estudando agora.',
+    horusQuote: 'Pratique com questÃµes reais de concursos e da OAB ligadas diretamente ao artigo!',
     icon: HelpCircle,
   },
   praticar: {
     title: 'Praticar sem Limites',
-    description: 'Questões da OAB e flashcards com repetição espaçada por artigo.',
-    pitch: 'Teoria e prática no mesmo lugar: leia o dispositivo, responda e evolua.',
-    horusQuote: 'Fixe o conteúdo resolvendo questões reais da OAB e flashcards com repetição espaçada!',
+    description: 'QuestÃµes da OAB e flashcards com repetiÃ§Ã£o espaÃ§ada por artigo.',
+    pitch: 'Teoria e prÃ¡tica no mesmo lugar: leia o dispositivo, responda e evolua.',
+    horusQuote: 'Fixe o conteÃºdo resolvendo questÃµes reais da OAB e flashcards com repetiÃ§Ã£o espaÃ§ada!',
     icon: Layers,
   },
   favorito: {
     title: 'Artigos Favoritos Ilimitados',
-    description: 'Guarde seus artigos essenciais em um só lugar para acesso rápido.',
-    pitch: 'Sua biblioteca de artigos e leis mais consultadas sempre a um toque de distância.',
-    horusQuote: 'Guarde quantos artigos quiser na sua lista VIP de favoritos para acesso instantâneo!',
+    description: 'Guarde seus artigos essenciais em um sÃ³ lugar para acesso rÃ¡pido.',
+    pitch: 'Sua biblioteca de artigos e leis mais consultadas sempre a um toque de distÃ¢ncia.',
+    horusQuote: 'Guarde quantos artigos quiser na sua lista VIP de favoritos para acesso instantÃ¢neo!',
     icon: Heart,
   },
   radar: {
     title: 'Radar Legislativo',
-    description: 'Projetos de lei em tempo real com análise da IA.',
-    pitch: 'Saiba da mudança antes do cliente perguntar e antes do edital sair.',
-    horusQuote: 'Fique por dentro das últimas alterações legislativas em tempo real no Prime!',
+    description: 'Projetos de lei em tempo real com anÃ¡lise da IA.',
+    pitch: 'Saiba da mudanÃ§a antes do cliente perguntar e antes do edital sair.',
+    horusQuote: 'Fique por dentro das Ãºltimas alteraÃ§Ãµes legislativas em tempo real no Prime!',
     icon: Radar,
   },
   blog: {
-    title: 'Blogger Jurídico Completo',
+    title: 'Blogger JurÃ­dico Completo',
     description: 'Todos os artigos exclusivos, sem limite.',
-    pitch: 'Conteúdo autoral atualizado para argumentar melhor e escrever melhor.',
-    horusQuote: 'Artigos jurídicos profundos e análises práticas exclusivas para assinantes Prime!',
+    pitch: 'ConteÃºdo autoral atualizado para argumentar melhor e escrever melhor.',
+    horusQuote: 'Artigos jurÃ­dicos profundos e anÃ¡lises prÃ¡ticas exclusivas para assinantes Prime!',
     icon: Newspaper,
   },
   biblioteca: {
     title: 'Biblioteca Completa',
     description: 'Acesso irrestrito a centenas de obras, manuais e doutrinas.',
     pitch: 'Acervo profissional liberado: leitura nativa, PDF, folheada, offline e no desktop.',
-    horusQuote: 'Acesso ilimitado a toda a nossa biblioteca de livros e manuais doutrinários no Prime!',
+    horusQuote: 'Acesso ilimitado a toda a nossa biblioteca de livros e manuais doutrinÃ¡rios no Prime!',
     icon: Library,
   },
   aprender: {
     title: 'Trilha Aprender Ilimitada',
-    description: 'Trilhas guiadas sem limite diário.',
-    pitch: 'Do zero ao avançado com um caminho pronto — sem adivinhar por onde começar.',
-    horusQuote: 'Avance nas trilhas de aprendizado gamificadas e conquiste sua aprovação no Prime!',
+    description: 'Trilhas guiadas sem limite diÃ¡rio.',
+    pitch: 'Do zero ao avanÃ§ado com um caminho pronto â€” sem adivinhar por onde comeÃ§ar.',
+    horusQuote: 'Avance nas trilhas de aprendizado gamificadas e conquiste sua aprovaÃ§Ã£o no Prime!',
     icon: GraduationCap,
   },
   horus: {
     title: 'Horus 24h no WhatsApp',
-    description: 'Assistente jurídica pessoal no seu WhatsApp.',
-    pitch: 'Consulta jurídica na palma da mão, a qualquer hora, sem nem abrir o app.',
-    horusQuote: 'Eu estou no seu WhatsApp pronto para responder qualquer dúvida jurídica a qualquer hora!',
+    description: 'Assistente jurÃ­dica pessoal no seu WhatsApp.',
+    pitch: 'Consulta jurÃ­dica na palma da mÃ£o, a qualquer hora, sem nem abrir o app.',
+    horusQuote: 'Eu estou no seu WhatsApp pronto para responder qualquer dÃºvida jurÃ­dica a qualquer hora!',
     icon: Bot,
   },
   chat_juridico: {
-    title: 'Chat Jurídico Ilimitado',
-    description: 'No plano gratuito é 1 interação por dia.',
-    pitch: 'Pesquise teses, estruture peças e tire dúvidas sem contar mensagens.',
-    horusQuote: 'Pesquise teses e tire dúvidas sem limites comigo no Chat Jurídico Prime!',
+    title: 'Chat JurÃ­dico Ilimitado',
+    description: 'No plano gratuito Ã© 1 interaÃ§Ã£o por dia.',
+    pitch: 'Pesquise teses, estruture peÃ§as e tire dÃºvidas sem contar mensagens.',
+    horusQuote: 'Pesquise teses e tire dÃºvidas sem limites comigo no Chat JurÃ­dico Prime!',
     icon: MessageCircle,
   },
   chat_web: {
     title: 'Pesquisar na Internet',
-    description: 'Busca em tempo real dentro do Chat Jurídico.',
-    pitch: 'Jurisprudência e notícias atualizadas no minuto em que você precisa.',
-    horusQuote: 'Consulte informações e jurisprudências em tempo real na web através do Prime!',
+    description: 'Busca em tempo real dentro do Chat JurÃ­dico.',
+    pitch: 'JurisprudÃªncia e notÃ­cias atualizadas no minuto em que vocÃª precisa.',
+    horusQuote: 'Consulte informaÃ§Ãµes e jurisprudÃªncias em tempo real na web atravÃ©s do Prime!',
     icon: Sparkles,
   },
   chat_anexo: {
-    title: 'Análise de Documentos com IA',
-    description: 'Envie PDFs ou imagens e deixe a IA extrair dados, responder dúvidas e analisar o documento inteiro para você.',
-    pitch: 'Leia autos processuais inteiros em segundos. A IA encontra jurisprudências e fundamentos com base no seu documento.',
-    horusQuote: 'Precisa analisar uma petição gigante ou documento longo? Me envie e eu destrincho os pontos mais importantes no Prime!',
+    title: 'AnÃ¡lise de Documentos com IA',
+    description: 'Envie PDFs ou imagens e deixe a IA extrair dados, responder dÃºvidas e analisar o documento inteiro para vocÃª.',
+    pitch: 'Leia autos processuais inteiros em segundos. A IA encontra jurisprudÃªncias e fundamentos com base no seu documento.',
+    horusQuote: 'Precisa analisar uma petiÃ§Ã£o gigante ou documento longo? Me envie e eu destrincho os pontos mais importantes no Prime!',
     icon: FileText,
   },
   pilulas: {
-    title: 'Pílulas de Áudio Ilimitadas',
-    description: 'Acesse o acervo completo de Pílulas de Áudio dos maiores clássicos jurídicos.',
-    pitch: 'Aprenda a essência dos livros e oab em poucos minutos. Uma pílula por dia, onde você estiver.',
-    horusQuote: 'Gostou dessa pílula? Assine o Prime para destravar o acervo completo de áudios sem limites!',
+    title: 'PÃ­lulas de Ãudio Ilimitadas',
+    description: 'Acesse o acervo completo de PÃ­lulas de Ãudio dos maiores clÃ¡ssicos jurÃ­dicos.',
+    pitch: 'Aprenda a essÃªncia dos livros e oab em poucos minutos. Uma pÃ­lula por dia, onde vocÃª estiver.',
+    horusQuote: 'Gostou dessa pÃ­lula? Assine o Prime para destravar o acervo completo de Ã¡udios sem limites!',
     icon: Headphones,
   },
   audioaula: {
     title: 'Audioaulas sem Limite',
-    description: 'Todo o acervo de aulas em áudio sem restrições.',
-    pitch: 'Transforme o deslocamento em hora de estudo: todo o acervo de aulas em áudio.',
-    horusQuote: 'Estude escutando nossas aulas em áudio onde você estiver com o Prime!',
+    description: 'Todo o acervo de aulas em Ã¡udio sem restriÃ§Ãµes.',
+    pitch: 'Transforme o deslocamento em hora de estudo: todo o acervo de aulas em Ã¡udio.',
+    horusQuote: 'Estude escutando nossas aulas em Ã¡udio onde vocÃª estiver com o Prime!',
     icon: Volume2,
   },
   resumo: {
     title: 'Resumos Ilimitados',
-    description: 'Cornell, Feynman e mapas mentais de qualquer matéria.',
-    pitch: 'Resumos esquematizados de alta qualidade para revisão rápida.',
-    horusQuote: 'Acesse resumos completos e esquematizados para acelerar sua revisão no Prime!',
+    description: 'Cornell, Feynman e mapas mentais de qualquer matÃ©ria.',
+    pitch: 'Resumos esquematizados de alta qualidade para revisÃ£o rÃ¡pida.',
+    horusQuote: 'Acesse resumos completos e esquematizados para acelerar sua revisÃ£o no Prime!',
     icon: NotebookPen,
   },
   resumo_download: {
     title: 'Baixar Resumos em PDF',
     description: 'Exportar resumos em PDF de alta qualidade.',
-    pitch: 'Leve o resumo impresso para a audiência, para a prova e para o offline.',
+    pitch: 'Leve o resumo impresso para a audiÃªncia, para a prova e para o offline.',
     horusQuote: 'Baixe todos os resumos em PDF para imprimir ou estudar offline!',
     icon: Download,
   },
   lei_seca: {
     title: 'Lei Seca sem Limite',
     description: 'Percorra a trilha da lei inteira, artigo por artigo.',
-    pitch: 'Treinamento completo de leitura ativa da legislação seca.',
+    pitch: 'Treinamento completo de leitura ativa da legislaÃ§Ã£o seca.',
     horusQuote: 'Domine a letra da lei com nosso modo de leitura ativa sem limites no Prime!',
     icon: Gavel,
   },
   questao_funcoes: {
-    title: 'Funções da Questão',
-    description: 'Comentários da banca, mini-aula, teoria e pegadinhas em cada questão.',
-    pitch: 'Entenda por que errou: comentário da banca, teoria e pegadinhas.',
-    horusQuote: 'Desbloqueie comentários detalhados e explicações de cada questão no Prime!',
+    title: 'FunÃ§Ãµes da QuestÃ£o',
+    description: 'ComentÃ¡rios da banca, mini-aula, teoria e pegadinhas em cada questÃ£o.',
+    pitch: 'Entenda por que errou: comentÃ¡rio da banca, teoria e pegadinhas.',
+    horusQuote: 'Desbloqueie comentÃ¡rios detalhados e explicaÃ§Ãµes de cada questÃ£o no Prime!',
     icon: MessageCircle,
   },
   videoaula_funcoes: {
-    title: 'Funções da Videoaula',
-    description: 'Flashcards, resumos, lei seca, termos e questões da aula.',
-    pitch: 'Cada aula vira material de estudo completo — sem assistir duas vezes.',
+    title: 'FunÃ§Ãµes da Videoaula',
+    description: 'Flashcards, resumos, lei seca, termos e questÃµes da aula.',
+    pitch: 'Cada aula vira material de estudo completo â€” sem assistir duas vezes.',
     horusQuote: 'Tenha acesso ao material de apoio completo acoplado a cada videoaula!',
     icon: PlayCircle,
   },
   default: {
     title: 'Funcionalidade Exclusiva Prime',
-    description: 'Esta função faz parte do plano Prime.',
+    description: 'Esta funÃ§Ã£o faz parte do plano Prime.',
     pitch: 'Libere o Direito Prime completo e estude sem nenhum limite.',
-    horusQuote: 'Desbloqueie o potencial completo do Vade Mecum Prime com 3 dias grátis!',
+    horusQuote: 'Desbloqueie o potencial completo do Vade Mecum Prime com 3 dias grÃ¡tis!',
     icon: Crown,
   },
 };
@@ -278,7 +278,7 @@ const FEATURES: Record<PremiumFeatureKey, FeatureInfo> = {
 interface PremiumGateProps {
   open: boolean;
   onClose: () => void;
-  /** Chave da funcionalidade — mostra ícone, título e descrição personalizados. */
+  /** Chave da funcionalidade â€” mostra Ã­cone, tÃ­tulo e descriÃ§Ã£o personalizados. */
   feature?: PremiumFeatureKey;
   /** Override manual (opcional). */
   title?: string;
@@ -287,7 +287,7 @@ interface PremiumGateProps {
   usageLabel?: string;
 }
 
-// URL assinada de narração de exemplo (Art. 3º da CF88 narrado em alta fidelidade)
+// URL assinada de narraÃ§Ã£o de exemplo (Art. 3Âº da CF88 narrado em alta fidelidade)
 const SAMPLE_NARRACAO_URL =
   'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/sign/audios/narracoes/CF88_CONSTITUICAO_FEDERAL/3o.mp3?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV83M2I5MjhkMi05YmEyLTQ5ODEtODAzMi0wYjE4OWEzYjI4YzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJhdWRpb3MvbmFycmFjb2VzL0NGODhfQ09OU1RJVFVJQ0FPX0ZFREVSQUwvM28ubXAzIiwic2NvcGUiOiJkb3dubG9hZCIsImlhdCI6MTc4NTYyNTQxNywiZXhwIjoyMTAwOTg1NDE3fQ.gaDI47cbKvmezV72n-KGVZ4pAmZgXSwSppGGABVku90';
 
@@ -307,7 +307,7 @@ const PremiumGate = ({
   const [showBenefits, setShowBenefits] = useState(false);
   const { user } = useAuth();
 
-  // Verifica se o trial expirou (usando a mesma lógica do AppRoutes)
+  // Verifica se o trial expirou (usando a mesma lÃ³gica do AppRoutes)
   const isTrialExpired = useMemo(() => {
     if (!user) return false;
     const createdAt = new Date(user.created_at);
@@ -326,7 +326,7 @@ const PremiumGate = ({
     return Date.now() > trialEndsAt.getTime();
   }, [user]);
 
-  // Player de demonstração de narração
+  // Player de demonstraÃ§Ã£o de narraÃ§Ã£o
   const [isPlayingDemo, setIsPlayingDemo] = useState(false);
   const [demoProgress, setDemoProgress] = useState(0);
   const [demoCurrentTime, setDemoCurrentTime] = useState('0:00');
@@ -388,7 +388,7 @@ const PremiumGate = ({
     }
   }, [open, feature]);
 
-  // Mensalidade do plano anual — a App Store exige o patamar de R$ 19,90.
+  // Mensalidade do plano anual â€” a App Store exige o patamar de R$ 19,90.
   const isIOS = useMemo(() => Capacitor.getPlatform() === 'ios', []);
   const [mensalidade, setMensalidade] = useState(isIOS ? '19,90' : '16,66');
   const [totalAnual, setTotalAnual] = useState(isIOS ? 'total R$ 238,80/ano' : 'total R$ 199,90/ano');
@@ -424,7 +424,7 @@ const PremiumGate = ({
     loadPricing();
   }, [open]);
 
-  const ctaLabel = 'Começar 3 dias grátis';
+  const ctaLabel = 'ComeÃ§ar 3 dias grÃ¡tis';
   const goToCheckout = () => {
     haptic.medium();
     setShowBenefits(false);
@@ -458,7 +458,7 @@ const PremiumGate = ({
             className="fixed inset-0 z-[10051] flex items-center justify-center px-4 py-6 pointer-events-none"
           >
             <div className="relative w-full max-w-[364px] max-h-[90dvh] overflow-y-auto overscroll-contain bg-[#121214] border border-primary/30 rounded-[28px] shadow-2xl shadow-black/80 pointer-events-auto flex flex-col">
-              {/* Faixa superior com degradê bordô e marca d'água */}
+              {/* Faixa superior com degradÃª bordÃ´ e marca d'Ã¡gua */}
               <div
                 className="relative py-3.5 px-6 flex items-center justify-center overflow-hidden shrink-0"
                 style={{
@@ -469,7 +469,7 @@ const PremiumGate = ({
                 <Gavel className="absolute -left-3 -top-2 w-20 h-20 text-primary-foreground/10 rotate-[-18deg] pointer-events-none" />
                 <Scale className="absolute -right-4 -bottom-5 w-20 h-20 text-primary-foreground/10 pointer-events-none" />
                 <span className="relative text-[10.5px] font-extrabold tracking-[0.22em] uppercase text-primary-foreground flex items-center gap-1.5">
-                  <Crown className="w-3.5 h-3.5 fill-current" /> Direito Prime · Exclusivo
+                  <Crown className="w-3.5 h-3.5 fill-current" /> Direito Prime Â· Exclusivo
                 </span>
                 <button
                   onClick={() => {
@@ -487,7 +487,7 @@ const PremiumGate = ({
               <div className="relative px-5 pt-5 pb-6 flex flex-col items-center text-center overflow-hidden">
                 <Scale className="absolute -bottom-10 -right-10 w-48 h-48 text-primary/[0.05] pointer-events-none" />
 
-                {/* 🦉 Horus Mascot & Speech Bubble */}
+                {/* ðŸ¦‰ Horus Mascot & Speech Bubble */}
                 <div className="relative flex flex-col items-center mb-4 w-full">
                   <motion.div
                     animate={{ y: [0, -4, 0] }}
@@ -505,7 +505,7 @@ const PremiumGate = ({
                     </span>
                   </motion.div>
 
-                  {/* Balão de fala do Horus */}
+                  {/* BalÃ£o de fala do Horus */}
                   <div className="relative w-full bg-secondary/50 border border-primary/25 rounded-2xl p-3 shadow-md text-center">
                     <div className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-amber-400 mb-1">
                       <Sparkles className="w-3.5 h-3.5" />
@@ -517,7 +517,7 @@ const PremiumGate = ({
                   </div>
                 </div>
 
-                {/* Título & Descrição da funcionalidade */}
+                {/* TÃ­tulo & DescriÃ§Ã£o da funcionalidade */}
                 <div className="flex items-center gap-2 mb-1 justify-center">
                   <span className="w-6 h-6 rounded-lg bg-primary/20 flex items-center justify-center text-primary shrink-0">
                     <Icon className="w-3.5 h-3.5" />
@@ -530,7 +530,7 @@ const PremiumGate = ({
                   {shownDesc}
                 </p>
 
-                {/* 🎧 Demonstrador de Áudio para Narração */}
+                {/* ðŸŽ§ Demonstrador de Ãudio para NarraÃ§Ã£o */}
                 {feature === 'narracao' && (
                   <div className="relative w-full rounded-2xl border border-primary/30 bg-primary/10 p-3.5 mb-3.5 text-left shadow-inner">
                     <div className="flex items-center justify-between gap-2 mb-2">
@@ -539,8 +539,8 @@ const PremiumGate = ({
                           <Volume2 className="w-4 h-4" />
                         </span>
                         <div className="min-w-0">
-                          <p className="text-xs font-bold text-foreground truncate">Demonstração de Narração</p>
-                          <p className="text-[10.5px] text-muted-foreground truncate">Art. 3º da Constituição Federal</p>
+                          <p className="text-xs font-bold text-foreground truncate">DemonstraÃ§Ã£o de NarraÃ§Ã£o</p>
+                          <p className="text-[10.5px] text-muted-foreground truncate">Art. 3Âº da ConstituiÃ§Ã£o Federal</p>
                         </div>
                       </div>
                       <button
@@ -564,7 +564,7 @@ const PremiumGate = ({
                       </button>
                     </div>
 
-                    {/* Barra de progresso do áudio de teste */}
+                    {/* Barra de progresso do Ã¡udio de teste */}
                     <div className="w-full bg-secondary/80 rounded-full h-1.5 overflow-hidden my-2">
                       <div
                         className="bg-gradient-to-r from-primary to-primary-light h-full rounded-full transition-all duration-100"
@@ -579,7 +579,7 @@ const PremiumGate = ({
                   </div>
                 )}
 
-                {/* Preço — mensalidade em destaque */}
+                {/* PreÃ§o â€” mensalidade em destaque */}
                 <div className="relative w-full rounded-2xl border border-primary/25 bg-secondary/40 px-4 py-3 mb-3.5">
                   <div className="flex items-center justify-center gap-2 mb-1">
                     <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
@@ -594,18 +594,18 @@ const PremiumGate = ({
                     <span className="text-foreground text-[36px] font-bold leading-none tracking-tight">
                       {mensalidade}
                     </span>
-                    <span className="text-muted-foreground text-sm">/mês</span>
+                    <span className="text-muted-foreground text-sm">/mÃªs</span>
                   </div>
                   <p className="text-[11px] text-muted-foreground/90 mt-1">
-                    12x de R$ {mensalidade} · {totalAnual}
+                    12x de R$ {mensalidade} Â· {totalAnual}
                   </p>
                   <div className="flex items-center justify-center gap-1.5 mt-1.5 text-[11px] font-semibold text-primary">
                     <Check className="w-3.5 h-3.5" />
-                    3 dias grátis · cancele quando quiser
+                    3 dias grÃ¡tis Â· cancele quando quiser
                   </div>
                 </div>
 
-                {/* Botão Principal de CTA */}
+                {/* BotÃ£o Principal de CTA */}
                 <button
                   onClick={goToCheckout}
                   className="relative w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary-light transition-all active:scale-[0.98] shadow-lg shadow-primary/30 mb-2 flex items-center justify-center gap-2"
@@ -614,7 +614,7 @@ const PremiumGate = ({
                   {ctaLabel}
                 </button>
 
-                {/* Botão Secundário: Ver tudo que desbloqueia */}
+                {/* BotÃ£o SecundÃ¡rio: Ver tudo que desbloqueia */}
                 <button
                   onClick={() => {
                     haptic.selection();
@@ -638,13 +638,13 @@ const PremiumGate = ({
 
                 <p className="relative mt-2.5 flex items-center gap-1.5 text-[10px] text-muted-foreground/80">
                   <ShieldCheck className="w-3 h-3 text-emerald-400" />
-                  Pagamento pela {isIOS ? 'App Store' : 'Google Play'} · sem fidelidade
+                  Pagamento pela {isIOS ? 'App Store' : 'Google Play'} Â· sem fidelidade
                 </p>
               </div>
             </div>
           </motion.div>
 
-          {/* Camada de benefícios completos (Drawer) */}
+          {/* Camada de benefÃ­cios completos (Drawer) */}
           <AnimatePresence>
             {showBenefits && (
               <motion.div
@@ -673,7 +673,7 @@ const PremiumGate = ({
                     <ChevronLeft className="w-4 h-4 text-primary-foreground" />
                   </button>
                   <span className="relative flex-1 text-center text-[11px] font-extrabold tracking-[0.2em] uppercase text-primary-foreground">
-                    Tudo que você desbloqueia
+                    Tudo que vocÃª desbloqueia
                   </span>
                   <button
                     onClick={() => {
@@ -711,7 +711,7 @@ const PremiumGate = ({
                     className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary-light transition-all active:scale-[0.98] shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
                   >
                     <Crown className="w-4 h-4 fill-current" />
-                    {ctaLabel} · R$ {mensalidade}/mês
+                    {ctaLabel} Â· R$ {mensalidade}/mÃªs
                   </button>
                   <button
                     onClick={() => {
@@ -737,3 +737,4 @@ const PremiumGate = ({
 };
 
 export default PremiumGate;
+

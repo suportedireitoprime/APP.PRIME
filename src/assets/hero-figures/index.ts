@@ -1,63 +1,63 @@
-import {pickAsset, srcOf } from '@/lib/assetUrl';
-import a01Asset from './01-socrates.png.asset.json';
+﻿import {pickAsset, srcOf } from '@/lib/assetUrl';
+import a01Asset from './01-socrates.webp.asset.json';
 import a01Bundled from './01-socrates.webp';
-import a02Asset from './02-aristotle.png.asset.json';
+import a02Asset from './02-aristotle.webp.asset.json';
 import a02Bundled from './02-aristotle.webp';
-import a03Asset from './03-plato.png.asset.json';
+import a03Asset from './03-plato.webp.asset.json';
 import a03Bundled from './03-plato.webp';
-import a04Asset from './04-cicero.png.asset.json';
+import a04Asset from './04-cicero.webp.asset.json';
 import a04Bundled from './04-cicero.webp';
-import a05Asset from './05-kant.png.asset.json';
+import a05Asset from './05-kant.webp.asset.json';
 import a05Bundled from './05-kant.webp';
-import a06Asset from './06-montesquieu.png.asset.json';
+import a06Asset from './06-montesquieu.webp.asset.json';
 import a06Bundled from './06-montesquieu.webp';
-import a07Asset from './07-lawyer-reading.png.asset.json';
+import a07Asset from './07-lawyer-reading.webp.asset.json';
 import a07Bundled from './07-lawyer-reading.webp';
-import a08Asset from './08-lawyer-arguing.png.asset.json';
+import a08Asset from './08-lawyer-arguing.webp.asset.json';
 import a08Bundled from './08-lawyer-arguing.webp';
-import a09Asset from './09-judge.png.asset.json';
+import a09Asset from './09-judge.webp.asset.json';
 import a09Bundled from './09-judge.webp';
-import a10Asset from './10-lawyer-walking.png.asset.json';
+import a10Asset from './10-lawyer-walking.webp.asset.json';
 import a10Bundled from './10-lawyer-walking.webp';
-import a11Asset from './11-lawyer-oath.png.asset.json';
+import a11Asset from './11-lawyer-oath.webp.asset.json';
 import a11Bundled from './11-lawyer-oath.webp';
-import a12Asset from './12-lawyer-contract.png.asset.json';
+import a12Asset from './12-lawyer-contract.webp.asset.json';
 import a12Bundled from './12-lawyer-contract.webp';
-import a13Asset from './13-student-desk.png.asset.json';
+import a13Asset from './13-student-desk.webp.asset.json';
 import a13Bundled from './13-student-desk.webp';
-import a14Asset from './14-student-reading.png.asset.json';
+import a14Asset from './14-student-reading.webp.asset.json';
 import a14Bundled from './14-student-reading.webp';
-import a15Asset from './15-student-laptop.png.asset.json';
+import a15Asset from './15-student-laptop.webp.asset.json';
 import a15Bundled from './15-student-laptop.webp';
-import a16Asset from './16-student-stacking.png.asset.json';
+import a16Asset from './16-student-stacking.webp.asset.json';
 import a16Bundled from './16-student-stacking.webp';
-import a17Asset from './17-student-pointing.png.asset.json';
+import a17Asset from './17-student-pointing.webp.asset.json';
 import a17Bundled from './17-student-pointing.webp';
-import a18Asset from './18-student-silhouette.png.asset.json';
+import a18Asset from './18-student-silhouette.webp.asset.json';
 import a18Bundled from './18-student-silhouette.webp';
-import a19Asset from './19-students-group.png.asset.json';
+import a19Asset from './19-students-group.webp.asset.json';
 import a19Bundled from './19-students-group.webp';
-import a20Asset from './20-student-blackboard.png.asset.json';
+import a20Asset from './20-student-blackboard.webp.asset.json';
 import a20Bundled from './20-student-blackboard.webp';
-import a21Asset from './21-facade.png.asset.json';
+import a21Asset from './21-facade.webp.asset.json';
 import a21Bundled from './21-facade.webp';
-import a22Asset from './22-colonnade.png.asset.json';
+import a22Asset from './22-colonnade.webp.asset.json';
 import a22Bundled from './22-colonnade.webp';
-import a23Asset from './23-gothic-window.png.asset.json';
+import a23Asset from './23-gothic-window.webp.asset.json';
 import a23Bundled from './23-gothic-window.webp';
-import a24Asset from './24-staircase.png.asset.json';
+import a24Asset from './24-staircase.webp.asset.json';
 import a24Bundled from './24-staircase.webp';
-import a25Asset from './25-looking-up.png.asset.json';
+import a25Asset from './25-looking-up.webp.asset.json';
 import a25Bundled from './25-looking-up.webp';
-import a26Asset from './26-scales.png.asset.json';
+import a26Asset from './26-scales.webp.asset.json';
 import a26Bundled from './26-scales.webp';
-import a27Asset from './27-gavel.png.asset.json';
+import a27Asset from './27-gavel.webp.asset.json';
 import a27Bundled from './27-gavel.webp';
-import a28Asset from './28-scroll.png.asset.json';
+import a28Asset from './28-scroll.webp.asset.json';
 import a28Bundled from './28-scroll.webp';
-import a29Asset from './29-quill.png.asset.json';
+import a29Asset from './29-quill.webp.asset.json';
 import a29Bundled from './29-quill.webp';
-import a30Asset from './30-open-book.png.asset.json';
+import a30Asset from './30-open-book.webp.asset.json';
 import a30Bundled from './30-open-book.webp';
 
 const a01 = pickAsset(a01Bundled, srcOf(a01Asset));
@@ -101,37 +101,38 @@ export interface HeroFigure {
   side: HeroFigureSide;
 }
 
-// Ordem cicla entre lados (right → center → left) para nunca repetir posição
+// Ordem cicla entre lados (right â†’ center â†’ left) para nunca repetir posiÃ§Ã£o
 // e para variar o "peso" visual do slide.
 export const heroFigures: HeroFigure[] = [
-  { url: a01, alt: 'Sócrates', caption: 'Sócrates — o mestre do questionar', side: 'right' },
-  { url: a02, alt: 'Aristóteles', caption: 'Aristóteles — a virtude na medida', side: 'center' },
-  { url: a03, alt: 'Platão', caption: 'Platão — o filósofo do ideal', side: 'left' },
-  { url: a04, alt: 'Cícero', caption: 'Cícero — a palavra que persuade', side: 'right' },
-  { url: a05, alt: 'Kant', caption: 'Kant — a razão como imperativo', side: 'center' },
-  { url: a06, alt: 'Montesquieu', caption: 'Montesquieu — o espírito das leis', side: 'left' },
-  { url: a07, alt: 'Advogado lendo peça', caption: 'A análise atenta da peça', side: 'right' },
+  { url: a01, alt: 'SÃ³crates', caption: 'SÃ³crates â€” o mestre do questionar', side: 'right' },
+  { url: a02, alt: 'AristÃ³teles', caption: 'AristÃ³teles â€” a virtude na medida', side: 'center' },
+  { url: a03, alt: 'PlatÃ£o', caption: 'PlatÃ£o â€” o filÃ³sofo do ideal', side: 'left' },
+  { url: a04, alt: 'CÃ­cero', caption: 'CÃ­cero â€” a palavra que persuade', side: 'right' },
+  { url: a05, alt: 'Kant', caption: 'Kant â€” a razÃ£o como imperativo', side: 'center' },
+  { url: a06, alt: 'Montesquieu', caption: 'Montesquieu â€” o espÃ­rito das leis', side: 'left' },
+  { url: a07, alt: 'Advogado lendo peÃ§a', caption: 'A anÃ¡lise atenta da peÃ§a', side: 'right' },
   { url: a08, alt: 'Advogada argumentando', caption: 'A defesa em tribuna', side: 'center' },
-  { url: a09, alt: 'Juiz com martelo', caption: 'A decisão que encerra o litígio', side: 'left' },
-  { url: a10, alt: 'Advogada caminhando', caption: 'O peso dos códigos, o rumo do estudo', side: 'right' },
+  { url: a09, alt: 'Juiz com martelo', caption: 'A decisÃ£o que encerra o litÃ­gio', side: 'left' },
+  { url: a10, alt: 'Advogada caminhando', caption: 'O peso dos cÃ³digos, o rumo do estudo', side: 'right' },
   { url: a11, alt: 'Juramento de advogado', caption: 'O juramento que abre a toga', side: 'center' },
-  { url: a12, alt: 'Advogado com contrato', caption: 'A cláusula que revela intenção', side: 'left' },
-  { url: a13, alt: 'Estudante à mesa', caption: 'A madrugada que forma o jurista', side: 'right' },
+  { url: a12, alt: 'Advogado com contrato', caption: 'A clÃ¡usula que revela intenÃ§Ã£o', side: 'left' },
+  { url: a13, alt: 'Estudante Ã  mesa', caption: 'A madrugada que forma o jurista', side: 'right' },
   { url: a14, alt: 'Estudante lendo', caption: 'A leitura que fixa o conceito', side: 'center' },
-  { url: a15, alt: 'Estudante com notebook', caption: 'O foco na próxima prova', side: 'left' },
-  { url: a16, alt: 'Estudante empilhando livros', caption: 'Cada código, um degrau', side: 'right' },
+  { url: a15, alt: 'Estudante com notebook', caption: 'O foco na prÃ³xima prova', side: 'left' },
+  { url: a16, alt: 'Estudante empilhando livros', caption: 'Cada cÃ³digo, um degrau', side: 'right' },
   { url: a17, alt: 'Estudante apontando a lei', caption: 'O artigo exato para o caso', side: 'center' },
   { url: a18, alt: 'Estudante em contraluz', caption: 'A luz que atravessa o vitral', side: 'left' },
   { url: a19, alt: 'Grupo de estudantes', caption: 'O debate que amadurece a tese', side: 'right' },
-  { url: a20, alt: 'Estudante de costas', caption: 'O quadro cheio de anotações', side: 'center' },
+  { url: a20, alt: 'Estudante de costas', caption: 'O quadro cheio de anotaÃ§Ãµes', side: 'center' },
   { url: a21, alt: 'Fachada de faculdade', caption: 'O portal das faculdades de direito', side: 'left' },
   { url: a22, alt: 'Colonata em perspectiva', caption: 'A luz no fim da colunata', side: 'right' },
-  { url: a23, alt: 'Janela gótica', caption: 'A janela que ilumina o estudo', side: 'center' },
-  { url: a24, alt: 'Escadaria da faculdade', caption: 'Os degraus que levam à toga', side: 'left' },
-  { url: a25, alt: 'Pessoa olhando a faculdade', caption: 'O sonho começa no olhar', side: 'right' },
-  { url: a26, alt: 'Balança da justiça', caption: 'O equilíbrio da justiça', side: 'center' },
-  { url: a27, alt: 'Martelo do juiz', caption: 'O martelo que sela a decisão', side: 'left' },
+  { url: a23, alt: 'Janela gÃ³tica', caption: 'A janela que ilumina o estudo', side: 'center' },
+  { url: a24, alt: 'Escadaria da faculdade', caption: 'Os degraus que levam Ã  toga', side: 'left' },
+  { url: a25, alt: 'Pessoa olhando a faculdade', caption: 'O sonho comeÃ§a no olhar', side: 'right' },
+  { url: a26, alt: 'BalanÃ§a da justiÃ§a', caption: 'O equilÃ­brio da justiÃ§a', side: 'center' },
+  { url: a27, alt: 'Martelo do juiz', caption: 'O martelo que sela a decisÃ£o', side: 'left' },
   { url: a28, alt: 'Pergaminho lacrado', caption: 'O pergaminho e o selo do direito', side: 'right' },
   { url: a29, alt: 'Pena e tinteiro', caption: 'A pena que registra o direito', side: 'center' },
-  { url: a30, alt: 'Livro de leis aberto', caption: 'O código aberto sobre a mesa', side: 'left' },
+  { url: a30, alt: 'Livro de leis aberto', caption: 'O cÃ³digo aberto sobre a mesa', side: 'left' },
 ];
+

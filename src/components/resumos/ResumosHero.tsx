@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search, NotebookText, ChevronRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
@@ -8,23 +8,23 @@ import HeroCoverCarousel from '@/components/vademecum/home/HeroCoverCarousel';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 
 import { pickAsset, srcOf } from '@/lib/assetUrl';
-import cover2Asset from '@/assets/covers/cover-2.png.asset.json';
+import cover2Asset from '@/assets/covers/cover-2.webp.asset.json';
 import cover2Bundled from '@/assets/covers/cover-2.webp';
-import cover3Asset from '@/assets/covers/cover-3.png.asset.json';
+import cover3Asset from '@/assets/covers/cover-3.webp.asset.json';
 import cover3Bundled from '@/assets/covers/cover-3.webp';
-import cover4Asset from '@/assets/covers/cover-4.png.asset.json';
+import cover4Asset from '@/assets/covers/cover-4.webp.asset.json';
 import cover4Bundled from '@/assets/covers/cover-4.webp';
-import cover5Asset from '@/assets/covers/cover-5.png.asset.json';
+import cover5Asset from '@/assets/covers/cover-5.webp.asset.json';
 import cover5Bundled from '@/assets/covers/cover-5.webp';
-import cover6Asset from '@/assets/covers/cover-6.png.asset.json';
+import cover6Asset from '@/assets/covers/cover-6.webp.asset.json';
 import cover6Bundled from '@/assets/covers/cover-6.webp';
-import cover7Asset from '@/assets/covers/cover-7.png.asset.json';
+import cover7Asset from '@/assets/covers/cover-7.webp.asset.json';
 import cover7Bundled from '@/assets/covers/cover-7.webp';
-import cover8Asset from '@/assets/covers/cover-8.png.asset.json';
+import cover8Asset from '@/assets/covers/cover-8.webp.asset.json';
 import cover8Bundled from '@/assets/covers/cover-8.webp';
-import cover9Asset from '@/assets/covers/cover-9.png.asset.json';
+import cover9Asset from '@/assets/covers/cover-9.webp.asset.json';
 import cover9Bundled from '@/assets/covers/cover-9.webp';
-import cover10Asset from '@/assets/covers/cover-10.png.asset.json';
+import cover10Asset from '@/assets/covers/cover-10.webp.asset.json';
 import cover10Bundled from '@/assets/covers/cover-10.webp';
 
 const FALLBACK_COVERS = [
@@ -40,9 +40,9 @@ const FALLBACK_COVERS = [
 ];
 
 const HINTS = [
-  'Pesquise qualquer matéria...',
+  'Pesquise qualquer matÃ©ria...',
   'Pesquise uma lei...',
-  'Pesquise súmulas...',
+  'Pesquise sÃºmulas...',
   'Pesquise conceitos...',
   'Pesquise por voz...',
 ];
@@ -148,7 +148,7 @@ const ResumosHero = ({
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
 
-          {/* Wrapper com máscara para exibir SVGs apenas no lado direito do painel vermelho (atrás do texto fica limpo) */}
+          {/* Wrapper com mÃ¡scara para exibir SVGs apenas no lado direito do painel vermelho (atrÃ¡s do texto fica limpo) */}
           <div 
             className="absolute inset-0 pointer-events-none"
             style={{
@@ -161,7 +161,7 @@ const ResumosHero = ({
         </div>
       </div>
 
-      {/* Botões do topo absolutos */}
+      {/* BotÃµes do topo absolutos */}
       <header className="absolute top-0 right-0 left-0 z-30 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
         <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center justify-between">
           <button
@@ -174,7 +174,7 @@ const ResumosHero = ({
         </div>
       </header>
 
-      {/* Conteúdo idêntico à altura da Home (Textos animando) */}
+      {/* ConteÃºdo idÃªntico Ã  altura da Home (Textos animando) */}
       <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[100px]">
         <div className="flex flex-col items-center text-center gap-1 z-[10] relative w-[48%] max-w-[200px] ml-2 sm:ml-4">
           <div className="h-[20px] sm:h-[40px] mb-1 w-full" />
@@ -184,7 +184,7 @@ const ResumosHero = ({
               <NotebookText className="w-8 h-8 sm:w-10 sm:h-10 text-white drop-shadow-md" strokeWidth={1.5} />
             </div>
             <h1 className="font-display text-white text-[18px] sm:text-[22px] leading-[1.05] font-black tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] uppercase text-center w-full max-w-[160px] sm:max-w-[200px]">
-              Resumos Jurídicos
+              Resumos JurÃ­dicos
             </h1>
             <p className="mt-1.5 font-body text-white/90 text-[10px] sm:text-[11px] font-semibold tracking-wide uppercase drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]">
               Inteligentes e Estruturados
@@ -194,7 +194,7 @@ const ResumosHero = ({
       </div>
 
       <div className="relative z-10 px-3 sm:px-5 pt-6 pb-2">
-         {/* Estatísticas (Total Resumos, Áreas, Temas) */}
+         {/* EstatÃ­sticas (Total Resumos, Ãreas, Temas) */}
          <div className="relative mt-1 rounded-[20px] bg-[#0A0A0A] text-white shadow-xl ring-1 ring-white/5 overflow-hidden mx-1">
           <div className="grid grid-cols-3 divide-x divide-white/5">
             {/* Box 1: Total Resumos */}
@@ -211,11 +211,11 @@ const ResumosHero = ({
               <NotebookText className="pointer-events-none absolute -bottom-1 -left-1 h-8 w-8 text-white/5" />
             </div>
 
-            {/* Box 2: Total Áreas */}
+            {/* Box 2: Total Ãreas */}
             <div className="flex flex-col items-center justify-center px-1.5 py-3.5 transition-colors hover:bg-white/5 active:scale-95 group select-none">
               <div className="flex items-center gap-0.5">
                 <span className="text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest text-white/50 group-hover:text-white transition-colors">
-                  Total Áreas
+                  Total Ãreas
                 </span>
                 <ChevronRight className="w-2.5 h-2.5 text-white/30 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
               </div>
@@ -277,3 +277,4 @@ const ResumosHero = ({
 };
 
 export default ResumosHero;
+

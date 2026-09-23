@@ -1,5 +1,5 @@
-import horusOwlBundled from '@/assets/horus/horus-owl.webp';
-import horusOwlAsset from '@/assets/horus/horus-owl.png.asset.json';
+﻿import horusOwlBundled from '@/assets/horus/horus-owl.webp';
+import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 
 export const horusOwl = pickAsset(horusOwlBundled, srcOf(horusOwlAsset));
@@ -45,7 +45,7 @@ export interface JurisprudenciaArtigoProps {
 export const OVERLAY_STEPS = [
   'Procurando lei no Corpus927',
   'Vinculando automaticamente',
-  'Buscando jurisprudência',
+  'Buscando jurisprudÃªncia',
   'Pronto',
 ];
 
@@ -67,12 +67,12 @@ export function tribunalClasses(tribunal: string, active = false) {
 
 export function prettyLeiName(raw: string): string {
   if (!raw) return '';
-  if (!/_/.test(raw) && /[a-zàáâãéêíóôõúç]/.test(raw)) return raw;
+  if (!/_/.test(raw) && /[a-zÃ Ã¡Ã¢Ã£Ã©ÃªÃ­Ã³Ã´ÃµÃºÃ§]/.test(raw)) return raw;
   const tokens = raw.split('_').filter(Boolean);
   if (tokens.length === 0) return raw;
   const isSigla = (t: string) => /^[A-Z0-9]{2,6}$/.test(t);
   const titleCase = (t: string) =>
-    t.toLowerCase().replace(/(^|\s|-)([a-zà-ÿ])/g, (_, p, c) => p + c.toUpperCase());
+    t.toLowerCase().replace(/(^|\s|-)([a-zÃ -Ã¿])/g, (_, p, c) => p + c.toUpperCase());
   const stop = new Set(['de', 'da', 'do', 'das', 'dos', 'e']);
   const words = tokens.map((t, i) => {
     if (isSigla(t) && i === 0) return t;
@@ -81,7 +81,8 @@ export function prettyLeiName(raw: string): string {
     return titleCase(t);
   });
   if (isSigla(words[0]) && words.length > 1) {
-    return `${words[0]} — ${words.slice(1).join(' ')}`;
+    return `${words[0]} â€” ${words.slice(1).join(' ')}`;
   }
   return words.join(' ');
 }
+

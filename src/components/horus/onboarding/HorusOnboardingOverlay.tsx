@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import { Player, type PlayerRef } from '@remotion/player';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ArrowRight, Loader2 } from 'lucide-react';
-import horusOwlAsset from '@/assets/horus/horus-owl.png.asset.json';
+import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
 import { useHorusOnboarding } from './useHorusOnboarding';
@@ -21,9 +21,9 @@ type Props = {
   open: boolean;
   onFinished: () => void;
   initialName?: string;
-  /** Preview no admin — não grava nada, botão fecha imediatamente. */
+  /** Preview no admin â€” nÃ£o grava nada, botÃ£o fecha imediatamente. */
   previewMode?: boolean;
-  /** Ref exposto para o controller de narração ler frame atual. */
+  /** Ref exposto para o controller de narraÃ§Ã£o ler frame atual. */
   playerRefExternal?: React.MutableRefObject<PlayerRef | null>;
 };
 
@@ -48,7 +48,7 @@ export default function HorusOnboardingOverlay({
   const [saving, setSaving] = useState(false);
 
   const inputProps: HorusIntroProps = useMemo(
-    () => ({ owlSrc, nome: nome || 'você' }),
+    () => ({ owlSrc, nome: nome || 'vocÃª' }),
     [nome],
   );
 
@@ -125,14 +125,14 @@ export default function HorusOnboardingOverlay({
         {/* Skip button */}
         <button
           onClick={handleSkip}
-          aria-label="Pular apresentação"
+          aria-label="Pular apresentaÃ§Ã£o"
           className="absolute top-4 right-4 z-20 w-11 h-11 rounded-full bg-white/10 backdrop-blur-md text-white flex items-center justify-center active:scale-95 transition"
           style={{ marginTop: 'var(--sai-top)' }}
         >
           <X className="w-5 h-5" />
         </button>
 
-        {/* Player container — vertical, fills screen */}
+        {/* Player container â€” vertical, fills screen */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-full h-full max-w-[520px] mx-auto">
             <Player
@@ -153,7 +153,7 @@ export default function HorusOnboardingOverlay({
           </div>
         </div>
 
-        {/* Name input — appears when video pauses */}
+        {/* Name input â€” appears when video pauses */}
         <AnimatePresence>
           {phase === 'askName' && (
             <motion.div
@@ -205,7 +205,7 @@ export default function HorusOnboardingOverlay({
                   onClick={handleSkip}
                   className="mt-4 w-full text-white/50 text-sm underline underline-offset-2"
                 >
-                  Pular apresentação
+                  Pular apresentaÃ§Ã£o
                 </button>
               </div>
             </motion.div>
@@ -215,3 +215,4 @@ export default function HorusOnboardingOverlay({
     </AnimatePresence>
   );
 }
+

@@ -1,26 +1,26 @@
-import { useState, useEffect, useRef, useMemo, Suspense } from 'react';
+﻿import { useState, useEffect, useRef, useMemo, Suspense } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfileSummary } from '@/hooks/useProfileSummary';
-import cover2Asset from '@/assets/covers/cover-2.png.asset.json';
+import cover2Asset from '@/assets/covers/cover-2.webp.asset.json';
 import cover2Bundled from '@/assets/covers/cover-2.webp';
-import cover3Asset from '@/assets/covers/cover-3.png.asset.json';
+import cover3Asset from '@/assets/covers/cover-3.webp.asset.json';
 import cover3Bundled from '@/assets/covers/cover-3.webp';
-import cover4Asset from '@/assets/covers/cover-4.png.asset.json';
+import cover4Asset from '@/assets/covers/cover-4.webp.asset.json';
 import cover4Bundled from '@/assets/covers/cover-4.webp';
-import cover5Asset from '@/assets/covers/cover-5.png.asset.json';
+import cover5Asset from '@/assets/covers/cover-5.webp.asset.json';
 import cover5Bundled from '@/assets/covers/cover-5.webp';
-import cover6Asset from '@/assets/covers/cover-6.png.asset.json';
+import cover6Asset from '@/assets/covers/cover-6.webp.asset.json';
 import cover6Bundled from '@/assets/covers/cover-6.webp';
-import cover7Asset from '@/assets/covers/cover-7.png.asset.json';
+import cover7Asset from '@/assets/covers/cover-7.webp.asset.json';
 import cover7Bundled from '@/assets/covers/cover-7.webp';
-import cover8Asset from '@/assets/covers/cover-8.png.asset.json';
+import cover8Asset from '@/assets/covers/cover-8.webp.asset.json';
 import cover8Bundled from '@/assets/covers/cover-8.webp';
-import cover9Asset from '@/assets/covers/cover-9.png.asset.json';
+import cover9Asset from '@/assets/covers/cover-9.webp.asset.json';
 import cover9Bundled from '@/assets/covers/cover-9.webp';
-import cover10Asset from '@/assets/covers/cover-10.png.asset.json';
+import cover10Asset from '@/assets/covers/cover-10.webp.asset.json';
 import cover10Bundled from '@/assets/covers/cover-10.webp';
 import { useHeroHomeImages } from '@/hooks/useHeroHomeImages';
 import { prefetchHeroRoutesIdle } from '@/lib/routePrefetch';
@@ -142,7 +142,7 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
 
   return (
     <>
-      {/* Shell sólido, opaco e com blindagem contra culling e overscroll */}
+      {/* Shell sÃ³lido, opaco e com blindagem contra culling e overscroll */}
       <div
         className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20"
         style={{
@@ -157,7 +157,7 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           aria-hidden="true"
         />
 
-        {/* Imagem de Capa do Painel do Início (Substituindo o vídeo anterior) */}
+        {/* Imagem de Capa do Painel do InÃ­cio (Substituindo o vÃ­deo anterior) */}
         <img
           src={heroEstudanteImg}
           alt=""
@@ -168,7 +168,7 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           className="absolute inset-0 w-full h-full object-cover object-[32%_center] md:object-center z-0 pointer-events-none translate-x-[12%] md:translate-x-[8%]"
         />
 
-        {/* Overlay vermelho com gradiente estilo menu e sombra (drop-shadow real na divisória diagonal) */}
+        {/* Overlay vermelho com gradiente estilo menu e sombra (drop-shadow real na divisÃ³ria diagonal) */}
         <div 
           className="absolute inset-0 z-[1] pointer-events-none"
           style={{ filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.8)) drop-shadow(8px 0 10px rgba(0,0,0,0.95))' }}
@@ -192,12 +192,12 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           </div>
         </div>
 
-        {/* Botões de Notificação e Menu — alinhados com Vade Mecum */}
+        {/* BotÃµes de NotificaÃ§Ã£o e Menu â€” alinhados com Vade Mecum */}
         <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
           <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center justify-end gap-2 sm:gap-3">
             <button
               onClick={() => { haptic.light(); setNotifOpen(true); }}
-              aria-label={`Abrir notificações${unreadCount > 0 ? ` (${unreadCount} não lidas)` : ''}`}
+              aria-label={`Abrir notificaÃ§Ãµes${unreadCount > 0 ? ` (${unreadCount} nÃ£o lidas)` : ''}`}
               className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:scale-95 relative"
             >
               <Bell className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
@@ -218,12 +218,12 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           </div>
         </header>
 
-        {/* Conteúdo: Logo à esquerda — centralizado na área vermelha com recuo idêntico ao Vade Mecum */}
+        {/* ConteÃºdo: Logo Ã  esquerda â€” centralizado na Ã¡rea vermelha com recuo idÃªntico ao Vade Mecum */}
         <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[100px]">
           <HomeBrandBanner />
         </div>
 
-        {/* Atalhos Rápidos: APRENDER, FLASHCARDS, QUESTÕES, ME EXPLIQUE — dentro do painel */}
+        {/* Atalhos RÃ¡pidos: APRENDER, FLASHCARDS, QUESTÃ•ES, ME EXPLIQUE â€” dentro do painel */}
         <div className="relative z-10 px-3 sm:px-5 pt-2 pb-2">
           <HomeActionShortcuts />
         </div>
@@ -268,3 +268,4 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
 };
 
 export default HomeHeaderHero;
+

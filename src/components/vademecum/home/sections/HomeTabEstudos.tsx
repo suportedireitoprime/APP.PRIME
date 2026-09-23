@@ -1,4 +1,4 @@
-import { Suspense, memo, useState, useEffect } from 'react';
+﻿import { Suspense, memo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Sparkles, Zap, Star, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +14,7 @@ import HomeLivrosCarousel from '@/components/ferramentas/FerramentasLivrosCarros
 const HomeAprenderCarousel = lazyWithRetry(() => import('@/components/vademecum/home/aprender/HomeAprenderCarousel'));
 import { AprenderCarouselSkeleton } from '@/components/vademecum/home/aprender/chunks';
 import { GRID_CATS, EMALTA_CATS, Cat } from './homeSectionsData';
-import horusOwlAsset from '@/assets/horus/horus-owl.png.asset.json';
+import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
 import horusOwl1 from '@/assets/horus/01_coruja_oratoria.webp';
 import horusOwl2 from '@/assets/horus/02_coruja_estudando.webp';
@@ -27,22 +27,22 @@ const OWL_IMAGES = [horusOwl, horusOwl1, horusOwl2, horusOwl3, horusOwl4];
 
 const HORUS_DESCRIPTIONS = [
   "Seu tutor inteligente 24h",
-  "Tire dúvidas pelo WhatsApp",
-  "Peça resumos de leis",
-  "Pesquise jurisprudência",
-  "Explique termos difíceis",
-  "Gere casos práticos",
+  "Tire dÃºvidas pelo WhatsApp",
+  "PeÃ§a resumos de leis",
+  "Pesquise jurisprudÃªncia",
+  "Explique termos difÃ­ceis",
+  "Gere casos prÃ¡ticos",
   "Tabelas comparativas na hora",
-  "Crie flashcards de revisão",
-  "Entenda a Lei Seca rápido",
-  "Simule questões de provas"
+  "Crie flashcards de revisÃ£o",
+  "Entenda a Lei Seca rÃ¡pido",
+  "Simule questÃµes de provas"
 ];
 
-// Função para decidir o carrossel de forma determinística (por horário)
-// Isso evita trocas erráticas a cada navegação, garantindo que o cache funcione e o carregamento seja instantâneo.
+// FunÃ§Ã£o para decidir o carrossel de forma determinÃ­stica (por horÃ¡rio)
+// Isso evita trocas errÃ¡ticas a cada navegaÃ§Ã£o, garantindo que o cache funcione e o carregamento seja instantÃ¢neo.
 function getTopCarouselType(): 'noticias' | 'livros' {
   const hour = new Date().getHours();
-  // Das 00:00 às 17:59 exibe Notícias. Das 18:00 às 23:59 exibe Livros.
+  // Das 00:00 Ã s 17:59 exibe NotÃ­cias. Das 18:00 Ã s 23:59 exibe Livros.
   return (hour >= 18 || hour < 6) ? 'livros' : 'noticias';
 }
 
@@ -82,12 +82,12 @@ const HomeTabEstudos = ({
   const [bubblePhrase, setBubblePhrase] = useState("");
 
   useEffect(() => {
-    // Alternância do texto descritivo do botão
+    // AlternÃ¢ncia do texto descritivo do botÃ£o
     const descInterval = setInterval(() => {
       setDescIndex((prev) => (prev + 1) % HORUS_DESCRIPTIONS.length);
     }, 3200);
 
-    // Alternância da imagem do Horus a cada 5 segundos aleatoriamente
+    // AlternÃ¢ncia da imagem do Horus a cada 5 segundos aleatoriamente
     const owlInterval = setInterval(() => {
       setOwlIndex((prev) => {
         let next = prev;
@@ -105,14 +105,14 @@ const HomeTabEstudos = ({
   }, []);
 
   useEffect(() => {
-    // Lógica do balão de fala da coruja (1 vez por sessão, some em 6s)
+    // LÃ³gica do balÃ£o de fala da coruja (1 vez por sessÃ£o, some em 6s)
     const hasShown = sessionStorage.getItem('horus_balloon_shown');
     if (!hasShown) {
       const phrases = [
-        "venha conversar comigo! Vou tirar suas dúvidas jurídicas.",
+        "venha conversar comigo! Vou tirar suas dÃºvidas jurÃ­dicas.",
         "precisa de ajuda com leis? Me chame aqui!",
-        "está com dúvidas? Eu te explico em segundos!",
-        "simule casos práticos falando direto comigo!"
+        "estÃ¡ com dÃºvidas? Eu te explico em segundos!",
+        "simule casos prÃ¡ticos falando direto comigo!"
       ];
       const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
       setBubblePhrase(randomPhrase);
@@ -135,7 +135,7 @@ const HomeTabEstudos = ({
       transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
       className="space-y-6"
     >
-      {/* Carrossel de Notícias Jurídicas ou Livros no topo */}
+      {/* Carrossel de NotÃ­cias JurÃ­dicas ou Livros no topo */}
       {!hideNoticias && (
         <div className="pt-2 pb-2 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
           <Suspense fallback={<div className="h-48 bg-muted/20 animate-pulse rounded-xl mx-4" />}>
@@ -148,7 +148,7 @@ const HomeTabEstudos = ({
         </div>
       )}
 
-      {/* Em Alta — leis (Vade Mecum) ou funções de estudo (home) */}
+      {/* Em Alta â€” leis (Vade Mecum) ou funÃ§Ãµes de estudo (home) */}
       {emAltaLeis ? (
         <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 md:gap-4">
           {GRID_CATS.map((c, i) => (
@@ -215,7 +215,7 @@ const HomeTabEstudos = ({
                 </div>
               </div>
               
-              {/* Balão de Fala */}
+              {/* BalÃ£o de Fala */}
               <AnimatePresence>
                 {showBubble && (
                   <motion.div 
@@ -226,7 +226,7 @@ const HomeTabEstudos = ({
                     className="absolute -top-10 right-20 z-30"
                   >
                     <div className="relative bg-white text-rose-700 px-3 py-1.5 rounded-[12px] shadow-lg border border-rose-100 max-w-[190px]">
-                      {/* Botão de Fechar */}
+                      {/* BotÃ£o de Fechar */}
                       <button 
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowBubble(false); }}
                         className="absolute -top-1.5 -left-1.5 bg-white border border-rose-100 text-rose-400 hover:text-rose-600 rounded-full w-4 h-4 flex items-center justify-center shadow-sm z-10"
@@ -244,7 +244,7 @@ const HomeTabEstudos = ({
                 )}
               </AnimatePresence>
 
-              {/* Imagem do Horus e Texto no pé */}
+              {/* Imagem do Horus e Texto no pÃ© */}
               <div className="absolute -right-3 -top-8 w-[110px] flex flex-col items-center pointer-events-none z-20">
                 <AnimatePresence mode="wait">
                   <motion.img 
@@ -292,7 +292,7 @@ const HomeTabEstudos = ({
                 badge={c.emBreve ? 'Em breve' : undefined}
                 onClick={() => {
                   if (c.emBreve) {
-                    toast({ title: 'Em breve', description: 'Essa função está sendo preparada.' });
+                    toast({ title: 'Em breve', description: 'Essa funÃ§Ã£o estÃ¡ sendo preparada.' });
                     return;
                   }
                   if (c.id === 'ea-mapas') {
@@ -321,7 +321,7 @@ const HomeTabEstudos = ({
             </div>
           )}
 
-          {/* Seção Lei Seca com Título, Risquinho Vermelho e Descrição */}
+          {/* SeÃ§Ã£o Lei Seca com TÃ­tulo, Risquinho Vermelho e DescriÃ§Ã£o */}
           <div className="pt-2 flex flex-col gap-2.5">
             <div className="mb-0.5 relative z-10 flex items-start justify-between gap-3">
               <div>
@@ -330,7 +330,7 @@ const HomeTabEstudos = ({
                   Lei Seca
                 </h3>
                 <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3">
-                  Pratique artigos comentados, simulados e questões
+                  Pratique artigos comentados, simulados e questÃµes
                 </p>
               </div>
             </div>
@@ -341,18 +341,19 @@ const HomeTabEstudos = ({
       )}
 
 
-      {/* Seção Três Poderes */}
+      {/* SeÃ§Ã£o TrÃªs Poderes */}
       <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
         <HomeTresPoderes />
       </div>
 
-      {/* Linha do Tempo de Apresentações (Logo após Três Poderes) */}
+      {/* Linha do Tempo de ApresentaÃ§Ãµes (Logo apÃ³s TrÃªs Poderes) */}
       <HomeApresentacoesTimeline />
 
-      {/* Espaço de segurança para garantir que o último elemento não fique atrás do BottomNav */}
+      {/* EspaÃ§o de seguranÃ§a para garantir que o Ãºltimo elemento nÃ£o fique atrÃ¡s do BottomNav */}
       <div className="h-28 w-full shrink-0 pointer-events-none" />
     </motion.div>
   );
 };
 
 export default memo(HomeTabEstudos);
+

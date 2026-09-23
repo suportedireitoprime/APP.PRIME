@@ -1,14 +1,14 @@
-import { motion, AnimatePresence } from 'framer-motion';
+﻿import { motion, AnimatePresence } from 'framer-motion';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
-import cover2Asset from '@/assets/covers/cover-2.png.asset.json';
+import cover2Asset from '@/assets/covers/cover-2.webp.asset.json';
 import cover2Bundled from '@/assets/covers/cover-2.webp';
-import cover3Asset from '@/assets/covers/cover-3.png.asset.json';
+import cover3Asset from '@/assets/covers/cover-3.webp.asset.json';
 import cover3Bundled from '@/assets/covers/cover-3.webp';
-import cover4Asset from '@/assets/covers/cover-4.png.asset.json';
+import cover4Asset from '@/assets/covers/cover-4.webp.asset.json';
 import cover4Bundled from '@/assets/covers/cover-4.webp';
-import cover5Asset from '@/assets/covers/cover-5.png.asset.json';
+import cover5Asset from '@/assets/covers/cover-5.webp.asset.json';
 import cover5Bundled from '@/assets/covers/cover-5.webp';
-import cover6Asset from '@/assets/covers/cover-6.png.asset.json';
+import cover6Asset from '@/assets/covers/cover-6.webp.asset.json';
 import cover6Bundled from '@/assets/covers/cover-6.webp';
 import { useEffect, useState } from 'react';
 import type { BlogTema } from '@/data/blogPosts';
@@ -26,45 +26,45 @@ type HeroInfo = { titulo: string; descricao: string; bg: string; kicker: string 
 
 const INFOS: Record<string, HeroInfo> = {
   Todos: {
-    titulo: 'Blogger Jurídico',
+    titulo: 'Blogger JurÃ­dico',
     descricao: 'Artigos autorais sobre filosofia, STF, leis e curiosidades do Direito. Escolha um tema para mergulhar.',
-    kicker: 'Blogger Jurídico',
-    // âmbar clássico (identidade OAB na Risca)
+    kicker: 'Blogger JurÃ­dico',
+    // Ã¢mbar clÃ¡ssico (identidade OAB na Risca)
     bg: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(0 95% 55%) 55%, hsl(0 90% 45%) 100%)',
   },
   Filosofia: {
     titulo: 'Filosofia do Direito',
-    descricao: 'De Sócrates a Rawls: as ideias que moldam o que entendemos por justiça, lei e liberdade.',
+    descricao: 'De SÃ³crates a Rawls: as ideias que moldam o que entendemos por justiÃ§a, lei e liberdade.',
     kicker: 'Pensadores & Ideias',
     // roxo profundo
     bg: 'linear-gradient(135deg, hsl(265 55% 22%) 0%, hsl(270 60% 38%) 55%, hsl(280 55% 30%) 100%)',
   },
   STF: {
     titulo: 'STF em Foco',
-    descricao: 'Decisões marcantes e os bastidores da Suprema Corte que mudam a vida de milhões.',
+    descricao: 'DecisÃµes marcantes e os bastidores da Suprema Corte que mudam a vida de milhÃµes.',
     kicker: 'Suprema Corte',
     // azul institucional
     bg: 'linear-gradient(135deg, hsl(215 65% 18%) 0%, hsl(210 70% 32%) 55%, hsl(205 65% 25%) 100%)',
   },
   Curiosidades: {
-    titulo: 'Curiosidades Jurídicas',
-    descricao: 'Fatos históricos, casos bizarros e detalhes do Direito que quase ninguém conhece.',
-    kicker: 'Você sabia?',
+    titulo: 'Curiosidades JurÃ­dicas',
+    descricao: 'Fatos histÃ³ricos, casos bizarros e detalhes do Direito que quase ninguÃ©m conhece.',
+    kicker: 'VocÃª sabia?',
     // teal / verde-azulado
     bg: 'linear-gradient(135deg, hsl(175 60% 20%) 0%, hsl(170 65% 32%) 55%, hsl(180 55% 26%) 100%)',
   },
-  'Clássicos': {
-    titulo: 'Clássicos do Direito',
+  'ClÃ¡ssicos': {
+    titulo: 'ClÃ¡ssicos do Direito',
     descricao: 'Obras e autores que todo operador do Direito precisa conhecer ao menos uma vez.',
-    kicker: 'Leitura Obrigatória',
-    // bordô / vinho
+    kicker: 'Leitura ObrigatÃ³ria',
+    // bordÃ´ / vinho
     bg: 'linear-gradient(135deg, hsl(00 55% 20%) 0%, hsl(345 60% 34%) 55%, hsl(05 50% 26%) 100%)',
   },
   Leis: {
     titulo: 'Entendendo as Leis',
-    descricao: 'O que é uma lei, como se estrutura, quem cria e por que ela vale. Do básico à hierarquia normativa.',
+    descricao: 'O que Ã© uma lei, como se estrutura, quem cria e por que ela vale. Do bÃ¡sico Ã  hierarquia normativa.',
     kicker: 'Estrutura Legal',
-    // verde jurídico
+    // verde jurÃ­dico
     bg: 'linear-gradient(135deg, hsl(150 50% 18%) 0%, hsl(145 55% 30%) 55%, hsl(155 50% 24%) 100%)',
   },
 };
@@ -120,7 +120,7 @@ export default function BlogHeroHeader({ selectedTema }: { selectedTema: BlogTem
             <line x1="0" y1="-8" x2="0" y2="10" />
           </g>
           <g id="bhPara" fill="rgba(0,0,0,0.95)">
-            <text x="0" y="8" textAnchor="middle" fontFamily="Georgia, serif" fontSize="34" fontWeight="700">§</text>
+            <text x="0" y="8" textAnchor="middle" fontFamily="Georgia, serif" fontSize="34" fontWeight="700">Â§</text>
           </g>
           <g id="bhColumn" stroke="rgba(0,0,0,0.95)" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round">
             <rect x="-14" y="-20" width="28" height="4" />
@@ -196,3 +196,4 @@ export default function BlogHeroHeader({ selectedTema }: { selectedTema: BlogTem
     </motion.div>
   );
 }
+

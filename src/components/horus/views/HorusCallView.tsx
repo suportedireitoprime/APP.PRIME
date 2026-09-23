@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+﻿import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mic, MicOff, PhoneOff, Volume2, AlertTriangle, Loader2 } from 'lucide-react';
 
@@ -8,7 +8,7 @@ import { useMeExpliqueCota } from '@/hooks/useMeExpliqueCota';
 import { haptic, telaAcesa } from '@/lib/nativo';
 import PremiumGate from '@/components/PremiumGate';
 
-import horusOwlAsset from '@/assets/horus/horus-owl.png.asset.json';
+import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 const horusOwl = pickAsset(horusOwlBundled, srcOf(horusOwlAsset));
@@ -57,7 +57,7 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar }) => {
     };
   }, [status]);
 
-  // Timer da ligação (para exibir na tela)
+  // Timer da ligaÃ§Ã£o (para exibir na tela)
   useEffect(() => {
     if (status === 'falando' || status === 'ouvindo') {
       const interval = setInterval(() => {
@@ -73,7 +73,7 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar }) => {
     return `${min < 10 ? '0' : ''}${min}:${seg < 10 ? '0' : ''}${seg}`;
   };
 
-  // Monitora o volume para a animação do avatar da coruja
+  // Monitora o volume para a animaÃ§Ã£o do avatar da coruja
   useEffect(() => {
     if (status !== 'falando') {
       setVolume(0);
@@ -92,7 +92,7 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar }) => {
     return () => cancelAnimationFrame(animationFrameId);
   }, [status]);
 
-  // Mantém a tela acesa
+  // MantÃ©m a tela acesa
   useEffect(() => {
     isMounted.current = true;
     void telaAcesa('horus-live-call', true);
@@ -145,7 +145,7 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar }) => {
       });
 
       const timeoutPromise = new Promise<{ data: any, error: any }>((_, reject) => {
-        setTimeout(() => reject(new Error('A conexão demorou muito. Verifique a internet.')), 12000);
+        setTimeout(() => reject(new Error('A conexÃ£o demorou muito. Verifique a internet.')), 12000);
       });
 
       const { data, error } = await Promise.race([chamador, timeoutPromise]);
@@ -161,7 +161,7 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar }) => {
 
       const token = resposta?.token;
       const modelo = resposta?.modelo;
-      if (!token || !modelo) throw new Error('Não foi possível autorizar a ligação com o Horus.');
+      if (!token || !modelo) throw new Error('NÃ£o foi possÃ­vel autorizar a ligaÃ§Ã£o com o Horus.');
 
       const sessao = new SessaoMeExplique({
         token,
@@ -195,7 +195,7 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar }) => {
       if (isMounted.current) setMicAtivo(true);
     } catch (err: any) {
       if (!isMounted.current) return;
-      const msg = err instanceof Error ? err.message : 'Falha na ligação.';
+      const msg = err instanceof Error ? err.message : 'Falha na ligaÃ§Ã£o.';
       setErro(msg);
       setStatus('erro');
     } finally {
@@ -261,7 +261,7 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar }) => {
         </div>
       </div>
 
-      {/* Transcrição de texto */}
+      {/* TranscriÃ§Ã£o de texto */}
       <div className="relative z-10 px-8 py-2 h-20 flex items-end justify-center text-center">
         <AnimatePresence>
           {transcricao && (
@@ -278,11 +278,11 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar }) => {
         </AnimatePresence>
       </div>
 
-      {/* Centro: Avatar da Coruja com Animações */}
+      {/* Centro: Avatar da Coruja com AnimaÃ§Ãµes */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center -mt-8">
         <div className="relative w-48 h-48 sm:w-64 sm:h-64 flex items-center justify-center">
           
-          {/* Anéis de Pulsação de Chamada / Ondas sonoras */}
+          {/* AnÃ©is de PulsaÃ§Ã£o de Chamada / Ondas sonoras */}
           <AnimatePresence>
             {status === 'falando' && (
               <>
@@ -305,7 +305,7 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar }) => {
             )}
           </AnimatePresence>
 
-          {/* Anel de respiração quando ouvindo */}
+          {/* Anel de respiraÃ§Ã£o quando ouvindo */}
           {status === 'ouvindo' && (
             <motion.div
               animate={{ scale: [1, 1.05, 1], opacity: [0.3, 0.6, 0.3] }}
@@ -337,7 +337,7 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar }) => {
         
         <div className="flex items-center justify-center gap-10 w-full max-w-sm px-8">
           
-          {/* Botão Speaker (fictício, só para compor UI de chamada) */}
+          {/* BotÃ£o Speaker (fictÃ­cio, sÃ³ para compor UI de chamada) */}
           <button 
             type="button"
             className="w-16 h-16 rounded-full bg-zinc-800/80 border border-zinc-700/50 flex flex-col items-center justify-center gap-1 active:scale-95 transition-all text-zinc-400"
@@ -345,7 +345,7 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar }) => {
             <Volume2 className="w-7 h-7" />
           </button>
 
-          {/* Botão Microfone */}
+          {/* BotÃ£o Microfone */}
           <button 
             type="button"
             onClick={alternarMic}
@@ -358,7 +358,7 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar }) => {
             {micAtivo ? <Mic className="w-8 h-8" /> : <MicOff className="w-8 h-8" />}
           </button>
 
-          {/* Botão Desligar */}
+          {/* BotÃ£o Desligar */}
           <button 
             type="button"
             onClick={desligar}
@@ -370,7 +370,7 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar }) => {
         </div>
       </div>
 
-      {/* Gate para limite da ligação */}
+      {/* Gate para limite da ligaÃ§Ã£o */}
       <AnimatePresence>
         {gateAberto && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4">
@@ -378,8 +378,8 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar }) => {
               open={gateAberto}
               onClose={() => { setGateAberto(false); onEncerrar(); }}
               feature="explicacao"
-              title="Chamada com Horus Concluída"
-              description="Sua ligação teste com o Horus foi finalizada. Torne-se um assinante PRIME para liberar ligações diárias estendidas!"
+              title="Chamada com Horus ConcluÃ­da"
+              description="Sua ligaÃ§Ã£o teste com o Horus foi finalizada. Torne-se um assinante PRIME para liberar ligaÃ§Ãµes diÃ¡rias estendidas!"
             />
           </div>
         )}
@@ -387,3 +387,4 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar }) => {
     </div>
   );
 };
+
