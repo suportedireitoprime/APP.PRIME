@@ -141,11 +141,19 @@ Deno.serve(async (req) => {
       if (purchaseToken) q = q.eq('purchase_token', purchaseToken);
       else q = q.eq('order_id', orderId!);
 
-      const { error, count } = await q.select('id', { count: 'exact' });
+      const { data: updatedSubs, error } = await q.select('id, user_id');
       if (error) {
         console.error('voidedPurchase update failed', error);
       } else {
-        console.log('voidedPurchase applied', { purchaseToken, orderId, refundType, rows: count });
+        console.log('voidedPurchase applied', { purchaseToken, orderId, refundType, rows: updatedSubs?.length });
+        const voidedUid = updatedSubs?.[0]?.user_id;
+        if (voidedUid) {
+          const { data: activePlay } = await admin.from('play_subscriptions')
+            .select('id').eq('user_id', voidedUid).eq('status', 'SUBSCRIPTION_STATE_ACTIVE').limit(1);
+          if (!activePlay || activePlay.length === 0) {
+            await admin.from('profiles').update({ is_premium: false, updated_at: new Date().toISOString() }).eq('id', voidedUid);
+          }
+        }
       }
       return new Response('ok', { status: 200 });
     }
@@ -212,6 +220,34 @@ Deno.serve(async (req) => {
       .upsert(patch, { onConflict: 'purchase_token' });
     if (upErr) console.error('upsert play_subscriptions falhou', upErr);
     else console.log('subscriptionNotification applied', { productId, notifTypeLabel, status });
+
+    // Sincronizar profiles.is_premium e registrar app_events
+    const targetUserId = developerUserId || (await admin.from('play_subscriptions').select('user_id').eq('purchase_token', purchaseToken).maybeSingle()).data?.user_id;
+    if (targetUserId) {
+      if (status === 'SUBSCRIPTION_STATE_ACTIVE' || status === 'SUBSCRIPTION_STATE_IN_GRACE_PERIOD') {
+        await admin.from('profiles').update({ is_premium: true, updated_at: new Date().toISOString() }).eq('id', targetUserId);
+        if (notificationType === 4 || notificationType === 2) {
+          await admin.from('app_events').insert({
+            user_id: targetUserId,
+            event_name: 'purchase',
+            metadata: {
+              plano: productId.includes('anual') ? 'anual' : 'mensal',
+              currency: 'BRL',
+              source: 'google_play',
+              productId,
+              orderId: gJson.orderId ?? null,
+              notificationType: notifTypeLabel,
+            }
+          });
+        }
+      } else if (status === 'SUBSCRIPTION_STATE_CANCELED' || status === 'SUBSCRIPTION_STATE_EXPIRED') {
+        const { data: activePlay } = await admin.from('play_subscriptions')
+          .select('id').eq('user_id', targetUserId).eq('status', 'SUBSCRIPTION_STATE_ACTIVE').neq('purchase_token', purchaseToken).limit(1);
+        if (!activePlay || activePlay.length === 0) {
+          await admin.from('profiles').update({ is_premium: false, updated_at: new Date().toISOString() }).eq('id', targetUserId);
+        }
+      }
+    }
 
     return new Response('ok', { status: 200 });
   } catch (err) {

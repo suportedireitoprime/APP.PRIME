@@ -278,20 +278,6 @@ export function AdminHojeCards() {
       
       const list5m = list5mResult.status === 'fulfilled' ? list5mResult.value.data : [];
       const listOnline = listOnlineResult.status === 'fulfilled' ? listOnlineResult.value.data : [];
-
-      // Como o RPC admin_lista_dia não retorna created_at, precisamos buscar os perfis
-      const allUids = Array.from(new Set([
-        ...((list5m as any[]) || []).map(r => r.user_id || r.id),
-        ...((listOnline as any[]) || []).map(r => r.user_id || r.id)
-      ])).filter(Boolean);
-
-      let profilesDict: Record<string, string> = {};
-      if (allUids.length > 0) {
-        const { data: profs } = await supabase.from('profiles').select('id, created_at').in('id', allUids);
-        if (profs) {
-          profs.forEach(p => { profilesDict[p.id] = p.created_at; });
-        }
-      }
       
       let totalOnline5m = 0;
       let totalOnline = 0;
@@ -350,8 +336,8 @@ export function AdminHojeCards() {
           totalViuPlanos = Math.max(totalViuPlanos, uniqueVp.size);
         }
 
-        // Buscar novas assinaturas no Asaas, Play Store e Legado por data de criação/início
-        const [asaasRes, playRes, legRes] = await Promise.all([
+        // Buscar novas assinaturas no Asaas, Play Store, Apple e Legado por data de criação/início
+        const [asaasRes, playRes, appleRes, legRes] = await Promise.all([
           supabase
             .from('asaas_subscriptions')
             .select('id, user_id, created_at, started_at, plano, status')
@@ -363,6 +349,12 @@ export function AdminHojeCards() {
             .select('id, user_id, created_at, product_id, status')
             .gte('created_at', minDateStr.toISOString())
             .lt('created_at', maxDateStr.toISOString()),
+          supabase
+            .from('apple_subscriptions')
+            .select('id, user_id, created_at, start_time, product_id, status')
+            .or(`created_at.gte.${minDateStr.toISOString()},start_time.gte.${minDateStr.toISOString()}`)
+            .lt('created_at', maxDateStr.toISOString())
+            .in('status', ['active', 'in_grace']),
           supabase
             .from('legacy_subscribers')
             .select('id, created_at, email, tipo, status, claimed_user_id')
@@ -386,6 +378,15 @@ export function AdminHojeCards() {
           const uid = s.user_id || s.id;
           const plano = s.product_id?.includes('anual') ? 'anual' : s.product_id?.includes('vitalicio') ? 'vitalicio' : 'mensal';
           const valor = plano === 'anual' ? 199.90 : plano === 'vitalicio' ? 149.90 : 29.90;
+          if (!subUsers.has(uid)) {
+            subUsers.set(uid, { plano, valor });
+          }
+        });
+
+        (appleRes.data || []).forEach((s: any) => {
+          const uid = s.user_id || s.id;
+          const plano = s.product_id?.includes('anual') ? 'anual' : 'mensal';
+          const valor = plano === 'anual' ? 199.90 : 29.90;
           if (!subUsers.has(uid)) {
             subUsers.set(uid, { plano, valor });
           }
@@ -592,8 +593,8 @@ export function AdminHojeCards() {
         // 1. Chamar admin_lista_dia para todos os dias do período
         const rpcPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));
 
-        // 2. Buscar também diretamente no asaas_subscriptions, play_subscriptions e legacy_subscribers
-        const [rpcResults, asaasRes, playRes, legRes] = await Promise.all([
+        // 2. Buscar também diretamente no asaas_subscriptions, play_subscriptions, apple_subscriptions e legacy_subscribers
+        const [rpcResults, asaasRes, playRes, appleRes, legRes] = await Promise.all([
           Promise.all(rpcPromises),
           supabase
             .from('asaas_subscriptions')
@@ -609,6 +610,14 @@ export function AdminHojeCards() {
               id, user_id, created_at, product_id, status
             `)
             .gte('created_at', minDate.toISOString())
+            .lt('created_at', maxDate.toISOString())
+            .order('created_at', { ascending: false }),
+          supabase
+            .from('apple_subscriptions')
+            .select(`
+              id, user_id, created_at, start_time, product_id, status
+            `)
+            .or(`created_at.gte.${minDate.toISOString()},start_time.gte.${minDate.toISOString()}`)
             .lt('created_at', maxDate.toISOString())
             .order('created_at', { ascending: false }),
           supabase
@@ -653,7 +662,8 @@ export function AdminHojeCards() {
         // Buscar perfis para preencher nomes/emails de eventuais assinaturas não capturadas pela RPC
         const missingUids = Array.from(new Set([
           ...(asaasRes.data || []).map((s: any) => s.user_id),
-          ...(playRes.data || []).map((s: any) => s.user_id)
+          ...(playRes.data || []).map((s: any) => s.user_id),
+          ...(appleRes.data || []).map((s: any) => s.user_id)
         ])).filter(uid => Boolean(uid) && !existingUserIds.has(uid)) as string[];
 
         const profMap = new Map<string, { name?: string; email?: string }>();
@@ -708,6 +718,30 @@ export function AdminHojeCards() {
             email: profInfo?.email || null,
             subtitle: `Assinou via Google Play (${planName})`,
             at: s.created_at,
+            acessos: null,
+            avatar_url: null,
+            is_premium: true,
+            planValue: planValor,
+            planTag: { plano: planName, status: s.status, expires_at: null },
+          });
+          if (s.user_id) existingUserIds.add(s.user_id);
+        });
+
+        // Complementa com Apple Store faltantes
+        (appleRes.data || []).forEach((s: any) => {
+          if (s.user_id && existingUserIds.has(s.user_id)) return;
+          const isAnual = s.product_id?.includes('anual');
+          const planValor = isAnual ? 199.90 : 29.90;
+          const planName = isAnual ? 'Anual' : 'Mensal';
+          const profInfo = profMap.get(s.user_id);
+
+          allLists.push({
+            key: `apple-${s.id}`,
+            user_id: s.user_id,
+            title: profInfo?.name || 'Assinante App Store',
+            email: profInfo?.email || null,
+            subtitle: `Assinou via Apple (${planName})`,
+            at: s.created_at || s.start_time,
             acessos: null,
             avatar_url: null,
             is_premium: true,
@@ -1049,7 +1083,7 @@ export function AdminHojeCards() {
               </div>
 
               <div className={cn(
-                "font-body text-[10.5px] sm:text-[11px] leading-tight truncate mt-2 font-medium",
+                "font-body text-[10.5px] sm:text-[11px] leading-tight mt-2 font-medium line-clamp-2",
                 isZero ? "text-muted-foreground/60" : "text-muted-foreground"
               )}>
                 {label}

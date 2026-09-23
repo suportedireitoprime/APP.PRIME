@@ -145,6 +145,34 @@ Deno.serve(async (req) => {
       }, { onConflict: 'original_transaction_id' });
     if (upErr) throw upErr;
 
+    // Sincronizar profiles.is_premium e registrar app_events
+    if (existing.user_id) {
+      if (status === 'active' || status === 'in_grace') {
+        await admin.from('profiles').update({ is_premium: true, updated_at: new Date().toISOString() }).eq('id', existing.user_id);
+        if (notificationType === 'SUBSCRIBED' || notificationType === 'DID_RENEW' || notificationType === 'INTRODUCTORY_OFFER') {
+          await admin.from('app_events').insert({
+            user_id: existing.user_id,
+            event_name: 'purchase',
+            metadata: {
+              plano: (txFinal.productId || '').includes('anual') ? 'anual' : 'mensal',
+              currency: txFinal.currency ?? 'BRL',
+              source: 'apple_app_store',
+              productId: txFinal.productId,
+              originalTransactionId: originalTxId,
+              transactionId: txFinal.transactionId,
+              notificationType,
+            }
+          });
+        }
+      } else if (status === 'expired' || status === 'revoked') {
+        const { data: activeApple } = await admin.from('apple_subscriptions')
+          .select('id').eq('user_id', existing.user_id).in('status', ['active', 'in_grace']).neq('original_transaction_id', originalTxId).limit(1);
+        if (!activeApple || activeApple.length === 0) {
+          await admin.from('profiles').update({ is_premium: false, updated_at: new Date().toISOString() }).eq('id', existing.user_id);
+        }
+      }
+    }
+
     return new Response('ok', { status: 200 });
   } catch (err: any) {
     console.error('apple-billing-webhook error', err);

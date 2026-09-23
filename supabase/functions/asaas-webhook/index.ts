@@ -68,10 +68,14 @@ Deno.serve(async (req) => {
         const val = payment.value || 0;
         const desc = (payment.description || '').toLowerCase();
         
-        if (desc.includes('vitalicio') || desc.includes('vitalício') || val >= 250 || (val >= 140 && val <= 210)) {
+        if (desc.includes('vitalicio') || desc.includes('vitalício') || val >= 250) {
           inferredPlan = 'vitalicio';
-        } else if (desc.includes('anual')) {
+        } else if (desc.includes('promo') || (val >= 140 && val <= 165)) {
+          inferredPlan = 'anual_promocional';
+        } else if (desc.includes('anual') || (val > 165 && val <= 220)) {
           inferredPlan = 'anual';
+        } else if (desc.includes('mensal') || val < 50) {
+          inferredPlan = 'mensal';
         }
 
         // Mock a legacy object just to pass the checks, but with claimed_user_id
@@ -100,7 +104,7 @@ Deno.serve(async (req) => {
     ].includes(event);
 
     // Renovação respeitando o ciclo do plano (mensal/semestral/anual/vitalicio) + margem
-    const diasCiclo = legacy.tipo === 'anual' ? 370
+    const diasCiclo = (legacy.tipo === 'anual' || legacy.tipo === 'anual_promocional') ? 370
       : legacy.tipo === 'semestral' ? 190
       : 34;
     const CARENCIA_MS = 3 * 24 * 3600 * 1000;
@@ -177,7 +181,7 @@ Deno.serve(async (req) => {
 
           const nome = profile?.display_name?.split(' ')[0] || 'Assinante';
           const valor = payment.value ? `R$ ${Number(payment.value).toFixed(2).replace('.', ',')}` : '';
-          const planoLabel = legacy.tipo === 'anual' ? 'Anual' : legacy.tipo === 'vitalicio' ? 'Vitalício' : 'Mensal';
+          const planoLabel = (legacy.tipo === 'anual' || legacy.tipo === 'anual_promocional') ? 'Anual' : legacy.tipo === 'vitalicio' ? 'Vitalício' : 'Mensal';
 
           const msg = `${nome}, seu pagamento${valor ? ` de ${valor}` : ''} do plano *${planoLabel}* foi confirmado! ✅
 
