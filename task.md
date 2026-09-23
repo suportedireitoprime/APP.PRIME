@@ -1,11 +1,10 @@
-# Limite de 5 Minutos no Horus & Remoção do Botão Fechar no Card de Novidades
+# Scroll para o Topo ao Acessar o Horus
 
-- [x] Ajustar `HorusCallView.tsx`:
-  - [x] Implementar limite de 5 minutos (300 segundos).
-  - [x] Exibir tempo restante na parte superior do header (`Restante: MM:SS`).
-  - [x] Exibir tempo de conversa decorrido (`Tempo de conversa: MM:SS`).
-  - [x] Encerrar automaticamente ao atingir 5 minutos e abrir modal de cota.
-- [x] Ajustar `NovidadesRadarOverlay.tsx`:
-  - [x] Remover o botão de fechar "X" no topo direito do card.
-- [x] Validar compilação com `tsc --noEmit`.
-- [x] Realizar auto-commit e push para o GitHub.
+- [x] Ajustar `AssistenteHorus.tsx`:
+  - [x] Implementar hook de reset de scroll na montagem e mudança de aba.
+- [x] Ajustar `HomeTabEstudos.tsx`:
+  - [x] Resetar scroll no clique do botão "Assistente NO WhatsApp".
+- [x] Ajustar `ScrollToTop.tsx`:
+  - [x] Cobrir `documentElement`, `body` e `scrollingElement`.
+- [x] Validar com `tsc --noEmit`.
+- [x] Executar commit e push para o GitHub.

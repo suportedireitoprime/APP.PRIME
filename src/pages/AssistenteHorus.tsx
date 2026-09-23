@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -49,6 +49,26 @@ const AssistenteHorus = () => {
     savingNome, savingApelido, savingKey,
     loadStatus, handleVerified, savePref, saveNome, saveApelido
   } = useAssistenteHorus();
+
+  // Garante que a tela sempre inicie posicionada no topo absoluto
+  useEffect(() => {
+    const scrollToTop = () => {
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      } catch {}
+      if (document.documentElement) document.documentElement.scrollTop = 0;
+      if (document.body) document.body.scrollTop = 0;
+      if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
+    };
+
+    scrollToTop();
+    const t1 = setTimeout(scrollToTop, 20);
+    const t2 = setTimeout(scrollToTop, 100);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [tab]);
 
   // Show onboarding logic
   if (!onbLoading && !onboarded && !showOnboarding) {

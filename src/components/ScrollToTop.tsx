@@ -5,15 +5,23 @@ export default function ScrollToTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    // Adiciona um pequeno delay para garantir que o React renderize a nova página
-    // antes de forçar o scroll para o topo.
-    setTimeout(() => {
-      window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: 'instant'
-      });
-    }, 10);
+    const reset = () => {
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      } catch {}
+      if (document.documentElement) document.documentElement.scrollTop = 0;
+      if (document.body) document.body.scrollTop = 0;
+      if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
+    };
+
+    reset();
+    const t1 = setTimeout(reset, 10);
+    const t2 = setTimeout(reset, 50);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
   }, [pathname]);
 
   return null;

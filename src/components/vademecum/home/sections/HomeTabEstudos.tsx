@@ -1,4 +1,4 @@
-﻿import { Suspense, memo, useState, useEffect } from 'react';
+import { Suspense, memo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Sparkles, Zap, Star, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -177,7 +177,13 @@ const HomeTabEstudos = ({
           {/* Assistente Horus Centralizado e Destacado */}
           <div className="flex justify-center mb-10 mt-8 px-4">
             <button 
-              onClick={() => navigate('/assistente-horus')}
+              onClick={() => {
+                try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch {}
+                if (document.documentElement) document.documentElement.scrollTop = 0;
+                if (document.body) document.body.scrollTop = 0;
+                if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
+                navigate('/assistente-horus');
+              }}
               className="group relative flex items-center w-full max-w-[340px] bg-gradient-to-r from-[#E11D48] to-[#7F1D1D] text-white pl-6 pr-24 py-4 rounded-[1.25rem] shadow-xl shadow-rose-900/20 transition-all active:scale-95 border border-rose-500/30 overflow-visible"
             >
               {/* SVGs de Fundo */}
