@@ -996,7 +996,11 @@ export function AdminHojeCards() {
 
   const CARDS: { id: CardId; label: string; icon: any }[] = [
     { id: 'online5m', label: 'Online 5 min', icon: Zap },
-    { id: 'online', label: 'Online hoje', icon: Radio },
+    { 
+      id: 'online', 
+      label: periodo === 'ontem' ? 'Online ontem' : periodo === '7d' ? 'Online (7 dias)' : periodo === '30d' ? 'Online (30 dias)' : 'Online hoje', 
+      icon: Radio 
+    },
     { id: 'cadastros', label: 'Cadastrados', icon: UserPlus },
     { id: 'paywall', label: 'Tela de Assinaturas', icon: Sparkles },
     { id: 'viu_planos', label: 'Checkout', icon: Check },
