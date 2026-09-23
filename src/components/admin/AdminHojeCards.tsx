@@ -63,6 +63,24 @@ function formatStatusPt(status?: string | null): string {
   return status.toUpperCase();
 }
 
+function formatPlanoTag(plano?: string | null): string {
+  if (!plano) return '';
+  const p = plano.toLowerCase();
+  if (p.includes('anual') && (p.includes('promo') || p.includes('promocional'))) {
+    return 'ANUAL PROMO';
+  }
+  if (p.includes('vital') || p === 'vitalicio') {
+    return 'VITALÍCIO';
+  }
+  if (p.includes('anual')) {
+    return 'ANUAL';
+  }
+  if (p.includes('mensal')) {
+    return 'MENSAL';
+  }
+  return plano.toUpperCase();
+}
+
 const ProviderTag = ({ provider }: { provider?: string | null }) => {
   if (!provider) return null;
   const p = provider.toLowerCase();
@@ -509,7 +527,7 @@ export function AdminHojeCards() {
       const datas = getDatasPeriodo(periodo);
       
       let allLists: any[] = [];
-      let listPromises: Promise<any>[] = [];
+      let listPromises: any[] = [];
       
       if (id === 'viu_planos') {
         const minDate = new Date(datas[datas.length - 1]);
@@ -717,7 +735,7 @@ export function AdminHojeCards() {
         });
       } else {
         listPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: id, _dia: isoDate(d) }));
-        let extraPromises: Promise<any>[] = [];
+        let extraPromises: any[] = [];
         
         if (id === 'paywall') {
           // "Tela de assinaturas" also implicitly includes anyone who clicked a plan (viu_planos/trial)
@@ -1103,7 +1121,7 @@ export function AdminHojeCards() {
                     type="button"
                     onClick={() => r.userId && setDossie(r)}
                     className={cn(
-                      'w-full text-left flex items-center gap-3 px-4 py-3 hover:bg-secondary/60 active:bg-secondary transition-colors',
+                      'w-full text-left flex items-center gap-3 px-4 py-2.5 min-h-[76px] hover:bg-secondary/60 active:bg-secondary transition-colors',
                       novosKeys.has(r.key) && 'bg-emerald-500/10',
                     )}
                   >
@@ -1138,9 +1156,13 @@ export function AdminHojeCards() {
                         )}
                       </div>
                       <div className="flex flex-col gap-0.5 mt-0.5">
-                        {r.email && (
+                        {r.email ? (
                           <div className="font-body text-xs text-muted-foreground/90 truncate">
                             {r.email}
+                          </div>
+                        ) : (
+                          <div className="font-body text-xs text-muted-foreground/40 italic truncate">
+                            {r.subtitle || 'Usuário'}
                           </div>
                         )}
                         {!r.planTag && (
@@ -1149,15 +1171,18 @@ export function AdminHojeCards() {
                           </div>
                         )}
                         {r.planTag && (
-                          <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
-                            <span className="inline-flex items-center rounded-md bg-secondary border border-border/50 px-1.5 py-0.5 text-[9.5px] font-bold text-foreground">
-                              {r.planTag.plano.toUpperCase()}
+                          <div className="flex items-center gap-1.5 flex-nowrap overflow-hidden mt-0.5">
+                            <span 
+                              className="shrink-0 inline-flex items-center rounded-md bg-secondary border border-border/50 px-1.5 py-0.5 text-[9px] font-bold text-foreground"
+                              title={r.planTag.plano}
+                            >
+                              {formatPlanoTag(r.planTag.plano)}
                             </span>
-                            <span className="inline-flex items-center rounded-md bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 text-[10px] font-bold text-emerald-400">
+                            <span className="shrink-0 inline-flex items-center rounded-md bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 text-[9.5px] font-bold text-emerald-400">
                               {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(r.planValue || 0)}
                             </span>
                             <span className={cn(
-                              "inline-flex items-center rounded-md border px-1.5 py-0.5 text-[9.5px] font-bold",
+                              "shrink-0 inline-flex items-center rounded-md border px-1.5 py-0.5 text-[9px] font-bold",
                               r.planTag.status?.toLowerCase() === 'ativo' || r.planTag.status?.toLowerCase() === 'active'
                                 ? 'bg-secondary/60 border-border/50 text-emerald-400'
                                 : r.planTag.status?.toLowerCase() === 'cancelado'
@@ -1167,7 +1192,7 @@ export function AdminHojeCards() {
                               {formatStatusPt(r.planTag.status)}
                             </span>
                             {r.planTag.expires_at && (
-                              <span className="inline-flex items-center text-[10px] font-medium text-muted-foreground ml-0.5 opacity-80">
+                              <span className="shrink-0 inline-flex items-center text-[9.5px] font-medium text-muted-foreground opacity-80 truncate" title={`Expira em: ${r.planTag.expires_at}`}>
                                 Até {r.planTag.expires_at}
                               </span>
                             )}
@@ -1175,7 +1200,7 @@ export function AdminHojeCards() {
                         )}
                       </div>
                     </div>
-                    <div className="shrink-0 flex flex-col items-end justify-center gap-1 text-right">
+                    <div className="shrink-0 flex flex-col items-end justify-center gap-1 text-right min-w-[65px]">
                       <ProviderTag provider={r.provider} />
                       {r.meta && (
                         <span className="font-body text-[10.5px] font-medium text-muted-foreground/80">
