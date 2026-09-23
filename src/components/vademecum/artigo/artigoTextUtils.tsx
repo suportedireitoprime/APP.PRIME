@@ -162,7 +162,11 @@ export const LEGAL_NOTE_ONLY_RE = /^\((?:Redação|Incluído|Acrescido|Alterado|
 
 /** Merge physical line breaks into logical legal units. */
 export function normalizeLegalLineBreaks(text: string): string {
-  const raw = text.split('\n').map(l => l.trim());
+  // Corrige espaçamento anômalo entre número e indicador ordinal (ex: "§ 2 º" -> "§ 2º")
+  const normalizedText = text
+    .replace(/(§\s*\d+)\s+([º°ª])/g, '$1$2')
+    .replace(/(Art\.\s*\d+)\s+([º°ª])/gi, '$1$2');
+  const raw = normalizedText.split('\n').map(l => l.trim());
   const merged: string[] = [];
   for (const line of raw) {
     if (!line) continue;
@@ -281,10 +285,11 @@ export function highlightTermos(text: string, showRedacao?: boolean, termoBusca?
 /** Highlight only legal structure tokens (Art., §, Roman numerals, alíneas). */
 export function highlightTermosOnly(text: string): React.ReactNode[] {
   const patterns = [
-    /^(Art\.\s*\d+[º°]?(?:-[A-Z])?)(\s*[–-]\s*)?/i,
-    /^(§\s*\d+[º°]?(?:-[A-Z])?)(\s*[.–-]?\s*)?/i,
-    /^(Parágrafo\s+único)(\.?\s*[–-]?\s*)?/i,
-    /^([IVXLC]+\s*[-–.)])\s*/i,
+    /^(Art\.\s*\d+(?:\s*[.º°ªoO])?(?:\s*-[A-Z])?)(\s*[–—\-:]\s*)?/i,
+    /^(§§\s*\d+(?:\s*[.º°ªoO])?(?:\s*(?:e|,)\s*\d+(?:\s*[.º°ªoO])?)*)(\s*[.–—\-:]?\s*)?/i,
+    /^(§\s*\d+(?:\s*[.º°ªoO])?(?:\s*-[A-Z])?)(\s*[.–—\-:]?\s*)?/i,
+    /^(Parágrafo\s+único)(\.?\s*[–—\-:]?\s*)?/i,
+    /^([IVXLCDM]+\s*[-–—.):])\s*/i,
     /^([a-z]\))\s*/i,
   ];
   for (const pattern of patterns) {
@@ -307,7 +312,7 @@ export function highlightTermosOnly(text: string): React.ReactNode[] {
 export function classifyLine(line: string): { type: 'nomen' | 'caput' | 'inciso' | 'alinea' | 'paragrafo' | 'text'; text: string } {
   if (/^[IVXLC]+\s*[-–.]\s*/i.test(line)) return { type: 'inciso', text: line };
   if (/^[a-z]\)\s*/i.test(line)) return { type: 'alinea', text: line };
-  if (/^(§\s*\d+[º°]?\s*[-–.]?\s*|Parágrafo\s+único)/i.test(line)) return { type: 'paragrafo', text: line };
+  if (/^(§\s*\d+(?:\s*[.º°ªoO])?\s*[-–—.]?\s*|Parágrafo\s+único)/i.test(line)) return { type: 'paragrafo', text: line };
   return { type: 'text', text: line };
 }
 
