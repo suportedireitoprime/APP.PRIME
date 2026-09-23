@@ -276,8 +276,8 @@ const BottomNav = () => {
           <motion.button
             whileTap={{ scale: 0.92 }}
             transition={{ type: "spring", stiffness: 450, damping: 25 }}
-            onPointerDown={() => prefetchRoute('vademecum')}
-            onMouseEnter={() => prefetchRoute('vademecum')}
+            onPointerDown={() => prefetchRoute('vadeMecum')}
+            onMouseEnter={() => prefetchRoute('vadeMecum')}
             onClick={() => { haptic.selection(); if (!path.startsWith('/vade-mecum')) navigate('/vade-mecum'); }}
             data-track="bottom_nav_click"
             data-track-destino="vade-mecum"

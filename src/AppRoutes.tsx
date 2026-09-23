@@ -89,6 +89,16 @@ import Auth from "./pages/Auth.tsx";
 import Landing from "@/pages/Landing";
 import Onboarding from "./pages/Onboarding.tsx";
 
+// Hubs Críticos — eager para abrir sem Suspense fallback (Engenharia VACATIO-APP)
+import VadeMecum from "./pages/VadeMecum.tsx";
+import VadeMecumCodigos from "./pages/VadeMecumCodigos.tsx";
+import VadeMecumSumulas from "./pages/VadeMecumSumulas.tsx";
+import VadeMecumFavoritos from "./pages/VadeMecumFavoritos.tsx";
+import VadeMecumRecentes from "./pages/VadeMecumRecentes.tsx";
+import CategoriaLegislacao from "./pages/CategoriaLegislacao.tsx";
+import Ferramentas from "./pages/Ferramentas.tsx";
+import MeuEspaco from "./pages/MeuEspaco.tsx";
+
 // Lazy loaded
 const PilulasLista = lazy(() => import('@/pages/pilulas/PilulasLista'));
 const SmartLink = lazy(() => import("./pages/SmartLink.tsx"));
@@ -105,7 +115,6 @@ const AdminVadeMecumHistorico = lazy(() => import('./pages/AdminVadeMecumHistori
 import { supabase } from "@/integrations/supabase/client";
 
 // Lazy loaded
-const CategoriaLegislacao = lazy(() => import("./pages/CategoriaLegislacao.tsx"));
 const ResumosJuridicosJurisprudencia = lazy(() => import("./pages/resumos-juridicos/ResumosJuridicosJurisprudencia.tsx"));
 const Noticias = lazy(routePrefetch.noticias);
 const Novidades = lazy(() => import("./pages/Novidades.tsx"));
@@ -120,7 +129,6 @@ const PessoalLivros = lazy(() => import("./pages/pessoal/Livros.tsx"));
 const PessoalFilmes = lazy(() => import("./pages/pessoal/Filmes.tsx"));
 const PessoalJurisprudencias = lazy(() => import("./pages/pessoal/Jurisprudencias.tsx"));
 const PessoalTematicas = lazy(() => import("./pages/pessoal/Tematicas.tsx"));
-const MeuEspaco = lazy(() => import("./pages/MeuEspaco.tsx"));
 
 const MeusDownloads = lazy(() => import("./pages/MeusDownloads.tsx"));
 const MinhasLeituras = lazy(() => import("./pages/MinhasLeituras.tsx"));
@@ -157,7 +165,6 @@ const ExplicacaoLei = lazy(() => import("./pages/ExplicacaoLei.tsx"));
 const RadarPLDetalhe = lazy(() => import("./pages/RadarPLDetalhe.tsx"));
 const NarracaoLei = lazy(() => import("./pages/NarracaoLei.tsx"));
 
-const Ferramentas = lazy(routePrefetch.ferramentas);
 const PeticaoInicial = lazy(() => import("./pages/PeticaoInicial.tsx"));
 const PeticaoInicialEditor = lazy(() => import("./pages/PeticaoInicialEditor.tsx"));
 const PlanoEstudos = lazy(() => import("./pages/ferramentas/PlanoEstudos.tsx"));
@@ -182,11 +189,6 @@ const PraticarSessao = lazy(() => import("./pages/PraticarSessao.tsx"));
 const Estudar = lazy(routePrefetch.estudos);
 const EstudosHub = lazy(() => import("./pages/EstudosHub.tsx"));
 const Aprender = lazy(routePrefetch.aprender);
-const VadeMecum = lazy(routePrefetch.vadeMecum);
-const VadeMecumCodigos = lazy(routePrefetch.vadeMecumCodigos);
-const VadeMecumSumulas = lazy(routePrefetch.vadeMecumSumulas);
-const VadeMecumFavoritos = lazy(routePrefetch.vadeMecumFavoritos);
-const VadeMecumRecentes = lazy(routePrefetch.vadeMecumRecentes);
 
 const ArtigoEducacional = lazy(() => import("./pages/ArtigoEducacional.tsx"));
 const ForcaPage = lazy(() => import("./pages/gamificacao/Forca.tsx"));
@@ -965,12 +967,13 @@ function AnimatedRoutes() {
     // Pré-carrega os chunks das telas de Videoaulas em idle: navegar
     // (e voltar) passa a resolver do cache de módulos, sem Suspense visível.
     const carregarChunks = () => {
-      (['videoaulas', 'videoaulasCatalogo', 'videoaulasArea', 'videoaulaView',
-        'videoaulasCategorias', 'videoaulasTrilhas', 'videoaulasCatalogoTrilha', 'videoaulasLista',
-        'videoaulaView', 'videoaulasConquistas', 'resumosJuridicos', 'resumosJuridicosTemas',
+      ([
+        'videoaulas', 'videoaulasCatalogo', 'videoaulasArea', 'videoaulaView',
+        'videoaulasLista', 'resumosJuridicos', 'resumosJuridicosTemas',
         'resumosJuridicosSubtemas', 'resumosJuridicosLista', 'audioaulas',
         'dicionario', 'biblioteca', 'bibliotecaCategoria', 'blog',
-        'tematica'] as const).forEach((k) => prefetchRoute(k));
+        'tematica',
+      ] as PrefetchKey[]).forEach((k) => prefetchRoute(k));
     };
     const ric = (window as any).requestIdleCallback as ((cb: () => void, o?: { timeout?: number }) => number) | undefined;
     if (ric) ric(carregarChunks, { timeout: 3000 }); else setTimeout(carregarChunks, 1200);

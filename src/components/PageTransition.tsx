@@ -1,5 +1,5 @@
-import { ReactNode, Suspense } from "react";
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { ReactNode } from "react";
+import { useNavigationType } from "react-router-dom";
 
 interface PageTransitionProps {
   children: ReactNode;
@@ -8,97 +8,23 @@ interface PageTransitionProps {
   fallback?: ReactNode;
 }
 
-export function RouteLazyFallback() {
-  return (
-    <div
-      className="min-h-dvh bg-[#0D0D0D] p-4 pt-16 space-y-4 w-full"
-      aria-busy="true"
-      aria-live="polite"
-    >
-      <div className="h-8 w-48 rounded-md bg-white/[0.05] animate-pulse" />
-      <div className="h-4 w-64 rounded bg-white/[0.04] animate-pulse" />
-      <div className="space-y-3 mt-6">
-        {[1, 2, 3, 4, 5].map((i) => (
-          <div
-            key={i}
-            className="h-20 rounded-xl bg-white/[0.03] animate-pulse"
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
 /**
- * Transição de página fluida, elegante e cinemática (Padrão Apple iOS / Material 3).
- * Utiliza aceleração nativa por GPU (transform translateZ + opacity) com curva cúbica
- * outQuint assimétrica [0.16, 1, 0.3, 1], garantindo navegação a 60-120fps sem solavancos.
+ * Transição de página CSS-only nativa (idêntica ao VACATIO-APP).
+ * Em navegações POP (voltar do browser/gesto/botão voltar nativo) ou instant,
+ * pula a animação de entrada para resposta instantânea a 0ms (comportamento nativo puro).
+ * Em PUSH/REPLACE utiliza a animação acelerada por GPU `animate-page-in`.
+ *
+ * Elimina o framer-motion na troca de rotas e remove o <Suspense> aninhado,
+ * impedindo o piscar de esqueletos durante a navegação.
  */
-const pageVariants: Variants = {
-  initial: {
-    opacity: 0,
-    y: 10,
-  },
-  animate: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.12, // Levemente ajustado para dar tempo ao slide
-      ease: [0.16, 1, 0.3, 1],
-    },
-  },
-  exit: {
-    opacity: 0,
-    y: -5,
-    pointerEvents: "none",
-    transition: {
-      duration: 0.08,
-      ease: [0.32, 0, 0.67, 0],
-    },
-  },
-};
+const PageTransition = ({ children, className, instant }: PageTransitionProps) => {
+  const navType = useNavigationType();
+  const isInstant = navType === "POP" || Boolean(instant);
+  const cls = isInstant
+    ? `min-h-dvh w-full max-w-full overflow-x-hidden ${className || ""}`.trim()
+    : `min-h-dvh w-full max-w-full overflow-x-hidden animate-page-in ${className || ""}`.trim();
 
-const PageTransition = ({ children, className, instant, fallback }: PageTransitionProps) => {
-  const shouldReduceMotion = useReducedMotion();
-
-  const content = (
-    <Suspense fallback={fallback || <RouteLazyFallback />}>
-      {children}
-    </Suspense>
-  );
-
-  const baseStyle: React.CSSProperties = {
-    width: "100%",
-    maxWidth: "100vw",
-    minHeight: "100dvh",
-    overflowX: "hidden",
-  };
-
-  const baseClass = `w-full max-w-full overflow-x-hidden min-h-screen min-h-[100dvh] ${className || ""}`.trim();
-
-  if (shouldReduceMotion || instant) {
-    return (
-      <div
-        className={baseClass}
-        style={baseStyle}
-      >
-        {content}
-      </div>
-    );
-  }
-
-  return (
-    <motion.div
-      variants={pageVariants}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      className={baseClass}
-      style={baseStyle}
-    >
-      {content}
-    </motion.div>
-  );
+  return <div className={cls}>{children}</div>;
 };
 
 export default PageTransition;
