@@ -48,6 +48,9 @@ interface PushPayload {
   mirror_canal?: boolean;
   /** Se true, prefixa "{primeiro_nome}, " no título e substitui placeholders. */
   personalize?: boolean;
+  /** Uso interno para particionamento de lotes */
+  is_worker?: boolean;
+  worker_rows?: { token: string; user_id: string; platform: string }[];
 }
 
 /** Retorna o primeiro nome capitalizado. Retorna string vazia se não houver. */
@@ -130,7 +133,9 @@ Deno.serve(async (req) => {
     type Row = { token: string; user_id: string; platform: string };
     let rows: Row[] = [];
 
-    if (payload.tokens?.length) {
+    if (payload.is_worker && payload.worker_rows?.length) {
+      rows = payload.worker_rows;
+    } else if (payload.tokens?.length) {
       const { data } = await supabase.from("device_tokens")
         .select("token,user_id,platform").in("token", payload.tokens);
       rows = (data ?? []) as Row[];
@@ -223,7 +228,43 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 2) Envio FCM v1
+    // 1.5) Chunking/Orchestration: Se passar de 500 e não for um worker, quebra em lotes paralelos
+    if (!payload.is_worker && rows.length > 500) {
+      const selfUrl = Deno.env.get("SUPABASE_URL") + "/functions/v1/send-push";
+      const selfKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+      
+      const chunkPromises = [];
+      const CHUNK_SIZE = 500;
+      
+      for (let i = 0; i < rows.length; i += CHUNK_SIZE) {
+        const chunk = rows.slice(i, i + CHUNK_SIZE);
+        const chunkPayload = { ...payload, is_worker: true, worker_rows: chunk };
+        // Deleta tokens simples para não dar curto-circuito na lógica do worker
+        delete chunkPayload.tokens;
+        delete chunkPayload.audience;
+        
+        chunkPromises.push(
+          fetch(selfUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${selfKey}`,
+            },
+            body: JSON.stringify(chunkPayload),
+          })
+        );
+      }
+      
+      // Dispara em paralelo, mas aguarda eles terminarem (ou no mínimo aguarda serem enfileirados).
+      // Como o worker de 500 dispara super rápido, o Promise.all não estoura os 150s, 
+      // e garante que a função principal não morra antes das requisições saírem.
+      await Promise.all(chunkPromises);
+      
+      return new Response(JSON.stringify({ message: "Orchestration complete", total_dispatched: rows.length, chunks: chunkPromises.length }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    // 2) Envio FCM v1 (Worker ou lotes < 500)
     const accessToken = await getAccessToken(sa);
     const url = `https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`;
 
@@ -427,19 +468,17 @@ Deno.serve(async (req) => {
     }
 
     if (payload.campaign_id) {
-      const { data: current } = await supabase.from("push_campaigns")
-        .select("sent_count,failed_count").eq("id", payload.campaign_id).single();
-      await supabase.from("push_campaigns").update({
-        sent_count: (current?.sent_count ?? 0) + ok,
-        failed_count: (current?.failed_count ?? 0) + fail,
-        status: "completed",
-        last_run_at: new Date().toISOString(),
-      }).eq("id", payload.campaign_id);
+      // Usar a função RPC para garantir incremento seguro de contadores
+      await supabase.rpc('increment_push_campaign_stats', {
+        c_id: payload.campaign_id,
+        ok_count: ok,
+        fail_count: fail
+      });
     }
 
-    // Espelha no canal do WhatsApp (Horus). Não roda em envio de teste por token.
+    // Espelha no canal do WhatsApp (Horus). Não roda em envio de teste por token ou se for worker.
     let canal: unknown = { skipped: "desligado" };
-    if (payload.mirror_canal !== false && !payload.tokens?.length) {
+    if (payload.mirror_canal !== false && !payload.tokens?.length && !payload.is_worker) {
       let tipo = payload.data?.boletim_tipo;
       if (payload.campaign_id) {
         const { data: camp } = await supabase.from("push_campaigns")

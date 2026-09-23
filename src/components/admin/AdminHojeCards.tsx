@@ -250,7 +250,7 @@ export function AdminHojeCards() {
       if (metricasResults.status === 'fulfilled') {
         metricasResults.value.forEach((res) => {
           if (res.status === 'fulfilled') {
-            const m = (res.value.data as any) || {};
+            if(res.value.error) console.error('RPC ERROR', res.value.error); const m = (res.value.data as any) || {};
             rawRpcResponse = m;
             totalOnline5m = Math.max(totalOnline5m, m.online5m || 0);
             totalCadastros += m.cadastros || 0;
@@ -276,7 +276,7 @@ export function AdminHojeCards() {
       // Buscar eventos de paywall e checkout
       const { data: events, error } = await supabase
         .from('app_events')
-        .select('user_id, id, email, event_name, profiles:user_id(is_premium)')
+        .select('user_id, id, email, event_name')
         .in('event_name', ['trial_click', 'assinatura_aberta'])
         .gte('created_at', minDateStr.toISOString())
         .lt('created_at', maxDateStr.toISOString());
