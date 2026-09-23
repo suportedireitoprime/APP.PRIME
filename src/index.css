@@ -102,7 +102,7 @@ main::-webkit-scrollbar-track {
  * evitando as APIs deprecadas Window.setStatusBarColor/*.
  * ============================================================ */
 :root {
-  background-color: #0D0D0D;
+  background-color: #0D0F12;
   color-scheme: dark;
   --sai-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
   --sai-right: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
@@ -114,7 +114,7 @@ html,
 body {
   height: 100%;
   overflow: hidden !important; /* Trava o scroll no viewport para esconder a scrollbar branca nativa do iOS/Mobile */
-  background-color: #0D0D0D !important;
+  background-color: #0D0F12 !important;
   color: #FFFFFF;
 }
 
@@ -124,7 +124,7 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  background-color: #0D0D0D !important;
+  background-color: #0D0F12 !important;
   overscroll-behavior-y: none;
   /* Limitação de UX para Tablets/iPads (Bug 6) - impede a tela de se esticar infinitamente */
   max-width: 1024px;
@@ -344,7 +344,7 @@ body {
 @layer base {
   :root {
     /* Direito Prime — Cinza Escuro + Vermelho + Cinza Neutro */
-    --background: 0 0% 7%;                 /* #121212 - cinza escuro (era preto absoluto) */
+    --background: 216 19% 6%;                 /* #0D0F12 - cinza escuro (era preto absoluto) */
     --foreground: 0 0% 98%;
 
     --card: 0 0% 11%;                      /* #1C1C1C - card sutilmente mais claro */
@@ -398,7 +398,7 @@ body {
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 7%;
+    --sidebar-background: 216 19% 6%;
     --sidebar-foreground: 0 0% 96%;
     --sidebar-primary: 348 80% 50%;
     --sidebar-primary-foreground: 0 0% 100%;

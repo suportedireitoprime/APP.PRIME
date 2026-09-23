@@ -574,8 +574,8 @@ async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessa
   const currentStreak = Number(userRow?.off_topic_streak ?? 0);
   const nextStreak = isOffTopic(intent) ? currentStreak + 1 : 0;
 
-  // 4) Load recent history for multi-turn memory
-  const history = await loadHistory(admin, parsed.from, 10);
+  // 4) Load recent history for multi-turn memory (Limiting to 6 messages to save context/tokens - Bug 4)
+  const history = await loadHistory(admin, parsed.from, 6);
 
   // 4b) Carrega stats do usuário (só se agente usa)
   const stats = agent?.usa_estatisticas !== false
@@ -670,7 +670,7 @@ async function ensureUser(admin: any, phone: string, pushName: string) {
   // Try find existing
   const { data: existing } = await admin
     .from("horus_whatsapp_users")
-    .select("id, phone_e164, blocked, linked_user_id, user_id, display_name, contexto_resumo, msg_count, onboarding_state, off_topic_streak, perfil_pessoal")
+    .select("id, phone_e164, blocked, linked_user_id, user_id, display_name, contexto_resumo, msg_count, onboarding_state, off_topic_streak, perfil_pessoal, created_at")
     .eq("phone_e164", phone)
     .maybeSingle();
 
@@ -718,7 +718,7 @@ async function ensureUser(admin: any, phone: string, pushName: string) {
   const { data: inserted } = await admin
     .from("horus_whatsapp_users")
     .insert(insertRow)
-    .select("id, phone_e164, blocked, linked_user_id, display_name, contexto_resumo, msg_count, onboarding_state, off_topic_streak, perfil_pessoal")
+    .select("id, phone_e164, blocked, linked_user_id, display_name, contexto_resumo, msg_count, onboarding_state, off_topic_streak, perfil_pessoal, created_at")
     .single();
   return inserted;
 }
@@ -1061,6 +1061,12 @@ async function enrichWithMedia(parsed: ParsedMessage, admin: any): Promise<void>
   }
 
   if (m.type === "audio") {
+    // Estimativa segura: 1MB de base64 (~750KB binário) = ~3 minutos de áudio do WhatsApp (ogg)
+    if (base64.length > 1350000) {
+      parsed.text = "[ÁUDIO LONGO]\nO usuário enviou um áudio com mais de 3 minutos. Informe gentilmente que seu sistema tem um limite de 3 minutos de gravação por vez e peça para ele resumir ou enviar a dúvida por escrito.";
+      return;
+    }
+
     const t = await transcribeAudio(base64, mimetype);
     if (t) {
       parsed.text = parsed.text ? `${parsed.text}\n\n[áudio transcrito]\n${t}` : `[áudio transcrito]\n${t}`;
@@ -1073,7 +1079,9 @@ async function enrichWithMedia(parsed: ParsedMessage, admin: any): Promise<void>
   if (m.type === "image") {
     const desc = await describeImage(base64, mimetype);
     const caption = m.caption ? `\n\nLegenda do usuário: ${m.caption}` : "";
-    if (desc) {
+    if (desc && desc.includes("[IMAGEM_RUIM]")) {
+      parsed.text = "[IMAGEM_RUIM]\nA imagem enviada pelo usuário está embaçada, cortada ou ilegível. Peça desculpas educadamente e solicite que ele mande outra foto mais nítida ou digite a dúvida.";
+    } else if (desc) {
       parsed.text = parsed.text
         ? `${parsed.text}\n\n[imagem analisada]\n${desc}${caption}`
         : `[imagem analisada]\n${desc}${caption}`;
