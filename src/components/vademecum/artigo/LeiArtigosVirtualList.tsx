@@ -1,5 +1,5 @@
-import React, { useRef, useState, useLayoutEffect, useEffect, useMemo } from 'react';
-import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import React, { useRef, useState, useLayoutEffect, useEffect, useMemo, useCallback } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { Bookmark, X as XCloseIcon } from 'lucide-react';
 import ArtigoCard from '@/components/vademecum/artigo/ArtigoCard';
 import type { ArtigoLei } from '@/data/mockData';
@@ -39,6 +39,12 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
   const artigosListRef = useRef<HTMLDivElement | null>(null);
   const [artigosListOffset, setArtigosListOffset] = useState(0);
   const listKey = loadedKey || selectedTabelaNome || 'artigos-vade-mecum';
+
+  // Obter o elemento que realmente controla o scroll (no app é a div #root)
+  const getScrollElement = useCallback(() => {
+    if (typeof document === 'undefined') return null;
+    return document.getElementById('root') || document.documentElement || document.body;
+  }, []);
 
   // Item 30: Restauração do último artigo lido
   const [lastReadArtigo, setLastReadArtigo] = useState<{ numero: string; id: string } | null>(null);
@@ -96,10 +102,11 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
     const measureOffset = () => {
       if (rafId) cancelAnimationFrame(rafId);
       rafId = requestAnimationFrame(() => {
-        const scrollEl = document.getElementById('root') || document.body;
-        const next = artigosListRef.current
-          ? artigosListRef.current.getBoundingClientRect().top + scrollEl.scrollTop
-          : 0;
+        const scrollEl = getScrollElement();
+        if (!scrollEl || !artigosListRef.current) return;
+        const scrollElRect = scrollEl.getBoundingClientRect();
+        const listRect = artigosListRef.current.getBoundingClientRect();
+        const next = Math.max(0, listRect.top - scrollElRect.top + scrollEl.scrollTop);
         setArtigosListOffset(next);
       });
     };
@@ -111,7 +118,7 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
       if (rafId) cancelAnimationFrame(rafId);
       window.removeEventListener('resize', measureOffset);
     };
-  }, [shouldVirtualizeArtigos]);
+  }, [shouldVirtualizeArtigos, getScrollElement]);
 
   // Item 29: Overscan dinâmico calibrado por dispositivo e largura de tela
   const dynamicOverscan = useMemo(() => {
@@ -124,8 +131,9 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
     return 10; // Mobile moderno
   }, []);
 
-  const artigosVirtualizer = useWindowVirtualizer({
+  const artigosVirtualizer = useVirtualizer({
     count: shouldVirtualizeArtigos ? visibleArtigos.length : 0,
+    getScrollElement,
     // Item 21: Dynamic estimateSize based on article text length for smoother scrollbar
     estimateSize: (index) => {
       const artigo = visibleArtigos[index];
@@ -142,7 +150,7 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
     initialOffset: () => {
       const saved = virtualOffsetCache.get(listKey);
       if (saved === undefined) {
-        const scrollEl = typeof document !== 'undefined' ? document.getElementById('root') || document.body : null;
+        const scrollEl = getScrollElement();
         return scrollEl ? scrollEl.scrollTop : 0;
       }
       const approxTotal = visibleArtigos.length * 120;

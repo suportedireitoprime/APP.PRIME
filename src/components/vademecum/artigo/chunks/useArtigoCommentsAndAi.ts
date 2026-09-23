@@ -74,6 +74,13 @@ export function useArtigoCommentsAndAi({
     });
   }, []);
 
+  // Limpeza proativa de cache com erro ou tabelas solicitadas (Código Penal e Código Civil)
+  useEffect(() => {
+    import('@/lib/aiCacheLocal').then(({ purgeAiExplanationCache }) => {
+      purgeAiExplanationCache(['CP_CODIGO_PENAL', 'CC_CODIGO_CIVIL', 'codigo_penal', 'codigo_civil', 'cp', 'cc']);
+    });
+  }, []);
+
   const handleGerarAnotacaoIa = useCallback(
     async (commentPrompt: { id: string } | null, setCommentText: (txt: string) => void) => {
       if (!commentPrompt) return;
@@ -279,10 +286,18 @@ export function useArtigoCommentsAndAi({
         .then(({ data: cached }) => {
           if (activeArtigoIdRef.current !== currentId) return;
           if (cached?.conteudo) {
-            setLocalAiCache(cacheKey.tabela, cacheKey.numero, cacheKey.modo, cached.conteudo as string);
-            setAiContent((prev) => ({ ...prev, [activeTab]: cached.conteudo as string }));
-            setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
-            return;
+            const raw = String(cached.conteudo).trim();
+            const isBad =
+              raw.toLowerCase().includes('consegui gerar uma resposta') ||
+              raw.toLowerCase().includes('prepayment credits') ||
+              raw.toLowerCase().includes('"code": 429') ||
+              raw.toLowerCase().includes('"code":429');
+            if (!isBad && raw.length > 20) {
+              setLocalAiCache(cacheKey.tabela, cacheKey.numero, cacheKey.modo, raw);
+              setAiContent((prev) => ({ ...prev, [activeTab]: raw }));
+              setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
+              return;
+            }
           }
 
           const mode = activeTab as 'explicacao' | 'exemplo';
@@ -329,10 +344,21 @@ export function useArtigoCommentsAndAi({
               if (stepInterval) clearInterval(stepInterval);
               clearTimeout(timeoutId);
               if (aiAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) return;
-              if (!error && data?.reply) {
+
+              const replyText = typeof data?.reply === 'string' ? data.reply.trim() : '';
+              const isError =
+                !replyText ||
+                replyText.toLowerCase().includes('consegui gerar uma resposta') ||
+                replyText.toLowerCase().includes('prepayment credits') ||
+                replyText.toLowerCase().includes('"code": 429') ||
+                replyText.toLowerCase().includes('"code":429') ||
+                replyText.toLowerCase().startsWith('{"error":') ||
+                replyText.toLowerCase().startsWith('{ "error":');
+
+              if (!error && !isError && replyText.length > 20) {
                 setAiGeneratingStep(3);
-                setAiContent((prev) => ({ ...prev, [activeTab]: data.reply }));
-                setLocalAiCache(cacheKey.tabela, cacheKey.numero, cacheKey.modo, data.reply);
+                setAiContent((prev) => ({ ...prev, [activeTab]: replyText }));
+                setLocalAiCache(cacheKey.tabela, cacheKey.numero, cacheKey.modo, replyText);
                 supabase
                   .from('artigo_ai_cache')
                   .upsert(
@@ -340,7 +366,7 @@ export function useArtigoCommentsAndAi({
                       tabela_codigo: cacheKey.tabela,
                       numero_artigo: cacheKey.numero,
                       tipo: cacheKey.modo,
-                      conteudo: data.reply,
+                      conteudo: replyText,
                     },
                     { onConflict: 'tabela_codigo,numero_artigo,tipo' }
                   )
@@ -348,7 +374,7 @@ export function useArtigoCommentsAndAi({
               } else {
                 setAiContent((prev) => ({
                   ...prev,
-                  [activeTab]: 'Não foi possível gerar o conteúdo. Tente novamente.',
+                  [activeTab]: 'Não foi possível gerar a explicação no momento. Toque para tentar novamente.',
                 }));
               }
               setAiLoading((prev) => ({ ...prev, [activeTab]: false }));

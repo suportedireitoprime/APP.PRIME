@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect, useCallback, useRef, useLayoutEffe
 import { useNavigate } from 'react-router-dom';
 import { Search, BookOpen, LayoutGrid, History, Mic, MicOff, Camera, X as XIcon, Heart, ListMusic, StickyNote, Radar, ArrowUp, ArrowLeft, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { useSubscription } from '@/hooks/useSubscription';
 import PremiumGate from '@/components/PremiumGate';
@@ -427,10 +427,11 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
 
   const leiAccent = getLeiColor(selectedLeiId, tipo);
 
-  const idxVirtualizer = useWindowVirtualizer({
+  const idxVirtualizer = useVirtualizer({
     count: capituloGroups.length,
+    getScrollElement: () => typeof document !== 'undefined' ? (document.getElementById('root') || document.body) : null,
     estimateSize: () => 200,
-    overscan: 2,
+    overscan: 4,
   });
 
   const overlayLabels: Record<string, { label: string; icon: typeof Heart; desc: string }> = {

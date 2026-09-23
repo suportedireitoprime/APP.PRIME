@@ -831,12 +831,15 @@ Regras:
       }
     }
 
-    let finalReply = reply;
-    if (!finalReply || finalReply.includes('consegui gerar uma resposta')) {
-        finalReply = `${finalReply} | Detalhes: ${_lastErr}`;
+    if (!reply || reply.includes('consegui gerar uma resposta')) {
+      const errorMsg = `Não foi possível gerar uma resposta no momento. Detalhes: ${_lastErr || 'Serviço temporariamente indisponível'}`;
+      return new Response(JSON.stringify({ error: errorMsg, details: _lastErr }), {
+        status: 503,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    return new Response(JSON.stringify({ reply: finalReply, sources }), {
+    return new Response(JSON.stringify({ reply, sources }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (err) {

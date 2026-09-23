@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { ArrowLeft, BadgeCheck, Ban, ChevronRight, Gavel, Loader2, Scale, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { SUMULA_TRIBUNAIS, type Sumula } from '@/services/sumulasService';
@@ -32,6 +32,9 @@ const SumulaView: React.FC<SumulaViewProps> = ({
   openSumula,
   setOpenSumula,
 }) => {
+  const listRef = useRef<HTMLDivElement>(null);
+  const [listOffset, setListOffset] = useState(0);
+
   const filteredSumulas = useMemo(() => {
     if (!searchSumulas) return sumulas;
     const q = searchSumulas.toLowerCase();
@@ -41,10 +44,31 @@ const SumulaView: React.FC<SumulaViewProps> = ({
     );
   }, [sumulas, searchSumulas]);
 
-  const listVirtualizer = useWindowVirtualizer({
+  useEffect(() => {
+    if (!selectedTribunal) return;
+    const measure = () => {
+      if (!listRef.current) return;
+      const scrollEl = document.getElementById('root') || document.body;
+      const scrollElTop = scrollEl ? scrollEl.getBoundingClientRect().top : 0;
+      const listTop = listRef.current.getBoundingClientRect().top;
+      const currentScroll = scrollEl ? scrollEl.scrollTop : 0;
+      setListOffset(Math.max(0, listTop - scrollElTop + currentScroll));
+    };
+    measure();
+    const raf = requestAnimationFrame(measure);
+    window.addEventListener('resize', measure, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', measure);
+    };
+  }, [selectedTribunal, filteredSumulas.length]);
+
+  const listVirtualizer = useVirtualizer({
     count: filteredSumulas.length,
+    getScrollElement: () => typeof document !== 'undefined' ? (document.getElementById('root') || document.body) : null,
     estimateSize: () => 180,
-    overscan: 5,
+    overscan: 6,
+    scrollMargin: listOffset,
   });
 
   const highlightText = (text: string) => text;
@@ -92,7 +116,7 @@ const SumulaView: React.FC<SumulaViewProps> = ({
               <p className="text-muted-foreground text-sm">Carregando jurisprudência...</p>
             </div>
           ) : (
-            <div className="relative w-full" style={{ height: `${listVirtualizer.getTotalSize()}px` }}>
+            <div ref={listRef} className="relative w-full" style={{ height: `${listVirtualizer.getTotalSize()}px` }}>
               {listVirtualizer.getVirtualItems().map((virtualRow) => {
                 const sumula = filteredSumulas[virtualRow.index];
                 const i = virtualRow.index;
@@ -106,7 +130,7 @@ const SumulaView: React.FC<SumulaViewProps> = ({
                       top: 0,
                       left: 0,
                       width: '100%',
-                      transform: `translateY(${virtualRow.start}px)`,
+                      transform: `translateY(${virtualRow.start - listVirtualizer.options.scrollMargin}px)`,
                     }}
                     className="pb-2"
                   >

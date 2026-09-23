@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { ArrowLeft, Calendar, ChevronRight, Loader2, ScrollText, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ANOS_DECRETOS, type LeiOrdinaria } from '@/services/legislacaoService';
@@ -33,6 +33,8 @@ const DecretoView: React.FC<DecretoViewProps> = ({
   setOpenDecreto,
 }) => {
   const isDesktop = useMediaQuery('(min-width: 1024px)');
+  const listRef = useRef<HTMLDivElement>(null);
+  const [listOffset, setListOffset] = useState(0);
 
   const filteredDecretos = useMemo(() => {
     if (!searchDecretos) return decretos;
@@ -43,10 +45,31 @@ const DecretoView: React.FC<DecretoViewProps> = ({
     );
   }, [decretos, searchDecretos]);
 
-  const listVirtualizer = useWindowVirtualizer({
+  useEffect(() => {
+    if (!selectedAnoDecreto) return;
+    const measure = () => {
+      if (!listRef.current) return;
+      const scrollEl = document.getElementById('root') || document.body;
+      const scrollElTop = scrollEl ? scrollEl.getBoundingClientRect().top : 0;
+      const listTop = listRef.current.getBoundingClientRect().top;
+      const currentScroll = scrollEl ? scrollEl.scrollTop : 0;
+      setListOffset(Math.max(0, listTop - scrollElTop + currentScroll));
+    };
+    measure();
+    const raf = requestAnimationFrame(measure);
+    window.addEventListener('resize', measure, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', measure);
+    };
+  }, [selectedAnoDecreto, filteredDecretos.length]);
+
+  const listVirtualizer = useVirtualizer({
     count: filteredDecretos.length,
+    getScrollElement: () => typeof document !== 'undefined' ? (document.getElementById('root') || document.body) : null,
     estimateSize: () => 120,
-    overscan: 5,
+    overscan: 6,
+    scrollMargin: listOffset,
   });
 
   if (openDecreto && !isDesktop) {
@@ -100,7 +123,7 @@ const DecretoView: React.FC<DecretoViewProps> = ({
                 <p className="text-muted-foreground text-sm">Carregando decretos...</p>
               </div>
             ) : (
-              <div className="relative w-full" style={{ height: `${listVirtualizer.getTotalSize()}px` }}>
+              <div ref={listRef} className="relative w-full" style={{ height: `${listVirtualizer.getTotalSize()}px` }}>
                 {listVirtualizer.getVirtualItems().map((virtualRow) => {
                   const dec = filteredDecretos[virtualRow.index];
                   const i = virtualRow.index;
@@ -115,7 +138,7 @@ const DecretoView: React.FC<DecretoViewProps> = ({
                         top: 0,
                         left: 0,
                         width: '100%',
-                        transform: `translateY(${virtualRow.start}px)`,
+                        transform: `translateY(${virtualRow.start - listVirtualizer.options.scrollMargin}px)`,
                       }}
                       className="pb-2"
                     >

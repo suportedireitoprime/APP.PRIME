@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { ArrowLeft, Calendar, ChevronRight, FileText, Loader2, Scale, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ANOS_LEIS_ORDINARIAS, type LeiOrdinaria } from '@/services/legislacaoService';
@@ -31,6 +31,9 @@ const LeiOrdinariaView: React.FC<LeiOrdinariaViewProps> = ({
   openLeiOrd,
   setOpenLeiOrd,
 }) => {
+  const listRef = useRef<HTMLDivElement>(null);
+  const [listOffset, setListOffset] = useState(0);
+
   const filteredLeisOrdinarias = useMemo(() => {
     if (!searchLeisOrd) return leisOrdinarias;
     const q = searchLeisOrd.toLowerCase();
@@ -40,10 +43,31 @@ const LeiOrdinariaView: React.FC<LeiOrdinariaViewProps> = ({
     );
   }, [leisOrdinarias, searchLeisOrd]);
 
-  const listVirtualizer = useWindowVirtualizer({
+  useEffect(() => {
+    if (!selectedAno) return;
+    const measure = () => {
+      if (!listRef.current) return;
+      const scrollEl = document.getElementById('root') || document.body;
+      const scrollElTop = scrollEl ? scrollEl.getBoundingClientRect().top : 0;
+      const listTop = listRef.current.getBoundingClientRect().top;
+      const currentScroll = scrollEl ? scrollEl.scrollTop : 0;
+      setListOffset(Math.max(0, listTop - scrollElTop + currentScroll));
+    };
+    measure();
+    const raf = requestAnimationFrame(measure);
+    window.addEventListener('resize', measure, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', measure);
+    };
+  }, [selectedAno, filteredLeisOrdinarias.length]);
+
+  const listVirtualizer = useVirtualizer({
     count: filteredLeisOrdinarias.length,
+    getScrollElement: () => typeof document !== 'undefined' ? (document.getElementById('root') || document.body) : null,
     estimateSize: () => 120,
-    overscan: 5,
+    overscan: 6,
+    scrollMargin: listOffset,
   });
 
   // If viewing a specific lei ordinária detail
@@ -98,7 +122,7 @@ const LeiOrdinariaView: React.FC<LeiOrdinariaViewProps> = ({
               <p className="text-muted-foreground text-sm">Carregando leis ordinárias...</p>
             </div>
           ) : (
-            <div className="relative w-full" style={{ height: `${listVirtualizer.getTotalSize()}px` }}>
+            <div ref={listRef} className="relative w-full" style={{ height: `${listVirtualizer.getTotalSize()}px` }}>
               {listVirtualizer.getVirtualItems().map((virtualRow) => {
                 const lei = filteredLeisOrdinarias[virtualRow.index];
                 const i = virtualRow.index;
@@ -112,7 +136,7 @@ const LeiOrdinariaView: React.FC<LeiOrdinariaViewProps> = ({
                       top: 0,
                       left: 0,
                       width: '100%',
-                      transform: `translateY(${virtualRow.start}px)`,
+                      transform: `translateY(${virtualRow.start - listVirtualizer.options.scrollMargin}px)`,
                     }}
                     className="pb-2"
                   >
