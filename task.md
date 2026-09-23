@@ -1,17 +1,12 @@
-# Remoção de Tutoriais e Balões Flutuantes (Vade Mecum & Assistente WhatsApp)
+# Ajuste do Breadcrumb Hierárquico no Cabeçalho do Artigo
 
-- [x] 1. Remover tutorial de cards flutuantes em `src/pages/VadeMecum.tsx`:
-  - [x] Remover import de `VadeMecumTutorialOverlay`.
-  - [x] Remover estado `tutorialOpen`, verificação em `useEffect` e callback `fecharTutorial`.
-  - [x] Remover blocos `<AnimatePresence>{tutorialOpen && ...}</AnimatePresence>` no desktop e mobile.
-- [x] 2. Limpeza de arquivo órfão:
-  - [x] Remover `src/components/vademecum/overlays/VadeMecumTutorialOverlay.tsx`.
-- [x] 3. Remover balãozinho de conversa do Assistente no WhatsApp em `HomeTabEstudos.tsx`:
-  - [x] Remover estados `showBubble` e `bubblePhrase`.
-  - [x] Remover efeito de exibição de balão e persistência em `sessionStorage`.
-  - [x] Remover JSX do balão de fala.
-  - [x] Limpar import não utilizado `X`.
-- [x] 4. Validação e Entrega:
+- [x] 1. Ajustar construção de `timelineItems` em `ArtigoSheetHeader.tsx`:
+  - [x] Separar `titulo` e `tituloDesc` em itens distintos sem parênteses.
+  - [x] Separar `capitulo` e `capituloDesc` em itens distintos sem parênteses.
+  - [x] Remover adição do artigo (`Art. X`) no final da linha do tempo.
+- [x] 2. Ajustar renderização do JSX em `ArtigoSheetHeader.tsx`:
+  - [x] Renderizar hierarquia com `ChevronRight` entre cada nó com estilo padronizado `text-zinc-300`.
+- [x] 3. Validação e Entrega:
   - [x] Executar checagem de tipos TypeScript (`.\node_modules\.bin\tsc.CMD --noEmit`).
   - [x] Executar build de produção Vite (`.\node_modules\.bin\vite.CMD build`).
   - [x] Auto-commit e push para o repositório remoto.

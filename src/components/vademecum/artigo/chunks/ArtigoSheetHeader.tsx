@@ -77,7 +77,7 @@ export const ArtigoSheetHeader = memo(function ArtigoSheetHeader({
   magicHighlights,
 }: ArtigoSheetHeaderProps) {
   const timelineItems = useMemo(() => {
-    const items: Array<{ label: string; isLast?: boolean }> = [];
+    const items: Array<{ label: string }> = [];
 
     if (breadcrumb?.parte) {
       items.push({ label: toTitleCase(breadcrumb.parte) });
@@ -86,19 +86,25 @@ export const ArtigoSheetHeader = memo(function ArtigoSheetHeader({
       items.push({ label: toTitleCase(breadcrumb.livro) });
     }
     if (breadcrumb?.titulo) {
-      const tit = toTitleCase(breadcrumb.titulo);
-      const desc = breadcrumb.tituloDesc ? toTitleCase(breadcrumb.tituloDesc) : '';
-      items.push({ label: desc ? `${tit} (${desc})` : tit });
+      items.push({ label: toTitleCase(breadcrumb.titulo) });
+      if (breadcrumb.tituloDesc) {
+        items.push({ label: toTitleCase(breadcrumb.tituloDesc) });
+      }
     } else if (!breadcrumb && artigo.titulo && /^(T[IÍ]TULO|PARTE|LIVRO)\b/i.test(artigo.titulo)) {
-      items.push({ label: toTitleCase(artigo.titulo) });
+      const cleaned = artigo.titulo.replace(/[()]/g, '');
+      const parts = cleaned.split(/\s*[-—–:]\s*/).filter(Boolean);
+      parts.forEach(p => items.push({ label: toTitleCase(p) }));
     }
 
     if (breadcrumb?.capitulo) {
-      const cap = toTitleCase(breadcrumb.capitulo);
-      const desc = breadcrumb.capituloDesc ? toTitleCase(breadcrumb.capituloDesc) : '';
-      items.push({ label: desc ? `${cap} (${desc})` : cap });
+      items.push({ label: toTitleCase(breadcrumb.capitulo) });
+      if (breadcrumb.capituloDesc) {
+        items.push({ label: toTitleCase(breadcrumb.capituloDesc) });
+      }
     } else if (!breadcrumb && artigo.capitulo && /^CAP[ÍI]TULO\b/i.test(artigo.capitulo)) {
-      items.push({ label: toTitleCase(artigo.capitulo) });
+      const cleaned = artigo.capitulo.replace(/[()]/g, '');
+      const parts = cleaned.split(/\s*[-—–:]\s*/).filter(Boolean);
+      parts.forEach(p => items.push({ label: toTitleCase(p) }));
     }
 
     if (breadcrumb?.secao) {
@@ -113,12 +119,8 @@ export const ArtigoSheetHeader = memo(function ArtigoSheetHeader({
       items.push({ label: toTitleCase(tabelaNome.replace(/_/g, ' ')) });
     }
 
-    // O último nó da linha do tempo é o próprio artigo
-    const artLabel = /^\d/.test(String(artigo.numero)) ? `Art. ${artigo.numero}` : String(artigo.numero);
-    items.push({ label: artLabel, isLast: true });
-
     return items;
-  }, [breadcrumb, artigo.numero, artigo.titulo, artigo.capitulo, tabelaNome]);
+  }, [breadcrumb, artigo.titulo, artigo.capitulo, tabelaNome]);
 
   return (
     <>
@@ -295,25 +297,21 @@ export const ArtigoSheetHeader = memo(function ArtigoSheetHeader({
         )}
       </AnimatePresence>
 
-      {/* Linha do tempo hierárquica cronológica (Parte > Livro > Título > Capítulo > Seção > Artigo) */}
-      <div className="px-5 pb-3 flex items-center flex-wrap gap-1.5 text-[11px] font-medium leading-relaxed">
-        {timelineItems.map((item, idx) => (
-          <React.Fragment key={idx}>
-            {idx > 0 && (
-              <ChevronRight className="w-3.5 h-3.5 text-zinc-500/80 shrink-0" strokeWidth={2.2} />
-            )}
-            <span
-              className={
-                item.isLast
-                  ? 'text-primary font-bold tracking-wide'
-                  : 'text-zinc-300 font-medium tracking-wide'
-              }
-            >
-              {item.label}
-            </span>
-          </React.Fragment>
-        ))}
-      </div>
+      {/* Linha do tempo hierárquica cronológica (Parte > Livro > Título > Capítulo > Seção) */}
+      {timelineItems.length > 0 && (
+        <div className="px-5 pb-3 flex items-center flex-wrap gap-1.5 text-[11px] font-medium leading-relaxed">
+          {timelineItems.map((item, idx) => (
+            <React.Fragment key={idx}>
+              {idx > 0 && (
+                <ChevronRight className="w-3.5 h-3.5 text-zinc-500/80 shrink-0" strokeWidth={2.2} />
+              )}
+              <span className="text-zinc-300 font-medium tracking-wide">
+                {item.label}
+              </span>
+            </React.Fragment>
+          ))}
+        </div>
+      )}
 
       <AnimatePresence>
         {(highlightMode || voiceGrifoActive) && (
