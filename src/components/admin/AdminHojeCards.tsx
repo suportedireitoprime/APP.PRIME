@@ -301,9 +301,10 @@ export function AdminHojeCards() {
       const [asaasRes, playRes, legRes] = await Promise.all([
         supabase
           .from('asaas_subscriptions')
-          .select('id, user_id, created_at, plano, status')
-          .gte('created_at', minDateStr.toISOString())
-          .lt('created_at', maxDateStr.toISOString()),
+          .select('id, user_id, updated_at, plano, status')
+          .gte('updated_at', minDateStr.toISOString())
+          .lt('updated_at', maxDateStr.toISOString())
+          .eq('status', 'ACTIVE'),
         supabase
           .from('play_subscriptions')
           .select('id, user_id, created_at, product_id, status')
