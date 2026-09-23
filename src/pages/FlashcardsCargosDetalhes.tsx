@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
+import { BackButton } from '@/components/ui/BackButton';
 import FlashcardsCargoBottomNav, { CargoTab } from '@/components/flashcards/FlashcardsCargoBottomNav';
 import FlashcardsCargoHero from '@/components/flashcards/FlashcardsCargoHero';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
@@ -145,9 +146,7 @@ const TrilhaMapaEdital = ({ cargo, trilha, onBack }: { cargo: Cargo, trilha: Fla
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full flex flex-col bg-background min-h-screen pb-32">
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border/50">
         <div className="flex items-center gap-3 p-4">
-          <button onClick={onBack} className="p-2 -ml-2 text-muted-foreground hover:text-foreground rounded-full hover:bg-card">
-            <ChevronLeft className="w-6 h-6" />
-          </button>
+          <BackButton onClick={onBack} />
           <div className="flex-1 min-w-0">
             <h1 className="text-lg font-black text-foreground truncate">{cargo.cargo}</h1>
             <p className="text-xs text-muted-foreground truncate">{cargo.orgao}</p>

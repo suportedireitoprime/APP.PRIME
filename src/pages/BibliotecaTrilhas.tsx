@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, CheckCircle2, Route as RouteIcon, Search, BookOpen, Target } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
+import { BackButton } from '@/components/ui/BackButton';
 import { haptic } from '@/lib/nativeHaptics';
 import { Confetti } from '@/components/vademecum/ui_elements/Confetti';
 import { supabase } from '@/integrations/supabase/client';
@@ -79,9 +80,7 @@ const TimelineView = ({
       {showConfetti && <Confetti />}
       <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/50 px-4 py-4 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3 max-w-[65%]">
-          <button onClick={onBack} className="p-2 -ml-2 rounded-full bg-secondary/50 text-muted-foreground hover:text-foreground shrink-0">
-             <ChevronLeft className="w-5 h-5" />
-          </button>
+          <BackButton onClick={onBack} />
           <div className="min-w-0 flex flex-col">
             <p className="text-[10px] uppercase font-black text-primary tracking-widest mb-0.5 truncate">Trilha de Leitura</p>
             <p className="text-sm font-bold text-foreground truncate">{titulo}</p>

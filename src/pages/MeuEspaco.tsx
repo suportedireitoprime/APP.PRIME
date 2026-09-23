@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { BackButton } from "@/components/ui/BackButton";
 import {
   ChevronLeft, ChevronRight, Camera, Pencil, Check,
   StickyNote, Highlighter, Star, BookMarked,
@@ -378,13 +379,10 @@ const MeuEspaco = () => {
           containerClassName="w-full h-full"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-background pointer-events-none" />
-        <button
+        <BackButton
           onClick={handleBack}
-          aria-label="Voltar"
-          className="absolute top-[calc(0.75rem+var(--sai-top))] left-3 w-12 h-12 rounded-full bg-black/55 backdrop-blur flex items-center justify-center text-white active:scale-95 transition"
-        >
-          <ChevronLeft className="w-6 h-6" />
-        </button>
+          className="absolute top-[calc(0.75rem+var(--sai-top))] left-3 bg-black/55 backdrop-blur text-white border-0 z-10"
+        />
         <button
           onClick={() => setCoverPickerOpen(true)}
           className="absolute top-[calc(0.75rem+var(--sai-top))] right-3 h-12 px-4 rounded-full bg-black/55 backdrop-blur flex items-center gap-2 text-white text-sm font-medium active:scale-95 transition"

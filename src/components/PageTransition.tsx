@@ -37,19 +37,22 @@ export function RouteLazyFallback() {
 const pageVariants: Variants = {
   initial: {
     opacity: 0,
+    y: 10,
   },
   animate: {
     opacity: 1,
+    y: 0,
     transition: {
-      duration: 0.08, // Padronizado em 80ms para resposta instantânea de app nativo (120fps)
+      duration: 0.12, // Levemente ajustado para dar tempo ao slide
       ease: [0.16, 1, 0.3, 1],
     },
   },
   exit: {
     opacity: 0,
+    y: -5,
     pointerEvents: "none",
     transition: {
-      duration: 0.08, // Padronizado em 80ms para saída ultra-rápida sem retenção de frame
+      duration: 0.08,
       ease: [0.32, 0, 0.67, 0],
     },
   },

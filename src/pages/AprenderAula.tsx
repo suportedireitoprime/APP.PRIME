@@ -13,6 +13,7 @@ import {
   Play,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BackButton } from '@/components/ui/BackButton';
 
 import { useAuth } from '@/hooks/useAuth';
 import { useTrackArea } from "@/hooks/useTrackArea";
@@ -522,14 +523,7 @@ const AprenderAula = () => {
               paddingRight: 'calc(1rem + var(--sai-right))',
             }}
           >
-            <button
-              type="button"
-              onClick={handleVoltar}
-              aria-label="Voltar para o módulo de aulas"
-              className="flex w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 items-center justify-center rounded-2xl bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.1] active:scale-95 transition-all text-white/80 hover:text-white cursor-pointer z-30"
-            >
-              <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
-            </button>
+            <BackButton onClick={handleVoltar} className="bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.1] text-white/80 hover:text-white z-30" />
 
             <div className="flex flex-col items-center text-center flex-1 min-w-0 px-2 sm:px-4">
               <span className={`inline-flex items-center text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full border mb-1 ${atoInfo.badgeBg} ${atoInfo.cor}`}>

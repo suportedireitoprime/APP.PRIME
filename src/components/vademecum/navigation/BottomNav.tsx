@@ -244,7 +244,7 @@ const BottomNav = () => {
             transition={{ type: "spring", stiffness: 450, damping: 25 }}
             onPointerDown={() => prefetchRoute('blog')}
             onMouseEnter={() => prefetchRoute('blog')}
-            onClick={() => { haptic.light(); navigate('/blog'); }}
+            onClick={() => { haptic.selection(); navigate('/blog'); }}
             data-track="bottom_nav_click"
             data-track-destino="blog"
             className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-colors relative ${
@@ -278,7 +278,7 @@ const BottomNav = () => {
             transition={{ type: "spring", stiffness: 450, damping: 25 }}
             onPointerDown={() => prefetchRoute('vademecum')}
             onMouseEnter={() => prefetchRoute('vademecum')}
-            onClick={() => { haptic.light(); if (!path.startsWith('/vade-mecum')) navigate('/vade-mecum'); }}
+            onClick={() => { haptic.selection(); if (!path.startsWith('/vade-mecum')) navigate('/vade-mecum'); }}
             data-track="bottom_nav_click"
             data-track-destino="vade-mecum"
             className="relative flex flex-col items-center justify-end gap-1 py-1.5 md:py-3 md:justify-center md:rounded-xl md:hover:bg-white/10"

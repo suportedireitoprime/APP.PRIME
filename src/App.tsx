@@ -247,7 +247,7 @@ const App = () => (
                   </Suspense>
                   <ForceUpdateWrapper />
                   
-                  <Suspense fallback={<div className="min-h-screen bg-[#0D0D0D]" />}>
+                  <Suspense fallback={<div className="min-h-screen bg-[#0D0F12]" />}>
                     <AnimatedRoutes />
                   </Suspense>
                   <LazyMediaPlayers />
