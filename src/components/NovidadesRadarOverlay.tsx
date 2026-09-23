@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { X, ArrowRight, Play, Loader2 } from 'lucide-react';
+import { ArrowRight, Play, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { resenhaSelect } from '@/lib/resenhaBackend';
 import { useAuth } from '@/hooks/useAuth';
@@ -25,6 +25,7 @@ interface OverlayItem {
   ementa: string;
   url: string;
   imagem_capa?: string;
+  data_ref?: string;
 }
 
 const LS_KEY = 'radar_leis_last_seen';
@@ -228,7 +229,7 @@ export default function NovidadesRadarOverlay() {
               ementa: `Recomendação da semana: ${recHoje.obra.titulo}`,
               data_ref: todayISO,
               url: `/tematica-juridica?tab=recomendacoes`,
-              imagem_capa: recHoje.obra.poster_url || undefined,
+              imagem_capa: (recHoje.obra as any).poster_url || undefined,
             });
           }
         }
@@ -482,17 +483,6 @@ export default function NovidadesRadarOverlay() {
                 className="absolute -right-8 -top-4 w-40 h-40 opacity-20 mix-blend-luminosity pointer-events-none"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[hsl(340_55%_12%)] via-transparent to-transparent" />
-              <div className="relative p-4 flex items-center justify-end">
-
-                <button
-                  onClick={dismiss}
-                  aria-label="Fechar"
-                  className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/80"
-                  style={{ marginTop: 'calc(var(--sai-top, env(safe-area-inset-top, 0px)))' }}
-                >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
               <div className="absolute bottom-2 left-4 right-4">
                 <p className="font-display text-lg text-white leading-tight drop-shadow-lg line-clamp-2">
                   {items.length === 1

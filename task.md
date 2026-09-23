@@ -1,15 +1,11 @@
-# Ajustes do Horus: Tipografia, Nome, Balão de Voz e Sotaque
+# Limite de 5 Minutos no Horus & Remoção do Botão Fechar no Card de Novidades
 
-- [x] Corrigir mojibake e caracteres especiais em `HorusMainTab.tsx`, `HorusPremiumFeatureSheet.tsx` e `HorusOnboardingOverlay.tsx`.
-- [x] Atualizar `AssistenteHorus.tsx` para passar `displayName` para `HorusCallView`.
-- [x] Atualizar `HorusCallView.tsx`:
-  - [x] Receber `userName` e enviar ao backend e ao prompt inicial (substituindo "DIREITO PRIME" por "Wesley").
-  - [x] Corrigir distorção da transcrição (remover re-mount contínuo por `key={transcricao}`).
-  - [x] Implementar balão de fala do usuário ("Minha fala") e balão do Horus em tempo real.
-  - [x] Corrigir caracteres corrompidos no arquivo.
-- [x] Atualizar Edge Function `supabase/functions/horus-live-token/index.ts`:
-  - [x] Tratar `userName` do body e consultar `display_name` da tabela `profiles`.
-  - [x] Configurar diretiva estrita de sotaque brasileiro paulistano / neutro sem sotaque de Portugal.
-- [x] Fazer deploy da Edge Function `horus-live-token`.
-- [x] Validar com `tsc --noEmit`.
-- [x] Fazer commit e push automático para o GitHub.
+- [x] Ajustar `HorusCallView.tsx`:
+  - [x] Implementar limite de 5 minutos (300 segundos).
+  - [x] Exibir tempo restante na parte superior do header (`Restante: MM:SS`).
+  - [x] Exibir tempo de conversa decorrido (`Tempo de conversa: MM:SS`).
+  - [x] Encerrar automaticamente ao atingir 5 minutos e abrir modal de cota.
+- [x] Ajustar `NovidadesRadarOverlay.tsx`:
+  - [x] Remover o botão de fechar "X" no topo direito do card.
+- [x] Validar compilação com `tsc --noEmit`.
+- [x] Realizar auto-commit e push para o GitHub.

@@ -15,6 +15,8 @@ import { pickAsset, srcOf } from '@/lib/assetUrl';
 const horusOwl = pickAsset(horusOwlBundled, srcOf(horusOwlAsset));
 import chamadaAudioSrc from '@/assets/horus/CHAMADA.mp3';
 
+const LIMITE_CHAMADA_SEGUNDOS = 5 * 60; // 5 minutos (300 segundos)
+
 interface Props {
   onEncerrar: () => void;
   displayName?: string;
@@ -41,6 +43,8 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar, displayName, profil
   const iniciandoRef = useRef(false);
   const [callDuration, setCallDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const tempoRestante = Math.max(0, LIMITE_CHAMADA_SEGUNDOS - callDuration);
 
   // Determina o nome real do usuário
   const rawNome = (
@@ -77,11 +81,21 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar, displayName, profil
     };
   }, [status]);
 
-  // Timer da ligação (para exibir na tela)
+  // Timer da ligação (para exibir na tela e controlar limite de 5 min)
   useEffect(() => {
     if (status === 'falando' || status === 'ouvindo') {
       const interval = setInterval(() => {
-        setCallDuration((prev) => prev + 1);
+        setCallDuration((prev) => {
+          const next = prev + 1;
+          if (next >= LIMITE_CHAMADA_SEGUNDOS) {
+            sessaoRef.current?.encerrar();
+            sessaoRef.current = null;
+            setStatus('encerrado');
+            void haptic.heavy();
+            setGateAberto(true);
+          }
+          return next;
+        });
       }, 1000);
       return () => clearInterval(interval);
     }
@@ -271,10 +285,24 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar, displayName, profil
 
       {/* Header da Chamada */}
       <div className="relative z-10 flex flex-col items-center justify-center pt-[max(env(safe-area-inset-top,0px),2.5rem)] pb-2">
+        {/* Tempo restante exibido no topo ("do lado de cima o tempo que a pessoa tem restante") */}
+        {(status === 'ouvindo' || status === 'falando') && (
+          <div className={`mb-1.5 px-3 py-1 rounded-full border flex items-center gap-1.5 transition-colors ${
+            tempoRestante <= 60 
+              ? 'bg-rose-500/20 border-rose-500/40 text-rose-300' 
+              : 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300'
+          }`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${tempoRestante <= 60 ? 'bg-rose-400' : 'bg-emerald-400'} animate-pulse`} />
+            <span className="text-[11px] font-mono font-semibold tracking-wide">
+              Restante: {formatarTempo(tempoRestante)}
+            </span>
+          </div>
+        )}
+
         <h1 className="text-3xl font-display font-light text-white tracking-widest uppercase opacity-90">
           Horus
         </h1>
-        <div className="mt-1.5 text-zinc-400 font-mono text-xs sm:text-sm tracking-widest flex items-center gap-2">
+        <div className="mt-1 text-zinc-400 font-mono text-xs sm:text-sm tracking-widest flex items-center gap-2">
           {status === 'conectando' && (
             <>
               <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-400" />
@@ -288,7 +316,10 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar, displayName, profil
             </>
           )}
           {(status === 'ouvindo' || status === 'falando') && (
-            <span className="text-emerald-400 font-bold">{formatarTempo(callDuration)}</span>
+            <div className="flex items-center gap-1.5 text-zinc-300">
+              <span className="text-zinc-400 text-xs font-sans">Tempo de conversa:</span>
+              <span className="text-emerald-400 font-bold">{formatarTempo(callDuration)}</span>
+            </div>
           )}
         </div>
       </div>
