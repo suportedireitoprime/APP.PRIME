@@ -702,6 +702,19 @@ function EstudosRouter() {
 function LazyFallback() {
   const location = useLocation();
   const path = location.pathname.toLowerCase();
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    // Item 16: Evita "piscar" um skeleton se o chunk carregar quase instantaneamente (cache/prefetch).
+    const t = setTimeout(() => setShow(true), 120);
+    return () => clearTimeout(t);
+  }, []);
+
+  if (!show) {
+    // Retorna fundo vazio (idêntico ao do app) nos primeiros 120ms.
+    // Isso cria a sensação de navegação 100% instantânea sem flashing.
+    return <div className="min-h-dvh bg-transparent" aria-hidden="true" />;
+  }
 
   // Skeleton contextual para Leis, Artigos e Vade Mecum (Item 43)
   if (path.includes('/vade-mecum') || path.includes('/legislacao') || path.includes('/codigos')) {
