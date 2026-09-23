@@ -1,16 +1,17 @@
-# Ajuste de Fluxo Inicial, Botão Acessar Agora e Destravamento de Notificações
+# Remoção de Tutoriais e Balões Flutuantes (Vade Mecum & Assistente WhatsApp)
 
-- [x] 1. Configurar início do aplicativo na Landing Page:
-  - [x] Ajustar `ProtectedRoute` em `AppRoutes.tsx` para redirecionar usuários não autenticados na raiz (`/`) para `/landing`.
-- [x] 2. Corrigir navegação do botão "Acessar agora" na Landing Page:
-  - [x] Simplificar `handleStart` em `Landing.tsx` para direcionar diretamente para `/auth`.
-  - [x] Garantir que na tela de Auth o usuário possa escolher entre criar conta e entrar, com botão de voltar para a Landing funcional.
-- [x] 3. Destravar o banner de permissão de notificações:
-  - [x] Adicionar timeout de segurança de 3.5s em `useWebPush.ts` para evitar congelamento em `navigator.serviceWorker.ready`.
-  - [x] Implementar timeout geral de 6s com `Promise.race` em `ativar()` dentro de `NotificacoesPermissaoStep.tsx`.
-  - [x] Corrigir verificação de permissão no Capacitor Firebase Messaging (`permStatus.receive !== 'granted'`).
-  - [x] Adicionar botão "Agora não, lembrar mais tarde" para permitir dispensa limpa.
+- [x] 1. Remover tutorial de cards flutuantes em `src/pages/VadeMecum.tsx`:
+  - [x] Remover import de `VadeMecumTutorialOverlay`.
+  - [x] Remover estado `tutorialOpen`, verificação em `useEffect` e callback `fecharTutorial`.
+  - [x] Remover blocos `<AnimatePresence>{tutorialOpen && ...}</AnimatePresence>` no desktop e mobile.
+- [x] 2. Limpeza de arquivo órfão:
+  - [x] Remover `src/components/vademecum/overlays/VadeMecumTutorialOverlay.tsx`.
+- [x] 3. Remover balãozinho de conversa do Assistente no WhatsApp em `HomeTabEstudos.tsx`:
+  - [x] Remover estados `showBubble` e `bubblePhrase`.
+  - [x] Remover efeito de exibição de balão e persistência em `sessionStorage`.
+  - [x] Remover JSX do balão de fala.
+  - [x] Limpar import não utilizado `X`.
 - [x] 4. Validação e Entrega:
-  - [x] Executar `.\node_modules\.bin\tsc.CMD --noEmit` para garantir integridade dos tipos.
-  - [x] Executar `.\node_modules\.bin\vite.CMD build` para testar empacotamento de produção.
-  - [x] Realizar auto-commit e push para o GitHub.
+  - [x] Executar checagem de tipos TypeScript (`.\node_modules\.bin\tsc.CMD --noEmit`).
+  - [x] Executar build de produção Vite (`.\node_modules\.bin\vite.CMD build`).
+  - [x] Auto-commit e push para o repositório remoto.

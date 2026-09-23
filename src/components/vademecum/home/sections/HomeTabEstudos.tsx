@@ -1,6 +1,6 @@
 import { Suspense, memo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, Sparkles, Zap, Star, X } from 'lucide-react';
+import { ChevronRight, Sparkles, Zap, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
@@ -78,8 +78,6 @@ const HomeTabEstudos = ({
 
   const [descIndex, setDescIndex] = useState(0);
   const [owlIndex, setOwlIndex] = useState(0);
-  const [showBubble, setShowBubble] = useState(false);
-  const [bubblePhrase, setBubblePhrase] = useState("");
 
   useEffect(() => {
     // AlternÃ¢ncia do texto descritivo do botÃ£o
@@ -104,27 +102,7 @@ const HomeTabEstudos = ({
     };
   }, []);
 
-  useEffect(() => {
-    // LÃ³gica do balÃ£o de fala da coruja (1 vez por sessÃ£o, some em 6s)
-    const hasShown = sessionStorage.getItem('horus_balloon_shown');
-    if (!hasShown) {
-      const phrases = [
-        "venha conversar comigo! Vou tirar suas dÃºvidas jurÃ­dicas.",
-        "precisa de ajuda com leis? Me chame aqui!",
-        "estÃ¡ com dÃºvidas? Eu te explico em segundos!",
-        "simule casos prÃ¡ticos falando direto comigo!"
-      ];
-      const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
-      setBubblePhrase(randomPhrase);
-      setShowBubble(true);
-      sessionStorage.setItem('horus_balloon_shown', 'true');
 
-      const timer = setTimeout(() => {
-        setShowBubble(false);
-      }, 6000);
-      return () => clearTimeout(timer);
-    }
-  }, []);
 
   return (
     <motion.div
@@ -221,34 +199,7 @@ const HomeTabEstudos = ({
                 </div>
               </div>
               
-              {/* BalÃ£o de Fala */}
-              <AnimatePresence>
-                {showBubble && (
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.8, y: 10 }}
-                    animate={{ opacity: 1, scale: 1, y: [0, -3, 0] }}
-                    exit={{ opacity: 0, scale: 0.8, y: 10 }}
-                    transition={{ delay: 0.4, y: { repeat: Infinity, duration: 3.5, ease: "easeInOut" } }}
-                    className="absolute -top-10 right-20 z-30"
-                  >
-                    <div className="relative bg-white text-rose-700 px-3 py-1.5 rounded-[12px] shadow-lg border border-rose-100 max-w-[190px]">
-                      {/* BotÃ£o de Fechar */}
-                      <button 
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowBubble(false); }}
-                        className="absolute -top-1.5 -left-1.5 bg-white border border-rose-100 text-rose-400 hover:text-rose-600 rounded-full w-4 h-4 flex items-center justify-center shadow-sm z-10"
-                      >
-                        <X className="w-2.5 h-2.5" />
-                      </button>
-                      
-                      <p className="text-[10px] font-bold leading-tight text-center">
-                        {firstName}, {bubblePhrase}
-                      </p>
-                      {/* Caldinha apontando para a boca da coruja (direita) */}
-                      <div className="absolute top-1/2 -right-1.5 w-3 h-3 bg-white border-r border-t border-rose-100 transform -translate-y-1/2 rotate-45 rounded-sm pointer-events-none"></div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+
 
               {/* Imagem do Horus e Texto no pÃ© */}
               <div className="absolute -right-3 -top-8 w-[110px] flex flex-col items-center pointer-events-none z-20">

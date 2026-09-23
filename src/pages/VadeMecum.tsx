@@ -17,7 +17,6 @@ const ShapeGrid = lazyWithRetry(() => import('@/components/ui/ShapeGrid'));
 
 // Busca própria e exclusiva do Vade Mecum (Artigos, Leis e Jurisprudência)
 const BuscaLeisOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/BuscaLeisOverlay'));
-const VadeMecumTutorialOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/VadeMecumTutorialOverlay'));
 
 /**
  * Hub do Vade Mecum — painel de legislação completa em verde,
@@ -28,25 +27,12 @@ const VadeMecum = () => {
   const { pathname } = useLocation();
   const isDesktop = useIsDesktop();
   const [buscaOpen, setBuscaOpen] = useState(false);
-  const [tutorialOpen, setTutorialOpen] = useState(false);
   // Adia o ShapeGrid para não bloquear o primeiro paint
   const [gridReady, setGridReady] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setGridReady(true), 300);
     return () => clearTimeout(t);
   }, []);
-
-  useEffect(() => {
-    const hasSeenTutorial = localStorage.getItem('vademecum_tutorial_v1');
-    if (!hasSeenTutorial) {
-      setTutorialOpen(true);
-    }
-  }, []);
-
-  const fecharTutorial = () => {
-    localStorage.setItem('vademecum_tutorial_v1', 'true');
-    setTutorialOpen(false);
-  };
 
   const abrirLei = (lei: { tipo: string; leiId: string; nome: string; descricao: string; tabela_nome: string; artigoNumero?: string }) => {
     setBuscaOpen(false);
@@ -162,13 +148,7 @@ const VadeMecum = () => {
             <BuscaLeisOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
           </Suspense>
         )}
-        <AnimatePresence>
-          {tutorialOpen && (
-            <Suspense fallback={null}>
-              <VadeMecumTutorialOverlay onClose={fecharTutorial} />
-            </Suspense>
-          )}
-        </AnimatePresence>
+
       </div>
     );
   }
@@ -199,13 +179,7 @@ const VadeMecum = () => {
         )}
         <VadeMecumBottomNav hidden={buscaOpen} />
 
-        <AnimatePresence>
-          {tutorialOpen && (
-            <Suspense fallback={null}>
-              <VadeMecumTutorialOverlay onClose={fecharTutorial} />
-            </Suspense>
-          )}
-        </AnimatePresence>
+
       </div>
     </div>
   );
