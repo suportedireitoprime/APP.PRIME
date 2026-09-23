@@ -52,6 +52,17 @@ function formatTempoCadastro(createdAt?: string | null, fallbackSubtitle?: strin
   return 'Cadastrado recentemente';
 }
 
+function formatStatusPt(status?: string | null): string {
+  if (!status) return 'ATIVO';
+  const s = status.toLowerCase();
+  if (s === 'active' || s === 'ativo') return 'ATIVO';
+  if (s.includes('cancel')) return 'CANCELADO';
+  if (s.includes('pend')) return 'PENDENTE';
+  if (s.includes('overdue') || s.includes('atras')) return 'ATRASADO';
+  if (s.includes('trial')) return 'TESTE';
+  return status.toUpperCase();
+}
+
 const ProviderTag = ({ provider }: { provider?: string | null }) => {
   if (!provider) return null;
   const p = provider.toLowerCase();
@@ -1147,11 +1158,13 @@ export function AdminHojeCards() {
                             </span>
                             <span className={cn(
                               "inline-flex items-center rounded-md border px-1.5 py-0.5 text-[9.5px] font-bold",
-                              r.planTag.status?.toLowerCase() === 'ativo' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
-                              r.planTag.status?.toLowerCase() === 'cancelado' ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' :
-                              'bg-secondary/50 border-border/50 text-muted-foreground'
+                              r.planTag.status?.toLowerCase() === 'ativo' || r.planTag.status?.toLowerCase() === 'active'
+                                ? 'bg-secondary/60 border-border/50 text-emerald-400'
+                                : r.planTag.status?.toLowerCase() === 'cancelado'
+                                ? 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+                                : 'bg-secondary/50 border-border/50 text-muted-foreground'
                             )}>
-                              {String(r.planTag.status).toUpperCase()}
+                              {formatStatusPt(r.planTag.status)}
                             </span>
                             {r.planTag.expires_at && (
                               <span className="inline-flex items-center text-[10px] font-medium text-muted-foreground ml-0.5 opacity-80">
@@ -1162,11 +1175,15 @@ export function AdminHojeCards() {
                         )}
                       </div>
                     </div>
-                    <ProviderTag provider={r.provider} />
-                    <div className="font-body text-[11px] text-muted-foreground shrink-0 text-right">
-                      {r.meta}
+                    <div className="shrink-0 flex flex-col items-end justify-center gap-1 text-right">
+                      <ProviderTag provider={r.provider} />
+                      {r.meta && (
+                        <span className="font-body text-[10.5px] font-medium text-muted-foreground/80">
+                          {r.meta}
+                        </span>
+                      )}
                       {r.googleId && (
-                        <div className="text-[9px] opacity-70 mt-1 uppercase" title="Google Subscription ID / Token">
+                        <div className="text-[9px] opacity-70 uppercase" title="Google Subscription ID / Token">
                           {r.googleId.slice(0, 15)}...
                         </div>
                       )}
