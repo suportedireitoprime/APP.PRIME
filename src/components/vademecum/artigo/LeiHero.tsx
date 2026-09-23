@@ -81,9 +81,9 @@ const LeiHero: React.FC<LeiHeroProps> = ({
           type="button"
           onClick={goBack}
           aria-label="Voltar"
-          className="absolute left-4 top-[calc(var(--sai-top)+12px)] z-20 w-12 h-12 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-xl border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.35)] active:scale-95 transition touch-manipulation select-none"
+          className="absolute left-4 top-[calc(var(--sai-top)+12px)] z-20 w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full flex items-center justify-center bg-white/10 backdrop-blur-xl border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.35)] active:scale-95 transition touch-manipulation select-none"
         >
-          <ArrowLeft className="w-6 h-6 text-white drop-shadow" />
+          <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white drop-shadow" strokeWidth={2.4} />
         </button>
 
         {/* Botão de favoritar a lei — mesma linha do voltar, à direita */}

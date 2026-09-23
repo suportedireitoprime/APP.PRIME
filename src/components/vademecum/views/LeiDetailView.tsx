@@ -828,8 +828,8 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
               >
                 <div className="flex justify-center pt-3 pb-1 shrink-0"><div className="w-10 h-1 rounded-full bg-white/20" /></div>
                 <div className="flex items-center gap-3 px-4 py-2 border-b border-white/5 shrink-0">
-                  <button onClick={() => setOverlayPanel(null)} className="w-9 h-9 rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center">
-                    <ArrowLeft className="w-5 h-5 text-white" />
+                  <button onClick={() => setOverlayPanel(null)} className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center active:scale-95 transition-transform">
+                    <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
                   </button>
                   <div className="flex-1 min-w-0">
                     <h1 className="font-display text-base font-bold text-foreground truncate">{overlayLabels[overlayPanel]?.label}</h1>

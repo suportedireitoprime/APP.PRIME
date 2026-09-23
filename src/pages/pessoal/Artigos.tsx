@@ -2,8 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Heart, Loader2, ChevronRight } from "lucide-react";
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { motion } from "framer-motion";
-import { getLeiByTabela } from "@/data/leisCatalog";
 import { tipoToSlug, leiToSlug } from "@/lib/legislacaoSlugs";
+import { Skeleton } from "@/components/ui/skeleton";
+import ShapeGrid from "@/components/ui/ShapeGrid";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { getCache } from "@/lib/pessoalCache";
@@ -44,8 +45,14 @@ const ArtigosPage = () => {
   for (const f of favs) (grupos[f.tabela_codigo] ||= []).push(f);
 
   return (
-    <div className="min-h-dvh bg-background text-foreground pb-24">
-      <PageHeader
+    <div className="min-h-dvh bg-background text-foreground pb-24 relative overflow-x-hidden">
+      {/* Fundo ShapeGrid animado */}
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
+        <ShapeGrid />
+      </div>
+      
+      <div className="relative z-10">
+        <PageHeader
         title="Meus artigos"
         onBack={() => goBack()}
         leading={
@@ -56,9 +63,19 @@ const ArtigosPage = () => {
       />
 
 
-      <div className="max-w-2xl mx-auto px-4 py-4">
+      <div className="max-w-2xl mx-auto px-4 py-4 relative z-10">
         {loading ? (
-          <div className="flex items-center justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
+          <div className="space-y-4 py-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex gap-3 p-3 rounded-xl bg-card border border-border">
+                <Skeleton className="w-10 h-10 rounded-lg shrink-0" />
+                <div className="flex-1 space-y-2 py-1">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-1/2" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : favs.length === 0 ? (
           <div className="text-center py-16 space-y-3">
             <Heart className="w-12 h-12 mx-auto text-muted-foreground/40" />
@@ -101,6 +118,7 @@ const ArtigosPage = () => {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 };

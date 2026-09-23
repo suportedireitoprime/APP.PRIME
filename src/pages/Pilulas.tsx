@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { COLECOES, type LivroNormalizado, normalizeLivro } from '@/lib/bibliotecaColecoes';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+import { Skeleton } from '@/components/ui/skeleton';
 import { haptic } from '@/lib/nativeHaptics';
 import { PilulaClassicoItem } from './pilulas/components/PilulaClassicoItem';
 import { containerVariants, itemVariants } from './pilulas/data/pilulaAnimations';
@@ -94,9 +95,10 @@ export default function Pilulas() {
         {/* Lista de Livros */}
         <div className="px-4 py-6">
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-20 text-white/40 space-y-4">
-              <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-primary animate-spin" />
-              <p className="text-sm">Carregando acervo...</p>
+            <div className="grid gap-3">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <Skeleton key={i} className="w-full h-[88px] rounded-2xl bg-white/5 border border-white/10" />
+              ))}
             </div>
           ) : livrosFiltrados.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-white/40 text-center">
