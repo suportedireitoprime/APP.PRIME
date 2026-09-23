@@ -220,7 +220,7 @@ const BottomNav = () => {
       aria-label="Navegação principal"
       role="navigation"
       data-bottom-nav
-      className={`fixed z-50 bg-transparent transition-all duration-300 ease-out 
+      className={`fixed z-50  bg-black transition-all duration-300 ease-out 
         bottom-0 left-0 right-0 
         md:top-0 md:bottom-0 md:right-auto md:w-[90px] md:border-r md:border-white/10
         ${hideNav ? 'translate-y-[140%] md:-translate-x-[140%] md:translate-y-0 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'}`}
@@ -228,13 +228,13 @@ const BottomNav = () => {
       {/* Degradê escuro subindo do rodapé para dar profundidade no mobile */}
       <div
         aria-hidden="true"
-        className="absolute bottom-full left-0 right-0 h-20 bg-gradient-to-t from-[#0D0F12]/80 via-[#0D0F12]/30 to-transparent pointer-events-none md:hidden"
+        className="absolute bottom-full left-0 right-0 h-20 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none md:hidden"
       />
       {/* Menu Principal */}
       <div 
         onPointerDown={handleNavWarmup}
         onTouchStart={handleNavWarmup}
-        className="relative z-10 bg-[#0D0F12]/75 backdrop-blur-xl border-t border-white/10 rounded-t-2xl md:border-t-0 md:rounded-none md:h-full md:bg-none md:bg-[#0D0F12]/90 shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)] md:shadow-none pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] md:pb-0"
+        className="relative z-10 bg-bottomnav-gradient border-t border-white/10 rounded-t-2xl md:border-t-0 md:rounded-none md:h-full md:bg-none md:bg-black/95 shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)] md:shadow-none pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] md:pb-0"
       >
         <div className="max-w-2xl mx-auto px-1 xs:px-2 py-1.5 md:py-8 md:h-full md:flex md:flex-col md:justify-center md:gap-6">
         <div className="grid grid-cols-5 md:grid-cols-1 items-stretch md:gap-6">
