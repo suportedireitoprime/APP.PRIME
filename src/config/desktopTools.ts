@@ -52,14 +52,6 @@ export type DesktopToolGroup = {
  */
 export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
   {
-    id: 'inteligencia_artificial',
-    label: 'Inteligência Artificial',
-    hint: 'Ferramentas de IA generativa',
-    tools: [
-      { id: 'me-explique', label: 'Me Explique', desc: 'Seu tutor jurídico por voz', icon: Camera, route: '/me-explique', color: '#E11D48' },
-    ],
-  },
-  {
     id: 'monitoramento',
     label: 'Monitoramento',
     hint: 'Acompanhe alterações legislativas e notícias',
@@ -68,15 +60,6 @@ export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
       { id: 'noticias', label: 'Notícias', desc: 'Notícias jurídicas e atualizações', icon: Newspaper, route: '/noticias', color: '#EC4899' },
       { id: 'boletins', label: 'Boletins Jurídicos', desc: 'Vídeo diário com as normas quentes', icon: MicVocal, route: '/boletins', color: '#EF4444' },
       { id: 'newsletter', label: 'Newsletter', desc: 'Receba o resumo por e-mail', icon: Mail, route: '/newsletter', color: '#F97316' },
-    ],
-  },
-  {
-    id: 'aprendizado',
-    label: 'Aprendizado e Jogos',
-    hint: 'Gamificação e memorização',
-    tools: [
-      { id: 'forca', label: 'Jogo da Forca', desc: 'Memorize termos jurídicos brincando', icon: Gamepad2, route: '/gamificacao/forca', color: '#8B5CF6' },
-      { id: 'caca-palavras', label: 'Caça-Palavras', desc: 'Encontre conceitos chave na grade', icon: Gamepad2, route: '/gamificacao/caca-palavras', color: '#10B981' },
     ],
   },
   {

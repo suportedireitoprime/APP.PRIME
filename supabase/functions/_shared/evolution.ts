@@ -27,6 +27,16 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 async function req(path: string, init: RequestInit = {}) {
   let lastError: Error | null = null;
 
+  if (path.startsWith("/send/")) {
+    const action = path.replace("/send/", "");
+    const capitalized = action.charAt(0).toUpperCase() + action.slice(1);
+    path = `/message/send${capitalized}/${INSTANCE}`;
+  } else if (path === "/presence/update") {
+    path = `/chat/sendPresence/${INSTANCE}`;
+  } else if (path.startsWith("/message/") && !path.includes(INSTANCE)) {
+    path = `${path}/${INSTANCE}`;
+  }
+
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     let res: Response;
     try {
@@ -164,7 +174,13 @@ async function getInstanceInfo() {
     direct = null;
   }
 
-  const list = unwrapData(await req(`/instance/all`, { method: "GET" }));
+  let listRaw: any;
+  try {
+    listRaw = await req(`/instance/all`, { method: "GET" });
+  } catch {
+    listRaw = await req(`/instance/fetchInstances`, { method: "GET" });
+  }
+  const list = unwrapData(listRaw);
   const rows = Array.isArray(list) ? list : [];
   const found = rows.find((item: any) => (item?.name ?? item?.instanceName ?? item?.id) === INSTANCE);
 
@@ -201,7 +217,13 @@ async function getInstanceToken() {
     // Continue to /instance/all fallback below.
   }
 
-  const list = unwrapData(await req(`/instance/all`, { method: "GET" }));
+  let listRaw: any;
+  try {
+    listRaw = await req(`/instance/all`, { method: "GET" });
+  } catch {
+    listRaw = await req(`/instance/fetchInstances`, { method: "GET" });
+  }
+  const list = unwrapData(listRaw);
   const rows = Array.isArray(list) ? list : [];
   const found = rows.find((item: any) => (item?.name ?? item?.instanceName) === INSTANCE);
   if (found?.token) return found.token;
@@ -252,7 +274,11 @@ async function deleteInstance() {
 
 export const evolution = {
   async listInstances() {
-    return req(`/instance/all`, { method: "GET" });
+    try {
+      return await req(`/instance/all`, { method: "GET" });
+    } catch {
+      return await req(`/instance/fetchInstances`, { method: "GET" });
+    }
   },
   async createInstance(webhookUrl?: string) {
     return req(`/instance/create`, {
@@ -263,6 +289,7 @@ export const evolution = {
         token: Deno.env.get("EVOLUTION_INSTANCE_TOKEN") || KEY,
         webhookUrl: webhookUrl || "",
         subscribe: webhookUrl ? WEBHOOK_EVENTS : [],
+        integration: "WHATSAPP-BAILEYS",
       }),
     });
   },
@@ -281,23 +308,31 @@ export const evolution = {
   },
   async startConnection(webhookUrl?: string) {
     const headers = await getInstanceHeaders();
-    return req(`/instance/connect`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        instanceName: INSTANCE,
-        webhookUrl: webhookUrl || "",
-        subscribe: webhookUrl ? WEBHOOK_EVENTS : [],
-        immediate: true,
-        rabbitmqEnable: "",
-        websocketEnable: "",
-        natsEnable: "",
-      }),
-    });
+    try {
+      return await req(`/instance/connect`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          instanceName: INSTANCE,
+          webhookUrl: webhookUrl || "",
+          subscribe: webhookUrl ? WEBHOOK_EVENTS : [],
+          immediate: true,
+          rabbitmqEnable: "",
+          websocketEnable: "",
+          natsEnable: "",
+        }),
+      });
+    } catch (e: any) {
+      if (String(e?.message || e).includes("404")) {
+        return await req(`/instance/connect/${encodeURIComponent(INSTANCE)}`, { method: "GET", headers });
+      }
+      throw e;
+    }
   },
   async getQr() {
     const headers = await getInstanceHeaders();
     const attempts = [
+      () => req(`/instance/connect/${encodeURIComponent(INSTANCE)}`, { method: "GET", headers }),
       () => req(withInstanceName(`/instance/qr`), { method: "GET", headers }),
       () => req(`/instance/${encodeURIComponent(INSTANCE)}/qrcode`, { method: "GET", headers }),
       () => req(withInstanceName(`/instance/qrcode`), { method: "GET", headers }),
@@ -335,19 +370,32 @@ export const evolution = {
   },
   async setWebhook(url: string) {
     const headers = await getInstanceHeaders();
-    return req(`/instance/connect`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        instanceName: INSTANCE,
-        webhookUrl: url,
-        subscribe: WEBHOOK_EVENTS,
-        immediate: false,
-        rabbitmqEnable: "",
-        websocketEnable: "",
-        natsEnable: "",
-      }),
-    });
+    try {
+      return await req(`/instance/connect`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          instanceName: INSTANCE,
+          webhookUrl: url,
+          subscribe: WEBHOOK_EVENTS,
+          immediate: false,
+          rabbitmqEnable: "",
+          websocketEnable: "",
+          natsEnable: "",
+        }),
+      });
+    } catch (e: any) {
+      if (String(e?.message || e).includes("404")) {
+        return await req(`/webhook/set/${encodeURIComponent(INSTANCE)}`, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            webhook: { url, enabled: true, events: WEBHOOK_EVENTS },
+          }),
+        });
+      }
+      throw e;
+    }
   },
   async sendText(phoneE164: string, text: string) {
     const input = String(phoneE164 || "").trim();
@@ -635,7 +683,7 @@ export const evolution = {
     const state = presence === "paused" ? "paused" : "composing";
     const isAudio = presence === "recording";
     const headers = await getInstanceHeaders().catch(() => ({ apikey: KEY }));
-    const paths = [`/message/presence`, `/chat/presence`, `/chat/sendPresence`];
+    const paths = [`/chat/sendPresence/${INSTANCE}`, `/message/presence/${INSTANCE}`, `/chat/presence/${INSTANCE}`];
     for (const path of paths) {
       try {
         await req(path, {
@@ -665,9 +713,8 @@ export const evolution = {
     if (!number || !messageId) return;
     const headers = await getInstanceHeaders().catch(() => ({ apikey: KEY }));
     const payload = {
-      number,
+      key: { id: messageId, remoteJid: `${number}@s.whatsapp.net`, fromMe: false },
       reaction: emoji,
-      messageId,
     };
     try {
       await req(`/message/sendReaction`, {

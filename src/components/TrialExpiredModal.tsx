@@ -21,7 +21,6 @@ import trabCover from '@/assets/biblioteca/areas/direito-do-trabalho.webp';
 import tribCover from '@/assets/biblioteca/areas/direito-tributario.webp';
 import procPenalCover from '@/assets/biblioteca/areas/direito-processual-penal.webp';
 import procCivilCover from '@/assets/biblioteca/areas/direito-processual-civil.webp';
-import somTeclado from '@/assets/teclado.mp3';
 
 interface MateriaCover {
   id: string;
@@ -70,6 +69,13 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
   useBodyScrollLock(!isAdmin);
 
   useEffect(() => {
+    // Pré-carregamento agressivo em background da página de assinatura e checkout
+    if (typeof window !== "undefined") {
+      setTimeout(() => {
+        import("@/pages/Assinatura");
+      }, 500);
+    }
+    
     return () => {
       // Item 36: Libera trava de scroll do body no unmount do modal
       resetBodyScrollLock(true);
@@ -88,30 +94,6 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
       setAtivo((prev) => (prev + 1) % MATERIAS.length);
     }, 2500);
     return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    let audio: HTMLAudioElement | null = null;
-    const timeout = setTimeout(() => {
-      // Item 34: Verificar se o documento está visível e respeitar preferência de áudio mudo
-      if (typeof document !== 'undefined' && document.visibilityState !== 'visible') {
-        return;
-      }
-      try {
-        const isMuted = typeof localStorage !== 'undefined' && localStorage.getItem('direitoprime:sound:muted') === 'true';
-        if (isMuted) return;
-        audio = new Audio(somTeclado);
-        audio.volume = 0.35;
-        audio.play().catch(() => {});
-      } catch {}
-    }, 350);
-    return () => {
-      clearTimeout(timeout);
-      if (audio) {
-        audio.pause();
-        audio = null;
-      }
-    };
   }, []);
 
   if (isAdmin || !open) {
@@ -148,14 +130,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
         )}
         {/* Horus mascote em cima do cartão, na parte de cima */}
         <div className="absolute -top-[82px] sm:-top-[92px] left-4 sm:left-7 z-30 flex items-end pointer-events-none">
-          <motion.div
-            initial={{ y: -40, opacity: 0, scale: 0.85 }}
-            animate={{
-              y: [ -40, 0, -6, 0 ],
-              scale: [ 0.85, 1.04, 0.98, 1 ],
-              opacity: 1
-            }}
-            transition={{ duration: 0.65, ease: 'easeOut' }}
+          <div
             className="w-28 h-28 sm:w-34 sm:h-34 drop-shadow-[0_18px_24px_rgba(0,0,0,0.65)] shrink-0"
           >
             <img
@@ -164,13 +139,10 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
               draggable={false}
               className="w-full h-full object-contain"
             />
-          </motion.div>
+          </div>
 
           {/* Balão de fala ao lado do Horus */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.7, x: -10, y: 10 }}
-            animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
-            transition={{ type: 'spring', stiffness: 360, damping: 22, delay: 0.35 }}
+          <div
             className="relative -top-5 -left-1 max-w-[205px] sm:max-w-[235px] bg-white text-neutral-950 rounded-2xl px-3.5 py-2 shadow-2xl border-2 border-neutral-900 pointer-events-auto"
           >
             <p className="text-[12px] sm:text-[13px] font-black leading-snug text-neutral-900">
@@ -184,14 +156,11 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
               className="absolute -bottom-[5px] left-[17px] w-0 h-0 pointer-events-none"
               style={{ borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '7px solid #ffffff' }}
             />
-          </motion.div>
+          </div>
         </div>
 
         {/* Card Principal */}
-        <motion.div
-          initial={{ y: 24, opacity: 0, scale: 0.98 }}
-          animate={{ y: 0, opacity: 1, scale: 1 }}
-          transition={{ duration: 0.35, ease: 'easeOut' }}
+        <div
           className="relative z-10 space-y-4 rounded-3xl border border-white/10 bg-[#121417]/95 backdrop-blur-2xl p-6 sm:p-7 shadow-2xl shadow-black/60 text-center"
         >
           {/* Decks com as capas do Aprender passando no automático */}
@@ -285,7 +254,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
               Conhecer outros planos e formas de pagamento
             </button>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

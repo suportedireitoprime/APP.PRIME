@@ -14,11 +14,11 @@ import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import horusAsset from '@/assets/horus/horus-star.webp';
 
-import historia1 from '@/assets/onboarding/historia_direito_1.jpg';
-import historia2 from '@/assets/onboarding/historia_direito_2.jpg';
-import historia3 from '@/assets/onboarding/historia_direito_3.jpg';
+import historia1 from '@/assets/onboarding/historia_direito_1.webp';
+import historia2 from '@/assets/onboarding/historia_direito_2.webp';
+import historia3 from '@/assets/onboarding/historia_direito_3.webp';
 import story1Filosofo from '@/assets/onboarding/story_1_filosofo.webp';
-import story2Doutrina from '@/assets/onboarding/story_2_doutrina.jpg';
+import story2Doutrina from '@/assets/onboarding/story_2_doutrina.webp';
 import story3Ia from '@/assets/onboarding/story_3_ia.webp';
 import story4Socrates from '@/assets/onboarding/story_4_socrates.webp';
 import story4Voce from '@/assets/onboarding/story_4_voce.webp';

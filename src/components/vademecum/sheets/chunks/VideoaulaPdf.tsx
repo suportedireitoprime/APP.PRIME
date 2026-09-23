@@ -1,5 +1,5 @@
 import { Document, Page, Text, View, StyleSheet, Image as PdfImage } from '@react-pdf/renderer';
-import logoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import logoAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
 import { srcOf } from '@/lib/assetUrl';
 
 const LOGO_URL = srcOf(logoAsset);

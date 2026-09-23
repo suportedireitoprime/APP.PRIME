@@ -2,7 +2,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, spring, Img } from 'remotion';
 import { YELLOW, YELLOW_SOFT, INK, CREAM, displayFont, bodyFont, BackdropRays, Sparkles, Eyebrow } from './AppIntroShared';
 
-import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
 import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));

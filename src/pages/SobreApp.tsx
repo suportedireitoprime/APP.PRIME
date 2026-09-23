@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Capacitor } from '@capacitor/core';
-import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
 import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { checkForAppUpdate } from '@/lib/appUpdate';

@@ -13,6 +13,7 @@
 import { logAiCall } from "./ai-log.ts";
 import { geminiFetch } from "./geminiFetch.ts";
 import { MODELS } from "./ai-models.ts";
+import { PDFDocument } from 'https://esm.sh/pdf-lib@1.17.1';
 
 const MODEL = MODELS.text;
 const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
@@ -65,7 +66,11 @@ async function callGemini(
     if (!res.ok) {
       success = false;
       errMsg = `${res.status}: ${(await res.text()).slice(0, 240)}`;
-      console.warn(`horusMedia ${kind} failed`, errMsg);
+      console.warn(`horusMedia ${kind} failed`, {
+        error: errMsg,
+        mimetype: cleanMimetype,
+        base64Length: base64.length,
+      });
       return "";
     }
     const data = await res.json();
@@ -126,3 +131,22 @@ export function extractPdfText(base64: string, mimetype: string): Promise<string
     "ocr",
   );
 }
+
+/** Conta as páginas de um PDF base64. */
+export async function getPdfPageCount(base64: string): Promise<number> {
+  try {
+    const clean = cleanB64(base64);
+    // Convert base64 string to Uint8Array
+    const binary = atob(clean);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    const pdfDoc = await PDFDocument.load(bytes);
+    return pdfDoc.getPageCount();
+  } catch (e) {
+    console.warn("horusMedia getPdfPageCount error", String(e));
+    return 0; // If it fails, assume it's small or rely on Gemini
+  }
+}
+

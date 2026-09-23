@@ -58,7 +58,7 @@ export const handler = async (req: Request) => {
 
     const body = req.method === "POST" ? await req.json().catch(() => ({})) : {};
     const action = body.action || new URL(req.url).searchParams.get("action") || "status";
-    const webhookUrl = `${Deno.env.get("SUPABASE_URL")}/functions/v1/horus-webhook`;
+    const webhookUrl = `${Deno.env.get("SUPABASE_URL")}/functions/v1/horus?fn=webhook`;
 
     if (action === "status") {
       let exists = true;

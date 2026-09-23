@@ -3,10 +3,11 @@ import {
   ShieldAlert, House, CircleDollarSign, FileText, ShieldCheck, Briefcase, Store, Building,
   Vote, HeartPulse, TreePine, ShoppingCart, Baby, Shield, Globe, Map,
   Library, Video, NotebookPen, Headphones, Brain, BookA, Presentation,
-  CalendarCheck, GraduationCap, PieChart, LayoutGrid, Flame, type LucideIcon
+  CalendarCheck, GraduationCap, PieChart, LayoutGrid, Flame, MessageCircle, type LucideIcon
 } from 'lucide-react';
-import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { directImg } from '@/lib/cdnImg';
+import { LEIS_CATALOG } from '@/data/leisCatalog';
+import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon';
 
 export interface Cat {
   id: string;
@@ -76,7 +77,6 @@ export const JURI_OPCOES = [
   { id: 'STJ',            nome: 'Súmulas do STJ',      desc: 'Superior Tribunal de Justiça' },
 ];
 
-export type EmAltaCat = Cat & { route: string; emBreve?: boolean };
 export const EMALTA_CATS: EmAltaCat[] = [
   { id: 'ea-biblioteca',  label: 'Biblioteca',     sublabel: 'Obras',       icon: Library,     color: 'hsl(var(--primary))', route: '/bibliotecas' },
   { id: 'ea-resumos',     label: 'Resumos',        sublabel: 'Anotações',   icon: NotebookPen, color: 'hsl(var(--primary))', route: '/resumos-juridicos' },

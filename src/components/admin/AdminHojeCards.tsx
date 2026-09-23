@@ -530,59 +530,7 @@ export function AdminHojeCards() {
       let allLists: any[] = [];
       let listPromises: any[] = [];
       
-      if (id === 'viu_planos') {
-        const minDate = new Date(datas[datas.length - 1]);
-        minDate.setHours(0, 0, 0, 0);
-        const maxDate = new Date(datas[0]);
-        maxDate.setDate(maxDate.getDate() + 1);
-        maxDate.setHours(0, 0, 0, 0);
-        
-        const { data: vpEvents } = await supabase
-          .from('app_events')
-          .select(`
-            id, user_id, created_at, email,
-            profiles:user_id ( display_name, is_premium ),
-            users:user_id ( email, raw_user_meta_data )
-          `)
-          .eq('event_name', 'trial_click')
-          .gte('created_at', minDate.toISOString())
-          .lt('created_at', maxDate.toISOString())
-          .order('created_at', { ascending: false })
-          .limit(500);
-
-        if (vpEvents) {
-          allLists = vpEvents.map((e: any) => {
-            const uemail = e.users?.email || e.email || 'Visitante';
-            return {
-              key: e.id,
-              user_id: e.user_id,
-              title: e.profiles?.display_name || uemail.split('@')[0],
-              email: uemail,
-              subtitle: 'Clicou no plano',
-              at: e.created_at,
-              acessos: null,
-              avatar_url: e.users?.raw_user_meta_data?.avatar_url || e.users?.raw_user_meta_data?.picture,
-              is_premium: e.profiles?.is_premium || false,
-            };
-          });
-        }
-        const trialPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));
-        const trialResults = await Promise.all(trialPromises);
-        trialResults.forEach(({ data }) => {
-          const trials = ((data as any[]) || []).map(r => ({
-            key: r.id,
-            user_id: r.id,
-            title: r.nome || r.email?.split('@')[0] || 'Usuário',
-            email: r.email,
-            subtitle: 'Clicou no plano (Iniciou teste)',
-            at: r.created_at || r.last_seen,
-            is_premium: r.premium,
-            avatar_url: null,
-            acessos: null
-          }));
-          allLists = allLists.concat(trials);
-        });
-      } else if (id === 'trial') {
+      if (id === 'trial') {
         const minDate = new Date(datas[datas.length - 1]);
         minDate.setHours(0, 0, 0, 0);
         
@@ -771,7 +719,7 @@ export function AdminHojeCards() {
         listPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: id, _dia: isoDate(d) }));
         let extraPromises: any[] = [];
         
-        if (id === 'paywall') {
+        if (id === 'paywall' || id === 'viu_planos') {
           // "Tela de assinaturas" also implicitly includes anyone who clicked a plan (viu_planos/trial)
           // But we will just pull the raw app_events for trial_click plus the trial list to make sure the counts reflect Math.max
           extraPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));

@@ -18,7 +18,7 @@ import {
   textoTemOferta,
 } from "../_shared/horusOferta.ts";
 import { loadUserStatsByPhone } from "../_shared/horus-user-stats.ts";
-import { transcribeAudio, describeImage, extractPdfText } from "../_shared/horusMedia.ts";
+import { transcribeAudio, describeImage, extractPdfText, getPdfPageCount } from "../_shared/horusMedia.ts";
 import { traceGeneration, langfuseEnabled } from "../_shared/langfuse.ts";
 import { logAiCall } from "../_shared/ai-log.ts";
 import { MODELS } from "../_shared/ai-models.ts";
@@ -306,7 +306,7 @@ function extractMessage(body: any): ParsedMessage | null {
     text: hasText ? text.trim() : "",
     fromMe,
     media,
-    rawMessage: msg,
+    rawMessage: d, // Pass the whole data object so evolution.downloadMedia has the 'key'
   };
 }
 
@@ -342,45 +342,47 @@ async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessa
     return;
   }
 
-  // 1b) Gate Premium: usuários gratuitos só podem enviar TEXTO.
-  //     Áudio, imagem e PDF exigem assinatura. Bloqueia antes do enrichWithMedia
-  //     (evita gastar tokens de transcrição/OCR) e responde de forma amigável.
-  if (parsed.media) {
-    const premium = userRow?.linked_user_id
-      ? await isUserPremium(admin, userRow.linked_user_id)
-      : false;
-    if (!premium) {
-      const mediaLabel = parsed.media.type === "audio" ? "áudio"
-        : parsed.media.type === "image" ? "imagem"
-        : "PDF";
-      const blockMsg =
-        `Vi que você me mandou um *${mediaLabel}* 🦉\n\n` +
-        `Você está na *assinatura gratuita* — nela eu só consigo ler *texto*. ` +
-        `Pra eu ouvir áudios, ver imagens e ler PDFs, é preciso ter um plano ativo.\n\n` +
-        `Se quiser, me manda a dúvida escrita que eu te ajudo agora mesmo. ✍️\n\n` +
-        `Pra liberar áudio, PDF e imagem:\n` +
-        `1️⃣ Abra o app *Vade Mecum*\n` +
-        `2️⃣ Vá em *Perfil → Assinaturas*\n` +
-        `3️⃣ Comece com *7 dias grátis* 🎁`;
-      try {
-        await evolution.sendText(parsed.remoteJid || parsed.from, blockMsg);
-        await logOutbound(admin, parsed, "sent", null, { agent: "premium_gate", media_type: parsed.media.type });
-      } catch (e) {
-        await logOutbound(admin, parsed, "failed", String((e as any)?.message || e), { agent: "premium_gate" });
-      }
-      await admin.from("horus_conversations").insert([
-        { phone_e164: parsed.from, role: "user", content: `[${parsed.media.type}]` },
-        { phone_e164: parsed.from, role: "assistant", content: blockMsg },
-      ]);
-      return;
-    }
+  // 1b) Gate Premium/Trial: Todos os usuários têm 3 dias de teste gratuito com acesso a tudo.
+  // Após 3 dias, se não forem premium, bloqueia acesso a qualquer mensagem (texto e mídia).
+  const premium = userRow?.linked_user_id
+    ? await isUserPremium(admin, userRow.linked_user_id)
+    : false;
+  
+  let isTrial = false;
+  if (userRow?.created_at) {
+    const createdAtMs = new Date(userRow.created_at).getTime();
+    const daysSinceCreated = (Date.now() - createdAtMs) / (1000 * 60 * 60 * 24);
+    isTrial = daysSinceCreated <= 3;
+  }
 
-    // Premium: envia ack imediato ("estou escutando/vendo/lendo…")
+  if (!premium && !isTrial) {
+    const blockMsg = 
+      `Seu período de teste gratuito de 3 dias acabou! ⏳\n\n` +
+      `Espero que tenha gostado de conversar comigo. Para continuar tirando dúvidas e enviando áudios, imagens e PDFs, você precisa assinar um plano.\n\n` +
+      `1️⃣ Abra o app ou site *Vade Mecum*\n` +
+      `2️⃣ Vá em *Perfil → Assinaturas*\n` +
+      `3️⃣ Escolha o plano ideal para você 🚀`;
+
+    try {
+      await evolution.sendText(parsed.remoteJid || parsed.from, blockMsg);
+      await logOutbound(admin, parsed, "sent", null, { agent: "trial_expired_gate" });
+    } catch (e) {
+      await logOutbound(admin, parsed, "failed", String((e as any)?.message || e), { agent: "trial_expired_gate" });
+    }
+    await admin.from("horus_conversations").insert([
+      { phone_e164: parsed.from, role: "user", content: parsed.media ? `[${parsed.media.type}]` : String(parsed.text || "[msg]") },
+      { phone_e164: parsed.from, role: "assistant", content: blockMsg },
+    ]);
+    return;
+  }
+
+  if (parsed.media) {
+    // Ack imediato para mídia ("estou escutando/vendo/lendo…")
     const ackMsg = parsed.media.type === "audio"
-      ? "Recebi seu áudio 🦉 Estou escutando, um instante…"
+      ? "Recebi seu áudio 🎧 Estou escutando, um instante…"
       : parsed.media.type === "image"
-      ? "Recebi sua imagem 🦉 Estou analisando, um instante…"
-      : "Recebi seu PDF 🦉 Estou lendo, um instante…";
+      ? "Recebi sua imagem 🖼️ Estou analisando, um instante…"
+      : "Recebi seu PDF 📄 Estou lendo, um instante…";
     evolution.sendText(parsed.remoteJid || parsed.from, ackMsg)
       .then(() => logOutbound(admin, parsed, "sent", null, { agent: "media_ack", media_type: parsed.media!.type }))
       .catch((e) => console.warn("horus media_ack fail", String((e as any)?.message || e)));
@@ -394,7 +396,7 @@ async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessa
     mimetype: parsed.media?.mimetype,
     hasBase64: Boolean(parsed.media?.base64),
   });
-  await enrichWithMedia(parsed).catch((e) => console.warn("horus media enrich fail", String(e)));
+  await enrichWithMedia(parsed, admin).catch((e) => console.warn("horus media enrich fail", String(e)));
   console.log("horus-webhook enrichWithMedia:out", {
     phone: parsed.from,
     textLen: parsed.text?.length || 0,
@@ -623,6 +625,12 @@ async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessa
 
   try {
     const result = await evolution.sendText(parsed.remoteJid || parsed.from, reply);
+
+    // Atualiza a reação para ✅ indicando que a mensagem foi processada e respondida
+    if (parsed.id) {
+      evolution.sendReaction(parsed.remoteJid || parsed.from, parsed.id, "✅").catch(() => {});
+    }
+
     await logOutbound(admin, parsed, "sent", null, { result, agent: agent?.nome });
     await admin.from("horus_conversations").insert({
       phone_e164: parsed.from,
@@ -1028,7 +1036,7 @@ async function shouldSendOnboarding(admin: any, userRowId: string | undefined): 
 
 // Se a mensagem trouxer áudio/imagem/PDF, baixa e enriquece `parsed.text`
 // com a transcrição/descrição para que o restante do pipeline funcione igual.
-async function enrichWithMedia(parsed: ParsedMessage): Promise<void> {
+async function enrichWithMedia(parsed: ParsedMessage, admin: any): Promise<void> {
   const m = parsed.media;
   if (!m) return;
 
@@ -1078,6 +1086,31 @@ async function enrichWithMedia(parsed: ParsedMessage): Promise<void> {
   if (m.type === "document") {
     // Só processa PDFs; outros documentos avisamos ao usuário.
     if (/pdf/i.test(mimetype)) {
+      // 1. Checa contagem de páginas
+      const pages = await getPdfPageCount(base64);
+      if (pages > 20) {
+        parsed.text = `[PDF recusado]\nO usuário enviou um arquivo PDF muito grande (${pages} páginas). O limite é de 20 páginas. Responda educadamente informando o limite e sugira buscar no Vade Mecum caso seja um livro ou código completo.`;
+        return;
+      }
+      
+      // 2. Checa limite diário de PDFs
+      if (admin) {
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+        const { count, error: countErr } = await admin
+          .from('horus_conversations')
+          .select('*', { count: 'exact', head: true })
+          .eq('phone_e164', parsed.from)
+          .eq('role', 'user')
+          .like('content', '%[PDF extraído]%')
+          .gte('created_at', startOfDay.toISOString());
+        
+        if (!countErr && count !== null && count >= 10) {
+          parsed.text = `[PDF recusado]\nO usuário atingiu o limite de 10 PDFs enviados por dia. Informe-o gentilmente que ele alcançou o limite de leituras de documentos de hoje e que o limite será reiniciado à meia-noite.`;
+          return;
+        }
+      }
+
       const t = await extractPdfText(base64, mimetype);
       if (t) {
         parsed.text = parsed.text

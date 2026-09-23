@@ -96,7 +96,6 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword.tsx"));
 
 const QuestoesHistorico = lazy(() => import('@/pages/QuestoesHistorico'));
 const AdminFuncoes = lazy(() => import("./pages/AdminFuncoes.tsx"));
-const Boletins = lazy(() => import("./pages/Boletins.tsx"));
 const AdminPush = lazy(() => import("./pages/AdminPush.tsx"));
 const AdminPushSection = lazy(() => import("./pages/AdminPushSection.tsx"));
 const AdminPilulas = lazy(() => import("./pages/AdminPilulas.tsx"));
@@ -415,7 +414,7 @@ const AdminAppleCsr = lazy(() => import("./pages/AdminAppleCsr.tsx"));
 
 const AdminHandoffIA = lazy(() => import("./pages/AdminHandoffIA.tsx"));
 const AdminTransferenciaApp = lazy(() => import("./pages/AdminTransferenciaApp.tsx"));
-const BoletinsJuridicos = lazy(routePrefetch.boletins);
+const BoletinsJuridicos = lazy(() => import("./pages/BoletinsJuridicos.tsx"));
 const AdminBoletins = lazy(() => import("./pages/AdminBoletins.tsx"));
 const PilulasHome = lazy(() => import("./pages/pilulas/PilulasHome.tsx"));
 const PilulasViewer = lazy(() => import("./pages/pilulas/PilulasViewer.tsx"));
@@ -623,6 +622,18 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
     const cleanPath = (location.pathname || '').replace(/\/+$/, '') || '/';
     // Item 29: Home ('/') não é isenta de bloqueio pós-trial. Apenas telas de assinatura, planos, perfil, configurações e termos são permitidas sem plano ativo.
     const isAllowedPath = 
+      cleanPath === '/' ||
+      cleanPath === '/biblioteca' ||
+      cleanPath === '/aprender' ||
+      cleanPath === '/questoes' ||
+      cleanPath === '/radar' ||
+      cleanPath === '/resumos' ||
+      cleanPath === '/flashcards' ||
+      cleanPath === '/audioaulas' ||
+      cleanPath === '/videoaulas' ||
+      cleanPath === '/leis-cantadas' ||
+      cleanPath === '/noticias' ||
+      cleanPath === '/novidades' ||
       cleanPath === '/assinatura' ||
       cleanPath.startsWith('/assinatura/') ||
       cleanPath === '/planos/ativos' ||
@@ -640,8 +651,7 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
 
     if (!isUserPremium && !isTrialActive && !isAllowedPath) {
       return (
-        <>
-          {children}
+        <div className="fixed inset-0 z-50 bg-[#0A0A0A]">
           <Suspense fallback={null}>
             <TrialExpiredModal 
               open={true} 
@@ -651,7 +661,7 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
               }} 
             />
           </Suspense>
-        </>
+        </div>
       );
     }
   }
@@ -1267,7 +1277,8 @@ function AnimatedRoutes() {
           <Route path="/admin-boletins" element={<ProtectedRoute><PageTransition><AdminBoletins /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-erros-questoes" element={<ProtectedRoute><PageTransition><AdminErrosQuestoes /></PageTransition></ProtectedRoute>} />
 
-          <Route path="/boletins" element={<ProtectedRoute><PageTransition><Boletins /></PageTransition></ProtectedRoute>} />
+          <Route path="/boletins" element={<ProtectedRoute><PageTransition><BoletinsJuridicos tipo="juridico" /></PageTransition></ProtectedRoute>} />
+          <Route path="/boletins-noticias" element={<ProtectedRoute><PageTransition><BoletinsJuridicos tipo="noticias" /></PageTransition></ProtectedRoute>} />
           <Route path="/ajustes/horus" element={<ProtectedRoute><PageTransition><HorusWhatsApp /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-blog-edicao" element={<ProtectedRoute><PageTransition><AdminBlogEdicao /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-flashcards-editar" element={<ProtectedRoute><PageTransition><AdminFlashcardsEditar /></PageTransition></ProtectedRoute>} />

@@ -2,7 +2,7 @@ import { Search, Heart, NotebookPen, Radar, History, LayoutGrid, Scale, ChevronR
 import { useNavigate } from 'react-router-dom';
 import heroBannerAsset from '@/assets/covers/vademecum-judge.webp';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
-import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
 import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 

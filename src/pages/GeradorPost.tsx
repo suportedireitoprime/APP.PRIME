@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { toBlob } from 'html-to-image';
-import logoImgAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import logoImgAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
 import logoImgBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 const logoImg = pickAsset(logoImgBundled, srcOf(logoImgAsset));
 

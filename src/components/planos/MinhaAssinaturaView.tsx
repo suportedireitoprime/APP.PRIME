@@ -25,7 +25,7 @@ interface Props {
 function planoLabel(plano: string | null): string {
   if (!plano) return 'Premium';
   const p = plano.toLowerCase();
-  if (p.includes('anual') || p.includes('yearly') || p.includes('year')) return 'Premium Anual';
+  if (p.includes('anual') || p.includes('yearly') || p.includes('year') || p.includes('vitalício') || p.includes('vitalicio')) return 'Premium Anual';
   if (p.includes('mensal') || p.includes('month')) return 'Premium Mensal';
   return `Premium (${plano})`;
 }
@@ -119,11 +119,11 @@ export default function MinhaAssinaturaView({ plano, expiresAt, startedAt, sourc
   const openSupport = () => {
     const subject = encodeURIComponent('Suporte Direito Prime Premium');
     const body = encodeURIComponent(`Olá, sou assinante ${planoLabel(plano)} e preciso de ajuda.`);
-    window.location.href = `mailto:wn7corporation@gmail.com?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:suporte@direitoprime.com.br?subject=${subject}&body=${body}`;
   };
 
   const label = planoLabel(plano);
-  const isAnual = /anual|year/i.test(plano ?? '');
+  const isAnual = /anual|year|vitalício|vitalicio/i.test(plano ?? '');
   const isApple = source === 'apple' || Capacitor.getPlatform() === 'ios';
   const preco = isAnual ? (isApple ? 'R$ 238,80/ano' : 'R$ 199,90/ano') : 'R$ 29,90/mês';
   const equivalente = isAnual ? (isApple ? 'Equivalente a R$ 19,90/mês' : 'Equivalente a R$ 16,66/mês') : null;

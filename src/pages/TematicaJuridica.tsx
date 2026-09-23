@@ -81,17 +81,27 @@ export default function TematicaJuridica() {
 
   useEffect(() => {
     (async () => {
-      const list = await loadObras();
-      if (list.length) {
-        setDestaques(new Set(list.filter((o: any) => o.destaque).map((o) => o.id)));
-        setObras(list as unknown as Obra[]);
+      try {
+        const list = await loadObras();
+        if (list.length) {
+          setDestaques(new Set(list.filter((o: any) => o.destaque).map((o) => o.id)));
+          setObras(list as unknown as Obra[]);
+        }
+      } catch (e) {
+        console.error("Erro ao carregar obras da Temática:", e);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
 
-      void loadRanking(buscarRankingEngajamento as any).then((rows) => {
-        setRanking(new Map(rows.map((r: any) => [r.obra_id, r as RankingRow])));
-      });
-      void loadFavoritosTematica().then((ids) => setFavoritos(new Set(ids)));
+      void loadRanking(buscarRankingEngajamento as any)
+        .then((rows) => {
+          setRanking(new Map(rows.map((r: any) => [r.obra_id, r as RankingRow])));
+        })
+        .catch(console.error);
+
+      void loadFavoritosTematica()
+        .then((ids) => setFavoritos(new Set(ids)))
+        .catch(console.error);
     })();
   }, []);
 

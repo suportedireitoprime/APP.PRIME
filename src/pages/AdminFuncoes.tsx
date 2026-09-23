@@ -120,16 +120,15 @@ type Category = {
   icon: any;
   items?: Item[];
   route?: string;
-};
-
 const CATEGORIES: Category[] = [
   {
-    id: 'assinantes-top',
-    title: 'Assinantes',
-    desc: 'Lista de todos os assinantes ativos',
-    icon: Users,
+    id: 'assinaturas-financeiro',
+    title: 'Assinaturas & Financeiro',
+    desc: 'Lista de assinantes, limites free e paywall',
+    icon: Crown,
     items: [
       { id: 'admin-assinantes', label: 'Assinantes Asaas', icon: Users, desc: 'Lista de todos os assinantes do Asaas', route: '/admin-assinantes' },
+      { id: 'admin-funcoes-assinantes', label: 'Funções Assinantes', icon: Crown, desc: 'Limite de uso free por função (blog, narração, biblioteca, IA…)', route: '/admin-funcoes-assinantes' },
     ],
   },
   {
@@ -140,8 +139,17 @@ const CATEGORIES: Category[] = [
     route: '/admin-instagram-posts',
     items: [
       { id: 'instagram-posts', label: 'Instagram Posts', icon: ImageIcon, desc: 'Gerar carrosséis com IA no padrão Vade Mecum', route: '/admin-instagram-posts' },
-      { id: 'ranking-funcoes', label: 'Ranking de Funções', icon: Activity, desc: 'Funções e subfunções mais acessadas pelos usuários', route: '/admin-ranking-funcoes' },
     ],
+  },
+  {
+    id: 'crescimento-retencao',
+    title: 'Crescimento & Retenção',
+    desc: 'Onboarding, triagem e avaliações nas lojas',
+    icon: Target,
+    items: [
+      { id: 'admin-triagem', label: 'Triagem de Entrada', icon: Target, desc: 'Ver respostas de usuários e alterar design', route: '/admin-triagem' },
+      { id: 'admin-avaliacao-loja', label: 'Avaliação Loja', icon: Star, desc: 'Estatísticas e tracking', route: '/admin-avaliacao-loja' },
+    ]
   },
   {
     id: 'push',
@@ -155,7 +163,7 @@ const CATEGORIES: Category[] = [
   {
     id: 'geracao-conteudo',
     title: 'Geração de Conteúdo',
-    desc: 'IA, biblioteca, radar e estudos',
+    desc: 'IA, biblioteca e estudos',
     icon: Newspaper,
     items: [
       // Conteúdo & IA
@@ -168,51 +176,27 @@ const CATEGORIES: Category[] = [
       { id: 'apresentacao-editar', label: 'Apresentação Editar', icon: Mic, desc: 'Resumo ou lei + PDF → OCR e narração de cada slide', route: '/admin-apresentacao-editar' },
       { id: 'resumo-livro-audio-editar', label: 'Resumo Livro Áudio Editar', icon: Headphones, desc: 'Adicionar áudio para os resumos dos livros', route: '/admin/resumo-livro-audio' },
       { id: 'admin-pilulas', label: 'Pílulas (Clássicos)', icon: Pill, desc: 'Gerenciar áudios e prompts para pílulas de clássicos', route: '/admin/pilulas' },
-      { id: 'narracao', label: 'Narração Editar', icon: Mic, desc: 'TTS com Gemini', route: '/narracao' },
       { id: 'explicacao-lei', label: 'Explicações Editar (IA)', icon: Lightbulb, desc: 'Batch de explicações', route: '/explicacao-lei' },
-      { id: 'boletins', label: 'Boletins Editar', icon: Rss, desc: 'Newsletters e boletins', route: '/newsletter' },
+      
       // Biblioteca
       { id: 'biblioteca-editar', label: 'Biblioteca Editar', icon: BookOpen, desc: 'Sinopse, capa horizontal e análise técnica com IA', route: '/admin-biblioteca-editar' },
       { id: 'leitura-nativa', label: 'Leitura Nativa', icon: FileText, desc: 'Extração instantânea de PDFs em segundo plano com divisão de capítulos', route: '/admin-leitura-nativa' },
       { id: 'audioaulas', label: 'Audioaulas', icon: PlayCircle, desc: 'Gera títulos e prompts de podcast a partir da leitura nativa', route: '/admin-audioaulas' },
       { id: 'leis-cantadas', label: 'Leis Cantadas Editar', icon: PlayCircle, desc: 'Gera prompts de música (sertanejo, pagode, rock...) e publica as faixas', route: '/admin-leis-cantadas' },
-      // Radar Legislativo
-      { id: 'camara-deputados', label: 'Câmara Editar', icon: Building2, desc: 'Radar legislativo', route: '/radar/deputados' },
+      
       // Estudo & Jogos
-      { id: 'aprender-viewer', label: 'Aprender (WIP)', icon: GraduationCap, desc: 'Acesso ao módulo principal Aprender (oculto para usuários)', route: '/aprender' },
-      { id: 'praticar', label: 'Praticar', icon: Target, desc: 'Tiro ao alvo na lei seca (em testes, só admin)', route: '/praticar' },
       { id: 'dicionario', label: 'Dicionário Editar', icon: BookA, desc: 'Termos e definições' },
-      { id: 'questoes-editar', label: 'Questões Editar', icon: ListChecks, desc: 'Buscar mais questões, novos cargos e importar do Google Sheets', route: '/admin-questoes' },
     ],
   },
   {
-    id: 'avaliacao-loja',
-    title: 'Avaliação Loja',
-    desc: 'Estatísticas e tracking de avaliações nas lojas',
-    icon: Star,
-    route: '/admin-avaliacao-loja',
-    items: [
-      { id: 'admin-avaliacao-loja', label: 'Avaliação Loja', icon: Star, desc: 'Estatísticas e tracking', route: '/admin-avaliacao-loja' }
-    ],
-  },
-  {
-    id: 'triagem-entrada',
-    title: 'Triagem / Onboarding',
-    desc: 'Ver respostas dos usuários e escolher versão do onboarding',
-    icon: Target,
-    route: '/admin-triagem',
-    items: [
-      { id: 'admin-triagem', label: 'Triagem de Entrada', icon: Target, desc: 'Ver respostas de usuários e alterar design', route: '/admin-triagem' },
-    ],
-  },
-  {
-    id: 'vade-mecum',
-    title: 'Vade Mecum',
-    desc: 'Varredura de leis (Planalto) e atualização do histórico de artigos',
+    id: 'bases-juridicas',
+    title: 'Bases Jurídicas',
+    desc: 'Vade Mecum, jurisprudência e locais',
     icon: Scale,
-    route: '/admin-vade-mecum-historico',
     items: [
       { id: 'admin-vade-mecum-historico', label: 'Histórico de Atualizações', icon: Scale, desc: 'Rastreador de leis e sincronização com Supabase', route: '/admin-vade-mecum-historico' },
+      { id: 'admin-jurisprudencia', label: 'Mapeamento de Leis', icon: Building2, desc: 'Cadastra o ID Corpus927 de cada lei; acompanha cache de artigos', route: '/admin-jurisprudencia' },
+      { id: 'admin-locais', label: 'Locais Jurídicos', icon: MapPin, desc: 'Sincronizar OSM por UF e categoria (custo zero)', route: '/admin/locais' },
     ],
   },
   {
@@ -240,8 +224,8 @@ const CATEGORIES: Category[] = [
     title: 'Narração de Conteúdo',
     desc: 'Narrar livros da biblioteca e artigos do blog com vozes do Gemini',
     icon: Mic,
-    route: '/admin-narracao',
     items: [
+      { id: 'narracao', label: 'Narração Editar (Avulso)', icon: Mic, desc: 'TTS com Gemini para conteúdo rápido', route: '/narracao' },
       { id: 'admin-narracao-biblioteca', label: 'Narração Biblioteca', icon: BookOpen, desc: 'Escolha o livro, a voz e narre página por página ou em fila', route: '/admin-narracao/biblioteca' },
       { id: 'admin-narracao-blog', label: 'Narração Blog e Artigos', icon: Newspaper, desc: 'Prévia de voz e narração dos artigos do Blogger', route: '/admin-narracao/blog' },
     ],
@@ -267,37 +251,45 @@ const CATEGORIES: Category[] = [
     ],
   },
   {
-    id: 'jurisprudencia',
-    title: 'Jurisprudência',
-    desc: 'Mapear leis do Vade Mecum ao Corpus927 (Enfam/STJ)',
-    icon: Scale,
-    route: '/admin-jurisprudencia',
-    items: [
-      { id: 'admin-jurisprudencia', label: 'Mapeamento de leis', icon: Scale, desc: 'Cadastra o ID Corpus927 de cada lei; acompanha cache de artigos', route: '/admin-jurisprudencia' },
-    ],
-  },
-  {
     id: 'monitoramento',
-    title: 'Monitoramento',
-    desc: 'Saúde do sistema, usuários e APIs de IA',
+    title: 'Monitoramento & Saúde',
+    desc: 'Saúde do sistema, usuários, métricas e APIs',
     icon: Monitor,
-    route: '/admin-monitoramento',
     items: [
       { id: 'admin-monitor', label: 'Monitoramento', icon: Activity, desc: 'Status e saúde do sistema', route: '/admin-monitor' },
       { id: 'monitor-usuarios', label: 'Usuários Online', icon: Users, desc: 'Monitoramento em tempo real', route: '/admin-monitor-usuarios' },
       { id: 'monitor-apis', label: 'APIs', icon: Activity, desc: 'Funções que usam IA (custo, manual/auto)', route: '/admin-monitor-apis' },
+      { id: 'ranking-funcoes', label: 'Ranking de Funções', icon: Activity, desc: 'Funções e subfunções mais acessadas pelos usuários', route: '/admin-ranking-funcoes' },
     ],
   },
-
-
   {
     id: 'horus-exclusivo',
     title: 'Horus (Exclusivo)',
     desc: 'Assistente Horus no WhatsApp — instância, usuários e conversas',
     icon: MessageCircle,
+    route: '/admin-horus',
+  },
+  {
+    id: 'radares-admin',
+    title: 'Radares',
+    desc: 'Radar de Leis, cron e histórico',
+    icon: Rss,
     items: [
-      { id: 'admin-horus', label: 'Painel do Horus', icon: MessageCircle, desc: 'Instância, QR Code, usuários vinculados e conversas', route: '/admin-horus' },
-      { id: 'admin-horus-template', label: 'Horus Templates 3D', icon: ImageIcon, desc: 'Pré-visualização e guias de cenas 3D do Horus', route: '/admin-horus-template' },
+      { id: 'camara-deputados', label: 'Câmara Editar', icon: Building2, desc: 'Radar legislativo - Câmara dos Deputados', route: '/radar/deputados' },
+      { id: 'admin-radares-leis', label: 'Radar de Leis (Editar)', icon: Rss, desc: 'Cron 10h e 20h, histórico das raspagens, reenvio de push', route: '/admin-radares-leis' },
+      { id: 'admin-biblioteca-leis', label: 'Biblioteca de Leis', icon: BookOpen, desc: 'Auditoria, verificação de atualização e sugestões do Radar', route: '/admin-biblioteca-leis' },
+      { id: 'admin-buscador-leis', label: 'Buscador de Leis', icon: Search, desc: 'IA busca na web leis faltantes e sugere para adicionar à Biblioteca', route: '/admin-buscador-leis' },
+    ],
+  },
+  {
+    id: 'boletins-juridicos',
+    title: 'Boletins Jurídicos',
+    desc: 'Geração diária de boletins em áudio e vídeo',
+    icon: Mic,
+    items: [
+      { id: 'admin-boletins', label: 'Boletins (Admin)', icon: Mic, desc: 'Gerar, renderizar MP4 e configurar cron 9h', route: '/admin-boletins' },
+      { id: 'boletins', label: 'Boletins Editar (News)', icon: Rss, desc: 'Newsletters antigas e boletins', route: '/newsletter' },
+      { id: 'boletins-player', label: 'Player de Boletins', icon: Rss, desc: 'Visualizar boletins publicados no app', route: '/boletins' },
     ],
   },
   {
@@ -323,50 +315,25 @@ const CATEGORIES: Category[] = [
     ],
   },
   {
-    id: 'radares-admin',
-    title: 'Radares',
-    desc: 'Radar de Leis, cron e histórico',
-    icon: Rss,
-    items: [
-      { id: 'admin-radares-leis', label: 'Radar de Leis (Editar)', icon: Rss, desc: 'Cron 10h e 20h, histórico das raspagens, reenvio de push', route: '/admin-radares-leis' },
-      { id: 'admin-biblioteca-leis', label: 'Biblioteca de Leis', icon: BookOpen, desc: 'Auditoria, verificação de atualização e sugestões do Radar', route: '/admin-biblioteca-leis' },
-      { id: 'admin-buscador-leis', label: 'Buscador de Leis', icon: Search, desc: 'IA busca na web leis faltantes e sugere para adicionar à Biblioteca', route: '/admin-buscador-leis' },
-    ],
-  },
-  {
-    id: 'locais-juridicos',
-    title: 'Locais Jurídicos',
-    desc: 'Tribunais, cartórios, delegacias e museus via OpenStreetMap',
-    icon: MapPin,
-    items: [
-      { id: 'admin-locais', label: 'Locais Jurídicos', icon: MapPin, desc: 'Sincronizar OSM por UF e categoria (custo zero)', route: '/admin/locais' },
-    ],
-  },
-  {
-    id: 'boletins-juridicos',
-    title: 'Boletins Jurídicos',
-    desc: 'Geração diária de boletins em áudio e vídeo',
-    icon: Mic,
-    items: [
-      { id: 'admin-boletins', label: 'Boletins (Admin)', icon: Mic, desc: 'Gerar, renderizar MP4 e configurar cron 9h', route: '/admin-boletins' },
-      { id: 'boletins-player', label: 'Player de Boletins', icon: Rss, desc: 'Visualizar boletins publicados no app', route: '/boletins' },
-    ],
-  },
-  {
-    id: 'monetizacao',
-    title: 'Monetização & Paywall',
-    desc: 'Limites free por função (editável)',
-    icon: Crown,
-    items: [
-      { id: 'admin-funcoes-assinantes', label: 'Funções Assinantes', icon: Crown, desc: 'Limite de uso free por função (blog, narração, biblioteca, IA…)', route: '/admin-funcoes-assinantes' },
-    ],
-  },
-
-  {
     id: 'configuracoes',
     title: 'Configurações',
     desc: 'Paleta, tema e preferências',
     icon: Wrench,
+    items: [
+      { id: 'paleta-cores', label: 'Paleta de Cores', icon: Palette, desc: 'Configurações visuais', route: '/configuracoes' },
+    ],
+  },
+  {
+    id: 'laboratorio-testes',
+    title: 'Laboratório & Viewer',
+    desc: 'Atalhos para testar áreas ocultas do app',
+    icon: Sparkles,
+    items: [
+      { id: 'aprender-viewer', label: 'Aprender (WIP)', icon: GraduationCap, desc: 'Acesso ao módulo principal Aprender (oculto para usuários)', route: '/aprender' },
+      { id: 'praticar', label: 'Praticar', icon: Target, desc: 'Tiro ao alvo na lei seca (em testes, só admin)', route: '/praticar' },
+    ],
+  },
+];  icon: Wrench,
     items: [
       { id: 'paleta-cores', label: 'Paleta de Cores', icon: Palette, desc: 'Configurações visuais', route: '/configuracoes' },
     ],

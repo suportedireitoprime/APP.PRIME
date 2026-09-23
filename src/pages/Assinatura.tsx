@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, startTransition } from "react";
 import { useNavigate, useSearchParams, Navigate, useLocation, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Capacitor } from '@capacitor/core';
@@ -150,7 +150,9 @@ export default function Assinatura() {
       navigate('/login', { state: { returnTo: '/assinatura' } });
       return; 
     }
-    setCheckoutPlan(plano);
+    startTransition(() => {
+      setCheckoutPlan(plano);
+    });
   };
 
   const previewPlans = searchParams.get('preview') === 'plans' || searchParams.get('planos') === '1' || (location.state as { previewPlans?: boolean } | null)?.previewPlans;
@@ -199,7 +201,7 @@ export default function Assinatura() {
               <SheetHeader className="mb-8 text-left shrink-0 relative z-10">
                 <SheetTitle className="text-3xl font-display font-black text-foreground leading-tight uppercase">Escolha como<br/>prefere pagar.</SheetTitle>
                 <SheetDescription className="text-[13px] font-medium mt-2 text-muted-foreground">
-                  Acesso imediato ao plano Vitalício. Selecione a forma de pagamento abaixo.
+                  Acesso imediato ao plano Anual. Selecione a forma de pagamento abaixo.
                 </SheetDescription>
               </SheetHeader>
               <div className="flex flex-col gap-4 relative z-10">
@@ -333,7 +335,7 @@ export default function Assinatura() {
                 }`}
               >
                 <span className="flex items-center justify-center gap-2">
-                  {tab === 'promocao' ? 'Garantir Vitalício no PIX' : tab === 'vitalicio' ? 'Garantir Acesso Vitalício' : 'Assinar Mensal'}
+                  {tab === 'promocao' ? 'Garantir Plano Anual no PIX' : tab === 'vitalicio' ? 'Garantir Plano Anual' : 'Assinar Mensal'}
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </span>
               </Button>

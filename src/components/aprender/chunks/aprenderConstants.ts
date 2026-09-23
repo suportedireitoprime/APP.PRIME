@@ -3,12 +3,12 @@ import {
   HeartPulse, Users, Globe, Leaf, Trophy, Hammer, Coins, Swords, Building, Globe2, AlertTriangle,
   GraduationCap, Microscope, BookText, ClipboardList, Award, Lightbulb,
 } from 'lucide-react';
-import hero1 from '@/assets/aprender-hero/hero-1.png.asset.json';
-import hero2 from '@/assets/aprender-hero/hero-2.png.asset.json';
-import hero3 from '@/assets/aprender-hero/hero-3.png.asset.json';
-import hero4 from '@/assets/aprender-hero/hero-4.png.asset.json';
-import hero5 from '@/assets/aprender-hero/hero-5.png.asset.json';
-import hero6 from '@/assets/aprender-hero/hero-6.png.asset.json';
+import hero1 from '@/assets/aprender-hero/hero-1.webp.asset.json';
+import hero2 from '@/assets/aprender-hero/hero-2.webp.asset.json';
+import hero3 from '@/assets/aprender-hero/hero-3.webp.asset.json';
+import hero4 from '@/assets/aprender-hero/hero-4.webp.asset.json';
+import hero5 from '@/assets/aprender-hero/hero-5.webp.asset.json';
+import hero6 from '@/assets/aprender-hero/hero-6.webp.asset.json';
 import { srcOf } from '@/lib/assetUrl';
 import type { AprenderHomeData } from '@/lib/aprenderHomeSnapshot';
 

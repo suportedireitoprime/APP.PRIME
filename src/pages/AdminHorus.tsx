@@ -10,8 +10,20 @@ import { HorusEstatisticasTab } from '@/components/admin/horus/HorusEstatisticas
 import { HorusPoderesTab } from '@/components/admin/horus/HorusPoderesTab';
 import { HorusRankingTab } from '@/components/admin/horus/HorusRankingTab';
 import { HorusCanalTab } from '@/components/admin/horus/HorusCanalTab';
+import { HorusUsuariosTab } from '@/components/admin/horus/HorusUsuariosTab';
+import { Users, ImageIcon } from 'lucide-react';
 
-const SECTIONS = [
+type Section = {
+  id: string;
+  label: string;
+  desc: string;
+  icon: any;
+  color: string;
+  Component?: any;
+  route?: string;
+};
+
+const SECTIONS: Section[] = [
   { id: 'admin', label: 'Admin', desc: 'Instância, QR code e conexão', icon: Settings, color: '#3B82F6', Component: HorusAdminTab },
   { id: 'funcoes', label: 'Funções', desc: 'Agentes, prompts e configurações', icon: Sparkles, color: '#A855F7', Component: HorusFuncoesTab },
   { id: 'poderes', label: 'Poderes', desc: 'Superpoderes open-source: memória, Wikipedia, BrasilAPI, BCB…', icon: Dumbbell, color: '#DC2626', Component: HorusPoderesTab },
@@ -20,8 +32,10 @@ const SECTIONS = [
   { id: 'conversas', label: 'Conversas', desc: 'Histórico e resposta manual', icon: MessagesSquare, color: '#10B981', Component: HorusConversasTab },
   { id: 'marketing', label: 'Marketing', desc: 'Campanhas e disparos em massa', icon: Megaphone, color: '#DC2626', Component: HorusMarketingTab },
   { id: 'canal', label: 'Canal', desc: 'Publicar no canal do WhatsApp (Direito Prime vade mecum)', icon: Radio, color: '#22C55E', Component: HorusCanalTab },
+  { id: 'template', label: 'Horus Templates 3D', desc: 'Pré-visualização e guias de cenas 3D do Horus', icon: ImageIcon, color: '#EAB308', route: '/admin-horus-template' },
+  { id: 'usuarios', label: 'Pessoas Cadastradas', desc: 'Gerenciar usuários vinculados ao Horus', icon: Users, color: '#14B8A6', Component: HorusUsuariosTab },
   { id: 'notifs', label: 'Notificações', desc: 'Logs de envio e diagnóstico', icon: Bell, color: 'hsl(348 78% 38%)', Component: HorusNotificacoesTab },
-] as const;
+];
 
 export default function AdminHorus() {
   const navigate = useNavigate();
@@ -50,10 +64,10 @@ export default function AdminHorus() {
               Toque em um card para abrir a seção.
             </p>
             <div className="grid grid-cols-2 gap-3">
-              {SECTIONS.map(({ id, label, desc, icon: Icon, color }) => (
+              {SECTIONS.map(({ id, label, desc, icon: Icon, color, route }) => (
                 <button
                   key={id}
-                  onClick={() => setParams({ tab: id }, { replace: true })}
+                  onClick={() => route ? navigate(route) : setParams({ tab: id }, { replace: true })}
                   className="text-left rounded-2xl border border-border/60 bg-secondary/30 p-4 min-h-[140px] flex flex-col gap-3 hover:bg-secondary/60 active:bg-secondary transition-colors"
                 >
                   <div

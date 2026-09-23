@@ -98,9 +98,9 @@ const TematicaCarrossel = () => {
           Temática jurídica
         </p>
         <div className="flex items-center justify-between gap-3">
-          <div className="flex items-stretch gap-2 min-w-0">
-            <span className="w-[3px] rounded-full bg-primary shrink-0" />
-            <h3 className="font-display text-foreground text-[17px] font-semibold uppercase leading-tight truncate">
+          <div className="flex items-start gap-2 min-w-0 mt-1">
+            <span className="w-1.5 h-[22px] rounded-full bg-[#E11D48] shrink-0" />
+            <h3 className="font-display text-foreground text-[18px] font-bold uppercase tracking-widest truncate">
               Filmes e séries para juristas
             </h3>
           </div>

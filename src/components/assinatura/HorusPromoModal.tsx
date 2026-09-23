@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Confetti } from "@/components/vademecum/ui_elements/Confetti";
 import { haptic } from "@/lib/nativeHaptics";
 import { useAuth } from "@/hooks/useAuth";
 import ShapeGrid from "@/components/ui/ShapeGrid";
@@ -48,7 +47,6 @@ export function HorusPromoModal({ open, timeLeft, onClose, onRedeem }: HorusProm
     <AnimatePresence>
       {open && (
         <>
-          <Confetti />
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

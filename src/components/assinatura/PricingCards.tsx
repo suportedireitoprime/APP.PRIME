@@ -15,9 +15,9 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
   const activePlan = normalizedPlan === 'promocao' && !isNewUser ? 'vitalicio' : normalizedPlan;
 
   const vitalicioMessages = [
-    "Acesso total permanente para sempre",
-    "Sem mensalidades ou renovações futuras",
-    "Pague uma única vez, use para sempre",
+    "Acesso total por 1 ano inteiro",
+    "Mais econômico que o plano mensal",
+    "Garantia de 7 dias ou seu dinheiro de volta",
     "Todas as atualizações e novas leis inclusas"
   ];
 
@@ -73,7 +73,7 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
               transition={{ type: "spring", bounce: 0.15, duration: 0.45 }}
             />
           )}
-          Vitalício
+          Anual
         </button>
       </div>
 
@@ -134,7 +134,7 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
               
               {/* Imagem de Fundo Vazada */}
               <div className="absolute top-0 bottom-0 right-0 w-3/5 pointer-events-none overflow-hidden rounded-r-3xl z-0" style={{ WebkitMaskImage: 'linear-gradient(to right, transparent, black 40%)' }}>
-                <img src="/anual_premium.jpg" alt="" className="w-full h-full object-cover opacity-60 mix-blend-screen scale-125 translate-x-4 translate-y-1" loading="lazy" />
+                <img src="/anual_premium.webp" alt="" className="w-full h-full object-cover opacity-60 mix-blend-screen scale-125 translate-x-4 translate-y-1" loading="lazy" />
               </div>
 
               <div className="absolute top-0 right-0 bg-primary text-primary-foreground font-black text-[9px] px-2.5 py-0.5 rounded-bl-xl tracking-wider z-10 flex items-center gap-1">
@@ -174,7 +174,7 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
             >
               {/* Imagem de Fundo Vazada */}
               <div className="absolute top-0 bottom-0 right-0 w-3/5 pointer-events-none overflow-hidden rounded-r-3xl z-0" style={{ WebkitMaskImage: 'linear-gradient(to right, transparent, black 40%)' }}>
-                <img src="/mensal_premium.jpg" alt="" className="w-full h-full object-cover object-top opacity-50 mix-blend-screen scale-110 translate-x-4 translate-y-2" loading="lazy" />
+                <img src="/mensal_premium.webp" alt="" className="w-full h-full object-cover object-top opacity-50 mix-blend-screen scale-110 translate-x-4 translate-y-2" loading="lazy" />
               </div>
 
               <div className="flex justify-between items-start mb-1.5 relative z-10">

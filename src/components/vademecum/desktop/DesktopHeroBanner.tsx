@@ -3,7 +3,7 @@ import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { AprenderDeckStacked, useAprenderItems } from '@/components/vademecum/home/aprender/chunks';
 import { useNavigate } from 'react-router-dom';
 import heroBannerAsset from '@/assets/desktop-hero-banner.jpg';
-import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
 import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';

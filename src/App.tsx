@@ -58,6 +58,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import OfflineStatusBadge from "@/components/OfflineStatusBadge";
 import OfflineWatcher from "@/components/OfflineWatcher";
 import BackToTop from "@/components/ui/back-to-top";
+import ScrollToTop from "@/components/ScrollToTop";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
@@ -227,6 +228,7 @@ const App = () => (
 
                   <Analytics />
                   <SpeedInsights />
+                  <ScrollToTop />
                   <Suspense fallback={null}>
                     <AnalyticsDebugPanel />
                   </Suspense>

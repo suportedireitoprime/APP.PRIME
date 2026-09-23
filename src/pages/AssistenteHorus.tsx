@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -23,6 +23,7 @@ import { HorusMainTab } from '@/components/horus/tabs/HorusMainTab';
 import { HorusFuncoesTab } from '@/components/horus/tabs/HorusFuncoesTab';
 import { HorusNotificacoesTab } from '@/components/horus/tabs/HorusNotificacoesTab';
 import { HorusAjustesTab } from '@/components/horus/tabs/HorusAjustesTab';
+import { HorusCallView } from '@/components/horus/views/HorusCallView';
 
 const WHATSAPP_NUMERO = '5511914910906';
 const WHATSAPP_MSG = 'Olá Horus! Preciso da sua ajuda com uma dúvida jurídica.';
@@ -39,6 +40,7 @@ const AssistenteHorus = () => {
   const [euOpen, setEuOpen] = useState(false);
   const [ajustesOpen, setAjustesOpen] = useState(false);
   const [waIntent, setWaIntent] = useState(false);
+  const [isCalling, setIsCalling] = useState(false);
 
   const { isPremium } = useSubscription();
   const {
@@ -105,6 +107,20 @@ const AssistenteHorus = () => {
         onVerified={onVerifiedCallback}
         initialPhone={linked?.phone_e164 || ''}
       />
+
+      <AnimatePresence>
+        {isCalling && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.05 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="fixed inset-0 z-50"
+          >
+            <HorusCallView onEncerrar={() => setIsCalling(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
       
       {/* Header */}
       <header className="sticky top-0 z-30 bg-background/85 backdrop-blur-md">
@@ -133,6 +149,7 @@ const AssistenteHorus = () => {
               isPremium={isPremium}
               handleWhatsAppClick={handleWhatsAppClick}
               onRequestVerify={() => setVerifyOpen(true)}
+              onCallClick={() => setIsCalling(true)}
             />
           )}
 

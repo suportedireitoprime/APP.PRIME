@@ -532,7 +532,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         {/* Background Overlay */}
         <div 
           className="absolute inset-0 z-0 pointer-events-none opacity-20 bg-cover bg-center" 
-          style={{ backgroundImage: "url('/images/checkout_bg.jpg')" }}
+          style={{ backgroundImage: "url('/images/checkout_bg.webp')" }}
         />
         
         {/* Top Header with Custom Close/Back Button */}

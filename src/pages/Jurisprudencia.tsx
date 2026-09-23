@@ -7,7 +7,7 @@ import JurisBlogCarousel from '@/components/vademecum/blog/JurisBlogCarousel';
 import HeroOrnaments from '@/components/vademecum/home/HeroOrnaments';
 import HomeCard from '@/components/vademecum/home/HomeCard';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import jurisprudenciaHeroImg from '@/assets/jurisprudencia-hero.jpg';
+import jurisprudenciaHeroImg from '@/assets/jurisprudencia-hero.webp';
 import VadeMecumQuickActions from '@/components/vademecum/home/chunks/VadeMecumQuickActions';
 import { prefetchRoute } from '@/lib/routePrefetch';
 import { fetchSumulas } from '@/services/sumulasService';
