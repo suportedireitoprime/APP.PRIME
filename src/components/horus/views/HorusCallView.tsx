@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mic, MicOff, PhoneOff, Volume2, AlertTriangle, Loader2 } from 'lucide-react';
 
@@ -7,6 +7,7 @@ import { SessaoMeExplique, type StatusLive } from '@/lib/meExplique/liveClient';
 import { useMeExpliqueCota } from '@/hooks/useMeExpliqueCota';
 import { haptic, telaAcesa } from '@/lib/nativo';
 import PremiumGate from '@/components/PremiumGate';
+import { useAuth } from '@/hooks/useAuth';
 
 import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
@@ -20,6 +21,7 @@ interface Props {
 
 export const HorusCallView: React.FC<Props> = ({ onEncerrar }) => {
   const cota = useMeExpliqueCota();
+  const { user } = useAuth();
   const [gateAberto, setGateAberto] = useState(false);
 
   const [status, setStatus] = useState<StatusLive>('conectando');
@@ -168,7 +170,7 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar }) => {
         modelo,
         ephemeral: resposta?.ephemeral ?? false,
         setup: resposta?.setup ?? null,
-        promptInicial: null, // Deixamos a systemInstruction agir naturalmente
+        promptInicial: `Inicie a conversa cumprimentando o usuário chamado '${user?.user_metadata?.full_name || user?.user_metadata?.name || 'Aluno'}'. Aja como o assistente Horus, seja conciso e proativo.`,
 
         onStatus: (s) => {
           if (isMounted.current) {
@@ -176,11 +178,11 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar }) => {
             if (s === 'falando') void haptic.light();
           }
         },
-        onTranscricaoParcial: (texto) => {
-          if (isMounted.current && texto.trim()) setTranscricao(texto);
+        onTranscricaoParcial: (fala: any) => {
+          if (isMounted.current && fala?.texto?.trim()) setTranscricao(fala.texto);
         },
-        onTranscricao: (texto) => {
-          if (isMounted.current && texto.trim()) setTranscricao(texto);
+        onTranscricao: (fala: any) => {
+          if (isMounted.current && fala?.texto?.trim()) setTranscricao(fala.texto);
         },
         onErro: (msg) => {
           if (isMounted.current) {
@@ -282,26 +284,30 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar }) => {
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center -mt-8">
         <div className="relative w-48 h-48 sm:w-64 sm:h-64 flex items-center justify-center">
           
-          {/* AnÃ©is de PulsaÃ§Ã£o de Chamada / Ondas sonoras */}
+          {/* Animação de Onda Sonora Atrás do Logo */}
           <AnimatePresence>
             {status === 'falando' && (
-              <>
-                <motion.div
-                  className="absolute inset-0 rounded-full border-2 border-emerald-500/50"
-                  animate={{ scale: 1 + (volume * 0.4), opacity: 1 - volume }}
-                  transition={{ type: 'tween', ease: 'easeOut', duration: 0.1 }}
-                />
-                <motion.div
-                  className="absolute inset-0 rounded-full border-2 border-emerald-500/30"
-                  animate={{ scale: 1 + (volume * 0.8), opacity: Math.max(0, 0.8 - volume) }}
-                  transition={{ type: 'tween', ease: 'easeOut', duration: 0.15 }}
-                />
-                <motion.div
-                  className="absolute inset-0 rounded-full bg-emerald-500/10"
-                  animate={{ scale: 1 + (volume * 1.2), opacity: Math.max(0, 0.5 - volume) }}
-                  transition={{ type: 'tween', ease: 'easeOut', duration: 0.2 }}
-                />
-              </>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center gap-1.5 sm:gap-2.5 z-0 pointer-events-none"
+              >
+                {[0.4, 0.7, 1.2, 1.5, 1.2, 0.7, 0.4].map((mult, i) => (
+                  <motion.div
+                    key={i}
+                    className="w-3 sm:w-4 bg-emerald-500/30 rounded-full"
+                    animate={{
+                      height: 120 + (volume * 160 * mult)
+                    }}
+                    transition={{
+                      type: 'spring',
+                      stiffness: 400,
+                      damping: 20
+                    }}
+                  />
+                ))}
+              </motion.div>
             )}
           </AnimatePresence>
 

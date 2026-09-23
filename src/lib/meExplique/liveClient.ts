@@ -367,6 +367,18 @@ export class SessaoMeExplique {
     if (msg.setupComplete) {
       console.log('[MeExplique] setupComplete recebido!');
       onSetup?.();
+      
+      if (this.opcoes.promptInicial) {
+        console.log('[MeExplique] Enviando prompt inicial silenciamente.');
+        this.ws?.send(JSON.stringify({
+          clientContent: {
+            turns: [
+              { role: "user", parts: [{ text: this.opcoes.promptInicial }] }
+            ],
+            turnComplete: true
+          }
+        }));
+      }
       return;
     }
 
