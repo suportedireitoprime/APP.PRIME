@@ -1,21 +1,8 @@
-# Correção do Plano Anual (Leandro) e Reconciliação do Checkout no Admin
+# Tarefas: Carrossel Em Alta Vermelho & Seção Legislação
 
-- [x] 1. Atualizar registros no Supabase para o usuário Leandro:
-  - [x] Atualizar `asaas_subscriptions` (`plano = 'anual'`, `expires_at = 1 ano`).
-  - [x] Atualizar `profiles` (`is_premium = true`).
-  - [x] Atualizar eventos de compra em `app_events`.
-- [x] 2. Corrigir componentes de planos e checkout no Frontend:
-  - [x] Corrigir `PricingCards.tsx` (remover conversão oculta de `'anual'` para `'vitalicio'`).
-  - [x] Corrigir `CheckoutModal.tsx` (títulos, preços R$ 199,90 e payload do plano anual).
-  - [x] Corrigir `Assinatura.tsx` e `Onboarding.tsx` para passar plano `'anual'` e `'anual_pix'`.
-- [x] 3. Atualizar Edge Functions do Asaas:
-  - [x] Atualizar `supabase/functions/asaas-checkout/index.ts`.
-  - [x] Atualizar `supabase/functions/asaas-webhook/index.ts`.
-  - [x] Fazer deploy das funções `asaas-checkout` e `asaas-webhook`.
-- [x] 4. Ajustar Dashboard Admin (`AdminHojeCards.tsx`):
-  - [x] Filtrar `ADMIN_EMAILS` dos contadores de `paywall` e `viu_planos` (Checkout = 1 em vez de 2).
-  - [x] Garantir valor correto (R$ 199,90) e tag `ANUAL` para assinaturas anuais e parceladas.
-- [x] 5. Validação e Entrega:
-  - [x] Executar checagem TypeScript (`.\node_modules\.bin\tsc.CMD --noEmit`).
-  - [x] Executar build de produção (`.\node_modules\.bin\vite.CMD build`).
-  - [x] Auto-commit e push para o GitHub.
+- [x] Criar componente `HomeEmAltaCarousel.tsx` com visual vermelho do carrossel de livros <!-- id: 0 -->
+- [x] Atualizar `HomeTabEmAlta.tsx` com o carrossel "Em Alta" e a seção "Legislação" (Áreas) <!-- id: 1 -->
+- [x] Validar abertura do modal de baixo para cima com as leis correspondentes <!-- id: 2 -->
+- [x] Testar tipos com TypeScript (`tsc --noEmit`) <!-- id: 3 -->
+- [x] Testar build de produção (`vite build`) <!-- id: 4 -->
+- [/] Auto-commit e push para o repositório GitHub <!-- id: 5 -->
