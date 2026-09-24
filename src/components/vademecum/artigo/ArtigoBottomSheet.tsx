@@ -1,7 +1,8 @@
-import { useState, useCallback, useRef, useEffect, useMemo, Suspense } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo, Suspense, Fragment } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { AnimatePresence } from 'framer-motion';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Compass, Layers, ChevronDown, ChevronUp, Mic } from 'lucide-react';
+import { extractArtigoDispositivos, type ArtigoDispositivoLandmark } from './artigoTextUtils';
 const QuizView = lazyWithRetry(() => import('@/components/estudar/QuizView'));
 const JurisprudenciaArtigoView = lazyWithRetry(() => import('@/pages/JurisprudenciaArtigo'));
 import ArtigoSidePanel from '@/components/vademecum/artigo/ArtigoSidePanel';
@@ -869,6 +870,62 @@ const ArtigoBottomSheet = ({
 
   narracaoTimingsRef.current = timingsAtivos;
 
+  // Item 04: Marcos normativos para salto rápido e colapso inteligente de incisos
+  const [collapsedIncisos, setCollapsedIncisos] = useState(false);
+
+  useEffect(() => {
+    setCollapsedIncisos(false);
+  }, [artigo?.id]);
+
+  const dispositivosLandmarks = useMemo(() => {
+    return extractArtigoDispositivos(displayLines);
+  }, [displayLines]);
+
+  const totalIncisosCount = useMemo(() => {
+    return dispositivosLandmarks.filter((d) => d.type === 'inciso').length;
+  }, [dispositivosLandmarks]);
+
+  const incisoLineIndices = useMemo(() => {
+    return new Set(dispositivosLandmarks.filter((d) => d.type === 'inciso').map((d) => d.lineIndex));
+  }, [dispositivosLandmarks]);
+
+  const visibleLineIndices = useMemo(() => {
+    if (!collapsedIncisos || totalIncisosCount <= 4) return null;
+    const allowed = new Set<number>();
+    let count = 0;
+    displayLines.forEach((_, idx) => {
+      if (incisoLineIndices.has(idx)) {
+        count++;
+        if (count <= 3) allowed.add(idx);
+      } else {
+        allowed.add(idx);
+      }
+    });
+    return allowed;
+  }, [collapsedIncisos, totalIncisosCount, displayLines, incisoLineIndices]);
+
+  const handleJumpToDispositivo = useCallback(
+    (targetLineIndex: number) => {
+      if (collapsedIncisos) {
+        setCollapsedIncisos(false);
+      }
+      requestAnimationFrame(() => {
+        const el = containerRef.current?.querySelector(
+          `[data-line-index="${targetLineIndex}"]`
+        ) as HTMLElement | null;
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.classList.add('ring-2', 'ring-primary', 'bg-primary/20', 'rounded-md', 'transition-all', 'duration-500');
+          import('@/lib/nativeHaptics').then(({ haptic }) => haptic.selection()).catch(() => {});
+          setTimeout(() => {
+            el.classList.remove('ring-2', 'ring-primary', 'bg-primary/20');
+          }, 1400);
+        }
+      });
+    },
+    [collapsedIncisos, containerRef]
+  );
+
   const iaFullSections: AiSection[] = iaFull
     ? parseAiSections(
         aiContent[iaFull.mode] || '',
@@ -1141,6 +1198,42 @@ const ArtigoBottomSheet = ({
                       </p>
                     )}
 
+                  {/* Item 04: Barra de Saltos Diretos por Dispositivos (Landmarks) e Colapso de Incisos */}
+                  {dispositivosLandmarks.length > 1 && (
+                    <div className="mb-4 flex items-center gap-1.5 overflow-x-auto pb-1.5 scrollbar-thin scrollbar-thumb-white/10 select-none">
+                      <div className="flex items-center gap-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider shrink-0 mr-1">
+                        <Compass className="w-3.5 h-3.5 text-primary" />
+                        <span>Saltar:</span>
+                      </div>
+                      {dispositivosLandmarks.map((dm) => (
+                        <button
+                          key={`dm-${dm.type}-${dm.label}-${dm.lineIndex}`}
+                          type="button"
+                          onClick={() => handleJumpToDispositivo(dm.lineIndex)}
+                          className="shrink-0 px-2.5 py-1 rounded-full text-xs font-medium bg-muted/50 hover:bg-primary/20 text-muted-foreground hover:text-primary border border-border/50 hover:border-primary/40 transition-colors"
+                        >
+                          {dm.label}
+                        </button>
+                      ))}
+
+                      {totalIncisosCount > 3 && (
+                        <button
+                          type="button"
+                          onClick={() => setCollapsedIncisos((prev) => !prev)}
+                          className={`shrink-0 ml-auto flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition-all border ${
+                            collapsedIncisos
+                              ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                              : 'bg-muted/40 text-muted-foreground hover:text-foreground border-border/50'
+                          }`}
+                          title={collapsedIncisos ? 'Expandir todos os incisos' : 'Recolher incisos longos'}
+                        >
+                          <Layers className="w-3 h-3" />
+                          <span>{collapsedIncisos ? `Expandir (${totalIncisosCount})` : 'Recolher incisos'}</span>
+                        </button>
+                      )}
+                    </div>
+                  )}
+
                   <div
                     ref={containerRef}
                     className={`space-y-4 text-base ${FONT_FAMILY_CLASSES[fontFamily] || 'font-sans'} ${LINE_HEIGHT_CLASSES[lineHeight] || 'leading-[1.8]'} ${readingGuide ? 'reading-guide-active' : ''} ${
@@ -1166,39 +1259,69 @@ const ArtigoBottomSheet = ({
                     onMouseUp={handleTextSelection}
                     onTouchEnd={handleTextSelection}
                   >
-                    {displayLines.map((line, i) => (
-                      <ArtigoLineRenderer
-                        key={`line-${i}`}
-                        line={line}
-                        lineIndex={i}
-                        isFirst={i === 0}
-                        modificationInfo={modificationInfo}
-                        showRedacao={showRedacao}
-                        isRevogado={isRevogado}
-                        fontSize={fontSize}
-                        fontFamily={fontFamily}
-                        lineHeight={lineHeight}
-                        bionicReading={bionicReading}
-                        readingGuide={readingGuide}
-                        highlightMode={highlightMode}
-                        focusedSegment={focusedSegment}
-                        selectedColor={selectedColor}
-                        lineSegmentMap={lineSegmentMap}
-                        artigoNumero={artigo?.numero}
-                        magicMode={magicMode}
-                        magicHighlights={magicHighlights}
-                        handleRemoveSingleMagicHighlight={handleRemoveSingleMagicHighlight}
-                        setMagicTooltip={setMagicTooltip}
-                        narracaoPlaying={narracaoPlaying}
-                        activeRenderedWordIndex={activeRenderedWordIndex}
-                        lineWordStartIndex={lineWordStartIndexes[i] || 0}
-                        lineHighlights={getLineHighlights(i)}
-                        removeHighlight={removeHighlight}
-                        handleHoverHighlight={handleHoverHighlight}
-                        handleTapHighlight={handleTapHighlight}
-                        setFocusedSegment={setFocusedSegment}
-                      />
-                    ))}
+                    {displayLines.map((line, i) => {
+                      if (visibleLineIndices && !visibleLineIndices.has(i)) {
+                        return null;
+                      }
+
+                      const isThirdVisibleInciso =
+                        collapsedIncisos &&
+                        totalIncisosCount > 3 &&
+                        incisoLineIndices.has(i) &&
+                        Array.from(visibleLineIndices || []).filter((idx) => incisoLineIndices.has(idx)).indexOf(i) === 2;
+
+                      return (
+                        <Fragment key={`line-frag-${i}`}>
+                          <ArtigoLineRenderer
+                            key={`line-${i}`}
+                            line={line}
+                            lineIndex={i}
+                            isFirst={i === 0}
+                            modificationInfo={modificationInfo}
+                            showRedacao={showRedacao}
+                            isRevogado={isRevogado}
+                            fontSize={fontSize}
+                            fontFamily={fontFamily}
+                            lineHeight={lineHeight}
+                            bionicReading={bionicReading}
+                            readingGuide={readingGuide}
+                            highlightMode={highlightMode}
+                            focusedSegment={focusedSegment}
+                            selectedColor={selectedColor}
+                            lineSegmentMap={lineSegmentMap}
+                            artigoNumero={artigo?.numero}
+                            magicMode={magicMode}
+                            magicHighlights={magicHighlights}
+                            handleRemoveSingleMagicHighlight={handleRemoveSingleMagicHighlight}
+                            setMagicTooltip={setMagicTooltip}
+                            narracaoPlaying={narracaoPlaying}
+                            activeRenderedWordIndex={activeRenderedWordIndex}
+                            lineWordStartIndex={lineWordStartIndexes[i] || 0}
+                            lineHighlights={getLineHighlights(i)}
+                            removeHighlight={removeHighlight}
+                            handleHoverHighlight={handleHoverHighlight}
+                            handleTapHighlight={handleTapHighlight}
+                            setFocusedSegment={setFocusedSegment}
+                          />
+
+                          {isThirdVisibleInciso && (
+                            <button
+                              type="button"
+                              onClick={() => setCollapsedIncisos(false)}
+                              className="w-full my-3 p-3.5 rounded-xl border border-primary/30 bg-primary/10 hover:bg-primary/20 text-primary flex items-center justify-between text-xs font-semibold tracking-wide transition-all shadow-sm group active:scale-[0.99]"
+                            >
+                              <span className="flex items-center gap-2">
+                                <ChevronDown className="w-4 h-4 text-primary group-hover:translate-y-0.5 transition-transform" />
+                                <span>+{totalIncisosCount - 3} incisos recolhidos para leitura rápida</span>
+                              </span>
+                              <span className="px-2 py-0.5 rounded bg-primary/20 text-[11px] font-bold uppercase tracking-wider text-primary border border-primary/30">
+                                Expandir todos
+                              </span>
+                            </button>
+                          )}
+                        </Fragment>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -1242,6 +1365,11 @@ const ArtigoBottomSheet = ({
                       onMouseLeave={() => setTooltipData(null)}
                     >
                       <p className="text-[clamp(1rem,4.2vw,1.125rem)] text-foreground leading-[1.5]">
+                        {tooltipHighlight.tags?.includes('voz') && (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 mr-2 rounded bg-emerald-500/20 text-emerald-400 text-[11px] font-bold uppercase tracking-wider">
+                            <Mic className="w-3 h-3" /> Voz
+                          </span>
+                        )}
                         {tooltipHighlight.comment}
                       </p>
                       <div

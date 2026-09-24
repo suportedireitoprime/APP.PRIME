@@ -316,6 +316,78 @@ export function classifyLine(line: string): { type: 'nomen' | 'caput' | 'inciso'
   return { type: 'text', text: line };
 }
 
+// ─── Extração de Marcos Normativos (Item 04: Salto Rápido e Colapso) ───
+
+export interface ArtigoDispositivoLandmark {
+  lineIndex: number;
+  label: string;
+  shortLabel: string;
+  type: 'caput' | 'paragrafo' | 'inciso' | 'alinea' | 'text';
+}
+
+/** Extrai marcos normativos (Caput, §, Incisos, Alíneas) para salto rápido e navegação estruturada */
+export function extractArtigoDispositivos(lines: string[]): ArtigoDispositivoLandmark[] {
+  const result: ArtigoDispositivoLandmark[] = [];
+
+  lines.forEach((rawLine, index) => {
+    const line = stripRedacao(rawLine).trim();
+    if (!line) return;
+
+    if (index === 0) {
+      result.push({
+        lineIndex: 0,
+        label: 'Caput',
+        shortLabel: 'Caput',
+        type: 'caput',
+      });
+      return;
+    }
+
+    // Parágrafo (§ ou Parágrafo único)
+    const paragMatch = line.match(/^(§\s*\d+[º°ªoO]?|Parágrafo\s+único)/i);
+    if (paragMatch) {
+      const pText = paragMatch[1].replace(/\s+/g, ' ');
+      const label = /^parágrafo/i.test(pText) ? 'Parágrafo Único' : pText;
+      const short = /^parágrafo/i.test(pText) ? 'P. Único' : pText;
+      result.push({
+        lineIndex: index,
+        label,
+        shortLabel: short,
+        type: 'paragrafo',
+      });
+      return;
+    }
+
+    // Inciso (I, II, III, XLIV...)
+    const incisoMatch = line.match(/^([IVXLCDM]+)\s*[-–—.]/i);
+    if (incisoMatch) {
+      const numeral = incisoMatch[1].toUpperCase();
+      result.push({
+        lineIndex: index,
+        label: `Inciso ${numeral}`,
+        shortLabel: `Inc. ${numeral}`,
+        type: 'inciso',
+      });
+      return;
+    }
+
+    // Alínea (a, b, c...)
+    const alineaMatch = line.match(/^([a-z])\)\s*/i);
+    if (alineaMatch) {
+      const letter = alineaMatch[1].toLowerCase();
+      result.push({
+        lineIndex: index,
+        label: `Alínea ${letter}`,
+        shortLabel: `Al. ${letter}`,
+        type: 'alinea',
+      });
+      return;
+    }
+  });
+
+  return result;
+}
+
 /** Apply highlight marks over existing React nodes for a given line. */
 export function applyHighlightsToText(
   nodes: React.ReactNode[],
