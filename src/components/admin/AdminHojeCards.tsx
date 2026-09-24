@@ -342,8 +342,8 @@ export function AdminHojeCards() {
           totalViuPlanos = Math.max(totalViuPlanos, uniqueVp.size);
         }
 
-        // Buscar novas assinaturas no Asaas, Play Store, Apple, Legado e eventos de compra confirmados
-        const [asaasRes, playRes, appleRes, legRes, purchaseRes] = await Promise.all([
+        // Buscar novas assinaturas no Asaas, Play Store, Apple e Legado por data de criação/início
+        const [asaasRes, playRes, appleRes, legRes] = await Promise.all([
           supabase
             .from('asaas_subscriptions')
             .select('id, user_id, created_at, started_at, plano, status')
@@ -363,12 +363,6 @@ export function AdminHojeCards() {
           supabase
             .from('legacy_subscribers')
             .select('id, created_at, email, tipo, status, claimed_user_id')
-            .gte('created_at', minDateStr.toISOString())
-            .lt('created_at', maxDateStr.toISOString()),
-          supabase
-            .from('app_events')
-            .select('user_id, email, metadata, created_at')
-            .eq('event_name', 'purchase')
             .gte('created_at', minDateStr.toISOString())
             .lt('created_at', maxDateStr.toISOString())
         ]);
@@ -409,24 +403,6 @@ export function AdminHojeCards() {
           const valor = plano === 'vitalicio' ? 149.90 : plano === 'anual' ? 199.90 : 29.90;
           if (!subUsers.has(uid)) {
             subUsers.set(uid, { plano, valor });
-          }
-        });
-
-        (purchaseRes.data || []).forEach((p: any) => {
-          if (!p.user_id) return;
-          const meta = p.metadata || {};
-          const val = Number(meta.value) || 0;
-          if (val <= 0 && meta.plano === 'Teste de 3 Dias') return;
-          const planoLower = (meta.plano || '').toLowerCase();
-          const isPromo = planoLower.includes('promocional') || planoLower.includes('promo');
-          const isAnual = planoLower.includes('anual');
-          const isVit = !isPromo && (planoLower.includes('vitalicio') || planoLower.includes('vitalício'));
-          const valor = (isAnual && isPromo) ? 149.90 : isAnual ? 199.90 : isVit ? 199.90 : 29.90;
-          if (!subUsers.has(p.user_id)) {
-            subUsers.set(p.user_id, {
-              plano: (isAnual && isPromo) ? 'anual_promocional' : isAnual ? 'anual' : isVit ? 'vitalicio' : 'mensal',
-              valor: val > 50 ? val : valor
-            });
           }
         });
 
