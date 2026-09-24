@@ -1,6 +1,6 @@
-import { memo, Suspense } from 'react';
-import { motion } from 'framer-motion';
-import { ChevronRight } from 'lucide-react';
+import { memo, Suspense, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronRight, Search } from 'lucide-react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import HomeCard from '@/components/vademecum/home/HomeCard';
 import HomeEmAltaCarousel from '@/components/vademecum/home/carousel/HomeEmAltaCarousel';
@@ -22,6 +22,16 @@ function getAreaDisplayLabel(label: string): string {
 }
 
 const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar }: HomeTabEmAltaProps) => {
+  const [searchArea, setSearchArea] = useState('');
+
+  const filteredAreas = AREA_CATS.filter(c => {
+    if (!searchArea) return true;
+    const term = searchArea.toLowerCase();
+    const lbl = getAreaDisplayLabel(c.label).toLowerCase();
+    const sub = c.sublabel.toLowerCase();
+    return lbl.includes(term) || sub.includes(term);
+  });
+
   return (
     <motion.div
       key="emalta"
@@ -36,21 +46,42 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar }: HomeTabEmAltaProps) =>
 
       {/* 2. SEÇÃO LEGISLAÇÃO (ÁREAS DO DIREITO) */}
       <div className="pt-2">
-        <div className="mb-3 px-1">
-          <h3 className="font-display text-foreground text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
-            <span className="w-1 h-5 rounded-full bg-primary" />
-            LEGISLAÇÃO
-          </h3>
-          <p className="font-body text-sm text-muted-foreground mt-0.5 ml-3">
-            Consulte as leis e normas organizadas por ramo do Direito
-          </p>
+        <div className="mb-4 px-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h3 className="font-display text-foreground text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
+              <span className="w-1 h-5 rounded-full bg-primary" />
+              LEGISLAÇÃO
+            </h3>
+            <p className="font-body text-sm text-muted-foreground mt-0.5 ml-3">
+              Consulte as leis e normas organizadas por ramo do Direito
+            </p>
+          </div>
+          <div className="relative w-full sm:w-[260px] shrink-0 ml-3 sm:ml-0">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              type="text"
+              value={searchArea}
+              onChange={(e) => setSearchArea(e.target.value)}
+              placeholder="Buscar área do direito..."
+              className="w-full h-[42px] pl-10 pr-4 bg-secondary border border-border/60 rounded-xl text-[14.5px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-4">
-          {AREA_CATS.map((c, i) => {
-            const displayLabel = getAreaDisplayLabel(c.label);
-            return (
-              <HomeCard
+          <AnimatePresence mode="popLayout">
+            {filteredAreas.map((c, i) => {
+              const displayLabel = getAreaDisplayLabel(c.label);
+              return (
+                <motion.div
+                  key={c.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <HomeCard
                 key={c.id}
                 icon={c.icon}
                 label={displayLabel}
@@ -66,8 +97,16 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar }: HomeTabEmAltaProps) =>
                 data-track-name={displayLabel}
                 data-track-section="legislacao"
               />
-            );
-          })}
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+          {filteredAreas.length === 0 && (
+            <div className="col-span-full py-8 flex flex-col items-center justify-center text-center text-muted-foreground">
+              <Search className="w-8 h-8 mb-2 opacity-20" />
+              <p className="text-sm">Nenhuma área encontrada para "{searchArea}"</p>
+            </div>
+          )}
         </div>
       </div>
 
