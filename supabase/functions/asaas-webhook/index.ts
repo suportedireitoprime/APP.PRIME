@@ -128,7 +128,7 @@ Deno.serve(async (req) => {
     }
 
     if (legacy.claimed_user_id) {
-      await admin.from('asaas_subscriptions').upsert({
+      const subUpsertPayload: any = {
         user_id: legacy.claimed_user_id,
         plano: legacy.tipo,
         status: cortarAgora ? 'CANCELED' : 'ACTIVE',
@@ -137,7 +137,11 @@ Deno.serve(async (req) => {
         expires_at: vitalicio ? null : (proximo ?? legacy.expires_at),
         origem: 'asaas',
         updated_at: new Date().toISOString(),
-      }, { onConflict: 'user_id' });
+      };
+      if (pago) {
+        subUpsertPayload.started_at = new Date().toISOString();
+      }
+      await admin.from('asaas_subscriptions').upsert(subUpsertPayload, { onConflict: 'user_id' });
 
       // Atualiza também profiles para manter is_premium sincronizado em 100% dos lugares
       if (pago) {

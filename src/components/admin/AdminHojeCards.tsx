@@ -342,13 +342,12 @@ export function AdminHojeCards() {
           totalViuPlanos = Math.max(totalViuPlanos, uniqueVp.size);
         }
 
-        // Buscar novas assinaturas no Asaas, Play Store, Apple e Legado por data de criação/início
-        const [asaasRes, playRes, appleRes, legRes] = await Promise.all([
+        // Buscar novas assinaturas no Asaas, Play Store, Apple, Legado e eventos de compra confirmados
+        const [asaasRes, playRes, appleRes, legRes, purchaseRes] = await Promise.all([
           supabase
             .from('asaas_subscriptions')
             .select('id, user_id, created_at, started_at, plano, status')
-            .or(`created_at.gte.${minDateStr.toISOString()},started_at.gte.${minDateStr.toISOString()}`)
-            .lt('created_at', maxDateStr.toISOString())
+            .or(`and(created_at.gte.${minDateStr.toISOString()},created_at.lt.${maxDateStr.toISOString()}),and(started_at.gte.${minDateStr.toISOString()},started_at.lt.${maxDateStr.toISOString()})`)
             .eq('status', 'ACTIVE'),
           supabase
             .from('play_subscriptions')
@@ -364,6 +363,12 @@ export function AdminHojeCards() {
           supabase
             .from('legacy_subscribers')
             .select('id, created_at, email, tipo, status, claimed_user_id')
+            .gte('created_at', minDateStr.toISOString())
+            .lt('created_at', maxDateStr.toISOString()),
+          supabase
+            .from('app_events')
+            .select('user_id, email, metadata, created_at')
+            .eq('event_name', 'purchase')
             .gte('created_at', minDateStr.toISOString())
             .lt('created_at', maxDateStr.toISOString())
         ]);
@@ -404,6 +409,24 @@ export function AdminHojeCards() {
           const valor = plano === 'vitalicio' ? 149.90 : plano === 'anual' ? 199.90 : 29.90;
           if (!subUsers.has(uid)) {
             subUsers.set(uid, { plano, valor });
+          }
+        });
+
+        (purchaseRes.data || []).forEach((p: any) => {
+          if (!p.user_id) return;
+          const meta = p.metadata || {};
+          const val = Number(meta.value) || 0;
+          if (val <= 0 && meta.plano === 'Teste de 3 Dias') return;
+          const planoLower = (meta.plano || '').toLowerCase();
+          const isPromo = planoLower.includes('promocional') || planoLower.includes('promo');
+          const isAnual = planoLower.includes('anual');
+          const isVit = !isPromo && (planoLower.includes('vitalicio') || planoLower.includes('vitalício'));
+          const valor = (isAnual && isPromo) ? 149.90 : isAnual ? 199.90 : isVit ? 199.90 : 29.90;
+          if (!subUsers.has(p.user_id)) {
+            subUsers.set(p.user_id, {
+              plano: (isAnual && isPromo) ? 'anual_promocional' : isAnual ? 'anual' : isVit ? 'vitalicio' : 'mensal',
+              valor: val > 50 ? val : valor
+            });
           }
         });
 
@@ -554,8 +577,7 @@ export function AdminHojeCards() {
             .select(`
               id, user_id, created_at, started_at, plano, status, asaas_customer_id, asaas_subscription_id
             `)
-            .or(`created_at.gte.${minDate.toISOString()},started_at.gte.${minDate.toISOString()}`)
-            .lt('created_at', maxDate.toISOString())
+            .or(`and(created_at.gte.${minDate.toISOString()},created_at.lt.${maxDate.toISOString()}),and(started_at.gte.${minDate.toISOString()},started_at.lt.${maxDate.toISOString()})`)
             .order('created_at', { ascending: false }),
           supabase
             .from('play_subscriptions')
@@ -621,10 +643,34 @@ export function AdminHojeCards() {
 
         const profMap = new Map<string, { name?: string; email?: string }>();
         if (missingUids.length > 0) {
-          const { data: profs } = await supabase.from('profiles').select('id, display_name, email').in('id', missingUids);
+          const [{ data: profs }, { data: legUsers }, { data: userEvents }] = await Promise.all([
+            supabase.from('profiles').select('id, display_name').in('id', missingUids),
+            supabase.from('legacy_subscribers').select('claimed_user_id, email, nome').in('claimed_user_id', missingUids),
+            supabase.from('app_events').select('user_id, email').in('user_id', missingUids).not('email', 'is', null)
+          ]);
           if (profs) {
             profs.forEach((p: any) => {
-              profMap.set(p.id, { name: p.display_name, email: p.email });
+              profMap.set(p.id, { name: p.display_name });
+            });
+          }
+          if (legUsers) {
+            legUsers.forEach((l: any) => {
+              if (l.claimed_user_id) {
+                const cur = profMap.get(l.claimed_user_id) || {};
+                profMap.set(l.claimed_user_id, {
+                  name: cur.name || l.nome,
+                  email: l.email || cur.email
+                });
+              }
+            });
+          }
+          if (userEvents) {
+            userEvents.forEach((e: any) => {
+              if (e.user_id && e.email) {
+                const cur = profMap.get(e.user_id) || {};
+                if (!cur.email) cur.email = e.email;
+                profMap.set(e.user_id, cur);
+              }
             });
           }
         }
@@ -646,7 +692,7 @@ export function AdminHojeCards() {
             title: profInfo?.name || 'Assinante Asaas',
             email: profInfo?.email || null,
             subtitle: `Assinou via Asaas (${planName} - ${s.status})`,
-            at: s.created_at || s.started_at,
+            at: s.started_at || s.created_at,
             acessos: null,
             avatar_url: null,
             is_premium: true,

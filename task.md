@@ -6,4 +6,4 @@
 - [x] Validar tipagem com TypeScript (`tsc --noEmit`) <!-- id: 3 -->
 - [x] Validar build de produção (`vite build`) <!-- id: 4 -->
 - [x] Auto-commit e push para o repositório GitHub <!-- id: 5 -->
-
+- [x] Implementar campo de busca (filtro) para áreas na seção "Legislação" <!-- id: 6 -->
