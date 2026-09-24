@@ -2532,7 +2532,7 @@ jobs:
 
       - name: Add Facebook SDK for install/ad tracking (Meta Ads)
         # SDK nativo do Facebook — necessário pro Meta Ads atribuir instalações
-        # via Google Play Install Referrer. App ID 1590734976033061, Client
+        # via Google Play Install Referrer. App ID 2189641011896065, Client
         # Token d0f7c8833c75e815d78c81ac5f4b6fb3 (Key Hash de release já
         # validado no Meta for Developers).
         run: |
@@ -2548,8 +2548,8 @@ jobs:
               p.write_text('<?xml version="1.0" encoding="utf-8"?>\n<resources>\n</resources>\n')
           s = p.read_text()
           entries = {
-              'facebook_app_id': '1590734976033061',
-              'fb_login_protocol_scheme': 'fb1590734976033061',
+              'facebook_app_id': '2189641011896065',
+              'fb_login_protocol_scheme': 'fb2189641011896065',
               'facebook_client_token': 'd0f7c8833c75e815d78c81ac5f4b6fb3',
           }
           for name, val in entries.items():

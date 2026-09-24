@@ -516,7 +516,7 @@ jobs:
             /usr/libexec/PlistBuddy -c "Add :${key} string ${value}" "$PLIST" 2>/dev/null \
               || /usr/libexec/PlistBuddy -c "Set :${key} ${value}" "$PLIST"
           }
-          add_or_set FacebookAppID 1590734976033061
+          add_or_set FacebookAppID 2189641011896065
           add_or_set FacebookDisplayName "Estudos Jurídicos"
           add_or_set FacebookClientToken d0f7c8833c75e815d78c81ac5f4b6fb3
 
@@ -525,7 +525,7 @@ jobs:
           /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes array" "$PLIST"
           /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0 dict" "$PLIST"
           /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes array" "$PLIST"
-          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string fb1590734976033061" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string fb2189641011896065" "$PLIST"
 
           # LSApplicationQueriesSchemes
           /usr/libexec/PlistBuddy -c "Delete :LSApplicationQueriesSchemes" "$PLIST" 2>/dev/null || true

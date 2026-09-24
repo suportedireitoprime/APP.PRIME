@@ -4,6 +4,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 import { evolution } from '../_shared/evolution.ts';
+import { syncHorusSubscriptionStatus } from '../_shared/horus-plan.ts';
 
 /**
  * Webhook do Asaas — mantém as assinaturas MENSAIS migradas do app antigo
@@ -165,6 +166,14 @@ Deno.serve(async (req) => {
           updated_at: new Date().toISOString()
         }).eq('id', legacy.claimed_user_id);
       }
+      // Sincroniza imediatamente o plano no Horus (WhatsApp)
+      syncHorusSubscriptionStatus(admin, {
+        userId: legacy.claimed_user_id,
+        isPremium: !cortarAgora && (pago || legacy.status === 'active'),
+        plano: legacy.tipo,
+        expiresAt: vitalicio ? null : (proximo ?? legacy.expires_at),
+        notifyWhatsapp: false, // O recibo abaixo já faz a notificação via WhatsApp
+      }).catch((e) => console.warn('syncHorusSubscriptionStatus error in asaas-webhook:', e));
     }
 
     // Item 50: Envio de recibo/confirmação via WhatsApp quando pagamento confirmado

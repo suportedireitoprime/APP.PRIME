@@ -4,6 +4,7 @@
 //  - voidedPurchaseNotification (reembolso do admin, chargeback, refund do usuário)
 //  - oneTimeProductNotification (apenas logado por ora)
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { syncHorusSubscriptionStatus } from '../_shared/horus-plan.ts';
 
 const PACKAGE_NAME = Deno.env.get('ANDROID_PACKAGE_NAME') ?? '';
 const SERVICE_ACCOUNT_JSON = Deno.env.get('GOOGLE_PLAY_SERVICE_ACCOUNT_JSON') ?? '';
@@ -240,11 +241,24 @@ Deno.serve(async (req) => {
             }
           });
         }
+        // Sincroniza imediatamente com o Horus (WhatsApp)
+        syncHorusSubscriptionStatus(admin, {
+          userId: targetUserId,
+          isPremium: true,
+          plano: productId.includes('anual') ? 'anual' : 'mensal',
+          expiresAt: effectiveExpiryMs ? new Date(effectiveExpiryMs).toISOString() : null,
+          notifyWhatsapp: notificationType === 4,
+        }).catch((e) => console.warn('syncHorusSubscriptionStatus in play-billing-webhook fail', e));
       } else if (status === 'SUBSCRIPTION_STATE_CANCELED' || status === 'SUBSCRIPTION_STATE_EXPIRED') {
         const { data: activePlay } = await admin.from('play_subscriptions')
           .select('id').eq('user_id', targetUserId).eq('status', 'SUBSCRIPTION_STATE_ACTIVE').neq('purchase_token', purchaseToken).limit(1);
         if (!activePlay || activePlay.length === 0) {
           await admin.from('profiles').update({ is_premium: false, updated_at: new Date().toISOString() }).eq('id', targetUserId);
+          syncHorusSubscriptionStatus(admin, {
+            userId: targetUserId,
+            isPremium: false,
+            notifyWhatsapp: false,
+          }).catch((e) => console.warn('syncHorusSubscriptionStatus in play-billing-webhook fail', e));
         }
       }
     }

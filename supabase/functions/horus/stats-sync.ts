@@ -4,6 +4,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 import { sanitizeFirstName } from "../_shared/nomeSanitizer.ts";
+import { resolveUserPlan, normalizePhoneE164 } from "../_shared/horus-plan.ts";
 
 
 // Sincroniza estatísticas consolidadas do usuário para o Horus usar como contexto.
@@ -84,20 +85,19 @@ async function syncOne(admin: any, userId: string, force: boolean) {
   // Perfil
   const { data: profile } = await admin
     .from("profiles")
-    .select("id, display_name, telefone")
+    .select("id, display_name, telefone, whatsapp_number, email")
     .eq("id", userId)
     .maybeSingle();
-  const telefone = String(profile?.telefone || "").replace(/\D/g, "");
+  const rawPhone = profile?.whatsapp_number || profile?.telefone;
+  const telefone = normalizePhoneE164(rawPhone) || String(rawPhone || "").replace(/\D/g, "");
 
-  // Assinatura
-  const { data: sub } = await admin
-    .from("play_subscriptions")
-    .select("status, expires_at, product_id")
-    .eq("user_id", userId)
-    .order("expires_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  const plano = sub && (sub.status || "").toString().toLowerCase().includes("active") ? "pro" : "free";
+  // Assinatura & Status de Admin unificados (Asaas, Play, Apple, Admin)
+  const resolved = await resolveUserPlan(admin, {
+    userId,
+    phone: telefone,
+    email: profile?.email,
+  });
+  const plano = resolved.plano;
 
   // Streak: dias consecutivos com study_sessions
   const { data: sessoes } = await admin
@@ -192,7 +192,7 @@ async function syncOne(admin: any, userId: string, force: boolean) {
     telefone: telefone || null,
     nome_preferido: sanitizeFirstName(profile?.display_name) || null,
     plano_atual: plano,
-    plano_expira_em: sub?.expires_at || null,
+    plano_expira_em: resolved.expiresAt || null,
     ultima_atividade_em: ultAtiv?.created_at || new Date().toISOString(),
     dias_streak_estudo: streak,
     materia_mais_estudada_7d: top(cont7),

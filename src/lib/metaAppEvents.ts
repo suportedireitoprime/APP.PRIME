@@ -6,7 +6,7 @@ import { Capacitor } from '@capacitor/core';
 import { supabase } from '@/integrations/supabase/client';
 import { newEventId } from './fbPixel';
 
-const APP_ID = '1590734976033061';
+const APP_ID = '2189641011896065';
 
 let cachedUser: { id?: string; email?: string } | null = null;
 

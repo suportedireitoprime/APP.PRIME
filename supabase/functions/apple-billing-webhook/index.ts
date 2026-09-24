@@ -14,6 +14,7 @@ import {
   getSubscriptionStatuses,
   mapAppleStatus,
 } from '../_shared/apple-storekit.ts';
+import { syncHorusSubscriptionStatus } from '../_shared/horus-plan.ts';
 
 // Mapeia notificationType + subtype das App Store Server Notifications V2 para
 // o status interno da tabela public.apple_subscriptions.
@@ -164,11 +165,24 @@ Deno.serve(async (req) => {
             }
           });
         }
+        // Sincroniza imediatamente com o Horus (WhatsApp)
+        syncHorusSubscriptionStatus(admin, {
+          userId: existing.user_id,
+          isPremium: true,
+          plano: (txFinal.productId || '').includes('anual') ? 'anual' : 'mensal',
+          expiresAt: expiresMs ? new Date(expiresMs).toISOString() : null,
+          notifyWhatsapp: notificationType === 'SUBSCRIBED',
+        }).catch((e) => console.warn('syncHorusSubscriptionStatus in apple-billing-webhook fail', e));
       } else if (status === 'expired' || status === 'revoked') {
         const { data: activeApple } = await admin.from('apple_subscriptions')
           .select('id').eq('user_id', existing.user_id).in('status', ['active', 'in_grace']).neq('original_transaction_id', originalTxId).limit(1);
         if (!activeApple || activeApple.length === 0) {
           await admin.from('profiles').update({ is_premium: false, updated_at: new Date().toISOString() }).eq('id', existing.user_id);
+          syncHorusSubscriptionStatus(admin, {
+            userId: existing.user_id,
+            isPremium: false,
+            notifyWhatsapp: false,
+          }).catch((e) => console.warn('syncHorusSubscriptionStatus in apple-billing-webhook fail', e));
         }
       }
     }

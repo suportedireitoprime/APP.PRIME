@@ -7,7 +7,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const PIXEL_ID = Deno.env.get("META_PIXEL_ID") ?? "2069588673817892";
+const PIXEL_ID = Deno.env.get("META_PIXEL_ID") ?? "873623912504404";
 const TOKEN = Deno.env.get("META_CAPI_ACCESS_TOKEN") ?? "";
 const TEST_CODE = Deno.env.get("META_CAPI_TEST_CODE") ?? "";
 

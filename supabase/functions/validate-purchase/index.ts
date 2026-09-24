@@ -7,6 +7,7 @@ import {
   getSubscriptionStatuses,
   mapAppleStatus,
 } from '../_shared/apple-storekit.ts';
+import { syncHorusSubscriptionStatus } from '../_shared/horus-plan.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -130,6 +131,17 @@ async function onSubscriptionActivated(admin: ReturnType<typeof createClient>, p
       }),
     });
   } catch (e) { console.warn('push premium_ativado falhou (não fatal)', e); }
+
+  // Sincroniza imediatamente o plano Pro no Horus (WhatsApp)
+  try {
+    await syncHorusSubscriptionStatus(admin, {
+      userId,
+      isPremium: true,
+      plano: productId.includes('anual') ? 'anual' : 'mensal',
+      expiresAt: expiresAtIso,
+      notifyWhatsapp: true,
+    });
+  } catch (e) { console.warn('syncHorusSubscriptionStatus falhou (não fatal)', e); }
 }
 
 

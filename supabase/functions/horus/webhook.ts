@@ -17,17 +17,17 @@ import {
   enviarVideoaula,
   textoTemOferta,
 } from "../_shared/horusOferta.ts";
-import { loadUserStatsByPhone } from "../_shared/horus-user-stats.ts";
+import { loadUserStatsByPhone, formatStatsBlock } from "../_shared/horus-user-stats.ts";
+import { resolveUserPlan, isPhoneAdmin } from "../_shared/horus-plan.ts";
 import { transcribeAudio, describeImage, extractPdfText, getPdfPageCount } from "../_shared/horusMedia.ts";
 import { traceGeneration, langfuseEnabled } from "../_shared/langfuse.ts";
 import { logAiCall } from "../_shared/ai-log.ts";
 import { MODELS } from "../_shared/ai-models.ts";
 
-async function isUserPremium(admin: any, userId: string): Promise<boolean> {
+async function isUserPremium(admin: any, userId?: string | null, phone?: string | null): Promise<boolean> {
   try {
-    const { data, error } = await admin.rpc("is_premium_user", { _user_id: userId });
-    if (error) { console.warn("isUserPremium rpc error", error.message); return false; }
-    return Boolean(data);
+    const res = await resolveUserPlan(admin, { userId, phone });
+    return res.isPremium;
   } catch (e) {
     console.warn("isUserPremium fail", String((e as any)?.message || e));
     return false;
@@ -342,11 +342,12 @@ async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessa
     return;
   }
 
-  // 1b) Gate Premium/Trial: Todos os usuários têm 3 dias de teste gratuito com acesso a tudo.
-  // Após 3 dias, se não forem premium, bloqueia acesso a qualquer mensagem (texto e mídia).
-  const premium = userRow?.linked_user_id
-    ? await isUserPremium(admin, userRow.linked_user_id)
-    : false;
+  // 1b) Gate Premium/Trial: Resolução unificada (Admin, Asaas, Play, Apple)
+  const resolvedPlan = await resolveUserPlan(admin, {
+    userId: userRow?.linked_user_id || userRow?.user_id,
+    phone: parsed.from,
+  });
+  const premium = resolvedPlan.isPremium;
   
   let isTrial = false;
   if (userRow?.created_at) {
@@ -582,6 +583,28 @@ async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessa
     ? await loadUserStatsByPhone(admin, parsed.from).catch(() => null)
     : null;
 
+  // Auto-cura do plano no contexto se o usuário for Premium ou Admin
+  if (stats && premium) {
+    if (stats.plano_atual !== "pro") {
+      stats.plano_atual = "pro";
+      if (!stats.plano_expira_em && resolvedPlan.expiresAt) {
+        stats.plano_expira_em = resolvedPlan.expiresAt;
+      }
+      stats.contexto_formatado = formatStatsBlock(stats);
+      // Auto-heal em background na tabela horus_user_stats
+      admin
+        .from("horus_user_stats")
+        .update({
+          plano_atual: "pro",
+          plano_expira_em: resolvedPlan.expiresAt || null,
+          contexto_formatado: stats.contexto_formatado,
+          updated_at: new Date().toISOString(),
+        })
+        .or(`telefone.eq.${parsed.from},user_id.eq.${userRow?.linked_user_id || ''}`)
+        .catch(() => {});
+    }
+  }
+
   // 5) Prompt em 5 camadas
   const displayName = userRow?.display_name || pushName || "";
   let systemPrompt = buildSystemPrompt({
@@ -729,15 +752,17 @@ async function tryLinkProfile(admin: any, phone: string): Promise<{ id: string; 
   const variants = new Set<string>([digits]);
   if (digits.length >= 10) variants.add(digits.slice(-11));
   if (digits.length >= 11) variants.add("55" + digits.slice(-11));
+  if (digits.length >= 9) variants.add(digits.slice(-9));
   const list = Array.from(variants);
   const { data: rows } = await admin
     .from("profiles")
-    .select("id, display_name, telefone")
-    .not("telefone", "is", null)
-    .limit(500);
+    .select("id, display_name, telefone, whatsapp_number")
+    .or(list.map((v) => `telefone.ilike.%${v}%,whatsapp_number.ilike.%${v}%`).join(","))
+    .limit(20);
   const match = (rows || []).find((r: any) => {
-    const d = String(r.telefone || "").replace(/\D/g, "");
-    return list.some((v) => d === v || d.endsWith(v) || v.endsWith(d));
+    const d1 = String(r.telefone || "").replace(/\D/g, "");
+    const d2 = String(r.whatsapp_number || "").replace(/\D/g, "");
+    return list.some((v) => (d1 && (d1 === v || d1.endsWith(v) || v.endsWith(d1))) || (d2 && (d2 === v || d2.endsWith(v) || v.endsWith(d2))));
   });
   return match ? { id: match.id, display_name: match.display_name } : null;
 }

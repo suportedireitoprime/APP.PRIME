@@ -347,7 +347,7 @@ export const TRANSFER_GROUPS: TransferGroup[] = [
     titulo: 'Marketing e rastreamento',
     desc: 'Meta, pixel e conversões',
     itens: [
-      { key: 'meta_app_id', label: 'Facebook App ID', atual: '1590734976033061', kind: 'arquivo', arquivos: ['src/lib/metaAppEvents.ts', 'public/workflows/build-android.yml', 'src/generated/workflows/build-android.yml', 'public/workflows/build-ios.yml', 'src/generated/workflows/build-ios.yml', 'android-config/FACEBOOK_SDK.md'], comoObter: 'developers.facebook.com → criar app novo → App ID.' },
+      { key: 'meta_app_id', label: 'Facebook App ID', atual: '2189641011896065', kind: 'arquivo', arquivos: ['src/lib/metaAppEvents.ts', 'public/workflows/build-android.yml', 'src/generated/workflows/build-android.yml', 'public/workflows/build-ios.yml', 'src/generated/workflows/build-ios.yml', 'android-config/FACEBOOK_SDK.md'], comoObter: 'developers.facebook.com → criar app novo → App ID.' },
       { key: 'meta_pixel_id', label: 'META_PIXEL_ID', atual: null, kind: 'secret-supabase', comoObter: 'Meta Events Manager → criar pixel do novo negócio.' },
       { key: 'meta_capi_token', label: 'META_CAPI_ACCESS_TOKEN', atual: null, kind: 'secret-supabase', comoObter: 'Events Manager → Conversions API → gerar token.', naoSubstituivel: true },
     ],

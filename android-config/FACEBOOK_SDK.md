@@ -8,7 +8,7 @@ install/ad tracking (Meta Ads)"**. Não precisa mexer em nada em cada release.
 
 | Campo | Valor |
 | --- | --- |
-| App ID | `1590734976033061` |
+| App ID | `2189641011896065` |
 | Client Token | `d0f7c8833c75e815d78c81ac5f4b6fb3` |
 | Key Hash (release) | `k0U9TvEZJ7sGGUXYJg3WfqhJgVw=` ✅ validado no Meta for Developers |
 | Package name | `br.com.direito.app` |
