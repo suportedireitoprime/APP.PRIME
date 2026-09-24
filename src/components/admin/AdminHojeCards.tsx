@@ -347,8 +347,7 @@ export function AdminHojeCards() {
           supabase
             .from('asaas_subscriptions')
             .select('id, user_id, created_at, started_at, plano, status')
-            .or(`and(created_at.gte.${minDateStr.toISOString()},created_at.lt.${maxDateStr.toISOString()}),and(started_at.gte.${minDateStr.toISOString()},started_at.lt.${maxDateStr.toISOString()})`)
-            .eq('status', 'ACTIVE'),
+            .or(`and(created_at.gte.${minDateStr.toISOString()},created_at.lt.${maxDateStr.toISOString()}),and(started_at.gte.${minDateStr.toISOString()},started_at.lt.${maxDateStr.toISOString()})`),
           supabase
             .from('play_subscriptions')
             .select('id, user_id, created_at, product_id, status')
@@ -358,8 +357,7 @@ export function AdminHojeCards() {
             .from('apple_subscriptions')
             .select('id, user_id, created_at, start_time, product_id, status')
             .or(`created_at.gte.${minDateStr.toISOString()},start_time.gte.${minDateStr.toISOString()}`)
-            .lt('created_at', maxDateStr.toISOString())
-            .in('status', ['active', 'in_grace']),
+            .lt('created_at', maxDateStr.toISOString()),
           supabase
             .from('legacy_subscribers')
             .select('id, created_at, email, tipo, status, claimed_user_id')

@@ -1,12 +1,7 @@
-# Tarefas: Verificação Horus e Blindagem de Safe Areas (Assinatura e Checkout)
+# Tarefas: Correção da Métrica de Assinaturas e Receita do Dia (Admin)
 
-- [x] Redesenhar modal de verificação do Horus no topo da tela (`HorusVerifyPhoneSheet.tsx`) <!-- id: 10 -->
-- [x] Inicializar campo de telefone vazio e configurar DDI com bandeira do Brasil (+55) por padrão <!-- id: 11 -->
-- [x] Suporte à seleção de outros países com troca dinâmica de DDI <!-- id: 12 -->
-- [x] Posicionar campo OTP de 6 dígitos no topo com mascote Horus abaixo para não colidir com teclado <!-- id: 13 -->
-- [x] Blindar margens inferiores e safe-area em todas as abas do Horus (`AssistenteHorus.tsx`) <!-- id: 14 -->
-- [x] Blindar margens de safe-area superior e inferior no modal de Checkout (`CheckoutModal.tsx`) <!-- id: 15 -->
-- [x] Blindar margens inferiores e botões nas telas de assinatura (`Assinatura.tsx` e `PlanosAtivos.tsx`) <!-- id: 16 -->
-- [x] Validar tipagem TypeScript (`tsc --noEmit`) <!-- id: 17 -->
-- [x] Validar build de produção (`vite build`) <!-- id: 18 -->
-- [x] Executar auto-commit e push para o GitHub <!-- id: 19 -->
+- [x] Diagnóstico e comprovação via script da divergência de status entre card e modal <!-- id: 20 -->
+- [x] Remover filtro restritivo de status em `asaas_subscriptions` e `apple_subscriptions` em `AdminHojeCards.tsx` <!-- id: 21 -->
+- [x] Validar contagem (2 assinaturas) e receita acumulada (R$ 400) <!-- id: 22 -->
+- [x] Validar tipagem TypeScript (`tsc --noEmit`) <!-- id: 23 -->
+- [x] Executar auto-commit e push para o GitHub <!-- id: 24 -->
