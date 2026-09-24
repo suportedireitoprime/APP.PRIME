@@ -115,7 +115,7 @@ const AssistenteHorus = () => {
   };
 
   return (
-    <div className="min-h-dvh bg-background text-foreground pb-10">
+    <div className="min-h-dvh bg-background text-foreground pb-[calc(8.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
       <HorusOnboardingOverlay
         open={showOnboarding}
         initialName={profileName}
@@ -148,17 +148,20 @@ const AssistenteHorus = () => {
       
       {/* Header */}
       <header className="sticky top-0 z-30 bg-background/85 backdrop-blur-md">
-        <div className="max-w-lg mx-auto flex items-center">
-          <div className="flex-1 min-w-0">
-            <PageHeader title={titles[tab]} onBack={back} />
-          </div>
-          <button
-            onClick={() => { haptic.selection(); setAjustesOpen(true); }}
-            className="mr-3 shrink-0 w-10 h-10 rounded-full bg-secondary/70 border border-border flex items-center justify-center hover:bg-secondary transition-colors"
-            aria-label="Ajustes"
-          >
-            <Settings className="w-5 h-5 text-foreground" strokeWidth={1.8} />
-          </button>
+        <div className="max-w-lg mx-auto">
+          <PageHeader
+            title={titles[tab]}
+            onBack={back}
+            rightAction={
+              <button
+                onClick={() => { haptic.selection(); setAjustesOpen(true); }}
+                className="w-10 h-10 rounded-full bg-secondary/70 border border-border flex items-center justify-center hover:bg-secondary transition-colors"
+                aria-label="Ajustes"
+              >
+                <Settings className="w-5 h-5 text-foreground" strokeWidth={1.8} />
+              </button>
+            }
+          />
         </div>
       </header>
 

@@ -193,7 +193,7 @@ export default function Assinatura() {
         />
 
         <Sheet open={paymentMethodSheetOpen} onOpenChange={setPaymentMethodSheetOpen}>
-          <SheetContent side="bottom" className="rounded-t-3xl px-6 pb-12 pt-10 bg-background border-border">
+          <SheetContent side="bottom" className="rounded-t-3xl px-6 pb-[calc(3rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-10 bg-background border-border">
             <div className="relative">
               <div className="absolute inset-0 pointer-events-none opacity-20 -z-10">
                 <ShapeGrid />
@@ -264,7 +264,7 @@ export default function Assinatura() {
                  setTab('promocao');
                  window.scrollTo({ top: 0, behavior: 'smooth' });
                }}
-               className="fixed bottom-[calc(1.5rem+var(--sai-bottom,0px))] right-6 z-40 w-14 h-14 bg-emerald-500 rounded-full shadow-[0_10px_30px_rgba(16,185,129,0.5)] flex items-center justify-center border-2 border-white/20 hover:bg-emerald-400 transition-colors"
+               className="fixed bottom-[calc(5.5rem+var(--sai-bottom,0px))] right-6 z-40 w-14 h-14 bg-emerald-500 rounded-full shadow-[0_10px_30px_rgba(16,185,129,0.5)] flex items-center justify-center border-2 border-white/20 hover:bg-emerald-400 transition-colors"
              >
                <Gift className="w-6 h-6 text-white" />
                <span className="absolute -top-2 -right-2 flex h-5 w-5">
@@ -296,7 +296,7 @@ export default function Assinatura() {
 
         {isTrial && <TrialCountdownBanner expiresAt={expiresAt} />}
 
-        <div className="max-w-2xl mx-auto pt-4 space-y-7 pb-20">
+        <div className="max-w-2xl mx-auto pt-4 space-y-7 pb-[calc(8.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
             <PaywallImageStack />
 
             <div className="space-y-2 text-center px-4">

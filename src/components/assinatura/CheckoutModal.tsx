@@ -538,7 +538,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         />
         
         {/* Top Header with Custom Close/Back Button */}
-        <div className="relative z-10 flex items-center justify-between p-4 bg-background/60 backdrop-blur-xl border-b border-white/5">
+        <div className="relative z-10 flex items-center justify-between px-4 pb-4 pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] bg-background/60 backdrop-blur-xl border-b border-white/5">
           <Button 
             variant="ghost" 
             size="icon" 
@@ -556,7 +556,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         </div>
         
         <div className="flex-1 overflow-y-auto relative z-10">
-          <div className="max-w-md mx-auto w-full p-6 flex flex-col pb-[calc(5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+          <div className="max-w-md mx-auto w-full p-6 flex flex-col pb-[calc(8.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
             
             {/* Plan Info Card - Hidden on Step 2 as requested */}
             {step !== 2 && (
