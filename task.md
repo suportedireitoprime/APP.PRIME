@@ -1,8 +1,9 @@
-# Tarefas: Carrossel Em Alta Vermelho & Seção Legislação
+# Tarefas: Refinamento de Em Alta e Legislação
 
-- [x] Criar componente `HomeEmAltaCarousel.tsx` com visual vermelho do carrossel de livros <!-- id: 0 -->
-- [x] Atualizar `HomeTabEmAlta.tsx` com o carrossel "Em Alta" e a seção "Legislação" (Áreas) <!-- id: 1 -->
-- [x] Validar abertura do modal de baixo para cima com as leis correspondentes <!-- id: 2 -->
-- [x] Testar tipos com TypeScript (`tsc --noEmit`) <!-- id: 3 -->
-- [x] Testar build de produção (`vite build`) <!-- id: 4 -->
+- [x] Ajustar `HomeEmAltaCarousel.tsx`: remover bordas claras e eliminar o vão à direita <!-- id: 0 -->
+- [x] Ajustar cards de Legislação: remover ícone direito (`ChevronRight` e marca d'água interna) e aplicar nova tipografia sem abreviações <!-- id: 1 -->
+- [x] Reordenar áreas da Legislação por hierarquia de leis (Constitucional -> Civil -> Processual Civil -> Penal...) <!-- id: 2 -->
+- [x] Validar tipagem com TypeScript (`tsc --noEmit`) <!-- id: 3 -->
+- [x] Validar build de produção (`vite build`) <!-- id: 4 -->
 - [x] Auto-commit e push para o repositório GitHub <!-- id: 5 -->
+

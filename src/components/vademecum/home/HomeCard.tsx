@@ -12,6 +12,9 @@ interface HomeCardProps {
   onClick: () => void;
   className?: string;
   iconClassName?: string;
+  titleClassName?: string;
+  hideChevron?: boolean;
+  hideWatermark?: boolean;
   badge?: string;
   'data-track'?: string;
   'data-track-name'?: string;
@@ -26,7 +29,27 @@ interface HomeCardProps {
  * Card padrão usado em Categorias, Em Alta e Áreas.
  * Garante proporção, ícone, tipografia e espaçamento idênticos.
  */
-const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, className = '', iconClassName = '', badge, 'data-track': dataTrack, 'data-track-name': dataTrackName, 'data-track-section': dataTrackSection, solidColor = false, style, iconStyle, iconStrokeWidth }: HomeCardProps) => (
+const HomeCardImpl = ({
+  icon: Icon,
+  label,
+  sublabel,
+  color,
+  delay = 0,
+  onClick,
+  className = '',
+  iconClassName = '',
+  titleClassName = '',
+  hideChevron = false,
+  hideWatermark = false,
+  badge,
+  'data-track': dataTrack,
+  'data-track-name': dataTrackName,
+  'data-track-section': dataTrackSection,
+  solidColor = false,
+  style,
+  iconStyle,
+  iconStrokeWidth,
+}: HomeCardProps) => (
   <button
     onClick={() => {
       haptic.selection();
@@ -35,18 +58,22 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
     data-track={dataTrack}
     data-track-name={dataTrackName}
     data-track-section={dataTrackSection}
-    className={`group relative flex h-[100px] min-h-[100px] w-full min-w-0 flex-row items-center justify-between overflow-hidden p-3.5 pr-8 rounded-2xl shadow-sm hover:shadow-md transition-all focus-visible:outline-none text-left active:scale-[0.97] border border-border/80 bg-zinc-800/80 hover:bg-zinc-700/80 ${className}`}
+    className={`group relative flex h-[100px] min-h-[100px] w-full min-w-0 flex-row items-center justify-between overflow-hidden p-3.5 ${
+      hideChevron ? 'pr-3.5' : 'pr-8'
+    } rounded-2xl shadow-sm hover:shadow-md transition-all focus-visible:outline-none text-left active:scale-[0.97] border border-border/80 bg-zinc-800/80 hover:bg-zinc-700/80 ${className}`}
     style={style}
   >
-    <div className="absolute top-1/2 -translate-y-1/2 right-2.5">
-      {badge ? (
-        <span className={`rounded-full border px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wide ${solidColor ? 'border-border/60 bg-black/40 text-muted-foreground' : 'border-border bg-muted text-muted-foreground'}`}>
-          {badge}
-        </span>
-      ) : (
-        <ChevronRight className={`w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 ${solidColor ? 'text-muted-foreground' : 'text-muted-foreground'}`} />
-      )}
-    </div>
+    {!hideChevron && (
+      <div className="absolute top-1/2 -translate-y-1/2 right-2.5">
+        {badge ? (
+          <span className={`rounded-full border px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wide ${solidColor ? 'border-border/60 bg-black/40 text-muted-foreground' : 'border-border bg-muted text-muted-foreground'}`}>
+            {badge}
+          </span>
+        ) : (
+          <ChevronRight className={`w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 ${solidColor ? 'text-muted-foreground' : 'text-muted-foreground'}`} />
+        )}
+      </div>
+    )}
     
     <div className="flex items-center gap-2.5 w-full min-w-0 z-10">
       <div className="relative shrink-0 flex items-center justify-center p-1">
@@ -58,7 +85,7 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
       </div>
       
       <div className="flex-1 min-w-0 flex flex-col justify-center">
-        <p className={`line-clamp-2 font-display text-[14.5px] xs:text-[16px] sm:text-[17px] font-bold leading-tight tracking-tighter ${solidColor ? 'text-foreground' : 'text-foreground'}`}>
+        <p className={titleClassName || `line-clamp-2 font-display text-[14.5px] xs:text-[16px] sm:text-[17px] font-bold leading-tight tracking-tighter ${solidColor ? 'text-foreground' : 'text-foreground'}`}>
           {label}
         </p>
         {!solidColor && sublabel && (
@@ -69,7 +96,7 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
       </div>
     </div>
 
-    {solidColor && (
+    {solidColor && !hideWatermark && (
       <div className="absolute -right-3 -bottom-3 w-[84px] h-[84px] pointer-events-none transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6 group-active:scale-95">
         <div className="absolute inset-0 opacity-[0.15]">
           <Icon className="w-full h-full" style={{ color }} strokeWidth={1.5} />

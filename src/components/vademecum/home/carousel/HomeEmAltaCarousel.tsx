@@ -1,11 +1,9 @@
 import { memo, useRef, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Landmark, Gavel, Scale, FileText, ShieldAlert, Briefcase, CircleDollarSign, ShoppingCart, Baby, BookMarked, Clock, ArrowUpRight, LucideIcon } from 'lucide-react';
-import { LEIS_CATALOG, type LeiCatalogItem } from '@/data/leisCatalog';
+import { Landmark, Gavel, Scale, FileText, ShieldAlert, Briefcase, CircleDollarSign, ShoppingCart, Baby, BookMarked, LucideIcon } from 'lucide-react';
+import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { leiPath } from '@/lib/legislacaoSlugs';
-import { cdnImg } from '@/lib/cdnImg';
-import { COVERS } from '@/lib/coverLoader';
 import { haptic } from '@/lib/nativeHaptics';
 import CarouselDots from './CarouselDots';
 
@@ -13,9 +11,8 @@ export interface EmAltaItem {
   id: string;
   tipo: string;
   title: string;
+  sigla: string;
   sublabel: string;
-  badge: string;
-  cover: string;
   icon: LucideIcon;
 }
 
@@ -24,95 +21,85 @@ const EM_ALTA_ITEMS: EmAltaItem[] = [
     id: 'cf88',
     tipo: 'constituicao',
     title: 'Constituição Federal',
-    sublabel: 'CF/88 · 1988',
-    badge: 'Carta Magna',
-    cover: COVERS.cf88 || '/pilulas/cf_portrait.webp',
+    sigla: 'CF/88',
+    sublabel: 'Carta Magna · 1988',
     icon: Landmark,
   },
   {
     id: 'cp',
     tipo: 'codigo',
     title: 'Código Penal',
-    sublabel: 'CP · Dec.-Lei 2.848/1940',
-    badge: 'Penal',
-    cover: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg',
+    sigla: 'CP',
+    sublabel: 'Dec.-Lei 2.848/1940',
     icon: Gavel,
   },
   {
     id: 'cc',
     tipo: 'codigo',
     title: 'Código Civil',
-    sublabel: 'CC · Lei 10.406/2002',
-    badge: 'Civil',
-    cover: COVERS.cc || '/pilulas/cc_portrait.webp',
+    sigla: 'CC',
+    sublabel: 'Lei 10.406/2002',
     icon: Scale,
   },
   {
     id: 'cpc',
     tipo: 'codigo',
-    title: 'Código de Processo Civil',
-    sublabel: 'CPC · Lei 13.105/2015',
-    badge: 'Processo',
-    cover: '/pilulas/cpp_portrait.webp',
+    title: 'Processo Civil',
+    sigla: 'CPC',
+    sublabel: 'Lei 13.105/2015',
     icon: FileText,
   },
   {
     id: 'cpp',
     tipo: 'codigo',
-    title: 'Código de Processo Penal',
-    sublabel: 'CPP · Dec.-Lei 3.689/1941',
-    badge: 'Processo',
-    cover: '/pilulas/cpp_portrait.webp',
+    title: 'Processo Penal',
+    sigla: 'CPP',
+    sublabel: 'Dec.-Lei 3.689/1941',
     icon: ShieldAlert,
   },
   {
     id: 'clt',
     tipo: 'codigo',
-    title: 'Consolidação das Leis do Trabalho',
-    sublabel: 'CLT · Dec.-Lei 5.452/1943',
-    badge: 'Trabalho',
-    cover: COVERS.clt || '/pilulas/clt_portrait.webp',
+    title: 'Leis do Trabalho',
+    sigla: 'CLT',
+    sublabel: 'Dec.-Lei 5.452/1943',
     icon: Briefcase,
   },
   {
     id: 'ctn',
     tipo: 'codigo',
-    title: 'Código Tributário Nacional',
-    sublabel: 'CTN · Lei 5.172/1966',
-    badge: 'Tributário',
-    cover: COVERS.ctn,
+    title: 'Tributário Nacional',
+    sigla: 'CTN',
+    sublabel: 'Lei 5.172/1966',
     icon: CircleDollarSign,
   },
   {
     id: 'cdc',
     tipo: 'codigo',
-    title: 'Código de Defesa do Consumidor',
-    sublabel: 'CDC · Lei 8.078/1990',
-    badge: 'Consumidor',
-    cover: COVERS.cdc,
+    title: 'Defesa do Consumidor',
+    sigla: 'CDC',
+    sublabel: 'Lei 8.078/1990',
     icon: ShoppingCart,
   },
   {
     id: 'eca',
     tipo: 'estatuto',
-    title: 'Estatuto da Criança e Adolescente',
-    sublabel: 'ECA · Lei 8.069/1990',
-    badge: 'Estatuto',
-    cover: COVERS.eca,
+    title: 'Criança e Adolescente',
+    sigla: 'ECA',
+    sublabel: 'Lei 8.069/1990',
     icon: Baby,
   },
   {
     id: 'eoab',
     tipo: 'estatuto',
-    title: 'Estatuto da Advocacia e OAB',
-    sublabel: 'EOAB · Lei 8.906/1994',
-    badge: 'OAB',
-    cover: COVERS.eoab,
+    title: 'Estatuto da OAB',
+    sigla: 'EOAB',
+    sublabel: 'Lei 8.906/1994',
     icon: BookMarked,
   },
 ];
 
-const AUTOPLAY_MS = 6000;
+const AUTOPLAY_MS = 5000;
 
 interface HomeEmAltaCarouselProps {
   onSelectItem?: (item: EmAltaItem) => void;
@@ -146,8 +133,8 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
     const el = scrollerRef.current;
     if (!el) return;
     const cardWidth = el.firstElementChild
-      ? (el.firstElementChild as HTMLElement).offsetWidth + 12
-      : 280;
+      ? (el.firstElementChild as HTMLElement).offsetWidth + 10
+      : 155;
     const idx = Math.round(el.scrollLeft / cardWidth);
     setActiveIndex(Math.max(0, Math.min(EM_ALTA_ITEMS.length - 1, idx)));
   }, []);
@@ -157,7 +144,7 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => {
       isInteractingRef.current = false;
-    }, 12000);
+    }, 10000);
   }, []);
 
   useEffect(() => {
@@ -168,8 +155,8 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
       const el = scrollerRef.current;
       if (!el) return;
       const cardWidth = el.firstElementChild
-        ? (el.firstElementChild as HTMLElement).offsetWidth + 12
-        : 280;
+        ? (el.firstElementChild as HTMLElement).offsetWidth + 10
+        : 155;
       const nextIndex = (activeIndex + 1) % EM_ALTA_ITEMS.length;
       el.scrollTo({
         left: nextIndex * cardWidth,
@@ -186,7 +173,7 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
 
   return (
     <section className="space-y-3">
-      {/* Cabeçalho "EM ALTA" */}
+      {/* Cabeçalho "EM ALTA" — sem botão "Mais" à direita */}
       <div className="px-1 flex items-start justify-between gap-3">
         <div>
           <h3 className="font-display text-foreground text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
@@ -199,13 +186,13 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
         </div>
       </div>
 
-      {/* Faixa Carrossel Horizontal Snap com cards vermelhos */}
+      {/* Faixa Carrossel Horizontal: cards quadrados em vermelho com SVG branco (sem capas) */}
       <div
         ref={scrollerRef}
         onScroll={handleScroll}
         onPointerDown={pauseAutoplay}
         onTouchStart={pauseAutoplay}
-        className="flex gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 pt-1 px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-4 sm:px-6 md:px-8 lg:px-12 flex gap-2.5 sm:gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
         {EM_ALTA_ITEMS.map((item, i) => {
           const isActive = i === activeIndex;
@@ -216,84 +203,41 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
               key={item.id}
               type="button"
               onClick={() => handleOpenItem(item)}
-              initial={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: Math.min(i * 0.04, 0.2) }}
-              className="snap-center shrink-0 w-[82%] sm:w-[50%] md:w-[46%] lg:w-[32%] active:scale-[0.99] text-left cursor-pointer focus-visible:outline-none"
+              transition={{ delay: Math.min(i * 0.03, 0.2) }}
+              className="snap-start shrink-0 w-[145px] sm:w-[155px] h-[130px] sm:h-[138px] active:scale-[0.97] text-left cursor-pointer focus-visible:outline-none"
             >
               <div
-                className={`relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 flex transform-gpu will-change-transform bg-brand-gradient ${
+                className={`relative w-full h-full overflow-hidden rounded-2xl transition-all duration-300 flex flex-col justify-between p-3.5 transform-gpu will-change-transform bg-brand-gradient ${
                   isActive
-                    ? 'opacity-100 scale-100 shadow-xl shadow-red-950/40 ring-1 ring-white/20'
-                    : 'opacity-90 scale-[0.98]'
+                    ? 'opacity-100 shadow-xl shadow-red-950/60'
+                    : 'opacity-90 shadow-md hover:opacity-100'
                 }`}
               >
-                {/* SVGs jurídicos decorativos ao fundo */}
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 200 200"
-                  className="pointer-events-none absolute -right-4 -bottom-6 w-[130px] h-[130px] text-white/10"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M100 30 V170 M70 170 H130 M100 55 L55 95 M100 55 L145 95" strokeLinecap="round" />
-                  <path d="M35 95 Q55 135 75 95 Z" />
-                  <path d="M125 95 Q145 135 165 95 Z" />
-                </svg>
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 100 100"
-                  className="pointer-events-none absolute top-2 right-14 w-[54px] h-[54px] text-white/10"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                >
-                  <path d="M18 78 L58 38" />
-                  <rect x="52" y="20" width="30" height="14" rx="2" transform="rotate(45 67 27)" />
-                  <path d="M10 88 H50" />
-                </svg>
-
-                {/* Capa com destaque */}
-                <div className="relative h-full w-[96px] sm:w-[104px] shrink-0 flex items-center justify-center px-2 z-[1]">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Icon className="w-8 h-8 text-white/25" />
-                  </div>
-                  {item.cover && (
-                    <img
-                      src={cdnImg(item.cover, 240)}
-                      alt={item.title}
-                      loading={i === 0 ? 'eager' : 'lazy'}
-                      decoding="async"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                      }}
-                      className="relative h-[118px] w-auto max-w-full object-contain rounded-md z-[2]"
-                      style={{
-                        boxShadow:
-                          '0 14px 26px -8px rgba(0,0,0,0.75), 0 6px 12px -4px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,0,0,0.25)',
-                      }}
-                    />
-                  )}
+                {/* SVG Marca d'água no fundo (igual em legislação, cor branca) */}
+                <div className="absolute -right-2.5 -bottom-2.5 w-[76px] h-[76px] pointer-events-none opacity-[0.16] text-white">
+                  <Icon className="w-full h-full" strokeWidth={1.3} />
                 </div>
 
-                {/* Texto e detalhes à direita */}
-                <div className="relative flex-1 min-w-0 flex flex-col justify-end px-3 pb-3 pt-3 z-[1]">
-                  <span className="self-start flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider text-white mb-1.5 bg-black/40 backdrop-blur-sm">
-                    <Icon className="w-2.5 h-2.5" />
-                    {item.badge}
-                  </span>
-                  <div className="flex items-center gap-1.5 mb-1 text-[11px] text-white/85">
-                    <Clock className="w-3 h-3 shrink-0" />
-                    <span className="truncate">{item.sublabel}</span>
+                {/* Topo do Card: Ícone SVG Branco e Sigla/Badge */}
+                <div className="flex items-center justify-between gap-1 relative z-10">
+                  <div className="w-9 h-9 rounded-xl bg-white/15 backdrop-blur-md flex items-center justify-center shrink-0 border border-white/20 shadow-sm">
+                    <Icon className="w-5 h-5 text-white" strokeWidth={1.6} />
                   </div>
-                  <p className="font-display text-white text-[13.5px] sm:text-[14px] font-semibold leading-snug line-clamp-2 drop-shadow-sm pr-6">
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider text-white bg-black/40 backdrop-blur-sm border border-white/10">
+                    {item.sigla}
+                  </span>
+                </div>
+
+                {/* Base do Card: Título da Lei e Sublabel */}
+                <div className="relative z-10 flex flex-col justify-end mt-2">
+                  <p className="font-display text-white text-[13.5px] sm:text-[14px] font-bold leading-tight line-clamp-2 drop-shadow-sm uppercase">
                     {item.title}
                   </p>
-                  <div className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-md">
-                    <ArrowUpRight className="w-3 h-3 text-white" strokeWidth={2.2} />
-                  </div>
+                  <p className="font-body text-white/80 text-[10.5px] leading-snug mt-1 truncate">
+                    {item.sublabel}
+                  </p>
                 </div>
               </div>
             </motion.button>

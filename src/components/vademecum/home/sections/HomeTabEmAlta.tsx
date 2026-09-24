@@ -29,7 +29,7 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar }: HomeTabEmAltaProps) =>
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
-      className="space-y-6 px-1 pb-8"
+      className="space-y-6 pb-8"
     >
       {/* 1. CARROSSEL EM ALTA (DESIGN VERMELHO DO CARROSSEL DE LIVROS) */}
       <HomeEmAltaCarousel />
@@ -58,6 +58,9 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar }: HomeTabEmAltaProps) =>
                 color={c.color}
                 delay={Math.min(i * 0.03, 0.25)}
                 solidColor={true}
+                hideChevron={true}
+                hideWatermark={true}
+                titleClassName="font-sans font-bold text-[12px] xs:text-[13px] sm:text-[14px] leading-[1.2] uppercase text-white tracking-normal break-words"
                 onClick={() => onOpenCategory({ ...c, label: displayLabel })}
                 data-track="home_card_click"
                 data-track-name={displayLabel}
