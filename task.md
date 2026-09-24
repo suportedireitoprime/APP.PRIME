@@ -5,4 +5,4 @@
 - [x] Validar abertura do modal de baixo para cima com as leis correspondentes <!-- id: 2 -->
 - [x] Testar tipos com TypeScript (`tsc --noEmit`) <!-- id: 3 -->
 - [x] Testar build de produção (`vite build`) <!-- id: 4 -->
-- [/] Auto-commit e push para o repositório GitHub <!-- id: 5 -->
+- [x] Auto-commit e push para o repositório GitHub <!-- id: 5 -->
