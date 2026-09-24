@@ -120,12 +120,13 @@ Deno.serve(async (req) => {
         totalWithTax = Number(((baseValue + 0.29) / (1 - taxRate)).toFixed(2));
       }
       
+      const isPromo = plan === 'vitalicio_pix' || plan === 'anual_pix' || plan === 'promocao';
       const paymentPayload: any = {
         customer: customerId,
         billingType: billingType,
         dueDate: today,
-        description: isVitalicio 
-          ? `Vitalício Estudos Jurídicos${num > 1 ? ` (Parcelado em ${num}x)` : ''}`
+        description: isPromo
+          ? `Anual Estudos Jurídicos Promoção${num > 1 ? ` (Parcelado em ${num}x)` : ''}`
           : `Anual Estudos Jurídicos${num > 1 ? ` (Parcelado em ${num}x)` : ''}`,
       };
 

@@ -65,18 +65,18 @@ Deno.serve(async (req) => {
       // Caso não seja um legado, verificamos se é um usuário novo vindo do app (externalReference = user_id)
       const externalRef = payment.externalReference || body?.customer?.externalReference;
       if (externalRef) {
-        let inferredPlan = 'mensal';
+        let inferredPlan = 'anual';
         const val = payment.value || 0;
         const desc = (payment.description || '').toLowerCase();
+        const isParcelado = desc.includes('parcelad') || !!payment.installment || !!payment.installmentNumber;
         
-        if (desc.includes('vitalicio') || desc.includes('vitalício') || val >= 250) {
-          inferredPlan = 'vitalicio';
+        // Vitalício não existe para novos usuários do app — compras avulsas/parceladas são Plano Anual
+        if (desc.includes('mensal') || (!isParcelado && val > 0 && val < 50 && !desc.includes('anual') && !desc.includes('vitalicio'))) {
+          inferredPlan = 'mensal';
         } else if (desc.includes('promo') || (val >= 140 && val <= 165)) {
           inferredPlan = 'anual_promocional';
-        } else if (desc.includes('anual') || (val > 165 && val <= 220)) {
+        } else {
           inferredPlan = 'anual';
-        } else if (desc.includes('mensal') || val < 50) {
-          inferredPlan = 'mensal';
         }
 
         // Mock a legacy object just to pass the checks, but with claimed_user_id

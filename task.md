@@ -1,11 +1,21 @@
-# Colorização Vermelha do Símbolo Ordinal (º) nos Parágrafos
+# Correção do Plano Anual (Leandro) e Reconciliação do Checkout no Admin
 
-- [x] 1. Ajustar expressões regulares e normalização em `artigoTextUtils.tsx`:
-  - [x] Atualizar pattern de `§` em `highlightTermosOnly` para capturar `º`/`°` com ou sem espaço após o número.
-  - [x] Atualizar pattern de `§§` e `Art.` para suportar indicadores ordinais espaçados e travessões variados.
-  - [x] Atualizar `classifyLine` para classificar corretamente parágrafos com indicador espaçado.
-  - [x] Normalizar espaçamento de indicadores ordinais em `normalizeLegalLineBreaks`.
-- [x] 2. Validação e Entrega:
-  - [x] Executar checagem de tipos TypeScript (`.\node_modules\.bin\tsc.CMD --noEmit`).
-  - [x] Executar build de produção Vite (`.\node_modules\.bin\vite.CMD build`).
-  - [x] Auto-commit e push para o repositório remoto.
+- [x] 1. Atualizar registros no Supabase para o usuário Leandro:
+  - [x] Atualizar `asaas_subscriptions` (`plano = 'anual'`, `expires_at = 1 ano`).
+  - [x] Atualizar `profiles` (`is_premium = true`).
+  - [x] Atualizar eventos de compra em `app_events`.
+- [x] 2. Corrigir componentes de planos e checkout no Frontend:
+  - [x] Corrigir `PricingCards.tsx` (remover conversão oculta de `'anual'` para `'vitalicio'`).
+  - [x] Corrigir `CheckoutModal.tsx` (títulos, preços R$ 199,90 e payload do plano anual).
+  - [x] Corrigir `Assinatura.tsx` e `Onboarding.tsx` para passar plano `'anual'` e `'anual_pix'`.
+- [x] 3. Atualizar Edge Functions do Asaas:
+  - [x] Atualizar `supabase/functions/asaas-checkout/index.ts`.
+  - [x] Atualizar `supabase/functions/asaas-webhook/index.ts`.
+  - [x] Fazer deploy das funções `asaas-checkout` e `asaas-webhook`.
+- [x] 4. Ajustar Dashboard Admin (`AdminHojeCards.tsx`):
+  - [x] Filtrar `ADMIN_EMAILS` dos contadores de `paywall` e `viu_planos` (Checkout = 1 em vez de 2).
+  - [x] Garantir valor correto (R$ 199,90) e tag `ANUAL` para assinaturas anuais e parceladas.
+- [x] 5. Validação e Entrega:
+  - [x] Executar checagem TypeScript (`.\node_modules\.bin\tsc.CMD --noEmit`).
+  - [x] Executar build de produção (`.\node_modules\.bin\vite.CMD build`).
+  - [x] Auto-commit e push para o GitHub.

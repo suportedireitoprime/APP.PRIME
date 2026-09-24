@@ -177,7 +177,7 @@ const Onboarding = () => {
   }, []);
 
   const resgatarPromo = useCallback(() => {
-    setCheckoutPlan('vitalicio_pix');
+    setCheckoutPlan('anual_pix');
   }, []);
 
   const concluirCheckout = useCallback(() => {

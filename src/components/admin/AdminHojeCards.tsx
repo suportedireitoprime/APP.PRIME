@@ -9,6 +9,8 @@ import { rotaParaFuncao } from '@/lib/rotaFuncoes';
 type CardId = 'online5m' | 'online' | 'cadastros' | 'paywall' | 'viu_planos' | 'trial';
 type PeriodoId = 'hoje' | 'ontem' | '7d' | '30d';
 
+const ADMIN_EMAILS = ['wn7corporation@gmail.com', 'suporte@direitoprime.com.br', 'wn7juridico@gmail.com'];
+
 interface Row {
   key: string;
   title: string;
@@ -326,12 +328,16 @@ export function AdminHojeCards() {
         if (error) throw error;
           
         if (events) {
-          const allPwEvents = events.filter((e: any) => e.event_name === 'assinatura_aberta' || e.event_name === 'paywall_view');
+          const nonAdminEvents = events.filter((e: any) => {
+            const em = (e.email || '').toLowerCase().trim();
+            return !ADMIN_EMAILS.includes(em);
+          });
+
+          const allPwEvents = nonAdminEvents.filter((e: any) => e.event_name === 'assinatura_aberta' || e.event_name === 'paywall_view');
           const uniquePw = new Set(allPwEvents.map((e: any) => e.email || e.user_id || 'anonymous'));
           totalPaywall = Math.max(totalPaywall, uniquePw.size);
 
-          const filteredEvents = events.filter((e: any) => e.profiles?.is_premium !== true);
-          const vpEvents = filteredEvents.filter((e: any) => e.event_name === 'trial_click');
+          const vpEvents = nonAdminEvents.filter((e: any) => e.event_name === 'trial_click');
           const uniqueVp = new Set(vpEvents.map((e: any) => e.email || e.user_id || 'anonymous'));
           totalViuPlanos = Math.max(totalViuPlanos, uniqueVp.size);
         }
@@ -370,7 +376,7 @@ export function AdminHojeCards() {
           const isPromo = plano.includes('promocional') || plano.includes('promo');
           const isAnual = plano.includes('anual');
           const isVit = !isPromo && (plano.includes('vitalicio') || plano.includes('vitalício'));
-          const valor = (isAnual && isPromo) ? 149.90 : isAnual ? 199.90 : isVit ? 149.90 : 29.90;
+          const valor = (isAnual && isPromo) ? 149.90 : isAnual ? 199.90 : isVit ? 199.90 : 29.90;
           subUsers.set(uid, { plano: (isAnual && isPromo) ? 'anual_promocional' : plano, valor });
         });
 
@@ -422,12 +428,11 @@ export function AdminHojeCards() {
       // Ensure paywall (Tela de Assinatura) is at least equal to viu_planos
       totalPaywall = Math.max(totalPaywall, totalViuPlanos);
 
-      const adminEmails = ['wn7corporation@gmail.com', 'suporte@direitoprime.com.br', 'wn7juridico@gmail.com'];
-      const count5mFromList = periodo === 'hoje' ? ((list5m as any[]) || []).filter(r => !adminEmails.includes(r.email)).length : 0;
+      const count5mFromList = periodo === 'hoje' ? ((list5m as any[]) || []).filter(r => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim())).length : 0;
       const count5m = periodo === 'hoje' ? Math.max(totalOnline5m, count5mFromList) : 0;
       
       // Para online (dia inteiro), pega o totalOnline extraído do RPC (se disponível) ou da lista
-      const countOnlineFromList = ((listOnline as any[]) || []).filter(r => !adminEmails.includes(r.email)).length;
+      const countOnlineFromList = ((listOnline as any[]) || []).filter(r => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim())).length;
       const countOnline = Math.max(totalOnline, countOnlineFromList);
       const novos: Record<CardId | 'trialValor', number> = {
         online5m: count5m, 
@@ -586,7 +591,7 @@ export function AdminHojeCards() {
             const isPromo = subText.includes('promocional') || subText.includes('promo') || titleText.includes('promocional');
             const isAnual = subText.includes('anual') || titleText.includes('anual');
             const isVit = !isPromo && (subText.includes('vitalicio') || subText.includes('vitalício') || titleText.includes('vitalicio'));
-            const planValor = (isAnual && isPromo) ? 149.90 : isAnual ? 199.90 : isVit ? 149.90 : 29.90;
+            const planValor = (isAnual && isPromo) ? 149.90 : isAnual ? 199.90 : isVit ? 199.90 : 29.90;
             const planName = (isAnual && isPromo) ? 'Anual Promocional' : isAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
             const uid = r.user_id || r.id;
             if (uid) existingUserIds.add(uid);
@@ -631,7 +636,7 @@ export function AdminHojeCards() {
           const isPromo = planoLower.includes('promocional') || planoLower.includes('promo');
           const isAnual = planoLower.includes('anual');
           const isVit = !isPromo && (planoLower === 'vitalicio' || planoLower.includes('vitalício'));
-          const planValor = (isAnual && isPromo) ? 149.90 : isAnual ? 199.90 : isVit ? 149.90 : 29.90;
+          const planValor = (isAnual && isPromo) ? 149.90 : isAnual ? 199.90 : isVit ? 199.90 : 29.90;
           const planName = (isAnual && isPromo) ? 'Anual Promocional' : isAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
           const profInfo = profMap.get(s.user_id);
 
@@ -736,14 +741,17 @@ export function AdminHojeCards() {
               profiles:user_id ( display_name, is_premium ),
               users:user_id ( email, raw_user_meta_data )
             `)
-            .in('event_name', ['trial_click', 'assinatura_aberta'])
+            .in('event_name', id === 'viu_planos' ? ['trial_click'] : ['trial_click', 'assinatura_aberta'])
             .gte('created_at', minDate.toISOString())
             .lt('created_at', maxDate.toISOString());
             
           if (vpEvents) {
-            // Remove Premium do Modal
+            // Remove Admin do Modal
             const vpMapped = vpEvents
-              .filter((e: any) => e.profiles?.is_premium !== true)
+              .filter((e: any) => {
+                const em = (e.users?.email || e.email || '').toLowerCase().trim();
+                return !ADMIN_EMAILS.includes(em);
+              })
               .map((e: any) => {
                 const uemail = e.users?.email || e.email || 'Visitante';
                 return {
@@ -751,11 +759,11 @@ export function AdminHojeCards() {
                   user_id: e.user_id,
                   title: e.profiles?.display_name || uemail.split('@')[0],
                   email: uemail,
-                  subtitle: 'Abriu planos (Clicou)',
+                  subtitle: id === 'viu_planos' ? 'Abriu checkout (Clicou)' : 'Abriu planos',
                   at: e.created_at,
                   acessos: null,
                   avatar_url: e.users?.raw_user_meta_data?.avatar_url || e.users?.raw_user_meta_data?.picture,
-                  is_premium: false,
+                  is_premium: e.profiles?.is_premium || false,
                   created_at: e.created_at
                 };
             });
@@ -848,7 +856,7 @@ export function AdminHojeCards() {
         planValue: r.planValue,
         planTag: r.planTag,
         created_at: r.created_at,
-      })).filter(r => r.email !== 'wn7corporation@gmail.com' && r.email !== 'suporte@direitoprime.com.br' && r.email !== 'wn7juridico@gmail.com');
+      })).filter(r => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim()));
 
       if (id === 'trial' && list.length > 0) {
         // Agora tratamos "trial" como "Assinou via Asaas". Não vamos chamar o endpoint antigo de Google/Apple.
