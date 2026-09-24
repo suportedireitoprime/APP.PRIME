@@ -61,25 +61,24 @@ Deno.serve(async (req) => {
         legacy = data;
       }
     }
+    // Inferência inteligente do plano da cobrança atual (independente de ser legado ou novo)
+    const val = payment.value || 0;
+    const desc = (payment.description || '').toLowerCase();
+    const isParcelado = desc.includes('parcelad') || !!payment.installment || !!payment.installmentNumber;
+
+    let inferredPlan = 'anual';
+    if (desc.includes('mensal') || (!isParcelado && val > 0 && val < 50 && !desc.includes('anual') && !desc.includes('vitalicio'))) {
+      inferredPlan = 'mensal';
+    } else if (desc.includes('promo') || (val >= 140 && val <= 165)) {
+      inferredPlan = 'anual_promocional';
+    } else {
+      inferredPlan = 'anual';
+    }
+
     if (!legacy) {
-      // Caso não seja um legado, verificamos se é um usuário novo vindo do app (externalReference = user_id)
+      // Caso não seja um legado pelo Asaas ID, verificamos externalReference (user_id do app)
       const externalRef = payment.externalReference || body?.customer?.externalReference;
       if (externalRef) {
-        let inferredPlan = 'anual';
-        const val = payment.value || 0;
-        const desc = (payment.description || '').toLowerCase();
-        const isParcelado = desc.includes('parcelad') || !!payment.installment || !!payment.installmentNumber;
-        
-        // Vitalício não existe para novos usuários do app — compras avulsas/parceladas são Plano Anual
-        if (desc.includes('mensal') || (!isParcelado && val > 0 && val < 50 && !desc.includes('anual') && !desc.includes('vitalicio'))) {
-          inferredPlan = 'mensal';
-        } else if (desc.includes('promo') || (val >= 140 && val <= 165)) {
-          inferredPlan = 'anual_promocional';
-        } else {
-          inferredPlan = 'anual';
-        }
-
-        // Mock a legacy object just to pass the checks, but with claimed_user_id
         legacy = {
           id: 'new_user',
           tipo: inferredPlan,
@@ -90,12 +89,34 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Se ainda não achou legacy mas temos customerEmail, busca por profile existente
+    const customerEmail: string | null = payment?.customerEmail || body?.customerEmail || null;
+    let targetUserId: string | null = legacy?.claimed_user_id || payment.externalReference || body?.customer?.externalReference || null;
+
+    if (!targetUserId && customerEmail) {
+      const { data: userProfile } = await admin.from('profiles').select('id').ilike('email', customerEmail.trim()).limit(1).maybeSingle();
+      if (userProfile?.id) {
+        targetUserId = userProfile.id;
+      }
+    }
+
+    if (!legacy && targetUserId) {
+      legacy = {
+        id: 'new_user',
+        tipo: inferredPlan,
+        claimed_user_id: targetUserId,
+        asaas_customer_id: customerId,
+        asaas_subscription_id: subscriptionId,
+      };
+    }
+
     if (!legacy) {
       return new Response(JSON.stringify({ ok: true, ignored: 'assinante não encontrado' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
+    // Plano efetivo: se for um novo pagamento confirmado ou cobrança, prioriza o plano detectado na transação atual
     const pago = ['PAYMENT_CONFIRMED', 'PAYMENT_RECEIVED', 'PAYMENT_RECEIVED_IN_CASH'].includes(event);
     const atrasado = event === 'PAYMENT_OVERDUE';
     const perdido = [
@@ -104,9 +125,22 @@ Deno.serve(async (req) => {
       'SUBSCRIPTION_INACTIVATED', 'PAYMENT_RECEIVED_IN_CASH_UNDONE',
     ].includes(event);
 
+    // Se a cobrança atual define claramente o plano (ex: anual ou mensal), atualiza o plano do usuário
+    let effectivePlan = legacy.tipo;
+    if (pago || event === 'PAYMENT_CREATED' || event === 'PAYMENT_UPDATED') {
+      if (desc.includes('anual') || isParcelado || val >= 100) {
+        effectivePlan = inferredPlan;
+      } else if (desc.includes('mensal') || (val > 0 && val < 50)) {
+        effectivePlan = 'mensal';
+      }
+    }
+    if (legacy.tipo === 'vitalicio' && !desc.includes('mensal') && !desc.includes('anual')) {
+      effectivePlan = 'vitalicio';
+    }
+
     // Renovação respeitando o ciclo do plano (mensal/semestral/anual/vitalicio) + margem
-    const diasCiclo = (legacy.tipo === 'anual' || legacy.tipo === 'anual_promocional') ? 370
-      : legacy.tipo === 'semestral' ? 190
+    const diasCiclo = (effectivePlan === 'anual' || effectivePlan === 'anual_promocional') ? 370
+      : effectivePlan === 'semestral' ? 190
       : 34;
     const CARENCIA_MS = 3 * 24 * 3600 * 1000;
     const venc = new Date(dueDate ?? Date.now()).getTime();
@@ -116,21 +150,26 @@ Deno.serve(async (req) => {
         ? new Date(venc + CARENCIA_MS).toISOString() // acesso só até vencimento + 3 dias
         : null;
 
-    const vitalicio = legacy.tipo === 'vitalicio';
+    const vitalicio = effectivePlan === 'vitalicio';
     // Se for vitalício, nunca corta por expiração ou carência de ciclo
     const cortarAgora = !vitalicio && (perdido || (atrasado && Date.now() > venc + CARENCIA_MS));
 
     if (legacy.id !== 'new_user') {
       await admin.from('legacy_subscribers').update({
+        tipo: effectivePlan,
         status: cortarAgora ? 'inactive' : 'active',
         expires_at: vitalicio ? null : (proximo ?? legacy.expires_at),
+        claimed_user_id: targetUserId ?? legacy.claimed_user_id,
+        claimed_at: targetUserId && !legacy.claimed_user_id ? new Date().toISOString() : legacy.claimed_at,
       }).eq('id', legacy.id);
     }
 
-    if (legacy.claimed_user_id) {
+    const finalUserId = targetUserId || legacy.claimed_user_id;
+
+    if (finalUserId) {
       const subUpsertPayload: any = {
-        user_id: legacy.claimed_user_id,
-        plano: legacy.tipo,
+        user_id: finalUserId,
+        plano: effectivePlan,
         status: cortarAgora ? 'CANCELED' : 'ACTIVE',
         asaas_customer_id: customerId ?? legacy.asaas_customer_id,
         asaas_subscription_id: subscriptionId ?? legacy.asaas_subscription_id,
@@ -148,15 +187,15 @@ Deno.serve(async (req) => {
         await admin.from('profiles').update({
           is_premium: true,
           updated_at: new Date().toISOString()
-        }).eq('id', legacy.claimed_user_id);
+        }).eq('id', finalUserId);
 
         // Registra evento de compra no app_events para histórico e métricas
         await admin.from('app_events').insert({
-          user_id: legacy.claimed_user_id,
+          user_id: finalUserId,
           email: payment?.customerEmail ?? null,
           event_name: 'purchase',
           metadata: {
-            plano: legacy.tipo,
+            plano: effectivePlan,
             value: payment.value || 0,
             currency: 'BRL',
             source: 'asaas',
@@ -168,25 +207,25 @@ Deno.serve(async (req) => {
         await admin.from('profiles').update({
           is_premium: false,
           updated_at: new Date().toISOString()
-        }).eq('id', legacy.claimed_user_id);
+        }).eq('id', finalUserId);
       }
       // Sincroniza imediatamente o plano no Horus (WhatsApp)
       syncHorusSubscriptionStatus(admin, {
-        userId: legacy.claimed_user_id,
+        userId: finalUserId,
         isPremium: !cortarAgora && (pago || legacy.status === 'active'),
-        plano: legacy.tipo,
+        plano: effectivePlan,
         expiresAt: vitalicio ? null : (proximo ?? legacy.expires_at),
         notifyWhatsapp: false, // O recibo abaixo já faz a notificação via WhatsApp
       }).catch((e) => console.warn('syncHorusSubscriptionStatus error in asaas-webhook:', e));
     }
 
     // Item 50: Envio de recibo/confirmação via WhatsApp quando pagamento confirmado
-    if (pago && legacy.claimed_user_id) {
+    if (pago && finalUserId) {
       (async () => {
         try {
           const { data: profile } = await admin.from('profiles')
             .select('display_name, telefone, whatsapp_number')
-            .eq('id', legacy.claimed_user_id)
+            .eq('id', finalUserId)
             .maybeSingle();
 
           const phone = profile?.whatsapp_number || profile?.telefone;
@@ -194,7 +233,7 @@ Deno.serve(async (req) => {
 
           const nome = profile?.display_name?.split(' ')[0] || 'Assinante';
           const valor = payment.value ? `R$ ${Number(payment.value).toFixed(2).replace('.', ',')}` : '';
-          const planoLabel = (legacy.tipo === 'anual' || legacy.tipo === 'anual_promocional') ? 'Anual' : legacy.tipo === 'vitalicio' ? 'Vitalício' : 'Mensal';
+          const planoLabel = (effectivePlan === 'anual' || effectivePlan === 'anual_promocional') ? 'Anual' : effectivePlan === 'vitalicio' ? 'Vitalício' : 'Mensal';
 
           const msg = `${nome}, seu pagamento${valor ? ` de ${valor}` : ''} do plano *${planoLabel}* foi confirmado! ✅
 

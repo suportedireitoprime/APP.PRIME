@@ -12,7 +12,7 @@ const PlanosAtivos = () => {
   const navigate = useNavigate();
   const { session } = useAuth();
   const showDevToggle = isAdminEmail(session?.user?.email);
-  const { isPremium, loading, plano, expiresAt, startedAt, source, isAdminOverride } = useSubscription();
+  const { isPremium, loading, plano, expiresAt, startedAt, source, status, isAdminOverride } = useSubscription();
 
   if (!loading && !isPremium) {
     return <Navigate to="/assinatura" replace />;
@@ -84,7 +84,7 @@ const PlanosAtivos = () => {
         <section className="text-center py-4">
           <div className="flex items-center justify-center gap-2 text-muted-foreground">
             <Shield className="w-4 h-4" />
-            <span className="font-body text-xs">Sua assinatura é gerenciada com segurança pela {source === 'apple' ? 'App Store' : 'Google Play'}</span>
+            <span className="font-body text-xs">Sua assinatura é gerenciada com segurança pela {source === 'apple' ? 'App Store' : source === 'asaas' ? 'Asaas Pagamentos' : 'Google Play'}</span>
           </div>
         </section>
       </div>

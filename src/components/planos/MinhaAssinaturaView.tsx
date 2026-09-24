@@ -83,7 +83,7 @@ export default function MinhaAssinaturaView({ plano, expiresAt, startedAt, sourc
     let cancelled = false;
     (async () => {
       setLoadingHistory(true);
-      const [playRes, appleRes] = await Promise.all([
+      const [playRes, appleRes, asaasRes] = await Promise.all([
         supabase
           .from('play_subscriptions')
           .select('id, product_id, status, expires_at, created_at')
@@ -94,8 +94,20 @@ export default function MinhaAssinaturaView({ plano, expiresAt, startedAt, sourc
           .select('id, product_id, status, expires_at, created_at')
           .eq('user_id', user.id)
           .order('expires_at', { ascending: false, nullsFirst: false }),
+        supabase
+          .from('asaas_subscriptions' as any)
+          .select('id, plano, status, expires_at, created_at, started_at')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false, nullsFirst: false }),
       ]);
-      const rows = [...(playRes.data ?? []), ...(appleRes.data ?? [])].sort((a, b) => {
+      const asaasRows = ((asaasRes.data ?? []) as any[]).map((r) => ({
+        id: r.id,
+        product_id: r.plano,
+        status: r.status,
+        expires_at: r.expires_at,
+        created_at: r.started_at || r.created_at,
+      }));
+      const rows = [...(playRes.data ?? []), ...(appleRes.data ?? []), ...asaasRows].sort((a, b) => {
         const aDate = a.expires_at ? new Date(a.expires_at).getTime() : 0;
         const bDate = b.expires_at ? new Date(b.expires_at).getTime() : 0;
         return bDate - aDate;
@@ -111,6 +123,8 @@ export default function MinhaAssinaturaView({ plano, expiresAt, startedAt, sourc
   const openStore = () => {
     if (source === 'apple') {
       void abrirLink('https://apps.apple.com/account/subscriptions');
+    } else if (source === 'asaas') {
+      openSupport();
     } else {
       void abrirLink('https://play.google.com/store/account/subscriptions');
     }

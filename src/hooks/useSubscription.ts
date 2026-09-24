@@ -124,11 +124,12 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         const nowIso = new Date().toISOString();
 
         // 1. Paralelizar a busca de cancelamentos e das assinaturas ativas em todas as lojas
-        const [cancelRes, playRes, appleRes, legadoRes] = await Promise.all([
+        const [cancelRes, playRes, appleRes, legadoRes, profileRes] = await Promise.all([
           supabase.from('assinatura_cancelamentos' as any).select('canceled_at').eq('user_id', user.id).maybeSingle(),
           supabase.from('play_subscriptions').select('product_id, status, expires_at').eq('user_id', user.id).in('status', ACTIVE_STATUSES).or(`expires_at.is.null,expires_at.gt.${nowIso}`).order('expires_at', { ascending: false }).limit(1).maybeSingle(),
           supabase.from('apple_subscriptions').select('product_id, status, expires_at, start_time').eq('user_id', user.id).in('status', ['active', 'in_grace']).or(`expires_at.is.null,expires_at.gt.${nowIso}`).order('expires_at', { ascending: false }).limit(1).maybeSingle(),
-          supabase.from('asaas_subscriptions' as any).select('plano, status, expires_at, started_at').eq('user_id', user.id).in('status', ['ACTIVE', 'ACTIVE_GRACE']).or(`expires_at.is.null,expires_at.gt.${nowIso}`).limit(1).maybeSingle()
+          supabase.from('asaas_subscriptions' as any).select('plano, status, expires_at, started_at').eq('user_id', user.id).in('status', ['ACTIVE', 'ACTIVE_GRACE']).or(`expires_at.is.null,expires_at.gt.${nowIso}`).limit(1).maybeSingle(),
+          supabase.from('profiles').select('is_premium').eq('id', user.id).maybeSingle()
         ]);
 
         if (cancelled) return true;
@@ -170,6 +171,22 @@ export function useSubscription(options: Options = {}): SubscriptionState {
             isPremium: true, loading: false,
             plano: l.plano, expiresAt: l.expires_at, startedAt: l.started_at, source: 'asaas',
             status: l.status, isAdminOverride: false, isTrial: false,
+          });
+          return true;
+        }
+
+        // 3.1. Fallback de Segurança Máxima: se profiles.is_premium for true, garante que o usuário nunca seja bloqueado
+        if (profileRes.data?.is_premium) {
+          const { data: legacyRow } = await supabase.from('legacy_subscribers' as any)
+            .select('tipo, expires_at, created_at')
+            .or(`claimed_user_id.eq.${user.id},email.ilike.${user.email || ''}`)
+            .limit(1).maybeSingle();
+
+          const planoFallback = (legacyRow as any)?.tipo || 'anual';
+          persist({
+            isPremium: true, loading: false,
+            plano: planoFallback, expiresAt: (legacyRow as any)?.expires_at ?? null, startedAt: (legacyRow as any)?.created_at ?? null, source: 'asaas',
+            status: 'ACTIVE', isAdminOverride: false, isTrial: false,
           });
           return true;
         }
@@ -287,14 +304,15 @@ export function useSubscription(options: Options = {}): SubscriptionState {
       }
     })();
 
-    // Realtime: qualquer INSERT/UPDATE em play_subscriptions ou apple_subscriptions
-    // do usuário atual dispara re-fetch imediato (sem esperar polling).
-    // Nome único por instância evita reuso do canal já `subscribed` em StrictMode/re-mount
+    // Realtime: qualquer INSERT/UPDATE em play_subscriptions, apple_subscriptions,
+    // asaas_subscriptions, profiles ou legacy_subscribers dispara re-fetch imediato.
     const channel = supabase
       .channel(`sub-${user.id}-${Math.random().toString(36).slice(2, 10)}`)
-      .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'play_subscriptions', filter: `user_id=eq.${user.id}` }, () => { fetchOnce(); })
-      .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'apple_subscriptions', filter: `user_id=eq.${user.id}` }, () => { fetchOnce(); })
-      .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'asaas_subscriptions', filter: `user_id=eq.${user.id}` }, () => { fetchOnce(); })
+      .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'play_subscriptions', filter: `user_id=eq.${user.id}` }, () => { void fetchOnce(); })
+      .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'apple_subscriptions', filter: `user_id=eq.${user.id}` }, () => { void fetchOnce(); })
+      .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'asaas_subscriptions', filter: `user_id=eq.${user.id}` }, () => { void fetchOnce(); })
+      .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` }, () => { void fetchOnce(); })
+      .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'legacy_subscribers', filter: `claimed_user_id=eq.${user.id}` }, () => { void fetchOnce(); })
       .subscribe();
 
     // Ao voltar do segundo plano: revalida com a loja e reconsulta. Cobre
@@ -325,16 +343,28 @@ export function useSubscription(options: Options = {}): SubscriptionState {
     };
   }, [user, nonce, pollOnMount]);
 
-  // GA4: dispara `assinatura_ativada` na primeira vez que o Premium fica ativo
-  // (ignora admin override para evitar ruído em contas internas).
+  // GA4 / Telemetria: dispara `assinatura_ativada` na primeira vez que o Premium fica ativo
+  // Deduplicado via sessionStorage e ref para não poluir app_events com remontagens.
   useEffect(() => {
     if (!state.isPremium || state.loading || state.isAdminOverride) return;
     if (wasPremium.current) return;
+    
+    const sessKey = `direitoprime:sub_event:${user?.id}:${state.plano}`;
+    if (typeof window !== 'undefined') {
+      try {
+        if (window.sessionStorage.getItem(sessKey)) {
+          wasPremium.current = true;
+          return;
+        }
+        window.sessionStorage.setItem(sessKey, '1');
+      } catch {}
+    }
+
     wasPremium.current = true;
     import('@/lib/appEvents').then(({ appEvents }) =>
       appEvents.assinaturaAtivada({ plano: state.plano, source: state.source })
     ).catch(() => {});
-  }, [state.isPremium, state.loading, state.isAdminOverride, state.plano, state.source]);
+  }, [state.isPremium, state.loading, state.isAdminOverride, state.plano, state.source, user?.id]);
 
   return { ...state, refresh };
 }

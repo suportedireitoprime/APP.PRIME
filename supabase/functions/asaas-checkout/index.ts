@@ -207,6 +207,68 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Se o pagamento no cartão foi aprovado instantaneamente pelo Asaas, ativa no banco a 0ms
+    const isApproved = ['ACTIVE', 'CONFIRMED', 'RECEIVED', 'PAYMENT_RECEIVED', 'PAYMENT_CONFIRMED'].includes(sub?.status);
+    if (isApproved) {
+      try {
+        const admin = createClient(
+          Deno.env.get('SUPABASE_URL')!,
+          Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+        );
+
+        const isAnualPlan = plan === 'anual' || plan === 'anual_pix' || plan === 'anual_regular_pix' || plan === 'promocao' || plan === 'vitalicio' || plan === 'vitalicio_pix';
+        const planoFinal = plan === 'mensal' ? 'mensal' : (plan === 'promocao' ? 'anual_promocional' : 'anual');
+        const diasCiclo = isAnualPlan ? 370 : 34;
+        const now = new Date();
+        const expiresAt = new Date(now.getTime() + diasCiclo * 24 * 3600 * 1000).toISOString();
+
+        // 1. Atualiza asaas_subscriptions imediatamente
+        await admin.from('asaas_subscriptions').upsert({
+          user_id: user.id,
+          plano: planoFinal,
+          status: 'ACTIVE',
+          asaas_customer_id: customerId,
+          asaas_subscription_id: sub.id,
+          started_at: now.toISOString(),
+          expires_at: expiresAt,
+          origem: 'asaas',
+          updated_at: now.toISOString(),
+        }, { onConflict: 'user_id' });
+
+        // 2. Atualiza profiles para liberar 100% das funções imediatamente
+        await admin.from('profiles').update({
+          is_premium: true,
+          updated_at: now.toISOString(),
+        }).eq('id', user.id);
+
+        // 3. Atualiza legacy_subscribers se existir correspondência para este usuário
+        await admin.from('legacy_subscribers').update({
+          tipo: planoFinal,
+          status: 'active',
+          expires_at: expiresAt,
+          claimed_user_id: user.id,
+          claimed_at: now.toISOString(),
+        }).or(`claimed_user_id.eq.${user.id},email.ilike.${userEmail},asaas_customer_id.eq.${customerId}`);
+
+        // 4. Registra evento de compra no app_events
+        await admin.from('app_events').insert({
+          user_id: user.id,
+          email: userEmail,
+          event_name: 'purchase',
+          metadata: {
+            plano: planoFinal,
+            value: sub.value || (isAnualPlan ? 199.90 : 29.90),
+            currency: 'BRL',
+            source: 'asaas_checkout_direct',
+            payment_id: sub.id,
+            billingType: billingType,
+          }
+        });
+      } catch (dbErr) {
+        console.warn('Persistência direta pós-checkout falhou (webhook cuidará):', dbErr);
+      }
+    }
+
     return new Response(JSON.stringify({ 
       invoiceUrl, 
       pixQrCode, 
