@@ -58,3 +58,26 @@ export const MAGIC_LABELS: Record<string, string> = {
 export const NARRACAO_CACHE_VERSION = 'v6-pronuncia-juridica';
 
 export const GRIFO_IA_DEFAULT_KEY = 'direitoprime:grifoia:default:on';
+
+// ─── Tipografia & Ergonomia de Leitura (Itens 01 e 02) ───
+
+export type VadeMecumFontFamily = 'sans' | 'serif' | 'mono';
+export type VadeMecumLineHeight = '1.6' | '1.8' | '2.1';
+
+export const VADEMECUM_FONT_SIZE_KEY = 'vademecum_font_size';
+export const VADEMECUM_FONT_FAMILY_KEY = 'vademecum_font_family';
+export const VADEMECUM_LINE_HEIGHT_KEY = 'vademecum_line_height';
+export const VADEMECUM_BIONIC_READING_KEY = 'vademecum_bionic_reading';
+export const VADEMECUM_READING_GUIDE_KEY = 'vademecum_reading_guide';
+
+export const FONT_FAMILY_CLASSES: Record<VadeMecumFontFamily, string> = {
+  sans: 'font-sans',
+  serif: 'font-vademecum-serif',
+  mono: 'font-vademecum-mono',
+};
+
+export const LINE_HEIGHT_CLASSES: Record<VadeMecumLineHeight, string> = {
+  '1.6': 'leading-[1.6]',
+  '1.8': 'leading-[1.8]',
+  '2.1': 'leading-[2.1]',
+};

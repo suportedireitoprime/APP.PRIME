@@ -40,6 +40,15 @@ import { useArtigoNarracao } from './useArtigoNarracao';
 
 import {
   type ArtigoBottomSheetProps,
+  type VadeMecumFontFamily,
+  type VadeMecumLineHeight,
+  VADEMECUM_FONT_SIZE_KEY,
+  VADEMECUM_FONT_FAMILY_KEY,
+  VADEMECUM_LINE_HEIGHT_KEY,
+  VADEMECUM_BIONIC_READING_KEY,
+  VADEMECUM_READING_GUIDE_KEY,
+  FONT_FAMILY_CLASSES,
+  LINE_HEIGHT_CLASSES,
 } from './artigoConstants';
 export type { ModificationInfo } from './artigoConstants';
 import {
@@ -160,7 +169,82 @@ const ArtigoBottomSheet = ({
     };
   }, [artigo?.id, artigo?.numero, tabelaNome]);
 
-  const [fontSize, setFontSize] = useState(18);
+  // Itens 01 e 02: Preferências de Tipografia e Leitura persistidas no localStorage
+  const [fontSize, setFontSize] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem(VADEMECUM_FONT_SIZE_KEY);
+      return saved ? Number(saved) : 18;
+    } catch {
+      return 18;
+    }
+  });
+
+  const [fontFamily, setFontFamily] = useState<VadeMecumFontFamily>(() => {
+    try {
+      const saved = localStorage.getItem(VADEMECUM_FONT_FAMILY_KEY);
+      if (saved === 'serif' || saved === 'mono' || saved === 'sans') return saved;
+      return 'sans';
+    } catch {
+      return 'sans';
+    }
+  });
+
+  const [lineHeight, setLineHeight] = useState<VadeMecumLineHeight>(() => {
+    try {
+      const saved = localStorage.getItem(VADEMECUM_LINE_HEIGHT_KEY);
+      if (saved === '1.6' || saved === '1.8' || saved === '2.1') return saved;
+      return '1.8';
+    } catch {
+      return '1.8';
+    }
+  });
+
+  const [bionicReading, setBionicReading] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(VADEMECUM_BIONIC_READING_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const [readingGuide, setReadingGuide] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(VADEMECUM_READING_GUIDE_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(VADEMECUM_FONT_SIZE_KEY, String(fontSize));
+    } catch {}
+  }, [fontSize]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(VADEMECUM_FONT_FAMILY_KEY, fontFamily);
+    } catch {}
+  }, [fontFamily]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(VADEMECUM_LINE_HEIGHT_KEY, lineHeight);
+    } catch {}
+  }, [lineHeight]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(VADEMECUM_BIONIC_READING_KEY, String(bionicReading));
+    } catch {}
+  }, [bionicReading]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(VADEMECUM_READING_GUIDE_KEY, String(readingGuide));
+    } catch {}
+  }, [readingGuide]);
+
   const [showFontControls, setShowFontControls] = useState(false);
   const [, setShowCommentPanel] = useState(false);
   const [showPraticarSheet, setShowPraticarSheet] = useState(false);
@@ -961,6 +1045,14 @@ const ArtigoBottomSheet = ({
               setShowFontControls={setShowFontControls}
               fontSize={fontSize}
               setFontSize={setFontSize}
+              fontFamily={fontFamily}
+              setFontFamily={setFontFamily}
+              lineHeight={lineHeight}
+              setLineHeight={setLineHeight}
+              bionicReading={bionicReading}
+              setBionicReading={setBionicReading}
+              readingGuide={readingGuide}
+              setReadingGuide={setReadingGuide}
               onlineCount={onlineCount}
               highlightMode={highlightMode}
               voiceGrifoActive={voiceGrifoActive}
@@ -1051,7 +1143,7 @@ const ArtigoBottomSheet = ({
 
                   <div
                     ref={containerRef}
-                    className={`space-y-4 font-legal text-base ${
+                    className={`space-y-4 text-base ${FONT_FAMILY_CLASSES[fontFamily] || 'font-sans'} ${LINE_HEIGHT_CLASSES[lineHeight] || 'leading-[1.8]'} ${readingGuide ? 'reading-guide-active' : ''} ${
                       highlightMode ? 'select-text cursor-text highlight-selectable' : ''
                     }`}
                     style={
@@ -1084,6 +1176,10 @@ const ArtigoBottomSheet = ({
                         showRedacao={showRedacao}
                         isRevogado={isRevogado}
                         fontSize={fontSize}
+                        fontFamily={fontFamily}
+                        lineHeight={lineHeight}
+                        bionicReading={bionicReading}
+                        readingGuide={readingGuide}
                         highlightMode={highlightMode}
                         focusedSegment={focusedSegment}
                         selectedColor={selectedColor}

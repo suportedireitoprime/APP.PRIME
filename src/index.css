@@ -2014,4 +2014,26 @@ html[data-route-transitioning="true"] * {
   }
 }
 
+/* ==========================================================================
+   TIPOGRAFIA & ERGONOMIA DE LEITURA (Vade Mecum Itens 01 e 02)
+   ========================================================================== */
+.font-vademecum-serif {
+  font-family: 'Literata', 'Newsreader', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif !important;
+}
+
+.font-vademecum-mono {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace !important;
+}
+
+/* Guia Óptico de Leitura (Linha de Foco) */
+.reading-guide-active .reading-line-focus {
+  transition: background-color 0.18s ease, border-color 0.18s ease, opacity 0.18s ease;
+}
+
+.reading-guide-active .reading-line-focus:hover,
+.reading-guide-active .reading-line-focus:focus-within {
+  background-color: rgba(245, 158, 11, 0.045);
+  border-left-color: rgb(245 158 11 / 0.8) !important;
+}
+
 

@@ -8,7 +8,15 @@ import {
   applyHighlightsToText,
 } from '../artigoTextUtils';
 import type { ArtigoLei } from '@/data/mockData';
-import { MAGIC_COLORS, type ModificationInfo, type MagicGrifo } from '../artigoConstants';
+import {
+  MAGIC_COLORS,
+  FONT_FAMILY_CLASSES,
+  LINE_HEIGHT_CLASSES,
+  type ModificationInfo,
+  type MagicGrifo,
+  type VadeMecumFontFamily,
+  type VadeMecumLineHeight,
+} from '../artigoConstants';
 import type { Highlight } from '@/hooks/useHighlights';
 
 export interface ArtigoLineRendererProps {
@@ -19,6 +27,10 @@ export interface ArtigoLineRendererProps {
   showRedacao: boolean;
   isRevogado: boolean;
   fontSize: number;
+  fontFamily?: VadeMecumFontFamily;
+  lineHeight?: VadeMecumLineHeight;
+  bionicReading?: boolean;
+  readingGuide?: boolean;
   highlightMode: boolean;
   focusedSegment: string | null;
   selectedColor: string;
@@ -38,6 +50,73 @@ export interface ArtigoLineRendererProps {
   setFocusedSegment: (segment: string) => void;
 }
 
+// ─── Bionic Reading Engine (Item 01) ───
+function renderBionicWord(word: string, key: string): React.ReactNode {
+  if (!word || !/[\p{L}\p{N}]/u.test(word)) return word;
+
+  const match = word.match(/^([^\p{L}\p{N}]*)([\p{L}\p{N}]+(?:[-–][\p{L}\p{N}]+)*)([^\p{L}\p{N}]*)$/u);
+  if (!match) return word;
+
+  const [, leadingPunct, coreWord, trailingPunct] = match;
+  const len = coreWord.length;
+  if (len <= 1) {
+    return (
+      <span key={key}>
+        {leadingPunct}<b className="font-bold text-foreground">{coreWord}</b>{trailingPunct}
+      </span>
+    );
+  }
+
+  const fixLen = len <= 3 ? 1 : Math.ceil(len * 0.44);
+  const boldPart = coreWord.slice(0, fixLen);
+  const restPart = coreWord.slice(fixLen);
+
+  return (
+    <span key={key}>
+      {leadingPunct}
+      <b className="font-bold text-foreground drop-shadow-[0_0_1px_rgba(255,255,255,0.15)]">{boldPart}</b>
+      <span className="opacity-90">{restPart}</span>
+      {trailingPunct}
+    </span>
+  );
+}
+
+function processBionicText(text: string, keyPrefix: string): React.ReactNode[] {
+  const tokens = text.split(/(\s+)/);
+  return tokens.map((token, idx) => {
+    if (!token || /^\s+$/.test(token)) return token;
+    return renderBionicWord(token, `${keyPrefix}-bw-${idx}`);
+  });
+}
+
+function applyBionicReading(nodes: React.ReactNode[], keyPrefix: string): React.ReactNode[] {
+  return nodes.map((node, index) => {
+    if (typeof node === 'string') {
+      const parts = processBionicText(node, `${keyPrefix}-${index}`);
+      return parts.length === 1 ? parts[0] : parts;
+    }
+    if (React.isValidElement(node)) {
+      const children = (node.props as any)?.children;
+      if (typeof children === 'string') {
+        const parts = processBionicText(children, `${keyPrefix}-${index}`);
+        return React.cloneElement(
+          node as React.ReactElement<any>,
+          { key: node.key || `${keyPrefix}-${index}` },
+          parts.length === 1 ? parts[0] : parts
+        );
+      }
+      if (Array.isArray(children)) {
+        return React.cloneElement(
+          node as React.ReactElement<any>,
+          { key: node.key || `${keyPrefix}-${index}` },
+          applyBionicReading(children, `${keyPrefix}-${index}`)
+        );
+      }
+    }
+    return node;
+  }).flat();
+}
+
 const ArtigoLineRendererComponent = ({
   line,
   lineIndex,
@@ -46,6 +125,10 @@ const ArtigoLineRendererComponent = ({
   showRedacao,
   isRevogado,
   fontSize,
+  fontFamily = 'sans',
+  lineHeight = '1.8',
+  bionicReading = false,
+  readingGuide = false,
   highlightMode,
   focusedSegment,
   selectedColor,
@@ -67,6 +150,9 @@ const ArtigoLineRendererComponent = ({
   const classified = classifyLine(line);
   const lineIsRevogado = isLineRevogado(line);
 
+  const leadingClass = LINE_HEIGHT_CLASSES[lineHeight] || 'leading-[1.8]';
+  const fontClass = FONT_FAMILY_CLASSES[fontFamily] || 'font-sans';
+
   const isModifiedLine = modificationInfo && modificationInfo.linhasModificadas.includes(lineIndex);
   const displayText = modificationInfo
     ? (isModifiedLine && showRedacao ? line : stripRedacao(line))
@@ -75,7 +161,19 @@ const ArtigoLineRendererComponent = ({
   if (lineIsRevogado && !isRevogado) {
     const revogadoDisplay = showRedacao ? line : line;
     return (
-      <p data-line-index={lineIndex} className={`italic leading-[1.8] ${classified.type === 'inciso' ? 'pl-4 border-l-2 border-purple-400/30' : classified.type === 'alinea' ? 'pl-8' : classified.type === 'paragrafo' ? 'mt-2' : ''}`} style={{ fontSize: `${Math.max(fontSize - 1, 10)}px` }}>
+      <p
+        data-line-index={lineIndex}
+        className={`italic ${fontClass} ${leadingClass} ${
+          classified.type === 'inciso'
+            ? 'pl-4 border-l-2 border-purple-400/30'
+            : classified.type === 'alinea'
+            ? 'pl-8'
+            : classified.type === 'paragrafo'
+            ? 'mt-2'
+            : ''
+        }`}
+        style={{ fontSize: `${Math.max(fontSize - 1, 10)}px` }}
+      >
         <span className="bg-purple-500/20 text-purple-300 rounded px-1 py-0.5">{revogadoDisplay}</span>
       </p>
     );
@@ -268,9 +366,18 @@ const ArtigoLineRendererComponent = ({
     finalNodes = finalNodes.map((node, index) => processNarracaoNode(node, `l${lineIndex}-${index}`)).flat();
   }
 
+  // Item 01: Aplicação do Motor Bionic Reading nos nós de texto resultantes
+  if (bionicReading) {
+    finalNodes = applyBionicReading(finalNodes, `bionic-${lineIndex}`);
+  }
+
   if (isRevogado) {
     return (
-      <p data-line-index={lineIndex} className="leading-[1.8]" style={{ fontSize: `${Math.max(fontSize - 2, 10)}px` }}>
+      <p
+        data-line-index={lineIndex}
+        className={`${fontClass} ${leadingClass}`}
+        style={{ fontSize: `${Math.max(fontSize - 2, 10)}px` }}
+      >
         <span className="bg-purple-500/20 text-purple-300 rounded px-1 py-0.5">{line}</span>
       </p>
     );
@@ -295,6 +402,11 @@ const ArtigoLineRendererComponent = ({
 
   const currentSegmentId = lineSegmentMap[lineIndex] || 'caput';
 
+  // Item 01: Guia Óptico (foco suave na linha ativa e leitura confortável)
+  const readingGuideClass = readingGuide
+    ? 'reading-line-focus hover:bg-amber-400/[0.045] hover:border-l-2 hover:border-amber-400/80 hover:pl-2.5 transition-all duration-150 cursor-pointer rounded-r-md'
+    : '';
+
   return (
     <p
       data-line-index={lineIndex}
@@ -302,7 +414,11 @@ const ArtigoLineRendererComponent = ({
       onClick={() => {
         if (!highlightMode) setFocusedSegment(currentSegmentId);
       }}
-      className={`text-foreground leading-[1.8] ${extra} ${highlightBg} ${!highlightMode && focusedSegment && focusedSegment === currentSegmentId ? 'rounded-md ring-1 ring-primary/25' : ''}`}
+      className={`text-foreground ${fontClass} ${leadingClass} ${extra} ${highlightBg} ${readingGuideClass} ${
+        !highlightMode && focusedSegment && focusedSegment === currentSegmentId
+          ? 'rounded-md ring-1 ring-primary/25 bg-primary/[0.03]'
+          : ''
+      }`}
       style={{ fontSize: `${fontSize}px` }}
     >
       {isFirst && !isRevogado && artLabel && (
@@ -326,6 +442,10 @@ export const ArtigoLineRenderer = memo(ArtigoLineRendererComponent, (prev, next)
     prev.showRedacao !== next.showRedacao ||
     prev.isRevogado !== next.isRevogado ||
     prev.fontSize !== next.fontSize ||
+    prev.fontFamily !== next.fontFamily ||
+    prev.lineHeight !== next.lineHeight ||
+    prev.bionicReading !== next.bionicReading ||
+    prev.readingGuide !== next.readingGuide ||
     prev.highlightMode !== next.highlightMode ||
     prev.focusedSegment !== next.focusedSegment ||
     prev.selectedColor !== next.selectedColor ||
