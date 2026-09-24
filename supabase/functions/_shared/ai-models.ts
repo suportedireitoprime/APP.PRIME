@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Modelos Gemini permitidos no app - FONTE UNICA DE VERDADE.
  *
  * Politica oficial: TODA chamada de texto/multimodal usa
@@ -20,15 +20,17 @@ export const MODELS = {
   tts: "gemini-2.5-flash-preview-tts",
 } as const;
 
-// Modelos de texto permitidos com fallback gracioso.
+// Modelos de texto permitidos com fallback gracioso (priorizando os mais rápidos).
 export const TEXT_MODEL_FALLBACKS = [
-  "gemini-2.5-flash",
   "gemini-3.1-flash-lite",
+  "gemini-2.5-flash-lite",
+  "gemini-2.5-flash",
 ] as const;
 
 export const ALLOWED_TEXT_MODELS = new Set<string>([
-  "gemini-3.1-flash",
   "gemini-3.1-flash-lite",
+  "gemini-2.5-flash-lite",
+  "gemini-3.1-flash",
   "gemini-3.5-flash",
   "gemini-2.5-flash",
 ]);

@@ -8,17 +8,22 @@ type PoderRow = { slug: string; ativo: boolean };
 
 async function callFn(name: string, body: unknown) {
   const t0 = Date.now();
-  const resp = await fetch(`${FUNCTIONS_URL}/${name}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${ANON}`,
-      apikey: ANON,
-    },
-    body: JSON.stringify(body),
-  });
-  const data = await resp.json().catch(() => ({}));
-  return { ok: resp.ok, data, latency: Date.now() - t0 };
+  try {
+    const resp = await fetch(`${FUNCTIONS_URL}/${name}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${ANON}`,
+        apikey: ANON,
+      },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(1000), // Timeout rígido de 1s para nunca travar a resposta do WhatsApp
+    });
+    const data = await resp.json().catch(() => ({}));
+    return { ok: resp.ok, data, latency: Date.now() - t0 };
+  } catch (e) {
+    return { ok: false, data: {}, latency: Date.now() - t0, error: String(e) };
+  }
 }
 
 function has(text: string, ...kws: string[]) {
@@ -45,8 +50,9 @@ export async function runPoderes(
   const blocks: string[] = [];
   const logs: Array<{ slug: string; ok: boolean; latency: number; error?: string }> = [];
 
-  // 2) MEM0 — recall silencioso sempre que ativo
-  if (active.has("mem0")) {
+  // 2) MEM0 — recall silencioso inteligente (apenas para mensagens informativas ou pedidos de memória)
+  const isSmallTalk = /^(oi|olá|ola|bom dia|boa tarde|boa noite|valeu|obrigado|ok|beleza|sim|não|nao)\b/i.test(userMessage.trim());
+  if (active.has("mem0") && !isSmallTalk && userMessage.trim().length > 8) {
     try {
       const r = await callFn("poder-tools", {
         fn: "mem0",

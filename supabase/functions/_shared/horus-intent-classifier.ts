@@ -1,7 +1,5 @@
-// Classificador de intenção via Gemini com structured output.
-// Roda antes da resposta principal para decidir tom/tratamento.
-
-import { geminiFetch } from "./geminiFetch.ts";
+// Classificador de intenção rápido e heurístico do Horus (0ms).
+// Elimina latência síncrona de LLM antes da resposta do WhatsApp.
 
 export type Intent =
   | "duvida_juridica"
@@ -18,82 +16,55 @@ export type ClassificationResult = {
   raw?: unknown;
 };
 
-const SYSTEM = `Você é um classificador. Recebe UMA mensagem de usuário (WhatsApp, português).
-Responda APENAS com JSON válido no formato:
-{"intent":"...","confidence":0.0,"redirect":true|false}
-
-Categorias:
-- duvida_juridica: pergunta sobre lei, artigo, doutrina, conceito jurídico, caso hipotético
-- duvida_app: pergunta sobre o app Vade Mecum Pro (funcionalidade, assinatura, bug)
-- bate_papo: cumprimento, small talk, brincadeira, pergunta pessoal ao bot
-- fora_escopo: pergunta séria mas fora do tema (política, medicina, receita, etc)
-- ininteligivel: texto sem sentido, teclado batido, muito curto e vago
-- suporte: reclamação, problema, pedido de ajuda urgente
-
-confidence: 0.0 a 1.0.
-redirect: true se a resposta ideal deve puxar de volta pro tema jurídico.`;
-
-export async function classifyIntent(message: string): Promise<ClassificationResult> {
-  const key = Deno.env.get("GEMINI_API_KEY") || "";
-  const fallback: ClassificationResult = { intent: "duvida_juridica", confidence: 0.3, redirect: false };
-  if (!key || !message) return fallback;
-
-  const { TEXT_MODEL_FALLBACKS } = await import("./ai-models.ts");
-  const { logAiCall } = await import("./ai-log.ts");
-  const models = [...TEXT_MODEL_FALLBACKS];
-  for (const model of models) {
-    const startedAt = Date.now();
-    let success = true;
-    let errMsg: string | undefined;
-    let inputUnits = 0;
-    let outputUnits = 0;
-    try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
-      const res = await geminiFetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: message.slice(0, 500) }] }],
-          systemInstruction: { parts: [{ text: SYSTEM }] },
-          generationConfig: {
-            temperature: 0.1,
-            maxOutputTokens: 100,
-            responseMimeType: "application/json",
-          },
-        }),
-      });
-      if (!res.ok) { success = false; errMsg = `${res.status}`; continue; }
-      const data = await res.json();
-      inputUnits  = Number(data?.usageMetadata?.promptTokenCount ?? 0) || 0;
-      outputUnits = Number(data?.usageMetadata?.candidatesTokenCount ?? 0) || 0;
-      const text = data?.candidates?.[0]?.content?.parts?.map((p: any) => p?.text).filter(Boolean).join("") || "";
-      const parsed = JSON.parse(text);
-      const intent = (["duvida_juridica","duvida_app","bate_papo","fora_escopo","ininteligivel","suporte"].includes(parsed?.intent)
-        ? parsed.intent
-        : "duvida_juridica") as Intent;
-      return {
-        intent,
-        confidence: Number(parsed?.confidence ?? 0.5),
-        redirect: Boolean(parsed?.redirect),
-        raw: parsed,
-      };
-    } catch (e) {
-      success = false;
-      errMsg = String(e);
-      console.warn("classifyIntent failed", model, errMsg);
-    } finally {
-      await logAiCall({
-        functionName: "horus-intent-classifier",
-        kind: "text",
-        model,
-        triggerType: "manual",
-        inputUnits, outputUnits,
-        durationMs: Date.now() - startedAt,
-        success, error: errMsg,
-      });
-    }
+/**
+ * Classificação instantânea baseada em heurísticas e padrões léxicos (0ms de rede).
+ */
+export function classifyIntentFast(message: string): ClassificationResult {
+  const text = (message || "").trim().toLowerCase();
+  if (!text || text.length < 2) {
+    return { intent: "ininteligivel", confidence: 0.95, redirect: true };
   }
-  return fallback;
+
+  // Teclado batido ou caracteres repetidos: "asdasd", "kkk", "???", "..."
+  if (/^([a-z0-9])\1{3,}$/i.test(text) || /^[^a-zA-Z0-9áéíóúâêîôûãõç\s]+$/.test(text)) {
+    return { intent: "ininteligivel", confidence: 0.9, redirect: true };
+  }
+
+  // 1. Suporte urgente / Reclamação
+  if (/\b(suporte|reclamação|reclamacao|problema|bug|travou|não funciona|nao funciona|não consigo|nao consigo|deu erro|está com erro|falha)\b/i.test(text)) {
+    return { intent: "suporte", confidence: 0.9, redirect: false };
+  }
+
+  // 2. Dúvida sobre o App / Assinatura
+  if (/\b(app|aplicativo|vade mecum|assinatura|assinar|plano|preço|preco|valor|quanto custa|mensalidade|anual|cupom|login|senha|recuperar conta|pro|premium)\b/i.test(text)) {
+    return { intent: "duvida_app", confidence: 0.88, redirect: false };
+  }
+
+  // 3. Cumprimentos, Small Talk e Bate-papo
+  if (/^(oi|olá|ola|bom dia|boa tarde|boa noite|e aí|e ai|fala|opa|salve|tudo bem|como vai|beleza|blz|valeu|obrigado|obrigada|tks|show|top|legal|perfeito|quem é você|quem e voce|qual seu nome|você é ia|voce e robo)\b/i.test(text)) {
+    return { intent: "bate_papo", confidence: 0.95, redirect: false };
+  }
+
+  // 4. Fora de escopo óbvio (culinária, futebol, medicina, etc.)
+  if (/\b(receita de bolo|escalação do|jogo do flamengo|fórmula 1|remédio para|posologia|sintoma de gripe|piada)\b/i.test(text)) {
+    return { intent: "fora_escopo", confidence: 0.85, redirect: true };
+  }
+
+  // 5. Dúvida jurídica (padrão principal do Horus)
+  if (/\b(lei|artigo|art\b|código|codigo|cp\b|cc\b|cf\b|cpc\b|clt\b|cpp\b|stf|stj|oab|concurso|pena|crime|prisão|habeas corpus|usucapião|dano moral|recurso|prazo|prescrição|decadência|audiência|júri|jurisprudência|doutrina|constituição|trabalhista|tributário|civil|penal|administrativo|previdenciário)\b/i.test(text)) {
+    return { intent: "duvida_juridica", confidence: 0.95, redirect: false };
+  }
+
+  // Padrão padrão para o assistente Horus: dúvida jurídica
+  return { intent: "duvida_juridica", confidence: 0.75, redirect: false };
+}
+
+/**
+ * Classifica a intenção sem bloquear a resposta do WhatsApp.
+ * Retorna em 0ms usando o motor heurístico.
+ */
+export async function classifyIntent(message: string): Promise<ClassificationResult> {
+  return classifyIntentFast(message);
 }
 
 // Decide se a intenção é "off-topic" para efeito de tracking de streak.

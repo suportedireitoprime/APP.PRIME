@@ -46,12 +46,36 @@ export function isPhoneAdmin(phone: string | null | undefined): boolean {
   );
 }
 
+// Cache em memória para evitar 8 queries repetitivas por mensagem do WhatsApp
+const planCache = new Map<string, { plan: ResolvedPlan; expiresAt: number }>();
+const PLAN_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutos
+
 /**
- * Resolve o plano do usuário de forma abrangente e confiável.
- * Checa: Admin (RPC, email, telefone), RPC is_premium_user, Asaas, Play, Apple,
- * user_subscriptions, profiles.is_premium e legacy_subscribers.
+ * Resolve o plano do usuário com cache de 5 minutos em memória.
  */
 export async function resolveUserPlan(
+  admin: any,
+  params: { userId?: string | null; phone?: string | null; email?: string | null }
+): Promise<ResolvedPlan> {
+  const cacheKey = [params.phone ? normalizePhoneE164(params.phone) : "", params.userId || "", params.email || ""].filter(Boolean).join(":");
+  if (cacheKey) {
+    const cached = planCache.get(cacheKey);
+    if (cached && Date.now() < cached.expiresAt) {
+      return cached.plan;
+    }
+  }
+
+  const plan = await resolveUserPlanInternal(admin, params);
+  if (cacheKey) {
+    planCache.set(cacheKey, { plan, expiresAt: Date.now() + PLAN_CACHE_TTL_MS });
+  }
+  return plan;
+}
+
+/**
+ * Resolução interna profunda em todas as fontes (Admin, RPC, Asaas, Play, Apple, etc.)
+ */
+async function resolveUserPlanInternal(
   admin: any,
   params: { userId?: string | null; phone?: string | null; email?: string | null }
 ): Promise<ResolvedPlan> {

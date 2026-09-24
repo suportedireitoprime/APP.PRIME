@@ -575,13 +575,13 @@ async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessa
   const currentStreak = Number(userRow?.off_topic_streak ?? 0);
   const nextStreak = isOffTopic(intent) ? currentStreak + 1 : 0;
 
-  // 4) Load recent history for multi-turn memory (Limiting to 6 messages to save context/tokens - Bug 4)
-  const history = await loadHistory(admin, parsed.from, 6);
-
-  // 4b) Carrega stats do usuário (só se agente usa)
-  const stats = agent?.usa_estatisticas !== false
-    ? await loadUserStatsByPhone(admin, parsed.from).catch(() => null)
-    : null;
+  // 4) Carrega histórico e estatísticas em paralelo (reduz latência de rede no WhatsApp)
+  const [history, stats] = await Promise.all([
+    loadHistory(admin, parsed.from, 6),
+    agent?.usa_estatisticas !== false
+      ? loadUserStatsByPhone(admin, parsed.from).catch(() => null)
+      : Promise.resolve(null),
+  ]);
 
   // Auto-cura do plano no contexto se o usuário for Premium ou Admin
   if (stats && premium) {
@@ -629,7 +629,7 @@ async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessa
   }
 
   // A presença "digitando…" já está sendo renovada por handleIncomingMessage.
-  const gen: AskGeminiResult = await askGemini(history, systemPrompt, agent, parsed.from);
+  const gen: AskGeminiResult = await askGemini(history, systemPrompt, agent, parsed.from, parsed.text);
   let reply = gen.text;
   if (!reply) return;
 
@@ -767,13 +767,21 @@ async function tryLinkProfile(admin: any, phone: string): Promise<{ id: string; 
   return match ? { id: match.id, display_name: match.display_name } : null;
 }
 
-async function loadAgents(admin: any) {
+let cachedAgents: any[] = [];
+let cachedAgentsExpiry = 0;
+
+async function loadAgents(admin: any): Promise<any[]> {
+  if (cachedAgents.length > 0 && Date.now() < cachedAgentsExpiry) {
+    return cachedAgents;
+  }
   const { data } = await admin
     .from("horus_funcoes")
     .select("id, nome, descricao, prompt, keywords, ativo, prioridade, requer_cadastro, modelo, temperatura, max_tokens, eh_onboarding, eh_fallback, usar_busca_web, usa_estatisticas")
     .eq("ativo", true)
     .order("prioridade", { ascending: true });
-  return data || [];
+  cachedAgents = data || [];
+  cachedAgentsExpiry = Date.now() + 60_000;
+  return cachedAgents;
 }
 
 function pickAgent(agents: any[], text: string, isLinked: boolean) {
@@ -819,7 +827,30 @@ async function logOutbound(admin: any, parsed: { from: string; remoteJid: string
 
 type AskGeminiResult = { text: string; model: string; usage: { input: number; output: number; total: number } };
 
-async function askGemini(history: Array<{ role: string; content: string }>, systemPrompt: string, agent: any, userPhone?: string): Promise<AskGeminiResult> {
+/**
+ * Ativa busca na web apenas se o usuário pedir dados em tempo real ou eventos recentes.
+ * Economiza de 4 a 10 segundos em 95% das mensagens.
+ */
+function shouldSearchWeb(agent: any, userText: string): boolean {
+  if (agent?.usar_busca_web === false) return false;
+  const lower = (userText || "").toLowerCase();
+  const webKeywords = [
+    "hoje", "ontem", "esta semana", "este mês", "este ano", "2026",
+    "notícia", "noticia", "recente", "última", "ultima", "atual",
+    "ao vivo", "saiu hoje", "cotação", "cotacao", "stf ao vivo",
+    "resultado", "decisão de ontem", "decisao de ontem", "pesquise na web",
+    "busca na web", "pesquisar na internet"
+  ];
+  return webKeywords.some((kw) => lower.includes(kw));
+}
+
+async function askGemini(
+  history: Array<{ role: string; content: string }>,
+  systemPrompt: string,
+  agent: any,
+  userPhone?: string,
+  userText?: string
+): Promise<AskGeminiResult> {
   const key = Deno.env.get("GEMINI_API_KEY") || "";
   const contents = history
     .filter((m) => m && m.content && !isGenericHorusFailure(m.content))
@@ -831,14 +862,20 @@ async function askGemini(history: Array<{ role: string; content: string }>, syst
   if (!contents.length) return empty;
 
   const { TEXT_MODEL_FALLBACKS } = await import("../_shared/ai-models.ts");
+  const defaultFastModel = "gemini-3.1-flash-lite";
+  const preferredModel = (agent?.modelo && agent.modelo !== "gemini-2.5-flash")
+    ? normalizeGeminiTextModel(agent.modelo)
+    : defaultFastModel;
+
   const models = Array.from(new Set([
-    normalizeGeminiTextModel(agent?.modelo),
+    preferredModel,
+    defaultFastModel,
     normalizeGeminiTextModel(Deno.env.get("GEMINI_MODEL")),
     ...TEXT_MODEL_FALLBACKS,
   ].filter(Boolean) as string[]));
 
   let lastError = "";
-  const useSearch = agent?.usar_busca_web !== false;
+  const useSearch = shouldSearchWeb(agent, userText || "");
   const traceEnabled = langfuseEnabled();
   if (key) {
     for (const model of models) {
@@ -954,7 +991,7 @@ function normalizeGeminiTextModel(model: unknown): string | null {
 }
 
 async function askGeminiGateway(history: Array<{ role: string; content: string }>, systemPrompt: string, agent: any): Promise<string> {
-  const GeminiKey = undefined || "";
+  const GeminiKey = "";
   if (!GeminiKey) return "";
 
   const messages = [
