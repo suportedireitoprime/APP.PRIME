@@ -1115,15 +1115,14 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
         </div>
 
         <motion.nav
-          initial={{ opacity: 0, y: 14 }}
-          animate={showFooter ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
-          transition={{ duration: 0.26, ease: [0.22, 0.61, 0.36, 1] }}
-          style={{ willChange: 'transform, opacity', pointerEvents: showFooter ? 'auto' : 'none' }}
-          className="fixed bottom-0 left-0 right-0 z-[58] lg:hidden"
+          aria-label="Navegação do Código"
+          initial={false}
+          animate={showFooter ? { y: 0, opacity: 1, pointerEvents: 'auto' as const } : { y: 120, opacity: 0, pointerEvents: 'none' as const }}
+          transition={{ duration: 0.18, ease: 'easeOut' }}
+          className="fixed bottom-0 left-0 right-0 z-[58] md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto lg:hidden"
         >
-          <div className="bg-[#0e0e10]/95 backdrop-blur-xl border-t border-white/10 rounded-t-3xl shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.65)] pb-safe px-3 pt-2 pb-2">
-            {/* Menu de rodapé estético com exatamente 2 tons de cinza */}
-            <div className="grid grid-cols-4 max-w-md mx-auto items-center gap-1">
+          <div className="bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[calc(0.5rem+var(--sai-bottom))] md:border md:rounded-full md:shadow-2xl md:shadow-black/30 md:pb-0">
+            <div className="grid grid-cols-4 items-end px-1 pt-3.5 pb-3.5 max-w-lg mx-auto md:gap-1 md:px-3 md:py-2">
               {[
                 { key: 'art' as const, icon: BookOpen, label: 'Artigos' },
                 { key: 'cap' as const, icon: LayoutGrid, label: 'Capítulos' },
@@ -1131,6 +1130,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                 { key: 'sobre' as const, icon: Info, label: 'Sobre' },
               ].map((tab) => {
                 const active = tab.key === 'sobre' ? showSobreModal : activeTab === tab.key;
+                const Icon = tab.icon;
                 return (
                   <button
                     key={tab.key}
@@ -1142,15 +1142,26 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                         setActiveTab(tab.key);
                       }
                     }}
-                    type="button"
-                    className={`flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-2xl transition-all select-none active:scale-95 ${
-                      active
-                        ? 'bg-white/10 text-white font-bold border border-white/15 shadow-sm'
-                        : 'text-zinc-400 hover:text-white font-medium hover:bg-white/5'
+                    className={`relative flex flex-col items-center justify-end gap-1 py-1.5 px-1 rounded-2xl transition-colors ${
+                      active ? 'text-white' : 'text-muted-foreground hover:text-white/80'
                     }`}
+                    aria-label={tab.label}
                   >
-                    <tab.icon className={`w-5 h-5 sm:w-6 sm:h-6 shrink-0 transition-transform ${active ? 'text-primary scale-110' : 'text-zinc-400'}`} strokeWidth={active ? 2.5 : 2} />
-                    <span className="font-body text-[11px] sm:text-[12px] leading-tight">
+                    {active && (
+                      <motion.span
+                        layoutId="cp-nav-active-pill"
+                        className="absolute inset-0 rounded-2xl bg-white/10 ring-1 ring-white/20"
+                        transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                        aria-hidden="true"
+                      />
+                    )}
+
+                    <Icon className="relative w-7 h-7 sm:w-8 sm:h-8" strokeWidth={active ? 1.9 : 1.5} />
+                    <span
+                      className={`relative text-[10px] sm:text-[11px] leading-none ${
+                        active ? 'font-bold' : 'font-medium'
+                      }`}
+                    >
                       {tab.label}
                     </span>
                   </button>
