@@ -102,6 +102,111 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   const [ocrOpen, setOcrOpen] = useState(false);
   const [showGrafo, setShowGrafo] = useState(false);
 
+  // Efeito Máquina de Escrever (Typewriter) adaptativo à Legislação Selecionada
+  const searchPlaceholders = useMemo(() => {
+    const nome = (selectedLeiNome || '').toLowerCase();
+    const tabela = (selectedTabelaNome || '').toLowerCase();
+
+    if (tabela.includes('penal') || nome.includes('penal')) {
+      return [
+        'Pesquisar artigo...',
+        'Pesquisar 157 (Roubo)...',
+        'Pesquisar 121 (Homicídio)...',
+        'Pesquisar 171 (Estelionato)...',
+        'Pesquisar 155 (Furto)...',
+        'Pesquisar Legítima Defesa...',
+        'Pesquisar Prescrição...',
+      ];
+    }
+    if (tabela.includes('civil') || nome.includes('civil')) {
+      return [
+        'Pesquisar artigo...',
+        'Pesquisar 186 (Ato Ilícito)...',
+        'Pesquisar 421 (Contratos)...',
+        'Pesquisar 927 (Indenização)...',
+        'Pesquisar Usucapião...',
+        'Pesquisar Casamento...',
+      ];
+    }
+    if (tabela.includes('cf88') || tabela.includes('constituicao') || nome.includes('constitui')) {
+      return [
+        'Pesquisar artigo...',
+        'Pesquisar Art. 5º...',
+        'Pesquisar Direitos Fundamentais...',
+        'Pesquisar Art. 37 (Admin. Pública)...',
+        'Pesquisar Habeas Corpus...',
+      ];
+    }
+    if (tabela.includes('clt') || tabela.includes('trabalho') || nome.includes('clt') || nome.includes('trabalho')) {
+      return [
+        'Pesquisar artigo...',
+        'Pesquisar 477 (Rescisão)...',
+        'Pesquisar Horas Extras...',
+        'Pesquisar Justa Causa...',
+        'Pesquisar Férias...',
+      ];
+    }
+    if (tabela.includes('cdc') || tabela.includes('consumidor') || nome.includes('consumidor')) {
+      return [
+        'Pesquisar artigo...',
+        'Pesquisar Art. 6º (Direitos)...',
+        'Pesquisar Vício do Produto...',
+        'Pesquisar Prazo de Devolução...',
+      ];
+    }
+    if (tabela.includes('tribut') || nome.includes('tribut')) {
+      return [
+        'Pesquisar artigo...',
+        'Pesquisar Fato Gerador...',
+        'Pesquisar Imunidade...',
+        'Pesquisar Isenção...',
+      ];
+    }
+    return [
+      'Pesquisar artigo...',
+      'Pesquisar Art. 1º...',
+      'Pesquisar termo ou assunto...',
+      'Pesquisar por voz ou câmera...',
+    ];
+  }, [selectedLeiNome, selectedTabelaNome]);
+
+  const [animatedPlaceholder, setAnimatedPlaceholder] = useState('Pesquisar artigo...');
+
+  useEffect(() => {
+    let wordIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    let timer: NodeJS.Timeout;
+
+    const tick = () => {
+      const currentWord = searchPlaceholders[wordIndex] || 'Pesquisar artigo...';
+
+      if (isDeleting) {
+        charIndex--;
+        setAnimatedPlaceholder(currentWord.substring(0, charIndex));
+        if (charIndex <= 0) {
+          isDeleting = false;
+          wordIndex = (wordIndex + 1) % searchPlaceholders.length;
+          timer = setTimeout(tick, 350);
+          return;
+        }
+        timer = setTimeout(tick, 30);
+      } else {
+        charIndex++;
+        setAnimatedPlaceholder(currentWord.substring(0, charIndex));
+        if (charIndex >= currentWord.length) {
+          isDeleting = true;
+          timer = setTimeout(tick, 2200);
+          return;
+        }
+        timer = setTimeout(tick, 60);
+      }
+    };
+
+    timer = setTimeout(tick, 800);
+    return () => clearTimeout(timer);
+  }, [searchPlaceholders]);
+
   const [expandedCapituloId, setExpandedCapituloId] = useState<string | null>(null);
   const [playingUrl, setPlayingUrl] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -575,7 +680,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           <div ref={searchBarRef} className={`mx-auto w-full relative ${isDesktop ? 'max-w-none' : ''}`}>
             <form className="flex items-center gap-2.5 min-w-0" onSubmit={(e) => { e.preventDefault(); handleSearch(); setIsSearchFocused(false); }}>
               <div className="relative flex-1 min-w-0">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-foreground" />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[19px] h-[19px] text-zinc-400 pointer-events-none" />
                 <Input
                   value={voiceSearch.listening ? (voiceSearch.partial || searchQuery) : searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -583,16 +688,16 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                     setIsSearchFocused(true);
                     scrollToSearch();
                   }}
-                  placeholder="Pesquisar artigo..."
-                  className={`rounded-2xl bg-secondary border-border pl-10 pr-20 text-sm font-medium ${isDesktop ? 'h-12' : 'h-12'}`}
+                  placeholder={animatedPlaceholder}
+                  className={`rounded-2xl bg-zinc-800/85 hover:bg-zinc-800 border border-white/10 hover:border-white/20 focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/30 pl-11 pr-20 text-[14px] sm:text-[15px] font-medium text-white placeholder:text-zinc-400/90 shadow-md transition-all ${isDesktop ? 'h-[52px]' : 'h-[52px] sm:h-[54px]'}`}
                 />
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                   {searchQuery && !voiceSearch.listening && (
-                    <button type="button" onClick={() => { setSearchQuery(''); handleSearch(''); }} className="p-1.5 rounded-full hover:bg-background/40 text-muted-foreground" aria-label="Limpar busca">
+                    <button type="button" onClick={() => { setSearchQuery(''); handleSearch(''); }} className="p-1.5 rounded-full hover:bg-white/10 text-zinc-400 hover:text-white transition-colors" aria-label="Limpar busca">
                       <XIcon className="w-4 h-4" />
                     </button>
                   )}
-                  <button type="button" onClick={() => setOcrOpen(true)} aria-label="Fotografar artigo (OCR)" className="w-8 h-8 rounded-full flex items-center justify-center bg-red-500/15 text-red-400 hover:bg-red-500/25 transition-colors">
+                  <button type="button" onClick={() => setOcrOpen(true)} aria-label="Fotografar artigo (OCR)" className="w-8 h-8 rounded-full flex items-center justify-center bg-red-500/15 text-red-400 hover:bg-red-500/25 active:scale-95 transition-all">
                     <Camera className="w-4 h-4" />
                   </button>
                 </div>
@@ -601,10 +706,10 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                 type="button"
                 onClick={() => voiceSearch.toggle()}
                 aria-label={voiceSearch.listening ? 'Parar gravação' : 'Buscar por voz'}
-                className={`relative overflow-hidden shrink-0 rounded-full flex items-center justify-center shadow-lg active:scale-[0.95] transition ${isDesktop ? 'w-11 h-11' : 'w-12 h-12'} ${voiceSearch.listening ? 'bg-hero-panel text-white animate-pulse shadow-red-950/50' : 'bg-hero-panel text-white shadow-red-950/40'}`}
+                className={`relative overflow-hidden shrink-0 rounded-full flex items-center justify-center shadow-lg active:scale-[0.95] transition-all ${isDesktop ? 'w-[52px] h-[52px]' : 'w-[52px] h-[52px] sm:w-[54px] sm:h-[54px]'} ${voiceSearch.listening ? 'bg-hero-panel text-white animate-pulse shadow-red-950/50' : 'bg-hero-panel text-white shadow-red-950/40'}`}
               >
                 {voiceSearch.listening && <span className="absolute inset-0 rounded-full bg-red-500/30 animate-ping" />}
-                {voiceSearch.listening ? <MicOff className={`relative z-[2] ${isDesktop ? 'w-5 h-5' : 'w-6 h-6'}`} strokeWidth={2.5} /> : <Mic className={`relative z-[2] ${isDesktop ? 'w-5 h-5' : 'w-6 h-6'}`} strokeWidth={2.5} />}
+                {voiceSearch.listening ? <MicOff className="relative z-[2] w-6 h-6" strokeWidth={2.4} /> : <Mic className="relative z-[2] w-6 h-6" strokeWidth={2.4} />}
               </button>
             </form>
 

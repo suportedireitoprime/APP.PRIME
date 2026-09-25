@@ -215,7 +215,7 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
           {/* Risquinho vertical padrão oficial ampliado */}
           <span className="w-1.5 h-5 rounded-full bg-primary shadow-sm shadow-primary/60 shrink-0" />
           <h3 className="font-display text-foreground text-[18px] font-bold flex items-center gap-2 pointer-events-auto uppercase tracking-widest truncate">
-            HISTÓRICO
+            NOVIDADES
             <span className="text-[12px] font-medium tracking-normal text-zinc-400 normal-case">
               ({totalAlteracoes} atualizações)
             </span>

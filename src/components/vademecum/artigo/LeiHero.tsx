@@ -98,9 +98,9 @@ const LeiHero: React.FC<LeiHeroProps> = ({
             type="button"
             onClick={goBack}
             aria-label="Voltar"
-            className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/45 backdrop-blur-md border border-white/10 text-white shadow-xl transition-all hover:bg-black/60 active:scale-95 cursor-pointer"
+            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full flex items-center justify-center bg-black/45 backdrop-blur-md border border-white/10 text-white shadow-xl transition-all hover:bg-black/60 active:scale-95 cursor-pointer"
           >
-            <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
+            <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           </button>
         </header>
 
