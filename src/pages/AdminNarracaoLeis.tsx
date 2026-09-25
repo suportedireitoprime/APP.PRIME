@@ -1060,7 +1060,7 @@ export default function AdminNarracaoLeis() {
       <PageHeader
         title="Narração de Leis"
         subtitle="Vade Mecum, estúdio de voz fatiada, testes e automação"
-        onBack={() => navigate(-1)}
+        onBack={() => navigate('/admin-funcoes?cat=bases-juridicas', { state: { fromCat: 'bases-juridicas' } })}
       />
 
       <div className="p-4 max-w-4xl mx-auto space-y-4">

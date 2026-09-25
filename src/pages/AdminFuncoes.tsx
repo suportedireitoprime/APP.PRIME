@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useMemo } from 'react';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
   ChevronRight, Activity, ShieldCheck, ClipboardList, BookOpen,
   Gamepad2, Brain, BookA, MessageCircle, BellRing, Mic, Lightbulb, Building2,
@@ -346,7 +346,25 @@ const DEFAULT_REPO = 'WN7CORP/lexi-guide';
 
 const AdminFuncoes = () => {
   const navigate = useNavigate();
-  const [openCat, setOpenCat] = useState<Category | null>(null);
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const catParam = searchParams.get('cat') || (location.state as any)?.fromCat;
+  const initialCat = useMemo(() => {
+    if (!catParam) return null;
+    return CATEGORIES.find(c => c.id === catParam) || null;
+  }, [catParam]);
+
+  const [openCat, setOpenCat] = useState<Category | null>(initialCat);
+
+  useEffect(() => {
+    if (catParam) {
+      const match = CATEGORIES.find(c => c.id === catParam);
+      if (match) setOpenCat(match);
+    } else {
+      setOpenCat(null);
+    }
+  }, [catParam]);
 
   useEffect(() => {
     const run = () => prefetchAllAdminRoutes();
@@ -367,15 +385,20 @@ const AdminFuncoes = () => {
 
     if (item.route) {
       try { await prefetch(item.route); } catch {}
-      setOpenCat(null);
-      navigate(item.route);
+      navigate(item.route, { state: { fromCat: openCat?.id } });
     }
   };
 
   if (openCat) {
     return (
       <div className="min-h-dvh bg-background pb-8">
-        <PageHeader title={openCat.title} onBack={() => setOpenCat(null)} />
+        <PageHeader
+          title={openCat.title}
+          onBack={() => {
+            setSearchParams({});
+            setOpenCat(null);
+          }}
+        />
 
         <div className="p-4">
           <p className="font-body text-[12px] text-muted-foreground mb-3 px-1">
@@ -440,6 +463,7 @@ const AdminFuncoes = () => {
                   if (items.length === 1 && items[0].route) {
                     void prefetch(items[0].route).finally(() => navigate(items[0].route!));
                   } else {
+                    setSearchParams({ cat: cat.id });
                     setOpenCat(cat);
                   }
                 }}

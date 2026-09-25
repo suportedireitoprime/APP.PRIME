@@ -1,24 +1,16 @@
-# Tarefas — Estúdio de Narração de Leis no "Bases Jurídicas"
+# Tarefas — Roteamento e Retorno de Bases Jurídicas
 
-- [x] **1. Parser de Artigos em Partes Estruturadas**
-  - [x] Criar `src/utils/artigoPartesParser.ts` para fatiar Caput, Pena, Parágrafos, Incisos e Alíneas
-  - [x] Adicionar suporte a higienização jurídica e conversão fonética por bloco
-- [x] **2. Backend & Automação Supabase (Cron a cada 10 min)**
-  - [x] Criar migration SQL para tabelas `narracao_leis_config` e `narracao_leis_logs` com RPC para `pg_cron`
-  - [x] Criar Edge Function `supabase/functions/narracao-leis-automacao/index.ts` com prioridade para artigos maiores e geração fatiada
-  - [x] Realizar deploy da Edge Function via Supabase CLI (`narracao-leis-automacao` deployed)
-  - [x] Executar migration SQL com sucesso no Supabase
-- [x] **3. Serviço de Narração & Automação no Frontend**
-  - [x] Criar `src/services/narracaoLeisService.ts` com busca de artigos narrados, geração fatiada, prévia de vozes e automação
-- [x] **4. Telas e Componentes do Estúdio**
-  - [x] Criar `src/pages/AdminNarracaoLeis.tsx` com navegação hierárquica (Categorias → Leis → Artigos fatiados)
-  - [x] Implementar seção "Teste de Áudio" (abaixo de Previdenciário) com seletor de vozes, tonalidade e player de amostra
-  - [x] Implementar seção "Automação" (abaixo do Teste de Áudio) com configuração do cron de 10 min, lei alvo e prioridade (artigos maiores primeiro)
-  - [x] Implementar player com destaque visual em tempo real do bloco que está sendo narrado
-- [x] **5. Integração no Menu "Bases Jurídicas" e Rotas**
-  - [x] Adicionar item "Narração de Leis" na categoria `bases-juridicas` em `src/pages/AdminFuncoes.tsx`
-  - [x] Registrar rota `/admin-narracao-leis` em `src/AppRoutes.tsx`
-- [x] **6. Verificação e Auto-Commit**
-  - [x] Validar tipos com `tsc --noEmit` (0 erros)
-  - [x] Validar empacotamento com `vite build` (sucesso 100%)
+- [x] **1. Ajustar `AdminFuncoes.tsx` com `useSearchParams` e URL sync**
+  - [x] Sincronizar `openCat` com `searchParams.get('cat')` e `location.state?.fromCat`
+  - [x] Atualizar `handleClick` para repassar `state: { fromCat: openCat.id }`
+  - [x] Ajustar `onBack` da categoria aberta para limpar a query `?cat`
+- [x] **2. Ajustar `onBack` em `AdminMapeamentoLeis.tsx`**
+  - [x] Retornar para `/admin-funcoes?cat=bases-juridicas` com state
+- [x] **3. Ajustar `onBack` em `AdminVadeMecumHistorico.tsx`**
+  - [x] Retornar para `/admin-funcoes?cat=bases-juridicas` com state
+- [x] **4. Ajustar `onBack` em `AdminNarracaoLeis.tsx`**
+  - [x] Retornar para `/admin-funcoes?cat=bases-juridicas` com state
+- [x] **5. Validação e Auto-Commit**
+  - [x] Checagem de TypeScript (`tsc --noEmit` com 0 erros)
+  - [x] Build do projeto (`vite build` com código 0)
   - [ ] Auto-commit e push para o GitHub

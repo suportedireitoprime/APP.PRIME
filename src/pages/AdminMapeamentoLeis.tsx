@@ -809,7 +809,7 @@ export default function AdminMapeamentoLeis() {
             setSelectedCat(null);
             setBusca('');
           } else {
-            navigate('/admin-funcoes');
+            navigate('/admin-funcoes?cat=bases-juridicas', { state: { fromCat: 'bases-juridicas' } });
           }
         }}
       />

@@ -297,7 +297,7 @@ export default function AdminVadeMecumHistorico() {
       {/* Header */}
       <PageHeader
         title="Histórico de Atualizações"
-        onBack={() => navigate('/admin-funcoes')}
+        onBack={() => navigate('/admin-funcoes?cat=bases-juridicas', { state: { fromCat: 'bases-juridicas' } })}
       />
 
       <div className="p-4 max-w-4xl mx-auto space-y-5">
