@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { ArrowLeft, ExternalLink, Heart, ScrollText } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Heart, ScrollText, StickyNote, Radar, ListMusic } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { getLeiColor, getLeiCover, shade } from '@/lib/leiTheme';
+import { getLeiColor, getLeiCover } from '@/lib/leiTheme';
 import { isFavorito as isLeiFavorita, toggleFavorito as toggleLeiFavorito } from '@/lib/leisFavoritos';
+import { haptic } from '@/lib/nativeHaptics';
 import brasaoImgAsset from '@/assets/brasao-republica.webp';
 
 const brasaoImg = brasaoImgAsset;
@@ -11,7 +12,7 @@ interface LeiHeroProps {
   isDesktop: boolean;
   selectedLeiId: string;
   tipo: string | undefined;
-  leis: any[]; // The generic law type array
+  leis: any[];
   selectedLeiNome: string;
   selectedLeiDescricao: string;
   config: { label: string; bg: string } | null;
@@ -19,6 +20,8 @@ interface LeiHeroProps {
   leiFavToggle: number;
   setLeiFavToggle: React.Dispatch<React.SetStateAction<number>>;
   selectedLeiEmenta: string | null;
+  onOpenOverlay?: (panel: 'fav' | 'playlist' | 'anotacoes' | 'radar') => void;
+  favCount?: number;
 }
 
 const LeiHero: React.FC<LeiHeroProps> = ({
@@ -33,111 +36,99 @@ const LeiHero: React.FC<LeiHeroProps> = ({
   leiFavToggle,
   setLeiFavToggle,
   selectedLeiEmenta,
+  onOpenOverlay,
+  favCount = 0,
 }) => {
   const [showEmentaDialog, setShowEmentaDialog] = useState(false);
 
-  const leiColor = getLeiColor(selectedLeiId, tipo);
   const cover = getLeiCover(selectedLeiId, tipo);
   const selectedLei = leis.find((l) => l.id === selectedLeiId);
   const planaltoUrl = selectedLei?.url_planalto;
+  const isFav = selectedLei ? isLeiFavorita(selectedLei.id) : false;
 
   return (
     <>
+      {/* Shell sólido com cantos inferiores arredondados idêntico ao painel inicial do aplicativo */}
       <div
-        className="relative overflow-hidden w-full pt-[var(--sai-top)]"
+        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/70 pt-[var(--sai-top)] flex flex-col z-20"
         style={{
-          aspectRatio: isDesktop ? '21 / 7' : '16 / 10',
-          ...(isDesktop ? { maxHeight: 300, minHeight: 200 } : null),
+          transform: 'translateZ(0)',
+          backgroundColor: '#050505',
         }}
       >
+        {/* Blindagem de overscroll superior contra vazamento do fundo */}
+        <div
+          className="pointer-events-none absolute -top-[1200px] left-0 right-0 h-[1200px] z-0"
+          style={{ backgroundColor: '#050505' }}
+          aria-hidden="true"
+        />
+
+        {/* Imagem de Capa em toda a extensão do painel */}
         <img
           src={cover}
           alt={`Capa — ${selectedLeiNome}`}
           loading="eager"
           decoding="async"
           fetchPriority="high"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover object-center z-0 pointer-events-none"
         />
-        {/* Suave tint colorido — deixa os desenhos laterais aparecerem */}
+
+        {/* Degradê e vinheta para legibilidade absoluta */}
         <div
-          className="absolute inset-0 mix-blend-multiply"
-          style={{ background: `linear-gradient(135deg, ${leiColor}80 0%, ${shade(leiColor, -0.4)}60 100%)` }}
+          className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/45 to-[#050505] pointer-events-none z-[1]"
         />
+        <div
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_15%,rgba(0,0,0,0.85)_100%)] pointer-events-none z-[1]"
+        />
+
         {/* Brasão watermark centralizado atrás do título */}
         <img
           src={brasaoImg}
           alt=""
           aria-hidden
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none w-[180px] md:w-[240px] opacity-[0.14] mix-blend-luminosity"
+          className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none w-[180px] md:w-[240px] opacity-[0.10] mix-blend-luminosity z-[1]"
         />
-        {/* Degradê inferior — funde com o fundo preto da página */}
-        <div
-          className="absolute inset-x-0 bottom-0 h-2/3"
-          style={{ background: `linear-gradient(180deg, transparent 0%, hsl(var(--background) / 0.55) 55%, hsl(var(--background)) 100%)` }}
-        />
-        
-        {/* Botão flutuante em vidro — voltar para a rota anterior */}
-        <button
-          type="button"
-          onClick={goBack}
-          aria-label="Voltar"
-          className="absolute left-4 top-[calc(var(--sai-top)+12px)] z-20 w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full flex items-center justify-center bg-white/10 backdrop-blur-xl border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.35)] active:scale-95 transition touch-manipulation select-none"
-        >
-          <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white drop-shadow" strokeWidth={2.4} />
-        </button>
 
-        {/* Botão de favoritar a lei — mesma linha do voltar, à direita */}
-        {selectedLei && (() => {
-          const fav = isLeiFavorita(selectedLei.id);
-          void leiFavToggle; // força re-render em mudanças externas
-          return (
-            <button
-              type="button"
-              onClick={() => {
-                toggleLeiFavorito({
-                  tipo: selectedLei.tipo,
-                  leiId: selectedLei.id,
-                  nome: selectedLei.nome,
-                  descricao: selectedLei.descricao,
-                  tabela_nome: selectedLei.tabela_nome,
-                });
-                setLeiFavToggle((n) => n + 1);
-              }}
-              aria-label={fav ? 'Remover dos favoritos' : 'Favoritar lei'}
-              className={`absolute right-4 top-[calc(var(--sai-top)+12px)] z-20 w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-xl border shadow-[0_8px_24px_rgba(0,0,0,0.35)] active:scale-95 transition touch-manipulation select-none ${fav ? 'bg-rose-500/25 border-rose-300/50' : 'bg-white/10 border-white/25'}`}
-            >
-              <Heart className={`w-6 h-6 drop-shadow ${fav ? 'text-rose-400 fill-rose-400' : 'text-white'}`} />
-            </button>
-          );
-        })()}
-
-        {/* Texto */}
-        <div className="absolute inset-0 flex flex-col items-center justify-end text-center px-6 pb-5 lg:pb-4">
-          <p
-            className="text-[10px] font-semibold tracking-[0.35em] uppercase mb-2 lg:mb-1 opacity-80"
-            style={{ color: '#ffffff' }}
+        {/* Barra superior de navegação: Botão Voltar */}
+        <header className="relative z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] px-4 pb-2 flex items-center justify-between">
+          <button
+            type="button"
+            onClick={goBack}
+            aria-label="Voltar"
+            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full flex items-center justify-center bg-black/45 backdrop-blur-md border border-white/10 text-white shadow-xl transition-all hover:bg-black/60 active:scale-95"
           >
-            {config?.label || 'Legislação'}
+            <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
+          </button>
+        </header>
+
+        {/* Conteúdo Central: Título e Identificação da Lei */}
+        <div className="relative z-10 px-4 pt-1 sm:pt-2 pb-2 flex flex-col items-center justify-center text-center">
+          <p className="text-[10px] sm:text-xs font-bold tracking-[0.35em] uppercase text-white/75 mb-1">
+            {config?.label || 'Códigos'}
           </p>
-          <h1 className="font-display text-white text-2xl md:text-4xl lg:text-3xl font-bold uppercase tracking-wide leading-tight drop-shadow-lg">
+
+          <h1 className="font-display text-white text-2xl sm:text-3xl md:text-4xl font-extrabold uppercase tracking-wide leading-tight drop-shadow-xl">
             {selectedLeiNome}
           </h1>
+
           {selectedLeiDescricao && (
-            <p className="text-white/85 text-xs md:text-sm mt-2 lg:mt-1 max-w-2xl leading-snug line-clamp-2">
+            <p className="text-white/80 text-xs sm:text-sm mt-1 max-w-xl leading-snug line-clamp-2 px-2">
               {selectedLeiDescricao}
             </p>
           )}
+
           <div
-            className="mt-3 lg:mt-2 h-0.5 w-16 rounded-full"
-            style={{ background: `linear-gradient(90deg, transparent, #ffffff, transparent)` }}
+            className="my-2.5 h-0.5 w-16 rounded-full"
+            style={{ background: 'linear-gradient(90deg, transparent, #ffffff, transparent)' }}
           />
-          <div className="mt-3 flex items-center justify-center gap-2 flex-wrap">
+
+          <div className="flex items-center justify-center gap-2 flex-wrap">
             {planaltoUrl && (
               <a
                 href={planaltoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 w-32 h-9 text-[11px] text-white/90 hover:text-white transition-colors font-medium bg-black/30 backdrop-blur-sm rounded-full border border-white/20 shrink-0"
+                className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-[11px] text-white/90 hover:text-white transition-colors font-medium bg-black/40 backdrop-blur-sm rounded-full border border-white/20 active:scale-95"
               >
                 <ExternalLink className="w-3 h-3" />
                 <span>{/^(estadual|municipal)_/.test(tipo || '') ? 'Ver legislação' : 'Ver no Planalto'}</span>
@@ -148,12 +139,87 @@ const LeiHero: React.FC<LeiHeroProps> = ({
               <button
                 type="button"
                 onClick={() => setShowEmentaDialog(true)}
-                className="inline-flex items-center justify-center gap-1.5 w-32 h-9 text-[11px] text-red-100 hover:text-white transition-colors font-medium bg-red-950/40 hover:bg-red-900/50 backdrop-blur-sm rounded-full border border-red-400/40 shrink-0"
+                className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-[11px] text-red-100 hover:text-white transition-colors font-medium bg-red-950/40 hover:bg-red-900/50 backdrop-blur-sm rounded-full border border-red-400/40 active:scale-95"
               >
                 <ScrollText className="w-3 h-3" />
                 <span>Ver ementa</span>
               </button>
             )}
+          </div>
+        </div>
+
+        {/* Atalhos Rápidos dentro do Painel: FAVORITO, ANOTAÇÕES, RADAR, PLAYLIST */}
+        <div className="relative z-10 px-3 sm:px-6 pt-2 pb-5 w-full max-w-lg mx-auto">
+          <div className="grid grid-cols-4 gap-2">
+            {/* FAVORITOS */}
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                onOpenOverlay?.('fav');
+              }}
+              className="group flex flex-col items-center justify-center py-2.5 sm:py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] select-none cursor-pointer overflow-hidden relative"
+            >
+              {favCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-white text-[10px] font-bold leading-none flex items-center justify-center border border-white/20 shadow z-10 bg-rose-600">
+                  {favCount > 99 ? '99+' : favCount}
+                </span>
+              )}
+              <Heart
+                className={`w-5 h-5 shrink-0 transition-all group-hover:scale-110 ${
+                  isFav ? 'text-rose-400 fill-rose-400' : 'text-rose-400'
+                }`}
+                strokeWidth={2}
+              />
+              <span className="text-[9px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
+                Favorito
+              </span>
+            </button>
+
+            {/* ANOTAÇÕES */}
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                onOpenOverlay?.('anotacoes');
+              }}
+              className="group flex flex-col items-center justify-center py-2.5 sm:py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] select-none cursor-pointer overflow-hidden relative"
+            >
+              <StickyNote className="w-5 h-5 shrink-0 transition-all group-hover:scale-110 text-amber-400" strokeWidth={2} />
+              <span className="text-[9px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
+                Anotações
+              </span>
+            </button>
+
+            {/* RADAR */}
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                onOpenOverlay?.('radar');
+              }}
+              className="group flex flex-col items-center justify-center py-2.5 sm:py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] select-none cursor-pointer overflow-hidden relative"
+            >
+              <Radar className="w-5 h-5 shrink-0 transition-all group-hover:scale-110 text-sky-400" strokeWidth={2} />
+              <span className="text-[9px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
+                Radar
+              </span>
+            </button>
+
+            {/* PLAYLIST */}
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                onOpenOverlay?.('playlist');
+              }}
+              className="group flex flex-col items-center justify-center py-2.5 sm:py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] select-none cursor-pointer overflow-hidden relative"
+            >
+              <ListMusic className="w-5 h-5 shrink-0 transition-all group-hover:scale-110 text-purple-400" strokeWidth={2} />
+              <span className="text-[9px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
+                Playlist
+              </span>
+            </button>
           </div>
         </div>
       </div>

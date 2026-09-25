@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect, useCallback, useRef, useLayoutEffect, useDeferredValue } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, BookOpen, LayoutGrid, History, Mic, MicOff, Camera, X as XIcon, Heart, ListMusic, StickyNote, Radar, ArrowUp, ArrowLeft, Info } from 'lucide-react';
+import { Search, BookOpen, LayoutGrid, History, Mic, MicOff, Camera, X as XIcon, Heart, ListMusic, StickyNote, Radar, ArrowUp, ArrowLeft, Info, Layers } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
@@ -20,6 +20,7 @@ import type { ArtigoLei } from '@/data/mockData';
 import ArtigoBottomSheet from '@/components/vademecum/artigo/ArtigoBottomSheet';
 import { buildArtigoBreadcrumbsMap } from '@/components/vademecum/artigo/artigoBreadcrumbs';
 import OcrScanner from '@/components/vademecum/grifos_ocr/OcrScanner';
+import { haptic } from '@/lib/nativeHaptics';
 
 import NovidadesPanel from '@/components/vademecum/panels/NovidadesPanel';
 import { FavPanel, PlaylistPanel, AnotacoesPanel } from '@/components/vademecum/panels/OverlayPanels';
@@ -478,15 +479,26 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
         leiFavToggle={leiFavToggle}
         setLeiFavToggle={setLeiFavToggle}
         selectedLeiEmenta={selectedLeiEmenta}
+        onOpenOverlay={(panel) => {
+          if (!isPremium && panel === 'radar') {
+            setPremiumGateFeature('radar');
+            setPremiumGateDesc('O Radar Legislativo é exclusivo para assinantes.');
+            setShowPremiumGate(true);
+            return;
+          }
+          setOverlayPanel(panel);
+        }}
+        favCount={favArtigoNumeros.size}
       />
 
-      <div id="lei-conteudo" className={`mx-auto px-2 sm:px-4 md:px-6 scroll-mt-2 ${isDesktop ? 'max-w-7xl pt-3 space-y-3' : 'max-w-5xl pt-4 space-y-4'}`}>
+      <div id="lei-conteudo" className={`mx-auto px-3 sm:px-4 md:px-6 scroll-mt-2 ${isDesktop ? 'max-w-7xl pt-4 space-y-4' : 'max-w-5xl pt-4 space-y-4'}`}>
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.28, ease: [0.22, 0.61, 0.36, 1], delay: 0.06 }}
           className={isDesktop ? 'sticky top-0 z-40 -mx-2 sm:-mx-4 md:-mx-6 px-2 sm:px-4 md:px-6 py-3 bg-background/95 backdrop-blur-md border-b border-border/60 space-y-2.5' : 'space-y-4'}
         >
+          {/* Barra de Pesquisa posicionada fora e abaixo do painel */}
           <div ref={searchBarRef} className={`mx-auto w-full ${isDesktop ? 'max-w-none' : ''}`}>
             <form className="flex items-center gap-2.5 min-w-0" onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
               <div className="relative flex-1 min-w-0">
@@ -520,26 +532,29 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
             </form>
           </div>
 
-          <div className={`flex flex-col gap-3 ${isDesktop ? 'w-full' : 'mx-auto w-full'}`}>
-            <div className="grid grid-cols-4 gap-2">
-              {[
-                { key: 'art' as const, icon: BookOpen, label: 'Artigos' },
-                { key: 'cap' as const, icon: LayoutGrid, label: 'Capítulos' },
-                { key: 'lot' as const, icon: LayoutGrid, label: 'Lotes' },
-                { key: 'rec' as const, icon: History, label: 'Recentes' },
-              ].map(tab => (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveTab(tab.key)}
-                  disabled={loadingArtigos}
-                  className={`flex items-center justify-center gap-1.5 px-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all ${isDesktop ? 'py-2' : 'py-3 md:py-3.5'} ${activeTab === tab.key ? 'bg-hero-panel text-white shadow-md shadow-red-950/40' : 'bg-secondary text-foreground hover:text-foreground'} ${loadingArtigos ? 'opacity-70' : ''}`}
-                >
-                  <tab.icon className="w-4 h-4" />
-                  <span>{tab.label}</span>
-                </button>
-              ))}
+          {/* Abas no Desktop (no mobile a navegação fica no rodapé) */}
+          {isDesktop && (
+            <div className="flex flex-col gap-3 w-full">
+              <div className="grid grid-cols-4 gap-2">
+                {[
+                  { key: 'art' as const, icon: BookOpen, label: 'Artigos' },
+                  { key: 'cap' as const, icon: LayoutGrid, label: 'Capítulos' },
+                  { key: 'lot' as const, icon: Layers, label: 'Lotes' },
+                  { key: 'rec' as const, icon: History, label: 'Recentes' },
+                ].map(tab => (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveTab(tab.key)}
+                    disabled={loadingArtigos}
+                    className={`flex items-center justify-center gap-1.5 px-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all py-2 ${activeTab === tab.key ? 'bg-hero-panel text-white shadow-md shadow-red-950/40' : 'bg-secondary text-foreground hover:text-foreground'} ${loadingArtigos ? 'opacity-70' : ''}`}
+                  >
+                    <tab.icon className="w-4 h-4" />
+                    <span>{tab.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </motion.div>
 
         <AnimatePresence>
@@ -772,33 +787,30 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           style={{ willChange: 'transform, opacity', pointerEvents: showFooter ? 'auto' : 'none' }}
           className="fixed bottom-0 left-0 right-0 z-[58] lg:hidden"
         >
-          <div className="bg-secondary/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.45)] pb-safe">
-            <div className="grid grid-cols-5 items-end px-1 pt-3.5 pb-3.5 max-w-lg mx-auto">
+          <div className="bg-[#0e0e10]/95 backdrop-blur-xl border-t border-white/10 rounded-t-3xl shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.65)] pb-safe">
+            <div className="grid grid-cols-3 items-end px-3 pt-3 pb-3 max-w-md mx-auto">
               {[
-                { key: 'novidades' as const, icon: History, label: 'Histórico' },
-                { key: 'playlist' as const, icon: ListMusic, label: 'Playlist' },
-                { key: 'anotacoes' as const, icon: StickyNote, label: 'Anotações' },
-                { key: 'radar' as const, icon: Radar, label: 'Radar' },
-                { key: 'fav' as const, icon: Heart, label: 'Favoritos' },
+                { key: 'art' as const, icon: BookOpen, label: 'Artigos' },
+                { key: 'cap' as const, icon: LayoutGrid, label: 'Capítulos' },
+                { key: 'lot' as const, icon: Layers, label: 'Lotes' },
               ].map((tab) => {
-                const active = overlayPanel === tab.key;
+                const active = activeTab === tab.key;
                 return (
                   <button
                     key={tab.key}
                     onClick={() => {
-                      if (!isPremium && tab.key === 'radar') {
-                        setPremiumGateFeature('radar');
-                        setPremiumGateDesc('O Radar Legislativo é exclusivo para assinantes.');
-                        setShowPremiumGate(true);
-                        return;
-                      }
-                      setOverlayPanel(tab.key);
+                      haptic.selection();
+                      setActiveTab(tab.key);
                     }}
                     type="button"
-                    className={`flex flex-col items-center justify-end gap-1.5 py-1.5 transition-colors ${active ? 'text-primary' : 'text-foreground hover:text-primary'}`}
+                    className={`flex flex-col items-center justify-end gap-1.5 py-1.5 transition-all active:scale-95 ${
+                      active ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+                    }`}
                   >
-                    <tab.icon className="w-7 h-7 sm:w-8 sm:h-8" strokeWidth={2} fill="none" />
-                    <span className="font-body text-[11px] sm:text-[12px] leading-tight">{tab.label}</span>
+                    <tab.icon className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={active ? 2.5 : 2} />
+                    <span className={`font-body text-[12px] sm:text-[13px] leading-tight ${active ? 'font-bold text-foreground' : 'font-medium'}`}>
+                      {tab.label}
+                    </span>
                   </button>
                 );
               })}

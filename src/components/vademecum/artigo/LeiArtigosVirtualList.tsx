@@ -1,10 +1,9 @@
 import React, { useRef, useState, useLayoutEffect, useEffect, useMemo, useCallback } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { Bookmark, X as XCloseIcon, Compass } from 'lucide-react';
+import { Bookmark, X as XCloseIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import ArtigoCard from '@/components/vademecum/artigo/ArtigoCard';
 import type { ArtigoLei } from '@/data/mockData';
-import { JumpToArticleModal } from './JumpToArticleModal';
 
 interface LeiArtigosVirtualListProps {
   visibleArtigos: ArtigoLei[];
@@ -74,9 +73,6 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
     }
     openArtigoWithRecent(artigo);
   };
-
-  // Item 05: Modal de Salto Rápido para Artigo (Numpad)
-  const [showJumpModal, setShowJumpModal] = useState(false);
 
   // Item 22: Real highlight implementation for search terms in article cards
   const highlightText = (text: string) => {
@@ -205,43 +201,6 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
     }
   };
 
-  const handleJumpToArticle = useCallback(
-    (targetNumero: string) => {
-      const cleanTarget = targetNumero.toLowerCase().replace(/º/g, '').trim();
-
-      // Busca exata
-      let idx = visibleArtigos.findIndex(
-        (a) =>
-          String(a.numero).toLowerCase().trim() === cleanTarget ||
-          String(a.numero).toLowerCase().trim() === targetNumero.toLowerCase().trim()
-      );
-
-      // Busca por prefixo se não encontrar exato
-      if (idx === -1) {
-        idx = visibleArtigos.findIndex((a) => {
-          const numStr = String(a.numero).toLowerCase().replace(/º/g, '').trim();
-          return numStr === cleanTarget || numStr.startsWith(cleanTarget);
-        });
-      }
-
-      if (idx !== -1) {
-        const targetArtigo = visibleArtigos[idx];
-        toast.success(`Navegando para o Artigo ${targetArtigo.numero}...`);
-        import('@/lib/nativeHaptics').then(({ haptic }) => haptic.impact('medium')).catch(() => {});
-
-        if (shouldVirtualizeArtigos) {
-          artigosVirtualizer.scrollToIndex(idx, { align: 'center', behavior: 'smooth' });
-        } else {
-          const el = document.querySelector(`[data-index="${idx}"]`);
-          el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      } else {
-        toast.error(`Artigo ${targetNumero} não encontrado nesta lei.`);
-      }
-    },
-    [visibleArtigos, shouldVirtualizeArtigos, artigosVirtualizer]
-  );
-
   return (
     <div ref={artigosListRef} className={shouldVirtualizeArtigos ? 'pb-8' : 'space-y-2 pb-8'}>
       {/* Item 30: Banner discreto para continuar leitura anterior */}
@@ -333,29 +292,6 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
       {visibleArtigos.length === 0 && loadedKey === selectedTabelaNome && !loadingArtigos && (
         <p className="text-center text-muted-foreground py-8">Nenhum artigo encontrado.</p>
       )}
-
-      {/* Item 05: Botão Flutuante de Salto Rápido para Artigo */}
-      {visibleArtigos.length > 0 && (
-        <button
-          type="button"
-          onClick={() => setShowJumpModal(true)}
-          className="fixed bottom-24 right-4 sm:bottom-10 sm:right-10 z-30 flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary/95 hover:bg-primary text-primary-foreground border border-primary-foreground/20 shadow-xl shadow-primary/30 active:scale-95 transition-all backdrop-blur-md group"
-          title="Salto Rápido para Artigo (Numpad)"
-          aria-label="Salto Rápido para Artigo"
-        >
-          <Compass className="w-4 h-4 group-hover:rotate-45 transition-transform" />
-          <span className="text-xs font-extrabold tracking-wider uppercase">
-            Ir p/ Artigo
-          </span>
-        </button>
-      )}
-
-      <JumpToArticleModal
-        open={showJumpModal}
-        onClose={() => setShowJumpModal(false)}
-        onJump={handleJumpToArticle}
-        totalArtigos={visibleArtigos.length}
-      />
     </div>
   );
 };
