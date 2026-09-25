@@ -187,7 +187,7 @@ export default function NovidadesRadarOverlay() {
           tipo_label: it.tipo_ato,
           ementa: it.ementa,
           data_ref: it.data_dou,
-          url: '/radar-360',
+          url: `/radar-360?lei=${it.id}`,
         });
       }
 

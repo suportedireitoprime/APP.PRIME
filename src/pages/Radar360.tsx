@@ -14,9 +14,6 @@ import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import type { LeiOrdinaria } from '@/services/legislacaoService';
 import brasaoImgAsset from '@/assets/brasao-republica.webp';
 import { useGoBack } from '@/hooks/useGoBack';
-import { Capacitor } from '@capacitor/core';
-import { supabase } from '@/integrations/supabase/client';
-import { NativeRadar360Plugin } from '@/plugins/NativeRadar360Plugin';
 const brasaoImg = brasaoImgAsset;
 
 const TIPO_COLORS: Record<string, { badge: string; border: string; card: string }> = {
@@ -71,8 +68,6 @@ export default function Radar360() {
 
   const centerDate = useMemo(() => getLatestDate() || new Date(), [items]);
   const dayList = useMemo(() => getDayList(centerDate, 3), [centerDate]);
-
-  const [nativeDispatched, setNativeDispatched] = useState(false);
 
   const reload = useCallback(async () => {
     try {
@@ -131,32 +126,25 @@ export default function Radar360() {
     };
   }, []);
 
+  const targetLeiId = searchParams.get('lei');
+  const handledLeiIdRef = useRef<string | null>(null);
+
   useEffect(() => {
-    if (Capacitor.isNativePlatform() && !nativeDispatched && !loading && items.length > 0) {
-      setNativeDispatched(true);
-      const abrirNativo = async () => {
-        try {
-          const { data } = await supabase.auth.getSession();
-          // Prepara itens enxutos (evita TransactionTooLargeException no Android Binder)
-          const cleanItems = items.map(i => ({
-            id: i.id,
-            tipo_ato: i.tipo_ato || 'Outro',
-            numero_ato: i.numero_ato || 'Sem número',
-            ementa: i.ementa || '',
-            data_publicacao: i.data_publicacao || i.data_dou || '',
-          }));
-          await NativeRadar360Plugin.openRadar360({
-            accessToken: data.session?.access_token || '',
-            itemsJson: JSON.stringify(cleanItems),
-          });
-          goBack();
-        } catch (e) {
-          console.warn('[Radar360] Plugin nativo falhou, mantendo interface React:', e);
-        }
-      };
-      abrirNativo();
+    if (!targetLeiId || items.length === 0) return;
+    if (handledLeiIdRef.current === targetLeiId) return;
+
+    const found = items.find((i) => i.id === targetLeiId);
+    if (found) {
+      handledLeiIdRef.current = targetLeiId;
+      // Sincroniza a data selecionada com a data da publicação
+      const dStr = found.data_dou || found.data_publicacao;
+      if (dStr) {
+        const [y, m, d] = dStr.slice(0, 10).split('-').map(Number);
+        if (y && m && d) setSelectedDate(new Date(y, m - 1, d));
+      }
+      openDetail(found);
     }
-  }, [loading, items, goBack, nativeDispatched]);
+  }, [targetLeiId, items]);
 
   const availableDates = useMemo(() => {
     const set = new Set<string>();
@@ -301,7 +289,17 @@ export default function Radar360() {
   if (detailItem) {
     return (
       <div className="min-h-dvh bg-background">
-        <LeiOrdinariaDetail lei={detailItem} onBack={() => setDetailItem(null)} />
+        <LeiOrdinariaDetail
+          lei={detailItem}
+          onBack={() => {
+            setDetailItem(null);
+            if (searchParams.get('lei')) {
+              const sp = new URLSearchParams(searchParams);
+              sp.delete('lei');
+              setSearchParams(sp, { replace: true });
+            }
+          }}
+        />
       </div>
     );
   }

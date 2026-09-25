@@ -13,7 +13,7 @@ import { useTrackArea } from "@/hooks/useTrackArea";
 import { srcOf } from '@/lib/assetUrl';
 import { useGoBack } from '@/hooks/useGoBack';
 
-type RadarKey = 'leis' | 'legislativo' | 'stf';
+type RadarKey = 'leis' | 'legislativo';
 
 // Native → bundled WebP. Web → CDN (WebP comprimido, ~100 KB).
 const isNative = Capacitor.isNativePlatform();
@@ -32,6 +32,7 @@ if (typeof window !== 'undefined') {
 
 const RADARES: Record<RadarKey, {
   label: string;
+  tabLabel: string;
   short: string;
   cover: string;
   icon: typeof ScanEye;
@@ -43,6 +44,7 @@ const RADARES: Record<RadarKey, {
 }> = {
   leis: {
     label: 'Radar de Leis',
+    tabLabel: 'Radar de Leis',
     short: 'Alterações em tempo real',
     cover: radarLeisSrc,
     icon: ScanEye,
@@ -60,6 +62,7 @@ const RADARES: Record<RadarKey, {
   },
   legislativo: {
     label: 'Radar Legislativo',
+    tabLabel: 'Radar Legislativo',
     short: 'Câmara, Senado e projetos',
     cover: radarLegislativoSrc,
     icon: Landmark,
@@ -74,23 +77,6 @@ const RADARES: Record<RadarKey, {
     route: '/radar/proposicoes',
     gradient:
       'radial-gradient(120% 90% at 50% 30%, #0d2246 0%, #08132b 45%, #030814 100%)',
-  },
-  stf: {
-    label: 'Radar STF',
-    short: 'Pautas e Ministros',
-    cover: brasaoSrc,
-    icon: Scale,
-    descricao:
-      'Acompanhe de perto as pautas de julgamento do Supremo Tribunal Federal e conheça a composição da Corte.',
-    bullets: [
-      'Pautas de julgamento atualizadas',
-      'Perfil completo dos ministros (biografia e indicações)',
-      'Links diretos para processos oficiais',
-    ],
-    cta: 'Abrir Radar STF',
-    route: '/radar/stf',
-    gradient:
-      'radial-gradient(120% 90% at 50% 30%, #4a3809 0%, #2b2005 45%, #0d0a02 100%)',
   },
 };
 
@@ -136,7 +122,7 @@ export default function Radares() {
                   }`}
                 >
                   <Icon className="w-4 h-4" strokeWidth={2} />
-                  <span className="truncate">{r.label.replace('Radar ', '')}</span>
+                  <span className="truncate">{r.tabLabel}</span>
                 </motion.button>
               );
             })}
