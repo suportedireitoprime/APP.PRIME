@@ -78,43 +78,6 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
   // Item 05: Modal de Salto Rápido para Artigo (Numpad)
   const [showJumpModal, setShowJumpModal] = useState(false);
 
-  const handleJumpToArticle = useCallback(
-    (targetNumero: string) => {
-      const cleanTarget = targetNumero.toLowerCase().replace(/º/g, '').trim();
-
-      // Busca exata
-      let idx = visibleArtigos.findIndex(
-        (a) =>
-          String(a.numero).toLowerCase().trim() === cleanTarget ||
-          String(a.numero).toLowerCase().trim() === targetNumero.toLowerCase().trim()
-      );
-
-      // Busca por prefixo se não encontrar exato
-      if (idx === -1) {
-        idx = visibleArtigos.findIndex((a) => {
-          const numStr = String(a.numero).toLowerCase().replace(/º/g, '').trim();
-          return numStr === cleanTarget || numStr.startsWith(cleanTarget);
-        });
-      }
-
-      if (idx !== -1) {
-        const targetArtigo = visibleArtigos[idx];
-        toast.success(`Navegando para o Artigo ${targetArtigo.numero}...`);
-        import('@/lib/nativeHaptics').then(({ haptic }) => haptic.impact('medium')).catch(() => {});
-
-        if (shouldVirtualizeArtigos) {
-          artigosVirtualizer.scrollToIndex(idx, { align: 'center', behavior: 'smooth' });
-        } else {
-          const el = document.querySelector(`[data-index="${idx}"]`);
-          el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      } else {
-        toast.error(`Artigo ${targetNumero} não encontrado nesta lei.`);
-      }
-    },
-    [visibleArtigos, shouldVirtualizeArtigos, artigosVirtualizer]
-  );
-
   // Item 22: Real highlight implementation for search terms in article cards
   const highlightText = (text: string) => {
     if (!searchQuery || !searchQuery.trim()) return text;
@@ -241,6 +204,43 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
       artigosVirtualizer.scrollToIndex(idx, { align: 'center', behavior: 'smooth' });
     }
   };
+
+  const handleJumpToArticle = useCallback(
+    (targetNumero: string) => {
+      const cleanTarget = targetNumero.toLowerCase().replace(/º/g, '').trim();
+
+      // Busca exata
+      let idx = visibleArtigos.findIndex(
+        (a) =>
+          String(a.numero).toLowerCase().trim() === cleanTarget ||
+          String(a.numero).toLowerCase().trim() === targetNumero.toLowerCase().trim()
+      );
+
+      // Busca por prefixo se não encontrar exato
+      if (idx === -1) {
+        idx = visibleArtigos.findIndex((a) => {
+          const numStr = String(a.numero).toLowerCase().replace(/º/g, '').trim();
+          return numStr === cleanTarget || numStr.startsWith(cleanTarget);
+        });
+      }
+
+      if (idx !== -1) {
+        const targetArtigo = visibleArtigos[idx];
+        toast.success(`Navegando para o Artigo ${targetArtigo.numero}...`);
+        import('@/lib/nativeHaptics').then(({ haptic }) => haptic.impact('medium')).catch(() => {});
+
+        if (shouldVirtualizeArtigos) {
+          artigosVirtualizer.scrollToIndex(idx, { align: 'center', behavior: 'smooth' });
+        } else {
+          const el = document.querySelector(`[data-index="${idx}"]`);
+          el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      } else {
+        toast.error(`Artigo ${targetNumero} não encontrado nesta lei.`);
+      }
+    },
+    [visibleArtigos, shouldVirtualizeArtigos, artigosVirtualizer]
+  );
 
   return (
     <div ref={artigosListRef} className={shouldVirtualizeArtigos ? 'pb-8' : 'space-y-2 pb-8'}>
