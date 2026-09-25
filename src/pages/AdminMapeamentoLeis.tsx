@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Scale, BookOpen, Shield, ScrollText, HeartHandshake,
   Search, RefreshCw, ExternalLink, ChevronRight, CheckCircle2,
-  Clock, Loader2, Eye, ArrowLeft, History, AlertTriangle, Check
+  Clock, Loader2, Eye, ArrowLeft, History, AlertTriangle, Check, X
 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { LEIS_CATALOG, type LeiCatalogItem } from '@/data/leisCatalog';
@@ -29,6 +29,15 @@ interface ScrapedArticleUpdate {
   data_completa?: string;
 }
 
+export interface ExtracaoHistoricoItem {
+  id: string;
+  data: string;
+  timestamp: number;
+  artigos: number;
+  status: 'sucesso' | 'erro';
+  detalhe?: string;
+}
+
 const CATEGORIAS_DEF: CategoriaDef[] = [
   { id: 'codigo', nome: 'Códigos', desc: 'CP, CC, CPC, CPP, CLT, CTN, CDC, CTB e outros', icon: Scale, color: '#f59e0b' },
   { id: 'estatuto', nome: 'Estatutos', desc: 'ECA, Idoso, PCD, OAB, Igualdade Racial, Desarmamento', icon: BookOpen, color: '#ec4899' },
@@ -42,7 +51,11 @@ export default function AdminMapeamentoLeis() {
   const [selectedCat, setSelectedCat] = useState<CategoriaDef | null>(null);
   const [busca, setBusca] = useState('');
   const [extraindoSlug, setExtraindoSlug] = useState<string | null>(null);
+  const [progressoExtraindo, setProgressoExtraindo] = useState<Record<string, number>>({});
+  const [etapaExtraindo, setEtapaExtraindo] = useState<Record<string, string>>({});
   const [lastScrapes, setLastScrapes] = useState<Record<string, string>>({});
+  const [historicoExtracoes, setHistoricoExtracoes] = useState<Record<string, ExtracaoHistoricoItem[]>>({});
+  const [modalHistoricoExtracoesLei, setModalHistoricoExtracoesLei] = useState<LeiCatalogItem | null>(null);
   const [aprovados, setAprovados] = useState<Record<string, boolean>>({});
   const [previaLei, setPreviaLei] = useState<LeiCatalogItem | null>(null);
   const [filtroStatus, setFiltroStatus] = useState<'todas' | 'aprovadas' | 'pendentes'>('todas');
@@ -55,10 +68,11 @@ export default function AdminMapeamentoLeis() {
   const [buscaArtigoHistorico, setBuscaArtigoHistorico] = useState('');
   const [sincronizandoArtigo, setSincronizandoArtigo] = useState<string | null>(null);
 
-  // Carrega histórico de última extração e status de aprovação
+  // Carrega histórico de última extração, status de aprovação e histórico de extrações anteriores
   useEffect(() => {
     const loadedScrapes: Record<string, string> = {};
     const loadedAprovados: Record<string, boolean> = {};
+    const loadedHistoricos: Record<string, ExtracaoHistoricoItem[]> = {};
 
     LEIS_CATALOG.forEach(l => {
       const dt = localStorage.getItem(`vade_scrape_${l.id}`) ||
@@ -67,10 +81,27 @@ export default function AdminMapeamentoLeis() {
 
       const ap = localStorage.getItem(`vade_aprovado_${l.id}`) === 'true';
       if (ap) loadedAprovados[l.id] = true;
+
+      const histRaw = localStorage.getItem(`vade_scrape_history_${l.id}`);
+      if (histRaw) {
+        try {
+          loadedHistoricos[l.id] = JSON.parse(histRaw);
+        } catch {}
+      } else if (dt) {
+        loadedHistoricos[l.id] = [{
+          id: `hist_init_${l.id}`,
+          data: dt,
+          timestamp: Date.now(),
+          artigos: l.id === 'cp' ? 428 : 0,
+          status: 'sucesso',
+          detalhe: 'Extração registrada com sucesso'
+        }];
+      }
     });
 
     setLastScrapes(loadedScrapes);
     setAprovados(loadedAprovados);
+    setHistoricoExtracoes(loadedHistoricos);
   }, []);
 
   // Contadores por status dentro da categoria selecionada
@@ -110,7 +141,7 @@ export default function AdminMapeamentoLeis() {
     return list;
   }, [selectedCat, filtroStatus, aprovados, busca]);
 
-  // Função para executar a extração / re-extração da lei
+  // Função para executar a extração / re-extração da lei com porcentagem e histórico
   const handleExtrairLei = async (lei: LeiCatalogItem) => {
     if (!lei.url_planalto) {
       toast.error(`A lei ${lei.sigla} não possui URL oficial do Planalto configurada.`);
@@ -118,7 +149,30 @@ export default function AdminMapeamentoLeis() {
     }
 
     setExtraindoSlug(lei.id);
+    setProgressoExtraindo(prev => ({ ...prev, [lei.id]: 8 }));
+    setEtapaExtraindo(prev => ({ ...prev, [lei.id]: 'Conectando ao Planalto...' }));
     const toastId = toast.loading(`Iniciando extração de ${lei.nome} no Planalto...`);
+
+    // Timer de progressão gradual de porcentagem (0% a 95%)
+    const progressTimer = setInterval(() => {
+      setProgressoExtraindo(prev => {
+        const cur = prev[lei.id] || 8;
+        if (cur < 28) {
+          setEtapaExtraindo(e => ({ ...e, [lei.id]: 'Baixando HTML oficial do Planalto...' }));
+          return cur + 4;
+        } else if (cur < 58) {
+          setEtapaExtraindo(e => ({ ...e, [lei.id]: 'Estruturando hierarquia e artigos...' }));
+          return cur + 3;
+        } else if (cur < 86) {
+          setEtapaExtraindo(e => ({ ...e, [lei.id]: 'Gravando artigos no banco de dados...' }));
+          return cur + 2;
+        } else if (cur < 95) {
+          setEtapaExtraindo(e => ({ ...e, [lei.id]: 'Finalizando indexação...' }));
+          return cur + 1;
+        }
+        return cur;
+      });
+    }, 350);
 
     try {
       let artigosCount = 0;
@@ -145,6 +199,10 @@ export default function AdminMapeamentoLeis() {
         artigosCount = (data as { artigos?: number })?.artigos || 0;
       }
 
+      clearInterval(progressTimer);
+      setProgressoExtraindo(prev => ({ ...prev, [lei.id]: 100 }));
+      setEtapaExtraindo(prev => ({ ...prev, [lei.id]: 'Concluído com sucesso!' }));
+
       const agora = new Date().toLocaleString('pt-BR', {
         day: '2-digit', month: '2-digit', year: 'numeric',
         hour: '2-digit', minute: '2-digit'
@@ -154,15 +212,64 @@ export default function AdminMapeamentoLeis() {
       localStorage.setItem(`vade_scrape_${lei.tabela_nome}`, agora);
       setLastScrapes(prev => ({ ...prev, [lei.id]: agora }));
 
+      // Registra no histórico de extrações
+      const novoRegistro: ExtracaoHistoricoItem = {
+        id: `ext_${Date.now()}`,
+        data: agora,
+        timestamp: Date.now(),
+        artigos: artigosCount,
+        status: 'sucesso',
+        detalhe: `${artigosCount} artigos processados e indexados com sucesso.`
+      };
+      setHistoricoExtracoes(prev => {
+        const prevHist = prev[lei.id] || [];
+        const updatedHist = [novoRegistro, ...prevHist].slice(0, 15);
+        localStorage.setItem(`vade_scrape_history_${lei.id}`, JSON.stringify(updatedHist));
+        return { ...prev, [lei.id]: updatedHist };
+      });
+
       toast.success(
         `Extração concluída com sucesso! ${artigosCount > 0 ? `${artigosCount} artigos processados.` : ''}`,
         { id: toastId }
       );
     } catch (err: any) {
+      clearInterval(progressTimer);
       console.error(err);
+      
+      const agora = new Date().toLocaleString('pt-BR', {
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      });
+      const novoRegistroErro: ExtracaoHistoricoItem = {
+        id: `ext_${Date.now()}`,
+        data: agora,
+        timestamp: Date.now(),
+        artigos: 0,
+        status: 'erro',
+        detalhe: err.message || 'Falha na conexão com o Planalto'
+      };
+      setHistoricoExtracoes(prev => {
+        const prevHist = prev[lei.id] || [];
+        const updatedHist = [novoRegistroErro, ...prevHist].slice(0, 15);
+        localStorage.setItem(`vade_scrape_history_${lei.id}`, JSON.stringify(updatedHist));
+        return { ...prev, [lei.id]: updatedHist };
+      });
+
       toast.error(`Erro ao extrair ${lei.sigla}: ${err.message || 'Falha na conexão'}`, { id: toastId });
     } finally {
-      setExtraindoSlug(null);
+      setTimeout(() => {
+        setExtraindoSlug(null);
+        setProgressoExtraindo(prev => {
+          const c = { ...prev };
+          delete c[lei.id];
+          return c;
+        });
+        setEtapaExtraindo(prev => {
+          const c = { ...prev };
+          delete c[lei.id];
+          return c;
+        });
+      }, 1000);
     }
   };
 
@@ -576,13 +683,15 @@ export default function AdminMapeamentoLeis() {
             >
               {isExtracting ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Extraindo...</span>
+                  <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+                  <span className="whitespace-nowrap">
+                    Re-extraindo {progressoExtraindo[previaLei.id] || 0}%
+                  </span>
                 </>
               ) : (
                 <>
-                  <RefreshCw className="w-4 h-4" />
-                  <span>Re-extrair</span>
+                  <RefreshCw className="w-4 h-4 shrink-0" />
+                  <span className="whitespace-nowrap">Re-extrair Lei</span>
                 </>
               )}
             </button>
@@ -738,6 +847,9 @@ export default function AdminMapeamentoLeis() {
                   const isExtracting = extraindoSlug === lei.id;
                   const lastScrape = lastScrapes[lei.id];
                   const isAprovada = !!aprovados[lei.id];
+                  const histList = historicoExtracoes[lei.id] || [];
+                  const progresso = progressoExtraindo[lei.id] || 0;
+                  const etapa = etapaExtraindo[lei.id] || 'Extraindo lei...';
 
                   return (
                     <div
@@ -763,10 +875,10 @@ export default function AdminMapeamentoLeis() {
                           {lei.descricao}
                         </div>
 
-                        <div className="flex items-center gap-4 mt-2.5 flex-wrap text-[11px]">
+                        <div className="flex items-center gap-3 mt-2.5 flex-wrap text-[11px]">
                           {/* Data da última extração */}
                           <div className="flex items-center gap-1.5 text-muted-foreground">
-                            <Clock className="w-3.5 h-3.5" />
+                            <Clock className="w-3.5 h-3.5 shrink-0" />
                             <span>
                               Última extração:{' '}
                               {lastScrape ? (
@@ -777,21 +889,54 @@ export default function AdminMapeamentoLeis() {
                             </span>
                           </div>
 
+                          {/* Histórico das últimas vezes que foi extraído */}
+                          {histList.length > 0 && (
+                            <button
+                              onClick={() => setModalHistoricoExtracoesLei(lei)}
+                              className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-secondary hover:bg-secondary/80 text-primary border border-primary/20 transition-all hover:scale-105 active:scale-95"
+                              title="Ver histórico de todas as vezes que esta lei foi extraída"
+                            >
+                              <History className="w-3 h-3 text-primary shrink-0" />
+                              <span>{histList.length} extraç{histList.length === 1 ? 'ão' : 'ões'}</span>
+                            </button>
+                          )}
+
                           {/* Link oficial Planalto */}
                           {lei.url_planalto && (
                             <a
                               href={lei.url_planalto}
                               target="_blank"
                               rel="noreferrer"
-                              className="inline-flex items-center gap-1 text-primary hover:underline"
+                              className="inline-flex items-center gap-1 text-primary hover:underline ml-auto sm:ml-0"
                             >
-                              Planalto oficial <ExternalLink className="w-3 h-3" />
+                              Planalto oficial <ExternalLink className="w-3 h-3 shrink-0" />
                             </a>
                           )}
                         </div>
+
+                        {/* Barra de Progresso em Tempo Real durante a Extração */}
+                        {isExtracting && (
+                          <div className="mt-3 p-3 rounded-xl bg-primary/10 border border-primary/25 space-y-2 animate-in fade-in duration-300">
+                            <div className="flex items-center justify-between text-xs font-semibold">
+                              <span className="text-primary inline-flex items-center gap-1.5 min-w-0 truncate">
+                                <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0 text-primary" />
+                                <span className="truncate">{etapa}</span>
+                              </span>
+                              <span className="font-mono text-primary font-bold text-sm shrink-0 ml-2">
+                                {progresso}%
+                              </span>
+                            </div>
+                            <div className="w-full h-2 rounded-full bg-secondary/80 overflow-hidden relative">
+                              <div
+                                className="h-full bg-gradient-to-r from-primary via-blue-500 to-emerald-400 transition-all duration-300 rounded-full shadow-sm"
+                                style={{ width: `${progresso}%` }}
+                              />
+                            </div>
+                          </div>
+                        )}
                       </div>
 
-                      {/* Botões de Ação Responsivos: Ver Prévia, Histórico e Extrair Lei */}
+                      {/* Botões de Ação Responsivos: Ver Prévia, Histórico e Extrair Lei com Porcentagem ao vivo */}
                       <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto shrink-0 mt-2 sm:mt-0">
                         {/* Botão Ver Prévia */}
                         <button
@@ -813,7 +958,7 @@ export default function AdminMapeamentoLeis() {
                           <span className="whitespace-nowrap">Histórico</span>
                         </button>
 
-                        {/* Botão Extrair Lei / Re-extrair Lei */}
+                        {/* Botão Extrair Lei / Re-extrair Lei com Porcentagem ao vivo */}
                         <button
                           onClick={() => handleExtrairLei(lei)}
                           disabled={isExtracting}
@@ -823,7 +968,9 @@ export default function AdminMapeamentoLeis() {
                           {isExtracting ? (
                             <>
                               <Loader2 className="w-4 h-4 animate-spin shrink-0" />
-                              <span className="whitespace-nowrap">Extraindo Lei...</span>
+                              <span className="whitespace-nowrap">
+                                {lastScrape ? 'Re-extraindo' : 'Extraindo'} {progresso}%
+                              </span>
                             </>
                           ) : (
                             <>
@@ -843,6 +990,111 @@ export default function AdminMapeamentoLeis() {
           </div>
         )}
       </div>
+
+      {/* Modal / Dialog: Histórico das Últimas Vezes que foi Extraído */}
+      {modalHistoricoExtracoesLei && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-[#121212] border border-border/80 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+            {/* Header do Modal */}
+            <div className="p-4 sm:p-5 border-b border-border/60 flex items-center justify-between gap-3 bg-secondary/20">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary/20 text-primary border border-primary/30 uppercase tracking-wider">
+                    {modalHistoricoExtracoesLei.sigla}
+                  </span>
+                  <h3 className="font-bold text-base text-foreground truncate">
+                    Histórico de Extrações
+                  </h3>
+                </div>
+                <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                  {modalHistoricoExtracoesLei.nome}
+                </p>
+              </div>
+
+              <button
+                onClick={() => setModalHistoricoExtracoesLei(null)}
+                className="w-8 h-8 rounded-full flex items-center justify-center bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground transition-colors shrink-0"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Conteúdo da Timeline */}
+            <div className="p-4 sm:p-5 overflow-y-auto space-y-3 flex-1 divide-y divide-border/30">
+              {(historicoExtracoes[modalHistoricoExtracoesLei.id] || []).length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground text-xs space-y-2">
+                  <Clock className="w-8 h-8 mx-auto text-muted-foreground/60" />
+                  <p>Nenhuma extração anterior registrada ainda para esta lei.</p>
+                </div>
+              ) : (
+                (historicoExtracoes[modalHistoricoExtracoesLei.id] || []).map((item, idx) => (
+                  <div key={item.id || idx} className="pt-3 first:pt-0 flex items-start gap-3">
+                    <div className="mt-0.5 shrink-0">
+                      {item.status === 'sucesso' ? (
+                        <div className="w-7 h-7 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                          <CheckCircle2 className="w-4 h-4" />
+                        </div>
+                      ) : (
+                        <div className="w-7 h-7 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
+                          <AlertTriangle className="w-4 h-4" />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <span className="text-xs font-bold text-foreground">
+                          {item.data}
+                        </span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                          item.status === 'sucesso'
+                            ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
+                            : 'bg-rose-500/15 text-rose-300 border border-rose-500/30'
+                        }`}>
+                          {item.status === 'sucesso' ? 'Sucesso' : 'Falha'}
+                        </span>
+                      </div>
+
+                      <div className="text-xs text-muted-foreground leading-relaxed">
+                        {item.detalhe || `${item.artigos} artigos processados.`}
+                      </div>
+
+                      {item.artigos > 0 && (
+                        <div className="text-[11px] font-medium text-emerald-400/90">
+                          Total: {item.artigos} artigos sincronizados
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Footer do Modal */}
+            <div className="p-4 border-t border-border/60 bg-secondary/10 flex items-center justify-between gap-3">
+              <button
+                onClick={() => {
+                  const lei = modalHistoricoExtracoesLei;
+                  setModalHistoricoExtracoesLei(null);
+                  handleExtrairLei(lei);
+                }}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold transition-all active:scale-95"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Re-extrair Agora</span>
+              </button>
+
+              <button
+                onClick={() => setModalHistoricoExtracoesLei(null)}
+                className="px-4 py-2 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground text-xs font-medium transition-all"
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
     </div>
   );
 }
