@@ -33,8 +33,8 @@ interface BannerConfig {
 const BANNERS: BannerConfig[] = [
   {
     id: 'horus',
-    headerTitle: 'Horus · Assistente Jurídico',
-    headerSub: 'Tire dúvidas e gere revisões 24h no WhatsApp',
+    headerTitle: 'Horus',
+    headerSub: 'Assistente e tutor inteligente 24h no WhatsApp',
     accentColor: '#E11D48',
     bgGradient: 'from-[#E11D48] via-[#BE123C] to-[#7F1D1D]',
     borderColor: 'border-rose-400/30',
@@ -59,7 +59,7 @@ const BANNERS: BannerConfig[] = [
   },
   {
     id: 'radar',
-    headerTitle: 'Radar de Leis · Monitoramento',
+    headerTitle: 'Radar de Leis',
     headerSub: 'Acompanhe mudanças e projetos em tempo real',
     accentColor: '#2563EB',
     bgGradient: 'from-[#2563EB] via-[#1D4ED8] to-[#1E3A8A]',
@@ -82,7 +82,7 @@ const BANNERS: BannerConfig[] = [
   },
   {
     id: 'boletins',
-    headerTitle: 'Boletins · Informativos Jurídicos',
+    headerTitle: 'Boletins',
     headerSub: 'Informativos e notícias jurídicas diárias',
     accentColor: '#D97706',
     bgGradient: 'from-[#D97706] via-[#B45309] to-[#78350F]',
@@ -105,7 +105,7 @@ const BANNERS: BannerConfig[] = [
   },
 ];
 
-const AUTOPLAY_INTERVAL = 6000;
+const AUTOPLAY_INTERVAL = 5000;
 
 const HomeHorusBannerCarousel = () => {
   const navigate = useNavigate();
@@ -182,50 +182,62 @@ const HomeHorusBannerCarousel = () => {
 
   return (
     <div className="flex flex-col items-center mb-8 mt-6 px-3">
-      {/* 1. TÍTULO DINÂMICO COM RISQUINHO SUPERIOR */}
-      <div className="flex items-center justify-between w-full max-w-[320px] mb-2.5 px-1">
-        <div className="flex items-center gap-2 min-w-0">
-          <motion.span
-            key={`bar-${activeBanner.id}`}
-            initial={{ scaleY: 0.6, opacity: 0.5 }}
-            animate={{ scaleY: 1, opacity: 1 }}
-            transition={{ duration: 0.25 }}
-            className="w-1.5 h-4.5 rounded-full shrink-0"
-            style={{ backgroundColor: activeBanner.accentColor }}
-          />
-          <div className="min-w-0">
+      {/* 1. TÍTULO DINÂMICO COM RISQUINHO SUPERIOR (PADRÃO ESTUDOS) */}
+      <div className="mb-1 relative z-10 flex items-start justify-between gap-3 w-full max-w-[320px] px-1">
+        <div className="min-w-0 flex-1">
+          <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 uppercase tracking-widest">
+            <motion.span
+              key={`bar-${activeBanner.id}`}
+              initial={{ scaleY: 0.6, opacity: 0.5 }}
+              animate={{ scaleY: 1, opacity: 1 }}
+              transition={{ duration: 0.25 }}
+              className="w-1 h-5 rounded-full shrink-0"
+              style={{ backgroundColor: activeBanner.accentColor }}
+            />
             <AnimatePresence mode="wait">
-              <motion.h4
+              <motion.span
                 key={`title-${activeBanner.id}`}
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 4 }}
+                initial={{ opacity: 0, x: -5 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 5 }}
                 transition={{ duration: 0.2 }}
-                className="font-display text-[14px] font-bold text-foreground leading-tight truncate uppercase tracking-wider"
+                className="truncate block"
               >
                 {activeBanner.headerTitle}
-              </motion.h4>
+              </motion.span>
             </AnimatePresence>
-          </div>
+          </h3>
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={`sub-${activeBanner.id}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3 truncate"
+            >
+              {activeBanner.headerSub}
+            </motion.p>
+          </AnimatePresence>
         </div>
 
         {/* Setinhas de navegação rápidas */}
-        <div className="flex items-center gap-1 shrink-0">
+        <div className="flex items-center gap-1 shrink-0 mt-1">
           <button
             type="button"
             onClick={() => paginate(-1)}
             aria-label="Anterior"
-            className="w-6 h-6 rounded-full bg-secondary/80 hover:bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground transition active:scale-90"
+            className="w-7 h-7 rounded-full bg-secondary/60 hover:bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground transition active:scale-90"
           >
-            <ChevronLeft className="w-3.5 h-3.5" />
+            <ChevronLeft className="w-4 h-4" />
           </button>
           <button
             type="button"
             onClick={() => paginate(1)}
             aria-label="Próximo"
-            className="w-6 h-6 rounded-full bg-secondary/80 hover:bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground transition active:scale-90"
+            className="w-7 h-7 rounded-full bg-secondary/60 hover:bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground transition active:scale-90"
           >
-            <ChevronRight className="w-3.5 h-3.5" />
+            <ChevronRight className="w-4 h-4" />
           </button>
         </div>
       </div>
@@ -254,19 +266,20 @@ const HomeHorusBannerCarousel = () => {
             </div>
 
             {/* Textos à esquerda */}
-            <div className="flex flex-col items-start text-left z-10 min-w-0 flex-1">
-              <span className="text-[13.5px] font-display font-black uppercase tracking-wider flex items-center gap-0.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] leading-tight whitespace-nowrap">
+            <div className="flex flex-col items-start text-left z-10 min-w-0 flex-1 pr-1">
+              <span className="text-[12px] sm:text-[13px] font-display font-black uppercase tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] leading-[1.15] w-full line-clamp-2">
                 {banner.title}
-                <motion.div
+                <motion.span
                   animate={{ x: [0, 3, 0] }}
                   transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+                  className="inline-block align-middle ml-1 -mt-0.5"
                 >
                   <ChevronRight className="w-3.5 h-3.5 opacity-80 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
-                </motion.div>
+                </motion.span>
               </span>
 
               {/* Subtítulo dinâmico com transição vertical */}
-              <div className="h-4 relative w-full overflow-hidden mt-1">
+              <div className="h-4 sm:h-5 relative w-full overflow-hidden mt-1 sm:mt-1.5">
                 <AnimatePresence mode="popLayout">
                   <motion.span
                     key={descIndices[i]}
@@ -274,7 +287,7 @@ const HomeHorusBannerCarousel = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -12 }}
                     transition={{ duration: 0.28 }}
-                    className={`absolute text-[11px] font-body ${banner.textColor} leading-snug font-semibold whitespace-nowrap truncate w-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]`}
+                    className={`absolute text-[10px] sm:text-[11px] font-body ${banner.textColor} leading-snug font-medium whitespace-nowrap truncate w-[95%] drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]`}
                   >
                     {banner.descriptions[descIndices[i]]}
                   </motion.span>
