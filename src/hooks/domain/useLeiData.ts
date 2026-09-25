@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { LEIS_SUPABASE_URL, leisAuthHeaders } from '@/lib/legislacaoBackend';
+import { obterAliasesTabela } from '@/utils/narracaoLookup';
 
 export function useLeiData(
   selectedLeiId: string | null,
@@ -62,8 +63,10 @@ export function useLeiData(
     if (overlayPanel !== 'playlist' || !selectedTabelaNome) return;
     let cancelled = false;
     setLoadingPlaylist(true);
+    const aliases = obterAliasesTabela(selectedTabelaNome);
+    const postgrestIn = `in.(${aliases.map((a) => `"${a}"`).join(',')})`;
     fetch(
-      `${LEIS_SUPABASE_URL}/rest/v1/narracoes_artigos?tabela_nome=eq.${encodeURIComponent(selectedTabelaNome)}&select=artigo_numero,audio_url`,
+      `${LEIS_SUPABASE_URL}/rest/v1/narracoes_artigos?tabela_nome=${postgrestIn}&select=artigo_numero,audio_url`,
       { headers: leisAuthHeaders() }
     )
       .then(async (res) => {
@@ -74,7 +77,18 @@ export function useLeiData(
         if (cancelled) return;
         const map: Record<string, string> = {};
         (Array.isArray(rows) ? rows : []).forEach((row: any) => {
-          if (row?.artigo_numero && row?.audio_url) map[row.artigo_numero] = row.audio_url;
+          if (row?.artigo_numero && row?.audio_url) {
+            const raw = String(row.artigo_numero).trim();
+            const numLimpo = raw.replace(/^[Aa]rt\.?\s*/i, '').trim();
+            const numDigitos = numLimpo.replace(/\D/g, '');
+            map[raw] = row.audio_url;
+            map[numLimpo] = row.audio_url;
+            map[`Art. ${numLimpo}`] = row.audio_url;
+            if (numDigitos) {
+              map[numDigitos] = row.audio_url;
+              map[`${numDigitos}º`] = row.audio_url;
+            }
+          }
         });
         setPlaylistNarracoes(map);
       })

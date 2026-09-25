@@ -10,6 +10,7 @@ import {
   type ArtigoParte,
   type ArtigoEstruturado,
 } from '@/utils/artigoPartesParser';
+import { obterAliasesTabela, obterVariantesArtigoNumero } from '@/utils/narracaoLookup';
 import type { ArtigoLei } from '@/data/mockData';
 
 export interface VozTTS {
@@ -99,10 +100,11 @@ export interface LogAutomacao {
  */
 export async function buscarStatusNarracoes(tabelaNome: string): Promise<Record<string, NarracaoArtigoRegistro>> {
   try {
+    const aliases = obterAliasesTabela(tabelaNome);
     const { data, error } = await supabase
       .from('narracoes_artigos')
       .select('artigo_numero, audio_url, word_timings, created_at')
-      .eq('tabela_nome', tabelaNome);
+      .in('tabela_nome', aliases);
 
     if (error) {
       console.warn('[narracaoLeisService] Erro ao buscar narracoes_artigos:', error);
@@ -306,31 +308,14 @@ export async function apagarPreviaAudio(id: string, storagePath?: string): Promi
  * Apaga a narração de um artigo da tabela narracoes_artigos e remove todos os áudios do Storage.
  */
 export async function apagarNarracaoArtigo(tabelaNome: string, artigoNumero: string): Promise<void> {
-  const numLimpo = String(artigoNumero).replace(/^[Aa]rt\.?\s*/i, '').trim();
-  const numDigitos = numLimpo.replace(/\D/g, '');
-  const variantes = Array.from(new Set([
-    artigoNumero,
-    numLimpo,
-    `Art. ${numLimpo}`,
-    `Artigo ${numLimpo}`,
-    `Art. ${artigoNumero}`,
-    ...(numDigitos ? [
-      numDigitos,
-      `${numDigitos}º`,
-      `${numDigitos}°`,
-      `Art. ${numDigitos}`,
-      `Art. ${numDigitos}º`,
-      `Art. ${numDigitos}°`,
-      `Artigo ${numDigitos}`,
-      `Artigo ${numDigitos}º`,
-    ] : []),
-  ]));
+  const aliasesTabela = obterAliasesTabela(tabelaNome);
+  const variantes = obterVariantesArtigoNumero(artigoNumero);
 
   // 1. Busca os registros no banco para extrair todos os links de áudio salvos
   const { data: rows } = await supabase
     .from('narracoes_artigos')
     .select('audio_url, word_timings')
-    .eq('tabela_nome', tabelaNome)
+    .in('tabela_nome', aliasesTabela)
     .in('artigo_numero', variantes);
 
   const storagePaths: string[] = [];
@@ -351,18 +336,24 @@ export async function apagarNarracaoArtigo(tabelaNome: string, artigoNumero: str
     }
   });
 
+  const numLimpo = String(artigoNumero).replace(/^[Aa]rt\.?\s*/i, '').trim();
+  const numDigitos = numLimpo.replace(/\D/g, '');
+
   // Adiciona também caminhos convencionais para limpeza profunda
   const safeNums = Array.from(new Set([
     numLimpo.replace(/[^a-zA-Z0-9]/g, '_'),
     numDigitos,
   ].filter(Boolean)));
 
-  for (const s of safeNums) {
-    storagePaths.push(`narracoes/${tabelaNome}/fatiado/${s}_art_${s}_completo.wav`);
-    storagePaths.push(`narracoes/${tabelaNome}/fatiado/${s}_art_${s}_parte_1.wav`);
-    storagePaths.push(`narracoes/${tabelaNome}/fatiado/${s}_art_${s}_parte_2.wav`);
-    storagePaths.push(`narracoes/${tabelaNome}/fatiado/${s}_art_${s}_parte_3.wav`);
-    storagePaths.push(`narracoes/${tabelaNome}/fatiado/${s}_art_${s}_caput.wav`);
+  for (const t of aliasesTabela) {
+    for (const s of safeNums) {
+      storagePaths.push(`narracoes/${t}/fatiado/${s}_art_${s}_completo.wav`);
+      storagePaths.push(`narracoes/${t}/fatiado/${s}_art_${s}_parte_1.wav`);
+      storagePaths.push(`narracoes/${t}/fatiado/${s}_art_${s}_parte_2.wav`);
+      storagePaths.push(`narracoes/${t}/fatiado/${s}_art_${s}_parte_3.wav`);
+      storagePaths.push(`narracoes/${t}/fatiado/${s}_art_${s}_caput.wav`);
+      storagePaths.push(`narracoes/${t}/${s}.wav`);
+    }
   }
 
   const pathsUnicos = Array.from(new Set(storagePaths.filter(Boolean)));
@@ -378,7 +369,7 @@ export async function apagarNarracaoArtigo(tabelaNome: string, artigoNumero: str
   const { error } = await supabase
     .from('narracoes_artigos')
     .delete()
-    .eq('tabela_nome', tabelaNome)
+    .in('tabela_nome', aliasesTabela)
     .in('artigo_numero', variantes);
 
   if (error) {
@@ -611,17 +602,36 @@ export async function gerarNarracaoArtigoFatiada(
     }
   }
 
-  // Persiste no banco de dados na tabela narracoes_artigos
+  // Persiste no banco de dados na tabela narracoes_artigos com redundância para garantir busca instantânea
+  const aliasesTabela = obterAliasesTabela(tabelaNome);
   const numLimpo = String(artigo.numero).replace(/^[Aa]rt\.?\s*/i, '').trim();
+  const numDigitos = numLimpo.replace(/\D/g, '');
+
+  const numsVariantes = Array.from(new Set([
+    numLimpo,
+    `Art. ${numLimpo}`,
+    String(artigo.numero).trim(),
+    ...(numDigitos ? [numDigitos, `${numDigitos}º`, `Art. ${numDigitos}`, `Art. ${numDigitos}º`] : []),
+  ])).filter(Boolean);
+
+  const tabs = Array.from(new Set([tabelaNome, ...aliasesTabela])).slice(0, 4);
+
+  const rowsParaSalvar = [];
+  for (const t of tabs) {
+    for (const n of numsVariantes) {
+      rowsParaSalvar.push({
+        tabela_nome: t,
+        artigo_numero: n,
+        lei_nome: leiNome,
+        titulo_artigo: artigo.titulo || null,
+        audio_url: audioPrincipal,
+        word_timings: { partes: partesResultado } as any,
+      });
+    }
+  }
+
   const { error: dbErr } = await supabase.from('narracoes_artigos').upsert(
-    {
-      tabela_nome: tabelaNome,
-      artigo_numero: numLimpo,
-      lei_nome: leiNome,
-      titulo_artigo: artigo.titulo || null,
-      audio_url: audioPrincipal,
-      word_timings: { partes: partesResultado } as any,
-    },
+    rowsParaSalvar,
     { onConflict: 'tabela_nome,artigo_numero' }
   );
 

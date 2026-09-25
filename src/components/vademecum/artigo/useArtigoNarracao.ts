@@ -14,6 +14,7 @@ import {
   buildAudioCacheKey,
   prefetchNextArticleAudio,
 } from '@/services/audioOfflineCache';
+import { obterAliasesTabela, obterVariantesArtigoNumero } from '@/utils/narracaoLookup';
 
 const SB_URL = LEIS_SUPABASE_URL;
 const SB_KEY = LEIS_SUPABASE_ANON_KEY;
@@ -182,45 +183,50 @@ export function useArtigoNarracao({
 
     (async () => {
       try {
-        const cacheKey = buildAudioCacheKey(tabelaNome, artigo.numero);
-        // Item 14: Cache persistente IndexedDB com cota inteligente LRU
-        const cached = await getCachedAudio(cacheKey);
-        if (cached) {
-          setNarracaoUrl(cached.blobUrl);
-          if (cached.wordTimings && cached.wordTimings.length > 0) {
-            setNarracaoWordTimings(cached.wordTimings as any[]);
+        const aliases = obterAliasesTabela(tabelaNome);
+        const variantesNum = obterVariantesArtigoNumero(artigo.numero);
+
+        // 1. Cache persistente IndexedDB com verificação de variantes
+        for (const v of variantesNum) {
+          for (const a of aliases) {
+            const cacheKey = buildAudioCacheKey(a, v);
+            const cached = await getCachedAudio(cacheKey);
+            if (cached?.blobUrl) {
+              setNarracaoUrl(cached.blobUrl);
+              if (cached.wordTimings && cached.wordTimings.length > 0) {
+                setNarracaoWordTimings(cached.wordTimings as any[]);
+              }
+              return;
+            }
           }
-          return;
         }
 
-        const aliases = Array.from(new Set([
-          tabelaNome,
-          tabelaNome.toLowerCase(),
-          tabelaNome.toUpperCase(),
-          tabelaNome.replace(/^[A-Z0-9]+_/, '').toLowerCase(),
-          tabelaNome.replace(/^[A-Z0-9]+_/, '').toUpperCase(),
-        ]));
-
-        const { data: row } = await supabase
+        // 2. Consulta no Supabase usando todos os aliases e variantes de número
+        const { data: rows } = await supabase
           .from('narracoes_artigos')
           .select('audio_url, word_timings')
           .in('tabela_nome', aliases)
-          .eq('artigo_numero', artigo.numero)
-          .limit(1)
-          .maybeSingle();
+          .in('artigo_numero', variantesNum)
+          .order('created_at', { ascending: false })
+          .limit(1);
 
+        const row = rows?.[0];
         if (row?.audio_url) {
           setNarracaoUrl(row.audio_url);
-          if (Array.isArray(row.word_timings) && row.word_timings.length > 0) {
-            setNarracaoWordTimings(row.word_timings as any[]);
+          const timings = Array.isArray(row.word_timings)
+            ? row.word_timings
+            : ((row.word_timings as any)?.partes || null);
+          if (timings && timings.length > 0) {
+            setNarracaoWordTimings(timings as any[]);
           }
           // Salva no IndexedDB em background para próximas reproduções offline instantâneas
+          const primaryCacheKey = buildAudioCacheKey(tabelaNome, artigo.numero);
           void (async () => {
             try {
               const resp = await fetch(row.audio_url);
               if (resp.ok) {
                 const blob = await resp.blob();
-                await saveCachedAudio(cacheKey, blob, row.word_timings as any);
+                await saveCachedAudio(primaryCacheKey, blob, timings as any);
               }
             } catch {}
           })();
@@ -459,10 +465,80 @@ export function useArtigoNarracao({
       console.warn('[useArtigoNarracao] Geração de áudio já em andamento. Ignorando clique duplicado.');
       return;
     }
-    isGeneratingAudioRef.current = true;
 
     const autoplay = options?.autoplay ?? true;
     const silent = options?.silent ?? false;
+    const forceRegenerate = options?.forceRegenerate ?? false;
+
+    // Se NÃO for forceRegenerate, verifica primeiro se já temos o áudio pronto no estado, cache ou banco
+    if (!forceRegenerate) {
+      if (narracaoUrl) {
+        if (!silent) setNarracaoLoading(false);
+        if (autoplay) await playNarracao(narracaoUrl);
+        return;
+      }
+
+      const aliases = obterAliasesTabela(tabelaNome);
+      const variantesNum = obterVariantesArtigoNumero(artigo.numero);
+
+      // A. Cache IndexedDB rápido
+      for (const v of variantesNum) {
+        for (const a of aliases) {
+          const cached = await getCachedAudio(buildAudioCacheKey(a, v));
+          if (cached?.blobUrl) {
+            setNarracaoUrl(cached.blobUrl);
+            if (cached.wordTimings && cached.wordTimings.length > 0) {
+              setNarracaoWordTimings(cached.wordTimings as any[]);
+            }
+            if (!silent) setNarracaoLoading(false);
+            if (autoplay) await playNarracao(cached.blobUrl);
+            return;
+          }
+        }
+      }
+
+      // B. Supabase narracoes_artigos
+      try {
+        const { data: rows } = await supabase
+          .from('narracoes_artigos')
+          .select('audio_url, word_timings')
+          .in('tabela_nome', aliases)
+          .in('artigo_numero', variantesNum)
+          .order('created_at', { ascending: false })
+          .limit(1);
+
+        const row = rows?.[0];
+        if (row?.audio_url) {
+          const foundUrl = row.audio_url;
+          const timings = Array.isArray(row.word_timings)
+            ? row.word_timings
+            : ((row.word_timings as any)?.partes || null);
+
+          setNarracaoUrl(foundUrl);
+          if (timings && timings.length > 0) {
+            setNarracaoWordTimings(timings as any[]);
+          }
+          if (!silent) setNarracaoLoading(false);
+          if (autoplay) await playNarracao(foundUrl);
+
+          const cKey = buildAudioCacheKey(tabelaNome, artigo.numero);
+          void (async () => {
+            try {
+              const resp = await fetch(foundUrl);
+              if (resp.ok) {
+                const blob = await resp.blob();
+                await saveCachedAudio(cKey, blob, timings as any);
+              }
+            } catch {}
+          })();
+          return;
+        }
+      } catch (errDb) {
+        console.warn('[useArtigoNarracao] Erro ao consultar narracoes_artigos:', errDb);
+      }
+    }
+
+    isGeneratingAudioRef.current = true;
 
     if (!silent) {
       setNarracaoLoading(true);
@@ -493,32 +569,30 @@ export function useArtigoNarracao({
         hierarquia: hier,
         titulo_artigo: hier,
         epigrafe: epig,
-        force_regenerate: options?.forceRegenerate ?? false,
+        force_regenerate: forceRegenerate,
       };
 
       let audio_url: string | null = null;
       let word_timings: any[] | null = null;
 
-      // 1ª Tentativa: cache no banco
+      // 1ª Tentativa: cache no banco com aliases e variantes
       try {
-        const aliases = Array.from(new Set([
-          tabelaNome,
-          tabelaNome.toLowerCase(),
-          tabelaNome.toUpperCase(),
-          tabelaNome.replace(/^[A-Z0-9]+_/, '').toLowerCase(),
-          tabelaNome.replace(/^[A-Z0-9]+_/, '').toUpperCase(),
-        ]));
+        const aliases = obterAliasesTabela(tabelaNome);
+        const variantesNum = obterVariantesArtigoNumero(artigo.numero);
 
-        const { data: row } = await supabase
+        const { data: rows } = await supabase
           .from('narracoes_artigos')
           .select('audio_url, word_timings')
           .in('tabela_nome', aliases)
-          .eq('artigo_numero', artigo.numero)
-          .limit(1)
-          .maybeSingle();
+          .in('artigo_numero', variantesNum)
+          .order('created_at', { ascending: false })
+          .limit(1);
 
+        const row = rows?.[0];
         const cachedUrl = row?.audio_url || null;
-        const cachedTimings = Array.isArray(row?.word_timings) ? (row!.word_timings as any[]) : null;
+        const cachedTimings = Array.isArray(row?.word_timings)
+          ? (row!.word_timings as any[])
+          : ((row?.word_timings as any)?.partes || null);
         if (cachedUrl) {
           audio_url = cachedUrl;
           word_timings = cachedTimings;
@@ -640,7 +714,7 @@ export function useArtigoNarracao({
       isGeneratingAudioRef.current = false;
     }
     if (!silent) setNarracaoLoading(false);
-  }, [artigo, tabelaNome, breadcrumb?.tituloDesc, breadcrumb?.titulo, playNarracao, openPremiumGate, isPremium]);
+  }, [artigo, tabelaNome, breadcrumb, narracaoUrl, playNarracao, openPremiumGate, isPremium]);
 
   // ─── handleNarrar ───
   const handleNarrar = async () => {

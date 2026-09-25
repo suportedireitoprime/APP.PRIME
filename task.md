@@ -1,22 +1,21 @@
-# Tarefas - Correção da Exclusão e Narração Contínua de Artigos (Até 1 Minuto e Áudio Unificado)
+# Checklist de Execução — Correção de Extração e Histórico de Leis (2024–2026)
 
-- [x] 1. Modal de Confirmação Seguro para Exclusão de Narração <!-- id: 1 -->
-  - [x] Garantir que o clique na lixeira abra imediatamente o `Dialog` de confirmação sem bloqueios <!-- id: 1.1 -->
-  - [x] Normalizar busca de chaves (`numLimpo`, `artigo.numero`, dígitos numéricos `1`, `1º`) em `apagarNarracaoArtigo` no banco e storage <!-- id: 1.2 -->
-  - [x] Atualização reativa de `statusNarracoes` limpando o artigo e permitindo re-narração instantânea <!-- id: 1.3 -->
-- [x] 2. Narração Contínua Unificada (~1 Minuto com Quebra em Ponto Final) <!-- id: 2 -->
-  - [x] Início com enunciação do nome da lei ("Direito Penal" para CP, "Constituição Federal", etc.) <!-- id: 2.1 -->
-  - [x] Enunciação do Título e Capítulo contextuais quando existirem <!-- id: 2.2 -->
-  - [x] Enunciação do Artigo ("Artigo primeiro: ...") com caput, parágrafos e incisos em texto contínuo <!-- id: 2.3 -->
-  - [x] Fatiamento inteligente em teto de ~1 minuto (~800-850 caracteres) parando estritamente no próximo ponto final <!-- id: 2.4 -->
-  - [x] Concatenação/Unificação de todos os blocos de áudio WAV gerados em 1 único áudio contínuo ("Aí juntar tudo") <!-- id: 2.5 -->
-- [x] 3. Atualização da Interface `AdminNarracaoLeis.tsx` <!-- id: 3 -->
-  - [x] Badge simplificado indicando narração completa unificada <!-- id: 3.1 -->
-  - [x] Botão de reprodução tocando o áudio completo com 1 clique <!-- id: 3.2 -->
-  - [x] Modal de exclusão com visual moderno, acessível e sem dependência de `window.confirm` <!-- id: 3.3 -->
-- [x] 4. Atualização da Edge Function de Automação <!-- id: 4 -->
-  - [x] Sincronizar regras na Edge Function `narracao-leis-automacao` <!-- id: 4.1 -->
-- [x] 5. Validação, Compilação e Versionamento <!-- id: 5 -->
-  - [x] Validação de tipos com `tsc.CMD --noEmit` <!-- id: 5.1 -->
-  - [x] Validação de build com `vite.CMD build` <!-- id: 5.2 -->
-  - [x] Auto-commit e push para o GitHub <!-- id: 5.3 -->
+- [ ] 1. Refatorar Edge Function `vademecum-scraper/index.ts` <!-- id: 1 -->
+  - [ ] Implementar motor de extração HTTP nativo (Deno) com decoding `windows-1252`/`utf-8` e fallback de URLs Planalto
+  - [ ] Corrigir identificação de artigos (evitar pular o próprio caput em `Art. 300-A` e suportar sufixos e milhar `/^Art\.?\s*(\d+(?:\.\d+)*(?:-[A-Za-z0-9]+)?)/i`)
+  - [ ] Expandir filtros de termos modificadores (incluída, revogado/a, decretos, emendas, medidas provisórias)
+  - [ ] Ajustar chave de deduplicação para não descartar múltiplos dispositivos/anos do mesmo artigo
+  - [ ] Manter Puppeteer/Browserless apenas como fallback secundário
+- [ ] 2. Atualizar Base de Dados e Sementes em `src/data/leiAlteracoesScraped.ts` <!-- id: 2 -->
+  - [ ] Cadastrar datas de leis de 2023, 2024, 2025 e 2026 no `KNOWN_LEIS_DATAS` (Lei 15.280/2025, 14.994/2024, 14.843/2024, 14.836/2024, 14.711/2023, 14.620/2023, etc.)
+  - [ ] Adicionar sementes de novidades para Código Civil (`SEED_CC_ALTERACOES`) e Código de Processo Penal (`SEED_CPP_ALTERACOES`)
+  - [ ] Atualizar `getScrapedAlteracoes` para garantir que novidades recentes nunca fiquem presas em cache antigo
+- [ ] 3. Aprimorar UI e Sincronização em `src/pages/AdminMapeamentoLeis.tsx` <!-- id: 3 -->
+  - [ ] Adicionar botão/ação explícita de "Limpar Cache & Re-escanear do Planalto"
+  - [ ] Corrigir `handleSincronizarArtigo` para preservar artigos com sufixo (ex: `Art. 300-A`) sem truncar para número base
+  - [ ] Exibir contadores e filtros atualizados (2024, 2025, 2026)
+- [ ] 4. Verificação, Deploy e Versionamento Git <!-- id: 4 -->
+  - [ ] Executar checagem de tipos `tsc --noEmit`
+  - [ ] Executar build de produção `vite build`
+  - [ ] Fazer deploy da Edge Function `vademecum-scraper` no Supabase
+  - [ ] Commit e push automático no repositório GitHub
