@@ -10,9 +10,8 @@ import VadeMecumSubpage from '@/components/vademecum/outros/VadeMecumSubpage';
 const norm = (v: string) => v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
 const GRUPOS = [
-  { id: 'constituicao', label: 'Constituição' },
+  { id: 'constituicao', label: 'Constituição Federal' },
   { id: 'codigo', label: 'Códigos' },
-  { id: 'estatuto', label: 'Estatutos' },
 ];
 
 const VadeMecumCodigos = () => {
@@ -32,14 +31,14 @@ const VadeMecumCodigos = () => {
   }, [q]);
 
   return (
-    <VadeMecumSubpage titulo="Códigos" descricao="Constituição, códigos e estatutos na íntegra">
+    <VadeMecumSubpage titulo="Códigos" descricao="Constituição Federal e Códigos do Brasil na íntegra">
       <div className="relative mb-5">
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground" />
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Buscar código ou estatuto…"
-          className="w-full h-12 pl-11 pr-4 rounded-2xl bg-card border border-border text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/40"
+          placeholder="Buscar código ou constituição…"
+          className="w-full h-12 pl-11 pr-4 rounded-2xl bg-card border border-border text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/40 text-sm"
         />
       </div>
 

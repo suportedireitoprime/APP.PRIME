@@ -1,11 +1,13 @@
-import { memo, useRef, useState, useEffect, useCallback } from 'react';
+import { memo, useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Landmark, Gavel, Scale, FileText, ShieldAlert, Briefcase, CircleDollarSign, ShoppingCart, Baby, BookMarked, LucideIcon } from 'lucide-react';
+import { Landmark, Gavel, Scale, FileText, ShieldAlert, Briefcase, CircleDollarSign, ShoppingCart, Baby, BookMarked, Settings2, LucideIcon } from 'lucide-react';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { leiPath } from '@/lib/legislacaoSlugs';
 import { haptic } from '@/lib/nativeHaptics';
 import CarouselDots from './CarouselDots';
+import { useEmAltaConfig } from '@/hooks/useEmAltaConfig';
+import { HomeEmAltaCustomizer } from './HomeEmAltaCustomizer';
 
 export interface EmAltaItem {
   id: string;
@@ -99,6 +101,15 @@ const EM_ALTA_ITEMS: EmAltaItem[] = [
   },
 ];
 
+const getIconForLei = (tipo: string, id: string) => {
+  const original = EM_ALTA_ITEMS.find(i => i.id === id);
+  if (original) return original.icon;
+  if (tipo === 'codigo') return FileText;
+  if (tipo === 'estatuto') return BookMarked;
+  if (tipo === 'constituicao') return Landmark;
+  return FileText;
+};
+
 const AUTOPLAY_MS = 5000;
 
 interface HomeEmAltaCarouselProps {
@@ -111,6 +122,31 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const isInteractingRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const { config } = useEmAltaConfig();
+  const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
+
+  const displayItems = useMemo(() => {
+    if (!config || config.length === 0) return EM_ALTA_ITEMS;
+
+    return config.map(id => {
+      const original = EM_ALTA_ITEMS.find(item => item.id === id);
+      if (original) return original;
+      
+      const catalogItem = LEIS_CATALOG.find(l => l.id === id);
+      if (catalogItem) {
+        return {
+          id: catalogItem.id,
+          tipo: catalogItem.tipo,
+          title: catalogItem.nome,
+          sigla: catalogItem.sigla,
+          sublabel: catalogItem.descricao || 'Lei',
+          icon: getIconForLei(catalogItem.tipo, catalogItem.id)
+        };
+      }
+      return null;
+    }).filter(Boolean) as EmAltaItem[];
+  }, [config]);
 
   const handleOpenItem = useCallback(
     (item: EmAltaItem) => {
@@ -136,8 +172,8 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
       ? (el.firstElementChild as HTMLElement).offsetWidth + 10
       : 155;
     const idx = Math.round(el.scrollLeft / cardWidth);
-    setActiveIndex(Math.max(0, Math.min(EM_ALTA_ITEMS.length - 1, idx)));
-  }, []);
+    setActiveIndex(Math.max(0, Math.min(displayItems.length - 1, idx)));
+  }, [displayItems.length]);
 
   const pauseAutoplay = useCallback(() => {
     isInteractingRef.current = true;
@@ -148,7 +184,7 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
   }, []);
 
   useEffect(() => {
-    if (EM_ALTA_ITEMS.length <= 1) return;
+    if (displayItems.length <= 1) return;
 
     const interval = setInterval(() => {
       if (isInteractingRef.current || document.hidden) return;
@@ -157,7 +193,7 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
       const cardWidth = el.firstElementChild
         ? (el.firstElementChild as HTMLElement).offsetWidth + 10
         : 155;
-      const nextIndex = (activeIndex + 1) % EM_ALTA_ITEMS.length;
+      const nextIndex = (activeIndex + 1) % displayItems.length;
       el.scrollTo({
         left: nextIndex * cardWidth,
         behavior: 'smooth',
@@ -169,11 +205,11 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
       clearInterval(interval);
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [activeIndex]);
+  }, [activeIndex, displayItems.length]);
 
   return (
     <section className="space-y-3">
-      {/* Cabeçalho "EM ALTA" — sem botão "Mais" à direita */}
+      {/* Cabeçalho "EM ALTA" */}
       <div className="px-1 flex items-start justify-between gap-3">
         <div>
           <h3 className="font-display text-foreground text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
@@ -184,6 +220,16 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
             As leis e normas mais acessadas no momento
           </p>
         </div>
+        <button
+          onClick={() => {
+            haptic.selection();
+            setIsCustomizerOpen(true);
+          }}
+          className="mr-2 sm:mr-3.5 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-300 hover:text-red-100 transition-all text-xs font-semibold shadow-sm shadow-red-950/20 active:scale-95 touch-manipulation"
+        >
+          <Settings2 className="w-3.5 h-3.5 text-red-400" />
+          Personalizar
+        </button>
       </div>
 
       {/* Faixa Carrossel Horizontal: cards quadrados em vermelho com SVG branco (sem capas) */}
@@ -194,7 +240,7 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
         onTouchStart={pauseAutoplay}
         className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-4 sm:px-6 md:px-8 lg:px-12 flex gap-2.5 sm:gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
-        {EM_ALTA_ITEMS.map((item, i) => {
+        {displayItems.map((item, i) => {
           const isActive = i === activeIndex;
           const Icon = item.icon;
 
@@ -246,7 +292,13 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
       </div>
 
       {/* Indicador de Paginação */}
-      <CarouselDots total={EM_ALTA_ITEMS.length} activeIndex={activeIndex} />
+      <CarouselDots total={displayItems.length} activeIndex={activeIndex} />
+
+      <HomeEmAltaCustomizer 
+        isOpen={isCustomizerOpen}
+        onClose={() => setIsCustomizerOpen(false)}
+        defaultOrder={EM_ALTA_ITEMS.map(i => i.id)}
+      />
     </section>
   );
 };

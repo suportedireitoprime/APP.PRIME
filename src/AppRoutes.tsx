@@ -92,6 +92,8 @@ import Onboarding from "./pages/Onboarding.tsx";
 // Hubs Críticos — eager para abrir sem Suspense fallback (Engenharia VACATIO-APP)
 import VadeMecum from "./pages/VadeMecum.tsx";
 import VadeMecumCodigos from "./pages/VadeMecumCodigos.tsx";
+import VadeMecumEstatutos from "./pages/VadeMecumEstatutos.tsx";
+import VadeMecumEspeciais from "./pages/VadeMecumEspeciais.tsx";
 import VadeMecumSumulas from "./pages/VadeMecumSumulas.tsx";
 import VadeMecumFavoritos from "./pages/VadeMecumFavoritos.tsx";
 import VadeMecumRecentes from "./pages/VadeMecumRecentes.tsx";
@@ -1015,7 +1017,7 @@ function AnimatedRoutes() {
 
   const getRouteKey = (path: string, search: string) => {
     // Agrupa abas do Vade Mecum para não acionar a transição de página inteira
-    if (path.match(/^\/vade-mecum(\/(areas|categorias|favoritos|recentes|codigos|sumulas))?$/)) {
+    if (path.match(/^\/vade-mecum(\/(areas|categorias|favoritos|recentes|codigos|estatutos|especiais|sumulas))?$/)) {
       return '/vade-mecum-tabs';
     }
     // Agrupa abas de Resumos Jurídicos para navegação instantânea sem desmontar rota
@@ -1120,6 +1122,8 @@ function AnimatedRoutes() {
           <Route path="/vade-mecum/areas" element={<ProtectedRoute><PageTransition instant><VadeMecum /></PageTransition></ProtectedRoute>} />
           <Route path="/vade-mecum/categorias" element={<ProtectedRoute><PageTransition instant><VadeMecum /></PageTransition></ProtectedRoute>} />
           <Route path="/vade-mecum/codigos" element={<ProtectedRoute><PageTransition instant><VadeMecumCodigos /></PageTransition></ProtectedRoute>} />
+          <Route path="/vade-mecum/estatutos" element={<ProtectedRoute><PageTransition instant><VadeMecumEstatutos /></PageTransition></ProtectedRoute>} />
+          <Route path="/vade-mecum/especiais" element={<ProtectedRoute><PageTransition instant><VadeMecumEspeciais /></PageTransition></ProtectedRoute>} />
           <Route path="/vade-mecum/sumulas" element={<ProtectedRoute><PageTransition instant><VadeMecumSumulas /></PageTransition></ProtectedRoute>} />
           <Route path="/vade-mecum/favoritos" element={<ProtectedRoute><PageTransition instant><VadeMecum /></PageTransition></ProtectedRoute>} />
           <Route path="/vade-mecum/recentes" element={<ProtectedRoute><PageTransition instant><VadeMecumRecentes /></PageTransition></ProtectedRoute>} />

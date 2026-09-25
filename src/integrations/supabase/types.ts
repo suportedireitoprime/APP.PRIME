@@ -10709,6 +10709,7 @@ export type Database = {
       user_preferences: {
         Row: {
           created_at: string
+          em_alta_config: Json | null
           highlights: Json | null
           id: string
           theme_id: string | null
@@ -10717,6 +10718,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          em_alta_config?: Json | null
           highlights?: Json | null
           id?: string
           theme_id?: string | null
@@ -10725,6 +10727,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          em_alta_config?: Json | null
           highlights?: Json | null
           id?: string
           theme_id?: string | null

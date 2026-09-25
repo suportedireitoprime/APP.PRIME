@@ -22,16 +22,6 @@ function getAreaDisplayLabel(label: string): string {
 }
 
 const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar }: HomeTabEmAltaProps) => {
-  const [searchArea, setSearchArea] = useState('');
-
-  const filteredAreas = AREA_CATS.filter(c => {
-    if (!searchArea) return true;
-    const term = searchArea.toLowerCase();
-    const lbl = getAreaDisplayLabel(c.label).toLowerCase();
-    const sub = c.sublabel.toLowerCase();
-    return lbl.includes(term) || sub.includes(term);
-  });
-
   return (
     <motion.div
       key="emalta"
@@ -56,21 +46,11 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar }: HomeTabEmAltaProps) =>
               Consulte as leis e normas organizadas por ramo do Direito
             </p>
           </div>
-          <div className="relative w-full sm:w-[260px] shrink-0 ml-3 sm:ml-0">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input
-              type="text"
-              value={searchArea}
-              onChange={(e) => setSearchArea(e.target.value)}
-              placeholder="Buscar área do direito..."
-              className="w-full h-[42px] pl-10 pr-4 bg-secondary border border-border/60 rounded-xl text-[14.5px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
-            />
-          </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-4">
           <AnimatePresence mode="popLayout">
-            {filteredAreas.map((c, i) => {
+            {AREA_CATS.map((c, i) => {
               const displayLabel = getAreaDisplayLabel(c.label);
               return (
                 <motion.div
@@ -91,7 +71,7 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar }: HomeTabEmAltaProps) =>
                 solidColor={true}
                 hideChevron={true}
                 hideWatermark={true}
-                titleClassName="font-sans font-bold text-[12px] xs:text-[13px] sm:text-[14px] leading-[1.2] uppercase text-white tracking-normal break-words"
+                titleClassName="font-sans font-medium text-[13.5px] xs:text-[14px] leading-tight text-white/95 break-words"
                 onClick={() => onOpenCategory({ ...c, label: displayLabel })}
                 data-track="home_card_click"
                 data-track-name={displayLabel}
@@ -101,12 +81,6 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar }: HomeTabEmAltaProps) =>
               );
             })}
           </AnimatePresence>
-          {filteredAreas.length === 0 && (
-            <div className="col-span-full py-8 flex flex-col items-center justify-center text-center text-muted-foreground">
-              <Search className="w-8 h-8 mb-2 opacity-20" />
-              <p className="text-sm">Nenhuma área encontrada para "{searchArea}"</p>
-            </div>
-          )}
         </div>
       </div>
 

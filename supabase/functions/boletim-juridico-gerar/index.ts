@@ -307,7 +307,7 @@ Deno.serve(async (req) => {
       boletimId = boletim.id;
     } else {
       // Atualiza para gerando se já existe
-      await supa.from("boletins_juridicos").update({ status: "gerando" }).eq("id", boletimId);
+      await supa.from("boletins_juridicos").update({ status: "gerando", subtitulo: `${filtradas.length} ${filtradas.length === 1 ? "norma comentada" : "normas comentadas"}` }).eq("id", boletimId);
     }
 
 
@@ -318,7 +318,7 @@ Deno.serve(async (req) => {
     const scenes: any[] = [];
 
     // Intro
-    const intro = `Bom dia! Aqui é o Boletim Jurídico do dia ${new Date(dataRef + "T12:00:00").toLocaleDateString("pt-BR", { day: "numeric", month: "long" })}. Separamos ${filtradas.length} ${filtradas.length === 1 ? "norma quente" : "normas quentes"} pra você começar o dia por dentro do que mudou. Bora?`;
+    const intro = `Bom dia! Aqui é o Boletim Jurídico do dia ${new Date(dataReal + "T12:00:00").toLocaleDateString("pt-BR", { day: "numeric", month: "long" })}. Separamos ${filtradas.length} ${filtradas.length === 1 ? "norma quente" : "normas quentes"} pra você começar o dia por dentro do que mudou. Bora?`;
     scenes.push({ kind: "intro", tipo: "generico", titulo: "Boletim Jurídico", texto: intro });
 
     // Normas
