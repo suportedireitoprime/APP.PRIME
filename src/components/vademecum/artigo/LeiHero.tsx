@@ -63,19 +63,14 @@ const LeiHero: React.FC<LeiHeroProps> = ({
           aria-hidden="true"
         />
 
-        {/* Imagem de Capa em alta visibilidade */}
+        {/* Imagem de Capa real sem degradê */}
         <img
           src={cover}
           alt={`Capa — ${selectedLeiNome}`}
           loading="eager"
           decoding="async"
           fetchPriority="high"
-          className="absolute inset-0 w-full h-full object-cover object-center z-0 pointer-events-none opacity-90"
-        />
-
-        {/* Degradê suave de baixo para cima para destacar a imagem com legibilidade */}
-        <div
-          className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-black/20 pointer-events-none z-[1]"
+          className="absolute inset-0 w-full h-full object-cover object-center z-0 pointer-events-none"
         />
 
         {/* Brasão watermark centralizado atrás do título */}

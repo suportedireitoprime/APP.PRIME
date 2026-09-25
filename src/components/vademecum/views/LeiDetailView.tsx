@@ -28,7 +28,6 @@ import RadarLegislacaoContent from '@/components/vademecum/outros/RadarLegislaca
 import LeiHero from '@/components/vademecum/artigo/LeiHero';
 import LeiArtigosVirtualList from '@/components/vademecum/artigo/LeiArtigosVirtualList';
 import LeiCapitulosGrid from '@/components/vademecum/artigo/LeiCapitulosGrid';
-import ShapeGrid from '@/components/ui/ShapeGrid';
 import LeiHistoricoCarousel from '@/components/vademecum/artigo/LeiHistoricoCarousel';
 
 const MOBILE_ARTIGOS_VIRTUAL_THRESHOLD = 120;
@@ -496,18 +495,6 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
 
   return (
     <div className="theme-vademecum min-h-dvh bg-background pb-28 lg:pb-0 relative overflow-x-hidden">
-      {/* Fundo Oficial Animado ShapeGrid com quadradinhos */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <ShapeGrid 
-          speed={0.5} 
-          squareSize={40}
-          direction="diagonal"
-          borderColor="rgba(255, 255, 255, 0.04)"
-          hoverFillColor="rgba(255, 255, 255, 0.08)"
-          shape="square"
-          hoverTrailAmount={5}
-        />
-      </div>
       {/* Item 75: Skip to Content para acessibilidade WCAG AAA */}
       <a
         href="#lei-conteudo"
@@ -943,9 +930,9 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           style={{ willChange: 'transform, opacity', pointerEvents: showFooter ? 'auto' : 'none' }}
           className="fixed bottom-0 left-0 right-0 z-[58] lg:hidden"
         >
-          <div className="bg-[#0e0e10]/95 backdrop-blur-xl border-t border-white/10 rounded-t-3xl shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.65)] pb-safe px-3 pt-2.5 pb-2">
-            {/* Fundo cinza um pouco mais claro distribuído entre os 3 itens (Menu de alternância tipo segmented control) */}
-            <div className="grid grid-cols-3 p-1.5 rounded-2xl bg-white/[0.08] border border-white/10 shadow-inner max-w-md mx-auto relative gap-1">
+          <div className="bg-[#0e0e10]/95 backdrop-blur-xl border-t border-white/10 rounded-t-3xl shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.65)] pb-safe px-3 pt-2 pb-2">
+            {/* Menu de rodapé estético com exatamente 2 tons de cinza */}
+            <div className="grid grid-cols-3 max-w-md mx-auto items-center gap-1.5">
               {[
                 { key: 'art' as const, icon: BookOpen, label: 'Artigos' },
                 { key: 'cap' as const, icon: LayoutGrid, label: 'Capítulos' },
@@ -960,10 +947,10 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                       setActiveTab(tab.key);
                     }}
                     type="button"
-                    className={`relative z-10 flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-xl transition-all select-none active:scale-95 ${
+                    className={`flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-2xl transition-all select-none active:scale-95 ${
                       active
-                        ? 'bg-white/15 text-white font-bold shadow-md border border-white/10'
-                        : 'text-zinc-400 hover:text-white font-medium'
+                        ? 'bg-white/10 text-white font-bold border border-white/15 shadow-sm'
+                        : 'text-zinc-400 hover:text-white font-medium hover:bg-white/5'
                     }`}
                   >
                     <tab.icon className={`w-5 h-5 sm:w-6 sm:h-6 shrink-0 transition-transform ${active ? 'text-primary scale-110' : 'text-zinc-400'}`} strokeWidth={active ? 2.5 : 2} />
