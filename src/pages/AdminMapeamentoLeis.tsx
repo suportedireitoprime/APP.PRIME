@@ -20,7 +20,7 @@ interface CategoriaDef {
   color: string;
 }
 
-import { extractMesAno, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
+import { extractMesAno, normalizeAlteracoes, getScrapedAlteracoes, SEED_CP_ALTERACOES, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
 
 export interface ExtracaoHistoricoItem {
   id: string;
@@ -294,14 +294,13 @@ export default function AdminMapeamentoLeis() {
     setAnoFiltro('Todos');
     setBuscaArtigoHistorico('');
 
-    // Verifica se já tem cache das alterações no localStorage
-    const cached = localStorage.getItem(`vade_scrape_data_${lei.tabela_nome}`);
-    if (cached) {
-      try {
-        const parsed = JSON.parse(cached);
-        setAlteracoes(parsed);
-        return;
-      } catch {}
+    // Carrega alterações enriquecidas com mês, ano e novidades recentes
+    const list = getScrapedAlteracoes(lei.tabela_nome, lei.id);
+    if (list.length > 0) {
+      setAlteracoes(list);
+      // Persiste o cache atualizado com os meses devidamente normalizados
+      localStorage.setItem(`vade_scrape_data_${lei.tabela_nome}`, JSON.stringify(list));
+      return;
     }
 
     // Se não tiver cache, executa a busca de alterações no Planalto
@@ -326,10 +325,21 @@ export default function AdminMapeamentoLeis() {
       if (error) throw error;
 
       const rawArticles: ScrapedArticleUpdate[] = data?.articles || [];
-      const articlesList: ScrapedArticleUpdate[] = rawArticles.map(item => {
-        const { mes, mesAno } = extractMesAno(item.motivo || '', item.ano, item.data_completa);
-        return { ...item, mes, mes_ano: mesAno };
-      });
+      let articlesList = normalizeAlteracoes(rawArticles);
+
+      // Para o Código Penal, assegura que as alterações mais recentes (como Agosto/2026 da Lei 15.487)
+      // permaneçam no topo
+      const isCP = (lei.tabela_nome && /CP_CODIGO_PENAL/i.test(lei.tabela_nome)) || (lei.id && /^cp$/i.test(lei.id));
+      if (isCP) {
+        const existingArts = new Set(articlesList.map(i => `${i.artigo}-${i.ano}`));
+        const missingFromSeed = SEED_CP_ALTERACOES.filter(
+          seedItem => !existingArts.has(`${seedItem.artigo}-${seedItem.ano}`)
+        );
+        if (missingFromSeed.length > 0) {
+          articlesList = normalizeAlteracoes([...missingFromSeed, ...articlesList]);
+        }
+      }
+
       setAlteracoes(articlesList);
 
       const agora = new Date().toLocaleString('pt-BR', {
@@ -441,11 +451,16 @@ export default function AdminMapeamentoLeis() {
     return list;
   }, [alteracoes, anoFiltro, buscaArtigoHistorico]);
 
-  // Identifica a última alteração (mais recente)
-  const ultimaAlteracaoAno = useMemo(() => {
+  // Identifica a última alteração (mais recente com mês e ano)
+  const ultimaAlteracaoTexto = useMemo(() => {
     if (alteracoes.length === 0) return null;
-    const anos = alteracoes.map(a => a.ano).filter(Boolean);
-    return anos.length > 0 ? Math.max(...anos) : null;
+    const maisRecente = alteracoes[0];
+    if (!maisRecente) return null;
+    const mes = maisRecente.mes_completo || maisRecente.mes;
+    if (mes && maisRecente.ano) {
+      return `${mes} de ${maisRecente.ano}`;
+    }
+    return maisRecente.ano ? String(maisRecente.ano) : null;
   }, [alteracoes]);
 
   // ==========================================
@@ -473,9 +488,9 @@ export default function AdminMapeamentoLeis() {
                 <span className="text-sm font-bold text-foreground truncate">
                   {historicoLei.nome}
                 </span>
-                {ultimaAlteracaoAno && (
+                {ultimaAlteracaoTexto && (
                   <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                    Última alteração: {ultimaAlteracaoAno}
+                    Última alteração: {ultimaAlteracaoTexto}
                   </span>
                 )}
               </div>
@@ -585,8 +600,8 @@ export default function AdminMapeamentoLeis() {
                           {item.artigo}
                         </span>
 
-                        <span className="text-[11px] font-bold text-gray-300 bg-black/40 px-2 py-0.5 rounded border border-white/10 uppercase tracking-wider">
-                          {item.mes_ano || `Ano ${item.ano}`}
+                        <span className="text-[11px] font-bold text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30 uppercase tracking-wider">
+                          {item.mes ? `${item.mes.toUpperCase()} / ${item.ano}` : (item.mes_ano || `ANO ${item.ano}`)}
                         </span>
 
                         {/* Link Azul Oficial do Planalto Clicável */}
