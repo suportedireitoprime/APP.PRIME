@@ -452,8 +452,8 @@ export default function AdminNarracaoLeis() {
     if (!configAuto) return;
     setSalvandoAuto(true);
     try {
-      await salvarConfigAutomacao({ voz_padrao: vozTeste, estilo_tom: estiloTeste });
-      setConfigAuto((prev) => prev ? { ...prev, voz_padrao: vozTeste, estilo_tom: estiloTeste } : prev);
+      await salvarConfigAutomacao({ voz_padrao: vozTeste, estilo_tom: ESTILOS_TOM[0].prompt });
+      setConfigAuto((prev) => prev ? { ...prev, voz_padrao: vozTeste, estilo_tom: ESTILOS_TOM[0].prompt } : prev);
       toast.success(`Voz ${vozTeste} definida como padrão da automação!`);
     } catch (e) {
       toast.error('Erro ao salvar preferências');
