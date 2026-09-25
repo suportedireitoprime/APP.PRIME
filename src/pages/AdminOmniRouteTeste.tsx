@@ -39,17 +39,19 @@ const STORAGE_KEYS = {
 };
 
 const DEFAULT_BASE_URL = 'https://omniroute-production-fb57.up.railway.app/v1';
-const DEFAULT_API_KEY = 'sk-b031bdec64ce3755-4e94d3-d0de5a82';
+const DEFAULT_API_KEY = 'sk-03fcfd719bf0cc25-19fbd7-028392e5';
 
 const POPULAR_TEXT_MODELS = [
+  'antigravity/gemini-3.7-flash-high',
+  'antigravity/gemini-pro-agent',
+  'antigravity/claude-sonnet-4-6',
+  'antigravity/claude-opus-4-6-thinking',
   'google/gemini-2.5-pro',
   'google/gemini-2.5-flash',
   'google/gemini-1.5-pro',
   'google/gemini-1.5-flash',
-  'google/gemini-2.0-flash',
-  'gpt-4o',
-  'gpt-4o-mini',
-  'claude-3-7-sonnet',
+  'auto/best-coding',
+  'auto/gemini',
 ];
 
 const TTS_VOICES = [
@@ -73,7 +75,7 @@ export default function AdminOmniRouteTeste() {
   const [showConfig, setShowConfig] = useState(false);
 
   // Tab Texto
-  const [textModel, setTextModel] = useState(() => localStorage.getItem(STORAGE_KEYS.LAST_MODEL) || 'google/gemini-2.5-pro');
+  const [textModel, setTextModel] = useState(() => localStorage.getItem(STORAGE_KEYS.LAST_MODEL) || 'antigravity/gemini-3.7-flash-high');
   const [textPrompt, setTextPrompt] = useState('Explique de forma concisa o princípio da dignidade da pessoa humana para um estudante de direito.');
   const [textSystem, setTextSystem] = useState('Você é um assistente jurídico experiente e didático do Vade Mecum Prime.');
   const [temperature, setTemperature] = useState(0.7);
@@ -92,7 +94,7 @@ export default function AdminOmniRouteTeste() {
   // Tab Imagem (Geração & Visão)
   const [imageTab, setImageTab] = useState<'generate' | 'vision'>('generate');
   const [imagePrompt, setImagePrompt] = useState('Balança da justiça dourada reluzente sobre livro antigo de couro e martelo de juiz, estilo cinematográfico ultra realista, 8k');
-  const [imageModel, setImageModel] = useState('dall-e-3');
+  const [imageModel, setImageModel] = useState('antigravity/gemini-3.1-flash-image');
   const [imageSize, setImageSize] = useState('1024x1024');
   const [imageLoading, setImageLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -101,7 +103,7 @@ export default function AdminOmniRouteTeste() {
   // Visão
   const [visionImageBase64, setVisionImageBase64] = useState<string | null>(null);
   const [visionPrompt, setVisionPrompt] = useState('Descreva os elementos jurídicos e visuais presentes nesta imagem.');
-  const [visionModel, setVisionModel] = useState('gemini-2.5-pro');
+  const [visionModel, setVisionModel] = useState('antigravity/gemini-3.7-flash-high');
   const [visionLoading, setVisionLoading] = useState(false);
   const [visionResponse, setVisionResponse] = useState<string | null>(null);
 

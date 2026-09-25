@@ -1302,6 +1302,10 @@ function AnimatedRoutes() {
           <Route path="/ajustes/horus" element={<ProtectedRoute><PageTransition><HorusWhatsApp /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-blog-edicao" element={<ProtectedRoute><PageTransition><AdminBlogEdicao /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-omniroute-teste" element={<ProtectedRoute><PageTransition><AdminOmniRouteTeste /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-omniroute" element={<ProtectedRoute><PageTransition><AdminOmniRouteTeste /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin/omniroute" element={<ProtectedRoute><PageTransition><AdminOmniRouteTeste /></PageTransition></ProtectedRoute>} />
+          <Route path="/omniroute-teste" element={<ProtectedRoute><PageTransition><AdminOmniRouteTeste /></PageTransition></ProtectedRoute>} />
+          <Route path="/omniroute" element={<ProtectedRoute><PageTransition><AdminOmniRouteTeste /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-flashcards-editar" element={<ProtectedRoute><PageTransition><AdminFlashcardsEditar /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-design-imagens" element={<ProtectedRoute><PageTransition><AdminDesignImagens /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-hero-home" element={<ProtectedRoute><PageTransition><AdminHeroHome /></PageTransition></ProtectedRoute>} />
