@@ -3,7 +3,7 @@ import { ChevronRight } from 'lucide-react';
 import type { ArtigoLei } from '@/data/mockData';
 import type { ModificationInfo } from '@/components/vademecum/artigo/ArtigoBottomSheet';
 import { haptic } from '@/lib/nativeHaptics';
-import { getScrapedAlteracoes, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
+import { getScrapedAlteracoes, extractMesAno, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
 
 export type DbAlteracao = {
   artigo_numero: string;
@@ -19,6 +19,8 @@ export type HistoricoCarouselItem = {
   tipo: string;
   referencia: string;
   ano: number;
+  mes?: string;
+  mesAno: string;
   snippet: string;
   leiNome: string;
   textoAntigo?: string;
@@ -33,6 +35,7 @@ interface LeiHistoricoCarouselProps {
   leiId?: string | null;
   leiNome?: string;
   onOpenArtigo: (artigo: ArtigoLei, modInfo: ModificationInfo) => void;
+  onOpenComparativo?: (item: HistoricoCarouselItem) => void;
   onOpenVerTodos: () => void;
 }
 
@@ -92,16 +95,15 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
   leiId,
   leiNome = 'Legislação',
   onOpenArtigo,
+  onOpenComparativo,
   onOpenVerTodos,
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // Carrega as alterações reais extraídas da varredura do Planalto
+  // Carrega as alterações reais extraídas da varredura do Planalto com mês abreviado / ano
   const { items, totalAlteracoes } = useMemo(() => {
-    // 1. Obtém as alterações reais da varredura
     const scrapedList = getScrapedAlteracoes(tabelaNome || null, leiId || null);
 
-    // Mapeamento rápido de número de artigo para ArtigoLei
     const artigoByNumber = new Map<string, ArtigoLei>();
     for (const a of artigos) {
       const clean = cleanArtigoNumber(a.numero);
@@ -113,7 +115,6 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
     const result: HistoricoCarouselItem[] = [];
     const seenKeys = new Set<string>();
 
-    // Processa alterações raspadas do Planalto
     for (const scraped of scrapedList) {
       const numClean = cleanArtigoNumber(scraped.artigo);
       const key = `${numClean || scraped.artigo}-${scraped.ano}`;
@@ -129,8 +130,8 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
 
       const tipo = extractTipoFromMotivo(scraped.motivo, Boolean(scraped.texto_antigo));
       const leiModificadora = extractLeiNomeFromMotivo(scraped.motivo);
+      const { mes, mesAno } = extractMesAno(scraped.motivo, scraped.ano, scraped.data_completa);
 
-      // Snippet limpo de exibição no card
       let snippet = (scraped.texto_novo || scraped.motivo || artigoObj.caput || '')
         .replace(/\([^)]*\)/g, '')
         .replace(/^Art\.\s*\d+[º°]?\s*[-–.]?/i, '')
@@ -146,6 +147,8 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
         tipo,
         referencia: scraped.motivo,
         ano: scraped.ano || 2026,
+        mes: scraped.mes || mes,
+        mesAno: scraped.mes_ano || mesAno,
         snippet,
         leiNome: leiModificadora,
         textoAntigo: scraped.texto_antigo,
@@ -154,7 +157,7 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
       });
     }
 
-    // 2. Mescla alterações salvas no Supabase (legislacao_alteracoes)
+    // Mescla alterações do Supabase
     for (const dbItem of dbAlteracoes) {
       const numClean = cleanArtigoNumber(dbItem.artigo_numero);
       const ano = dbItem.detectado_em ? new Date(dbItem.detectado_em).getFullYear() : 2026;
@@ -174,12 +177,19 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
         : dbItem.tipo_alteracao === 'texto_alterado' ? 'Alterado'
         : 'Alteração';
 
+      const d = dbItem.detectado_em ? new Date(dbItem.detectado_em) : new Date();
+      const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+      const mesName = meses[d.getMonth()] || 'Jan';
+      const mesAno = `${mesName}/${ano}`;
+
       result.push({
         artigo: artigoObj,
         artigoDisplay: formatArtigoDisplay(dbItem.artigo_numero),
         tipo,
         referencia: 'Atualização oficial registrada na varredura',
         ano,
+        mes: mesName,
+        mesAno,
         snippet: (dbItem.texto_atual || dbItem.texto_anterior || '').slice(0, 140),
         leiNome: 'Atualização Planalto',
         textoAntigo: dbItem.texto_anterior || undefined,
@@ -187,7 +197,6 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
       });
     }
 
-    // Ordena do mais recente para o mais antigo (ex: 2026 antes de 2025, 2024...)
     result.sort((a, b) => (b.ano || 0) - (a.ano || 0));
 
     return {
@@ -217,7 +226,7 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
         <button
           type="button"
           onClick={onOpenVerTodos}
-          className="group pointer-events-auto shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.14] active:scale-95 backdrop-blur-md border border-white/10 hover:border-white/20 text-[12px] font-semibold text-foreground/90 hover:text-white transition-all shadow-sm"
+          className="group pointer-events-auto shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.14] active:scale-95 backdrop-blur-md border border-white/10 hover:border-white/20 text-[12px] font-semibold text-foreground/90 hover:text-white transition-all shadow-sm cursor-pointer"
         >
           <span>Ver todos</span>
           <ChevronRight className="w-3.5 h-3.5 text-primary group-hover:translate-x-0.5 transition-transform" />
@@ -238,28 +247,32 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
                 key={`${item.artigo.id}-${item.referencia}-${idx}`}
                 onClick={() => {
                   haptic.selection();
-                  onOpenArtigo(item.artigo, {
-                    tipo: item.tipo,
-                    referencia: item.referencia,
-                    ano: item.ano,
-                    leiNome: item.leiNome,
-                    parteModificada: 'Dispositivo',
-                    linhasModificadas: [],
-                  });
+                  if (onOpenComparativo) {
+                    onOpenComparativo(item);
+                  } else {
+                    onOpenArtigo(item.artigo, {
+                      tipo: item.tipo,
+                      referencia: item.referencia,
+                      ano: item.ano,
+                      leiNome: item.leiNome,
+                      parteModificada: 'Dispositivo',
+                      linhasModificadas: [],
+                    });
+                  }
                 }}
                 className="snap-start shrink-0 w-[220px] sm:w-[245px] rounded-2xl bg-[#121316] hover:bg-[#17181e] border border-white/[0.04] hover:border-white/[0.08] p-3.5 flex flex-col justify-between shadow-xl shadow-black/60 backdrop-blur-md active:scale-[0.98] transition-all cursor-pointer relative overflow-hidden group"
               >
                 {/* Glow sutil ao passar o cursor */}
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
-                {/* Topo do Card: Número do Artigo e Badges */}
+                {/* Topo do Card: Número do Artigo e Badges com Mês/Ano */}
                 <div className="flex items-center justify-between gap-1.5 mb-2 relative z-10">
                   <span className="font-bold text-[14px] sm:text-[15px] text-white group-hover:text-primary transition-colors flex items-center gap-1">
                     {item.artigoDisplay}
                   </span>
                   <div className="flex items-center gap-1.5 shrink-0">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/[0.06] text-zinc-300 border border-white/[0.05]">
-                      {item.ano}
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-white/[0.06] text-zinc-300 border border-white/[0.05] tracking-widest">
+                      {item.mesAno}
                     </span>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full leading-none shrink-0 ${badgeClass}`}>
                       {item.tipo}
@@ -274,16 +287,14 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
                   </p>
                 </div>
 
-                {/* Rodapé do Card: Lei Modificadora */}
+                {/* Rodapé do Card: Lei Modificadora e Mês/Ano */}
                 <div className="flex items-center justify-between text-[10px] text-zinc-500 pt-2 border-t border-white/[0.04] relative z-10">
-                  <span className="truncate max-w-[160px] font-medium text-zinc-400">
+                  <span className="truncate max-w-[150px] font-medium text-zinc-400">
                     {item.leiNome}
                   </span>
-                  {item.ano > 0 && (
-                    <span className="font-semibold text-zinc-300 shrink-0 ml-1">
-                      {item.ano}
-                    </span>
-                  )}
+                  <span className="font-bold text-zinc-300 shrink-0 ml-1 tracking-wider">
+                    {item.mesAno}
+                  </span>
                 </div>
               </div>
             );

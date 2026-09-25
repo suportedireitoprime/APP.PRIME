@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Calendar, ChevronRight, Loader2, Sparkles, ExternalLink } from 'lucide-react';
 import type { ArtigoLei } from '@/data/mockData';
 import type { ModificationInfo } from '@/components/vademecum/artigo/ArtigoBottomSheet';
-import { getScrapedAlteracoes, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
+import { getScrapedAlteracoes, extractMesAno, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
 
 export type DbAlteracao = {
   artigo_numero: string;
@@ -18,6 +18,8 @@ type ModItem = {
   tipo: string;
   referencia: string;
   ano: number;
+  mes?: string;
+  mesAno: string;
   parteModificada: string;
   leiNome: string;
   linhasModificadas: number[];
@@ -34,6 +36,7 @@ interface NovidadesPanelProps {
   tabelaNome?: string | null;
   leiId?: string | null;
   onOpenArtigo: (artigo: ArtigoLei, modInfo: ModificationInfo) => void;
+  onOpenComparativo?: (item: any) => void;
 }
 
 function badgeColor(tipo: string) {
@@ -92,9 +95,9 @@ const NovidadesPanel: React.FC<NovidadesPanelProps> = ({
   tabelaNome,
   leiId,
   onOpenArtigo,
+  onOpenComparativo,
 }) => {
   const { items, grouped } = useMemo(() => {
-    // 1. Carrega dados reais raspados da varredura
     const scrapedList = getScrapedAlteracoes(tabelaNome || null, leiId || null);
 
     const artigoByNumber = new Map<string, ArtigoLei>();
@@ -123,12 +126,15 @@ const NovidadesPanel: React.FC<NovidadesPanelProps> = ({
 
       const tipo = extractTipoFromMotivo(scraped.motivo, Boolean(scraped.texto_antigo));
       const leiNome = extractLeiNomeFromMotivo(scraped.motivo);
+      const { mes, mesAno } = extractMesAno(scraped.motivo, scraped.ano, scraped.data_completa);
 
       result.push({
         artigo: artigoObj,
         tipo,
         referencia: scraped.motivo,
         ano: scraped.ano || 2026,
+        mes: scraped.mes || mes,
+        mesAno: scraped.mes_ano || mesAno,
         parteModificada: 'Dispositivo',
         leiNome,
         linhasModificadas: [],
@@ -138,7 +144,7 @@ const NovidadesPanel: React.FC<NovidadesPanelProps> = ({
       });
     }
 
-    // 2. Mescla alterações salvas no Supabase
+    // Mescla alterações do Supabase
     for (const dbItem of dbAlteracoes) {
       const numClean = cleanArtigoNumber(dbItem.artigo_numero);
       const ano = dbItem.detectado_em ? new Date(dbItem.detectado_em).getFullYear() : 2026;
@@ -158,11 +164,18 @@ const NovidadesPanel: React.FC<NovidadesPanelProps> = ({
         : dbItem.tipo_alteracao === 'texto_alterado' ? 'Alterado'
         : 'Alteração';
 
+      const d = dbItem.detectado_em ? new Date(dbItem.detectado_em) : new Date();
+      const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+      const mesName = meses[d.getMonth()] || 'Jan';
+      const mesAno = `${mesName}/${ano}`;
+
       result.push({
         artigo: artigoObj,
         tipo,
         referencia: 'Atualização oficial registrada na varredura',
         ano,
+        mes: mesName,
+        mesAno,
         parteModificada: 'Dispositivo',
         leiNome: 'Atualização Planalto',
         linhasModificadas: [],
@@ -202,13 +215,17 @@ const NovidadesPanel: React.FC<NovidadesPanelProps> = ({
     <div className="space-y-6 pb-8">
       {[...grouped.entries()].map(([ano, group]) => (
         <div key={ano}>
-          <div className="flex items-center gap-2 mb-3">
-            <Calendar className="w-4 h-4 text-primary" />
-            <h3 className="text-sm font-bold text-foreground">{ano > 0 ? `Ano ${ano}` : 'Sem data'}</h3>
-            <span className="text-xs text-muted-foreground">
+          {/* Cabeçalho do Ano com tipografia nítida e espaçamento amplo (tracking-widest) */}
+          <div className="flex items-center gap-2.5 mb-3.5 pt-1">
+            <Calendar className="w-4 h-4 text-primary shrink-0" />
+            <h3 className="font-sans text-sm sm:text-base font-black uppercase tracking-widest text-zinc-100">
+              {ano > 0 ? `ANO ${ano}` : 'SEM DATA'}
+            </h3>
+            <span className="text-xs text-zinc-400 font-medium">
               ({group.length} {group.length === 1 ? 'alteração' : 'alterações'})
             </span>
           </div>
+
           <div className="space-y-2.5">
             {group.map((item, i) => {
               const displayNumero = formatArtigoDisplay(item.artigo.numero);
@@ -224,14 +241,29 @@ const NovidadesPanel: React.FC<NovidadesPanelProps> = ({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.02 }}
                   onClick={() => {
-                    onOpenArtigo(item.artigo, {
-                      tipo: item.tipo,
-                      referencia: item.referencia,
-                      ano: item.ano,
-                      leiNome: item.leiNome,
-                      parteModificada: item.parteModificada,
-                      linhasModificadas: item.linhasModificadas,
-                    });
+                    if (onOpenComparativo) {
+                      onOpenComparativo({
+                        artigo: item.artigo,
+                        artigoDisplay: displayNumero,
+                        tipo: item.tipo,
+                        referencia: item.referencia,
+                        ano: item.ano,
+                        mesAno: item.mesAno,
+                        leiNome: item.leiNome,
+                        textoAntigo: item.textoAntigo,
+                        textoNovo: item.textoNovo,
+                        linkLei: item.linkLei,
+                      });
+                    } else {
+                      onOpenArtigo(item.artigo, {
+                        tipo: item.tipo,
+                        referencia: item.referencia,
+                        ano: item.ano,
+                        leiNome: item.leiNome,
+                        parteModificada: item.parteModificada,
+                        linhasModificadas: item.linhasModificadas,
+                      });
+                    }
                   }}
                   className="w-full text-left rounded-2xl bg-[#121316] hover:bg-[#17181e] border border-white/[0.04] hover:border-white/[0.08] transition-all group flex overflow-hidden min-h-[82px] cursor-pointer shadow-md shadow-black/40"
                 >
@@ -244,8 +276,8 @@ const NovidadesPanel: React.FC<NovidadesPanelProps> = ({
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeColor(item.tipo)}`}>
                         {item.tipo}
                       </span>
-                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-white/[0.05] text-zinc-300">
-                        Ano {item.ano}
+                      <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-white/[0.06] text-zinc-300 border border-white/[0.08] tracking-widest">
+                        {item.mesAno}
                       </span>
                       {item.linkLei && (
                         <a

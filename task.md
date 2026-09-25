@@ -1,9 +1,12 @@
-# Tarefas: Menu de Alternância de Artigos Recentes e Fundo Opaco da Busca
+# Tarefas: Tela Cheia de Histórico e Artigo, Mês/Ano nos Cards e Comparativo com IA OmniRoute
 
-- [x] Remover transparência do dropdown de pesquisa e aplicar fundo 100% sólido opaco (`bg-[#0E0F12]`) <!-- id: 501 -->
-- [x] Implementar menu de alternância rolável horizontal para "ÚLTIMOS ARTIGOS PESQUISADOS" <!-- id: 502 -->
-- [x] Formatar cada item como pílula compacta contendo apenas artigo abreviado e número (ex: `Art. 1º`, `Art. 2º`) <!-- id: 503 -->
-- [x] Conectar clique da pílula com abertura instantânea do artigo (`openArtigoWithRecent`) <!-- id: 504 -->
-- [x] Validar compilação TypeScript (`tsc --noEmit`) <!-- id: 505 -->
-- [x] Validar build Vite de produção (`vite build`) <!-- id: 506 -->
-- [x] Executar auto-commit e push para o GitHub <!-- id: 507 -->
+- [ ] Atualizar `leiAlteracoesScraped.ts` e `AdminMapeamentoLeis.tsx` com extração e formato de mês abreviado / ano (`Jan/2026`) <!-- id: 601 -->
+- [ ] Atualizar `LeiHistoricoCarousel.tsx` para exibir `mes_ano` (`Jan/2026`) no badge dos cards <!-- id: 602 -->
+- [ ] Ajustar tipografia de ano em `NovidadesPanel.tsx` com `tracking-widest` para descolar as letras <!-- id: 603 -->
+- [ ] Ajustar `LeiDetailView.tsx` para abrir o Histórico ("Ver todos") em tela 100% cheia (`h-[100dvh] inset-0`) <!-- id: 604 -->
+- [ ] Ajustar `ArtigoBottomSheet.tsx` para abrir o leitor de artigo em tela 100% cheia até o topo <!-- id: 605 -->
+- [ ] Criar `ArtigoComparativoModal.tsx` com tabs de comparativo (Novo vs Antigo), explicação IA OmniRoute e botão "Ir para o Artigo" <!-- id: 606 -->
+- [ ] Conectar clique nos cards do Histórico para abrir o `ArtigoComparativoModal` antes do leitor <!-- id: 607 -->
+- [ ] Validar compilação TypeScript (`tsc --noEmit`) <!-- id: 608 -->
+- [ ] Validar build Vite de produção (`vite build`) <!-- id: 609 -->
+- [ ] Executar auto-commit e push para o GitHub <!-- id: 610 -->

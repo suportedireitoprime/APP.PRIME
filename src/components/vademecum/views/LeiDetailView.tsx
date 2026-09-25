@@ -27,8 +27,8 @@ import { FavPanel, PlaylistPanel, AnotacoesPanel } from '@/components/vademecum/
 import RadarLegislacaoContent from '@/components/vademecum/outros/RadarLegislacaoContent';
 import LeiHero from '@/components/vademecum/artigo/LeiHero';
 import LeiArtigosVirtualList from '@/components/vademecum/artigo/LeiArtigosVirtualList';
-import LeiCapitulosGrid from '@/components/vademecum/artigo/LeiCapitulosGrid';
 import LeiHistoricoCarousel from '@/components/vademecum/artigo/LeiHistoricoCarousel';
+import ArtigoComparativoModal, { type AlteracaoDetailData } from '@/components/vademecum/artigo/ArtigoComparativoModal';
 
 const MOBILE_ARTIGOS_VIRTUAL_THRESHOLD = 120;
 
@@ -72,6 +72,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'art' | 'cap' | 'rec' | 'lot'>('art');
   const [overlayPanel, setOverlayPanel] = useState<'fav' | 'playlist' | 'novidades' | 'anotacoes' | 'radar' | null>(null);
+  const [selectedAlteracaoDetail, setSelectedAlteracaoDetail] = useState<AlteracaoDetailData | null>(null);
   
   const [showFooter, setShowFooter] = useState(false);
   useEffect(() => {
@@ -502,6 +503,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           setOpenModInfo(modInfo);
           setOpenArtigo(a);
         }}
+        onOpenComparativo={(item) => setSelectedAlteracaoDetail(item)}
       />
     ),
     radar: <RadarLegislacaoContent leiNome={selectedLeiNome} tabelaNome={selectedTabelaNome} navigate={navigate} />,
@@ -560,6 +562,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
             setOpenFromNovidades(Boolean(modInfo));
             openArtigoWithRecent(artigo);
           }}
+          onOpenComparativo={(item) => setSelectedAlteracaoDetail(item)}
           onOpenVerTodos={() => setOverlayPanel('novidades')}
         />
 
@@ -1087,10 +1090,16 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
                 transition={{ type: 'spring', damping: 30, stiffness: 320 }}
-                className="fixed inset-x-0 bottom-0 z-[60] h-[80vh] bg-[#0f0f0f] border-t border-white/10 rounded-t-3xl flex flex-col shadow-2xl lg:max-w-[720px] lg:mx-auto"
+                className={
+                  overlayPanel === 'novidades'
+                    ? "fixed inset-0 z-[60] h-[100dvh] max-h-[100dvh] bg-[#0f0f0f] flex flex-col shadow-2xl lg:max-w-[760px] lg:mx-auto pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))]"
+                    : "fixed inset-x-0 bottom-0 z-[60] h-[80vh] bg-[#0f0f0f] border-t border-white/10 rounded-t-3xl flex flex-col shadow-2xl lg:max-w-[720px] lg:mx-auto"
+                }
                 style={{ willChange: 'transform' }}
               >
-                <div className="flex justify-center pt-3 pb-1 shrink-0"><div className="w-10 h-1 rounded-full bg-white/20" /></div>
+                {overlayPanel !== 'novidades' && (
+                  <div className="flex justify-center pt-3 pb-1 shrink-0"><div className="w-10 h-1 rounded-full bg-white/20" /></div>
+                )}
                 <div className="flex items-center gap-3 px-4 py-2 border-b border-white/5 shrink-0">
                   <button onClick={() => setOverlayPanel(null)} className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center active:scale-95 transition-transform">
                     <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
@@ -1138,6 +1147,17 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           }
         />
       )}
+
+      <ArtigoComparativoModal
+        open={Boolean(selectedAlteracaoDetail)}
+        onClose={() => setSelectedAlteracaoDetail(null)}
+        data={selectedAlteracaoDetail}
+        onIrParaArtigo={(artigo) => {
+          setSelectedAlteracaoDetail(null);
+          setOverlayPanel(null);
+          openArtigoWithRecent(artigo);
+        }}
+      />
 
       {selectedTabelaNome && <OcrScanner open={ocrOpen} onClose={() => setOcrOpen(false)} leiNome={selectedLeiNome} leiSlug={selectedTabelaNome} />}
 

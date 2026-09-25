@@ -20,15 +20,7 @@ interface CategoriaDef {
   color: string;
 }
 
-interface ScrapedArticleUpdate {
-  artigo: string;
-  motivo: string; // Ex: "Incluído pela Lei nº 13.964, de 2019"
-  ano: number;
-  texto_antigo: string;
-  texto_novo: string;
-  link_lei?: string;
-  data_completa?: string;
-}
+import { extractMesAno, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
 
 export interface ExtracaoHistoricoItem {
   id: string;
@@ -333,7 +325,11 @@ export default function AdminMapeamentoLeis() {
 
       if (error) throw error;
 
-      const articlesList: ScrapedArticleUpdate[] = data?.articles || [];
+      const rawArticles: ScrapedArticleUpdate[] = data?.articles || [];
+      const articlesList: ScrapedArticleUpdate[] = rawArticles.map(item => {
+        const { mes, mesAno } = extractMesAno(item.motivo || '', item.ano, item.data_completa);
+        return { ...item, mes, mes_ano: mesAno };
+      });
       setAlteracoes(articlesList);
 
       const agora = new Date().toLocaleString('pt-BR', {
@@ -590,7 +586,7 @@ export default function AdminMapeamentoLeis() {
                         </span>
 
                         <span className="text-[11px] font-bold text-gray-300 bg-black/40 px-2 py-0.5 rounded border border-white/10 uppercase tracking-wider">
-                          Ano {item.ano}
+                          {item.mes_ano || `Ano ${item.ano}`}
                         </span>
 
                         {/* Link Azul Oficial do Planalto Clicável */}

@@ -1054,8 +1054,8 @@ const ArtigoBottomSheet = ({
           side="bottom"
           className={
             isDesktop
-              ? 'theme-vademecum-accent z-[9999] flex min-h-0 flex-col gap-0 overflow-hidden overscroll-contain rounded-2xl border border-white/5 bg-[#0f0f0f] p-0 shadow-2xl [&>button:last-child]:hidden top-[5%] bottom-[5%] inset-x-0 mx-auto max-w-[860px] h-[90dvh] max-h-[90dvh]'
-              : 'theme-vademecum-accent z-[9999] flex min-h-0 flex-col gap-0 overflow-hidden overscroll-contain rounded-t-3xl border-t border-white/5 bg-[#0f0f0f] p-0 !pb-0 [&>button:last-child]:hidden top-auto bottom-0 h-[90dvh] max-h-[90dvh]'
+              ? 'theme-vademecum-accent z-[9999] flex min-h-0 flex-col gap-0 overflow-hidden overscroll-contain rounded-2xl border border-white/5 bg-[#0f0f0f] p-0 shadow-2xl [&>button:last-child]:hidden inset-0 top-0 bottom-0 mx-auto max-w-[920px] h-[100dvh] max-h-[100dvh]'
+              : 'theme-vademecum-accent z-[9999] flex min-h-0 flex-col gap-0 overflow-hidden overscroll-contain rounded-none border-none bg-[#0f0f0f] p-0 !pb-0 [&>button:last-child]:hidden inset-0 top-0 bottom-0 h-[100dvh] max-h-[100dvh] w-full pt-[var(--sai-top,env(safe-area-inset-top,0px))]'
           }
           onInteractOutside={(e) => {
             const t = e.target as HTMLElement | null;
@@ -1080,8 +1080,8 @@ const ArtigoBottomSheet = ({
               e.preventDefault();
           }}
         >
-          <div className="shrink-0 flex justify-center pt-3 pb-1 bg-[#0f0f0f]">
-            <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
+          <div className="shrink-0 flex justify-center pt-2 pb-0.5 bg-[#0f0f0f] sm:hidden">
+            <div className="w-8 h-1 rounded-full bg-muted-foreground/20" />
           </div>
 
           <div
