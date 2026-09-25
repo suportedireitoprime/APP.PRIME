@@ -5,8 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { PremiumMarkdown } from '@/components/ui/PremiumMarkdown';
 import { toast } from 'sonner';
@@ -73,6 +72,9 @@ export default function AdminOmniRouteTeste() {
   const [connError, setConnError] = useState<string | null>(null);
   const [availableModels, setAvailableModels] = useState<string[]>([]);
   const [showConfig, setShowConfig] = useState(false);
+
+  // Tab Principal de Alternância ('texto' | 'imagem')
+  const [mainTab, setMainTab] = useState<'texto' | 'imagem'>('texto');
 
   // Tab Texto
   const [textModel, setTextModel] = useState(() => localStorage.getItem(STORAGE_KEYS.LAST_MODEL) || 'antigravity/gemini-3.7-flash-high');
@@ -390,7 +392,9 @@ export default function AdminOmniRouteTeste() {
         title={
           <div className="flex items-center justify-center gap-2">
             <Sparkles className="w-5 h-5 text-amber-400" />
-            <span className="font-semibold tracking-wide">Teste OmniRoute</span>
+            <span className="!font-sans !font-semibold tracking-normal text-base sm:text-lg text-white normal-case">
+              Teste OmniRoute
+            </span>
           </div>
         }
         subtitle="Gateway de Inteligência Artificial: Texto e Imagem com auto-fallback"
@@ -410,9 +414,11 @@ export default function AdminOmniRouteTeste() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <CardTitle className="text-base font-semibold text-white">Gateway OmniRoute</CardTitle>
+                    <h2 className="!font-sans text-sm sm:text-base font-semibold text-white tracking-normal normal-case">
+                      Gateway OmniRoute
+                    </h2>
                     {connStatus === 'connected' && (
-                      <Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium text-[11px] px-2 py-0.5">
+                      <Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 !font-sans font-medium text-[11px] px-2 py-0.5">
                         <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
                         Online ({availableModels.length} modelos)
                       </Badge>
@@ -508,38 +514,51 @@ export default function AdminOmniRouteTeste() {
           )}
         </Card>
 
-        {/* 2 Abas Principais: Texto e Imagem */}
-        <Tabs defaultValue="texto" className="w-full">
-          <TabsList className="grid grid-cols-2 w-full bg-[#141416] border border-white/10 p-1.5 rounded-2xl shadow-xl">
-            <TabsTrigger
-              value="texto"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-black text-white/80 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 py-3 rounded-xl transition-all shadow-md"
+        {/* Menu de Alternância Integrado ao Layout */}
+        <div className="w-full bg-[#141416] p-1.5 rounded-2xl border border-white/10 shadow-xl">
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => setMainTab('texto')}
+              className={`flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-xs sm:text-sm !font-sans font-semibold transition-all duration-200 cursor-pointer ${
+                mainTab === 'texto'
+                  ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/25'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
+              }`}
             >
-              <Type className="w-4 h-4" />
-              <span>Teste de Texto</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="imagem"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-black text-white/80 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 py-3 rounded-xl transition-all shadow-md"
-            >
-              <ImageIcon className="w-4 h-4" />
-              <span>Teste de Imagem</span>
-            </TabsTrigger>
-          </TabsList>
+              <Type className={`w-4 h-4 ${mainTab === 'texto' ? 'text-black' : 'text-zinc-400'}`} />
+              <span className="!font-sans font-semibold tracking-normal normal-case">Teste de Texto</span>
+            </button>
 
-          {/* TAB 1: TESTE DE TEXTO */}
-          <TabsContent value="texto" className="mt-4 space-y-4">
+            <button
+              type="button"
+              onClick={() => setMainTab('imagem')}
+              className={`flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-xs sm:text-sm !font-sans font-semibold transition-all duration-200 cursor-pointer ${
+                mainTab === 'imagem'
+                  ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/25'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <ImageIcon className={`w-4 h-4 ${mainTab === 'imagem' ? 'text-black' : 'text-zinc-400'}`} />
+              <span className="!font-sans font-semibold tracking-normal normal-case">Teste de Imagem</span>
+            </button>
+          </div>
+        </div>
+
+        {/* TAB 1: TESTE DE TEXTO */}
+        {mainTab === 'texto' && (
+          <div className="space-y-4">
             <Card className="bg-[#141416] border-white/10 text-white rounded-2xl shadow-2xl overflow-hidden">
               <CardHeader className="pb-3 px-4 sm:px-6 pt-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <CardTitle className="text-base sm:text-lg flex items-center gap-2 font-semibold text-white">
+                    <h2 className="!font-sans text-base sm:text-lg font-semibold text-white tracking-normal normal-case flex items-center gap-2">
                       <Bot className="w-5 h-5 text-amber-400" />
-                      Geração de Texto & Raciocínio (Chat Completions)
-                    </CardTitle>
-                    <CardDescription className="text-xs text-white/50 mt-0.5">
+                      <span>Geração de Texto e Raciocínio (Chat)</span>
+                    </h2>
+                    <p className="!font-sans text-xs text-white/50 mt-1 font-normal tracking-normal normal-case">
                       Roteamento inteligente para Google Gemini / Antigravity com fallback automático
-                    </CardDescription>
+                    </p>
                   </div>
 
                   {/* Seletor de Modelo */}
@@ -690,21 +709,23 @@ export default function AdminOmniRouteTeste() {
                 )}
               </CardContent>
             </Card>
-          </TabsContent>
+          </div>
+        )}
 
-          {/* TAB 2: TESTE DE IMAGEM */}
-          <TabsContent value="imagem" className="mt-4 space-y-4">
+        {/* TAB 2: TESTE DE IMAGEM */}
+        {mainTab === 'imagem' && (
+          <div className="space-y-4">
             <Card className="bg-[#141416] border-white/10 text-white rounded-2xl shadow-2xl overflow-hidden">
               <CardHeader className="pb-3 px-4 sm:px-6 pt-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <CardTitle className="text-base sm:text-lg flex items-center gap-2 font-semibold text-white">
+                    <h2 className="!font-sans text-base sm:text-lg font-semibold text-white tracking-normal normal-case flex items-center gap-2">
                       <ImageIcon className="w-5 h-5 text-amber-400" />
-                      Geração de Imagens & Visão Multimodal
-                    </CardTitle>
-                    <CardDescription className="text-xs text-white/50 mt-0.5">
+                      <span>Geração de Imagens e Visão Multimodal</span>
+                    </h2>
+                    <p className="!font-sans text-xs text-white/50 mt-1 font-normal tracking-normal normal-case">
                       Geração de arte com IA ou análise visual de documentos e fotos
-                    </CardDescription>
+                    </p>
                   </div>
 
                   <div className="flex bg-black/50 p-1 rounded-xl border border-white/10 text-xs">
@@ -920,17 +941,17 @@ export default function AdminOmniRouteTeste() {
                 )}
               </CardContent>
             </Card>
-          </TabsContent>
-        </Tabs>
+          </div>
+        )}
 
         {/* Histórico Recente de Execuções */}
         {logs.length > 0 && (
           <Card className="bg-[#141416] border-white/10 text-white rounded-2xl overflow-hidden shadow-xl">
             <CardHeader className="py-3 px-4 sm:px-6">
-              <CardTitle className="text-xs sm:text-sm font-medium text-white/70 flex items-center gap-2">
+              <h3 className="!font-sans text-xs sm:text-sm font-medium text-white/70 tracking-normal normal-case flex items-center gap-2">
                 <Clock className="w-4 h-4 text-white/40" />
-                Histórico Recente de Execuções
-              </CardTitle>
+                <span>Histórico Recente de Execuções</span>
+              </h3>
             </CardHeader>
             <CardContent className="px-4 sm:px-6 pb-4 pt-0">
               <div className="divide-y divide-white/5 text-xs font-mono">
