@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
-  Sparkles,
+  BookOpen,
   ExternalLink,
   CheckCircle2,
   AlertCircle,
@@ -16,6 +16,95 @@ import type { ArtigoLei } from '@/data/mockData';
 import { executeAiTask } from '@/services/aiGatewayService';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+
+interface ExplicacaoSecao {
+  numero: string;
+  titulo: string;
+  conteudo: string;
+}
+
+/**
+ * Converte o markdown cru da IA em seções modulares numeradas e limpas, sem asteriscos.
+ */
+function parseExplicacaoSecoes(rawText: string): ExplicacaoSecao[] {
+  if (!rawText) return [];
+
+  const secoes: ExplicacaoSecao[] = [];
+  const lines = rawText.split('\n');
+  let currentSecao: ExplicacaoSecao | null = null;
+  let buffer: string[] = [];
+
+  for (const line of lines) {
+    const headerMatch = line.match(/^(\d+)\.\s*\*{0,2}(.*?)\*{0,2}:?\s*$/i) ||
+                        line.match(/^(\d+)\.\s*\*{0,2}(.*?)\*{0,2}:?\s*(.*)$/i);
+
+    if (headerMatch && parseInt(headerMatch[1], 10) >= 1 && parseInt(headerMatch[1], 10) <= 6) {
+      if (currentSecao) {
+        currentSecao.conteudo = buffer.join('\n').trim();
+        secoes.push(currentSecao);
+        buffer = [];
+      }
+      const num = headerMatch[1].padStart(2, '0');
+      const titulo = headerMatch[2].replace(/\*/g, '').replace(/:$/, '').trim();
+      currentSecao = {
+        numero: num,
+        titulo: titulo || `Tópico ${num}`,
+        conteudo: '',
+      };
+      if (headerMatch[3] && headerMatch[3].trim()) {
+        buffer.push(headerMatch[3].trim());
+      }
+    } else {
+      buffer.push(line);
+    }
+  }
+
+  if (currentSecao) {
+    currentSecao.conteudo = buffer.join('\n').trim();
+    secoes.push(currentSecao);
+  }
+
+  if (secoes.length === 0 && rawText.trim()) {
+    secoes.push({
+      numero: '01',
+      titulo: 'Síntese da Alteração',
+      conteudo: rawText.trim(),
+    });
+  }
+
+  return secoes;
+}
+
+/**
+ * Renderiza parágrafos interpretando negrito (**termo**) e itálico (*termo*) sem tags brutas.
+ */
+function renderFormattedText(text: string) {
+  const paragraphs = text.split(/\n\s*\n/);
+  return paragraphs.map((para, pIdx) => {
+    const parts = para.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+    return (
+      <p key={pIdx} className="leading-relaxed font-body text-zinc-200 text-sm sm:text-[15px]">
+        {parts.map((part, partIdx) => {
+          if (part.startsWith('**') && part.endsWith('**')) {
+            return (
+              <strong key={partIdx} className="font-bold text-white">
+                {part.slice(2, -2)}
+              </strong>
+            );
+          }
+          if (part.startsWith('*') && part.endsWith('*')) {
+            return (
+              <em key={partIdx} className="italic text-zinc-300">
+                {part.slice(1, -1)}
+              </em>
+            );
+          }
+          return part;
+        })}
+      </p>
+    );
+  });
+}
 
 export interface AlteracaoDetailData {
   artigo: ArtigoLei;
@@ -50,11 +139,13 @@ export const ArtigoComparativoModal: React.FC<ArtigoComparativoModalProps> = ({
   const [aiExplicacao, setAiExplicacao] = useState<string>('');
   const [aiLoading, setAiLoading] = useState<boolean>(false);
   const [aiModelUsed, setAiModelUsed] = useState<string>('');
+  const [showExplicacaoSheet, setShowExplicacaoSheet] = useState<boolean>(false);
 
   // Reseta estado e busca explicação da IA automaticamente via OmniRoute ao abrir o card
   useEffect(() => {
     if (!open || !data) return;
     setTextoView('vigente');
+    setShowExplicacaoSheet(false);
 
     const cacheKey = `alteracao_ia_explicacao_${data.artigoDisplay.replace(/\s+/g, '_')}_${data.ano}`;
     const cached = localStorage.getItem(cacheKey);
@@ -336,85 +427,198 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
             </button>
           </div>
 
-          {/* ── 3. EXPLICAÇÃO DIDÁTICA COM IA (OMNIROUTE COM TIMEOUT E RESPOSTA GARANTIDA) ── */}
-          <div className="rounded-2xl bg-[#121318]/95 border border-white/10 p-4 sm:p-5 space-y-3.5 shadow-2xl backdrop-blur-md">
-            <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500/20 to-primary/20 border border-amber-500/30 flex items-center justify-center shrink-0">
-                  <Sparkles className="w-4 h-4 text-amber-400" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-sm text-white flex items-center gap-2">
-                    Explicação Didática com IA
-                    <span className="text-[9.5px] font-bold px-2 py-0.5 rounded bg-primary/20 text-primary border border-primary/30 uppercase tracking-wider">
-                      OmniRoute
-                    </span>
-                  </h3>
-                  <p className="text-[11px] text-zinc-400">
-                    O que mudou, o contexto e o impacto penal prático.
-                  </p>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => {
-                  haptic.selection();
-                  void gerarExplicacaoIA(data, true);
-                }}
-                disabled={aiLoading}
-                className="px-3 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] active:scale-95 text-xs font-semibold text-zinc-200 border border-white/10 flex items-center gap-1.5 transition-all shrink-0 cursor-pointer disabled:opacity-50"
-                title="Regerar análise com IA"
-              >
-                <RotateCcw className={`w-3.5 h-3.5 ${aiLoading ? 'animate-spin' : ''}`} />
-                <span className="hidden sm:inline">Regerar</span>
-              </button>
-            </div>
-
-            {/* Conteúdo da Análise IA ou Loader com tempo limite */}
-            {aiLoading ? (
-              <div className="py-8 flex flex-col items-center justify-center gap-3 text-center">
-                <Loader2 className="w-7 h-7 text-primary animate-spin" />
-                <p className="text-sm font-semibold text-zinc-200">
-                  Gerando explicação didática via OmniRoute...
-                </p>
-                <p className="text-xs text-zinc-400 max-w-sm">
-                  Examinando as alterações no Planalto e estruturando o impacto penal prático.
-                </p>
-              </div>
-            ) : (
-              <div className="prose prose-invert max-w-none text-xs sm:text-sm leading-relaxed text-zinc-200 space-y-3 whitespace-pre-line font-body p-4 rounded-xl bg-black/45 border border-white/10 shadow-inner">
-                {aiExplicacao}
-              </div>
-            )}
-
-            {/* Princípio Constitucional da Irretroatividade Penal */}
-            <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.06] text-[11px] text-zinc-400 leading-relaxed flex items-center gap-2">
-              <Scale className="w-4 h-4 text-primary shrink-0" />
-              <span>
-                As alterações penais aplicam-se respeitando a irretroatividade da lei penal mais gravosa (Art. 5º, XL, CF/88).
-              </span>
-            </div>
-          </div>
-
-          {/* ── 4. BOTÃO DE AÇÃO: IR PARA O ARTIGO COMPLETO (INTEGRADO NO SCROLL) ── */}
-          <div className="pt-2 pb-6">
+          {/* ── BOTÕES DE AÇÃO: ESCOLHA ENTRE EXPLICAÇÃO DIDÁTICA E IR PARA ARTIGO ── */}
+          <div className="space-y-3 pt-3 pb-8">
+            {/* Botão Primário: Explicação Didática (Abre Bottom Sheet de baixo para cima, sem ícone de brilho) */}
             <button
               type="button"
               onClick={() => {
                 haptic.impact();
+                setShowExplicacaoSheet(true);
+              }}
+              className="w-full flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-hero-panel hover:bg-primary text-white border border-red-500/40 shadow-xl shadow-red-950/50 active:scale-[0.99] transition-all cursor-pointer group"
+            >
+              <div className="flex items-center gap-3.5 min-w-0">
+                <div className="w-11 h-11 rounded-xl bg-white/[0.14] border border-white/20 flex items-center justify-center shrink-0">
+                  <BookOpen className="w-5 h-5 text-white" />
+                </div>
+                <div className="text-left min-w-0">
+                  <p className="font-bold text-sm sm:text-base text-white leading-tight">
+                    Explicação Didática da Alteração
+                  </p>
+                  <p className="text-xs text-white/80 leading-snug mt-0.5 truncate">
+                    Entenda o que mudou, o contexto e o impacto penal prático
+                  </p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-white/80 group-hover:translate-x-1 transition-transform shrink-0 ml-2" />
+            </button>
+
+            {/* Botão Secundário: Ir para o Artigo Completo */}
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
                 onClose();
                 onIrParaArtigo(data.artigo);
               }}
-              className="w-full inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-hero-panel hover:bg-primary text-white text-sm font-bold shadow-xl shadow-red-950/50 active:scale-95 transition-all min-h-[50px] cursor-pointer border border-red-500/30"
+              className="w-full flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-[#14151a] hover:bg-[#1a1c24] text-white border border-white/10 shadow-lg active:scale-[0.99] transition-all cursor-pointer group"
             >
-              <Bookmark className="w-4 h-4 text-white" />
-              <span>Ir para o Artigo Completo</span>
-              <ChevronRight className="w-4 h-4" />
+              <div className="flex items-center gap-3.5 min-w-0">
+                <div className="w-11 h-11 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center shrink-0">
+                  <Bookmark className="w-5 h-5 text-zinc-300" />
+                </div>
+                <div className="text-left min-w-0">
+                  <p className="font-bold text-sm sm:text-base text-zinc-100 leading-tight">
+                    Ir para o Artigo Completo
+                  </p>
+                  <p className="text-xs text-zinc-400 leading-snug mt-0.5 truncate">
+                    Visualizar caput, incisos, notas e jurisprudência completa
+                  </p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-zinc-400 group-hover:translate-x-1 transition-transform shrink-0 ml-2" />
             </button>
           </div>
 
         </div>
+
+        {/* ── BOTTOM SHEET DE EXPLICAÇÃO DIDÁTICA (ABRE DE BAIXO PARA CIMA) ── */}
+        <AnimatePresence>
+          {showExplicacaoSheet && (
+            <>
+              {/* Backdrop escuro com blur */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={() => setShowExplicacaoSheet(false)}
+                className="fixed inset-0 z-[80] bg-black/80 backdrop-blur-sm"
+              />
+
+              {/* Sheet de baixo para cima */}
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+                style={{ willChange: 'transform' }}
+                className="fixed inset-x-0 bottom-0 z-[85] h-[88dvh] max-h-[88dvh] bg-[#0E0F12] border-t border-white/15 rounded-t-[32px] flex flex-col shadow-2xl overflow-hidden max-w-3xl mx-auto"
+              >
+                {/* Puxador central */}
+                <div className="w-12 h-1.5 rounded-full bg-white/20 mx-auto mt-3 mb-1 shrink-0" />
+
+                {/* Cabeçalho do Bottom Sheet (SEM ícone de brilho) */}
+                <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3 border-b border-white/10 shrink-0">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <button
+                      type="button"
+                      onClick={() => setShowExplicacaoSheet(false)}
+                      className="w-10 h-10 rounded-full flex items-center justify-center bg-white/[0.08] hover:bg-white/15 border border-white/10 text-white active:scale-95 transition-all shrink-0"
+                      title="Fechar explicação"
+                    >
+                      <ArrowLeft className="w-5 h-5 text-white" />
+                    </button>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h2 className="font-display text-base sm:text-lg font-bold text-white truncate">
+                          Explicação Didática
+                        </h2>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-primary/20 text-primary border border-primary/30 uppercase tracking-wider shrink-0">
+                          {aiModelUsed || 'Doutrina'}
+                        </span>
+                      </div>
+                      <p className="text-xs text-zinc-400 truncate mt-0.5">
+                        {data.artigoDisplay} • {data.leiNome}
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      haptic.selection();
+                      void gerarExplicacaoIA(data, true);
+                    }}
+                    disabled={aiLoading}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] active:scale-95 text-xs font-semibold text-zinc-200 border border-white/10 transition-all shrink-0 disabled:opacity-50"
+                    title="Regerar análise"
+                  >
+                    <RotateCcw className={`w-3.5 h-3.5 ${aiLoading ? 'animate-spin' : ''}`} />
+                    <span className="hidden sm:inline">Regerar</span>
+                  </button>
+                </div>
+
+                {/* Conteúdo rolável com cards didáticos idênticos aos artigos de lei */}
+                <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-5 space-y-4 custom-scrollbar pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+                  {aiLoading ? (
+                    <div className="py-20 flex flex-col items-center justify-center gap-3 text-center">
+                      <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                      <p className="text-sm font-semibold text-zinc-200">
+                        Estruturando explicação didática...
+                      </p>
+                      <p className="text-xs text-zinc-400 max-w-sm">
+                        Examinando a redação legal e fundamentando as consequências penais.
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Seções parseadas em cards modulares */}
+                      {parseExplicacaoSecoes(aiExplicacao).map((secao) => (
+                        <div
+                          key={secao.numero}
+                          className="rounded-2xl border border-white/10 bg-[#14151b] p-4 sm:p-5 space-y-2.5 shadow-lg"
+                        >
+                          <div className="flex items-center gap-2.5 border-b border-white/10 pb-2">
+                            <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-white/[0.08] text-primary border border-primary/30">
+                              {secao.numero}
+                            </span>
+                            <h3 className="font-display text-sm sm:text-base font-bold text-white tracking-tight">
+                              {secao.titulo}
+                            </h3>
+                          </div>
+                          <div className="space-y-2 pt-1">
+                            {renderFormattedText(secao.conteudo)}
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Card Constitucional de Irretroatividade */}
+                      <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] text-xs text-zinc-300 leading-relaxed flex items-start gap-3 shadow-sm">
+                        <Scale className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-bold text-white mb-0.5">Segurança Jurídica & Irretroatividade</p>
+                          <p className="text-zinc-400">
+                            A nova redação penal incide nos termos do Art. 5º, XL da Constituição Federal, sendo vedada a aplicação retroativa que agrave a situação do réu (*lex gravior*).
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Botão para ir ao artigo completo dentro do sheet */}
+                      <div className="pt-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            haptic.impact();
+                            setShowExplicacaoSheet(false);
+                            onClose();
+                            onIrParaArtigo(data.artigo);
+                          }}
+                          className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl bg-hero-panel hover:bg-primary text-white text-sm font-bold shadow-lg shadow-red-950/40 active:scale-95 transition-all cursor-pointer border border-red-500/30"
+                        >
+                          <Bookmark className="w-4 h-4 text-white" />
+                          <span>Ir para o Artigo Completo</span>
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </div>
     </AnimatePresence>
   );

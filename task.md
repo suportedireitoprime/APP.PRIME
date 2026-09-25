@@ -1,9 +1,9 @@
-# Tarefas - Histórico de Alterações & Gestão de Aprovações
+# Tarefas - Fundo Animado ShapeGrid & Bottom Sheet de Explicação
 
-- [x] Implementar parser de dispositivo e ação (`parseDispositivoAlteracao`) para alíneas, incisos, parágrafos e caput <!-- id: 1 -->
-- [x] Otimizar os cards do Histórico de Alterações em `AdminMapeamentoLeis.tsx` exibindo o dispositivo em destaque e link limpo da lei <!-- id: 2 -->
-- [x] Tornar o cabeçalho do Histórico responsivo, removendo o botão volumoso de varredura <!-- id: 3 -->
-- [x] Ajustar a aba "Todas" e contadores para remover leis aprovadas e permitir zerar a fila de 17 para 16 <!-- id: 4 -->
+- [x] Ajustar o contêiner do `ShapeGrid` em `LeiDetailView.tsx` para `fixed inset-0`, corrigindo o fundo animado de quadradinhos <!-- id: 1 -->
+- [x] Reestruturar os botões de ação em `ArtigoComparativoModal.tsx` com as duas opções (Explicação Didática e Ir para Artigo Completo) <!-- id: 2 -->
+- [x] Remover o ícone de brilho e implementar o Bottom Sheet que sobe de baixo para cima <!-- id: 3 -->
+- [x] Implementar a renderização do markdown da explicação com cards didáticos idênticos aos artigos de lei <!-- id: 4 -->
 - [x] Validar compilação com `tsc --noEmit` <!-- id: 5 -->
-- [x] Validar build com `vite build` <!-- id: 6 -->
-- [x] Enviar alterações via auto-commit e push para o GitHub <!-- id: 7 -->
+- [x] Validar empacotamento com `vite build` <!-- id: 6 -->
+- [x] Realizar auto-commit e push para o GitHub <!-- id: 7 -->
