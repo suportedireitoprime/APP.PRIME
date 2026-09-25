@@ -28,6 +28,7 @@ import {
   Layers,
   ChevronDown,
   ChevronUp,
+  ChevronRight,
   SlidersHorizontal,
   Bot,
   Mic,
@@ -35,8 +36,25 @@ import {
   FileAudio,
   Volume2,
   Upload,
-  ArrowRight
+  ArrowRight,
+  BookOpen,
+  FileText,
+  Zap,
+  Play,
+  AlertCircle,
+  MessageSquare,
+  X
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  AI_FEATURES_REGISTRY,
+  getAiFeaturesRouting,
+  updateAiFeatureConfig,
+  executeAiTask,
+  AiFeatureKey,
+  AiFeatureDefinition,
+  AiProviderType
+} from '@/services/aiGatewayService';
 
 const STORAGE_KEYS = {
   BASE_URL: 'omniroute_test_base_url',
@@ -143,6 +161,80 @@ export default function AdminOmniRouteTeste() {
   const [audioMeta, setAudioMeta] = useState<{ durationMs: number } | null>(null);
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
   const audioChunksRef = React.useRef<Blob[]>([]);
+
+  // Central de Roteamento de IA por Função (Preferência 1: OmniRoute)
+  const [routingConfigs, setRoutingConfigs] = useState(() => getAiFeaturesRouting());
+  const [featureTestResults, setFeatureTestResults] = useState<Record<string, {
+    loading?: boolean;
+    response?: string;
+    imageUrl?: string;
+    durationMs?: number;
+    error?: string;
+    modelUsed?: string;
+    providerUsed?: string;
+  }>>({});
+
+  // Estados para Bottom Sheets de 95%
+  const [selectedFeature, setSelectedFeature] = useState<AiFeatureDefinition | null>(null);
+  const [showOmniRouteTestSheet, setShowOmniRouteTestSheet] = useState(false);
+
+  const handleFeatureProviderChange = (featureKey: AiFeatureKey, provider: AiProviderType) => {
+    updateAiFeatureConfig(featureKey, { provider });
+    setRoutingConfigs(getAiFeaturesRouting());
+    toast.success(`Função atualizada para ${provider === 'omniroute' ? 'OmniRoute (Principal)' : 'Chave Própria Gemini'}!`);
+  };
+
+  const handleFeatureModelChange = (featureKey: AiFeatureKey, modelId: string) => {
+    updateAiFeatureConfig(featureKey, { selectedModel: modelId });
+    setRoutingConfigs(getAiFeaturesRouting());
+    toast.success(`Modelo selecionado: ${modelId}`);
+  };
+
+  const handleTestFeatureCard = async (feature: AiFeatureDefinition) => {
+    if (feature.ttsOnly) {
+      toast.info('Narração dos artigos mantida 100% no Motor Nativo / Gemini TTS.', {
+        description: 'OmniRoute não possui geração de fala.',
+      });
+      return;
+    }
+
+    setFeatureTestResults(prev => ({
+      ...prev,
+      [feature.key]: { loading: true }
+    }));
+
+    try {
+      const res = await executeAiTask({
+        featureKey: feature.key,
+        prompt: feature.samplePrompt,
+        systemPrompt: 'Você é um jurista e tutor de alta precisão do Vade Mecum Prime. Seja didático, conciso e estruturado.',
+      });
+
+      setFeatureTestResults(prev => ({
+        ...prev,
+        [feature.key]: {
+          loading: false,
+          response: res.text,
+          imageUrl: res.imageUrl,
+          durationMs: res.durationMs,
+          modelUsed: res.modelUsed,
+          providerUsed: res.providerUsed,
+        }
+      }));
+      addLog(feature.title.split('/')[0].trim(), res.modelUsed, res.durationMs, 200);
+      toast.success(`Teste de ${feature.title.split('/')[0]} concluído em ${res.durationMs}ms!`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setFeatureTestResults(prev => ({
+        ...prev,
+        [feature.key]: {
+          loading: false,
+          error: msg,
+        }
+      }));
+      toast.error(`Erro no teste: ${msg}`);
+    }
+  };
 
   // Histórico de requisições
   const [logs, setLogs] = useState<Array<{ id: string; time: string; type: string; model: string; duration: number; status: number | string }>>([]);
@@ -759,7 +851,435 @@ export default function AdminOmniRouteTeste() {
           )}
         </Card>
 
-        {/* Menu de Alternância Integrado ao Layout (4 Módulos) */}
+        {/* ============================================================== */}
+        {/* 1. PRIMEIRA FUNÇÃO EM LISTA: TESTAR OMNIROUTE */}
+        {/* ============================================================== */}
+        <div className="space-y-2 pt-1">
+          <div className="bg-[#141416] border border-amber-500/30 rounded-2xl p-1 shadow-lg shadow-black/40">
+            <button
+              type="button"
+              onClick={() => setShowOmniRouteTestSheet(true)}
+              className="w-full flex items-center justify-between p-3.5 sm:p-4 rounded-xl hover:bg-white/[0.04] transition-all text-left group cursor-pointer"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 group-hover:scale-105 transition-transform">
+                  <Sparkles className="w-5 h-5 text-amber-400" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm sm:text-base font-bold text-white group-hover:text-amber-300 transition-colors">
+                      Testar OmniRoute
+                    </h3>
+                    <Badge className="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] px-2 py-0.5 font-medium">
+                      Sandbox de IA
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-zinc-400 mt-0.5">
+                    Ambiente completo para testar Texto, Imagem, Visão e Áudio livremente
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-amber-400 font-medium hidden sm:inline">
+                  Abrir Testes
+                </span>
+                <ChevronRight className="w-5 h-5 text-zinc-400 group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all" />
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {/* ============================================================== */}
+        {/* 2. TÍTULO E LISTA: FUNÇÕES DO APLICATIVO */}
+        {/* ============================================================== */}
+        <div className="space-y-3 pt-2">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm sm:text-base font-bold text-white tracking-wide">
+                Funções do Aplicativo
+              </h3>
+              <p className="text-xs text-zinc-400 mt-0.5">
+                Toque em uma função para abrir as configurações (OmniRoute ou Chave Própria) e testar o modelo
+              </p>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                AI_FEATURES_REGISTRY.forEach(f => {
+                  if (!f.ttsOnly) updateAiFeatureConfig(f.key, { provider: 'omniroute' });
+                });
+                setRoutingConfigs(getAiFeaturesRouting());
+                toast.success('Todas as funções de IA definidas para OmniRoute (Principal)!');
+              }}
+              className="border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs h-7.5 px-2.5 rounded-xl font-medium hidden sm:flex"
+            >
+              <Zap className="w-3.5 h-3.5 mr-1" />
+              OmniRoute em Tudo
+            </Button>
+          </div>
+
+          {/* LISTA MINIMALISTA DE FUNÇÕES */}
+          <div className="bg-[#141416] border border-white/10 rounded-2xl overflow-hidden divide-y divide-white/5 shadow-xl">
+            {AI_FEATURES_REGISTRY.map((feature) => {
+              const config = routingConfigs[feature.key] || {
+                provider: feature.defaultProvider,
+                selectedModel: feature.defaultModel,
+              };
+              const isOmni = config.provider === 'omniroute';
+              const currentModel = feature.suggestedModels.find(m => m.id === config.selectedModel) || feature.suggestedModels[0];
+
+              return (
+                <button
+                  key={feature.key}
+                  type="button"
+                  onClick={() => setSelectedFeature(feature)}
+                  className="w-full flex items-center justify-between p-3.5 sm:p-4 hover:bg-white/[0.04] transition-all text-left group cursor-pointer"
+                >
+                  <div className="flex items-center gap-3 min-w-0 pr-3">
+                    <div className={`p-2.5 rounded-xl border shrink-0 ${
+                      feature.category.includes('Texto') ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
+                      feature.category.includes('Síntese') ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' :
+                      feature.category.includes('Visão') ? 'bg-purple-500/10 border-purple-500/20 text-purple-400' :
+                      feature.category.includes('Áudio') ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' :
+                      'bg-rose-500/10 border-rose-500/20 text-rose-400'
+                    }`}>
+                      {feature.key === 'chat_juridico' && <MessageSquare className="w-4 h-4" />}
+                      {feature.key === 'resumo_inteligente' && <BookOpen className="w-4 h-4" />}
+                      {feature.key === 'visao_documentos' && <Eye className="w-4 h-4" />}
+                      {feature.key === 'transcricao_audio' && <Mic className="w-4 h-4" />}
+                      {feature.key === 'geracao_imagens' && <ImageIcon className="w-4 h-4" />}
+                      {feature.key === 'narracao_vademecum' && <Volume2 className="w-4 h-4" />}
+                    </div>
+
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className="text-xs sm:text-sm font-semibold text-white group-hover:text-amber-300 transition-colors truncate">
+                          {feature.title}
+                        </h4>
+                        <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono hidden md:inline">
+                          {feature.category}
+                        </span>
+                      </div>
+                      <p className="text-[11px] sm:text-xs text-zinc-400 truncate mt-0.5">
+                        {feature.subtitle}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 shrink-0">
+                    {feature.ttsOnly ? (
+                      <Badge className="bg-zinc-800 text-zinc-300 border border-zinc-700 text-[10px] px-2 py-0.5 whitespace-nowrap">
+                        Motor Nativo
+                      </Badge>
+                    ) : (
+                      <div className="flex flex-col items-end">
+                        <Badge className={`text-[10px] px-2 py-0.5 whitespace-nowrap font-medium ${
+                          isOmni
+                            ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                            : 'bg-zinc-800 text-zinc-300 border border-zinc-700'
+                        }`}>
+                          {isOmni ? '★ OmniRoute (1ª)' : 'Chave Própria'}
+                        </Badge>
+                        <span className="text-[10px] text-zinc-500 font-mono mt-0.5 truncate max-w-[130px] hidden sm:block">
+                          {currentModel?.name.split('(')[0].trim()}
+                        </span>
+                      </div>
+                    )}
+                    <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ============================================================== */}
+        {/* BOTTOM SHEET 95%: CONFIGURAÇÃO MINIMALISTA DA FUNÇÃO SELECIONADA */}
+        {/* ============================================================== */}
+        <AnimatePresence>
+          {selectedFeature && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedFeature(null)}
+                className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50"
+              />
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 28, stiffness: 280 }}
+                className="fixed inset-x-0 bottom-0 max-h-[95vh] h-[95vh] bg-[#121215] border-t border-white/10 rounded-t-3xl z-50 flex flex-col shadow-2xl overflow-hidden"
+              >
+                {/* Puxador Central */}
+                <div className="w-12 h-1.5 rounded-full bg-white/20 mx-auto mt-3 shrink-0" />
+
+                {/* Header do Sheet */}
+                <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-white/10 shrink-0">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
+                      {selectedFeature.key === 'chat_juridico' && <MessageSquare className="w-4 h-4" />}
+                      {selectedFeature.key === 'resumo_inteligente' && <BookOpen className="w-4 h-4" />}
+                      {selectedFeature.key === 'visao_documentos' && <Eye className="w-4 h-4" />}
+                      {selectedFeature.key === 'transcricao_audio' && <Mic className="w-4 h-4" />}
+                      {selectedFeature.key === 'geracao_imagens' && <ImageIcon className="w-4 h-4" />}
+                      {selectedFeature.key === 'narracao_vademecum' && <Volume2 className="w-4 h-4" />}
+                    </div>
+                    <div>
+                      <h3 className="text-sm sm:text-base font-bold text-white">
+                        {selectedFeature.title}
+                      </h3>
+                      <p className="text-[11px] text-zinc-400">
+                        {selectedFeature.category}
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedFeature(null)}
+                    className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Conteúdo Minimalista com Scroll */}
+                <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-4">
+                  <p className="text-xs text-zinc-300 leading-relaxed bg-white/[0.02] p-3 rounded-xl border border-white/5">
+                    {selectedFeature.subtitle}
+                  </p>
+
+                  {/* Bloco 1: Provedor / Tipo de Chave */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-semibold text-white flex items-center justify-between">
+                      <span>Tipo de Chave / Provedor:</span>
+                      {selectedFeature.ttsOnly && (
+                        <span className="text-[11px] text-amber-400 font-mono">Exclusivo Nativo</span>
+                      )}
+                    </label>
+
+                    {selectedFeature.ttsOnly ? (
+                      <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90 leading-snug flex items-start gap-2.5">
+                        <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                        <span>
+                          A narração dos artigos do Vade Mecum é mantida <strong>100% no Motor Nativo / Gemini TTS</strong> do dispositivo, pois o OmniRoute não possui motor de síntese de voz (TTS).
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-2 p-1 bg-black/40 rounded-xl border border-white/5">
+                        <button
+                          type="button"
+                          onClick={() => handleFeatureProviderChange(selectedFeature.key, 'omniroute')}
+                          className={`py-2 px-3 rounded-lg text-xs font-medium transition-all text-center cursor-pointer ${
+                            (routingConfigs[selectedFeature.key]?.provider ?? selectedFeature.defaultProvider) === 'omniroute'
+                              ? 'bg-amber-500 text-black font-bold shadow-md shadow-amber-500/25'
+                              : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                          }`}
+                        >
+                          OmniRoute (1ª Opção - Principal)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleFeatureProviderChange(selectedFeature.key, 'gemini_propria')}
+                          className={`py-2 px-3 rounded-lg text-xs font-medium transition-all text-center cursor-pointer ${
+                            (routingConfigs[selectedFeature.key]?.provider ?? selectedFeature.defaultProvider) === 'gemini_propria'
+                              ? 'bg-zinc-700 text-white font-bold'
+                              : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                          }`}
+                        >
+                          Chave Própria Gemini
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Bloco 2: Seletor de Modelo Sugerido */}
+                  {!selectedFeature.ttsOnly && (
+                    <div className="space-y-2 pt-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-semibold text-white">
+                          Modelo Sugerido:
+                        </label>
+                        {(() => {
+                          const currentConfig = routingConfigs[selectedFeature.key] || { selectedModel: selectedFeature.defaultModel };
+                          const found = selectedFeature.suggestedModels.find(m => m.id === currentConfig.selectedModel);
+                          return found?.tag ? (
+                            <span className={`text-[10px] font-medium px-2 py-0.5 rounded-md ${
+                              found.tag === 'Precisão Jurídica'
+                                ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                                : found.tag === 'Econômico / Rápido'
+                                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                                : 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                            }`}>
+                              {found.tag}
+                            </span>
+                          ) : null;
+                        })()}
+                      </div>
+
+                      <select
+                        value={routingConfigs[selectedFeature.key]?.selectedModel || selectedFeature.defaultModel}
+                        onChange={(e) => handleFeatureModelChange(selectedFeature.key, e.target.value)}
+                        className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500 transition-colors font-mono cursor-pointer"
+                      >
+                        {selectedFeature.suggestedModels.map((m) => (
+                          <option key={m.id} value={m.id} className="bg-[#1a1a1e] text-white py-1">
+                            {m.name} {m.recommended ? '★ (Recomendado)' : ''} — [{m.tag}]
+                          </option>
+                        ))}
+                      </select>
+
+                      {(() => {
+                        const currentConfig = routingConfigs[selectedFeature.key] || { selectedModel: selectedFeature.defaultModel };
+                        const found = selectedFeature.suggestedModels.find(m => m.id === currentConfig.selectedModel);
+                        return found?.notes ? (
+                          <p className="text-[11px] text-zinc-400 italic bg-white/[0.02] p-2.5 rounded-lg border border-white/5 leading-relaxed">
+                            💡 <strong>Dica de uso:</strong> {found.notes}
+                          </p>
+                        ) : null;
+                      })()}
+                    </div>
+                  )}
+
+                  {/* Bloco 3: Teste da Função */}
+                  <div className="pt-3 border-t border-white/10 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-white">
+                        Validação em Tempo Real:
+                      </span>
+                      <span className="text-[11px] text-zinc-500">
+                        Dispara chamada real com o modelo selecionado
+                      </span>
+                    </div>
+
+                    <Button
+                      size="sm"
+                      disabled={featureTestResults[selectedFeature.key]?.loading || selectedFeature.ttsOnly}
+                      onClick={() => handleTestFeatureCard(selectedFeature)}
+                      className="w-full text-xs h-9 rounded-xl font-medium bg-amber-500 hover:bg-amber-600 text-black shadow-lg shadow-amber-500/20 cursor-pointer"
+                    >
+                      {featureTestResults[selectedFeature.key]?.loading ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin text-black" />
+                          Executando teste com o modelo...
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-3.5 h-3.5 mr-2 text-black" />
+                          Testar Função Agora
+                        </>
+                      )}
+                    </Button>
+
+                    {/* Resposta do Teste */}
+                    {featureTestResults[selectedFeature.key] && !featureTestResults[selectedFeature.key]?.loading && (
+                      <div className="p-3 rounded-xl bg-black/60 border border-white/10 text-xs space-y-2">
+                        <div className="flex items-center justify-between text-[11px] text-zinc-400 border-b border-white/5 pb-2">
+                          <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            Concluído com sucesso ({featureTestResults[selectedFeature.key]?.durationMs}ms)
+                          </span>
+                          <span className="font-mono text-[10px] text-zinc-400">
+                            {featureTestResults[selectedFeature.key]?.modelUsed}
+                          </span>
+                        </div>
+
+                        {featureTestResults[selectedFeature.key]?.imageUrl && (
+                          <div className="rounded-xl overflow-hidden border border-white/10 mt-2">
+                            <img
+                              src={featureTestResults[selectedFeature.key]?.imageUrl}
+                              alt="Preview da imagem gerada"
+                              className="w-full h-44 object-cover"
+                            />
+                          </div>
+                        )}
+
+                        {featureTestResults[selectedFeature.key]?.response && (
+                          <div className="max-h-56 overflow-y-auto pr-1 text-zinc-300 text-xs leading-relaxed font-sans">
+                            <PremiumMarkdown content={featureTestResults[selectedFeature.key]?.response || ''} />
+                          </div>
+                        )}
+
+                        {featureTestResults[selectedFeature.key]?.error && (
+                          <p className="text-rose-400 text-xs font-mono leading-tight">
+                            ❌ {featureTestResults[selectedFeature.key]?.error}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Rodapé do Sheet */}
+                <div className="p-4 border-t border-white/10 bg-[#141416] shrink-0">
+                  <Button
+                    onClick={() => setSelectedFeature(null)}
+                    className="w-full bg-white/10 hover:bg-white/15 text-white text-xs h-9 rounded-xl font-medium cursor-pointer"
+                  >
+                    Concluído
+                  </Button>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* ============================================================== */}
+        {/* BOTTOM SHEET 95%: TESTAR OMNIROUTE (SANDBOX DE TESTE COMPLETO) */}
+        {/* ============================================================== */}
+        <AnimatePresence>
+          {showOmniRouteTestSheet && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowOmniRouteTestSheet(false)}
+                className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50"
+              />
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 28, stiffness: 280 }}
+                className="fixed inset-x-0 bottom-0 max-h-[95vh] h-[95vh] bg-[#121215] border-t border-white/10 rounded-t-3xl z-50 flex flex-col shadow-2xl overflow-hidden"
+              >
+                {/* Puxador Central */}
+                <div className="w-12 h-1.5 rounded-full bg-white/20 mx-auto mt-3 shrink-0" />
+
+                {/* Header do Sheet */}
+                <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-white/10 shrink-0">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
+                      <Sparkles className="w-5 h-5 text-amber-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm sm:text-base font-bold text-white">
+                        Testar OmniRoute — Sandbox de IA
+                      </h3>
+                      <p className="text-[11px] text-zinc-400">
+                        Validação interativa de Texto, Imagens, Visão e Áudio
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowOmniRouteTestSheet(false)}
+                    className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Conteúdo com Scroll */}
+                <div className="flex-1 overflow-y-auto px-2 sm:px-4 md:px-6 py-4 space-y-4">
+                  {/* Menu de Alternância Integrado ao Layout (4 Módulos) */}
         <div className="w-full bg-[#141416] p-1.5 rounded-2xl border border-white/10 shadow-xl">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             <button
@@ -1459,6 +1979,11 @@ export default function AdminOmniRouteTeste() {
             </CardContent>
           </Card>
         )}
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </main>
     </div>
   );
