@@ -126,6 +126,167 @@ export async function buscarStatusNarracoes(tabelaNome: string): Promise<Record<
   }
 }
 
+export interface TesteAudioRegistro {
+  id: string;
+  voz: string;
+  estilo_id: string;
+  estilo_nome?: string;
+  texto: string;
+  texto_hash: string;
+  audio_url: string;
+  storage_path: string;
+  duracao_segundos?: number;
+  created_at?: string;
+}
+
+/**
+ * Gera hash determinístico e compacto do texto para chave de cache.
+ */
+export function gerarTextoHash(texto: string): string {
+  const limpo = texto.trim().toLowerCase().replace(/\s+/g, ' ');
+  let hash = 0;
+  for (let i = 0; i < limpo.length; i++) {
+    const char = limpo.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash |= 0;
+  }
+  const prefixo = limpo.slice(0, 15).replace(/[^a-z0-9]/g, '_');
+  return `${prefixo}_${Math.abs(hash)}_${limpo.length}`;
+}
+
+/**
+ * Busca prévias de áudio em cache no Supabase para a voz e texto informados.
+ */
+export async function buscarTestesCache(voz: string, texto: string): Promise<Record<string, TesteAudioRegistro>> {
+  if (!texto.trim()) return {};
+  const hash = gerarTextoHash(texto);
+
+  try {
+    const { data, error } = await supabase
+      .from('narracao_testes_cache')
+      .select('*')
+      .eq('voz', voz)
+      .eq('texto_hash', hash);
+
+    if (error) {
+      console.warn('[narracaoLeisService] Erro ao buscar narracao_testes_cache:', error);
+      return {};
+    }
+
+    const mapa: Record<string, TesteAudioRegistro> = {};
+    (data || []).forEach((item: any) => {
+      if (item.estilo_id) {
+        mapa[item.estilo_id] = item as TesteAudioRegistro;
+      }
+    });
+    return mapa;
+  } catch (err) {
+    console.warn('[narracaoLeisService] Exceção ao consultar narracao_testes_cache:', err);
+    return {};
+  }
+}
+
+/**
+ * Gera e salva a prévia de áudio no Supabase Storage e na tabela narracao_testes_cache.
+ * Se já existir em cache, reaproveita sem gastar cota.
+ */
+export async function gerarESalvarPreviaAudio(
+  texto: string,
+  voz: string,
+  estiloId: string,
+  estiloPrompt: string,
+  estiloLabel: string
+): Promise<TesteAudioRegistro> {
+  const hash = gerarTextoHash(texto);
+  const cacheId = `${voz}_${estiloId}_${hash}`;
+
+  // 1. Verifica se já está salvo no banco
+  try {
+    const { data: existente } = await supabase
+      .from('narracao_testes_cache')
+      .select('*')
+      .eq('id', cacheId)
+      .maybeSingle();
+
+    if (existente?.audio_url) {
+      return existente as TesteAudioRegistro;
+    }
+  } catch (e) {
+    console.warn('[gerarESalvarPreviaAudio] Aviso ao checar cache:', e);
+  }
+
+  // 2. Dispara geração via Edge Function
+  const { data, error } = await supabase.functions.invoke('narracao', {
+    body: { fn: 'blog_preview', texto: texto.slice(0, 1500), voz, estilo: estiloPrompt },
+  });
+
+  if (error || !data?.audio_data_url) {
+    throw new Error(error?.message || data?.error || 'Erro ao gerar prévia de áudio');
+  }
+
+  const dataUrl: string = data.audio_data_url;
+  let finalAudioUrl = dataUrl;
+  const storagePath = `narracoes/testes_vozes/${voz.toLowerCase()}/${estiloId}_${hash}.wav`;
+
+  // 3. Faz upload para o bucket público 'audios'
+  try {
+    const resp = await fetch(dataUrl);
+    const blob = await resp.blob();
+
+    const { error: upErr } = await supabase.storage
+      .from('audios')
+      .upload(storagePath, blob, { contentType: 'audio/wav', upsert: true });
+
+    if (!upErr) {
+      const { data: publicData } = supabase.storage.from('audios').getPublicUrl(storagePath);
+      if (publicData?.publicUrl) {
+        finalAudioUrl = publicData.publicUrl;
+      }
+    }
+  } catch (err) {
+    console.warn('[gerarESalvarPreviaAudio] Aviso ao salvar no storage audios:', err);
+  }
+
+  // 4. Salva no banco de dados na tabela narracao_testes_cache
+  const registro: TesteAudioRegistro = {
+    id: cacheId,
+    voz,
+    estilo_id: estiloId,
+    estilo_nome: estiloLabel,
+    texto: texto.slice(0, 1500),
+    texto_hash: hash,
+    audio_url: finalAudioUrl,
+    storage_path: storagePath,
+    created_at: new Date().toISOString(),
+  };
+
+  try {
+    await supabase.from('narracao_testes_cache').upsert(registro);
+  } catch (dbErr) {
+    console.warn('[gerarESalvarPreviaAudio] Erro ao persistir registro no banco:', dbErr);
+  }
+
+  return registro;
+}
+
+/**
+ * Apaga a prévia de áudio da tabela narracao_testes_cache e do Supabase Storage.
+ */
+export async function apagarPreviaAudio(id: string, storagePath?: string): Promise<void> {
+  if (storagePath) {
+    try {
+      await supabase.storage.from('audios').remove([storagePath]);
+    } catch (err) {
+      console.warn('[apagarPreviaAudio] Erro ao remover do storage:', err);
+    }
+  }
+
+  const { error } = await supabase.from('narracao_testes_cache').delete().eq('id', id);
+  if (error) {
+    throw new Error(error.message || 'Falha ao excluir prévia do banco');
+  }
+}
+
 /**
  * Gera áudio de prévia para testar voz e tom instantaneamente.
  */

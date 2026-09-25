@@ -1,11 +1,21 @@
-# Tarefas — Reordenação dos Filtros de Usuários Online (AdminHojeCards)
+# Tarefas — Teste de Áudio (Seletor Compacto, 4 Versões e Supabase Cache)
 
-- [x] **1. Reordenar filtros e definir padrão**
-  - [x] Alterar estado inicial de `filtroUser` para `'gratuitos'`
-  - [x] Ao abrir card `'online'` ou `'online5m'`, definir `filtroUser` como `'gratuitos'`
-  - [x] Mudar array de renderização para `['gratuitos', 'assinantes', 'todos']`
-- [x] **2. Validação**
-  - [x] Validar TypeScript (`.\node_modules\.bin\tsc.CMD --noEmit`)
-  - [x] Validar build (`.\node_modules\.bin\vite.CMD build`)
-- [x] **3. Git Auto-Commit & Push**
+- [x] **1. Banco de Dados e Storage (Supabase)**
+  - [x] Criar migração SQL `20260925130000_narracao_testes_cache.sql`
+  - [x] Aplicar migração no banco de dados via `supabase db push`
+- [x] **2. Serviços de Teste e Persistência (`narracaoLeisService.ts`)**
+  - [x] Tipos e função de hash de texto determinístico
+  - [x] Função `buscarTestesCache(voz, texto)`
+  - [x] Função `gerarESalvarPreviaAudio(texto, voz, estilo)` com upload para bucket `audios`
+  - [x] Função `apagarPreviaAudio(id, storagePath)` com deleção do Storage e da Tabela
+- [x] **3. Interface de Usuário (`AdminNarracaoLeis.tsx`)**
+  - [x] Substituir o grid aberto de 11 vozes por um botão compacto de seleção
+  - [x] Criar Modal/Sheet para seleção de voz que fecha imediatamente ao escolher
+  - [x] Exibir as 4 tonalidades em cards estruturados com status de salvamento no Supabase
+  - [x] Botão de "Gerar 4 Versões Simultâneas" que aproveita o cache
+  - [x] Player individual em cada tonalidade e ícone de lixeira para apagar e regenerar
+- [x] **4. Validação & Build**
+  - [x] Checagem de TypeScript (`tsc --noEmit`)
+  - [x] Teste de empacotamento de produção (`vite build`)
+- [x] **5. Git Auto-Commit & Push**
   - [x] Commit e push automático no repositório

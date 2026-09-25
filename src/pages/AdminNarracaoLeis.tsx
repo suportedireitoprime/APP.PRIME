@@ -5,7 +5,8 @@ import {
   Search, RefreshCw, ChevronRight, CheckCircle2,
   Clock, Loader2, Play, Pause, ArrowLeft, Volume2,
   Cpu, Sliders, Check, Sparkles, Filter, AlertCircle,
-  FileText, Zap, Music, ListFilter, VolumeX
+  FileText, Zap, Music, ListFilter, VolumeX,
+  Trash2, ChevronDown, Mic, Database, Layers
 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { LEIS_CATALOG, type LeiCatalogItem } from '@/data/leisCatalog';
@@ -18,6 +19,10 @@ import {
   AMOSTRAS_TESTE,
   buscarStatusNarracoes,
   testarVozAudio,
+  buscarTestesCache,
+  gerarESalvarPreviaAudio,
+  apagarPreviaAudio,
+  type TesteAudioRegistro,
   gerarNarracaoArtigoFatiada,
   obterConfigAutomacao,
   salvarConfigAutomacao,
@@ -28,6 +33,8 @@ import {
   type ConfigAutomacao,
   type LogAutomacao,
 } from '@/services/narracaoLeisService';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 interface CategoriaDef {
@@ -77,10 +84,17 @@ export default function AdminNarracaoLeis() {
 
   // Estados do "Teste de Áudio"
   const [vozTeste, setVozTeste] = useState('Kore');
-  const [estiloTeste, setEstiloTeste] = useState(ESTILOS_TOM[0].prompt);
   const [textoTeste, setTextoTeste] = useState(AMOSTRAS_TESTE[0].texto);
-  const [gerandoPrevia, setGerandoPrevia] = useState(false);
-  const [audioPreviaUrl, setAudioPreviaUrl] = useState<string | null>(null);
+  const [isVozModalOpen, setIsVozModalOpen] = useState(false);
+  const [filtroGeneroVoz, setFiltroGeneroVoz] = useState<'todos' | 'F' | 'M'>('todos');
+  const [testesCache, setTestesCache] = useState<Record<string, TesteAudioRegistro>>({});
+  const [carregandoCache, setCarregandoCache] = useState(false);
+  const [gerandoEstilos, setGerandoEstilos] = useState<Record<string, boolean>>({});
+  const [gerandoTodas, setGerandoTodas] = useState(false);
+  const [apagandoEstiloId, setApagandoEstiloId] = useState<string | null>(null);
+  const [tocandoEstiloId, setTocandoEstiloId] = useState<string | null>(null);
+  const [tempoAudioAtual, setTempoAudioAtual] = useState(0);
+  const [duracaoAudioAtual, setDuracaoAudioAtual] = useState(0);
 
   // Estados da "Automação"
   const [configAuto, setConfigAuto] = useState<ConfigAutomacao | null>(null);
@@ -278,30 +292,158 @@ export default function AdminNarracaoLeis() {
     }
   };
 
-  // Teste de Voz instantâneo
-  const handleTestarVoz = async () => {
-    if (!textoTeste.trim()) {
-      toast.error('Insira um texto de amostra');
+  // Efeito para carregar o cache do Supabase sempre que a voz ou texto mudarem
+  useEffect(() => {
+    if (selectedCat?.id !== 'teste-audio') return;
+    let ativo = true;
+    setCarregandoCache(true);
+    buscarTestesCache(vozTeste, textoTeste)
+      .then((res) => {
+        if (ativo) setTestesCache(res);
+      })
+      .catch((err) => console.warn('Erro ao carregar cache de testes:', err))
+      .finally(() => {
+        if (ativo) setCarregandoCache(false);
+      });
+    return () => {
+      ativo = false;
+    };
+  }, [vozTeste, textoTeste, selectedCat?.id]);
+
+  // Reproduzir ou pausar uma prévia de estilo
+  const handleTocarEstilo = (estiloId: string, url: string) => {
+    if (tocandoEstiloId === estiloId) {
+      audioRef.current?.pause();
+      setTocandoEstiloId(null);
       return;
     }
 
-    setGerandoPrevia(true);
-    setAudioPreviaUrl(null);
-    const toastId = toast.loading(`Gerando áudio com a voz ${vozTeste}...`);
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+    }
+
+    audioRef.current.pause();
+    audioRef.current.src = url;
+    audioRef.current.ontimeupdate = () => {
+      if (audioRef.current) {
+        setTempoAudioAtual(audioRef.current.currentTime || 0);
+        setDuracaoAudioAtual(audioRef.current.duration || 0);
+      }
+    };
+    audioRef.current.onended = () => {
+      setTocandoEstiloId(null);
+      setTempoAudioAtual(0);
+    };
+    audioRef.current.onerror = () => {
+      setTocandoEstiloId(null);
+      toast.error('Erro ao reproduzir arquivo de áudio');
+    };
+
+    audioRef.current.play().then(() => {
+      setTocandoEstiloId(estiloId);
+    }).catch((err) => {
+      console.warn('Falha no autoplay:', err);
+      setTocandoEstiloId(null);
+    });
+  };
+
+  // Gerar versão individual de uma tonalidade
+  const handleGerarEstilo = async (estilo: typeof ESTILOS_TOM[0]) => {
+    if (!textoTeste.trim()) {
+      toast.error('Insira o texto da amostra jurídica');
+      return;
+    }
+
+    setGerandoEstilos((prev) => ({ ...prev, [estilo.id]: true }));
+    const toastId = toast.loading(`Gerando áudio (${estilo.label}) com voz ${vozTeste}...`);
 
     try {
-      const url = await testarVozAudio(textoTeste, vozTeste, estiloTeste);
-      setAudioPreviaUrl(url);
+      const reg = await gerarESalvarPreviaAudio(
+        textoTeste,
+        vozTeste,
+        estilo.id,
+        estilo.prompt,
+        estilo.label
+      );
 
-      if (!audioRef.current) audioRef.current = new Audio();
-      audioRef.current.src = url;
-      audioRef.current.play().catch(() => {});
-
-      toast.success(`Prévia gerada com sucesso!`, { id: toastId });
+      setTestesCache((prev) => ({ ...prev, [estilo.id]: reg }));
+      toast.success(`Versão "${estilo.label}" gerada e salva no Supabase!`, { id: toastId });
+      handleTocarEstilo(estilo.id, reg.audio_url);
     } catch (err: any) {
-      toast.error(`Erro: ${err.message || 'Falha ao gerar voz'}`, { id: toastId });
+      toast.error(`Erro ao gerar versão: ${err.message || 'Falha'}`, { id: toastId });
     } finally {
-      setGerandoPrevia(false);
+      setGerandoEstilos((prev) => ({ ...prev, [estilo.id]: false }));
+    }
+  };
+
+  // Gerar todas as 4 versões simultaneamente
+  const handleGerarTodas4Versoes = async () => {
+    if (!textoTeste.trim()) {
+      toast.error('Insira o texto da amostra jurídica');
+      return;
+    }
+
+    const estilosPendentes = ESTILOS_TOM.filter((e) => !testesCache[e.id]?.audio_url);
+
+    if (estilosPendentes.length === 0) {
+      toast.info('As 4 versões já estão salvas no Supabase!');
+      return;
+    }
+
+    setGerandoTodas(true);
+    const toastId = toast.loading(`Gerando ${estilosPendentes.length} versões pendentes com a voz ${vozTeste}...`);
+
+    let sucessoCount = 0;
+    for (const estilo of estilosPendentes) {
+      try {
+        setGerandoEstilos((prev) => ({ ...prev, [estilo.id]: true }));
+        const reg = await gerarESalvarPreviaAudio(
+          textoTeste,
+          vozTeste,
+          estilo.id,
+          estilo.prompt,
+          estilo.label
+        );
+        setTestesCache((prev) => ({ ...prev, [estilo.id]: reg }));
+        sucessoCount++;
+      } catch (err: any) {
+        console.error(`Erro na versão ${estilo.id}:`, err);
+      } finally {
+        setGerandoEstilos((prev) => ({ ...prev, [estilo.id]: false }));
+      }
+    }
+
+    setGerandoTodas(false);
+    if (sucessoCount > 0) {
+      toast.success(`${sucessoCount} versões geradas e salvas com sucesso no Supabase!`, { id: toastId });
+    } else {
+      toast.error('Falha ao gerar versões simultâneas', { id: toastId });
+    }
+  };
+
+  // Apagar áudio do Supabase para poder regenerar
+  const handleApagarEstilo = async (estiloId: string) => {
+    const reg = testesCache[estiloId];
+    if (!reg) return;
+
+    if (tocandoEstiloId === estiloId) {
+      audioRef.current?.pause();
+      setTocandoEstiloId(null);
+    }
+
+    setApagandoEstiloId(estiloId);
+    try {
+      await apagarPreviaAudio(reg.id, reg.storage_path);
+      setTestesCache((prev) => {
+        const copia = { ...prev };
+        delete copia[estiloId];
+        return copia;
+      });
+      toast.success('Áudio excluído do Supabase! Agora você pode regenerá-lo.');
+    } catch (err: any) {
+      toast.error(`Falha ao excluir: ${err.message || 'Erro'}`);
+    } finally {
+      setApagandoEstiloId(null);
     }
   };
 
@@ -734,79 +876,188 @@ export default function AdminNarracaoLeis() {
   // RENDER: FERRAMENTA ESPECIAL — TESTE DE ÁUDIO
   // ==========================================================================
   if (selectedCat && selectedCat.id === 'teste-audio') {
+    const vozSelecionadaObj = VOZES_DISPONIVEIS.find((v) => v.id === vozTeste) || VOZES_DISPONIVEIS[0];
+    const vozesFiltradas = filtroGeneroVoz === 'todos'
+      ? VOZES_DISPONIVEIS
+      : VOZES_DISPONIVEIS.filter((v) => v.genero === filtroGeneroVoz);
+    const totalVersoesSalvas = ESTILOS_TOM.filter((e) => !!testesCache[e.id]?.audio_url).length;
+
+    const formatarTempo = (segundos: number) => {
+      if (isNaN(segundos) || segundos < 0) return '0:00';
+      const mins = Math.floor(segundos / 60);
+      const secs = Math.floor(segundos % 60);
+      return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    };
+
     return (
       <div className="min-h-dvh bg-background pb-12">
         <PageHeader
           title="Teste de Áudio"
           subtitle="Vozes Gemini TTS, tonalidades e testes de pronúncia jurídica"
-          onBack={() => setSelectedCat(null)}
+          onBack={() => {
+            if (audioRef.current) {
+              audioRef.current.pause();
+              setTocandoEstiloId(null);
+            }
+            setSelectedCat(null);
+          }}
         />
 
-        <div className="p-4 max-w-4xl mx-auto space-y-6">
-          {/* Seletor de Vozes */}
-          <div className="p-4 rounded-2xl border border-border/60 bg-card/60 space-y-3">
+        <div className="p-4 max-w-4xl mx-auto space-y-5">
+          {/* Seletor de Voz Compacto (Botão com Modal) */}
+          <div className="p-4 rounded-2xl border border-border/70 bg-gradient-to-br from-card/90 via-card/60 to-secondary/30 shadow-md space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                <Volume2 className="w-4 h-4 text-primary" />
-                Selecione a Voz para Teste
-              </h3>
-              <span className="text-xs text-muted-foreground">{VOZES_DISPONIVEIS.length} vozes disponíveis</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <Volume2 className="w-3.5 h-3.5 text-primary" />
+                Voz Selecionada para Teste
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {VOZES_DISPONIVEIS.length} vozes disponíveis
+              </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-              {VOZES_DISPONIVEIS.map((v) => {
-                const isSelected = vozTeste === v.id;
-                return (
-                  <button
-                    key={v.id}
-                    onClick={() => setVozTeste(v.id)}
-                    className={`p-3 rounded-xl border text-left transition-all ${
-                      isSelected
-                        ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
-                        : 'border-border/60 bg-secondary/20 hover:bg-secondary/40'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-bold text-sm text-foreground">{v.nome}</span>
-                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                        v.genero === 'F' ? 'bg-pink-500/10 text-pink-400' : 'bg-blue-500/10 text-blue-400'
-                      }`}>
-                        {v.genero === 'F' ? 'Feminina' : 'Masculina'}
+            {/* Botão Trigger que abre o seletor */}
+            <button
+              type="button"
+              onClick={() => setIsVozModalOpen(true)}
+              className="w-full p-3.5 rounded-xl border border-border/80 bg-secondary/30 hover:bg-secondary/60 hover:border-primary/50 transition-all text-left flex items-center justify-between gap-3 group active:scale-[0.99]"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className={cn(
+                  'w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border shadow-sm transition-transform group-hover:scale-105',
+                  vozSelecionadaObj.genero === 'F'
+                    ? 'bg-pink-500/15 border-pink-500/30 text-pink-400'
+                    : 'bg-blue-500/15 border-blue-500/30 text-blue-400'
+                )}>
+                  <Mic className="w-5 h-5" />
+                </div>
+
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-base text-foreground tracking-tight">
+                      {vozSelecionadaObj.nome}
+                    </span>
+                    <span className={cn(
+                      'px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase',
+                      vozSelecionadaObj.genero === 'F'
+                        ? 'bg-pink-500/15 text-pink-400 border border-pink-500/30'
+                        : 'bg-blue-500/15 text-blue-400 border border-blue-500/30'
+                    )}>
+                      {vozSelecionadaObj.genero === 'F' ? 'Feminina' : 'Masculina'}
+                    </span>
+                    {vozSelecionadaObj.destaque && (
+                      <span className="hidden sm:inline px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                        Recomendada
                       </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground line-clamp-1">{v.descricao}</p>
-                  </button>
-                );
-              })}
-            </div>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground truncate mt-0.5">
+                    {vozSelecionadaObj.descricao}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1.5 shrink-0 px-3 py-1.5 rounded-lg bg-secondary/90 border border-border/70 text-xs font-semibold text-foreground group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
+                <span>Trocar Voz</span>
+                <ChevronDown className="w-3.5 h-3.5 transition-transform group-hover:translate-y-0.5" />
+              </div>
+            </button>
           </div>
 
-          {/* Seletor de Tonalidade / Estilo */}
-          <div className="p-4 rounded-2xl border border-border/60 bg-card/60 space-y-3">
-            <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-              <Sliders className="w-4 h-4 text-primary" />
-              Tonalidade e Estilo da Narração
-            </h3>
+          {/* Modal / Dialog de Escolha da Voz */}
+          <Dialog open={isVozModalOpen} onOpenChange={setIsVozModalOpen}>
+            <DialogContent className="max-w-xl max-h-[85vh] flex flex-col p-0 overflow-hidden bg-background border-border/80">
+              <DialogHeader className="p-4 sm:p-5 border-b border-border/50 text-left">
+                <DialogTitle className="text-base font-bold text-foreground flex items-center gap-2">
+                  <Volume2 className="w-4 h-4 text-primary" />
+                  Selecione a Voz para Teste
+                </DialogTitle>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Clique na voz desejada para selecioná-la. A janela fechará automaticamente.
+                </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {ESTILOS_TOM.map((estilo) => (
-                <button
-                  key={estilo.id}
-                  onClick={() => setEstiloTeste(estilo.prompt)}
-                  className={`p-3 rounded-xl border text-left transition-all ${
-                    estiloTeste === estilo.prompt
-                      ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
-                      : 'border-border/60 bg-secondary/20 hover:bg-secondary/40'
-                  }`}
-                >
-                  <p className="font-bold text-xs text-foreground mb-1">{estilo.label}</p>
-                  <p className="text-[11px] text-muted-foreground line-clamp-2">{estilo.prompt}</p>
-                </button>
-              ))}
-            </div>
-          </div>
+                {/* Filtro Rápido: Todas / Femininas / Masculinas */}
+                <div className="flex items-center gap-1.5 mt-3 bg-secondary/40 p-1 rounded-xl w-fit">
+                  {(['todos', 'F', 'M'] as const).map((g) => (
+                    <button
+                      key={g}
+                      type="button"
+                      onClick={() => setFiltroGeneroVoz(g)}
+                      className={cn(
+                        'px-3 py-1 rounded-lg text-xs font-semibold transition-all',
+                        filtroGeneroVoz === g
+                          ? 'bg-background text-foreground shadow-sm'
+                          : 'text-muted-foreground hover:text-foreground'
+                      )}
+                    >
+                      {g === 'todos' ? 'Todas (11)' : g === 'F' ? 'Femininas (5)' : 'Masculinas (6)'}
+                    </button>
+                  ))}
+                </div>
+              </DialogHeader>
 
-          {/* Amostras Rápidas e Texto para Ouvir */}
+              <div className="p-4 overflow-y-auto space-y-2 flex-1">
+                {vozesFiltradas.map((v) => {
+                  const isSelected = vozTeste === v.id;
+                  return (
+                    <button
+                      key={v.id}
+                      type="button"
+                      onClick={() => {
+                        setVozTeste(v.id);
+                        setIsVozModalOpen(false); // Fecha o modal imediatamente conforme solicitado!
+                      }}
+                      className={cn(
+                        'w-full p-3 rounded-xl border text-left transition-all flex items-center justify-between gap-3 group',
+                        isSelected
+                          ? 'border-primary bg-primary/10 ring-1 ring-primary/40'
+                          : 'border-border/60 bg-secondary/20 hover:bg-secondary/40 hover:border-border'
+                      )}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className={cn(
+                          'w-9 h-9 rounded-lg flex items-center justify-center shrink-0 border',
+                          v.genero === 'F'
+                            ? 'bg-pink-500/10 border-pink-500/20 text-pink-400'
+                            : 'bg-blue-500/10 border-blue-500/20 text-blue-400'
+                        )}>
+                          <Mic className="w-4 h-4" />
+                        </div>
+
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-sm text-foreground">{v.nome}</span>
+                            <span className={cn(
+                              'px-1.5 py-0.5 rounded text-[9.5px] font-bold',
+                              v.genero === 'F' ? 'bg-pink-500/10 text-pink-400' : 'bg-blue-500/10 text-blue-400'
+                            )}>
+                              {v.genero === 'F' ? 'Feminina' : 'Masculina'}
+                            </span>
+                            {v.destaque && (
+                              <span className="px-1.5 py-0.5 rounded text-[9.5px] font-bold bg-amber-500/10 text-amber-400">
+                                Recomendada
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground truncate mt-0.5">{v.descricao}</p>
+                        </div>
+                      </div>
+
+                      {isSelected ? (
+                        <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground shrink-0">
+                          <Check className="w-3.5 h-3.5" />
+                        </div>
+                      ) : (
+                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Amostras Rápidas e Texto da Narração */}
           <div className="p-4 rounded-2xl border border-border/60 bg-card/60 space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
@@ -818,6 +1069,7 @@ export default function AdminNarracaoLeis() {
                 {AMOSTRAS_TESTE.map((amostra, idx) => (
                   <button
                     key={idx}
+                    type="button"
                     onClick={() => setTextoTeste(amostra.texto)}
                     className="px-2.5 py-1 rounded-lg bg-secondary/60 hover:bg-secondary text-[11px] font-medium text-foreground transition-colors"
                   >
@@ -830,29 +1082,207 @@ export default function AdminNarracaoLeis() {
             <textarea
               value={textoTeste}
               onChange={(e) => setTextoTeste(e.target.value)}
-              rows={4}
+              rows={3}
               className="w-full p-3 rounded-xl bg-secondary/30 border border-border/60 text-xs text-foreground leading-relaxed focus:outline-none focus:ring-1 focus:ring-primary"
               placeholder="Digite ou cole aqui o texto do artigo que você deseja ouvir..."
             />
 
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+            <div className="flex items-center justify-between text-[11px] text-muted-foreground px-1">
+              <span>{textoTeste.length} / 1.500 caracteres</span>
               <button
-                onClick={handleTestarVoz}
-                disabled={gerandoPrevia}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-bold shadow-lg hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50"
-              >
-                {gerandoPrevia ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-                <span>Ouvir com voz {vozTeste}</span>
-              </button>
-
-              <button
+                type="button"
                 onClick={handleDefinirComoPadrao}
                 disabled={salvandoAuto}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-secondary hover:bg-secondary/80 border border-border/60 text-xs font-semibold text-foreground transition-all"
+                className="inline-flex items-center gap-1 text-primary hover:underline font-semibold"
               >
-                <Check className="w-4 h-4 text-emerald-400" />
-                <span>Definir voz {vozTeste} como padrão da Automação</span>
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                Definir voz {vozTeste} como padrão da Automação
               </button>
+            </div>
+          </div>
+
+          {/* As 4 Tonalidades e Prévias Simultâneas */}
+          <div className="p-4 rounded-2xl border border-border/60 bg-card/60 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-border/40">
+              <div>
+                <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                  <Sliders className="w-4 h-4 text-primary" />
+                  4 Versões de Tonalidade (Gemini TTS)
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {carregandoCache ? (
+                    'Consultando cache no Supabase...'
+                  ) : (
+                    <span className="flex items-center gap-1.5">
+                      <Database className="w-3.5 h-3.5 text-emerald-400" />
+                      <strong>{totalVersoesSalvas} de 4</strong> versões salvas no Supabase
+                    </span>
+                  )}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleGerarTodas4Versoes}
+                disabled={gerandoTodas || totalVersoesSalvas === 4}
+                className={cn(
+                  'flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all active:scale-95 disabled:opacity-50',
+                  totalVersoesSalvas === 4
+                    ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400'
+                    : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                )}
+              >
+                {gerandoTodas ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Gerando Versões...</span>
+                  </>
+                ) : totalVersoesSalvas === 4 ? (
+                  <>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Todas as 4 Salvas</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Gerar 4 Versões Simultâneas</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Grid com os 4 cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {ESTILOS_TOM.map((estilo) => {
+                const cacheItem = testesCache[estilo.id];
+                const isSalvo = !!cacheItem?.audio_url;
+                const isGerando = !!gerandoEstilos[estilo.id];
+                const isTocando = tocandoEstiloId === estilo.id;
+                const isApagando = apagandoEstiloId === estilo.id;
+
+                return (
+                  <div
+                    key={estilo.id}
+                    className={cn(
+                      'p-4 rounded-xl border transition-all flex flex-col justify-between gap-3',
+                      isSalvo
+                        ? 'border-emerald-500/40 bg-emerald-500/5 ring-1 ring-emerald-500/10'
+                        : 'border-border/60 bg-secondary/20 hover:bg-secondary/30'
+                    )}
+                  >
+                    <div>
+                      {/* Topo do card: Nome + Status + Botão Apagar */}
+                      <div className="flex items-start justify-between gap-2 mb-1.5">
+                        <div className="min-w-0">
+                          <h4 className="font-bold text-xs text-foreground tracking-tight truncate">
+                            {estilo.label}
+                          </h4>
+                          <div className="mt-1 flex items-center gap-1.5 flex-wrap">
+                            {isSalvo ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
+                                <CheckCircle2 className="w-3 h-3" /> Salvo no Supabase
+                              </span>
+                            ) : isGerando ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/15 border border-primary/30 text-primary animate-pulse">
+                                <Loader2 className="w-3 h-3 animate-spin" /> Gerando...
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-secondary text-muted-foreground border border-border/60">
+                                Não gerado
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Botão Apagar com Ícone de Lixeira */}
+                        {isSalvo && (
+                          <button
+                            type="button"
+                            onClick={() => handleApagarEstilo(estilo.id)}
+                            disabled={isApagando}
+                            className="p-1.5 rounded-lg text-muted-foreground hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 active:scale-90 transition-all shrink-0"
+                            title="Apagar áudio do Supabase e regenerar"
+                          >
+                            {isApagando ? (
+                              <Loader2 className="w-4 h-4 animate-spin text-rose-400" />
+                            ) : (
+                              <Trash2 className="w-4 h-4" />
+                            )}
+                          </button>
+                        )}
+                      </div>
+
+                      <p className="text-[11px] text-muted-foreground line-clamp-2 mt-2 leading-relaxed">
+                        {estilo.prompt}
+                      </p>
+                    </div>
+
+                    {/* Ações / Player */}
+                    <div className="pt-2 border-t border-border/40">
+                      {isSalvo && cacheItem?.audio_url ? (
+                        <div className="flex items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={() => handleTocarEstilo(estilo.id, cacheItem.audio_url)}
+                            className={cn(
+                              'w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all shadow-md shrink-0 active:scale-95',
+                              isTocando
+                                ? 'bg-primary text-primary-foreground animate-pulse'
+                                : 'bg-emerald-500 text-black hover:bg-emerald-400'
+                            )}
+                            title={isTocando ? 'Pausar' : 'Ouvir Versão'}
+                          >
+                            {isTocando ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-current ml-0.5" />}
+                          </button>
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground mb-1">
+                              <span>{isTocando ? 'Reproduzindo' : 'Pronto para ouvir'}</span>
+                              <span>
+                                {isTocando && duracaoAudioAtual > 0
+                                  ? `${formatarTempo(tempoAudioAtual)} / ${formatarTempo(duracaoAudioAtual)}`
+                                  : 'WAV'}
+                              </span>
+                            </div>
+                            <div className="w-full h-1.5 rounded-full bg-secondary overflow-hidden">
+                              <div
+                                className={cn(
+                                  'h-full transition-all duration-200',
+                                  isTocando ? 'bg-primary' : 'bg-emerald-500/70'
+                                )}
+                                style={{
+                                  width: isTocando && duracaoAudioAtual > 0
+                                    ? `${(tempoAudioAtual / duracaoAudioAtual) * 100}%`
+                                    : '100%'
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleGerarEstilo(estilo)}
+                          disabled={isGerando || gerandoTodas}
+                          className="w-full py-2 px-3 rounded-xl bg-secondary/70 hover:bg-secondary border border-border/60 text-xs font-semibold text-foreground flex items-center justify-center gap-2 hover:border-primary/50 active:scale-98 transition-all disabled:opacity-50"
+                        >
+                          {isGerando ? (
+                            <>
+                              <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
+                              <span>Gerando áudio...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Play className="w-3 h-3 text-primary" />
+                              <span>Gerar Esta Versão</span>
+                            </>
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
