@@ -31,6 +31,7 @@ import LeiCapitulosGrid from '@/components/vademecum/artigo/LeiCapitulosGrid';
 import LeiArtigosVirtualList from '@/components/vademecum/artigo/LeiArtigosVirtualList';
 import LeiHistoricoCarousel from '@/components/vademecum/artigo/LeiHistoricoCarousel';
 import ArtigoComparativoModal, { type AlteracaoDetailData } from '@/components/vademecum/artigo/ArtigoComparativoModal';
+import LeiSobreModal from '@/components/vademecum/artigo/LeiSobreModal';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { extractLeiCapitulos, isStructuralArtigo, formatArtigoNumeroOnly } from '@/lib/leiStructure';
 
@@ -77,6 +78,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   const [activeTab, setActiveTab] = useState<'art' | 'cap' | 'rec' | 'lot'>('art');
   const [overlayPanel, setOverlayPanel] = useState<'fav' | 'playlist' | 'novidades' | 'anotacoes' | 'radar' | null>(null);
   const [selectedAlteracaoDetail, setSelectedAlteracaoDetail] = useState<AlteracaoDetailData | null>(null);
+  const [showSobreModal, setShowSobreModal] = useState(false);
   
   const [showFooter, setShowFooter] = useState(false);
   const [gridReady, setGridReady] = useState(false);
@@ -815,18 +817,30 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           {/* Abas no Desktop (no mobile a navegação fica no rodapé) */}
           {isDesktop && (
             <div className="flex flex-col gap-3 w-full">
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-5 gap-2">
                 {[
                   { key: 'art' as const, icon: BookOpen, label: 'Artigos' },
                   { key: 'cap' as const, icon: LayoutGrid, label: 'Capítulos' },
                   { key: 'lot' as const, icon: Layers, label: 'Lotes' },
                   { key: 'rec' as const, icon: History, label: 'Recentes' },
+                  { key: 'sobre' as const, icon: Info, label: 'Sobre' },
                 ].map(tab => (
                   <button
                     key={tab.key}
-                    onClick={() => setActiveTab(tab.key)}
-                    disabled={loadingArtigos}
-                    className={`flex items-center justify-center gap-1.5 px-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all py-2 ${activeTab === tab.key ? 'bg-hero-panel text-white shadow-md shadow-red-950/40' : 'bg-secondary text-foreground hover:text-foreground'} ${loadingArtigos ? 'opacity-70' : ''}`}
+                    onClick={() => {
+                      if (tab.key === 'sobre') {
+                        haptic.selection();
+                        setShowSobreModal(true);
+                      } else {
+                        setActiveTab(tab.key);
+                      }
+                    }}
+                    disabled={loadingArtigos && tab.key !== 'sobre'}
+                    className={`flex items-center justify-center gap-1.5 px-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all py-2 cursor-pointer ${
+                      (tab.key === 'sobre' ? showSobreModal : activeTab === tab.key)
+                        ? 'bg-hero-panel text-white shadow-md shadow-red-950/40'
+                        : 'bg-secondary text-foreground hover:text-foreground'
+                    } ${loadingArtigos && tab.key !== 'sobre' ? 'opacity-70' : ''}`}
                   >
                     <tab.icon className="w-4 h-4" />
                     <span>{tab.label}</span>
@@ -1004,19 +1018,24 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
         >
           <div className="bg-[#0e0e10]/95 backdrop-blur-xl border-t border-white/10 rounded-t-3xl shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.65)] pb-safe px-3 pt-2 pb-2">
             {/* Menu de rodapé estético com exatamente 2 tons de cinza */}
-            <div className="grid grid-cols-3 max-w-md mx-auto items-center gap-1.5">
+            <div className="grid grid-cols-4 max-w-md mx-auto items-center gap-1">
               {[
                 { key: 'art' as const, icon: BookOpen, label: 'Artigos' },
                 { key: 'cap' as const, icon: LayoutGrid, label: 'Capítulos' },
                 { key: 'lot' as const, icon: Layers, label: 'Lotes' },
+                { key: 'sobre' as const, icon: Info, label: 'Sobre' },
               ].map((tab) => {
-                const active = activeTab === tab.key;
+                const active = tab.key === 'sobre' ? showSobreModal : activeTab === tab.key;
                 return (
                   <button
                     key={tab.key}
                     onClick={() => {
                       haptic.selection();
-                      setActiveTab(tab.key);
+                      if (tab.key === 'sobre') {
+                        setShowSobreModal(true);
+                      } else {
+                        setActiveTab(tab.key);
+                      }
                     }}
                     type="button"
                     className={`flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-2xl transition-all select-none active:scale-95 ${
@@ -1126,6 +1145,13 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
       />
 
       {selectedTabelaNome && <OcrScanner open={ocrOpen} onClose={() => setOcrOpen(false)} leiNome={selectedLeiNome} leiSlug={selectedTabelaNome} />}
+
+      <LeiSobreModal
+        open={showSobreModal}
+        onClose={() => setShowSobreModal(false)}
+        leiNome={selectedLeiNome}
+        leiDescricao={selectedLeiDescricao}
+      />
 
 
       <AnimatePresence>

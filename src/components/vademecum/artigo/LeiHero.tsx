@@ -105,7 +105,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
         </header>
 
         {/* Conteúdo do Painel: Título e Identificação da Lei à Esquerda (sobre a área vermelha, alinhado à Home) */}
-        <div className="relative z-10 px-3 sm:px-4 ml-1 sm:ml-2 pt-0.5 pb-2.5 flex flex-col justify-start w-[44%] max-w-[175px]">
+        <div className="relative z-10 px-3 sm:px-4 ml-1 sm:ml-2 pt-1 sm:pt-2 pb-3.5 sm:pb-4 flex flex-col justify-start w-[44%] max-w-[175px]">
           {/* Brasão watermark sutil atrás do texto */}
           <img
             src={brasaoImg}
@@ -129,7 +129,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
           )}
 
           {/* Badges de Ação: Ver no Planalto e Ementa */}
-          <div className="flex items-center gap-1.5 flex-wrap mt-2">
+          <div className="flex items-center gap-1.5 flex-wrap mt-2.5">
             {planaltoUrl && (
               <a
                 href={planaltoUrl}
@@ -155,8 +155,8 @@ const LeiHero: React.FC<LeiHeroProps> = ({
           </div>
         </div>
 
-        {/* Atalhos Rápidos na Base do Painel: FAVORITO, ANOTAÇÕES, RADAR, PLAYLIST */}
-        <div className="relative z-10 px-3 sm:px-6 pt-2 pb-5 w-full max-w-lg mx-auto">
+        {/* Atalhos Rápidos na Base do Painel: FAVORITO, ANOTAÇÕES, RADAR, PLAYLIST com altura ampliada */}
+        <div className="relative z-10 px-3 sm:px-6 pt-2.5 pb-6 sm:pb-7 w-full max-w-lg mx-auto">
           <div className="grid grid-cols-4 gap-2">
             {/* FAVORITOS DE ARTIGOS */}
             <button

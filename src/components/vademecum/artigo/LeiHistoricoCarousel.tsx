@@ -42,21 +42,21 @@ interface LeiHistoricoCarouselProps {
 function getBadgeStyle(tipo: string) {
   const t = tipo.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   if (t.startsWith('revogad') || t.startsWith('vetad') || t.startsWith('suprimid')) {
-    return 'bg-black/50 text-rose-200 border border-rose-400/40 backdrop-blur-sm';
+    return 'bg-rose-500/20 text-rose-300 border border-rose-500/30';
   }
   if (t.startsWith('incluid') || t.startsWith('acrescid')) {
-    return 'bg-emerald-950/60 text-emerald-200 border border-emerald-400/40 backdrop-blur-sm';
+    return 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
   }
   if (t.startsWith('redacao') || t.startsWith('alterad')) {
-    return 'bg-amber-950/60 text-amber-200 border border-amber-400/40 backdrop-blur-sm';
+    return 'bg-amber-500/20 text-amber-300 border border-amber-500/30';
   }
   if (t.startsWith('renumerad')) {
-    return 'bg-sky-950/60 text-sky-200 border border-sky-400/40 backdrop-blur-sm';
+    return 'bg-sky-500/20 text-sky-300 border border-sky-500/30';
   }
   if (t.startsWith('vigencia') || t.startsWith('producao')) {
-    return 'bg-purple-950/60 text-purple-200 border border-purple-400/40 backdrop-blur-sm';
+    return 'bg-purple-500/20 text-purple-300 border border-purple-500/30';
   }
-  return 'bg-black/40 text-white border border-white/20 backdrop-blur-sm';
+  return 'bg-primary/20 text-primary border border-primary/30';
 }
 
 function cleanArtigoNumber(val: string): string {
@@ -260,14 +260,14 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
                     });
                   }
                 }}
-                className="snap-start shrink-0 w-[220px] sm:w-[245px] rounded-2xl bg-brand-gradient hover:brightness-110 border border-white/15 hover:border-white/25 p-3.5 flex flex-col justify-between shadow-xl shadow-red-950/50 active:scale-[0.98] transition-all cursor-pointer relative overflow-hidden group"
+                className="snap-start shrink-0 w-[220px] sm:w-[245px] rounded-2xl bg-primary/10 hover:bg-primary/15 border border-primary/25 hover:border-primary/40 p-3.5 flex flex-col justify-between shadow-xl shadow-black/60 backdrop-blur-md active:scale-[0.98] transition-all cursor-pointer relative overflow-hidden group"
               >
                 {/* Glow sutil ao passar o cursor */}
-                <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
                 {/* Topo do Card: Número do Artigo e Badge de Tipo */}
                 <div className="flex items-center justify-between gap-1.5 mb-2 relative z-10">
-                  <span className="font-bold text-[14px] sm:text-[15px] text-white flex items-center gap-1 drop-shadow-sm">
+                  <span className="font-bold text-[14px] sm:text-[15px] text-white group-hover:text-primary transition-colors flex items-center gap-1 drop-shadow-sm">
                     {item.artigoDisplay}
                   </span>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full leading-none shrink-0 shadow-sm ${badgeClass}`}>
@@ -277,17 +277,17 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
 
                 {/* Trecho modificado */}
                 <div className="flex-1 relative z-10 mb-2.5">
-                  <p className="text-[11px] text-white/85 line-clamp-2 leading-relaxed font-normal drop-shadow-sm">
+                  <p className="text-[11px] text-zinc-300 line-clamp-2 leading-relaxed font-normal">
                     {item.snippet}
                   </p>
                 </div>
 
                 {/* Rodapé do Card: Lei Modificadora e Mês/Ano com listra sutil */}
-                <div className="flex items-center justify-between text-[10px] text-white/70 pt-2 border-t border-white/15 relative z-10">
-                  <span className="truncate max-w-[150px] font-medium text-white/90">
+                <div className="flex items-center justify-between text-[10px] text-zinc-400 pt-2 border-t border-primary/20 relative z-10">
+                  <span className="truncate max-w-[150px] font-medium text-zinc-300">
                     {item.leiNome}
                   </span>
-                  <span className="font-black text-white shrink-0 ml-1 tracking-wider drop-shadow-sm">
+                  <span className="font-bold text-zinc-200 shrink-0 ml-1 tracking-wider">
                     {item.mesAno}
                   </span>
                 </div>
