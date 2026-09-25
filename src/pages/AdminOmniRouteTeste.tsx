@@ -925,9 +925,9 @@ export default function AdminOmniRouteTeste() {
             <button
               type="button"
               onClick={() => setShowOmniRouteTestSheet(true)}
-              className="w-full flex items-start sm:items-center justify-between gap-4 p-4.5 sm:p-5 text-left group cursor-pointer"
+              className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 p-4.5 sm:p-5 text-left group cursor-pointer"
             >
-              <div className="flex items-start sm:items-center gap-4 min-w-0 flex-1">
+              <div className="flex items-start sm:items-center gap-4 min-w-0 w-full sm:flex-1">
                 <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#F59E0B]/15 border border-[#F59E0B]/35 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-md shadow-[#F59E0B]/10 mt-0.5 sm:mt-0">
                   <Sparkles className="w-6 h-6 text-[#FBBF24]" />
                 </div>
@@ -946,9 +946,12 @@ export default function AdminOmniRouteTeste() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0 self-center">
+              <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto shrink-0 mt-2 sm:mt-0 pl-16 sm:pl-0 border-t border-white/5 sm:border-0 pt-3 sm:pt-0">
                 <span className="!font-sans text-xs text-[#FBBF24] font-medium hidden sm:inline">
                   Abrir Testes
+                </span>
+                <span className="!font-sans text-[11px] text-[#FBBF24] font-medium sm:hidden">
+                  Abrir Sandbox
                 </span>
                 <ChevronRight className="w-5 h-5 text-zinc-400 group-hover:text-[#FBBF24] group-hover:translate-x-0.5 transition-all" />
               </div>
@@ -1005,53 +1008,50 @@ export default function AdminOmniRouteTeste() {
                   <button
                     type="button"
                     onClick={() => setSelectedFeature(feature)}
-                    className="w-full flex items-start sm:items-center justify-between gap-4 p-4.5 sm:p-5 text-left group cursor-pointer"
+                    className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3 p-3.5 sm:p-4 text-left group cursor-pointer"
                   >
-                    <div className="flex items-start sm:items-center gap-4 min-w-0 flex-1">
-                      <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl border shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform shadow-md mt-0.5 sm:mt-0 ${style.iconBg} ${style.iconBorder} ${style.iconColor}`}>
-                        {feature.key === 'chat_juridico' && <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6" />}
-                        {feature.key === 'resumo_inteligente' && <BookOpen className="w-5 h-5 sm:w-6 sm:h-6" />}
-                        {feature.key === 'visao_documentos' && <Eye className="w-5 h-5 sm:w-6 sm:h-6" />}
-                        {feature.key === 'transcricao_audio' && <Mic className="w-5 h-5 sm:w-6 sm:h-6" />}
-                        {feature.key === 'geracao_imagens' && <ImageIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                        {feature.key === 'narracao_vademecum' && <Volume2 className="w-5 h-5 sm:w-6 sm:h-6" />}
+                    <div className="flex items-center gap-3.5 min-w-0 w-full sm:flex-1">
+                      <div className={`w-10 h-10 rounded-xl border shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform shadow-md ${style.iconBg} ${style.iconBorder} ${style.iconColor}`}>
+                        {feature.key === 'chat_juridico' && <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />}
+                        {feature.key === 'resumo_inteligente' && <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />}
+                        {feature.key === 'visao_documentos' && <Eye className="w-4 h-4 sm:w-5 sm:h-5" />}
+                        {feature.key === 'transcricao_audio' && <Mic className="w-4 h-4 sm:w-5 sm:h-5" />}
+                        {feature.key === 'geracao_imagens' && <ImageIcon className="w-4 h-4 sm:w-5 sm:h-5" />}
+                        {feature.key === 'narracao_vademecum' && <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />}
                       </div>
 
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h4 className="!font-sans text-sm sm:text-base font-semibold text-white group-hover:text-[#FBBF24] transition-colors tracking-normal normal-case leading-snug break-words">
+                          <h4 className="!font-sans text-sm font-semibold text-white group-hover:text-[#FBBF24] transition-colors tracking-normal normal-case leading-tight break-words">
                             {feature.title}
                           </h4>
-                          <span className="!font-sans text-[11px] text-zinc-500 font-medium shrink-0">
+                          <span className="!font-sans text-[10px] sm:text-[11px] text-zinc-500 font-medium shrink-0">
                             • {feature.category}
                           </span>
                         </div>
-                        <p className="!font-sans text-xs sm:text-[13px] text-zinc-400 mt-1 leading-relaxed break-words">
-                          {feature.subtitle}
-                        </p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 shrink-0 self-center">
+                    <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto shrink-0 mt-2 sm:mt-0 pl-[52px] sm:pl-0">
                       {feature.ttsOnly ? (
-                        <span className="!font-sans text-xs font-medium px-2.5 py-1 rounded-lg bg-zinc-800 text-zinc-300 border border-zinc-700 whitespace-nowrap">
+                        <span className="!font-sans text-[10px] sm:text-xs font-medium px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700 whitespace-nowrap">
                           Motor Nativo
                         </span>
                       ) : (
-                        <div className="flex flex-col items-end">
-                          <span className={`!font-sans text-xs font-semibold px-2.5 py-1 rounded-lg whitespace-nowrap shadow-sm ${
+                        <div className="flex items-center sm:flex-col sm:items-end gap-2 sm:gap-0">
+                          <span className={`!font-sans text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded whitespace-nowrap shadow-sm ${
                             isOmni
                               ? 'bg-[#F59E0B]/15 text-[#FBBF24] border border-[#F59E0B]/30'
                               : 'bg-zinc-800 text-zinc-300 border border-zinc-700'
                           }`}>
-                            {isOmni ? '★ OmniRoute (1ª)' : 'Chave Própria'}
+                            {isOmni ? '★ OmniRoute' : 'Chave Própria'}
                           </span>
-                          <span className="text-[11px] text-zinc-500 font-mono mt-1 whitespace-nowrap hidden sm:block">
+                          <span className="text-[9px] sm:text-[10px] text-zinc-500 font-mono sm:mt-0.5 whitespace-nowrap">
                             {currentModel?.name.split('(')[0].trim()}
                           </span>
                         </div>
                       )}
-                      <ChevronRight className="w-5 h-5 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                      <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
                     </div>
                   </button>
                 </div>

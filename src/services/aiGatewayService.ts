@@ -320,35 +320,68 @@ export async function executeAiTask(options: {
 
   // 1. Geração de Imagem
   if (featureKey === 'geracao_imagens') {
-    const res = await fetch(`${cleanUrl}/images/generations`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey.trim()}`,
-      },
-      body: JSON.stringify({
-        prompt,
-        model: config.selectedModel,
-        n: 1,
-        size: '1024x1024',
-      }),
-    });
+    try {
+      const res = await fetch(`${cleanUrl}/images/generations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey.trim()}`,
+        },
+        body: JSON.stringify({
+          prompt,
+          model: config.selectedModel,
+          n: 1,
+          size: '1024x1024',
+        }),
+      });
 
-    const elapsed = Math.round(performance.now() - start);
-    if (!res.ok) {
-      const err = await res.text().catch(() => '');
-      throw new Error(`OmniRoute Imagem [HTTP ${res.status}]: ${err}`);
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      const elapsed = Math.round(performance.now() - start);
+      const data = await res.json();
+      const url = data?.data?.[0]?.url || (data?.data?.[0]?.b64_json ? `data:image/png;base64,${data.data[0].b64_json}` : undefined);
+      return {
+        imageUrl: url,
+        text: 'Imagem gerada com sucesso!',
+        providerUsed: 'omniroute',
+        modelUsed: config.selectedModel,
+        durationMs: elapsed,
+      };
+    } catch (err) {
+      console.warn(`[OmniRoute] Falha ao gerar imagem com ${config.selectedModel}. Tentando fallback para 3.1 Flash Light...`);
+      // Fallback
+      const res = await fetch(`${cleanUrl}/images/generations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey.trim()}`,
+        },
+        body: JSON.stringify({
+          prompt,
+          model: 'antigravity/gemini-3.1-flash-light',
+          n: 1,
+          size: '1024x1024',
+        }),
+      });
+
+      const elapsed = Math.round(performance.now() - start);
+      if (!res.ok) {
+        const errorText = await res.text().catch(() => '');
+        throw new Error(`Fallback Falhou [HTTP ${res.status}]: ${errorText}`);
+      }
+
+      const data = await res.json();
+      const url = data?.data?.[0]?.url || (data?.data?.[0]?.b64_json ? `data:image/png;base64,${data.data[0].b64_json}` : undefined);
+      return {
+        imageUrl: url,
+        text: 'Imagem gerada com sucesso! (Fallback)',
+        providerUsed: 'omniroute',
+        modelUsed: 'antigravity/gemini-3.1-flash-light',
+        durationMs: elapsed,
+      };
     }
-
-    const data = await res.json();
-    const url = data?.data?.[0]?.url || (data?.data?.[0]?.b64_json ? `data:image/png;base64,${data.data[0].b64_json}` : undefined);
-    return {
-      imageUrl: url,
-      text: 'Imagem gerada com sucesso!',
-      providerUsed: 'omniroute',
-      modelUsed: config.selectedModel,
-      durationMs: elapsed,
-    };
   }
 
   // 2. Transcrição de Áudio
@@ -359,16 +392,20 @@ export async function executeAiTask(options: {
     formData.append('file', fileToSend);
     formData.append('model', config.selectedModel);
 
-    const res = await fetch(`${cleanUrl}/audio/transcriptions`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey.trim()}`,
-      },
-      body: formData,
-    });
+    try {
+      const res = await fetch(`${cleanUrl}/audio/transcriptions`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey.trim()}`,
+        },
+        body: formData,
+      });
 
-    const elapsed = Math.round(performance.now() - start);
-    if (res.ok) {
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      const elapsed = Math.round(performance.now() - start);
       const data = await res.json();
       return {
         text: data?.text || data?.transcription || JSON.stringify(data),
@@ -376,11 +413,117 @@ export async function executeAiTask(options: {
         modelUsed: config.selectedModel,
         durationMs: elapsed,
       };
+    } catch (err) {
+      console.warn(`[OmniRoute] Falha ao transcrever com ${config.selectedModel}. Tentando fallback para 3.1 Flash Light...`);
+      const fallbackFormData = new FormData();
+      fallbackFormData.append('file', fileToSend);
+      fallbackFormData.append('model', 'antigravity/gemini-3.1-flash-light');
+      
+      const res = await fetch(`${cleanUrl}/audio/transcriptions`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey.trim()}`,
+        },
+        body: fallbackFormData,
+      });
+
+      const elapsed = Math.round(performance.now() - start);
+      if (!res.ok) {
+        const errorText = await res.text().catch(() => '');
+        throw new Error(`Fallback Falhou [HTTP ${res.status}]: ${errorText}`);
+      }
+
+      const data = await res.json();
+      return {
+        text: data?.text || data?.transcription || JSON.stringify(data),
+        providerUsed: 'omniroute',
+        modelUsed: 'antigravity/gemini-3.1-flash-light',
+        durationMs: elapsed,
+      };
     }
   }
 
   // 3. Visão Computacional / OCR
   if (featureKey === 'visao_documentos' && imageBase64) {
+    try {
+      const res = await fetch(`${cleanUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey.trim()}`,
+        },
+        body: JSON.stringify({
+          model: config.selectedModel,
+          messages: [
+            {
+              role: 'user',
+              content: [
+                { type: 'text', text: prompt },
+                { type: 'image_url', image_url: { url: imageBase64 } },
+              ],
+            },
+          ],
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      const elapsed = Math.round(performance.now() - start);
+      const data = await res.json();
+      return {
+        text: data?.choices?.[0]?.message?.content || 'Sem resposta gerada.',
+        providerUsed: 'omniroute',
+        modelUsed: config.selectedModel,
+        durationMs: elapsed,
+      };
+    } catch (err) {
+      console.warn(`[OmniRoute] Falha ao analisar visão com ${config.selectedModel}. Tentando fallback para 3.1 Flash Light...`);
+      const res = await fetch(`${cleanUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey.trim()}`,
+        },
+        body: JSON.stringify({
+          model: 'antigravity/gemini-3.1-flash-light',
+          messages: [
+            {
+              role: 'user',
+              content: [
+                { type: 'text', text: prompt },
+                { type: 'image_url', image_url: { url: imageBase64 } },
+              ],
+            },
+          ],
+        }),
+      });
+
+      const elapsed = Math.round(performance.now() - start);
+      if (!res.ok) {
+        const errorText = await res.text().catch(() => '');
+        throw new Error(`Fallback Falhou [HTTP ${res.status}]: ${errorText}`);
+      }
+
+      const data = await res.json();
+      return {
+        text: data?.choices?.[0]?.message?.content || 'Sem resposta gerada.',
+        providerUsed: 'omniroute',
+        modelUsed: 'antigravity/gemini-3.1-flash-light',
+        durationMs: elapsed,
+      };
+    }
+  }
+
+  // 4. Chat & Resumo Jurídico (Texto)
+  const messages: Array<{ role: string; content: string | any[] }> = [];
+  if (systemPrompt) {
+    messages.push({ role: 'system', content: systemPrompt });
+  }
+  messages.push({ role: 'user', content: prompt });
+
+  try {
     const res = await fetch(`${cleanUrl}/chat/completions`, {
       method: 'POST',
       headers: {
@@ -389,24 +532,16 @@ export async function executeAiTask(options: {
       },
       body: JSON.stringify({
         model: config.selectedModel,
-        messages: [
-          {
-            role: 'user',
-            content: [
-              { type: 'text', text: prompt },
-              { type: 'image_url', image_url: { url: imageBase64 } },
-            ],
-          },
-        ],
+        messages,
+        temperature: options.temperature ?? 0.7,
       }),
     });
 
-    const elapsed = Math.round(performance.now() - start);
     if (!res.ok) {
-      const err = await res.text().catch(() => '');
-      throw new Error(`OmniRoute Visão [HTTP ${res.status}]: ${err}`);
+      throw new Error(`HTTP ${res.status}`);
     }
 
+    const elapsed = Math.round(performance.now() - start);
     const data = await res.json();
     return {
       text: data?.choices?.[0]?.message?.content || 'Sem resposta gerada.',
@@ -414,39 +549,33 @@ export async function executeAiTask(options: {
       modelUsed: config.selectedModel,
       durationMs: elapsed,
     };
+  } catch (err) {
+    console.warn(`[OmniRoute] Falha no texto com ${config.selectedModel}. Tentando fallback para 3.1 Flash Light...`);
+    const res = await fetch(`${cleanUrl}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey.trim()}`,
+      },
+      body: JSON.stringify({
+        model: 'antigravity/gemini-3.1-flash-light',
+        messages,
+        temperature: options.temperature ?? 0.7,
+      }),
+    });
+
+    const elapsed = Math.round(performance.now() - start);
+    if (!res.ok) {
+      const errorText = await res.text().catch(() => '');
+      throw new Error(`Fallback Falhou [HTTP ${res.status}]: ${errorText}`);
+    }
+
+    const data = await res.json();
+    return {
+      text: data?.choices?.[0]?.message?.content || 'Sem resposta gerada.',
+      providerUsed: 'omniroute',
+      modelUsed: 'antigravity/gemini-3.1-flash-light',
+      durationMs: elapsed,
+    };
   }
-
-  // 4. Chat & Resumo Jurídico (Texto)
-  const messages: any[] = [];
-  if (systemPrompt) {
-    messages.push({ role: 'system', content: systemPrompt });
-  }
-  messages.push({ role: 'user', content: prompt });
-
-  const res = await fetch(`${cleanUrl}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey.trim()}`,
-    },
-    body: JSON.stringify({
-      model: config.selectedModel,
-      messages,
-      temperature: options.temperature ?? 0.7,
-    }),
-  });
-
-  const elapsed = Math.round(performance.now() - start);
-  if (!res.ok) {
-    const err = await res.text().catch(() => '');
-    throw new Error(`OmniRoute Texto [HTTP ${res.status}]: ${err}`);
-  }
-
-  const data = await res.json();
-  return {
-    text: data?.choices?.[0]?.message?.content || 'Sem resposta gerada.',
-    providerUsed: 'omniroute',
-    modelUsed: config.selectedModel,
-    durationMs: elapsed,
-  };
 }
