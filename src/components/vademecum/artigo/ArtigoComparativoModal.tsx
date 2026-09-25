@@ -18,6 +18,7 @@ import { executeAiTask } from '@/services/aiGatewayService';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import vademecumHeroImg from '@/assets/covers/vademecum-judge.webp';
+import cpCoverImg from '@/assets/lei-cover-cp.webp';
 
 export interface AlteracaoDetailData {
   artigo: ArtigoLei;
@@ -152,15 +153,15 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
             backgroundColor: '#050505',
           }}
         >
-          {/* Imagem de Capa do Tribunal / Justiça à Direita */}
+          {/* Imagem de Capa do Tribunal / Justiça ou Penal à Direita */}
           <img
-            src={vademecumHeroImg}
+            src={data.leiNomePai?.toLowerCase().includes('penal') ? cpCoverImg : vademecumHeroImg}
             alt=""
             aria-hidden="true"
             loading="eager"
             fetchPriority="high"
             decoding="async"
-            className="absolute inset-0 w-full h-full object-cover object-center z-0 pointer-events-none"
+            className="absolute inset-0 w-full h-full object-cover object-right z-0 pointer-events-none"
           />
 
           {/* Overlay Vermelho com gradiente da marca e corte poligonal idêntico ao Vade Mecum */}
@@ -173,7 +174,7 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
           >
             <div
               className="absolute inset-0 overflow-hidden"
-              style={{ clipPath: 'polygon(0 0, 58% 0, 42% 100%, 0% 100%)' }}
+              style={{ clipPath: 'polygon(0 0, 47% 0, 36% 100%, 0% 100%)' }}
             >
               <div className="absolute inset-0 bg-brand-gradient" />
               <div className="absolute inset-0 opacity-15 mix-blend-overlay">
@@ -183,7 +184,7 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
           </div>
 
           {/* Cabeçalho do Painel com Botão Voltar e Link Externo */}
-          <div className="relative z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] px-4 pb-2 flex items-center justify-between">
+          <div className="relative z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] px-4 pb-1.5 flex items-center justify-between">
             <button
               type="button"
               onClick={() => {
@@ -201,31 +202,31 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
                 href={data.linkLei}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-md text-white/90 hover:text-white border border-white/15 text-xs font-semibold transition-all shadow-md active:scale-95 cursor-pointer"
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-md text-white/90 hover:text-white border border-white/15 text-[10.5px] font-semibold transition-all shadow-md active:scale-95 cursor-pointer"
               >
                 <span>Planalto</span>
-                <ExternalLink className="w-3.5 h-3.5" />
+                <ExternalLink className="w-3 h-3" />
               </a>
             )}
           </div>
 
           {/* Conteúdo do Painel: Título da Matéria e Identificação do Artigo à Esquerda */}
-          <div className="relative z-10 px-4 sm:px-6 pt-1 pb-4 flex flex-col justify-start max-w-[62%] sm:max-w-[55%]">
-            <p className="text-[10px] sm:text-xs font-extrabold tracking-[0.25em] uppercase text-white/85 drop-shadow">
+          <div className="relative z-10 px-3 sm:px-4 ml-1 sm:ml-2 pt-0.5 pb-3 flex flex-col justify-start w-[44%] max-w-[175px]">
+            <p className="text-[9.5px] sm:text-[10px] font-extrabold tracking-[0.25em] uppercase text-white/85 drop-shadow">
               {data.leiNomePai || 'Direito Penal'}
             </p>
 
-            <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-black text-white uppercase tracking-tight leading-tight mt-0.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+            <h1 className="font-display text-lg sm:text-xl md:text-2xl font-black text-white uppercase tracking-tight leading-tight mt-0.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
               {data.artigoDisplay}
             </h1>
 
-            <div className="flex items-center gap-1.5 flex-wrap mt-2">
+            <div className="flex items-center gap-1 flex-wrap mt-1.5">
               <span
-                className={`text-[10px] sm:text-[11px] font-bold px-2.5 py-0.5 rounded-full border shadow-sm backdrop-blur-sm ${tipoBadgeColor}`}
+                className={`text-[9.5px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full border shadow-sm backdrop-blur-sm ${tipoBadgeColor}`}
               >
                 {data.tipo}
               </span>
-              <span className="text-[10px] sm:text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-black/45 text-white/90 border border-white/15 backdrop-blur-sm truncate max-w-[190px]">
+              <span className="text-[9.5px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full bg-black/45 text-white/90 border border-white/15 backdrop-blur-sm truncate max-w-[150px]">
                 {data.leiNome}
               </span>
             </div>
