@@ -46,6 +46,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-erros-questoes': () => import('./AdminErrosQuestoes'),
   '/admin-jurisprudencia': () => import('./AdminJurisprudencia'),
   '/admin-mapeamento-leis': () => import('./AdminMapeamentoLeis'),
+  '/admin-narracao-leis': () => import('./AdminNarracaoLeis'),
   '/admin-radares-leis': () => import('./AdminRadaresLeis'),
   '/admin/locais': () => import('./AdminLocais'),
   '/admin-biblioteca-leis': () => import('./AdminBibliotecaLeis'),
@@ -200,6 +201,7 @@ const CATEGORIES: Category[] = [
     items: [
       { id: 'admin-mapeamento-leis', label: 'Mapeamento de Leis', icon: Building2, desc: 'Catálogo de códigos, estatutos e status de extração', route: '/admin-mapeamento-leis' },
       { id: 'admin-vade-mecum-historico', label: 'Histórico de Atualizações', icon: Scale, desc: 'Resenha diária do Planalto, impactos e antes/depois', route: '/admin-vade-mecum-historico' },
+      { id: 'admin-narracao-leis', label: 'Narração de Leis', icon: Headphones, desc: 'Estúdio de narração fatiada, teste de vozes e automação cron', route: '/admin-narracao-leis' },
     ],
   },
   {

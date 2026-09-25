@@ -1,41 +1,76 @@
-# Plano de Implementação - Radar do Código Penal em Tela Inteira
+# Plano de Implementação — Estúdio de Narração de Leis no "Bases Jurídicas"
 
-O usuário solicitou através de áudio e captura de tela que o Radar do Código Penal (`LeiDetailView.tsx` / `RadarLegislacaoContent.tsx`) seja transformado em uma experiência completa em tela inteira, exibindo os Projetos de Lei que estão tramitando na Câmara dos Deputados para alterar, incluir ou revogar dispositivos do Código Penal, com:
-1. Abertura em tela inteira ao clicar no botão "RADAR".
-2. Descrição no topo explicando que este é o local onde se acompanha o que pode mudar no Código Penal.
-3. Lista detalhada de quais artigos do Código Penal estão na mira de alteração.
-4. Identificação do Deputado(a) proponente de cada proposição.
-5. Explicação didática do que o deputado quer fazer e mudar no Código Penal.
-6. Links diretos para a tramitação oficial no portal da Câmara dos Deputados e navegação para o artigo correspondente.
+Implementar o módulo completo de **Narração de Leis** acessível a partir da tela **Bases Jurídicas**, seguindo a mesma hierarquia do Mapeamento de Leis (Categorias → Leis → Artigos com status de narração), com suporte a:
+1. **Teste de Áudio** (vozes Gemini TTS, tonalidade, estilo e preview imediato);
+2. **Automação via Cron Job no Supabase** (execução a cada 10 minutos com prioridade para artigos maiores);
+3. **Novo Paradigma de Narração Fatiada por Partes do Artigo** (Caput, Parágrafos, Incisos, Alíneas gerados e reproduzidos em blocos modulares, com grifo visual do bloco completo em reprodução).
 
 ---
 
 ## 1. Arquitetura e Componentes
 
-### 1.1 `LeiDetailView.tsx`
-- No gerenciador de overlays, tratar `overlayPanel === 'radar'` com abertura em tela inteira (`fixed inset-0 z-[60] h-[100dvh] max-h-[100dvh]`), idêntico ao painel de novidades.
-- Manter o botão voltar padronizado oficial (52x52px, stroke 2.4, feedback tátil `haptic.selection()`).
+### 1.1 Parser Fatiador de Artigo (`src/utils/artigoPartesParser.ts`)
+- Quebra o texto integral do artigo (ou campos `paragrafos` / `incisos`) em blocos estruturados:
+  - `Caput`
+  - `Pena` (se houver, comum no Código Penal)
+  - `§ 1º, § 2º, Parágrafo único`
+  - `Incisos I, II, III...`
+  - `Alíneas a), b)...`
+- Higienização jurídica e conversão para texto fonético pronto para TTS.
 
-### 1.2 Serviço e Dados do Radar do Código Penal (`src/services/radarCpService.ts`)
-- Mapeamento inteligente de proposições ativas da Câmara dos Deputados que alteram o Código Penal (Decreto-Lei nº 2.848/1940).
-- Detecção automática do artigo visado pela ementa (ex: `Art. 157`, `Art. 171`, `Art. 155, § 5º`, `Art. 129`, `Art. 149-A`, `Art. 216-B / 218-C`...).
-- Extração do deputado proponente (com link/foto e filiação partidária).
-- Resumo didático em português claro: *"O que o deputado propõe alterar"*.
-- Cache local inteligente e semente com dados reais de 2026/2025 da Câmara dos Deputados para garantir 0ms de carregamento e resiliência offline.
+### 1.2 Serviço de Narração e Automação (`src/services/narracaoLeisService.ts`)
+- Busca de status de narração de artigos por lei em `narracoes_artigos`.
+- Geração de áudio fatiado de cada parte via Edge Function Gemini TTS.
+- Player sequencial de blocos com callback de bloco ativo (`activeBlockId`).
+- Gerenciamento de configurações da automação e histórico de execuções.
+- Suporte a geração manual imediata ou em lote prioritário.
 
-### 1.3 `RadarLegislacaoContent.tsx`
-- Substituir o stub ("Radar de legislação indisponível") por um componente de nível de produção:
-  - Header informativo contextualizado com descrição em destaque.
-  - Indicador de tempo real da Câmara dos Deputados.
-  - Barra de busca rápida por artigo do CP, deputado ou tema.
-  - Cards visuais ricos com os artigos em destaque, identificação do deputado, descrição clara da alteração proposta, fase da tramitação e botão para visualizar o artigo ou abrir na Câmara.
+### 1.3 Infraestrutura Supabase & Automação Cron
+- Migration SQL:
+  - Tabela `narracao_leis_config` (intervalo_minutos, lei_id, prioridade, voz, tom, ativa, etc.).
+  - Tabela `narracao_leis_logs` (histórico de execuções e artigos gravados).
+  - RPC para agendamento seguro no `pg_cron` a cada 10 minutos (`*/10 * * * *`).
+- Edge Function `narracao-leis-automacao`:
+  - Disparada pelo cron job a cada 10 minutos (ou via teste no admin).
+  - Seleciona o artigo pendente de maior prioridade (artigos maiores primeiro).
+  - Fatia em blocos, gera os áudios via Gemini TTS, armazena no bucket `audios` e atualiza `narracoes_artigos`.
+
+### 1.4 Interface do Estúdio (`src/pages/AdminNarracaoLeis.tsx`)
+- **Tela Principal (Nível 1 - Categorias & Ferramentas):**
+  - Códigos (CP, CC, CPC, CPP, etc.)
+  - Estatutos (ECA, OAB, etc.)
+  - Constituição Federal
+  - Leis Especiais
+  - Previdenciário
+  - **Teste de Áudio** (localizado logo abaixo de Previdenciário)
+  - **Automação** (localizado logo abaixo do Teste de Áudio)
+- **Nível 2 (Lista de Leis da Categoria):**
+  - Indicadores de total de artigos, artigos narrados e percentual.
+- **Nível 3 (Listagem de Artigos da Lei Selecionada):**
+  - Indicador de status (Narrado / Pendente).
+  - Indicador de complexidade/tamanho (caracteres e blocos).
+  - Visualização fatiada por blocos com destaque do bloco ativo durante a reprodução.
+  - Ação de geração de áudio individual ou em lote.
+- **Painel "Teste de Áudio":**
+  - Seleção de vozes (Kore, Sulafat, Aoede, Puck, Charon, Fenrir, etc.).
+  - Seleção de tom/estilo (animado, solene, claro, didático).
+  - Amostras de textos jurídicos reais para teste imediato.
+- **Painel "Automação":**
+  - Frequência (10 em 10 minutos configurável).
+  - Seleção da lei alvo (Código Penal por padrão).
+  - Prioridade: "Artigos maiores primeiro" (ordem por tamanho decrescente).
+  - Histórico de execuções e botão "Disparar lote agora".
+
+### 1.5 Integração em "Bases Jurídicas"
+- Adicionar o item "Narração de Leis" na categoria `bases-juridicas` em `src/pages/AdminFuncoes.tsx`.
+- Registrar a rota `/admin-narracao-leis` em `src/AppRoutes.tsx`.
 
 ---
 
-## 2. Checklist de Execução
-1. Criar `src/services/radarCpService.ts` com base de conhecimento curada e busca na API da Câmara.
-2. Implementar `src/components/vademecum/outros/RadarLegislacaoContent.tsx` com interface rica, cards de artigos visados, deputado e o que quer mudar.
-3. Ajustar `LeiDetailView.tsx` para abrir o Radar em tela inteira.
-4. Validar com `tsc --noEmit`.
-5. Validar empacotamento com `vite build`.
-6. Auto-commit e push para o GitHub.
+## 2. Validação e Qualidade
+1. Testar parsing de artigos complexos do Código Penal (com caput, pena, parágrafos e incisos).
+2. Testar geração e reprodução de partes isoladas com grifo do bloco ativo.
+3. Testar prévia de áudio com diferentes vozes e estilos.
+4. Testar configuração e disparo da automação cron no Supabase.
+5. Executar `tsc --noEmit` e `vite build`.
+6. Auto-commit e push para o repositório GitHub.

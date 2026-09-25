@@ -115,6 +115,7 @@ const AdminResumoLivroAudioEditar = lazy(() => import("./pages/AdminResumoLivroA
 const AdminErrosQuestoes = lazy(() => import("./pages/AdminErrosQuestoes.tsx"));
 const AdminVadeMecumHistorico = lazy(() => import('./pages/AdminVadeMecumHistorico.tsx'));
 const AdminMapeamentoLeis = lazy(() => import('./pages/AdminMapeamentoLeis.tsx'));
+const AdminNarracaoLeis = lazy(() => import('./pages/AdminNarracaoLeis.tsx'));
 import { supabase } from "@/integrations/supabase/client";
 
 // Lazy loaded
@@ -1271,6 +1272,7 @@ function AnimatedRoutes() {
           <Route path="/admin-vade-mecum" element={<ProtectedRoute><PageTransition><AdminVadeMecum /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-vade-mecum-historico" element={<ProtectedRoute><PageTransition><AdminVadeMecumHistorico /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-mapeamento-leis" element={<ProtectedRoute><PageTransition><AdminMapeamentoLeis /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-narracao-leis" element={<ProtectedRoute><PageTransition><AdminNarracaoLeis /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-lembretes" element={<ProtectedRoute><PageTransition><AdminLembretes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-lembretes/biblioteca" element={<ProtectedRoute><PageTransition><AdminLembretesBiblioteca /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-narracao" element={<ProtectedRoute><PageTransition><AdminNarracaoConteudo /></PageTransition></ProtectedRoute>} />
