@@ -117,6 +117,10 @@ const HomeHorusBannerCarousel = () => {
 
   const activeBanner = BANNERS[currentIndex];
 
+  const getCardWidth = (el: HTMLDivElement) => {
+    return el.firstElementChild ? (el.firstElementChild as HTMLElement).offsetWidth + 16 : 300;
+  };
+
   const pauseInteraction = useCallback(() => {
     isInteractingRef.current = true;
     if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
@@ -130,17 +134,15 @@ const HomeHorusBannerCarousel = () => {
     pauseInteraction();
     const el = scrollerRef.current;
     if (!el) return;
-    const cardWidth = el.firstElementChild ? (el.firstElementChild as HTMLElement).offsetWidth + 12 : 300;
     const nextIndex = (currentIndex + direction + BANNERS.length) % BANNERS.length;
-    el.scrollTo({ left: nextIndex * cardWidth, behavior: 'smooth' });
+    el.scrollTo({ left: nextIndex * getCardWidth(el), behavior: 'smooth' });
     setCurrentIndex(nextIndex);
   }, [currentIndex, pauseInteraction]);
 
   const handleScroll = useCallback(() => {
     const el = scrollerRef.current;
     if (!el) return;
-    const cardWidth = el.firstElementChild ? (el.firstElementChild as HTMLElement).offsetWidth + 12 : 300;
-    const idx = Math.round(el.scrollLeft / cardWidth);
+    const idx = Math.round(el.scrollLeft / getCardWidth(el));
     setCurrentIndex(Math.max(0, Math.min(BANNERS.length - 1, idx)));
   }, []);
 
@@ -160,9 +162,8 @@ const HomeHorusBannerCarousel = () => {
       if (isInteractingRef.current || document.hidden) return;
       const el = scrollerRef.current;
       if (!el) return;
-      const cardWidth = el.firstElementChild ? (el.firstElementChild as HTMLElement).offsetWidth + 12 : 300;
       const nextIndex = (currentIndex + 1) % BANNERS.length;
-      el.scrollTo({ left: nextIndex * cardWidth, behavior: 'smooth' });
+      el.scrollTo({ left: nextIndex * getCardWidth(el), behavior: 'smooth' });
       setCurrentIndex(nextIndex);
     }, AUTOPLAY_INTERVAL);
 
@@ -181,9 +182,9 @@ const HomeHorusBannerCarousel = () => {
   };
 
   return (
-    <div className="flex flex-col items-center mb-8 mt-6 px-3">
+    <div className="flex flex-col mb-8 mt-6 w-full">
       {/* 1. TÍTULO DINÂMICO COM RISQUINHO SUPERIOR (PADRÃO ESTUDOS) */}
-      <div className="mb-1 relative z-10 flex items-start justify-between gap-3 w-full max-w-[320px] px-1">
+      <div className="mb-1 relative z-10 flex items-start justify-between gap-3 w-full">
         <div className="min-w-0 flex-1">
           <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 uppercase tracking-widest">
             <motion.span
@@ -255,7 +256,7 @@ const HomeHorusBannerCarousel = () => {
             key={banner.id}
             type="button"
             onClick={() => handleBannerClick(banner.route)}
-            className={`snap-center shrink-0 w-[86vw] max-w-[315px] h-[115px] group relative flex items-center bg-gradient-to-r ${banner.bgGradient} text-white pl-4.5 pr-22 py-3 rounded-[1.2rem] shadow-xl ${banner.shadowColor} transition-all active:scale-[0.98] border ${banner.borderColor} overflow-visible text-left`}
+            className={`snap-center shrink-0 w-[86vw] max-w-[315px] h-[115px] group relative flex items-center bg-gradient-to-r ${banner.bgGradient} text-white pl-5 sm:pl-6 pr-22 py-3 rounded-[1.2rem] shadow-xl ${banner.shadowColor} transition-all active:scale-[0.98] border ${banner.borderColor} overflow-visible text-left`}
           >
             {/* SVGs decorativos de fundo */}
             <div className="absolute inset-0 overflow-hidden rounded-[1.2rem] pointer-events-none">
@@ -266,8 +267,8 @@ const HomeHorusBannerCarousel = () => {
             </div>
 
             {/* Textos à esquerda */}
-            <div className="flex flex-col items-start text-left z-10 min-w-0 flex-1 pr-1">
-              <span className="text-[12px] sm:text-[13px] font-display font-black uppercase tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] leading-[1.15] w-full line-clamp-2">
+            <div className="flex flex-col items-start text-left z-10 min-w-0 flex-1">
+              <span className="text-[13px] sm:text-[14px] font-display font-black uppercase tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] leading-[1.15] w-full line-clamp-2">
                 {banner.title}
                 <motion.span
                   animate={{ x: [0, 3, 0] }}
@@ -323,8 +324,7 @@ const HomeHorusBannerCarousel = () => {
               pauseInteraction();
               const el = scrollerRef.current;
               if (!el) return;
-              const cardWidth = el.firstElementChild ? (el.firstElementChild as HTMLElement).offsetWidth + 12 : 300;
-              el.scrollTo({ left: i * cardWidth, behavior: 'smooth' });
+              el.scrollTo({ left: i * getCardWidth(el), behavior: 'smooth' });
               setCurrentIndex(i);
             }}
             aria-label={`Ir para banner ${b.headerTitle}`}
