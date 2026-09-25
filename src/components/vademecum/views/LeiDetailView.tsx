@@ -572,7 +572,11 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
     playlist: { label: 'Playlist', icon: ListMusic, desc: 'Ouça as narrações dos artigos desta lei. Ideal para estudar enquanto faz outras atividades — basta gerar as narrações na tela de Narração.' },
     anotacoes: { label: 'Anotações', icon: StickyNote, desc: 'Veja todas as suas anotações e grifos desta lei em um só lugar. Para criar, abra um artigo e grife um trecho.' },
     novidades: { label: 'Histórico', icon: History, desc: 'Histórico de alterações legislativas — veja quais artigos foram incluídos, revogados ou modificados, organizados por ano.' },
-    radar: { label: 'Radar', icon: Radar, desc: 'Proposições em tramitação no Congresso que podem alterar esta legislação. Acompanhe os projetos de lei em tempo real.' },
+    radar: { 
+      label: 'Radar do Código Penal', 
+      icon: Radar, 
+      desc: 'Aqui você acompanha os Projetos de Lei (PL) e Proposições em tramitação na Câmara dos Deputados com potencial para alterar, incluir ou revogar dispositivos do Código Penal.' 
+    },
   };
   
   const overlayContents: Record<string, React.ReactNode> = {
@@ -595,7 +599,21 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
         onOpenComparativo={(item) => setSelectedAlteracaoDetail(item)}
       />
     ),
-    radar: <RadarLegislacaoContent leiNome={selectedLeiNome} tabelaNome={selectedTabelaNome} navigate={navigate} />,
+    radar: (
+      <RadarLegislacaoContent
+        leiNome={selectedLeiNome}
+        tabelaNome={selectedTabelaNome}
+        navigate={navigate}
+        onSelectArtigoNumero={(num) => {
+          const clean = (num || '').replace(/[^0-9]/g, '');
+          const target = artigos.find(a => (a.numero || '').replace(/[^0-9]/g, '') === clean);
+          if (target) {
+            setOverlayPanel(null);
+            setOpenArtigo(target);
+          }
+        }}
+      />
+    ),
   };
 
   return (
@@ -1190,17 +1208,17 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                 exit={{ y: '100%' }}
                 transition={{ type: 'spring', damping: 30, stiffness: 320 }}
                 className={
-                  overlayPanel === 'novidades'
-                    ? "fixed inset-0 z-[60] h-[100dvh] max-h-[100dvh] bg-[#0f0f0f] flex flex-col shadow-2xl lg:max-w-[760px] lg:mx-auto pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))]"
+                  (overlayPanel === 'novidades' || overlayPanel === 'radar')
+                    ? "fixed inset-0 z-[60] h-[100dvh] max-h-[100dvh] bg-[#0f0f0f] flex flex-col shadow-2xl lg:max-w-[780px] lg:mx-auto pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))]"
                     : "fixed inset-x-0 bottom-0 z-[60] h-[80vh] bg-[#0f0f0f] border-t border-white/10 rounded-t-3xl flex flex-col shadow-2xl lg:max-w-[720px] lg:mx-auto"
                 }
                 style={{ willChange: 'transform' }}
               >
-                {overlayPanel !== 'novidades' && (
+                {overlayPanel !== 'novidades' && overlayPanel !== 'radar' && (
                   <div className="flex justify-center pt-3 pb-1 shrink-0"><div className="w-10 h-1 rounded-full bg-white/20" /></div>
                 )}
                 <div className="flex items-center gap-3 px-4 py-2 border-b border-white/5 shrink-0">
-                  <button onClick={() => setOverlayPanel(null)} className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center active:scale-95 transition-transform">
+                  <button onClick={() => setOverlayPanel(null)} className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center active:scale-95 transition-transform cursor-pointer">
                     <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
                   </button>
                   <div className="flex-1 min-w-0">
@@ -1208,13 +1226,13 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                     <p className="text-xs text-muted-foreground truncate">{selectedLeiNome}</p>
                   </div>
                 </div>
-                {overlayPanel !== 'fav' && (
+                {overlayPanel !== 'fav' && overlayPanel !== 'radar' && (
                   <div className="mx-4 mt-3 p-3 rounded-xl bg-primary/10 border border-primary/20 flex gap-3 items-start shrink-0">
                     <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                     <p className="text-xs text-foreground/80 leading-relaxed">{overlayLabels[overlayPanel]?.desc}</p>
                   </div>
                 )}
-                {(overlayPanel === 'novidades' || overlayPanel === 'radar') && (
+                {overlayPanel === 'novidades' && (
                   <div className="mx-4 mt-2 flex items-center gap-2.5 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 shrink-0">
                     <span className="relative flex h-2.5 w-2.5 shrink-0"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" /></span>
                     <p className="text-[11px] text-emerald-400 font-medium">Monitoramento em tempo real</p>
