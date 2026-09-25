@@ -142,8 +142,22 @@ const HomeHorusBannerCarousel = () => {
   const handleScroll = useCallback(() => {
     const el = scrollerRef.current;
     if (!el) return;
-    const idx = Math.round(el.scrollLeft / getCardWidth(el));
-    setCurrentIndex(Math.max(0, Math.min(BANNERS.length - 1, idx)));
+    
+    // Calcula qual banner está mais próximo do centro
+    const containerCenter = el.getBoundingClientRect().left + el.offsetWidth / 2;
+    let closestIdx = 0;
+    let minDiff = Infinity;
+    
+    Array.from(el.children).forEach((child, idx) => {
+      const childCenter = child.getBoundingClientRect().left + (child as HTMLElement).offsetWidth / 2;
+      const diff = Math.abs(containerCenter - childCenter);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIdx = idx;
+      }
+    });
+    
+    setCurrentIndex((prev) => (prev !== closestIdx ? closestIdx : prev));
   }, []);
 
   // Rotação periódica de descrições dentro de cada banner
@@ -256,7 +270,7 @@ const HomeHorusBannerCarousel = () => {
             key={banner.id}
             type="button"
             onClick={() => handleBannerClick(banner.route)}
-            className={`snap-center shrink-0 w-[86vw] max-w-[315px] h-[115px] group relative flex items-center bg-gradient-to-r ${banner.bgGradient} text-white pl-5 sm:pl-6 pr-22 py-3 rounded-[1.2rem] shadow-xl ${banner.shadowColor} transition-all active:scale-[0.98] border ${banner.borderColor} overflow-visible text-left`}
+            className={`snap-center shrink-0 w-[86vw] max-w-[315px] h-[115px] group relative flex items-center bg-gradient-to-r ${banner.bgGradient} text-white pl-7 sm:pl-8 pr-22 py-3 rounded-[1.2rem] shadow-xl ${banner.shadowColor} transition-all active:scale-[0.98] border ${banner.borderColor} overflow-visible text-left`}
           >
             {/* SVGs decorativos de fundo */}
             <div className="absolute inset-0 overflow-hidden rounded-[1.2rem] pointer-events-none">
@@ -268,7 +282,7 @@ const HomeHorusBannerCarousel = () => {
 
             {/* Textos à esquerda */}
             <div className="flex flex-col items-start text-left z-10 min-w-0 flex-1">
-              <span className="text-[13px] sm:text-[14px] font-display font-black uppercase tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] leading-[1.15] w-full line-clamp-2">
+              <span className="text-[14px] sm:text-[15px] font-display font-black uppercase tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] leading-[1.15] w-full line-clamp-2">
                 {banner.title}
                 <motion.span
                   animate={{ x: [0, 3, 0] }}
