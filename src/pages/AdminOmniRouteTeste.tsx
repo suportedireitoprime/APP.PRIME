@@ -705,6 +705,11 @@ export default function AdminOmniRouteTeste() {
       return;
     }
 
+    if (audioBlob.size > 15 * 1024 * 1024) {
+      toast.error('O arquivo é muito grande! O limite para a transcrição via Base64 inline é de 15MB. Por favor, grave um áudio mais curto ou corte o arquivo.');
+      return;
+    }
+
     setAudioLoading(true);
     setAudioTranscription(null);
     const start = performance.now();
@@ -746,34 +751,39 @@ export default function AdminOmniRouteTeste() {
         reader.readAsDataURL(audioBlob);
         const base64Audio = await base64Promise;
 
-        const chatRes = await fetch(`${cleanUrl}/chat/completions`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey.trim()}`,
-          },
-          body: JSON.stringify({
-            model: audioModel.includes('gemini') ? audioModel : 'antigravity/gemini-3.7-flash-high',
-            messages: [
-              {
-                role: 'user',
-                content: [
-                  {
-                    type: 'text',
-                    text: 'Transcreva este áudio fielmente para texto em português do Brasil com pontuação rigorosa e estruturação em parágrafos claros. Retorne exclusivamente a transcrição do áudio.',
-                  },
-                  {
-                    type: 'input_audio',
-                    input_audio: {
-                      data: base64Audio,
-                      format: ext,
+        let chatRes;
+        try {
+          chatRes = await fetch(`${cleanUrl}/chat/completions`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey.trim()}`,
+            },
+            body: JSON.stringify({
+              model: audioModel.includes('gemini') ? audioModel : 'antigravity/gemini-3.7-flash-high',
+              messages: [
+                {
+                  role: 'user',
+                  content: [
+                    {
+                      type: 'text',
+                      text: 'Transcreva este áudio fielmente para texto em português do Brasil com pontuação rigorosa e estruturação em parágrafos claros. Retorne exclusivamente a transcrição do áudio.',
                     },
-                  },
-                ],
-              },
-            ],
-          }),
-        });
+                    {
+                      type: 'input_audio',
+                      input_audio: {
+                        data: base64Audio,
+                        format: ext,
+                      },
+                    },
+                  ],
+                },
+              ],
+            }),
+          });
+        } catch (fallbackErr: any) {
+           throw new Error(`A conexão caiu (Failed to fetch). Isso geralmente ocorre se o arquivo for muito pesado para o servidor (Payload Too Large) ou bloqueio de CORS. Erro original: ${fallbackErr.message}`);
+        }
 
         if (!chatRes.ok) {
           const errText = await chatRes.text().catch(() => '');
