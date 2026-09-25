@@ -717,17 +717,24 @@ export default function AdminOmniRouteTeste() {
       formData.append('file', fileToSend);
       formData.append('model', audioModel);
 
-      const res = await fetch(`${cleanUrl}/audio/transcriptions`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey.trim()}`,
-        },
-        body: formData,
-      });
+      let res;
+      let directFailed = false;
+      try {
+        res = await fetch(`${cleanUrl}/audio/transcriptions`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey.trim()}`,
+          },
+          body: formData,
+        });
+        if (!res.ok) directFailed = true;
+      } catch (err) {
+        directFailed = true;
+      }
 
-      // Se o endpoint direto de audio falhar (ex: por ser modelo Antigravity/Gemini multimodal),
-      // faz fallback automático para /chat/completions com áudio em base64!
-      if (!res.ok) {
+      // Se o endpoint direto de audio falhar (ex: por erro de CORS, rota inexistente no backend, ou modelo incompatível),
+      // faz fallback automático para /chat/completions enviando o áudio em base64!
+      if (directFailed) {
         const reader = new FileReader();
         const base64Promise = new Promise<string>((resolve, reject) => {
           reader.onloadend = () => {
@@ -770,7 +777,7 @@ export default function AdminOmniRouteTeste() {
 
         if (!chatRes.ok) {
           const errText = await chatRes.text().catch(() => '');
-          throw new Error(`Erro na transcrição: HTTP ${res.status} / Fallback: ${errText}`);
+          throw new Error(`Fallback HTTP ${chatRes.status} / ${errText}`);
         }
 
         const chatData = await chatRes.json();
@@ -783,7 +790,7 @@ export default function AdminOmniRouteTeste() {
         return;
       }
 
-      const data = await res.json();
+      const data = await res!.json();
       const content = data?.text || data?.transcription || JSON.stringify(data);
       const elapsed = Math.round(performance.now() - start);
       setAudioTranscription(content);
@@ -2048,17 +2055,17 @@ export default function AdminOmniRouteTeste() {
               <div className="divide-y divide-white/5 text-xs font-mono">
                 {logs.map((log) => (
                   <div key={log.id} className="py-2.5 flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-white/40 text-[11px]">{log.time}</span>
-                      <Badge variant="outline" className="text-[10px] border-white/15 bg-white/5 text-white/90 py-0.5">
+                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                      <span className="text-white/40 text-[11px] shrink-0">{log.time}</span>
+                      <Badge variant="outline" className="text-[10px] border-white/15 bg-white/5 text-white/90 py-0.5 truncate block shrink-0 max-w-[70px] sm:max-w-[140px]">
                         {log.type}
                       </Badge>
-                      <span className="text-white/60 text-xs truncate max-w-[140px] sm:max-w-[280px]">
+                      <span className="text-white/60 text-xs truncate flex-1">
                         {log.model}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 shrink-0">
                       <span className="text-white/40">{log.duration}ms</span>
                       <span
                         className={`text-xs font-semibold ${log.status === 200 ? 'text-emerald-400' : 'text-rose-400'}`}
