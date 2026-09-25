@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
-import { Search, Crown, User, Calendar, Loader2 } from 'lucide-react';
+import { Search, Crown, User, Calendar, Loader2, RotateCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { UserDossieSheet } from '@/components/admin/UserDossieSheet';
 import { useGoBack } from '@/hooks/useGoBack';
+import { get as idbGet, set as idbSet } from 'idb-keyval';
 
 interface Usuario {
   id: string;
@@ -15,72 +16,140 @@ interface Usuario {
   created_at: string | null;
 }
 
+const USERS_CACHE_KEY = 'admin_usuarios_list_v2';
+const USERS_SYNC_TIME_KEY = 'admin_usuarios_sync_time_v2';
+let memoryUsuariosCache: Usuario[] | null = null;
+let memorySyncTimestamp: string | null = null;
+
 export default function AdminUsuarios() {
   const goBack = useGoBack();
-  const [loading, setLoading] = useState(true);
-  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const [loading, setLoading] = useState(!memoryUsuariosCache || memoryUsuariosCache.length === 0);
+  const [sincronizando, setSincronizando] = useState(false);
+  const [usuarios, setUsuarios] = useState<Usuario[]>(() => memoryUsuariosCache || []);
   const [busca, setBusca] = useState('');
   const [filtroAssinante, setFiltroAssinante] = useState<'todos' | 'assinantes' | 'gratuitos'>('todos');
   const [dossieUserId, setDossieUserId] = useState<Usuario | null>(null);
 
   const [limiteExibicao, setLimiteExibicao] = useState(50);
 
-  useEffect(() => {
-    async function carregarUsuarios() {
-      setLoading(true);
-      try {
-        const { data: authUsers, error: authErr } = await supabase.functions.invoke('admin-list-users');
-        if (authErr) {
-          console.error('Edge Function Error:', authErr);
+  const carregarOuSincronizar = useCallback(async (forcarCompleto = false) => {
+    try {
+      if (forcarCompleto) {
+        setSincronizando(true);
+      }
+
+      const since = (!forcarCompleto && memorySyncTimestamp && memoryUsuariosCache && memoryUsuariosCache.length > 0)
+        ? memorySyncTimestamp
+        : null;
+
+      const { data: authUsers, error: authErr } = await supabase.functions.invoke('admin-list-users', {
+        body: since ? { since } : {}
+      });
+
+      if (authErr) {
+        console.error('Edge Function Error:', authErr);
+        if (!memoryUsuariosCache || memoryUsuariosCache.length === 0) {
           throw new Error(authErr.message || authErr.context?.error || JSON.stringify(authErr));
         }
+        return;
+      }
 
-        const getMostRecentDate = (...dates: (string | null | undefined)[]) => {
-          let latestTime = 0;
-          let latestStr: string | null = null;
-          for (const d of dates) {
-            if (!d) continue;
-            const t = new Date(d).getTime();
-            if (!isNaN(t) && t > latestTime) {
-              latestTime = t;
-              latestStr = d;
-            }
+      const getMostRecentDate = (...dates: (string | null | undefined)[]) => {
+        let latestTime = 0;
+        let latestStr: string | null = null;
+        for (const d of dates) {
+          if (!d) continue;
+          const t = new Date(d).getTime();
+          if (!isNaN(t) && t > latestTime) {
+            latestTime = t;
+            latestStr = d;
           }
-          return latestStr;
+        }
+        return latestStr;
+      };
+
+      const mappedNovos: Usuario[] = (authUsers || []).map((u: any) => {
+        const lastAccess = getMostRecentDate(
+          u.activity_last_seen_at,
+          u.last_sign_in_at,
+          u.created_at
+        );
+        return {
+          id: u.id,
+          display_name: u.profile_display_name || u.user_metadata?.full_name || u.user_metadata?.name || u.user_metadata?.display_name || null,
+          is_premium: !!u.is_premium,
+          created_at: u.created_at,
+          email: u.email || null,
+          last_seen_at: lastAccess || u.created_at || null
         };
+      });
 
-        const list: Usuario[] = (authUsers || []).map((u: any) => {
-          const lastAccess = getMostRecentDate(
-            u.activity_last_seen_at,
-            u.last_sign_in_at,
-            u.created_at
-          );
-          return {
-            id: u.id,
-            display_name: u.profile_display_name || u.user_metadata?.full_name || u.user_metadata?.name || u.user_metadata?.display_name || null,
-            is_premium: !!u.is_premium,
-            created_at: u.created_at,
-            email: u.email || null,
-            last_seen_at: lastAccess || u.created_at || null
-          };
-        });
+      let listaFinal: Usuario[] = [];
 
-        list.sort((a, b) => {
-          const tA = a.last_seen_at ? new Date(a.last_seen_at).getTime() : 0;
-          const tB = b.last_seen_at ? new Date(b.last_seen_at).getTime() : 0;
-          return tB - tA;
-        });
+      if (since && memoryUsuariosCache && memoryUsuariosCache.length > 0) {
+        // Merge incremental dos mais recentes sobre os existentes em cache
+        const userMap = new Map<string, Usuario>();
+        memoryUsuariosCache.forEach(u => userMap.set(u.id, u));
+        mappedNovos.forEach(u => userMap.set(u.id, u));
+        listaFinal = Array.from(userMap.values());
+      } else {
+        listaFinal = mappedNovos;
+      }
 
-        setUsuarios(list);
-      } catch (e: any) {
-        toast.error('Erro ao carregar usuários: ' + (e.message || ''));
-      } finally {
-        setLoading(false);
+      listaFinal.sort((a, b) => {
+        const tA = a.last_seen_at ? new Date(a.last_seen_at).getTime() : 0;
+        const tB = b.last_seen_at ? new Date(b.last_seen_at).getTime() : 0;
+        return tB - tA;
+      });
+
+      const nowIso = new Date().toISOString();
+      memoryUsuariosCache = listaFinal;
+      memorySyncTimestamp = nowIso;
+      setUsuarios(listaFinal);
+
+      // Salva de forma persistente em segundo plano
+      void idbSet(USERS_CACHE_KEY, listaFinal);
+      void idbSet(USERS_SYNC_TIME_KEY, nowIso);
+
+      if (forcarCompleto) {
+        toast.success('Lista de usuários atualizada com sucesso!');
+      }
+    } catch (e: any) {
+      toast.error('Erro ao sincronizar usuários: ' + (e.message || ''));
+    } finally {
+      setLoading(false);
+      setSincronizando(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    let cancel = false;
+    async function inicializar() {
+      // 1. Tenta carregar do IndexedDB se não estiver na memória (instantâneo)
+      if (!memoryUsuariosCache || memoryUsuariosCache.length === 0) {
+        try {
+          const cached = await idbGet<Usuario[]>(USERS_CACHE_KEY);
+          const cachedTime = await idbGet<string>(USERS_SYNC_TIME_KEY);
+          if (cached && Array.isArray(cached) && cached.length > 0 && !cancel) {
+            memoryUsuariosCache = cached;
+            memorySyncTimestamp = cachedTime || null;
+            setUsuarios(cached);
+            setLoading(false);
+          }
+        } catch (err) {
+          console.warn('Erro ao ler cache IDB:', err);
+        }
+      }
+
+      // 2. Busca incremental (apenas novidades / alterações) em segundo plano
+      if (!cancel) {
+        await carregarOuSincronizar(false);
       }
     }
 
-    carregarUsuarios();
-  }, []);
+    inicializar();
+    return () => { cancel = true; };
+  }, [carregarOuSincronizar]);
 
   useEffect(() => {
     setLimiteExibicao(50);
@@ -105,7 +174,17 @@ export default function AdminUsuarios() {
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-32">
-      <PageHeader title="Usuários Cadastrados" subtitle="Lista de usuários e último acesso" onBack={goBack} />
+      <div className="relative">
+        <PageHeader title="Usuários Cadastrados" subtitle="Lista de usuários e último acesso" onBack={goBack} />
+        <button
+          onClick={() => carregarOuSincronizar(true)}
+          disabled={sincronizando}
+          title="Sincronizar usuários"
+          className="absolute right-4 top-4 sm:right-8 sm:top-6 p-2 rounded-xl bg-secondary/30 hover:bg-secondary/50 border border-border/50 text-muted-foreground hover:text-foreground transition-all disabled:opacity-50"
+        >
+          <RotateCw className={`w-4 h-4 ${sincronizando ? 'animate-spin text-primary' : ''}`} />
+        </button>
+      </div>
 
       <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
         
@@ -220,7 +299,10 @@ export default function AdminUsuarios() {
           nome={dossieUserId.display_name || ''}
           email={dossieUserId.email ?? ''}
           provider="email"
-          onClose={() => setDossieUserId(null)}
+          onClose={() => {
+            setDossieUserId(null);
+            void carregarOuSincronizar(true);
+          }}
         />
       )}
     </div>

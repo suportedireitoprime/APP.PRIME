@@ -43,31 +43,60 @@ serve(async (req) => {
       throw new Error('SUPABASE_DB_URL is not set');
     }
     
-    // Connect to postgres directly to fetch all users in < 1 second
+    let since: string | null = null;
+    try {
+      const body = await req.json();
+      if (body?.since) since = String(body.since);
+    } catch {}
+
     const pool = new postgres.Pool(dbUrl, 3, true);
     const connection = await pool.connect();
     
     let allUsers = [];
     try {
-      const result = await connection.queryObject`
-        SELECT 
-          u.id, 
-          u.email, 
-          u.created_at, 
-          u.last_sign_in_at,
-          u.raw_user_meta_data as user_metadata,
-          p.display_name as profile_display_name,
-          COALESCE(p.is_premium, false) as is_premium,
-          a.last_seen_at as activity_last_seen_at
-        FROM auth.users u
-        LEFT JOIN public.profiles p ON p.id = u.id
-        LEFT JOIN (
-          SELECT user_id, MAX(last_seen_at) as last_seen_at 
-          FROM public.user_activity_log 
-          GROUP BY user_id
-        ) a ON a.user_id = u.id
-        ORDER BY COALESCE(a.last_seen_at, u.last_sign_in_at, u.created_at) DESC
-      `;
+      const result = since
+        ? await connection.queryObject`
+            SELECT 
+              u.id, 
+              u.email, 
+              u.created_at, 
+              u.last_sign_in_at,
+              u.raw_user_meta_data as user_metadata,
+              p.display_name as profile_display_name,
+              COALESCE(p.is_premium, false) as is_premium,
+              a.last_seen_at as activity_last_seen_at
+            FROM auth.users u
+            LEFT JOIN public.profiles p ON p.id = u.id
+            LEFT JOIN (
+              SELECT user_id, MAX(last_seen_at) as last_seen_at 
+              FROM public.user_activity_log 
+              GROUP BY user_id
+            ) a ON a.user_id = u.id
+            WHERE u.created_at > ${since}
+               OR u.last_sign_in_at > ${since}
+               OR a.last_seen_at > ${since}
+               OR p.updated_at > ${since}
+            ORDER BY COALESCE(a.last_seen_at, u.last_sign_in_at, u.created_at) DESC
+          `
+        : await connection.queryObject`
+            SELECT 
+              u.id, 
+              u.email, 
+              u.created_at, 
+              u.last_sign_in_at,
+              u.raw_user_meta_data as user_metadata,
+              p.display_name as profile_display_name,
+              COALESCE(p.is_premium, false) as is_premium,
+              a.last_seen_at as activity_last_seen_at
+            FROM auth.users u
+            LEFT JOIN public.profiles p ON p.id = u.id
+            LEFT JOIN (
+              SELECT user_id, MAX(last_seen_at) as last_seen_at 
+              FROM public.user_activity_log 
+              GROUP BY user_id
+            ) a ON a.user_id = u.id
+            ORDER BY COALESCE(a.last_seen_at, u.last_sign_in_at, u.created_at) DESC
+          `;
       allUsers = result.rows;
     } finally {
       connection.release();

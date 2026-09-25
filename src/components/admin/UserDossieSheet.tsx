@@ -69,20 +69,18 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
     if (!userId) return;
     setExecutando(true);
     try {
-      if (acao === 'downgrade') {
-        const { error } = await supabase.from('profiles').update({ is_premium: false }).eq('id', userId);
-        if (error) throw error;
-        toast.success('Conta rebaixada para o plano gratuito com sucesso!');
-        setConfirmar(null);
-        onClose();
-        return;
-      }
       const { data, error } = await supabase.rpc('admin_gerenciar_usuario' as any, {
         _user_id: userId,
         _acao: acao,
       });
       if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
-      toast.success(acao === 'ban' ? 'Usuário banido — não poderá usar este e-mail' : 'Conta excluída definitivamente');
+      toast.success(
+        acao === 'ban'
+          ? 'Usuário banido — não poderá usar este e-mail'
+          : acao === 'downgrade'
+            ? 'Conta rebaixada para o plano gratuito com sucesso!'
+            : 'Conta excluída definitivamente'
+      );
       setConfirmar(null);
       onClose();
     } catch (e: any) {
