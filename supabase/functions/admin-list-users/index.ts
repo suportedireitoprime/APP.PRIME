@@ -51,17 +51,27 @@ serve(async (req) => {
     try {
       const result = await connection.queryObject`
         SELECT 
-          id, 
-          email, 
-          created_at, 
-          last_sign_in_at,
-          raw_user_meta_data as user_metadata
-        FROM auth.users
-        ORDER BY created_at DESC
+          u.id, 
+          u.email, 
+          u.created_at, 
+          u.last_sign_in_at,
+          u.raw_user_meta_data as user_metadata,
+          p.display_name as profile_display_name,
+          COALESCE(p.is_premium, false) as is_premium,
+          a.last_seen_at as activity_last_seen_at
+        FROM auth.users u
+        LEFT JOIN public.profiles p ON p.id = u.id
+        LEFT JOIN (
+          SELECT user_id, MAX(last_seen_at) as last_seen_at 
+          FROM public.user_activity_log 
+          GROUP BY user_id
+        ) a ON a.user_id = u.id
+        ORDER BY COALESCE(a.last_seen_at, u.last_sign_in_at, u.created_at) DESC
       `;
       allUsers = result.rows;
     } finally {
       connection.release();
+      await pool.end();
     }
 
     return new Response(JSON.stringify(allUsers), {

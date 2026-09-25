@@ -23,62 +23,51 @@ export default function AdminUsuarios() {
   const [filtroAssinante, setFiltroAssinante] = useState<'todos' | 'assinantes' | 'gratuitos'>('todos');
   const [dossieUserId, setDossieUserId] = useState<Usuario | null>(null);
 
+  const [limiteExibicao, setLimiteExibicao] = useState(50);
+
   useEffect(() => {
     async function carregarUsuarios() {
       setLoading(true);
       try {
-        const fetchAll = async (table: string, columns: string, orderBy?: string) => {
-          const all = [];
-          let from = 0;
-          const limit = 1000;
-          while (true) {
-            let q = supabase.from(table).select(columns).range(from, from + limit - 1);
-            if (orderBy) q = q.order(orderBy, { ascending: false });
-            const { data, error } = await q;
-            if (error) throw error;
-            if (!data || data.length === 0) break;
-            all.push(...data);
-            if (data.length < limit) break;
-            from += limit;
-          }
-          return all;
-        };
-
         const { data: authUsers, error: authErr } = await supabase.functions.invoke('admin-list-users');
         if (authErr) {
           console.error('Edge Function Error:', authErr);
           throw new Error(authErr.message || authErr.context?.error || JSON.stringify(authErr));
         }
 
-        const profiles = await fetchAll('profiles', 'id, display_name, is_premium, created_at');
-        const activityLog = await fetchAll('user_activity_log', 'user_id, email, last_seen_at');
-
-        const profileMap = new Map<string, any>();
-        profiles.forEach(p => profileMap.set(p.id, p));
-
-        const activityMap = new Map<string, { email: string | null; last_seen_at: string | null }>();
-        activityLog?.forEach(log => {
-          if (!activityMap.has(log.user_id) || new Date(log.last_seen_at) > new Date(activityMap.get(log.user_id)!.last_seen_at!)) {
-            activityMap.set(log.user_id, { email: log.email, last_seen_at: log.last_seen_at });
+        const getMostRecentDate = (...dates: (string | null | undefined)[]) => {
+          let latestTime = 0;
+          let latestStr: string | null = null;
+          for (const d of dates) {
+            if (!d) continue;
+            const t = new Date(d).getTime();
+            if (!isNaN(t) && t > latestTime) {
+              latestTime = t;
+              latestStr = d;
+            }
           }
-        });
+          return latestStr;
+        };
 
         const list: Usuario[] = (authUsers || []).map((u: any) => {
-          const p = profileMap.get(u.id);
-          const act = activityMap.get(u.id);
+          const lastAccess = getMostRecentDate(
+            u.activity_last_seen_at,
+            u.last_sign_in_at,
+            u.created_at
+          );
           return {
             id: u.id,
-            display_name: p?.display_name || u.user_metadata?.full_name || u.user_metadata?.name || null,
-            is_premium: !!p?.is_premium,
+            display_name: u.profile_display_name || u.user_metadata?.full_name || u.user_metadata?.name || u.user_metadata?.display_name || null,
+            is_premium: !!u.is_premium,
             created_at: u.created_at,
-            email: u.email || act?.email || null,
-            last_seen_at: act?.last_seen_at || null
+            email: u.email || null,
+            last_seen_at: lastAccess || u.created_at || null
           };
         });
 
         list.sort((a, b) => {
-          const tA = a.last_seen_at ? new Date(a.last_seen_at).getTime() : (a.created_at ? new Date(a.created_at).getTime() : 0);
-          const tB = b.last_seen_at ? new Date(b.last_seen_at).getTime() : (b.created_at ? new Date(b.created_at).getTime() : 0);
+          const tA = a.last_seen_at ? new Date(a.last_seen_at).getTime() : 0;
+          const tB = b.last_seen_at ? new Date(b.last_seen_at).getTime() : 0;
           return tB - tA;
         });
 
@@ -92,6 +81,10 @@ export default function AdminUsuarios() {
 
     carregarUsuarios();
   }, []);
+
+  useEffect(() => {
+    setLimiteExibicao(50);
+  }, [busca, filtroAssinante]);
 
   const filtrados = useMemo(() => {
     let res = usuarios;
@@ -107,6 +100,8 @@ export default function AdminUsuarios() {
     }
     return res;
   }, [usuarios, busca, filtroAssinante]);
+
+  const exibidos = useMemo(() => filtrados.slice(0, limiteExibicao), [filtrados, limiteExibicao]);
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-32">
@@ -170,35 +165,50 @@ export default function AdminUsuarios() {
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
         ) : (
-          <div className="grid gap-3">
-            {filtrados.length === 0 ? (
-              <div className="p-8 text-center bg-secondary/10 border border-dashed border-border/50 rounded-2xl">
-                <p className="text-sm text-muted-foreground">Nenhum usuário encontrado.</p>
-              </div>
-            ) : (
-              filtrados.map(u => (
-                <div key={u.id} onClick={() => setDossieUserId(u)} className="flex flex-col sm:flex-row gap-4 p-4 rounded-2xl bg-secondary/10 border border-border/50 items-start sm:items-center justify-between hover:bg-secondary/20 transition-all cursor-pointer">
-                  <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${u.is_premium ? 'bg-emerald-500/20 text-emerald-400' : 'bg-primary/10 text-primary'}`}>
-                      {u.is_premium ? <Crown className="w-5 h-5" /> : <User className="w-5 h-5" />}
+          <div className="space-y-4">
+            <div className="grid gap-3">
+              {filtrados.length === 0 ? (
+                <div className="p-8 text-center bg-secondary/10 border border-dashed border-border/50 rounded-2xl">
+                  <p className="text-sm text-muted-foreground">Nenhum usuário encontrado.</p>
+                </div>
+              ) : (
+                exibidos.map(u => (
+                  <div key={u.id} onClick={() => setDossieUserId(u)} className="flex flex-col sm:flex-row gap-4 p-4 rounded-2xl bg-secondary/10 border border-border/50 items-start sm:items-center justify-between hover:bg-secondary/20 transition-all cursor-pointer">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${u.is_premium ? 'bg-emerald-500/20 text-emerald-400' : 'bg-primary/10 text-primary'}`}>
+                        {u.is_premium ? <Crown className="w-5 h-5" /> : <User className="w-5 h-5" />}
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm line-clamp-1">{u.display_name || 'Sem Nome'}</p>
+                        <p className="text-xs text-muted-foreground">{u.email || 'Email oculto/desconhecido'}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium text-sm line-clamp-1">{u.display_name || 'Sem Nome'}</p>
-                      <p className="text-xs text-muted-foreground">{u.email || 'Email oculto/desconhecido'}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-6 text-right sm:text-left mt-2 sm:mt-0 w-full sm:w-auto">
-                    <div className="flex-1 sm:flex-none text-right">
-                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-0.5">Último Acesso</p>
-                      <div className="flex items-center gap-1.5 justify-end text-xs font-medium">
-                        <Calendar className="w-3.5 h-3.5 text-primary/70" />
-                        {u.last_seen_at ? new Date(u.last_seen_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'Nunca acessou'}
+                    
+                    <div className="flex items-center gap-6 text-right sm:text-left mt-2 sm:mt-0 w-full sm:w-auto">
+                      <div className="flex-1 sm:flex-none text-right">
+                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-0.5">Último Acesso</p>
+                        <div className="flex items-center gap-1.5 justify-end text-xs font-medium">
+                          <Calendar className="w-3.5 h-3.5 text-primary/70" />
+                          {u.last_seen_at 
+                            ? new Date(u.last_seen_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) 
+                            : (u.created_at ? new Date(u.created_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'Recente')}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))
+                ))
+              )}
+            </div>
+
+            {filtrados.length > limiteExibicao && (
+              <div className="pt-2 flex justify-center">
+                <button
+                  onClick={() => setLimiteExibicao(prev => prev + 50)}
+                  className="px-6 py-3 rounded-xl bg-secondary/40 hover:bg-secondary/60 border border-border/50 text-xs font-semibold text-foreground transition-all flex items-center gap-2"
+                >
+                  Carregar mais 50 usuários ({filtrados.length - limiteExibicao} restantes)
+                </button>
+              </div>
             )}
           </div>
         )}
