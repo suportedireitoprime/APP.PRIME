@@ -28,6 +28,7 @@ import { FavPanel, PlaylistPanel, AnotacoesPanel } from '@/components/vademecum/
 import RadarLegislacaoContent from '@/components/vademecum/outros/RadarLegislacaoContent';
 import LeiHero from '@/components/vademecum/artigo/LeiHero';
 import LeiCapitulosGrid from '@/components/vademecum/artigo/LeiCapitulosGrid';
+import LeiArtigosVirtualList from '@/components/vademecum/artigo/LeiArtigosVirtualList';
 import LeiHistoricoCarousel from '@/components/vademecum/artigo/LeiHistoricoCarousel';
 import ArtigoComparativoModal, { type AlteracaoDetailData } from '@/components/vademecum/artigo/ArtigoComparativoModal';
 import { extractLeiCapitulos, isStructuralArtigo, formatArtigoNumeroOnly } from '@/lib/leiStructure';
