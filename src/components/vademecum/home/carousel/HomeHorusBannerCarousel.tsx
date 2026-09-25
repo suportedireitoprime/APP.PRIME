@@ -282,7 +282,7 @@ const HomeHorusBannerCarousel = () => {
 
             {/* Textos à esquerda */}
             <div className="flex flex-col items-start text-left z-10 min-w-0 flex-1">
-              <span className="text-[14px] sm:text-[15px] font-display font-black uppercase tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] leading-[1.15] w-full line-clamp-2">
+              <span className="text-[16px] sm:text-[17px] font-display font-black uppercase tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] leading-[1.15] w-full line-clamp-2">
                 {banner.title}
                 <motion.span
                   animate={{ x: [0, 3, 0] }}
@@ -302,7 +302,7 @@ const HomeHorusBannerCarousel = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -12 }}
                     transition={{ duration: 0.28 }}
-                    className={`absolute text-[10px] sm:text-[11px] font-body ${banner.textColor} leading-snug font-medium whitespace-nowrap truncate w-[95%] drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]`}
+                    className={`absolute text-[11.5px] sm:text-[12.5px] font-body ${banner.textColor} leading-snug font-medium whitespace-nowrap truncate w-[95%] drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]`}
                   >
                     {banner.descriptions[descIndices[i]]}
                   </motion.span>
