@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import * as postgres from "https://deno.land/x/postgres@v0.17.0/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -36,23 +37,31 @@ serve(async (req) => {
       }
     }
 
-    // Create service role client to list users
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-
-    // List all users from auth.users (paginated)
-    const allUsers = [];
-    let page = 1;
-    const perPage = 1000;
-    while (true) {
-      const { data, error } = await supabaseAdmin.auth.admin.listUsers({ page, perPage });
-      if (error) throw error;
-      
-      allUsers.push(...data.users);
-      if (data.users.length < perPage) break;
-      page++;
+    const dbUrl = Deno.env.get('SUPABASE_DB_URL') ?? '';
+    
+    if (!dbUrl) {
+      throw new Error('SUPABASE_DB_URL is not set');
+    }
+    
+    // Connect to postgres directly to fetch all users in < 1 second
+    const pool = new postgres.Pool(dbUrl, 3, true);
+    const connection = await pool.connect();
+    
+    let allUsers = [];
+    try {
+      const result = await connection.queryObject`
+        SELECT 
+          id, 
+          email, 
+          created_at, 
+          last_sign_in_at,
+          raw_user_meta_data as user_metadata
+        FROM auth.users
+        ORDER BY created_at DESC
+      `;
+      allUsers = result.rows;
+    } finally {
+      connection.release();
     }
 
     return new Response(JSON.stringify(allUsers), {

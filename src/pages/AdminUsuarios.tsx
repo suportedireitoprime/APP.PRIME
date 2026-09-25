@@ -45,7 +45,10 @@ export default function AdminUsuarios() {
         };
 
         const { data: authUsers, error: authErr } = await supabase.functions.invoke('admin-list-users');
-        if (authErr) throw authErr;
+        if (authErr) {
+          console.error('Edge Function Error:', authErr);
+          throw new Error(authErr.message || authErr.context?.error || JSON.stringify(authErr));
+        }
 
         const profiles = await fetchAll('profiles', 'id, display_name, is_premium, created_at');
         const activityLog = await fetchAll('user_activity_log', 'user_id, email, last_seen_at');
