@@ -489,7 +489,21 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
     fav: <FavPanel artigos={artigos} isArtigoFav={isArtigoFav} onOpenArtigo={(a) => { setOverlayPanel(null); setOpenArtigo(a); }} accentColor={leiAccent} grifadoNumeros={grifadoNumeros} anotadoNumeros={anotadoNumeros} />,
     playlist: <PlaylistPanel artigos={artigos} playlistNarracoes={playlistNarracoes} loadingPlaylist={loadingPlaylist} playingUrl={playingUrl} togglePlayAudio={togglePlayAudio} onOpenArtigo={(a) => { setOverlayPanel(null); setOpenArtigo(a); }} />,
     anotacoes: <AnotacoesPanel />,
-    novidades: <NovidadesPanel artigos={artigos} dbAlteracoes={dbAlteracoes} loadingDbAlteracoes={loadingDbAlteracoes} onOpenArtigo={(a, modInfo) => { setOverlayPanel(null); setOpenFromNovidades(true); setOpenModInfo(modInfo); setOpenArtigo(a); }} />,
+    novidades: (
+      <NovidadesPanel
+        artigos={artigos}
+        dbAlteracoes={dbAlteracoes}
+        loadingDbAlteracoes={loadingDbAlteracoes}
+        tabelaNome={selectedTabelaNome}
+        leiId={selectedLeiId}
+        onOpenArtigo={(a, modInfo) => {
+          setOverlayPanel(null);
+          setOpenFromNovidades(true);
+          setOpenModInfo(modInfo);
+          setOpenArtigo(a);
+        }}
+      />
+    ),
     radar: <RadarLegislacaoContent leiNome={selectedLeiNome} tabelaNome={selectedTabelaNome} navigate={navigate} />,
   };
 
@@ -538,6 +552,9 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
         <LeiHistoricoCarousel
           artigos={artigos}
           dbAlteracoes={dbAlteracoes}
+          tabelaNome={selectedTabelaNome}
+          leiId={selectedLeiId}
+          leiNome={selectedLeiNome}
           onOpenArtigo={(artigo, modInfo) => {
             setOpenModInfo(modInfo || null);
             setOpenFromNovidades(Boolean(modInfo));
