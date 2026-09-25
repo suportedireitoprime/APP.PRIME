@@ -260,24 +260,19 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
                     });
                   }
                 }}
-                className="snap-start shrink-0 w-[220px] sm:w-[245px] rounded-2xl bg-[#121316] hover:bg-[#17181e] border border-white/[0.04] hover:border-white/[0.08] p-3.5 flex flex-col justify-between shadow-xl shadow-black/60 backdrop-blur-md active:scale-[0.98] transition-all cursor-pointer relative overflow-hidden group"
+                className="snap-start shrink-0 w-[220px] sm:w-[245px] rounded-2xl bg-[#121316] hover:bg-[#16171d] border border-zinc-800/80 hover:border-zinc-700/80 p-3.5 flex flex-col justify-between shadow-xl shadow-black/60 backdrop-blur-md active:scale-[0.98] transition-all cursor-pointer relative overflow-hidden group"
               >
                 {/* Glow sutil ao passar o cursor */}
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
-                {/* Topo do Card: Número do Artigo e Badges com Mês/Ano */}
+                {/* Topo do Card: Número do Artigo e Badge de Tipo (data já exibida no rodapé) */}
                 <div className="flex items-center justify-between gap-1.5 mb-2 relative z-10">
                   <span className="font-bold text-[14px] sm:text-[15px] text-white group-hover:text-primary transition-colors flex items-center gap-1">
                     {item.artigoDisplay}
                   </span>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-white/[0.06] text-zinc-300 border border-white/[0.05] tracking-widest">
-                      {item.mesAno}
-                    </span>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full leading-none shrink-0 ${badgeClass}`}>
-                      {item.tipo}
-                    </span>
-                  </div>
+                  <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full leading-none shrink-0 shadow-sm ${badgeClass}`}>
+                    {item.tipo}
+                  </span>
                 </div>
 
                 {/* Trecho modificado */}
@@ -287,8 +282,8 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
                   </p>
                 </div>
 
-                {/* Rodapé do Card: Lei Modificadora e Mês/Ano */}
-                <div className="flex items-center justify-between text-[10px] text-zinc-500 pt-2 border-t border-white/[0.04] relative z-10">
+                {/* Rodapé do Card: Lei Modificadora e Mês/Ano com listra cinza sutil */}
+                <div className="flex items-center justify-between text-[10px] text-zinc-500 pt-2 border-t border-zinc-800/80 relative z-10">
                   <span className="truncate max-w-[150px] font-medium text-zinc-400">
                     {item.leiNome}
                   </span>

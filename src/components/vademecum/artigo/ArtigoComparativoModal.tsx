@@ -4,21 +4,20 @@ import {
   ArrowLeft,
   BookOpen,
   Sparkles,
-  ArrowRight,
   ExternalLink,
   CheckCircle2,
   AlertCircle,
-  FileText,
   RotateCcw,
   Loader2,
   Scale,
-  Calendar,
-  Layers,
   ChevronRight,
+  Bookmark,
 } from 'lucide-react';
 import type { ArtigoLei } from '@/data/mockData';
 import { executeAiTask } from '@/services/aiGatewayService';
 import { haptic } from '@/lib/nativeHaptics';
+import ShapeGrid from '@/components/ui/ShapeGrid';
+import vademecumHeroImg from '@/assets/covers/vademecum-judge.webp';
 
 export interface AlteracaoDetailData {
   artigo: ArtigoLei;
@@ -41,7 +40,7 @@ interface ArtigoComparativoModalProps {
   onIrParaArtigo: (artigo: ArtigoLei) => void;
 }
 
-type TabType = 'comparativo' | 'explicacao' | 'dispositivo';
+type TextoViewType = 'vigente' | 'anterior';
 
 export const ArtigoComparativoModal: React.FC<ArtigoComparativoModalProps> = ({
   open,
@@ -49,15 +48,15 @@ export const ArtigoComparativoModal: React.FC<ArtigoComparativoModalProps> = ({
   data,
   onIrParaArtigo,
 }) => {
-  const [activeTab, setActiveTab] = useState<TabType>('comparativo');
+  const [textoView, setTextoView] = useState<TextoViewType>('vigente');
   const [aiExplicacao, setAiExplicacao] = useState<string>('');
   const [aiLoading, setAiLoading] = useState<boolean>(false);
   const [aiModelUsed, setAiModelUsed] = useState<string>('');
 
-  // Reseta aba e busca explicação da IA ao abrir novo artigo
+  // Reseta estado e busca explicação da IA automaticamente via OmniRoute ao abrir o card
   useEffect(() => {
     if (!open || !data) return;
-    setActiveTab('comparativo');
+    setTextoView('vigente');
 
     const cacheKey = `alteracao_ia_explicacao_${data.artigoDisplay.replace(/\s+/g, '_')}_${data.ano}`;
     const cached = localStorage.getItem(cacheKey);
@@ -70,7 +69,7 @@ export const ArtigoComparativoModal: React.FC<ArtigoComparativoModalProps> = ({
       } catch {}
     }
 
-    // Se não tiver cache, gera automaticamente via OmniRoute
+    // Se não tiver em cache, gera automaticamente via OmniRoute
     void gerarExplicacaoIA(data, false);
   }, [open, data?.artigoDisplay, data?.ano]);
 
@@ -129,247 +128,275 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
 
   if (!open || !data) return null;
 
+  const isIncluido = data.tipo.toLowerCase().includes('inclu');
+  const isRevogado = data.tipo.toLowerCase().includes('revog');
+  const tipoBadgeColor = isIncluido
+    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+    : isRevogado
+    ? 'bg-rose-500/20 text-rose-300 border-rose-500/30'
+    : 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[70] bg-[#0E0F12] flex flex-col overflow-hidden select-none">
-        {/* Topo / Header Fixo com Safe Area */}
-        <div className="shrink-0 bg-[#121318] border-b border-zinc-800/80 px-4 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-3 flex items-center justify-between gap-3 shadow-lg">
-          <div className="flex items-center gap-3 min-w-0">
+      <div className="fixed inset-0 z-[70] bg-[#0A0B0E] flex flex-col overflow-hidden select-none">
+        {/* Fundo com ShapeGrid global para manter a tonalidade dos quadradinhos pretos */}
+        <div className="absolute inset-0 opacity-20 pointer-events-none z-0">
+          <ShapeGrid />
+        </div>
+
+        {/* ── PAINEL HERO (Estilo Vade Mecum: Traçado vermelho à esquerda, corte diagonal e imagem à direita) ── */}
+        <div
+          className="relative shrink-0 overflow-hidden rounded-b-[32px] sm:rounded-b-[36px] shadow-2xl shadow-black/80 z-20"
+          style={{
+            transform: 'translateZ(0)',
+            backgroundColor: '#050505',
+          }}
+        >
+          {/* Imagem de Capa do Tribunal / Justiça à Direita */}
+          <img
+            src={vademecumHeroImg}
+            alt=""
+            aria-hidden="true"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+            className="absolute inset-0 w-full h-full object-cover object-center z-0 pointer-events-none"
+          />
+
+          {/* Overlay Vermelho com gradiente da marca e corte poligonal idêntico ao Vade Mecum */}
+          <div
+            className="absolute inset-0 z-[1] pointer-events-none"
+            style={{
+              filter:
+                'drop-shadow(25px 0 25px rgba(0,0,0,0.85)) drop-shadow(8px 0 10px rgba(0,0,0,0.95))',
+            }}
+          >
+            <div
+              className="absolute inset-0 overflow-hidden"
+              style={{ clipPath: 'polygon(0 0, 58% 0, 42% 100%, 0% 100%)' }}
+            >
+              <div className="absolute inset-0 bg-brand-gradient" />
+              <div className="absolute inset-0 opacity-15 mix-blend-overlay">
+                <ShapeGrid />
+              </div>
+            </div>
+          </div>
+
+          {/* Cabeçalho do Painel com Botão Voltar e Link Externo */}
+          <div className="relative z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] px-4 pb-2 flex items-center justify-between">
             <button
               type="button"
               onClick={() => {
                 haptic.selection();
                 onClose();
               }}
-              className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/[0.06] hover:bg-white/[0.12] active:scale-95 border border-white/10 flex items-center justify-center text-white transition-all shrink-0 cursor-pointer"
+              className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/50 backdrop-blur-md border border-white/10 text-white shadow-xl transition-all hover:bg-black/70 active:scale-95 cursor-pointer"
               title="Voltar ao Vade Mecum"
             >
               <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
             </button>
 
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="font-display text-lg sm:text-xl font-black text-white tracking-wide truncate">
-                  {data.artigoDisplay}
-                </h1>
-                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">
-                  {data.tipo}
-                </span>
-                <span className="text-[11px] font-black px-2.5 py-0.5 rounded-full bg-white/[0.06] text-zinc-300 border border-white/[0.08] tracking-widest">
-                  {data.mesAno}
-                </span>
-              </div>
-              <p className="text-xs text-zinc-400 truncate mt-0.5">
-                {data.leiNomePai || 'Código Penal'} • {data.leiNome}
-              </p>
+            {data.linkLei && (
+              <a
+                href={data.linkLei}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-md text-white/90 hover:text-white border border-white/15 text-xs font-semibold transition-all shadow-md active:scale-95 cursor-pointer"
+              >
+                <span>Planalto</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            )}
+          </div>
+
+          {/* Conteúdo do Painel: Título da Matéria e Identificação do Artigo à Esquerda */}
+          <div className="relative z-10 px-4 sm:px-6 pt-1 pb-4 flex flex-col justify-start max-w-[62%] sm:max-w-[55%]">
+            <p className="text-[10px] sm:text-xs font-extrabold tracking-[0.25em] uppercase text-white/85 drop-shadow">
+              {data.leiNomePai || 'Direito Penal'}
+            </p>
+
+            <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-black text-white uppercase tracking-tight leading-tight mt-0.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+              {data.artigoDisplay}
+            </h1>
+
+            <div className="flex items-center gap-1.5 flex-wrap mt-2">
+              <span
+                className={`text-[10px] sm:text-[11px] font-bold px-2.5 py-0.5 rounded-full border shadow-sm backdrop-blur-sm ${tipoBadgeColor}`}
+              >
+                {data.tipo}
+              </span>
+              <span className="text-[10px] sm:text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-black/45 text-white/90 border border-white/15 backdrop-blur-sm truncate max-w-[190px]">
+                {data.leiNome}
+              </span>
             </div>
           </div>
-
-          {/* Link externo para a lei no Planalto se houver */}
-          {data.linkLei && (
-            <a
-              href={data.linkLei}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500/15 text-blue-300 hover:bg-blue-500/25 border border-blue-500/30 text-xs font-semibold transition-all shrink-0 cursor-pointer"
-            >
-              <span>Ver Lei no Planalto</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          )}
         </div>
 
-        {/* Menu de Alternância (Tabs) */}
-        <div className="shrink-0 bg-[#121318]/70 border-b border-zinc-800/80 px-4 py-2">
-          <div className="max-w-4xl mx-auto grid grid-cols-3 gap-1.5 p-1 bg-black/40 rounded-2xl border border-white/[0.05]">
+        {/* ── MENU DE ALTERNÂNCIA (Novo / Vigente vs Antigo / Anterior) ── */}
+        <div className="shrink-0 bg-[#0E0F14]/90 border-b border-zinc-800/80 px-4 py-2.5 z-10 backdrop-blur-md">
+          <div className="max-w-2xl mx-auto grid grid-cols-2 gap-2 p-1 bg-black/50 rounded-2xl border border-zinc-800/80">
             <button
               type="button"
               onClick={() => {
                 haptic.selection();
-                setActiveTab('comparativo');
+                setTextoView('vigente');
               }}
-              className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs sm:text-sm font-bold transition-all select-none cursor-pointer ${
-                activeTab === 'comparativo'
-                  ? 'bg-primary text-white shadow-md shadow-primary/30'
+              className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all select-none cursor-pointer ${
+                textoView === 'vigente'
+                  ? 'bg-hero-panel text-white shadow-lg shadow-red-950/50 border border-red-500/30'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
-              <Scale className="w-4 h-4 shrink-0" />
-              <span className="truncate">Comparativo</span>
+              <CheckCircle2
+                className={`w-4 h-4 shrink-0 ${
+                  textoView === 'vigente' ? 'text-emerald-400' : 'text-zinc-500'
+                }`}
+              />
+              <span className="truncate">Vigente (Novo Texto)</span>
             </button>
 
             <button
               type="button"
               onClick={() => {
                 haptic.selection();
-                setActiveTab('explicacao');
+                setTextoView('anterior');
               }}
-              className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs sm:text-sm font-bold transition-all select-none cursor-pointer ${
-                activeTab === 'explicacao'
-                  ? 'bg-primary text-white shadow-md shadow-primary/30'
+              className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all select-none cursor-pointer ${
+                textoView === 'anterior'
+                  ? 'bg-hero-panel text-white shadow-lg shadow-red-950/50 border border-red-500/30'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
-              <Sparkles className="w-4 h-4 shrink-0 text-amber-300" />
-              <span className="truncate">Explicação IA</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                haptic.selection();
-                setActiveTab('dispositivo');
-              }}
-              className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs sm:text-sm font-bold transition-all select-none cursor-pointer ${
-                activeTab === 'dispositivo'
-                  ? 'bg-primary text-white shadow-md shadow-primary/30'
-                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
-              }`}
-            >
-              <FileText className="w-4 h-4 shrink-0" />
-              <span className="truncate">Dispositivo</span>
+              <AlertCircle
+                className={`w-4 h-4 shrink-0 ${
+                  textoView === 'anterior' ? 'text-rose-400' : 'text-zinc-500'
+                }`}
+              />
+              <span className="truncate">Anterior (Revogado)</span>
             </button>
           </div>
         </div>
 
-        {/* Corpo com Scroll do Conteúdo */}
-        <div className="flex-1 overflow-y-auto px-4 py-5 max-w-4xl w-full mx-auto space-y-5 custom-scrollbar">
-          {activeTab === 'comparativo' && (
-            <div className="space-y-4">
-              {/* Card da Norma Modificadora */}
-              <div className="p-4 rounded-2xl bg-[#14151b] border border-zinc-800 space-y-1.5 shadow-sm">
-                <div className="flex items-center justify-between gap-2 flex-wrap">
-                  <span className="text-[11px] font-black uppercase tracking-widest text-zinc-400">
-                    Norma Modificadora Oficial
+        {/* ── CORPO COM SCROLL (Texto do Artigo + Explicação IA Automática Embaixo) ── */}
+        <div className="flex-1 overflow-y-auto px-4 py-4 max-w-3xl w-full mx-auto space-y-4 custom-scrollbar z-10">
+          {/* Card do Texto Selecionado */}
+          <div className="space-y-3">
+            {textoView === 'vigente' ? (
+              <div className="rounded-2xl border border-emerald-500/30 bg-[#0E1512]/95 p-4 sm:p-5 space-y-3 shadow-xl backdrop-blur-md">
+                <div className="flex items-center justify-between gap-2 border-b border-zinc-800/80 pb-2.5">
+                  <span className="text-[11px] font-black uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4" />
+                    Texto Novo (Vigente no Planalto)
                   </span>
-                  <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                    {data.mesAno}
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase">
+                    Vigente
                   </span>
                 </div>
-                <p className="text-sm font-semibold text-white">
-                  {data.leiNome}
-                </p>
-                <p className="text-xs text-zinc-400 leading-relaxed font-mono">
+                <div className="text-sm sm:text-base text-zinc-100 font-serif leading-relaxed p-3.5 rounded-xl bg-black/40 border border-emerald-500/20 font-medium">
+                  {data.textoNovo || data.artigo.caput}
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-rose-500/25 bg-[#170E11]/95 p-4 sm:p-5 space-y-3 shadow-xl backdrop-blur-md">
+                <div className="flex items-center justify-between gap-2 border-b border-zinc-800/80 pb-2.5">
+                  <span className="text-[11px] font-black uppercase tracking-widest text-rose-400 flex items-center gap-1.5">
+                    <AlertCircle className="w-4 h-4" />
+                    Texto Antigo (Revogado / Anterior)
+                  </span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 uppercase">
+                    Anterior
+                  </span>
+                </div>
+                <div className="text-sm sm:text-base text-zinc-300 font-serif leading-relaxed line-through decoration-rose-500/60 p-3.5 rounded-xl bg-black/40 border border-rose-500/15">
+                  {data.textoAntigo ||
+                    'Dispositivo inédito no Código Penal (incluído pela primeira vez por esta lei).'}
+                </div>
+              </div>
+            )}
+
+            {/* Informações da Norma Modificadora Oficial com listra cinza sutil */}
+            <div className="p-3.5 rounded-2xl bg-[#121316] border border-zinc-800/80 flex items-center justify-between gap-3 text-xs shadow-sm">
+              <div className="min-w-0">
+                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block mb-0.5">
+                  Norma Modificadora Oficial
+                </span>
+                <p className="font-semibold text-white truncate">{data.leiNome}</p>
+                <p className="text-[11px] text-zinc-400 truncate font-mono mt-0.5">
                   {data.referencia}
                 </p>
               </div>
-
-              {/* Grid Comparativo dos Textos: Novo vs Antigo */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Texto Antigo (Revogado / Anterior) */}
-                <div className="rounded-2xl border border-rose-500/25 bg-[#170e10] p-4 space-y-2.5 shadow-md">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-black uppercase tracking-widest text-rose-400 flex items-center gap-1.5">
-                      <AlertCircle className="w-3.5 h-3.5" />
-                      Texto Antigo (Revogado / Anterior)
-                    </span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 uppercase">
-                      Anterior
-                    </span>
-                  </div>
-                  <div className="text-xs sm:text-[13px] text-zinc-300 font-serif leading-relaxed line-through decoration-rose-500/60 p-3 rounded-xl bg-black/30 border border-rose-500/15">
-                    {data.textoAntigo || 'Dispositivo inédito no Código Penal (incluído pela primeira vez por esta lei).'}
-                  </div>
-                </div>
-
-                {/* Texto Novo (Vigente no Planalto) */}
-                <div className="rounded-2xl border border-emerald-500/30 bg-[#0e1713] p-4 space-y-2.5 shadow-md">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-black uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      Texto Novo (Vigente no Planalto)
-                    </span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase">
-                      Vigente
-                    </span>
-                  </div>
-                  <div className="text-xs sm:text-[13px] text-white font-serif leading-relaxed p-3 rounded-xl bg-black/40 border border-emerald-500/20 font-medium">
-                    {data.textoNovo || data.artigo.caput}
-                  </div>
-                </div>
-              </div>
-
-              {/* Informação adicional sobre o princípio da anterioridade */}
-              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.05] text-xs text-zinc-400 leading-relaxed flex items-center gap-2.5">
-                <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
-                <span>
-                  As alterações penais aplicam-se respeitando o princípio constitucional da irretroatividade da lei penal mais gravosa (Art. 5º, XL, CF/88).
-                </span>
-              </div>
+              <span className="text-[10px] font-bold text-zinc-300 bg-white/[0.06] border border-white/[0.08] px-2.5 py-1 rounded-full shrink-0">
+                {data.mesAno}
+              </span>
             </div>
-          )}
+          </div>
 
-          {activeTab === 'explicacao' && (
-            <div className="space-y-4">
-              <div className="p-4 rounded-2xl bg-[#14151b] border border-zinc-800 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-primary/20 border border-amber-500/30 flex items-center justify-center shrink-0">
-                    <Sparkles className="w-5 h-5 text-amber-400" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-sm text-white flex items-center gap-2">
-                      Análise Jurídica com IA
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary/20 text-primary border border-primary/30 uppercase">
-                        OmniRoute
-                      </span>
-                    </h3>
-                    <p className="text-xs text-zinc-400">
-                      Entenda o que mudou, o contexto e o impacto penal prático.
-                    </p>
-                  </div>
+          {/* ── SEÇÃO DE EXPLICAÇÃO IA AUTOMÁTICA OMNIROUTE (POSICIONADA EMBAIXO) ── */}
+          <div className="rounded-2xl bg-[#121316] border border-zinc-800/80 p-4 sm:p-5 space-y-3.5 shadow-xl backdrop-blur-md">
+            <div className="flex items-center justify-between gap-3 border-b border-zinc-800/80 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500/20 to-primary/20 border border-amber-500/30 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-4 h-4 text-amber-400" />
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => gerarExplicacaoIA(data, true)}
-                  disabled={aiLoading}
-                  className="px-3 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] active:scale-95 text-xs font-semibold text-zinc-200 border border-white/10 flex items-center gap-1.5 transition-all shrink-0 cursor-pointer disabled:opacity-50"
-                  title="Atualizar análise com IA"
-                >
-                  <RotateCcw className={`w-3.5 h-3.5 ${aiLoading ? 'animate-spin' : ''}`} />
-                  <span className="hidden sm:inline">Regerar</span>
-                </button>
+                <div>
+                  <h3 className="font-bold text-sm text-white flex items-center gap-2">
+                    Explicação Didática com IA
+                    <span className="text-[9.5px] font-bold px-2 py-0.5 rounded bg-primary/20 text-primary border border-primary/30 uppercase tracking-wider">
+                      OmniRoute
+                    </span>
+                  </h3>
+                  <p className="text-[11px] text-zinc-400">
+                    O que mudou, o contexto e o impacto penal prático.
+                  </p>
+                </div>
               </div>
 
-              {/* Box de Explicação */}
-              <div className="p-5 rounded-2xl bg-[#101116] border border-zinc-800/90 shadow-md">
-                {aiLoading ? (
-                  <div className="py-12 flex flex-col items-center justify-center gap-3 text-center">
-                    <Loader2 className="w-7 h-7 text-primary animate-spin" />
-                    <p className="text-sm font-semibold text-zinc-200">
-                      Consultando tutor jurídico OmniRoute...
-                    </p>
-                    <p className="text-xs text-zinc-400 max-w-sm">
-                      Examinando as diferenças entre a redação anterior e o novo texto vigente.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="prose prose-invert max-w-none text-xs sm:text-sm leading-relaxed text-zinc-200 space-y-3 whitespace-pre-line font-body">
-                    {aiExplicacao}
-                  </div>
-                )}
-              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  void gerarExplicacaoIA(data, true);
+                }}
+                disabled={aiLoading}
+                className="px-3 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] active:scale-95 text-xs font-semibold text-zinc-200 border border-white/10 flex items-center gap-1.5 transition-all shrink-0 cursor-pointer disabled:opacity-50"
+                title="Regerar análise com IA"
+              >
+                <RotateCcw className={`w-3.5 h-3.5 ${aiLoading ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">Regerar</span>
+              </button>
             </div>
-          )}
 
-          {activeTab === 'dispositivo' && (
-            <div className="space-y-4">
-              <div className="p-4 rounded-2xl bg-[#14151b] border border-zinc-800 space-y-2">
-                <span className="text-[11px] font-black uppercase tracking-widest text-zinc-400">
-                  Dispositivo no Código
-                </span>
-                <p className="font-serif text-sm sm:text-base text-zinc-100 leading-relaxed p-4 rounded-xl bg-black/40 border border-white/[0.05]">
-                  {data.artigo.caput}
+            {/* Conteúdo da Análise IA com Loader ou Texto Formatado */}
+            {aiLoading ? (
+              <div className="py-8 flex flex-col items-center justify-center gap-3 text-center">
+                <Loader2 className="w-7 h-7 text-primary animate-spin" />
+                <p className="text-sm font-semibold text-zinc-200">
+                  Gerando explicação didática via OmniRoute...
+                </p>
+                <p className="text-xs text-zinc-400 max-w-sm">
+                  Examinando as alterações no Planalto e estruturando o impacto penal prático.
                 </p>
               </div>
+            ) : (
+              <div className="prose prose-invert max-w-none text-xs sm:text-sm leading-relaxed text-zinc-200 space-y-3 whitespace-pre-line font-body p-3.5 rounded-xl bg-black/40 border border-zinc-800/80">
+                {aiExplicacao}
+              </div>
+            )}
+
+            {/* Princípio Constitucional da Irretroatividade Penal */}
+            <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.04] text-[11px] text-zinc-400 leading-relaxed flex items-center gap-2">
+              <Scale className="w-4 h-4 text-primary shrink-0" />
+              <span>
+                As alterações penais aplicam-se respeitando a irretroatividade da lei penal mais gravosa (Art. 5º, XL, CF/88).
+              </span>
             </div>
-          )}
+          </div>
         </div>
 
-        {/* Rodapé Fixo com Botão "Ir para o Artigo" */}
-        <div className="shrink-0 bg-[#121318] border-t border-zinc-800/80 px-4 py-3 pb-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] flex items-center justify-between gap-3 shadow-2xl">
+        {/* ── RODAPÉ FIXO COM BOTÃO "IR PARA O ARTIGO COMPLETO" (ESTILO IMAGEM 3) ── */}
+        <div className="shrink-0 bg-[#0E0F14]/95 border-t border-zinc-800/80 px-4 py-3 pb-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] flex items-center justify-between gap-3 shadow-2xl z-20 backdrop-blur-md">
           <div className="hidden sm:block text-xs text-zinc-400">
-            Deseja ler o artigo completo com grifos e anotações?
+            Deseja ler o artigo completo com grifos, notas e áudio?
           </div>
 
           <button
@@ -379,9 +406,9 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
               onClose();
               onIrParaArtigo(data.artigo);
             }}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3 rounded-2xl bg-hero-panel hover:bg-primary text-white text-sm font-bold shadow-lg shadow-red-950/40 active:scale-95 transition-all min-h-[48px] cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3 rounded-2xl bg-hero-panel hover:bg-primary text-white text-sm font-bold shadow-lg shadow-red-950/50 active:scale-95 transition-all min-h-[48px] cursor-pointer border border-red-500/30"
           >
-            <BookOpen className="w-4 h-4" />
+            <Bookmark className="w-4 h-4 text-white" />
             <span>Ir para o Artigo Completo</span>
             <ChevronRight className="w-4 h-4" />
           </button>
