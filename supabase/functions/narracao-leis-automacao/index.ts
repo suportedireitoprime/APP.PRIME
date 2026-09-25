@@ -83,16 +83,36 @@ function normalizarParaTTS(texto: string, rotulo: string, numeroArtigo: string):
   return r.trim();
 }
 
-function fatiarArtigo(textoCompleto: string, numeroArtigo: string): Array<{ id: string; rotulo: string; tipo: string; texto: string; textoTTS: string }> {
+function fatiarArtigo(
+  textoCompleto: string,
+  numeroArtigo: string,
+  leiNome = "Código Penal",
+  capitulo?: string,
+  titulo?: string,
+  maxChars = 850
+): Array<{ id: string; rotulo: string; tipo: string; texto: string; textoTTS: string }> {
   const linhas = (textoCompleto || "")
     .split(/\r?\n/)
     .map((l) => l.trim())
     .filter(Boolean);
 
-  const partes: Array<{ id: string; rotulo: string; tipo: string; texto: string; textoTTS: string }> = [];
-  let caputAcumulado: string[] = [];
+  const numLimpo = numeroArtigo.replace(/^[Aa]rt\.?\s*/i, "").trim();
+  const numInt = parseInt(numLimpo.replace(/\D/g, ""), 10);
+  const numExt = isNaN(numInt) ? numLimpo : numeroExtenso(numInt);
+  const artFalado = `Artigo ${numExt}`;
+
+  // Monta introdução de contexto
+  let introTTS = `${leiNome}. `;
+  if (capitulo && capitulo.trim()) {
+    introTTS += `${limparTexto(capitulo)}. `;
+  } else if (titulo && titulo.trim()) {
+    introTTS += `${limparTexto(titulo)}. `;
+  }
+  introTTS += `${artFalado}: `;
+
+  const blocos: Array<{ textoOriginal: string; textoTTS: string; tipo: string }> = [];
+  const caputAcumulado: string[] = [];
   let caputFechado = false;
-  let ordem = 1;
 
   for (const linha of linhas) {
     const isParagrafo = /^§|^(?:Par[áa]grafo\s+[úu]nico)/i.test(linha);
@@ -107,87 +127,87 @@ function fatiarArtigo(textoCompleto: string, numeroArtigo: string): Array<{ id: 
 
     if (!caputFechado && caputAcumulado.length > 0) {
       const caputTexto = limparTexto(caputAcumulado.join(" "));
-      partes.push({
-        id: "caput",
-        rotulo: "Caput",
+      const semPrefixo = caputTexto.replace(/^\s*(?:Artigo|Art)\.?\s*\d+[º°]?(?:\s*[-–—]\s*[A-Za-z])?\s*[.\-–—:]?\s*/i, "").trim();
+      blocos.push({
+        textoOriginal: caputTexto,
+        textoTTS: semPrefixo,
         tipo: "caput",
-        texto: caputTexto,
-        textoTTS: normalizarParaTTS(caputTexto, "Caput", numeroArtigo),
       });
       caputFechado = true;
     }
 
     const limpo = limparTexto(linha);
-
-    if (isPena) {
-      partes.push({
-        id: `pena_${ordem++}`,
-        rotulo: "Pena",
-        tipo: "pena",
-        texto: limpo,
-        textoTTS: normalizarParaTTS(limpo, "Pena", numeroArtigo),
-      });
-    } else if (isParagrafo) {
-      const isUnico = /único/i.test(limpo);
-      const matchNum = limpo.match(/§\s*(\d+[º°]?(?:-[A-Za-z])?)/i);
-      const rotulo = isUnico ? "Parágrafo único" : matchNum ? `§ ${matchNum[1]}` : "Parágrafo";
-      partes.push({
-        id: `p_${ordem++}`,
-        rotulo,
-        tipo: "paragrafo",
-        texto: limpo,
-        textoTTS: normalizarParaTTS(limpo, rotulo, numeroArtigo),
-      });
-    } else if (isInciso) {
-      const matchRom = limpo.match(/^([IVXLCDM]+)/i);
-      const rotulo = matchRom ? `Inciso ${matchRom[1]}` : "Inciso";
-      partes.push({
-        id: `inc_${ordem++}`,
-        rotulo,
-        tipo: "inciso",
-        texto: limpo,
-        textoTTS: normalizarParaTTS(limpo, rotulo, numeroArtigo),
-      });
-    } else if (isAlinea) {
-      const matchLetra = limpo.match(/^([a-z])\)/i);
-      const rotulo = matchLetra ? `Alínea ${matchLetra[1]}` : "Alínea";
-      partes.push({
-        id: `al_${ordem++}`,
-        rotulo,
-        tipo: "alinea",
-        texto: limpo,
-        textoTTS: normalizarParaTTS(limpo, rotulo, numeroArtigo),
-      });
-    } else {
-      partes.push({
-        id: `bloco_${ordem++}`,
-        rotulo: `Bloco ${ordem}`,
-        tipo: "outro",
-        texto: limpo,
-        textoTTS: normalizarParaTTS(limpo, `Bloco ${ordem}`, numeroArtigo),
-      });
-    }
+    const tipo = isPena ? "pena" : isParagrafo ? "paragrafo" : isInciso ? "inciso" : isAlinea ? "alinea" : "outro";
+    blocos.push({
+      textoOriginal: limpo,
+      textoTTS: normalizarParaTTS(limpo, tipo, numeroArtigo),
+      tipo,
+    });
   }
 
   if (!caputFechado && caputAcumulado.length > 0) {
     const caputTexto = limparTexto(caputAcumulado.join(" "));
-    partes.push({
-      id: "caput",
-      rotulo: "Caput",
+    const semPrefixo = caputTexto.replace(/^\s*(?:Artigo|Art)\.?\s*\d+[º°]?(?:\s*[-–—]\s*[A-Za-z])?\s*[.\-–—:]?\s*/i, "").trim();
+    blocos.push({
+      textoOriginal: caputTexto,
+      textoTTS: semPrefixo,
       tipo: "caput",
-      texto: caputTexto,
-      textoTTS: normalizarParaTTS(caputTexto, "Caput", numeroArtigo),
     });
   }
 
-  if (partes.length === 0) {
-    const textoFallback = limparTexto(textoCompleto || `Artigo ${numeroArtigo}`);
+  if (blocos.length === 0) {
+    const fb = limparTexto(textoCompleto || `Artigo ${numLimpo}`);
+    blocos.push({ textoOriginal: fb, textoTTS: fb, tipo: "caput" });
+  }
+
+  // Agrupamento contínuo em partes de até ~1 minuto (~850 chars)
+  const partes: Array<{ id: string; rotulo: string; tipo: string; texto: string; textoTTS: string }> = [];
+  let parteAtualOrig: string[] = [];
+  let parteAtualTTS = "";
+  let parteIndex = 1;
+
+  for (let i = 0; i < blocos.length; i++) {
+    const b = blocos[i];
+    const isPrimeiro = i === 0;
+
+    let incTTS = "";
+    if (parteAtualTTS === "") {
+      incTTS = isPrimeiro ? `${introTTS}${b.textoTTS}` : b.textoTTS;
+    } else {
+      incTTS = ` ${b.textoTTS}`;
+    }
+
+    if ((parteAtualTTS + incTTS).length <= maxChars || parteAtualTTS === "") {
+      parteAtualOrig.push(b.textoOriginal);
+      parteAtualTTS += incTTS;
+    } else {
+      partes.push({
+        id: `parte_${parteIndex}`,
+        rotulo: `Parte ${parteIndex}`,
+        tipo: parteIndex === 1 ? "caput" : "continua",
+        texto: parteAtualOrig.join("\n\n"),
+        textoTTS: parteAtualTTS.trim(),
+      });
+      parteIndex++;
+      parteAtualOrig = [b.textoOriginal];
+      parteAtualTTS = b.textoTTS;
+    }
+  }
+
+  if (parteAtualTTS.trim().length > 0) {
     partes.push({
-      id: "caput",
-      rotulo: "Caput",
-      tipo: "caput",
-      texto: textoFallback,
-      textoTTS: normalizarParaTTS(textoFallback, "Caput", numeroArtigo),
+      id: `parte_${parteIndex}`,
+      rotulo: parteIndex === 1 ? "Artigo Completo" : `Parte ${parteIndex}`,
+      tipo: parteIndex === 1 ? "artigo_completo" : "continua",
+      texto: parteAtualOrig.join("\n\n"),
+      textoTTS: parteAtualTTS.trim(),
+    });
+  }
+
+  if (partes.length > 1) {
+    partes.forEach((p, idx) => {
+      p.rotulo = `Parte ${idx + 1} de ${partes.length}`;
+      if (idx > 0) p.tipo = "continua";
     });
   }
 
@@ -363,8 +383,15 @@ Deno.serve(async (req) => {
 
     console.log(`[Automação] Processando Artigo ${numAlvo} de ${tabelaAlvo} (${textoAlvo.length} chars)`);
 
-    // 6. Fatia em partes
-    const partes = fatiarArtigo(textoAlvo, numAlvo);
+    // 6. Fatia em partes contínuas (até ~1 minuto por áudio com introdução da Lei/Capítulo)
+    const leiNomeFormatada = tabelaAlvo === "CP_CODIGO_PENAL" ? "Código Penal" : tabelaAlvo.replace(/_/g, " ");
+    const partes = fatiarArtigo(
+      textoAlvo,
+      numAlvo,
+      leiNomeFormatada,
+      artigoAlvo.capitulo,
+      artigoAlvo.titulo
+    );
     console.log(`[Automação] Fatiado em ${partes.length} partes`);
 
     const partesResultado: Array<any> = [];

@@ -1,20 +1,22 @@
-# Tarefas - Ajuste de Último Acesso e Otimização da Lista de Usuários
+# Tarefas - Correção da Exclusão e Narração Contínua de Artigos (Até 1 Minuto e Áudio Unificado)
 
-- [x] Investigação e Diagnóstico <!-- id: 0 -->
-  - [x] Identificar causa de "Nunca acessou" (ignorado `last_sign_in_at` e `created_at`) <!-- id: 0.1 -->
-  - [x] Identificar causa de "fica só carregando" (serialização de requisições + renderização de 7.7k nós DOM simultâneos) <!-- id: 0.2 -->
-  - [x] Identificar falha no downgrade de Juliete (RLS em profiles e falta da ação no RPC de admin) <!-- id: 0.3 -->
-- [x] Atualização do Backend (Edge Functions & RPCs) <!-- id: 1 -->
-  - [x] Adicionar suporte à ação 'downgrade' no RPC `admin_gerenciar_usuario` com SECURITY DEFINER <!-- id: 1.1 -->
-  - [x] Adicionar suporte ao parâmetro `since` na Edge Function `admin-list-users` para sincronização incremental rápida <!-- id: 1.2 -->
-  - [x] Criar e executar Edge Function `admin-asaas-overdue` para auditar todos os inadimplentes mensais > 3 dias no Asaas <!-- id: 1.3 -->
-  - [x] Rebaixar Juliete e demais usuários inadimplentes pendentes para o plano gratuito <!-- id: 1.4 -->
-- [x] Otimização e Cache no Frontend (`src/pages/AdminUsuarios.tsx` & `UserDossieSheet.tsx`) <!-- id: 2 -->
-  - [x] Implementar cache persistente em IndexedDB (`idb-keyval`) para abertura em 0ms <!-- id: 2.1 -->
-  - [x] Sincronização incremental em segundo plano apenas dos usuários mais recentes <!-- id: 2.2 -->
-  - [x] Botão de sincronização manual com feedback visual <!-- id: 2.3 -->
-  - [x] Integrar ação de downgrade de `UserDossieSheet` ao RPC administrativo <!-- id: 2.4 -->
-- [x] Validação e Auditoria <!-- id: 3 -->
-  - [x] Checagem de TypeScript com `tsc.CMD --noEmit` <!-- id: 3.1 -->
-  - [x] Build com `vite.CMD build` <!-- id: 3.2 -->
-  - [x] Commit e Push automático no Git <!-- id: 3.3 -->
+- [x] 1. Modal de Confirmação Seguro para Exclusão de Narração <!-- id: 1 -->
+  - [x] Garantir que o clique na lixeira abra imediatamente o `Dialog` de confirmação sem bloqueios <!-- id: 1.1 -->
+  - [x] Normalizar busca de chaves (`numLimpo`, `artigo.numero`, dígitos numéricos `1`, `1º`) em `apagarNarracaoArtigo` no banco e storage <!-- id: 1.2 -->
+  - [x] Atualização reativa de `statusNarracoes` limpando o artigo e permitindo re-narração instantânea <!-- id: 1.3 -->
+- [x] 2. Narração Contínua Unificada (~1 Minuto com Quebra em Ponto Final) <!-- id: 2 -->
+  - [x] Início com enunciação do nome da lei ("Direito Penal" para CP, "Constituição Federal", etc.) <!-- id: 2.1 -->
+  - [x] Enunciação do Título e Capítulo contextuais quando existirem <!-- id: 2.2 -->
+  - [x] Enunciação do Artigo ("Artigo primeiro: ...") com caput, parágrafos e incisos em texto contínuo <!-- id: 2.3 -->
+  - [x] Fatiamento inteligente em teto de ~1 minuto (~800-850 caracteres) parando estritamente no próximo ponto final <!-- id: 2.4 -->
+  - [x] Concatenação/Unificação de todos os blocos de áudio WAV gerados em 1 único áudio contínuo ("Aí juntar tudo") <!-- id: 2.5 -->
+- [x] 3. Atualização da Interface `AdminNarracaoLeis.tsx` <!-- id: 3 -->
+  - [x] Badge simplificado indicando narração completa unificada <!-- id: 3.1 -->
+  - [x] Botão de reprodução tocando o áudio completo com 1 clique <!-- id: 3.2 -->
+  - [x] Modal de exclusão com visual moderno, acessível e sem dependência de `window.confirm` <!-- id: 3.3 -->
+- [x] 4. Atualização da Edge Function de Automação <!-- id: 4 -->
+  - [x] Sincronizar regras na Edge Function `narracao-leis-automacao` <!-- id: 4.1 -->
+- [x] 5. Validação, Compilação e Versionamento <!-- id: 5 -->
+  - [x] Validação de tipos com `tsc.CMD --noEmit` <!-- id: 5.1 -->
+  - [x] Validação de build com `vite.CMD build` <!-- id: 5.2 -->
+  - [x] Auto-commit e push para o GitHub <!-- id: 5.3 -->

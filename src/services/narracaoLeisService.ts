@@ -4,7 +4,12 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
-import { parseArtigoEmPartes, type ArtigoParte, type ArtigoEstruturado } from '@/utils/artigoPartesParser';
+import {
+  parseArtigoEmNarracaoContinua,
+  parseArtigoEmPartes,
+  type ArtigoParte,
+  type ArtigoEstruturado,
+} from '@/utils/artigoPartesParser';
 import type { ArtigoLei } from '@/data/mockData';
 
 export interface VozTTS {
@@ -107,16 +112,26 @@ export async function buscarStatusNarracoes(tabelaNome: string): Promise<Record<
     const mapa: Record<string, NarracaoArtigoRegistro> = {};
     (data || []).forEach((row: any) => {
       const num = String(row.artigo_numero).trim();
+      const numDigitos = num.replace(/\D/g, '');
       let partes: ArtigoParte[] | undefined;
       if (row.word_timings && typeof row.word_timings === 'object' && Array.isArray(row.word_timings.partes)) {
         partes = row.word_timings.partes;
       }
-      mapa[num] = {
+      const reg: NarracaoArtigoRegistro = {
         artigo_numero: num,
         audio_url: row.audio_url,
         partes,
         created_at: row.created_at,
       };
+
+      mapa[num] = reg;
+      if (numDigitos) {
+        mapa[numDigitos] = reg;
+        mapa[`${numDigitos}º`] = reg;
+        mapa[`${numDigitos}°`] = reg;
+        mapa[`Art. ${numDigitos}`] = reg;
+        mapa[`Art. ${numDigitos}º`] = reg;
+      }
     });
 
     return mapa;
@@ -288,46 +303,83 @@ export async function apagarPreviaAudio(id: string, storagePath?: string): Promi
 }
 
 /**
- * Apaga a narração de um artigo da tabela narracoes_artigos e remove os áudios do Storage.
+ * Apaga a narração de um artigo da tabela narracoes_artigos e remove todos os áudios do Storage.
  */
 export async function apagarNarracaoArtigo(tabelaNome: string, artigoNumero: string): Promise<void> {
-  // Busca o registro para obter partes com paths do storage
+  const numLimpo = String(artigoNumero).replace(/^[Aa]rt\.?\s*/i, '').trim();
+  const numDigitos = numLimpo.replace(/\D/g, '');
+  const variantes = Array.from(new Set([
+    artigoNumero,
+    numLimpo,
+    `Art. ${numLimpo}`,
+    `Artigo ${numLimpo}`,
+    `Art. ${artigoNumero}`,
+    ...(numDigitos ? [
+      numDigitos,
+      `${numDigitos}º`,
+      `${numDigitos}°`,
+      `Art. ${numDigitos}`,
+      `Art. ${numDigitos}º`,
+      `Art. ${numDigitos}°`,
+      `Artigo ${numDigitos}`,
+      `Artigo ${numDigitos}º`,
+    ] : []),
+  ]));
+
+  // 1. Busca os registros no banco para extrair todos os links de áudio salvos
   const { data: rows } = await supabase
     .from('narracoes_artigos')
-    .select('word_timings')
+    .select('audio_url, word_timings')
     .eq('tabela_nome', tabelaNome)
-    .eq('artigo_numero', artigoNumero)
-    .limit(1);
+    .in('artigo_numero', variantes);
 
-  // Remove áudios do storage
-  const row = rows?.[0];
-  if (row?.word_timings && typeof row.word_timings === 'object' && Array.isArray((row.word_timings as any).partes)) {
-    const partes = (row.word_timings as any).partes as ArtigoParte[];
-    const storagePaths: string[] = [];
-    for (const p of partes) {
-      if (p.audioUrl && p.audioUrl.includes('/audios/')) {
-        // Extrai o path relativo do storage a partir da URL
-        const match = p.audioUrl.match(/\/audios\/([^?]+)/);
-        if (match?.[1]) {
-          storagePaths.push(decodeURIComponent(match[1]));
+  const storagePaths: string[] = [];
+
+  (rows || []).forEach((row: any) => {
+    if (row.audio_url && typeof row.audio_url === 'string' && row.audio_url.includes('/audios/')) {
+      const match = row.audio_url.match(/\/audios\/([^?]+)/);
+      if (match?.[1]) storagePaths.push(decodeURIComponent(match[1]));
+    }
+    if (row?.word_timings && typeof row.word_timings === 'object' && Array.isArray((row.word_timings as any).partes)) {
+      const partes = (row.word_timings as any).partes as ArtigoParte[];
+      for (const p of partes) {
+        if (p.audioUrl && p.audioUrl.includes('/audios/')) {
+          const match = p.audioUrl.match(/\/audios\/([^?]+)/);
+          if (match?.[1]) storagePaths.push(decodeURIComponent(match[1]));
         }
       }
     }
-    if (storagePaths.length > 0) {
-      try {
-        await supabase.storage.from('audios').remove(storagePaths);
-      } catch (err) {
-        console.warn('[apagarNarracaoArtigo] Erro ao remover do storage:', err);
-      }
+  });
+
+  // Adiciona também caminhos convencionais para limpeza profunda
+  const safeNums = Array.from(new Set([
+    numLimpo.replace(/[^a-zA-Z0-9]/g, '_'),
+    numDigitos,
+  ].filter(Boolean)));
+
+  for (const s of safeNums) {
+    storagePaths.push(`narracoes/${tabelaNome}/fatiado/${s}_art_${s}_completo.wav`);
+    storagePaths.push(`narracoes/${tabelaNome}/fatiado/${s}_art_${s}_parte_1.wav`);
+    storagePaths.push(`narracoes/${tabelaNome}/fatiado/${s}_art_${s}_parte_2.wav`);
+    storagePaths.push(`narracoes/${tabelaNome}/fatiado/${s}_art_${s}_parte_3.wav`);
+    storagePaths.push(`narracoes/${tabelaNome}/fatiado/${s}_art_${s}_caput.wav`);
+  }
+
+  const pathsUnicos = Array.from(new Set(storagePaths.filter(Boolean)));
+  if (pathsUnicos.length > 0) {
+    try {
+      await supabase.storage.from('audios').remove(pathsUnicos);
+    } catch (err) {
+      console.warn('[apagarNarracaoArtigo] Erro ao remover do storage:', err);
     }
   }
 
-  // Remove registro do banco
+  // 2. Remove todos os registros deste artigo da tabela narracoes_artigos
   const { error } = await supabase
     .from('narracoes_artigos')
     .delete()
     .eq('tabela_nome', tabelaNome)
-    .eq('artigo_numero', artigoNumero);
+    .in('artigo_numero', variantes);
 
   if (error) {
     throw new Error(error.message || 'Falha ao excluir narração do banco');
@@ -355,7 +407,87 @@ export async function testarVozAudio(texto: string, voz: string, estilo: string)
 }
 
 /**
- * Gera a narração de um artigo fatiada em partes (Caput, Pena, Parágrafos, Incisos).
+ * Concatena múltiplos arquivos de áudio WAV (mesmo formato PCM 24kHz 16-bit mono) em um único WAV contínuo.
+ */
+export function concatenarWavs(blobsOrBuffers: Uint8Array[]): Uint8Array {
+  if (blobsOrBuffers.length === 0) return new Uint8Array(0);
+  if (blobsOrBuffers.length === 1) return blobsOrBuffers[0];
+
+  const pcmChunks: Uint8Array[] = [];
+  let totalPcmBytes = 0;
+
+  for (const wav of blobsOrBuffers) {
+    if (wav.length <= 44) continue;
+    // Varre procurando o subchunk 'data'
+    const view = new DataView(wav.buffer, wav.byteOffset, wav.byteLength);
+    let pcmOffset = 44;
+    let pcmLength = wav.byteLength - 44;
+
+    let offset = 12;
+    while (offset < wav.byteLength - 8) {
+      const chunkId = String.fromCharCode(
+        view.getUint8(offset),
+        view.getUint8(offset + 1),
+        view.getUint8(offset + 2),
+        view.getUint8(offset + 3)
+      );
+      const chunkSize = view.getUint32(offset + 4, true);
+      if (chunkId === 'data') {
+        pcmOffset = offset + 8;
+        pcmLength = Math.min(chunkSize, wav.byteLength - pcmOffset);
+        break;
+      }
+      offset += 8 + chunkSize;
+    }
+
+    const pcm = wav.subarray(pcmOffset, pcmOffset + pcmLength);
+    pcmChunks.push(pcm);
+    totalPcmBytes += pcm.length;
+  }
+
+  const sampleRate = 24000;
+  const numChannels = 1;
+  const bitsPerSample = 16;
+  const byteRate = sampleRate * numChannels * (bitsPerSample / 8);
+  const blockAlign = numChannels * (bitsPerSample / 8);
+
+  const outBuffer = new ArrayBuffer(44 + totalPcmBytes);
+  const view = new DataView(outBuffer);
+
+  const writeString = (offset: number, str: string) => {
+    for (let i = 0; i < str.length; i++) {
+      view.setUint8(offset + i, str.charCodeAt(i));
+    }
+  };
+
+  writeString(0, 'RIFF');
+  view.setUint32(4, 36 + totalPcmBytes, true);
+  writeString(8, 'WAVE');
+  writeString(12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true); // PCM
+  view.setUint16(22, numChannels, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, byteRate, true);
+  view.setUint16(32, blockAlign, true);
+  view.setUint16(34, bitsPerSample, true);
+  writeString(36, 'data');
+  view.setUint32(40, totalPcmBytes, true);
+
+  const outBytes = new Uint8Array(outBuffer);
+  let offset = 44;
+  for (const chunk of pcmChunks) {
+    outBytes.set(chunk, offset);
+    offset += chunk.length;
+  }
+
+  return outBytes;
+}
+
+/**
+ * Gera a narração contínua de um artigo (com introdução contextual da Lei e Capítulo/Título)
+ * fatiando de forma inteligente em no máximo ~1 minuto (~850 caracteres) por chamada de TTS,
+ * e unificando todas as partes em 1 único arquivo de áudio WAV contínuo para reprodução fluida.
  */
 export async function gerarNarracaoArtigoFatiada(
   artigo: ArtigoLei,
@@ -365,21 +497,26 @@ export async function gerarNarracaoArtigoFatiada(
   estilo: string,
   onProgress?: (parteAtual: number, totalPartes: number, rotuloParte: string) => void
 ): Promise<{ audioUrl: string; partes: ArtigoParte[] }> {
-  const estruturado: ArtigoEstruturado = parseArtigoEmPartes(artigo);
+  // Novo modelo contínuo com introdução da Lei/Capítulo e teto de ~1 minuto
+  const estruturado: ArtigoEstruturado = parseArtigoEmNarracaoContinua(artigo, {
+    leiNome,
+    tabelaNome,
+    maxCharsPorParte: 850,
+  });
   const partesResultado: ArtigoParte[] = [];
+  const rawAudioBytes: Uint8Array[] = [];
 
   for (let i = 0; i < estruturado.partes.length; i++) {
     const parte = estruturado.partes[i];
     onProgress?.(i + 1, estruturado.partes.length, parte.rotulo);
 
-    // Gera áudio desta parte específica (com retry e delay entre partes para evitar rate limit)
+    // Gera áudio desta parte específica (com retry e delay para robustez)
     let data: any = null;
     let lastError: string | null = null;
     const MAX_RETRIES = 3;
 
     for (let tentativa = 0; tentativa < MAX_RETRIES; tentativa++) {
       if (tentativa > 0) {
-        // Backoff exponencial: 3s, 6s, 12s
         const delayMs = 3000 * Math.pow(2, tentativa - 1);
         await new Promise((r) => setTimeout(r, delayMs));
       }
@@ -407,7 +544,7 @@ export async function gerarNarracaoArtigoFatiada(
       throw new Error(`Falha ao gerar parte ${parte.rotulo}: ${lastError || 'Sem áudio gerado'}`);
     }
 
-    // Delay de 1.5s entre partes para evitar rate limit do Gemini
+    // Delay de 1.5s entre partes se houver mais de uma
     if (i < estruturado.partes.length - 1) {
       await new Promise((r) => setTimeout(r, 1500));
     }
@@ -419,6 +556,9 @@ export async function gerarNarracaoArtigoFatiada(
     try {
       const resp = await fetch(audioDataUrl);
       const blob = await resp.blob();
+      const arrayBuf = await blob.arrayBuffer();
+      rawAudioBytes.push(new Uint8Array(arrayBuf));
+
       const safeNum = String(artigo.numero).replace(/[^a-zA-Z0-9]/g, '_');
       const storagePath = `narracoes/${tabelaNome}/fatiado/${safeNum}_${parte.id}.wav`;
 
@@ -444,10 +584,35 @@ export async function gerarNarracaoArtigoFatiada(
     });
   }
 
-  const audioPrincipal = partesResultado[0]?.audioUrl || '';
+  let audioPrincipal = partesResultado[0]?.audioUrl || '';
+
+  // Se o artigo possui mais de 1 parte, concatena todas em 1 único arquivo WAV unificado
+  if (rawAudioBytes.length > 1) {
+    try {
+      const wavUnificado = concatenarWavs(rawAudioBytes);
+      const safeNum = String(artigo.numero).replace(/[^a-zA-Z0-9]/g, '_');
+      const storagePathUnificado = `narracoes/${tabelaNome}/fatiado/${safeNum}_art_${safeNum}_completo.wav`;
+      const blobUnificado = new Blob([wavUnificado.buffer as ArrayBuffer], { type: 'audio/wav' });
+
+      const { error: upErr } = await supabase.storage
+        .from('audios')
+        .upload(storagePathUnificado, blobUnificado, { contentType: 'audio/wav', upsert: true });
+
+      if (!upErr) {
+        const { data: signed } = await supabase.storage
+          .from('audios')
+          .createSignedUrl(storagePathUnificado, 60 * 60 * 24 * 365 * 5);
+        if (signed?.signedUrl) {
+          audioPrincipal = signed.signedUrl;
+        }
+      }
+    } catch (concatErr) {
+      console.warn('[gerarNarracaoArtigoFatiada] Falha ao concatenar WAVs unificados:', concatErr);
+    }
+  }
 
   // Persiste no banco de dados na tabela narracoes_artigos
-  const numLimpo = String(artigo.numero).replace(/^[Aa]rt\.?\s*/, '').trim();
+  const numLimpo = String(artigo.numero).replace(/^[Aa]rt\.?\s*/i, '').trim();
   const { error: dbErr } = await supabase.from('narracoes_artigos').upsert(
     {
       tabela_nome: tabelaNome,

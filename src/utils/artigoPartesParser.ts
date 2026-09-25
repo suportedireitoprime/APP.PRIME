@@ -1,13 +1,21 @@
 /**
- * Parser de Artigos em Partes Estruturadas (Caput, Pena, Parágrafos, Incisos, Alíneas).
+ * Parser de Artigos para Narração Contínua e Fatiamento Inteligente (~1 minuto por áudio).
  * 
- * Permite que a narração seja gerada e reproduzida em partes modulares,
- * possibilitando o destaque visual (grifo) de cada bloco estrutural correspondente.
+ * Regras Centrais:
+ * 1. Narração Contínua: o artigo é narrado fluido, sem micro-cortes picotados por blocos de 3 segundos.
+ * 2. Introdução Contextual Obrigatória:
+ *    - Enuncia a Lei (ex: "Código Penal")
+ *    - Enuncia o Capítulo / Título se houver (ex: "Capítulo primeiro: Da Aplicação da Lei Penal")
+ *    - Enuncia o Artigo (ex: "Artigo primeiro: ...")
+ * 3. Limite Seguro de ~1 Minuto (~800 a 850 caracteres por áudio):
+ *    - Se o artigo couber em até ~850 caracteres, gera 1 ÚNICO áudio contínuo.
+ *    - Se ultrapassar 1 minuto (ex: Art. 5º CF/88), fatia no próximo ponto final / fim de parágrafo / inciso
+ *      para preservar a cadência natural e não distorcer a voz da IA.
  */
 
 import type { ArtigoLei } from '@/data/mockData';
 
-export type TipoParteArtigo = 'caput' | 'pena' | 'paragrafo' | 'inciso' | 'alinea' | 'outro';
+export type TipoParteArtigo = 'caput' | 'pena' | 'paragrafo' | 'inciso' | 'alinea' | 'outro' | 'artigo_completo' | 'continua';
 
 export interface ArtigoParte {
   id: string;
@@ -23,6 +31,8 @@ export interface ArtigoParte {
 export interface ArtigoEstruturado {
   artigoNumero: string;
   titulo?: string;
+  capitulo?: string;
+  leiNome?: string;
   partes: ArtigoParte[];
   totalCaracteres: number;
   totalPartes: number;
@@ -52,7 +62,7 @@ const ROMANOS_ORDINAIS: Record<string, string> = {
 const ORDINAIS_UNIDADES = ['', 'primeiro', 'segundo', 'terceiro', 'quarto', 'quinto', 'sexto', 'sétimo', 'oitavo', 'nono'];
 const ORDINAIS_DEZENAS = ['', '', 'vigésimo', 'trigésimo', 'quadragésimo', 'quinquagésimo', 'sexagésimo', 'septuagésimo', 'octogésimo', 'nonagésimo'];
 
-function numeroParaOrdinal(n: number): string {
+export function numeroParaOrdinal(n: number): string {
   if (n <= 0) return String(n);
   if (n === 10) return 'décimo';
   if (n < 10) return ORDINAIS_UNIDADES[n];
@@ -65,7 +75,7 @@ function numeroParaOrdinal(n: number): string {
   return String(n);
 }
 
-function numeroParaCardinal(n: number): string {
+export function numeroParaCardinal(n: number): string {
   const unidades = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'];
   const dezenas10a19 = ['dez', 'onze', 'doze', 'treze', 'quatorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'];
   const dezenas = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
@@ -88,14 +98,14 @@ function numeroParaCardinal(n: number): string {
   return String(n);
 }
 
-function numeroExtensoJuridico(n: number): string {
+export function numeroExtensoJuridico(n: number): string {
   if (n >= 1 && n <= 9) return numeroParaOrdinal(n);
   return numeroParaCardinal(n);
 }
 
 /** Limpa anotações editoriais do Planalto entre parênteses como (Redação dada pela...) */
 export function limparAnotacoesEditoriais(texto: string): string {
-  return texto
+  return (texto || '')
     .replace(/\(\s*(?:Reda[çc][ãa]o\s+dada|Inclu[ií]d[oa]|Acrescid[oa]|Alterad[oa]|Renumerad[oa]|Vide|Vig[êe]ncia|Regulamento|Produ[çc][ãa]o\s+de\s+efeitos|NR)[^)]*\)/gi, '')
     .replace(/\(\s*(?:Lei\s+(?:n[ºo°]?\s*)?\d|Decreto|Medida\s+Provis[oó]ria|Emenda\s+Constitucional|Lei\s+Complementar)[^)]*\)/gi, '')
     .replace(/\s{2,}/g, ' ')
@@ -103,17 +113,112 @@ export function limparAnotacoesEditoriais(texto: string): string {
 }
 
 /**
- * Normaliza o texto de um bloco específico para áudio TTS em português do Brasil
+ * Converte o nome da lei em uma pronúncia formal limpa para início da narração.
+ * Exemplo explícito: Código Penal -> "Direito Penal".
  */
-export function normalizarParteParaTTS(blocoTexto: string, rotulo: string, numeroArtigo?: string): string {
+export function formatarNomeLeiParaTTS(leiNome?: string, tabelaNome?: string): string {
+  const base = (leiNome || '').trim();
+  const tab = (tabelaNome || '').trim();
+
+  // Código Penal -> "Direito Penal" (solicitado explicitamente pelo usuário)
+  if (/^CP_CODIGO_PENAL$/i.test(tab) || /c[oó]digo\s*penal/i.test(base) || /c[oó]digo\s*penal/i.test(tab) || /^cp$/i.test(base) || /^direito\s*penal$/i.test(base)) {
+    return 'Direito Penal';
+  }
+  if (/^CC_CODIGO_CIVIL$/i.test(tab) || /c[oó]digo\s*civil/i.test(base) || /^cc$/i.test(base)) {
+    return 'Direito Civil';
+  }
+  if (/^CPP_CODIGO_PROCESSO_PENAL$/i.test(tab) || /processo\s*penal/i.test(base) || /^cpp$/i.test(base)) {
+    return 'Direito Processual Penal';
+  }
+  if (/^CPC_CODIGO_PROCESSO_CIVIL$/i.test(tab) || /processo\s*civil/i.test(base) || /^cpc$/i.test(base)) {
+    return 'Direito Processual Civil';
+  }
+  if (/^CF88_CONSTITUICAO_FEDERAL$/i.test(tab) || /constitui[çc][ãa]o/i.test(base) || /^cf/i.test(base)) {
+    return 'Direito Constitucional, Constituição Federal';
+  }
+  if (/^CLT/i.test(tab) || /trabalho|clt/i.test(base)) {
+    return 'Direito do Trabalho, CLT';
+  }
+  if (/tribut[aá]rio/i.test(base) || /tributario/i.test(tab)) {
+    return 'Direito Tributário';
+  }
+  if (/consumidor/i.test(base) || /consumidor/i.test(tab)) {
+    return 'Direito do Consumidor';
+  }
+  return base || tab.replace(/_/g, ' ');
+}
+
+/**
+ * Converte capítulo / título em fala fonética jurídica.
+ */
+export function formatarContextoEstruturalParaTTS(capitulo?: string, titulo?: string): string {
+  const partes: string[] = [];
+
+  const normalizarRomano = (match: string, rom: string) => {
+    const ord = ROMANOS_ORDINAIS[rom.toUpperCase()];
+    return ord ? ord : rom;
+  };
+
+  if (titulo && titulo.trim()) {
+    let t = limparAnotacoesEditoriais(titulo).trim();
+    if (/^T[ÍI]TULO\s+([IVXLCDM]+)/i.test(t)) {
+      t = t.replace(/^T[ÍI]TULO\s+([IVXLCDM]+)\s*[-–—:]?\s*/i, (_m, rom) => {
+        const ord = ROMANOS_ORDINAIS[rom.toUpperCase()] || rom;
+        return `Título ${ord}: `;
+      });
+    } else if (/^PARTE\s+(GERAL|ESPECIAL)/i.test(t)) {
+      t = t.replace(/^PARTE\s+(GERAL|ESPECIAL)\s*[-–—:]?\s*/i, 'Parte $1: ');
+    }
+    if (t) partes.push(t);
+  }
+
+  if (capitulo && capitulo.trim()) {
+    let c = limparAnotacoesEditoriais(capitulo).trim();
+    if (/^CAP[ÍI]TULO\s+([IVXLCDM]+)/i.test(c)) {
+      c = c.replace(/^CAP[ÍI]TULO\s+([IVXLCDM]+)\s*[-–—:]?\s*/i, (_m, rom) => {
+        const ord = ROMANOS_ORDINAIS[rom.toUpperCase()] || rom;
+        return `Capítulo ${ord}: `;
+      });
+    } else if (/^CAP[ÍI]TULO\s+[ÚU]NICO/i.test(c)) {
+      c = c.replace(/^CAP[ÍI]TULO\s+[ÚU]NICO\s*[-–—:]?\s*/i, 'Capítulo único: ');
+    }
+    if (c) partes.push(c);
+  }
+
+  if (partes.length === 0) return '';
+  return partes.join('. ').replace(/\.\s*\./g, '.').trim();
+}
+
+/**
+ * Converte o número do artigo em fala fonética jurídica.
+ * Ex: "1º" -> "Artigo primeiro", "121" -> "Artigo cento e vinte e um", "121-A" -> "Artigo cento e vinte e um, letra A"
+ */
+export function formatarNumeroArtigoParaTTS(numeroArtigo: string): string {
+  const limpo = numeroArtigo.replace(/^[Aa]rt\.?\s*/i, '').trim();
+  const match = limpo.match(/^(\d+)(?:[º°])?(?:-([A-Za-z]))?/i);
+  if (match) {
+    const numInt = parseInt(match[1], 10);
+    const sufixo = match[2];
+    const numExt = isNaN(numInt) ? match[1] : numeroExtensoJuridico(numInt);
+    if (sufixo) {
+      const letraExt = LETRAS_EXTENSO[sufixo.toLowerCase()] || sufixo.toUpperCase();
+      return `Artigo ${numExt}, letra ${letraExt}`;
+    }
+    return `Artigo ${numExt}`;
+  }
+  return `Artigo ${limpo}`;
+}
+
+/**
+ * Normaliza blocos de texto (parágrafos, incisos, penas) para leitura de áudio fluida.
+ */
+export function normalizarParteParaTTS(blocoTexto: string, rotulo?: string, numeroArtigo?: string): string {
   let r = limparAnotacoesEditoriais(blocoTexto);
 
-  // Se for o Caput e ainda não tiver o prefixo formal, ajusta
-  if (rotulo.toLowerCase().includes('caput') && numeroArtigo) {
+  if (rotulo && rotulo.toLowerCase().includes('caput') && numeroArtigo) {
     const limpoSemArt = r.replace(/^\s*(?:Artigo|Art)\.?\s*\d+[º°]?(?:\s*[-–—]\s*[A-Za-z])?\s*[.\-–—:]?\s*/i, '').trim();
-    const numInt = parseInt(numeroArtigo.replace(/\D/g, ''), 10);
-    const numExt = isNaN(numInt) ? numeroArtigo : numeroExtensoJuridico(numInt);
-    r = `Artigo ${numExt}. ${limpoSemArt}`;
+    const artFalado = formatarNumeroArtigoParaTTS(numeroArtigo);
+    r = `${artFalado}. ${limpoSemArt}`;
   }
 
   // Parágrafos: § 1º -> "Parágrafo primeiro.", § 10 -> "Parágrafo dez."
@@ -142,83 +247,98 @@ export function normalizarParteParaTTS(blocoTexto: string, rotulo: string, numer
   r = r.replace(/\bCP\b/g, 'Código Penal')
        .replace(/\bCC\b/g, 'Código Civil')
        .replace(/\bCF\b/g, 'Constituição Federal')
-       .replace(/\breclus[ãa]o\b/gi, 'reclusão')
-       .replace(/\bdeten[çc][ãa]o\b/gi, 'detenção');
+       .replace(/\bCPP\b/g, 'Código de Processo Penal');
 
-  return r.trim();
+  return r.replace(/\s{2,}/g, ' ').trim();
+}
+
+export interface OpcoesParseArtigo {
+  leiNome?: string;
+  tabelaNome?: string;
+  /** Limite máximo de caracteres por áudio (padrão 850 chars ≈ 1 minuto de fala) */
+  maxCharsPorParte?: number;
 }
 
 /**
- * Fatiador inteligente de artigo em partes (Caput, Pena, Parágrafos, Incisos, Alíneas).
+ * Fatiador Contínuo com Introdução de Contexto e Limite de ~1 Minuto por Áudio.
+ * 
+ * Estrutura:
+ * 1. Introdução: [Nome da Lei]. [Capítulo/Título se houver]. [Artigo X]: [Caput].
+ * 2. Concatenação contínua de parágrafos, incisos e penas sem picotar.
+ * 3. Se o total couber em ~850 caracteres, gera 1 parte única.
+ * 4. Se passar de ~850 caracteres, divide em pontos finais / quebras naturais de parágrafo/inciso,
+ *    criando Parte 1, Parte 2, etc. cada uma respeitando ~1 minuto.
  */
-export function parseArtigoEmPartes(artigo: ArtigoLei): ArtigoEstruturado {
-  const partes: ArtigoParte[] = [];
+export function parseArtigoEmNarracaoContinua(
+  artigo: ArtigoLei,
+  opcoes?: OpcoesParseArtigo
+): ArtigoEstruturado {
+  const maxChars = opcoes?.maxCharsPorParte || 850;
   const rawCaput = artigo.caput || '';
-  let ordem = 1;
+  const numArtigoLimpo = String(artigo.numero).replace(/^[Aa]rt\.?\s*/i, '').trim();
 
-  // Quebra por linhas preservando parágrafos e incisos
-  const linhas = rawCaput
+  // 1. Monta os elementos da introdução
+  const nomeLeiFalado = formatarNomeLeiParaTTS(opcoes?.leiNome, opcoes?.tabelaNome);
+  const contextoEstruturalFalado = formatarContextoEstruturalParaTTS(artigo.capitulo, artigo.titulo);
+  const prefixoArtigoFalado = formatarNumeroArtigoParaTTS(artigo.numero);
+
+  let introTTS = '';
+  if (nomeLeiFalado) introTTS += `${nomeLeiFalado}. `;
+  if (contextoEstruturalFalado) introTTS += `${contextoEstruturalFalado}. `;
+  introTTS += `${prefixoArtigoFalado}: `;
+
+  // 2. Extrai os blocos textuais ordenados do artigo
+  const blocosBrutos: Array<{ textoOriginal: string; textoTTS: string; tipo: TipoParteArtigo }> = [];
+
+  // Linhas do caput
+  const linhasCaput = rawCaput
     .split(/\r?\n/)
-    .map(l => l.trim())
+    .map((l) => l.trim())
     .filter(Boolean);
 
-  // Se não tiver quebras mas tiver os arrays separados de paragrafos/incisos
   const hasSeparatedFields = (artigo.paragrafos && artigo.paragrafos.length > 0) ||
                              (artigo.incisos && artigo.incisos.length > 0);
 
-  if (linhas.length <= 1 && hasSeparatedFields) {
-    // 1. Caput
+  if (linhasCaput.length <= 1 && hasSeparatedFields) {
+    // Caput
     const caputLimpo = limparAnotacoesEditoriais(rawCaput);
-    partes.push({
-      id: `art_${artigo.numero}_caput`,
-      ordem: ordem++,
+    const caputSemPrefixo = caputLimpo.replace(/^\s*(?:Artigo|Art)\.?\s*\d+[º°]?(?:\s*[-–—]\s*[A-Za-z])?\s*[.\-–—:]?\s*/i, '').trim();
+    blocosBrutos.push({
+      textoOriginal: caputLimpo,
+      textoTTS: caputSemPrefixo,
       tipo: 'caput',
-      rotulo: 'Caput',
-      texto: caputLimpo,
-      textoTTS: normalizarParteParaTTS(caputLimpo, 'Caput', artigo.numero),
     });
 
-    // 2. Incisos se houver
+    // Incisos
     if (artigo.incisos) {
-      artigo.incisos.forEach((inc, idx) => {
+      artigo.incisos.forEach((inc) => {
         const limpo = limparAnotacoesEditoriais(inc);
-        const matchRom = limpo.match(/^([IVXLCDM]+)/i);
-        const rotuloInc = matchRom ? `Inciso ${matchRom[1]}` : `Inciso ${idx + 1}`;
-        partes.push({
-          id: `art_${artigo.numero}_inc_${idx + 1}`,
-          ordem: ordem++,
+        blocosBrutos.push({
+          textoOriginal: limpo,
+          textoTTS: normalizarParteParaTTS(limpo),
           tipo: 'inciso',
-          rotulo: rotuloInc,
-          texto: limpo,
-          textoTTS: normalizarParteParaTTS(limpo, rotuloInc),
         });
       });
     }
 
-    // 3. Parágrafos se houver
+    // Parágrafos
     if (artigo.paragrafos) {
-      artigo.paragrafos.forEach((par, idx) => {
+      artigo.paragrafos.forEach((par) => {
         const limpo = limparAnotacoesEditoriais(par);
-        const isUnico = /único/i.test(limpo);
-        const matchNum = limpo.match(/§\s*(\d+)/i);
-        const rotuloPar = isUnico ? 'Parágrafo único' : matchNum ? `§ ${matchNum[1]}º` : `Parágrafo ${idx + 1}`;
-        partes.push({
-          id: `art_${artigo.numero}_p_${idx + 1}`,
-          ordem: ordem++,
+        blocosBrutos.push({
+          textoOriginal: limpo,
+          textoTTS: normalizarParteParaTTS(limpo),
           tipo: 'paragrafo',
-          rotulo: rotuloPar,
-          texto: limpo,
-          textoTTS: normalizarParteParaTTS(limpo, rotuloPar),
         });
       });
     }
   } else {
-    // O texto completo está agrupado em linhas ou blocos dentro de rawCaput
-    let caputAcumulado: string[] = [];
+    // O texto completo está agrupado em linhas dentro de rawCaput
+    const caputAcumulado: string[] = [];
     let caputFechado = false;
 
-    for (let i = 0; i < linhas.length; i++) {
-      const linha = linhas[i];
+    for (let i = 0; i < linhasCaput.length; i++) {
+      const linha = linhasCaput[i];
       const isParagrafo = /^§|^(?:Par[áa]grafo\s+[úu]nico)/i.test(linha);
       const isInciso = /^[IVXLCDM]+\s*[-–—.]/i.test(linha);
       const isAlinea = /^[a-z]\)\s*/i.test(linha);
@@ -229,103 +349,132 @@ export function parseArtigoEmPartes(artigo: ArtigoLei): ArtigoEstruturado {
         continue;
       }
 
-      // Fecha o caput se ainda estiver aberto
       if (!caputFechado && caputAcumulado.length > 0) {
-        const textoCaput = caputAcumulado.join(' ');
-        const caputLimpo = limparAnotacoesEditoriais(textoCaput);
-        partes.push({
-          id: `art_${artigo.numero}_caput`,
-          ordem: ordem++,
+        const caputTexto = caputAcumulado.join(' ');
+        const caputLimpo = limparAnotacoesEditoriais(caputTexto);
+        const caputSemPrefixo = caputLimpo.replace(/^\s*(?:Artigo|Art)\.?\s*\d+[º°]?(?:\s*[-–—]\s*[A-Za-z])?\s*[.\-–—:]?\s*/i, '').trim();
+        blocosBrutos.push({
+          textoOriginal: caputLimpo,
+          textoTTS: caputSemPrefixo,
           tipo: 'caput',
-          rotulo: 'Caput',
-          texto: caputLimpo,
-          textoTTS: normalizarParteParaTTS(caputLimpo, 'Caput', artigo.numero),
         });
         caputFechado = true;
       }
 
       const limpo = limparAnotacoesEditoriais(linha);
-
-      if (isPena) {
-        partes.push({
-          id: `art_${artigo.numero}_pena_${ordem}`,
-          ordem: ordem++,
-          tipo: 'pena',
-          rotulo: 'Pena',
-          texto: limpo,
-          textoTTS: normalizarParteParaTTS(limpo, 'Pena'),
-        });
-      } else if (isParagrafo) {
-        const isUnico = /único/i.test(limpo);
-        const matchNum = limpo.match(/§\s*(\d+[º°]?(?:-[A-Za-z])?)/i);
-        const rotulo = isUnico ? 'Parágrafo único' : matchNum ? `§ ${matchNum[1]}` : 'Parágrafo';
-        partes.push({
-          id: `art_${artigo.numero}_p_${ordem}`,
-          ordem: ordem++,
-          tipo: 'paragrafo',
-          rotulo,
-          texto: limpo,
-          textoTTS: normalizarParteParaTTS(limpo, rotulo),
-        });
-      } else if (isInciso) {
-        const matchRom = limpo.match(/^([IVXLCDM]+)/i);
-        const rotulo = matchRom ? `Inciso ${matchRom[1]}` : 'Inciso';
-        partes.push({
-          id: `art_${artigo.numero}_inc_${ordem}`,
-          ordem: ordem++,
-          tipo: 'inciso',
-          rotulo,
-          texto: limpo,
-          textoTTS: normalizarParteParaTTS(limpo, rotulo),
-        });
-      } else if (isAlinea) {
-        const matchLetra = limpo.match(/^([a-z])\)/i);
-        const rotulo = matchLetra ? `Alínea ${matchLetra[1]}` : 'Alínea';
-        partes.push({
-          id: `art_${artigo.numero}_al_${ordem}`,
-          ordem: ordem++,
-          tipo: 'alinea',
-          rotulo,
-          texto: limpo,
-          textoTTS: normalizarParteParaTTS(limpo, rotulo),
-        });
-      } else {
-        partes.push({
-          id: `art_${artigo.numero}_bloco_${ordem}`,
-          ordem: ordem++,
-          tipo: 'outro',
-          rotulo: `Item ${ordem - 1}`,
-          texto: limpo,
-          textoTTS: normalizarParteParaTTS(limpo, `Item ${ordem - 1}`),
-        });
-      }
+      const tipo: TipoParteArtigo = isPena ? 'pena' : isParagrafo ? 'paragrafo' : isInciso ? 'inciso' : isAlinea ? 'alinea' : 'outro';
+      blocosBrutos.push({
+        textoOriginal: limpo,
+        textoTTS: normalizarParteParaTTS(limpo),
+        tipo,
+      });
     }
 
-    // Se só tinha caput
     if (!caputFechado && caputAcumulado.length > 0) {
-      const textoCaput = caputAcumulado.join(' ');
-      const caputLimpo = limparAnotacoesEditoriais(textoCaput);
-      partes.push({
-        id: `art_${artigo.numero}_caput`,
-        ordem: ordem++,
+      const caputTexto = caputAcumulado.join(' ');
+      const caputLimpo = limparAnotacoesEditoriais(caputTexto);
+      const caputSemPrefixo = caputLimpo.replace(/^\s*(?:Artigo|Art)\.?\s*\d+[º°]?(?:\s*[-–—]\s*[A-Za-z])?\s*[.\-–—:]?\s*/i, '').trim();
+      blocosBrutos.push({
+        textoOriginal: caputLimpo,
+        textoTTS: caputSemPrefixo,
         tipo: 'caput',
-        rotulo: 'Caput',
-        texto: caputLimpo,
-        textoTTS: normalizarParteParaTTS(caputLimpo, 'Caput', artigo.numero),
       });
     }
   }
 
-  // Se por algum motivo o artigo for vazio
-  if (partes.length === 0) {
-    const textoFallback = limparAnotacoesEditoriais(rawCaput || `Artigo ${artigo.numero}`);
-    partes.push({
-      id: `art_${artigo.numero}_caput`,
-      ordem: 1,
+  // Se por ventura nenhum bloco foi extraído
+  if (blocosBrutos.length === 0) {
+    const fb = limparAnotacoesEditoriais(rawCaput || `Artigo ${numArtigoLimpo}`);
+    blocosBrutos.push({
+      textoOriginal: fb,
+      textoTTS: fb,
       tipo: 'caput',
-      rotulo: 'Caput',
-      texto: textoFallback,
-      textoTTS: normalizarParteParaTTS(textoFallback, 'Caput', artigo.numero),
+    });
+  }
+
+  // 3. Agrupamento em fatias contínuas de até ~1 minuto (~maxChars) parando estritamente no ponto final
+  // Monta o texto TTS completo com introdução
+  const corpoTTSCompleto = blocosBrutos.map((b) => b.textoTTS.trim()).filter(Boolean).join(' ');
+  const textoOriginalCompleto = blocosBrutos.map((b) => b.textoOriginal.trim()).filter(Boolean).join('\n\n');
+  const textoTTSIntegral = `${introTTS}${corpoTTSCompleto}`.trim();
+
+  const partes: ArtigoParte[] = [];
+
+  // Se o artigo completo cabe dentro de ~1 minuto (~850 caracteres), gera 1 ÚNICA parte contínua
+  if (textoTTSIntegral.length <= maxChars) {
+    partes.push({
+      id: `art_${numArtigoLimpo}_parte_1`,
+      ordem: 1,
+      tipo: 'artigo_completo',
+      rotulo: 'Artigo Completo',
+      texto: textoOriginalCompleto,
+      textoTTS: textoTTSIntegral,
+    });
+  } else {
+    // Ultrapassou 1 minuto: fatia estritamente no próximo ponto final para não distorcer a voz
+    // Divide o corpo em sentenças respeitando pontos finais (. ? !)
+    const sentencasComPontuacao: string[] = [];
+    // Regex que divide mantendo a pontuação final de cada frase
+    const regexSentencas = /[^.!?]+[.!?]+(?:\s+|$)|[^.!?]+$/g;
+    let matchSentenca: RegExpExecArray | null;
+
+    while ((matchSentenca = regexSentencas.exec(corpoTTSCompleto)) !== null) {
+      const s = matchSentenca[0].trim();
+      if (s) sentencasComPontuacao.push(s);
+    }
+
+    if (sentencasComPontuacao.length === 0) {
+      sentencasComPontuacao.push(corpoTTSCompleto);
+    }
+
+    let parteIndex = 1;
+    let acumuladoTTS = introTTS;
+    let acumuladoOrig: string[] = [];
+
+    for (let sIdx = 0; sIdx < sentencasComPontuacao.length; sIdx++) {
+      const sentenca = sentencasComPontuacao[sIdx];
+      const espaco = acumuladoTTS.endsWith(' ') || acumuladoTTS.endsWith(': ') ? '' : ' ';
+      const tamanhoProjetado = acumuladoTTS.length + espaco.length + sentenca.length;
+
+      // Se cabe dentro do teto de ~1 minuto (~850 chars) ou é a primeira sentença da parte
+      if (tamanhoProjetado <= maxChars || acumuladoTTS === introTTS || acumuladoTTS === '') {
+        acumuladoTTS += `${espaco}${sentenca}`;
+      } else {
+        // Ultrapassaria 1 minuto: fecha a parte no ponto final anterior
+        partes.push({
+          id: `art_${numArtigoLimpo}_parte_${parteIndex}`,
+          ordem: parteIndex,
+          tipo: parteIndex === 1 ? 'caput' : 'continua',
+          rotulo: `Parte ${parteIndex}`,
+          texto: acumuladoOrig.length > 0 ? acumuladoOrig.join('\n\n') : acumuladoTTS.replace(introTTS, '').trim(),
+          textoTTS: acumuladoTTS.trim(),
+        });
+        parteIndex++;
+
+        // Inicia a nova parte com a sentença atual
+        acumuladoTTS = sentenca;
+        acumuladoOrig = [];
+      }
+    }
+
+    // Fecha a última parte acumulada
+    if (acumuladoTTS.trim().length > 0) {
+      partes.push({
+        id: `art_${numArtigoLimpo}_parte_${parteIndex}`,
+        ordem: parteIndex,
+        tipo: parteIndex === 1 ? 'artigo_completo' : 'continua',
+        rotulo: `Parte ${parteIndex}`,
+        texto: acumuladoOrig.length > 0 ? acumuladoOrig.join('\n\n') : acumuladoTTS.replace(introTTS, '').trim(),
+        textoTTS: acumuladoTTS.trim(),
+      });
+    }
+
+    // Preenche textos originais correspondentes caso vazios
+    partes.forEach((p, idx) => {
+      p.rotulo = `Parte ${idx + 1} de ${partes.length}`;
+      if (!p.texto || p.texto.length < 5) {
+        p.texto = p.textoTTS.replace(introTTS, '').trim();
+      }
     });
   }
 
@@ -334,9 +483,23 @@ export function parseArtigoEmPartes(artigo: ArtigoLei): ArtigoEstruturado {
   return {
     artigoNumero: artigo.numero,
     titulo: artigo.titulo,
+    capitulo: artigo.capitulo,
+    leiNome: opcoes?.leiNome,
     partes,
     totalCaracteres,
     totalPartes: partes.length,
     possuiSubdivisoes: partes.length > 1,
   };
+}
+
+/**
+ * Função retrocompatível chamada pelas telas existentes.
+ * Por padrão aplica o novo modelo de narração contínua inteligente.
+ */
+export function parseArtigoEmPartes(
+  artigo: ArtigoLei,
+  leiNome?: string,
+  tabelaNome?: string
+): ArtigoEstruturado {
+  return parseArtigoEmNarracaoContinua(artigo, { leiNome, tabelaNome });
 }

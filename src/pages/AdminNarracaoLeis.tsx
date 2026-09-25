@@ -34,7 +34,7 @@ import {
   type ConfigAutomacao,
   type LogAutomacao,
 } from '@/services/narracaoLeisService';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -84,9 +84,11 @@ export default function AdminNarracaoLeis() {
   const [artigoExpandido, setArtigoExpandido] = useState<string | null>(null);
   const [filtroArtigos, setFiltroArtigos] = useState<'todos' | 'narrados' | 'pendentes' | 'maiores'>('todos');
 
-  // Geração de narração fatiada individual
+  // Geração de narração individual
   const [gerandoArtigoNum, setGerandoArtigoNum] = useState<string | null>(null);
   const [apagandoArtigoNum, setApagandoArtigoNum] = useState<string | null>(null);
+  const [artigoParaExcluir, setArtigoParaExcluir] = useState<ArtigoLei | null>(null);
+  const [apagandoArtigo, setApagandoArtigo] = useState(false);
   const [progressoGeracao, setProgressoGeracao] = useState<{ parteAtual: number; totalPartes: number; rotulo: string } | null>(null);
 
   // Player de Áudio Fatiado (com destaque do bloco ativo)
@@ -263,13 +265,13 @@ export default function AdminNarracaoLeis() {
     playNext();
   };
 
-  // Gera narração fatiada para um artigo
+  // Gera narração contínua inteligente para um artigo (com introdução contextual e até ~1 min por áudio)
   const handleGerarNarraçãoIndividual = async (artigo: ArtigoLei) => {
     if (!selectedLei || gerandoArtigoNum) return;
     setGerandoArtigoNum(artigo.numero);
-    setProgressoGeracao({ parteAtual: 1, totalPartes: 1, rotulo: 'Iniciando...' });
+    setProgressoGeracao({ parteAtual: 1, totalPartes: 1, rotulo: 'Iniciando gravação contínua...' });
 
-    const toastId = toast.loading(`Fatiando e narrando Artigo ${artigo.numero}...`);
+    const toastId = toast.loading(`Narrando Artigo ${artigo.numero}...`);
 
     try {
       const voz = configAuto?.voz_padrao || 'Kore';
@@ -286,7 +288,7 @@ export default function AdminNarracaoLeis() {
         }
       );
 
-      const numLimpo = String(artigo.numero).replace(/^[Aa]rt\.?\s*/, '').trim();
+      const numLimpo = String(artigo.numero).replace(/^[Aa]rt\.?\s*/i, '').trim();
       setStatusNarracoes((prev) => ({
         ...prev,
         [numLimpo]: {
@@ -294,9 +296,17 @@ export default function AdminNarracaoLeis() {
           audio_url: res.audioUrl,
           partes: res.partes,
         },
+        [artigo.numero]: {
+          artigo_numero: numLimpo,
+          audio_url: res.audioUrl,
+          partes: res.partes,
+        },
       }));
 
-      toast.success(`Artigo ${artigo.numero} narrado com sucesso em ${res.partes.length} partes!`, { id: toastId });
+      const msg = res.partes.length === 1
+        ? `Artigo ${artigo.numero} gravado com sucesso em 1 áudio contínuo!`
+        : `Artigo ${artigo.numero} gravado com sucesso em ${res.partes.length} partes (~1 min cada)!`;
+      toast.success(msg, { id: toastId });
     } catch (err: any) {
       console.error('Erro na narração individual:', err);
       toast.error(`Falha ao narrar: ${err.message || 'Erro desconhecido'}`, { id: toastId });
@@ -306,33 +316,44 @@ export default function AdminNarracaoLeis() {
     }
   };
 
-  // Apaga a narração fatiada de um artigo
-  const handleApagarNarracaoArtigo = async (artigo: ArtigoLei) => {
-    if (!selectedLei || apagandoArtigoNum) return;
-    const numLimpo = String(artigo.numero).replace(/^[Aa]rt\.?\s*/, '').trim();
-    if (!statusNarracoes[numLimpo]) return;
+  // Confirmação e exclusão real da narração no Supabase (DB + Storage)
+  const handleConfirmarExcluirNarracao = async () => {
+    if (!artigoParaExcluir || !selectedLei) return;
+    const art = artigoParaExcluir;
+    const numLimpo = String(art.numero).replace(/^[Aa]rt\.?\s*/i, '').trim();
 
-    if (!window.confirm(`Tem certeza que deseja excluir a narração do Artigo ${artigo.numero}?`)) return;
-
-    setApagandoArtigoNum(artigo.numero);
-    const toastId = toast.loading(`Excluindo narração do Artigo ${artigo.numero}...`);
+    setApagandoArtigo(true);
+    setApagandoArtigoNum(art.numero);
+    const toastId = toast.loading(`Excluindo narração do Artigo ${art.numero} do Supabase...`);
 
     try {
       await apagarNarracaoArtigo(selectedLei.tabela_nome, numLimpo);
-      
-      // Atualiza o cache local
+
+      // Atualiza o estado local removendo todas as variações de chaves
       setStatusNarracoes((prev) => {
         const novo = { ...prev };
         delete novo[numLimpo];
-        delete novo[artigo.numero];
+        delete novo[art.numero];
+        delete novo[`Art. ${numLimpo}`];
+        delete novo[`Artigo ${numLimpo}`];
         return novo;
       });
 
-      toast.success(`Narração do Artigo ${artigo.numero} excluída com sucesso!`, { id: toastId });
+      // Se estiver tocando este artigo, interrompe
+      if (tocandoUrl || reproduzindoSequencial === art.numero) {
+        if (audioRef.current) audioRef.current.pause();
+        setTocandoUrl(null);
+        setReproduzindoSequencial(null);
+        setBlocoAtivoId(null);
+      }
+
+      toast.success(`Narração do Artigo ${art.numero} excluída com sucesso!`, { id: toastId });
+      setArtigoParaExcluir(null);
     } catch (err: any) {
       console.error('Erro ao excluir narração:', err);
       toast.error(`Falha ao excluir: ${err.message || 'Erro desconhecido'}`, { id: toastId });
     } finally {
+      setApagandoArtigo(false);
       setApagandoArtigoNum(null);
     }
   };
@@ -666,7 +687,7 @@ export default function AdminNarracaoLeis() {
                 const numLimpo = String(artigo.numero).replace(/^[Aa]rt\.?\s*/, '').trim();
                 const reg = statusNarracoes[numLimpo] || statusNarracoes[artigo.numero];
                 const estaNarrado = !!reg?.audio_url;
-                const estruturado = parseArtigoEmPartes(artigo);
+                const estruturado = parseArtigoEmPartes(artigo, selectedLei?.nome, selectedLei?.tabela_nome);
                 const isExpandido = artigoExpandido === artigo.numero;
                 const estaGerando = gerandoArtigoNum === artigo.numero;
                 const partesAtuais = reg?.partes || estruturado.partes;
@@ -690,7 +711,7 @@ export default function AdminNarracaoLeis() {
                           </span>
                           {estaNarrado ? (
                             <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                              <CheckCircle2 className="w-3 h-3" /> Narrado ({partesAtuais.length} blocos)
+                              <CheckCircle2 className="w-3 h-3" /> Narrado ({partesAtuais.length} {partesAtuais.length === 1 ? 'áudio contínuo' : 'partes'})
                             </span>
                           ) : (
                             <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
@@ -698,7 +719,7 @@ export default function AdminNarracaoLeis() {
                             </span>
                           )}
                           <span className="text-[11px] text-muted-foreground font-mono">
-                            {estruturado.totalCaracteres} chars · {estruturado.totalPartes} partes
+                            {estruturado.totalCaracteres} chars · {estruturado.totalPartes === 1 ? '1 áudio contínuo (~1 min)' : `${estruturado.totalPartes} partes (~1 min cada)`}
                           </span>
                         </div>
 
@@ -729,10 +750,10 @@ export default function AdminNarracaoLeis() {
                               {estaTocandoSequencial ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                             </button>
                             <button
-                              onClick={() => handleApagarNarracaoArtigo(artigo)}
-                              disabled={apagandoArtigoNum === artigo.numero}
-                              className="p-2.5 rounded-xl bg-destructive/10 text-destructive border border-destructive/20 hover:bg-destructive/20 transition-all disabled:opacity-50"
-                              title="Apagar Narração"
+                              onClick={() => setArtigoParaExcluir(artigo)}
+                              disabled={apagandoArtigoNum === artigo.numero || apagandoArtigo}
+                              className="p-2.5 rounded-xl bg-destructive/10 text-destructive border border-destructive/20 hover:bg-destructive/20 active:scale-95 transition-all disabled:opacity-50"
+                              title="Excluir Narração do Supabase"
                             >
                               {apagandoArtigoNum === artigo.numero ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                             </button>
@@ -744,7 +765,7 @@ export default function AdminNarracaoLeis() {
                             className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary/10 border border-primary/20 text-primary text-xs font-semibold hover:bg-primary/20 active:scale-95 transition-all disabled:opacity-50"
                           >
                             {estaGerando ? <Loader2 className="w-4 h-4 animate-spin" /> : <Volume2 className="w-4 h-4" />}
-                            <span className="hidden sm:inline">Gerar Fatiado</span>
+                            <span className="hidden sm:inline">Gerar Áudio</span>
                           </button>
                         )}
 
@@ -780,7 +801,7 @@ export default function AdminNarracaoLeis() {
                       <div className="p-4 pt-0 border-t border-border/40 mt-1 space-y-2.5">
                         <div className="flex items-center justify-between pt-3">
                           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                            Subdivisões do Artigo ({partesAtuais.length} blocos)
+                            {partesAtuais.length === 1 ? 'Áudio Contínuo (~1 minuto)' : `Partes do Artigo (${partesAtuais.length} partes)`}
                           </span>
                           {!estaNarrado && (
                             <button
@@ -788,7 +809,7 @@ export default function AdminNarracaoLeis() {
                               disabled={estaGerando}
                               className="text-xs text-primary hover:underline font-semibold"
                             >
-                              Gerar todos os áudios agora
+                              Gerar narração contínua agora
                             </button>
                           )}
                         </div>
@@ -853,6 +874,58 @@ export default function AdminNarracaoLeis() {
             </div>
           )}
         </div>
+
+        {/* Modal de Confirmação para Excluir Narração do Supabase */}
+        <Dialog open={!!artigoParaExcluir} onOpenChange={(open) => !open && !apagandoArtigo && setArtigoParaExcluir(null)}>
+          <DialogContent className="max-w-md bg-[#0D0F12]/95 border-white/10 text-white backdrop-blur-2xl">
+            <DialogHeader>
+              <div className="w-12 h-12 rounded-2xl bg-destructive/15 border border-destructive/30 flex items-center justify-center text-destructive mb-2">
+                <Trash2 className="w-6 h-6" />
+              </div>
+              <DialogTitle className="text-lg font-bold text-white">
+                Excluir Narração do Artigo {artigoParaExcluir?.numero}?
+              </DialogTitle>
+              <DialogDescription className="text-sm text-zinc-400">
+                Esta ação removerá todos os arquivos de áudio do <strong className="text-white">Supabase Storage</strong> e apagará o registro da tabela <strong className="text-white">narracoes_artigos</strong>. Deseja continuar?
+              </DialogDescription>
+            </DialogHeader>
+
+            {artigoParaExcluir && (
+              <div className="p-3 rounded-xl bg-zinc-900/70 border border-white/5 text-xs text-zinc-300 line-clamp-3 italic">
+                "{artigoParaExcluir.caput}"
+              </div>
+            )}
+
+            <DialogFooter className="gap-2 sm:gap-2 mt-3">
+              <button
+                type="button"
+                disabled={apagandoArtigo}
+                onClick={() => setArtigoParaExcluir(null)}
+                className="px-4 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-sm font-medium transition-colors disabled:opacity-50 text-zinc-300"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                disabled={apagandoArtigo}
+                onClick={handleConfirmarExcluirNarracao}
+                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-destructive hover:bg-destructive/90 text-white text-sm font-semibold transition-all shadow-lg shadow-destructive/20 disabled:opacity-50"
+              >
+                {apagandoArtigo ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Excluindo...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4" />
+                    <span>Excluir Definitivamente</span>
+                  </>
+                )}
+              </button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }
