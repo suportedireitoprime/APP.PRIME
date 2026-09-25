@@ -47,13 +47,13 @@ export const PremiumMarkdown: React.FC<PremiumMarkdownProps> = ({ children, comp
         // @ts-ignore
         div: ({ node, children: divChildren, ...divProps }) => <div {...divProps}>{processChildren(divChildren)}</div>,
         // @ts-ignore
-        h1: ({ node, children: hChildren, ...hProps }) => <h1 {...hProps}>{processChildren(hChildren)}</h1>,
+        h1: ({ node, children: hChildren, ...hProps }) => <h1 className="font-display tracking-[0.15em] uppercase text-white/95" {...hProps}>{processChildren(hChildren)}</h1>,
         // @ts-ignore
-        h2: ({ node, children: hChildren, ...hProps }) => <h2 {...hProps}>{processChildren(hChildren)}</h2>,
+        h2: ({ node, children: hChildren, ...hProps }) => <h2 className="font-display tracking-widest uppercase text-white/90" {...hProps}>{processChildren(hChildren)}</h2>,
         // @ts-ignore
-        h3: ({ node, children: hChildren, ...hProps }) => <h3 {...hProps}>{processChildren(hChildren)}</h3>,
+        h3: ({ node, children: hChildren, ...hProps }) => <h3 className="font-display tracking-widest uppercase text-white/85" {...hProps}>{processChildren(hChildren)}</h3>,
         // @ts-ignore
-        h4: ({ node, children: hChildren, ...hProps }) => <h4 {...hProps}>{processChildren(hChildren)}</h4>,
+        h4: ({ node, children: hChildren, ...hProps }) => <h4 className="font-display tracking-wider uppercase text-white/80" {...hProps}>{processChildren(hChildren)}</h4>,
         // @ts-ignore
         strong: ({ node, children: sChildren, ...sProps }) => <strong {...sProps}>{processChildren(sChildren)}</strong>,
         // @ts-ignore

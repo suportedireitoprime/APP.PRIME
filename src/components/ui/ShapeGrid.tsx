@@ -613,3 +613,4 @@ const ShapeGrid = ({
 };
 
 export default ShapeGrid;
+export { ShapeGrid };
