@@ -42,14 +42,14 @@ const DEFAULT_BASE_URL = 'https://omniroute-production-fb57.up.railway.app/v1';
 const DEFAULT_API_KEY = 'sk-b031bdec64ce3755-4e94d3-d0de5a82';
 
 const POPULAR_TEXT_MODELS = [
-  'gemini-2.5-pro',
-  'gemini-2.5-flash',
-  'gemini-1.5-pro',
-  'gemini-1.5-flash',
+  'google/gemini-2.5-pro',
+  'google/gemini-2.5-flash',
+  'google/gemini-1.5-pro',
+  'google/gemini-1.5-flash',
+  'google/gemini-2.0-flash',
   'gpt-4o',
   'gpt-4o-mini',
   'claude-3-7-sonnet',
-  'deepseek-chat',
 ];
 
 const TTS_VOICES = [
@@ -73,7 +73,7 @@ export default function AdminOmniRouteTeste() {
   const [showConfig, setShowConfig] = useState(false);
 
   // Tab Texto
-  const [textModel, setTextModel] = useState(() => localStorage.getItem(STORAGE_KEYS.LAST_MODEL) || 'gemini-2.5-pro');
+  const [textModel, setTextModel] = useState(() => localStorage.getItem(STORAGE_KEYS.LAST_MODEL) || 'google/gemini-2.5-pro');
   const [textPrompt, setTextPrompt] = useState('Explique de forma concisa o princípio da dignidade da pessoa humana para um estudante de direito.');
   const [textSystem, setTextSystem] = useState('Você é um assistente jurídico experiente e didático do Vade Mecum Prime.');
   const [temperature, setTemperature] = useState(0.7);
@@ -217,8 +217,13 @@ export default function AdminOmniRouteTeste() {
 
       if (!res.ok) {
         const errorText = await res.text().catch(() => '');
+        let parsedMsg = errorText;
+        try {
+          const parsed = JSON.parse(errorText);
+          parsedMsg = parsed?.error?.message || errorText;
+        } catch {}
         addLog('Texto', textModel, elapsed, res.status);
-        throw new Error(`HTTP ${res.status}: ${errorText || res.statusText}`);
+        throw new Error(parsedMsg || `HTTP ${res.status}: ${res.statusText}`);
       }
 
       const data = await res.json();
