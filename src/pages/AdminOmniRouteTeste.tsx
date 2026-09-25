@@ -827,7 +827,7 @@ export default function AdminOmniRouteTeste() {
       />
 
       {/* Conteúdo Fluido - Margens amplas e responsivas sem aperto lateral */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-2 sm:px-4 md:px-6 py-3 sm:py-5 space-y-4 pb-24">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 pb-24">
         {/* Barra de Status e Conexão */}
         <Card className="bg-[#141416] border-white/10 text-white shadow-2xl rounded-2xl overflow-hidden">
           <CardHeader className="py-3.5 px-4 sm:px-6">
@@ -946,35 +946,29 @@ export default function AdminOmniRouteTeste() {
             <button
               type="button"
               onClick={() => setShowOmniRouteTestSheet(true)}
-              className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 p-4.5 sm:p-5 text-left group cursor-pointer"
+              className="w-full flex items-center justify-between gap-2 sm:gap-3 p-3.5 sm:p-4 text-left group cursor-pointer"
             >
-              <div className="flex items-start sm:items-center gap-4 min-w-0 w-full sm:flex-1">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#F59E0B]/15 border border-[#F59E0B]/35 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-md shadow-[#F59E0B]/10 mt-0.5 sm:mt-0">
-                  <Sparkles className="w-6 h-6 text-[#FBBF24]" />
+              <div className="flex items-center gap-3.5 min-w-0 w-full sm:flex-1">
+                <div className="w-10 h-10 rounded-xl bg-[#F59E0B]/15 border border-[#F59E0B]/35 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-md shadow-[#F59E0B]/10">
+                  <Sparkles className="w-5 h-5 text-[#FBBF24]" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2.5 flex-wrap">
-                    <h3 className="!font-sans text-sm sm:text-base font-semibold text-white tracking-normal normal-case group-hover:text-[#FBBF24] transition-colors leading-snug break-words">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="!font-sans text-[13px] sm:text-sm font-semibold text-white tracking-normal normal-case group-hover:text-[#FBBF24] transition-colors leading-tight break-words">
                       Testar OmniRoute
                     </h3>
-                    <span className="!font-sans text-xs font-semibold px-2.5 py-0.5 rounded-lg bg-[#F59E0B]/15 text-[#FBBF24] border border-[#F59E0B]/30 whitespace-nowrap shadow-sm">
+                    <span className="!font-sans text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded bg-[#F59E0B]/15 text-[#FBBF24] border border-[#F59E0B]/30 whitespace-nowrap shadow-sm">
                       Sandbox de IA
                     </span>
                   </div>
-                  <p className="!font-sans text-xs sm:text-[13px] text-zinc-400 mt-1 leading-relaxed break-words">
-                    Ambiente completo para testar Texto, Imagem, Visão e Áudio livremente
-                  </p>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto shrink-0 mt-2 sm:mt-0 pl-16 sm:pl-0 border-t border-white/5 sm:border-0 pt-3 sm:pt-0">
-                <span className="!font-sans text-xs text-[#FBBF24] font-medium hidden sm:inline">
+              <div className="flex items-center justify-end gap-3 shrink-0">
+                <span className="!font-sans text-[11px] text-[#FBBF24] font-medium hidden sm:inline">
                   Abrir Testes
                 </span>
-                <span className="!font-sans text-[11px] text-[#FBBF24] font-medium sm:hidden">
-                  Abrir Sandbox
-                </span>
-                <ChevronRight className="w-5 h-5 text-zinc-400 group-hover:text-[#FBBF24] group-hover:translate-x-0.5 transition-all" />
+                <ChevronRight className="w-4 h-4 text-zinc-400 group-hover:text-[#FBBF24] group-hover:translate-x-0.5 transition-all" />
               </div>
             </button>
           </div>
@@ -1045,7 +1039,7 @@ export default function AdminOmniRouteTeste() {
 
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h4 className="!font-sans text-sm font-semibold text-white group-hover:text-[#FBBF24] transition-colors tracking-normal normal-case leading-tight break-words">
+                          <h4 className="!font-sans text-[13px] sm:text-sm font-semibold text-white group-hover:text-[#FBBF24] transition-colors tracking-normal normal-case leading-tight break-words">
                             {feature.title}
                           </h4>
                           <span className="!font-sans text-[10px] sm:text-[11px] text-zinc-500 font-medium shrink-0">
