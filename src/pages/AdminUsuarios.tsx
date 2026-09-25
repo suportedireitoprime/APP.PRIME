@@ -94,7 +94,7 @@ export default function AdminUsuarios() {
       <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
         
         {/* Contadores */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div className="p-4 rounded-2xl bg-secondary/20 border border-border/50">
             <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Total</p>
             <p className="text-2xl font-black mt-1">{usuarios.length}</p>
@@ -162,7 +162,7 @@ export default function AdminUsuarios() {
                       {u.is_premium ? <Crown className="w-5 h-5" /> : <User className="w-5 h-5" />}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-sm line-clamp-1">{u.display_name || 'Sem Nome'}</h3>
+                      <p className="font-medium text-sm line-clamp-1">{u.display_name || 'Sem Nome'}</p>
                       <p className="text-xs text-muted-foreground">{u.email || 'Email oculto/desconhecido'}</p>
                     </div>
                   </div>
