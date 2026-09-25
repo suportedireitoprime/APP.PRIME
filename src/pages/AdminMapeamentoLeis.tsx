@@ -20,7 +20,7 @@ interface CategoriaDef {
   color: string;
 }
 
-import { extractMesAno, normalizeAlteracoes, getScrapedAlteracoes, SEED_CP_ALTERACOES, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
+import { extractMesAno, normalizeAlteracoes, getScrapedAlteracoes, SEED_CP_ALTERACOES, parseDispositivoAlteracao, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
 
 export interface ExtracaoHistoricoItem {
   id: string;
@@ -109,14 +109,17 @@ export default function AdminMapeamentoLeis() {
   }, []);
 
   // Contadores por status dentro da categoria selecionada
+  // O contador 'total' representa as leis a processar (exclui as já aprovadas, permitindo zerar a fila!)
   const counts = useMemo(() => {
     if (!selectedCat) return { total: 0, triagem: 0, aprovadas: 0, pendentes: 0 };
     const leisCat = LEIS_CATALOG.filter(l => l.tipo === selectedCat.id);
     const aprovadasCount = leisCat.filter(l => !!aprovados[l.id]).length;
     const triagemCount = leisCat.filter(l => !aprovados[l.id] && !!triagem[l.id]).length;
     const pendentesCount = leisCat.filter(l => !aprovados[l.id] && !triagem[l.id]).length;
+    const filaAProcessarCount = leisCat.filter(l => !aprovados[l.id]).length;
     return {
-      total: leisCat.length,
+      total: filaAProcessarCount,
+      totalGeral: leisCat.length,
       triagem: triagemCount,
       aprovadas: aprovadasCount,
       pendentes: pendentesCount,
@@ -129,7 +132,10 @@ export default function AdminMapeamentoLeis() {
       ? LEIS_CATALOG.filter(l => l.tipo === selectedCat.id)
       : [];
 
-    if (filtroStatus === 'triagem') {
+    if (filtroStatus === 'todas') {
+      // Quando na aba 'todas' (fila de aprovação), remove as leis já aprovadas para permitir zerar a lista
+      list = list.filter(l => !aprovados[l.id]);
+    } else if (filtroStatus === 'triagem') {
       list = list.filter(l => !aprovados[l.id] && !!triagem[l.id]);
     } else if (filtroStatus === 'aprovadas') {
       list = list.filter(l => !!aprovados[l.id]);
@@ -469,51 +475,52 @@ export default function AdminMapeamentoLeis() {
   if (historicoLei) {
     return (
       <div className="min-h-dvh bg-background pb-12">
-        {/* Header Superior Fixo */}
-        <div className="sticky top-0 z-50 bg-[#0D0D0D]/95 backdrop-blur-md border-b border-border/80 px-4 py-3 flex items-center justify-between gap-3 shadow-lg">
-          <div className="flex items-center gap-3 min-w-0">
+        {/* Header Superior Fixo Responsivo e Despoluído */}
+        <div className="sticky top-0 z-50 bg-[#0D0D0D]/95 backdrop-blur-md border-b border-border/80 px-4 py-2.5 flex items-center justify-between gap-3 shadow-lg">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             <button
               onClick={() => setHistoricoLei(null)}
-              className="w-10 h-10 rounded-full flex items-center justify-center bg-secondary hover:bg-secondary/80 text-foreground shrink-0 transition-colors"
+              className="w-10 h-10 rounded-full flex items-center justify-center bg-white/[0.06] hover:bg-white/10 border border-white/10 text-foreground shrink-0 active:scale-95 transition-all"
               title="Voltar ao Mapeamento"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-5 h-5 text-white" />
             </button>
 
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 uppercase tracking-wider">
-                  Histórico de Alterações
-                </span>
-                <span className="text-sm font-bold text-foreground truncate">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <h1 className="text-base sm:text-lg font-bold text-foreground truncate">
                   {historicoLei.nome}
+                </h1>
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 shrink-0">
+                  {historicoLei.sigla}
                 </span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground truncate">
+                <span className="truncate">{historicoLei.descricao || 'Decreto oficial'}</span>
                 {ultimaAlteracaoTexto && (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                    Última alteração: {ultimaAlteracaoTexto}
-                  </span>
+                  <>
+                    <span className="shrink-0 text-white/30">•</span>
+                    <span className="shrink-0 text-emerald-400 font-medium">
+                      Atualizado em {ultimaAlteracaoTexto}
+                    </span>
+                  </>
                 )}
               </div>
-              <p className="text-[11px] text-muted-foreground truncate">{historicoLei.descricao}</p>
             </div>
           </div>
 
+          {/* Ação compacta e discreta de atualização (sem botão vermelho grandão que polui a tela) */}
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => handleBuscarAlteracoesPlanalto(historicoLei)}
               disabled={carregandoAlteracoes}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs sm:text-sm font-semibold transition-all min-h-[40px] disabled:opacity-50 shadow-sm"
+              className="w-10 h-10 rounded-xl bg-white/[0.05] hover:bg-white/10 border border-white/10 flex items-center justify-center text-muted-foreground hover:text-white transition-all disabled:opacity-50 active:scale-95"
+              title="Atualizar varredura do Planalto"
             >
               {carregandoAlteracoes ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Varrendo Planalto...</span>
-                </>
+                <Loader2 className="w-4 h-4 animate-spin text-primary" />
               ) : (
-                <>
-                  <RefreshCw className="w-4 h-4" />
-                  <span>Varredura Planalto</span>
-                </>
+                <RefreshCw className="w-4 h-4" />
               )}
             </button>
           </div>
@@ -587,16 +594,17 @@ export default function AdminMapeamentoLeis() {
               {alteracoesFiltradas.map((item, idx) => {
                 const isSincronizando = sincronizandoArtigo === item.artigo;
                 const linkDestino = item.link_lei || historicoLei.url_planalto;
+                const dispInfo = parseDispositivoAlteracao(item);
 
                 return (
                   <div
                     key={`${item.artigo}_${idx}`}
-                    className="rounded-2xl border border-border/60 bg-secondary/30 p-5 space-y-4 shadow-sm hover:border-border transition-colors"
+                    className="rounded-2xl border border-border/60 bg-secondary/30 p-4 sm:p-5 space-y-4 shadow-sm hover:border-border transition-colors"
                   >
-                    {/* Topo do Card de Alteração */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/40 pb-3">
+                    {/* Topo do Card de Alteração: Artigo, Data, Dispositivo em Destaque e Norma Modificadora */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/40 pb-3">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-display text-base font-bold text-foreground">
+                        <span className="font-display text-base sm:text-lg font-bold text-foreground">
                           {item.artigo}
                         </span>
 
@@ -604,16 +612,21 @@ export default function AdminMapeamentoLeis() {
                           {item.mes ? `${item.mes.toUpperCase()} / ${item.ano}` : (item.mes_ano || `ANO ${item.ano}`)}
                         </span>
 
-                        {/* Link Azul Oficial do Planalto Clicável */}
+                        {/* DISPOSITIVO EM DESTAQUE (Ex: Incluído Inciso XI, Revogada Alínea 'a', Redação dada ao § 2º) */}
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-bold border ${dispInfo.badgeCor.bg} ${dispInfo.badgeCor.text} ${dispInfo.badgeCor.border} tracking-wide`}>
+                          {dispInfo.tituloDestaque}
+                        </span>
+
+                        {/* Link Limpo Oficial da Norma Modificadora */}
                         {linkDestino && (
                           <a
                             href={linkDestino}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 underline font-medium cursor-pointer transition-colors"
+                            className="inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 hover:underline font-semibold cursor-pointer transition-colors bg-blue-500/10 px-2 py-0.5 rounded-md border border-blue-500/20"
                             title="Abrir lei oficial no site do Planalto"
                           >
-                            <span>({item.motivo})</span>
+                            <span>{dispInfo.leiReferencia}</span>
                             <ExternalLink className="w-3 h-3 text-blue-400 shrink-0" />
                           </a>
                         )}

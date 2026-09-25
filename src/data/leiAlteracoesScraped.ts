@@ -422,3 +422,163 @@ export function getScrapedAlteracoes(
 
   return [];
 }
+
+export interface DispositivoInfo {
+  acao: 'incluido' | 'revogado' | 'redacao_dada' | 'atualizado';
+  acaoTexto: string;
+  tipoDispositivo: 'alinea' | 'inciso' | 'paragrafo' | 'caput' | 'artigo' | 'pena';
+  rotuloDispositivo: string;
+  tituloDestaque: string;
+  leiReferencia: string;
+  resumoLimpo: string;
+  badgeCor: {
+    bg: string;
+    text: string;
+    border: string;
+  };
+}
+
+/**
+ * Analisa e extrai com precisão cirúrgica o dispositivo alterado (Alínea, Inciso, Parágrafo, Caput ou Artigo)
+ * e a ação correspondente (Incluído, Revogado, Redação dada), conforme padrão solicitado.
+ */
+export function parseDispositivoAlteracao(item: ScrapedArticleUpdate): DispositivoInfo {
+  const motivoRaw = (item.motivo || '').replace(/^[()]+|[()]+$/g, '').trim();
+  const textoNovoRaw = (item.texto_novo || '').trim();
+  const textoAntigoRaw = (item.texto_antigo || '').trim();
+  const searchCorpus = `${motivoRaw} ${textoNovoRaw} ${textoAntigoRaw}`.toLowerCase();
+
+  // 1. Identifica a Lei Modificadora (ex: "Lei nº 15.517, de 2026")
+  let leiReferencia = '';
+  const matchLei = motivoRaw.match(/(?:pela\s+)?(Lei(?:\s+Federal)?(?:\s+n[º°.]?)?\s*[\d.]+(?:,?\s+de\s+\d{1,2}\s+de\s+[a-zA-Zç]+\s+de\s+\d{4}|,?\s+de\s+\d{4})?)/i) ||
+                   motivoRaw.match(/(Decreto-Lei(?:\s+n[º°.]?)?\s*[\d.]+(?:,?\s+de\s+\d{4})?)/i) ||
+                   motivoRaw.match(/(Emenda\s+Constitucional(?:\s+n[º°.]?)?\s*\d+)/i);
+  if (matchLei) {
+    leiReferencia = matchLei[1].replace(/^pela\s+/i, '').trim();
+  } else {
+    // Fallback: busca pelo link_lei se disponível
+    const matchLinkLei = (item.link_lei || '').match(/l(\d{4,5})/i);
+    if (matchLinkLei) {
+      leiReferencia = `Lei nº ${matchLinkLei[1]}`;
+    } else {
+      leiReferencia = `Ano ${item.ano}`;
+    }
+  }
+
+  // 2. Identifica a Ação (Revogado, Incluído, Redação dada/Alterado)
+  let acao: DispositivoInfo['acao'] = 'atualizado';
+  let acaoTexto = 'Alterado';
+  let badgeCor = {
+    bg: 'bg-blue-500/15',
+    text: 'text-blue-400',
+    border: 'border-blue-500/30'
+  };
+
+  if (/revogad[ao]|revoga-se/i.test(searchCorpus)) {
+    acao = 'revogado';
+    acaoTexto = 'Revogado';
+    badgeCor = {
+      bg: 'bg-rose-500/20',
+      text: 'text-rose-400',
+      border: 'border-rose-500/35'
+    };
+  } else if (/inclu[íi]d[ao]|acrescid[ao]|inserid[ao]/i.test(searchCorpus)) {
+    acao = 'incluido';
+    acaoTexto = 'Incluído';
+    badgeCor = {
+      bg: 'bg-emerald-500/20',
+      text: 'text-emerald-400',
+      border: 'border-emerald-500/35'
+    };
+  } else if (/reda[çc][ãa]o\s+dada|alterad[ao]/i.test(searchCorpus)) {
+    acao = 'redacao_dada';
+    acaoTexto = 'Redação dada';
+    badgeCor = {
+      bg: 'bg-amber-500/20',
+      text: 'text-amber-400',
+      border: 'border-amber-500/35'
+    };
+  }
+
+  // 3. Identifica o Dispositivo Específico (Alínea, Inciso, Parágrafo, Caput, Pena, Artigo)
+  let tipoDispositivo: DispositivoInfo['tipoDispositivo'] = 'artigo';
+  let rotuloDispositivo = item.artigo;
+  let tituloDestaque = `${acaoTexto} no ${item.artigo}`;
+
+  // 3.1. Alínea (Prioridade máxima de detecção solicitada pelo usuário)
+  const matchAlinea = motivoRaw.match(/\bal[íi]nea\s+['"]?([a-z])['"]?/i) ||
+                      textoNovoRaw.match(/^\(?([a-z])\)\s+[-–]/i) ||
+                      motivoRaw.match(/^\(?([a-z])\)\s+[-–]/i);
+  if (matchAlinea) {
+    const letra = matchAlinea[1].toLowerCase();
+    tipoDispositivo = 'alinea';
+    rotuloDispositivo = `Alínea "${letra}"`;
+    const acaoFem = acao === 'incluido' ? 'Incluída' : acao === 'revogado' ? 'Revogada' : acaoTexto;
+    tituloDestaque = acao === 'redacao_dada' ? `Redação dada à ${rotuloDispositivo}` : `${acaoFem} ${rotuloDispositivo}`;
+  }
+  // 3.2. Inciso (Algarismo Romano no início do motivo ou texto: ex: "XI - ...", "IV - ...")
+  else {
+    const matchInciso = motivoRaw.match(/\binciso\s+([IVXLCDM]+)\b/i) ||
+                        motivoRaw.match(/^\(?\s*([IVXLCDM]{1,8})\s*[-–]\s+/i) ||
+                        textoNovoRaw.match(/^\(?\s*([IVXLCDM]{1,8})\s*[-–]\s+/i);
+    if (matchInciso) {
+      const romano = matchInciso[1].toUpperCase();
+      tipoDispositivo = 'inciso';
+      rotuloDispositivo = `Inciso ${romano}`;
+      tituloDestaque = acao === 'redacao_dada' ? `Redação dada ao ${rotuloDispositivo}` : `${acaoTexto} ${rotuloDispositivo}`;
+    }
+    // 3.3. Parágrafo (ex: "§ 4º", "§ 2º", "Parágrafo único")
+    else {
+      const matchParagrafo = motivoRaw.match(/(§\s*\d+[º°]?|par[áa]grafo\s+[úu]nico|par[áa]grafo\s+\d+[º°]?)/i) ||
+                             textoNovoRaw.match(/(§\s*\d+[º°]?|par[áa]grafo\s+[úu]nico|par[áa]grafo\s+\d+[º°]?)/i);
+      if (matchParagrafo) {
+        let pTxt = matchParagrafo[1].replace(/\s+/g, ' ').trim();
+        if (/par[áa]grafo\s+[úu]nico/i.test(pTxt)) {
+          pTxt = 'Parágrafo Único';
+        } else if (/par[áa]grafo\s+(\d+)/i.test(pTxt)) {
+          pTxt = `§ ${RegExp.$1}º`;
+        }
+        tipoDispositivo = 'paragrafo';
+        rotuloDispositivo = pTxt;
+        tituloDestaque = acao === 'redacao_dada' ? `Redação dada ao ${rotuloDispositivo}` : `${acaoTexto} ${rotuloDispositivo}`;
+      }
+      // 3.4. Pena
+      else if (/^pena\s*[-–:]/i.test(textoNovoRaw) || /^pena\s*[-–:]/i.test(motivoRaw)) {
+        tipoDispositivo = 'pena';
+        rotuloDispositivo = 'Pena';
+        tituloDestaque = `Pena ${acao === 'redacao_dada' ? 'Alterada' : acaoTexto}`;
+      }
+      // 3.5. Caput
+      else if (/caput/i.test(motivoRaw) || textoNovoRaw.startsWith(`${item.artigo}.`)) {
+        tipoDispositivo = 'caput';
+        rotuloDispositivo = 'Caput';
+        tituloDestaque = acao === 'redacao_dada' ? 'Redação dada ao Caput' : `${acaoTexto} Caput`;
+      }
+      // 3.6. Artigo Completo
+      else {
+        tipoDispositivo = 'artigo';
+        rotuloDispositivo = item.artigo;
+        tituloDestaque = acao === 'incluido' ? 'Artigo Novo Incluído' : `${acaoTexto} no ${item.artigo}`;
+      }
+    }
+  }
+
+  // 4. Resumo textual limpo sem o texto longo do dispositivo
+  let resumoLimpo = motivoRaw;
+  // Se o motivo começar com o texto do dispositivo (ex: "(XI – se a subtração... Incluído...)")
+  // removemos o texto corrido para não duplicar com o bloco de texto novo
+  if (resumoLimpo.length > 80 && leiReferencia) {
+    resumoLimpo = `${acaoTexto} pela ${leiReferencia}`;
+  }
+
+  return {
+    acao,
+    acaoTexto,
+    tipoDispositivo,
+    rotuloDispositivo,
+    tituloDestaque,
+    leiReferencia,
+    resumoLimpo,
+    badgeCor
+  };
+}
