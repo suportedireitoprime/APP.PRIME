@@ -1,216 +1,169 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronRight, BookOpen, Layers } from 'lucide-react';
 import ArtigoCard from '@/components/vademecum/artigo/ArtigoCard';
 import type { ArtigoLei } from '@/data/mockData';
+import type { LeiCapituloItem } from '@/lib/leiStructure';
+import { haptic } from '@/lib/nativeHaptics';
 
 interface LeiCapitulosGridProps {
-  capituloGroups: Array<{
-    titulo: string;
-    capitulos: Array<{
-      capitulo: string;
-      artigos: ArtigoLei[];
-    }>;
-  }>;
-  expandedTitulo: string | null;
-  setExpandedTitulo: (t: string | null) => void;
+  capitulos: LeiCapituloItem[];
+  expandedCapituloId: string | null;
+  setExpandedCapituloId: (id: string | null) => void;
   setOpenArtigo: (artigo: ArtigoLei) => void;
   leiAccent: string;
   isArtigoFav: (a: { id: string; numero: string | number }) => boolean;
   grifadoNumeros: Set<string>;
   anotadoNumeros: Set<string>;
+  searchQuery?: string;
 }
 
-const splitRe = /^((?:PARTE|LIVRO|T[ÍI]TULO|CAP[ÍI]TULO|SE[ÇC][ÃA]O|SUBSE[ÇC][ÃA]O)\s+[IVXLCDM0-9º°]+(?:-[A-Z])?)\s*[–—\-:]?\s*(.+)$/i;
-const _lowerWords = new Set(['a','à','às','ao','aos','o','os','as','e','ou','de','do','da','dos','das','em','no','na','nos','nas','por','para','com','sem','sob','sobre','entre','após','ante','até','contra','desde','perante','trás','um','uma','uns','umas']);
-
-const toTitleCase = (s: string) => s.toLowerCase().split(/(\s+)/).map((w, i) => {
-  if (/^\s+$/.test(w) || !w) return w;
-  if (i !== 0 && _lowerWords.has(w)) return w;
-  return w.charAt(0).toUpperCase() + w.slice(1);
-}).join('');
-
 const LeiCapitulosGrid: React.FC<LeiCapitulosGridProps> = ({
-  capituloGroups,
-  expandedTitulo,
-  setExpandedTitulo,
+  capitulos,
+  expandedCapituloId,
+  setExpandedCapituloId,
   setOpenArtigo,
   leiAccent,
   isArtigoFav,
   grifadoNumeros,
   anotadoNumeros,
+  searchQuery,
 }) => {
-  const stripRedacaoFn = (s: string) => s.replace(/\s*\((?:Redação|Incluído|Revogado|Acrescido|Alterado|Vide|Regulamento)[^)]*\)/gi, '').trim();
-
-  // Se o único "título" é o sintético TÍTULO ÚNICO (lei que só tem capítulos),
-  // renderiza os capítulos como cards de topo — sem o wrapper redundante.
-  const flatCapitulos = capituloGroups.length === 1 && capituloGroups[0].titulo === 'TÍTULO ÚNICO';
-  
-  if (flatCapitulos) {
-    const tGroup = capituloGroups[0];
+  if (!capitulos || capitulos.length === 0) {
     return (
-      <div className="space-y-3 pb-8">
-        {tGroup.capitulos.map((capGroup, ci) => {
-          const capKey = `flat__${capGroup.capitulo}`;
-          const isCapExpanded = expandedTitulo === capKey;
-          const fA = capGroup.artigos[0]?.numero || '';
-          const lA = capGroup.artigos[capGroup.artigos.length - 1]?.numero || '';
-          const rawCap = capGroup.capitulo === '__sem_capitulo__' ? 'Disposições Gerais' : stripRedacaoFn(capGroup.capitulo);
-          const cMatch = rawCap.match(splitRe);
-          const capHead = cMatch ? cMatch[1].trim() : rawCap;
-          const capSub = cMatch ? cMatch[2].trim() : '';
-
-          return (
-            <div key={ci}>
-              <motion.button
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: ci * 0.02 }}
-                onClick={() => setExpandedTitulo(isCapExpanded ? null : capKey)}
-                className="w-full text-left rounded-2xl bg-card hover:bg-secondary/60 transition-all flex overflow-hidden min-h-[104px] md:min-h-[112px]"
-              >
-                <div className="w-2 rounded-l-2xl shrink-0" style={{ background: leiAccent }} />
-                <div className="p-4 md:p-5 flex-1 min-w-0 flex flex-col justify-center">
-                  <p className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.22em] text-amber-300/90">{capHead}</p>
-                  {capSub ? (
-                    <h5 className="font-serif text-sm md:text-base font-semibold text-foreground leading-snug mt-0.5">{toTitleCase(capSub)}</h5>
-                  ) : null}
-                  <p className="text-muted-foreground text-xs md:text-sm mt-1">
-                    {capGroup.artigos.length} artigos{fA && lA ? ` (${fA} – ${lA})` : ''}
-                  </p>
-                </div>
-                <div className="flex items-center pr-4">
-                  <ChevronRight className={`w-5 h-5 text-muted-foreground transition-transform ${isCapExpanded ? 'rotate-90' : ''}`} />
-                </div>
-              </motion.button>
-              {isCapExpanded && (
-                <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="pl-3 mt-2 space-y-2">
-                  {capGroup.artigos.map((artigo, i) => (
-                    <ArtigoCard key={artigo.id} artigo={artigo} index={i} onClick={() => setOpenArtigo(artigo)} accentColor={leiAccent} tags={{ favorito: isArtigoFav(artigo), grifado: grifadoNumeros.has(artigo.numero), anotado: anotadoNumeros.has(artigo.numero) }} />
-                  ))}
-                </motion.div>
-              )}
-            </div>
-          );
-        })}
+      <div className="flex flex-col items-center justify-center py-16 text-center space-y-3">
+        <Layers className="w-10 h-10 text-muted-foreground/40" />
+        <p className="text-muted-foreground text-sm font-medium">Nenhum capítulo identificado nesta lei.</p>
       </div>
     );
   }
 
+  const formatRange = (first: string, last: string) => {
+    if (!first && !last) return '';
+    if (first === last) return `(Art. ${first})`;
+    return `(Arts. ${first} a ${last})`;
+  };
+
   return (
-    <div className="space-y-3 pb-8">
-      {capituloGroups.map((tGroup, ti) => {
-        const rawTitulo = stripRedacaoFn(tGroup.titulo);
-        const tMatch = rawTitulo.match(splitRe);
-        const titHead = tMatch ? tMatch[1].trim() : rawTitulo;
-        let titSub = tMatch ? tMatch[2].trim() : '';
-        // Remove duplicated head prefix (e.g. "TÍTULO I DISPOSIÇÕES PRELIMINARES" -> "DISPOSIÇÕES PRELIMINARES")
-        if (titSub && titHead) {
-          const dupRe = new RegExp(`^${titHead.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')}\\s*[-–—:]?\\s*`, 'i');
-          titSub = titSub.replace(dupRe, '').trim();
-        }
-        const totalArts = tGroup.capitulos.reduce((s, c) => s + c.artigos.length, 0);
-        const allArts = tGroup.capitulos.flatMap(c => c.artigos);
-        const firstArt = allArts[0]?.numero || '';
-        const lastArt = allArts[allArts.length - 1]?.numero || '';
-        const hasRealCapitulos = tGroup.capitulos.some(c => c.capitulo !== '__sem_capitulo__');
-        const titKey = `titulo__${tGroup.titulo}`;
-        const isTitExpanded = expandedTitulo === titKey || (expandedTitulo?.startsWith(`${tGroup.titulo}__`) ?? false);
+    <div className="space-y-3.5 pb-10 select-none">
+      {capitulos.map((cap, idx) => {
+        const isExpanded = expandedCapituloId === cap.id;
+        const totalArts = cap.artigos.length;
+        const rangeText = formatRange(cap.primeiroArtigo, cap.ultimoArtigo);
+
         return (
-          <div key={ti}>
+          <div
+            key={cap.id || idx}
+            className="rounded-2xl bg-[#121316] border border-white/[0.05] hover:border-white/[0.1] transition-all overflow-hidden shadow-lg shadow-black/40"
+          >
+            {/* Botão Principal do Card do Capítulo */}
             <motion.button
-              initial={{ opacity: 0, y: 8 }}
+              type="button"
+              initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: ti * 0.02 }}
-              onClick={() => setExpandedTitulo(isTitExpanded ? null : titKey)}
-              className="w-full text-left rounded-2xl bg-card hover:bg-secondary/60 transition-all flex overflow-hidden min-h-[112px] md:min-h-[124px]"
+              transition={{ delay: Math.min(idx * 0.02, 0.25) }}
+              onClick={() => {
+                haptic.selection();
+                setExpandedCapituloId(isExpanded ? null : cap.id);
+              }}
+              className="w-full text-left flex items-stretch min-h-[96px] sm:min-h-[104px] p-0 active:scale-[0.99] transition-transform cursor-pointer relative group"
             >
-              <div className="w-2 rounded-l-2xl shrink-0" style={{ background: leiAccent }} />
-              <div className="p-4 md:p-5 flex-1 min-w-0 flex flex-col justify-center">
-                <p className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.22em] text-amber-300/90">{titHead}</p>
-                {titSub ? (
-                  <h5 className="font-serif text-base md:text-lg font-semibold text-foreground leading-snug mt-1 line-clamp-2">
-                    {toTitleCase(titSub)}
-                  </h5>
-                ) : (
-                  <h5 className="font-serif text-base md:text-lg font-semibold text-foreground leading-snug mt-1 opacity-0 select-none" aria-hidden>
-                    &nbsp;
-                  </h5>
-                )}
-                <p className="text-muted-foreground text-xs md:text-sm mt-1.5">
-                  {totalArts} artigos{firstArt && lastArt ? ` (${firstArt} – ${lastArt})` : ''}
-                </p>
+              {/* Barra lateral colorida de destaque com a cor da lei */}
+              <div
+                className="w-2 sm:w-2.5 rounded-l-2xl shrink-0 transition-opacity"
+                style={{ background: isExpanded ? leiAccent || '#c2274a' : `${leiAccent || '#c2274a'}bb` }}
+              />
+
+              {/* Informações do Capítulo */}
+              <div className="p-3.5 sm:p-5 flex-1 min-w-0 flex flex-col justify-center">
+                {/* Linha Superior: Tag do Capítulo e Contexto Pai */}
+                <div className="flex items-center gap-2 mb-1 min-w-0">
+                  <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-amber-400 shrink-0">
+                    {cap.capituloHead || 'CAPÍTULO'}
+                  </span>
+                  {cap.parentContext && (
+                    <span className="text-[11px] text-zinc-500 font-medium truncate hidden sm:inline">
+                      • {cap.parentContext}
+                    </span>
+                  )}
+                </div>
+
+                {/* Nome do Capítulo em destaque */}
+                <h4 className="font-serif text-sm sm:text-base md:text-lg font-bold text-white leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                  {cap.capituloNome}
+                </h4>
+
+                {/* Linha Inferior: Contagem e Intervalo dos Artigos */}
+                <div className="flex items-center gap-2 mt-1.5 text-xs sm:text-sm text-zinc-400">
+                  <span className="font-semibold text-zinc-300">
+                    {totalArts} {totalArts === 1 ? 'artigo' : 'artigos'}
+                  </span>
+                  {rangeText && (
+                    <span className="text-zinc-500 text-[11px] sm:text-xs">
+                      {rangeText}
+                    </span>
+                  )}
+                </div>
               </div>
-              <div className="flex items-center pr-4">
-                <ChevronRight
-                  className={`w-6 h-6 md:w-7 md:h-7 transition-transform ${isTitExpanded ? 'rotate-90' : ''}`}
-                  style={{ color: leiAccent }}
-                  strokeWidth={2.5}
-                />
+
+              {/* Ícone de Expansão (Chevron) */}
+              <div className="flex items-center pr-4 sm:pr-5 shrink-0">
+                <div
+                  className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
+                    isExpanded
+                      ? 'bg-primary/20 text-primary rotate-90 shadow-md shadow-primary/20'
+                      : 'bg-white/[0.04] text-zinc-400 group-hover:bg-white/[0.08] group-hover:text-white'
+                  }`}
+                >
+                  <ChevronRight className="w-5 h-5 transition-transform" strokeWidth={2.4} />
+                </div>
               </div>
             </motion.button>
-            {isTitExpanded && (
-              <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="pl-4 mt-2 space-y-2">
-                {hasRealCapitulos ? (
-                  tGroup.capitulos.map((capGroup, ci) => {
-                    const capKey = `${tGroup.titulo}__${capGroup.capitulo}`;
-                    const isCapExpanded = expandedTitulo === capKey;
-                    const fA = capGroup.artigos[0]?.numero || '';
-                    const lA = capGroup.artigos[capGroup.artigos.length - 1]?.numero || '';
-                    const rawCap = capGroup.capitulo === '__sem_capitulo__'
-                      ? 'Disposições Gerais'
-                      : stripRedacaoFn(capGroup.capitulo);
-                    const cMatch = rawCap.match(splitRe);
-                    const capHead = cMatch ? cMatch[1].trim() : rawCap;
-                    let capSub = cMatch ? cMatch[2].trim() : '';
-                    if (capSub && capHead) {
-                      const dupRe = new RegExp(`^${capHead.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')}\\s*[-–—:]?\\s*`, 'i');
-                      capSub = capSub.replace(dupRe, '').trim();
-                    }
-                    return (
-                      <div key={ci}>
-                        <button
-                          onClick={() => setExpandedTitulo(isCapExpanded ? titKey : capKey)}
-                          className="w-full text-left rounded-xl bg-card/70 hover:bg-secondary/60 transition-all flex overflow-hidden border border-border/40"
-                        >
-                          <div className="p-3 md:p-4 flex-1 min-w-0">
-                            {capSub ? (
-                              <>
-                                <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-amber-300/80">{capHead}</p>
-                                <h6 className="font-serif text-sm md:text-base font-semibold text-foreground leading-snug mt-0.5 line-clamp-2">
-                                  {toTitleCase(capSub)}
-                                </h6>
-                              </>
-                            ) : (
-                              <h6 className="font-display text-sm md:text-base font-bold text-foreground leading-snug">{capHead}</h6>
-                            )}
-                            <p className="text-muted-foreground text-[11px] md:text-xs mt-1">{capGroup.artigos.length} artigos ({fA} – {lA})</p>
-                          </div>
-                          <div className="flex items-center pr-3">
-                            <ChevronRight
-                              className={`w-5 h-5 md:w-6 md:h-6 transition-transform ${isCapExpanded ? 'rotate-90' : ''}`}
-                              style={{ color: leiAccent }}
-                              strokeWidth={2.5}
-                            />
-                          </div>
-                        </button>
-                        {isCapExpanded && (
-                          <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="pl-3 mt-2 space-y-2">
-                            {capGroup.artigos.map((artigo, i) => (
-                              <ArtigoCard key={artigo.id} artigo={artigo} index={i} onClick={() => setOpenArtigo(artigo)} accentColor={leiAccent} tags={{ favorito: isArtigoFav(artigo), grifado: grifadoNumeros.has(artigo.numero), anotado: anotadoNumeros.has(artigo.numero) }} />
-                            ))}
-                          </motion.div>
-                        )}
-                      </div>
-                    );
-                  })
-                ) : (
-                  allArts.map((artigo, i) => (
-                    <ArtigoCard key={artigo.id} artigo={artigo} index={i} onClick={() => setOpenArtigo(artigo)} accentColor={leiAccent} tags={{ favorito: isArtigoFav(artigo), grifado: grifadoNumeros.has(artigo.numero), anotado: anotadoNumeros.has(artigo.numero) }} />
-                  ))
-                )}
-              </motion.div>
-            )}
+
+            {/* Conteúdo Expandido (Accordion com os Artigos deste Capítulo) */}
+            <AnimatePresence initial={false}>
+              {isExpanded && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                  className="overflow-hidden border-t border-white/[0.06] bg-black/40"
+                >
+                  <div className="p-3 sm:p-4 space-y-2.5">
+                    {/* Barra de atalho interno do capítulo */}
+                    <div className="flex items-center justify-between px-1 py-1 text-xs text-zinc-400 border-b border-white/[0.04] mb-2">
+                      <span className="font-semibold flex items-center gap-1.5 text-zinc-300">
+                        <BookOpen className="w-3.5 h-3.5 text-primary" />
+                        Artigos de {cap.capituloNome}
+                      </span>
+                      <span className="text-[11px] text-zinc-500">
+                        Toque no artigo para ler
+                      </span>
+                    </div>
+
+                    {/* Lista dos ArtigoCards */}
+                    {cap.artigos.map((artigo, aIdx) => (
+                      <ArtigoCard
+                        key={artigo.id || aIdx}
+                        artigo={artigo}
+                        index={aIdx}
+                        onClick={() => {
+                          haptic.selection();
+                          setOpenArtigo(artigo);
+                        }}
+                        accentColor={leiAccent}
+                        tags={{
+                          favorito: isArtigoFav(artigo),
+                          grifado: grifadoNumeros.has(artigo.numero),
+                          anotado: anotadoNumeros.has(artigo.numero),
+                        }}
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         );
       })}
@@ -218,4 +171,4 @@ const LeiCapitulosGrid: React.FC<LeiCapitulosGridProps> = ({
   );
 };
 
-export default LeiCapitulosGrid;
+export default React.memo(LeiCapitulosGrid);

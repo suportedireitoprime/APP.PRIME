@@ -26,9 +26,10 @@ import NovidadesPanel from '@/components/vademecum/panels/NovidadesPanel';
 import { FavPanel, PlaylistPanel, AnotacoesPanel } from '@/components/vademecum/panels/OverlayPanels';
 import RadarLegislacaoContent from '@/components/vademecum/outros/RadarLegislacaoContent';
 import LeiHero from '@/components/vademecum/artigo/LeiHero';
-import LeiArtigosVirtualList from '@/components/vademecum/artigo/LeiArtigosVirtualList';
+import LeiCapitulosGrid from '@/components/vademecum/artigo/LeiCapitulosGrid';
 import LeiHistoricoCarousel from '@/components/vademecum/artigo/LeiHistoricoCarousel';
 import ArtigoComparativoModal, { type AlteracaoDetailData } from '@/components/vademecum/artigo/ArtigoComparativoModal';
+import { extractLeiCapitulos, isStructuralArtigo, formatArtigoNumeroOnly } from '@/lib/leiStructure';
 
 const MOBILE_ARTIGOS_VIRTUAL_THRESHOLD = 120;
 
@@ -92,7 +93,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   const [ocrOpen, setOcrOpen] = useState(false);
   const [showGrafo, setShowGrafo] = useState(false);
 
-  const [expandedTitulo, setExpandedTitulo] = useState<string | null>(null);
+  const [expandedCapituloId, setExpandedCapituloId] = useState<string | null>(null);
   const [playingUrl, setPlayingUrl] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -372,95 +373,21 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [openArtigo, searchQuery]);
 
-  const showTitulos = useMemo(() => artigos.length > 0 && artigos.some(a => a.titulo && a.titulo.trim() !== ''), [artigos]);
+  const capitulos = useMemo(() => extractLeiCapitulos(artigos), [artigos]);
 
-  const capituloGroups = useMemo(() => {
-    const isTituloRow = (n: string) => /^\s*T[ÍI]TULO\s+[IVXLCDM0-9]/i.test(n || '');
-    const isCapituloRow = (n: string) => /^\s*CAP[ÍI]TULO\s+[IVXLCDM0-9]/i.test(n || '');
-    const isStructuralRow = (n: string) => /^\s*(PARTE|LIVRO|T[ÍI]TULO|CAP[ÍI]TULO|SE[ÇC][ÃA]O|SUBSE[ÇC][ÃA]O)\s+[IVXLCDM0-9]/i.test(n || '');
-
-    type CapGroup = { capitulo: string; artigos: typeof artigos };
-    type TituloGroup = { titulo: string; capitulos: CapGroup[] };
-
-    const groups: TituloGroup[] = [];
-    const tituloMap = new Map<string, TituloGroup>();
-    const ensureTitulo = (key: string) => {
-      if (!tituloMap.has(key)) {
-        const g: TituloGroup = { titulo: key, capitulos: [] };
-        tituloMap.set(key, g);
-        groups.push(g);
-      }
-      return tituloMap.get(key)!;
-    };
-    const ensureCap = (t: TituloGroup, key: string) => {
-      let c = t.capitulos.find(x => x.capitulo === key);
-      if (!c) { c = { capitulo: key, artigos: [] }; t.capitulos.push(c); }
-      return c;
-    };
-
-    if (showTitulos) {
-      for (const art of artigos) {
-        const rawTitulo = art.titulo || 'Sem título';
-        const tituloKey = rawTitulo === 'Sem título' ? 'TÍTULO I - DA APLICAÇÃO DA LEI PENAL' : rawTitulo;
-        const capKey = art.capitulo || '__sem_capitulo__';
-        const t = ensureTitulo(tituloKey);
-        ensureCap(t, capKey).artigos.push(art);
-      }
-      return groups;
-    }
-
-    let currentTitulo: string | null = null;
-    let currentCapitulo: string | null = null;
-    let sawStructural = false;
-
-    for (const art of artigos) {
-      const num = (art.numero || '').trim();
-      if (isTituloRow(num)) {
-        sawStructural = true;
-        let sub = (art.caput || '').replace(/<[^>]+>/g, '').trim();
-        const dupRe = new RegExp(`^${num.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*[-–—:]?\\s*`, 'i');
-        sub = sub.replace(dupRe, '').trim();
-        currentTitulo = sub ? `${num} - ${sub}` : num;
-        currentCapitulo = null;
-        continue;
-      }
-      if (isCapituloRow(num)) {
-        sawStructural = true;
-        let sub = (art.caput || '').replace(/<[^>]+>/g, '').trim();
-        const dupRe = new RegExp(`^${num.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*[-–—:]?\\s*`, 'i');
-        sub = sub.replace(dupRe, '').trim();
-        currentCapitulo = sub ? `${num} - ${sub}` : num;
-        if (!currentTitulo) currentTitulo = 'TÍTULO ÚNICO';
-        continue;
-      }
-      if (isStructuralRow(num)) continue;
-
-      const tKey = currentTitulo || '__no_titulo__';
-      const cKey = currentCapitulo || '__sem_capitulo__';
-      ensureCap(ensureTitulo(tKey), cKey).artigos.push(art);
-    }
-
-    if (!sawStructural && artigos.length > 0) {
-      const t = ensureTitulo('__no_titulo__');
-      ensureCap(t, '__sem_capitulo__').artigos.push(...artigos);
-    }
-    return groups;
-  }, [artigos, showTitulos]);
+  const onlyRealArtigos = useMemo(() => {
+    return filteredArtigos.filter((a) => !isStructuralArtigo(a));
+  }, [filteredArtigos]);
 
   const visibleArtigos = useMemo(() => {
-    if (!isMasterDetail || !expandedTitulo) return filteredArtigos;
-    const ids = new Set<string>();
-    for (const tg of capituloGroups) {
-      for (const cg of tg.capitulos) {
-        const ck = `${tg.titulo}__${cg.capitulo}`;
-        if (ck === expandedTitulo) {
-          cg.artigos.forEach((a) => ids.add(String(a.id)));
-          return filteredArtigos.filter((a) => ids.has(String(a.id)));
-        }
-      }
+    if (!isMasterDetail || !expandedCapituloId) return filteredArtigos;
+    const foundCap = capitulos.find((c) => c.id === expandedCapituloId);
+    if (foundCap) {
+      const ids = new Set(foundCap.artigos.map((a) => String(a.id)));
+      return filteredArtigos.filter((a) => ids.has(String(a.id)));
     }
-    return [];
-  }, [capituloGroups, expandedTitulo, filteredArtigos, isMasterDetail]);
+    return filteredArtigos;
+  }, [capitulos, expandedCapituloId, filteredArtigos, isMasterDetail]);
 
   const shouldVirtualizeArtigos = Boolean(
     selectedLeiId &&
@@ -470,13 +397,6 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   );
 
   const leiAccent = getLeiColor(selectedLeiId, tipo);
-
-  const idxVirtualizer = useVirtualizer({
-    count: capituloGroups.length,
-    getScrollElement: () => typeof document !== 'undefined' ? (document.getElementById('root') || document.body) : null,
-    estimateSize: () => 200,
-    overscan: 4,
-  });
 
   const overlayLabels: Record<string, { label: string; icon: typeof Heart; desc: string }> = {
     fav: { label: 'Favoritos', icon: Heart, desc: 'Aqui ficam os artigos que você marcou com o coração. Favoritar facilita o acesso rápido aos dispositivos que você mais consulta.' },
@@ -860,85 +780,52 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
               />
             ) : activeTab === 'cap' ? (
               <LeiCapitulosGrid
-                capituloGroups={capituloGroups}
-                expandedTitulo={expandedTitulo}
-                setExpandedTitulo={setExpandedTitulo}
+                capitulos={capitulos}
+                expandedCapituloId={expandedCapituloId}
+                setExpandedCapituloId={setExpandedCapituloId}
                 setOpenArtigo={openArtigoWithRecent}
                 leiAccent={leiAccent}
                 isArtigoFav={isArtigoFav}
                 grifadoNumeros={grifadoNumeros}
                 anotadoNumeros={anotadoNumeros}
+                searchQuery={searchQuery}
               />
             ) : activeTab === 'lot' ? (
-              <div className="space-y-5 pb-8">
-                {(() => {
-                  const stripRe = (s: string) => s.replace(/\s*\((?:Redação|Incluído|Revogado|Acrescido|Alterado|Vide|Regulamento)[^)]*\)/gi, '').trim();
-                  const formatNumero = (n: string) => {
-                    const raw = (n || '').trim();
-                    const m = raw.match(/^(\d+)\s*[ºo°]?\s*[-–\s]?\s*([A-Za-z]?)$/);
-                    if (m) return `${m[1]}${(m[2] || '').toUpperCase()}`;
-                    return raw.replace(/[ºo°]/g, '');
-                  };
-                  if (capituloGroups.length === 0) {
-                    return (
-                      <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-2">
-                        {filteredArtigos.map(a => (
-                          <button key={a.id} onClick={() => openArtigoWithRecent(a)} className="aspect-square rounded-xl bg-secondary/70 hover:bg-primary hover:text-primary-foreground active:scale-95 transition-all text-foreground font-bold text-sm md:text-base flex items-center justify-center border border-border/40" title={`Art. ${a.numero}`}>
-                            {formatNumero(a.numero)}
-                          </button>
-                        ))}
-                      </div>
-                    );
-                  }
-                  return (
-                    <div
-                      style={{
-                        height: `${idxVirtualizer.getTotalSize()}px`,
-                        width: '100%',
-                        position: 'relative',
-                      }}
-                    >
-                      {idxVirtualizer.getVirtualItems().map((virtualRow) => {
-                        const tGroup = capituloGroups[virtualRow.index];
-                        return (
-                          <div
-                            key={virtualRow.key}
-                            data-index={virtualRow.index}
-                            ref={idxVirtualizer.measureElement}
-                            style={{
-                              position: 'absolute',
-                              top: 0,
-                              left: 0,
-                              width: '100%',
-                              transform: `translateY(${virtualRow.start}px)`,
-                            }}
-                          >
-                            <div className="space-y-3 pb-5">
-                              {stripRe(tGroup.titulo) && !/^T[ÍI]TULO\s+[ÚU]NICO$/i.test(stripRe(tGroup.titulo)) && (
-                                <p className="text-primary text-[11px] font-bold uppercase tracking-wider">{stripRe(tGroup.titulo)}</p>
-                              )}
-                              {tGroup.capitulos.map((cap, ci) => {
-                                const displayCap = cap.capitulo === '__sem_capitulo__' ? null : stripRe(cap.capitulo);
-                                return (
-                                  <div key={ci} className="space-y-2">
-                                    {displayCap && <p className="text-foreground/80 text-xs font-semibold px-0.5 line-clamp-2">{displayCap}</p>}
-                                    <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-2">
-                                      {cap.artigos.map(a => (
-                                        <button key={a.id} onClick={() => openArtigoWithRecent(a)} className="aspect-square rounded-xl bg-secondary/70 hover:bg-primary hover:text-primary-foreground active:scale-95 transition-all text-foreground font-bold text-sm md:text-base flex items-center justify-center border border-border/40" title={`Art. ${a.numero}`}>
-                                          {formatNumero(a.numero)}
-                                        </button>
-                                      ))}
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                })()}
+              <div className="space-y-4 pb-12 select-none">
+                <div className="flex items-center justify-between px-1 text-xs text-zinc-400">
+                  <span className="font-semibold text-zinc-300">
+                    {onlyRealArtigos.length} artigos para acesso rápido
+                  </span>
+                  <span className="text-[11px] text-zinc-500">
+                    Toque no número para abrir
+                  </span>
+                </div>
+
+                {onlyRealArtigos.length === 0 ? (
+                  <p className="text-center text-zinc-500 text-sm py-12">Nenhum artigo encontrado.</p>
+                ) : (
+                  <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2 sm:gap-2.5">
+                    {onlyRealArtigos.map((a) => {
+                      const numDisplay = formatArtigoNumeroOnly(a.numero);
+                      return (
+                        <button
+                          key={a.id}
+                          type="button"
+                          onClick={() => {
+                            haptic.impact();
+                            openArtigoWithRecent(a);
+                          }}
+                          className="aspect-square rounded-2xl bg-[#14151a] hover:bg-primary hover:text-white border border-white/[0.06] hover:border-primary/40 flex flex-col items-center justify-center text-zinc-100 font-black text-sm sm:text-base active:scale-90 transition-all shadow-md shadow-black/40 cursor-pointer select-none group"
+                          title={`Artigo ${a.numero}`}
+                        >
+                          <span className="group-hover:scale-110 transition-transform">
+                            {numDisplay}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             ) : activeTab === 'rec' ? (
               <div className="space-y-2 pb-8">

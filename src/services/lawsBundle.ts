@@ -55,7 +55,8 @@ function normalizeArtigos(rows: any[]) {
       id: r.id,
       numero: (r.numero || '').replace(/(\d)o\b/g, '$1º').replace(/°/g, 'º'),
       caput: (r.texto || '').replace(/(\d)o\b/g, '$1º').replace(/°/g, 'º'),
-      titulo: r.epigrafe || undefined,
+      titulo: undefined,
+      epigrafe: r.epigrafe || undefined,
       capitulo: undefined,
       ordem: typeof r.ordem === 'number' ? r.ordem : undefined,
     }))
