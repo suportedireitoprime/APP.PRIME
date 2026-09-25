@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Loader2, Clock, Activity, Flame, Star, Calendar, Crown, Phone, Mail,
-  GraduationCap, LayoutGrid, MessageCircle, MapPin, Trash2, X, Ban, ShieldAlert, User
+  GraduationCap, LayoutGrid, MessageCircle, MapPin, Trash2, X, Ban, ShieldAlert, User, ArrowDown
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { supabase } from '@/integrations/supabase/client';
@@ -61,14 +61,22 @@ const dia = (v?: string | null) => (v ? new Date(v).toLocaleDateString('pt-BR') 
 export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onClose }: Props) {
   const [loading, setLoading] = useState(false);
   const [d, setD] = useState<Dossie | null>(null);
-  const [confirmar, setConfirmar] = useState<null | 'menu' | 'ban' | 'delete'>(null);
+  const [confirmar, setConfirmar] = useState<null | 'menu' | 'ban' | 'delete' | 'downgrade'>(null);
   const [executando, setExecutando] = useState(false);
   const [fotoFull, setFotoFull] = useState(false);
 
-  const executarAcao = async (acao: 'ban' | 'delete') => {
+  const executarAcao = async (acao: 'ban' | 'delete' | 'downgrade') => {
     if (!userId) return;
     setExecutando(true);
     try {
+      if (acao === 'downgrade') {
+        const { error } = await supabase.from('profiles').update({ is_premium: false }).eq('id', userId);
+        if (error) throw error;
+        toast.success('Conta rebaixada para o plano gratuito com sucesso!');
+        setConfirmar(null);
+        onClose();
+        return;
+      }
       const { data, error } = await supabase.rpc('admin_gerenciar_usuario' as any, {
         _user_id: userId,
         _acao: acao,
@@ -533,6 +541,19 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
                 </button>
                 <button
                   type="button"
+                  onClick={() => setConfirmar('downgrade')}
+                  className="w-full flex items-start gap-3 rounded-2xl border border-orange-500/30 bg-orange-500/10 px-4 py-4 text-left hover:bg-orange-500/20 transition-colors"
+                >
+                  <ArrowDown className="w-5 h-5 text-orange-500 mt-0.5 shrink-0" />
+                  <div>
+                    <div className="font-body text-[15px] font-semibold text-orange-500">Rebaixar conta</div>
+                    <div className="font-body text-[12.5px] text-muted-foreground mt-0.5">
+                      Remove o plano premium e rebaixa a conta para a versão gratuita.
+                    </div>
+                  </div>
+                </button>
+                <button
+                  type="button"
                   onClick={() => setConfirmar('delete')}
                   className="w-full flex items-start gap-3 rounded-2xl border border-destructive/40 bg-destructive/10 px-4 py-4 text-left hover:bg-destructive/20 transition-colors"
                 >
@@ -558,12 +579,14 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
                   <ShieldAlert className="w-6 h-6 text-destructive shrink-0" />
                   <div>
                     <div className="font-display text-lg font-bold text-foreground">
-                      {confirmar === 'ban' ? 'Banir este usuário?' : 'Excluir a conta?'}
+                      {confirmar === 'ban' ? 'Banir este usuário?' : confirmar === 'delete' ? 'Excluir a conta?' : 'Rebaixar para Gratuito?'}
                     </div>
                     <p className="font-body text-[13px] text-muted-foreground mt-1">
                       {confirmar === 'ban'
                         ? 'Ele perde o acesso imediatamente e o e-mail continua bloqueado para novos cadastros.'
-                        : 'Todos os dados serão apagados definitivamente. Esta ação não pode ser desfeita.'}
+                        : confirmar === 'delete'
+                        ? 'Todos os dados serão apagados definitivamente. Esta ação não pode ser desfeita.'
+                        : 'O usuário perderá o acesso aos recursos premium e voltará ao plano básico.'}
                     </p>
                     <p className="font-body text-[12.5px] text-foreground mt-2 truncate">{email || nome}</p>
                   </div>
@@ -580,11 +603,11 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
                   <button
                     type="button"
                     disabled={executando}
-                    onClick={() => executarAcao(confirmar as 'ban' | 'delete')}
+                    onClick={() => executarAcao(confirmar as 'ban' | 'delete' | 'downgrade')}
                     className="rounded-2xl bg-destructive px-4 py-3 font-body text-[14px] font-semibold text-destructive-foreground inline-flex items-center justify-center gap-2 disabled:opacity-60"
                   >
                     {executando && <Loader2 className="w-4 h-4 animate-spin" />}
-                    {confirmar === 'ban' ? 'Banir' : 'Excluir'}
+                    {confirmar === 'ban' ? 'Banir' : confirmar === 'delete' ? 'Excluir' : 'Rebaixar'}
                   </button>
                 </div>
               </>
