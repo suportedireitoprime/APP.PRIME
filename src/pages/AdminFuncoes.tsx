@@ -6,7 +6,7 @@ import {
   Rss, Palette, Users, GitBranch, Github, ImageIcon, KeyRound, Bug, Newspaper,
   Quote, Monitor, Send, RefreshCcw, Lock, Wrench, FileText, Crown, Search, Target, MapPin, PlayCircle,
   Sparkles, UserPlus, GraduationCap, Scale, Store, Mail, FileSignature,
-  ListChecks, Headphones, ShieldAlert, Layers, Star, CloudDownload, Pill
+  ListChecks, Headphones, ShieldAlert, Layers, Star, CloudDownload, Pill, UserCheck
 } from 'lucide-react';
 
 import { toast } from 'sonner';
@@ -42,6 +42,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   
   '/admin-funcoes-assinantes': () => import('./AdminFuncoesAssinantes'),
   '/admin-assinantes': () => import('./AdminAssinantes'),
+  '/admin-usuarios': () => import('./AdminUsuarios'),
   '/admin-boletins': () => import('./AdminBoletins'),
   '/admin-erros-questoes': () => import('./AdminErrosQuestoes'),
   '/admin-jurisprudencia': () => import('./AdminJurisprudencia'),
@@ -132,6 +133,7 @@ const CATEGORIES: Category[] = [
     icon: Crown,
     items: [
       { id: 'admin-assinantes', label: 'Assinantes Asaas', icon: Users, desc: 'Lista de todos os assinantes do Asaas', route: '/admin-assinantes' },
+      { id: 'admin-usuarios', label: 'Usuários Cadastrados', icon: UserCheck, desc: 'Lista de todos os usuários cadastrados e status', route: '/admin-usuarios' },
       { id: 'admin-funcoes-assinantes', label: 'Funções Assinantes', icon: Crown, desc: 'Limite de uso free por função (blog, narração, biblioteca, IA…)', route: '/admin-funcoes-assinantes' },
     ],
   },

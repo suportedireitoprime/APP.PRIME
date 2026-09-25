@@ -369,6 +369,7 @@ const ApresentacaoPlayer = lazy(() => import("./pages/ApresentacaoPlayer.tsx"));
 const Apresentacoes = lazy(() => import("./pages/Apresentacoes.tsx"));
 const AdminApresentacaoEditar = lazy(() => import("./pages/AdminApresentacaoEditar.tsx"));
 const AdminAssinantes = lazy(() => import("./pages/AdminAssinantes.tsx"));
+const AdminUsuarios = lazy(() => import("./pages/AdminUsuarios.tsx"));
 const AdminFunil = lazy(() => import("./pages/AdminFunil.tsx"));
 const AdminMonitorUsuarios = lazy(() => import("./pages/AdminMonitorUsuarios.tsx"));
 const AdminMonitoramento = lazy(() => import("./pages/AdminMonitoramento.tsx"));
@@ -1053,6 +1054,7 @@ function AnimatedRoutes() {
 
             <Route path="/ir/*" element={<SmartLink />} />
               <Route path="/admin/assinantes" element={<AdminAssinantes />} />
+              <Route path="/admin/usuarios" element={<AdminUsuarios />} />
               <Route path="/admin/funil" element={<AdminFunil />} />
               <Route path="/admin/monitor/usuarios" element={<AdminMonitorUsuarios />} />
             <Route path="/privacidade" element={<PageTransition><Privacidade /></PageTransition>} />
@@ -1283,6 +1285,7 @@ function AnimatedRoutes() {
           <Route path="/admin-apresentacao-editar" element={<ProtectedRoute><PageTransition><AdminApresentacaoEditar /></PageTransition></ProtectedRoute>} />
           <Route path="/apresentacao/:id" element={<ProtectedRoute><PageTransition><ApresentacaoPlayer /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-assinantes" element={<ProtectedRoute><PageTransition><AdminAssinantes /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-usuarios" element={<ProtectedRoute><PageTransition><AdminUsuarios /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-monitor-usuarios" element={<ProtectedRoute><PageTransition><AdminMonitorUsuarios /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-monitoramento" element={<ProtectedRoute><PageTransition><AdminMonitoramento /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-monitor-apis" element={<ProtectedRoute><PageTransition><AdminMonitorApis /></PageTransition></ProtectedRoute>} />
