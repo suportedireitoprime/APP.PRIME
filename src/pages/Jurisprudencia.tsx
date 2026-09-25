@@ -9,6 +9,7 @@ import HomeCard from '@/components/vademecum/home/HomeCard';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import jurisprudenciaHeroImg from '@/assets/jurisprudencia-hero.webp';
 import VadeMecumQuickActions from '@/components/vademecum/home/chunks/VadeMecumQuickActions';
+import VadeMecumBottomNav from '@/components/vademecum/navigation/VadeMecumBottomNav';
 import { prefetchRoute } from '@/lib/routePrefetch';
 import { fetchSumulas } from '@/services/sumulasService';
 import { fetchPesquisasProntas } from '@/services/pesquisasProntasService';
@@ -393,6 +394,8 @@ const Jurisprudencia = () => {
           </p>
         </motion.div>
       </motion.div>
+
+      <VadeMecumBottomNav />
     </div>
   );
 };

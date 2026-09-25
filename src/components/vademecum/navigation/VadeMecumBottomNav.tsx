@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Scale, Radar, BellRing, Heart, Newspaper, History, LayoutGrid, Briefcase, Menu, X, ChevronRight, Gavel, Landmark, PocketKnife, Map, Shield } from 'lucide-react';
+import { Scale, Menu, X, ChevronRight, Gavel, Landmark, PocketKnife, Map, ScrollText } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 type Tab = {
@@ -37,11 +37,11 @@ const TABS: Tab[] = [
     match: (p) => p.startsWith('/vade-mecum/estatutos'),
   },
   {
-    id: 'favoritos',
-    label: 'Favoritos',
-    to: '/vade-mecum/favoritos',
-    icon: Heart,
-    match: (p) => p.startsWith('/vade-mecum/favoritos'),
+    id: 'jurisprudencia',
+    label: 'Jurisprudência',
+    to: '/jurisprudencia',
+    icon: ScrollText,
+    match: (p) => p.startsWith('/jurisprudencia') || p.startsWith('/vade-mecum/sumulas'),
   },
   {
     id: 'mais',
@@ -53,13 +53,8 @@ const TABS: Tab[] = [
 ];
 
 const MAIS_MENU = [
-  { id: 'areas', label: 'Áreas do Direito', to: '/vade-mecum/areas', icon: LayoutGrid, desc: 'Penal, Civil, Trabalhista, Tributário e mais', color: '#E11D48' },
   { id: 'especiais', label: 'Legislação Especial', to: '/vade-mecum/especiais', icon: PocketKnife, desc: 'Leis penais extravagantes e especiais', color: '#F97316' },
   { id: 'estadual', label: 'Legislação Estadual', to: '/legislacao-estadual', icon: Map, desc: 'Normas das 27 unidades federativas', color: '#38BDF8' },
-  { id: 'sumulas', label: 'Súmulas & Jurisprudência', to: '/vade-mecum/sumulas', icon: Scale, desc: 'STF, STJ, Súmulas Vinculantes e teses', color: '#EC4899' },
-  { id: 'historico', label: 'Histórico', to: '/vade-mecum/recentes', icon: History, desc: 'Leis acessadas recentemente', color: '#8B5CF6' },
-  { id: 'radar', label: 'Radares', to: '/radares', icon: Radar, desc: 'Acompanhamento de proposições', color: '#10B981' },
-  { id: 'boletins', label: 'Boletins', to: '/boletins', icon: Newspaper, desc: 'Notícias e atualizações jurídicas', color: '#6366F1' },
 ];
 
 import { useKeyboardHeight } from '@/hooks/useKeyboardListeners';
