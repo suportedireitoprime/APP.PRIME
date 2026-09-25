@@ -245,6 +245,70 @@ function pcmToWav(pcm: Uint8Array, sampleRate = 24000): Uint8Array {
   return bytes;
 }
 
+function concatenarWavs(blobsOrBuffers: Uint8Array[]): Uint8Array {
+  if (blobsOrBuffers.length === 0) return new Uint8Array(0);
+  if (blobsOrBuffers.length === 1) return blobsOrBuffers[0];
+
+  const pcmChunks: Uint8Array[] = [];
+  let totalPcmBytes = 0;
+
+  for (const wav of blobsOrBuffers) {
+    if (wav.length <= 44) continue;
+    const view = new DataView(wav.buffer, wav.byteOffset, wav.byteLength);
+    let pcmOffset = 44;
+    let pcmLength = wav.byteLength - 44;
+
+    let offset = 12;
+    while (offset < wav.byteLength - 8) {
+      const chunkId = String.fromCharCode(
+        view.getUint8(offset),
+        view.getUint8(offset + 1),
+        view.getUint8(offset + 2),
+        view.getUint8(offset + 3)
+      );
+      const chunkSize = view.getUint32(offset + 4, true);
+      if (chunkId === "data") {
+        pcmOffset = offset + 8;
+        pcmLength = Math.min(chunkSize, wav.byteLength - pcmOffset);
+        break;
+      }
+      offset += 8 + chunkSize;
+    }
+
+    const pcm = wav.subarray(pcmOffset, pcmOffset + pcmLength);
+    pcmChunks.push(pcm);
+    totalPcmBytes += pcm.length;
+  }
+
+  const outBuffer = new ArrayBuffer(44 + totalPcmBytes);
+  const view = new DataView(outBuffer);
+  const writeString = (o: number, s: string) => {
+    for (let i = 0; i < s.length; i++) view.setUint8(o + i, s.charCodeAt(i));
+  };
+
+  writeString(0, "RIFF");
+  view.setUint32(4, 36 + totalPcmBytes, true);
+  writeString(8, "WAVE");
+  writeString(12, "fmt ");
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
+  view.setUint32(24, 24000, true);
+  view.setUint32(28, 48000, true);
+  view.setUint16(32, 2, true);
+  view.setUint16(34, 16, true);
+  writeString(36, "data");
+  view.setUint32(40, totalPcmBytes, true);
+
+  const outBytes = new Uint8Array(outBuffer);
+  let offset = 44;
+  for (const chunk of pcmChunks) {
+    outBytes.set(chunk, offset);
+    offset += chunk.length;
+  }
+  return outBytes;
+}
+
 async function gerarAudioGemini(texto: string, voz: string, estilo: string, key: string): Promise<Uint8Array> {
   const instrucao = `TTS(português brasileiro): ${estilo}.\nNarre de forma clara, contínua e expressiva.\n\n${texto}`;
 
@@ -384,7 +448,7 @@ Deno.serve(async (req) => {
     console.log(`[Automação] Processando Artigo ${numAlvo} de ${tabelaAlvo} (${textoAlvo.length} chars)`);
 
     // 6. Fatia em partes contínuas (até ~1 minuto por áudio com introdução da Lei/Capítulo)
-    const leiNomeFormatada = tabelaAlvo === "CP_CODIGO_PENAL" ? "Código Penal" : tabelaAlvo.replace(/_/g, " ");
+    const leiNomeFormatada = tabelaAlvo === "CP_CODIGO_PENAL" ? "Direito Penal" : tabelaAlvo.replace(/_/g, " ");
     const partes = fatiarArtigo(
       textoAlvo,
       numAlvo,
@@ -395,11 +459,13 @@ Deno.serve(async (req) => {
     console.log(`[Automação] Fatiado em ${partes.length} partes`);
 
     const partesResultado: Array<any> = [];
+    const rawWavBytes: Uint8Array[] = [];
 
     // 7. Gera áudio para cada parte
     for (let idx = 0; idx < partes.length; idx++) {
       const parte = partes[idx];
       const wavBytes = await gerarAudioGemini(parte.textoTTS, voz, estilo, geminiKey);
+      rawWavBytes.push(wavBytes);
       const safeNum = numAlvo.replace(/[^a-zA-Z0-9]/g, "_");
       const storagePath = `narracoes/${tabelaAlvo}/fatiado/${safeNum}_${parte.id}.wav`;
 
@@ -430,15 +496,37 @@ Deno.serve(async (req) => {
       });
     }
 
-    // 8. Áudio principal (caput ou primeiro bloco)
-    const audioUrlPrincipal = partesResultado[0]?.audio_url || "";
+    // 8. Áudio principal (se mais de 1 parte, unifica em 1 único WAV contínuo)
+    let audioUrlPrincipal = partesResultado[0]?.audio_url || "";
+    if (rawWavBytes.length > 1) {
+      try {
+        const wavUnificado = concatenarWavs(rawWavBytes);
+        const safeNum = numAlvo.replace(/[^a-zA-Z0-9]/g, "_");
+        const storagePathUnificado = `narracoes/${tabelaAlvo}/fatiado/${safeNum}_art_${safeNum}_completo.wav`;
+        const { error: upErr } = await supabase.storage
+          .from("audios")
+          .upload(storagePathUnificado, wavUnificado, {
+            contentType: "audio/wav",
+            upsert: true,
+            cacheControl: "31536000, immutable",
+          });
+        if (!upErr) {
+          const { data: signed } = await supabase.storage
+            .from("audios")
+            .createSignedUrl(storagePathUnificado, 60 * 60 * 24 * 365 * 5);
+          if (signed?.signedUrl) audioUrlPrincipal = signed.signedUrl;
+        }
+      } catch (err) {
+        console.warn("Falha concatenação automação:", err);
+      }
+    }
 
     // 9. Salva em narracoes_artigos
     const { error: insErr } = await supabase.from("narracoes_artigos").upsert(
       {
         tabela_nome: tabelaAlvo,
         artigo_numero: numAlvo,
-        lei_nome: tabelaAlvo === "CP_CODIGO_PENAL" ? "Código Penal" : tabelaAlvo,
+        lei_nome: tabelaAlvo === "CP_CODIGO_PENAL" ? "Direito Penal" : tabelaAlvo,
         titulo_artigo: artigoAlvo.titulo || null,
         audio_url: audioUrlPrincipal,
         word_timings: { partes: partesResultado },

@@ -221,48 +221,44 @@ export default function AdminNarracaoLeis() {
     };
   };
 
-  // Handler de reprodução sequencial do artigo fatiado
-  const tocarArtigoSequencial = (partes: ArtigoParte[], artigoNum: string) => {
-    if (!partes || partes.length === 0) return;
-    const partesComAudio = partes.filter((p) => !!p.audioUrl);
+  // Handler de reprodução do áudio do artigo (áudio completo unificado ou sequencial)
+  const tocarArtigo = (audioUrlPrincipal: string | undefined, partes: ArtigoParte[], artigoNum: string) => {
+    if (audioUrlPrincipal) {
+      if (!audioRef.current) {
+        audioRef.current = new Audio();
+      }
+      const a = audioRef.current;
 
-    if (partesComAudio.length === 0) {
-      toast.error('Este artigo ainda não possui áudios gerados nas partes.');
-      return;
-    }
-
-    if (reproduzindoSequencial === artigoNum) {
-      // Pausa
-      if (audioRef.current) audioRef.current.pause();
-      setReproduzindoSequencial(null);
-      setTocandoUrl(null);
-      setBlocoAtivoId(null);
-      return;
-    }
-
-    setReproduzindoSequencial(artigoNum);
-    let idx = 0;
-
-    const playNext = () => {
-      if (idx >= partesComAudio.length) {
-        setReproduzindoSequencial(null);
+      if (tocandoUrl === audioUrlPrincipal && reproduzindoSequencial === artigoNum) {
+        a.pause();
         setTocandoUrl(null);
+        setReproduzindoSequencial(null);
         setBlocoAtivoId(null);
         return;
       }
 
-      const parte = partesComAudio[idx];
-      tocarParteAudio(parte.audioUrl!, parte.id);
+      a.pause();
+      a.src = audioUrlPrincipal;
+      setTocandoUrl(audioUrlPrincipal);
+      setReproduzindoSequencial(artigoNum);
+      setBlocoAtivoId(null);
 
-      if (audioRef.current) {
-        audioRef.current.onended = () => {
-          idx++;
-          playNext();
-        };
-      }
-    };
+      a.play().catch((err) => {
+        console.warn('Erro ao tocar áudio unificado:', err);
+        toast.error('Não foi possível reproduzir este áudio');
+        setTocandoUrl(null);
+        setReproduzindoSequencial(null);
+      });
 
-    playNext();
+      a.onended = () => {
+        setTocandoUrl(null);
+        setReproduzindoSequencial(null);
+        setBlocoAtivoId(null);
+      };
+      return;
+    }
+
+    tocarArtigoSequencial(partes, artigoNum);
   };
 
   // Gera narração contínua inteligente para um artigo (com introdução contextual e até ~1 min por áudio)
@@ -327,7 +323,7 @@ export default function AdminNarracaoLeis() {
     const toastId = toast.loading(`Excluindo narração do Artigo ${art.numero} do Supabase...`);
 
     try {
-      await apagarNarracaoArtigo(selectedLei.tabela_nome, numLimpo);
+      await apagarNarracaoArtigo(selectedLei.tabela_nome, art.numero);
 
       // Atualiza o estado local removendo todas as variações de chaves
       setStatusNarracoes((prev) => {
@@ -336,6 +332,14 @@ export default function AdminNarracaoLeis() {
         delete novo[art.numero];
         delete novo[`Art. ${numLimpo}`];
         delete novo[`Artigo ${numLimpo}`];
+        const numDigitos = numLimpo.replace(/\D/g, '');
+        if (numDigitos) {
+          delete novo[numDigitos];
+          delete novo[`${numDigitos}º`];
+          delete novo[`${numDigitos}°`];
+          delete novo[`Art. ${numDigitos}`];
+          delete novo[`Art. ${numDigitos}º`];
+        }
         return novo;
       });
 
@@ -739,7 +743,7 @@ export default function AdminNarracaoLeis() {
                         {estaNarrado ? (
                           <div className="flex items-center gap-1.5 shrink-0">
                             <button
-                              onClick={() => tocarArtigoSequencial(partesAtuais, artigo.numero)}
+                              onClick={() => tocarArtigo(reg?.audio_url, partesAtuais, artigo.numero)}
                               className={`p-2.5 rounded-xl border transition-all ${
                                 estaTocandoSequencial
                                   ? 'bg-primary text-primary-foreground border-primary animate-pulse'
@@ -750,7 +754,10 @@ export default function AdminNarracaoLeis() {
                               {estaTocandoSequencial ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                             </button>
                             <button
-                              onClick={() => setArtigoParaExcluir(artigo)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setArtigoParaExcluir(artigo);
+                              }}
                               disabled={apagandoArtigoNum === artigo.numero || apagandoArtigo}
                               className="p-2.5 rounded-xl bg-destructive/10 text-destructive border border-destructive/20 hover:bg-destructive/20 active:scale-95 transition-all disabled:opacity-50"
                               title="Excluir Narração do Supabase"
