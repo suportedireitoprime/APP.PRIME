@@ -47,32 +47,46 @@ const STORAGE_KEYS = {
 const DEFAULT_BASE_URL = 'https://omniroute-production-fb57.up.railway.app/v1';
 const DEFAULT_API_KEY = 'sk-03fcfd719bf0cc25-19fbd7-028392e5';
 
-const POPULAR_TEXT_MODELS = [
-  'antigravity/gemini-3.7-flash-high',
-  'antigravity/gemini-pro-agent',
-  'antigravity/gemini-3.1-pro-low',
-  'antigravity/claude-sonnet-4-6',
-  'antigravity/claude-opus-4-6-thinking',
-  'auto/best-coding',
-  'auto/gemini',
-  'google/gemini-2.5-pro',
-  'google/gemini-2.5-flash',
-  'google/gemini-1.5-pro',
-  'google/gemini-1.5-flash',
+export interface AntigravityModelInfo {
+  id: string;
+  name: string;
+  group: 'Google Gemini' | 'Anthropic Claude' | 'OpenAI GPT';
+}
+
+const ANTIGRAVITY_TEXT_MODELS: AntigravityModelInfo[] = [
+  // Google Gemini
+  { id: 'antigravity/gemini-3.8-flash', name: 'Gemini 3.8 Flash (Última Geração)', group: 'Google Gemini' },
+  { id: 'antigravity/gemini-3.7-flash-high', name: 'Gemini 3.7 Flash High (Recomendado)', group: 'Google Gemini' },
+  { id: 'antigravity/gemini-3.7-flash-thinking', name: 'Gemini 3.7 Flash Thinking (Raciocínio Profundo)', group: 'Google Gemini' },
+  { id: 'antigravity/gemini-3.6-flash', name: 'Gemini 3.6 Flash (Velocidade & Precisão)', group: 'Google Gemini' },
+  { id: 'antigravity/gemini-3.1-pro-low', name: 'Gemini 3.1 Pro (Precisão Jurídica)', group: 'Google Gemini' },
+  { id: 'antigravity/gemini-pro-agent', name: 'Gemini Pro Agent (Agente Autônomo)', group: 'Google Gemini' },
+  // Anthropic Claude
+  { id: 'antigravity/claude-sonnet-4-6', name: 'Claude 3.7 Sonnet / 4.6 (Redação e Análise)', group: 'Anthropic Claude' },
+  { id: 'antigravity/claude-opus-4-6-thinking', name: 'Claude Opus 4.6 Thinking (Raciocínio Avançado)', group: 'Anthropic Claude' },
+  // OpenAI GPT
+  { id: 'antigravity/gpt-4o', name: 'GPT-4o (Omni Multimodal)', group: 'OpenAI GPT' },
+  { id: 'antigravity/gpt-o3-mini', name: 'GPT-o3-mini (Raciocínio Eficiente)', group: 'OpenAI GPT' },
+  { id: 'antigravity/gpt-o1', name: 'GPT-o1 (Lógica Complexa)', group: 'OpenAI GPT' },
 ];
 
 const POPULAR_IMAGE_MODELS = [
   'antigravity/gemini-3.1-flash-image',
-  'auto/best-vision',
   'dall-e-3',
   'imagen-3.0-generate-002',
 ];
 
 const POPULAR_AUDIO_MODELS = [
-  'whisper-1',
   'antigravity/gemini-3.7-flash-high',
-  'antigravity/gemini-2.5-flash',
-  'auto/best-audio',
+  'antigravity/gemini-3.8-flash',
+  'whisper-1',
+];
+
+const POPULAR_VISION_MODELS = [
+  'antigravity/gemini-3.7-flash-high',
+  'antigravity/gemini-3.8-flash',
+  'antigravity/gemini-pro-agent',
+  'antigravity/gpt-4o',
 ];
 
 export default function AdminOmniRouteTeste() {
@@ -83,7 +97,9 @@ export default function AdminOmniRouteTeste() {
   const [apiKey, setApiKey] = useState(() => localStorage.getItem(STORAGE_KEYS.API_KEY) || DEFAULT_API_KEY);
   const [connStatus, setConnStatus] = useState<'idle' | 'checking' | 'connected' | 'error'>('idle');
   const [connError, setConnError] = useState<string | null>(null);
-  const [availableModels, setAvailableModels] = useState<string[]>([]);
+  const [availableModels, setAvailableModels] = useState<string[]>(() =>
+    ANTIGRAVITY_TEXT_MODELS.map((m) => m.id)
+  );
   const [showConfig, setShowConfig] = useState(false);
 
   // Tab Principal de Alternância ('texto' | 'imagem' | 'visao' | 'audio')
@@ -175,16 +191,29 @@ export default function AdminOmniRouteTeste() {
       }
 
       const data = await res.json();
-      const modelsList: string[] = Array.isArray(data?.data)
+      const rawList: string[] = Array.isArray(data?.data)
         ? data.data.map((m: { id: string }) => m.id).filter(Boolean)
         : [];
 
-      setAvailableModels(modelsList);
-      setConnStatus('connected');
-      toast.success(`OmniRoute conectado com sucesso (${elapsed}ms)!`);
+      // Filtra estritamente os modelos com prefixo antigravity/
+      const remoteAntigravity = rawList.filter((m) =>
+        m.toLowerCase().startsWith('antigravity/')
+      );
 
-      if (modelsList.length > 0 && !modelsList.includes(textModel)) {
-        const found = modelsList.find((m) => m === 'antigravity/gemini-3.7-flash-high') || modelsList[0];
+      // Combina com os modelos canônicos do Antigravity sem duplicatas
+      const combined = Array.from(
+        new Set([
+          ...ANTIGRAVITY_TEXT_MODELS.map((m) => m.id),
+          ...remoteAntigravity,
+        ])
+      );
+
+      setAvailableModels(combined);
+      setConnStatus('connected');
+      toast.success(`OmniRoute conectado (${combined.length} modelos Antigravity)!`);
+
+      if (combined.length > 0 && !combined.includes(textModel)) {
+        const found = combined.find((m) => m === 'antigravity/gemini-3.7-flash-high') || combined[0];
         setTextModel(found);
       }
     } catch (err: unknown) {
@@ -636,7 +665,7 @@ export default function AdminOmniRouteTeste() {
                     {connStatus === 'connected' && (
                       <Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 !font-sans font-medium text-[11px] px-2 py-0.5">
                         <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
-                        Online ({availableModels.length} modelos)
+                        Online ({availableModels.length} modelos Antigravity)
                       </Badge>
                     )}
                     {connStatus === 'checking' && (
@@ -814,17 +843,38 @@ export default function AdminOmniRouteTeste() {
                       }}
                       className="bg-transparent text-xs text-amber-400 font-mono focus:outline-none cursor-pointer"
                     >
-                      {availableModels.length > 0
-                        ? availableModels.map((m) => (
-                            <option key={m} value={m} className="bg-zinc-900 text-white">
-                              {m}
-                            </option>
-                          ))
-                        : POPULAR_TEXT_MODELS.map((m) => (
-                            <option key={m} value={m} className="bg-zinc-900 text-white">
-                              {m}
-                            </option>
-                          ))}
+                      <optgroup label="Google Gemini (Antigravity)">
+                        {ANTIGRAVITY_TEXT_MODELS.filter((m) => m.group === 'Google Gemini').map((m) => (
+                          <option key={m.id} value={m.id} className="bg-zinc-900 text-white">
+                            {m.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="Anthropic Claude (Antigravity)">
+                        {ANTIGRAVITY_TEXT_MODELS.filter((m) => m.group === 'Anthropic Claude').map((m) => (
+                          <option key={m.id} value={m.id} className="bg-zinc-900 text-white">
+                            {m.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="OpenAI GPT (Antigravity)">
+                        {ANTIGRAVITY_TEXT_MODELS.filter((m) => m.group === 'OpenAI GPT').map((m) => (
+                          <option key={m.id} value={m.id} className="bg-zinc-900 text-white">
+                            {m.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                      {availableModels.filter((m) => !ANTIGRAVITY_TEXT_MODELS.some((known) => known.id === m)).length > 0 && (
+                        <optgroup label="Outros Modelos Antigravity Detectados">
+                          {availableModels
+                            .filter((m) => !ANTIGRAVITY_TEXT_MODELS.some((known) => known.id === m))
+                            .map((m) => (
+                              <option key={m} value={m} className="bg-zinc-900 text-white">
+                                {m}
+                              </option>
+                            ))}
+                        </optgroup>
+                      )}
                     </select>
                   </div>
                 </div>
@@ -1103,9 +1153,11 @@ export default function AdminOmniRouteTeste() {
                       onChange={(e) => setVisionModel(e.target.value)}
                       className="w-full bg-black/50 border border-white/15 text-xs rounded-xl px-3 py-2.5 text-amber-400 font-mono focus:outline-none cursor-pointer"
                     >
-                      <option value="antigravity/gemini-3.7-flash-high" className="bg-zinc-900 text-white">antigravity/gemini-3.7-flash-high (Recomendado)</option>
-                      <option value="antigravity/gemini-pro-agent" className="bg-zinc-900 text-white">antigravity/gemini-pro-agent</option>
-                      <option value="google/gemini-2.5-pro" className="bg-zinc-900 text-white">google/gemini-2.5-pro</option>
+                      {POPULAR_VISION_MODELS.map((m) => (
+                        <option key={m} value={m} className="bg-zinc-900 text-white">
+                          {m}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
