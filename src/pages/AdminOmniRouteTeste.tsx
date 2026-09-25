@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { PremiumMarkdown } from '@/components/ui/PremiumMarkdown';
+import { ShapeGrid } from '@/components/ui/ShapeGrid';
 import { toast } from 'sonner';
 import {
   Sparkles,
@@ -811,23 +812,28 @@ export default function AdminOmniRouteTeste() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D] text-white flex flex-col antialiased">
-      <PageHeader
-        title={
-          <div className="flex items-center justify-center gap-2">
-            <Sparkles className="w-5 h-5 text-amber-400" />
-            <span className="!font-sans !font-semibold tracking-normal text-base sm:text-lg text-white normal-case">
-              Teste OmniRoute
-            </span>
-          </div>
-        }
-        subtitle="Gateway de Inteligência Artificial: Texto e Imagem com auto-fallback"
-        onBack={() => navigate('/admin-funcoes')}
-        variant="dark"
-      />
+    <div className="relative min-h-screen bg-[#0D0D0D] text-white flex flex-col antialiased overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <ShapeGrid />
+      </div>
+      
+      <div className="relative z-10 flex flex-col min-h-screen w-full">
+        <PageHeader
+          title={
+            <div className="flex items-center justify-center gap-2">
+              <Sparkles className="w-5 h-5 text-amber-400" />
+              <span className="!font-sans !font-semibold tracking-normal text-base sm:text-lg text-white normal-case">
+                Teste OmniRoute
+              </span>
+            </div>
+          }
+          subtitle="Gateway de Inteligência Artificial: Texto e Imagem com auto-fallback"
+          onBack={() => navigate('/admin-funcoes')}
+          variant="dark"
+        />
 
-      {/* Conteúdo Fluido - Margens amplas e responsivas sem aperto lateral */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 pb-24">
+        {/* Conteúdo Fluido - Margens amplas e responsivas sem aperto lateral */}
+        <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 pb-24">
         {/* Barra de Status e Conexão */}
         <Card className="bg-[#141416] border-white/10 text-white shadow-2xl rounded-2xl overflow-hidden">
           <CardHeader className="py-3.5 px-4 sm:px-6">
@@ -2072,6 +2078,7 @@ export default function AdminOmniRouteTeste() {
           )}
         </AnimatePresence>
       </main>
+      </div>
     </div>
   );
 }
