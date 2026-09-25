@@ -42,8 +42,14 @@ export default function AdminUsuarios() {
           return all;
         };
 
-        const profiles = await fetchAll('profiles', 'id, display_name, is_premium, created_at', 'created_at');
+        const { data: authUsers, error: authErr } = await supabase.functions.invoke('admin-list-users');
+        if (authErr) throw authErr;
+
+        const profiles = await fetchAll('profiles', 'id, display_name, is_premium, created_at');
         const activityLog = await fetchAll('user_activity_log', 'user_id, email, last_seen_at');
+
+        const profileMap = new Map<string, any>();
+        profiles.forEach(p => profileMap.set(p.id, p));
 
         const activityMap = new Map<string, { email: string | null; last_seen_at: string | null }>();
         activityLog?.forEach(log => {
@@ -52,14 +58,15 @@ export default function AdminUsuarios() {
           }
         });
 
-        const list: Usuario[] = (profiles || []).map(p => {
-          const act = activityMap.get(p.id);
+        const list: Usuario[] = (authUsers || []).map((u: any) => {
+          const p = profileMap.get(u.id);
+          const act = activityMap.get(u.id);
           return {
-            id: p.id,
-            display_name: p.display_name,
-            is_premium: !!p.is_premium,
-            created_at: p.created_at,
-            email: act?.email || null,
+            id: u.id,
+            display_name: p?.display_name || u.user_metadata?.full_name || u.user_metadata?.name || null,
+            is_premium: !!p?.is_premium,
+            created_at: u.created_at,
+            email: u.email || act?.email || null,
             last_seen_at: act?.last_seen_at || null
           };
         });
