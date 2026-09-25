@@ -1,9 +1,8 @@
-# Tarefas - Fundo Animado ShapeGrid & Bottom Sheet de Explicação
+# Checklist de Tarefas - Detalhamento de Dispositivos nos Cards de Novidades
 
-- [x] Ajustar o contêiner do `ShapeGrid` em `LeiDetailView.tsx` para `fixed inset-0`, corrigindo o fundo animado de quadradinhos <!-- id: 1 -->
-- [x] Reestruturar os botões de ação em `ArtigoComparativoModal.tsx` com as duas opções (Explicação Didática e Ir para Artigo Completo) <!-- id: 2 -->
-- [x] Remover o ícone de brilho e implementar o Bottom Sheet que sobe de baixo para cima <!-- id: 3 -->
-- [x] Implementar a renderização do markdown da explicação com cards didáticos idênticos aos artigos de lei <!-- id: 4 -->
-- [x] Validar compilação com `tsc --noEmit` <!-- id: 5 -->
-- [x] Validar empacotamento com `vite build` <!-- id: 6 -->
-- [x] Realizar auto-commit e push para o GitHub <!-- id: 7 -->
+- [x] Aprimorar `parseDispositivoAlteracao` em `src/data/leiAlteracoesScraped.ts` para extrair dispositivo cirúrgico, limpar hifens residuais de artigos e gerar ação descritiva <!-- id: 1 -->
+- [x] Atualizar `src/components/vademecum/artigo/LeiHistoricoCarousel.tsx` para exibir título completo e ação descritiva destacada <!-- id: 2 -->
+- [x] Atualizar `src/components/vademecum/panels/NovidadesPanel.tsx` para manter consistência no painel de "Ver todos" <!-- id: 3 -->
+- [x] Validar com `tsc --noEmit` <!-- id: 4 -->
+- [x] Validar com `vite build` <!-- id: 5 -->
+- [x] Auto-commit e push para o GitHub <!-- id: 6 -->

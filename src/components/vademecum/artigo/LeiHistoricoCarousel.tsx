@@ -3,7 +3,7 @@ import { ChevronRight } from 'lucide-react';
 import type { ArtigoLei } from '@/data/mockData';
 import type { ModificationInfo } from '@/components/vademecum/artigo/ArtigoBottomSheet';
 import { haptic } from '@/lib/nativeHaptics';
-import { getScrapedAlteracoes, extractMesAno, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
+import { getScrapedAlteracoes, extractMesAno, parseDispositivoAlteracao, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
 
 export type DbAlteracao = {
   artigo_numero: string;
@@ -26,6 +26,9 @@ export type HistoricoCarouselItem = {
   textoAntigo?: string;
   textoNovo?: string;
   linkLei?: string;
+  acaoDescritiva?: string;
+  corpoTexto?: string;
+  rotuloDispositivo?: string;
 };
 
 interface LeiHistoricoCarouselProps {
@@ -128,29 +131,22 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
         caput: scraped.texto_novo || scraped.motivo,
       };
 
-      const tipo = extractTipoFromMotivo(scraped.motivo, Boolean(scraped.texto_antigo));
-      const leiModificadora = extractLeiNomeFromMotivo(scraped.motivo);
+      const dispInfo = parseDispositivoAlteracao(scraped);
       const { mes, mesAno } = extractMesAno(scraped.motivo, scraped.ano, scraped.data_completa);
-
-      let snippet = (scraped.texto_novo || scraped.motivo || artigoObj.caput || '')
-        .replace(/\([^)]*\)/g, '')
-        .replace(/^Art\.\s*\d+[º°]?\s*[-–.]?/i, '')
-        .trim();
-
-      if (!snippet) {
-        snippet = scraped.motivo || 'Alteração legislativa oficial identificada no Planalto.';
-      }
 
       result.push({
         artigo: artigoObj,
-        artigoDisplay: formatArtigoDisplay(scraped.artigo),
-        tipo,
+        artigoDisplay: dispInfo.artigoDisplayCompleto,
+        tipo: dispInfo.acaoTexto || tipo,
         referencia: scraped.motivo,
         ano: scraped.ano || 2026,
         mes: scraped.mes || mes,
         mesAno: scraped.mes_ano || mesAno,
-        snippet,
-        leiNome: leiModificadora,
+        snippet: dispInfo.descricaoCompleta,
+        acaoDescritiva: dispInfo.acaoDescritiva,
+        corpoTexto: dispInfo.corpoTexto,
+        rotuloDispositivo: dispInfo.rotuloDispositivo,
+        leiNome: dispInfo.leiReferencia || leiModificadora,
         textoAntigo: scraped.texto_antigo,
         textoNovo: scraped.texto_novo,
         linkLei: scraped.link_lei,
@@ -177,6 +173,14 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
         : dbItem.tipo_alteracao === 'texto_alterado' ? 'Alterado'
         : 'Alteração';
 
+      const dispInfo = parseDispositivoAlteracao({
+        artigo_numero: dbItem.artigo_numero,
+        texto_atual: dbItem.texto_atual,
+        texto_anterior: dbItem.texto_anterior,
+        tipo_alteracao: dbItem.tipo_alteracao,
+        ano,
+      });
+
       const d = dbItem.detectado_em ? new Date(dbItem.detectado_em) : new Date();
       const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
       const mesName = meses[d.getMonth()] || 'Jan';
@@ -184,14 +188,17 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
 
       result.push({
         artigo: artigoObj,
-        artigoDisplay: formatArtigoDisplay(dbItem.artigo_numero),
-        tipo,
+        artigoDisplay: dispInfo.artigoDisplayCompleto,
+        tipo: dispInfo.acaoTexto || tipo,
         referencia: 'Atualização oficial registrada na varredura',
         ano,
         mes: mesName,
         mesAno,
-        snippet: (dbItem.texto_atual || dbItem.texto_anterior || '').slice(0, 140),
-        leiNome: 'Atualização Planalto',
+        snippet: dispInfo.descricaoCompleta,
+        acaoDescritiva: dispInfo.acaoDescritiva,
+        corpoTexto: dispInfo.corpoTexto,
+        rotuloDispositivo: dispInfo.rotuloDispositivo,
+        leiNome: dispInfo.leiReferencia || 'Atualização Planalto',
         textoAntigo: dbItem.texto_anterior || undefined,
         textoNovo: dbItem.texto_atual || undefined,
       });
@@ -255,7 +262,7 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
                       referencia: item.referencia,
                       ano: item.ano,
                       leiNome: item.leiNome,
-                      parteModificada: 'Dispositivo',
+                      parteModificada: item.rotuloDispositivo || 'Dispositivo',
                       linhasModificadas: [],
                     });
                   }
@@ -265,9 +272,12 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
                 {/* Glow sutil ao passar o cursor */}
                 <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
-                {/* Topo do Card: Número do Artigo e Badge de Tipo */}
+                {/* Topo do Card: Número do Artigo com Dispositivo Específico e Badge de Tipo */}
                 <div className="flex items-center justify-between gap-1.5 mb-2 relative z-10">
-                  <span className="font-bold text-[14px] sm:text-[15px] text-white group-hover:text-primary transition-colors flex items-center gap-1 drop-shadow-sm">
+                  <span
+                    className="font-bold text-[13.5px] sm:text-[14.5px] text-white group-hover:text-primary transition-colors flex items-center gap-1 drop-shadow-sm truncate pr-1"
+                    title={item.artigoDisplay}
+                  >
                     {item.artigoDisplay}
                   </span>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full leading-none shrink-0 shadow-sm ${badgeClass}`}>
@@ -275,10 +285,17 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
                   </span>
                 </div>
 
-                {/* Trecho modificado */}
+                {/* Trecho modificado com ação explicativa destacada */}
                 <div className="flex-1 relative z-10 mb-2.5">
-                  <p className="text-[11px] text-zinc-300 line-clamp-2 leading-relaxed font-normal">
-                    {item.snippet}
+                  <p className="text-[11px] text-zinc-300 line-clamp-3 leading-relaxed font-normal">
+                    {item.acaoDescritiva ? (
+                      <>
+                        <span className="font-semibold text-white/95">{item.acaoDescritiva}: </span>
+                        <span>{item.corpoTexto || item.snippet}</span>
+                      </>
+                    ) : (
+                      item.snippet
+                    )}
                   </p>
                 </div>
 

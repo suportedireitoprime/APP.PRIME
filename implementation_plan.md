@@ -1,41 +1,46 @@
-# Implementation Plan - Fundo ShapeGrid no Código Penal e Bottom Sheet de Explicação com IA
+# Plano de Implementação - Detalhamento de Dispositivos e Ações nos Cards de Novidades
 
-## Diagnóstico
-1. **Fundo do Código Penal (LeiDetailView):**
-   - O usuário reportou que no Código Penal o fundo não estava apresentando os quadrados animados como no Vade Mecum (apareciam listras verticais por conta do container com `absolute inset-0` em uma página com scroll longo de milhares de pixels, esticando a proporção do canvas).
-   - O fundo deve ser `fixed inset-0 z-0 pointer-events-none` com `ShapeGrid` idêntico ao do Vade Mecum e Bibliotecas.
-
-2. **Explicação Didática no Modal Comparativo (ArtigoComparativoModal):**
-   - A explicação com IA estava embutida na página e exibia asteriscos de markdown crus (`**O que mudou...**`).
-   - O usuário solicitou:
-     - Ter dois botões de ação na tela comparativa: um botão de **"Explicação Didática"** (botão de destaque) e o botão **"Ir para Artigo Completo"**, para que o usuário escolha qual deseja.
-     - Remover o ícone de brilho (`Sparkles`).
-     - Ao clicar em "Explicação Didática", abrir um **Bottom Sheet** de baixo para cima (`AnimatePresence` / sheet com transição suave).
-     - Renderizar o markdown formatado sem asteriscos, com design idêntico ao dos artigos de lei do Vade Mecum (tipografia elegante, blocos modulares, alto contraste e legibilidade impecável).
+O usuário solicitou através de 2 áudios e captura de tela que os cards de novidades deixem de exibir apenas o número genérico do artigo (ex: `Art. 156 -`) e passem a identificar o dispositivo exato alterado (Inciso, Alínea, Parágrafo, Caput), com a descrição informativa explicitando a ação realizada (ex: "Foi incluído o Inciso XI: ...", "Foi alterada a redação do § 2º: ..."), idêntico ao padrão da extração do painel de administração.
 
 ---
 
-## Estrutura da Implementação
+## 1. Diagnóstico e Arquitetura
 
-### 1. Fundo ShapeGrid em `LeiDetailView.tsx`
-- Alterar o contêiner do `ShapeGrid` para `fixed inset-0 z-0 pointer-events-none opacity-50`.
-- Garantir que o canvas permaneça com a proporção exata da viewport (100vw x 100vh), exibindo os quadrados perfeitos animados em 40x40px, sem esticamentos verticais.
+### 1.1 Identificação do Dispositivo Específico
+Atualmente, `LeiHistoricoCarousel.tsx` e `NovidadesPanel.tsx` utilizam `formatArtigoDisplay(item.artigo)`, o que faz com que artigos como `Art. 156 -` permaneçam com hífen residual e sem o desdobramento do dispositivo (ex: Inciso XI). Além disso, a regex que limpava o artigo no snippet (`replace(/^Art\.\s*\d+[º°]?\s*[-–.]?/i, '')`) não capturava sufixos de letras (como `Art. 216-B`), deixando texto truncado como `B- Produzir...`.
 
-### 2. Ações e Bottom Sheet em `ArtigoComparativoModal.tsx`
-- Na tela principal do modal comparativo:
-  - Exibir bloco de ações com os dois botões:
-    1. **Botão Explicação Didática:** cor de destaque (`bg-hero-panel` ou botão estilizado), com ícone neutro/editorial (`BookOpen` ou `GraduationCap`), SEM ícone de brilho.
-    2. **Botão Ir para Artigo Completo:** navega direto para o artigo.
-- Criar o Bottom Sheet de Explicação Didática:
-  - Estado `showExplicacaoSheet`.
-  - Animação de subida de baixo para cima com `framer-motion` (`initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}`).
-  - Puxador no topo (`handle bar`) e cabeçalho com botão de fechar.
-  - Parser/formatador de markdown para converter os tópicos (`1. O que mudou`, `2. Contexto e Finalidade`, `3. Impacto Prático`) em seções estilizadas com cards modulares idênticos aos dos artigos de lei.
-  - Ação de regerar explicação caso necessário.
+### 1.2 Ação Descritiva no Texto do Card
+Conforme solicitado no Áudio 2 (*"Aí na descrição vai falar: 'Ah, foi incluído o inciso tal', 'foi retirado o inciso tal'... esse tipo de coisa"*), cada card terá uma ação descritiva destacada (ex: `Foi incluído o Inciso XI:`) acompanhada do texto limpo do dispositivo.
 
 ---
 
-## Validação e Versionamento
-- Executar `tsc --noEmit` para garantir zero erros de compilação.
-- Executar `vite build` para validação do bundle de produção.
-- Git auto-commit e push para o repositório no branch `main`.
+## 2. Etapas de Modificação
+
+### 2.1 Aprimoramento de `parseDispositivoAlteracao` (`src/data/leiAlteracoesScraped.ts`)
+1. Limpar caracteres residuais do artigo base (`Art. 156 -` -> `Art. 156`).
+2. Detecção profunda e priorizada de:
+   - **Alínea**: Alínea "a", Alínea "b"...
+   - **Inciso**: Inciso XI, Inciso IV...
+   - **Parágrafo**: § 1º, § 2º, § 4º-B, Parágrafo Único...
+   - **Pena**: Cominação de Pena
+   - **Caput**: Caput
+   - **Artigo Novo**: Artigo autônomo incluído/revogado
+3. Adicionar novos campos no retorno:
+   - `artigoDisplayCompleto`: ex. `Art. 156, Inciso XI`, `Art. 216-B, § 2º`.
+   - `acaoDescritiva`: ex. `Foi incluído o Inciso XI`, `Foi alterada a redação do § 2º`, `Foi revogado o Inciso IV`.
+   - `descricaoCompleta`: frase pedagógica com a ação descritiva e o trecho limpo do dispositivo.
+   - `corpoTexto`: trecho do texto sem prefixos repetidos de artigo ou incisos.
+
+### 2.2 Atualização do Carrossel de Novidades (`src/components/vademecum/artigo/LeiHistoricoCarousel.tsx`)
+1. Integrar `parseDispositivoAlteracao` para dados locais de semente e do Supabase (`dbAlteracoes`).
+2. Renderizar no topo do card `item.artigoDisplay` enriquecido (ex: `Art. 156, Inciso XI`).
+3. Renderizar na descrição a frase de ação descritiva destacada (`item.acaoDescritiva: `) seguida do corpo do texto.
+4. Ajustar regex de limpeza para contemplar sufixos de artigos com letras (ex: `Art. 216-B`, `Art. 121-A`).
+
+### 2.3 Atualização do Painel Completo de Histórico (`src/components/vademecum/panels/NovidadesPanel.tsx`)
+1. Integrar a mesma resolução de dispositivo e ação descritiva para a listagem completa ("Ver todos").
+
+### 2.4 Validação e Envio
+1. Testar compilação com `tsc --noEmit`.
+2. Testar build com `vite build`.
+3. Auto-commit e push para o repositório remoto.

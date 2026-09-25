@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Calendar, ChevronRight, Loader2, Sparkles, ExternalLink } from 'lucide-react';
 import type { ArtigoLei } from '@/data/mockData';
 import type { ModificationInfo } from '@/components/vademecum/artigo/ArtigoBottomSheet';
-import { getScrapedAlteracoes, extractMesAno, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
+import { getScrapedAlteracoes, extractMesAno, parseDispositivoAlteracao, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
 
 export type DbAlteracao = {
   artigo_numero: string;
@@ -15,6 +15,7 @@ export type DbAlteracao = {
 
 type ModItem = {
   artigo: ArtigoLei;
+  artigoDisplay: string;
   tipo: string;
   referencia: string;
   ano: number;
@@ -27,6 +28,9 @@ type ModItem = {
   linkLei?: string;
   textoAntigo?: string;
   textoNovo?: string;
+  acaoDescritiva?: string;
+  corpoTexto?: string;
+  rotuloDispositivo?: string;
 };
 
 interface NovidadesPanelProps {
@@ -124,23 +128,26 @@ const NovidadesPanel: React.FC<NovidadesPanelProps> = ({
         caput: scraped.texto_novo || scraped.motivo,
       };
 
-      const tipo = extractTipoFromMotivo(scraped.motivo, Boolean(scraped.texto_antigo));
-      const leiNome = extractLeiNomeFromMotivo(scraped.motivo);
+      const dispInfo = parseDispositivoAlteracao(scraped);
       const { mes, mesAno } = extractMesAno(scraped.motivo, scraped.ano, scraped.data_completa);
 
       result.push({
         artigo: artigoObj,
-        tipo,
+        artigoDisplay: dispInfo.artigoDisplayCompleto,
+        tipo: dispInfo.acaoTexto || tipo,
         referencia: scraped.motivo,
         ano: scraped.ano || 2026,
         mes: scraped.mes || mes,
         mesAno: scraped.mes_ano || mesAno,
-        parteModificada: 'Dispositivo',
-        leiNome,
+        parteModificada: dispInfo.rotuloDispositivo || 'Dispositivo',
+        leiNome: dispInfo.leiReferencia || leiNome,
         linhasModificadas: [],
         linkLei: scraped.link_lei,
         textoAntigo: scraped.texto_antigo,
         textoNovo: scraped.texto_novo,
+        acaoDescritiva: dispInfo.acaoDescritiva,
+        corpoTexto: dispInfo.corpoTexto,
+        rotuloDispositivo: dispInfo.rotuloDispositivo,
       });
     }
 
@@ -164,6 +171,14 @@ const NovidadesPanel: React.FC<NovidadesPanelProps> = ({
         : dbItem.tipo_alteracao === 'texto_alterado' ? 'Alterado'
         : 'Alteração';
 
+      const dispInfo = parseDispositivoAlteracao({
+        artigo_numero: dbItem.artigo_numero,
+        texto_atual: dbItem.texto_atual,
+        texto_anterior: dbItem.texto_anterior,
+        tipo_alteracao: dbItem.tipo_alteracao,
+        ano,
+      });
+
       const d = dbItem.detectado_em ? new Date(dbItem.detectado_em) : new Date();
       const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
       const mesName = meses[d.getMonth()] || 'Jan';
@@ -171,17 +186,21 @@ const NovidadesPanel: React.FC<NovidadesPanelProps> = ({
 
       result.push({
         artigo: artigoObj,
-        tipo,
+        artigoDisplay: dispInfo.artigoDisplayCompleto,
+        tipo: dispInfo.acaoTexto || tipo,
         referencia: 'Atualização oficial registrada na varredura',
         ano,
         mes: mesName,
         mesAno,
-        parteModificada: 'Dispositivo',
-        leiNome: 'Atualização Planalto',
+        parteModificada: dispInfo.rotuloDispositivo || 'Dispositivo',
+        leiNome: dispInfo.leiReferencia || 'Atualização Planalto',
         linhasModificadas: [],
         fromMonitor: true,
         textoAntigo: dbItem.texto_anterior || undefined,
         textoNovo: dbItem.texto_atual || undefined,
+        acaoDescritiva: dispInfo.acaoDescritiva,
+        corpoTexto: dispInfo.corpoTexto,
+        rotuloDispositivo: dispInfo.rotuloDispositivo,
       });
     }
 
@@ -228,10 +247,10 @@ const NovidadesPanel: React.FC<NovidadesPanelProps> = ({
 
           <div className="space-y-2.5">
             {group.map((item, i) => {
-              const displayNumero = formatArtigoDisplay(item.artigo.numero);
+              const displayNumero = item.artigoDisplay || formatArtigoDisplay(item.artigo.numero);
               const previewText = (item.textoNovo || item.artigo.caput || item.referencia)
                 .replace(/\([^)]*\)/g, '')
-                .replace(/^Art\.\s*\d+[º°]?\s*[-–.]?/i, '')
+                .replace(/^Art\.\s*[\w-]+[º°]?\s*[-–.:]?\s*/i, '')
                 .trim();
 
               return (
@@ -297,11 +316,16 @@ const NovidadesPanel: React.FC<NovidadesPanelProps> = ({
                       {item.referencia}
                     </p>
 
-                    {previewText && (
-                      <p className="text-[12px] leading-relaxed line-clamp-2 text-zinc-300/90 font-serif">
+                    {item.acaoDescritiva ? (
+                      <p className="text-[12px] leading-relaxed line-clamp-3 text-zinc-300/90 font-serif">
+                        <strong className="font-sans font-semibold text-white/95">{item.acaoDescritiva}: </strong>
+                        <span>{item.corpoTexto}</span>
+                      </p>
+                    ) : previewText ? (
+                      <p className="text-[12px] leading-relaxed line-clamp-3 text-zinc-300/90 font-serif">
                         {previewText}
                       </p>
-                    )}
+                    ) : null}
                   </div>
                   <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-primary shrink-0 my-auto mr-3 transition-colors" />
                 </motion.div>

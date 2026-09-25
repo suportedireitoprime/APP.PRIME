@@ -436,19 +436,52 @@ export interface DispositivoInfo {
     text: string;
     border: string;
   };
+  artigoBase: string;              // Ex: "Art. 156" (sem hífen ou pontuação residual)
+  artigoDisplayCompleto: string;   // Ex: "Art. 156, Inciso XI", "Art. 216-B, § 2º"
+  acaoDescritiva: string;          // Ex: "Foi incluído o Inciso XI", "Foi revogado o Inciso IV"
+  descricaoCompleta: string;       // Ex: "Foi incluído o Inciso XI: se a subtração for de petróleo..."
+  corpoTexto: string;              // Trecho limpo do dispositivo sem duplicações
 }
+
+export type ParseDispositivoInput = {
+  artigo?: string;
+  artigo_numero?: string;
+  motivo?: string;
+  texto_novo?: string | null;
+  texto_atual?: string | null;
+  texto_antigo?: string | null;
+  texto_anterior?: string | null;
+  tipo_alteracao?: string | null;
+  ano?: number;
+  link_lei?: string;
+};
 
 /**
  * Analisa e extrai com precisão cirúrgica o dispositivo alterado (Alínea, Inciso, Parágrafo, Caput ou Artigo)
- * e a ação correspondente (Incluído, Revogado, Redação dada), conforme padrão solicitado.
+ * e a ação correspondente (Incluído, Revogado, Redação dada), formatando títulos completos e frases descritivas.
  */
-export function parseDispositivoAlteracao(item: ScrapedArticleUpdate): DispositivoInfo {
+export function parseDispositivoAlteracao(item: ScrapedArticleUpdate | ParseDispositivoInput): DispositivoInfo {
+  const rawArtigo = (item.artigo || (item as any).artigo_numero || '').trim();
   const motivoRaw = (item.motivo || '').replace(/^[()]+|[()]+$/g, '').trim();
-  const textoNovoRaw = (item.texto_novo || '').trim();
-  const textoAntigoRaw = (item.texto_antigo || '').trim();
-  const searchCorpus = `${motivoRaw} ${textoNovoRaw} ${textoAntigoRaw}`.toLowerCase();
+  const textoNovoRaw = ((item.texto_novo || (item as any).texto_atual || '') as string).trim();
+  const textoAntigoRaw = ((item.texto_antigo || (item as any).texto_anterior || '') as string).trim();
+  const tipoAlteracaoRaw = (((item as any).tipo_alteracao || '') as string).toLowerCase();
+  const searchCorpus = `${rawArtigo} ${motivoRaw} ${textoNovoRaw} ${textoAntigoRaw}`.toLowerCase();
 
-  // 1. Identifica a Lei Modificadora (ex: "Lei nº 15.517, de 2026")
+  // 1. Limpeza rigorosa do número base do artigo (ex: "Art. 156 -" -> "Art. 156", "Art. 216-B." -> "Art. 216-B")
+  let artigoBase = rawArtigo.replace(/[\s\-–—:.]*$/, '').trim();
+  // Se o número tiver um subdispositivo já embutido (ex: "Art. 156 - XI")
+  const matchArtigoSeparado = artigoBase.match(/^Art\.?\s*(\d+[A-Za-z-–—\d]*)\s*[-–,]\s*(.+)$/i);
+  if (matchArtigoSeparado) {
+    artigoBase = `Art. ${matchArtigoSeparado[1].replace(/[\s\-–—:.]*$/, '').trim()}`;
+  } else if (!/^art/i.test(artigoBase) && artigoBase) {
+    artigoBase = `Art. ${artigoBase}`;
+  }
+  if (!artigoBase) {
+    artigoBase = 'Artigo';
+  }
+
+  // 2. Identifica a Lei Modificadora (ex: "Lei nº 15.517, de 2026")
   let leiReferencia = '';
   const matchLei = motivoRaw.match(/(?:pela\s+)?(Lei(?:\s+Federal)?(?:\s+n[º°.]?)?\s*[\d.]+(?:,?\s+de\s+\d{1,2}\s+de\s+[a-zA-Zç]+\s+de\s+\d{4}|,?\s+de\s+\d{4})?)/i) ||
                    motivoRaw.match(/(Decreto-Lei(?:\s+n[º°.]?)?\s*[\d.]+(?:,?\s+de\s+\d{4})?)/i) ||
@@ -456,16 +489,15 @@ export function parseDispositivoAlteracao(item: ScrapedArticleUpdate): Dispositi
   if (matchLei) {
     leiReferencia = matchLei[1].replace(/^pela\s+/i, '').trim();
   } else {
-    // Fallback: busca pelo link_lei se disponível
     const matchLinkLei = (item.link_lei || '').match(/l(\d{4,5})/i);
     if (matchLinkLei) {
       leiReferencia = `Lei nº ${matchLinkLei[1]}`;
     } else {
-      leiReferencia = `Ano ${item.ano}`;
+      leiReferencia = item.ano ? `Ano ${item.ano}` : 'Legislação Oficial';
     }
   }
 
-  // 2. Identifica a Ação (Revogado, Incluído, Redação dada/Alterado)
+  // 3. Identifica a Ação (Revogado, Incluído, Redação dada / Alterado)
   let acao: DispositivoInfo['acao'] = 'atualizado';
   let acaoTexto = 'Alterado';
   let badgeCor = {
@@ -474,7 +506,7 @@ export function parseDispositivoAlteracao(item: ScrapedArticleUpdate): Dispositi
     border: 'border-blue-500/30'
   };
 
-  if (/revogad[ao]|revoga-se/i.test(searchCorpus)) {
+  if (tipoAlteracaoRaw === 'artigo_revogado' || /revogad[ao]|revoga-se|suprimid[ao]|vetad[ao]/i.test(searchCorpus)) {
     acao = 'revogado';
     acaoTexto = 'Revogado';
     badgeCor = {
@@ -482,7 +514,7 @@ export function parseDispositivoAlteracao(item: ScrapedArticleUpdate): Dispositi
       text: 'text-rose-400',
       border: 'border-rose-500/35'
     };
-  } else if (/inclu[íi]d[ao]|acrescid[ao]|inserid[ao]/i.test(searchCorpus)) {
+  } else if (tipoAlteracaoRaw === 'artigo_novo' || /inclu[íi]d[ao]|acrescid[ao]|inserid[ao]/i.test(searchCorpus)) {
     acao = 'incluido';
     acaoTexto = 'Incluído';
     badgeCor = {
@@ -490,9 +522,9 @@ export function parseDispositivoAlteracao(item: ScrapedArticleUpdate): Dispositi
       text: 'text-emerald-400',
       border: 'border-emerald-500/35'
     };
-  } else if (/reda[çc][ãa]o\s+dada|alterad[ao]/i.test(searchCorpus)) {
+  } else if (tipoAlteracaoRaw === 'texto_alterado' || /reda[çc][ãa]o\s+dada|alterad[ao]/i.test(searchCorpus)) {
     acao = 'redacao_dada';
-    acaoTexto = 'Redação dada';
+    acaoTexto = 'Alterado';
     badgeCor = {
       bg: 'bg-amber-500/20',
       text: 'text-amber-400',
@@ -500,15 +532,16 @@ export function parseDispositivoAlteracao(item: ScrapedArticleUpdate): Dispositi
     };
   }
 
-  // 3. Identifica o Dispositivo Específico (Alínea, Inciso, Parágrafo, Caput, Pena, Artigo)
+  // 4. Identifica o Dispositivo Específico (Alínea, Inciso, Parágrafo, Caput, Pena, Artigo)
   let tipoDispositivo: DispositivoInfo['tipoDispositivo'] = 'artigo';
-  let rotuloDispositivo = item.artigo;
-  let tituloDestaque = `${acaoTexto} no ${item.artigo}`;
+  let rotuloDispositivo = artigoBase;
+  let tituloDestaque = `${acaoTexto} no ${artigoBase}`;
 
-  // 3.1. Alínea (Prioridade máxima de detecção solicitada pelo usuário)
+  // 4.1. Alínea (ex: 'Alínea "a"', 'Alínea "b"')
   const matchAlinea = motivoRaw.match(/\bal[íi]nea\s+['"]?([a-z])['"]?/i) ||
-                      textoNovoRaw.match(/^\(?([a-z])\)\s+[-–]/i) ||
-                      motivoRaw.match(/^\(?([a-z])\)\s+[-–]/i);
+                      textoNovoRaw.match(/^\(?\s*([a-z])\)\s*[-–]/i) ||
+                      motivoRaw.match(/^\(?\s*([a-z])\)\s*[-–]/i) ||
+                      textoAntigoRaw.match(/^\(?\s*([a-z])\)\s*[-–]/i);
   if (matchAlinea) {
     const letra = matchAlinea[1].toLowerCase();
     tipoDispositivo = 'alinea';
@@ -516,21 +549,25 @@ export function parseDispositivoAlteracao(item: ScrapedArticleUpdate): Dispositi
     const acaoFem = acao === 'incluido' ? 'Incluída' : acao === 'revogado' ? 'Revogada' : acaoTexto;
     tituloDestaque = acao === 'redacao_dada' ? `Redação dada à ${rotuloDispositivo}` : `${acaoFem} ${rotuloDispositivo}`;
   }
-  // 3.2. Inciso (Algarismo Romano no início do motivo ou texto: ex: "XI - ...", "IV - ...")
+  // 4.2. Inciso (Algarismo Romano no início do texto ou motivo: ex: "XI - ...", "IV - ...")
   else {
     const matchInciso = motivoRaw.match(/\binciso\s+([IVXLCDM]+)\b/i) ||
                         motivoRaw.match(/^\(?\s*([IVXLCDM]{1,8})\s*[-–]\s+/i) ||
-                        textoNovoRaw.match(/^\(?\s*([IVXLCDM]{1,8})\s*[-–]\s+/i);
+                        textoNovoRaw.match(/^\(?\s*([IVXLCDM]{1,8})\s*[-–]\s+/i) ||
+                        textoNovoRaw.match(/\binciso\s+([IVXLCDM]+)\b/i) ||
+                        textoAntigoRaw.match(/^\(?\s*([IVXLCDM]{1,8})\s*[-–]\s+/i) ||
+                        rawArtigo.match(/[-–,\s]+([IVXLCDM]{1,8})\s*$/i);
     if (matchInciso) {
       const romano = matchInciso[1].toUpperCase();
       tipoDispositivo = 'inciso';
       rotuloDispositivo = `Inciso ${romano}`;
       tituloDestaque = acao === 'redacao_dada' ? `Redação dada ao ${rotuloDispositivo}` : `${acaoTexto} ${rotuloDispositivo}`;
     }
-    // 3.3. Parágrafo (ex: "§ 4º", "§ 2º", "Parágrafo único")
+    // 4.3. Parágrafo (ex: "§ 4º", "§ 2º", "§ 4º-B", "Parágrafo único")
     else {
-      const matchParagrafo = motivoRaw.match(/(§\s*\d+[º°]?|par[áa]grafo\s+[úu]nico|par[áa]grafo\s+\d+[º°]?)/i) ||
-                             textoNovoRaw.match(/(§\s*\d+[º°]?|par[áa]grafo\s+[úu]nico|par[áa]grafo\s+\d+[º°]?)/i);
+      const matchParagrafo = motivoRaw.match(/(§\s*\d+[º°]?\s*[-–\w]*|par[áa]grafo\s+[úu]nico|par[áa]grafo\s+\d+[º°]?\s*[-–\w]*)/i) ||
+                             textoNovoRaw.match(/(§\s*\d+[º°]?\s*[-–\w]*|par[áa]grafo\s+[úu]nico|par[áa]grafo\s+\d+[º°]?\s*[-–\w]*)/i) ||
+                             textoAntigoRaw.match(/(§\s*\d+[º°]?\s*[-–\w]*|par[áa]grafo\s+[úu]nico|par[áa]grafo\s+\d+[º°]?\s*[-–\w]*)/i);
       if (matchParagrafo) {
         let pTxt = matchParagrafo[1].replace(/\s+/g, ' ').trim();
         if (/par[áa]grafo\s+[úu]nico/i.test(pTxt)) {
@@ -542,31 +579,80 @@ export function parseDispositivoAlteracao(item: ScrapedArticleUpdate): Dispositi
         rotuloDispositivo = pTxt;
         tituloDestaque = acao === 'redacao_dada' ? `Redação dada ao ${rotuloDispositivo}` : `${acaoTexto} ${rotuloDispositivo}`;
       }
-      // 3.4. Pena
+      // 4.4. Pena
       else if (/^pena\s*[-–:]/i.test(textoNovoRaw) || /^pena\s*[-–:]/i.test(motivoRaw)) {
         tipoDispositivo = 'pena';
         rotuloDispositivo = 'Pena';
         tituloDestaque = `Pena ${acao === 'redacao_dada' ? 'Alterada' : acaoTexto}`;
       }
-      // 3.5. Caput
-      else if (/caput/i.test(motivoRaw) || textoNovoRaw.startsWith(`${item.artigo}.`)) {
+      // 4.5. Caput
+      else if (/caput/i.test(motivoRaw) || /caput/i.test(textoNovoRaw)) {
         tipoDispositivo = 'caput';
         rotuloDispositivo = 'Caput';
         tituloDestaque = acao === 'redacao_dada' ? 'Redação dada ao Caput' : `${acaoTexto} Caput`;
       }
-      // 3.6. Artigo Completo
+      // 4.6. Artigo Completo
       else {
         tipoDispositivo = 'artigo';
-        rotuloDispositivo = item.artigo;
-        tituloDestaque = acao === 'incluido' ? 'Artigo Novo Incluído' : `${acaoTexto} no ${item.artigo}`;
+        rotuloDispositivo = artigoBase;
+        tituloDestaque = acao === 'incluido' ? 'Artigo Novo Incluído' : `${acaoTexto} no ${artigoBase}`;
       }
     }
   }
 
-  // 4. Resumo textual limpo sem o texto longo do dispositivo
+  // 5. Montagem do Título Enriquecido (ex: "Art. 156, Inciso XI" ou "Art. 216-B, § 2º")
+  let artigoDisplayCompleto = artigoBase;
+  if (tipoDispositivo === 'inciso' || tipoDispositivo === 'alinea' || tipoDispositivo === 'paragrafo') {
+    artigoDisplayCompleto = `${artigoBase}, ${rotuloDispositivo}`;
+  } else if (tipoDispositivo === 'caput') {
+    artigoDisplayCompleto = `${artigoBase} (Caput)`;
+  } else if (tipoDispositivo === 'pena') {
+    artigoDisplayCompleto = `${artigoBase} (Pena)`;
+  }
+
+  // 6. Montagem da Frase de Ação Descritiva (ex: "Foi incluído o Inciso XI", "Alterada a redação do § 2º")
+  let acaoDescritiva = '';
+  if (acao === 'incluido') {
+    if (tipoDispositivo === 'alinea') acaoDescritiva = `Foi incluída a ${rotuloDispositivo}`;
+    else if (tipoDispositivo === 'inciso') acaoDescritiva = `Foi incluído o ${rotuloDispositivo}`;
+    else if (tipoDispositivo === 'paragrafo') acaoDescritiva = `Foi incluído o ${rotuloDispositivo}`;
+    else if (tipoDispositivo === 'caput') acaoDescritiva = `Foi incluído o Caput`;
+    else if (tipoDispositivo === 'pena') acaoDescritiva = `Foi cominada nova Pena`;
+    else acaoDescritiva = `Foi incluído novo dispositivo`;
+  } else if (acao === 'revogado') {
+    if (tipoDispositivo === 'alinea') acaoDescritiva = `Foi revogada a ${rotuloDispositivo}`;
+    else if (tipoDispositivo === 'inciso') acaoDescritiva = `Foi revogado o ${rotuloDispositivo}`;
+    else if (tipoDispositivo === 'paragrafo') acaoDescritiva = `Foi revogado o ${rotuloDispositivo}`;
+    else if (tipoDispositivo === 'caput') acaoDescritiva = `Foi revogado o Caput`;
+    else if (tipoDispositivo === 'pena') acaoDescritiva = `Foi revogada a Pena`;
+    else acaoDescritiva = `Foi revogado o dispositivo`;
+  } else {
+    if (tipoDispositivo === 'alinea') acaoDescritiva = `Alterada a redação da ${rotuloDispositivo}`;
+    else if (tipoDispositivo === 'inciso') acaoDescritiva = `Alterada a redação do ${rotuloDispositivo}`;
+    else if (tipoDispositivo === 'paragrafo') acaoDescritiva = `Alterada a redação do ${rotuloDispositivo}`;
+    else if (tipoDispositivo === 'caput') acaoDescritiva = `Alterada a redação do Caput`;
+    else if (tipoDispositivo === 'pena') acaoDescritiva = `Alterada a pena`;
+    else acaoDescritiva = `Alterada a redação do dispositivo`;
+  }
+
+  // 7. Extração do corpo textual limpo (sem duplicações de "Art. 216-B" e sem o numeral repetido do inciso)
+  let rawCorpo = textoNovoRaw || textoAntigoRaw || motivoRaw;
+  rawCorpo = rawCorpo.replace(/\s*\([^)]*(?:lei|decreto|redação|incluíd|revogad)[^)]*\)\s*$/i, '').trim();
+  rawCorpo = rawCorpo.replace(/^Art\.\s*[\w-]+[º°]?\s*[-–.:]?\s*/i, '').trim();
+
+  let corpoTexto = rawCorpo;
+  if (tipoDispositivo === 'inciso') {
+    corpoTexto = corpoTexto.replace(/^\(?\s*[IVXLCDM]{1,8}\s*[-–]\s*/i, '').trim();
+  } else if (tipoDispositivo === 'alinea') {
+    corpoTexto = corpoTexto.replace(/^\(?\s*[a-z]\)\s*[-–]\s*/i, '').trim();
+  } else if (tipoDispositivo === 'paragrafo') {
+    corpoTexto = corpoTexto.replace(/^(?:§\s*\d+[º°]?\s*[-–\w]*|par[áa]grafo\s+[úu]nico)\s*[-–.]?\s*/i, '').trim();
+  }
+
+  const descricaoCompleta = corpoTexto ? `${acaoDescritiva}: ${corpoTexto}` : acaoDescritiva;
+
+  // 8. Resumo textual limpo
   let resumoLimpo = motivoRaw;
-  // Se o motivo começar com o texto do dispositivo (ex: "(XI – se a subtração... Incluído...)")
-  // removemos o texto corrido para não duplicar com o bloco de texto novo
   if (resumoLimpo.length > 80 && leiReferencia) {
     resumoLimpo = `${acaoTexto} pela ${leiReferencia}`;
   }
@@ -579,6 +665,11 @@ export function parseDispositivoAlteracao(item: ScrapedArticleUpdate): Dispositi
     tituloDestaque,
     leiReferencia,
     resumoLimpo,
-    badgeCor
+    badgeCor,
+    artigoBase,
+    artigoDisplayCompleto,
+    acaoDescritiva,
+    descricaoCompleta,
+    corpoTexto: corpoTexto || resumoLimpo,
   };
 }
