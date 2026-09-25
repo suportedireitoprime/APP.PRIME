@@ -100,12 +100,78 @@ const POPULAR_AUDIO_MODELS = [
   'whisper-1',
 ];
 
-const POPULAR_VISION_MODELS = [
-  'antigravity/gemini-3.7-flash-high',
-  'antigravity/gemini-3.8-flash',
-  'antigravity/gemini-pro-agent',
-  'antigravity/gpt-4o',
-];
+interface FeatureStyle {
+  iconBg: string;
+  iconBorder: string;
+  iconColor: string;
+  badgeBg: string;
+  badgeBorder: string;
+  badgeText: string;
+  accentHex: string;
+}
+
+const FEATURE_STYLES: Record<string, FeatureStyle> = {
+  // 1. Chat Jurídico / Me Explique / Mentor: Azul Tecnológico / Royal Blue
+  chat_juridico: {
+    iconBg: 'bg-[#3B82F6]/15',
+    iconBorder: 'border-[#3B82F6]/35',
+    iconColor: 'text-[#60A5FA]',
+    badgeBg: 'bg-[#3B82F6]/15',
+    badgeBorder: 'border-[#3B82F6]/30',
+    badgeText: 'text-[#93C5FD]',
+    accentHex: '#3B82F6',
+  },
+  // 2. Resumos Inteligentes & Sínteses: Laranja / Âmbar Quente
+  resumo_inteligente: {
+    iconBg: 'bg-[#F97316]/15',
+    iconBorder: 'border-[#F97316]/35',
+    iconColor: 'text-[#FB923C]',
+    badgeBg: 'bg-[#F97316]/15',
+    badgeBorder: 'border-[#F97316]/30',
+    badgeText: 'text-[#FDBA74]',
+    accentHex: '#F97316',
+  },
+  // 3. Visão Computacional & OCR de Documentos: Violeta / Roxo
+  visao_documentos: {
+    iconBg: 'bg-[#8B5CF6]/15',
+    iconBorder: 'border-[#8B5CF6]/35',
+    iconColor: 'text-[#A78BFA]',
+    badgeBg: 'bg-[#8B5CF6]/15',
+    badgeBorder: 'border-[#8B5CF6]/30',
+    badgeText: 'text-[#C4B5FD]',
+    accentHex: '#8B5CF6',
+  },
+  // 4. Transcrição de Áudio (Speech-to-Text): Esmeralda / Verde Neon
+  transcricao_audio: {
+    iconBg: 'bg-[#10B981]/15',
+    iconBorder: 'border-[#10B981]/35',
+    iconColor: 'text-[#34D399]',
+    badgeBg: 'bg-[#10B981]/15',
+    badgeBorder: 'border-[#10B981]/30',
+    badgeText: 'text-[#6EE7B7]',
+    accentHex: '#10B981',
+  },
+  // 5. Geração de Imagens & Capas Editoriais: Rosa / Magenta Vibrante
+  geracao_imagens: {
+    iconBg: 'bg-[#EC4899]/15',
+    iconBorder: 'border-[#EC4899]/35',
+    iconColor: 'text-[#F472B6]',
+    badgeBg: 'bg-[#EC4899]/15',
+    badgeBorder: 'border-[#EC4899]/30',
+    badgeText: 'text-[#F9A8D4]',
+    accentHex: '#EC4899',
+  },
+  // 6. Narração de Leis e Artigos (TTS): Ciano / Turquesa
+  narracao_vademecum: {
+    iconBg: 'bg-[#06B6D4]/15',
+    iconBorder: 'border-[#06B6D4]/35',
+    iconColor: 'text-[#22D3EE]',
+    badgeBg: 'bg-[#06B6D4]/15',
+    badgeBorder: 'border-[#06B6D4]/30',
+    badgeText: 'text-[#67E8F9]',
+    accentHex: '#06B6D4',
+  },
+};
 
 export default function AdminOmniRouteTeste() {
   const navigate = useNavigate();
@@ -854,37 +920,37 @@ export default function AdminOmniRouteTeste() {
         {/* ============================================================== */}
         {/* 1. PRIMEIRA FUNÇÃO EM LISTA: TESTAR OMNIROUTE */}
         {/* ============================================================== */}
-        <div className="space-y-2 pt-1">
-          <div className="bg-[#141416] border border-amber-500/30 rounded-2xl p-1 shadow-lg shadow-black/40">
+        <div className="pt-1">
+          <div className="bg-[#141416] hover:bg-[#18181c] border border-[#F59E0B]/35 hover:border-[#F59E0B]/50 rounded-2xl shadow-xl shadow-black/40 transition-all">
             <button
               type="button"
               onClick={() => setShowOmniRouteTestSheet(true)}
-              className="w-full flex items-center justify-between p-3.5 sm:p-4 rounded-xl hover:bg-white/[0.04] transition-all text-left group cursor-pointer"
+              className="w-full flex items-start sm:items-center justify-between gap-4 p-4.5 sm:p-5 text-left group cursor-pointer"
             >
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 group-hover:scale-105 transition-transform">
-                  <Sparkles className="w-5 h-5 text-amber-400" />
+              <div className="flex items-start sm:items-center gap-4 min-w-0 flex-1">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#F59E0B]/15 border border-[#F59E0B]/35 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-md shadow-[#F59E0B]/10 mt-0.5 sm:mt-0">
+                  <Sparkles className="w-6 h-6 text-[#FBBF24]" />
                 </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-sm sm:text-base font-bold text-white group-hover:text-amber-300 transition-colors">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2.5 flex-wrap">
+                    <h3 className="!font-sans text-sm sm:text-base font-semibold text-white tracking-normal normal-case group-hover:text-[#FBBF24] transition-colors leading-snug break-words">
                       Testar OmniRoute
                     </h3>
-                    <Badge className="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] px-2 py-0.5 font-medium">
+                    <span className="!font-sans text-xs font-semibold px-2.5 py-0.5 rounded-lg bg-[#F59E0B]/15 text-[#FBBF24] border border-[#F59E0B]/30 whitespace-nowrap shadow-sm">
                       Sandbox de IA
-                    </Badge>
+                    </span>
                   </div>
-                  <p className="text-xs text-zinc-400 mt-0.5">
+                  <p className="!font-sans text-xs sm:text-[13px] text-zinc-400 mt-1 leading-relaxed break-words">
                     Ambiente completo para testar Texto, Imagem, Visão e Áudio livremente
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-amber-400 font-medium hidden sm:inline">
+              <div className="flex items-center gap-2 shrink-0 self-center">
+                <span className="!font-sans text-xs text-[#FBBF24] font-medium hidden sm:inline">
                   Abrir Testes
                 </span>
-                <ChevronRight className="w-5 h-5 text-zinc-400 group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all" />
+                <ChevronRight className="w-5 h-5 text-zinc-400 group-hover:text-[#FBBF24] group-hover:translate-x-0.5 transition-all" />
               </div>
             </button>
           </div>
@@ -893,13 +959,13 @@ export default function AdminOmniRouteTeste() {
         {/* ============================================================== */}
         {/* 2. TÍTULO E LISTA: FUNÇÕES DO APLICATIVO */}
         {/* ============================================================== */}
-        <div className="space-y-3 pt-2">
-          <div className="flex items-center justify-between">
+        <div className="space-y-4 pt-3">
+          <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-sm sm:text-base font-bold text-white tracking-wide">
+              <h3 className="!font-sans text-base sm:text-lg font-bold text-white tracking-normal normal-case">
                 Funções do Aplicativo
               </h3>
-              <p className="text-xs text-zinc-400 mt-0.5">
+              <p className="!font-sans text-xs sm:text-[13px] text-zinc-400 mt-1">
                 Toque em uma função para abrir as configurações (OmniRoute ou Chave Própria) e testar o modelo
               </p>
             </div>
@@ -913,15 +979,15 @@ export default function AdminOmniRouteTeste() {
                 setRoutingConfigs(getAiFeaturesRouting());
                 toast.success('Todas as funções de IA definidas para OmniRoute (Principal)!');
               }}
-              className="border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs h-7.5 px-2.5 rounded-xl font-medium hidden sm:flex"
+              className="border-[#F59E0B]/35 bg-[#F59E0B]/10 hover:bg-[#F59E0B]/20 text-[#FBBF24] text-xs h-8 px-3 rounded-xl font-medium hidden sm:flex !font-sans shrink-0"
             >
-              <Zap className="w-3.5 h-3.5 mr-1" />
+              <Zap className="w-3.5 h-3.5 mr-1 text-[#FBBF24]" />
               OmniRoute em Tudo
             </Button>
           </div>
 
-          {/* LISTA MINIMALISTA DE FUNÇÕES */}
-          <div className="bg-[#141416] border border-white/10 rounded-2xl overflow-hidden divide-y divide-white/5 shadow-xl">
+          {/* CARDS INDIVIDUAIS BEM DISTRIBUÍDOS SEM ABREVIAÇÕES */}
+          <div className="space-y-3 sm:space-y-3.5">
             {AI_FEATURES_REGISTRY.map((feature) => {
               const config = routingConfigs[feature.key] || {
                 provider: feature.defaultProvider,
@@ -929,67 +995,66 @@ export default function AdminOmniRouteTeste() {
               };
               const isOmni = config.provider === 'omniroute';
               const currentModel = feature.suggestedModels.find(m => m.id === config.selectedModel) || feature.suggestedModels[0];
+              const style = FEATURE_STYLES[feature.key] || FEATURE_STYLES.chat_juridico;
 
               return (
-                <button
+                <div
                   key={feature.key}
-                  type="button"
-                  onClick={() => setSelectedFeature(feature)}
-                  className="w-full flex items-center justify-between p-3.5 sm:p-4 hover:bg-white/[0.04] transition-all text-left group cursor-pointer"
+                  className="bg-[#141416] hover:bg-[#18181c] border border-white/10 hover:border-white/20 rounded-2xl shadow-lg transition-all"
                 >
-                  <div className="flex items-center gap-3 min-w-0 pr-3">
-                    <div className={`p-2.5 rounded-xl border shrink-0 ${
-                      feature.category.includes('Texto') ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
-                      feature.category.includes('Síntese') ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' :
-                      feature.category.includes('Visão') ? 'bg-purple-500/10 border-purple-500/20 text-purple-400' :
-                      feature.category.includes('Áudio') ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' :
-                      'bg-rose-500/10 border-rose-500/20 text-rose-400'
-                    }`}>
-                      {feature.key === 'chat_juridico' && <MessageSquare className="w-4 h-4" />}
-                      {feature.key === 'resumo_inteligente' && <BookOpen className="w-4 h-4" />}
-                      {feature.key === 'visao_documentos' && <Eye className="w-4 h-4" />}
-                      {feature.key === 'transcricao_audio' && <Mic className="w-4 h-4" />}
-                      {feature.key === 'geracao_imagens' && <ImageIcon className="w-4 h-4" />}
-                      {feature.key === 'narracao_vademecum' && <Volume2 className="w-4 h-4" />}
+                  <button
+                    type="button"
+                    onClick={() => setSelectedFeature(feature)}
+                    className="w-full flex items-start sm:items-center justify-between gap-4 p-4.5 sm:p-5 text-left group cursor-pointer"
+                  >
+                    <div className="flex items-start sm:items-center gap-4 min-w-0 flex-1">
+                      <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl border shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform shadow-md mt-0.5 sm:mt-0 ${style.iconBg} ${style.iconBorder} ${style.iconColor}`}>
+                        {feature.key === 'chat_juridico' && <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6" />}
+                        {feature.key === 'resumo_inteligente' && <BookOpen className="w-5 h-5 sm:w-6 sm:h-6" />}
+                        {feature.key === 'visao_documentos' && <Eye className="w-5 h-5 sm:w-6 sm:h-6" />}
+                        {feature.key === 'transcricao_audio' && <Mic className="w-5 h-5 sm:w-6 sm:h-6" />}
+                        {feature.key === 'geracao_imagens' && <ImageIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
+                        {feature.key === 'narracao_vademecum' && <Volume2 className="w-5 h-5 sm:w-6 sm:h-6" />}
+                      </div>
+
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h4 className="!font-sans text-sm sm:text-base font-semibold text-white group-hover:text-[#FBBF24] transition-colors tracking-normal normal-case leading-snug break-words">
+                            {feature.title}
+                          </h4>
+                          <span className="!font-sans text-[11px] text-zinc-500 font-medium shrink-0">
+                            • {feature.category}
+                          </span>
+                        </div>
+                        <p className="!font-sans text-xs sm:text-[13px] text-zinc-400 mt-1 leading-relaxed break-words">
+                          {feature.subtitle}
+                        </p>
+                      </div>
                     </div>
 
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="text-xs sm:text-sm font-semibold text-white group-hover:text-amber-300 transition-colors truncate">
-                          {feature.title}
-                        </h4>
-                        <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono hidden md:inline">
-                          {feature.category}
+                    <div className="flex items-center gap-3 shrink-0 self-center">
+                      {feature.ttsOnly ? (
+                        <span className="!font-sans text-xs font-medium px-2.5 py-1 rounded-lg bg-zinc-800 text-zinc-300 border border-zinc-700 whitespace-nowrap">
+                          Motor Nativo
                         </span>
-                      </div>
-                      <p className="text-[11px] sm:text-xs text-zinc-400 truncate mt-0.5">
-                        {feature.subtitle}
-                      </p>
+                      ) : (
+                        <div className="flex flex-col items-end">
+                          <span className={`!font-sans text-xs font-semibold px-2.5 py-1 rounded-lg whitespace-nowrap shadow-sm ${
+                            isOmni
+                              ? 'bg-[#F59E0B]/15 text-[#FBBF24] border border-[#F59E0B]/30'
+                              : 'bg-zinc-800 text-zinc-300 border border-zinc-700'
+                          }`}>
+                            {isOmni ? '★ OmniRoute (1ª)' : 'Chave Própria'}
+                          </span>
+                          <span className="text-[11px] text-zinc-500 font-mono mt-1 whitespace-nowrap hidden sm:block">
+                            {currentModel?.name.split('(')[0].trim()}
+                          </span>
+                        </div>
+                      )}
+                      <ChevronRight className="w-5 h-5 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
                     </div>
-                  </div>
-
-                  <div className="flex items-center gap-2.5 shrink-0">
-                    {feature.ttsOnly ? (
-                      <Badge className="bg-zinc-800 text-zinc-300 border border-zinc-700 text-[10px] px-2 py-0.5 whitespace-nowrap">
-                        Motor Nativo
-                      </Badge>
-                    ) : (
-                      <div className="flex flex-col items-end">
-                        <Badge className={`text-[10px] px-2 py-0.5 whitespace-nowrap font-medium ${
-                          isOmni
-                            ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                            : 'bg-zinc-800 text-zinc-300 border border-zinc-700'
-                        }`}>
-                          {isOmni ? '★ OmniRoute (1ª)' : 'Chave Própria'}
-                        </Badge>
-                        <span className="text-[10px] text-zinc-500 font-mono mt-0.5 truncate max-w-[130px] hidden sm:block">
-                          {currentModel?.name.split('(')[0].trim()}
-                        </span>
-                      </div>
-                    )}
-                    <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
-                  </div>
-                </button>
+                  </button>
+                </div>
               );
             })}
           </div>
@@ -1019,21 +1084,26 @@ export default function AdminOmniRouteTeste() {
                 <div className="w-12 h-1.5 rounded-full bg-white/20 mx-auto mt-3 shrink-0" />
 
                 {/* Header do Sheet */}
-                <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-white/10 shrink-0">
-                  <div className="flex items-center gap-2.5">
-                    <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
-                      {selectedFeature.key === 'chat_juridico' && <MessageSquare className="w-4 h-4" />}
-                      {selectedFeature.key === 'resumo_inteligente' && <BookOpen className="w-4 h-4" />}
-                      {selectedFeature.key === 'visao_documentos' && <Eye className="w-4 h-4" />}
-                      {selectedFeature.key === 'transcricao_audio' && <Mic className="w-4 h-4" />}
-                      {selectedFeature.key === 'geracao_imagens' && <ImageIcon className="w-4 h-4" />}
-                      {selectedFeature.key === 'narracao_vademecum' && <Volume2 className="w-4 h-4" />}
-                    </div>
+                <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-white/10 shrink-0">
+                  <div className="flex items-center gap-3">
+                    {(() => {
+                      const sheetStyle = FEATURE_STYLES[selectedFeature.key] || FEATURE_STYLES.chat_juridico;
+                      return (
+                        <div className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${sheetStyle.iconBg} ${sheetStyle.iconBorder} ${sheetStyle.iconColor}`}>
+                          {selectedFeature.key === 'chat_juridico' && <MessageSquare className="w-5 h-5" />}
+                          {selectedFeature.key === 'resumo_inteligente' && <BookOpen className="w-5 h-5" />}
+                          {selectedFeature.key === 'visao_documentos' && <Eye className="w-5 h-5" />}
+                          {selectedFeature.key === 'transcricao_audio' && <Mic className="w-5 h-5" />}
+                          {selectedFeature.key === 'geracao_imagens' && <ImageIcon className="w-5 h-5" />}
+                          {selectedFeature.key === 'narracao_vademecum' && <Volume2 className="w-5 h-5" />}
+                        </div>
+                      );
+                    })()}
                     <div>
-                      <h3 className="text-sm sm:text-base font-bold text-white">
+                      <h3 className="!font-sans text-base sm:text-lg font-bold text-white tracking-normal normal-case">
                         {selectedFeature.title}
                       </h3>
-                      <p className="text-[11px] text-zinc-400">
+                      <p className="!font-sans text-xs text-zinc-400">
                         {selectedFeature.category}
                       </p>
                     </div>
@@ -1253,16 +1323,16 @@ export default function AdminOmniRouteTeste() {
                 <div className="w-12 h-1.5 rounded-full bg-white/20 mx-auto mt-3 shrink-0" />
 
                 {/* Header do Sheet */}
-                <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-white/10 shrink-0">
-                  <div className="flex items-center gap-2.5">
-                    <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
-                      <Sparkles className="w-5 h-5 text-amber-400" />
+                <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-white/10 shrink-0">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#F59E0B]/15 border border-[#F59E0B]/30 text-[#FBBF24] flex items-center justify-center shrink-0">
+                      <Sparkles className="w-5 h-5 text-[#FBBF24]" />
                     </div>
                     <div>
-                      <h3 className="text-sm sm:text-base font-bold text-white">
+                      <h3 className="!font-sans text-base sm:text-lg font-bold text-white tracking-normal normal-case">
                         Testar OmniRoute — Sandbox de IA
                       </h3>
-                      <p className="text-[11px] text-zinc-400">
+                      <p className="!font-sans text-xs text-zinc-400">
                         Validação interativa de Texto, Imagens, Visão e Áudio
                       </p>
                     </div>
