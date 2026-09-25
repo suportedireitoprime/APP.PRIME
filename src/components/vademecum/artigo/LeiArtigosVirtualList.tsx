@@ -47,7 +47,7 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
     return document.getElementById('root') || document.documentElement || document.body;
   }, []);
 
-  // Item 30: Restauração do último artigo lido
+  // Item 30: Restauração do último artigo lido (reativo instantâneo)
   const [lastReadArtigo, setLastReadArtigo] = useState<{ numero: string; id: string } | null>(null);
   const [dismissedLastRead, setDismissedLastRead] = useState(false);
 
@@ -60,15 +60,27 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
         if (parsed?.numero) setLastReadArtigo(parsed);
       }
     } catch {}
+
+    const onUpdated = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail?.numero) {
+        setLastReadArtigo(detail);
+        setDismissedLastRead(false);
+      }
+    };
+    window.addEventListener(`last-artigo-updated:${selectedTabelaNome}`, onUpdated);
+    return () => window.removeEventListener(`last-artigo-updated:${selectedTabelaNome}`, onUpdated);
   }, [selectedTabelaNome]);
 
   const handleOpenArtigo = (artigo: ArtigoLei) => {
+    const cleanNum = String(artigo.numero).replace(/^art\.?\s*/i, '').trim();
+    const item = { numero: cleanNum, id: String(artigo.id) };
+    setLastReadArtigo(item);
+    setDismissedLastRead(false);
     if (selectedTabelaNome) {
       try {
-        localStorage.setItem(`last_artigo_${selectedTabelaNome}`, JSON.stringify({
-          numero: artigo.numero,
-          id: String(artigo.id),
-        }));
+        localStorage.setItem(`last_artigo_${selectedTabelaNome}`, JSON.stringify(item));
+        window.dispatchEvent(new CustomEvent(`last-artigo-updated:${selectedTabelaNome}`, { detail: item }));
       } catch {}
     }
     openArtigoWithRecent(artigo);
@@ -193,11 +205,16 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
 
   const handleResumeLastRead = () => {
     if (!lastReadArtigo) return;
-    const idx = visibleArtigos.findIndex(
-      (a) => String(a.numero).trim() === String(lastReadArtigo.numero).trim() || String(a.id) === String(lastReadArtigo.id)
+    const cleanTarget = String(lastReadArtigo.numero).replace(/^art\.?\s*/i, '').trim();
+    const targetArtigo = visibleArtigos.find(
+      (a) => String(a.numero).replace(/^art\.?\s*/i, '').trim() === cleanTarget || String(a.id) === String(lastReadArtigo.id)
     );
-    if (idx !== -1) {
-      artigosVirtualizer.scrollToIndex(idx, { align: 'center', behavior: 'smooth' });
+    if (targetArtigo) {
+      const idx = visibleArtigos.indexOf(targetArtigo);
+      if (idx !== -1) {
+        artigosVirtualizer.scrollToIndex(idx, { align: 'center', behavior: 'smooth' });
+      }
+      openArtigoWithRecent(targetArtigo);
     }
   };
 

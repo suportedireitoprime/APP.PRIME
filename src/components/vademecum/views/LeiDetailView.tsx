@@ -28,6 +28,7 @@ import RadarLegislacaoContent from '@/components/vademecum/outros/RadarLegislaca
 import LeiHero from '@/components/vademecum/artigo/LeiHero';
 import LeiArtigosVirtualList from '@/components/vademecum/artigo/LeiArtigosVirtualList';
 import LeiCapitulosGrid from '@/components/vademecum/artigo/LeiCapitulosGrid';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 
 const MOBILE_ARTIGOS_VIRTUAL_THRESHOLD = 120;
 
@@ -85,7 +86,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
     setTimeout(() => handleSearch(text), 0);
   });
 
-  const [stickySearch, setStickySearch] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [ocrOpen, setOcrOpen] = useState(false);
   const [showGrafo, setShowGrafo] = useState(false);
@@ -125,6 +126,12 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
     track('legislacao_artigo_opened', { lei_id: selectedLeiId, lei_nome: selectedLeiNome, tabela: selectedTabelaNome, artigo_id: artigo.id, artigo_numero: artigo.numero });
     setOpenArtigo(artigo);
     if (!selectedTabelaNome) return;
+    const cleanNum = String(artigo.numero).replace(/^art\.?\s*/i, '').trim();
+    const item = { numero: cleanNum, id: String(artigo.id) };
+    try {
+      localStorage.setItem(`last_artigo_${selectedTabelaNome}`, JSON.stringify(item));
+      window.dispatchEvent(new CustomEvent(`last-artigo-updated:${selectedTabelaNome}`, { detail: item }));
+    } catch {}
     setRecentIds(prev => {
       const next = [String(artigo.id), ...prev.filter(id => id !== String(artigo.id))].slice(0, 30);
       try { localStorage.setItem(`recentes_artigos_${selectedTabelaNome}`, JSON.stringify(next)); } catch {}
@@ -158,12 +165,8 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   useEffect(() => {
     const handleScroll = () => setShowScrollTop(window.scrollY > 320);
     window.addEventListener('scroll', handleScroll, { passive: true });
-    const observer = new IntersectionObserver(([entry]) => setStickySearch(!entry.isIntersecting), { threshold: 0 });
-    const el = searchBarRef.current;
-    if (el) observer.observe(el);
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      if (el) observer.unobserve(el);
     };
   }, []);
 
@@ -243,6 +246,45 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
       return artNum === q;
     });
   }, [artigos, deferredSearchQuery, workerResultIds]);
+
+  const previewResults = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    return filteredArtigos.slice(0, 8);
+  }, [filteredArtigos, searchQuery]);
+
+  const recentArticles = useMemo(() => {
+    if (!recentIds.length || !artigos.length) return [];
+    const map = new Map(artigos.map(a => [String(a.id), a]));
+    return recentIds.map(id => map.get(id)).filter(Boolean) as ArtigoLei[];
+  }, [recentIds, artigos]);
+
+  const scrollToSearch = useCallback(() => {
+    setTimeout(() => {
+      if (searchBarRef.current) {
+        const top = searchBarRef.current.getBoundingClientRect().top + window.scrollY - 12;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    }, 100);
+  }, []);
+
+  useEffect(() => {
+    if (!window.visualViewport) return;
+    const vv = window.visualViewport;
+    const handleViewport = () => {
+      if (isSearchFocused && searchBarRef.current) {
+        const rect = searchBarRef.current.getBoundingClientRect();
+        if (rect.top < 8 || rect.bottom > vv.height) {
+          searchBarRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }
+    };
+    vv.addEventListener('resize', handleViewport);
+    vv.addEventListener('scroll', handleViewport);
+    return () => {
+      vv.removeEventListener('resize', handleViewport);
+      vv.removeEventListener('scroll', handleViewport);
+    };
+  }, [isSearchFocused]);
 
   const handleSearch = (override?: string) => {
     const raw = (override ?? searchQuery).trim();
@@ -452,7 +494,19 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   };
 
   return (
-    <div className="theme-vademecum min-h-dvh bg-background pb-28 lg:pb-0">
+    <div className="theme-vademecum min-h-dvh bg-background pb-28 lg:pb-0 relative overflow-x-hidden">
+      {/* Fundo Oficial Animado ShapeGrid com quadradinhos */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <ShapeGrid 
+          speed={0.5} 
+          squareSize={40}
+          direction="diagonal"
+          borderColor="rgba(255, 255, 255, 0.04)"
+          hoverFillColor="rgba(255, 255, 255, 0.08)"
+          shape="square"
+          hoverTrailAmount={5}
+        />
+      </div>
       {/* Item 75: Skip to Content para acessibilidade WCAG AAA */}
       <a
         href="#lei-conteudo"
@@ -496,16 +550,20 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.28, ease: [0.22, 0.61, 0.36, 1], delay: 0.06 }}
-          className={isDesktop ? 'sticky top-0 z-40 -mx-2 sm:-mx-4 md:-mx-6 px-2 sm:px-4 md:px-6 py-3 bg-background/95 backdrop-blur-md border-b border-border/60 space-y-2.5' : 'space-y-4'}
+          className="sticky top-0 z-40 -mx-3 sm:-mx-4 md:-mx-6 px-3 sm:px-4 md:px-6 pt-[calc(0.6rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-2.5 bg-[#0e0e10]/95 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-black/40 space-y-2.5"
         >
           {/* Barra de Pesquisa posicionada fora e abaixo do painel */}
-          <div ref={searchBarRef} className={`mx-auto w-full ${isDesktop ? 'max-w-none' : ''}`}>
-            <form className="flex items-center gap-2.5 min-w-0" onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
+          <div ref={searchBarRef} className={`mx-auto w-full relative ${isDesktop ? 'max-w-none' : ''}`}>
+            <form className="flex items-center gap-2.5 min-w-0" onSubmit={(e) => { e.preventDefault(); handleSearch(); setIsSearchFocused(false); }}>
               <div className="relative flex-1 min-w-0">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-foreground" />
                 <Input
                   value={voiceSearch.listening ? (voiceSearch.partial || searchQuery) : searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => {
+                    setIsSearchFocused(true);
+                    scrollToSearch();
+                  }}
                   placeholder="Pesquisar artigo..."
                   className={`rounded-2xl bg-secondary border-border pl-10 pr-20 text-sm font-medium ${isDesktop ? 'h-12' : 'h-12'}`}
                 />
@@ -524,12 +582,129 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                 type="button"
                 onClick={() => voiceSearch.toggle()}
                 aria-label={voiceSearch.listening ? 'Parar gravação' : 'Buscar por voz'}
-                className={`relative overflow-hidden shrink-0 rounded-full flex items-center justify-center shadow-lg active:scale-[0.95] transition ${isDesktop ? 'w-11 h-11' : 'w-14 h-14'} ${voiceSearch.listening ? 'bg-hero-panel text-white animate-pulse shadow-red-950/50' : 'bg-hero-panel text-white shadow-red-950/40'}`}
+                className={`relative overflow-hidden shrink-0 rounded-full flex items-center justify-center shadow-lg active:scale-[0.95] transition ${isDesktop ? 'w-11 h-11' : 'w-12 h-12'} ${voiceSearch.listening ? 'bg-hero-panel text-white animate-pulse shadow-red-950/50' : 'bg-hero-panel text-white shadow-red-950/40'}`}
               >
                 {voiceSearch.listening && <span className="absolute inset-0 rounded-full bg-red-500/30 animate-ping" />}
                 {voiceSearch.listening ? <MicOff className={`relative z-[2] ${isDesktop ? 'w-5 h-5' : 'w-6 h-6'}`} strokeWidth={2.5} /> : <Mic className={`relative z-[2] ${isDesktop ? 'w-5 h-5' : 'w-6 h-6'}`} strokeWidth={2.5} />}
               </button>
             </form>
+
+            {/* Dropdown suspenso de pesquisa (resultados instantâneos e artigos recentes) */}
+            <AnimatePresence>
+              {isSearchFocused && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs"
+                    onClick={() => setIsSearchFocused(false)}
+                  />
+                  <motion.div
+                    initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                    transition={{ duration: 0.18, ease: 'easeOut' }}
+                    className="absolute left-0 right-0 top-full mt-2 z-50 bg-[#121216]/98 backdrop-blur-2xl border border-white/15 rounded-2xl shadow-2xl overflow-hidden max-h-[60vh] flex flex-col"
+                  >
+                    <div className="px-3.5 py-2.5 border-b border-white/10 flex items-center justify-between text-xs text-muted-foreground bg-white/[0.03]">
+                      <div className="flex items-center gap-2">
+                        <Search className="w-3.5 h-3.5 text-primary" />
+                        <span className="font-semibold uppercase tracking-wider text-[10px] text-white/90">
+                          {searchQuery.trim() ? `Resultados correspondentes (${previewResults.length})` : 'Artigos Recentes / Pesquisados'}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setIsSearchFocused(false)}
+                        className="text-xs text-muted-foreground hover:text-white px-2 py-0.5 rounded-md hover:bg-white/10 transition-colors"
+                      >
+                        Fechar
+                      </button>
+                    </div>
+
+                    <div className="overflow-y-auto divide-y divide-white/5 p-1.5 space-y-1">
+                      {searchQuery.trim() ? (
+                        previewResults.length > 0 ? (
+                          previewResults.map((art) => (
+                            <button
+                              key={art.id}
+                              type="button"
+                              onMouseDown={(e) => {
+                                e.preventDefault();
+                                openArtigoWithRecent(art);
+                                setIsSearchFocused(false);
+                                haptic.selection();
+                              }}
+                              className="w-full text-left p-2.5 rounded-xl hover:bg-white/10 active:bg-white/15 transition flex flex-col gap-0.5 group"
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm font-bold text-primary group-hover:text-red-400">
+                                  {art.numero}
+                                </span>
+                                {art.topico && (
+                                  <span className="text-[10px] text-zinc-400 bg-white/5 px-2 py-0.5 rounded-full">
+                                    {art.topico}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-xs text-zinc-300 line-clamp-2 leading-relaxed">
+                                {art.caput}
+                              </p>
+                            </button>
+                          ))
+                        ) : (
+                          <div className="py-6 text-center text-xs text-muted-foreground">
+                            Nenhum artigo encontrado para &ldquo;{searchQuery}&rdquo;.
+                          </div>
+                        )
+                      ) : (
+                        recentArticles.length > 0 ? (
+                          recentArticles.map((art) => (
+                            <button
+                              key={art.id}
+                              type="button"
+                              onMouseDown={(e) => {
+                                e.preventDefault();
+                                openArtigoWithRecent(art);
+                                setIsSearchFocused(false);
+                                haptic.selection();
+                              }}
+                              className="w-full text-left p-2.5 rounded-xl hover:bg-white/10 active:bg-white/15 transition flex items-center justify-between group"
+                            >
+                              <div className="flex flex-col gap-0.5 min-w-0 pr-2">
+                                <span className="text-sm font-bold text-white group-hover:text-primary">
+                                  {art.numero}
+                                </span>
+                                <p className="text-xs text-zinc-400 truncate max-w-sm">
+                                  {art.caput}
+                                </p>
+                              </div>
+                              <History className="w-4 h-4 text-zinc-500 shrink-0" />
+                            </button>
+                          ))
+                        ) : (
+                          <div className="py-6 text-center text-xs text-muted-foreground">
+                            Digite o número do artigo ou termo jurídico para pesquisar...
+                          </div>
+                        )
+                      )}
+                    </div>
+
+                    {searchQuery.trim() && filteredArtigos.length > previewResults.length && (
+                      <button
+                        type="button"
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          setIsSearchFocused(false);
+                          handleSearch();
+                        }}
+                        className="w-full py-2.5 px-3 text-center text-xs font-semibold text-primary hover:bg-white/5 border-t border-white/10 transition-colors"
+                      >
+                        Ver todos os {filteredArtigos.length} artigos na lista
+                      </button>
+                    )}
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Abas no Desktop (no mobile a navegação fica no rodapé) */}
@@ -556,38 +731,6 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
             </div>
           )}
         </motion.div>
-
-        <AnimatePresence>
-          {stickySearch && !isDesktop && (
-            <motion.div
-              initial={{ y: -60, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -60, opacity: 0 }}
-              transition={{ type: 'spring', damping: 24, stiffness: 300 }}
-              className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/50 px-4 py-2.5 shadow-lg"
-            >
-              <form className="relative max-w-lg mx-auto" onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-foreground" />
-                <Input
-                  value={voiceSearch.listening ? (voiceSearch.partial || searchQuery) : searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Pesquisar..."
-                  className="rounded-full bg-secondary/80 border-border/50 pl-10 pr-20 h-10 text-sm font-medium"
-                />
-                <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
-                  {searchQuery && !voiceSearch.listening && (
-                    <button type="button" onClick={() => { setSearchQuery(''); handleSearch(''); }} className="p-1.5 rounded-full hover:bg-background/50 text-muted-foreground">
-                      <XIcon className="w-4 h-4" />
-                    </button>
-                  )}
-                  <button type="button" onClick={() => voiceSearch.toggle()} className={`w-7 h-7 rounded-full flex items-center justify-center ${voiceSearch.listening ? 'bg-red-500 text-white animate-pulse' : 'text-primary hover:bg-primary/10'}`}>
-                    {voiceSearch.listening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-                  </button>
-                </div>
-              </form>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Item 61: Layout Master-Detail adaptativo para Tablets (iPad/Android) e Desktop */}
         <div className={`flex ${isMasterDetail ? 'md:gap-6 md:items-start' : 'flex-col'}`}>
@@ -787,8 +930,9 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           style={{ willChange: 'transform, opacity', pointerEvents: showFooter ? 'auto' : 'none' }}
           className="fixed bottom-0 left-0 right-0 z-[58] lg:hidden"
         >
-          <div className="bg-[#0e0e10]/95 backdrop-blur-xl border-t border-white/10 rounded-t-3xl shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.65)] pb-safe">
-            <div className="grid grid-cols-3 items-end px-3 pt-3 pb-3 max-w-md mx-auto">
+          <div className="bg-[#0e0e10]/95 backdrop-blur-xl border-t border-white/10 rounded-t-3xl shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.65)] pb-safe px-3 pt-2.5 pb-2">
+            {/* Fundo cinza um pouco mais claro distribuído entre os 3 itens (Menu de alternância tipo segmented control) */}
+            <div className="grid grid-cols-3 p-1.5 rounded-2xl bg-white/[0.08] border border-white/10 shadow-inner max-w-md mx-auto relative gap-1">
               {[
                 { key: 'art' as const, icon: BookOpen, label: 'Artigos' },
                 { key: 'cap' as const, icon: LayoutGrid, label: 'Capítulos' },
@@ -803,12 +947,14 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                       setActiveTab(tab.key);
                     }}
                     type="button"
-                    className={`flex flex-col items-center justify-end gap-1.5 py-1.5 transition-all active:scale-95 ${
-                      active ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+                    className={`relative z-10 flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-xl transition-all select-none active:scale-95 ${
+                      active
+                        ? 'bg-white/15 text-white font-bold shadow-md border border-white/10'
+                        : 'text-zinc-400 hover:text-white font-medium'
                     }`}
                   >
-                    <tab.icon className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={active ? 2.5 : 2} />
-                    <span className={`font-body text-[12px] sm:text-[13px] leading-tight ${active ? 'font-bold text-foreground' : 'font-medium'}`}>
+                    <tab.icon className={`w-5 h-5 sm:w-6 sm:h-6 shrink-0 transition-transform ${active ? 'text-primary scale-110' : 'text-zinc-400'}`} strokeWidth={active ? 2.5 : 2} />
+                    <span className="font-body text-[11px] sm:text-[12px] leading-tight">
                       {tab.label}
                     </span>
                   </button>
