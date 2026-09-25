@@ -29,8 +29,10 @@ import {
   Clock,
   Layers,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  VolumeX
 } from 'lucide-react';
+import { speakNative, stopNative } from '@/lib/nativeTts';
 
 const STORAGE_KEYS = {
   BASE_URL: 'omniroute_test_base_url',
@@ -90,6 +92,7 @@ export default function AdminOmniRouteTeste() {
   const [audioLoading, setAudioLoading] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [audioMeta, setAudioMeta] = useState<{ durationMs: number; sizeBytes: number } | null>(null);
+  const [isPlayingNativeTts, setIsPlayingNativeTts] = useState(false);
 
   // Tab Imagem (Geração & Visão)
   const [imageTab, setImageTab] = useState<'generate' | 'vision'>('generate');
@@ -288,7 +291,21 @@ export default function AdminOmniRouteTeste() {
       if (!res.ok) {
         const errorText = await res.text().catch(() => '');
         addLog('Áudio TTS', audioModel, elapsed, res.status);
-        throw new Error(`HTTP ${res.status}: ${errorText || res.statusText}`);
+        let parsed = errorText;
+        try {
+          const j = JSON.parse(errorText);
+          parsed = j?.error?.message || errorText;
+        } catch {}
+
+        if (parsed.includes('No credentials for provider') || parsed.includes('Invalid speech model')) {
+          toast.info('OmniRoute sem chave OpenAI/ElevenLabs configurada. Reproduzindo com TTS nativo!');
+          setIsPlayingNativeTts(true);
+          await speakNative(audioText, { lang: 'pt-BR' });
+          setIsPlayingNativeTts(false);
+          return;
+        }
+
+        throw new Error(parsed || `HTTP ${res.status}: ${res.statusText}`);
       }
 
       const blob = await res.blob();
@@ -799,14 +816,44 @@ export default function AdminOmniRouteTeste() {
                   />
                 </div>
 
-                <div className="flex justify-end">
+                {/* Aviso explicativo de TTS */}
+                <div className="bg-amber-500/10 border border-amber-500/20 p-3.5 rounded-xl text-xs text-amber-300/90 leading-relaxed flex items-start gap-2.5">
+                  <Volume2 className="w-4 h-4 shrink-0 mt-0.5 text-amber-400" />
+                  <div>
+                    <span className="font-semibold text-amber-200">Como funciona o Áudio no OmniRoute:</span>
+                    <p className="mt-1 text-[11.5px] text-amber-300/70">
+                      O provedor <strong>Antigravity</strong> conectado no OmniRoute fornece acesso aos modelos de <strong>Texto</strong> e <strong>Imagem</strong> do Gemini. Para gerar arquivos de áudio via API (<code>/v1/audio/speech</code>), é necessário cadastrar um provedor de voz (como <strong>OpenAI</strong> ou <strong>ElevenLabs</strong>) no painel do OmniRoute. Você também pode testar a locução imediatamente usando o <strong>TTS do Aparelho</strong> abaixo!
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={async () => {
+                      if (isPlayingNativeTts) {
+                        await stopNative();
+                        setIsPlayingNativeTts(false);
+                      } else {
+                        setIsPlayingNativeTts(true);
+                        await speakNative(audioText, { lang: 'pt-BR' });
+                        setIsPlayingNativeTts(false);
+                      }
+                    }}
+                    className="border-white/10 hover:bg-white/10 text-xs gap-1.5 h-10"
+                  >
+                    {isPlayingNativeTts ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-amber-400" />}
+                    {isPlayingNativeTts ? 'Parar Voz Nativa' : 'Ouvir via TTS do Aparelho (Local)'}
+                  </Button>
+
                   <Button
                     onClick={handleRunAudioTTS}
                     disabled={audioLoading}
                     className="bg-amber-500 hover:bg-amber-600 text-black font-semibold text-xs sm:text-sm px-6 h-10 gap-2"
                   >
                     {audioLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mic className="w-4 h-4" />}
-                    {audioLoading ? 'Sintetizando Áudio...' : 'Gerar Áudio (TTS)'}
+                    {audioLoading ? 'Sintetizando Áudio...' : 'Gerar Áudio (OmniRoute)'}
                   </Button>
                 </div>
 
