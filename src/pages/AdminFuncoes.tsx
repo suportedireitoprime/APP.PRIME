@@ -32,6 +32,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-transferencia-app': () => import('./AdminTransferenciaApp'),
   '/admin-secrets': () => import('./AdminSecretsDownload'),
   '/admin-blog-edicao': () => import('./AdminBlogEdicao'),
+  '/admin-omniroute-teste': () => import('./AdminOmniRouteTeste'),
   '/admin-design-imagens': () => import('./AdminDesignImagens'),
   '/admin-avaliacao-loja': () => import('./AdminAvaliacaoLoja'),
   '/admin-hero-home': () => import('./AdminHeroHome'),
@@ -169,6 +170,7 @@ const CATEGORIES: Category[] = [
     icon: Newspaper,
     items: [
       // Conteúdo & IA
+      { id: 'omniroute-teste', label: 'Teste OmniRoute', icon: Sparkles, desc: 'Testes de IA via OmniRoute: Texto, Áudio e Imagem com fallback', route: '/admin-omniroute-teste' },
       { id: 'flashcards-edicao', label: 'Flashcards Editar', icon: Layers, desc: 'IA, bibliotecas, revisão e stats', route: '/admin-flashcards-editar' },
       { id: 'blog-edicao', label: 'Blog Editar', icon: Newspaper, desc: 'Geração automática de artigos + push', route: '/admin-blog-edicao' },
       { id: 'overlay-frases', label: 'Frases Editar', icon: Quote, desc: 'Frases + vozes do overlay de geração', route: '/admin-overlay-frases' },
