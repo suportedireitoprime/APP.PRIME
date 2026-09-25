@@ -715,6 +715,7 @@ export default function AdminNarracaoLeis() {
 
                       {/* Botões de Ação do Artigo */}
                       <div className="flex items-center gap-1.5 shrink-0">
+                        {estaNarrado ? (
                           <div className="flex items-center gap-1.5 shrink-0">
                             <button
                               onClick={() => tocarArtigoSequencial(partesAtuais, artigo.numero)}
