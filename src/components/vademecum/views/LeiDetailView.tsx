@@ -29,6 +29,7 @@ import LeiHero from '@/components/vademecum/artigo/LeiHero';
 import LeiArtigosVirtualList from '@/components/vademecum/artigo/LeiArtigosVirtualList';
 import LeiCapitulosGrid from '@/components/vademecum/artigo/LeiCapitulosGrid';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+import LeiHistoricoCarousel from '@/components/vademecum/artigo/LeiHistoricoCarousel';
 
 const MOBILE_ARTIGOS_VIRTUAL_THRESHOLD = 120;
 
@@ -546,6 +547,18 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
       />
 
       <div id="lei-conteudo" className={`mx-auto px-3 sm:px-4 md:px-6 scroll-mt-2 ${isDesktop ? 'max-w-7xl pt-4 space-y-4' : 'max-w-5xl pt-4 space-y-4'}`}>
+        {/* Carrossel de Histórico de Artigos Atualizados (Antes da barra de pesquisa) */}
+        <LeiHistoricoCarousel
+          artigos={artigos}
+          dbAlteracoes={dbAlteracoes}
+          onOpenArtigo={(artigo, modInfo) => {
+            setOpenModInfo(modInfo || null);
+            setOpenFromNovidades(Boolean(modInfo));
+            openArtigoWithRecent(artigo);
+          }}
+          onOpenVerTodos={() => setOverlayPanel('novidades')}
+        />
+
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}

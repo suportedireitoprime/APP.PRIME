@@ -33,9 +33,9 @@ export function useLeiData(
     return () => { cancelled = true; };
   }, [selectedLeiId]);
 
-  // Fetch DB alteracoes when novidades panel opens
+  // Fetch DB alteracoes when selectedTabelaNome is available
   useEffect(() => {
-    if (overlayPanel !== 'novidades' || !selectedTabelaNome) return;
+    if (!selectedTabelaNome) return;
     
     setLoadingDbAlteracoes(true);
     fetch(
