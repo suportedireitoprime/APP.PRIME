@@ -107,68 +107,78 @@ async function favoritoLimit(): Promise<number> {
 
 export async function toggleArtigoFavorito(fav: ArtigoFav): Promise<boolean> {
   const { data: { user } } = await supabase.auth.getUser();
-  const tabela = fav.tabela_codigo;
-  const numero = fav.numero_artigo;
-
-  // Sempre atualiza espelho local (instantâneo e offline-safe)
-  const local = readLocal();
-  const existsLocal = local.some((l) => l.tabela_codigo === tabela && l.numero_artigo === numero);
-  let nowOn: boolean;
-
-  if (user) {
-    // Estado atual no DB
-    const { data: existing } = await supabase
-      .from('artigos_favoritos')
-      .select('id')
-      .eq('user_id', user.id)
-      .eq('tabela_codigo', tabela)
-      .eq('numero_artigo', numero)
-      .maybeSingle();
-
-    if (existing?.id) {
-      const { error } = await supabase.from('artigos_favoritos').delete().eq('id', existing.id);
-      if (error) {
-        try {
-          const { syncQueue } = await import('@/services/syncQueue');
-          await syncQueue.enqueue({ kind: 'table.delete', table: 'artigos_favoritos', match: { id: existing.id } });
-        } catch {}
-      }
-      nowOn = false;
-    } else {
-      // Teto de favoritos ativos para contas gratuitas
-      if (!isPremiumSnapshot(user.id, user.email)) {
-        const limite = await favoritoLimit();
-        if (limite > 0) {
-          const { count } = await supabase
-            .from('artigos_favoritos')
-            .select('id', { count: 'exact', head: true })
-            .eq('user_id', user.id);
-          if ((count || 0) >= limite) throw new FavoritoLimitError(limite);
-        }
-      }
-      const payload = {
-        user_id: user.id,
-        tabela_codigo: tabela,
-        numero_artigo: numero,
-        conteudo_preview: fav.conteudo_preview ?? null,
-        artigo_id: makeArtigoId(tabela, numero),
-      };
-      const { error } = await supabase.from('artigos_favoritos').insert(payload);
-      if (error) {
-        try {
-          const { syncQueue } = await import('@/services/syncQueue');
-          await syncQueue.enqueue({ kind: 'table.insert', table: 'artigos_favoritos', values: payload });
-        } catch {}
-      }
-      nowOn = true;
-    }
-  } else {
-    nowOn = !existsLocal;
+  if (!user) {
+    throw new Error('Faça login para salvar seus favoritos no Supabase.');
   }
 
+  const tabela = fav.tabela_codigo;
+  const rawNumero = String(fav.numero_artigo || '').trim();
+  const cleanNumero = rawNumero.replace(/^art\.?\s*/i, '').trim();
+
+  // Localiza no Supabase considerando variações (com ou sem prefixo)
+  const { data: existingRows, error: searchError } = await supabase
+    .from('artigos_favoritos')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('tabela_codigo', tabela)
+    .in('numero_artigo', [rawNumero, cleanNumero]);
+
+  if (searchError) {
+    console.error('Erro ao buscar favoritos no Supabase:', searchError);
+    throw new Error('Não foi possível sincronizar o favorito com o Supabase.');
+  }
+
+  let nowOn: boolean;
+
+  if (existingRows && existingRows.length > 0) {
+    const ids = existingRows.map((r) => r.id);
+    const { error: deleteError } = await supabase
+      .from('artigos_favoritos')
+      .delete()
+      .in('id', ids);
+
+    if (deleteError) {
+      console.error('Erro ao remover favorito do Supabase:', deleteError);
+      throw new Error('Erro ao remover favorito do Supabase.');
+    }
+    nowOn = false;
+  } else {
+    // Teto de favoritos ativos para contas gratuitas (se configurado)
+    if (!isPremiumSnapshot(user.id, user.email)) {
+      const limite = await favoritoLimit();
+      if (limite > 0) {
+        const { count } = await supabase
+          .from('artigos_favoritos')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', user.id);
+        if ((count || 0) >= limite) throw new FavoritoLimitError(limite);
+      }
+    }
+
+    const payload = {
+      user_id: user.id,
+      tabela_codigo: tabela,
+      numero_artigo: cleanNumero,
+      conteudo_preview: fav.conteudo_preview ?? null,
+      artigo_id: makeArtigoId(tabela, cleanNumero),
+    };
+
+    const { error: insertError } = await supabase
+      .from('artigos_favoritos')
+      .insert(payload);
+
+    if (insertError) {
+      console.error('Erro ao inserir favorito no Supabase:', insertError);
+      throw new Error(`Erro ao salvar favorito no Supabase: ${insertError.message}`);
+    }
+    nowOn = true;
+  }
+
+  // Atualiza espelho local para cache rápido e emite evento global
+  const local = readLocal();
   const nextLocal = nowOn
-    ? [{ ...fav }, ...local.filter((l) => !(l.tabela_codigo === tabela && l.numero_artigo === numero))]
-    : local.filter((l) => !(l.tabela_codigo === tabela && l.numero_artigo === numero));
+    ? [{ ...fav, numero_artigo: cleanNumero }, ...local.filter((l) => !(l.tabela_codigo === tabela && (l.numero_artigo === rawNumero || l.numero_artigo === cleanNumero)))]
+    : local.filter((l) => !(l.tabela_codigo === tabela && (l.numero_artigo === rawNumero || l.numero_artigo === cleanNumero)));
   writeLocal(nextLocal);
   emit();
   return nowOn;

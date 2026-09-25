@@ -150,10 +150,6 @@ export const ArtigoSheetHeader = memo(function ArtigoSheetHeader({
             <>
               <motion.button
                 onClick={() => {
-                  if (!isPremium) {
-                    openPremiumGate('favorito');
-                    return;
-                  }
                   import('@/lib/appEvents')
                     .then(({ appEvents }) =>
                       appEvents.favoritarArtigo({

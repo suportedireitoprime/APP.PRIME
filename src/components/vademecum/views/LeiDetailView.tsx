@@ -8,6 +8,7 @@ import { useSubscription } from '@/hooks/useSubscription';
 import PremiumGate from '@/components/PremiumGate';
 import { Input } from '@/components/ui/input';
 import { toggleArtigoFavorito } from '@/lib/artigosFavoritos';
+import { toast } from 'sonner';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { useIsTablet } from '@/hooks/use-tablet';
 import { track } from '@/lib/analyticsEvents';
@@ -172,10 +173,65 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
     };
   }, []);
 
-  const isArtigoFav = (a: { id: string; numero: string | number }) => {
-    const num = String(a.numero || '').replace(/^Art\.\s*/i, '').trim();
-    return favoritos.has(a.id) || favArtigoNumeros.has(num) || favArtigoNumeros.has(String(a.numero));
-  };
+  const isArtigoFav = useCallback((a: { id: string; numero: string | number }) => {
+    const raw = String(a.numero || '').trim();
+    const clean = raw.replace(/^art\.?\s*/i, '').trim();
+    const digitsOnly = clean.replace(/[º°]/g, '').trim();
+    return (
+      favArtigoNumeros.has(raw) ||
+      favArtigoNumeros.has(clean) ||
+      favArtigoNumeros.has(digitsOnly) ||
+      favArtigoNumeros.has(`${clean}º`) ||
+      favoritos.has(String(a.id))
+    );
+  }, [favArtigoNumeros, favoritos]);
+
+  const handleToggleFavorito = useCallback(async (artigo: ArtigoLei) => {
+    if (!selectedTabelaNome) return;
+    const cleanNum = String(artigo.numero || '').replace(/^art\.?\s*/i, '').trim();
+    const wasFav = isArtigoFav(artigo);
+    haptic.impact();
+
+    // Atualização otimista imediata no estado da lei
+    setFavArtigoNumeros((prev) => {
+      const next = new Set(prev);
+      if (wasFav) {
+        next.delete(cleanNum);
+        next.delete(String(artigo.numero).trim());
+        next.delete(`${cleanNum}º`);
+      } else {
+        next.add(cleanNum);
+      }
+      return next;
+    });
+
+    try {
+      const nowFav = await toggleArtigoFavorito({
+        tabela_codigo: selectedTabelaNome,
+        numero_artigo: cleanNum,
+        conteudo_preview: artigo.caput?.slice(0, 140) || null,
+      });
+      if (nowFav) {
+        toast.success(`Artigo ${cleanNum} salvo nos favoritos (Supabase)!`);
+      } else {
+        toast.info(`Artigo ${cleanNum} removido dos favoritos.`);
+      }
+    } catch (err: any) {
+      // Reverte estado otimista caso ocorra erro (ex: não logado)
+      setFavArtigoNumeros((prev) => {
+        const next = new Set(prev);
+        if (wasFav) {
+          next.add(cleanNum);
+        } else {
+          next.delete(cleanNum);
+          next.delete(String(artigo.numero).trim());
+          next.delete(`${cleanNum}º`);
+        }
+        return next;
+      });
+      toast.error(err?.message || 'Erro ao sincronizar favorito com o Supabase');
+    }
+  }, [selectedTabelaNome, isArtigoFav, setFavArtigoNumeros]);
 
   useEffect(() => {
     if (!selectedLeiId || !selectedLeiNome) return;
@@ -1027,6 +1083,8 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           leiInfo={{ id: selectedLeiId, nome: selectedLeiNome, tipo: tipo || '', cor: leiAccent }}
           modInfo={openModInfo}
           showTimelineFirst={openFromNovidades}
+          isFavorito={isArtigoFav(openArtigo)}
+          onToggleFavorito={() => handleToggleFavorito(openArtigo)}
           breadcrumb={
             artigoBreadcrumbsMap.get(String(openArtigo.id)) ||
             artigoBreadcrumbsMap.get(String(openArtigo.numero).trim()) ||
