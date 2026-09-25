@@ -31,6 +31,7 @@ import LeiCapitulosGrid from '@/components/vademecum/artigo/LeiCapitulosGrid';
 import LeiArtigosVirtualList from '@/components/vademecum/artigo/LeiArtigosVirtualList';
 import LeiHistoricoCarousel from '@/components/vademecum/artigo/LeiHistoricoCarousel';
 import ArtigoComparativoModal, { type AlteracaoDetailData } from '@/components/vademecum/artigo/ArtigoComparativoModal';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 import { extractLeiCapitulos, isStructuralArtigo, formatArtigoNumeroOnly } from '@/lib/leiStructure';
 
 const MOBILE_ARTIGOS_VIRTUAL_THRESHOLD = 120;
@@ -78,8 +79,12 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   const [selectedAlteracaoDetail, setSelectedAlteracaoDetail] = useState<AlteracaoDetailData | null>(null);
   
   const [showFooter, setShowFooter] = useState(false);
+  const [gridReady, setGridReady] = useState(false);
   useEffect(() => {
-    const t = setTimeout(() => setShowFooter(true), 380);
+    const t = setTimeout(() => {
+      setShowFooter(true);
+      setGridReady(true);
+    }, 320);
     return () => clearTimeout(t);
   }, []);
 
@@ -487,7 +492,22 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   };
 
   return (
-    <div className="theme-vademecum min-h-dvh bg-background pb-28 lg:pb-0 relative overflow-x-hidden">
+    <div className="theme-vademecum min-h-dvh bg-zinc-950 pb-28 lg:pb-0 relative overflow-x-hidden">
+      {/* Fundo com ShapeGrid idêntico ao do Vade Mecum */}
+      {gridReady && (
+        <div className="absolute inset-0 z-0 opacity-60 pointer-events-none">
+          <ShapeGrid 
+            speed={0.5} 
+            squareSize={40}
+            direction="diagonal"
+            borderColor="rgba(255, 255, 255, 0.05)"
+            hoverFillColor="rgba(255, 255, 255, 0.1)"
+            shape="square"
+            hoverTrailAmount={5}
+          />
+        </div>
+      )}
+
       {/* Item 75: Skip to Content para acessibilidade WCAG AAA */}
       <a
         href="#lei-conteudo"
@@ -526,7 +546,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
         favCount={favArtigoNumeros.size}
       />
 
-      <div id="lei-conteudo" className={`mx-auto px-3 sm:px-4 md:px-6 scroll-mt-2 ${isDesktop ? 'max-w-7xl pt-4 space-y-4' : 'max-w-5xl pt-4 space-y-4'}`}>
+      <div id="lei-conteudo" className={`relative z-10 mx-auto px-3 sm:px-4 md:px-6 scroll-mt-2 ${isDesktop ? 'max-w-7xl pt-7 space-y-5' : 'max-w-5xl pt-7 space-y-5'}`}>
         {/* Carrossel de Histórico de Artigos Atualizados (Antes da barra de pesquisa) */}
         <LeiHistoricoCarousel
           artigos={artigos}
