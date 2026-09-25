@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 
 import { toast } from 'sonner';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { AdminHojeCards } from '@/components/admin/AdminHojeCards';
 
@@ -46,6 +45,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-boletins': () => import('./AdminBoletins'),
   '/admin-erros-questoes': () => import('./AdminErrosQuestoes'),
   '/admin-jurisprudencia': () => import('./AdminJurisprudencia'),
+  '/admin-mapeamento-leis': () => import('./AdminMapeamentoLeis'),
   '/admin-radares-leis': () => import('./AdminRadaresLeis'),
   '/admin/locais': () => import('./AdminLocais'),
   '/admin-biblioteca-leis': () => import('./AdminBibliotecaLeis'),
@@ -195,12 +195,11 @@ const CATEGORIES: Category[] = [
   {
     id: 'bases-juridicas',
     title: 'Bases Jurídicas',
-    desc: 'Vade Mecum, jurisprudência e locais',
+    desc: 'Vade Mecum, Planalto e catalogação de leis',
     icon: Scale,
     items: [
-      { id: 'admin-vade-mecum-historico', label: 'Histórico de Atualizações', icon: Scale, desc: 'Rastreador de leis e sincronização com Supabase', route: '/admin-vade-mecum-historico' },
-      { id: 'admin-jurisprudencia', label: 'Mapeamento de Leis', icon: Building2, desc: 'Cadastra o ID Corpus927 de cada lei; acompanha cache de artigos', route: '/admin-jurisprudencia' },
-      { id: 'admin-locais', label: 'Locais Jurídicos', icon: MapPin, desc: 'Sincronizar OSM por UF e categoria (custo zero)', route: '/admin/locais' },
+      { id: 'admin-mapeamento-leis', label: 'Mapeamento de Leis', icon: Building2, desc: 'Catálogo de códigos, estatutos e status de extração', route: '/admin-mapeamento-leis' },
+      { id: 'admin-vade-mecum-historico', label: 'Histórico de Atualizações', icon: Scale, desc: 'Resenha diária do Planalto, impactos e antes/depois', route: '/admin-vade-mecum-historico' },
     ],
   },
   {
@@ -240,6 +239,7 @@ const CATEGORIES: Category[] = [
     desc: 'Funções restritas para admin',
     icon: FileSignature,
     items: [
+      { id: 'admin-locais', label: 'Locais Jurídicos', icon: MapPin, desc: 'Sincronizar OSM por UF e categoria (custo zero)', route: '/admin/locais' },
       { id: 'peticao', label: 'Petição Inicial', icon: FileSignature, desc: 'Monte peças com apoio de IA', route: '/ferramentas/peticao-inicial' },
       { id: 'offline', label: 'Modo Offline', icon: CloudDownload, desc: 'Baixe leis e livros para usar sem internet', route: '/modo-offline' },
     ],
@@ -370,6 +370,49 @@ const AdminFuncoes = () => {
     }
   };
 
+  if (openCat) {
+    return (
+      <div className="min-h-dvh bg-background pb-8">
+        <PageHeader title={openCat.title} onBack={() => setOpenCat(null)} />
+
+        <div className="p-4">
+          <p className="font-body text-[12px] text-muted-foreground mb-3 px-1">
+            {openCat.desc}
+          </p>
+
+          <div className="rounded-2xl border border-border/60 bg-secondary/30 divide-y divide-border/50 overflow-hidden">
+            {(openCat.items || []).map(item => {
+              const Icon = item.icon;
+              const disabled = !item.route && item.id !== 'github-abrir' && item.id !== 'crashlytics-test';
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleClick(item)}
+                  onPointerDown={() => prefetch(item.route)}
+                  disabled={disabled}
+                  className="w-full flex items-center gap-4 px-4 py-5 min-h-[84px] text-left hover:bg-secondary/60 active:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <div className="w-14 h-14 flex items-center justify-center shrink-0" style={{ color: iconColor(item.id) }}>
+                    <Icon className="w-7 h-7" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-body text-base font-semibold text-foreground truncate">
+                      {item.label}
+                    </div>
+                    <div className="font-body text-[12px] text-muted-foreground truncate mt-0.5">
+                      {item.desc}
+                    </div>
+                  </div>
+                  {!disabled && <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-dvh bg-background pb-8">
       <PageHeader title="Funções Admin" onBack={() => navigate('/')} />
@@ -421,65 +464,6 @@ const AdminFuncoes = () => {
           })}
         </div>
       </div>
-
-      {/* Sheet de baixo pra cima com os itens da categoria */}
-      <Sheet open={!!openCat} onOpenChange={(v) => !v && setOpenCat(null)}>
-        <SheetContent
-          side="bottom"
-          className="rounded-t-2xl max-h-[85vh] overflow-y-auto p-0 bg-background border-border"
-        >
-          <SheetHeader className="px-4 pt-5 pb-3 border-b border-border/50">
-            <div className="flex items-center gap-3">
-              {openCat && (
-                <div className="w-10 h-10 flex items-center justify-center" style={{ color: iconColor(openCat.id) }}>
-                  <openCat.icon className="w-6 h-6" />
-                </div>
-              )}
-              <div className="flex-1 min-w-0 text-left">
-                <SheetTitle className="font-display text-base font-bold text-foreground">
-                  {openCat?.title}
-                </SheetTitle>
-                <p className="font-body text-[11.5px] text-muted-foreground mt-0.5">
-                  {openCat?.desc}
-                </p>
-              </div>
-            </div>
-          </SheetHeader>
-
-          {openCat && (
-              <div className="p-3">
-                <div className="rounded-2xl border border-border/60 bg-secondary/30 divide-y divide-border/50 overflow-hidden">
-                  {(openCat.items || []).map(item => {
-                    const Icon = item.icon;
-                    const disabled = !item.route && item.id !== 'github-abrir' && item.id !== 'crashlytics-test';
-                    return (
-                      <button
-                        key={item.id}
-                        onClick={() => handleClick(item)}
-                        onPointerDown={() => prefetch(item.route)}
-                        disabled={disabled}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-secondary/60 active:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <div className="w-10 h-10 flex items-center justify-center shrink-0" style={{ color: iconColor(item.id) }}>
-                          <Icon className="w-[22px] h-[22px]" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-body text-sm font-semibold text-foreground truncate">
-                            {item.label}
-                          </div>
-                          <div className="font-body text-[11px] text-muted-foreground truncate">
-                            {item.desc}
-                          </div>
-                        </div>
-                        {!disabled && <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-        </SheetContent>
-      </Sheet>
     </div>
   );
 };

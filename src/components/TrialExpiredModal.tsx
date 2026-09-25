@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import horusAsset from '@/assets/horus/horus-star.webp';
+import horusAsset from '@/assets/horus/03_coruja_balanca_justica.webp';
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { isAdminEmail } from "@/lib/adminEmails";
