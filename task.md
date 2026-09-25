@@ -1,12 +1,7 @@
-# Tarefas: Tela Cheia de Histórico e Artigo, Mês/Ano nos Cards e Comparativo com IA OmniRoute
+# Tarefas - Distribuição Uniforme do Rodapé em LeiDetailView
 
-- [ ] Atualizar `leiAlteracoesScraped.ts` e `AdminMapeamentoLeis.tsx` com extração e formato de mês abreviado / ano (`Jan/2026`) <!-- id: 601 -->
-- [ ] Atualizar `LeiHistoricoCarousel.tsx` para exibir `mes_ano` (`Jan/2026`) no badge dos cards <!-- id: 602 -->
-- [ ] Ajustar tipografia de ano em `NovidadesPanel.tsx` com `tracking-widest` para descolar as letras <!-- id: 603 -->
-- [ ] Ajustar `LeiDetailView.tsx` para abrir o Histórico ("Ver todos") em tela 100% cheia (`h-[100dvh] inset-0`) <!-- id: 604 -->
-- [ ] Ajustar `ArtigoBottomSheet.tsx` para abrir o leitor de artigo em tela 100% cheia até o topo <!-- id: 605 -->
-- [ ] Criar `ArtigoComparativoModal.tsx` com tabs de comparativo (Novo vs Antigo), explicação IA OmniRoute e botão "Ir para o Artigo" <!-- id: 606 -->
-- [ ] Conectar clique nos cards do Histórico para abrir o `ArtigoComparativoModal` antes do leitor <!-- id: 607 -->
-- [ ] Validar compilação TypeScript (`tsc --noEmit`) <!-- id: 608 -->
-- [ ] Validar build Vite de produção (`vite build`) <!-- id: 609 -->
-- [ ] Executar auto-commit e push para o GitHub <!-- id: 610 -->
+- [x] Modificar o `<motion.nav>` de `LeiDetailView.tsx` com grid 4 colunas simétrico e padding lateral seguro <!-- id: 1 -->
+- [x] Padronizar dimensões, centralização vertical, ícones e rótulos das 4 abas (Artigos, Capítulos, Lotes, Sobre) <!-- id: 2 -->
+- [x] Validar compilação TypeScript com `tsc --noEmit` <!-- id: 3 -->
+- [x] Validar empacotamento com `vite build` <!-- id: 4 -->
+- [ ] Realizar auto commit e push para o GitHub <!-- id: 5 -->
