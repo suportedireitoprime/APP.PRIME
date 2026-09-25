@@ -1,16 +1,11 @@
-# Tarefas — Roteamento e Retorno de Bases Jurídicas
+# Tarefas — Reordenação dos Filtros de Usuários Online (AdminHojeCards)
 
-- [x] **1. Ajustar `AdminFuncoes.tsx` com `useSearchParams` e URL sync**
-  - [x] Sincronizar `openCat` com `searchParams.get('cat')` e `location.state?.fromCat`
-  - [x] Atualizar `handleClick` para repassar `state: { fromCat: openCat.id }`
-  - [x] Ajustar `onBack` da categoria aberta para limpar a query `?cat`
-- [x] **2. Ajustar `onBack` em `AdminMapeamentoLeis.tsx`**
-  - [x] Retornar para `/admin-funcoes?cat=bases-juridicas` com state
-- [x] **3. Ajustar `onBack` em `AdminVadeMecumHistorico.tsx`**
-  - [x] Retornar para `/admin-funcoes?cat=bases-juridicas` com state
-- [x] **4. Ajustar `onBack` em `AdminNarracaoLeis.tsx`**
-  - [x] Retornar para `/admin-funcoes?cat=bases-juridicas` com state
-- [x] **5. Validação e Auto-Commit**
-  - [x] Checagem de TypeScript (`tsc --noEmit` com 0 erros)
-  - [x] Build do projeto (`vite build` com código 0)
-  - [ ] Auto-commit e push para o GitHub
+- [x] **1. Reordenar filtros e definir padrão**
+  - [x] Alterar estado inicial de `filtroUser` para `'gratuitos'`
+  - [x] Ao abrir card `'online'` ou `'online5m'`, definir `filtroUser` como `'gratuitos'`
+  - [x] Mudar array de renderização para `['gratuitos', 'assinantes', 'todos']`
+- [x] **2. Validação**
+  - [x] Validar TypeScript (`.\node_modules\.bin\tsc.CMD --noEmit`)
+  - [x] Validar build (`.\node_modules\.bin\vite.CMD build`)
+- [x] **3. Git Auto-Commit & Push**
+  - [x] Commit e push automático no repositório

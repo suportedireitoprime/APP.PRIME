@@ -188,7 +188,7 @@ export function AdminHojeCards() {
   const [novosKeys, setNovosKeys] = useState<Set<string>>(new Set());
   const [open, setOpen] = useState<CardId | null>(null);
   const [rows, setRows] = useState<Row[]>([]);
-  const [filtroUser, setFiltroUser] = useState<'todos' | 'gratuitos' | 'assinantes'>('todos');
+  const [filtroUser, setFiltroUser] = useState<'gratuitos' | 'assinantes' | 'todos'>('gratuitos');
   const [loading, setLoading] = useState(false);
   const [dossie, setDossie] = useState<Row | null>(null);
   const [periodo, setPeriodo] = useState<PeriodoId>('hoje');
@@ -941,6 +941,9 @@ export function AdminHojeCards() {
 
   const openCard = useCallback((id: CardId) => {
     setOpen(id);
+    if (id === 'online' || id === 'online5m') {
+      setFiltroUser('gratuitos');
+    }
     fetchRows(id, new Date()); // Date argument is mostly ignored now, uses getDatasPeriodo
   }, [fetchRows]);
 
@@ -1097,7 +1100,7 @@ export function AdminHojeCards() {
 
             {(open === 'online' || open === 'online5m') && (
               <div className="flex bg-secondary/50 p-1 rounded-xl mt-4 w-full">
-                {(['todos', 'gratuitos', 'assinantes'] as const).map((t) => (
+                {(['gratuitos', 'assinantes', 'todos'] as const).map((t) => (
                   <button
                     key={t}
                     onClick={() => setFiltroUser(t)}
@@ -1108,7 +1111,7 @@ export function AdminHojeCards() {
                         : 'text-muted-foreground hover:text-foreground'
                     )}
                   >
-                    {t}
+                    {t === 'gratuitos' ? 'Gratuitos' : t === 'assinantes' ? 'Assinantes' : 'Todos'}
                   </button>
                 ))}
               </div>
