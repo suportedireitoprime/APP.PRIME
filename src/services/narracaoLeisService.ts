@@ -325,18 +325,44 @@ export async function gerarNarracaoArtigoFatiada(
     const parte = estruturado.partes[i];
     onProgress?.(i + 1, estruturado.partes.length, parte.rotulo);
 
-    // Gera áudio desta parte específica
-    const { data, error } = await supabase.functions.invoke('narracao', {
-      body: {
-        fn: 'blog_preview',
-        texto: parte.textoTTS.slice(0, 1500),
-        voz,
-        estilo,
-      },
-    });
+    // Gera áudio desta parte específica (com retry e delay entre partes para evitar rate limit)
+    let data: any = null;
+    let lastError: string | null = null;
+    const MAX_RETRIES = 3;
 
-    if (error || !data?.audio_data_url) {
-      throw new Error(`Falha ao gerar parte ${parte.rotulo}: ${error?.message || 'Sem áudio gerado'}`);
+    for (let tentativa = 0; tentativa < MAX_RETRIES; tentativa++) {
+      if (tentativa > 0) {
+        // Backoff exponencial: 3s, 6s, 12s
+        const delayMs = 3000 * Math.pow(2, tentativa - 1);
+        await new Promise((r) => setTimeout(r, delayMs));
+      }
+
+      const res = await supabase.functions.invoke('narracao', {
+        body: {
+          fn: 'blog_preview',
+          texto: parte.textoTTS.slice(0, 1500),
+          voz,
+          estilo,
+        },
+      });
+
+      if (!res.error && res.data?.audio_data_url) {
+        data = res.data;
+        lastError = null;
+        break;
+      }
+
+      lastError = res.error?.message || res.data?.error || 'Sem áudio gerado';
+      console.warn(`[gerarNarracaoArtigoFatiada] Tentativa ${tentativa + 1}/${MAX_RETRIES} falhou para ${parte.rotulo}: ${lastError}`);
+    }
+
+    if (!data?.audio_data_url) {
+      throw new Error(`Falha ao gerar parte ${parte.rotulo}: ${lastError || 'Sem áudio gerado'}`);
+    }
+
+    // Delay de 1.5s entre partes para evitar rate limit do Gemini
+    if (i < estruturado.partes.length - 1) {
+      await new Promise((r) => setTimeout(r, 1500));
     }
 
     const audioDataUrl = data.audio_data_url;
