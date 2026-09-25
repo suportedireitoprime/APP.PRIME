@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import {
   Scale, BookOpen, Shield, ScrollText, HeartHandshake,
   Search, RefreshCw, ExternalLink, ChevronRight, CheckCircle2,
-  Clock, Loader2
+  Clock, Loader2, Eye, ArrowLeft, Check
 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { LEIS_CATALOG, type LeiCatalogItem } from '@/data/leisCatalog';
 import { supabase } from '@/integrations/supabase/client';
+import LeiDetailView from '@/components/vademecum/views/LeiDetailView';
 import { toast } from 'sonner';
 
 interface CategoriaDef {
@@ -32,19 +33,28 @@ export default function AdminMapeamentoLeis() {
   const [busca, setBusca] = useState('');
   const [extraindoSlug, setExtraindoSlug] = useState<string | null>(null);
   const [lastScrapes, setLastScrapes] = useState<Record<string, string>>({});
+  const [aprovados, setAprovados] = useState<Record<string, boolean>>({});
+  const [previaLei, setPreviaLei] = useState<LeiCatalogItem | null>(null);
 
-  // Carrega histórico de última extração salvo no localStorage ou storage local
+  // Carrega histórico de última extração e status de aprovação
   useEffect(() => {
-    const loaded: Record<string, string> = {};
+    const loadedScrapes: Record<string, string> = {};
+    const loadedAprovados: Record<string, boolean> = {};
+
     LEIS_CATALOG.forEach(l => {
       const dt = localStorage.getItem(`vade_scrape_${l.id}`) ||
                  localStorage.getItem(`vade_scrape_${l.tabela_nome}`);
-      if (dt) loaded[l.id] = dt;
+      if (dt) loadedScrapes[l.id] = dt;
+
+      const ap = localStorage.getItem(`vade_aprovado_${l.id}`) === 'true';
+      if (ap) loadedAprovados[l.id] = true;
     });
-    setLastScrapes(loaded);
+
+    setLastScrapes(loadedScrapes);
+    setAprovados(loadedAprovados);
   }, []);
 
-  // Leis da categoria selecionada ou todas
+  // Leis da categoria selecionada ou filtradas pela busca
   const leisFiltradas = useMemo(() => {
     let list = selectedCat
       ? LEIS_CATALOG.filter(l => l.tipo === selectedCat.id)
@@ -74,7 +84,6 @@ export default function AdminMapeamentoLeis() {
     const toastId = toast.loading(`Iniciando extração de ${lei.nome} no Planalto...`);
 
     try {
-      // 1. Tenta reextrair-lei-planalto
       let artigosCount = 0;
       const { data, error } = await supabase.functions.invoke('reextrair-lei-planalto', {
         body: {
@@ -117,6 +126,110 @@ export default function AdminMapeamentoLeis() {
     }
   };
 
+  // Função para aprovar a lei para o Vade Mecum
+  const handleAprovarLei = (lei: LeiCatalogItem) => {
+    const novoStatus = !aprovados[lei.id];
+    localStorage.setItem(`vade_aprovado_${lei.id}`, String(novoStatus));
+    setAprovados(prev => ({ ...prev, [lei.id]: novoStatus }));
+
+    if (novoStatus) {
+      toast.success(`${lei.nome} aprovada para o Vade Mecum com sucesso!`);
+    } else {
+      toast.info(`Aprovação de ${lei.nome} revogada.`);
+    }
+  };
+
+  // MODO PRÉVIA: RENDERIZA O VADE MECUM EXATAMENTE COMO O ALUNO VÊ COM BARRA DE ADMIN
+  if (previaLei) {
+    const isExtracting = extraindoSlug === previaLei.id;
+    const isAprovada = !!aprovados[previaLei.id];
+
+    return (
+      <div className="min-h-dvh bg-background flex flex-col">
+        {/* Barra Superior de Controle Administrativo */}
+        <div className="sticky top-0 z-50 bg-[#0D0D0D]/95 backdrop-blur-md border-b border-border/80 px-4 py-3 flex items-center justify-between gap-3 shadow-lg">
+          <div className="flex items-center gap-3 min-w-0">
+            <button
+              onClick={() => setPreviaLei(null)}
+              className="w-10 h-10 rounded-full flex items-center justify-center bg-secondary hover:bg-secondary/80 text-foreground shrink-0 transition-colors"
+              title="Voltar ao Mapeamento"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary/20 text-primary border border-primary/30 uppercase tracking-wider">
+                  Prévia Oficial Vade Mecum
+                </span>
+                <span className="text-sm font-bold text-foreground truncate">
+                  {previaLei.nome}
+                </span>
+                {isAprovada && (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    <CheckCircle2 className="w-3 h-3" /> Aprovada
+                  </span>
+                )}
+              </div>
+              <p className="text-[11px] text-muted-foreground truncate">{previaLei.descricao}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Botão Aprovar */}
+            <button
+              onClick={() => handleAprovarLei(previaLei)}
+              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all min-h-[40px] shadow-sm ${
+                isAprovada
+                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30'
+                  : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+              }`}
+            >
+              <CheckCircle2 className="w-4 h-4" />
+              <span>{isAprovada ? 'Aprovada' : 'Aprovar'}</span>
+            </button>
+
+            {/* Botão Re-extrair */}
+            <button
+              onClick={() => handleExtrairLei(previaLei)}
+              disabled={isExtracting}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs sm:text-sm font-semibold transition-all min-h-[40px] disabled:opacity-50 shadow-sm"
+            >
+              {isExtracting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Extraindo...</span>
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="w-4 h-4" />
+                  <span>Re-extrair</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Visualizador Oficial do Vade Mecum */}
+        <div className="flex-1">
+          <LeiDetailView
+            tipo={previaLei.tipo}
+            leis={[previaLei]}
+            selectedLeiId={previaLei.id}
+            selectedLeiNome={previaLei.nome}
+            selectedLeiDescricao={previaLei.descricao}
+            selectedTabelaNome={previaLei.tabela_nome}
+            subcat={previaLei.id}
+            config={{ label: previaLei.nome, icon: Scale, bg: 'from-amber-500/90 to-amber-700/80' }}
+            goBack={() => setPreviaLei(null)}
+            pendingArtigoNumero={null}
+            setPendingArtigoNumero={() => {}}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-dvh bg-background pb-12">
       {/* Header com navegação */}
@@ -137,7 +250,7 @@ export default function AdminMapeamentoLeis() {
         {!selectedCat && (
           <div className="space-y-3">
             <p className="font-body text-[12px] text-muted-foreground px-1">
-              Selecione uma categoria para visualizar as leis e o status de extração do Planalto.
+              Selecione uma categoria para visualizar as leis, o status de extração e a prévia do Vade Mecum.
             </p>
 
             <div className="rounded-2xl border border-border/60 bg-secondary/30 divide-y divide-border/50 overflow-hidden">
@@ -202,6 +315,7 @@ export default function AdminMapeamentoLeis() {
                 {leisFiltradas.map(lei => {
                   const isExtracting = extraindoSlug === lei.id;
                   const lastScrape = lastScrapes[lei.id];
+                  const isAprovada = !!aprovados[lei.id];
 
                   return (
                     <div
@@ -216,6 +330,11 @@ export default function AdminMapeamentoLeis() {
                           <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
                             {lei.sigla}
                           </span>
+                          {isAprovada && (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                              <CheckCircle2 className="w-3 h-3" /> Aprovada
+                            </span>
+                          )}
                         </div>
 
                         <div className="font-body text-[12px] text-muted-foreground mt-1 line-clamp-2">
@@ -250,24 +369,36 @@ export default function AdminMapeamentoLeis() {
                         </div>
                       </div>
 
-                      {/* Botão de Extração */}
-                      <button
-                        onClick={() => handleExtrairLei(lei)}
-                        disabled={isExtracting}
-                        className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-medium text-xs sm:text-sm hover:opacity-90 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all shrink-0 min-h-[44px]"
-                      >
-                        {isExtracting ? (
-                          <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            <span>Extraindo...</span>
-                          </>
-                        ) : (
-                          <>
-                            <RefreshCw className="w-4 h-4" />
-                            <span>{lastScrape ? 'Re-extrair Lei' : 'Extrair Lei'}</span>
-                          </>
-                        )}
-                      </button>
+                      {/* Botões Lado a Lado: Ver Prévia & Extrair/Re-extrair */}
+                      <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+                        {/* Botão Ver Prévia */}
+                        <button
+                          onClick={() => setPreviaLei(lei)}
+                          className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border/60 text-xs sm:text-sm font-medium active:scale-95 transition-all min-h-[44px]"
+                        >
+                          <Eye className="w-4 h-4 text-primary" />
+                          <span>Ver Prévia</span>
+                        </button>
+
+                        {/* Botão Extrair / Re-extrair */}
+                        <button
+                          onClick={() => handleExtrairLei(lei)}
+                          disabled={isExtracting}
+                          className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-medium text-xs sm:text-sm hover:opacity-90 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all min-h-[44px]"
+                        >
+                          {isExtracting ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              <span>Extraindo...</span>
+                            </>
+                          ) : (
+                            <>
+                              <RefreshCw className="w-4 h-4" />
+                              <span>{lastScrape ? 'Re-extrair Lei' : 'Extrair Lei'}</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </div>
                   );
                 })}
