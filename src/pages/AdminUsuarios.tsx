@@ -25,18 +25,25 @@ export default function AdminUsuarios() {
     async function carregarUsuarios() {
       setLoading(true);
       try {
-        const { data: profiles, error: errProfiles } = await supabase
-          .from('profiles')
-          .select('id, display_name, is_premium, created_at')
-          .order('created_at', { ascending: false });
+        const fetchAll = async (table: string, columns: string, orderBy?: string) => {
+          const all = [];
+          let from = 0;
+          const limit = 1000;
+          while (true) {
+            let q = supabase.from(table).select(columns).range(from, from + limit - 1);
+            if (orderBy) q = q.order(orderBy, { ascending: false });
+            const { data, error } = await q;
+            if (error) throw error;
+            if (!data || data.length === 0) break;
+            all.push(...data);
+            if (data.length < limit) break;
+            from += limit;
+          }
+          return all;
+        };
 
-        if (errProfiles) throw errProfiles;
-
-        const { data: activityLog, error: errLog } = await supabase
-          .from('user_activity_log')
-          .select('user_id, email, last_seen_at');
-
-        if (errLog) throw errLog;
+        const profiles = await fetchAll('profiles', 'id, display_name, is_premium, created_at', 'created_at');
+        const activityLog = await fetchAll('user_activity_log', 'user_id, email, last_seen_at');
 
         const activityMap = new Map<string, { email: string | null; last_seen_at: string | null }>();
         activityLog?.forEach(log => {
