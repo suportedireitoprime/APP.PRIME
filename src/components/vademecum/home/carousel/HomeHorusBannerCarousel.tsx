@@ -111,9 +111,9 @@ const HomeHorusBannerCarousel = () => {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [descIndices, setDescIndices] = useState<number[]>([0, 0, 0]);
-  const [direction, setDirection] = useState<number>(1);
   const isInteractingRef = useRef(false);
   const pauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scrollerRef = useRef<HTMLDivElement>(null);
 
   const activeBanner = BANNERS[currentIndex];
 
@@ -125,12 +125,24 @@ const HomeHorusBannerCarousel = () => {
     }, 12000);
   }, []);
 
-  const paginate = useCallback((newDirection: number) => {
+  const paginate = useCallback((direction: number) => {
     haptic.selection();
     pauseInteraction();
-    setDirection(newDirection);
-    setCurrentIndex((prev) => (prev + newDirection + BANNERS.length) % BANNERS.length);
-  }, [pauseInteraction]);
+    const el = scrollerRef.current;
+    if (!el) return;
+    const cardWidth = el.firstElementChild ? (el.firstElementChild as HTMLElement).offsetWidth + 12 : 300;
+    const nextIndex = (currentIndex + direction + BANNERS.length) % BANNERS.length;
+    el.scrollTo({ left: nextIndex * cardWidth, behavior: 'smooth' });
+    setCurrentIndex(nextIndex);
+  }, [currentIndex, pauseInteraction]);
+
+  const handleScroll = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const cardWidth = el.firstElementChild ? (el.firstElementChild as HTMLElement).offsetWidth + 12 : 300;
+    const idx = Math.round(el.scrollLeft / cardWidth);
+    setCurrentIndex(Math.max(0, Math.min(BANNERS.length - 1, idx)));
+  }, []);
 
   // Rotação periódica de descrições dentro de cada banner
   useEffect(() => {
@@ -146,14 +158,18 @@ const HomeHorusBannerCarousel = () => {
   useEffect(() => {
     const timer = setInterval(() => {
       if (isInteractingRef.current || document.hidden) return;
-      setDirection(1);
-      setCurrentIndex((prev) => (prev + 1) % BANNERS.length);
+      const el = scrollerRef.current;
+      if (!el) return;
+      const cardWidth = el.firstElementChild ? (el.firstElementChild as HTMLElement).offsetWidth + 12 : 300;
+      const nextIndex = (currentIndex + 1) % BANNERS.length;
+      el.scrollTo({ left: nextIndex * cardWidth, behavior: 'smooth' });
+      setCurrentIndex(nextIndex);
     }, AUTOPLAY_INTERVAL);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [currentIndex]);
 
-  const handleBannerClick = () => {
+  const handleBannerClick = (route: string) => {
     haptic.selection();
     try {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -161,35 +177,7 @@ const HomeHorusBannerCarousel = () => {
     if (document.documentElement) document.documentElement.scrollTop = 0;
     if (document.body) document.body.scrollTop = 0;
     if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
-    navigate(activeBanner.route);
-  };
-
-  const variants = {
-    enter: (dir: number) => ({
-      x: dir > 0 ? 120 : -120,
-      opacity: 0,
-      scale: 0.96,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-      scale: 1,
-      transition: {
-        x: { type: 'spring', stiffness: 320, damping: 30 },
-        opacity: { duration: 0.22 },
-        scale: { duration: 0.22 },
-      },
-    },
-    exit: (dir: number) => ({
-      x: dir > 0 ? -120 : 120,
-      opacity: 0,
-      scale: 0.96,
-      transition: {
-        x: { type: 'spring', stiffness: 320, damping: 30 },
-        opacity: { duration: 0.2 },
-        scale: { duration: 0.2 },
-      },
-    }),
+    navigate(route);
   };
 
   return (
@@ -242,91 +230,73 @@ const HomeHorusBannerCarousel = () => {
         </div>
       </div>
 
-      {/* 2. ÁREA DO CARROSSEL INFINITO (LARGURA AJUSTADA / COMPACTA) */}
+      {/* 2. ÁREA DO CARROSSEL SCROLLÁVEL */}
       <div
-        className="relative w-full max-w-[295px] h-[96px] flex items-center justify-center overflow-visible select-none"
+        ref={scrollerRef}
+        onScroll={handleScroll}
+        className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-4 sm:px-6 md:px-8 lg:px-12 flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-8 pt-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         onMouseEnter={pauseInteraction}
         onTouchStart={pauseInteraction}
       >
-        <AnimatePresence initial={false} custom={direction} mode="wait">
-          <motion.div
-            key={activeBanner.id}
-            custom={direction}
-            variants={variants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.2}
-            onDragEnd={(_, { offset, velocity }) => {
-              const swipe = Math.abs(offset.x) * velocity.x;
-              if (swipe < -100 || offset.x < -40) {
-                paginate(1);
-              } else if (swipe > 100 || offset.x > 40) {
-                paginate(-1);
-              }
-            }}
-            className="w-full h-full cursor-pointer"
+        {BANNERS.map((banner, i) => (
+          <button
+            key={banner.id}
+            type="button"
+            onClick={() => handleBannerClick(banner.route)}
+            className={`snap-center shrink-0 w-[86vw] max-w-[315px] h-[115px] group relative flex items-center bg-gradient-to-r ${banner.bgGradient} text-white pl-4.5 pr-22 py-3 rounded-[1.2rem] shadow-xl ${banner.shadowColor} transition-all active:scale-[0.98] border ${banner.borderColor} overflow-visible text-left`}
           >
-            <button
-              type="button"
-              onClick={handleBannerClick}
-              className={`group relative flex items-center w-full h-full bg-gradient-to-r ${activeBanner.bgGradient} text-white pl-4.5 pr-22 py-3 rounded-[1.2rem] shadow-xl ${activeBanner.shadowColor} transition-all active:scale-[0.98] border ${activeBanner.borderColor} overflow-visible text-left`}
-            >
-              {/* SVGs decorativos de fundo */}
-              <div className="absolute inset-0 overflow-hidden rounded-[1.2rem] pointer-events-none">
-                <Sparkles className={`absolute top-2 left-4 w-5 h-5 ${activeBanner.sparkleColor} opacity-20`} />
-                <Zap className={`absolute bottom-1 left-24 w-8 h-8 ${activeBanner.sparkleColor} opacity-10`} />
-                <Star className={`absolute top-1/2 left-32 w-4 h-4 ${activeBanner.sparkleColor} opacity-15`} />
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay" />
-              </div>
+            {/* SVGs decorativos de fundo */}
+            <div className="absolute inset-0 overflow-hidden rounded-[1.2rem] pointer-events-none">
+              <Sparkles className={`absolute top-2 left-4 w-5 h-5 ${banner.sparkleColor} opacity-20`} />
+              <Zap className={`absolute bottom-1 left-24 w-8 h-8 ${banner.sparkleColor} opacity-10`} />
+              <Star className={`absolute top-1/2 left-32 w-4 h-4 ${banner.sparkleColor} opacity-15`} />
+              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay" />
+            </div>
 
-              {/* Textos à esquerda */}
-              <div className="flex flex-col items-start text-left z-10 min-w-0 flex-1">
-                <span className="text-[13.5px] font-display font-black uppercase tracking-wider flex items-center gap-0.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] leading-tight whitespace-nowrap">
-                  {activeBanner.title}
-                  <motion.div
-                    animate={{ x: [0, 3, 0] }}
-                    transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+            {/* Textos à esquerda */}
+            <div className="flex flex-col items-start text-left z-10 min-w-0 flex-1">
+              <span className="text-[13.5px] font-display font-black uppercase tracking-wider flex items-center gap-0.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] leading-tight whitespace-nowrap">
+                {banner.title}
+                <motion.div
+                  animate={{ x: [0, 3, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+                >
+                  <ChevronRight className="w-3.5 h-3.5 opacity-80 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
+                </motion.div>
+              </span>
+
+              {/* Subtítulo dinâmico com transição vertical */}
+              <div className="h-4 relative w-full overflow-hidden mt-1">
+                <AnimatePresence mode="popLayout">
+                  <motion.span
+                    key={descIndices[i]}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -12 }}
+                    transition={{ duration: 0.28 }}
+                    className={`absolute text-[11px] font-body ${banner.textColor} leading-snug font-semibold whitespace-nowrap truncate w-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]`}
                   >
-                    <ChevronRight className="w-3.5 h-3.5 opacity-80 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
-                  </motion.div>
-                </span>
-
-                {/* Subtítulo dinâmico com transição vertical */}
-                <div className="h-4 relative w-full overflow-hidden mt-1">
-                  <AnimatePresence mode="popLayout">
-                    <motion.span
-                      key={descIndices[currentIndex]}
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -12 }}
-                      transition={{ duration: 0.28 }}
-                      className={`absolute text-[11px] font-body ${activeBanner.textColor} leading-snug font-semibold whitespace-nowrap truncate w-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]`}
-                    >
-                      {activeBanner.descriptions[descIndices[currentIndex]]}
-                    </motion.span>
-                  </AnimatePresence>
-                </div>
+                    {banner.descriptions[descIndices[i]]}
+                  </motion.span>
+                </AnimatePresence>
               </div>
+            </div>
 
-              {/* Imagem do mascote Horus e texto no pé */}
-              <div className="absolute -right-3.5 -top-7 w-[98px] flex flex-col items-center pointer-events-none z-20">
-                <img
-                  src={activeBanner.owlImage}
-                  alt="Horus"
-                  loading="eager"
-                  decoding="async"
-                  className="w-full h-[98px] object-contain drop-shadow-2xl filter saturate-[1.1]"
-                />
-                <span className="text-[10.5px] font-display font-black uppercase tracking-widest text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] -mt-1.5 relative z-10 bg-black/35 px-1.5 py-0.2 rounded-full border border-white/20">
-                  HORUS
-                </span>
-              </div>
-            </button>
-          </motion.div>
-        </AnimatePresence>
+            {/* Imagem do mascote Horus e texto no pé */}
+            <div className="absolute -right-3 -top-7 w-[105px] flex flex-col items-center pointer-events-none z-20">
+              <img
+                src={banner.owlImage}
+                alt="Horus"
+                loading="eager"
+                decoding="async"
+                className="w-full h-[105px] object-contain drop-shadow-2xl filter saturate-[1.1]"
+              />
+              <span className="text-[10px] sm:text-[10.5px] font-display font-black uppercase tracking-widest text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] -mt-2.5 relative z-10 bg-black/40 px-2 py-0.5 rounded-full border border-white/20">
+                HORUS
+              </span>
+            </div>
+          </button>
+        ))}
       </div>
 
       {/* 3. DOTS INDICADORES DE POSIÇÃO */}
@@ -338,7 +308,10 @@ const HomeHorusBannerCarousel = () => {
             onClick={() => {
               haptic.selection();
               pauseInteraction();
-              setDirection(i > currentIndex ? 1 : -1);
+              const el = scrollerRef.current;
+              if (!el) return;
+              const cardWidth = el.firstElementChild ? (el.firstElementChild as HTMLElement).offsetWidth + 12 : 300;
+              el.scrollTo({ left: i * cardWidth, behavior: 'smooth' });
               setCurrentIndex(i);
             }}
             aria-label={`Ir para banner ${b.headerTitle}`}
