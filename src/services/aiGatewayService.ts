@@ -12,7 +12,9 @@ export type AiFeatureKey =
   | 'visao_documentos'
   | 'transcricao_audio'
   | 'geracao_imagens'
-  | 'narracao_vademecum';
+  | 'narracao_vademecum'
+  | 'horus_whatsapp'
+  | 'ligacao_live';
 
 export type AiProviderType = 'omniroute' | 'gemini_propria';
 
@@ -238,6 +240,52 @@ export const AI_FEATURES_REGISTRY: AiFeatureDefinition[] = [
       },
     ],
     samplePrompt: 'Artigo 1º A República Federativa do Brasil, formada pela união indissolúvel dos Estados...',
+  },
+  {
+    key: 'horus_whatsapp',
+    title: 'Horus (Assistente WhatsApp)',
+    subtitle: 'Atendimento e suporte jurídico 24/7 direto pelo WhatsApp',
+    category: 'Texto & Chat',
+    defaultProvider: 'omniroute',
+    defaultModel: 'antigravity/gemini-3.7-flash-high',
+    suggestedModels: [
+      {
+        id: 'antigravity/gemini-3.7-flash-high',
+        name: 'Gemini 3.7 Flash High',
+        tag: 'Equilibrado',
+        costProfile: 'medium',
+        recommended: true,
+        notes: 'Bom equilíbrio para respostas rápidas e contextualizadas no WhatsApp',
+      },
+      {
+        id: 'antigravity/gemini-3.6-flash',
+        name: 'Gemini 3.6 Flash',
+        tag: 'Econômico / Rápido',
+        costProfile: 'low',
+        notes: 'Velocidade máxima para alto volume de mensagens curtas',
+      }
+    ],
+    samplePrompt: 'Responda como Horus: Olá, gostaria de saber como acesso o Vade Mecum.',
+  },
+  {
+    key: 'ligacao_live',
+    title: 'Ligação em Tempo Real (Me ligando)',
+    subtitle: 'Interação por voz bidirecional instantânea (WebRTC)',
+    category: 'Áudio & Fala',
+    defaultProvider: 'gemini_propria',
+    defaultModel: 'gemini-live-api',
+    ttsOnly: true,
+    suggestedModels: [
+      {
+        id: 'gemini-live-api',
+        name: 'API Live / WebRTC',
+        tag: 'Motor Nativo',
+        costProfile: 'high',
+        recommended: true,
+        notes: 'Exclusivo: Utiliza a API Live que a gente já paga para garantir baixíssima latência na voz. Não usa OmniRoute.'
+      }
+    ],
+    samplePrompt: 'Iniciando conexão de voz...',
   },
 ];
 

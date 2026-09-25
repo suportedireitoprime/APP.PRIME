@@ -43,7 +43,8 @@ import {
   Play,
   AlertCircle,
   MessageSquare,
-  X
+  X,
+  PhoneCall
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -170,6 +171,26 @@ const FEATURE_STYLES: Record<string, FeatureStyle> = {
     badgeBorder: 'border-[#06B6D4]/30',
     badgeText: 'text-[#67E8F9]',
     accentHex: '#06B6D4',
+  },
+  // 7. Horus WhatsApp: Verde Esmeralda (WhatsApp)
+  horus_whatsapp: {
+    iconBg: 'bg-[#22C55E]/15',
+    iconBorder: 'border-[#22C55E]/35',
+    iconColor: 'text-[#4ADE80]',
+    badgeBg: 'bg-[#22C55E]/15',
+    badgeBorder: 'border-[#22C55E]/30',
+    badgeText: 'text-[#86EFAC]',
+    accentHex: '#22C55E',
+  },
+  // 8. Ligação Live: Vermelho Rosa
+  ligacao_live: {
+    iconBg: 'bg-[#F43F5E]/15',
+    iconBorder: 'border-[#F43F5E]/35',
+    iconColor: 'text-[#FB7185]',
+    badgeBg: 'bg-[#F43F5E]/15',
+    badgeBorder: 'border-[#F43F5E]/30',
+    badgeText: 'text-[#FDA4AF]',
+    accentHex: '#F43F5E',
   },
 };
 
@@ -1018,6 +1039,8 @@ export default function AdminOmniRouteTeste() {
                         {feature.key === 'transcricao_audio' && <Mic className="w-4 h-4 sm:w-5 sm:h-5" />}
                         {feature.key === 'geracao_imagens' && <ImageIcon className="w-4 h-4 sm:w-5 sm:h-5" />}
                         {feature.key === 'narracao_vademecum' && <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />}
+                        {feature.key === 'horus_whatsapp' && <Bot className="w-4 h-4 sm:w-5 sm:h-5" />}
+                        {feature.key === 'ligacao_live' && <PhoneCall className="w-4 h-4 sm:w-5 sm:h-5" />}
                       </div>
 
                       <div className="min-w-0 flex-1">
