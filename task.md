@@ -6,4 +6,4 @@
 - [x] Ajustar a aba "Todas" e contadores para remover leis aprovadas e permitir zerar a fila de 17 para 16 <!-- id: 4 -->
 - [x] Validar compilação com `tsc --noEmit` <!-- id: 5 -->
 - [x] Validar build com `vite build` <!-- id: 6 -->
-- [ ] Enviar alterações via auto-commit e push para o GitHub <!-- id: 7 -->
+- [x] Enviar alterações via auto-commit e push para o GitHub <!-- id: 7 -->
