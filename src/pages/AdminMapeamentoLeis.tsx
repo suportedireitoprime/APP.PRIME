@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import {
   Scale, BookOpen, Shield, ScrollText, HeartHandshake,
   Search, RefreshCw, ExternalLink, ChevronRight, CheckCircle2,
-  Clock, Loader2, Eye, ArrowLeft, History, AlertTriangle, Check, X
+  Clock, Loader2, Eye, ArrowLeft, History, AlertTriangle, Check, X,
+  ListFilter, RotateCcw
 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { LEIS_CATALOG, type LeiCatalogItem } from '@/data/leisCatalog';
@@ -57,8 +58,9 @@ export default function AdminMapeamentoLeis() {
   const [historicoExtracoes, setHistoricoExtracoes] = useState<Record<string, ExtracaoHistoricoItem[]>>({});
   const [modalHistoricoExtracoesLei, setModalHistoricoExtracoesLei] = useState<LeiCatalogItem | null>(null);
   const [aprovados, setAprovados] = useState<Record<string, boolean>>({});
+  const [triagem, setTriagem] = useState<Record<string, boolean>>({});
   const [previaLei, setPreviaLei] = useState<LeiCatalogItem | null>(null);
-  const [filtroStatus, setFiltroStatus] = useState<'todas' | 'aprovadas' | 'pendentes'>('todas');
+  const [filtroStatus, setFiltroStatus] = useState<'todas' | 'triagem' | 'aprovadas' | 'pendentes'>('todas');
 
   // Estados do Modo Histórico da Lei
   const [historicoLei, setHistoricoLei] = useState<LeiCatalogItem | null>(null);
@@ -72,6 +74,7 @@ export default function AdminMapeamentoLeis() {
   useEffect(() => {
     const loadedScrapes: Record<string, string> = {};
     const loadedAprovados: Record<string, boolean> = {};
+    const loadedTriagem: Record<string, boolean> = {};
     const loadedHistoricos: Record<string, ExtracaoHistoricoItem[]> = {};
 
     LEIS_CATALOG.forEach(l => {
@@ -81,6 +84,14 @@ export default function AdminMapeamentoLeis() {
 
       const ap = localStorage.getItem(`vade_aprovado_${l.id}`) === 'true';
       if (ap) loadedAprovados[l.id] = true;
+
+      // Status de Triagem: explícito no localStorage ou, se extraído e não aprovado, entra por padrão em triagem
+      const trRaw = localStorage.getItem(`vade_triagem_${l.id}`);
+      if (trRaw !== null) {
+        loadedTriagem[l.id] = trRaw === 'true';
+      } else if (dt && !ap) {
+        loadedTriagem[l.id] = true;
+      }
 
       const histRaw = localStorage.getItem(`vade_scrape_history_${l.id}`);
       if (histRaw) {
@@ -101,20 +112,24 @@ export default function AdminMapeamentoLeis() {
 
     setLastScrapes(loadedScrapes);
     setAprovados(loadedAprovados);
+    setTriagem(loadedTriagem);
     setHistoricoExtracoes(loadedHistoricos);
   }, []);
 
   // Contadores por status dentro da categoria selecionada
   const counts = useMemo(() => {
-    if (!selectedCat) return { total: 0, aprovadas: 0, pendentes: 0 };
+    if (!selectedCat) return { total: 0, triagem: 0, aprovadas: 0, pendentes: 0 };
     const leisCat = LEIS_CATALOG.filter(l => l.tipo === selectedCat.id);
     const aprovadasCount = leisCat.filter(l => !!aprovados[l.id]).length;
+    const triagemCount = leisCat.filter(l => !aprovados[l.id] && !!triagem[l.id]).length;
+    const pendentesCount = leisCat.filter(l => !aprovados[l.id] && !triagem[l.id]).length;
     return {
       total: leisCat.length,
+      triagem: triagemCount,
       aprovadas: aprovadasCount,
-      pendentes: leisCat.length - aprovadasCount,
+      pendentes: pendentesCount,
     };
-  }, [selectedCat, aprovados]);
+  }, [selectedCat, aprovados, triagem]);
 
   // Leis da categoria selecionada ou filtradas pela busca e status
   const leisFiltradas = useMemo(() => {
@@ -122,10 +137,12 @@ export default function AdminMapeamentoLeis() {
       ? LEIS_CATALOG.filter(l => l.tipo === selectedCat.id)
       : [];
 
-    if (filtroStatus === 'aprovadas') {
+    if (filtroStatus === 'triagem') {
+      list = list.filter(l => !aprovados[l.id] && !!triagem[l.id]);
+    } else if (filtroStatus === 'aprovadas') {
       list = list.filter(l => !!aprovados[l.id]);
     } else if (filtroStatus === 'pendentes') {
-      list = list.filter(l => !aprovados[l.id]);
+      list = list.filter(l => !aprovados[l.id] && !triagem[l.id]);
     }
 
     if (busca.trim()) {
@@ -139,7 +156,7 @@ export default function AdminMapeamentoLeis() {
     }
 
     return list;
-  }, [selectedCat, filtroStatus, aprovados, busca]);
+  }, [selectedCat, filtroStatus, aprovados, triagem, busca]);
 
   // Função para executar a extração / re-extração da lei com porcentagem e histórico
   const handleExtrairLei = async (lei: LeiCatalogItem) => {
@@ -211,6 +228,12 @@ export default function AdminMapeamentoLeis() {
       localStorage.setItem(`vade_scrape_${lei.id}`, agora);
       localStorage.setItem(`vade_scrape_${lei.tabela_nome}`, agora);
       setLastScrapes(prev => ({ ...prev, [lei.id]: agora }));
+
+      // Se a lei ainda não foi aprovada, coloca-a em Triagem para revisão
+      if (!aprovados[lei.id]) {
+        localStorage.setItem(`vade_triagem_${lei.id}`, 'true');
+        setTriagem(prev => ({ ...prev, [lei.id]: true }));
+      }
 
       // Registra no histórico de extrações
       const novoRegistro: ExtracaoHistoricoItem = {
@@ -371,17 +394,31 @@ export default function AdminMapeamentoLeis() {
     }
   };
 
-  // Função para aprovar a lei para o Vade Mecum
+  // Função para aprovar a lei para o Vade Mecum (move de Triagem/Todos para Aprovadas)
   const handleAprovarLei = (lei: LeiCatalogItem) => {
-    const novoStatus = !aprovados[lei.id];
-    localStorage.setItem(`vade_aprovado_${lei.id}`, String(novoStatus));
-    setAprovados(prev => ({ ...prev, [lei.id]: novoStatus }));
+    localStorage.setItem(`vade_aprovado_${lei.id}`, 'true');
+    localStorage.setItem(`vade_triagem_${lei.id}`, 'false');
+    setAprovados(prev => ({ ...prev, [lei.id]: true }));
+    setTriagem(prev => ({ ...prev, [lei.id]: false }));
+    toast.success(`${lei.nome} aprovada com sucesso! Movida para Aprovadas.`);
+  };
 
-    if (novoStatus) {
-      toast.success(`${lei.nome} aprovada para o Vade Mecum com sucesso!`);
-    } else {
-      toast.info(`Aprovação de ${lei.nome} revogada.`);
-    }
+  // Função para devolver a lei de Triagem de volta para Todos / Pendentes
+  const handleDevolverTriagem = (lei: LeiCatalogItem) => {
+    localStorage.setItem(`vade_triagem_${lei.id}`, 'false');
+    localStorage.setItem(`vade_aprovado_${lei.id}`, 'false');
+    setTriagem(prev => ({ ...prev, [lei.id]: false }));
+    setAprovados(prev => ({ ...prev, [lei.id]: false }));
+    toast.info(`${lei.nome} devolvida para Todos.`);
+  };
+
+  // Função para revogar aprovação e mover de volta para Triagem
+  const handleRevogarAprovacao = (lei: LeiCatalogItem) => {
+    localStorage.setItem(`vade_aprovado_${lei.id}`, 'false');
+    localStorage.setItem(`vade_triagem_${lei.id}`, 'true');
+    setAprovados(prev => ({ ...prev, [lei.id]: false }));
+    setTriagem(prev => ({ ...prev, [lei.id]: true }));
+    toast.info(`Aprovação revogada. ${lei.nome} retornou para Triagem.`);
   };
 
   // Anos disponíveis para filtro no Histórico
@@ -629,6 +666,7 @@ export default function AdminMapeamentoLeis() {
   if (previaLei) {
     const isExtracting = extraindoSlug === previaLei.id;
     const isAprovada = !!aprovados[previaLei.id];
+    const isEmTriagem = !isAprovada && !!triagem[previaLei.id];
 
     return (
       <div className="min-h-dvh bg-background flex flex-col">
@@ -651,28 +689,44 @@ export default function AdminMapeamentoLeis() {
                 <span className="text-sm font-bold text-foreground truncate">
                   {previaLei.nome}
                 </span>
-                {isAprovada && (
+                {isAprovada ? (
                   <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                     <CheckCircle2 className="w-3 h-3" /> Aprovada
                   </span>
-                )}
+                ) : isEmTriagem ? (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                    <ListFilter className="w-3 h-3" /> Em Triagem
+                  </span>
+                ) : null}
               </div>
               <p className="text-[11px] text-muted-foreground truncate">{previaLei.descricao}</p>
             </div>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            {/* Botão Aprovar */}
+            {/* Se estiver em triagem, botão Devolver para Todos */}
+            {isEmTriagem && (
+              <button
+                onClick={() => handleDevolverTriagem(previaLei)}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-secondary/80 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition-all min-h-[40px] shadow-sm active:scale-95"
+                title="Devolver para Todos / Pendentes"
+              >
+                <RotateCcw className="w-4 h-4 text-rose-400" />
+                <span>Devolver</span>
+              </button>
+            )}
+
+            {/* Botão Aprovar / Revogar */}
             <button
-              onClick={() => handleAprovarLei(previaLei)}
-              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all min-h-[40px] shadow-sm ${
+              onClick={() => isAprovada ? handleRevogarAprovacao(previaLei) : handleAprovarLei(previaLei)}
+              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all min-h-[40px] shadow-sm active:scale-95 ${
                 isAprovada
                   ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30'
                   : 'bg-emerald-600 hover:bg-emerald-700 text-white'
               }`}
             >
               <CheckCircle2 className="w-4 h-4" />
-              <span>{isAprovada ? 'Aprovada' : 'Aprovar'}</span>
+              <span>{isAprovada ? 'Aprovada (Revogar)' : 'Aprovar Lei'}</span>
             </button>
 
             {/* Botão Re-extrair */}
@@ -798,7 +852,7 @@ export default function AdminMapeamentoLeis() {
                 />
               </div>
 
-              {/* Pills de Filtro: Todas / Aprovadas / Pendentes */}
+              {/* Pills de Filtro: Todas / Triagem / Aprovadas / Pendentes */}
               <div className="flex items-center gap-2 overflow-x-auto pb-1 hide-scrollbar">
                 <button
                   onClick={() => setFiltroStatus('todas')}
@@ -809,6 +863,18 @@ export default function AdminMapeamentoLeis() {
                   }`}
                 >
                   Todas ({counts.total})
+                </button>
+
+                <button
+                  onClick={() => setFiltroStatus('triagem')}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                    filtroStatus === 'triagem'
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'bg-secondary/60 text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <ListFilter className="w-3.5 h-3.5" />
+                  <span>Triagem ({counts.triagem})</span>
                 </button>
 
                 <button
@@ -847,6 +913,7 @@ export default function AdminMapeamentoLeis() {
                   const isExtracting = extraindoSlug === lei.id;
                   const lastScrape = lastScrapes[lei.id];
                   const isAprovada = !!aprovados[lei.id];
+                  const isEmTriagem = !isAprovada && !!triagem[lei.id];
                   const histList = historicoExtracoes[lei.id] || [];
                   const progresso = progressoExtraindo[lei.id] || 0;
                   const etapa = etapaExtraindo[lei.id] || 'Extraindo lei...';
@@ -864,9 +931,17 @@ export default function AdminMapeamentoLeis() {
                           <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
                             {lei.sigla}
                           </span>
-                          {isAprovada && (
+                          {isAprovada ? (
                             <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                               <CheckCircle2 className="w-3 h-3" /> Aprovada
+                            </span>
+                          ) : isEmTriagem ? (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                              <ListFilter className="w-3 h-3" /> Em Triagem
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded bg-zinc-500/10 text-muted-foreground border border-border/40">
+                              Pendente
                             </span>
                           )}
                         </div>
@@ -936,12 +1011,12 @@ export default function AdminMapeamentoLeis() {
                         )}
                       </div>
 
-                      {/* Botões de Ação Responsivos: Ver Prévia, Histórico e Extrair Lei com Porcentagem ao vivo */}
+                      {/* Botões de Ação Responsivos */}
                       <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto shrink-0 mt-2 sm:mt-0">
                         {/* Botão Ver Prévia */}
                         <button
                           onClick={() => setPreviaLei(lei)}
-                          className="col-span-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border/60 text-xs sm:text-sm font-medium whitespace-nowrap active:scale-95 transition-all min-h-[44px]"
+                          className="col-span-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border/60 text-xs sm:text-sm font-medium whitespace-nowrap active:scale-95 transition-all min-h-[40px]"
                           title="Abrir Prévia Oficial do Vade Mecum"
                         >
                           <Eye className="w-4 h-4 text-primary shrink-0" />
@@ -951,36 +1026,93 @@ export default function AdminMapeamentoLeis() {
                         {/* Botão Histórico da Lei */}
                         <button
                           onClick={() => handleAbrirHistorico(lei)}
-                          className="col-span-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border/60 text-xs sm:text-sm font-medium whitespace-nowrap active:scale-95 transition-all min-h-[44px]"
+                          className="col-span-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border/60 text-xs sm:text-sm font-medium whitespace-nowrap active:scale-95 transition-all min-h-[40px]"
                           title="Ver histórico de alterações por artigo do Planalto"
                         >
                           <History className="w-4 h-4 text-amber-400 shrink-0" />
                           <span className="whitespace-nowrap">Histórico</span>
                         </button>
 
-                        {/* Botão Extrair Lei / Re-extrair Lei com Porcentagem ao vivo */}
-                        <button
-                          onClick={() => handleExtrairLei(lei)}
-                          disabled={isExtracting}
-                          className="col-span-2 sm:col-span-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-medium text-xs sm:text-sm whitespace-nowrap hover:opacity-90 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all min-h-[44px]"
-                          title={lastScrape ? 'Re-extrair Lei completa do Planalto' : 'Extrair Lei completa do Planalto'}
-                        >
-                          {isExtracting ? (
-                            <>
-                              <Loader2 className="w-4 h-4 animate-spin shrink-0" />
-                              <span className="whitespace-nowrap">
-                                {lastScrape ? 'Re-extraindo' : 'Extraindo'} {progresso}%
-                              </span>
-                            </>
-                          ) : (
-                            <>
-                              <RefreshCw className="w-4 h-4 shrink-0" />
-                              <span className="whitespace-nowrap">
-                                {lastScrape ? 'Re-extrair Lei' : 'Extrair Lei'}
-                              </span>
-                            </>
-                          )}
-                        </button>
+                        {/* Fluxo de Triagem e Decisão Administrativa */}
+                        {isEmTriagem ? (
+                          <>
+                            {/* Botão Devolver para Todos */}
+                            <button
+                              onClick={() => handleDevolverTriagem(lei)}
+                              className="col-span-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-secondary/80 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 text-xs sm:text-sm font-semibold whitespace-nowrap active:scale-95 transition-all min-h-[40px]"
+                              title="Devolver para Todos / Pendentes"
+                            >
+                              <RotateCcw className="w-4 h-4 text-rose-400 shrink-0" />
+                              <span className="whitespace-nowrap">Devolver</span>
+                            </button>
+
+                            {/* Botão Aprovar Lei */}
+                            <button
+                              onClick={() => handleAprovarLei(lei)}
+                              className="col-span-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-semibold whitespace-nowrap active:scale-95 transition-all min-h-[40px] shadow-sm"
+                              title="Aprovar Lei para o Vade Mecum"
+                            >
+                              <CheckCircle2 className="w-4 h-4 shrink-0" />
+                              <span className="whitespace-nowrap">Aprovar Lei</span>
+                            </button>
+                          </>
+                        ) : isAprovada ? (
+                          <>
+                            {/* Botão Revogar Aprovação */}
+                            <button
+                              onClick={() => handleRevogarAprovacao(lei)}
+                              className="col-span-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500/15 hover:bg-rose-500/20 text-emerald-300 hover:text-rose-300 border border-emerald-500/30 hover:border-rose-500/30 text-xs sm:text-sm font-medium whitespace-nowrap active:scale-95 transition-all min-h-[40px]"
+                              title="Revogar aprovação e mover de volta para Triagem"
+                            >
+                              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                              <span className="whitespace-nowrap">Aprovada</span>
+                            </button>
+
+                            {/* Botão Re-extrair Lei */}
+                            <button
+                              onClick={() => handleExtrairLei(lei)}
+                              disabled={isExtracting}
+                              className="col-span-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-primary text-primary-foreground font-medium text-xs sm:text-sm whitespace-nowrap hover:opacity-90 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all min-h-[40px]"
+                              title="Re-extrair Lei do Planalto"
+                            >
+                              {isExtracting ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+                                  <span className="whitespace-nowrap">{progresso}%</span>
+                                </>
+                              ) : (
+                                <>
+                                  <RefreshCw className="w-4 h-4 shrink-0" />
+                                  <span className="whitespace-nowrap">Re-extrair</span>
+                                </>
+                              )}
+                            </button>
+                          </>
+                        ) : (
+                          /* Lei Pendente */
+                          <button
+                            onClick={() => handleExtrairLei(lei)}
+                            disabled={isExtracting}
+                            className="col-span-2 sm:col-span-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-primary-foreground font-medium text-xs sm:text-sm whitespace-nowrap hover:opacity-90 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all min-h-[40px]"
+                            title={lastScrape ? 'Re-extrair Lei e enviar para Triagem' : 'Extrair Lei e enviar para Triagem'}
+                          >
+                            {isExtracting ? (
+                              <>
+                                <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+                                <span className="whitespace-nowrap">
+                                  {lastScrape ? 'Re-extraindo' : 'Extraindo'} {progresso}%
+                                </span>
+                              </>
+                            ) : (
+                              <>
+                                <RefreshCw className="w-4 h-4 shrink-0" />
+                                <span className="whitespace-nowrap">
+                                  {lastScrape ? 'Re-extrair' : 'Extrair Lei'}
+                                </span>
+                              </>
+                            )}
+                          </button>
+                        )}
                       </div>
                     </div>
                   );
@@ -1094,7 +1226,6 @@ export default function AdminMapeamentoLeis() {
           </div>
         </div>
       )}
-    </div>
     </div>
   );
 }
