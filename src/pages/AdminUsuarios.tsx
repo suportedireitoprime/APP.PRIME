@@ -3,6 +3,7 @@ import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { Search, Crown, User, Calendar, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { UserDossieSheet } from '@/components/admin/UserDossieSheet';
 
 interface Usuario {
   id: string;
@@ -18,6 +19,7 @@ export default function AdminUsuarios() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [busca, setBusca] = useState('');
   const [filtroAssinante, setFiltroAssinante] = useState<'todos' | 'assinantes' | 'gratuitos'>('todos');
+  const [dossieUserId, setDossieUserId] = useState<Usuario | null>(null);
 
   useEffect(() => {
     async function carregarUsuarios() {
@@ -156,7 +158,7 @@ export default function AdminUsuarios() {
               </div>
             ) : (
               filtrados.map(u => (
-                <div key={u.id} className="flex flex-col sm:flex-row gap-4 p-4 rounded-2xl bg-secondary/10 border border-border/50 items-start sm:items-center justify-between hover:bg-secondary/20 transition-all">
+                <div key={u.id} onClick={() => setDossieUserId(u)} className="flex flex-col sm:flex-row gap-4 p-4 rounded-2xl bg-secondary/10 border border-border/50 items-start sm:items-center justify-between hover:bg-secondary/20 transition-all cursor-pointer">
                   <div className="flex items-center gap-4">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${u.is_premium ? 'bg-emerald-500/20 text-emerald-400' : 'bg-primary/10 text-primary'}`}>
                       {u.is_premium ? <Crown className="w-5 h-5" /> : <User className="w-5 h-5" />}
@@ -182,6 +184,16 @@ export default function AdminUsuarios() {
           </div>
         )}
       </div>
+
+      {dossieUserId && (
+        <UserDossieSheet
+          userId={dossieUserId.id}
+          nome={dossieUserId.display_name || ''}
+          email={dossieUserId.email ?? ''}
+          provider="email"
+          onClose={() => setDossieUserId(null)}
+        />
+      )}
     </div>
   );
 }
