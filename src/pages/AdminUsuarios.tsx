@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Search, Crown, User, Calendar, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { UserDossieSheet } from '@/components/admin/UserDossieSheet';
+import { useGoBack } from '@/hooks/useGoBack';
 
 interface Usuario {
   id: string;
@@ -15,6 +16,7 @@ interface Usuario {
 }
 
 export default function AdminUsuarios() {
+  const goBack = useGoBack();
   const [loading, setLoading] = useState(true);
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [busca, setBusca] = useState('');
@@ -105,7 +107,7 @@ export default function AdminUsuarios() {
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-32">
-      <PageHeader title="Usuários Cadastrados" subtitle="Lista de usuários e último acesso" />
+      <PageHeader title="Usuários Cadastrados" subtitle="Lista de usuários e último acesso" onBack={goBack} />
 
       <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
         
