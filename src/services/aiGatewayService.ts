@@ -572,6 +572,9 @@ export async function executeAiTask(options: {
   messages.push({ role: 'user', content: prompt });
 
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+
     const res = await fetch(`${cleanUrl}/chat/completions`, {
       method: 'POST',
       headers: {
@@ -583,7 +586,9 @@ export async function executeAiTask(options: {
         messages,
         temperature: options.temperature ?? 0.7,
       }),
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
 
     if (!res.ok) {
       throw new Error(`HTTP ${res.status}`);
@@ -599,31 +604,41 @@ export async function executeAiTask(options: {
     };
   } catch (err) {
     console.warn(`[OmniRoute] Falha no texto com ${config.selectedModel}. Tentando fallback para 3.1 Flash Light...`);
-    const res = await fetch(`${cleanUrl}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey.trim()}`,
-      },
-      body: JSON.stringify({
-        model: 'antigravity/gemini-3.1-flash-light',
-        messages,
-        temperature: options.temperature ?? 0.7,
-      }),
-    });
+    try {
+      const controllerFallback = new AbortController();
+      const timeoutIdFallback = setTimeout(() => controllerFallback.abort(), 6000);
 
-    const elapsed = Math.round(performance.now() - start);
-    if (!res.ok) {
-      const errorText = await res.text().catch(() => '');
-      throw new Error(`Fallback Falhou [HTTP ${res.status}]: ${errorText}`);
+      const res = await fetch(`${cleanUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey.trim()}`,
+        },
+        body: JSON.stringify({
+          model: 'antigravity/gemini-3.1-flash-light',
+          messages,
+          temperature: options.temperature ?? 0.7,
+        }),
+        signal: controllerFallback.signal,
+      });
+      clearTimeout(timeoutIdFallback);
+
+      const elapsed = Math.round(performance.now() - start);
+      if (!res.ok) {
+        const errorText = await res.text().catch(() => '');
+        throw new Error(`Fallback Falhou [HTTP ${res.status}]: ${errorText}`);
+      }
+
+      const data = await res.json();
+      return {
+        text: data?.choices?.[0]?.message?.content || 'Sem resposta gerada.',
+        providerUsed: 'omniroute',
+        modelUsed: 'antigravity/gemini-3.1-flash-light',
+        durationMs: elapsed,
+      };
+    } catch (fallbackErr) {
+      console.warn('[OmniRoute] Falha em todos os endpoints de texto:', fallbackErr);
+      throw fallbackErr;
     }
-
-    const data = await res.json();
-    return {
-      text: data?.choices?.[0]?.message?.content || 'Sem resposta gerada.',
-      providerUsed: 'omniroute',
-      modelUsed: 'antigravity/gemini-3.1-flash-light',
-      durationMs: elapsed,
-    };
   }
 }
