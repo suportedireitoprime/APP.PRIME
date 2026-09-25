@@ -35,30 +35,31 @@ export default function AdminMapeamentoLeis() {
   const [lastScrapes, setLastScrapes] = useState<Record<string, string>>({});
   const [aprovados, setAprovados] = useState<Record<string, boolean>>({});
   const [previaLei, setPreviaLei] = useState<LeiCatalogItem | null>(null);
+  const [filtroStatus, setFiltroStatus] = useState<'todas' | 'aprovadas' | 'pendentes'>('todas');
 
-  // Carrega histórico de última extração e status de aprovação
-  useEffect(() => {
-    const loadedScrapes: Record<string, string> = {};
-    const loadedAprovados: Record<string, boolean> = {};
+  // Contadores por status dentro da categoria selecionada
+  const counts = useMemo(() => {
+    if (!selectedCat) return { total: 0, aprovadas: 0, pendentes: 0 };
+    const leisCat = LEIS_CATALOG.filter(l => l.tipo === selectedCat.id);
+    const aprovadasCount = leisCat.filter(l => !!aprovados[l.id]).length;
+    return {
+      total: leisCat.length,
+      aprovadas: aprovadasCount,
+      pendentes: leisCat.length - aprovadasCount,
+    };
+  }, [selectedCat, aprovados]);
 
-    LEIS_CATALOG.forEach(l => {
-      const dt = localStorage.getItem(`vade_scrape_${l.id}`) ||
-                 localStorage.getItem(`vade_scrape_${l.tabela_nome}`);
-      if (dt) loadedScrapes[l.id] = dt;
-
-      const ap = localStorage.getItem(`vade_aprovado_${l.id}`) === 'true';
-      if (ap) loadedAprovados[l.id] = true;
-    });
-
-    setLastScrapes(loadedScrapes);
-    setAprovados(loadedAprovados);
-  }, []);
-
-  // Leis da categoria selecionada ou filtradas pela busca
+  // Leis da categoria selecionada ou filtradas pela busca e status
   const leisFiltradas = useMemo(() => {
     let list = selectedCat
       ? LEIS_CATALOG.filter(l => l.tipo === selectedCat.id)
       : [];
+
+    if (filtroStatus === 'aprovadas') {
+      list = list.filter(l => !!aprovados[l.id]);
+    } else if (filtroStatus === 'pendentes') {
+      list = list.filter(l => !aprovados[l.id]);
+    }
 
     if (busca.trim()) {
       const q = busca.toLowerCase();
@@ -71,7 +72,7 @@ export default function AdminMapeamentoLeis() {
     }
 
     return list;
-  }, [selectedCat, busca]);
+  }, [selectedCat, filtroStatus, aprovados, busca]);
 
   // Função para executar a extração / re-extração da lei
   const handleExtrairLei = async (lei: LeiCatalogItem) => {
@@ -294,16 +295,56 @@ export default function AdminMapeamentoLeis() {
         {/* NÍVEL 2: LEIS DA CATEGORIA SELECIONADA */}
         {selectedCat && (
           <div className="space-y-4 animate-in fade-in duration-200">
-            {/* Campo de Busca Rápida */}
-            <div className="relative">
-              <Search className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={busca}
-                onChange={e => setBusca(e.target.value)}
-                placeholder={`Buscar em ${selectedCat.nome}...`}
-                className="w-full pl-10 pr-4 py-2.5 bg-secondary/40 border border-border/60 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-              />
+            {/* Campo de Busca Rápida & Filtros por Status */}
+            <div className="space-y-2.5">
+              <div className="relative">
+                <Search className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={busca}
+                  onChange={e => setBusca(e.target.value)}
+                  placeholder={`Buscar em ${selectedCat.nome}...`}
+                  className="w-full pl-10 pr-4 py-2.5 bg-secondary/40 border border-border/60 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+              </div>
+
+              {/* Pills de Filtro: Todas / Aprovadas / Pendentes */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 hide-scrollbar">
+                <button
+                  onClick={() => setFiltroStatus('todas')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                    filtroStatus === 'todas'
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'bg-secondary/60 text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  Todas ({counts.total})
+                </button>
+
+                <button
+                  onClick={() => setFiltroStatus('aprovadas')}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                    filtroStatus === 'aprovadas'
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'bg-secondary/60 text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>Aprovadas ({counts.aprovadas})</span>
+                </button>
+
+                <button
+                  onClick={() => setFiltroStatus('pendentes')}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                    filtroStatus === 'pendentes'
+                      ? 'bg-amber-600 text-white shadow-sm'
+                      : 'bg-secondary/60 text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <Clock className="w-3.5 h-3.5" />
+                  <span>Pendentes ({counts.pendentes})</span>
+                </button>
+              </div>
             </div>
 
             {leisFiltradas.length === 0 ? (
