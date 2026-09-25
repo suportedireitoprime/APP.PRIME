@@ -791,43 +791,46 @@ export default function AdminMapeamentoLeis() {
                         </div>
                       </div>
 
-                      {/* Botões Lado a Lado: Ver Prévia, Histórico e Extrair */}
-                      <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto shrink-0">
+                      {/* Botões de Ação Responsivos: Ver Prévia, Histórico e Extrair Lei */}
+                      <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto shrink-0 mt-2 sm:mt-0">
                         {/* Botão Ver Prévia */}
                         <button
                           onClick={() => setPreviaLei(lei)}
-                          className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border/60 text-xs sm:text-sm font-medium active:scale-95 transition-all min-h-[44px]"
+                          className="col-span-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border/60 text-xs sm:text-sm font-medium whitespace-nowrap active:scale-95 transition-all min-h-[44px]"
                           title="Abrir Prévia Oficial do Vade Mecum"
                         >
-                          <Eye className="w-4 h-4 text-primary" />
-                          <span>Ver Prévia</span>
+                          <Eye className="w-4 h-4 text-primary shrink-0" />
+                          <span className="whitespace-nowrap">Ver Prévia</span>
                         </button>
 
                         {/* Botão Histórico da Lei */}
                         <button
                           onClick={() => handleAbrirHistorico(lei)}
-                          className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border/60 text-xs sm:text-sm font-medium active:scale-95 transition-all min-h-[44px]"
+                          className="col-span-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border/60 text-xs sm:text-sm font-medium whitespace-nowrap active:scale-95 transition-all min-h-[44px]"
                           title="Ver histórico de alterações por artigo do Planalto"
                         >
-                          <History className="w-4 h-4 text-amber-400" />
-                          <span>Histórico</span>
+                          <History className="w-4 h-4 text-amber-400 shrink-0" />
+                          <span className="whitespace-nowrap">Histórico</span>
                         </button>
 
-                        {/* Botão Extrair / Re-extrair */}
+                        {/* Botão Extrair Lei / Re-extrair Lei */}
                         <button
                           onClick={() => handleExtrairLei(lei)}
                           disabled={isExtracting}
-                          className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-medium text-xs sm:text-sm hover:opacity-90 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all min-h-[44px]"
+                          className="col-span-2 sm:col-span-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-medium text-xs sm:text-sm whitespace-nowrap hover:opacity-90 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all min-h-[44px]"
+                          title={lastScrape ? 'Re-extrair Lei completa do Planalto' : 'Extrair Lei completa do Planalto'}
                         >
                           {isExtracting ? (
                             <>
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                              <span>Extraindo...</span>
+                              <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+                              <span className="whitespace-nowrap">Extraindo Lei...</span>
                             </>
                           ) : (
                             <>
-                              <RefreshCw className="w-4 h-4" />
-                              <span>{lastScrape ? 'Re-extrair' : 'Extrair'}</span>
+                              <RefreshCw className="w-4 h-4 shrink-0" />
+                              <span className="whitespace-nowrap">
+                                {lastScrape ? 'Re-extrair Lei' : 'Extrair Lei'}
+                              </span>
                             </>
                           )}
                         </button>
