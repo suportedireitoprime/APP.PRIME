@@ -234,10 +234,10 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
       </div>
 
       {/* Carrossel Horizontal de Cards com rolagem suave e sem bordas claras */}
-      <div className="relative group/carousel">
+      <div className="relative group/carousel -mr-3 sm:-mr-4 md:-mr-6">
         <div
           ref={scrollContainerRef}
-          className="flex items-stretch gap-2.5 overflow-x-auto no-scrollbar scroll-smooth px-1 py-1 snap-x snap-mandatory"
+          className="flex items-stretch gap-2.5 overflow-x-auto no-scrollbar scroll-smooth pl-1 pr-4 sm:pr-6 py-1 snap-x snap-mandatory"
           style={{ WebkitOverflowScrolling: 'touch' }}
         >
           {items.map((item, idx) => {
