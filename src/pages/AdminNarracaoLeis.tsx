@@ -22,6 +22,7 @@ import {
   buscarTestesCache,
   gerarESalvarPreviaAudio,
   apagarPreviaAudio,
+  apagarNarracaoArtigo,
   type TesteAudioRegistro,
   gerarNarracaoArtigoFatiada,
   obterConfigAutomacao,
@@ -85,6 +86,7 @@ export default function AdminNarracaoLeis() {
 
   // Geração de narração fatiada individual
   const [gerandoArtigoNum, setGerandoArtigoNum] = useState<string | null>(null);
+  const [apagandoArtigoNum, setApagandoArtigoNum] = useState<string | null>(null);
   const [progressoGeracao, setProgressoGeracao] = useState<{ parteAtual: number; totalPartes: number; rotulo: string } | null>(null);
 
   // Player de Áudio Fatiado (com destaque do bloco ativo)
@@ -301,6 +303,37 @@ export default function AdminNarracaoLeis() {
     } finally {
       setGerandoArtigoNum(null);
       setProgressoGeracao(null);
+    }
+  };
+
+  // Apaga a narração fatiada de um artigo
+  const handleApagarNarracaoArtigo = async (artigo: ArtigoLei) => {
+    if (!selectedLei || apagandoArtigoNum) return;
+    const numLimpo = String(artigo.numero).replace(/^[Aa]rt\.?\s*/, '').trim();
+    if (!statusNarracoes[numLimpo]) return;
+
+    if (!window.confirm(`Tem certeza que deseja excluir a narração do Artigo ${artigo.numero}?`)) return;
+
+    setApagandoArtigoNum(artigo.numero);
+    const toastId = toast.loading(`Excluindo narração do Artigo ${artigo.numero}...`);
+
+    try {
+      await apagarNarracaoArtigo(selectedLei.tabela_nome, numLimpo);
+      
+      // Atualiza o cache local
+      setStatusNarracoes((prev) => {
+        const novo = { ...prev };
+        delete novo[numLimpo];
+        delete novo[artigo.numero];
+        return novo;
+      });
+
+      toast.success(`Narração do Artigo ${artigo.numero} excluída com sucesso!`, { id: toastId });
+    } catch (err: any) {
+      console.error('Erro ao excluir narração:', err);
+      toast.error(`Falha ao excluir: ${err.message || 'Erro desconhecido'}`, { id: toastId });
+    } finally {
+      setApagandoArtigoNum(null);
     }
   };
 
@@ -682,18 +715,27 @@ export default function AdminNarracaoLeis() {
 
                       {/* Botões de Ação do Artigo */}
                       <div className="flex items-center gap-1.5 shrink-0">
-                        {estaNarrado ? (
-                          <button
-                            onClick={() => tocarArtigoSequencial(partesAtuais, artigo.numero)}
-                            className={`p-2.5 rounded-xl border transition-all ${
-                              estaTocandoSequencial
-                                ? 'bg-primary text-primary-foreground border-primary animate-pulse'
-                                : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
-                            }`}
-                            title="Ouvir Artigo Completo"
-                          >
-                            {estaTocandoSequencial ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                          </button>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <button
+                              onClick={() => tocarArtigoSequencial(partesAtuais, artigo.numero)}
+                              className={`p-2.5 rounded-xl border transition-all ${
+                                estaTocandoSequencial
+                                  ? 'bg-primary text-primary-foreground border-primary animate-pulse'
+                                  : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
+                              }`}
+                              title="Ouvir Artigo Completo"
+                            >
+                              {estaTocandoSequencial ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                            </button>
+                            <button
+                              onClick={() => handleApagarNarracaoArtigo(artigo)}
+                              disabled={apagandoArtigoNum === artigo.numero}
+                              className="p-2.5 rounded-xl bg-destructive/10 text-destructive border border-destructive/20 hover:bg-destructive/20 transition-all disabled:opacity-50"
+                              title="Apagar Narração"
+                            >
+                              {apagandoArtigoNum === artigo.numero ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                            </button>
+                          </div>
                         ) : (
                           <button
                             onClick={() => handleGerarNarraçãoIndividual(artigo)}

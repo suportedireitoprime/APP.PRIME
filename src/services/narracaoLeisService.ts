@@ -288,6 +288,53 @@ export async function apagarPreviaAudio(id: string, storagePath?: string): Promi
 }
 
 /**
+ * Apaga a narração de um artigo da tabela narracoes_artigos e remove os áudios do Storage.
+ */
+export async function apagarNarracaoArtigo(tabelaNome: string, artigoNumero: string): Promise<void> {
+  // Busca o registro para obter partes com paths do storage
+  const { data: rows } = await supabase
+    .from('narracoes_artigos')
+    .select('word_timings')
+    .eq('tabela_nome', tabelaNome)
+    .eq('artigo_numero', artigoNumero)
+    .limit(1);
+
+  // Remove áudios do storage
+  const row = rows?.[0];
+  if (row?.word_timings && typeof row.word_timings === 'object' && Array.isArray((row.word_timings as any).partes)) {
+    const partes = (row.word_timings as any).partes as ArtigoParte[];
+    const storagePaths: string[] = [];
+    for (const p of partes) {
+      if (p.audioUrl && p.audioUrl.includes('/audios/')) {
+        // Extrai o path relativo do storage a partir da URL
+        const match = p.audioUrl.match(/\/audios\/([^?]+)/);
+        if (match?.[1]) {
+          storagePaths.push(decodeURIComponent(match[1]));
+        }
+      }
+    }
+    if (storagePaths.length > 0) {
+      try {
+        await supabase.storage.from('audios').remove(storagePaths);
+      } catch (err) {
+        console.warn('[apagarNarracaoArtigo] Erro ao remover do storage:', err);
+      }
+    }
+  }
+
+  // Remove registro do banco
+  const { error } = await supabase
+    .from('narracoes_artigos')
+    .delete()
+    .eq('tabela_nome', tabelaNome)
+    .eq('artigo_numero', artigoNumero);
+
+  if (error) {
+    throw new Error(error.message || 'Falha ao excluir narração do banco');
+  }
+}
+
+/**
  * Gera áudio de prévia para testar voz e tom instantaneamente.
  */
 export async function testarVozAudio(texto: string, voz: string, estilo: string): Promise<string> {
