@@ -61,11 +61,17 @@ export const KNOWN_LEIS_DATAS: Record<string, { mes: string; ano: number; mesInd
   '15159': { mes: 'Jul', ano: 2025, mesIndex: 7, mesCompleto: 'Julho', dia: 3 },
   '15123': { mes: 'Abr', ano: 2025, mesIndex: 4, mesCompleto: 'Abril', dia: 23 },
   '14994': { mes: 'Out', ano: 2024, mesIndex: 10, mesCompleto: 'Outubro', dia: 9 },
+  '14904': { mes: 'Jun', ano: 2024, mesIndex: 6, mesCompleto: 'Junho', dia: 27 },
   '14843': { mes: 'Abr', ano: 2024, mesIndex: 4, mesCompleto: 'Abril', dia: 11 },
+  '14836': { mes: 'Abr', ano: 2024, mesIndex: 4, mesCompleto: 'Abril', dia: 8 },
   '14811': { mes: 'Jan', ano: 2024, mesIndex: 1, mesCompleto: 'Janeiro', dia: 15 },
+  '14711': { mes: 'Out', ano: 2023, mesIndex: 10, mesCompleto: 'Outubro', dia: 30 },
+  '14620': { mes: 'Jul', ano: 2023, mesIndex: 7, mesCompleto: 'Julho', dia: 13 },
   '14562': { mes: 'Abr', ano: 2023, mesIndex: 4, mesCompleto: 'Abril', dia: 26 },
   '14532': { mes: 'Jan', ano: 2023, mesIndex: 1, mesCompleto: 'Janeiro', dia: 11 },
+  '14382': { mes: 'Jun', ano: 2022, mesIndex: 6, mesCompleto: 'Junho', dia: 27 },
   '14344': { mes: 'Mai', ano: 2022, mesIndex: 5, mesCompleto: 'Maio', dia: 24 },
+  '14195': { mes: 'Ago', ano: 2021, mesIndex: 8, mesCompleto: 'Agosto', dia: 26 },
   '14155': { mes: 'Mai', ano: 2021, mesIndex: 5, mesCompleto: 'Maio', dia: 27 },
   '14132': { mes: 'Mar', ano: 2021, mesIndex: 3, mesCompleto: 'Março', dia: 31 },
   '13964': { mes: 'Dez', ano: 2019, mesIndex: 12, mesCompleto: 'Dezembro', dia: 24 },
@@ -340,6 +346,146 @@ export const SEED_CP_ALTERACOES: ScrapedArticleUpdate[] = [
   },
 ];
 
+// Semente oficial das alterações mais recentes do Código Civil (Planalto 2024 / 2023 / 2022)
+export const SEED_CC_ALTERACOES: ScrapedArticleUpdate[] = [
+  // ── OUTUBRO DE 2024 (Lei nº 14.994, de 9 de outubro de 2024 - Pacote Antifeminicídio) ──
+  {
+    artigo: 'Art. 1815',
+    motivo: '(Indignidade para herança no feminicídio e crimes contra mulher. Redação dada pela Lei nº 14.994, de 9 de outubro de 2024)',
+    ano: 2024,
+    mes: 'Out',
+    mes_ano: 'Out/2024',
+    mes_completo: 'Outubro',
+    mes_index: 10,
+    texto_antigo: 'Art. 1.815. A exclusão do herdeiro ou legatário, em qualquer desses casos de indignidade, será declarada por sentença.',
+    texto_novo: 'Art. 1.815. O herdeiro ou legatário que incorrer em qualquer das hipóteses de indignidade previstas neste Código perderá o direito à herança independentemente de sentença penal condenatória transitada em julgado. § 3º Na hipótese do inciso I do caput do art. 1.814 deste Código, a ação declaratória de indignidade poderá ser proposta pelo Ministério Público. (Redação dada pela Lei nº 14.994, de 2024)',
+    link_lei: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2024/lei/l14994.htm',
+  },
+  {
+    artigo: 'Art. 1814',
+    motivo: '(Causa de exclusão da sucessão por feminicídio ou homicídio doloso contra cônjuge. Alterado pela Lei nº 14.994, de 9 de outubro de 2024)',
+    ano: 2024,
+    mes: 'Out',
+    mes_ano: 'Out/2024',
+    mes_completo: 'Outubro',
+    mes_index: 10,
+    texto_antigo: 'I - que houverem sido autores, co-autores ou partícipes de homicídio doloso, ou tentativa deste...',
+    texto_novo: 'Art. 1.814. São excluídos da sucessão os herdeiros ou legatários: I - que houverem sido autores, coautores ou partícipes de homicídio doloso, feminicídio ou de tentativa deste, contra a pessoa de cuja sucessão se tratar, seu cônjuge, companheiro, ascendente ou descendente. (Redação dada pela Lei nº 14.994, de 2024)',
+    link_lei: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2024/lei/l14994.htm',
+  },
+
+  // ── OUTUBRO DE 2023 (Lei nº 14.711, de 30 de outubro de 2023 - Marco Legal das Garantias) ──
+  {
+    artigo: 'Art. 853-A',
+    motivo: '(Contrato de administração de garantias fiduciárias. Incluído pela Lei nº 14.711, de 30 de outubro de 2023)',
+    ano: 2023,
+    mes: 'Out',
+    mes_ano: 'Out/2023',
+    mes_completo: 'Outubro',
+    mes_index: 10,
+    texto_antigo: 'Dispositivo sem previsão explícita de agente de garantia fiduciária.',
+    texto_novo: 'Art. 853-A. Qualquer garantia poderá ser constituída ou levada a registro em nome de agente de garantia, que atuará em favor dos credores da obrigação garantida ou de seus sucessores. (Incluído pela Lei nº 14.711, de 2023)',
+    link_lei: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/lei/l14711.htm',
+  },
+  {
+    artigo: 'Art. 1367',
+    motivo: '(Execução de garantias fiduciárias supervenientes. Redação dada pela Lei nº 14.711, de 30 de outubro de 2023)',
+    ano: 2023,
+    mes: 'Out',
+    mes_ano: 'Out/2023',
+    mes_completo: 'Outubro',
+    mes_index: 10,
+    texto_antigo: 'A propriedade fiduciária em garantia de bens móveis ou imóveis submete-se à disciplina das respectivas leis especiais...',
+    texto_novo: 'Art. 1.367. A propriedade fiduciária em garantia de bens móveis ou imóveis submete-se à disciplina das respectivas leis especiais e às normas gerais deste Código. (Redação dada pela Lei nº 14.711, de 2023)',
+    link_lei: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/lei/l14711.htm',
+  },
+  {
+    artigo: 'Art. 1417-A',
+    motivo: '(Promessa de permuta e eficácia real equivalente à promessa de compra e venda. Incluído pela Lei nº 14.711, de 30 de outubro de 2023)',
+    ano: 2023,
+    mes: 'Out',
+    mes_ano: 'Out/2023',
+    mes_completo: 'Outubro',
+    mes_index: 10,
+    texto_antigo: 'Dispositivo sem previsão legal explícita de permuta com direito real.',
+    texto_novo: 'Art. 1.417-A. À promessa de permuta de bens imóveis aplica-se o disposto no art. 1.417 e no art. 1.418 deste Código. (Incluído pela Lei nº 14.711, de 2023)',
+    link_lei: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/lei/l14711.htm',
+  },
+
+  // ── JULHO DE 2023 (Lei nº 14.620, de 13 de julho de 2023 - Minha Casa Minha Vida) ──
+  {
+    artigo: 'Art. 1225',
+    motivo: '(Direitos reais sobre imissão provisória na posse em desapropriação. Incluído pela Lei nº 14.620, de 13 de julho de 2023)',
+    ano: 2023,
+    mes: 'Jul',
+    mes_ano: 'Jul/2023',
+    mes_completo: 'Julho',
+    mes_index: 7,
+    texto_antigo: 'Dispositivo incluído pela primeira vez (inédito).',
+    texto_novo: 'Art. 1.225. São direitos reais: XIV - os direitos oriundos da imissão provisória na posse, quando concedida à União, aos Estados, ao Distrito Federal, aos Municípios ou às suas entidades delegadas e a respectiva cessão e promessa de cessão. (Incluído pela Lei nº 14.620, de 2023)',
+    link_lei: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/lei/l14620.htm',
+  },
+];
+
+// Semente oficial das alterações mais recentes do Código de Processo Penal (Planalto 2025 / 2024 / 2019)
+export const SEED_CPP_ALTERACOES: ScrapedArticleUpdate[] = [
+  // ── DEZEMBRO DE 2025 (Lei nº 15.280, de 5 de dezembro de 2025) ──────────────────────
+  {
+    artigo: 'Art. 300-A',
+    motivo: '(Identificação de perfil genético por DNA de investigados por crimes sexuais. Incluído pela Lei nº 15.280, de 5 de dezembro de 2025)',
+    ano: 2025,
+    mes: 'Dez',
+    mes_ano: 'Dez/2025',
+    mes_completo: 'Dezembro',
+    mes_index: 12,
+    texto_antigo: 'Dispositivo incluído pela primeira vez (inédito).',
+    texto_novo: 'Art. 300-A. O investigado por crimes contra a dignidade sexual, quando preso cautelarmente, e o condenado pelos mesmos crimes deverão ser submetidos obrigatoriamente à identificação do perfil genético por extração de DNA (ácido desoxirribonucleico), por técnica adequada e indolor, por ocasião do ingresso no estabelecimento prisional. (Incluído pela Lei nº 15.280, de 2025)',
+    link_lei: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/lei/l15280.htm',
+  },
+
+  // ── OUTUBRO DE 2024 (Lei nº 14.994, de 9 de outubro de 2024 - Pacote Antifeminicídio) ──
+  {
+    artigo: 'Art. 394-A',
+    motivo: '(Prioridade especial nos procedimentos que apuram violência contra mulher e feminicídio. Redação dada pela Lei nº 14.994, de 9 de outubro de 2024)',
+    ano: 2024,
+    mes: 'Out',
+    mes_ano: 'Out/2024',
+    mes_completo: 'Outubro',
+    mes_index: 10,
+    texto_antigo: 'Art. 394-A. Os processos que apuram a prática de crime hediondo terão prioridade de tramitação em todas as instâncias.',
+    texto_novo: 'Art. 394-A. Terão prioridade de tramitação em todas as instâncias os processos que apuram: I - a prática de crime hediondo; II - os crimes previstos no art. 121-A do Decreto-Lei nº 2.848, de 7 de dezembro de 1940 (Código Penal), e outros crimes praticados contra a mulher por razões da condição do sexo feminino. (Redação dada pela Lei nº 14.994, de 2024)',
+    link_lei: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2024/lei/l14994.htm',
+  },
+
+  // ── ABRIL DE 2024 (Lei nº 14.836, de 8 de abril de 2024 - Empate em HC) ───────────────
+  {
+    artigo: 'Art. 615',
+    motivo: '(Critério de desempate favorável ao réu no julgamento de habeas corpus e recursos. Redação dada pela Lei nº 14.836, de 8 de abril de 2024)',
+    ano: 2024,
+    mes: 'Abr',
+    mes_ano: 'Abr/2024',
+    mes_completo: 'Abril',
+    mes_index: 4,
+    texto_antigo: '§ 1º Em caso de empate, prevalecerá a decisão mais favorável ao réu.',
+    texto_novo: 'Art. 615. O tribunal decidirá por maioria de votos. § 1º Em caso de empate de votos no julgamento de habeas corpus ou de recurso em matéria penal, havendo ou não tomado parte no julgamento o presidente do colegiado, prevalecerá a decisão mais favorável ao réu ou ao paciente, e será proclamado imediatamente esse resultado. (Redação dada pela Lei nº 14.836, de 2024)',
+    link_lei: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2024/lei/l14836.htm',
+  },
+
+  // ── ABRIL DE 2024 (Lei nº 14.843, de 11 de abril de 2024 - Exame Criminológico) ───────
+  {
+    artigo: 'Art. 112',
+    motivo: '(Exame criminológico e regras para progressão de regime. Alterado pela Lei nº 14.843, de 11 de abril de 2024)',
+    ano: 2024,
+    mes: 'Abr',
+    mes_ano: 'Abr/2024',
+    mes_completo: 'Abril',
+    mes_index: 4,
+    texto_antigo: 'Requisitos puramente formais e de bom comportamento carcerário.',
+    texto_novo: 'Art. 112. A pena privativa de liberdade será executada em forma progressiva... § 1º Em todos os casos, o apenado somente terá direito à progressão de regime se ostentar boa conduta carcerária, comprovada pelo diretor do estabelecimento, e pelos resultados do exame criminológico. (Redação dada pela Lei nº 14.843, de 2024)',
+    link_lei: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2024/lei/l14843.htm',
+  },
+];
+
 /**
  * Normaliza e enriquece qualquer lista de alterações com mês, ano e ordenação cronológica decrescente.
  */
@@ -382,10 +528,22 @@ export function getScrapedAlteracoes(
   if (leiId) {
     keysToTry.push(`vade_scrape_data_${leiId}`);
   }
+
   const isCP = (tabelaNome && /CP_CODIGO_PENAL/i.test(tabelaNome)) || (leiId && /^cp$/i.test(leiId));
+  const isCC = (tabelaNome && /CC_CODIGO_CIVIL/i.test(tabelaNome)) || (leiId && /^cc$/i.test(leiId));
+  const isCPP = (tabelaNome && /CPP_CODIGO_PROCESSO_PENAL/i.test(tabelaNome)) || (leiId && /^cpp$/i.test(leiId));
+
   if (isCP) {
     keysToTry.push('vade_scrape_data_CP_CODIGO_PENAL', 'vade_scrape_data_cp');
   }
+  if (isCC) {
+    keysToTry.push('vade_scrape_data_CC_CODIGO_CIVIL', 'vade_scrape_data_cc');
+  }
+  if (isCPP) {
+    keysToTry.push('vade_scrape_data_CPP_CODIGO_PROCESSO_PENAL', 'vade_scrape_data_cpp');
+  }
+
+  const seedsToMerge = isCP ? SEED_CP_ALTERACOES : (isCC ? SEED_CC_ALTERACOES : (isCPP ? SEED_CPP_ALTERACOES : []));
 
   for (const key of keysToTry) {
     try {
@@ -395,11 +553,10 @@ export function getScrapedAlteracoes(
         if (Array.isArray(parsed) && parsed.length > 0) {
           let list = normalizeAlteracoes(parsed);
 
-          // Para o Código Penal, assegura que as alterações mais recentes (como Agosto/2026 da Lei 15.487)
-          // estejam sempre presentes mesmo se o cache local tiver sido gravado antes de agosto.
-          if (isCP) {
+          // Assegura que novidades recentes oficiais estejam sempre no topo
+          if (seedsToMerge.length > 0) {
             const existingArts = new Set(list.map(i => `${i.artigo}-${i.ano}`));
-            const missingFromSeed = SEED_CP_ALTERACOES.filter(
+            const missingFromSeed = seedsToMerge.filter(
               seedItem => !existingArts.has(`${seedItem.artigo}-${seedItem.ano}`)
             );
             if (missingFromSeed.length > 0) {
@@ -415,9 +572,9 @@ export function getScrapedAlteracoes(
     }
   }
 
-  // Fallback para Código Penal se nenhum cache estiver presente
-  if (isCP) {
-    return normalizeAlteracoes(SEED_CP_ALTERACOES);
+  // Fallback quando nenhum cache estiver presente
+  if (seedsToMerge.length > 0) {
+    return normalizeAlteracoes(seedsToMerge);
   }
 
   return [];

@@ -20,7 +20,7 @@ interface CategoriaDef {
   color: string;
 }
 
-import { extractMesAno, normalizeAlteracoes, getScrapedAlteracoes, SEED_CP_ALTERACOES, parseDispositivoAlteracao, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
+import { extractMesAno, normalizeAlteracoes, getScrapedAlteracoes, SEED_CP_ALTERACOES, SEED_CC_ALTERACOES, SEED_CPP_ALTERACOES, parseDispositivoAlteracao, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
 
 export interface ExtracaoHistoricoItem {
   id: string;
@@ -172,20 +172,21 @@ export default function AdminMapeamentoLeis() {
     const progressTimer = setInterval(() => {
       setProgressoExtraindo(prev => {
         const cur = prev[lei.id] || 8;
+        let nextVal = cur;
         if (cur < 28) {
           setEtapaExtraindo(e => ({ ...e, [lei.id]: 'Baixando HTML oficial do Planalto...' }));
-          return cur + 4;
+          nextVal = cur + 4;
         } else if (cur < 58) {
           setEtapaExtraindo(e => ({ ...e, [lei.id]: 'Estruturando hierarquia e artigos...' }));
-          return cur + 3;
+          nextVal = cur + 3;
         } else if (cur < 86) {
           setEtapaExtraindo(e => ({ ...e, [lei.id]: 'Gravando artigos no banco de dados...' }));
-          return cur + 2;
+          nextVal = cur + 2;
         } else if (cur < 95) {
           setEtapaExtraindo(e => ({ ...e, [lei.id]: 'Finalizando indexação...' }));
-          return cur + 1;
+          nextVal = cur + 1;
         }
-        return cur;
+        return { ...prev, [lei.id]: nextVal };
       });
     }, 350);
 
@@ -314,14 +315,19 @@ export default function AdminMapeamentoLeis() {
   };
 
   // Busca alterações por artigo no Planalto via vademecum-scraper
-  const handleBuscarAlteracoesPlanalto = async (lei: LeiCatalogItem) => {
+  const handleBuscarAlteracoesPlanalto = async (lei: LeiCatalogItem, forcarLimpezaCache = false) => {
     if (!lei.url_planalto) {
       toast.error(`A lei ${lei.sigla} não possui URL oficial do Planalto configurada.`);
       return;
     }
 
+    if (forcarLimpezaCache) {
+      localStorage.removeItem(`vade_scrape_data_${lei.tabela_nome}`);
+      localStorage.removeItem(`vade_scrape_data_${lei.id}`);
+    }
+
     setCarregandoAlteracoes(true);
-    const toastId = toast.loading(`Buscando alterações e redações dadas no Planalto...`);
+    const toastId = toast.loading(`Varrendo alterações e novidades de 2024-2026 no Planalto...`);
 
     try {
       const { data, error } = await supabase.functions.invoke('vademecum-scraper', {
@@ -333,12 +339,15 @@ export default function AdminMapeamentoLeis() {
       const rawArticles: ScrapedArticleUpdate[] = data?.articles || [];
       let articlesList = normalizeAlteracoes(rawArticles);
 
-      // Para o Código Penal, assegura que as alterações mais recentes (como Agosto/2026 da Lei 15.487)
-      // permaneçam no topo
+      // Assegura que novidades das sementes oficiais permaneçam no topo para CP, CC e CPP
       const isCP = (lei.tabela_nome && /CP_CODIGO_PENAL/i.test(lei.tabela_nome)) || (lei.id && /^cp$/i.test(lei.id));
-      if (isCP) {
+      const isCC = (lei.tabela_nome && /CC_CODIGO_CIVIL/i.test(lei.tabela_nome)) || (lei.id && /^cc$/i.test(lei.id));
+      const isCPP = (lei.tabela_nome && /CPP_CODIGO_PROCESSO_PENAL/i.test(lei.tabela_nome)) || (lei.id && /^cpp$/i.test(lei.id));
+
+      const seedsToMerge = isCP ? SEED_CP_ALTERACOES : (isCC ? SEED_CC_ALTERACOES : (isCPP ? SEED_CPP_ALTERACOES : []));
+      if (seedsToMerge.length > 0) {
         const existingArts = new Set(articlesList.map(i => `${i.artigo}-${i.ano}`));
-        const missingFromSeed = SEED_CP_ALTERACOES.filter(
+        const missingFromSeed = seedsToMerge.filter(
           seedItem => !existingArts.has(`${seedItem.artigo}-${seedItem.ano}`)
         );
         if (missingFromSeed.length > 0) {
@@ -362,9 +371,10 @@ export default function AdminMapeamentoLeis() {
         `${articlesList.length} artigos alterados/incluídos identificados no Planalto.`,
         { id: toastId }
       );
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      toast.error(`Erro ao rastrear alterações: ${err.message || 'Falha de conexão'}`, { id: toastId });
+      const errMsg = err instanceof Error ? err.message : 'Falha de conexão';
+      toast.error(`Erro ao rastrear alterações: ${errMsg}`, { id: toastId });
     } finally {
       setCarregandoAlteracoes(false);
     }
@@ -376,16 +386,20 @@ export default function AdminMapeamentoLeis() {
     const toastId = toast.loading(`Sincronizando ${item.artigo} no banco de dados...`);
 
     try {
-      const numArtigoLimpo = item.artigo.replace(/[^0-9]/g, '');
+      // Extrai o identificador exato do artigo (suportando "300-A", "1225", "15-B")
+      const artMatch = item.artigo.match(/^Art\.?\s*(\d+(?:\.\d+)*(?:-[A-Za-z0-9]+)?)/i);
+      const identArtigo = artMatch ? artMatch[1].replace(/\./g, '') : item.artigo.replace(/^Art\.?\s*/i, '').trim();
 
-      if (numArtigoLimpo) {
+      if (identArtigo) {
+        // Atualiza no banco de artigos buscando com segurança
         await supabase
           .from('vade_mecum_artigos')
           .update({ texto: item.texto_novo })
-          .ilike('numero', `%${numArtigoLimpo}%`);
+          .eq('lei_id', lei.id)
+          .ilike('numero', `%${identArtigo}%`);
       }
 
-      await supabase
+      await (supabase as any)
         .from('legislacao_alteracoes')
         .insert({
           tabela_nome: lei.tabela_nome,
@@ -398,9 +412,10 @@ export default function AdminMapeamentoLeis() {
         });
 
       toast.success(`${item.artigo} sincronizado e gravado no Histórico com sucesso!`, { id: toastId });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      toast.error(`Falha ao sincronizar ${item.artigo}: ` + (err.message || 'Erro no banco'), { id: toastId });
+      const errMsg = err instanceof Error ? err.message : 'Erro no banco';
+      toast.error(`Falha ao sincronizar ${item.artigo}: ` + errMsg, { id: toastId });
     } finally {
       setSincronizandoArtigo(null);
     }
@@ -509,18 +524,24 @@ export default function AdminMapeamentoLeis() {
             </div>
           </div>
 
-          {/* Ação compacta e discreta de atualização (sem botão vermelho grandão que polui a tela) */}
+          {/* Ação de atualização com botão claro de re-escanear e limpar cache */}
           <div className="flex items-center gap-2 shrink-0">
             <button
-              onClick={() => handleBuscarAlteracoesPlanalto(historicoLei)}
+              onClick={() => handleBuscarAlteracoesPlanalto(historicoLei, true)}
               disabled={carregandoAlteracoes}
-              className="w-10 h-10 rounded-xl bg-white/[0.05] hover:bg-white/10 border border-white/10 flex items-center justify-center text-muted-foreground hover:text-white transition-all disabled:opacity-50 active:scale-95"
-              title="Atualizar varredura do Planalto"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.06] hover:bg-white/10 border border-white/10 text-xs font-semibold text-foreground hover:text-white transition-all disabled:opacity-50 active:scale-95"
+              title="Limpar cache local e realizar nova varredura oficial no Planalto (2024-2026)"
             >
               {carregandoAlteracoes ? (
-                <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-primary shrink-0" />
+                  <span className="hidden sm:inline">Varrendo Planalto...</span>
+                </>
               ) : (
-                <RefreshCw className="w-4 h-4" />
+                <>
+                  <RefreshCw className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span className="hidden sm:inline">Re-escanear Planalto</span>
+                </>
               )}
             </button>
           </div>

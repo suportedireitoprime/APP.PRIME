@@ -1,21 +1,21 @@
 # Checklist de Execução — Correção de Extração e Histórico de Leis (2024–2026)
 
-- [ ] 1. Refatorar Edge Function `vademecum-scraper/index.ts` <!-- id: 1 -->
-  - [ ] Implementar motor de extração HTTP nativo (Deno) com decoding `windows-1252`/`utf-8` e fallback de URLs Planalto
-  - [ ] Corrigir identificação de artigos (evitar pular o próprio caput em `Art. 300-A` e suportar sufixos e milhar `/^Art\.?\s*(\d+(?:\.\d+)*(?:-[A-Za-z0-9]+)?)/i`)
-  - [ ] Expandir filtros de termos modificadores (incluída, revogado/a, decretos, emendas, medidas provisórias)
-  - [ ] Ajustar chave de deduplicação para não descartar múltiplos dispositivos/anos do mesmo artigo
-  - [ ] Manter Puppeteer/Browserless apenas como fallback secundário
-- [ ] 2. Atualizar Base de Dados e Sementes em `src/data/leiAlteracoesScraped.ts` <!-- id: 2 -->
-  - [ ] Cadastrar datas de leis de 2023, 2024, 2025 e 2026 no `KNOWN_LEIS_DATAS` (Lei 15.280/2025, 14.994/2024, 14.843/2024, 14.836/2024, 14.711/2023, 14.620/2023, etc.)
-  - [ ] Adicionar sementes de novidades para Código Civil (`SEED_CC_ALTERACOES`) e Código de Processo Penal (`SEED_CPP_ALTERACOES`)
-  - [ ] Atualizar `getScrapedAlteracoes` para garantir que novidades recentes nunca fiquem presas em cache antigo
-- [ ] 3. Aprimorar UI e Sincronização em `src/pages/AdminMapeamentoLeis.tsx` <!-- id: 3 -->
-  - [ ] Adicionar botão/ação explícita de "Limpar Cache & Re-escanear do Planalto"
-  - [ ] Corrigir `handleSincronizarArtigo` para preservar artigos com sufixo (ex: `Art. 300-A`) sem truncar para número base
-  - [ ] Exibir contadores e filtros atualizados (2024, 2025, 2026)
-- [ ] 4. Verificação, Deploy e Versionamento Git <!-- id: 4 -->
-  - [ ] Executar checagem de tipos `tsc --noEmit`
-  - [ ] Executar build de produção `vite build`
-  - [ ] Fazer deploy da Edge Function `vademecum-scraper` no Supabase
-  - [ ] Commit e push automático no repositório GitHub
+- [x] 1. Refatorar Edge Function `vademecum-scraper/index.ts` <!-- id: 1 -->
+  - [x] Implementar motor de extração HTTP nativo (Deno) com decoding `windows-1252`/`utf-8` e fallback de URLs Planalto
+  - [x] Corrigir identificação de artigos (evitar pular o próprio caput em `Art. 300-A` e suportar sufixos e milhar `/^Art\.?\s*(\d+(?:\.\d+)*(?:-[A-Za-z0-9]+)?)/i`)
+  - [x] Expandir filtros de termos modificadores (incluída, revogado/a, decretos, emendas, medidas provisórias)
+  - [x] Ajustar chave de deduplicação para não descartar múltiplos dispositivos/anos do mesmo artigo
+  - [x] Manter Puppeteer/Browserless apenas como fallback secundário
+- [x] 2. Atualizar Base de Dados e Sementes em `src/data/leiAlteracoesScraped.ts` <!-- id: 2 -->
+  - [x] Cadastrar datas de leis de 2023, 2024, 2025 e 2026 no `KNOWN_LEIS_DATAS` (Lei 15.280/2025, 14.994/2024, 14.843/2024, 14.836/2024, 14.711/2023, 14.620/2023, etc.)
+  - [x] Adicionar sementes de novidades para Código Civil (`SEED_CC_ALTERACOES`) e Código de Processo Penal (`SEED_CPP_ALTERACOES`)
+  - [x] Atualizar `getScrapedAlteracoes` para garantir que novidades recentes nunca fiquem presas em cache antigo
+- [x] 3. Aprimorar UI e Sincronização em `src/pages/AdminMapeamentoLeis.tsx` <!-- id: 3 -->
+  - [x] Adicionar botão/ação explícita de "Limpar Cache & Re-escanear do Planalto"
+  - [x] Corrigir `handleSincronizarArtigo` para preservar artigos com sufixo (ex: `Art. 300-A`) sem truncar para número base
+  - [x] Exibir contadores e filtros atualizados (2024, 2025, 2026)
+- [x] 4. Verificação, Deploy e Versionamento Git <!-- id: 4 -->
+  - [x] Executar checagem de tipos `tsc --noEmit` (concluído com zero erros)
+  - [x] Executar build de produção `vite build` (concluído com sucesso)
+  - [x] Fazer deploy da Edge Function `vademecum-scraper` no Supabase (concluído)
+  - [x] Commit e push automático no repositório GitHub
