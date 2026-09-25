@@ -606,117 +606,205 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
               </button>
             </form>
 
-            {/* Dropdown suspenso de pesquisa (resultados instantâneos e artigos recentes) */}
+            {/* Dropdown suspenso de pesquisa (100% opaco, sem transparência, com menu de alternância dos recentes) */}
             <AnimatePresence>
               {isSearchFocused && (
                 <>
                   <div
-                    className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs"
+                    className="fixed inset-0 z-50 bg-black/75"
                     onClick={() => setIsSearchFocused(false)}
                   />
                   <motion.div
                     initial={{ opacity: 0, y: -6, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -6, scale: 0.98 }}
-                    transition={{ duration: 0.18, ease: 'easeOut' }}
-                    className="absolute left-0 right-0 top-full mt-2 z-50 bg-[#121216]/98 backdrop-blur-2xl border border-white/15 rounded-2xl shadow-2xl overflow-hidden max-h-[60vh] flex flex-col"
+                    transition={{ duration: 0.16, ease: 'easeOut' }}
+                    className="absolute left-0 right-0 top-full mt-2 z-[60] bg-[#0E0F12] border border-zinc-800 rounded-2xl shadow-2xl shadow-black overflow-hidden max-h-[65vh] flex flex-col select-none"
                   >
-                    <div className="px-3.5 py-2.5 border-b border-white/10 flex items-center justify-between text-xs text-muted-foreground bg-white/[0.03]">
+                    {/* Cabeçalho do Dropdown */}
+                    <div className="px-4 py-3 border-b border-zinc-800/80 flex items-center justify-between text-xs bg-[#121318]">
                       <div className="flex items-center gap-2">
-                        <Search className="w-3.5 h-3.5 text-primary" />
-                        <span className="font-semibold uppercase tracking-wider text-[10px] text-white/90">
-                          {searchQuery.trim() ? `Resultados correspondentes (${previewResults.length})` : 'Artigos Recentes / Pesquisados'}
-                        </span>
+                        {searchQuery.trim() ? (
+                          <>
+                            <Search className="w-4 h-4 text-primary shrink-0" />
+                            <span className="font-extrabold uppercase tracking-wider text-[11px] text-white">
+                              Resultados para &ldquo;{searchQuery}&rdquo; ({previewResults.length})
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <History className="w-4 h-4 text-primary shrink-0" />
+                            <span className="font-extrabold uppercase tracking-wider text-[11px] text-white">
+                              Últimos Artigos Pesquisados
+                            </span>
+                            {recentArticles.length > 0 && (
+                              <span className="text-[11px] text-zinc-400 font-medium">
+                                ({recentArticles.length})
+                              </span>
+                            )}
+                          </>
+                        )}
                       </div>
                       <button
                         type="button"
                         onClick={() => setIsSearchFocused(false)}
-                        className="text-xs text-muted-foreground hover:text-white px-2 py-0.5 rounded-md hover:bg-white/10 transition-colors"
+                        className="text-xs text-zinc-400 hover:text-white px-2.5 py-1 rounded-lg hover:bg-white/10 active:scale-95 transition-all"
                       >
                         Fechar
                       </button>
                     </div>
 
-                    <div className="overflow-y-auto divide-y divide-white/5 p-1.5 space-y-1">
-                      {searchQuery.trim() ? (
-                        previewResults.length > 0 ? (
-                          previewResults.map((art) => (
-                            <button
-                              key={art.id}
-                              type="button"
-                              onMouseDown={(e) => {
-                                e.preventDefault();
-                                openArtigoWithRecent(art);
-                                setIsSearchFocused(false);
-                                haptic.selection();
-                              }}
-                              className="w-full text-left p-2.5 rounded-xl hover:bg-white/10 active:bg-white/15 transition flex flex-col gap-0.5 group"
-                            >
-                              <div className="flex items-center justify-between">
-                                <span className="text-sm font-bold text-primary group-hover:text-red-400">
-                                  {art.numero}
-                                </span>
-                                {art.topico && (
-                                  <span className="text-[10px] text-zinc-400 bg-white/5 px-2 py-0.5 rounded-full">
-                                    {art.topico}
-                                  </span>
-                                )}
-                              </div>
-                              <p className="text-xs text-zinc-300 line-clamp-2 leading-relaxed">
-                                {art.caput}
-                              </p>
-                            </button>
-                          ))
-                        ) : (
-                          <div className="py-6 text-center text-xs text-muted-foreground">
-                            Nenhum artigo encontrado para &ldquo;{searchQuery}&rdquo;.
+                    {/* Conteúdo: Menu de alternância dos recentes ou resultados da busca */}
+                    {searchQuery.trim() ? (
+                      <>
+                        {/* Linha compacta de recentes se houver durante a busca */}
+                        {recentArticles.length > 0 && (
+                          <div className="px-3 pt-2.5 pb-1 border-b border-zinc-800/60 bg-[#101115]">
+                            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+                              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider shrink-0 mr-1">
+                                Recentes:
+                              </span>
+                              {recentArticles.slice(0, 8).map((art) => {
+                                const cleanNum = (art.numero || '').replace(/^art\.?\s*/i, '').trim();
+                                return (
+                                  <button
+                                    key={art.id}
+                                    type="button"
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                      openArtigoWithRecent(art);
+                                      setIsSearchFocused(false);
+                                      haptic.selection();
+                                    }}
+                                    className="shrink-0 px-2.5 py-1 rounded-lg bg-[#181920] hover:bg-primary/20 hover:text-primary border border-zinc-800 text-[11px] font-bold text-zinc-300 transition-all active:scale-95 cursor-pointer"
+                                  >
+                                    Art. {cleanNum}
+                                  </button>
+                                );
+                              })}
+                            </div>
                           </div>
-                        )
-                      ) : (
-                        recentArticles.length > 0 ? (
-                          recentArticles.map((art) => (
-                            <button
-                              key={art.id}
-                              type="button"
-                              onMouseDown={(e) => {
-                                e.preventDefault();
-                                openArtigoWithRecent(art);
-                                setIsSearchFocused(false);
-                                haptic.selection();
-                              }}
-                              className="w-full text-left p-2.5 rounded-xl hover:bg-white/10 active:bg-white/15 transition flex items-center justify-between group"
-                            >
-                              <div className="flex flex-col gap-0.5 min-w-0 pr-2">
-                                <span className="text-sm font-bold text-white group-hover:text-primary">
-                                  {art.numero}
-                                </span>
-                                <p className="text-xs text-zinc-400 truncate max-w-sm">
-                                  {art.caput}
-                                </p>
-                              </div>
-                              <History className="w-4 h-4 text-zinc-500 shrink-0" />
-                            </button>
-                          ))
-                        ) : (
-                          <div className="py-6 text-center text-xs text-muted-foreground">
-                            Digite o número do artigo ou termo jurídico para pesquisar...
-                          </div>
-                        )
-                      )}
-                    </div>
+                        )}
 
-                    {searchQuery.trim() && filteredArtigos.length > previewResults.length && (
-                      <button
-                        type="button"
-                        onMouseDown={(e) => {
-                          e.preventDefault();
-                          setIsSearchFocused(false);
-                          handleSearch();
-                        }}
-                        className="w-full py-2.5 px-3 text-center text-xs font-semibold text-primary hover:bg-white/5 border-t border-white/10 transition-colors"
-                      >
-                        Ver todos os {filteredArtigos.length} artigos na lista
-                      </button>
+                        {/* Lista de resultados correspondentes */}
+                        <div className="overflow-y-auto divide-y divide-zinc-800/60 p-2 space-y-1.5 max-h-[45vh] bg-[#0E0F12]">
+                          {previewResults.length > 0 ? (
+                            previewResults.map((art) => (
+                              <button
+                                key={art.id}
+                                type="button"
+                                onMouseDown={(e) => {
+                                  e.preventDefault();
+                                  openArtigoWithRecent(art);
+                                  setIsSearchFocused(false);
+                                  haptic.selection();
+                                }}
+                                className="w-full text-left p-3 rounded-xl bg-[#14151a] hover:bg-[#1a1b22] active:bg-[#20212a] border border-zinc-800/70 hover:border-zinc-700 transition-all flex flex-col gap-1 group shadow-sm cursor-pointer"
+                              >
+                                <div className="flex items-center justify-between">
+                                  <span className="text-sm font-bold text-primary group-hover:text-red-400">
+                                    {/^art/i.test(art.numero) ? art.numero : `Art. ${art.numero}`}
+                                  </span>
+                                  {art.topico && (
+                                    <span className="text-[10px] text-zinc-400 bg-white/[0.05] px-2 py-0.5 rounded-full border border-white/[0.05]">
+                                      {art.topico}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-xs text-zinc-300 line-clamp-2 leading-relaxed font-serif">
+                                  {art.caput.replace(/\([^)]*\)/g, '').trim()}
+                                </p>
+                              </button>
+                            ))
+                          ) : (
+                            <div className="py-6 text-center text-xs text-zinc-400">
+                              Nenhum artigo encontrado para &ldquo;{searchQuery}&rdquo;.
+                            </div>
+                          )}
+                        </div>
+
+                        {filteredArtigos.length > previewResults.length && (
+                          <button
+                            type="button"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              setIsSearchFocused(false);
+                              handleSearch();
+                            }}
+                            className="w-full py-2.5 px-3 text-center text-xs font-semibold text-primary hover:bg-white/[0.04] border-t border-zinc-800 transition-colors bg-[#111216]"
+                          >
+                            Ver todos os {filteredArtigos.length} artigos na lista
+                          </button>
+                        )}
+                      </>
+                    ) : (
+                      /* Menu de Alternância Rolável dos Recentes (Artigo abreviado e número) */
+                      <div className="p-3.5 space-y-3 bg-[#0E0F12]">
+                        {recentArticles.length > 0 ? (
+                          <div
+                            className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth py-1 px-0.5"
+                            style={{ WebkitOverflowScrolling: 'touch' }}
+                          >
+                            {recentArticles.map((art) => {
+                              const cleanNum = (art.numero || '').replace(/^art\.?\s*/i, '').trim();
+                              const displayLabel = `Art. ${cleanNum}`;
+                              return (
+                                <button
+                                  key={art.id}
+                                  type="button"
+                                  onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    openArtigoWithRecent(art);
+                                    setIsSearchFocused(false);
+                                    haptic.selection();
+                                  }}
+                                  className="shrink-0 px-4 py-2 rounded-xl bg-[#17181f] hover:bg-primary/20 hover:text-primary active:scale-95 border border-zinc-800 hover:border-primary/40 text-xs sm:text-sm font-bold text-white transition-all shadow-md flex items-center gap-1.5 cursor-pointer group"
+                                >
+                                  <History className="w-3.5 h-3.5 text-zinc-500 group-hover:text-primary transition-colors" />
+                                  <span>{displayLabel}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="py-4 text-center space-y-2">
+                            <p className="text-xs text-zinc-400">
+                              Nenhum artigo pesquisado recentemente.
+                            </p>
+                            {artigos.length > 0 && (
+                              <div className="space-y-1.5 pt-1">
+                                <p className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">
+                                  Sugestões de Acesso Rápido
+                                </p>
+                                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth py-1 px-0.5 justify-center flex-wrap">
+                                  {artigos.slice(0, 6).map((art) => {
+                                    const cleanNum = (art.numero || '').replace(/^art\.?\s*/i, '').trim();
+                                    return (
+                                      <button
+                                        key={art.id}
+                                        type="button"
+                                        onMouseDown={(e) => {
+                                          e.preventDefault();
+                                          openArtigoWithRecent(art);
+                                          setIsSearchFocused(false);
+                                          haptic.selection();
+                                        }}
+                                        className="px-3.5 py-1.5 rounded-xl bg-[#17181f] hover:bg-primary/20 text-xs font-bold text-zinc-200 hover:text-primary border border-zinc-800 transition-all active:scale-95 cursor-pointer"
+                                      >
+                                        Art. {cleanNum}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        <p className="text-[11px] text-zinc-500 text-center pt-2 border-t border-zinc-800/60">
+                          Toque em um artigo para abrir imediatamente ou digite o número na barra acima.
+                        </p>
+                      </div>
                     )}
                   </motion.div>
                 </>
