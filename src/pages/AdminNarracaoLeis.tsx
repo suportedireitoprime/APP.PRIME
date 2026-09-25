@@ -57,6 +57,17 @@ const CATEGORIAS_DEF: CategoriaDef[] = [
   { id: 'automacao', nome: 'Automação', desc: 'Cron job de 10 em 10 minutos, prioridade de artigos maiores e fila', icon: Cpu, color: '#6366f1', isSpecialTool: true },
 ];
 
+/** Detecta se um item é um artigo real (Art. X) vs estrutural (PARTE GERAL, TÍTULO, CAPÍTULO, etc.) */
+const ROTULOS_ESTRUTURAIS = /^(PARTE|T[ÍI]TULO|CAP[ÍI]TULO|SE[ÇC][ÃA]O|SUBSE[ÇC][ÃA]O|LIVRO|DISPOSI[ÇC][ÕO]ES|PRELI?MINARES?|TRANSITÓRIAS?)/i;
+function isArtigoReal(art: ArtigoLei): boolean {
+  const num = String(art.numero || '').trim();
+  // Se o "número" começa com um rótulo estrutural, não é artigo
+  if (ROTULOS_ESTRUTURAIS.test(num)) return false;
+  // Se não tem conteúdo substancial (caput < 5 chars) e o título é estrutural
+  if (art.titulo && ROTULOS_ESTRUTURAIS.test(art.titulo.trim()) && (!art.caput || art.caput.trim().length < 5)) return false;
+  return true;
+}
+
 export default function AdminNarracaoLeis() {
   const navigate = useNavigate();
 
@@ -120,7 +131,8 @@ export default function AdminNarracaoLeis() {
       fetchArtigosLei(selectedLei.id, selectedLei.tabela_nome),
       buscarStatusNarracoes(selectedLei.tabela_nome),
     ]).then(([listaArtigos, statusMap]) => {
-      setArtigos(listaArtigos || []);
+      // Filtra itens estruturais (PARTE GERAL, TÍTULO, CAPÍTULO, etc.) — apenas artigos reais
+      setArtigos((listaArtigos || []).filter(isArtigoReal));
       setStatusNarracoes(statusMap || {});
     }).catch((err) => {
       toast.error('Erro ao carregar dados da legislação');
