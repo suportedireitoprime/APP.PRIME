@@ -357,8 +357,8 @@ export default function RadarConcursos() {
                         />
                      </div>
 
-                    <div className="flex flex-col items-end gap-1.5">
-                      <StateMapIcon uf={conc.uf || visual.tag} className="w-14 h-14" />
+                    <div className="flex flex-col items-end gap-1.5 -mr-1">
+                      <StateMapIcon uf={conc.uf || visual.tag} className="w-[72px] h-[72px] sm:w-[84px] sm:h-[84px]" />
 
                       {dias !== null && dias <= 7 && dias >= 0 && (
                         <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-amber-500/90 text-black shadow-md mt-1">
@@ -375,7 +375,9 @@ export default function RadarConcursos() {
                     </p>
                     <div className="flex items-center gap-1.5 text-[14px] sm:text-[15px] text-emerald-400 font-bold">
                       <Clock className="w-4 h-4 shrink-0" />
-                      <span className="truncate">{conc.vagas_salario || visual.subtitulo}</span>
+                      <span className="truncate">
+                        {(conc.vagas_salario || visual.subtitulo).replace(/.*?até\s+R\$/i, 'Salários até R$')}
+                      </span>
                     </div>
                   </div>
                 </div>

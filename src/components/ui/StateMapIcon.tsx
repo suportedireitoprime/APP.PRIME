@@ -32,7 +32,7 @@ export function StateMapIcon({ uf, className, ...props }: StateMapIconProps) {
       >
         <path d={stateData.path} vectorEffect="non-scaling-stroke" />
       </svg>
-      <span className="relative z-10 text-[10px] font-bold text-emerald-300 drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">
+      <span className="relative z-10 text-[14px] sm:text-[16px] font-black text-emerald-300 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] tracking-wide">
         {uf.toUpperCase()}
       </span>
     </div>
