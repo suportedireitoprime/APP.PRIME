@@ -720,9 +720,9 @@ export default function RadarConcursos() {
               <button
                 type="button"
                 onClick={() => setSelectedEdital(null)}
-                className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-white hover:bg-black/80 cursor-pointer"
+                className="absolute top-4 right-4 z-20 w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-white hover:bg-black/80 cursor-pointer backdrop-blur-md shadow-xl"
               >
-                <X className="w-4 h-4" />
+                <X className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.4]" />
               </button>
 
               {/* Imagem de Capa Grande */}
@@ -746,15 +746,23 @@ export default function RadarConcursos() {
                       className="w-full h-full object-contain rounded-full"
                     />
                   </div>
-                  <div className="flex flex-col gap-1 mt-2">
-                    <span className="px-3 py-1 w-max rounded-full text-[10px] font-bold bg-emerald-500 text-white shadow-md">
-                      {selectedEdital.uf ? `Estado: ${selectedEdital.uf}` : selectedEdital.regiao || 'NACIONAL'}
-                    </span>
-                    {selectedEdital.dias_restantes !== undefined && (
-                      <span className="px-3 py-1 w-max rounded-full text-[10px] font-bold bg-black/70 border border-white/20 text-emerald-400 backdrop-blur-md">
-                        {selectedEdital.dias_restantes > 0
-                          ? `${selectedEdital.dias_restantes} dias p/ encerrar`
-                          : 'Inscrições encerrando'}
+                  <div className="flex flex-col gap-1.5 mt-1.5">
+                    <div className="flex gap-2">
+                      <span className="px-3 py-1 w-max rounded-full text-[10px] font-bold bg-emerald-500 text-white shadow-md">
+                        {selectedEdital.uf ? `Estado: ${selectedEdital.uf}` : selectedEdital.regiao || 'NACIONAL'}
+                      </span>
+                      {selectedEdital.dias_restantes !== undefined && (
+                        <span className="px-3 py-1 w-max rounded-full text-[10px] font-bold bg-black/70 border border-white/20 text-emerald-400 backdrop-blur-md">
+                          {selectedEdital.dias_restantes > 0
+                            ? `${selectedEdital.dias_restantes} dias p/ encerrar`
+                            : 'Inscrições encerrando'}
+                        </span>
+                      )}
+                    </div>
+                    {selectedEdital.vagas_salario && (
+                      <span className="px-3 py-1.5 w-max rounded-full text-[11px] font-bold bg-emerald-950/90 border border-emerald-500/40 text-emerald-300 backdrop-blur-md flex items-center gap-1.5 shadow-lg">
+                        <Sparkles className="w-3.5 h-3.5 shrink-0" />
+                        {selectedEdital.vagas_salario}
                       </span>
                     )}
                   </div>
@@ -766,13 +774,6 @@ export default function RadarConcursos() {
                 <h3 className="font-display font-bold text-lg sm:text-xl text-foreground leading-snug">
                   {selectedEdital.titulo}
                 </h3>
-
-                {selectedEdital.vagas_salario && (
-                  <div className="p-3 rounded-xl bg-emerald-950/30 border border-emerald-500/30 flex items-center gap-2 text-emerald-300 font-semibold text-sm">
-                    <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span>{selectedEdital.vagas_salario}</span>
-                  </div>
-                )}
               </div>
 
               {/* Cargos Oferecidos */}
@@ -799,14 +800,14 @@ export default function RadarConcursos() {
                 <h4 className="font-display font-bold text-xs uppercase tracking-wider text-muted-foreground">
                   Informações do Edital
                 </h4>
-                <div className="text-sm text-foreground/90 leading-relaxed font-body whitespace-pre-wrap max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
+                <div className="text-sm text-foreground/90 leading-relaxed font-body whitespace-pre-wrap pb-4">
                   {loadingFullText ? (
                     <div className="flex items-center gap-2 text-muted-foreground py-2">
                       <Loader2 className="w-4 h-4 animate-spin" />
                       <span>Extraindo conteúdo completo do edital...</span>
                     </div>
                   ) : editalFullText ? (
-                    <div className="prose prose-invert prose-emerald max-w-none prose-sm">
+                    <div className="prose prose-invert prose-emerald max-w-none font-body text-[15px] sm:text-[16px] leading-relaxed text-white/90">
                       <ReactMarkdown>{editalFullText}</ReactMarkdown>
                     </div>
                   ) : (

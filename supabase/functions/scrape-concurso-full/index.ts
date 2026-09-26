@@ -39,11 +39,25 @@ serve(async (req) => {
     }
 
     const json = await response.json();
-    const markdown = json?.data?.markdown || "";
+    let markdown = json?.data?.markdown || "";
 
     if (!markdown || markdown.length < 20) {
       throw new Error("Conteúdo extraído muito curto ou vazio.");
     }
+
+    // Clean up PCI Concursos specific generic headers, footers, and logo images
+    markdown = markdown
+      // Remove PCI logos and headers
+      .replace(/\[!\[\]\(https:\/\/www\.pciconcursos\.com\.br\/img\/.*?\)\].*?\n/g, '')
+      .replace(/\[!\[\]\(.*?\)\].*?\n/g, '')
+      // Remove navigation links like [Página Inicial](...)
+      .replace(/- \[(Página Inicial|Apostilas|Provas|Videoaulas|Aulas em Áudio|Dicas|Questões|Gabaritos)\].*?\n/g, '')
+      // Remove more generic links if they are alone
+      .replace(/^\[.*?\]\(.*?\)$/gm, '')
+      .replace(/Busca.*?Apostilas.*?/gi, '')
+      // Remove multiple empty lines
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
 
     return new Response(JSON.stringify({ text: markdown }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
