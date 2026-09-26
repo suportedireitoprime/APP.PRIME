@@ -40,7 +40,8 @@ export function alinharTimingsComTexto(
   const tTokens = safeTimings.map(t => normalizeNarracaoToken(t.word));
 
   // Descobre onde o texto do artigo começa dentro da fala (após o prefixo)
-  const amostra = renderedTokens.slice(0, Math.min(8, renderedTokens.length));
+  const amostraBruta = renderedTokens.slice(0, Math.min(8, renderedTokens.length));
+  const amostra = amostraBruta.map(t => normalizeNarracaoToken(t));
   let melhorInicio = -1;
   let melhorScore = 0;
   for (let i = 0; i < tTokens.length; i++) {
@@ -62,7 +63,7 @@ export function alinharTimingsComTexto(
   const mapeado: Array<{ start: number; end: number } | null> = new Array(renderedTokens.length).fill(null);
   let cursor = melhorInicio;
   for (let i = 0; i < renderedTokens.length; i++) {
-    const alvo = renderedTokens[i];
+    const alvo = normalizeNarracaoToken(renderedTokens[i]);
     const limite = Math.min(tTokens.length, cursor + 6);
     for (let p = cursor; p < limite; p++) {
       if (tTokens[p] === alvo) {
