@@ -220,6 +220,16 @@ const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, 
   };
 
   const deleteNote = useCallback(async (nota: Anotacao) => {
+    if (!window.confirm('Tem certeza que deseja apagar esta anotação?')) return;
+
+    // Atualização otimista (instantânea na UI)
+    setNotas(prev => {
+      const next = prev.filter(n => n.id !== nota.id);
+      onCountChange?.(next.length);
+      return next;
+    });
+    haptic.light();
+
     if (nota.source === 'highlight') {
       if (!userId) return;
       const { data, error: loadError } = await supabase
@@ -229,7 +239,7 @@ const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, 
         .eq('tabela_codigo', tabelaNome)
         .eq('numero_artigo', artigoNumero)
         .maybeSingle();
-      if (loadError) { toast.error('Erro ao apagar'); return; }
+      if (loadError) { toast.error('Erro ao comunicar com o servidor'); return; }
       const updated = Array.isArray(data?.highlights)
         ? (data.highlights as unknown as SavedHighlight[]).filter((item) => item.id !== nota.highlightId)
         : [];
@@ -239,23 +249,17 @@ const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, 
         .eq('user_id', userId)
         .eq('tabela_codigo', tabelaNome)
         .eq('numero_artigo', artigoNumero);
-      if (error) { toast.error('Erro ao apagar'); return; }
+      if (error) { toast.error('Erro ao apagar no servidor'); return; }
     } else {
       const { error } = await supabase.from('artigos_anotacoes').delete().eq('id', nota.id);
-      if (error) { toast.error('Erro ao apagar'); return; }
-      void removeAnotacaoItem(userId, nota.id);
+      if (error) { toast.error('Erro ao apagar no servidor'); return; }
+      if (userId) void removeAnotacaoItem(userId, nota.id);
     }
     if (nota.audio_url && userId) {
       // audio_url é o path no bucket: {user_id}/{filename}
       supabase.storage.from(AUDIO_BUCKET).remove([nota.audio_url]).catch(() => {});
     }
-    setNotas(prev => {
-      const next = prev.filter(n => n.id !== nota.id);
-      onCountChange?.(next.length);
-      return next;
-    });
     if (userId) invalidateCache(anotacoesKey(tabelaNome, artigoNumero, userId));
-    haptic.light();
   }, [userId, tabelaNome, artigoNumero, onCountChange]);
 
   const handleAdd = async () => {
