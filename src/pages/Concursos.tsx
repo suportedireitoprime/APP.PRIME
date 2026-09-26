@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Clock, Calendar, Info, ExternalLink, Newspaper, Bell, ChevronRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Clock, Calendar, ExternalLink, Newspaper } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
@@ -64,7 +63,6 @@ const Concursos = () => {
   const [concursos, setConcursos] = useState<ConcursoNoticia[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [dataFiltro, setDataFiltro] = useState<string>('');
-  const [infoOpen, setInfoOpen] = useState(false);
 
   useEffect(() => {
     let cancel = false;
@@ -106,10 +104,12 @@ const Concursos = () => {
   }, [concursos]);
 
   useEffect(() => {
-    if (!dataFiltro) {
+    if (concursos.length > 0 && !dataFiltro) {
+      setDataFiltro(datasDisponiveis[0] || todayYMD);
+    } else if (concursos.length === 0 && !dataFiltro && !loading) {
       setDataFiltro(todayYMD);
     }
-  }, []);
+  }, [concursos, datasDisponiveis, dataFiltro, loading, todayYMD]);
 
   const finalFiltered = useMemo(() => {
     const filtered = !dataFiltro
@@ -123,6 +123,8 @@ const Concursos = () => {
     });
   }, [concursos, dataFiltro]);
 
+  // Adjust dayList to ensure it includes the most recent date with data if it's within 5 days,
+  // or just center it around today as before.
   const centerDate = useMemo(() => new Date(), []);
   const dayList = useMemo(() => getDayList(centerDate, 5), [centerDate]);
   const availableDatesSet = useMemo(() => new Set(datasDisponiveis), [datasDisponiveis]);
@@ -134,82 +136,7 @@ const Concursos = () => {
           title="Concursos Públicos"
           subtitle="Últimas oportunidades"
           onBack={() => goBack()}
-          rightAction={
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => navigate('/ferramentas/radar-concursos')}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold shadow-md shadow-emerald-500/25 active:scale-95 transition-all cursor-pointer"
-                title="Configurar Alertas e Radar"
-              >
-                <Bell className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Radar & Alertas</span>
-              </button>
-              <button
-                onClick={() => setInfoOpen((v) => !v)}
-                className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
-                  infoOpen ? 'bg-[#10B981] text-white' : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                }`}
-              >
-                <Info className="w-4 h-4" />
-              </button>
-            </div>
-          }
         />
-
-        {/* Banner do Radar de Concursos */}
-        <div className="max-w-3xl mx-auto px-4 mt-2 mb-1">
-          <button
-            type="button"
-            onClick={() => navigate('/ferramentas/radar-concursos')}
-            className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-card to-card border border-emerald-500/30 hover:border-emerald-500/60 transition-all cursor-pointer shadow-md group text-left"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition-transform shrink-0">
-                <Bell className="w-5 h-5" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5">
-                  <p className="text-sm font-display font-bold text-foreground truncate">
-                    Radar de Concursos & Alertas
-                  </p>
-                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500 text-white font-bold shrink-0">
-                    NOVO
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground line-clamp-1">
-                  Seja avisado por estado, cargo e notificações do Hórus IA
-                </p>
-              </div>
-            </div>
-            <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-400 transition-colors shrink-0 ml-2" />
-          </button>
-        </div>
-
-        <AnimatePresence initial={false}>
-          {infoOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 260, damping: 28 }}
-              className="overflow-hidden max-w-3xl mx-auto px-4"
-            >
-              <div className="mt-1 mb-2 rounded-2xl border border-[#10B981]/30 bg-card/60 backdrop-blur-sm p-4 space-y-2">
-                <div className="flex items-center gap-2">
-                  <Info className="w-4 h-4 text-[#10B981]" />
-                  <h3 className="font-display text-sm font-bold text-foreground">O que é esta seção?</h3>
-                </div>
-                <p className="font-body text-[12.5px] leading-relaxed text-muted-foreground">
-                  Aqui você acompanha as últimas publicações e editais abertos de <strong className="text-foreground">Concursos Públicos</strong> em todo o Brasil.
-                </p>
-                <p className="font-body text-[12.5px] leading-relaxed text-muted-foreground">
-                  Use o calendário acima para navegar por dia — os editais estão agrupados pelas datas de publicação.
-                </p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         <div className="flex justify-between gap-1.5 px-3 py-3 max-w-3xl mx-auto">
           {dayList.map((day, idx) => {
