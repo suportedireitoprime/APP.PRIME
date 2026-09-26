@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence, useDragControls, useReducedMotion } from 'framer-motion';
+
 import { 
   ArrowLeft, Search, Scale, BookOpen, Clock, Gavel, Mic, MicOff, X, Loader2, Heart,
   Play, PenLine, FileText, Newspaper, Film, BookMarked, Stamp, ListChecks, ChevronDown
@@ -99,10 +99,7 @@ const identificarLeiPorTexto = (text: string) => {
 };
 
 const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
-  const [query, setQuery] = useState('');
-  const dragControls = useDragControls();
-  const shouldReduceMotion = useReducedMotion();
-  const debouncedQuery = useDebounce(query, 100);
+  const [query, setQuery] = useState('');  const debouncedQuery = useDebounce(query, 100);
   const [activeTab, setActiveTab] = useState<UnifiedTab>('tudo');
   
   const inputRef = useRef<HTMLInputElement>(null);
@@ -248,7 +245,6 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
     <PrimeBottomSheet
       open={open}
       onClose={onClose}
-      dragControls={dragControls}
       zIndex={100}
       className="lg:top-[10%] lg:bottom-auto lg:h-[80vh] lg:max-w-[800px] lg:mx-auto lg:rounded-2xl lg:shadow-2xl"
     >
@@ -256,8 +252,7 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
           <div className="bg-hero-panel px-4 pb-4 pt-[calc(0.5rem+var(--sai-top))] shrink-0 shadow-md">
             <div 
               className="flex items-center justify-center w-full h-8 cursor-grab active:cursor-grabbing touch-none"
-              onPointerDown={(e) => dragControls.start(e)}
-            >
+              >
               <div className="w-12 h-1.5 rounded-full bg-white/30" />
             </div>
             <div className="flex items-center gap-2.5">
@@ -427,16 +422,14 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
                     <p className="text-sm uppercase tracking-wider text-muted-foreground py-2 px-3">
                       Artigo {artigoQueryDigits} em… (por relevância)
                     </p>
-                    <AnimatePresence initial={false}>
-                    {artigoLeis.map((lei, i) => (
-                      <motion.button
-                        key={lei.id}
-                        layout
-                        initial={{ opacity: 0, x: 40 }}
+                    <div className="flex flex-col gap-2">
+{artigoLeis.map((lei, i) => (
+                      <button
+                        key={lei.id}                        initial={{ opacity: 0, x: 40 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.02, type: 'spring', stiffness: 260, damping: 22 }}
                         onClick={() => openArtigoInLei(lei)}
-                        className="w-full flex items-center gap-4 p-3.5 rounded-xl bg-card border border-border hover:border-primary/40 transition-all text-left"
+                        className="w-full flex items-center animate-in fade-in slide-in-from-right-4" style={{ animationFillMode: 'both', animationDelay: `${i * 30}ms` }} className="w-full flex items-center gap-4 p-3.5 rounded-xl bg-card border border-border hover:border-primary/40 transition-all text-left"
                       >
                         <div className="w-12 h-12 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0">
                           <span className="text-xs font-bold text-red-500">{lei.sigla}</span>
@@ -448,9 +441,9 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
                         <div className="shrink-0 px-3 py-1.5 rounded-md bg-primary/10 text-primary text-sm font-bold">
                           Art. {artigoQueryDigits}
                         </div>
-                      </motion.button>
+                      </button>
                     ))}
-                    </AnimatePresence>
+</div>
                   </>
                 )}
               </div>
