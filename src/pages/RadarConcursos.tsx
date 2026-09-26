@@ -130,8 +130,8 @@ export default function RadarConcursos() {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Notificações
-  const [notifPush, setNotifPush] = useState(true);
-  const [notifHorus, setNotifHorus] = useState(true);
+  const [notifPush, setNotifPush] = useState(false);
+  const [notifHorus, setNotifHorus] = useState(false);
 
   // Dados
   const [concursos, setConcursos] = useState<ConcursoItem[]>([]);
@@ -559,40 +559,15 @@ export default function RadarConcursos() {
           </div>
         </section>
 
-        {/* 3. CARD DE CHAMADA PARA A LISTA COMPLETA */}
-        <section className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-emerald-950/40 via-card to-card border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
-          <div className="space-y-1">
-            <h4 className="font-display font-bold text-base text-foreground flex items-center gap-2">
-              <span>{concursosFiltrados.length} Editais Disponíveis</span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                {selectedUf === 'TODOS' ? 'Brasil' : selectedUf}
-              </span>
-            </h4>
-            <p className="text-xs text-muted-foreground">
-              Abra a lista completa com salários detalhados, prazos de encerramento e todos os cargos.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              haptic.selection();
-              startTransition(() => navigate('/concursos'));
-            }}
-            className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs shadow-lg shadow-emerald-500/25 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 shrink-0"
-          >
-            <span>Ver todos em lista ({concursosFiltrados.length})</span>
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </section>
-
         {/* 4. CONFIGURAÇÃO DE NOTIFICAÇÕES COMPACTA NO RODAPÉ */}
         <section className="bg-card/70 border border-emerald-500/25 rounded-3xl p-4 sm:p-5 shadow-md space-y-3.5">
           <div className="flex items-center justify-between pb-2 border-b border-border/40">
             <div className="flex items-center gap-2">
               <Bell className="w-4 h-4 text-emerald-400" />
-              <h3 className="font-display font-bold text-sm text-foreground">
+              <h3 className="font-display font-bold text-sm text-foreground uppercase tracking-widest">
                 Alertas & Notificações Automáticas
               </h3>
+              <img src={horusAsset} alt="Hórus" className="w-5 h-5 ml-1 drop-shadow-md" />
             </div>
             <button
               type="button"
