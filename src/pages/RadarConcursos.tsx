@@ -27,7 +27,8 @@ import {
   Calculator,
   Landmark,
   HeartPulse,
-  BookOpen
+  BookOpen,
+  DollarSign
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -125,6 +126,7 @@ export default function RadarConcursos() {
   // Filtros em menu de suspensão
   const [selectedUf, setSelectedUf] = useState<string>('TODOS');
   const [selectedCarreira, setSelectedCarreira] = useState<string>('TODOS');
+  const [selectedSalario, setSelectedSalario] = useState<string>('TODOS');
   const [searchTerm, setSearchTerm] = useState('');
 
   // Notificações
@@ -249,7 +251,20 @@ export default function RadarConcursos() {
         if (!bateCargo) return false;
       }
 
-      // 3. Busca por texto livre
+      // 3. Filtro de Salário
+      if (selectedSalario !== 'TODOS') {
+        const wageStr = item.vagas_salario || '';
+        const match = wageStr.match(/R\$\s*([\d.]+),?/);
+        if (match) {
+          const val = parseFloat(match[1].replace(/\./g, ''));
+          const target = parseInt(selectedSalario, 10);
+          if (val < target) return false;
+        } else {
+           return false;
+        }
+      }
+
+      // 4. Busca por texto livre
       if (searchTerm.trim()) {
         const q = searchTerm.toLowerCase();
         const matchSearch =
@@ -262,7 +277,7 @@ export default function RadarConcursos() {
 
       return true;
     });
-  }, [concursos, selectedUf, selectedCarreira, searchTerm]);
+  }, [concursos, selectedUf, selectedCarreira, selectedSalario, searchTerm]);
 
   // Abertura de link externo segura
   const openExternalLink = async (url: string) => {
@@ -416,15 +431,15 @@ export default function RadarConcursos() {
 
         {/* 1.5. CARGOS EM ALTA (NEW) */}
         <section className="space-y-4">
-          <div className="flex items-center gap-2 px-4 mb-1">
-            <div className="w-1.5 h-5 bg-emerald-400 rounded-r-md -ml-4" />
-            <TrendingUp className="w-5 h-5 text-emerald-400 ml-1" />
-            <h2 className="font-display font-bold text-lg text-foreground uppercase tracking-wide">
+          <div className="flex items-center gap-2 px-1">
+            <span className="w-1.5 h-4 rounded-full bg-emerald-500" />
+            <h2 className="font-display text-foreground text-base sm:text-lg font-bold uppercase tracking-widest">
               Cargos em Alta
             </h2>
+            <TrendingUp className="w-4 h-4 text-emerald-400" />
           </div>
           
-          <div className="flex overflow-x-auto gap-3 px-4 pb-4 hide-scrollbar snap-x snap-mandatory">
+          <div className="flex overflow-x-auto gap-3 pb-4 hide-scrollbar snap-x snap-mandatory px-1 -mr-4 pr-4">
             {CARGOS_EM_ALTA.map(cargo => {
               const Icon = cargo.icon;
               return (
@@ -450,13 +465,13 @@ export default function RadarConcursos() {
           </div>
         </section>
 
-        {/* 2. FILTROS VIA MENU DE SUSPENSÃO (DROPDOWNS) */}
+        {/* 2. MEUS FILTROS */}
         <section className="bg-card/60 border border-border/60 rounded-3xl p-4 sm:p-5 shadow-sm space-y-4">
           <div className="flex items-center justify-between pb-1 border-b border-border/30">
             <div className="flex items-center gap-2">
-              <SlidersHorizontal className="w-4 h-4 text-emerald-400" />
-              <h3 className="font-display font-bold text-sm sm:text-base text-foreground">
-                Filtrar Oportunidades
+              <span className="w-1.5 h-4 rounded-full bg-emerald-500" />
+              <h3 className="font-display text-foreground text-base sm:text-lg font-bold uppercase tracking-widest">
+                Meus Filtros
               </h3>
             </div>
             <span className="text-xs text-muted-foreground">
@@ -464,48 +479,69 @@ export default function RadarConcursos() {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
             {/* Dropdown de Estado */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Estado de Interesse</span>
+              <label className="text-[10px] sm:text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span className="truncate">Estado</span>
               </label>
               <div className="relative">
                 <select
                   value={selectedUf}
                   onChange={e => { haptic.selection(); setSelectedUf(e.target.value); }}
-                  className="w-full appearance-none px-4 py-3 rounded-2xl bg-card border border-border/80 text-sm text-foreground font-medium focus:outline-none focus:border-emerald-500 transition-colors pr-10 cursor-pointer shadow-sm"
+                  className="w-full appearance-none px-3 py-2.5 rounded-xl bg-card border border-border/80 text-[11px] sm:text-sm text-foreground font-medium focus:outline-none focus:border-emerald-500 transition-colors pr-7 cursor-pointer shadow-sm truncate"
                 >
                   {UFS_LIST.map(uf => (
                     <option key={uf.value} value={uf.value} className="bg-zinc-900 text-white">
-                      {uf.label}
+                      {uf.value === 'TODOS' ? 'Todos' : uf.label}
                     </option>
                   ))}
                 </select>
-                <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
             </div>
 
             {/* Dropdown de Cargos / Carreiras */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
-                <Briefcase className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Cargo ou Carreira</span>
+              <label className="text-[10px] sm:text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+                <Briefcase className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span className="truncate">Carreira</span>
               </label>
               <div className="relative">
                 <select
                   value={selectedCarreira}
                   onChange={e => { haptic.selection(); setSelectedCarreira(e.target.value); }}
-                  className="w-full appearance-none px-4 py-3 rounded-2xl bg-card border border-border/80 text-sm text-foreground font-medium focus:outline-none focus:border-emerald-500 transition-colors pr-10 cursor-pointer shadow-sm"
+                  className="w-full appearance-none px-3 py-2.5 rounded-xl bg-card border border-border/80 text-[11px] sm:text-sm text-foreground font-medium focus:outline-none focus:border-emerald-500 transition-colors pr-7 cursor-pointer shadow-sm truncate"
                 >
                   {CARREIRAS_OPTIONS.map(carreira => (
                     <option key={carreira.value} value={carreira.value} className="bg-zinc-900 text-white">
-                      {carreira.label}
+                      {carreira.value === 'TODOS' ? 'Todas' : carreira.label.split(' ')[1]}
                     </option>
                   ))}
                 </select>
-                <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Dropdown de Salário */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] sm:text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+                <DollarSign className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span className="truncate">Salário</span>
+              </label>
+              <div className="relative">
+                <select
+                  value={selectedSalario}
+                  onChange={e => { haptic.selection(); setSelectedSalario(e.target.value); }}
+                  className="w-full appearance-none px-3 py-2.5 rounded-xl bg-card border border-border/80 text-[11px] sm:text-sm text-foreground font-medium focus:outline-none focus:border-emerald-500 transition-colors pr-7 cursor-pointer shadow-sm truncate"
+                >
+                  <option value="TODOS" className="bg-zinc-900 text-white">Todos</option>
+                  <option value="5000" className="bg-zinc-900 text-white">+ 5.000</option>
+                  <option value="10000" className="bg-zinc-900 text-white">+ 10.000</option>
+                  <option value="20000" className="bg-zinc-900 text-white">+ 20.000</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
             </div>
           </div>
