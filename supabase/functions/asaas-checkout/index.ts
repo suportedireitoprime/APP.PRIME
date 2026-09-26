@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
     
     let sub: any;
 
-    if (isVitalicio || isInstallment || (plan === 'anual' && isCreditCard)) {
+    if (isVitalicio || isInstallment) {
       // Cobrança avulsa / parcelada via /payments (sem recorrência anual para Vitalício)
       let baseValue = 199.90;
       if (plan === 'vitalicio_pix' || plan === 'anual_pix' || plan === 'promocao') {
