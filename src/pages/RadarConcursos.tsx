@@ -18,7 +18,16 @@ import {
   X,
   Share2,
   SlidersHorizontal,
-  ChevronDown
+  ChevronDown,
+  TrendingUp,
+  Shield,
+  ShieldAlert,
+  Scale,
+  FileText,
+  Calculator,
+  Landmark,
+  HeartPulse,
+  BookOpen
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -90,6 +99,17 @@ const CARREIRAS_OPTIONS = [
   { value: 'administrativo', label: '🏢 Administrativo & Gestão', termos: ['ADMINISTRATIVO', 'AUXILIAR', 'ASSISTENTE', 'ANALISTA', 'GESTÃO'] },
   { value: 'professores', label: '🎓 Educação & Professores', termos: ['PROFESSOR', 'PEDAGOGO', 'DOCENTE', 'EDUCADOR'] },
   { value: 'saude', label: '🩺 Saúde & Medicina', termos: ['MÉDICO', 'ENFERMEIRO', 'PSICÓLOGO', 'FARMACÊUTICO'] },
+];
+
+const CARGOS_EM_ALTA = [
+  { id: 'policial', titulo: 'Carreira Policial', icon: Shield, cor: 'bg-blue-500/10 text-blue-400 border-blue-500/20 shadow-blue-500/10' },
+  { id: 'delegado', titulo: 'Delegado de Polícia', icon: ShieldAlert, cor: 'bg-zinc-800 text-zinc-300 border-zinc-700 shadow-black/20' },
+  { id: 'juiz', titulo: 'Juiz de Direito', icon: Scale, cor: 'bg-amber-500/10 text-amber-400 border-amber-500/20 shadow-amber-500/10' },
+  { id: 'escrevente', titulo: 'Tribunais (TJ/TRT)', icon: FileText, cor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/10' },
+  { id: 'fiscal', titulo: 'Auditor Fiscal', icon: Calculator, cor: 'bg-purple-500/10 text-purple-400 border-purple-500/20 shadow-purple-500/10' },
+  { id: 'bancaria', titulo: 'Carreira Bancária', icon: Landmark, cor: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20 shadow-cyan-500/10' },
+  { id: 'saude', titulo: 'Área da Saúde', icon: HeartPulse, cor: 'bg-rose-500/10 text-rose-400 border-rose-500/20 shadow-rose-500/10' },
+  { id: 'educacao', titulo: 'Educação', icon: BookOpen, cor: 'bg-orange-500/10 text-orange-400 border-orange-500/20 shadow-orange-500/10' },
 ];
 
 export default function RadarConcursos() {
@@ -387,6 +407,37 @@ export default function RadarConcursos() {
                 Nenhum edital encontrado para os filtros selecionados.
               </div>
             )}
+          </div>
+        </section>
+
+        {/* 1.5. CARGOS EM ALTA (NEW) */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2 px-4">
+            <TrendingUp className="w-5 h-5 text-emerald-400" />
+            <h2 className="font-display font-bold text-lg text-foreground uppercase tracking-wide">
+              Cargos em Alta
+            </h2>
+          </div>
+          
+          <div className="flex overflow-x-auto gap-3 px-4 pb-4 hide-scrollbar snap-x snap-mandatory">
+            {CARGOS_EM_ALTA.map(cargo => {
+              const Icon = cargo.icon;
+              return (
+                <div
+                  key={cargo.id}
+                  onClick={() => {
+                    haptic.selection();
+                    startTransition(() => navigate('/concursos', { state: { preFiltroCargo: cargo.id } }));
+                  }}
+                  className={`flex flex-col items-center justify-center gap-2 min-w-[110px] w-[110px] sm:min-w-[120px] sm:w-[120px] h-[100px] shrink-0 snap-start rounded-2xl border ${cargo.cor} shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer`}
+                >
+                  <Icon className="w-7 h-7" strokeWidth={1.5} />
+                  <span className="text-[11px] font-bold text-center leading-tight px-1">
+                    {cargo.titulo}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </section>
 

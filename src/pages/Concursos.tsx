@@ -157,6 +157,9 @@ const Concursos = () => {
 
   // Removido useEffect que forçava uma data específica, para que a tela inicie exibindo TODOS os concursos (dataFiltro = '').
 
+  const location = useLocation();
+  const preFiltroCargo = (location.state as any)?.preFiltroCargo as string | undefined;
+
   const dateFiltered = useMemo(() => {
     return !dataFiltro
       ? concursos
@@ -175,8 +178,28 @@ const Concursos = () => {
   const finalFiltered = useMemo(() => {
     let filtered = dateFiltered;
 
+    // Apply strict "pill" filter if not "Todos"
     if (cargoFiltro !== 'Todos') {
       filtered = filtered.filter(n => extractCargo(n).toUpperCase() === cargoFiltro);
+    }
+
+    // Apply generic category filter from RadarConcursos if present
+    if (preFiltroCargo) {
+      const term = preFiltroCargo.toLowerCase();
+      filtered = filtered.filter(n => {
+        const textToSearch = `${n.titulo} ${n.cargos_resumo || ''} ${(n.cargos || []).join(' ')}`.toLowerCase();
+        
+        if (term === 'policial') return textToSearch.includes('polícia') || textToSearch.includes('policial') || textToSearch.includes('pm') || textToSearch.includes('pc') || textToSearch.includes('bombeiro');
+        if (term === 'delegado') return textToSearch.includes('delegado');
+        if (term === 'juiz') return textToSearch.includes('juiz') || textToSearch.includes('magistratura');
+        if (term === 'escrevente') return textToSearch.includes('escrevente') || textToSearch.includes('tribunal') || textToSearch.includes('tj') || textToSearch.includes('trt') || textToSearch.includes('trf');
+        if (term === 'fiscal') return textToSearch.includes('auditor') || textToSearch.includes('fiscal') || textToSearch.includes('receita');
+        if (term === 'bancaria') return textToSearch.includes('banco') || textToSearch.includes('caixa') || textToSearch.includes('escriturário');
+        if (term === 'saude') return textToSearch.includes('médico') || textToSearch.includes('enfermeiro') || textToSearch.includes('saúde') || textToSearch.includes('fisioterapeuta') || textToSearch.includes('psicólogo');
+        if (term === 'educacao') return textToSearch.includes('professor') || textToSearch.includes('educação') || textToSearch.includes('pedagogo') || textToSearch.includes('docente');
+
+        return textToSearch.includes(term);
+      });
     }
 
     return [...filtered].sort((a, b) => {
@@ -184,7 +207,7 @@ const Concursos = () => {
       if (dateDiff !== 0) return dateDiff;
       return b.id.localeCompare(a.id);
     });
-  }, [dateFiltered, cargoFiltro]);
+  }, [dateFiltered, cargoFiltro, preFiltroCargo]);
 
   // Adjust dayList to ensure it includes the most recent date with data if it's within 5 days,
   // or just center it around today as before.
