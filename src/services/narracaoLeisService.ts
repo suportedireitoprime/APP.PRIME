@@ -679,8 +679,9 @@ export async function gerarNarracaoArtigoFatiada(
       duracaoParteSegundos = Math.max(1, Math.round((pcmLen / 48000) * 10) / 10);
       rawAudioBytes.push(new Uint8Array(arrayBuf));
 
-      const safeNum = String(artigo.numero).replace(/[^a-zA-Z0-9]/g, '_');
-      const storagePath = `narracoes/${tabelaNome}/fatiado/${safeNum}_${parte.id}.wav`;
+      const safeNum = String(artigo.numero).replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_');
+      const safeParteId = String(parte.id).replace(/[^a-zA-Z0-9_]/g, '').replace(/_+/g, '_');
+      const storagePath = `narracoes/${tabelaNome}/fatiado/${safeNum}_${safeParteId}.wav`;
 
       const { error: upErr } = await supabase.storage
         .from('audios')
@@ -723,8 +724,8 @@ export async function gerarNarracaoArtigoFatiada(
   if (rawAudioBytes.length > 1) {
     try {
       const wavUnificado = concatenarWavs(rawAudioBytes);
-      const safeNum = String(artigo.numero).replace(/[^a-zA-Z0-9]/g, '_');
-      const storagePathUnificado = `narracoes/${tabelaNome}/fatiado/${safeNum}_art_${safeNum}_completo.wav`;
+      const safeNum = String(artigo.numero).replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_');
+      const storagePathUnificado = `narracoes/${tabelaNome}/fatiado/${safeNum}_completo.wav`;
       const blobUnificado = new Blob([wavUnificado.buffer as ArrayBuffer], { type: 'audio/wav' });
 
       const { error: upErr } = await supabase.storage
