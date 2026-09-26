@@ -338,8 +338,15 @@ export default function RadarConcursos() {
                     haptic.selection();
                     setSelectedEdital(conc);
                   }}
-                  className="w-[240px] h-[210px] sm:w-[270px] sm:h-[220px] shrink-0 snap-start relative overflow-hidden rounded-2xl cursor-pointer active:scale-[0.98] transition-transform flex flex-col bg-card/60 hover:bg-card border border-white/10 group shadow-lg p-4 sm:p-5"
+                  className="w-[240px] h-[210px] sm:w-[270px] sm:h-[220px] shrink-0 snap-start relative overflow-hidden rounded-2xl cursor-pointer active:scale-[0.98] transition-transform flex flex-col bg-card/60 hover:bg-card border border-white/10 group shadow-lg px-4 pb-4 pt-10 sm:px-5 sm:pb-5 sm:pt-11"
                 >
+                  {/* Listra de Cargo no Topo */}
+                  <div className="absolute top-0 left-0 w-full bg-emerald-500/10 border-b border-emerald-500/20 py-1.5 px-3 z-30 flex items-center justify-center backdrop-blur-sm">
+                    <span className="text-[9px] sm:text-[10px] font-bold text-emerald-400 uppercase tracking-widest truncate w-full text-center">
+                      {conc.cargos_resumo || (conc.cargos && conc.cargos.length > 0 ? conc.cargos[0] : (conc.titulo.match(/(?:para|cargo(?:s)? de|função de)\s+(.+?)(?:\s*-|\s*$)/i)?.[1] || "Vários Cargos"))}
+                    </span>
+                  </div>
+
                   <div className="flex items-start justify-between w-full mb-auto z-20">
                      <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center p-1.5 shrink-0 shadow-md border border-border/50">
                         <img
