@@ -944,11 +944,7 @@ function AnimatedRoutes() {
     trackPageview(location.pathname + location.search);
     markRouteChange(location.pathname + location.search);
     prefetchNearby(location.pathname);
-    // Item 7: Cancela queries ativas da rota anterior para liberar banda e acelerar nova tela
-    try {
-      qc.cancelQueries({ fetchStatus: 'fetching' });
-    } catch {}
-  }, [location.pathname, location.search, location.hash, qc]);
+  }, [location.pathname, location.search, location.hash]);
 
   // Hidrata o cache das Videoaulas (IndexedDB → memória) logo no boot, em idle:
   // ao entrar na área, a lista já pinta sem skeleton nem rede.
