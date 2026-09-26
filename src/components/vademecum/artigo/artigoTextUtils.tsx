@@ -24,6 +24,23 @@ export function getWordTokens(text: string): string[] {
   return Array.from(text.matchAll(/[\p{L}\p{N}]+(?:[-–][\p{L}\p{N}]+)*/gu), match => match[0]);
 }
 
+function isMatchNarracao(amostraWord: string, tToken: string) {
+  if (!amostraWord || !tToken) return false;
+  if (amostraWord === tToken) return true;
+  if (amostraWord === 'art' && tToken === 'artigo') return true;
+  if (amostraWord === '1' && (tToken === 'primeiro' || tToken === 'um')) return true;
+  if (amostraWord === '2' && (tToken === 'segundo' || tToken === 'dois')) return true;
+  if (amostraWord === '3' && (tToken === 'terceiro' || tToken === 'tres')) return true;
+  if (amostraWord === '4' && (tToken === 'quarto' || tToken === 'quatro')) return true;
+  if (amostraWord === '5' && (tToken === 'quinto' || tToken === 'cinco')) return true;
+  if (amostraWord === '6' && (tToken === 'sexto' || tToken === 'seis')) return true;
+  if (amostraWord === '7' && (tToken === 'setimo' || tToken === 'sete')) return true;
+  if (amostraWord === '8' && (tToken === 'oitavo' || tToken === 'oito')) return true;
+  if (amostraWord === '9' && (tToken === 'nono' || tToken === 'nove')) return true;
+  if (amostraWord === '10' && (tToken === 'decimo' || tToken === 'dez')) return true;
+  return false;
+}
+
 /**
  * Alinha os word_timings da narração (que incluem prefixo falado e números por extenso)
  * com as palavras realmente exibidas, devolvendo um timing por palavra renderizada.
@@ -40,18 +57,24 @@ export function alinharTimingsComTexto(
   const tTokens = safeTimings.map(t => normalizeNarracaoToken(t.word));
 
   // Descobre onde o texto do artigo começa dentro da fala (após o prefixo)
-  const amostraBruta = renderedTokens.slice(0, Math.min(8, renderedTokens.length));
-  const amostra = amostraBruta.map(t => normalizeNarracaoToken(t));
+  const amostraBruta = renderedTokens.slice(0, Math.min(12, renderedTokens.length));
+  const amostra = amostraBruta.map(t => normalizeNarracaoToken(t)).filter(t => t.length > 0);
+  
   let melhorInicio = -1;
   let melhorScore = 0;
+  
   for (let i = 0; i < tTokens.length; i++) {
-    if (tTokens[i] !== amostra[0]) continue;
+    if (!amostra.length || !isMatchNarracao(amostra[0], tTokens[i])) continue;
     let score = 0;
     let j = i;
     for (let k = 0; k < amostra.length && j < tTokens.length; k++) {
       const janela = Math.min(tTokens.length, j + 4);
       for (let p = j; p < janela; p++) {
-        if (tTokens[p] === amostra[k]) { score++; j = p + 1; break; }
+        if (isMatchNarracao(amostra[k], tTokens[p])) { 
+          score++; 
+          j = p + 1; 
+          break; 
+        }
       }
     }
     if (score > melhorScore) { melhorScore = score; melhorInicio = i; }
@@ -64,9 +87,10 @@ export function alinharTimingsComTexto(
   let cursor = melhorInicio;
   for (let i = 0; i < renderedTokens.length; i++) {
     const alvo = normalizeNarracaoToken(renderedTokens[i]);
+    if (!alvo) continue;
     const limite = Math.min(tTokens.length, cursor + 6);
     for (let p = cursor; p < limite; p++) {
-      if (tTokens[p] === alvo) {
+      if (isMatchNarracao(alvo, tTokens[p])) {
         mapeado[i] = { start: timings[p].start, end: timings[p].end };
         cursor = p + 1;
         break;
