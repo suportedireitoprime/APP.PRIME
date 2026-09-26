@@ -177,3 +177,32 @@ export async function prefetchNextArticleAudio(
     // Silencioso: prefetch não pode interromper fluxo
   }
 }
+
+/**
+ * Remove um áudio específico do IndexedDB e do sistema de arquivos nativo.
+ */
+export async function deleteCachedAudio(key: string): Promise<void> {
+  try {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const { Filesystem, Directory } = await import('@capacitor/filesystem');
+        await Filesystem.deleteFile({ path: `aud_${btoa(key).replace(/=/g, '')}.txt`, directory: Directory.Data });
+      } catch {}
+    }
+    await del(key, audioStore);
+  } catch (err) {
+    console.warn('[audioOfflineCache] Falha ao remover áudio do IndexedDB:', err);
+  }
+}
+
+/**
+ * Remove todas as variações de chaves de cache para um artigo e tabela.
+ */
+export async function deleteCachedAudioVariantes(aliasesTabela: string[], variantesNum: string[]): Promise<void> {
+  for (const t of aliasesTabela) {
+    for (const v of variantesNum) {
+      const key = buildAudioCacheKey(t, v);
+      await deleteCachedAudio(key);
+    }
+  }
+}

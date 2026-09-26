@@ -210,13 +210,13 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
   return (
     <section className="space-y-3">
       {/* Cabeçalho "EM ALTA" */}
-      <div className="px-1 flex items-start justify-between gap-3">
-        <div>
-          <h3 className="font-display text-foreground text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
-            <span className="w-1 h-5 rounded-full bg-primary" />
-            EM ALTA
+      <div className="flex items-center justify-between gap-2 px-1">
+        <div className="min-w-0 flex-1">
+          <h3 className="font-display text-foreground text-[17px] sm:text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
+            <span className="w-1 h-5 rounded-full bg-primary shrink-0" />
+            <span className="truncate">EM ALTA</span>
           </h3>
-          <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3 truncate">
+          <p className="font-body text-muted-foreground text-[12px] sm:text-[12.5px] leading-snug ml-3 truncate">
             As leis e normas mais acessadas no momento
           </p>
         </div>
@@ -225,10 +225,10 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
             haptic.selection();
             setIsCustomizerOpen(true);
           }}
-          className="mr-2 sm:mr-3.5 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-300 hover:text-red-100 transition-all text-xs font-semibold shadow-sm shadow-red-950/20 active:scale-95 touch-manipulation"
+          className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-300 hover:text-red-100 transition-all text-xs font-semibold shadow-sm shadow-red-950/20 active:scale-95 touch-manipulation cursor-pointer"
         >
           <Settings2 className="w-3.5 h-3.5 text-red-400" />
-          Personalizar
+          <span>Personalizar</span>
         </button>
       </div>
 

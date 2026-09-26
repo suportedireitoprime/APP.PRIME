@@ -11,6 +11,7 @@ import {
   type ArtigoEstruturado,
 } from '@/utils/artigoPartesParser';
 import { obterAliasesTabela, obterVariantesArtigoNumero } from '@/utils/narracaoLookup';
+import { deleteCachedAudioVariantes } from '@/services/audioOfflineCache';
 import type { ArtigoLei } from '@/data/mockData';
 
 export interface VozTTS {
@@ -307,11 +308,38 @@ export async function apagarPreviaAudio(id: string, storagePath?: string): Promi
 /**
  * Apaga a narração de um artigo da tabela narracoes_artigos e remove todos os áudios do Storage.
  */
+/**
+ * Apaga a narração de um artigo da tabela narracoes_artigos, remove os áudios do Storage
+ * e invalida todo o cache local offline (IndexedDB) para garantir que áudios antigos nunca voltem a tocar.
+ */
 export async function apagarNarracaoArtigo(tabelaNome: string, artigoNumero: string): Promise<void> {
   const aliasesTabela = obterAliasesTabela(tabelaNome);
   const variantes = obterVariantesArtigoNumero(artigoNumero);
 
-  // 1. Busca os registros no banco para extrair todos os links de áudio salvos
+  // 1. Limpa o cache persistente local (IndexedDB) de todas as variantes imediatamente
+  await deleteCachedAudioVariantes(aliasesTabela, variantes);
+
+  // 2. Invoca a Edge Function narracao (com service_role) para exclusão segura no DB e Storage
+  try {
+    const { data: edgeRes, error: edgeErr } = await supabase.functions.invoke('narracao', {
+      body: {
+        fn: 'apagar_narracao',
+        tabela_nome: tabelaNome,
+        artigo_numero: artigoNumero,
+      },
+    });
+
+    if (!edgeErr && edgeRes?.success) {
+      return;
+    }
+    if (edgeErr) {
+      console.warn('[apagarNarracaoArtigo] Edge function avisou:', edgeErr);
+    }
+  } catch (invErr) {
+    console.warn('[apagarNarracaoArtigo] Falha ao invocar edge function:', invErr);
+  }
+
+  // 3. Fallback direto no cliente (caso a Edge function oscile)
   const { data: rows } = await supabase
     .from('narracoes_artigos')
     .select('audio_url, word_timings')
@@ -325,8 +353,8 @@ export async function apagarNarracaoArtigo(tabelaNome: string, artigoNumero: str
       const match = row.audio_url.match(/\/audios\/([^?]+)/);
       if (match?.[1]) storagePaths.push(decodeURIComponent(match[1]));
     }
-    if (row?.word_timings && typeof row.word_timings === 'object' && Array.isArray((row.word_timings as any).partes)) {
-      const partes = (row.word_timings as any).partes as ArtigoParte[];
+    if (row?.word_timings && typeof row.word_timings === 'object' && Array.isArray(row.word_timings.partes)) {
+      const partes = row.word_timings.partes;
       for (const p of partes) {
         if (p.audioUrl && p.audioUrl.includes('/audios/')) {
           const match = p.audioUrl.match(/\/audios\/([^?]+)/);
@@ -339,7 +367,6 @@ export async function apagarNarracaoArtigo(tabelaNome: string, artigoNumero: str
   const numLimpo = String(artigoNumero).replace(/^[Aa]rt\.?\s*/i, '').trim();
   const numDigitos = numLimpo.replace(/\D/g, '');
 
-  // Adiciona também caminhos convencionais para limpeza profunda
   const safeNums = Array.from(new Set([
     numLimpo.replace(/[^a-zA-Z0-9]/g, '_'),
     numDigitos,
@@ -365,7 +392,7 @@ export async function apagarNarracaoArtigo(tabelaNome: string, artigoNumero: str
     }
   }
 
-  // 2. Remove todos os registros deste artigo da tabela narracoes_artigos
+  // Deleta da tabela narracoes_artigos
   const { error } = await supabase
     .from('narracoes_artigos')
     .delete()
@@ -373,7 +400,7 @@ export async function apagarNarracaoArtigo(tabelaNome: string, artigoNumero: str
     .in('artigo_numero', variantes);
 
   if (error) {
-    throw new Error(error.message || 'Falha ao excluir narração do banco');
+    console.warn('[apagarNarracaoArtigo] Aviso ao deletar narracoes_artigos:', error);
   }
 }
 
@@ -508,26 +535,37 @@ export async function gerarNarracaoArtigoFatiada(
 
     for (let tentativa = 0; tentativa < MAX_RETRIES; tentativa++) {
       if (tentativa > 0) {
-        const delayMs = 3000 * Math.pow(2, tentativa - 1);
+        const delayMs = 2500 * Math.pow(2, tentativa - 1);
         await new Promise((r) => setTimeout(r, delayMs));
       }
 
-      const res = await supabase.functions.invoke('narracao', {
-        body: {
-          fn: 'blog_preview',
-          texto: parte.textoTTS.slice(0, 1500),
-          voz,
-          estilo,
-        },
-      });
+      try {
+        const timeoutPromise = new Promise<{ error: { message: string }; data: null }>((resolve) =>
+          setTimeout(() => resolve({ error: { message: 'Timeout na síntese de voz (45s)' }, data: null }), 45000)
+        );
 
-      if (!res.error && res.data?.audio_data_url) {
-        data = res.data;
-        lastError = null;
-        break;
+        const res = await Promise.race([
+          supabase.functions.invoke('narracao', {
+            body: {
+              fn: 'blog_preview',
+              texto: parte.textoTTS.slice(0, 1500),
+              voz,
+              estilo,
+            },
+          }),
+          timeoutPromise,
+        ]);
+
+        if (!res.error && res.data?.audio_data_url) {
+          data = res.data;
+          lastError = null;
+          break;
+        }
+
+        lastError = res.error?.message || res.data?.error || 'Sem áudio gerado';
+      } catch (callErr: unknown) {
+        lastError = callErr instanceof Error ? callErr.message : String(callErr);
       }
-
-      lastError = res.error?.message || res.data?.error || 'Sem áudio gerado';
       console.warn(`[gerarNarracaoArtigoFatiada] Tentativa ${tentativa + 1}/${MAX_RETRIES} falhou para ${parte.rotulo}: ${lastError}`);
     }
 
@@ -637,6 +675,29 @@ export async function gerarNarracaoArtigoFatiada(
 
   if (dbErr) {
     console.warn('[gerarNarracaoArtigoFatiada] Aviso ao salvar narracoes_artigos:', dbErr);
+  }
+
+  // Limpa cache offline antigo no IndexedDB para que o Vade Mecum use o áudio recém-gerado imediatamente
+  await deleteCachedAudioVariantes(tabs, numsVariantes);
+
+  // Sincroniza narracao_url na base unificada vade_mecum_artigos
+  try {
+    const { data: leis } = await supabase
+      .from('vade_mecum_leis')
+      .select('id')
+      .in('slug', aliasesTabela)
+      .limit(2);
+
+    if (leis && leis.length > 0) {
+      const leiIds = leis.map((l: { id: string }) => l.id);
+      await supabase
+        .from('vade_mecum_artigos')
+        .update({ narracao_url: audioPrincipal })
+        .in('lei_id', leiIds)
+        .in('numero', numsVariantes);
+    }
+  } catch (vmErr) {
+    console.warn('[gerarNarracaoArtigoFatiada] Aviso ao sincronizar vade_mecum_artigos:', vmErr);
   }
 
   return {

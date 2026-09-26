@@ -17,6 +17,8 @@ export interface ArtigoLei {
   incisos?: string[];
   capitulo?: string;
   titulo?: string;
+  parte?: string;
+  livro?: string;
   /** Sort order from DB. Values > 10000 indicate ADCT / Disposições Transitórias in CF88. */
   ordem?: number;
 }

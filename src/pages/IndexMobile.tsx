@@ -116,8 +116,8 @@ const IndexMobile = () => {
           speed={0.5} 
           squareSize={40}
           direction='diagonal'
-          borderColor='rgba(255, 255, 255, 0.05)'
-          hoverFillColor='rgba(255, 255, 255, 0.1)'
+          borderColor='rgba(255, 255, 255, 0.08)'
+          hoverFillColor='rgba(255, 255, 255, 0.12)'
           shape='square'
           hoverTrailAmount={5}
         />

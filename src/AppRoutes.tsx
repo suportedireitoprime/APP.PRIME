@@ -1382,7 +1382,8 @@ function AnimatedRoutes() {
           <Route path="/tres-poderes/:poderId/portais" element={<ProtectedRoute><PageTransition><PortaisPoder /></PageTransition></ProtectedRoute>} />
           <Route path="/tres-poderes/stf/podcast/:videoId" element={<PageTransition><PodcastPlayer /></PageTransition>} />
           <Route path="/tres-poderes/stf/podcasts" element={<PageTransition><PodcastsLista /></PageTransition>} />
-          <Route path="/tres-poderes/:id" element={<PageTransition><PoderDetalhe /></PageTransition>} />
+          <Route path="/notificacoes" element={<Navigate to="/?notificacoes=1" replace />} />
+          <Route path="/meus-lembretes" element={<Navigate to="/?notificacoes=1" replace />} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
 
           </Routes>

@@ -62,6 +62,9 @@ const ROMANOS_ORDINAIS: Record<string, string> = {
 const ORDINAIS_UNIDADES = ['', 'primeiro', 'segundo', 'terceiro', 'quarto', 'quinto', 'sexto', 'sétimo', 'oitavo', 'nono'];
 const ORDINAIS_DEZENAS = ['', '', 'vigésimo', 'trigésimo', 'quadragésimo', 'quinquagésimo', 'sexagésimo', 'septuagésimo', 'octogésimo', 'nonagésimo'];
 
+/** Regex seguro que remove prefixos como "Art. 1º -", "Art. 121.", "Art. 1º-A." sem engolir a primeira letra do caput */
+const REGEX_PREFIXO_ARTIGO = /^\s*(?:Artigo|Art)\.?\s*\d+[º°]?(?:\s*[-–—]\s*[A-Za-z](?![a-zA-Záéíóúãõâêîôûàèìòù]))?\s*[.\-–—:]?\s*/i;
+
 export function numeroParaOrdinal(n: number): string {
   if (n <= 0) return String(n);
   if (n === 10) return 'décimo';
@@ -114,79 +117,138 @@ export function limparAnotacoesEditoriais(texto: string): string {
 
 /**
  * Converte o nome da lei em uma pronúncia formal limpa para início da narração.
- * Exemplo explícito: Código Penal -> "Direito Penal".
+ * Exemplo explícito: Código Penal -> "Código Penal".
  */
 export function formatarNomeLeiParaTTS(leiNome?: string, tabelaNome?: string): string {
   const base = (leiNome || '').trim();
   const tab = (tabelaNome || '').trim();
 
-  // Código Penal -> "Direito Penal" (solicitado explicitamente pelo usuário)
-  if (/^CP_CODIGO_PENAL$/i.test(tab) || /c[oó]digo\s*penal/i.test(base) || /c[oó]digo\s*penal/i.test(tab) || /^cp$/i.test(base) || /^direito\s*penal$/i.test(base)) {
-    return 'Direito Penal';
+  // Código Penal -> "Código Penal" (conforme solicitado explicitamente pelo usuário)
+  if (/^CP_CODIGO_PENAL$/i.test(tab) || /c[oó]digo\s*penal/i.test(base) || /c[oó]digo\s*penal/i.test(tab) || /^cp$/i.test(base)) {
+    return 'Código Penal';
   }
   if (/^CC_CODIGO_CIVIL$/i.test(tab) || /c[oó]digo\s*civil/i.test(base) || /^cc$/i.test(base)) {
-    return 'Direito Civil';
+    return 'Código Civil';
   }
   if (/^CPP_CODIGO_PROCESSO_PENAL$/i.test(tab) || /processo\s*penal/i.test(base) || /^cpp$/i.test(base)) {
-    return 'Direito Processual Penal';
+    return 'Código de Processo Penal';
   }
   if (/^CPC_CODIGO_PROCESSO_CIVIL$/i.test(tab) || /processo\s*civil/i.test(base) || /^cpc$/i.test(base)) {
-    return 'Direito Processual Civil';
+    return 'Código de Processo Civil';
   }
   if (/^CF88_CONSTITUICAO_FEDERAL$/i.test(tab) || /constitui[çc][ãa]o/i.test(base) || /^cf/i.test(base)) {
-    return 'Direito Constitucional, Constituição Federal';
+    return 'Constituição Federal';
   }
   if (/^CLT/i.test(tab) || /trabalho|clt/i.test(base)) {
-    return 'Direito do Trabalho, CLT';
+    return 'Consolidação das Leis do Trabalho, CLT';
   }
   if (/tribut[aá]rio/i.test(base) || /tributario/i.test(tab)) {
-    return 'Direito Tributário';
+    return 'Código Tributário Nacional';
   }
   if (/consumidor/i.test(base) || /consumidor/i.test(tab)) {
-    return 'Direito do Consumidor';
+    return 'Código de Defesa do Consumidor';
   }
   return base || tab.replace(/_/g, ' ');
 }
 
 /**
- * Converte capítulo / título em fala fonética jurídica.
+ * Capitaliza títulos em caixa alta jurídica mantendo conectivos e numerais romanos.
  */
-export function formatarContextoEstruturalParaTTS(capitulo?: string, titulo?: string): string {
+function capitalizarTituloJuridico(str: string): string {
+  const s = str.trim();
+  if (s === s.toUpperCase()) {
+    const lowerWords = new Set(['a', 'o', 'as', 'os', 'de', 'do', 'da', 'dos', 'das', 'em', 'no', 'na', 'nos', 'nas', 'e', 'ou', 'por', 'para', 'com', 'sem']);
+    return s.toLowerCase().split(/\s+/).map((word, idx) => {
+      if (/^[ivxlcdm]+$/i.test(word)) return word.toUpperCase();
+      if (idx > 0 && lowerWords.has(word)) return word;
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(' ');
+  }
+  return s;
+}
+
+/**
+ * Converte capítulo / título / parte em fala fonética jurídica.
+ */
+export function formatarContextoEstruturalParaTTS(
+  capitulo?: string,
+  titulo?: string,
+  parte?: string,
+  livro?: string
+): string {
   const partes: string[] = [];
 
-  const normalizarRomano = (match: string, rom: string) => {
-    const ord = ROMANOS_ORDINAIS[rom.toUpperCase()];
-    return ord ? ord : rom;
-  };
+  // 1. Parte (ex: "Parte Geral")
+  if (parte && parte.trim()) {
+    let p = limparAnotacoesEditoriais(parte).trim();
+    if (/^PARTE\s+(GERAL|ESPECIAL|[IVXLCDM0-9]+)/i.test(p)) {
+      p = p.replace(/^PARTE\s+([A-Za-z0-9]+)/i, (_m, sub) => {
+        const subLow = sub.toLowerCase();
+        if (subLow === 'geral') return 'Parte Geral';
+        if (subLow === 'especial') return 'Parte Especial';
+        const ord = ROMANOS_ORDINAIS[sub.toUpperCase()] || sub;
+        return `Parte ${ord}`;
+      });
+    }
+    if (p) partes.push(p);
+  }
 
+  // 2. Livro (ex: "Livro I")
+  if (livro && livro.trim()) {
+    let l = limparAnotacoesEditoriais(livro).trim();
+    if (/^LIVRO\s+([IVXLCDM]+)/i.test(l)) {
+      l = l.replace(/^LIVRO\s+([IVXLCDM]+)\s*[-–—:]?\s*(.*)$/i, (_m, rom, resto) => {
+        const ord = ROMANOS_ORDINAIS[rom.toUpperCase()] || rom;
+        const restoFmt = resto ? capitalizarTituloJuridico(resto) : '';
+        return restoFmt ? `Livro ${ord}, ${restoFmt}` : `Livro ${ord}`;
+      });
+    }
+    if (l) partes.push(l);
+  }
+
+  // 3. Título (ex: "Título I - Da Aplicação da Lei Penal")
   if (titulo && titulo.trim()) {
     let t = limparAnotacoesEditoriais(titulo).trim();
+    if (/^PARTE\s+(GERAL|ESPECIAL)/i.test(t) && !parte) {
+      const matchParte = t.match(/^PARTE\s+(GERAL|ESPECIAL)\s*(?:[•–—\-:]\s*)?(.*)$/i);
+      if (matchParte) {
+        const parteNome = matchParte[1].toLowerCase() === 'geral' ? 'Parte Geral' : 'Parte Especial';
+        partes.push(parteNome);
+        t = (matchParte[2] || '').trim();
+      }
+    }
     if (/^T[ÍI]TULO\s+([IVXLCDM]+)/i.test(t)) {
-      t = t.replace(/^T[ÍI]TULO\s+([IVXLCDM]+)\s*[-–—:]?\s*/i, (_m, rom) => {
+      t = t.replace(/^T[ÍI]TULO\s+([IVXLCDM]+)\s*[-–—:]?\s*(.*)$/i, (_m, rom, resto) => {
         const ord = ROMANOS_ORDINAIS[rom.toUpperCase()] || rom;
-        return `Título ${ord}: `;
+        const restoFmt = resto ? capitalizarTituloJuridico(resto) : '';
+        return restoFmt ? `Título ${ord}, ${restoFmt}` : `Título ${ord}`;
       });
     } else if (/^PARTE\s+(GERAL|ESPECIAL)/i.test(t)) {
-      t = t.replace(/^PARTE\s+(GERAL|ESPECIAL)\s*[-–—:]?\s*/i, 'Parte $1: ');
+      t = t.replace(/^PARTE\s+(GERAL|ESPECIAL)\s*[-–—:]?\s*/i, 'Parte $1, ');
     }
     if (t) partes.push(t);
   }
 
+  // 4. Capítulo (ex: "Capítulo I - Da Tentativa")
   if (capitulo && capitulo.trim()) {
     let c = limparAnotacoesEditoriais(capitulo).trim();
     if (/^CAP[ÍI]TULO\s+([IVXLCDM]+)/i.test(c)) {
-      c = c.replace(/^CAP[ÍI]TULO\s+([IVXLCDM]+)\s*[-–—:]?\s*/i, (_m, rom) => {
+      c = c.replace(/^CAP[ÍI]TULO\s+([IVXLCDM]+)\s*[-–—:]?\s*(.*)$/i, (_m, rom, resto) => {
         const ord = ROMANOS_ORDINAIS[rom.toUpperCase()] || rom;
-        return `Capítulo ${ord}: `;
+        const restoFmt = resto ? capitalizarTituloJuridico(resto) : '';
+        return restoFmt ? `Capítulo ${ord}, ${restoFmt}` : `Capítulo ${ord}`;
       });
     } else if (/^CAP[ÍI]TULO\s+[ÚU]NICO/i.test(c)) {
-      c = c.replace(/^CAP[ÍI]TULO\s+[ÚU]NICO\s*[-–—:]?\s*/i, 'Capítulo único: ');
+      c = c.replace(/^CAP[ÍI]TULO\s+[ÚU]NICO\s*[-–—:]?\s*(.*)$/i, (_m, resto) => {
+        const restoFmt = resto ? capitalizarTituloJuridico(resto) : '';
+        return restoFmt ? `Capítulo único, ${restoFmt}` : 'Capítulo único';
+      });
     }
     if (c) partes.push(c);
   }
 
   if (partes.length === 0) return '';
-  return partes.join('. ').replace(/\.\s*\./g, '.').trim();
+  return partes.join(', ').replace(/,\s*,/g, ',').replace(/\.\s*\./g, '.').trim();
 }
 
 /**
@@ -216,7 +278,7 @@ export function normalizarParteParaTTS(blocoTexto: string, rotulo?: string, nume
   let r = limparAnotacoesEditoriais(blocoTexto);
 
   if (rotulo && rotulo.toLowerCase().includes('caput') && numeroArtigo) {
-    const limpoSemArt = r.replace(/^\s*(?:Artigo|Art)\.?\s*\d+[º°]?(?:\s*[-–—]\s*[A-Za-z])?\s*[.\-–—:]?\s*/i, '').trim();
+    const limpoSemArt = r.replace(REGEX_PREFIXO_ARTIGO, '').trim();
     const artFalado = formatarNumeroArtigoParaTTS(numeroArtigo);
     r = `${artFalado}. ${limpoSemArt}`;
   }
@@ -279,12 +341,21 @@ export function parseArtigoEmNarracaoContinua(
 
   // 1. Monta os elementos da introdução
   const nomeLeiFalado = formatarNomeLeiParaTTS(opcoes?.leiNome, opcoes?.tabelaNome);
-  const contextoEstruturalFalado = formatarContextoEstruturalParaTTS(artigo.capitulo, artigo.titulo);
+  const contextoEstruturalFalado = formatarContextoEstruturalParaTTS(
+    artigo.capitulo,
+    artigo.titulo,
+    artigo.parte,
+    artigo.livro
+  );
   const prefixoArtigoFalado = formatarNumeroArtigoParaTTS(artigo.numero);
 
   let introTTS = '';
-  if (nomeLeiFalado) introTTS += `${nomeLeiFalado}. `;
-  if (contextoEstruturalFalado) introTTS += `${contextoEstruturalFalado}. `;
+  if (nomeLeiFalado) introTTS += `${nomeLeiFalado}`;
+  if (contextoEstruturalFalado) {
+    introTTS += introTTS ? `, ${contextoEstruturalFalado}. ` : `${contextoEstruturalFalado}. `;
+  } else if (introTTS) {
+    introTTS += '. ';
+  }
   introTTS += `${prefixoArtigoFalado}: `;
 
   // 2. Extrai os blocos textuais ordenados do artigo
@@ -302,7 +373,7 @@ export function parseArtigoEmNarracaoContinua(
   if (linhasCaput.length <= 1 && hasSeparatedFields) {
     // Caput
     const caputLimpo = limparAnotacoesEditoriais(rawCaput);
-    const caputSemPrefixo = caputLimpo.replace(/^\s*(?:Artigo|Art)\.?\s*\d+[º°]?(?:\s*[-–—]\s*[A-Za-z])?\s*[.\-–—:]?\s*/i, '').trim();
+    const caputSemPrefixo = caputLimpo.replace(REGEX_PREFIXO_ARTIGO, '').trim();
     blocosBrutos.push({
       textoOriginal: caputLimpo,
       textoTTS: caputSemPrefixo,
@@ -352,7 +423,7 @@ export function parseArtigoEmNarracaoContinua(
       if (!caputFechado && caputAcumulado.length > 0) {
         const caputTexto = caputAcumulado.join(' ');
         const caputLimpo = limparAnotacoesEditoriais(caputTexto);
-        const caputSemPrefixo = caputLimpo.replace(/^\s*(?:Artigo|Art)\.?\s*\d+[º°]?(?:\s*[-–—]\s*[A-Za-z])?\s*[.\-–—:]?\s*/i, '').trim();
+        const caputSemPrefixo = caputLimpo.replace(REGEX_PREFIXO_ARTIGO, '').trim();
         blocosBrutos.push({
           textoOriginal: caputLimpo,
           textoTTS: caputSemPrefixo,
@@ -373,7 +444,7 @@ export function parseArtigoEmNarracaoContinua(
     if (!caputFechado && caputAcumulado.length > 0) {
       const caputTexto = caputAcumulado.join(' ');
       const caputLimpo = limparAnotacoesEditoriais(caputTexto);
-      const caputSemPrefixo = caputLimpo.replace(/^\s*(?:Artigo|Art)\.?\s*\d+[º°]?(?:\s*[-–—]\s*[A-Za-z])?\s*[.\-–—:]?\s*/i, '').trim();
+      const caputSemPrefixo = caputLimpo.replace(REGEX_PREFIXO_ARTIGO, '').trim();
       blocosBrutos.push({
         textoOriginal: caputLimpo,
         textoTTS: caputSemPrefixo,

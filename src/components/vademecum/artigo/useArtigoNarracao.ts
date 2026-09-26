@@ -11,6 +11,7 @@ import type { ArtigoLei } from '@/data/mockData';
 import {
   getCachedAudio,
   saveCachedAudio,
+  deleteCachedAudio,
   buildAudioCacheKey,
   prefetchNextArticleAudio,
 } from '@/services/audioOfflineCache';
@@ -186,22 +187,25 @@ export function useArtigoNarracao({
         const aliases = obterAliasesTabela(tabelaNome);
         const variantesNum = obterVariantesArtigoNumero(artigo.numero);
 
-        // 1. Cache persistente IndexedDB com verificação de variantes
-        for (const v of variantesNum) {
-          for (const a of aliases) {
-            const cacheKey = buildAudioCacheKey(a, v);
-            const cached = await getCachedAudio(cacheKey);
-            if (cached?.blobUrl) {
-              setNarracaoUrl(cached.blobUrl);
-              if (cached.wordTimings && cached.wordTimings.length > 0) {
-                setNarracaoWordTimings(cached.wordTimings as any[]);
+        // 1. Se estiver offline, recorre diretamente ao IndexedDB
+        if (typeof navigator !== 'undefined' && !navigator.onLine) {
+          for (const v of variantesNum) {
+            for (const a of aliases) {
+              const cacheKey = buildAudioCacheKey(a, v);
+              const cached = await getCachedAudio(cacheKey);
+              if (cached?.blobUrl) {
+                setNarracaoUrl(cached.blobUrl);
+                if (cached.wordTimings && cached.wordTimings.length > 0) {
+                  setNarracaoWordTimings(cached.wordTimings as any[]);
+                }
+                return;
               }
-              return;
             }
           }
+          return;
         }
 
-        // 2. Consulta no Supabase usando todos os aliases e variantes de número
+        // 2. Com rede: Consulta a verdade absoluta no Supabase
         const { data: rows } = await supabase
           .from('narracoes_artigos')
           .select('audio_url, word_timings')
@@ -211,26 +215,41 @@ export function useArtigoNarracao({
           .limit(1);
 
         const row = rows?.[0];
-        if (row?.audio_url) {
-          setNarracaoUrl(row.audio_url);
-          const timings = Array.isArray(row.word_timings)
-            ? row.word_timings
-            : ((row.word_timings as any)?.partes || null);
-          if (timings && timings.length > 0) {
-            setNarracaoWordTimings(timings as any[]);
+
+        if (!row?.audio_url) {
+          // A narração NÃO existe no banco (foi excluída ou nunca foi gravada).
+          // Expurgamos qualquer cache velho do IndexedDB para não tocar áudio fantasma!
+          for (const v of variantesNum) {
+            for (const a of aliases) {
+              const cacheKey = buildAudioCacheKey(a, v);
+              await deleteCachedAudio(cacheKey);
+            }
           }
-          // Salva no IndexedDB em background para próximas reproduções offline instantâneas
-          const primaryCacheKey = buildAudioCacheKey(tabelaNome, artigo.numero);
-          void (async () => {
-            try {
-              const resp = await fetch(row.audio_url);
-              if (resp.ok) {
-                const blob = await resp.blob();
-                await saveCachedAudio(primaryCacheKey, blob, timings as any);
-              }
-            } catch {}
-          })();
+          setNarracaoUrl(null);
+          setNarracaoWordTimings(null);
+          return;
         }
+
+        // Existe narração válida no banco
+        setNarracaoUrl(row.audio_url);
+        const timings = Array.isArray(row.word_timings)
+          ? row.word_timings
+          : ((row.word_timings as any)?.partes || null);
+        if (timings && timings.length > 0) {
+          setNarracaoWordTimings(timings as any[]);
+        }
+
+        // Salva/renova no IndexedDB em background para próximas reproduções offline
+        const primaryCacheKey = buildAudioCacheKey(tabelaNome, artigo.numero);
+        void (async () => {
+          try {
+            const resp = await fetch(row.audio_url);
+            if (resp.ok) {
+              const blob = await resp.blob();
+              await saveCachedAudio(primaryCacheKey, blob, timings as any);
+            }
+          } catch {}
+        })();
       } catch (e) {
         console.error('Erro ao verificar narração no banco principal:', e);
       }

@@ -69,6 +69,72 @@ function isArtigoReal(art: ArtigoLei): boolean {
   return true;
 }
 
+/** Enriquecer artigos legislativos reais com seu contexto hierárquico (Parte, Livro, Título, Capítulo) */
+function enriquecerArtigosComHierarquia(artigosBrutos: ArtigoLei[]): ArtigoLei[] {
+  let currentParte = '';
+  let currentLivro = '';
+  let currentTitulo = '';
+  let currentCapitulo = '';
+
+  const artigosEnriquecidos: ArtigoLei[] = [];
+
+  for (const item of artigosBrutos) {
+    const num = String(item.numero || '').trim();
+    const caput = String(item.caput || '').trim();
+    const textoCompleto = `${num}\n${caput}`.trim();
+
+    // 1. Detecta Linha de Parte (ex: "PARTE GERAL", "PARTE ESPECIAL")
+    if (/^\s*PARTE\s+(?:GERAL|ESPECIAL|[IVXLCDM0-9]+)/i.test(num) || /^\s*PARTE\s+(?:GERAL|ESPECIAL|[IVXLCDM0-9]+)/i.test(caput)) {
+      const match = textoCompleto.match(/PARTE\s+(?:GERAL|ESPECIAL|[IVXLCDM0-9]+)/i);
+      currentParte = match ? match[0].trim() : num;
+      currentTitulo = '';
+      currentCapitulo = '';
+      continue;
+    }
+
+    // 2. Detecta Linha de Livro (ex: "LIVRO I")
+    if (/^\s*LIVRO\s+[IVXLCDM0-9]+/i.test(num) || /^\s*LIVRO\s+[IVXLCDM0-9]+/i.test(caput)) {
+      const match = textoCompleto.match(/LIVRO\s+[IVXLCDM0-9]+[^\n]*/i);
+      currentLivro = match ? match[0].trim() : num;
+      currentTitulo = '';
+      currentCapitulo = '';
+      continue;
+    }
+
+    // 3. Detecta Linha de Título (ex: "TÍTULO I\nDA APLICAÇÃO DA LEI PENAL")
+    if (/^\s*T[ÍI]TULO\s+[IVXLCDM0-9]+/i.test(num) || /^\s*T[ÍI]TULO\s+[IVXLCDM0-9]+/i.test(caput)) {
+      const linhas = textoCompleto.split('\n').map((l) => l.trim()).filter(Boolean);
+      const linha0 = linhas[0] || num;
+      const linha1 = linhas.slice(1).join(' - ');
+      currentTitulo = linha1 ? `${linha0} - ${linha1}` : linha0;
+      currentCapitulo = '';
+      continue;
+    }
+
+    // 4. Detecta Linha de Capítulo (ex: "CAPÍTULO I\nDO CRIME")
+    if (/^\s*CAP[ÍI]TULO\s+(?:[IVXLCDM0-9]+|[ÚU]NICO)/i.test(num) || /^\s*CAP[ÍI]TULO\s+(?:[IVXLCDM0-9]+|[ÚU]NICO)/i.test(caput)) {
+      const linhas = textoCompleto.split('\n').map((l) => l.trim()).filter(Boolean);
+      const linha0 = linhas[0] || num;
+      const linha1 = linhas.slice(1).join(' - ');
+      currentCapitulo = linha1 ? `${linha0} - ${linha1}` : linha0;
+      continue;
+    }
+
+    // Se for artigo real legislativo
+    if (isArtigoReal(item)) {
+      artigosEnriquecidos.push({
+        ...item,
+        parte: currentParte || item.parte,
+        livro: currentLivro || item.livro,
+        titulo: currentTitulo || item.titulo,
+        capitulo: currentCapitulo || item.capitulo,
+      });
+    }
+  }
+
+  return artigosEnriquecidos;
+}
+
 export default function AdminNarracaoLeis() {
   const navigate = useNavigate();
 
@@ -135,8 +201,9 @@ export default function AdminNarracaoLeis() {
       fetchArtigosLei(selectedLei.id, selectedLei.tabela_nome),
       buscarStatusNarracoes(selectedLei.tabela_nome),
     ]).then(([listaArtigos, statusMap]) => {
-      // Filtra itens estruturais (PARTE GERAL, TÍTULO, CAPÍTULO, etc.) — apenas artigos reais
-      setArtigos((listaArtigos || []).filter(isArtigoReal));
+      // Enriquece artigos reais com seu contexto hierárquico (Parte Geral, Livro, Título, Capítulo)
+      const artigosProcessados = enriquecerArtigosComHierarquia(listaArtigos || []);
+      setArtigos(artigosProcessados);
       setStatusNarracoes(statusMap || {});
     }).catch((err) => {
       toast.error('Erro ao carregar dados da legislação');
@@ -727,9 +794,11 @@ export default function AdminNarracaoLeis() {
                           </span>
                         </div>
 
-                        {artigo.titulo && (
+                        {([artigo.parte, artigo.livro, artigo.titulo, artigo.capitulo].filter(Boolean).length > 0) && (
                           <p className="text-xs font-semibold text-primary/90 truncate mb-1">
-                            {artigo.titulo}
+                            <span className="text-muted-foreground/80 font-normal">
+                              {[artigo.parte, artigo.livro, artigo.titulo, artigo.capitulo].filter(Boolean).join(' › ')}
+                            </span>
                           </p>
                         )}
 

@@ -23,6 +23,9 @@ interface LeiHeroProps {
   selectedLeiEmenta: string | null;
   onOpenOverlay?: (panel: 'fav' | 'playlist' | 'anotacoes' | 'radar') => void;
   favCount?: number;
+  anotacoesCount?: number;
+  radarCount?: number;
+  playlistCount?: number;
 }
 
 const LeiHero: React.FC<LeiHeroProps> = ({
@@ -39,6 +42,9 @@ const LeiHero: React.FC<LeiHeroProps> = ({
   selectedLeiEmenta,
   onOpenOverlay,
   favCount = 0,
+  anotacoesCount = 0,
+  radarCount = 0,
+  playlistCount = 0,
 }) => {
   const [showEmentaDialog, setShowEmentaDialog] = useState(false);
 
@@ -154,9 +160,9 @@ const LeiHero: React.FC<LeiHeroProps> = ({
           )}
         </div>
 
-        {/* Atalhos Rápidos na Base do Painel: FAVORITO, ANOTAÇÕES, RADAR, PLAYLIST com altura ampliada */}
+        {/* Atalhos Rápidos na Base do Painel: FAVORITO, ANOTAÇÕES, RADAR, PLAYLIST com altura ampliada e badges sem corte */}
         <div className="relative z-10 px-3 sm:px-6 pt-2.5 pb-6 sm:pb-7 w-full max-w-lg mx-auto">
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-4 gap-2 sm:gap-2.5">
             {/* FAVORITOS DE ARTIGOS */}
             <button
               type="button"
@@ -164,16 +170,16 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                 haptic.selection();
                 onOpenOverlay?.('fav');
               }}
-              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] select-none cursor-pointer overflow-hidden relative"
+              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] select-none cursor-pointer relative"
             >
               {favCount > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-white text-[10px] font-bold leading-none flex items-center justify-center border border-white/20 shadow z-10 bg-[#F43F5E]">
+                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] px-1 rounded-full text-white text-[10px] font-bold leading-none flex items-center justify-center border-2 border-[#050505] shadow-lg z-20 bg-[#F43F5E] pointer-events-none">
                   {favCount > 99 ? '99+' : favCount}
                 </span>
               )}
               <Heart
                 className="w-5 h-5 shrink-0 transition-all group-hover:scale-110 text-[#F43F5E]"
-                fill={favCount > 0 ? '#F43F5E' : 'none'}
+                fill="none"
                 strokeWidth={2}
               />
               <span className="text-[9px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
@@ -188,8 +194,13 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                 haptic.selection();
                 onOpenOverlay?.('anotacoes');
               }}
-              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] select-none cursor-pointer overflow-hidden relative"
+              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] select-none cursor-pointer relative"
             >
+              {anotacoesCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] px-1 rounded-full text-zinc-950 text-[10px] font-bold leading-none flex items-center justify-center border-2 border-[#050505] shadow-lg z-20 bg-[#FACC15] pointer-events-none">
+                  {anotacoesCount > 99 ? '99+' : anotacoesCount}
+                </span>
+              )}
               <StickyNote
                 className="w-5 h-5 shrink-0 transition-all group-hover:scale-110 text-[#FACC15]"
                 strokeWidth={2}
@@ -206,8 +217,13 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                 haptic.selection();
                 onOpenOverlay?.('radar');
               }}
-              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] select-none cursor-pointer overflow-hidden relative"
+              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] select-none cursor-pointer relative"
             >
+              {radarCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] px-1 rounded-full text-white text-[10px] font-bold leading-none flex items-center justify-center border-2 border-[#050505] shadow-lg z-20 bg-[#38BDF8] pointer-events-none">
+                  {radarCount > 99 ? '99+' : radarCount}
+                </span>
+              )}
               <Radar
                 className="w-5 h-5 shrink-0 transition-all group-hover:scale-110 text-[#38BDF8]"
                 strokeWidth={2}
@@ -224,8 +240,13 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                 haptic.selection();
                 onOpenOverlay?.('playlist');
               }}
-              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] select-none cursor-pointer overflow-hidden relative"
+              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] select-none cursor-pointer relative"
             >
+              {playlistCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] px-1 rounded-full text-white text-[10px] font-bold leading-none flex items-center justify-center border-2 border-[#050505] shadow-lg z-20 bg-[#A855F7] pointer-events-none">
+                  {playlistCount > 99 ? '99+' : playlistCount}
+                </span>
+              )}
               <ListMusic
                 className="w-5 h-5 shrink-0 transition-all group-hover:scale-110 text-[#A855F7]"
                 strokeWidth={2}

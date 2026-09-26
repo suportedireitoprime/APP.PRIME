@@ -669,6 +669,9 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           setOverlayPanel(panel);
         }}
         favCount={favArtigoNumeros.size}
+        anotacoesCount={anotadoNumeros.size}
+        radarCount={dbAlteracoes?.length || 0}
+        playlistCount={Object.keys(playlistNarracoes || {}).length}
       />
 
       <div id="lei-conteudo" className={`relative z-10 mx-auto px-3 sm:px-4 md:px-6 scroll-mt-2 ${isDesktop ? 'max-w-7xl pt-7 space-y-5' : 'max-w-5xl pt-7 space-y-5'}`}>
@@ -1102,24 +1105,22 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                       </button>
                     );
                   })}
-                  {activeTab !== 'cap' && (
+                  {activeTab !== 'cap' && capitulos.length > 0 && (
                     <div className="pt-4 mt-4 border-t border-border/50">
                       <h4 className="font-semibold text-sm px-2 mb-3 text-muted-foreground uppercase tracking-wider">Estrutura</h4>
-                      {capituloGroups.map((tg, i) => {
-                        const ck = `titulo__${tg.titulo}`;
-                        const exp = expandedTitulo === ck || (expandedTitulo?.startsWith(`${tg.titulo}__`) ?? false);
-                        const num = tg.titulo.match(/(?:T[ÍI]TULO|LIVRO|PARTE)\s+[IVXLCDM0-9]+/i)?.[0] || '';
+                      {capitulos.map((cap, i) => {
+                        const exp = expandedCapituloId === cap.id;
                         return (
-                          <div key={i} className="mb-1">
+                          <div key={cap.id || i} className="mb-1">
                             <button
                               onClick={() => {
-                                setExpandedTitulo(exp ? null : ck);
+                                setExpandedCapituloId(exp ? null : cap.id);
                                 setActiveTab('cap');
                               }}
                               className={`w-full text-left px-3 py-2 rounded-xl text-[13px] transition-colors flex items-center gap-2 ${exp ? 'bg-primary/10 text-primary font-bold' : 'text-foreground/80 hover:bg-secondary'}`}
                             >
                               <BookOpen className={`w-3.5 h-3.5 shrink-0 ${exp ? 'text-primary' : 'text-muted-foreground'}`} />
-                              <span className="truncate">{num || tg.titulo}</span>
+                              <span className="truncate">{cap.capituloHead ? `${cap.capituloHead} - ${cap.capituloNome}` : cap.capituloNome}</span>
                             </button>
                           </div>
                         );
@@ -1189,63 +1190,70 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           </div>
         </motion.nav>
 
-        <AnimatePresence>
-          {overlayPanel && (
-            <>
-              <motion.div
-                key={`${overlayPanel}-backdrop`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                onClick={() => setOverlayPanel(null)}
-                className="fixed inset-0 z-[59] bg-black/60 backdrop-blur-sm"
-              />
-              <motion.div
-                key={overlayPanel}
-                initial={{ y: '100%' }}
-                animate={{ y: 0 }}
-                exit={{ y: '100%' }}
-                transition={{ type: 'spring', damping: 30, stiffness: 320 }}
-                className={
-                  (overlayPanel === 'novidades' || overlayPanel === 'radar')
-                    ? "fixed inset-0 z-[60] h-[100dvh] max-h-[100dvh] bg-[#0f0f0f] flex flex-col shadow-2xl lg:max-w-[780px] lg:mx-auto pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))]"
-                    : "fixed inset-x-0 bottom-0 z-[60] h-[80vh] bg-[#0f0f0f] border-t border-white/10 rounded-t-3xl flex flex-col shadow-2xl lg:max-w-[720px] lg:mx-auto"
-                }
-                style={{ willChange: 'transform' }}
-              >
-                {overlayPanel !== 'novidades' && overlayPanel !== 'radar' && (
-                  <div className="flex justify-center pt-3 pb-1 shrink-0"><div className="w-10 h-1 rounded-full bg-white/20" /></div>
-                )}
-                <div className="flex items-center gap-3 px-4 py-2 border-b border-white/5 shrink-0">
-                  <button onClick={() => setOverlayPanel(null)} className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center active:scale-95 transition-transform cursor-pointer">
-                    <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
-                  </button>
-                  <div className="flex-1 min-w-0">
-                    <h1 className="font-display text-base font-bold text-foreground truncate">{overlayLabels[overlayPanel]?.label}</h1>
-                    <p className="text-xs text-muted-foreground truncate">{selectedLeiNome}</p>
-                  </div>
-                </div>
-                {overlayPanel !== 'fav' && overlayPanel !== 'radar' && (
-                  <div className="mx-4 mt-3 p-3 rounded-xl bg-primary/10 border border-primary/20 flex gap-3 items-start shrink-0">
-                    <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                    <p className="text-xs text-foreground/80 leading-relaxed">{overlayLabels[overlayPanel]?.desc}</p>
-                  </div>
-                )}
-                {overlayPanel === 'novidades' && (
-                  <div className="mx-4 mt-2 flex items-center gap-2.5 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 shrink-0">
-                    <span className="relative flex h-2.5 w-2.5 shrink-0"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" /></span>
-                    <p className="text-[11px] text-emerald-400 font-medium">Monitoramento em tempo real</p>
-                  </div>
-                )}
-                <div className="flex-1 overflow-y-auto px-4 pt-4 pb-[calc(1rem+var(--sai-bottom))] overscroll-contain">
-                  {overlayContents[overlayPanel]}
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
       </div>
+
+      {/* Painéis Rápidos (Favoritos, Anotações, Radar, Playlist, Novidades) em Tela Cheia cobrindo 100% por cima da capa */}
+      <AnimatePresence>
+        {overlayPanel && (
+          <>
+            <motion.div
+              key={`${overlayPanel}-backdrop`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setOverlayPanel(null)}
+              className="fixed inset-0 z-[99] bg-black/75 backdrop-blur-md"
+            />
+            <motion.div
+              key={overlayPanel}
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 320 }}
+              className="fixed inset-0 z-[100] h-[100dvh] max-h-[100dvh] bg-[#0f0f0f] flex flex-col shadow-2xl lg:max-w-[780px] lg:mx-auto pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))]"
+              style={{ willChange: 'transform' }}
+            >
+              <div className="flex items-center gap-3 px-4 py-2 border-b border-white/5 shrink-0">
+                <button
+                  onClick={() => {
+                    haptic.selection();
+                    setOverlayPanel(null);
+                  }}
+                  aria-label="Voltar para a lei"
+                  className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center active:scale-95 transition-transform cursor-pointer"
+                >
+                  <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
+                </button>
+                <div className="flex-1 min-w-0">
+                  <h1 className="font-display text-base sm:text-lg font-bold text-foreground truncate">
+                    {overlayLabels[overlayPanel]?.label}
+                  </h1>
+                  <p className="text-xs text-muted-foreground truncate">{selectedLeiNome}</p>
+                </div>
+              </div>
+              {overlayPanel !== 'fav' && overlayPanel !== 'radar' && (
+                <div className="mx-4 mt-3 p-3 rounded-xl bg-primary/10 border border-primary/20 flex gap-3 items-start shrink-0">
+                  <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <p className="text-xs text-foreground/80 leading-relaxed">{overlayLabels[overlayPanel]?.desc}</p>
+                </div>
+              )}
+              {overlayPanel === 'novidades' && (
+                <div className="mx-4 mt-2 flex items-center gap-2.5 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 shrink-0">
+                  <span className="relative flex h-2.5 w-2.5 shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+                  </span>
+                  <p className="text-[11px] text-emerald-400 font-medium">Monitoramento em tempo real</p>
+                </div>
+              )}
+              <div className="flex-1 overflow-y-auto px-4 pt-4 pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] overscroll-contain">
+                {overlayContents[overlayPanel]}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {openArtigo && (
         <ArtigoBottomSheet

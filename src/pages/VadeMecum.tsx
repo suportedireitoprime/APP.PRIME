@@ -13,7 +13,7 @@ import DesktopSidebar from '@/components/vademecum/desktop/DesktopSidebar';
 import VadeMecumDesktopTabs from '@/components/vademecum/desktop/VadeMecumDesktopTabs';
 import VadeMecumDesktopHeroBanner from '@/components/vademecum/desktop/VadeMecumDesktopHeroBanner';
 import { lazyWithRetry } from '@/utils/lazyWithRetry';
-const ShapeGrid = lazyWithRetry(() => import('@/components/ui/ShapeGrid'));
+import ShapeGrid from '@/components/ui/ShapeGrid';
 
 // Busca própria e exclusiva do Vade Mecum (Artigos, Leis e Jurisprudência)
 const BuscaLeisOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/BuscaLeisOverlay'));
@@ -27,12 +27,6 @@ const VadeMecum = () => {
   const { pathname } = useLocation();
   const isDesktop = useIsDesktop();
   const [buscaOpen, setBuscaOpen] = useState(false);
-  // Adia o ShapeGrid para não bloquear o primeiro paint
-  const [gridReady, setGridReady] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setGridReady(true), 300);
-    return () => clearTimeout(t);
-  }, []);
 
   const abrirLei = (lei: { tipo: string; leiId: string; nome: string; descricao: string; tabela_nome: string; artigoNumero?: string }) => {
     setBuscaOpen(false);
@@ -99,21 +93,17 @@ const VadeMecum = () => {
   if (isDesktop) {
     return (
       <div className="min-h-dvh bg-hero-panel flex flex-col theme-vademecum relative overflow-hidden">
-        {gridReady && (
-          <div className="absolute inset-0 z-0 opacity-60">
-            <Suspense fallback={null}>
-              <ShapeGrid 
-                speed={0.5} 
-                squareSize={40}
-                direction="diagonal"
-                borderColor="rgba(255, 255, 255, 0.05)"
-                hoverFillColor="rgba(255, 255, 255, 0.1)"
-                shape="square"
-                hoverTrailAmount={5}
-              />
-            </Suspense>
-          </div>
-        )}
+        <div className="fixed inset-0 pointer-events-none z-0">
+          <ShapeGrid 
+            speed={0.5} 
+            squareSize={40}
+            direction="diagonal"
+            borderColor="rgba(255, 255, 255, 0.08)"
+            hoverFillColor="rgba(255, 255, 255, 0.12)"
+            shape="square"
+            hoverTrailAmount={5}
+          />
+        </div>
         <div className="flex flex-1 min-h-0 relative z-10">
           <DesktopSidebar 
             activeTab={'vademecum' as any} 
@@ -155,21 +145,17 @@ const VadeMecum = () => {
 
   return (
     <div className={`theme-vademecum min-h-dvh bg-zinc-950 pb-24 relative overflow-x-hidden ${activeTab !== 'emalta' && activeTab !== 'favoritos' ? 'pt-8' : ''}`}>
-      {gridReady && (
-        <div className="absolute inset-0 z-0 opacity-60">
-          <Suspense fallback={null}>
-            <ShapeGrid 
-              speed={0.5} 
-              squareSize={40}
-              direction="diagonal"
-              borderColor="rgba(255, 255, 255, 0.05)"
-              hoverFillColor="rgba(255, 255, 255, 0.1)"
-              shape="square"
-              hoverTrailAmount={5}
-            />
-          </Suspense>
-        </div>
-      )}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <ShapeGrid 
+          speed={0.5} 
+          squareSize={40}
+          direction="diagonal"
+          borderColor="rgba(255, 255, 255, 0.08)"
+          hoverFillColor="rgba(255, 255, 255, 0.12)"
+          shape="square"
+          hoverTrailAmount={5}
+        />
+      </div>
       <div className="relative z-10">
         {renderContent()}
         {buscaOpen && (
