@@ -315,21 +315,22 @@ export default function RadarConcursos() {
           <div className="flex items-center justify-between px-1">
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-4 rounded-full bg-emerald-500" />
-              <h2 className="font-display text-foreground text-[16px] sm:text-[17px] font-bold uppercase tracking-widest">
-                Últimos Editais Abertos
+              <h2 className="font-display text-foreground text-[15px] sm:text-[17px] font-bold uppercase tracking-widest">
+                Últimos Editais Abertos ({concursosFiltrados.length})
               </h2>
             </div>
             <button
               type="button"
-              onClick={() => { haptic.light(); startTransition(() => navigate('/concursos')); }}
-              className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-0.5 cursor-pointer"
+              onClick={() => { haptic.selection(); startTransition(() => navigate('/concursos')); }}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold shadow-md shadow-emerald-500/25 active:scale-95 transition-all cursor-pointer"
             >
-              Ver todos <ChevronRight className="w-3.5 h-3.5" />
+              <span>Ver todos</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
           <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 pb-2 hide-scrollbar px-1 -mr-4 pr-4">
-            {concursos.length > 0 ? concursos.slice(0, 15).map((conc) => {
+            {concursosFiltrados.length > 0 ? concursosFiltrados.slice(0, 15).map((conc) => {
               const visual = getConcursoVisual(conc.titulo, conc.imagem_url);
               const dias = conc.dias_restantes ?? null;
 
@@ -377,9 +378,9 @@ export default function RadarConcursos() {
                 </div>
               );
             }) : (
-              [1, 2, 3].map(n => (
-                <div key={n} className="w-[240px] h-[210px] shrink-0 bg-card/30 rounded-2xl animate-pulse" />
-              ))
+              <div className="py-8 px-4 text-center w-full text-muted-foreground text-xs">
+                Nenhum edital encontrado para os filtros selecionados.
+              </div>
             )}
           </div>
         </section>
@@ -457,99 +458,30 @@ export default function RadarConcursos() {
           </div>
         </section>
 
-        {/* 3. FEED DE CONCURSOS COM IMAGEM E CONTEÚDO */}
-        <section className="space-y-3">
-          <div className="flex items-center justify-between px-1">
-            <h3 className="font-display font-bold text-base text-foreground">
-              Editais Abertos ({concursosFiltrados.length})
-            </h3>
-            <span className="text-xs text-muted-foreground">Toque para ver o conteúdo completo</span>
+        {/* 3. CARD DE CHAMADA PARA A LISTA COMPLETA */}
+        <section className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-emerald-950/40 via-card to-card border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+          <div className="space-y-1">
+            <h4 className="font-display font-bold text-base text-foreground flex items-center gap-2">
+              <span>{concursosFiltrados.length} Editais Disponíveis</span>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                {selectedUf === 'TODOS' ? 'Brasil' : selectedUf}
+              </span>
+            </h4>
+            <p className="text-xs text-muted-foreground">
+              Abra a lista completa com salários detalhados, prazos de encerramento e todos os cargos.
+            </p>
           </div>
-
-          {loading ? (
-            <div className="space-y-3">
-              {[1, 2, 3].map(n => (
-                <div key={n} className="h-28 rounded-2xl bg-card/40 animate-pulse border border-border/40" />
-              ))}
-            </div>
-          ) : concursosFiltrados.length === 0 ? (
-            <div className="text-center py-12 bg-card/30 rounded-3xl border border-dashed border-border/60 p-6 space-y-2">
-              <Briefcase className="w-9 h-9 text-muted-foreground/40 mx-auto" />
-              <p className="text-sm font-semibold text-foreground">Nenhum edital encontrado para estes filtros</p>
-              <p className="text-xs text-muted-foreground">Altere o estado ou cargo selecionado acima para ver mais oportunidades.</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {concursosFiltrados.map((item, i) => {
-                const visual = getConcursoVisual(item.titulo, item.imagem_url);
-                const dias = item.dias_restantes ?? null;
-
-                return (
-                  <motion.div
-                    key={item.id}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: Math.min(i * 0.02, 0.2) }}
-                    onClick={() => {
-                      haptic.selection();
-                      setSelectedEdital(item);
-                    }}
-                    className="group flex items-stretch gap-3 bg-card border border-border/70 hover:border-emerald-500/40 rounded-2xl p-3 sm:p-4 transition-all cursor-pointer shadow-sm hover:shadow-md overflow-hidden relative"
-                  >
-                    {/* Imagem real com fallback */}
-                    <div className="w-24 sm:w-28 h-24 sm:h-28 shrink-0 rounded-xl overflow-hidden relative bg-black/30">
-                      <img
-                        src={visual.imagemUrl}
-                        alt={item.titulo}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        loading="lazy"
-                      />
-                      {item.uf && (
-                        <span className="absolute bottom-1.5 left-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500 text-white shadow-sm">
-                          {item.uf}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Informações */}
-                    <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2 flex-wrap text-[11px]">
-                          {dias !== null && (
-                            <span className={`inline-flex items-center gap-1 font-semibold ${
-                              dias <= 5 && dias >= 0 ? 'text-amber-400 font-bold' : 'text-emerald-400'
-                            }`}>
-                              <Clock className="w-3 h-3" />
-                              {dias > 0 ? `${dias}d restantes` : dias === 0 ? 'Último dia!' : 'Encerrado'}
-                            </span>
-                          )}
-                          {item.vagas_salario && (
-                            <span className="text-muted-foreground/90 font-medium truncate">
-                              · {item.vagas_salario}
-                            </span>
-                          )}
-                        </div>
-
-                        <h4 className="font-display font-semibold text-sm sm:text-[15px] text-foreground group-hover:text-emerald-400 transition-colors leading-snug line-clamp-2">
-                          {item.titulo}
-                        </h4>
-                      </div>
-
-                      {item.resumo && (
-                        <p className="text-xs text-muted-foreground line-clamp-1 mt-1">
-                          {item.resumo}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="self-center shrink-0 pr-1 text-muted-foreground group-hover:text-emerald-400 transition-colors">
-                      <ChevronRight className="w-5 h-5" />
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          )}
+          <button
+            type="button"
+            onClick={() => {
+              haptic.selection();
+              startTransition(() => navigate('/concursos'));
+            }}
+            className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs shadow-lg shadow-emerald-500/25 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 shrink-0"
+          >
+            <span>Ver todos em lista ({concursosFiltrados.length})</span>
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </section>
 
         {/* 4. CONFIGURAÇÃO DE NOTIFICAÇÕES COMPACTA NO RODAPÉ */}
