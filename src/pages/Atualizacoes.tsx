@@ -438,7 +438,4 @@ const Atualizacoes = () => {
   );
 };
 
-export default memo(Atualizacoes);
-
-import { Browser } from '@capacitor/browser';
-import { Capacitor } from '@capacitor/core';
+export default memo(Atualizacoes);
