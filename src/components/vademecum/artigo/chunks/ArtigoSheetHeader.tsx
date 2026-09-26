@@ -238,16 +238,8 @@ export const ArtigoSheetHeader = memo(function ArtigoSheetHeader({
         </div>
       </div>
 
-      {/* Painel expansível de ajuste de tipografia e leitura (Itens 01 e 02) */}
-      <AnimatePresence>
-        {showFontControls && (
-          <motion.div
-            initial={{ opacity: 0, height: 0, y: -8 }}
-            animate={{ opacity: 1, height: 'auto', y: 0 }}
-            exit={{ opacity: 0, height: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden px-4 pb-2.5"
-          >
+      {showFontControls && (
+        <div className="overflow-hidden px-4 pb-2.5 border-t border-border/50 pt-2.5 mt-2 bg-background/50 backdrop-blur-md">
             <div className="flex flex-col gap-2.5 p-3 rounded-2xl bg-secondary/90 border border-border/80 backdrop-blur-md shadow-lg">
               {/* Linha 1: Tamanho da Fonte + Espaçamento (Leading) */}
               <div className="flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
@@ -375,9 +367,8 @@ export const ArtigoSheetHeader = memo(function ArtigoSheetHeader({
                 </div>
               )}
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
 
       {/* Big Art. Nº + Ver no Planalto */}
       <div className="px-5 pt-1 pb-1.5 flex items-center justify-between gap-3">

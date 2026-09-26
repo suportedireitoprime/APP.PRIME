@@ -93,73 +93,121 @@ export default function MeExplique() {
 
 
       {/* Conteúdo Principal */}
-      <main className="relative z-10 flex-1 w-full max-w-4xl mx-auto px-4 pt-3 pb-5 space-y-5">
-        {/* Título de Seção Estilo Home/Vade Mecum com Barra Lateral Vermelha */}
-        <div className="flex items-center gap-2 px-1">
-          <span className="w-1 h-5 rounded-full bg-[#E11D48]" />
-          <h2 className="font-display text-foreground text-[14px] xs:text-[15px] sm:text-[16px] font-bold uppercase tracking-widest">
-            ESCOLHA UMA MODALIDADE DE APRENDIZADO
-          </h2>
+      <main className="relative z-10 flex-1 w-full max-w-4xl mx-auto px-4 pt-8 pb-5 space-y-6">
+        {/* Seção Modalidades */}
+        <div>
+          <div className="flex items-center gap-2 px-1">
+            <span className="w-1 h-5 rounded-full bg-[#E11D48]" />
+            <div className="flex items-center gap-2">
+              <h2 className="font-display text-foreground text-[18px] font-bold uppercase tracking-widest">
+                EXPLICAÇÃO AO VIVO
+              </h2>
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+            </div>
+          </div>
+          <p className="text-muted-foreground text-[13px] px-1 mt-1 mb-4 truncate">
+            Aprenda Direito de forma simples e interativa
+          </p>
+
+          {/* Grid em Carrossel Horizontal (Sem margem direita para ir até o fim da tela) */}
+          <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 pb-4 hide-scrollbar px-1 -mr-4 pr-4">
+            {/* Card 1: Câmera ao Vivo */}
+            <div className="w-[150px] sm:w-[180px] shrink-0 snap-start">
+              <MeExpliqueModalidadeCard
+                icon={Camera}
+                label="Apontando a Câmera"
+                sublabel="Visão e voz ao vivo"
+                color="#F87171"
+                onClick={() => navegarModo('camera')}
+              />
+            </div>
+
+            {/* Card 2: Modo Livre */}
+            <div className="w-[150px] sm:w-[180px] shrink-0 snap-start">
+              <MeExpliqueModalidadeCard
+                icon={MessageSquare}
+                label={<>Modo<br/>Livre</>}
+                sublabel="Voz e texto aberto"
+                color="#34D399"
+                onClick={() => navegarModo('livre')}
+              />
+            </div>
+
+            {/* Card 3: Livros da Biblioteca */}
+            <div className="w-[150px] sm:w-[180px] shrink-0 snap-start">
+              <MeExpliqueModalidadeCard
+                icon={BookOpen}
+                label="Livros da Biblioteca"
+                sublabel="Capítulo por capítulo"
+                color="#C084FC"
+                onClick={() => navegarModo('livros')}
+              />
+            </div>
+
+            {/* Card 4: Termos Jurídicos */}
+            <div className="w-[150px] sm:w-[180px] shrink-0 snap-start">
+              <MeExpliqueModalidadeCard
+                icon={BookA}
+                label="Termos Jurídicos"
+                sublabel="Dicionário 6 anos"
+                color="#FACC15"
+                onClick={() => navegarModo('termos')}
+              />
+            </div>
+
+            {/* Card 5: Leis & Artigos */}
+            <div className="w-[150px] sm:w-[180px] shrink-0 snap-start">
+              <MeExpliqueModalidadeCard
+                icon={Scale}
+                label="Leis & Artigos"
+                sublabel="Destrinchar Vade Mecum"
+                color="#60A5FA"
+                onClick={() => navegarModo('leis')}
+              />
+            </div>
+
+            {/* Card 6: Casos do Cotidiano */}
+            <div className="w-[150px] sm:w-[180px] shrink-0 snap-start">
+              <MeExpliqueModalidadeCard
+                icon={Sparkles}
+                label="Casos do Cotidiano"
+                sublabel="Exemplos da vida real"
+                color="#FB923C"
+                onClick={() => navegarModo('livre')}
+              />
+            </div>
+          </div>
         </div>
 
-        {/* Grid 2 por Linha no mesmo estilo exato dos cards do início do app */}
-        <div className="grid grid-cols-2 gap-2.5 sm:gap-3.5">
-          {/* Card 1: Câmera ao Vivo */}
-          <MeExpliqueModalidadeCard
-            icon={Camera}
-            label="Apontando a Câmera"
-            sublabel="Visão e voz ao vivo"
-            color="#F87171"
-            onClick={() => navegarModo('camera')}
-          />
+        {/* Seção Chat Jurídico */}
+        <div className="pt-2 border-t border-border/20">
+          <div className="flex items-center gap-2 px-1">
+            <span className="w-1 h-5 rounded-full bg-[#E11D48]" />
+            <h2 className="font-display text-foreground text-[18px] font-bold uppercase tracking-widest">
+              CHAT JURÍDICO
+            </h2>
+          </div>
+          <p className="text-muted-foreground text-[13px] px-1 mt-1 mb-5 truncate">
+            Converse com a IA em tempo real
+          </p>
 
-          {/* Card 2: Livros da Biblioteca */}
-          <MeExpliqueModalidadeCard
-            icon={BookOpen}
-            label="Livros da Biblioteca"
-            sublabel="Capítulo por capítulo"
-            color="#C084FC"
-            onClick={() => navegarModo('livros')}
-          />
+          <div className="flex flex-col gap-3">
 
-          {/* Card 3: Termos Jurídicos */}
-          <MeExpliqueModalidadeCard
-            icon={BookA}
-            label="Termos Jurídicos"
-            sublabel="Dicionário 6 anos"
-            color="#FACC15"
-            onClick={() => navegarModo('termos')}
-          />
-
-          {/* Card 4: Modo Livre */}
-          <MeExpliqueModalidadeCard
-            icon={MessageSquare}
-            label="Modo Livre"
-            sublabel="Voz e texto aberto"
-            color="#34D399"
-            onClick={() => navegarModo('livre')}
-          />
-
-          {/* Card 5: Leis & Artigos */}
-          <MeExpliqueModalidadeCard
-            icon={Scale}
-            label="Leis & Artigos"
-            sublabel="Destrinchar Vade Mecum"
-            color="#60A5FA"
-            onClick={() => navegarModo('leis')}
-          />
-
-          {/* Card 6: Casos do Cotidiano */}
-          <MeExpliqueModalidadeCard
-            icon={Sparkles}
-            label="Casos do Cotidiano"
-            sublabel="Exemplos da vida real"
-            color="#FB923C"
-            onClick={() => navegarModo('livre')}
-          />
+            {/* Modalidade 2: Botão Chat Jurídico (estilo Horus) */}
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                navegarModo('livre');
+              }}
+              className="relative overflow-hidden w-full h-[60px] rounded-2xl bg-[#E11D48] text-white font-black text-sm shadow-md hover:bg-rose-600 active:scale-95 transition-all flex items-center justify-center gap-2"
+            >
+              <div className="absolute inset-0 bg-white/10 opacity-0 hover:opacity-100 transition-opacity" />
+              <MessageSquare className="w-5 h-5" />
+              CHAT JURÍDICO
+            </button>
+          </div>
         </div>
-
-
       </main>
 
       {/* Modal de Limite de Tempo Compartilhado */}

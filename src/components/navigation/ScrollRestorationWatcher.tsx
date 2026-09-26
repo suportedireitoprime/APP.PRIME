@@ -34,6 +34,11 @@ function setSessionSaved(key: string, pos: { windowY: number; containerY: number
  * - Item 34: Recalcula offsets e âncoras na mudança de orientação (portrait/landscape) em tablets.
  * - Item 35: Estanca o momentum scrolling inercial no iOS durante os 80ms de transição de rota.
  */
+// Desativa a restauração nativa do navegador de forma global
+if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
+  window.history.scrollRestoration = 'manual';
+}
+
 export function ScrollRestorationWatcher() {
   const location = useLocation();
   const navType = useNavigationType();
@@ -187,7 +192,7 @@ export function ScrollRestorationWatcher() {
       if (navType === 'POP') {
         const saved = scrollMemory.get(currentKey) || getSessionSaved(currentKey);
         if (saved && (saved.windowY > 0 || saved.containerY > 0)) {
-          window.scrollTo({ top: saved.windowY, left: 0, behavior: 'instant' });
+          window.scrollTo(0, saved.windowY);
           if (desktopContainer) {
             desktopContainer.scrollTop = saved.containerY;
           }
@@ -198,7 +203,7 @@ export function ScrollRestorationWatcher() {
       }
 
       // Itens 21 e 24: Navegação PUSH / REPLACE comum reseta ambos para o topo (0, 0)
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      window.scrollTo(0, 0);
       if (desktopContainer) {
         desktopContainer.scrollTop = 0;
       }

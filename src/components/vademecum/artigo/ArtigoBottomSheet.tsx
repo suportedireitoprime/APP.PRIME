@@ -986,12 +986,30 @@ const ArtigoBottomSheet = ({
     [collapsedIncisos, containerRef]
   );
 
-  const iaFullSections: AiSection[] = iaFull
-    ? parseAiSections(
-        aiContent[iaFull.mode] || '',
-        iaFull.mode === 'exemplo' ? '---EXEMPLO---' : '---SECAO---'
-      )
-    : [];
+  const iaFullSections: AiSection[] = useMemo(() => {
+    if (!iaFull) return [];
+    const parsed = parseAiSections(
+      aiContent[iaFull.mode] || '',
+      iaFull.mode === 'exemplo' ? '---EXEMPLO---' : '---SECAO---'
+    );
+    
+    if (iaFull.mode !== 'explicacao' || !artigo?.caput) return parsed;
+    
+    // Identifica quais blocos realmente existem no texto do artigo
+    const textLower = artigo.caput.toLowerCase();
+    const hasParUnico = textLower.includes('parágrafo único');
+    const hasIncisos = /(?:^|\n)[ivxlcdm]+\s*-/i.test(artigo.caput) || /(?:^|\n)[ivxlcdm]+\s*\)/i.test(artigo.caput) || /(?:^|\n)[ivxlcdm]+\s*\./i.test(artigo.caput);
+    const hasParagrafos = /(?:^|\n)§/i.test(artigo.caput);
+    
+    return parsed.filter(sec => {
+      if (sec.id === 'caput') return true;
+      if (sec.id.startsWith('sec-')) return true;
+      if (sec.id === 'par-unico' && !hasParUnico) return false;
+      if (sec.id.startsWith('inciso-') && !hasIncisos) return false;
+      if (sec.id.startsWith('par-') && sec.id !== 'par-unico' && !hasParagrafos) return false;
+      return true;
+    });
+  }, [iaFull, aiContent, artigo?.caput]);
 
   const handleSheetClose = () => {
     import('@/lib/nativeHaptics').then((m) => m.haptic.selection());

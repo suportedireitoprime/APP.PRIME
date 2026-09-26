@@ -14,12 +14,11 @@ const MeExpliqueHeroPanel: React.FC<Props> = ({ onVoltar, onOpenConfig }) => {
 
   return (
     <div className="relative w-full overflow-hidden border-b border-border/80 shadow-2xl min-h-[260px] sm:min-h-[290px] bg-black">
-      {/* Imagem de Fundo à Direita (Deusa Têmis e STF/Planalto) */}
+      {/* Imagem de Fundo à Direita (Filósofo Sócrates) */}
       <picture>
-        <source srcSet="/images/me_explique_hero_temis.webp" type="image/webp" />
         <img
-          src="/images/me_explique_hero_temis.jpg"
-          alt="Deusa Têmis no STF"
+          src="/images/me_explique_hero_socrates.jpg"
+          alt="Sócrates orientando um estudante de direito"
           loading="eager"
           decoding="async"
           fetchPriority="high"

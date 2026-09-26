@@ -1,8 +1,8 @@
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, startTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, User, ArrowLeftRight, MicVocal, Pill, BookMarked, Microscope, Stethoscope, Podcast, Crown } from 'lucide-react';
+import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Flame, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, User, ArrowLeftRight, MicVocal, Pill, BookMarked, Microscope, Stethoscope, Podcast, Crown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import MentorOverlay from '@/components/vademecum/overlays/MentorOverlay';
 // PessoalSheet removido — Meu Espaço agora é rota dedicada (/meu-espaco).
@@ -244,7 +244,7 @@ const BottomNav = () => {
             transition={{ type: "spring", stiffness: 450, damping: 25 }}
             onPointerDown={() => prefetchRoute('blog')}
             onMouseEnter={() => prefetchRoute('blog')}
-            onClick={() => { haptic.selection(); navigate('/blog'); }}
+            onClick={() => { haptic.selection(); startTransition(() => navigate('/blog')); }}
             data-track="bottom_nav_click"
             data-track-destino="blog"
             className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-colors relative ${
@@ -256,20 +256,20 @@ const BottomNav = () => {
             <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Blog</span>
           </motion.button>
 
-          {/* Slot 2: Chat Jurídico */}
+          {/* Slot 2: Atualizações / Giro */}
           <motion.button
             whileTap={{ scale: 0.90 }}
             transition={{ type: "spring", stiffness: 450, damping: 25 }}
-            onClick={() => { haptic.selection(); setChatOpen(true); }}
+            onClick={() => { haptic.selection(); startTransition(() => navigate('/atualizacoes')); }}
             data-track="bottom_nav_click"
-            data-track-destino="chat"
+            data-track-destino="atualizacoes"
             className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-colors ${
-              chatOpen ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
+              path.startsWith('/atualizacoes') ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
             }`}
-            aria-label="Chat Jurídico"
+            aria-label="Giro Jurídico"
           >
-            <MessageCircle className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform text-white/90 drop-shadow-md ${chatOpen ? 'scale-110' : ''}`} strokeWidth={1.2} />
-            <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Chat</span>
+            <Flame className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/atualizacoes') ? 'scale-110' : ''}`} strokeWidth={1.2} />
+            <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Giro Jurídico</span>
           </motion.button>
 
           {/* Slot 3: Vade Mecum (destaque flutuante central no mobile, normal no tablet) */}
@@ -278,7 +278,7 @@ const BottomNav = () => {
             transition={{ type: "spring", stiffness: 450, damping: 25 }}
             onPointerDown={() => prefetchRoute('vadeMecum')}
             onMouseEnter={() => prefetchRoute('vadeMecum')}
-            onClick={() => { haptic.selection(); if (!path.startsWith('/vade-mecum')) navigate('/vade-mecum'); }}
+            onClick={() => { haptic.selection(); if (!path.startsWith('/vade-mecum')) startTransition(() => navigate('/vade-mecum')); }}
             data-track="bottom_nav_click"
             data-track-destino="vade-mecum"
             className="relative flex flex-col items-center justify-end gap-1 py-1.5 md:py-3 md:justify-center md:rounded-xl md:hover:bg-white/10"
@@ -309,7 +309,7 @@ const BottomNav = () => {
             onMouseEnter={() => prefetchRoute('ferramentas')}
             onClick={() => {
               haptic.light();
-              navigate('/ferramentas');
+              startTransition(() => navigate('/ferramentas'));
             }}
             data-track="bottom_nav_click"
             data-track-destino="ferramentas"
@@ -328,7 +328,7 @@ const BottomNav = () => {
             transition={{ type: "spring", stiffness: 450, damping: 25 }}
             onPointerDown={() => prefetchRoute('pilulas')}
             onMouseEnter={() => prefetchRoute('pilulas')}
-            onClick={() => { haptic.selection(); navigate('/pilulas'); }}
+            onClick={() => { haptic.selection(); startTransition(() => navigate('/pilulas')); }}
             data-track="bottom_nav_click"
             data-track-destino="pilulas"
             className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-colors ${
@@ -346,7 +346,7 @@ const BottomNav = () => {
             transition={{ type: "spring", stiffness: 450, damping: 25 }}
             onPointerDown={() => prefetchRoute('me-explique')}
             onMouseEnter={() => prefetchRoute('me-explique')}
-            onClick={() => { haptic.selection(); navigate('/me-explique'); }}
+            onClick={() => { haptic.selection(); startTransition(() => navigate('/me-explique')); }}
             data-track="bottom_nav_click"
             data-track-destino="me-explique"
             className={`hidden md:flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-colors ${
