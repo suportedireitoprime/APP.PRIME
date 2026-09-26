@@ -807,7 +807,16 @@ export default function RadarConcursos() {
                       <span>Extraindo conteúdo completo do edital...</span>
                     </div>
                   ) : editalFullText ? (
-                    <div className="prose prose-invert prose-emerald max-w-none font-body text-[15px] sm:text-[16px] leading-relaxed text-white/90">
+                    <div className="
+                      prose prose-sm md:prose-base max-w-none dark:prose-invert font-body text-foreground/90
+                      prose-headings:font-display prose-headings:text-foreground prose-headings:mt-6 prose-headings:mb-3
+                      prose-h2:text-xl prose-h3:text-lg
+                      prose-p:text-foreground/90 prose-p:leading-[1.75] prose-p:my-3
+                      prose-a:text-emerald-400 prose-a:no-underline hover:prose-a:underline
+                      prose-strong:text-foreground
+                      prose-ul:my-4 prose-li:my-1
+                      prose-img:hidden
+                    ">
                       <ReactMarkdown>{editalFullText}</ReactMarkdown>
                     </div>
                   ) : (

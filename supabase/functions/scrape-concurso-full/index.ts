@@ -45,18 +45,31 @@ serve(async (req) => {
       throw new Error("Conteúdo extraído muito curto ou vazio.");
     }
 
+    // Cut off everything from 'Compartilhe:' or 'MAPA:' onwards
+    const shareIndex = markdown.toLowerCase().indexOf('compartilhe:');
+    if (shareIndex !== -1) {
+      markdown = markdown.substring(0, shareIndex);
+    }
+    const mapIndex = markdown.toLowerCase().indexOf('mapa:');
+    if (mapIndex !== -1) {
+      markdown = markdown.substring(0, mapIndex);
+    }
+
     // Clean up PCI Concursos specific generic headers, footers, and logo images
     markdown = markdown
+      // Remove regional navigation
+      .replace(/- \[(Nacional|Sudeste|Sul|Centro-Oeste|Norte|Nordeste)\].*?\n/gi, '')
       // Remove PCI logos and headers
       .replace(/\[!\[\]\(https:\/\/www\.pciconcursos\.com\.br\/img\/.*?\)\].*?\n/g, '')
       .replace(/\[!\[\]\(.*?\)\].*?\n/g, '')
       // Remove navigation links like [Página Inicial](...)
-      .replace(/- \[(Página Inicial|Apostilas|Provas|Videoaulas|Aulas em Áudio|Dicas|Questões|Gabaritos)\].*?\n/g, '')
+      .replace(/- \[(Página Inicial|Apostilas|Provas|Videoaulas|Aulas em Áudio|Dicas|Questões|Gabaritos)\].*?\n/gi, '')
       // Remove more generic links if they are alone
       .replace(/^\[.*?\]\(.*?\)$/gm, '')
       .replace(/Busca.*?Apostilas.*?/gi, '')
-      // Remove multiple empty lines
+      // Reduce multiple line breaks to maximum two
       .replace(/\n{3,}/g, '\n\n')
+      .replace(/ {2,}/g, ' ')
       .trim();
 
     return new Response(JSON.stringify({ text: markdown }), {
