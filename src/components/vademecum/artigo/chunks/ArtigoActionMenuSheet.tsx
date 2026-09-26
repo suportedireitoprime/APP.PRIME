@@ -19,6 +19,7 @@ import {
   Feather,
   LayoutGrid,
   X,
+  ArrowLeft,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -81,6 +82,14 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
   grifoIaDefaultOn,
   setGrifoIaDefault,
 }: ArtigoActionMenuSheetProps) {
+  const [showMeExpliqueChoice, setShowMeExpliqueChoice] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!activeActionMenu) {
+      setShowMeExpliqueChoice(false);
+    }
+  }, [activeActionMenu]);
+
   if (typeof document === 'undefined') return null;
 
   return createPortal(
@@ -133,15 +142,12 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
           },
           {
             icon: MessageCircle,
-            label: 'Perguntar',
-            desc: 'Tire dúvidas com a IA',
+            label: 'Me explique',
+            desc: 'Entenda este artigo com a IA',
             color: '#A855F7',
             onClick: () => {
-              setActiveActionMenu(null);
-              if (!requireOnline('Perguntar à IA')) return;
-              gateFeature('perguntar', 'perguntar', 'Perguntar à IA', () =>
-                setShowPerguntarSheet(true)
-              );
+              if (!requireOnline('Me explique')) return;
+              setShowMeExpliqueChoice(true);
             },
           },
           ...(tabelaNome
@@ -170,19 +176,7 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
               handleCopy();
             },
           },
-          {
-            icon: Bell,
-            label: 'Lembretes',
-            desc: 'Avisar ao chegar em um local',
-            color: '#DC2626',
-            onClick: () => {
-              setActiveActionMenu(null);
-              import('@/components/vademecum/sheets/LembretesArtigoSheet');
-              gateFeature('lembretes', 'lembretes', 'Lembretes', () =>
-                setShowLembretesLocal(true)
-              );
-            },
-          },
+
           {
             icon: Download,
             label: 'Baixar artigo',
@@ -279,9 +273,51 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
         ];
 
         const isGrifar = activeActionMenu === 'grifar';
-        const items = isGrifar ? grifarItems : funcoesItems;
-        const title = isGrifar ? 'Grifar' : 'Funções';
-        const HeaderIcon = isGrifar ? Feather : LayoutGrid;
+        const isMeExplique = showMeExpliqueChoice;
+
+        let items;
+        let title;
+        let HeaderIcon;
+
+        if (isMeExplique) {
+          title = 'Me explique';
+          HeaderIcon = Camera;
+          items = [
+            {
+              icon: MessageCircle,
+              label: 'Chat',
+              desc: 'Tire dúvidas conversando com a IA',
+              color: '#A855F7',
+              onClick: () => {
+                setActiveActionMenu(null);
+                setShowMeExpliqueChoice(false);
+                if (!requireOnline('Perguntar à IA')) return;
+                gateFeature('perguntar', 'perguntar', 'Perguntar à IA', () =>
+                  setShowPerguntarSheet(true)
+                );
+              }
+            },
+            {
+              icon: Camera,
+              label: 'Me explique livre (Avatar)',
+              desc: 'IA visual usando a câmera',
+              color: '#F97316',
+              onClick: () => {
+                setActiveActionMenu(null);
+                setShowMeExpliqueChoice(false);
+                navigate('/me-explique');
+              }
+            }
+          ];
+        } else if (isGrifar) {
+          title = 'Grifar';
+          HeaderIcon = Feather;
+          items = grifarItems;
+        } else {
+          title = 'Funções';
+          HeaderIcon = LayoutGrid;
+          items = funcoesItems;
+        }
 
         return (
           <>
@@ -308,6 +344,15 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
               </div>
               <div className="flex items-center justify-between px-5 pb-3 border-b border-border">
                 <div className="flex items-center gap-2">
+                  {isMeExplique && (
+                    <button
+                      onClick={() => setShowMeExpliqueChoice(false)}
+                      className="w-8 h-8 -ml-2 rounded-full hover:bg-secondary flex items-center justify-center text-foreground/70"
+                      aria-label="Voltar"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                    </button>
+                  )}
                   <HeaderIcon className="w-5 h-5 text-primary" />
                   <h3 className="font-heading text-base font-semibold text-foreground">{title}</h3>
                 </div>
