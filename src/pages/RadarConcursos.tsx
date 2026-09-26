@@ -291,19 +291,10 @@ export default function RadarConcursos() {
                 RADAR DE CONCURSOS
               </h1>
             </div>
-            <span className="text-[10px] font-semibold text-emerald-400 uppercase tracking-wider">
-              PCI Concursos Oficial · 470+ Editais
-            </span>
           </div>
 
-          <button
-            type="button"
-            onClick={() => { haptic.selection(); startTransition(() => navigate('/concursos')); }}
-            className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3.5 py-1.5 rounded-full text-white font-medium transition-colors active:scale-95 cursor-pointer"
-          >
-            <span>Ver todos</span>
-            <ChevronRight className="w-4 h-4" />
-          </button>
+          {/* Spacer para manter o título centralizado */}
+          <div className="w-12 sm:w-[52px] shrink-0" />
         </div>
       </header>
 
@@ -311,13 +302,18 @@ export default function RadarConcursos() {
       <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-5 space-y-6 relative z-10 pb-36">
 
         {/* 1. CARROSSEL DE ÚLTIMAS NOTÍCIAS / CONCURSOS ABERTOS */}
-        <section className="space-y-3">
-          <div className="flex items-center justify-between px-1">
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-4 rounded-full bg-emerald-500" />
-              <h2 className="font-display text-foreground text-[15px] sm:text-[17px] font-bold uppercase tracking-widest">
-                Últimos Editais Abertos ({concursosFiltrados.length})
-              </h2>
+        <section className="space-y-4">
+          <div className="flex items-start justify-between px-1">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-4 rounded-full bg-emerald-500" />
+                <h2 className="font-display text-foreground text-base sm:text-lg font-bold uppercase tracking-widest">
+                  Últimos Editais Abertos
+                </h2>
+              </div>
+              <p className="text-xs text-muted-foreground ml-3.5">
+                Monitorando {concursosFiltrados.length} oportunidades no seu radar
+              </p>
             </div>
             <button
               type="button"
