@@ -612,24 +612,28 @@ export default function AdminNarracaoLeis() {
     const estiloPrompt = estiloObj.prompt;
     const voz = configAuto?.voz_padrao || 'Kore';
 
-    // Estimativa de tempo com base no tamanho do artigo (mínimo 5s, máximo 25s por chamada)
-    const totalChars = (artigo.caput || '').length + (artigo.titulo || '').length;
-    let tempoEstimadoParteSegundos = Math.max(5, Math.min(22, Math.round(totalChars / 45)));
-
+    // Identifica antecipadamente a estrutura fatiada do artigo para exibição precisa de partes (ex: 1 de 5, 2 de 3)
+    const estruturadoInicial = parseArtigoEmPartes(artigo, leiAlvo.nome, leiAlvo.tabela_nome);
+    let totalPartesNum = Math.max(1, estruturadoInicial.totalPartes || estruturadoInicial.partes?.length || 1);
     let parteAtualNum = 1;
-    let totalPartesNum = 1;
-    let rotuloAtual = 'Artigo Completo';
+    let rotuloAtual = estruturadoInicial.partes[0]?.rotulo || (totalPartesNum > 1 ? 'Parte 1' : 'Artigo Completo');
+
+    // Estimativa de tempo com base no tamanho da primeira parte (mínimo 5s, máximo 22s por chamada)
+    const primeiraParteChars = estruturadoInicial.partes[0]?.textoTTS?.length || ((artigo.caput || '').length + (artigo.titulo || '').length);
+    let tempoEstimadoParteSegundos = Math.max(5, Math.min(22, Math.round(primeiraParteChars / 45)));
+
     let startTime = Date.now();
     let porcentagemAcumulada = 3;
 
-    // Toast inicial com porcentagem e tempo estimado
-    const toastId = toast.loading(`Narrando Artigo ${artigo.numero} (${leiAlvo.sigla || leiAlvo.nome})... 3% (~${tempoEstimadoParteSegundos}s restantes)`);
+    // Toast inicial com identificação explícita da parte (ex: " · Parte 1 de 2")
+    const textoParteInicial = totalPartesNum > 1 ? ` · Parte 1 de ${totalPartesNum}` : '';
+    const toastId = toast.loading(`Narrando Artigo ${artigo.numero} (${leiAlvo.sigla || leiAlvo.nome})${textoParteInicial}... 3% (~${tempoEstimadoParteSegundos}s restantes)`);
 
-    setProgressoGeracao({ parteAtual: 1, totalPartes: 1, rotulo: rotuloAtual });
+    setProgressoGeracao({ parteAtual: 1, totalPartes: totalPartesNum, rotulo: rotuloAtual });
     setProgressoDetalhado({
       artigoNumero: `${leiAlvo.sigla ? leiAlvo.sigla + ' ' : ''}${artigo.numero}`,
       parteAtual: 1,
-      totalPartes: 1,
+      totalPartes: totalPartesNum,
       rotulo: rotuloAtual,
       porcentagem: 3,
       segundosDecorridos: 0,
@@ -657,9 +661,10 @@ export default function AdminNarracaoLeis() {
         segundosEstimadosRestantes: restantes,
       });
 
-      // Atualiza o toast com a porcentagem e tempo estimado
+      // Atualiza o toast com a identificação explícita da parte atual e total
+      const textoParte = totalPartesNum > 1 ? ` · Parte ${parteAtualNum} de ${totalPartesNum}` : '';
       toast.loading(
-        `Narrando Artigo ${artigo.numero} (${leiAlvo.sigla || leiAlvo.nome})... ${porcentagemGlobal}% (~${restantes}s restantes)`,
+        `Narrando Artigo ${artigo.numero} (${leiAlvo.sigla || leiAlvo.nome})${textoParte}... ${porcentagemGlobal}% (~${restantes}s restantes)`,
         { id: toastId }
       );
     }, 250);
@@ -678,6 +683,15 @@ export default function AdminNarracaoLeis() {
           startTime = Date.now();
           tempoEstimadoParteSegundos = 8;
           setProgressoGeracao({ parteAtual, totalPartes, rotulo });
+
+          const baseFatia = ((parteAtual - 1) / totalPartes) * 100;
+          porcentagemAcumulada = Math.min(96, Math.round(baseFatia + (10 / totalPartes)));
+
+          const textoParte = totalPartes > 1 ? ` · Parte ${parteAtual} de ${totalPartes}` : '';
+          toast.loading(
+            `Narrando Artigo ${artigo.numero} (${leiAlvo.sigla || leiAlvo.nome})${textoParte}... ${porcentagemAcumulada}% (~${tempoEstimadoParteSegundos}s restantes)`,
+            { id: toastId }
+          );
         }
       );
 
@@ -1225,7 +1239,7 @@ export default function AdminNarracaoLeis() {
                 const estaNarrado = !!reg?.audio_url;
                 const estruturado = parseArtigoEmPartes(artigo, selectedLei?.nome, selectedLei?.tabela_nome);
                 const isExpandido = artigoExpandido === artigo.numero;
-                const estaGerando = gerandoArtigoNum === artigo.numero;
+                const estaGerando = gerandoArtigoNum === artigo.numero || gerandoArtigoNum === `${selectedLei?.tabela_nome}_${artigo.numero}`;
                 const partesAtuais = reg?.partes || estruturado.partes;
                 const estaTocandoSequencial = reproduzindoSequencial === artigo.numero;
 
@@ -1324,7 +1338,9 @@ export default function AdminNarracaoLeis() {
                               <>
                                 <Loader2 className="w-4 h-4 animate-spin text-primary" />
                                 <span className="font-mono font-bold">
-                                  {progressoDetalhado?.porcentagem || 5}%
+                                  {progressoDetalhado?.totalPartes && progressoDetalhado.totalPartes > 1
+                                    ? `${progressoDetalhado.parteAtual}/${progressoDetalhado.totalPartes} (${progressoDetalhado.porcentagem}%)`
+                                    : `${progressoDetalhado?.porcentagem || 5}%`}
                                 </span>
                               </>
                             ) : (
@@ -1352,7 +1368,11 @@ export default function AdminNarracaoLeis() {
                           <div className="flex items-center justify-between mb-1.5 text-primary font-semibold">
                             <span className="flex items-center gap-1.5 truncate">
                               <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
-                              Gerando áudio: <strong>{progressoDetalhado?.rotulo || progressoGeracao?.rotulo || 'Artigo Completo'}</strong>
+                              Gerando áudio: <strong>
+                                {progressoDetalhado?.totalPartes && progressoDetalhado.totalPartes > 1
+                                  ? `Parte ${progressoDetalhado.parteAtual} de ${progressoDetalhado.totalPartes} (${progressoDetalhado.rotulo})`
+                                  : (progressoDetalhado?.rotulo || progressoGeracao?.rotulo || 'Artigo Completo')}
+                              </strong>
                             </span>
                             <div className="flex items-center gap-2 shrink-0">
                               <span className="font-mono font-bold text-sm text-foreground bg-primary/20 px-2 py-0.5 rounded-lg border border-primary/30">
@@ -1391,40 +1411,66 @@ export default function AdminNarracaoLeis() {
                           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                             {partesAtuais.length === 1 ? 'Áudio Contínuo (~1 minuto)' : `Partes do Artigo (${partesAtuais.length} partes)`}
                           </span>
-                          {!estaNarrado && (
+                          {estaGerando ? (
+                            <span className="text-xs text-primary font-semibold flex items-center gap-1.5 animate-pulse">
+                              <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
+                              <span>Narrando Parte {progressoDetalhado?.parteAtual || 1} de {progressoDetalhado?.totalPartes || partesAtuais.length}... ({progressoDetalhado?.porcentagem || 5}%)</span>
+                            </span>
+                          ) : !estaNarrado ? (
                             <button
                               onClick={() => handleGerarNarraçãoIndividual(artigo)}
-                              disabled={estaGerando}
                               className="text-xs text-primary hover:underline font-semibold"
                             >
                               Gerar narração contínua agora
                             </button>
-                          )}
+                          ) : null}
                         </div>
 
                         <div className="space-y-2">
-                          {partesAtuais.map((parte) => {
+                          {partesAtuais.map((parte, idx) => {
                             const isParteAtiva = blocoAtivoId === parte.id;
                             const isTocandoEsta = tocandoUrl === parte.audioUrl && !!tocandoUrl;
+                            const isParteSendoGerada = estaGerando && (progressoDetalhado?.parteAtual || 1) === (idx + 1);
+                            const isParteJaGerada = estaGerando && (idx + 1) < (progressoDetalhado?.parteAtual || 1);
+                            const isParteNaFila = estaGerando && (idx + 1) > (progressoDetalhado?.parteAtual || 1);
 
                             return (
                               <div
-                                key={parte.id}
+                                key={parte.id || idx}
                                 className={`p-3 rounded-xl border transition-all ${
-                                  isParteAtiva
+                                  isParteSendoGerada
+                                    ? 'bg-primary/10 border-primary/60 ring-2 ring-primary/30 shadow-md'
+                                    : isParteAtiva
                                     ? 'bg-amber-500/15 border-amber-500/60 ring-2 ring-amber-500/30 shadow-md'
                                     : 'bg-background/60 border-border/50 hover:border-border/80'
                                 }`}
                               >
                                 <div className="flex items-start justify-between gap-2 mb-1.5">
-                                  <div className="flex items-center gap-2">
+                                  <div className="flex items-center gap-2 flex-wrap">
                                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                                      isParteAtiva
+                                      isParteSendoGerada
+                                        ? 'bg-primary text-primary-foreground animate-pulse'
+                                        : isParteAtiva
                                         ? 'bg-amber-500 text-black'
                                         : 'bg-secondary text-muted-foreground'
                                     }`}>
                                       {parte.rotulo}
                                     </span>
+                                    {isParteSendoGerada && (
+                                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-primary/20 text-primary border border-primary/30 flex items-center gap-1 animate-pulse">
+                                        <Loader2 className="w-3 h-3 animate-spin" /> Narrando esta parte...
+                                      </span>
+                                    )}
+                                    {isParteJaGerada && (
+                                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                                        <Check className="w-3 h-3" /> Concluída
+                                      </span>
+                                    )}
+                                    {isParteNaFila && (
+                                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-secondary/80 text-muted-foreground border border-border/50">
+                                        Na fila
+                                      </span>
+                                    )}
                                     {parte.duracaoSegundos ? (
                                       <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-secondary/80 text-emerald-400 border border-emerald-500/20">
                                         ⏱ {parte.duracaoSegundos}s
@@ -1432,7 +1478,7 @@ export default function AdminNarracaoLeis() {
                                     ) : null}
                                     {isParteAtiva && (
                                       <span className="text-[11px] font-bold text-amber-400 animate-pulse flex items-center gap-1">
-                                        <Volume2 className="w-3.5 h-3.5" /> Narrando agora...
+                                        <Volume2 className="w-3.5 h-3.5" /> Ouvindo agora...
                                       </span>
                                     )}
                                   </div>
@@ -1452,7 +1498,7 @@ export default function AdminNarracaoLeis() {
                                   )}
                                 </div>
 
-                                <p className={`text-xs leading-relaxed ${isParteAtiva ? 'text-amber-200 font-medium' : 'text-foreground'}`}>
+                                <p className={`text-xs leading-relaxed ${isParteAtiva ? 'text-amber-200 font-medium' : isParteSendoGerada ? 'text-foreground font-medium' : 'text-foreground'}`}>
                                   {parte.texto}
                                 </p>
                               </div>
