@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, memo, Suspense, startTransition } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
-import { AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
@@ -168,63 +167,61 @@ const MobileHomeSections = ({
 
   return (
     <div className="space-y-6 pt-4">
-      <AnimatePresence mode="wait" initial={false}>
-        {currentTab === 'categorias' && (
-          <HomeTabCategorias
-            onOpenCategory={(cat) => {
-              setCategorySearch('');
-              setCategoryOpen(cat);
-            }}
-          />
-        )}
+      {currentTab === 'categorias' && (
+        <HomeTabCategorias
+          onOpenCategory={(cat) => {
+            setCategorySearch('');
+            setCategoryOpen(cat);
+          }}
+        />
+      )}
 
-        {currentTab === 'emalta' && (
-          <HomeTabEmAlta
-            onOpenCategory={(cat) => {
-              setCategorySearch('');
-              setCategoryOpen(cat);
-            }}
-            onSelectRadar={handle}
-          />
-        )}
+      {currentTab === 'emalta' && (
+        <HomeTabEmAlta
+          onOpenCategory={(cat) => {
+            setCategorySearch('');
+            setCategoryOpen(cat);
+          }}
+          onSelectRadar={handle}
+        />
+      )}
 
-        {currentTab === 'areas' && (
-          <HomeTabAreas
-            onOpenArea={(area) => {
-              setCategorySearch('');
-              setCategoryOpen(area);
-            }}
-          />
-        )}
+      {currentTab === 'areas' && (
+        <HomeTabAreas
+          onOpenArea={(area) => {
+            setCategorySearch('');
+            setCategoryOpen(area);
+          }}
+        />
+      )}
 
-        {currentTab === 'agenda' && (
-          <Suspense fallback={<div className="h-96 w-full animate-pulse bg-muted/5 rounded-2xl" />}>
-            <AgendaMobileTab />
-          </Suspense>
-        )}
+      {currentTab === 'agenda' && (
+        <Suspense fallback={<div className="h-96 w-full animate-pulse bg-muted/5 rounded-2xl" />}>
+          <AgendaMobileTab />
+        </Suspense>
+      )}
 
-        {currentTab === 'estudos' && (
-          <HomeTabEstudos
-            emAltaLeis={emAltaLeis}
-            hideBlog={hideBlog}
-            hideNoticias={hideNoticias}
-            noticiasAutoplay={noticiasAutoplay}
-            onNewsOpenChange={onNewsOpenChange}
-            onOpenCategory={(cat) => {
-              setCategorySearch('');
-              setCategoryOpen(cat);
-            }}
-            onOpenVisuais={() => {}} // Feature removida
-            onOpenAreas={() => startTransition(() => setAreasOpen(true))}
-          />
-        )}
+      {currentTab === 'estudos' && (
+        <HomeTabEstudos
+          emAltaLeis={emAltaLeis}
+          hideBlog={hideBlog}
+          hideNoticias={hideNoticias}
+          noticiasAutoplay={noticiasAutoplay}
+          onNewsOpenChange={onNewsOpenChange}
+          onOpenCategory={(cat) => {
+            setCategorySearch('');
+            setCategoryOpen(cat);
+          }}
+          onOpenVisuais={() => {}} // Feature removida
+          onOpenAreas={() => startTransition(() => setAreasOpen(true))}
+        />
+      )}
 
-        {currentTab === 'faculdade' && (
-          <Suspense fallback={<div className="h-96 w-full animate-pulse bg-muted/5 rounded-2xl" />}>
-            <GraficosMobileTab />
-          </Suspense>
-        )}
-      </AnimatePresence>
+      {currentTab === 'faculdade' && (
+        <Suspense fallback={<div className="h-96 w-full animate-pulse bg-muted/5 rounded-2xl" />}>
+          <GraficosMobileTab />
+        </Suspense>
+      )}
 
       {/* Category bottom sheet */}
       <HomeCategorySheet

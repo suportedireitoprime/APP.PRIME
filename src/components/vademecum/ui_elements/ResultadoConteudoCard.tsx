@@ -86,8 +86,7 @@ const ResultadoConteudoCard = memo(function ResultadoConteudoCard({
   return (
     <button
       onClick={onClick}
-      className="resultado-card-enter w-full flex items-stretch gap-4 p-3.5 rounded-xl bg-card border border-border hover:border-primary/40 transition-colors text-left will-change-transform"
-      style={{ animationDelay: `${Math.min(index * 20, 200)}ms` }}
+      className="w-full flex items-stretch gap-4 p-3.5 rounded-xl bg-card border border-border hover:border-primary/40 transition-colors text-left"
     >
       <div className="w-12 flex items-center justify-center shrink-0">
         {item.thumb_url ? (

@@ -1,21 +1,31 @@
-# Checklist de Execução — Correção de Extração e Histórico de Leis (2024–2026)
+# Checklist de Execução — Fluidez Absoluta e Navegação Instantânea (0ms)
 
-- [x] 1. Refatorar Edge Function `vademecum-scraper/index.ts` <!-- id: 1 -->
-  - [x] Implementar motor de extração HTTP nativo (Deno) com decoding `windows-1252`/`utf-8` e fallback de URLs Planalto
-  - [x] Corrigir identificação de artigos (evitar pular o próprio caput em `Art. 300-A` e suportar sufixos e milhar `/^Art\.?\s*(\d+(?:\.\d+)*(?:-[A-Za-z0-9]+)?)/i`)
-  - [x] Expandir filtros de termos modificadores (incluída, revogado/a, decretos, emendas, medidas provisórias)
-  - [x] Ajustar chave de deduplicação para não descartar múltiplos dispositivos/anos do mesmo artigo
-  - [x] Manter Puppeteer/Browserless apenas como fallback secundário
-- [x] 2. Atualizar Base de Dados e Sementes em `src/data/leiAlteracoesScraped.ts` <!-- id: 2 -->
-  - [x] Cadastrar datas de leis de 2023, 2024, 2025 e 2026 no `KNOWN_LEIS_DATAS` (Lei 15.280/2025, 14.994/2024, 14.843/2024, 14.836/2024, 14.711/2023, 14.620/2023, etc.)
-  - [x] Adicionar sementes de novidades para Código Civil (`SEED_CC_ALTERACOES`) e Código de Processo Penal (`SEED_CPP_ALTERACOES`)
-  - [x] Atualizar `getScrapedAlteracoes` para garantir que novidades recentes nunca fiquem presas em cache antigo
-- [x] 3. Aprimorar UI e Sincronização em `src/pages/AdminMapeamentoLeis.tsx` <!-- id: 3 -->
-  - [x] Adicionar botão/ação explícita de "Limpar Cache & Re-escanear do Planalto"
-  - [x] Corrigir `handleSincronizarArtigo` para preservar artigos com sufixo (ex: `Art. 300-A`) sem truncar para número base
-  - [x] Exibir contadores e filtros atualizados (2024, 2025, 2026)
-- [x] 4. Verificação, Deploy e Versionamento Git <!-- id: 4 -->
-  - [x] Executar checagem de tipos `tsc --noEmit` (concluído com zero erros)
-  - [x] Executar build de produção `vite build` (concluído com sucesso)
-  - [x] Fazer deploy da Edge Function `vademecum-scraper` no Supabase (concluído)
+- [x] 1. Otimizar Camada Global de Rota (`PageTransition.tsx`, `index.css`, `AppRoutes.tsx`) <!-- id: 1 -->
+  - [x] Remover `animate-page-in` com `opacity: 0` e `translateY` de `PageTransition.tsx`
+  - [x] Neutralizar `@keyframes page-in` em `src/index.css`
+  - [x] Garantir `instant` na rota `/vade-mecum` em `src/AppRoutes.tsx`
+- [x] 2. Eliminar Atrasos e Animações de Entrada no Hub Vade Mecum <!-- id: 2 -->
+  - [x] `src/pages/VadeMecum.tsx`: Remover `AnimatePresence mode="wait"` e `motion.div` com `opacity: 0`
+  - [x] `src/components/vademecum/home/MobileHomeSections.tsx`: Remover `AnimatePresence mode="wait"` nas abas
+  - [x] `src/components/vademecum/home/sections/HomeTabEmAlta.tsx`: Eliminar `motion.div`, delays escalonados de cards e stagger de radares
+  - [x] `src/components/vademecum/home/carousel/HomeEmAltaCarousel.tsx`: Remover `motion.button` com delay e opacity 0
+  - [x] `src/components/vademecum/outros/AprendaSobreLeis.tsx`: Remover `motion.button` com delay e opacity 0
+  - [x] `src/components/vademecum/home/sections/HomeTabCategorias.tsx` e `HomeTabAreas.tsx`: Remover motion wrappers e delays de cards
+- [x] 3. Otimizar Subpáginas do Vade Mecum para Exibição Instantânea <!-- id: 3 -->
+  - [x] `src/pages/VadeMecumCodigos.tsx`: Remover `initial="hidden"` e stagger de entrada
+  - [x] `src/pages/VadeMecumEstatutos.tsx`: Remover `initial="hidden"` e stagger de entrada
+  - [x] `src/pages/VadeMecumEspeciais.tsx`: Remover `initial="hidden"` e stagger de entrada
+  - [x] `src/pages/VadeMecumSumulas.tsx`: Remover `initial="hidden"` e stagger de entrada
+  - [x] `src/pages/VadeMecumFavoritos.tsx`: Remover `initial="hidden"` e stagger de entrada
+  - [x] `src/pages/VadeMecumRecentes.tsx`: Remover `initial="hidden"` e stagger de entrada
+- [x] 4. Limpeza de Artigos e Demais Delays em Componentes <!-- id: 4 -->
+  - [x] `src/components/vademecum/artigo/ArtigoCard.tsx`: Remover `animate-cascade-in` e delays em `style`
+  - [x] `tailwind.config.ts`: Neutralizar keyframe `cascade-in`
+  - [x] `src/pages/LeiSeca/LeiSecaParte.tsx`: Remover `animate-fade-in-up` e `animationDelay`
+  - [x] `src/components/vademecum/ui_elements/ResultadoConteudoCard.tsx`: Remover `animationDelay`
+  - [x] `src/index.css`: Neutralizar keyframes de `resultado-fade-up`
+  - [x] `src/pages/IndexDesktop.tsx`: Remover `animate-fade-in` da troca de abas
+- [x] 5. Validação, Build e Versionamento Git <!-- id: 5 -->
+  - [x] Executar checagem de tipos `tsc --noEmit`
+  - [x] Executar build de produção `vite build`
   - [x] Commit e push automático no repositório GitHub

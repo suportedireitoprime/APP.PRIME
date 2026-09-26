@@ -383,6 +383,24 @@ const ArtigoLineRendererComponent = ({
     );
   }
 
+  const currentSegmentId = lineSegmentMap[lineIndex] || 'caput';
+
+  if (classified.type === 'epigrafe') {
+    return (
+      <p
+        data-line-index={lineIndex}
+        data-segment-id={currentSegmentId}
+        onClick={() => {
+          if (!highlightMode) setFocusedSegment(currentSegmentId);
+        }}
+        className={`font-bold text-primary tracking-wide pt-3.5 pb-1 select-text ${fontClass}`}
+        style={{ fontSize: `${Math.max(fontSize - 1, 14)}px` }}
+      >
+        {finalNodes}
+      </p>
+    );
+  }
+
   const extra =
     classified.type === 'inciso' ? 'pl-4 border-l-2 border-primary/30' :
     classified.type === 'alinea' ? 'pl-8' :
@@ -399,8 +417,6 @@ const ArtigoLineRendererComponent = ({
     if (/^\d/.test(num)) return `Art. ${num}`;
     return num;
   })();
-
-  const currentSegmentId = lineSegmentMap[lineIndex] || 'caput';
 
   // Item 01: Guia Óptico (foco suave na linha ativa e leitura confortável)
   const readingGuideClass = readingGuide

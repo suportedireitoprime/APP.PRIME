@@ -1,6 +1,5 @@
 import { memo, useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Landmark, Gavel, Scale, FileText, ShieldAlert, Briefcase, CircleDollarSign, ShoppingCart, Baby, BookMarked, Settings2, LucideIcon } from 'lucide-react';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { leiPath } from '@/lib/legislacaoSlugs';
@@ -245,13 +244,10 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
           const Icon = item.icon;
 
           return (
-            <motion.button
+            <button
               key={item.id}
               type="button"
               onClick={() => handleOpenItem(item)}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: Math.min(i * 0.03, 0.2) }}
               className="snap-start shrink-0 w-[145px] sm:w-[155px] h-[130px] sm:h-[138px] active:scale-[0.97] text-left cursor-pointer focus-visible:outline-none"
             >
               <div
@@ -286,7 +282,7 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
                   </p>
                 </div>
               </div>
-            </motion.button>
+            </button>
           );
         })}
       </div>

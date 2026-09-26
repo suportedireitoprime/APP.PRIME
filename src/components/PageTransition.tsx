@@ -17,13 +17,8 @@ interface PageTransitionProps {
  * Elimina o framer-motion na troca de rotas e remove o <Suspense> aninhado,
  * impedindo o piscar de esqueletos durante a navegação.
  */
-const PageTransition = ({ children, className, instant }: PageTransitionProps) => {
-  const navType = useNavigationType();
-  const isInstant = navType === "POP" || Boolean(instant);
-  const cls = isInstant
-    ? `min-h-dvh w-full max-w-full overflow-x-hidden ${className || ""}`.trim()
-    : `min-h-dvh w-full max-w-full overflow-x-hidden animate-page-in ${className || ""}`.trim();
-
+const PageTransition = ({ children, className }: PageTransitionProps) => {
+  const cls = `min-h-dvh w-full max-w-full overflow-x-hidden ${className || ""}`.trim();
   return <div className={cls}>{children}</div>;
 };
 

@@ -14,8 +14,9 @@
  */
 
 import type { ArtigoLei } from '@/data/mockData';
+import { normalizeLegalLineBreaks, isLineEpigrafe } from '@/components/vademecum/artigo/artigoTextUtils';
 
-export type TipoParteArtigo = 'caput' | 'pena' | 'paragrafo' | 'inciso' | 'alinea' | 'outro' | 'artigo_completo' | 'continua';
+export type TipoParteArtigo = 'caput' | 'pena' | 'paragrafo' | 'inciso' | 'alinea' | 'epigrafe' | 'outro' | 'artigo_completo' | 'continua';
 
 export interface ArtigoParte {
   id: string;
@@ -375,8 +376,8 @@ export function parseArtigoEmNarracaoContinua(
   // 2. Extrai os blocos textuais ordenados do artigo
   const blocosBrutos: Array<{ textoOriginal: string; textoTTS: string; tipo: TipoParteArtigo }> = [];
 
-  // Linhas do caput
-  const linhasCaput = rawCaput
+  // Linhas do caput normalizadas (desmembrando epígrafes internas)
+  const linhasCaput = normalizeLegalLineBreaks(rawCaput)
     .split(/\r?\n/)
     .map((l) => l.trim())
     .filter(Boolean);
@@ -428,8 +429,9 @@ export function parseArtigoEmNarracaoContinua(
       const isInciso = /^[IVXLCDM]+\s*[-–—.]/i.test(linha);
       const isAlinea = /^[a-z]\)\s*/i.test(linha);
       const isPena = /^Pena\s*[-–—:]/i.test(linha);
+      const isEpigrafe = isLineEpigrafe(linha);
 
-      if (!caputFechado && !isParagrafo && !isInciso && !isAlinea && !isPena) {
+      if (!caputFechado && !isParagrafo && !isInciso && !isAlinea && !isPena && !isEpigrafe) {
         caputAcumulado.push(linha);
         continue;
       }
@@ -447,7 +449,7 @@ export function parseArtigoEmNarracaoContinua(
       }
 
       const limpo = limparAnotacoesEditoriais(linha);
-      const tipo: TipoParteArtigo = isPena ? 'pena' : isParagrafo ? 'paragrafo' : isInciso ? 'inciso' : isAlinea ? 'alinea' : 'outro';
+      const tipo: TipoParteArtigo = isPena ? 'pena' : isParagrafo ? 'paragrafo' : isInciso ? 'inciso' : isAlinea ? 'alinea' : isEpigrafe ? 'epigrafe' : 'outro';
       blocosBrutos.push({
         textoOriginal: limpo,
         textoTTS: normalizarParteParaTTS(limpo),

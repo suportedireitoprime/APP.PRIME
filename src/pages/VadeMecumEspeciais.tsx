@@ -34,22 +34,10 @@ const VadeMecumEspeciais = () => {
         />
       </div>
 
-      <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3"
-        initial="hidden"
-        animate="show"
-        variants={{
-          hidden: { opacity: 0 },
-          show: { opacity: 1, transition: { staggerChildren: 0.03 } }
-        }}
-      >
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
         {leisEspeciais.map((l) => (
           <motion.button
             key={l.id}
-            variants={{
-              hidden: { opacity: 0, y: 8 },
-              show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 320, damping: 26 } }
-            }}
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => {
@@ -85,7 +73,7 @@ const VadeMecumEspeciais = () => {
             <p className="text-muted-foreground text-sm">Nenhuma lei especial encontrada para a busca.</p>
           </div>
         )}
-      </motion.div>
+      </div>
     </VadeMecumSubpage>
   );
 };

@@ -138,7 +138,7 @@ const IndexDesktop = () => {
             </div>
             
             <div className={`px-4 lg:px-6 py-6 relative z-20 ${activeTab !== 'legislacao' ? 'pt-[104px]' : ''}`}>
-              <div key={activeTab} className="animate-fade-in">
+              <div key={activeTab}>
                 {activeTab === 'legislacao' && (
                   <>
                     <div className="mb-8 mt-4 relative z-0 pointer-events-auto">

@@ -1,6 +1,5 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
 import VadeMecumHero from '@/components/vademecum/home/VadeMecumHero';
 import MobileHomeSections from '@/components/vademecum/home/MobileHomeSections';
 import VadeMecumBottomNav from '@/components/vademecum/navigation/VadeMecumBottomNav';
@@ -57,38 +56,23 @@ const VadeMecum = () => {
 
 
       <main className={`relative ${isDesktop ? 'mt-8' : 'max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-2'}`}>
-        <AnimatePresence mode="wait">
-          {activeTab === 'favoritos' ? (
-            <motion.div
-              key="favoritos"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15, ease: 'easeOut' }}
-              className={isDesktop ? '' : 'pt-6'}
-            >
-              <VadeMecumFavoritos />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="outros"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15, ease: 'easeOut' }}
-            >
-              <MobileHomeSections 
-                noticiasAutoplay={false} 
-                hideNoticias 
-                hideBlog 
-                emAltaLeis 
-                hideTabs={!isDesktop}
-                activeTab={activeTab as any}
-                onBuscar={() => setBuscaOpen(true)}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {activeTab === 'favoritos' ? (
+          <div key="favoritos" className={isDesktop ? '' : 'pt-6'}>
+            <VadeMecumFavoritos />
+          </div>
+        ) : (
+          <div key="outros">
+            <MobileHomeSections 
+              noticiasAutoplay={false} 
+              hideNoticias 
+              hideBlog 
+              emAltaLeis 
+              hideTabs={!isDesktop}
+              activeTab={activeTab as any}
+              onBuscar={() => setBuscaOpen(true)}
+            />
+          </div>
+        )}
       </main>
     </>
   );

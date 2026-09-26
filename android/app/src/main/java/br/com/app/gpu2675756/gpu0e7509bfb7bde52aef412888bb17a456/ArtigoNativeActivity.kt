@@ -194,7 +194,7 @@ fun ArtigoNativeScreen(
     var selectedTab by remember { mutableStateOf(0) }
 
     // Estado do leitor
-    var fontSize by remember { mutableStateOf(16) }
+    var fontSize by remember { mutableStateOf(17) }
     var highlightMode by remember { mutableStateOf(false) }
     var isNarrating by remember { mutableStateOf(false) }
     var selectedColor by remember { mutableStateOf("#FACC15") }
@@ -237,7 +237,10 @@ fun ArtigoNativeScreen(
 
     val allBlocks = remember(caput, paragrafos, incisos) {
         val list = mutableListOf<String>()
-        if (caput.isNotBlank()) list.add(caput)
+        if (caput.isNotBlank()) {
+            val lines = caput.split("\n").map { it.trim() }.filter { it.isNotBlank() }
+            list.addAll(lines)
+        }
         list.addAll(paragrafos)
         list.addAll(incisos)
         list
@@ -398,68 +401,90 @@ fun ArtigoNativeScreen(
                             }
 
                             itemsIndexed(allBlocks) { blockIndex, blockText ->
-                                val words = remember(blockText) { blockText.split(Regex("\\s+")).filter { it.isNotBlank() } }
-                                val annotated = buildAnnotatedString {
-                                    if (blockIndex == 0) {
-                                        withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = Color(0xFFE11D48))) {
-                                            append("Art. $numero ")
-                                        }
-                                        withStyle(SpanStyle(color = Color(0xFF9CA3AF))) {
-                                            append("— ")
-                                        }
-                                    }
-
-                                    words.forEachIndexed { wordIndex, word ->
-                                        val key = "$blockIndex-$wordIndex"
-                                        val hlHex = highlights[key]
-                                        if (hlHex != null) {
-                                            val hlColor = Color(android.graphics.Color.parseColor(hlHex)).copy(alpha = 0.45f)
-                                            withStyle(SpanStyle(background = hlColor, color = Color.White)) {
-                                                append(word)
-                                            }
-                                        } else {
-                                            withStyle(SpanStyle(color = Color(0xFFE4E4E7))) {
-                                                append(word)
-                                            }
-                                        }
-                                        append(" ")
-                                    }
+                                val isEpigrafe = remember(blockText) {
+                                    val clean = blockText.replace(Regex("\\s*\\([^)]*\\)\\s*"), "").trim()
+                                    clean.isNotBlank() && clean.length <= 75 &&
+                                        !clean.matches(Regex("^(?:Art\\s*\\.|§|Parágrafo|[IVXLCDM]+\\s*[-–.)]|[a-z]\\)).*", RegexOption.IGNORE_CASE)) &&
+                                        !clean.startsWith("(") &&
+                                        clean.matches(Regex("^[A-ZÁÀÂÃÉÈÊÍÓÔÕÚÇ].*")) &&
+                                        !clean.matches(Regex(".*[.;:!?]$")) &&
+                                        !clean.contains(Regex("\\b(?:considera-se|aplica-se|será|serão|não\\s+será|deve|podem|ficam|sujeitos)\\b", RegexOption.IGNORE_CASE))
                                 }
 
-                                Text(
-                                    text = annotated,
-                                    fontSize = fontSize.sp,
-                                    lineHeight = (fontSize * 1.7).sp,
-                                    fontFamily = FontFamily.Serif,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 6.dp)
-                                        .pointerInput(highlightMode, selectedColor) {
-                                            if (highlightMode) {
-                                                detectDragGestures(
-                                                    onDragStart = { offset ->
-                                                        view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
-                                                        val approx = (offset.x / 40).toInt().coerceIn(0, words.size - 1)
-                                                        val key = "$blockIndex-$approx"
-                                                        if (highlights.containsKey(key)) {
-                                                            highlights.remove(key)
-                                                        } else {
-                                                            highlights[key] = selectedColor
-                                                        }
-                                                    },
-                                                    onDrag = { change, _ ->
-                                                        change.consume()
-                                                        val approx = (change.position.x / 40).toInt().coerceIn(0, words.size - 1)
-                                                        val key = "$blockIndex-$approx"
-                                                        if (highlights[key] != selectedColor) {
-                                                            view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
-                                                            highlights[key] = selectedColor
-                                                        }
-                                                    }
-                                                )
+                                if (isEpigrafe) {
+                                    Text(
+                                        text = blockText,
+                                        fontSize = (fontSize - 1).coerceAtLeast(14).sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFFE11D48),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 14.dp, bottom = 4.dp)
+                                    )
+                                } else {
+                                    val words = remember(blockText) { blockText.split(Regex("\\s+")).filter { it.isNotBlank() } }
+                                    val annotated = buildAnnotatedString {
+                                        if (blockIndex == 0) {
+                                            withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = Color(0xFFE11D48))) {
+                                                append("Art. $numero ")
+                                            }
+                                            withStyle(SpanStyle(color = Color(0xFF9CA3AF))) {
+                                                append("— ")
                                             }
                                         }
-                                )
+
+                                        words.forEachIndexed { wordIndex, word ->
+                                            val key = "$blockIndex-$wordIndex"
+                                            val hlHex = highlights[key]
+                                            if (hlHex != null) {
+                                                val hlColor = Color(android.graphics.Color.parseColor(hlHex)).copy(alpha = 0.45f)
+                                                withStyle(SpanStyle(background = hlColor, color = Color.White)) {
+                                                    append(word)
+                                                }
+                                            } else {
+                                                withStyle(SpanStyle(color = Color(0xFFE4E4E7))) {
+                                                    append(word)
+                                                }
+                                            }
+                                            append(" ")
+                                        }
+                                    }
+
+                                    Text(
+                                        text = annotated,
+                                        fontSize = fontSize.sp,
+                                        lineHeight = (fontSize * 1.7).sp,
+                                        fontFamily = FontFamily.Serif,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 6.dp)
+                                            .pointerInput(highlightMode, selectedColor) {
+                                                if (highlightMode) {
+                                                    detectDragGestures(
+                                                        onDragStart = { offset ->
+                                                            view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+                                                            val approx = (offset.x / 40).toInt().coerceIn(0, words.size - 1)
+                                                            val key = "$blockIndex-$approx"
+                                                            if (highlights.containsKey(key)) {
+                                                                highlights.remove(key)
+                                                            } else {
+                                                                highlights[key] = selectedColor
+                                                            }
+                                                        },
+                                                        onDrag = { change, _ ->
+                                                            change.consume()
+                                                            val approx = (change.position.x / 40).toInt().coerceIn(0, words.size - 1)
+                                                            val key = "$blockIndex-$approx"
+                                                            if (highlights[key] != selectedColor) {
+                                                                view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+                                                                highlights[key] = selectedColor
+                                                            }
+                                                        }
+                                                    )
+                                                }
+                                            }
+                                    )
+                                }
                             }
                         }
 

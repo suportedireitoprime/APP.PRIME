@@ -259,8 +259,11 @@ public struct ArtigoView: View {
                 Divider()
                     .background(Color.white.opacity(0.1))
                 
-                // Caput
-                renderTextParagraph(text: artigo.caput, lineIndex: 0)
+                // Caput e Linhas Internas
+                let caputLines = artigo.caput.components(separatedBy: "\n").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }
+                ForEach(Array(caputLines.enumerated()), id: \.offset) { idx, line in
+                    renderTextParagraph(text: line, lineIndex: idx)
+                }
                 
                 // Parágrafos
                 ForEach(Array(artigo.paragrafos.enumerated()), id: \.offset) { idx, para in
@@ -561,30 +564,50 @@ public struct ArtigoView: View {
         .background(Color(hex: 0x141416))
     }
     
+    private func isEpigrafe(_ line: String) -> Bool {
+        let clean = line.replacingOccurrences(of: "\\s*\\([^)]*\\)\\s*", with: "", options: .regularExpression).trimmingCharacters(in: .whitespacesAndNewlines)
+        if clean.isEmpty || clean.count > 75 { return false }
+        if clean.range(of: "^(?:Art\\s*\\.|§|Parágrafo|[IVXLCDM]+\\s*[-–.)]|[a-z]\\))", options: .regularExpression) != nil { return false }
+        if clean.hasPrefix("(") && clean.hasSuffix(")") { return false }
+        if clean.range(of: "^[A-ZÁÀÂÃÉÈÊÍÓÔÕÚÇ]", options: .regularExpression) == nil { return false }
+        if clean.range(of: "[.;:!?]$", options: .regularExpression) != nil { return false }
+        if clean.range(of: "\\b(considera-se|aplica-se|será|serão|não\\s+será|deve|podem|ficam|sujeitos)\\b", options: .caseInsensitive) != nil { return false }
+        return true
+    }
+    
     // MARK: - Renderizador de Parágrafo
+    @ViewBuilder
     private func renderTextParagraph(text: String, lineIndex: Int) -> some View {
-        let words = text.components(separatedBy: " ")
-        return VStack(alignment: .leading, spacing: 4) {
-            Text(words.enumerated().map { wordIdx, word in
-                let key = "\(lineIndex):\(wordIdx)"
-                let isHighlighted = highlights[key] != nil
-                return (word, isHighlighted, highlights[key])
-            }.reduce(into: AttributedString()) { result, item in
-                var wordAttr = AttributedString(item.0 + " ")
-                wordAttr.font = .system(size: fontSize, weight: .regular)
-                wordAttr.foregroundColor = Color(hex: 0xE5E7EB)
-                if item.1, let hex = item.2 {
-                    wordAttr.backgroundColor = Color(hex: hex).opacity(0.55)
-                    wordAttr.foregroundColor = .white
-                }
-                result.append(wordAttr)
-            })
-            .lineSpacing(6)
-            .contentShape(Rectangle())
-            .onTapGesture {
-                if highlightMode {
-                    haptic()
-                    toggleParagraphHighlight(lineIndex: lineIndex, totalWords: words.count)
+        if isEpigrafe(text) {
+            Text(text)
+                .font(.system(size: max(fontSize - 1, 14), weight: .bold))
+                .foregroundColor(Color(hex: 0xE11D48))
+                .padding(.top, 14)
+                .padding(.bottom, 4)
+        } else {
+            let words = text.components(separatedBy: " ")
+            VStack(alignment: .leading, spacing: 4) {
+                Text(words.enumerated().map { wordIdx, word in
+                    let key = "\(lineIndex):\(wordIdx)"
+                    let isHighlighted = highlights[key] != nil
+                    return (word, isHighlighted, highlights[key])
+                }.reduce(into: AttributedString()) { result, item in
+                    var wordAttr = AttributedString(item.0 + " ")
+                    wordAttr.font = .system(size: fontSize, weight: .regular)
+                    wordAttr.foregroundColor = Color(hex: 0xE5E7EB)
+                    if item.1, let hex = item.2 {
+                        wordAttr.backgroundColor = Color(hex: hex).opacity(0.55)
+                        wordAttr.foregroundColor = .white
+                    }
+                    result.append(wordAttr)
+                })
+                .lineSpacing(6)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    if highlightMode {
+                        haptic()
+                        toggleParagraphHighlight(lineIndex: lineIndex, totalWords: words.count)
+                    }
                 }
             }
         }

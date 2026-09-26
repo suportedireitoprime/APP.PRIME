@@ -1,5 +1,4 @@
 import { memo } from 'react';
-import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import HomeCard from '@/components/vademecum/home/HomeCard';
 import { CATEGORIA_CATS, CategoriaFormal } from './homeSectionsData';
@@ -12,14 +11,7 @@ const HomeTabCategorias = ({ onOpenCategory }: HomeTabCategoriasProps) => {
   const navigate = useNavigate();
 
   return (
-    <motion.div
-      key="categorias"
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
-      className="space-y-4 px-1 pb-8"
-    >
+    <div className="space-y-4 px-1 pb-8">
       <div>
         <div className="flex items-center gap-2">
           <span className="w-1 h-5 rounded-full bg-primary" />
@@ -40,7 +32,7 @@ const HomeTabCategorias = ({ onOpenCategory }: HomeTabCategoriasProps) => {
             label={c.label}
             sublabel={c.sublabel}
             color={c.color}
-            delay={i * 0.05}
+            delay={0}
             onClick={() => {
               if (c.route) { navigate(c.route); return; }
               if (c.id === 'cat-jurisprudencia') { navigate('/jurisprudencia'); return; }
@@ -52,7 +44,7 @@ const HomeTabCategorias = ({ onOpenCategory }: HomeTabCategoriasProps) => {
           />
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 };
 

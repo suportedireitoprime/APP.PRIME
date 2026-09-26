@@ -188,12 +188,49 @@ export const LEGAL_LINE_START_RE = /^(?:Art\s*\.|§|Parágrafo\b|[IVXLCDM]+\s*[-
 // Se a linha inteira for só uma nota entre parênteses
 export const LEGAL_NOTE_ONLY_RE = /^\((?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Revogado|Vetado)\b/i;
 
-/** Merge physical line breaks into logical legal units. */
+/** Verifica se uma linha é uma epígrafe/subtítulo interno dentro do artigo (ex: 'Superveniência de causa independente') */
+export function isLineEpigrafe(line: string): boolean {
+  const clean = line.replace(/\s*\([^)]*\)\s*/g, '').trim();
+  if (!clean || clean.length > 75) return false;
+  // Não pode ser dispositivo canônico nem nota nem subdivisão estrutural do código
+  if (/^(?:Art\s*\.|§|Parágrafo\b|[IVXLCDM]+\s*[-–.)]|[a-z]\)|LIVRO\b|PARTE\b|TÍTULO\b|CAPÍTULO\b|SEÇÃO\b|SUBSEÇÃO\b)/i.test(clean)) return false;
+  if (/^\((?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Revogado|Vetado)\b/i.test(line.trim())) return false;
+  // Deve começar com letra maiúscula
+  if (!/^[A-ZÁÀÂÃÉÈÊÍÓÔÕÚÇ]/.test(clean)) return false;
+  // Epígrafe não termina com ponto final, ponto e vírgula, dois pontos ou exclamação/interrogação
+  if (/[.;:!?]$/.test(clean)) return false;
+  // Não pode conter verbos típicos de corpo de norma jurídica
+  if (/\b(?:considera-se|aplica-se|será|serão|não\s+será|deve|podem|ficam|sujeitos)\b/i.test(clean)) return false;
+  return true;
+}
+
+/** Desmembra títulos/epígrafes colados após ponto final para sua própria linha */
+export function desmembrarEpigrafesEmbutidas(text: string): string {
+  return text.replace(
+    /([.;:])\s+([A-ZÁÀÂÃÉÈÊÍÓÔÕÚÇ][A-Za-zÁÀÂÃÉÈÊÍÓÔÕÚÇáàâãéèêíóôõúç\s–-]{2,60})\s*(?=\r?\n|§|Parágrafo|[IVXLCDM]+\s*[-–.)]|[a-z]\))/g,
+    (match, punct, title) => {
+      const cleanTitle = title.trim();
+      if (isLineEpigrafe(cleanTitle)) {
+        return `${punct}\n\n${cleanTitle}\n\n`;
+      }
+      return match;
+    }
+  );
+}
+
+/** Merge physical line breaks into logical legal units, preservando epígrafes em sua própria linha. */
 export function normalizeLegalLineBreaks(text: string): string {
   // Corrige espaçamento anômalo entre número e indicador ordinal (ex: "§ 2 º" -> "§ 2º")
-  const normalizedText = text
+  let normalizedText = text
     .replace(/(§\s*\d+)\s+([º°ª])/g, '$1$2')
     .replace(/(Art\.\s*\d+)\s+([º°ª])/gi, '$1$2');
+
+  // Quebras com múltiplos espaços (4+ espaços ou tabs) antes de dispositivos legais ou epígrafes viram nova linha
+  normalizedText = normalizedText.replace(/\s{3,}(?=(?:§|Parágrafo|[IVXLCDM]+\s*[-–.)]|[a-z]\)|[A-ZÁÀÂÃÉÈÊÍÓÔÕÚÇ]))/g, '\n');
+
+  // Desmembra títulos e epígrafes embutidos após ponto final
+  normalizedText = desmembrarEpigrafesEmbutidas(normalizedText);
+
   const raw = normalizedText.split('\n').map(l => l.trim());
   const merged: string[] = [];
   for (const line of raw) {
@@ -201,7 +238,8 @@ export function normalizeLegalLineBreaks(text: string): string {
     if (
       merged.length === 0 ||
       LEGAL_LINE_START_RE.test(line) ||
-      LEGAL_NOTE_ONLY_RE.test(line)
+      LEGAL_NOTE_ONLY_RE.test(line) ||
+      isLineEpigrafe(line)
     ) {
       merged.push(line);
     } else {
@@ -337,7 +375,8 @@ export function highlightTermosOnly(text: string): React.ReactNode[] {
 }
 
 /** Classify a line of legal text by its structural type. */
-export function classifyLine(line: string): { type: 'nomen' | 'caput' | 'inciso' | 'alinea' | 'paragrafo' | 'text'; text: string } {
+export function classifyLine(line: string): { type: 'nomen' | 'caput' | 'inciso' | 'alinea' | 'paragrafo' | 'epigrafe' | 'text'; text: string } {
+  if (isLineEpigrafe(line)) return { type: 'epigrafe', text: line };
   if (/^[IVXLC]+\s*[-–.]\s*/i.test(line)) return { type: 'inciso', text: line };
   if (/^[a-z]\)\s*/i.test(line)) return { type: 'alinea', text: line };
   if (/^(§\s*\d+(?:\s*[.º°ªoO])?\s*[-–—.]?\s*|Parágrafo\s+único)/i.test(line)) return { type: 'paragrafo', text: line };

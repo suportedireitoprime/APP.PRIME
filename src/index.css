@@ -115,18 +115,14 @@ button, a, input, select, textarea, [role="button"], [role="tab"], .cursor-point
 }
 
 @keyframes resultado-fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
+  from, to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 
 .resultado-card-enter {
-  animation: resultado-fade-up 0.2s ease-out both;
+  animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1351,18 +1347,15 @@ html.light .bg-\[\#212121\]\/95 { background-color: hsl(var(--card) / 0.95) !imp
 }
 
 
-/* Page transition — Apple/Linear Big Tech standard animation */
+/* Page transition — 0ms instant display without opacity 0 or translateY */
 @keyframes page-in {
-  from { opacity: 0; transform: translateY(4px) scale(0.994); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 1; transform: none; }
+  to   { opacity: 1; transform: none; }
 }
 .animate-page-in {
-  animation: page-in 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  will-change: transform, opacity;
-  transform: translateZ(0);
-}
-@media (prefers-reduced-motion: reduce) {
-  .animate-page-in { animation: none; }
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
 }
 
 /* Reflexo animado no logo central do hero */

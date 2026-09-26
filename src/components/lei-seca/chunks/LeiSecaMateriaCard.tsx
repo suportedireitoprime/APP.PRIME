@@ -28,8 +28,7 @@ export function LeiSecaMateriaCard({
         haptic.selection();
         onSelect(materia);
       }}
-      style={{ animationDelay: `${Math.min(index, 8) * 24}ms` }}
-      className="w-full min-h-[78px] h-auto py-3.5 rounded-2xl bg-card border border-border/60 hover:border-violet-500/40 hover:bg-card/80 hover:shadow-md transition-all duration-[80ms] flex items-center gap-3 px-3.5 text-left group active:scale-[0.985] animate-stagger-in touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      className="w-full min-h-[78px] h-auto py-3.5 rounded-2xl bg-card border border-border/60 hover:border-violet-500/40 hover:bg-card/80 hover:shadow-md transition-all duration-[80ms] flex items-center gap-3 px-3.5 text-left group active:scale-[0.985] touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
     >
       <div
         className="h-12 w-12 grid place-items-center shrink-0"

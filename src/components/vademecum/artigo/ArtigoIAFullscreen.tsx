@@ -34,7 +34,7 @@ const ArtigoIAFullscreen = ({
   sections,
   loading,
   initialSectionId,
-  fontSize = 16,
+  fontSize = 17,
   portalContainer,
   onClose,
 }: Props) => {

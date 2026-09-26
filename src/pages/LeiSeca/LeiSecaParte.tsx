@@ -175,10 +175,10 @@ export default function LeiSecaParte() {
           </div>
         )}
 
-        {grupos.map(([tituloPai, items], gi) => {
+        {grupos.map(([tituloPai, items]) => {
           const { nivel, descricao } = tituloPai !== "—" ? parseTituloPai(tituloPai) : { nivel: "", descricao: "" };
           return (
-            <div key={tituloPai} className="mb-7 animate-fade-in-up" style={{ animationDelay: `${gi * 40}ms` }}>
+            <div key={tituloPai} className="mb-7">
               {tituloPai !== "—" && (
                 <div className="mb-3 px-1">
                   <div
@@ -199,13 +199,13 @@ export default function LeiSecaParte() {
                 </div>
               )}
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                {items.map((l, li) => {
+                {items.map((l) => {
                   const idx = licoes.findIndex((x) => x.id === l.id);
                   const desbloq = isDesbloqueada(idx);
                   const prog = progressoQ.data?.get(l.id);
                   const isProx = idx === proxIdx;
                   return (
-                    <li key={l.id} className="animate-fade-in-up" style={{ animationDelay: `${(gi * 40) + li * 30}ms` }}>
+                    <li key={l.id}>
                       {/* Chunk 7: Nó de Lição Gamificada */}
                       <LeiSecaLicaoNode
                         licao={l}

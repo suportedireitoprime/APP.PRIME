@@ -201,9 +201,7 @@ export default {
           "50%":      { transform: "scaleY(1)" },
         },
         "cascade-in": {
-          "0%":   { opacity: "0", transform: "translateY(14px) scale(0.985)" },
-          "60%":  { opacity: "1" },
-          "100%": { opacity: "1", transform: "translateY(0) scale(1)" },
+          "0%, 100%": { opacity: "1", transform: "none" },
         },
       },
       transitionDuration: {
@@ -223,7 +221,7 @@ export default {
         "underline-draw": "underline-draw 0.6s ease-out both",
         "pulse-hazard": "pulse-hazard 2s ease-in-out infinite",
         waveform: "waveform 1.1s ease-in-out infinite",
-        "cascade-in": "cascade-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both",
+        "cascade-in": "none",
         shimmer: "shimmer 2.5s ease-in-out infinite",
       },
     },

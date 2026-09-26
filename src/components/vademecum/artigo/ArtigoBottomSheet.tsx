@@ -45,6 +45,7 @@ import {
   type ArtigoBottomSheetProps,
   type VadeMecumFontFamily,
   type VadeMecumLineHeight,
+  DEFAULT_VADEMECUM_FONT_SIZE,
   VADEMECUM_FONT_SIZE_KEY,
   VADEMECUM_FONT_FAMILY_KEY,
   VADEMECUM_LINE_HEIGHT_KEY,
@@ -232,9 +233,10 @@ const ArtigoBottomSheet = ({
   const [fontSize, setFontSize] = useState<number>(() => {
     try {
       const saved = localStorage.getItem(VADEMECUM_FONT_SIZE_KEY);
-      return saved ? Number(saved) : 18;
+      if (saved && saved !== '18') return Number(saved);
+      return DEFAULT_VADEMECUM_FONT_SIZE;
     } catch {
-      return 18;
+      return DEFAULT_VADEMECUM_FONT_SIZE;
     }
   });
 

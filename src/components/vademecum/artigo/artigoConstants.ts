@@ -64,6 +64,7 @@ export const GRIFO_IA_DEFAULT_KEY = 'direitoprime:grifoia:default:on';
 export type VadeMecumFontFamily = 'sans' | 'serif' | 'mono';
 export type VadeMecumLineHeight = '1.6' | '1.8' | '2.1';
 
+export const DEFAULT_VADEMECUM_FONT_SIZE = 17;
 export const VADEMECUM_FONT_SIZE_KEY = 'vademecum_font_size';
 export const VADEMECUM_FONT_FAMILY_KEY = 'vademecum_font_family';
 export const VADEMECUM_LINE_HEIGHT_KEY = 'vademecum_line_height';

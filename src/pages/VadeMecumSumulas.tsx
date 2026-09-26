@@ -17,24 +17,12 @@ const VadeMecumSumulas = () => {
 
   return (
     <VadeMecumSubpage titulo="Súmulas" descricao="Súmulas, teses e informativos dos tribunais">
-      <motion.div 
-        className="space-y-2"
-        initial="hidden"
-        animate="show"
-        variants={{
-          hidden: { opacity: 0 },
-          show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
-        }}
-      >
+      <div className="space-y-2">
         {ITENS.map((i) => {
           const Icon = i.icon;
           return (
             <motion.button
               key={i.to}
-              variants={{
-                hidden: { opacity: 0, x: -10 },
-                show: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-              }}
               whileHover={{ scale: 1.015 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => navigate(i.to)}
@@ -51,7 +39,7 @@ const VadeMecumSumulas = () => {
             </motion.button>
           );
         })}
-      </motion.div>
+      </div>
     </VadeMecumSubpage>
   );
 };

@@ -1,6 +1,5 @@
-import { memo, Suspense, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, Search } from 'lucide-react';
+import { memo, Suspense } from 'react';
+import { ChevronRight } from 'lucide-react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import HomeCard from '@/components/vademecum/home/HomeCard';
 import HomeEmAltaCarousel from '@/components/vademecum/home/carousel/HomeEmAltaCarousel';
@@ -23,14 +22,7 @@ function getAreaDisplayLabel(label: string): string {
 
 const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar }: HomeTabEmAltaProps) => {
   return (
-    <motion.div
-      key="emalta"
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
-      className="space-y-6 pb-8"
-    >
+    <div className="space-y-6 pb-8">
       {/* 1. CARROSSEL EM ALTA (DESIGN VERMELHO DO CARROSSEL DE LIVROS) */}
       <HomeEmAltaCarousel />
 
@@ -49,25 +41,16 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar }: HomeTabEmAltaProps) =>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-4">
-          <AnimatePresence mode="popLayout">
-            {AREA_CATS.map((c, i) => {
-              const displayLabel = getAreaDisplayLabel(c.label);
-              return (
-                <motion.div
-                  key={c.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <HomeCard
+          {AREA_CATS.map((c) => {
+            const displayLabel = getAreaDisplayLabel(c.label);
+            return (
+              <HomeCard
                 key={c.id}
                 icon={c.icon}
                 label={displayLabel}
                 sublabel={c.sublabel}
                 color={c.color}
-                delay={Math.min(i * 0.03, 0.25)}
+                delay={0}
                 solidColor={true}
                 hideChevron={true}
                 hideWatermark={true}
@@ -77,10 +60,8 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar }: HomeTabEmAltaProps) =>
                 data-track-name={displayLabel}
                 data-track-section="legislacao"
               />
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
+            );
+          })}
         </div>
       </div>
 
@@ -102,15 +83,7 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar }: HomeTabEmAltaProps) =>
             Acompanhe publicações diárias, radares e boletins jurídicos
           </p>
         </div>
-        <motion.div
-          className="space-y-2.5"
-          variants={{
-            hidden: { opacity: 0 },
-            show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } },
-          }}
-          initial="hidden"
-          animate="show"
-        >
+        <div className="space-y-2.5">
           {RADAR_CATS.map((c) => {
             const Icon = c.icon;
             return (
@@ -137,9 +110,9 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar }: HomeTabEmAltaProps) =>
               </button>
             );
           })}
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

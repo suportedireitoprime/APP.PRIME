@@ -3,7 +3,6 @@ import { Clock, ArrowUpRight, BookOpen } from 'lucide-react';
 import { useBlogLeisPosts, type BlogLeisPost } from '@/hooks/useBlogLeisPosts';
 import { useNavigate } from 'react-router-dom';
 import BlogCoverImage from '@/components/BlogCoverImage';
-import { motion } from 'framer-motion';
 
 const AUTOPLAY_MS = 10000;
 
@@ -115,13 +114,10 @@ export default function AprendaSobreLeis({ titleClassName = 'px-1' }: AprendaSob
         {items.map((it, i) => {
           const isActive = i === activeIndex;
           return (
-            <motion.button
+            <button
               type="button"
               key={it.id}
               onClick={it.onOpen}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: Math.min(i * 0.04, 0.2) }}
               className="snap-center shrink-0 w-[85%] md:w-[46%] lg:w-[31%] active:scale-[0.99] text-left"
             >
 
@@ -165,7 +161,7 @@ export default function AprendaSobreLeis({ titleClassName = 'px-1' }: AprendaSob
                   </p>
                 </div>
               </div>
-            </motion.button>
+            </button>
           );
         })}
       </div>

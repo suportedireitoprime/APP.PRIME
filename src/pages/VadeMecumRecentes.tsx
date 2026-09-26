@@ -60,22 +60,10 @@ const VadeMecumRecentes = () => {
           <p className="text-muted-foreground text-sm">Nenhuma lei alterada recentemente.</p>
         </div>
       ) : (
-        <motion.div 
-          className="space-y-3"
-          initial="hidden"
-          animate="show"
-          variants={{
-            hidden: { opacity: 0 },
-            show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
-          }}
-        >
+        <div className="space-y-3">
           {alteracoes.map((alt) => (
             <motion.button
               key={alt.id}
-              variants={{
-                hidden: { opacity: 0, x: -10 },
-                show: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-              }}
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => {
@@ -99,7 +87,7 @@ const VadeMecumRecentes = () => {
               </div>
             </motion.button>
           ))}
-        </motion.div>
+        </div>
       )}
     </VadeMecumSubpage>
   );

@@ -146,22 +146,10 @@ const VadeMecumFavoritos = () => {
             <p className="text-muted-foreground text-sm">Você ainda não favoritou nenhuma lei.</p>
           </div>
         ) : (
-          <motion.div 
-            className="space-y-2"
-            initial="hidden"
-            animate="show"
-            variants={{
-              hidden: { opacity: 0 },
-              show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
-            }}
-          >
+          <div className="space-y-2">
             {favoritos.map((l) => (
               <motion.button
                 key={l.leiId}
-                variants={{
-                  hidden: { opacity: 0, x: -10 },
-                  show: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-                }}
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => {
@@ -182,7 +170,7 @@ const VadeMecumFavoritos = () => {
                 <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0 transition-transform group-hover:translate-x-0.5" />
               </motion.button>
             ))}
-          </motion.div>
+          </div>
         )
       ) : (
         loadingArtigos ? (
@@ -196,24 +184,9 @@ const VadeMecumFavoritos = () => {
             <p className="text-muted-foreground text-sm">Você ainda não favoritou nenhum artigo.</p>
           </div>
         ) : (
-          <motion.div 
-            className="space-y-6 pb-6"
-            initial="hidden"
-            animate="show"
-            variants={{
-              hidden: { opacity: 0 },
-              show: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.1 } }
-            }}
-          >
+          <div className="space-y-6 pb-6">
             {grupos.map((g) => (
-              <motion.div 
-                key={g.lei.id} 
-                className="space-y-3"
-                variants={{
-                  hidden: { opacity: 0, y: 10 },
-                  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-                }}
-              >
+              <div key={g.lei.id} className="space-y-3">
                 <motion.button
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.98 }}
@@ -234,12 +207,9 @@ const VadeMecumFavoritos = () => {
 
                 <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto no-scrollbar">
                   <div className="flex gap-2.5 pb-1">
-                    {g.artigos.map((a, i) => (
+                    {g.artigos.map((a) => (
                       <motion.button
                         key={`${a.tabela_codigo}-${a.numero_artigo}`}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: Math.min(i, 12) * 0.03, type: "spring", stiffness: 300, damping: 24 }}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => abrirArtigo(g.lei, a.numero_artigo)}
@@ -260,9 +230,9 @@ const VadeMecumFavoritos = () => {
                     ))}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
         )
       )}
     </div>

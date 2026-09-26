@@ -2,12 +2,6 @@ import React from 'react';
 import { ChevronRight, Heart, Highlighter, StickyNote } from 'lucide-react';
 import type { ArtigoLei } from '@/data/mockData';
 
-// Cascata suave só nos primeiros itens visíveis (delay incremental de 28ms).
-// Do 13º em diante o item entra sem delay — o browser + content-visibility
-// garantem que só os visíveis pagam o custo de render.
-const CASCADE_MAX_DELAY_INDEX = 8;
-const CASCADE_STEP_MS = 22;
-
 interface ArtigoCardProps {
   artigo: ArtigoLei;
   index: number;
@@ -70,11 +64,9 @@ const ArtigoCard = ({ artigo, index, onClick, highlightText, isHighlighted, with
       const m = head.match(strictSplitRe);
       if (m && m[2]) { head = cleanStructuralText(m[1].trim()) || head; sub = cleanStructuralText([m[2].trim(), sub].filter(Boolean).join(' — ')); }
     }
-    const structuralDelay = `${Math.min(index, CASCADE_MAX_DELAY_INDEX) * CASCADE_STEP_MS}ms`;
     return (
       <div
-        className="article-cascade-item animate-cascade-in px-4 sm:px-6 pt-5 pb-3 sm:pt-6 sm:pb-4 flex flex-col items-center justify-center text-center overflow-hidden"
-        style={{ animationDelay: structuralDelay }}
+        className="article-cascade-item px-4 sm:px-6 pt-5 pb-3 sm:pt-6 sm:pb-4 flex flex-col items-center justify-center text-center overflow-hidden"
       >
         <p className="text-[15px] sm:text-[16px] uppercase tracking-[0.24em] font-extrabold text-amber-300 leading-tight break-words">
           {head}
@@ -126,15 +118,10 @@ const ArtigoCard = ({ artigo, index, onClick, highlightText, isHighlighted, with
   const renderCaput = highlightText ? highlightText(previewText) : previewText;
   const artLabel = /^Art\.?/i.test(displayNumero) ? displayNumero.replace(/\s+/g, ' ').trim() : `Art. ${badgeLabel}`;
 
-  const cascadeDelay = `${Math.min(index, CASCADE_MAX_DELAY_INDEX) * CASCADE_STEP_MS}ms`;
-
   const isADCT = typeof artigo.ordem === 'number' && artigo.ordem > 10000;
 
   return (
-    <div
-      className="article-cascade-item animate-cascade-in"
-      style={{ animationDelay: cascadeDelay }}
-    >
+    <div className="article-cascade-item">
       
       <button
         id={`artigo-${artigo.id}`}

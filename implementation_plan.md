@@ -1,66 +1,70 @@
-# Plano de Implementação — Correção da Extração de Leis e Histórico do Planalto (2024–2026)
+# Plano de Implementação — Fluidez Absoluta e Navegação Instantânea (0ms) no Vade Mecum e Rotas
 
-## Contexto e Diagnóstico
-O usuário identificou que, no **Histórico de Alterações do Vade Mecum** (`AdminMapeamentoLeis.tsx`):
-1. O Código Civil e outras leis estavam exibindo alterações apenas até **Janeiro de 2023** (14 alterações), omitindo alterações de 2023, 2024, 2025 e 2026.
-2. Ao conferir o Planalto (ex: CPP `del3689compilado.htm`), identificou a alteração de **2025** do **Art. 300-A** (`Lei nº 15.280, de 2025`), mas o extrator associou o artigo errado ou não capturou a novidade.
-
-### As 4 Causas Raiz Identificadas
-1. **Lógica de identificação do Artigo no Scraper (`supabase/functions/vademecum-scraper/index.ts`)**:
-   - Quando uma nova alteração é o próprio caput de um artigo incluído (ex: `<p>Art. 300-A. ... (Incluído pela Lei nº 15.280, de 2025)</p>`), a função `extractArticleData` pulava o parágrafo atual e procurava apenas no `previousElementSibling` (`let prev = startElement.previousElementSibling`), associando a alteração ao artigo anterior (ex: Art. 300 em vez do Art. 300-A)!
-   - O regex para número de artigo usava `split(' ')[1]?.replace('.', '')`, que falhava em artigos com sufixos (`300-A`), numerações com milhar (`1.225.`), ou sem espaço.
-   - O filtro de detecção de alterações checava apenas `Redação dada pela Lei` ou `Incluído pela Lei`, ignorando gênero feminino (`Incluída pela Lei`), revogações (`Revogado/a pela Lei`), Decretos-Leis, Emendas Constitucionais e Leis Complementares.
-   - Deduplicação cega por `item.artigo` sobrescrevia alterações de diferentes anos/dispositivos do mesmo artigo.
-   - Dependência estrita do `browserless.io` gerava falha de rede/timeout quando chamado pelo cliente.
-
-2. **Bloqueio de Cache Local no Frontend (`src/pages/AdminMapeamentoLeis.tsx`)**:
-   - `handleAbrirHistorico` checava `getScrapedAlteracoes(lei.tabela_nome, lei.id)`. Se encontrasse qualquer dado no `localStorage` (`vade_scrape_data_*`), ele usava o cache estático antigo (de 2023) e **nunca** executava a varredura nova no Planalto.
-   - Ausência de botão explícito e claro para "Limpar Cache & Re-escanear do Planalto".
-
-3. **Base de Sementes e Leis Recentes (`src/data/leiAlteracoesScraped.ts`)**:
-   - `KNOWN_LEIS_DATAS` não continha as leis de 2023 a 2026 como a Lei 15.280/2025 (CPP Art. 300-A), Lei 14.994/2024 (Pacote Antifeminicídio no CP/CPP/CC), Lei 14.843/2024, Lei 14.836/2024, Lei 14.711/2023 (Marco Legal das Garantias - CC), etc.
-   - Sementes ricas só existiam para o Código Penal (`SEED_CP_ALTERACOES`), deixando Código Civil e CPP sem cobertura offline/imediata.
-
-4. **Sincronização no Banco (`handleSincronizarArtigo`)**:
-   - O replace numérico `item.artigo.replace(/[^0-9]/g, '')` removia sufixos como `-A` (tornando `Art. 300-A` em `300`), sobrescrevendo artigos indevidos no banco com `%300%`.
+Eliminar a percepção de engasgo, lentidão, movimento vertical (`translateY`) e elementos inicialmente invisíveis (`opacity: 0`) nas navegações do aplicativo (especialmente Vade Mecum, Constituição, Códigos, Estatutos, Súmulas e subpáginas).
 
 ---
 
-## Proposta de Solução
+## 1. Diagnóstico e Causas Identificadas
 
-### 1. Refatoração Total do Extrator (`supabase/functions/vademecum-scraper/index.ts`)
-- Implementar **motor dual híbrido**:
-  - **Motor Primário (HTTP Nativo ultrarrápido com Deno)**: Busca o HTML oficial do Planalto via `fetch` direto (com decodificação `windows-1252` e `utf-8` e fallback de variantes de URL), parseia com RegExp/DOM robusto sem depender de Puppeteer/Browserless, retornando em menos de 1 segundo sem risco de quota ou timeout.
-  - **Motor Secundário (Puppeteer/Browserless)** como fallback caso o HTML precise de renderização complexa.
-- **Identificação precisa de Artigos**:
-  - Regex universal: `/^Art\.?\s*(\d+(?:\.\d+)*(?:-[A-Za-z0-9]+)?)/i` que suporta perfeitamente `Art. 300-A`, `Art. 1.225`, `Art. 15-B`, etc.
-  - Checar PRIMEIRO se o próprio elemento/parágrafo do dispositivo alterado é o caput do artigo (`Art. 300-A`). Somente se for parágrafo/inciso/alínea, percorrer os nós anteriores para encontrar o artigo-pai!
-- **Ampla detecção de termos modificadores**:
-  - Casar `Inclu[íi]d[oa]`, `Reda[çc][ãa]o\s+dada`, `Revogad[oa]`, `Acrescid[oa]`, `Vide`, `Vig[êe]ncia` por Lei, Lei Complementar, Decreto-Lei, Emenda Constitucional ou Medida Provisória.
-- **Chave de unicidade inteligente**:
-  - Deduplicar por `${artigo}_${ano}_${dispositivo}` para não apagar diferentes atualizações ou incisos do mesmo artigo.
+1. **Camada de Rota (`PageTransition.tsx` e `index.css`)**:
+   - `PageTransition.tsx` aplicava `animate-page-in` em navegações PUSH/REPLACE.
+   - `@keyframes page-in` em `index.css` iniciava em `opacity: 0; transform: translateY(4px) scale(0.994)` com duração de 200ms.
+   - A rota `/vade-mecum` em `AppRoutes.tsx` não tinha a prop `instant`.
 
-### 2. Atualização da Base de Conhecimento e Sementes (`src/data/leiAlteracoesScraped.ts`)
-- Adicionar todas as leis recentes no `KNOWN_LEIS_DATAS` (2023 a 2026):
-  - Lei 15.280/2025 (Art. 300-A CPP)
-  - Lei 14.994/2024 (Feminicídio - CP, CPP, CC)
-  - Lei 14.843/2024 (Saidinhas / Exame criminológico)
-  - Lei 14.836/2024 (Empate HC)
-  - Lei 14.711/2023 (Marco Legal das Garantias - Código Civil)
-  - Lei 14.620/2023 (Minha Casa Minha Vida - Código Civil)
-  - Leis de 2024 a 2026 correlatas.
-- Criar `SEED_CC_ALTERACOES` e `SEED_CPP_ALTERACOES` para que Código Civil e Código de Processo Penal tenham visualização imediata das alterações recentes mesmo antes de acionar a rede.
-- Ajustar `getScrapedAlteracoes` para mesclar as novidades recentes sempre no topo, independentemente da data do cache antigo.
+2. **Hub do Vade Mecum (`VadeMecum.tsx` e `MobileHomeSections.tsx`)**:
+   - `VadeMecum.tsx` envolvia o conteúdo em `<AnimatePresence mode="wait">` com `<motion.div initial={{ opacity: 0 }} transition={{ duration: 0.15 }}>`.
+   - `MobileHomeSections.tsx` envolvia as abas em `<AnimatePresence mode="wait" initial={false}>`, atrasando a troca e montagem das abas.
 
-### 3. Melhorias na UI de Histórico (`src/pages/AdminMapeamentoLeis.tsx`)
-- Adicionar botão com ação clara de **"Forçar Nova Varredura do Planalto"** (com limpeza de cache local para recarregar do zero).
-- Exibir badge com o ano mais recente (2025 / 2026) e contagem precisa de alterações.
-- Corrigir `handleSincronizarArtigo` para preservar artigos com sufixo (ex: `Art. 300-A`).
+3. **Abas e Seções do Vade Mecum (`HomeTabEmAlta.tsx`, `HomeTabCategorias.tsx`, `HomeTabAreas.tsx`)**:
+   - `HomeTabEmAlta.tsx`: container com `initial={{ opacity: 0, y: 16 }}`; cards de legislação com `initial={{ opacity: 0, scale: 0.95 }}` e `delay={Math.min(i * 0.03, 0.25)}`; radares com `staggerChildren: 0.05, delayChildren: 0.1`.
+   - `HomeEmAltaCarousel.tsx`: botões com `initial={{ opacity: 0, y: 6 }}` e `transition={{ delay: Math.min(i * 0.03, 0.2) }}`.
+   - `AprendaSobreLeis.tsx`: botões com `initial={{ opacity: 0, y: 8 }}` e `transition={{ delay: Math.min(i * 0.04, 0.2) }}`.
+   - `HomeTabCategorias.tsx` e `HomeTabAreas.tsx`: containers com `initial={{ opacity: 0, y: 16 }}` e cards com `delay={i * 0.05}` / `delay={Math.min(i * 0.04, 0.3)}`.
+
+4. **Subpáginas do Vade Mecum (`VadeMecumCodigos.tsx`, `VadeMecumEstatutos.tsx`, `VadeMecumEspeciais.tsx`, `VadeMecumSumulas.tsx`, `VadeMecumFavoritos.tsx`, `VadeMecumRecentes.tsx`)**:
+   - Todas usavam `initial="hidden"` com `opacity: 0`, `staggerChildren` (30ms a 100ms) e itens com `y: 8`, `y: 10` ou `x: -10`.
+
+5. **Artigos e Listas de Leis (`ArtigoCard.tsx` e `tailwind.config.ts`)**:
+   - `ArtigoCard.tsx` usava `animate-cascade-in` com `animationDelay: cascadeDelay / structuralDelay`.
+   - `cascade-in` em `tailwind.config.ts` iniciava com `opacity: 0, transform: translateY(14px)` e `fill-mode: both`.
+
+6. **Outras Ocorrências de Atraso**:
+   - `LeiSecaParte.tsx`: `animate-fade-in-up` com delays escalonados.
+   - `ResultadoConteudoCard.tsx`: `animationDelay: Math.min(index * 20, 200)ms`.
+   - `ForcaRanking.tsx`: delays artificiais na montagem.
 
 ---
 
-## Verificação e Entrega
-- Compilar com `.\node_modules\.bin\tsc.CMD --noEmit`.
-- Build de produção com `.\node_modules\.bin\vite.CMD build`.
-- Deploy da Edge Function: `.\node_modules\.bin\supabase.cmd functions deploy vademecum-scraper --project-ref dnjrgpldcwcpoywamorr`.
-- Commit e push automático no Git.
+## 2. Ações Planejadas
+
+### Fase 1: Zero Latência Global na Transição de Rotas
+- Ajustar `PageTransition.tsx` para não aplicar animação que inicie com `opacity: 0` ou `translateY`.
+- Neutralizar `animate-page-in` em `src/index.css`.
+- Adicionar `instant` à rota `/vade-mecum` em `src/AppRoutes.tsx`.
+
+### Fase 2: Eliminar Animações de Entrada no Hub Vade Mecum
+- `src/pages/VadeMecum.tsx`: Remover `AnimatePresence mode="wait"` e `motion.div` com `initial={{ opacity: 0 }}`. Renderização direta em elementos estáveis.
+- `src/components/vademecum/home/MobileHomeSections.tsx`: Remover `AnimatePresence mode="wait"`. Renderizar abas diretamente.
+- `src/components/vademecum/home/sections/HomeTabEmAlta.tsx`: Substituir `motion.div` por `div` padrão, remover delays de cards e stagger de radares.
+- `src/components/vademecum/home/carousel/HomeEmAltaCarousel.tsx`: Remover `motion.button` com delay e opacity 0.
+- `src/components/vademecum/outros/AprendaSobreLeis.tsx`: Remover `motion.button` com delay e opacity 0.
+- `src/components/vademecum/home/sections/HomeTabCategorias.tsx` e `HomeTabAreas.tsx`: Remover motion wrappers e delays de entrada dos cards.
+
+### Fase 3: Subpáginas do Vade Mecum Instantâneas
+- `src/pages/VadeMecumCodigos.tsx`: Remover `initial="hidden"`, stagger e translateY de entrada.
+- `src/pages/VadeMecumEstatutos.tsx`: Remover `initial="hidden"`, stagger e translateY de entrada.
+- `src/pages/VadeMecumEspeciais.tsx`: Remover `initial="hidden"`, stagger e translateY de entrada.
+- `src/pages/VadeMecumSumulas.tsx`: Remover `initial="hidden"`, stagger e translateX de entrada.
+- `src/pages/VadeMecumFavoritos.tsx`: Remover `initial="hidden"`, stagger e delays de entrada.
+- `src/pages/VadeMecumRecentes.tsx`: Remover `initial="hidden"`, stagger e delays de entrada.
+
+### Fase 4: Limpeza de Artigos e Demais Delays
+- `src/components/vademecum/artigo/ArtigoCard.tsx`: Remover `animate-cascade-in` e delays em `style`.
+- `tailwind.config.ts`: Ajustar keyframe `cascade-in` para não manter `opacity: 0` nem `translateY`.
+- `src/pages/LeiSeca/LeiSecaParte.tsx`: Remover `animate-fade-in-up` e `animationDelay`.
+- `src/components/vademecum/ui_elements/ResultadoConteudoCard.tsx`: Remover `animationDelay`.
+
+### Fase 5: Validação e Versionamento
+- Executar `tsc.CMD --noEmit` para validação rigorosa de tipagem.
+- Executar `vite.CMD build` para testar empacotamento de produção.
+- Git commit e push automáticos no repositório.

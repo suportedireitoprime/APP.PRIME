@@ -42,23 +42,9 @@ const VadeMecumCodigos = () => {
         />
       </div>
 
-      <motion.div 
-        className="space-y-6"
-        initial="hidden"
-        animate="show"
-        variants={{
-          hidden: { opacity: 0 },
-          show: { opacity: 1, transition: { staggerChildren: 0.1 } }
-        }}
-      >
+      <div className="space-y-6">
         {grupos.map((g) => (
-          <motion.section 
-            key={g.id}
-            variants={{
-              hidden: { opacity: 0, y: 10 },
-              show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-            }}
-          >
+          <section key={g.id}>
             <h2 className="font-display text-foreground text-[17px] font-bold mb-3">{g.label}</h2>
             <div className="space-y-2">
               {g.leis.map((l) => (
@@ -86,12 +72,12 @@ const VadeMecumCodigos = () => {
                 </motion.button>
               ))}
             </div>
-          </motion.section>
+          </section>
         ))}
         {grupos.length === 0 && (
           <p className="text-muted-foreground text-sm text-center py-10">Nenhum resultado.</p>
         )}
-      </motion.div>
+      </div>
     </VadeMecumSubpage>
   );
 };

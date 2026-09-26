@@ -70,8 +70,7 @@ export function LeiSecaMateriaSheet({ materia, trilhas, resumo, open, onOpenChan
                 return (
                   <div
                     key={t.id}
-                    style={{ animationDelay: `${Math.min(idx, 6) * 28}ms` }}
-                    className="min-h-[80px] h-auto py-3.5 rounded-2xl bg-background border border-border/60 hover:border-violet-500/40 transition-all flex items-center gap-3 px-3.5 group animate-stagger-in touch-manipulation"
+                    className="min-h-[80px] h-auto py-3.5 rounded-2xl bg-background border border-border/60 hover:border-violet-500/40 transition-all flex items-center gap-3 px-3.5 group touch-manipulation"
                   >
                     <button
                       {...handlers}
