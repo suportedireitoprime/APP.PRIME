@@ -341,37 +341,39 @@ export default function RadarConcursos() {
                     haptic.selection();
                     setSelectedEdital(conc);
                   }}
-                  className="w-[240px] h-[210px] sm:w-[270px] sm:h-[220px] shrink-0 snap-start relative overflow-hidden rounded-2xl cursor-pointer active:scale-[0.98] transition-transform block bg-card/60 border border-white/10 group shadow-lg"
+                  className="w-[240px] h-[210px] sm:w-[270px] sm:h-[220px] shrink-0 snap-start relative overflow-hidden rounded-2xl cursor-pointer active:scale-[0.98] transition-transform flex flex-col bg-card/60 hover:bg-card border border-white/10 group shadow-lg p-4 sm:p-5"
                 >
-                  <img
-                    src={visual.imagemUrl}
-                    alt={conc.titulo}
-                    className="absolute inset-0 w-full h-full object-cover brightness-[0.7] contrast-105 group-hover:scale-105 transition-transform duration-500"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 via-50% to-black/25 pointer-events-none" />
+                  <div className="flex items-start justify-between w-full mb-auto z-20">
+                     <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center p-1.5 shrink-0 shadow-md border border-border/50">
+                        <img
+                          src={visual.imagemUrl}
+                          alt={conc.titulo}
+                          className="w-full h-full object-contain rounded-full group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                        />
+                     </div>
 
-                  {/* Tag superior de UF e Urgência */}
-                  <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between z-20">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide text-white bg-emerald-500/90 backdrop-blur-md border border-white/20 shadow-md">
-                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse shrink-0" />
-                      <span>{conc.uf || visual.tag}</span>
-                    </span>
-
-                    {dias !== null && dias <= 7 && dias >= 0 && (
-                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-amber-500/90 text-black shadow-md">
-                        {dias === 0 ? 'ÚLTIMO DIA' : `${dias}d restantes`}
+                    <div className="flex flex-col items-end gap-1.5">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide text-emerald-950 bg-emerald-400 shadow-sm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-950 animate-pulse shrink-0" />
+                        <span>{conc.uf || visual.tag}</span>
                       </span>
-                    )}
+
+                      {dias !== null && dias <= 7 && dias >= 0 && (
+                        <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-amber-500/90 text-black shadow-md">
+                          {dias === 0 ? 'ÚLTIMO DIA' : `${dias}d restantes`}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Conteúdo inferior */}
-                  <div className="absolute inset-0 flex flex-col justify-end px-4 pb-3.5 pt-4 z-10">
-                    <div className="flex items-center gap-2 mb-1.5 text-[11px] text-white/80 font-medium">
-                      <Clock className="w-3 h-3 text-emerald-400" />
+                  <div className="flex flex-col z-10 mt-3">
+                    <div className="flex items-center gap-2 mb-1.5 text-[11px] text-muted-foreground font-medium">
+                      <Clock className="w-3.5 h-3.5 text-emerald-400" />
                       <span className="truncate">{conc.vagas_salario || visual.subtitulo}</span>
                     </div>
-                    <p className="font-display text-white text-[14px] sm:text-[15px] font-semibold leading-snug line-clamp-3 drop-shadow-md group-hover:text-emerald-300 transition-colors">
+                    <p className="font-display text-foreground text-[14px] sm:text-[15px] font-semibold leading-snug line-clamp-3 group-hover:text-emerald-400 transition-colors">
                       {conc.titulo}
                     </p>
                   </div>
