@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState, startTransition } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Scale, MicVocal, FileText, Smartphone, ChevronRight, GraduationCap, Clock, ArrowUpRight, Newspaper } from 'lucide-react';
+import { ArrowLeft, Scale, MicVocal, FileText, Smartphone, ChevronRight, GraduationCap, Clock, ArrowUpRight, Newspaper, X, ExternalLink } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { cn } from '@/lib/utils';
@@ -10,6 +10,7 @@ import { Browser } from '@capacitor/browser';
 import { fetchProposicoes } from '@/services/radarService';
 import { resenhaSelect, RESENHA_LIST_SELECT } from '@/lib/resenhaBackend';
 import { AuthorAvatar } from '@/components/radar/AuthorAvatar';
+import { getConcursoVisual } from '@/lib/concursosVisuais';
 import type { ResenhaItem } from '@/services/atualizacaoService';
 import type { Database } from '@/integrations/supabase/types';
 
@@ -49,6 +50,7 @@ const Atualizacoes = () => {
   const [boletins, setBoletins] = useState<BoletimJuridico[]>([]);
   const [pls, setPls] = useState<RadarPL[]>([]);
   const [concursos, setConcursos] = useState<ConcursoNoticia[]>([]);
+  const [modalConcursosOpen, setModalConcursosOpen] = useState(false);
 
   useEffect(() => {
     // 1. Novas Leis
@@ -86,7 +88,7 @@ const Atualizacoes = () => {
     supabase.from('concursos_noticias')
       .select('*')
       .order('data_publicacao', { ascending: false })
-      .limit(10)
+      .limit(50)
       .then(res => {
         if (res.data) setConcursos(res.data);
       });
@@ -251,7 +253,7 @@ const Atualizacoes = () => {
                     Notícias Jurídicas
                   </h2>
                 </div>
-                <button onClick={() => { haptic.light(); openExternalLink('https://www.migalhas.com.br'); }} className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-white font-medium transition-colors active:scale-95 cursor-pointer">Ver todos <ChevronRight className="w-4 h-4" /></button>
+                <button onClick={() => { haptic.light(); startTransition(() => navigate('/noticias')); }} className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-white font-medium transition-colors active:scale-95 cursor-pointer">Ver todos <ChevronRight className="w-4 h-4" /></button>
               </div>
               <p className="text-muted-foreground text-[13px] px-1 mb-4 truncate">
                 Principais destaques do mundo jurídico
@@ -315,52 +317,53 @@ const Atualizacoes = () => {
                     Concursos Públicos
                   </h2>
                 </div>
-                <button onClick={() => { haptic.light(); openExternalLink('https://www.pciconcursos.com.br/noticias/'); }} className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-white font-medium transition-colors active:scale-95 cursor-pointer">Ver todos <ChevronRight className="w-4 h-4" /></button>
+                <button onClick={() => { haptic.light(); setModalConcursosOpen(true); }} className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-white font-medium transition-colors active:scale-95 cursor-pointer">Ver todos <ChevronRight className="w-4 h-4" /></button>
               </div>
               <p className="text-muted-foreground text-[13px] px-1 mb-4 truncate">
                 Últimas oportunidades e editais abertos
               </p>
               <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 hide-scrollbar px-1 -mr-4 pr-4">
-                {concursos.length > 0 ? concursos.map((conc) => (
-                  <div
-                    key={conc.id} 
-                    onClick={() => {
-                      haptic.selection();
-                      openExternalLink(conc.link);
-                    }}
-                    className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start relative overflow-hidden rounded-2xl cursor-pointer active:scale-[0.98] transition-transform block bg-card/50"
-                  >
-                    <div className="absolute inset-0 flex items-center justify-center bg-[#10B981]/5 p-8">
-                      {conc.imagem_url ? (
-                        <img src={conc.imagem_url} alt="" className="w-full h-full object-contain opacity-70 mix-blend-plus-lighter" />
-                      ) : (
-                        <img src={getAvatarUrl(conc.titulo)} alt="" className="w-16 h-16 rounded-full object-contain drop-shadow-md border border-white/10" />
-                      )}
-                    </div>
-                    
-                    <div className="absolute inset-x-0 bottom-0 h-[75%] bg-gradient-to-t from-[#10B981]/10 to-transparent pointer-events-none" />
-                    <div className="absolute inset-0 bg-black/20" />
-                    
-                    <div className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-center shadow-md">
-                      <ArrowUpRight className="w-3.5 h-3.5 text-white" strokeWidth={2.2} />
-                    </div>
-
-                    <span className="absolute top-2.5 left-2.5 z-20 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] sm:text-[10.5px] font-bold tracking-wide text-white bg-[#10B981]/40 backdrop-blur-md border border-[#10B981]/20 shadow-md">
-                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse shrink-0" />
-                      <span>Edital Aberto</span>
-                    </span>
-
-                    <div className="absolute inset-0 flex flex-col justify-end px-4 pb-3 pt-4">
-                      <div className="flex items-center gap-2 mb-1 text-[11.5px] text-white/70">
-                        <Clock className="w-3 h-3" />
-                        <span className="truncate">{formatDate(conc.data_publicacao)}</span>
+                {concursos.length > 0 ? concursos.map((conc) => {
+                  const visual = getConcursoVisual(conc.titulo, conc.imagem_url);
+                  return (
+                    <div
+                      key={conc.id} 
+                      onClick={() => {
+                        haptic.selection();
+                        openExternalLink(conc.link);
+                      }}
+                      className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start relative overflow-hidden rounded-2xl cursor-pointer active:scale-[0.98] transition-transform block bg-card/60 border border-white/10 group shadow-lg"
+                    >
+                      <img 
+                        src={visual.imagemUrl} 
+                        alt="" 
+                        className="absolute inset-0 w-full h-full object-cover brightness-75 contrast-105 group-hover:scale-105 transition-transform duration-500" 
+                        loading="lazy"
+                      />
+                      
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 via-50% to-black/30 pointer-events-none" />
+                      
+                      <div className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-md">
+                        <ArrowUpRight className="w-3.5 h-3.5 text-white" strokeWidth={2.2} />
                       </div>
-                      <p className="font-display text-white text-[15px] font-normal leading-snug line-clamp-3 drop-shadow-sm">
-                        {conc.titulo}
-                      </p>
+
+                      <span className="absolute top-2.5 left-2.5 z-20 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] sm:text-[10.5px] font-bold tracking-wide text-white bg-emerald-500/80 backdrop-blur-md border border-white/20 shadow-md">
+                        <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse shrink-0" />
+                        <span>{visual.tag}</span>
+                      </span>
+
+                      <div className="absolute inset-0 flex flex-col justify-end px-4 pb-3.5 pt-4 z-10">
+                        <div className="flex items-center gap-2 mb-1.5 text-[11px] text-white/80 font-medium">
+                          <Clock className="w-3 h-3 text-emerald-400" />
+                          <span className="truncate">{formatDate(conc.data_publicacao)} · {visual.subtitulo}</span>
+                        </div>
+                        <p className="font-display text-white text-[14.5px] sm:text-[15px] font-semibold leading-snug line-clamp-3 drop-shadow-md">
+                          {conc.titulo}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                )) : (
+                  );
+                }) : (
                   <>
                     <div className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
                     <div className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
@@ -426,6 +429,103 @@ const Atualizacoes = () => {
             )}
           </div>
         </section>
+
+        {/* Modal / Dialog: Todos os Concursos Públicos */}
+        {modalConcursosOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+            <div className="relative w-full max-w-2xl max-h-[90vh] bg-[#0F1115] border border-white/10 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+              {/* Header do Modal */}
+              <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between shrink-0 bg-white/[0.02]">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-1.5 h-6 rounded-full bg-[#10B981]" />
+                  <div>
+                    <h3 className="font-display text-white text-[17px] sm:text-[19px] font-bold uppercase tracking-wider">
+                      Todos os Concursos Públicos
+                    </h3>
+                    <p className="text-muted-foreground text-[12px] sm:text-[13px]">
+                      {concursos.length} editais e oportunidades abertas no país
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => { haptic.light(); setModalConcursosOpen(false); }}
+                  className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white/80 hover:text-white transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Lista dos Concursos */}
+              <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3.5 hide-scrollbar">
+                {concursos.map((conc) => {
+                  const visual = getConcursoVisual(conc.titulo, conc.imagem_url);
+                  return (
+                    <div
+                      key={conc.id}
+                      onClick={() => {
+                        haptic.selection();
+                        openExternalLink(conc.link);
+                      }}
+                      className="group flex flex-col sm:flex-row items-start sm:items-center gap-3.5 p-3 sm:p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/5 hover:border-emerald-500/30 transition-all cursor-pointer active:scale-[0.99]"
+                    >
+                      {/* Miniatura / Capa */}
+                      <div className="relative w-full sm:w-28 h-32 sm:h-20 rounded-xl overflow-hidden shrink-0 border border-white/10">
+                        <img
+                          src={visual.imagemUrl}
+                          alt=""
+                          className="w-full h-full object-cover brightness-90 group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                        <span className="absolute bottom-1.5 left-1.5 text-[9px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/90 text-white shadow-sm">
+                          {visual.tag}
+                        </span>
+                      </div>
+
+                      {/* Informações */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 text-[11px] text-muted-foreground mb-1">
+                          <Clock className="w-3 h-3 text-emerald-400" />
+                          <span>{formatDate(conc.data_publicacao)}</span>
+                          <span>•</span>
+                          <span className="text-emerald-400/90 font-medium">{visual.subtitulo}</span>
+                        </div>
+                        <h4 className="font-display text-white text-[14px] sm:text-[15px] font-medium leading-snug line-clamp-2 group-hover:text-emerald-300 transition-colors">
+                          {conc.titulo}
+                        </h4>
+                        {conc.resumo && (
+                          <p className="text-muted-foreground text-[12px] line-clamp-1 mt-1">
+                            {conc.resumo}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Botão Acessar */}
+                      <div className="shrink-0 self-end sm:self-center">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 group-hover:translate-x-0.5 transition-transform">
+                          Acessar <ExternalLink className="w-3.5 h-3.5" />
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Rodapé do Modal */}
+              <div className="p-3.5 sm:p-4 border-t border-white/10 bg-white/[0.02] flex items-center justify-between text-xs text-muted-foreground">
+                <span>Fonte: PCI Concursos / Diários Oficiais</span>
+                <button
+                  type="button"
+                  onClick={() => { haptic.light(); openExternalLink('https://www.pciconcursos.com.br/noticias/'); }}
+                  className="text-emerald-400 hover:underline font-medium flex items-center gap-1 cursor-pointer"
+                >
+                  Abrir portal externo <ExternalLink className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
 
 
