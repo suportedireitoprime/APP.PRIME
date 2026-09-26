@@ -36,6 +36,9 @@ import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { StateMapIcon } from '@/components/ui/StateMapIcon';
 import horusAsset from '@/assets/horus/horus-owl.webp';
+import logoPF from '@/assets/logos/pf.png';
+import logoPRF from '@/assets/logos/prf.png';
+import logoPC from '@/assets/logos/pc.png';
 import { getConcursoVisual } from '@/lib/concursosVisuais';
 import { toast } from 'sonner';
 import { Capacitor } from '@capacitor/core';
@@ -102,8 +105,9 @@ const CARREIRAS_OPTIONS = [
 ];
 
 const CARGOS_EM_ALTA = [
-  { id: 'policial', titulo: 'Carreira Policial', icon: Shield, cor: 'bg-blue-500/10 text-blue-400 border-blue-500/20 shadow-blue-500/10' },
-  { id: 'delegado', titulo: 'Delegado de Polícia', icon: ShieldAlert, cor: 'bg-zinc-800 text-zinc-300 border-zinc-700 shadow-black/20' },
+  { id: 'pf', titulo: 'Polícia Federal (PF)', img: logoPF, cor: 'bg-zinc-900/50 text-zinc-300 border-zinc-700/50 shadow-black/20' },
+  { id: 'prf', titulo: 'Polícia Rodoviária Federal (PRF)', img: logoPRF, cor: 'bg-zinc-900/50 text-zinc-300 border-zinc-700/50 shadow-black/20' },
+  { id: 'delegado', titulo: 'Delegado de Polícia Civil', img: logoPC, cor: 'bg-zinc-900/50 text-zinc-300 border-zinc-700/50 shadow-black/20' },
   { id: 'juiz', titulo: 'Juiz de Direito', icon: Scale, cor: 'bg-amber-500/10 text-amber-400 border-amber-500/20 shadow-amber-500/10' },
   { id: 'escrevente', titulo: 'Tribunais (TJ/TRT)', icon: FileText, cor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/10' },
   { id: 'fiscal', titulo: 'Auditor Fiscal', icon: Calculator, cor: 'bg-purple-500/10 text-purple-400 border-purple-500/20 shadow-purple-500/10' },
@@ -412,8 +416,9 @@ export default function RadarConcursos() {
 
         {/* 1.5. CARGOS EM ALTA (NEW) */}
         <section className="space-y-4">
-          <div className="flex items-center gap-2 px-4">
-            <TrendingUp className="w-5 h-5 text-emerald-400" />
+          <div className="flex items-center gap-2 px-4 mb-1">
+            <div className="w-1.5 h-5 bg-emerald-400 rounded-r-md -ml-4" />
+            <TrendingUp className="w-5 h-5 text-emerald-400 ml-1" />
             <h2 className="font-display font-bold text-lg text-foreground uppercase tracking-wide">
               Cargos em Alta
             </h2>
@@ -429,10 +434,14 @@ export default function RadarConcursos() {
                     haptic.selection();
                     startTransition(() => navigate('/concursos', { state: { preFiltroCargo: cargo.id } }));
                   }}
-                  className={`flex flex-col items-center justify-center gap-2 min-w-[110px] w-[110px] sm:min-w-[120px] sm:w-[120px] h-[100px] shrink-0 snap-start rounded-2xl border ${cargo.cor} shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer`}
+                  className={`flex flex-col items-center justify-center gap-2 min-w-[120px] w-[120px] sm:min-w-[130px] sm:w-[130px] h-[110px] shrink-0 snap-start rounded-2xl border ${cargo.cor} shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer bg-card/40 backdrop-blur-sm`}
                 >
-                  <Icon className="w-7 h-7" strokeWidth={1.5} />
-                  <span className="text-[11px] font-bold text-center leading-tight px-1">
+                  {cargo.img ? (
+                    <img src={cargo.img} alt={cargo.titulo} className="w-10 h-10 object-contain drop-shadow-md" loading="lazy" />
+                  ) : (
+                    Icon && <Icon className="w-7 h-7" strokeWidth={1.5} />
+                  )}
+                  <span className="text-[11px] font-bold text-center leading-tight px-2 text-muted-foreground group-hover:text-foreground">
                     {cargo.titulo}
                   </span>
                 </div>

@@ -189,7 +189,8 @@ const Concursos = () => {
       filtered = filtered.filter(n => {
         const textToSearch = `${n.titulo} ${n.cargos_resumo || ''} ${(n.cargos || []).join(' ')}`.toLowerCase();
         
-        if (term === 'policial') return textToSearch.includes('polícia') || textToSearch.includes('policial') || textToSearch.includes('pm') || textToSearch.includes('pc') || textToSearch.includes('bombeiro');
+        if (term === 'pf') return textToSearch.includes('polícia federal') || textToSearch.includes('pf ');
+        if (term === 'prf') return textToSearch.includes('polícia rodoviária federal') || textToSearch.includes('prf');
         if (term === 'delegado') return textToSearch.includes('delegado');
         if (term === 'juiz') return textToSearch.includes('juiz') || textToSearch.includes('magistratura');
         if (term === 'escrevente') return textToSearch.includes('escrevente') || textToSearch.includes('tribunal') || textToSearch.includes('tj') || textToSearch.includes('trt') || textToSearch.includes('trf');
