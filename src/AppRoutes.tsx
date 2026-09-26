@@ -134,6 +134,8 @@ const PessoalLivros = lazy(() => import("./pages/pessoal/Livros.tsx"));
 const PessoalFilmes = lazy(() => import("./pages/pessoal/Filmes.tsx"));
 const PessoalJurisprudencias = lazy(() => import("./pages/pessoal/Jurisprudencias.tsx"));
 const PessoalTematicas = lazy(() => import("./pages/pessoal/Tematicas.tsx"));
+const Concursos = lazy(() => import("./pages/Concursos.tsx"));
+const RadarConcursos = lazy(() => import("./pages/RadarConcursos.tsx"));
 
 const MeusDownloads = lazy(() => import("./pages/MeusDownloads.tsx"));
 const MinhasLeituras = lazy(() => import("./pages/MinhasLeituras.tsx"));
@@ -1046,6 +1048,10 @@ function AnimatedRoutes() {
           <Route path="/legislacao/:tipo/:leiSlug" element={<ProtectedRoute><PageTransition><CategoriaLegislacao /></PageTransition></ProtectedRoute>} />
           <Route path="/legislacao/:tipo/:leiSlug/:artigoNumero" element={<ProtectedRoute><PageTransition><CategoriaLegislacao /></PageTransition></ProtectedRoute>} />
           <Route path="/noticias" element={<ProtectedRoute><PageTransition><Noticias /></PageTransition></ProtectedRoute>} />
+          <Route path="/concursos" element={<ProtectedRoute><PageTransition><Concursos /></PageTransition></ProtectedRoute>} />
+          <Route path="/concursos/radar" element={<ProtectedRoute><PageTransition><RadarConcursos /></PageTransition></ProtectedRoute>} />
+          <Route path="/radar-concursos" element={<ProtectedRoute><PageTransition><RadarConcursos /></PageTransition></ProtectedRoute>} />
+          <Route path="/ferramentas/radar-concursos" element={<ProtectedRoute><PageTransition><RadarConcursos /></PageTransition></ProtectedRoute>} />
           <Route path="/atualizacoes" element={<ProtectedRoute><PageTransition instant><Atualizacoes /></PageTransition></ProtectedRoute>} />
           <Route path="/novidades" element={<ProtectedRoute><PageTransition><Novidades /></PageTransition></ProtectedRoute>} />
           <Route path="/anotacoes" element={<ProtectedRoute><PageTransition><Anotacoes /></PageTransition></ProtectedRoute>} />

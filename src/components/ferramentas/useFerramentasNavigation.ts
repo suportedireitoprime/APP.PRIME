@@ -33,6 +33,7 @@ export function useFerramentasNavigation() {
       case 'peticao-inicial': navigate('/ferramentas/peticao-inicial'); break;
       case 'flashcards': navigate('/flashcards'); break;
       case 'dicionario': navigate('/ferramentas/dicionario'); break;
+      case 'radar-concursos': navigate('/ferramentas/radar-concursos'); break;
       case 'radar360': navigate('/radares'); break;
       case 'radares': navigate('/radares'); break;
       case 'leis-cantadas': navigate('/leis-cantadas'); break;

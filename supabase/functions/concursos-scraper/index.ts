@@ -1,146 +1,158 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
-import * as cheerio from "https://esm.sh/cheerio@1.0.0-rc.12";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
 const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+interface ConcursoMCPItem {
+  id: number;
+  titulo: string;
+  cargos_resumo?: string;
+  cargos?: string[];
+  vagas_salario?: string;
+  formacao?: string;
+  regiao?: string;
+  uf?: string | null;
+  datas?: {
+    inicio?: string;
+    fim?: string;
+    texto?: string;
+    aberto?: boolean;
+    dias_restantes?: number;
+  };
+  noticia?: {
+    id?: number;
+    titulo?: string;
+    link?: string;
+    imagem?: string;
+  };
+  apostila?: string | null;
+}
+
 serve(async (req: Request) => {
   try {
-    console.log("Iniciando raspagem de concursos (PCI Concursos)...");
+    console.log("Iniciando sincronização via MCP Oficial PCI Concursos...");
 
-    // 1. Fazer fetch da página de notícias
-    const response = await fetch("https://www.pciconcursos.com.br/noticias/", {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36'
-      }
-    });
-    const html = await response.text();
-    console.log("Fetch Status:", response.status, "HTML bytes:", html.length);
-    const $ = cheerio.load(html);
-
-    const imageMap = new Map<string, string>();
-    // Collect ALL images with data-src from any anchor on the page
-    $('a').each((_, element) => {
-      const link = $(element).attr('href');
-      const imgTag = $(element).find('img[data-src]');
-      if (link && imgTag.length > 0) {
-        const dataSrc = imgTag.attr('data-src') || '';
-        if (dataSrc && dataSrc.startsWith('http')) {
-          const fullLink = link.startsWith('http') ? link : `https://www.pciconcursos.com.br${link}`;
-          imageMap.set(fullLink, dataSrc);
+    // 1. Inicializar sessão MCP
+    const initRes = await fetch("https://mcp.pciconcursos.com.br/mcp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "initialize",
+        params: {
+          protocolVersion: "2024-11-05",
+          capabilities: {},
+          clientInfo: { name: "app-prime", version: "1.0.0" }
         }
-      }
+      })
     });
 
-    console.log(`ImageMap populated with ${imageMap.size} entries`);
+    if (!initRes.ok) {
+      throw new Error(`Falha ao inicializar MCP: status ${initRes.status}`);
+    }
 
-    const concursos: { titulo: string; link: string; resumo: string; imagem_url: string | null }[] = [];
-
-    // PCI Concursos geralmente lista em <ul class="noticias link-d">
-    $('ul.noticias.link-d > li > a').each((_, element) => {
-      const link = $(element).attr('href');
-      const titulo = $(element).attr('title') || $(element).text().trim();
-      
-      // Checar se o link é uma notícia válida e tem um título razoável
-      if (link && link.includes('/noticias/') && titulo.length > 10) {
-        // Encontrar o resumo, que normalmente é o próximo elemento span ou texto depois
-        let resumo = '';
-        const parentLi = $(element).closest('li');
-        if (parentLi.length) {
-           const textContent = parentLi.text().trim();
-           // Remove o titulo do texto completo para pegar o resumo
-           resumo = textContent.replace(titulo, '').trim().substring(0, 150);
-        } else {
-           const nextSpan = $(element).nextAll('span').first();
-           if (nextSpan.length) resumo = nextSpan.text().trim().substring(0, 150);
+    // 2. Chamar ferramenta listar_concursos
+    const callRes = await fetch("https://mcp.pciconcursos.com.br/mcp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 2,
+        method: "tools/call",
+        params: {
+          name: "listar_concursos",
+          arguments: {}
         }
+      })
+    });
 
-        
+    if (!callRes.ok) {
+      throw new Error(`Falha na chamada da tool MCP: status ${callRes.status}`);
+    }
 
-        const fullLink = link.startsWith('http') ? link : `https://www.pciconcursos.com.br${link}`;
-        concursos.push({
+    const callJson = await callRes.json();
+    const rawText = callJson.result?.content?.[0]?.text;
+    if (!rawText) {
+      throw new Error("Resposta MCP não continha texto estruturado");
+    }
+
+    const parsed = JSON.parse(rawText);
+    const concursosRaw: ConcursoMCPItem[] = parsed.data || [];
+    console.log(`Recebidos ${concursosRaw.length} concursos do MCP (Total meta: ${parsed.meta?.total || 0})`);
+
+    // 3. Normalizar e preparar os dados para o Supabase
+    const rowsToUpsert = concursosRaw
+      .filter(item => (item.noticia?.link || item.id) && (item.noticia?.titulo || item.titulo))
+      .map(item => {
+        const link = item.noticia?.link || `https://www.pciconcursos.com.br/concursos/${item.id}`;
+        const titulo = item.noticia?.titulo || item.titulo;
+        const resumo = item.cargos_resumo
+          ? `${item.cargos_resumo}${item.vagas_salario ? ' · ' + item.vagas_salario : ''}`
+          : item.vagas_salario || 'Inscrições abertas para concurso público.';
+
+        const uf = item.uf ? item.uf.trim().toUpperCase() : (item.regiao === 'NACIONAL' ? 'NACIONAL' : null);
+        const regiao = item.regiao ? item.regiao.trim().toUpperCase() : null;
+        const imagem_url = item.noticia?.imagem || null;
+
+        return {
+          pci_id: item.id,
           titulo,
-          link: fullLink,
-          resumo: resumo || 'Notícia sobre concurso público.',
-          imagem_url: imageMap.get(fullLink) || null,
-        });
-      }
-    });
-
-    // Se a primeira estratégia não pegar muito, vamos ser mais amplos
-    if (concursos.length < 5) {
-      $('a').each((_, element) => {
-        const link = $(element).attr('href');
-        const titulo = $(element).text().trim();
-        const parentText = $(element).parent().text().trim();
-        let resumo = parentText.replace(titulo, '').trim().substring(0, 150);
-        
-        
-
-        if (link && link.includes('/noticias/') && titulo.length > 20 && titulo.includes('Vagas')) {
-          const fullLink = link.startsWith('http') ? link : `https://www.pciconcursos.com.br${link}`;
-          concursos.push({
-            titulo,
-            link: fullLink,
-            resumo: resumo || 'Nova oportunidade.',
-            imagem_url: imageMap.get(fullLink) || null,
-          });
-        }
+          link,
+          resumo,
+          imagem_url,
+          uf,
+          regiao,
+          cargos: Array.isArray(item.cargos) ? item.cargos : [],
+          cargos_resumo: item.cargos_resumo || null,
+          vagas_salario: item.vagas_salario || null,
+          formacao: item.formacao || null,
+          data_inicio: item.datas?.inicio || null,
+          data_fim: item.datas?.fim || null,
+          dias_restantes: typeof item.datas?.dias_restantes === 'number' ? item.datas.dias_restantes : null,
+          data_publicacao: item.datas?.inicio ? new Date(item.datas.inicio).toISOString() : new Date().toISOString()
+        };
       });
-    }
 
-    // Desduplicar por link
-    const uniqueMap = new Map();
-    for (const c of concursos) {
-      if (!uniqueMap.has(c.link)) {
-        uniqueMap.set(c.link, c);
-      }
-    }
-    const uniqueConcursos = Array.from(uniqueMap.values()).slice(0, 30); // Limitar a 30
-
-    console.log(`Encontrados ${uniqueConcursos.length} concursos.`);
-
-    // 2. Salvar no Supabase
-    let countInserted = 0;
-    const errorsList = [];
-    for (const concurso of uniqueConcursos) {
-      const { error } = await supabase
+    // 4. Salvar em lotes (batch upsert de 50 em 50 para máxima performance)
+    let totalSalvos = 0;
+    const batchSize = 50;
+    for (let i = 0; i < rowsToUpsert.length; i += batchSize) {
+      const batch = rowsToUpsert.slice(i, i + batchSize);
+      const { error: upsertErr } = await supabase
         .from("concursos_noticias")
-        .upsert(
-          {
-            titulo: concurso.titulo,
-            link: concurso.link,
-            resumo: concurso.resumo,
-            imagem_url: concurso.imagem_url,
-          },
-          { onConflict: "link" }
-        );
+        .upsert(batch, { onConflict: "link" });
 
-      if (error) {
-        console.error(`Erro ao salvar concurso ${concurso.link}:`, error.message);
-        errorsList.push(error.message);
+      if (upsertErr) {
+        console.error(`Erro ao salvar lote ${i}-${i + batch.length}:`, upsertErr.message);
       } else {
-        countInserted++;
+        totalSalvos += batch.length;
       }
     }
+
+    console.log(`Sincronização concluída com sucesso! Total salvos/atualizados: ${totalSalvos}`);
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: `${countInserted} concursos processados e atualizados.`,
-        data: uniqueConcursos,
-        debug: { fetchStatus: response.status, keyPrefix: supabaseKey.substring(0, 10), errors: errorsList }
+        message: `${totalSalvos} concursos públicos sincronizados com dados do MCP.`,
+        totalRecebido: concursosRaw.length,
+        totalSalvo: totalSalvos,
+        meta: parsed.meta
       }),
       { headers: { "Content-Type": "application/json" } }
     );
   } catch (err: unknown) {
     const error = err as Error;
-    console.error("Erro geral no scraper de concursos:", error.message);
-    return new Response(JSON.stringify({ success: false, error: error.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    console.error("Erro geral no sincronizador MCP de concursos:", error.message);
+    return new Response(
+      JSON.stringify({ success: false, error: error.message }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
   }
 });
