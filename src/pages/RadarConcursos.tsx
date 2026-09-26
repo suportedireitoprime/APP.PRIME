@@ -28,7 +28,9 @@ import {
   Landmark,
   HeartPulse,
   BookOpen,
-  DollarSign
+  DollarSign,
+  Loader2,
+  Calendar
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -140,6 +142,8 @@ export default function RadarConcursos() {
 
   // Modal de Conteúdo Completo do Edital
   const [selectedEdital, setSelectedEdital] = useState<ConcursoItem | null>(null);
+  const [editalFullText, setEditalFullText] = useState<string | null>(null);
+  const [loadingFullText, setLoadingFullText] = useState(false);
 
   // Modal de Simulação do Hórus
   const [simulacaoOpen, setSimulacaoOpen] = useState(false);
@@ -191,6 +195,41 @@ export default function RadarConcursos() {
     loadData();
     return () => { cancel = true; };
   }, [user]);
+
+  // Carregar texto completo do edital quando selecionado
+  useEffect(() => {
+    let cancel = false;
+    
+    async function loadFullText(link: string) {
+      setLoadingFullText(true);
+      setEditalFullText(null);
+      try {
+        const { data, error } = await supabase.functions.invoke('scrape-concurso-full', {
+          body: { url: link }
+        });
+        if (error) throw error;
+        if (!cancel && data && data.text) {
+          setEditalFullText(data.text);
+        } else if (!cancel) {
+          setEditalFullText('Não foi possível extrair o texto completo. Acesse o edital oficial para ler.');
+        }
+      } catch (err) {
+        console.error('Erro ao extrair edital:', err);
+        if (!cancel) setEditalFullText('Erro ao carregar o conteúdo. Por favor, acesse o link oficial.');
+      } finally {
+        if (!cancel) setLoadingFullText(false);
+      }
+    }
+
+    if (selectedEdital && selectedEdital.link) {
+      loadFullText(selectedEdital.link);
+    } else {
+      setEditalFullText(null);
+      setLoadingFullText(false);
+    }
+
+    return () => { cancel = true; };
+  }, [selectedEdital]);
 
   // Salvar configurações
   const salvarConfiguracoes = async () => {
@@ -396,7 +435,7 @@ export default function RadarConcursos() {
                     haptic.selection();
                     setSelectedEdital(conc);
                   }}
-                  className="w-[240px] h-[210px] sm:w-[270px] sm:h-[220px] shrink-0 snap-start relative overflow-hidden rounded-2xl cursor-pointer active:scale-[0.98] transition-transform flex flex-col bg-card/60 hover:bg-card border border-white/10 group shadow-lg px-4 pb-4 pt-10 sm:px-5 sm:pb-5 sm:pt-11"
+                  className="w-[240px] h-[250px] sm:w-[270px] sm:h-[260px] shrink-0 snap-start relative overflow-hidden rounded-2xl cursor-pointer active:scale-[0.98] transition-transform flex flex-col bg-card/60 hover:bg-card border border-white/10 group shadow-lg px-4 pb-4 pt-10 sm:px-5 sm:pb-5 sm:pt-11"
                 >
                   {/* Listra de Cargo no Topo */}
                   <div className="absolute top-0 left-0 w-full bg-emerald-500/10 border-b border-emerald-500/20 py-1.5 px-3 z-30 flex items-center justify-center backdrop-blur-sm">
@@ -436,6 +475,20 @@ export default function RadarConcursos() {
                       <span className="truncate">
                         {(conc.vagas_salario || visual.subtitulo).replace(/.*?até\s+R\$/i, 'Salários até R$')}
                       </span>
+                    </div>
+                    {/* Datas / Status */}
+                    <div className="flex items-center justify-between mt-1 text-[11px] font-medium">
+                      {conc.data_publicacao ? (
+                        <span className="text-muted-foreground/70 flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {new Date(conc.data_publicacao).toLocaleDateString('pt-BR')}
+                        </span>
+                      ) : <span />}
+                      {conc.dias_restantes !== undefined && conc.dias_restantes !== null && (
+                        <span className={conc.dias_restantes <= 5 ? "text-rose-400" : "text-amber-400/90"}>
+                          {conc.dias_restantes > 0 ? `${conc.dias_restantes} dias p/ fechar` : 'Encerrando hoje!'}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -730,9 +783,18 @@ export default function RadarConcursos() {
                 <h4 className="font-display font-bold text-xs uppercase tracking-wider text-muted-foreground">
                   Informações do Edital
                 </h4>
-                <p className="text-sm text-foreground/90 leading-relaxed font-body">
-                  {selectedEdital.resumo || 'Acompanhe todas as regras e convocações deste concurso pelo link oficial.'}
-                </p>
+                <div className="text-sm text-foreground/90 leading-relaxed font-body whitespace-pre-wrap max-h-[30vh] overflow-y-auto pr-2 custom-scrollbar">
+                  {loadingFullText ? (
+                    <div className="flex items-center gap-2 text-muted-foreground py-2">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Extraindo conteúdo completo do edital...</span>
+                    </div>
+                  ) : editalFullText ? (
+                    editalFullText
+                  ) : (
+                    <p>{selectedEdital.resumo || 'Acompanhe todas as regras e convocações deste concurso pelo link oficial.'}</p>
+                  )}
+                </div>
               </div>
 
               {/* Análise Inteligente do Hórus IA */}
