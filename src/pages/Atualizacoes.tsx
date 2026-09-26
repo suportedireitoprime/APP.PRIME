@@ -33,14 +33,10 @@ const Atualizacoes = () => {
     const cleanTitle = title.split('-')[0].trim().substring(0, 20);
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(cleanTitle)}&background=10B981&color=fff&size=128&bold=true&font-size=0.4`;
   };
-  const openExternalLink = async (url: string) => {
-    try {
-      if (Capacitor.isNativePlatform()) {
-        await Browser.open({ url });
-      } else {
-        window.open(url, '_blank', 'noopener,noreferrer');
-      }
-    } catch (e) {
+  const openExternalLink = (url: string) => {
+    if (Capacitor.isNativePlatform()) {
+      void Browser.open({ url });
+    } else {
       window.open(url, '_blank', 'noopener,noreferrer');
     }
   };

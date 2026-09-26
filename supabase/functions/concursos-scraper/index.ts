@@ -21,14 +21,20 @@ serve(async (req: Request) => {
     const $ = cheerio.load(html);
 
     const imageMap = new Map<string, string>();
-    $('ul.lateral_social > li > a').each((_, element) => {
+    // Collect ALL images with data-src from any anchor on the page
+    $('a').each((_, element) => {
       const link = $(element).attr('href');
-      const imgTag = $(element).find('img.lazyload');
+      const imgTag = $(element).find('img[data-src]');
       if (link && imgTag.length > 0) {
-        const fullLink = link.startsWith('http') ? link : `https://www.pciconcursos.com.br${link}`;
-        imageMap.set(fullLink, imgTag.attr('data-src') || '');
+        const dataSrc = imgTag.attr('data-src') || '';
+        if (dataSrc && dataSrc.startsWith('http')) {
+          const fullLink = link.startsWith('http') ? link : `https://www.pciconcursos.com.br${link}`;
+          imageMap.set(fullLink, dataSrc);
+        }
       }
     });
+
+    console.log(`ImageMap populated with ${imageMap.size} entries`);
 
     const concursos: { titulo: string; link: string; resumo: string; imagem_url: string | null }[] = [];
 
