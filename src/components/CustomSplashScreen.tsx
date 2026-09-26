@@ -17,15 +17,11 @@ export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
       onComplete();
     };
 
-    // Escuta evento nativo ou do framework de pronto
-    window.addEventListener('app:ready', finish);
-
-    // Fallback de segurança de 3 segundos
-    const splashTimeout = setTimeout(finish, 3000);
+    // Permanece na tela exatamente por 1.5 segundos (um segundo e meio) antes de transicionar
+    const splashTimeout = setTimeout(finish, 1500);
 
     return () => {
       clearTimeout(splashTimeout);
-      window.removeEventListener('app:ready', finish);
     };
   }, [onComplete]);
 

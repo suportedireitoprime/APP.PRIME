@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, memo, Suspense, startTransition } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate } from 'react-router-dom';
 import useBodyScrollLock from '@/hooks/useBodyScrollLock';

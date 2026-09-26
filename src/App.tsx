@@ -148,13 +148,14 @@ function ForceUpdateWrapper() {
 
 const AnimatedRoutes = lazy(() => import("./AppRoutes"));
 
-// Splash em React desativado: usa exclusivamente o splash nativo do Capacitor para inicialização 0ms
-// import { CustomSplashScreen } from "@/components/CustomSplashScreen";
+import { CustomSplashScreen } from "@/components/CustomSplashScreen";
 
 import heroEstudanteImg from '@/assets/covers/hero-estudante-v3.jpg';
 
 function AppBootSplash() {
-  // Preload silencioso em background da imagem principal da Home para 0ms de carregamento visual
+  const [show, setShow] = useState(true);
+
+  // Preload silencioso em background da imagem principal da Home para 0ms de carregamento visual pós-splash
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const img = new Image();
@@ -164,7 +165,11 @@ function AppBootSplash() {
     }
   }, []);
   
-  return null;
+  return (
+    <AnimatePresence>
+      {show && <CustomSplashScreen onComplete={() => setShow(false)} />}
+    </AnimatePresence>
+  );
 }
 
 function AppWarmupInitializer() {
