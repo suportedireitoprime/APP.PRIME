@@ -10,10 +10,18 @@ import { supabase } from '@/integrations/supabase/client';
 import { useGoBack } from '@/hooks/useGoBack';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
-import type { Database } from '@/integrations/supabase/types';
 import { getConcursoVisual } from '@/lib/concursosVisuais';
 
-type ConcursoNoticia = Database['public']['Tables']['concursos_noticias']['Row'];
+type ConcursoNoticia = {
+  id: string;
+  data_publicacao: string;
+  titulo: string;
+  imagem_url?: string;
+  link: string;
+  cargos?: string[];
+  cargos_resumo?: string;
+  vagas_salario?: string;
+};
 
 const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
 const MONTHS = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
@@ -256,18 +264,21 @@ const Concursos = () => {
                     </div>
 
                     {/* Content */}
-                    <div className="flex-1 min-w-0 flex flex-col justify-between gap-2 p-4">
-                      <h3 className="font-display text-[15px] sm:text-base text-foreground leading-snug line-clamp-3 group-hover:text-[#10B981] transition-colors">
+                    <div className="flex-1 min-w-0 flex flex-col justify-between gap-1.5 p-4">
+                      <span className="text-[9px] sm:text-[10px] font-bold text-emerald-400 uppercase tracking-widest truncate w-full">
+                        {item.cargos_resumo || (item.cargos && item.cargos.length > 0 ? item.cargos[0] : (item.titulo.match(/(?:para|cargo(?:s)? de|função de)\s+(.+?)(?:\s*-|\s*$)/i)?.[1] || "Vários Cargos"))}
+                      </span>
+                      <h3 className="font-display text-[14px] sm:text-[15px] text-foreground leading-snug line-clamp-2 group-hover:text-[#10B981] transition-colors mt-0.5">
                         {item.titulo}
                       </h3>
-                      <div className="flex items-center gap-2 flex-wrap text-[11px] font-body text-muted-foreground">
+                      <div className="flex items-center gap-2 flex-wrap text-[11px] sm:text-[12px] font-body text-muted-foreground mt-auto pt-1">
                         <span className="inline-flex items-center gap-1 text-[#10B981] font-semibold">
                           <Clock className="w-3 h-3" />
                           {time}
                         </span>
                         <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
-                        <span className="inline-flex items-center text-muted-foreground font-medium">
-                          {visual.subtitulo}
+                        <span className="inline-flex items-center text-muted-foreground font-medium truncate">
+                          {(item.vagas_salario || visual.subtitulo).replace(/.*?até\s+R\$/i, 'Salários até R$')}
                         </span>
                       </div>
                     </div>
