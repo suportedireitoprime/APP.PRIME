@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Clock, Calendar, ExternalLink, Newspaper } from 'lucide-react';
+import { Clock, Calendar, ExternalLink, Newspaper, X, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useIsDesktop } from '@/hooks/use-desktop';
@@ -11,6 +11,8 @@ import { useGoBack } from '@/hooks/useGoBack';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
 import { getConcursoVisual } from '@/lib/concursosVisuais';
+import { Drawer, DrawerContent, DrawerClose } from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
 
 type ConcursoNoticia = {
   id: string;
@@ -84,6 +86,12 @@ const Concursos = () => {
   const [dataFiltro, setDataFiltro] = useState<string>('');
   const [cargoFiltro, setCargoFiltro] = useState<string>('Todos');
 
+  // Modal/Drawer state
+  const [selectedItem, setSelectedItem] = useState<ConcursoNoticia | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [loadingFull, setLoadingFull] = useState(false);
+  const [fullContent, setFullContent] = useState<string | null>(null);
+
   useEffect(() => {
     let cancel = false;
     supabase
@@ -105,6 +113,30 @@ const Concursos = () => {
       void Browser.open({ url });
     } else {
       window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const handleOpenItem = async (item: ConcursoNoticia) => {
+    setSelectedItem(item);
+    setFullContent(null);
+    setLoadingFull(true);
+    setIsDrawerOpen(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('pciconcursos-noticia', {
+        body: { url: item.link }
+      });
+      if (error) throw error;
+      if (data && data.success) {
+        setFullContent(data.html);
+      } else {
+        setFullContent('<p>Não foi possível carregar o edital completo.</p>');
+      }
+    } catch (e) {
+      console.error(e);
+      setFullContent('<p>Falha ao carregar conteúdo do edital.</p>');
+    } finally {
+      setLoadingFull(false);
     }
   };
 
@@ -246,7 +278,7 @@ const Concursos = () => {
                   key={`hero-${hero.id}`}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  onClick={() => openExternalLink(hero.link)}
+                  onClick={() => handleOpenItem(hero)}
                   className="overflow-hidden bg-card border-y md:border md:rounded-2xl border-border cursor-pointer hover:border-[#10B981]/30 transition-colors -mx-4 md:mx-0"
                 >
                   <div className="relative h-44 md:h-40 overflow-hidden">
@@ -293,7 +325,7 @@ const Concursos = () => {
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.03 }}
-                    onClick={() => openExternalLink(item.link)}
+                    onClick={() => handleOpenItem(item)}
                     className="group flex items-stretch gap-0 bg-card border-y md:border md:rounded-2xl border-border hover:border-[#10B981]/40 active:bg-secondary/30 transition-colors cursor-pointer overflow-hidden relative"
                   >
                     {/* Thumbnail */}
@@ -350,6 +382,81 @@ const Concursos = () => {
           )
         )}
       </div>
+
+      <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <DrawerContent className="h-[92vh] max-h-[92vh] flex flex-col p-0 bg-background overflow-hidden">
+          <div className="absolute right-4 top-4 z-[60]">
+            <DrawerClose asChild>
+              <button className="p-2 bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full text-white transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </DrawerClose>
+          </div>
+
+          {selectedItem && (
+            <div className="flex-1 overflow-y-auto hide-scrollbar pb-safe relative">
+              {/* Header Image */}
+              <div className="relative h-64 w-full shrink-0">
+                <img
+                  src={getConcursoVisual(selectedItem.titulo, selectedItem.imagem_url).imagemUrl}
+                  alt={selectedItem.titulo}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-6 space-y-3">
+                  <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#10B981] text-white uppercase tracking-wide">
+                    {extractCargo(selectedItem)}
+                  </span>
+                  <h2 className="font-display text-xl sm:text-2xl font-bold text-foreground leading-tight">
+                    {selectedItem.titulo}
+                  </h2>
+                </div>
+              </div>
+
+              {/* Content Body */}
+              <div className="px-6 py-6 space-y-6">
+                <div className="flex flex-col gap-3 text-sm font-body text-muted-foreground bg-secondary/30 p-4 rounded-xl border border-border">
+                  <div className="flex justify-between items-center border-b border-border/50 pb-2">
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground">Salário / Vagas</span>
+                    <p className="text-foreground font-medium text-right text-xs">{selectedItem.vagas_salario || "Não informado"}</p>
+                  </div>
+                  <div className="flex justify-between items-center border-b border-border/50 pb-2">
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground">Formação</span>
+                    <p className="text-foreground font-medium text-right text-xs">{selectedItem.formacao || "Não informado"}</p>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground">Publicado</span>
+                    <p className="text-foreground font-medium text-right text-xs">{formatDateFull(selectedItem.data_publicacao)}</p>
+                  </div>
+                </div>
+
+                <div className="prose prose-invert prose-emerald max-w-none prose-sm sm:prose-base font-body text-foreground/90 space-y-4">
+                  {loadingFull ? (
+                    <div className="flex flex-col items-center justify-center py-12 space-y-3 text-muted-foreground">
+                      <Loader2 className="w-8 h-8 animate-spin text-[#10B981]" />
+                      <p className="text-sm font-medium animate-pulse">Extraindo edital completo...</p>
+                    </div>
+                  ) : fullContent ? (
+                    <div dangerouslySetInnerHTML={{ __html: fullContent }} />
+                  ) : (
+                    <p>{selectedItem.resumo}</p>
+                  )}
+                </div>
+
+                {/* Footer Action */}
+                <div className="pt-6 pb-8 flex flex-col gap-3">
+                  <Button 
+                    onClick={() => openExternalLink(selectedItem.link)}
+                    className="w-full h-14 rounded-2xl bg-[#10B981] hover:bg-[#10B981]/90 text-white font-bold text-base shadow-lg shadow-[#10B981]/25"
+                  >
+                    Acessar Edital Oficial <ExternalLink className="w-5 h-5 ml-2" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 };
