@@ -6,91 +6,18 @@
 
 /* ==========================================================================
    OCULTAR BARRA DE ROLAGEM UNIVERSAL (Mobile Native & Web)
-   Remove totalmente qualquer barra de rolagem branca/translúcida no Android WebView,
-   iOS WKWebView e Web, preservando o scroll fluido por toque e mouse.
+   Remove a barra de rolagem preservando o scroll fluido por toque e mouse.
    ========================================================================== */
-*,
-*::before,
-*::after,
-html,
-body,
-#root,
-div,
-main,
-section,
-article,
-aside,
-nav,
-ul,
-ol,
-p,
-pre,
-span {
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
-}
-
-::-webkit-scrollbar,
-*::-webkit-scrollbar,
-html::-webkit-scrollbar,
-body::-webkit-scrollbar,
-#root::-webkit-scrollbar,
-div::-webkit-scrollbar,
-main::-webkit-scrollbar,
-section::-webkit-scrollbar,
-article::-webkit-scrollbar,
-aside::-webkit-scrollbar,
-nav::-webkit-scrollbar,
-ul::-webkit-scrollbar,
-ol::-webkit-scrollbar,
-span::-webkit-scrollbar {
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
-  max-width: 0 !important;
-  max-height: 0 !important;
-  background: transparent !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-  -webkit-appearance: none !important;
-}
-
-::-webkit-scrollbar-thumb,
-*::-webkit-scrollbar-thumb,
-html::-webkit-scrollbar-thumb,
-body::-webkit-scrollbar-thumb,
-#root::-webkit-scrollbar-thumb,
-div::-webkit-scrollbar-thumb,
-main::-webkit-scrollbar-thumb {
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
-  background: transparent !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-  -webkit-appearance: none !important;
-}
-
-::-webkit-scrollbar-track,
-*::-webkit-scrollbar-track,
-html::-webkit-scrollbar-track,
-body::-webkit-scrollbar-track,
-#root::-webkit-scrollbar-track,
-div::-webkit-scrollbar-track,
-main::-webkit-scrollbar-track {
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
-  background: transparent !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-  -webkit-appearance: none !important;
-}
-
-::-webkit-scrollbar-corner,
-*::-webkit-scrollbar-corner {
-  display: none !important;
-  background: transparent !important;
+@layer base {
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  *::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
 }
 
 /* ============================================================
