@@ -582,7 +582,17 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   const overlayContents: Record<string, React.ReactNode> = {
     fav: <FavPanel artigos={artigos} isArtigoFav={isArtigoFav} onOpenArtigo={(a) => { setOverlayPanel(null); setOpenArtigo(a); }} accentColor={leiAccent} grifadoNumeros={grifadoNumeros} anotadoNumeros={anotadoNumeros} />,
     playlist: <PlaylistPanel artigos={artigos} playlistNarracoes={playlistNarracoes} loadingPlaylist={loadingPlaylist} playingUrl={playingUrl} togglePlayAudio={togglePlayAudio} onOpenArtigo={(a) => { setOverlayPanel(null); setOpenArtigo(a); }} />,
-    anotacoes: <AnotacoesPanel />,
+    anotacoes: (
+      <AnotacoesPanel
+        tabelaNome={selectedTabelaNome}
+        artigos={artigos}
+        onOpenArtigo={(a) => {
+          setOverlayPanel(null);
+          setOpenArtigo(a);
+        }}
+        accentColor={leiAccent}
+      />
+    ),
     novidades: (
       <NovidadesPanel
         artigos={artigos}

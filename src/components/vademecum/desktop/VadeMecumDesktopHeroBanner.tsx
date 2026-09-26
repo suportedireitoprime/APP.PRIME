@@ -8,15 +8,20 @@ import { pickAsset, srcOf } from '@/lib/assetUrl';
 
 const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 
+import type { QuickActionType } from '@/components/vademecum/sheets/VadeMecumQuickActionSheet';
+import { haptic } from '@/lib/nativeHaptics';
+
 interface Props {
   typingHint?: string;
   onSearchClick?: () => void;
   onNotifClick?: () => void;
   unreadCount?: number;
+  onSelectQuickAction?: (action: QuickActionType) => void;
 }
 
-const VadeMecumDesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNotifClick, unreadCount = 0 }: Props) => {
+const VadeMecumDesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNotifClick, unreadCount = 0, onSelectQuickAction }: Props) => {
   const navigate = useNavigate();
+
 
   return (
     <div className="relative w-full mx-auto z-20 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 h-[380px]">
@@ -101,20 +106,28 @@ const VadeMecumDesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClic
             {/* 4 Botões Rápidos */}
             <div className="grid grid-cols-4 gap-4">
               {[
-                { label: 'Favoritos', icon: Heart, route: '/vade-mecum/favoritos' },
-                { label: 'Anotações', icon: NotebookPen, route: '/vade-mecum/anotacoes' },
-                { label: 'Radares', icon: Radar, route: '/radares' },
-                { label: 'Histórico', icon: History, route: '/vade-mecum/recentes' }
+                { label: 'Favoritos', icon: Heart, action: 'favoritos' as QuickActionType, route: '/vade-mecum/favoritos' },
+                { label: 'Anotações', icon: NotebookPen, action: 'anotacoes' as QuickActionType, route: '/vade-mecum/anotacoes' },
+                { label: 'Radares', icon: Radar, action: 'radares' as QuickActionType, route: '/radares' },
+                { label: 'Histórico', icon: History, action: 'historico' as QuickActionType, route: '/vade-mecum/recentes' }
               ].map((btn, i) => (
                 <button
                   key={i}
-                  onClick={() => btn.route === '/vade-mecum/anotacoes' ? null : navigate(btn.route)}
-                  className="flex flex-col items-center justify-center gap-2 bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/10 rounded-2xl p-4 transition-all hover:scale-105 group/btn shadow-lg"
+                  onClick={() => {
+                    haptic.selection();
+                    if (onSelectQuickAction) {
+                      onSelectQuickAction(btn.action);
+                    } else if (btn.route) {
+                      navigate(btn.route);
+                    }
+                  }}
+                  className="flex flex-col items-center justify-center gap-2 bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/10 rounded-2xl p-4 transition-all hover:scale-105 group/btn shadow-lg cursor-pointer"
                 >
                   <btn.icon className="w-7 h-7 text-white/90 group-hover/btn:text-white transition-colors drop-shadow-md" />
                   <span className="text-white text-xs font-semibold font-body tracking-wide drop-shadow-md">{btn.label}</span>
                 </button>
               ))}
+
             </div>
           </div>
         </div>

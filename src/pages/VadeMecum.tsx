@@ -14,6 +14,7 @@ import VadeMecumDesktopTabs from '@/components/vademecum/desktop/VadeMecumDeskto
 import VadeMecumDesktopHeroBanner from '@/components/vademecum/desktop/VadeMecumDesktopHeroBanner';
 import { lazyWithRetry } from '@/utils/lazyWithRetry';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+import VadeMecumQuickActionSheet, { type QuickActionType } from '@/components/vademecum/sheets/VadeMecumQuickActionSheet';
 
 // Busca própria e exclusiva do Vade Mecum (Artigos, Leis e Jurisprudência)
 const BuscaLeisOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/BuscaLeisOverlay'));
@@ -27,6 +28,7 @@ const VadeMecum = () => {
   const { pathname } = useLocation();
   const isDesktop = useIsDesktop();
   const [buscaOpen, setBuscaOpen] = useState(false);
+  const [activeQuickSheet, setActiveQuickSheet] = useState<QuickActionType | null>(null);
 
   const abrirLei = (lei: { tipo: string; leiId: string; nome: string; descricao: string; tabela_nome: string; artigoNumero?: string }) => {
     setBuscaOpen(false);
@@ -49,9 +51,10 @@ const VadeMecum = () => {
     <>
       {activeTab === 'emalta' && (
         <div className={isDesktop ? "-mx-8 -mt-6 2xl:-mx-14" : ""}>
-          <VadeMecumHero />
+          <VadeMecumHero onSelectQuickAction={(action) => setActiveQuickSheet(action)} />
         </div>
       )}
+
 
       <main className={`relative ${isDesktop ? 'mt-8' : 'max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-2'}`}>
         <AnimatePresence mode="wait">
@@ -125,6 +128,7 @@ const VadeMecum = () => {
               <VadeMecumDesktopHeroBanner 
                 typingHint="Buscar na legislação..."
                 onSearchClick={() => setBuscaOpen(true)}
+                onSelectQuickAction={(action) => setActiveQuickSheet(action)}
               />
               <div className="mt-8">
                 {renderContent()}
@@ -139,8 +143,13 @@ const VadeMecum = () => {
           </Suspense>
         )}
 
+        <VadeMecumQuickActionSheet
+          activeSheet={activeQuickSheet}
+          onClose={() => setActiveQuickSheet(null)}
+        />
       </div>
     );
+
   }
 
   return (
@@ -165,8 +174,12 @@ const VadeMecum = () => {
         )}
         <VadeMecumBottomNav hidden={buscaOpen} />
 
-
+        <VadeMecumQuickActionSheet
+          activeSheet={activeQuickSheet}
+          onClose={() => setActiveQuickSheet(null)}
+        />
       </div>
+
     </div>
   );
 };

@@ -7,12 +7,16 @@ import VadeMecumHeroBrand from './chunks/VadeMecumHeroBrand';
 import VadeMecumQuickActions from './chunks/VadeMecumQuickActions';
 import VadeMecumSearchBar from './chunks/VadeMecumSearchBar';
 
+import type { QuickActionType } from '@/components/vademecum/sheets/VadeMecumQuickActionSheet';
+
 interface VadeMecumHeroProps {
   onOpenMenu?: () => void;
   onOpenSearch?: () => void;
+  onSelectQuickAction?: (action: QuickActionType) => void;
 }
 
-const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onOpenSearch }) => {
+const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onOpenSearch, onSelectQuickAction }) => {
+
   return (
     <>
       {/* Shell sólido, opaco e com blindagem contra culling e overscroll */}
@@ -71,8 +75,9 @@ const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onOpenSearch 
 
         {/* ── 4 Botões de Ação Rápida ────────────────── */}
         <div className="relative z-10 px-3 sm:px-5 pt-2 pb-2">
-          <VadeMecumQuickActions />
+          <VadeMecumQuickActions onSelectQuickAction={onSelectQuickAction} />
         </div>
+
 
         {/* Barra de Pesquisa */}
         <div className="relative z-10 px-4 sm:px-6 w-full pb-5">

@@ -11,6 +11,7 @@ export interface ProposicaoRadarCP {
   ano: number;
   proposicaoDisplay: string;
   autorNome: string;
+  autorFotoUrl?: string;
   autorPartidoUf?: string;
   autorCargo?: string;
   artigosAfetados: string[];
@@ -33,13 +34,14 @@ export const SEED_PROPOSICOES_CP: ProposicaoRadarCP[] = [
     ano: 2026,
     proposicaoDisplay: 'PL 5320/2026',
     autorNome: 'Dep. Delegado da Cunha',
+    autorFotoUrl: 'https://www.camara.leg.br/internet/deputado/bandep/220649.jpg',
     autorPartidoUf: 'PP/SP',
     autorCargo: 'Deputado Federal',
     artigosAfetados: ['Art. 157 (Roubo)'],
     artigoPrincipalNumero: '157',
     oQueQuerFazer: 'Qualificar expressamente o roubo praticado mediante destruição ou rompimento de vidro ou de outro componente de veículo automotor ocupado (modalidade popularmente conhecida como "quebra de vidro" ou "saidinha no trânsito"), elevando as penas aplicáveis.',
     ementaOficial: 'Altera o art. 157 do Decreto-Lei nº 2.848, de 7 de dezembro de 1940 (Código Penal), para qualificar o roubo praticado mediante destruição ou rompimento de vidro ou de outro componente de veículo automotor ocupado.',
-    situacaoTramitacao: 'Aguardando Parecer na Comissão de Constituição e Justiça (CCJC)',
+    situacaoTramitacao: 'Aguardando Parecer na CCJC',
     dataApresentacao: '2026-09-10',
     dataDisplay: 'Set/2026',
     linkCamara: 'https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2646236',
@@ -52,13 +54,14 @@ export const SEED_PROPOSICOES_CP: ProposicaoRadarCP[] = [
     ano: 2026,
     proposicaoDisplay: 'PL 5262/2026',
     autorNome: 'Dep. Paulo Soares',
+    autorFotoUrl: 'https://www.camara.leg.br/internet/deputado/bandep/154700.jpg',
     autorPartidoUf: 'REPUBLICANOS/RJ',
     autorCargo: 'Deputado Federal',
     artigosAfetados: ['Art. 171 (Estelionato)'],
     artigoPrincipalNumero: '171',
     oQueQuerFazer: 'Majorar as penas do crime de estelionato comum e eletrônico, duplicando as sanções quando o crime envolver vulneráveis, golpes via PIX ou transações financeiras digitais.',
     ementaOficial: 'Altera o artigo 171 do Decreto-Lei nº 2.848, de 7 de dezembro de 1940 (Código Penal) para majorar as penas do crime de estelionato.',
-    situacaoTramitacao: 'Em tramitação na Comissão de Segurança Pública (CSP)',
+    situacaoTramitacao: 'Em tramitação na CSP',
     dataApresentacao: '2026-09-02',
     dataDisplay: 'Set/2026',
     linkCamara: 'https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2645219',
@@ -71,13 +74,14 @@ export const SEED_PROPOSICOES_CP: ProposicaoRadarCP[] = [
     ano: 2026,
     proposicaoDisplay: 'PL 5294/2026',
     autorNome: 'Dep. Fred Linhares',
+    autorFotoUrl: 'https://www.camara.leg.br/internet/deputado/bandep/220534.jpg',
     autorPartidoUf: 'REPUBLICANOS/DF',
     autorCargo: 'Deputado Federal',
     artigosAfetados: ['Art. 155, § 5º (Furto de Veículo)'],
     artigoPrincipalNumero: '155',
     oQueQuerFazer: 'Incluir expressamente o Distrito Federal na qualificadora de furto de veículo transportado para outro Estado ou exterior, sanando lacuna técnica do texto legal.',
     ementaOficial: 'Altera o § 5º do art. 155 do Decreto-Lei nº 2.848, de 7 de dezembro de 1940 - Código Penal, para incluir expressamente o Distrito Federal na qualificadora do crime de furto de veículo automotor.',
-    situacaoTramitacao: 'Aguardando Designação de Relator na CCJC',
+    situacaoTramitacao: 'Aguardando Parecer na CCJC',
     dataApresentacao: '2026-09-05',
     dataDisplay: 'Set/2026',
     linkCamara: 'https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2645943',
@@ -90,13 +94,14 @@ export const SEED_PROPOSICOES_CP: ProposicaoRadarCP[] = [
     ano: 2026,
     proposicaoDisplay: 'PL 5323/2026',
     autorNome: 'Dep. Julio Cesar Ribeiro',
+    autorFotoUrl: 'https://www.camara.leg.br/internet/deputado/bandep/204372.jpg',
     autorPartidoUf: 'REPUBLICANOS/DF',
     autorCargo: 'Deputado Federal',
-    artigosAfetados: ['Art. 129, § 9º e § 13 (Lesão Corporal)'],
+    artigosAfetados: ['Art. 129, § 9º (Violência Doméstica)'],
     artigoPrincipalNumero: '129',
     oQueQuerFazer: 'Agravar severamente as penas aplicáveis às lesões corporais praticadas no âmbito de violência doméstica e familiar contra a mulher e criar novas causas de aumento de pena quando houver descumprimento de medida protetiva.',
     ementaOficial: 'Altera o artigo 129 do Decreto-Lei nº 2.848, de 7 de dezembro de 1940 (Código Penal), para agravar as penas aplicáveis às lesões corporais praticadas no âmbito de violência doméstica e familiar contra a mulher.',
-    situacaoTramitacao: 'Pronto para Pauta na Comissão de Defesa dos Direitos da Mulher (CMULHER)',
+    situacaoTramitacao: 'Pronto para Pauta na CMULHER',
     dataApresentacao: '2026-09-11',
     dataDisplay: 'Set/2026',
     linkCamara: 'https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2646258',
@@ -109,13 +114,14 @@ export const SEED_PROPOSICOES_CP: ProposicaoRadarCP[] = [
     ano: 2026,
     proposicaoDisplay: 'PL 5366/2026',
     autorNome: 'Dep. Bruno Ganem',
+    autorFotoUrl: 'https://www.camara.leg.br/internet/deputado/bandep/220635.jpg',
     autorPartidoUf: 'PODE/SP',
     autorCargo: 'Deputado Federal',
     artigosAfetados: ['Art. 216-B e Art. 218-C (Crimes Sexuais e IA)'],
     artigoPrincipalNumero: '216',
     oQueQuerFazer: 'Criminalizar expressamente a criação e simulação de imagens sintéticas de conteúdo sexual infantil ou vulnerável geradas por Inteligência Artificial (deepfakes), classificando a conduta no rol de crimes hediondos.',
     ementaOficial: 'Altera a Lei nº 8.069/1990 (ECA), o Decreto-Lei nº 2.848/1940 (Código Penal) e a Lei nº 8.072/1990 (Crimes Hediondos), para tipificar a violência sexual gerada por inteligência artificial.',
-    situacaoTramitacao: 'Em análise conjunta na CCJC e Comissão de Comunicação',
+    situacaoTramitacao: 'Em análise conjunta na CCJC e CCOM',
     dataApresentacao: '2026-09-15',
     dataDisplay: 'Set/2026',
     linkCamara: 'https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2646413',
@@ -128,13 +134,14 @@ export const SEED_PROPOSICOES_CP: ProposicaoRadarCP[] = [
     ano: 2026,
     proposicaoDisplay: 'PL 5325/2026',
     autorNome: 'Dep. Augusto Coutinho',
+    autorFotoUrl: 'https://www.camara.leg.br/internet/deputado/bandep/160665.jpg',
     autorPartidoUf: 'REPUBLICANOS/PE',
     autorCargo: 'Deputado Federal',
-    artigosAfetados: ['Art. 149-A (Tráfico de Pessoas e Aliciamento)'],
+    artigosAfetados: ['Art. 149-A (Aliciamento Militar)'],
     artigoPrincipalNumero: '149',
     oQueQuerFazer: 'Tipificar como crime penal autônomo o aliciamento ou recrutamento de pessoas em território brasileiro com a finalidade de atuar como combatente em conflitos armados no exterior.',
     ementaOficial: 'Altera o art. 149-A do Decreto-Lei nº 2.848, de 7 de dezembro de 1940 – Código Penal, para tornar crime o aliciamento ou recrutamento de pessoa com a finalidade de combate em conflito armado.',
-    situacaoTramitacao: 'Aguardando Parecer na Comissão de Relações Exteriores e de Defesa Nacional (CREDN)',
+    situacaoTramitacao: 'Aguardando Parecer na CREDN',
     dataApresentacao: '2026-09-11',
     dataDisplay: 'Set/2026',
     linkCamara: 'https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2646260',
@@ -147,13 +154,14 @@ export const SEED_PROPOSICOES_CP: ProposicaoRadarCP[] = [
     ano: 2026,
     proposicaoDisplay: 'PL 5356/2026',
     autorNome: 'Dep. General Pazuello',
+    autorFotoUrl: 'https://www.camara.leg.br/internet/deputado/bandep/220611.jpg',
     autorPartidoUf: 'PL/RJ',
     autorCargo: 'Deputado Federal',
-    artigosAfetados: ['Art. 359-I (Estado Democrático de Direito)'],
+    artigosAfetados: ['Art. 359-I (Estado Democrático)'],
     artigoPrincipalNumero: '359',
     oQueQuerFazer: 'Modificar os elementos objetivos do caput e parágrafos do art. 359-I, adicionando circunstâncias atenuantes e limitadoras de dosimetria penal nos crimes contra o Estado Democrático de Direito.',
     ementaOficial: 'Altera a redação do caput e dos parágrafos 1º e 2º e acrescenta os incisos I, II e III ao artigo 359-I do Decreto-Lei nº 2.848, de 7 de dezembro de 1940 (Código Penal).',
-    situacaoTramitacao: 'Aguardando inclusão na Ordem do Dia da CCJC',
+    situacaoTramitacao: 'Aguardando Ordem do Dia na CCJC',
     dataApresentacao: '2026-09-14',
     dataDisplay: 'Set/2026',
     linkCamara: 'https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2646387',
@@ -166,19 +174,50 @@ export const SEED_PROPOSICOES_CP: ProposicaoRadarCP[] = [
     ano: 2026,
     proposicaoDisplay: 'PL 5371/2026',
     autorNome: 'Dep. Lincoln Portela',
+    autorFotoUrl: 'https://www.camara.leg.br/internet/deputado/bandep/74585.jpg',
     autorPartidoUf: 'PL/MG',
     autorCargo: 'Deputado Federal',
-    artigosAfetados: ['Art. 317 e Art. 333 (Corrupção e Integridade Privada)'],
+    artigosAfetados: ['Art. 317 e Art. 333 (Corrupção Privada)'],
     artigoPrincipalNumero: '317',
     oQueQuerFazer: 'Instituir novos tipos penais relativos à corrupção no setor privado empresarial, responsabilizando dirigentes e intermediários de vantagens indevidas.',
     ementaOficial: 'Institui o Estatuto Nacional de Integridade e Responsabilidade Anticorrupção no Setor Privado e altera o Decreto-Lei nº 2.848, de 7 de dezembro de 1940 (Código Penal).',
-    situacaoTramitacao: 'Em análise preliminar pela Mesa Diretora da Câmara',
+    situacaoTramitacao: 'Em análise pela Mesa Diretora',
     dataApresentacao: '2026-09-16',
     dataDisplay: 'Set/2026',
     linkCamara: 'https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2646428',
     tipoMudanca: 'Nova Tipificação',
   }
 ];
+
+import { supabase } from '@/integrations/supabase/client';
+
+export async function enrichProposicoesWithFotos(items: ProposicaoRadarCP[]): Promise<ProposicaoRadarCP[]> {
+  try {
+    const { data: deputados } = await (supabase as any)
+      .from('radar_deputados')
+      .select('nome, foto_url, camara_id');
+
+    if (!deputados || !Array.isArray(deputados)) return items;
+
+    return items.map(item => {
+      if (item.autorFotoUrl) return item;
+      const cleanAuthor = item.autorNome.replace(/^dep(?:utad[oa])?\.?\s*/i, '').trim().toLowerCase();
+      
+      const found = deputados.find((d: any) => {
+        const dNome = (d.nome || '').toLowerCase().trim();
+        return dNome.includes(cleanAuthor) || cleanAuthor.includes(dNome);
+      });
+
+      if (found && found.foto_url) {
+        return { ...item, autorFotoUrl: found.foto_url };
+      }
+      return item;
+    });
+  } catch (e) {
+    console.warn('Erro ao enriquecer fotos:', e);
+    return items;
+  }
+}
 
 const CAMARA_API = 'https://dadosabertos.camara.leg.br/api/v2';
 const CACHE_KEY = 'prime_radar_cp_proposicoes';
@@ -270,6 +309,7 @@ export async function getProposicoesRadarCP(): Promise<ProposicaoRadarCP[]> {
         })
       );
 
+
       // Mescla com o seed para garantir enriquecimento completo
       const seenIds = new Set<string>();
       const combined: ProposicaoRadarCP[] = [];
@@ -285,12 +325,14 @@ export async function getProposicoesRadarCP(): Promise<ProposicaoRadarCP[]> {
         }
       }
 
-      localStorage.setItem(CACHE_KEY, JSON.stringify({ data: combined, timestamp: Date.now() }));
-      return combined;
+      const enriched = await enrichProposicoesWithFotos(combined);
+      localStorage.setItem(CACHE_KEY, JSON.stringify({ data: enriched, timestamp: Date.now() }));
+      return enriched;
     }
   } catch (err) {
     console.warn('API da Câmara inacessível, utilizando catálogo curado:', err);
   }
 
-  return SEED_PROPOSICOES_CP;
+  return await enrichProposicoesWithFotos(SEED_PROPOSICOES_CP);
 }
+
