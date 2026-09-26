@@ -37,8 +37,8 @@ export const VOZES_DISPONIVEIS: VozTTS[] = [
 ];
 
 export const ESTILOS_TOM = [
-  { id: 'animado', label: 'Animado & Professoral (Padrão)', prompt: 'Animado e envolvente, como uma professora jovem apaixonada por Direito explicando aos seus alunos' },
-  { id: 'super_animado', label: 'Super Animado & Fluido', prompt: 'Super animado, vibrante, extremamente fluido, expressivo e cativante, tornando o estudo de Direito leve, envolvente e memorável' },
+  { id: 'super_animado', label: 'Super Animado & Fluido (Padrão)', prompt: 'Super animado, vibrante, extremamente fluido, expressivo e cativante, tornando o estudo de Direito leve, envolvente e memorável' },
+  { id: 'animado', label: 'Animado & Professoral', prompt: 'Animado e envolvente, como uma professora jovem apaixonada por Direito explicando aos seus alunos' },
   { id: 'solene', label: 'Solene & Formal (Judiciário)', prompt: 'Solene, formal, respeitoso e pausado, com dicção jurídica tradicional' },
   { id: 'didatico', label: 'Didático para Concursos (Pausado)', prompt: 'Didático, pausado e muito claro, enfatizando os artigos, incisos e penas para fixação' },
   { id: 'acelerado', label: 'Direto & Dinâmico (Revisão Rápida)', prompt: 'Dinâmico, direto e ágil para revisão rápida de legislação' },
@@ -85,6 +85,78 @@ export interface ConfigAutomacao {
   ultimo_disparo: string | null;
   ultimo_artigo_gerado: string | null;
   ultimo_status: string | null;
+  leis_ativas?: string[];
+  indice_lei_atual?: number;
+}
+
+/**
+ * Artigos de altíssima relevância e frequência em exames (OAB, Concursos Públicos e Prática Forense)
+ */
+export const MAPA_TOP_PROVAS: Record<string, string[]> = {
+  CP_CODIGO_PENAL: [
+    '1', '2', '5', '13', '14', '18', '20', '21', '23', '24', '25', '28', '29', '59',
+    '69', '70', '71', '107', '109', '121', '129', '147', '155', '157', '171', '213',
+    '217-A', '288', '297', '299', '312', '316', '317', '319', '333',
+  ],
+  CC_CODIGO_CIVIL: [
+    '1', '2', '3', '4', '5', '11', '12', '50', '104', '138', '145', '151', '156', '157',
+    '158', '166', '186', '187', '205', '206', '389', '395', '421', '422', '927', '932',
+    '944', '1196', '1228', '1238', '1240', '1511', '1694', '1784',
+  ],
+  CF88_CONSTITUICAO_FEDERAL: [
+    '1', '2', '3', '4', '5', '6', '12', '14', '18', '21', '22', '24', '37', '38', '39',
+    '40', '41', '102', '103', '105', '133', '144', '150',
+  ],
+  CPC_CODIGO_PROCESSO_CIVIL: [
+    '1', '4', '6', '9', '10', '85', '219', '300', '311', '319', '335', '355', '356',
+    '485', '487', '994', '1003', '1015', '1022',
+  ],
+  CPP_CODIGO_PROCESSO_PENAL: [
+    '4', '5', '6', '24', '28', '155', '156', '157', '282', '283', '310', '311', '312',
+    '315', '316', '396', '397', '406', '413', '414', '415', '581', '593', '647', '648',
+  ],
+  CLT_CONSOLIDACAO_LEIS_TRABALHO: [
+    '2', '3', '7', '58', '59', '71', '442', '443', '468', '477', '482', '483', '840',
+    '893', '895',
+  ],
+  CDC_CODIGO_DEFESA_CONSUMIDOR: [
+    '2', '3', '6', '12', '14', '18', '26', '27', '39', '51', '66', '67',
+  ],
+  ECA_ESTATUTO_CRIANCA_ADOLESCENTE: [
+    '1', '2', '3', '4', '18', '103', '104', '105', '112', '121', '122', '131', '225', '244-A',
+  ],
+  CTN_CODIGO_TRIBUTARIO_NACIONAL: [
+    '3', '9', '97', '108', '113', '114', '121', '128', '142', '150', '151', '156', '173', '174',
+  ],
+  CTB_CODIGO_TRANSITO_BRASILEIRO: [
+    '165', '165-A', '291', '302', '303', '306', '308', '309', '310', '311',
+  ],
+  EI_ESTATUTO_IDOSO: [
+    '1', '2', '3', '4', '96', '97', '98', '99', '100', '102',
+  ],
+  EOAB_ESTATUTO_OAB: [
+    '1', '2', '3', '7', '7-A', '7-B', '22', '34', '35', '36', '38',
+  ],
+};
+
+/**
+ * Calcula a prioridade combinada de um artigo:
+ * Top Prova (+50.000 pontos) + extensão em caracteres
+ */
+export function calcularScoreArtigo(
+  artigo: { numero?: string | number; texto?: string; caput?: string; titulo?: string },
+  tabelaNome: string
+): { score: number; isTopProva: boolean; lenChars: number } {
+  const numLimpo = String(artigo.numero || '')
+    .replace(/^[Aa]rt\.?\s*/i, '')
+    .replace(/[º°]/g, '')
+    .trim();
+  const topList = MAPA_TOP_PROVAS[tabelaNome] || [];
+  const isTopProva = topList.includes(numLimpo);
+  const textoTotal = artigo.texto || `${artigo.titulo || ''} ${artigo.caput || ''}`;
+  const lenChars = textoTotal.trim().length;
+  const score = (isTopProva ? 50000 : 0) + lenChars;
+  return { score, isTopProva, lenChars };
 }
 
 export interface LogAutomacao {
@@ -700,7 +772,8 @@ export async function gerarNarracaoArtigoFatiada(
   );
 
   if (dbErr) {
-    console.warn('[gerarNarracaoArtigoFatiada] Aviso ao salvar narracoes_artigos:', dbErr);
+    console.error('[gerarNarracaoArtigoFatiada] Falha crítica ao persistir em narracoes_artigos:', dbErr);
+    throw new Error(`Falha ao registrar áudio no banco de dados: ${dbErr.message || 'Erro de permissão'}`);
   }
 
   // Limpa cache offline antigo no IndexedDB para que o Vade Mecum use o áudio recém-gerado imediatamente
@@ -752,12 +825,14 @@ export async function obterConfigAutomacao(): Promise<ConfigAutomacao> {
       tabela_nome: 'CP_CODIGO_PENAL',
       prioridade: 'artigos_maiores',
       voz_padrao: 'Kore',
-      estilo_tom: 'Animado e envolvente, como professora jovem de Direito',
+      estilo_tom: 'Super animado, vibrante, extremamente fluido, expressivo e cativante, tornando o estudo de Direito leve, envolvente e memorável',
       lote_tamanho: 1,
       artigos_gerados_total: 0,
       ultimo_disparo: null,
       ultimo_artigo_gerado: null,
       ultimo_status: null,
+      leis_ativas: ['CP_CODIGO_PENAL'],
+      indice_lei_atual: 0,
     };
   }
 

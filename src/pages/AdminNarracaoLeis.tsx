@@ -6,7 +6,8 @@ import {
   Clock, Loader2, Play, Pause, ArrowLeft, Volume2,
   Cpu, Sliders, Check, Sparkles, Filter, AlertCircle,
   FileText, Zap, Music, ListFilter, VolumeX,
-  Trash2, ChevronDown, Mic, Database, Layers
+  Trash2, ChevronDown, Mic, Database, Layers,
+  Plus, X, Tag, ListOrdered
 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { LEIS_CATALOG, type LeiCatalogItem } from '@/data/leisCatalog';
@@ -33,6 +34,8 @@ import {
   type NarracaoArtigoRegistro,
   type ConfigAutomacao,
   type LogAutomacao,
+  calcularScoreArtigo,
+  MAPA_TOP_PROVAS,
 } from '@/services/narracaoLeisService';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
@@ -203,9 +206,13 @@ export default function AdminNarracaoLeis() {
   const [artigoExpandido, setArtigoExpandido] = useState<string | null>(null);
   const [filtroArtigos, setFiltroArtigos] = useState<'todos' | 'narrados' | 'pendentes' | 'maiores'>('todos');
 
-  // Tonalidade selecionada para gravação dos artigos (padrão 'animado')
+  // Tonalidade selecionada para gravação dos artigos (padrão 'super_animado')
   const [estiloNarracaoSelecionado, setEstiloNarracaoSelecionado] = useState<string>(() => {
-    return localStorage.getItem('admin_narracao_estilo_selecionado') || 'animado';
+    const saved = localStorage.getItem('admin_narracao_estilo_selecionado');
+    if (!saved || saved === 'animado') {
+      return 'super_animado';
+    }
+    return saved;
   });
 
   // Geração de narração individual
@@ -249,6 +256,141 @@ export default function AdminNarracaoLeis() {
   const [logsAuto, setLogsAuto] = useState<LogAutomacao[]>([]);
   const [salvandoAuto, setSalvandoAuto] = useState(false);
   const [disparandoManual, setDisparandoManual] = useState(false);
+  const [artigosPorLei, setArtigosPorLei] = useState<Record<string, ArtigoLei[]>>({});
+  const [statusPorLei, setStatusPorLei] = useState<Record<string, Record<string, NarracaoArtigoRegistro>>>({});
+  const [carregandoFila, setCarregandoFila] = useState(false);
+  const [limiteFila, setLimiteFila] = useState(30);
+
+  // Leis ativas na fila da automação (padrão multi-leis)
+  const leisAtivas = useMemo(() => {
+    if (Array.isArray(configAuto?.leis_ativas) && configAuto.leis_ativas.length > 0) {
+      return configAuto.leis_ativas;
+    }
+    return [configAuto?.tabela_nome || 'CP_CODIGO_PENAL'];
+  }, [configAuto?.leis_ativas, configAuto?.tabela_nome]);
+
+  // Carrega artigos e status das leis ativas para alimentar a fila em tempo real
+  useEffect(() => {
+    if (selectedCat?.id !== 'automacao' || leisAtivas.length === 0) return;
+    let mounted = true;
+    setCarregandoFila(true);
+
+    Promise.all(
+      leisAtivas.map(async (tabela) => {
+        const leiItem = LEIS_CATALOG.find((l) => l.tabela_nome === tabela);
+        const leiId = leiItem?.id || tabela.toLowerCase();
+        const [arts, status] = await Promise.all([
+          fetchArtigosLei(leiId, tabela),
+          buscarStatusNarracoes(tabela),
+        ]);
+        return { tabela, arts: arts || [], status: status || {} };
+      })
+    ).then((resultados) => {
+      if (!mounted) return;
+      const novosArtigos: Record<string, ArtigoLei[]> = {};
+      const novosStatus: Record<string, Record<string, NarracaoArtigoRegistro>> = {};
+      resultados.forEach((r) => {
+        novosArtigos[r.tabela] = r.arts;
+        novosStatus[r.tabela] = r.status;
+      });
+      setArtigosPorLei((prev) => ({ ...prev, ...novosArtigos }));
+      setStatusPorLei((prev) => ({ ...prev, ...novosStatus }));
+    }).catch((err) => {
+      console.error('Erro ao carregar artigos para fila:', err);
+    }).finally(() => {
+      if (mounted) setCarregandoFila(false);
+    });
+
+    return () => { mounted = false; };
+  }, [selectedCat?.id, leisAtivas]);
+
+  // Cálculo da Fila Intercalada Round-Robin por relevância (Top Provas + Artigos Maiores)
+  const filaIntercalada = useMemo(() => {
+    if (leisAtivas.length === 0) return [];
+
+    const listasPorLei: {
+      lei: LeiCatalogItem;
+      itens: { artigo: ArtigoLei; score: number; isTopProva: boolean; lenChars: number }[];
+    }[] = [];
+
+    leisAtivas.forEach((tab) => {
+      const leiItem = LEIS_CATALOG.find((l) => l.tabela_nome === tab) || {
+        id: tab.toLowerCase(),
+        nome: tab.replace(/_/g, ' '),
+        sigla: tab.split('_')[0] || tab,
+        tabela_nome: tab,
+        descricao: '',
+        tipo: 'codigo',
+        iconColor: '#f59e0b',
+      };
+
+      const arts = artigosPorLei[tab] || [];
+      const statusMap = statusPorLei[tab] || {};
+
+      const pendentes = arts
+        .filter((a) => {
+          if (!isArtigoReal(a)) return false;
+          const numLimpo = String(a.numero || '').replace(/^[Aa]rt\.?\s*/i, '').trim();
+          const numDigitos = numLimpo.replace(/\D/g, '');
+          const jaNarrado = !!(
+            statusMap[numLimpo] ||
+            statusMap[a.numero] ||
+            (numDigitos && (statusMap[numDigitos] || statusMap[`${numDigitos}º`] || statusMap[`Art. ${numDigitos}`]))
+          );
+          return !jaNarrado;
+        })
+        .map((art) => {
+          const { score, isTopProva, lenChars } = calcularScoreArtigo(art, tab);
+          return { artigo: art, score, isTopProva, lenChars };
+        });
+
+      // Ordena por score decrescente (Top Prova + Artigos Maiores primeiro!)
+      pendentes.sort((a, b) => b.score - a.score);
+
+      listasPorLei.push({ lei: leiItem, itens: pendentes });
+    });
+
+    // Intercalação 1 a 1 entre as leis ativas (Round-Robin)
+    const filaFinal: {
+      posicao: number;
+      lei: LeiCatalogItem;
+      artigo: ArtigoLei;
+      tabelaNome: string;
+      numLimpo: string;
+      tamanhoChars: number;
+      isTopProva: boolean;
+      estimativaSegundos: number;
+    }[] = [];
+
+    const maxItens = Math.max(...listasPorLei.map((l) => l.itens.length), 0);
+    if (maxItens === 0) return [];
+
+    const offsetIndice = (configAuto?.indice_lei_atual ?? 0) % listasPorLei.length;
+
+    for (let rodada = 0; rodada < maxItens; rodada++) {
+      for (let i = 0; i < listasPorLei.length; i++) {
+        const idxLei = (offsetIndice + i) % listasPorLei.length;
+        const grupo = listasPorLei[idxLei];
+        if (grupo.itens[rodada]) {
+          const item = grupo.itens[rodada];
+          const numLimpo = String(item.artigo.numero || '').replace(/^[Aa]rt\.?\s*/i, '').trim();
+          const estimativa = Math.max(10, Math.round(item.lenChars / 18));
+          filaFinal.push({
+            posicao: filaFinal.length + 1,
+            lei: grupo.lei,
+            artigo: item.artigo,
+            tabelaNome: grupo.lei.tabela_nome,
+            numLimpo,
+            tamanhoChars: item.lenChars,
+            isTopProva: item.isTopProva,
+            estimativaSegundos: estimativa,
+          });
+        }
+      }
+    }
+
+    return filaFinal;
+  }, [leisAtivas, artigosPorLei, statusPorLei, configAuto?.indice_lei_atual]);
 
   // Carrega configuração de automação ao montar
   useEffect(() => {
@@ -431,11 +573,13 @@ export default function AdminNarracaoLeis() {
   };
 
   // Gera narração contínua inteligente para um artigo com progresso em porcentagem e tempo estimado
-  const handleGerarNarraçãoIndividual = async (artigo: ArtigoLei) => {
-    if (!selectedLei || gerandoArtigoNum) return;
-    setGerandoArtigoNum(artigo.numero);
+  const handleGerarNarraçãoIndividual = async (artigo: ArtigoLei, leiCustom?: LeiCatalogItem) => {
+    const leiAlvo = leiCustom || selectedLei;
+    if (!leiAlvo || gerandoArtigoNum) return;
+    const chaveGerando = `${leiAlvo.tabela_nome}_${artigo.numero}`;
+    setGerandoArtigoNum(chaveGerando);
 
-    // Identifica o estilo selecionado pelo usuário (padrão animado)
+    // Identifica o estilo selecionado pelo usuário (padrão super animado)
     const estiloObj = ESTILOS_TOM.find((e) => e.id === estiloNarracaoSelecionado) || ESTILOS_TOM[0];
     const estiloPrompt = estiloObj.prompt;
     const voz = configAuto?.voz_padrao || 'Kore';
@@ -451,11 +595,11 @@ export default function AdminNarracaoLeis() {
     let porcentagemAcumulada = 3;
 
     // Toast inicial com porcentagem e tempo estimado
-    const toastId = toast.loading(`Narrando Artigo ${artigo.numero}... 3% (~${tempoEstimadoParteSegundos}s restantes)`);
+    const toastId = toast.loading(`Narrando Artigo ${artigo.numero} (${leiAlvo.sigla || leiAlvo.nome})... 3% (~${tempoEstimadoParteSegundos}s restantes)`);
 
     setProgressoGeracao({ parteAtual: 1, totalPartes: 1, rotulo: rotuloAtual });
     setProgressoDetalhado({
-      artigoNumero: artigo.numero,
+      artigoNumero: `${leiAlvo.sigla ? leiAlvo.sigla + ' ' : ''}${artigo.numero}`,
       parteAtual: 1,
       totalPartes: 1,
       rotulo: rotuloAtual,
@@ -476,7 +620,7 @@ export default function AdminNarracaoLeis() {
       porcentagemAcumulada = porcentagemGlobal;
 
       setProgressoDetalhado({
-        artigoNumero: artigo.numero,
+        artigoNumero: `${leiAlvo.sigla ? leiAlvo.sigla + ' ' : ''}${artigo.numero}`,
         parteAtual: parteAtualNum,
         totalPartes: totalPartesNum,
         rotulo: rotuloAtual,
@@ -487,7 +631,7 @@ export default function AdminNarracaoLeis() {
 
       // Atualiza o toast com a porcentagem e tempo estimado
       toast.loading(
-        `Narrando Artigo ${artigo.numero}... ${porcentagemGlobal}% (~${restantes}s restantes)`,
+        `Narrando Artigo ${artigo.numero} (${leiAlvo.sigla || leiAlvo.nome})... ${porcentagemGlobal}% (~${restantes}s restantes)`,
         { id: toastId }
       );
     }, 250);
@@ -495,8 +639,8 @@ export default function AdminNarracaoLeis() {
     try {
       const res = await gerarNarracaoArtigoFatiada(
         artigo,
-        selectedLei.tabela_nome,
-        selectedLei.nome,
+        leiAlvo.tabela_nome,
+        leiAlvo.nome,
         voz,
         estiloPrompt,
         (parteAtual, totalPartes, rotulo) => {
@@ -513,7 +657,7 @@ export default function AdminNarracaoLeis() {
 
       // Marca 100% no progresso
       setProgressoDetalhado({
-        artigoNumero: artigo.numero,
+        artigoNumero: `${leiAlvo.sigla ? leiAlvo.sigla + ' ' : ''}${artigo.numero}`,
         parteAtual: totalPartesNum,
         totalPartes: totalPartesNum,
         rotulo: rotuloAtual,
@@ -525,25 +669,35 @@ export default function AdminNarracaoLeis() {
       const numLimpo = String(artigo.numero).replace(/^[Aa]rt\.?\s*/i, '').trim();
       const duracaoSegundos = res.duracaoSegundos || 0;
 
+      const reg: NarracaoArtigoRegistro = {
+        artigo_numero: numLimpo,
+        audio_url: res.audioUrl,
+        partes: res.partes,
+        duracao_segundos: duracaoSegundos,
+      };
+
       setStatusNarracoes((prev) => ({
         ...prev,
-        [numLimpo]: {
-          artigo_numero: numLimpo,
-          audio_url: res.audioUrl,
-          partes: res.partes,
-          duracao_segundos: duracaoSegundos,
-        },
-        [artigo.numero]: {
-          artigo_numero: numLimpo,
-          audio_url: res.audioUrl,
-          partes: res.partes,
-          duracao_segundos: duracaoSegundos,
-        },
+        [numLimpo]: reg,
+        [artigo.numero]: reg,
       }));
 
+      setStatusPorLei((prev) => {
+        const leiTab = leiAlvo.tabela_nome;
+        const currentLeiStatus = prev[leiTab] || {};
+        return {
+          ...prev,
+          [leiTab]: {
+            ...currentLeiStatus,
+            [numLimpo]: reg,
+            [artigo.numero]: reg,
+          },
+        };
+      });
+
       const msg = res.partes.length === 1
-        ? `Artigo ${artigo.numero} gravado com sucesso! ${duracaoSegundos}s de áudio gerado (${estiloObj.label}).`
-        : `Artigo ${artigo.numero} gravado com sucesso em ${res.partes.length} partes! ${duracaoSegundos}s total de áudio gerado.`;
+        ? `Artigo ${artigo.numero} (${leiAlvo.sigla || leiAlvo.nome}) gravado e persistido! ${duracaoSegundos}s (${estiloObj.label}).`
+        : `Artigo ${artigo.numero} (${leiAlvo.sigla || leiAlvo.nome}) gravado em ${res.partes.length} partes! ${duracaoSegundos}s total.`;
       toast.success(msg, { id: toastId });
     } catch (err: any) {
       clearInterval(timer);
@@ -796,19 +950,23 @@ export default function AdminNarracaoLeis() {
   };
 
   // Disparo manual de lote na automação
-  const handleDispararLoteAgora = async () => {
+  const handleDispararLoteAgora = async (tabelaEspecifica?: string) => {
     setDisparandoManual(true);
-    const toastId = toast.loading('Processando próximo artigo de maior tamanho da fila...');
+    const toastId = toast.loading('Processando próximo artigo da fila de automação...');
 
     try {
       const res = await dispararAutomacaoLoteManual({
-        tabelaNome: configAuto?.tabela_nome || 'CP_CODIGO_PENAL',
+        tabelaNome: tabelaEspecifica,
         prioridade: configAuto?.prioridade || 'artigos_maiores',
         voz: configAuto?.voz_padrao || 'Kore',
       });
 
       if (res?.artigo) {
-        toast.success(`Artigo ${res.artigo} narrado e fatiado em ${res.partes_geradas} partes!`, { id: toastId });
+        toast.success(`Artigo ${res.artigo} (${res.tabela_nome || ''}) gravado com sucesso!`, { id: toastId });
+        if (res.tabela_nome) {
+          const novoStatus = await buscarStatusNarracoes(res.tabela_nome);
+          setStatusPorLei((prev) => ({ ...prev, [res.tabela_nome]: novoStatus }));
+        }
       } else {
         toast.info(res?.message || 'Ciclo de automação concluído.', { id: toastId });
       }
@@ -820,6 +978,39 @@ export default function AdminNarracaoLeis() {
       toast.error(`Erro: ${err.message || 'Falha no ciclo manual'}`, { id: toastId });
     } finally {
       setDisparandoManual(false);
+    }
+  };
+
+  const handleAdicionarLeiFila = async (tabelaNome: string) => {
+    if (leisAtivas.includes(tabelaNome)) return;
+    const novasLeis = [...leisAtivas, tabelaNome];
+    setSalvandoAuto(true);
+    try {
+      await salvarConfigAutomacao({ leis_ativas: novasLeis, tabela_nome: novasLeis[0] });
+      setConfigAuto((prev) => prev ? { ...prev, leis_ativas: novasLeis, tabela_nome: novasLeis[0] } : prev);
+      toast.success('Legislação adicionada à rotação da automação!');
+    } catch {
+      toast.error('Erro ao adicionar lei');
+    } finally {
+      setSalvandoAuto(false);
+    }
+  };
+
+  const handleRemoverLeiFila = async (tabelaNome: string) => {
+    if (leisAtivas.length <= 1) {
+      toast.warning('A fila precisa conter ao menos uma lei ativa!');
+      return;
+    }
+    const novasLeis = leisAtivas.filter((t) => t !== tabelaNome);
+    setSalvandoAuto(true);
+    try {
+      await salvarConfigAutomacao({ leis_ativas: novasLeis, tabela_nome: novasLeis[0] });
+      setConfigAuto((prev) => prev ? { ...prev, leis_ativas: novasLeis, tabela_nome: novasLeis[0] } : prev);
+      toast.info('Legislação removida da rotação');
+    } catch {
+      toast.error('Erro ao remover lei');
+    } finally {
+      setSalvandoAuto(false);
     }
   };
 
@@ -902,8 +1093,7 @@ export default function AdminNarracaoLeis() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 pt-1">
               {ESTILOS_TOM.map((est) => {
                 const isSelected = estiloNarracaoSelecionado === est.id;
-                const isPadrao = est.id === 'animado';
-                const isSuper = est.id === 'super_animado';
+                const isPadrao = est.id === 'super_animado';
 
                 return (
                   <button
@@ -942,11 +1132,6 @@ export default function AdminNarracaoLeis() {
                       {isPadrao && (
                         <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shrink-0">
                           Padrão
-                        </span>
-                      )}
-                      {isSuper && (
-                        <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/15 border border-amber-500/30 text-amber-400 shrink-0">
-                          Vibrante
                         </span>
                       )}
                     </div>
@@ -1880,68 +2065,306 @@ export default function AdminNarracaoLeis() {
             </div>
           </div>
 
-          {/* Configurações da Automação */}
+          {/* Seletor Multi-Leis da Automação */}
           <div className="p-5 rounded-2xl border border-border/60 bg-card/60 space-y-4">
-            <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-              <Sliders className="w-4 h-4 text-primary" />
-              Parâmetros de Execução do Cron
-            </h3>
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                <Layers className="w-4 h-4 text-primary" />
+                Legislações na Rotação Automática ({leisAtivas.length})
+              </h3>
+              <span className="text-[11px] text-muted-foreground font-medium">
+                Intercalação Round-Robin (1 artigo de cada)
+              </span>
+            </div>
 
-            <div className="space-y-4 text-xs">
-              <div>
-                <label className="font-semibold text-foreground block mb-1">
-                  Lei Alvo da Fila Automática
-                </label>
+            <p className="text-xs text-muted-foreground">
+              Adicione as leis que você deseja que a automação processe. O robô irá narrar <strong>1 artigo de cada lei selecionada</strong> a cada intervalo, alternando automaticamente no ciclo.
+            </p>
+
+            {/* Tags das Leis Ativas */}
+            <div className="flex flex-wrap gap-2 pt-1">
+              {leisAtivas.map((tab) => {
+                const leiItem = LEIS_CATALOG.find((l) => l.tabela_nome === tab);
+                const sigla = leiItem?.sigla || tab.split('_')[0];
+                const nome = leiItem?.nome || tab;
+                const cor = leiItem?.iconColor || '#f59e0b';
+
+                return (
+                  <div
+                    key={tab}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-border/70 bg-secondary/50 text-xs font-semibold text-foreground shadow-sm transition-all"
+                  >
+                    <span
+                      className="w-2.5 h-2.5 rounded-full shrink-0"
+                      style={{ backgroundColor: cor }}
+                    />
+                    <span className="font-bold text-primary">{sigla}</span>
+                    <span className="truncate max-w-[180px] text-muted-foreground">{nome}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoverLeiFila(tab)}
+                      disabled={salvandoAuto || leisAtivas.length <= 1}
+                      className="ml-1 text-muted-foreground hover:text-rose-400 p-0.5 rounded-full hover:bg-rose-500/15 disabled:opacity-40"
+                      title={leisAtivas.length <= 1 ? 'Mínimo de 1 lei obrigatória' : 'Remover da fila'}
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Botões Rápidos para Adicionar Leis Populares */}
+            <div className="pt-2 border-t border-border/40 space-y-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
+                Adicionar Legislação à Rotação:
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {[
+                  { tab: 'CP_CODIGO_PENAL', sigla: 'CP', nome: 'Código Penal' },
+                  { tab: 'CC_CODIGO_CIVIL', sigla: 'CC', nome: 'Código Civil' },
+                  { tab: 'CF88_CONSTITUICAO_FEDERAL', sigla: 'CF/88', nome: 'Constituição Federal' },
+                  { tab: 'CLT_CONSOLIDACAO_LEIS_TRABALHO', sigla: 'CLT', nome: 'Trabalhista (CLT)' },
+                  { tab: 'CPC_CODIGO_PROCESSO_CIVIL', sigla: 'CPC', nome: 'Processo Civil' },
+                  { tab: 'CPP_CODIGO_PROCESSO_PENAL', sigla: 'CPP', nome: 'Processo Penal' },
+                  { tab: 'CDC_CODIGO_DEFESA_CONSUMIDOR', sigla: 'CDC', nome: 'Consumidor' },
+                  { tab: 'ECA_ESTATUTO_CRIANCA_ADOLESCENTE', sigla: 'ECA', nome: 'ECA' },
+                ].map((item) => {
+                  const jaAtiva = leisAtivas.includes(item.tab);
+                  return (
+                    <button
+                      key={item.tab}
+                      type="button"
+                      onClick={() => jaAtiva ? handleRemoverLeiFila(item.tab) : handleAdicionarLeiFila(item.tab)}
+                      disabled={salvandoAuto}
+                      className={cn(
+                        'px-2.5 py-1 rounded-lg text-xs font-medium border transition-all flex items-center gap-1.5 active:scale-95',
+                        jaAtiva
+                          ? 'bg-primary/20 border-primary/40 text-primary font-bold'
+                          : 'bg-secondary/40 border-border/60 text-muted-foreground hover:text-foreground hover:bg-secondary/80'
+                      )}
+                    >
+                      {jaAtiva ? <Check className="w-3 h-3 text-primary" /> : <Plus className="w-3 h-3" />}
+                      <span>{item.sigla}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Dropdown com todo o LEIS_CATALOG */}
+              <div className="pt-2">
                 <select
-                  value={configAuto?.tabela_nome || 'CP_CODIGO_PENAL'}
-                  onChange={async (e) => {
-                    const tabela = e.target.value;
-                    await salvarConfigAutomacao({ tabela_nome: tabela });
-                    setConfigAuto((prev) => prev ? { ...prev, tabela_nome: tabela } : prev);
+                  value=""
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      handleAdicionarLeiFila(e.target.value);
+                    }
                   }}
-                  className="w-full p-2.5 rounded-xl bg-secondary/40 border border-border/60 text-foreground font-medium"
+                  disabled={salvandoAuto}
+                  className="w-full p-2.5 rounded-xl bg-secondary/40 border border-border/60 text-foreground font-medium text-xs"
                 >
-                  <option value="CP_CODIGO_PENAL">Código Penal (CP) — Recomendado</option>
-                  <option value="CC_CODIGO_CIVIL">Código Civil (CC)</option>
-                  <option value="CF88_CONSTITUICAO_FEDERAL">Constituição Federal (CF/88)</option>
-                  <option value="CPC_CODIGO_PROCESSO_CIVIL">Código de Processo Civil (CPC)</option>
-                  <option value="CPP_CODIGO_PROCESSO_PENAL">Código de Processo Penal (CPP)</option>
+                  <option value="">+ Selecionar outra lei do catálogo para adicionar à fila...</option>
+                  {LEIS_CATALOG.filter((l) => !leisAtivas.includes(l.tabela_nome)).map((l) => (
+                    <option key={l.id} value={l.tabela_nome}>
+                      {l.sigla} — {l.nome}
+                    </option>
+                  ))}
                 </select>
               </div>
+            </div>
 
+            {/* Regra de Prioridade Padronizada */}
+            <div className="p-3.5 rounded-xl bg-secondary/20 border border-border/50 text-muted-foreground space-y-1">
+              <div className="flex items-center gap-2 text-foreground font-bold text-xs">
+                <Zap className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>Hierarquia Padrão da Fila (Artigos Maiores + Top Provas)</span>
+              </div>
+              <p className="text-[11px] leading-relaxed">
+                Dentro de cada lei participante, o algoritmo pontua os artigos mais cobrados em exames (OAB e concursos) combinados com a extensão de caracteres do texto. Os artigos de maior impacto e densidade são sempre processados primeiro.
+              </p>
+            </div>
+          </div>
+
+          {/* PAINEL VIVO: FILA DE EXECUÇÃO DOS ARTIGOS (ORDEM DA AUTOMAÇÃO) */}
+          <div className="p-5 rounded-2xl border border-border/60 bg-card/60 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-border/40">
               <div>
-                <label className="font-semibold text-foreground block mb-1">
-                  Regra de Prioridade na Fila
-                </label>
-                <div className="p-3 rounded-xl bg-secondary/20 border border-border/50 text-muted-foreground">
-                  <div className="flex items-center gap-2 text-foreground font-bold mb-1">
-                    <Zap className="w-4 h-4 text-amber-400" />
-                    Artigos Maiores Primeiro (Ativo)
+                <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                  <ListOrdered className="w-4 h-4 text-emerald-400" />
+                  Fila de Execução da Automação ({filaIntercalada.length} artigos)
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Ordem real em que o cron do Supabase gravará os próximos artigos:
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleDispararLoteAgora()}
+                  disabled={disparandoManual || filaIntercalada.length === 0}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs shadow-md hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50"
+                >
+                  {disparandoManual ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
+                  <span>Disparar Próximo da Fila (#1)</span>
+                </button>
+              </div>
+            </div>
+
+            {carregandoFila ? (
+              <div className="p-8 text-center space-y-2">
+                <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto" />
+                <p className="text-xs text-muted-foreground">Calculando a ordem intercalada das leis selecionadas...</p>
+              </div>
+            ) : filaIntercalada.length === 0 ? (
+              <div className="p-8 text-center rounded-xl bg-secondary/20 border border-border/40 space-y-2">
+                <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
+                <h4 className="font-bold text-sm text-foreground">Todos os artigos narrados!</h4>
+                <p className="text-xs text-muted-foreground max-w-md mx-auto">
+                  Não existem artigos pendentes nas legislações ativas no momento. Adicione mais leis acima para continuar a expansão.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {/* DESTAQUE: Artigo #1 (O Próximo Imediato a ser gravado) */}
+                {filaIntercalada[0] && (
+                  <div className="p-4 rounded-xl border-2 border-emerald-500/50 bg-gradient-to-br from-emerald-500/10 via-card to-secondary/30 shadow-md space-y-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="px-2 py-0.5 rounded-md font-mono text-xs font-black bg-emerald-500 text-black shadow-sm">
+                          #1 PRÓXIMO NA FILA
+                        </span>
+                        <span
+                          className="px-2 py-0.5 rounded-md text-xs font-bold text-white shadow-sm"
+                          style={{ backgroundColor: filaIntercalada[0].lei.iconColor || '#e11d48' }}
+                        >
+                          {filaIntercalada[0].lei.sigla} · {filaIntercalada[0].lei.nome}
+                        </span>
+                        {filaIntercalada[0].isTopProva && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 border border-amber-500/30 text-amber-400">
+                            ⭐ Top Provas & Exames
+                          </span>
+                        )}
+                      </div>
+
+                      <span className="text-[11px] font-mono text-muted-foreground">
+                        {filaIntercalada[0].tamanhoChars} caracteres · ~{Math.round(filaIntercalada[0].estimativaSegundos / 60) || 1} min
+                      </span>
+                    </div>
+
+                    <div>
+                      <h4 className="font-bold text-sm text-foreground">
+                        Artigo {filaIntercalada[0].numLimpo}
+                        {filaIntercalada[0].artigo.titulo ? ` — ${filaIntercalada[0].artigo.titulo}` : ''}
+                      </h4>
+                      <p className="text-xs text-muted-foreground line-clamp-2 mt-1 italic">
+                        "{filaIntercalada[0].artigo.caput || filaIntercalada[0].artigo.texto || 'Sem texto de caput'}"
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-border/40">
+                      <span className="text-[11px] text-emerald-400 font-medium flex items-center gap-1">
+                        <Clock className="w-3.5 h-3.5" /> Será narrado no próximo tick do cron (ou clique ao lado)
+                      </span>
+
+                      <button
+                        onClick={() => handleGerarNarraçãoIndividual(filaIntercalada[0].artigo, filaIntercalada[0].lei)}
+                        disabled={!!gerandoArtigoNum}
+                        className="px-3 py-1.5 rounded-lg bg-emerald-500 text-black font-bold text-xs hover:bg-emerald-400 transition-all flex items-center gap-1 active:scale-95 disabled:opacity-50"
+                      >
+                        {gerandoArtigoNum === `${filaIntercalada[0].tabelaNome}_${filaIntercalada[0].artigo.numero}` ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <Play className="w-3.5 h-3.5" />
+                        )}
+                        <span>Narrar este Artigo Agora</span>
+                      </button>
+                    </div>
                   </div>
-                  Calcula a extensão em caracteres de cada artigo pendente e processa primeiro os mais extensos e densos, adiantando o trabalho nos artigos que os alunos mais precisam de narração.
+                )}
+
+                {/* Lista com os próximos artigos da fila */}
+                <div className="space-y-1.5 pt-1">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block px-1">
+                    Sequência Intercalada da Automação:
+                  </span>
+
+                  <div className="divide-y divide-border/40 rounded-xl border border-border/40 overflow-hidden bg-background/50 text-xs">
+                    {filaIntercalada.slice(1, limiteFila).map((item) => (
+                      <div
+                        key={`${item.tabelaNome}_${item.artigo.numero}_${item.posicao}`}
+                        className="p-3 flex items-center justify-between gap-3 hover:bg-secondary/30 transition-all"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                          <span className="font-mono font-bold text-muted-foreground text-[11px] w-7 shrink-0 text-right">
+                            #{item.posicao}
+                          </span>
+
+                          <span
+                            className="px-1.5 py-0.5 rounded text-[10px] font-black text-white shrink-0"
+                            style={{ backgroundColor: item.lei.iconColor || '#e11d48' }}
+                          >
+                            {item.lei.sigla}
+                          </span>
+
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="font-bold text-foreground">
+                                Art. {item.numLimpo}
+                              </span>
+                              {item.artigo.titulo && (
+                                <span className="text-muted-foreground truncate max-w-[200px]">
+                                  {item.artigo.titulo}
+                                </span>
+                              )}
+                              {item.isTopProva && (
+                                <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/15 border border-amber-500/30 text-amber-400 shrink-0">
+                                  ⭐ Top Prova
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+                              {item.artigo.caput || item.artigo.texto || ''}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 shrink-0">
+                          <span className="text-[10px] font-mono text-muted-foreground hidden sm:inline-block">
+                            {item.tamanhoChars} chars
+                          </span>
+
+                          <button
+                            onClick={() => handleGerarNarraçãoIndividual(item.artigo, item.lei)}
+                            disabled={!!gerandoArtigoNum}
+                            className="px-2.5 py-1 rounded-md bg-secondary border border-border text-foreground hover:bg-primary hover:text-primary-foreground font-semibold text-[11px] transition-all flex items-center gap-1 active:scale-95 disabled:opacity-50"
+                            title="Gravar este artigo antecipadamente"
+                          >
+                            {gerandoArtigoNum === `${item.tabelaNome}_${item.artigo.numero}` ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <Play className="w-3 h-3" />
+                            )}
+                            <span className="hidden sm:inline">Gravar</span>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {filaIntercalada.length > limiteFila && (
+                    <div className="pt-2 text-center">
+                      <button
+                        type="button"
+                        onClick={() => setLimiteFila((prev) => prev + 30)}
+                        className="px-4 py-2 rounded-xl bg-secondary/50 border border-border/60 hover:bg-secondary text-xs text-foreground font-semibold transition-all"
+                      >
+                        Carregar mais {Math.min(30, filaIntercalada.length - limiteFila)} artigos da fila ({filaIntercalada.length - limiteFila} restantes)...
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
-
-              <div>
-                <label className="font-semibold text-foreground block mb-1">
-                  Intervalo do Disparador
-                </label>
-                <div className="p-3 rounded-xl bg-secondary/20 border border-border/50 text-foreground font-mono">
-                  10 em 10 minutos (<code>*/10 * * * *</code>)
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-2">
-              <button
-                onClick={handleDispararLoteAgora}
-                disabled={disparandoManual}
-                className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-md hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50"
-              >
-                {disparandoManual ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
-                <span>Disparar 1 Lote Manual Agora (Maior Artigo Pendente)</span>
-              </button>
-            </div>
+            )}
           </div>
 
           {/* Histórico de Execuções e Logs */}

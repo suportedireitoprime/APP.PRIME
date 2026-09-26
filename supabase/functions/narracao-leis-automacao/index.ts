@@ -38,6 +38,65 @@ const LETRAS_EXTENSO: Record<string, string> = {
   u: "ú", v: "vê", w: "dáblio", x: "xis", y: "ípsilon", z: "zê",
 };
 
+// Artigos de altíssima relevância e frequência em exames (OAB, Concursos e Doutrina)
+const MAPA_TOP_PROVAS: Record<string, string[]> = {
+  CP_CODIGO_PENAL: [
+    '1', '2', '5', '13', '14', '18', '20', '21', '23', '24', '25', '28', '29', '59',
+    '69', '70', '71', '107', '109', '121', '129', '147', '155', '157', '171', '213',
+    '217-A', '288', '297', '299', '312', '316', '317', '319', '333',
+  ],
+  CC_CODIGO_CIVIL: [
+    '1', '2', '3', '4', '5', '11', '12', '50', '104', '138', '145', '151', '156', '157',
+    '158', '166', '186', '187', '205', '206', '389', '395', '421', '422', '927', '932',
+    '944', '1196', '1228', '1238', '1240', '1511', '1694', '1784',
+  ],
+  CF88_CONSTITUICAO_FEDERAL: [
+    '1', '2', '3', '4', '5', '6', '12', '14', '18', '21', '22', '24', '37', '38', '39',
+    '40', '41', '102', '103', '105', '133', '144', '150',
+  ],
+  CPC_CODIGO_PROCESSO_CIVIL: [
+    '1', '4', '6', '9', '10', '85', '219', '300', '311', '319', '335', '355', '356',
+    '485', '487', '994', '1003', '1015', '1022',
+  ],
+  CPP_CODIGO_PROCESSO_PENAL: [
+    '4', '5', '6', '24', '28', '155', '156', '157', '282', '283', '310', '311', '312',
+    '315', '316', '396', '397', '406', '413', '414', '415', '581', '593', '647', '648',
+  ],
+  CLT_CONSOLIDACAO_LEIS_TRABALHO: [
+    '2', '3', '7', '58', '59', '71', '442', '443', '468', '477', '482', '483', '840',
+    '893', '895',
+  ],
+  CDC_CODIGO_DEFESA_CONSUMIDOR: [
+    '2', '3', '6', '12', '14', '18', '26', '27', '39', '51', '66', '67',
+  ],
+  ECA_ESTATUTO_CRIANCA_ADOLESCENTE: [
+    '1', '2', '3', '4', '18', '103', '104', '105', '112', '121', '122', '131', '225', '244-A',
+  ],
+  CTN_CODIGO_TRIBUTARIO_NACIONAL: [
+    '3', '9', '97', '108', '113', '114', '121', '128', '142', '150', '151', '156', '173', '174',
+  ],
+  CTB_CODIGO_TRANSITO_BRASILEIRO: [
+    '165', '165-A', '291', '302', '303', '306', '308', '309', '310', '311',
+  ],
+  EI_ESTATUTO_IDOSO: [
+    '1', '2', '3', '4', '96', '97', '98', '99', '100', '102',
+  ],
+  EOAB_ESTATUTO_OAB: [
+    '1', '2', '3', '7', '7-A', '7-B', '22', '34', '35', '36', '38',
+  ],
+};
+
+function calcularScoreArtigo(artigo: any, tabelaNome: string): number {
+  const numLimpo = String(artigo.rotulo || artigo.numero || '')
+    .replace(/^[Aa]rt\.?\s*/i, '')
+    .replace(/[º°]/g, '')
+    .trim();
+  const topList = MAPA_TOP_PROVAS[tabelaNome] || [];
+  const isTop = topList.includes(numLimpo);
+  const len = (artigo.texto || '').length;
+  return (isTop ? 50000 : 0) + len;
+}
+
 function numeroExtenso(n: number): string {
   const ord = ["", "primeiro", "segundo", "terceiro", "quarto", "quinto", "sexto", "sétimo", "oitavo", "nono"];
   if (n >= 1 && n <= 9) return ord[n];
@@ -373,7 +432,7 @@ Deno.serve(async (req) => {
       lei_id: "cp",
       prioridade: "artigos_maiores",
       voz_padrao: "Kore",
-      estilo_tom: "Animado e envolvente, como professora jovem de Direito",
+      estilo_tom: "Super animado, vibrante, extremamente fluido, expressivo e cativante, tornando o estudo de Direito leve, envolvente e memorável",
       lote_tamanho: 1,
       artigos_gerados_total: 0,
     };
@@ -385,58 +444,79 @@ Deno.serve(async (req) => {
       );
     }
 
-    const tabelaAlvo = body.tabela_nome || config.tabela_nome || "CP_CODIGO_PENAL";
     const prioridade = body.prioridade || config.prioridade || "artigos_maiores";
     const voz = body.voz || config.voz_padrao || "Kore";
-    const estilo = body.estilo || config.estilo_tom || "Animado e envolvente, como professora jovem de Direito";
+    const estilo = body.estilo || config.estilo_tom || "Super animado, vibrante, extremamente fluido, expressivo e cativante, tornando o estudo de Direito leve, envolvente e memorável";
 
-    // 2. Busca artigos da lei alvo
-    const { data: todosArtigos, error: errArtigos } = await supabase
-      .from(tabelaAlvo)
-      .select("id, numero, rotulo, texto, ordem_numero, titulo, capitulo")
-      .order("ordem_numero", { ascending: true })
-      .limit(1000);
+    // 1. Identifica a lista de leis ativas para rotação intercalada (Round-Robin)
+    const leisAtivas: string[] = Array.isArray(config.leis_ativas) && config.leis_ativas.length > 0
+      ? config.leis_ativas
+      : [body.tabela_nome || config.tabela_nome || "CP_CODIGO_PENAL"];
 
-    if (errArtigos || !todosArtigos || todosArtigos.length === 0) {
-      throw new Error(`Erro ao buscar artigos de ${tabelaAlvo}: ${errArtigos?.message || "nenhum artigo encontrado"}`);
+    let indiceAtual = typeof config.indice_lei_atual === "number" ? config.indice_lei_atual : 0;
+    if (body.tabela_nome) {
+      const idx = leisAtivas.indexOf(body.tabela_nome);
+      if (idx >= 0) indiceAtual = idx;
     }
 
-    // 3. Busca artigos que já possuem narração
-    const { data: narrados, error: errNarrados } = await supabase
-      .from("narracoes_artigos")
-      .select("artigo_numero")
-      .eq("tabela_nome", tabelaAlvo);
+    // Busca artigos pendentes alternando entre as leis ativas
+    let tabelaAlvo = leisAtivas[indiceAtual % leisAtivas.length];
+    let todosArtigos: any[] = [];
+    let pendentes: any[] = [];
+    let leiIndexEscolhida = indiceAtual % leisAtivas.length;
 
-    const numerosNarrados = new Set((narrados || []).map((n: any) => String(n.artigo_numero).trim()));
+    for (let i = 0; i < leisAtivas.length; i++) {
+      const idxTentativa = (indiceAtual + i) % leisAtivas.length;
+      const tabCandidata = leisAtivas[idxTentativa];
 
-    // 4. Filtra apenas os pendentes
-    const pendentes = todosArtigos.filter((a: any) => {
-      const numLimpo = String(a.rotulo || a.numero).replace(/^[Aa]rt\.?\s*/, "").trim();
-      return !numerosNarrados.has(numLimpo) && !numerosNarrados.has(String(a.numero).trim());
-    });
+      const { data: arts } = await supabase
+        .from(tabCandidata)
+        .select("id, numero, rotulo, texto, ordem_numero, titulo, capitulo")
+        .order("ordem_numero", { ascending: true })
+        .limit(1000);
+
+      if (arts && arts.length > 0) {
+        const { data: narrados } = await supabase
+          .from("narracoes_artigos")
+          .select("artigo_numero")
+          .eq("tabela_nome", tabCandidata);
+
+        const numerosNarrados = new Set((narrados || []).map((n: any) => String(n.artigo_numero).trim()));
+        const pends = arts.filter((a: any) => {
+          const numLimpo = String(a.rotulo || a.numero).replace(/^[Aa]rt\.?\s*/, "").trim();
+          return !numerosNarrados.has(numLimpo) && !numerosNarrados.has(String(a.numero).trim());
+        });
+
+        if (pends.length > 0) {
+          tabelaAlvo = tabCandidata;
+          todosArtigos = arts;
+          pendentes = pends;
+          leiIndexEscolhida = idxTentativa;
+          break;
+        }
+      }
+    }
 
     if (pendentes.length === 0) {
       await supabase
         .from("narracao_leis_config")
-        .update({ ultimo_status: "concluido - todos os artigos já narrados", updated_at: new Date().toISOString() })
+        .update({ ultimo_status: "concluido - todos os artigos das leis ativas já narrados", updated_at: new Date().toISOString() })
         .eq("id", 1);
 
       return new Response(
-        JSON.stringify({ ok: true, status: "concluido", message: "Todos os artigos desta lei já possuem narração gerada!" }),
+        JSON.stringify({ ok: true, status: "concluido", message: "Todos os artigos das leis ativas já possuem narração gerada!" }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // 5. Ordena por prioridade
+    // 5. Ordena por prioridade inteligente (Top Provas + Artigos Maiores)
     if (prioridade === "artigos_maiores") {
-      // Artigos maiores (mais densos, mais caracteres) primeiro!
       pendentes.sort((a: any, b: any) => {
-        const lenA = (a.texto || "").length;
-        const lenB = (b.texto || "").length;
-        return lenB - lenA;
+        const scoreA = calcularScoreArtigo(a, tabelaAlvo);
+        const scoreB = calcularScoreArtigo(b, tabelaAlvo);
+        return scoreB - scoreA;
       });
     } else {
-      // Ordem numérica normal
       pendentes.sort((a: any, b: any) => (a.ordem_numero ?? 0) - (b.ordem_numero ?? 0));
     }
 
@@ -541,11 +621,14 @@ Deno.serve(async (req) => {
 
     const duracaoTotalMs = Date.now() - inicioMs;
 
-    // 10. Atualiza config e registra log
+    // 10. Atualiza config e registra log, avançando o round-robin para a próxima lei
+    const proximoIndiceLei = (leiIndexEscolhida + 1) % leisAtivas.length;
+
     await Promise.all([
       supabase.from("narracao_leis_config").update({
+        indice_lei_atual: proximoIndiceLei,
         ultimo_disparo: new Date().toISOString(),
-        ultimo_artigo_gerado: `Artigo ${numAlvo}`,
+        ultimo_artigo_gerado: `${tabelaAlvo} - Artigo ${numAlvo}`,
         artigos_gerados_total: (config.artigos_gerados_total || 0) + 1,
         ultimo_status: "sucesso",
         updated_at: new Date().toISOString(),
