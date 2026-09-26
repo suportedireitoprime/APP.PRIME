@@ -150,12 +150,26 @@ export default function AdminNarracaoLeis() {
   const [artigoExpandido, setArtigoExpandido] = useState<string | null>(null);
   const [filtroArtigos, setFiltroArtigos] = useState<'todos' | 'narrados' | 'pendentes' | 'maiores'>('todos');
 
+  // Tonalidade selecionada para gravação dos artigos (padrão 'animado')
+  const [estiloNarracaoSelecionado, setEstiloNarracaoSelecionado] = useState<string>(() => {
+    return localStorage.getItem('admin_narracao_estilo_selecionado') || 'animado';
+  });
+
   // Geração de narração individual
   const [gerandoArtigoNum, setGerandoArtigoNum] = useState<string | null>(null);
   const [apagandoArtigoNum, setApagandoArtigoNum] = useState<string | null>(null);
   const [artigoParaExcluir, setArtigoParaExcluir] = useState<ArtigoLei | null>(null);
   const [apagandoArtigo, setApagandoArtigo] = useState(false);
   const [progressoGeracao, setProgressoGeracao] = useState<{ parteAtual: number; totalPartes: number; rotulo: string } | null>(null);
+  const [progressoDetalhado, setProgressoDetalhado] = useState<{
+    artigoNumero: string;
+    parteAtual: number;
+    totalPartes: number;
+    rotulo: string;
+    porcentagem: number;
+    segundosDecorridos: number;
+    segundosEstimadosRestantes: number;
+  } | null>(null);
 
   // Player de Áudio Fatiado (com destaque do bloco ativo)
   const [tocandoUrl, setTocandoUrl] = useState<string | null>(null);
@@ -288,6 +302,41 @@ export default function AdminNarracaoLeis() {
     };
   };
 
+  // Reprodução sequencial caso as partes ainda não tenham sido unificadas em 1 único WAV
+  const tocarArtigoSequencial = (partes: ArtigoParte[], artigoNum: string) => {
+    const partesComAudio = partes.filter((p) => !!p.audioUrl);
+    if (partesComAudio.length === 0) {
+      toast.info('Nenhum áudio disponível para este artigo');
+      return;
+    }
+
+    let idx = 0;
+    const tocarProxima = () => {
+      if (idx >= partesComAudio.length) {
+        setTocandoUrl(null);
+        setReproduzindoSequencial(null);
+        setBlocoAtivoId(null);
+        return;
+      }
+
+      const parte = partesComAudio[idx];
+      idx++;
+      if (!audioRef.current) {
+        audioRef.current = new Audio();
+      }
+      const a = audioRef.current;
+      a.pause();
+      a.src = parte.audioUrl!;
+      setTocandoUrl(parte.audioUrl!);
+      setReproduzindoSequencial(artigoNum);
+      setBlocoAtivoId(parte.id);
+      a.play().catch(() => {});
+      a.onended = tocarProxima;
+    };
+
+    tocarProxima();
+  };
+
   // Handler de reprodução do áudio do artigo (áudio completo unificado ou sequencial)
   const tocarArtigo = (audioUrlPrincipal: string | undefined, partes: ArtigoParte[], artigoNum: string) => {
     if (audioUrlPrincipal) {
@@ -328,54 +377,130 @@ export default function AdminNarracaoLeis() {
     tocarArtigoSequencial(partes, artigoNum);
   };
 
-  // Gera narração contínua inteligente para um artigo (com introdução contextual e até ~1 min por áudio)
+  // Gera narração contínua inteligente para um artigo com progresso em porcentagem e tempo estimado
   const handleGerarNarraçãoIndividual = async (artigo: ArtigoLei) => {
     if (!selectedLei || gerandoArtigoNum) return;
     setGerandoArtigoNum(artigo.numero);
-    setProgressoGeracao({ parteAtual: 1, totalPartes: 1, rotulo: 'Iniciando gravação contínua...' });
 
-    const toastId = toast.loading(`Narrando Artigo ${artigo.numero}...`);
+    // Identifica o estilo selecionado pelo usuário (padrão animado)
+    const estiloObj = ESTILOS_TOM.find((e) => e.id === estiloNarracaoSelecionado) || ESTILOS_TOM[0];
+    const estiloPrompt = estiloObj.prompt;
+    const voz = configAuto?.voz_padrao || 'Kore';
+
+    // Estimativa de tempo com base no tamanho do artigo (mínimo 5s, máximo 25s por chamada)
+    const totalChars = (artigo.caput || '').length + (artigo.titulo || '').length;
+    let tempoEstimadoParteSegundos = Math.max(5, Math.min(22, Math.round(totalChars / 45)));
+
+    let parteAtualNum = 1;
+    let totalPartesNum = 1;
+    let rotuloAtual = 'Artigo Completo';
+    let startTime = Date.now();
+    let porcentagemAcumulada = 3;
+
+    // Toast inicial com porcentagem e tempo estimado
+    const toastId = toast.loading(`Narrando Artigo ${artigo.numero}... 3% (~${tempoEstimadoParteSegundos}s restantes)`);
+
+    setProgressoGeracao({ parteAtual: 1, totalPartes: 1, rotulo: rotuloAtual });
+    setProgressoDetalhado({
+      artigoNumero: artigo.numero,
+      parteAtual: 1,
+      totalPartes: 1,
+      rotulo: rotuloAtual,
+      porcentagem: 3,
+      segundosDecorridos: 0,
+      segundosEstimadosRestantes: tempoEstimadoParteSegundos,
+    });
+
+    // Timer suave a cada 250ms simulando subida orgânica de porcentagem e tempo restante
+    const timer = setInterval(() => {
+      const decorridos = Math.max(0.1, (Date.now() - startTime) / 1000);
+      const restantes = Math.max(1, Math.round(tempoEstimadoParteSegundos - decorridos));
+
+      // Calcula fatia da parte atual em relação ao total de partes
+      const baseFatia = ((parteAtualNum - 1) / totalPartesNum) * 100;
+      const progressoParte = Math.min(94, Math.max(5, Math.round((decorridos / tempoEstimadoParteSegundos) * 92)));
+      const porcentagemGlobal = Math.min(96, Math.max(porcentagemAcumulada, Math.round(baseFatia + (progressoParte / totalPartesNum))));
+      porcentagemAcumulada = porcentagemGlobal;
+
+      setProgressoDetalhado({
+        artigoNumero: artigo.numero,
+        parteAtual: parteAtualNum,
+        totalPartes: totalPartesNum,
+        rotulo: rotuloAtual,
+        porcentagem: porcentagemGlobal,
+        segundosDecorridos: Math.round(decorridos),
+        segundosEstimadosRestantes: restantes,
+      });
+
+      // Atualiza o toast com a porcentagem e tempo estimado
+      toast.loading(
+        `Narrando Artigo ${artigo.numero}... ${porcentagemGlobal}% (~${restantes}s restantes)`,
+        { id: toastId }
+      );
+    }, 250);
 
     try {
-      const voz = configAuto?.voz_padrao || 'Kore';
-      const estilo = configAuto?.estilo_tom || 'Animado e envolvente, como professora jovem de Direito';
-
       const res = await gerarNarracaoArtigoFatiada(
         artigo,
         selectedLei.tabela_nome,
         selectedLei.nome,
         voz,
-        estilo,
+        estiloPrompt,
         (parteAtual, totalPartes, rotulo) => {
+          parteAtualNum = parteAtual;
+          totalPartesNum = totalPartes;
+          rotuloAtual = rotulo;
+          startTime = Date.now();
+          tempoEstimadoParteSegundos = 8;
           setProgressoGeracao({ parteAtual, totalPartes, rotulo });
         }
       );
 
+      clearInterval(timer);
+
+      // Marca 100% no progresso
+      setProgressoDetalhado({
+        artigoNumero: artigo.numero,
+        parteAtual: totalPartesNum,
+        totalPartes: totalPartesNum,
+        rotulo: rotuloAtual,
+        porcentagem: 100,
+        segundosDecorridos: Math.round((Date.now() - startTime) / 1000),
+        segundosEstimadosRestantes: 0,
+      });
+
       const numLimpo = String(artigo.numero).replace(/^[Aa]rt\.?\s*/i, '').trim();
+      const duracaoSegundos = res.duracaoSegundos || 0;
+
       setStatusNarracoes((prev) => ({
         ...prev,
         [numLimpo]: {
           artigo_numero: numLimpo,
           audio_url: res.audioUrl,
           partes: res.partes,
+          duracao_segundos: duracaoSegundos,
         },
         [artigo.numero]: {
           artigo_numero: numLimpo,
           audio_url: res.audioUrl,
           partes: res.partes,
+          duracao_segundos: duracaoSegundos,
         },
       }));
 
       const msg = res.partes.length === 1
-        ? `Artigo ${artigo.numero} gravado com sucesso em 1 áudio contínuo!`
-        : `Artigo ${artigo.numero} gravado com sucesso em ${res.partes.length} partes (~1 min cada)!`;
+        ? `Artigo ${artigo.numero} gravado com sucesso! ${duracaoSegundos}s de áudio gerado (${estiloObj.label}).`
+        : `Artigo ${artigo.numero} gravado com sucesso em ${res.partes.length} partes! ${duracaoSegundos}s total de áudio gerado.`;
       toast.success(msg, { id: toastId });
     } catch (err: any) {
+      clearInterval(timer);
       console.error('Erro na narração individual:', err);
       toast.error(`Falha ao narrar: ${err.message || 'Erro desconhecido'}`, { id: toastId });
     } finally {
+      clearInterval(timer);
       setGerandoArtigoNum(null);
       setProgressoGeracao(null);
+      setTimeout(() => setProgressoDetalhado(null), 1200);
     }
   };
 
@@ -513,7 +638,7 @@ export default function AdminNarracaoLeis() {
     }
   };
 
-  // Gerar todas as 4 versões simultaneamente
+  // Gerar todas as 5 versões simultaneamente
   const handleGerarTodas4Versoes = async () => {
     if (!textoTeste.trim()) {
       toast.error('Insira o texto da amostra jurídica');
@@ -523,7 +648,7 @@ export default function AdminNarracaoLeis() {
     const estilosPendentes = ESTILOS_TOM.filter((e) => !testesCache[e.id]?.audio_url);
 
     if (estilosPendentes.length === 0) {
-      toast.info('As 4 versões já estão salvas no Supabase!');
+      toast.info(`Todas as ${ESTILOS_TOM.length} versões já estão salvas no Supabase!`);
       return;
     }
 
@@ -707,6 +832,80 @@ export default function AdminNarracaoLeis() {
             </div>
           </div>
 
+          {/* Seletor Visual de Tonalidade para Narração */}
+          <div className="p-4 rounded-2xl border border-border/70 bg-gradient-to-br from-card/90 via-card/60 to-secondary/30 backdrop-blur-md shadow-md space-y-2.5">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <Sliders className="w-4 h-4 text-primary" />
+                <span className="text-xs font-bold uppercase tracking-wider text-foreground">
+                  Tonalidade da Narração (Gemini TTS)
+                </span>
+              </div>
+              <span className="text-[11px] text-muted-foreground">
+                Voz: <strong className="text-foreground">{configAuto?.voz_padrao || 'Kore'}</strong> · Selecione a versão para gravar
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 pt-1">
+              {ESTILOS_TOM.map((est) => {
+                const isSelected = estiloNarracaoSelecionado === est.id;
+                const isPadrao = est.id === 'animado';
+                const isSuper = est.id === 'super_animado';
+
+                return (
+                  <button
+                    key={est.id}
+                    type="button"
+                    onClick={() => {
+                      setEstiloNarracaoSelecionado(est.id);
+                      localStorage.setItem('admin_narracao_estilo_selecionado', est.id);
+                      toast.info(`Tonalidade "${est.label}" selecionada para as próximas gravações!`);
+                    }}
+                    className={cn(
+                      'p-2.5 rounded-xl border text-left transition-all relative flex flex-col justify-between gap-1 group active:scale-[0.98]',
+                      isSelected
+                        ? 'bg-primary/15 border-primary ring-2 ring-primary/30 shadow-sm'
+                        : 'bg-secondary/30 border-border/60 hover:bg-secondary/60 hover:border-border'
+                    )}
+                  >
+                    <div className="flex items-center justify-between gap-1.5">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span className={cn(
+                          'w-4 h-4 rounded-full flex items-center justify-center text-[10px] shrink-0 border transition-all',
+                          isSelected
+                            ? 'bg-primary border-primary text-primary-foreground font-bold'
+                            : 'border-border/80 group-hover:border-primary/50'
+                        )}>
+                          {isSelected && <Check className="w-2.5 h-2.5" />}
+                        </span>
+                        <span className={cn(
+                          'text-xs font-bold truncate',
+                          isSelected ? 'text-primary' : 'text-foreground'
+                        )}>
+                          {est.label}
+                        </span>
+                      </div>
+
+                      {isPadrao && (
+                        <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shrink-0">
+                          Padrão
+                        </span>
+                      )}
+                      {isSuper && (
+                        <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/15 border border-amber-500/30 text-amber-400 shrink-0">
+                          Vibrante
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[10.5px] text-muted-foreground line-clamp-1 pl-5.5">
+                      {est.prompt}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Filtros e Busca */}
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="relative flex-1">
@@ -783,6 +982,11 @@ export default function AdminNarracaoLeis() {
                           {estaNarrado ? (
                             <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                               <CheckCircle2 className="w-3 h-3" /> Narrado ({partesAtuais.length} {partesAtuais.length === 1 ? 'áudio contínuo' : 'partes'})
+                              {reg?.duracao_segundos ? (
+                                <span className="ml-1 text-emerald-300 font-mono font-bold">
+                                  • ⏱ {reg.duracao_segundos}s
+                                </span>
+                              ) : null}
                             </span>
                           ) : (
                             <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
@@ -838,10 +1042,26 @@ export default function AdminNarracaoLeis() {
                           <button
                             onClick={() => handleGerarNarraçãoIndividual(artigo)}
                             disabled={estaGerando}
-                            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary/10 border border-primary/20 text-primary text-xs font-semibold hover:bg-primary/20 active:scale-95 transition-all disabled:opacity-50"
+                            className={cn(
+                              'flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold active:scale-95 transition-all disabled:opacity-60',
+                              estaGerando
+                                ? 'bg-primary/20 border-primary text-primary shadow-sm'
+                                : 'bg-primary/10 border-primary/20 text-primary hover:bg-primary/20'
+                            )}
                           >
-                            {estaGerando ? <Loader2 className="w-4 h-4 animate-spin" /> : <Volume2 className="w-4 h-4" />}
-                            <span className="hidden sm:inline">Gerar Áudio</span>
+                            {estaGerando ? (
+                              <>
+                                <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                                <span className="font-mono font-bold">
+                                  {progressoDetalhado?.porcentagem || 5}%
+                                </span>
+                              </>
+                            ) : (
+                              <>
+                                <Volume2 className="w-4 h-4" />
+                                <span className="hidden sm:inline">Gerar Áudio</span>
+                              </>
+                            )}
                           </button>
                         )}
 
@@ -854,19 +1074,40 @@ export default function AdminNarracaoLeis() {
                       </div>
                     </div>
 
-                    {/* Barra de Progresso Durante a Geração */}
-                    {estaGerando && progressoGeracao && (
+                    {/* Barra de Progresso Durante a Geração com Porcentagem e Estimativa de Segundos */}
+                    {estaGerando && (progressoDetalhado || progressoGeracao) && (
                       <div className="px-4 pb-3">
-                        <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 text-xs">
+                        <div className="p-3.5 rounded-xl bg-primary/10 border border-primary/20 text-xs shadow-inner">
                           <div className="flex items-center justify-between mb-1.5 text-primary font-semibold">
-                            <span>Gerando áudio da parte: {progressoGeracao.rotulo}</span>
-                            <span>{progressoGeracao.parteAtual} de {progressoGeracao.totalPartes}</span>
+                            <span className="flex items-center gap-1.5 truncate">
+                              <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
+                              Gerando áudio: <strong>{progressoDetalhado?.rotulo || progressoGeracao?.rotulo || 'Artigo Completo'}</strong>
+                            </span>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <span className="font-mono font-bold text-sm text-foreground bg-primary/20 px-2 py-0.5 rounded-lg border border-primary/30">
+                                {progressoDetalhado?.porcentagem || 5}%
+                              </span>
+                              <span className="text-muted-foreground font-mono text-[11px]">
+                                {progressoDetalhado?.parteAtual || progressoGeracao?.parteAtual || 1} de {progressoDetalhado?.totalPartes || progressoGeracao?.totalPartes || 1}
+                              </span>
+                            </div>
                           </div>
-                          <div className="w-full h-1.5 rounded-full bg-secondary overflow-hidden">
+
+                          <div className="w-full h-2 rounded-full bg-secondary/80 overflow-hidden relative">
                             <div
-                              className="h-full bg-primary transition-all duration-300"
-                              style={{ width: `${(progressoGeracao.parteAtual / progressoGeracao.totalPartes) * 100}%` }}
+                              className="h-full bg-gradient-to-r from-primary via-rose-500 to-amber-500 transition-all duration-300 rounded-full"
+                              style={{ width: `${Math.max(4, progressoDetalhado?.porcentagem || 8)}%` }}
                             />
+                          </div>
+
+                          <div className="flex items-center justify-between mt-2 text-[11px] text-muted-foreground font-mono">
+                            <span className="flex items-center gap-1 text-primary">
+                              <Clock className="w-3 h-3" />
+                              Tempo estimado restante: <strong>~{progressoDetalhado?.segundosEstimadosRestantes ?? 8}s</strong>
+                            </span>
+                            <span>
+                              Decorrido: <strong>{progressoDetalhado?.segundosDecorridos || 0}s</strong>
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -913,6 +1154,11 @@ export default function AdminNarracaoLeis() {
                                     }`}>
                                       {parte.rotulo}
                                     </span>
+                                    {parte.duracaoSegundos ? (
+                                      <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-secondary/80 text-emerald-400 border border-emerald-500/20">
+                                        ⏱ {parte.duracaoSegundos}s
+                                      </span>
+                                    ) : null}
                                     {isParteAtiva && (
                                       <span className="text-[11px] font-bold text-amber-400 animate-pulse flex items-center gap-1">
                                         <Volume2 className="w-3.5 h-3.5" /> Narrando agora...
@@ -1305,13 +1551,13 @@ export default function AdminNarracaoLeis() {
             </div>
           </div>
 
-          {/* As 4 Tonalidades e Prévias Simultâneas */}
+          {/* As 5 Tonalidades e Prévias Simultâneas */}
           <div className="p-4 rounded-2xl border border-border/60 bg-card/60 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-border/40">
               <div>
                 <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
                   <Sliders className="w-4 h-4 text-primary" />
-                  4 Versões de Tonalidade (Gemini TTS)
+                  5 Versões de Tonalidade (Gemini TTS)
                 </h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   {carregandoCache ? (
@@ -1319,7 +1565,7 @@ export default function AdminNarracaoLeis() {
                   ) : (
                     <span className="flex items-center gap-1.5">
                       <Database className="w-3.5 h-3.5 text-emerald-400" />
-                      <strong>{totalVersoesSalvas} de 4</strong> versões salvas no Supabase
+                      <strong>{totalVersoesSalvas} de {ESTILOS_TOM.length}</strong> versões salvas no Supabase
                     </span>
                   )}
                 </p>
@@ -1328,10 +1574,10 @@ export default function AdminNarracaoLeis() {
               <button
                 type="button"
                 onClick={handleGerarTodas4Versoes}
-                disabled={gerandoTodas || totalVersoesSalvas === 4}
+                disabled={gerandoTodas || totalVersoesSalvas === ESTILOS_TOM.length}
                 className={cn(
                   'flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all active:scale-95 disabled:opacity-50',
-                  totalVersoesSalvas === 4
+                  totalVersoesSalvas === ESTILOS_TOM.length
                     ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400'
                     : 'bg-primary text-primary-foreground hover:bg-primary/90'
                 )}
@@ -1341,21 +1587,21 @@ export default function AdminNarracaoLeis() {
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     <span>Gerando Versões...</span>
                   </>
-                ) : totalVersoesSalvas === 4 ? (
+                ) : totalVersoesSalvas === ESTILOS_TOM.length ? (
                   <>
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Todas as 4 Salvas</span>
+                    <span>Todas as 5 Salvas</span>
                   </>
                 ) : (
                   <>
                     <Sparkles className="w-3.5 h-3.5" />
-                    <span>Gerar 4 Versões Simultâneas</span>
+                    <span>Gerar 5 Versões Simultâneas</span>
                   </>
                 )}
               </button>
             </div>
 
-            {/* Grid com os 4 cards */}
+            {/* Grid com os cards de tonalidades */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {ESTILOS_TOM.map((estilo) => {
                 const cacheItem = testesCache[estilo.id];
@@ -1383,9 +1629,16 @@ export default function AdminNarracaoLeis() {
                           </h4>
                           <div className="mt-1 flex items-center gap-1.5 flex-wrap">
                             {isSalvo ? (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
-                                <CheckCircle2 className="w-3 h-3" /> Salvo no Supabase
-                              </span>
+                              <>
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
+                                  <CheckCircle2 className="w-3 h-3" /> Salvo no Supabase
+                                </span>
+                                {cacheItem?.duracao_segundos ? (
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
+                                    ⏱ {cacheItem.duracao_segundos}s gerados
+                                  </span>
+                                ) : null}
+                              </>
                             ) : isGerando ? (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/15 border border-primary/30 text-primary animate-pulse">
                                 <Loader2 className="w-3 h-3 animate-spin" /> Gerando...
@@ -1445,6 +1698,8 @@ export default function AdminNarracaoLeis() {
                               <span>
                                 {isTocando && duracaoAudioAtual > 0
                                   ? `${formatarTempo(tempoAudioAtual)} / ${formatarTempo(duracaoAudioAtual)}`
+                                  : cacheItem?.duracao_segundos
+                                  ? `${cacheItem.duracao_segundos}s • WAV`
                                   : 'WAV'}
                               </span>
                             </div>

@@ -38,6 +38,7 @@ export const VOZES_DISPONIVEIS: VozTTS[] = [
 
 export const ESTILOS_TOM = [
   { id: 'animado', label: 'Animado & Professoral (Padrão)', prompt: 'Animado e envolvente, como uma professora jovem apaixonada por Direito explicando aos seus alunos' },
+  { id: 'super_animado', label: 'Super Animado & Fluido', prompt: 'Super animado, vibrante, extremamente fluido, expressivo e cativante, tornando o estudo de Direito leve, envolvente e memorável' },
   { id: 'solene', label: 'Solene & Formal (Judiciário)', prompt: 'Solene, formal, respeitoso e pausado, com dicção jurídica tradicional' },
   { id: 'didatico', label: 'Didático para Concursos (Pausado)', prompt: 'Didático, pausado e muito claro, enfatizando os artigos, incisos e penas para fixação' },
   { id: 'acelerado', label: 'Direto & Dinâmico (Revisão Rápida)', prompt: 'Dinâmico, direto e ágil para revisão rápida de legislação' },
@@ -66,6 +67,7 @@ export interface NarracaoArtigoRegistro {
   artigo_numero: string;
   audio_url: string;
   partes?: ArtigoParte[];
+  duracao_segundos?: number;
   created_at?: string;
 }
 
@@ -117,13 +119,22 @@ export async function buscarStatusNarracoes(tabelaNome: string): Promise<Record<
       const num = String(row.artigo_numero).trim();
       const numDigitos = num.replace(/\D/g, '');
       let partes: ArtigoParte[] | undefined;
-      if (row.word_timings && typeof row.word_timings === 'object' && Array.isArray(row.word_timings.partes)) {
-        partes = row.word_timings.partes;
+      let duracaoSegundos: number | undefined;
+      if (row.word_timings && typeof row.word_timings === 'object') {
+        if (Array.isArray(row.word_timings.partes)) {
+          partes = row.word_timings.partes;
+          const soma = partes.reduce((acc, p) => acc + (p.duracaoSegundos || 0), 0);
+          if (soma > 0) duracaoSegundos = Math.round(soma * 10) / 10;
+        }
+        if (row.word_timings.duracao_segundos) {
+          duracaoSegundos = Number(row.word_timings.duracao_segundos);
+        }
       }
       const reg: NarracaoArtigoRegistro = {
         artigo_numero: num,
         audio_url: row.audio_url,
         partes,
+        duracao_segundos: duracaoSegundos,
         created_at: row.created_at,
       };
 
@@ -246,10 +257,14 @@ export async function gerarESalvarPreviaAudio(
   let finalAudioUrl = dataUrl;
   const storagePath = `narracoes/testes_vozes/${voz.toLowerCase()}/${estiloId}_${hash}.wav`;
 
+  let duracaoSegundos = 0;
+
   // 3. Faz upload para o bucket público 'audios'
   try {
     const resp = await fetch(dataUrl);
     const blob = await resp.blob();
+    const pcmBytes = Math.max(0, blob.size - 44);
+    duracaoSegundos = Math.max(1, Math.round((pcmBytes / 48000) * 10) / 10);
 
     const { error: upErr } = await supabase.storage
       .from('audios')
@@ -275,6 +290,7 @@ export async function gerarESalvarPreviaAudio(
     texto_hash: hash,
     audio_url: finalAudioUrl,
     storage_path: storagePath,
+    duracao_segundos: duracaoSegundos,
     created_at: new Date().toISOString(),
   };
 
@@ -514,7 +530,7 @@ export async function gerarNarracaoArtigoFatiada(
   voz: string,
   estilo: string,
   onProgress?: (parteAtual: number, totalPartes: number, rotuloParte: string) => void
-): Promise<{ audioUrl: string; partes: ArtigoParte[] }> {
+): Promise<{ audioUrl: string; partes: ArtigoParte[]; duracaoSegundos: number }> {
   // Novo modelo contínuo com introdução da Lei/Capítulo e teto de ~1 minuto
   const estruturado: ArtigoEstruturado = parseArtigoEmNarracaoContinua(artigo, {
     leiNome,
@@ -580,12 +596,15 @@ export async function gerarNarracaoArtigoFatiada(
 
     const audioDataUrl = data.audio_data_url;
     let finalAudioUrl = audioDataUrl;
+    let duracaoParteSegundos = 0;
 
     // Faz upload para o bucket audios
     try {
       const resp = await fetch(audioDataUrl);
       const blob = await resp.blob();
       const arrayBuf = await blob.arrayBuffer();
+      const pcmLen = Math.max(0, arrayBuf.byteLength - 44);
+      duracaoParteSegundos = Math.max(1, Math.round((pcmLen / 48000) * 10) / 10);
       rawAudioBytes.push(new Uint8Array(arrayBuf));
 
       const safeNum = String(artigo.numero).replace(/[^a-zA-Z0-9]/g, '_');
@@ -610,6 +629,7 @@ export async function gerarNarracaoArtigoFatiada(
     partesResultado.push({
       ...parte,
       audioUrl: finalAudioUrl,
+      duracaoSegundos: duracaoParteSegundos,
     });
   }
 
@@ -654,6 +674,9 @@ export async function gerarNarracaoArtigoFatiada(
 
   const tabs = Array.from(new Set([tabelaNome, ...aliasesTabela])).slice(0, 4);
 
+  const duracaoTotalSegundos = partesResultado.reduce((acc, p) => acc + (p.duracaoSegundos || 0), 0);
+  const duracaoTotalArredondada = Math.max(1, Math.round(duracaoTotalSegundos * 10) / 10);
+
   const rowsParaSalvar = [];
   for (const t of tabs) {
     for (const n of numsVariantes) {
@@ -663,7 +686,10 @@ export async function gerarNarracaoArtigoFatiada(
         lei_nome: leiNome,
         titulo_artigo: artigo.titulo || null,
         audio_url: audioPrincipal,
-        word_timings: { partes: partesResultado } as any,
+        word_timings: {
+          partes: partesResultado,
+          duracao_segundos: duracaoTotalArredondada,
+        } as any,
       });
     }
   }
@@ -703,6 +729,7 @@ export async function gerarNarracaoArtigoFatiada(
   return {
     audioUrl: audioPrincipal,
     partes: partesResultado,
+    duracaoSegundos: duracaoTotalArredondada,
   };
 }
 
