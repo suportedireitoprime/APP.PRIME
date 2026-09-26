@@ -66,12 +66,23 @@ function formatFullDate(date: Date): string {
   return `${weekdayFull[date.getDay()]}, ${date.getDate()} de ${monthFull[date.getMonth()]} de ${date.getFullYear()}`;
 }
 
+function extractCargo(item: ConcursoNoticia): string {
+  if (item.cargos_resumo) return item.cargos_resumo;
+  if (item.cargos && item.cargos.length > 0) return item.cargos[0];
+  const match = item.titulo.match(/(?:para|cargo(?:s)? de|função de)\s+(.+?)(?:\s*-|\s*$)/i);
+  if (match && match[1]) {
+    return match[1].split(' e ')[0].trim();
+  }
+  return "Vários Cargos";
+}
+
 const Concursos = () => {
   const navigate = useNavigate();
   const goBack = useGoBack();
   const [concursos, setConcursos] = useState<ConcursoNoticia[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [dataFiltro, setDataFiltro] = useState<string>('');
+  const [cargoFiltro, setCargoFiltro] = useState<string>('Todos');
 
   useEffect(() => {
     let cancel = false;
@@ -114,17 +125,34 @@ const Concursos = () => {
 
   // Removido useEffect que forçava uma data específica, para que a tela inicie exibindo TODOS os concursos (dataFiltro = '').
 
-  const finalFiltered = useMemo(() => {
-    const filtered = !dataFiltro
+  const dateFiltered = useMemo(() => {
+    return !dataFiltro
       ? concursos
       : concursos.filter(n => toYMD(new Date(n.data_publicacao)) === dataFiltro);
+  }, [concursos, dataFiltro]);
+
+  const availableCargos = useMemo(() => {
+    const set = new Set<string>();
+    dateFiltered.forEach(n => {
+      const c = extractCargo(n).toUpperCase();
+      if (c) set.add(c);
+    });
+    return ['Todos', ...Array.from(set).sort()];
+  }, [dateFiltered]);
+
+  const finalFiltered = useMemo(() => {
+    let filtered = dateFiltered;
+
+    if (cargoFiltro !== 'Todos') {
+      filtered = filtered.filter(n => extractCargo(n).toUpperCase() === cargoFiltro);
+    }
 
     return [...filtered].sort((a, b) => {
       const dateDiff = new Date(b.data_publicacao).getTime() - new Date(a.data_publicacao).getTime();
       if (dateDiff !== 0) return dateDiff;
       return b.id.localeCompare(a.id);
     });
-  }, [concursos, dataFiltro]);
+  }, [dateFiltered, cargoFiltro]);
 
   // Adjust dayList to ensure it includes the most recent date with data if it's within 5 days,
   // or just center it around today as before.
@@ -187,6 +215,25 @@ const Concursos = () => {
       </div>
 
       <div className="max-w-3xl mx-auto px-4 py-4 space-y-4">
+        {/* Menu de Alternância (Cargos) */}
+        {availableCargos.length > 1 && (
+          <div className="flex overflow-x-auto gap-2 pb-2 hide-scrollbar snap-x">
+            {availableCargos.map((cargo) => (
+              <button
+                key={cargo}
+                onClick={() => setCargoFiltro(cargo)}
+                className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide shrink-0 snap-start transition-colors border ${
+                  cargoFiltro === cargo
+                    ? 'bg-[#10B981] text-white border-[#10B981]'
+                    : 'bg-card text-muted-foreground border-border hover:border-[#10B981]/50'
+                }`}
+              >
+                {cargo}
+              </button>
+            ))}
+          </div>
+        )}
+
         {finalFiltered.length > 0 ? (
           <>
             {/* Hero card — edge-to-edge no mobile */}
