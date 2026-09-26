@@ -686,7 +686,18 @@ export async function gerarNarracaoArtigoFatiada(
         .from('audios')
         .upload(storagePath, blob, { contentType: 'audio/wav', upsert: true });
 
-      if (!upErr) {
+      if (upErr) {
+        console.error('[gerarNarracaoArtigoFatiada] Erro no upload da parte para storage:', upErr);
+        throw new Error(`Falha no upload para o Storage: ${upErr.message}`);
+      }
+
+      const { data: pubData } = supabase.storage
+        .from('audios')
+        .getPublicUrl(storagePath);
+
+      if (pubData?.publicUrl) {
+        finalAudioUrl = pubData.publicUrl;
+      } else {
         const { data: signed } = await supabase.storage
           .from('audios')
           .createSignedUrl(storagePath, 60 * 60 * 24 * 365 * 5);
@@ -694,8 +705,9 @@ export async function gerarNarracaoArtigoFatiada(
           finalAudioUrl = signed.signedUrl;
         }
       }
-    } catch (e) {
-      console.warn('[gerarNarracaoArtigoFatiada] Falha ao persistir parte no storage, usando data URL:', e);
+    } catch (e: any) {
+      console.error('[gerarNarracaoArtigoFatiada] Falha ao persistir parte no storage:', e);
+      throw new Error(`Falha ao persistir áudio da parte ${parte.rotulo}: ${e?.message || e}`);
     }
 
     partesResultado.push({
@@ -720,16 +732,31 @@ export async function gerarNarracaoArtigoFatiada(
         .upload(storagePathUnificado, blobUnificado, { contentType: 'audio/wav', upsert: true });
 
       if (!upErr) {
-        const { data: signed } = await supabase.storage
+        const { data: pubData } = supabase.storage
           .from('audios')
-          .createSignedUrl(storagePathUnificado, 60 * 60 * 24 * 365 * 5);
-        if (signed?.signedUrl) {
-          audioPrincipal = signed.signedUrl;
+          .getPublicUrl(storagePathUnificado);
+
+        if (pubData?.publicUrl) {
+          audioPrincipal = pubData.publicUrl;
+        } else {
+          const { data: signed } = await supabase.storage
+            .from('audios')
+            .createSignedUrl(storagePathUnificado, 60 * 60 * 24 * 365 * 5);
+          if (signed?.signedUrl) {
+            audioPrincipal = signed.signedUrl;
+          }
         }
+      } else {
+        console.warn('[gerarNarracaoArtigoFatiada] Erro ao subir áudio unificado no storage:', upErr);
       }
     } catch (concatErr) {
       console.warn('[gerarNarracaoArtigoFatiada] Falha ao concatenar WAVs unificados:', concatErr);
     }
+  }
+
+  // Prevenção absoluta: nunca persistir áudio em Data URL Base64 no banco de dados para evitar estouro de timeout
+  if (audioPrincipal.startsWith('data:') || partesResultado.some((p) => p.audioUrl?.startsWith('data:'))) {
+    throw new Error('Falha no armazenamento: o áudio não foi salvo no Storage e URLs em base64 não são permitidas no banco.');
   }
 
   // Persiste no banco de dados na tabela narracoes_artigos com redundância para garantir busca instantânea
@@ -750,19 +777,25 @@ export async function gerarNarracaoArtigoFatiada(
   const duracaoTotalArredondada = Math.max(1, Math.round(duracaoTotalSegundos * 10) / 10);
 
   const rowsParaSalvar = [];
+  const chavesUnicas = new Set<string>();
+
   for (const t of tabs) {
     for (const n of numsVariantes) {
-      rowsParaSalvar.push({
-        tabela_nome: t,
-        artigo_numero: n,
-        lei_nome: leiNome,
-        titulo_artigo: artigo.titulo || null,
-        audio_url: audioPrincipal,
-        word_timings: {
-          partes: partesResultado,
-          duracao_segundos: duracaoTotalArredondada,
-        } as any,
-      });
+      const key = `${t}::${n}`;
+      if (!chavesUnicas.has(key)) {
+        chavesUnicas.add(key);
+        rowsParaSalvar.push({
+          tabela_nome: t,
+          artigo_numero: n,
+          lei_nome: leiNome,
+          titulo_artigo: artigo.titulo || null,
+          audio_url: audioPrincipal,
+          word_timings: {
+            partes: partesResultado,
+            duracao_segundos: duracaoTotalArredondada,
+          } as any,
+        });
+      }
     }
   }
 
