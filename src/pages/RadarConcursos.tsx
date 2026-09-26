@@ -25,6 +25,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useSubscription } from '@/hooks/useSubscription';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+import { StateMapIcon } from '@/components/ui/StateMapIcon';
 import horusAsset from '@/assets/horus/horus-owl.webp';
 import { getConcursoVisual } from '@/lib/concursosVisuais';
 import { toast } from 'sonner';
@@ -350,13 +351,10 @@ export default function RadarConcursos() {
                      </div>
 
                     <div className="flex flex-col items-end gap-1.5">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide text-emerald-950 bg-emerald-400 shadow-sm">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-950 animate-pulse shrink-0" />
-                        <span>{conc.uf || visual.tag}</span>
-                      </span>
+                      <StateMapIcon uf={conc.uf || visual.tag} className="w-10 h-10" />
 
                       {dias !== null && dias <= 7 && dias >= 0 && (
-                        <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-amber-500/90 text-black shadow-md">
+                        <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-amber-500/90 text-black shadow-md mt-1">
                           {dias === 0 ? 'ÚLTIMO DIA' : `${dias}d restantes`}
                         </span>
                       )}
