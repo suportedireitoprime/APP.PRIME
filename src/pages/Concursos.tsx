@@ -104,13 +104,7 @@ const Concursos = () => {
     return Array.from(set).sort((a, b) => b.localeCompare(a));
   }, [concursos]);
 
-  useEffect(() => {
-    if (concursos.length > 0 && !dataFiltro) {
-      setDataFiltro(datasDisponiveis[0] || todayYMD);
-    } else if (concursos.length === 0 && !dataFiltro && !loading) {
-      setDataFiltro(todayYMD);
-    }
-  }, [concursos, datasDisponiveis, dataFiltro, loading, todayYMD]);
+  // Removido useEffect que forçava uma data específica, para que a tela inicie exibindo TODOS os concursos (dataFiltro = '').
 
   const finalFiltered = useMemo(() => {
     const filtered = !dataFiltro
@@ -150,7 +144,7 @@ const Concursos = () => {
             return (
               <button
                 key={key}
-                onClick={() => setDataFiltro(key)}
+                onClick={() => setDataFiltro(isSelected ? '' : key)}
                 className={`relative flex-1 flex flex-col items-center justify-center gap-1 py-3 min-h-[64px] rounded-2xl transition-all shadow-lg shadow-black/20 ${
                   isSelected
                     ? 'bg-[#10B981] shadow-[#10B981]/30'
@@ -178,8 +172,8 @@ const Concursos = () => {
 
         <div className="flex items-center gap-2 px-5 pb-1 max-w-3xl mx-auto">
           <Calendar className="w-3.5 h-3.5 text-[#10B981]" />
-          <span className="text-xs font-display text-[#10B981]">
-            {formatFullDate(dataFiltro ? new Date(dataFiltro + 'T00:00:00') : centerDate)}
+          <span className="text-[11px] font-display text-[#10B981] font-bold tracking-wider uppercase">
+            {dataFiltro ? formatFullDate(new Date(dataFiltro + 'T00:00:00')) : 'Exibindo Todos os Editais'}
           </span>
         </div>
       </div>
