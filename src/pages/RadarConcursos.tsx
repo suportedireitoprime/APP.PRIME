@@ -351,7 +351,7 @@ export default function RadarConcursos() {
                      </div>
 
                     <div className="flex flex-col items-end gap-1.5">
-                      <StateMapIcon uf={conc.uf || visual.tag} className="w-10 h-10" />
+                      <StateMapIcon uf={conc.uf || visual.tag} className="w-14 h-14" />
 
                       {dias !== null && dias <= 7 && dias >= 0 && (
                         <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-amber-500/90 text-black shadow-md mt-1">
@@ -362,14 +362,14 @@ export default function RadarConcursos() {
                   </div>
 
                   {/* Conteúdo inferior */}
-                  <div className="flex flex-col z-10 mt-3">
-                    <div className="flex items-center gap-2 mb-1.5 text-[11px] text-muted-foreground font-medium">
-                      <Clock className="w-3.5 h-3.5 text-emerald-400" />
-                      <span className="truncate">{conc.vagas_salario || visual.subtitulo}</span>
-                    </div>
-                    <p className="font-display text-foreground text-[14px] sm:text-[15px] font-semibold leading-snug line-clamp-3 group-hover:text-emerald-400 transition-colors">
+                  <div className="flex flex-col z-10 mt-3 gap-1.5">
+                    <p className="font-sans text-muted-foreground text-[12px] sm:text-[13px] font-medium leading-relaxed line-clamp-2 group-hover:text-foreground transition-colors">
                       {conc.titulo}
                     </p>
+                    <div className="flex items-center gap-1.5 text-[14px] sm:text-[15px] text-emerald-400 font-bold">
+                      <Clock className="w-4 h-4 shrink-0" />
+                      <span className="truncate">{conc.vagas_salario || visual.subtitulo}</span>
+                    </div>
                   </div>
                 </div>
               );
