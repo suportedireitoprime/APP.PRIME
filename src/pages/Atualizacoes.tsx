@@ -149,7 +149,7 @@ const Atualizacoes = () => {
             {boletins.length > 0 ? boletins.map((bol) => (
               <div 
                 key={bol.id} 
-                onClick={() => { haptic.selection(); startTransition(() => navigate(bol.tipo === 'noticias' ? '/boletins-noticias' : '/boletins')); }}
+                onClick={() => { haptic.selection(); startTransition(() => navigate(bol.tipo === 'noticias' ? `/boletins-noticias/${bol.id}` : `/boletins/${bol.id}`)); }}
                 className="w-[240px] h-[180px] sm:w-[280px] sm:h-[190px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:scale-95"
               >
                 <div className="absolute top-0 right-0 p-3 opacity-10">
