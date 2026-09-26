@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Scale, MicVocal, FileText, Smartphone, ChevronRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { fetchProposicoes } from '@/services/radarService';
 import { resenhaSelect, RESENHA_LIST_SELECT } from '@/lib/resenhaBackend';
@@ -155,14 +156,25 @@ const Atualizacoes = () => {
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <MicVocal className="w-16 h-16 sm:w-20 sm:h-20" />
                 </div>
-                <div className="w-10 h-10 rounded-xl bg-[#FACC15]/20 text-[#FACC15] flex items-center justify-center mb-1">
+                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center mb-1", 
+                  bol.tipo === 'noticias' ? 'bg-[#C084FC]/20 text-[#C084FC]' : 'bg-[#FACC15]/20 text-[#FACC15]'
+                )}>
                   <MicVocal className="w-5 h-5" />
                 </div>
-                <h3 className="font-sans font-semibold text-[15px] sm:text-[16px] leading-tight line-clamp-2">{bol.titulo}</h3>
-                <p className="text-muted-foreground text-[13px] sm:text-[14px] line-clamp-2">{bol.subtitulo || 'Resumo do boletim jurídico e notícias diárias.'}</p>
+                <h3 className="font-sans font-semibold text-[15px] sm:text-[16px] leading-tight line-clamp-1">
+                  {bol.tipo === 'noticias' ? 'Boletim de Notícias' : 'Boletim Jurídico'}
+                </h3>
+                {bol.data_ref && (
+                  <p className="text-[12px] sm:text-[13px] font-medium text-muted-foreground/90 -mt-1">
+                    {new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'long', timeZone: 'UTC' }).format(new Date(bol.data_ref))}
+                  </p>
+                )}
+                <p className="text-muted-foreground text-[13px] sm:text-[14px] line-clamp-2 mt-0.5">{bol.subtitulo || 'Resumo do boletim jurídico e notícias diárias.'}</p>
                 <div className="mt-auto pt-2 flex items-center justify-between">
                   <span className="text-[11px] sm:text-[12px] text-muted-foreground/70 font-medium">{formatDate(bol.data_ref)}</span>
-                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest bg-[#FACC15]/10 text-[#FACC15] px-2.5 py-1 rounded-full flex items-center gap-1">
+                  <span className={cn("text-[10px] sm:text-[11px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full flex items-center gap-1",
+                    bol.tipo === 'noticias' ? 'bg-[#C084FC]/10 text-[#C084FC]' : 'bg-[#FACC15]/10 text-[#FACC15]'
+                  )}>
                     Escutar <ChevronRight className="w-3 h-3" />
                   </span>
                 </div>

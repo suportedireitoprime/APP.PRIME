@@ -27,6 +27,7 @@ interface Row {
   planTag?: { plano: string, status: string, expires_at: string | null };
   googleId?: string | null;
   created_at?: string | null;
+  faixaEtaria?: string | null;
 }
 
 function formatTempoCadastro(createdAt?: string | null, fallbackSubtitle?: string | null): string {
@@ -890,9 +891,9 @@ export function AdminHojeCards() {
         ));
         const profilesDict: Record<string, any> = {};
         if (allUids.length > 0) {
-          const { data: profs } = await supabase.from('profiles').select('id, created_at').in('id', allUids);
+          const { data: profs } = await supabase.from('profiles').select('id, created_at, faixa_etaria').in('id', allUids);
           if (profs) {
-            profs.forEach(p => { profilesDict[p.id] = p.created_at; });
+            profs.forEach(p => { profilesDict[p.id] = { created_at: p.created_at, faixa_etaria: p.faixa_etaria }; });
           }
         }
         
@@ -913,7 +914,8 @@ export function AdminHojeCards() {
               is_premium: r.is_premium ?? r.premium ?? false,
               avatar_url: r.avatar_url || null,
               acessos: typeof r.acessos === 'number' ? r.acessos : null,
-              created_at: r.created_at || profilesDict[uid] || null
+              created_at: r.created_at || profilesDict[uid]?.created_at || null,
+              faixa_etaria: r.faixa_etaria || profilesDict[uid]?.faixa_etaria || null
             };
           });
           allLists = allLists.concat(mapped);
@@ -935,7 +937,8 @@ export function AdminHojeCards() {
                 avatar_url: r.avatar_url || null,
                 provider: isGoogleAvatar ? 'google' : (r.provider || 'email'),
                 acessos: null,
-                created_at: profilesDict[uid] || r.created_at || r.at
+                created_at: profilesDict[uid]?.created_at || r.created_at || r.at,
+                faixa_etaria: profilesDict[uid]?.faixa_etaria || r.faixa_etaria || null
               };
             });
             allLists = allLists.concat(trials);
@@ -965,6 +968,7 @@ export function AdminHojeCards() {
         planValue: r.planValue,
         planTag: r.planTag,
         created_at: r.created_at,
+        faixaEtaria: r.faixa_etaria,
       })).filter(r => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim()));
 
       if (id === 'trial' && list.length > 0) {
@@ -1309,6 +1313,12 @@ export function AdminHojeCards() {
                         {!r.planTag && (
                           <div className="font-body text-[10.5px] text-muted-foreground/60 truncate flex items-center gap-1.5">
                             {formatTempoCadastro(r.created_at, r.subtitle)}
+                            {r.faixaEtaria && (
+                              <>
+                                <span>·</span>
+                                <span>{r.faixaEtaria}</span>
+                              </>
+                            )}
                           </div>
                         )}
                         {r.planTag && (
