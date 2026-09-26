@@ -30,6 +30,16 @@
   - Utilizar sempre as definições de tipos em `src/integrations/supabase/types.ts`.
   - Reutilizar a camada de persistência com `idb-keyval`, Dexie ou React Query para garantir que a aplicação continue utilizável offline.
 
+## ⚡ Padrão Ouro de Fluidez & Latência Zero (Padrão Vacatio 0ms)
+- **REGRA PERMANENTE PARA NOVAS TELAS E REFATORAÇÕES:** Toda e qualquer nova tela, recurso ou refatoração no projeto DEVE seguir rigorosamente os 7 padrões de latência zero comprovados:
+  1. **Roteador Puro a 0ms (Sem AnimatePresence no Routes):** O componente `<Routes>` em `AppRoutes.tsx` NUNCA deve ser envolvido por `<AnimatePresence>` ou receber chaves dinâmicas baseadas em rota (`key={location.pathname}`). Transições de página devem ser isoladas dentro de `<PageTransition>` sem travar o ciclo síncrono de unmount/mount do React Router.
+  2. **Inicialização Instantânea a 0ms (Zero Splash Screen React):** Nunca criar telas artificiais de splash em React usando timers (`setTimeout` de 2s a 3s em `App.tsx`). A inicialização deve montar instantaneamente a rota inicial, delegando o splash exclusivamente à camada nativa do Capacitor/OS.
+  3. **Proteção de Rotas com Cache em Memória (Sem Waterfalls no ProtectedRoute):** `ProtectedRoute`, `useSubscription` e checagens de autorização DEVEM utilizar snapshots síncronos em memória (`subMemoryCache`) e deduplicação de requisições em voo (`inflightFetches`). É terminantemente proibido disparar cascatas de queries ao Supabase na transição de rotas.
+  4. **Proibido Cancelamento Indiscriminado de Queries (`cancelQueries`):** NUNCA executar `queryClient.cancelQueries({ fetchStatus: 'fetching' })` na troca de rotas. O cancelamento cego aborta preloads em segundo plano e invalida o cache reaproveitável entre telas.
+  5. **Code-Splitting Estrito (Mobile vs Desktop):** Telas bifurcadas por dispositivo (ex: `Index.tsx`) DEVEM carregar suas variantes desktop e mobile via `React.lazy()` e `<Suspense>`. Nunca empacote componentes de desktop no bundle inicial do mobile.
+  6. **Eficiência Gráfica no Topo/Hero (Zero Repaints de GPU Contínuos):** Carrosséis de topo, capas e banners NUNCA devem rodar animações contínuas infinitas na GPU (ex: efeito Ken Burns `scale: [1, 1.08]` combinado com `maskImage` e `drop-shadow`). Transições de imagens devem utilizar opacidade simples ou crossfade estático acelerado por hardware (`transform-gpu`).
+  7. **CSS Limpo Sem Wildcards Massivos:** Proibido utilizar seletores globais indiscriminados com `!important` (ex: `*, *::-webkit-scrollbar !important`). Regras de scrollbar e layout global devem ser declaradas dentro de `@layer base` do Tailwind ou em seletores de contêiner específicos, eliminando recálculos globais de estilo.
+
 ## 🎯 Integrador de Skills Nativas (`.agents/skills/`)
 
 ### 1. 🚀 Skill Suprema Final (`skill-suprema-final`)
