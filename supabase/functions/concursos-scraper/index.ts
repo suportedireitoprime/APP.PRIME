@@ -20,6 +20,16 @@ serve(async (req: Request) => {
     console.log("Fetch Status:", response.status, "HTML bytes:", html.length);
     const $ = cheerio.load(html);
 
+    const imageMap = new Map<string, string>();
+    $('ul.lateral_social > li > a').each((_, element) => {
+      const link = $(element).attr('href');
+      const imgTag = $(element).find('img.lazyload');
+      if (link && imgTag.length > 0) {
+        const fullLink = link.startsWith('http') ? link : `https://www.pciconcursos.com.br${link}`;
+        imageMap.set(fullLink, imgTag.attr('data-src') || '');
+      }
+    });
+
     const concursos: { titulo: string; link: string; resumo: string; imagem_url: string | null }[] = [];
 
     // PCI Concursos geralmente lista em <ul class="noticias link-d">
@@ -41,14 +51,14 @@ serve(async (req: Request) => {
            if (nextSpan.length) resumo = nextSpan.text().trim().substring(0, 150);
         }
 
-        const imgTag = $(element).find('img.lazyload');
-        const imagem_url = imgTag.length > 0 ? (imgTag.attr('data-src') || null) : null;
+        
 
+        const fullLink = link.startsWith('http') ? link : `https://www.pciconcursos.com.br${link}`;
         concursos.push({
           titulo,
-          link: link.startsWith('http') ? link : `https://www.pciconcursos.com.br${link}`,
+          link: fullLink,
           resumo: resumo || 'Notícia sobre concurso público.',
-          imagem_url,
+          imagem_url: imageMap.get(fullLink) || null,
         });
       }
     });
@@ -61,15 +71,15 @@ serve(async (req: Request) => {
         const parentText = $(element).parent().text().trim();
         let resumo = parentText.replace(titulo, '').trim().substring(0, 150);
         
-        const imgTag = $(element).find('img.lazyload');
-        const imagem_url = imgTag.length > 0 ? (imgTag.attr('data-src') || null) : null;
+        
 
         if (link && link.includes('/noticias/') && titulo.length > 20 && titulo.includes('Vagas')) {
+          const fullLink = link.startsWith('http') ? link : `https://www.pciconcursos.com.br${link}`;
           concursos.push({
             titulo,
-            link: link.startsWith('http') ? link : `https://www.pciconcursos.com.br${link}`,
+            link: fullLink,
             resumo: resumo || 'Nova oportunidade.',
-            imagem_url,
+            imagem_url: imageMap.get(fullLink) || null,
           });
         }
       });

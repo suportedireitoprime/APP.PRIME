@@ -27,6 +27,21 @@ interface RadarPL {
 }
 
 const Atualizacoes = () => {
+  const getAvatarUrl = (title: string) => {
+    const cleanTitle = title.split('-')[0].trim().substring(0, 20);
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(cleanTitle)}&background=10B981&color=fff&size=128&bold=true&font-size=0.4`;
+  };
+  const openExternalLink = async (url: string) => {
+    try {
+      if (Capacitor.isNativePlatform()) {
+        await Browser.open({ url });
+      } else {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      }
+    } catch (e) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<'novidades' | 'noticias'>('noticias');
@@ -238,7 +253,7 @@ const Atualizacoes = () => {
                     Notícias Jurídicas
                   </h2>
                 </div>
-                <button onClick={() => { haptic.light(); Browser.open({ url: 'https://www.migalhas.com.br' }); }} className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-white font-medium transition-colors active:scale-95 cursor-pointer">Ver todos <ChevronRight className="w-4 h-4" /></button>
+                <button onClick={() => { haptic.light(); openExternalLink('https://www.migalhas.com.br'); }} className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-white font-medium transition-colors active:scale-95 cursor-pointer">Ver todos <ChevronRight className="w-4 h-4" /></button>
               </div>
               <p className="text-muted-foreground text-[13px] px-1 mb-4 truncate">
                 Principais destaques do mundo jurídico
@@ -247,11 +262,11 @@ const Atualizacoes = () => {
                 {noticias.length > 0 ? noticias.map((noticia) => (
                   <div 
                     key={noticia.id} 
-                    onClick={() => { haptic.selection(); Browser.open({ url: noticia.link }); }}
+                    onClick={() => { haptic.selection(); openExternalLink(noticia.link); }}
                     className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start relative overflow-hidden rounded-2xl cursor-pointer active:scale-[0.98] transition-transform"
                   >
                     <div className="absolute inset-0 flex items-center justify-center bg-card">
-                      <Newspaper className="w-8 h-8 text-white/20" />
+                      <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(noticia.fonte || 'Noticia')}&background=FACC15&color=000&size=128&bold=true`} alt="" className="w-16 h-16 rounded-full object-contain drop-shadow-md border border-white/10 opacity-80" />
                     </div>
                     
                     {noticia.imagem_url && (
@@ -302,7 +317,7 @@ const Atualizacoes = () => {
                     Concursos Públicos
                   </h2>
                 </div>
-                <button onClick={() => { haptic.light(); Browser.open({ url: 'https://www.pciconcursos.com.br/noticias/' }); }} className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-white font-medium transition-colors active:scale-95 cursor-pointer">Ver todos <ChevronRight className="w-4 h-4" /></button>
+                <button onClick={() => { haptic.light(); openExternalLink('https://www.pciconcursos.com.br/noticias/'); }} className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-white font-medium transition-colors active:scale-95 cursor-pointer">Ver todos <ChevronRight className="w-4 h-4" /></button>
               </div>
               <p className="text-muted-foreground text-[13px] px-1 mb-4 truncate">
                 Últimas oportunidades e editais abertos
@@ -313,7 +328,7 @@ const Atualizacoes = () => {
                     key={conc.id} 
                     onClick={() => {
                       haptic.selection();
-                      Browser.open({ url: conc.link });
+                      openExternalLink(conc.link);
                     }}
                     className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start relative overflow-hidden rounded-2xl cursor-pointer active:scale-[0.98] transition-transform block bg-card/50"
                   >
@@ -321,7 +336,7 @@ const Atualizacoes = () => {
                       {conc.imagem_url ? (
                         <img src={conc.imagem_url} alt="" className="w-full h-full object-contain opacity-70 mix-blend-plus-lighter" />
                       ) : (
-                        <GraduationCap className="w-12 h-12 text-[#10B981]/20" />
+                        <img src={getAvatarUrl(conc.titulo)} alt="" className="w-16 h-16 rounded-full object-contain drop-shadow-md border border-white/10" />
                       )}
                     </div>
                     
@@ -424,3 +439,4 @@ const Atualizacoes = () => {
 export default memo(Atualizacoes);
 
 import { Browser } from '@capacitor/browser';
+import { Capacitor } from '@capacitor/core';
