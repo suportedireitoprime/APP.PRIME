@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { User } from 'lucide-react';
+import { User, Landmark } from 'lucide-react';
 import { fetchProposicaoAutores } from '@/services/radarService';
 import { avatarImg } from '@/lib/cdnImg';
 
@@ -68,7 +68,11 @@ export function AuthorAvatar({ proposicaoId }: AuthorAvatarProps) {
         </div>
       ) : (
         <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center border border-border shrink-0">
-          <User className="w-6 h-6 text-muted-foreground" />
+          {authorName?.toLowerCase().includes('executivo') || authorName?.toLowerCase().includes('senado') ? (
+            <Landmark className="w-6 h-6 text-muted-foreground" />
+          ) : (
+            <User className="w-6 h-6 text-muted-foreground" />
+          )}
         </div>
       )}
       

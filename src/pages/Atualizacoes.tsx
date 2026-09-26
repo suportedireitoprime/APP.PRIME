@@ -104,7 +104,7 @@ const Atualizacoes = () => {
               <div 
                 key={lei.id} 
                 onClick={() => { haptic.selection(); startTransition(() => navigate(`/radar-360?lei=${lei.id}`)); }}
-                className="w-[240px] h-[180px] sm:w-[280px] sm:h-[190px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:scale-95"
+                className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:scale-95"
               >
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <Scale className="w-16 h-16 sm:w-20 sm:h-20" />
@@ -122,7 +122,7 @@ const Atualizacoes = () => {
                 </div>
               </div>
             )) : (
-              <div className="w-[240px] h-[180px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+              <div className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
             )}
           </div>
         </section>
@@ -151,7 +151,7 @@ const Atualizacoes = () => {
               <div 
                 key={bol.id} 
                 onClick={() => { haptic.selection(); startTransition(() => navigate(bol.tipo === 'noticias' ? `/boletins-noticias/${bol.id}` : `/boletins/${bol.id}`)); }}
-                className="w-[240px] h-[180px] sm:w-[280px] sm:h-[190px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:scale-95"
+                className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:scale-95"
               >
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <MicVocal className="w-16 h-16 sm:w-20 sm:h-20" />
@@ -180,7 +180,7 @@ const Atualizacoes = () => {
                 </div>
               </div>
             )) : (
-              <div className="w-[240px] h-[180px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+              <div className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
             )}
           </div>
         </section>
@@ -238,7 +238,7 @@ const Atualizacoes = () => {
                 </div>
               </div>
             )) : (
-              <div className="w-[240px] h-[180px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+              <div className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
             )}
           </div>
         </section>
@@ -258,7 +258,7 @@ const Atualizacoes = () => {
           </p>
           <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 hide-scrollbar px-1 -mr-4 pr-4">
             {[1, 2].map((i) => (
-              <div key={i} className="w-[240px] h-[180px] sm:w-[280px] sm:h-[190px] shrink-0 snap-start bg-card rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden">
+              <div key={i} className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <Smartphone className="w-16 h-16 sm:w-20 sm:h-20" />
                 </div>
