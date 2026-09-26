@@ -37,8 +37,8 @@ export const VOZES_DISPONIVEIS: VozTTS[] = [
 ];
 
 export const ESTILOS_TOM = [
-  { id: 'super_animado', label: 'Super Animado & Fluido (Padrão)', prompt: 'Diga em português brasileiro de forma SUPER ANIMADA, contagiante e vibrante! Use uma voz cheia de energia, entusiasmo genuíno e paixão, como um apresentador carismático que adora o tema. Varie a entonação entre empolgação alta nos pontos importantes e pausas dramáticas antes de revelações. Seja expressivo, fluido, dinâmico e absolutamente cativante. Faça o ouvinte sentir vontade de continuar ouvindo. Transforme cada artigo em uma experiência envolvente e memorável' },
-  { id: 'animado', label: 'Animado & Professoral', prompt: 'Animado e envolvente, como uma professora jovem apaixonada por Direito explicando aos seus alunos' },
+  { id: 'animado', label: 'Animado & Professoral (Padrão)', prompt: 'Diga em português brasileiro com tom animado, didático e envolvente, como uma professora jovem apaixonada por Direito explicando aos seus alunos. Dicção clara, ritmo fluido e natural.' },
+  { id: 'super_animado', label: 'Super Animado & Vibrante', prompt: 'Diga em português brasileiro de forma SUPER ANIMADA, contagiante e vibrante! Use uma voz cheia de energia, entusiasmo genuíno e paixão, como um apresentador carismático que adora o tema. Varie a entonação entre empolgação alta nos pontos importantes e pausas dramáticas antes de revelações. Seja expressivo, fluido, dinâmico e absolutamente cativante. Faça o ouvinte sentir vontade de continuar ouvindo. Transforme cada artigo em uma experiência envolvente e memorável' },
   { id: 'solene', label: 'Solene & Formal (Judiciário)', prompt: 'Solene, formal, respeitoso e pausado, com dicção jurídica tradicional' },
   { id: 'didatico', label: 'Didático para Concursos (Pausado)', prompt: 'Didático, pausado e muito claro, enfatizando os artigos, incisos e penas para fixação' },
   { id: 'acelerado', label: 'Direto & Dinâmico (Revisão Rápida)', prompt: 'Dinâmico, direto e ágil para revisão rápida de legislação' },

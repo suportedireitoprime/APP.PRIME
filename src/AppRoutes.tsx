@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from "react";
-import { AnimatePresence, MotionConfig } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { initAnalytics, trackPageview, setAnalyticsUserWithProfile } from "@/lib/analytics";
 import { useScreenTracking } from "@/lib/screenTracking";
 import { initNavTelemetry, markRouteChange } from "@/lib/navTelemetry";
@@ -1017,23 +1017,6 @@ function AnimatedRoutes() {
   };
 
 
-
-  const getRouteKey = (path: string, search: string) => {
-    // Agrupa abas do Vade Mecum para não acionar a transição de página inteira
-    if (path.match(/^\/vade-mecum(\/(areas|categorias|favoritos|recentes|codigos|estatutos|especiais|sumulas))?$/)) {
-      return '/vade-mecum-tabs';
-    }
-    // Agrupa abas de Resumos Jurídicos para navegação instantânea sem desmontar rota
-    if (path.match(/^\/resumos-juridicos(\/(materias|leis|jurisprudencia|favoritos|recentes))?$/)) {
-      return '/resumos-juridicos-tabs';
-    }
-    // Suporte a rotas com query params significativos (view, mode, artigo, id)
-    if (search && (search.includes('view=') || search.includes('mode=') || search.includes('artigo=') || search.includes('tab='))) {
-      return `${path}${search}`;
-    }
-    return path;
-  };
-
   return (
     <div className="overflow-x-hidden">
       <ScrollRestorationWatcher />
@@ -1046,9 +1029,7 @@ function AnimatedRoutes() {
       <DesktopFileDropOverlay />
       <PersistentHome />
       <Suspense fallback={<LazyFallback />}>
-        <MotionConfig reducedMotion="user">
-          <AnimatePresence mode="popLayout" initial={false}>
-            <Routes location={location} key={getRouteKey(location.pathname, location.search)}>
+        <Routes>
             <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
             <Route path="/landing" element={<PageTransition><Landing /></PageTransition>} />
 
@@ -1387,9 +1368,7 @@ function AnimatedRoutes() {
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
 
           </Routes>
-        </AnimatePresence>
-      </MotionConfig>
-    </Suspense>
+      </Suspense>
   </div>
   );
 }
