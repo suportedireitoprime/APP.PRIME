@@ -107,6 +107,7 @@ serve(async (req: Request) => {
             titulo: concurso.titulo,
             link: concurso.link,
             resumo: concurso.resumo,
+            imagem_url: concurso.imagem_url,
           },
           { onConflict: "link" }
         );

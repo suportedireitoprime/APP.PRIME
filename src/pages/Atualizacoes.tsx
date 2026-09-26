@@ -5,6 +5,8 @@ import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
+import { Capacitor } from '@capacitor/core';
+import { Browser } from '@capacitor/browser';
 import { fetchProposicoes } from '@/services/radarService';
 import { resenhaSelect, RESENHA_LIST_SELECT } from '@/lib/resenhaBackend';
 import { AuthorAvatar } from '@/components/radar/AuthorAvatar';
