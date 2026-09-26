@@ -40,6 +40,8 @@ import ShapeGrid from '@/components/ui/ShapeGrid';
 import { StateMapIcon } from '@/components/ui/StateMapIcon';
 import horusAsset from '@/assets/horus/horus-owl.webp';
 import logoPF from '@/assets/logos/pf.png';
+import capaPadrao from '@/assets/concursos/capa-padrao.jpg';
+import ReactMarkdown from 'react-markdown';
 import logoPRF from '@/assets/logos/prf.png';
 import logoPC from '@/assets/logos/pc.png';
 import { getConcursoVisual } from '@/lib/concursosVisuais';
@@ -724,24 +726,38 @@ export default function RadarConcursos() {
               </button>
 
               {/* Imagem de Capa Grande */}
-              <div className="relative h-48 sm:h-56 -mx-5 -mt-5 sm:-mx-6 sm:-mt-6 overflow-hidden rounded-t-3xl">
-                <img
-                  src={getConcursoVisual(selectedEdital.titulo, selectedEdital.imagem_url).imagemUrl}
-                  alt={selectedEdital.titulo}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-card via-black/40 to-transparent" />
-                <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between">
-                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500 text-white shadow-md">
-                    {selectedEdital.uf ? `Estado: ${selectedEdital.uf}` : selectedEdital.regiao || 'NACIONAL'}
-                  </span>
-                  {selectedEdital.dias_restantes !== undefined && (
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-black/70 border border-white/20 text-emerald-400 backdrop-blur-md">
-                      {selectedEdital.dias_restantes > 0
-                        ? `${selectedEdital.dias_restantes} dias para o encerramento`
-                        : 'Inscrições encerrando'}
+              <div className="relative h-48 sm:h-56 -mx-5 -mt-5 sm:-mx-6 sm:-mt-6 rounded-t-3xl bg-black">
+                {/* Imagem Padrão de Fundo */}
+                <div className="absolute inset-0">
+                  <img
+                    src={capaPadrao}
+                    alt="Capa Padrão"
+                    className="w-full h-full object-cover opacity-60"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-card via-black/40 to-transparent" />
+                </div>
+                
+                {/* Logo da Instituição vazada/branca sobre a capa */}
+                <div className="absolute bottom-4 left-4 sm:left-6 z-10 flex items-center gap-3">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center p-2 shadow-xl border-4 border-card">
+                    <img
+                      src={getConcursoVisual(selectedEdital.titulo, selectedEdital.imagem_url).imagemUrl}
+                      alt={selectedEdital.titulo}
+                      className="w-full h-full object-contain rounded-full"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1 mt-2">
+                    <span className="px-3 py-1 w-max rounded-full text-[10px] font-bold bg-emerald-500 text-white shadow-md">
+                      {selectedEdital.uf ? `Estado: ${selectedEdital.uf}` : selectedEdital.regiao || 'NACIONAL'}
                     </span>
-                  )}
+                    {selectedEdital.dias_restantes !== undefined && (
+                      <span className="px-3 py-1 w-max rounded-full text-[10px] font-bold bg-black/70 border border-white/20 text-emerald-400 backdrop-blur-md">
+                        {selectedEdital.dias_restantes > 0
+                          ? `${selectedEdital.dias_restantes} dias p/ encerrar`
+                          : 'Inscrições encerrando'}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -783,31 +799,19 @@ export default function RadarConcursos() {
                 <h4 className="font-display font-bold text-xs uppercase tracking-wider text-muted-foreground">
                   Informações do Edital
                 </h4>
-                <div className="text-sm text-foreground/90 leading-relaxed font-body whitespace-pre-wrap max-h-[30vh] overflow-y-auto pr-2 custom-scrollbar">
+                <div className="text-sm text-foreground/90 leading-relaxed font-body whitespace-pre-wrap max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
                   {loadingFullText ? (
                     <div className="flex items-center gap-2 text-muted-foreground py-2">
                       <Loader2 className="w-4 h-4 animate-spin" />
                       <span>Extraindo conteúdo completo do edital...</span>
                     </div>
                   ) : editalFullText ? (
-                    editalFullText
+                    <div className="prose prose-invert prose-emerald max-w-none prose-sm">
+                      <ReactMarkdown>{editalFullText}</ReactMarkdown>
+                    </div>
                   ) : (
                     <p>{selectedEdital.resumo || 'Acompanhe todas as regras e convocações deste concurso pelo link oficial.'}</p>
                   )}
-                </div>
-              </div>
-
-              {/* Análise Inteligente do Hórus IA */}
-              <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-950/40 via-card to-card border border-emerald-500/30 flex items-start gap-3">
-                <img src={horusAsset} alt="Hórus" className="w-10 h-10 object-contain shrink-0" />
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
-                    <span>Recomendação do Hórus IA</span>
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                  </p>
-                  <p className="text-xs text-white/85 leading-relaxed font-body">
-                    Para este concurso ({selectedEdital.uf || 'Nacional'}), priorize o estudo de Direito Constitucional, Administrativo e a legislação específica do órgão.
-                  </p>
                 </div>
               </div>
 
