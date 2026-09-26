@@ -10,7 +10,8 @@ export function stripRedacao(text: string): string {
 }
 
 /** Normalize a word token for narration alignment (removes accents, lowercases). */
-export function normalizeNarracaoToken(text: string): string {
+export function normalizeNarracaoToken(text: string | undefined | null): string {
+  if (!text) return '';
   return text
     .toLowerCase()
     .normalize('NFD')
@@ -34,7 +35,9 @@ export function alinharTimingsComTexto(
   audioDuration: number,
 ): Array<{ word: string; start: number; end: number }> | null {
   if (!renderedTokens.length || !timings.length) return null;
-  const tTokens = timings.map(t => normalizeNarracaoToken(t.word));
+  const safeTimings = timings.filter(t => t && t.word != null);
+  if (!safeTimings.length) return null;
+  const tTokens = safeTimings.map(t => normalizeNarracaoToken(t.word));
 
   // Descobre onde o texto do artigo começa dentro da fala (após o prefixo)
   const amostra = renderedTokens.slice(0, Math.min(8, renderedTokens.length));
