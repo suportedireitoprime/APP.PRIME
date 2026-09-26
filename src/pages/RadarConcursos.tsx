@@ -560,30 +560,23 @@ export default function RadarConcursos() {
         </section>
 
         {/* 4. CONFIGURAÇÃO DE NOTIFICAÇÕES COMPACTA NO RODAPÉ */}
-        <section className="bg-card/70 border border-emerald-500/25 rounded-3xl p-4 sm:p-5 shadow-md space-y-3.5">
+        <section className="bg-card/70 border border-emerald-500/25 rounded-3xl p-4 sm:p-5 shadow-md space-y-3.5 mt-8 relative">
+          <img src={horusAsset} alt="Hórus" className="absolute -top-10 right-2 sm:-top-12 sm:right-6 w-20 h-20 sm:w-24 sm:h-24 drop-shadow-2xl z-20 pointer-events-none" />
+
           <div className="flex items-center justify-between pb-2 border-b border-border/40">
             <div className="flex items-center gap-2">
               <Bell className="w-4 h-4 text-emerald-400" />
               <h3 className="font-display font-bold text-sm text-foreground uppercase tracking-widest">
                 Alertas & Notificações Automáticas
               </h3>
-              <img src={horusAsset} alt="Hórus" className="w-5 h-5 ml-1 drop-shadow-md" />
             </div>
-            <button
-              type="button"
-              onClick={testarAlertaHorus}
-              className="text-xs font-semibold text-amber-400 hover:text-amber-300 flex items-center gap-1 cursor-pointer"
-            >
-              <Zap className="w-3.5 h-3.5" />
-              <span>Testar Alerta</span>
-            </button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Toggle Push */}
             <div className="flex items-center justify-between p-3 rounded-2xl bg-card/40 border border-border/60">
               <div className="space-y-0.5 pr-2">
-                <p className="text-xs font-semibold text-foreground">Push no Celular</p>
+                <p className="text-xs font-semibold text-foreground">Notificação pelo Celular</p>
                 <p className="text-[11px] text-muted-foreground">Notifica assim que o edital sair</p>
               </div>
               <button
@@ -600,10 +593,10 @@ export default function RadarConcursos() {
             </div>
 
             {/* Toggle Hórus IA */}
-            <div className="flex items-center justify-between p-3 rounded-2xl bg-emerald-950/20 border border-emerald-500/30">
+            <div className="flex items-center justify-between p-3 rounded-2xl bg-card/40 border border-border/60">
               <div className="space-y-0.5 pr-2">
-                <p className="text-xs font-semibold text-emerald-400 flex items-center gap-1">
-                  <span>Radar Hórus IA</span>
+                <p className="text-xs font-semibold text-foreground flex items-center gap-1">
+                  <span>Notificação pelo Hórus</span>
                   {isPremium && <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300">VIP</span>}
                 </p>
                 <p className="text-[11px] text-muted-foreground">Análise e resumo estratégico</p>
