@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Clock, Calendar, ExternalLink, Newspaper } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
