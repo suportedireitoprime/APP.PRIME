@@ -197,25 +197,25 @@ const Atualizacoes = () => {
               <div 
                 key={pl.id_externo || pl.dados_json?.id || pl.numero} 
                 onClick={() => { haptic.selection(); startTransition(() => navigate(`/radar/pl/${pl.id_externo || pl.dados_json?.id}`)); }}
-                className="w-[240px] h-[180px] sm:w-[280px] sm:h-[190px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:scale-95"
+                className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:scale-95"
               >
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <FileText className="w-16 h-16 sm:w-20 sm:h-20" />
                 </div>
                 
                 <div className="flex items-start justify-between mb-1">
-                  <div className="w-10 h-10 rounded-xl bg-[#60A5FA]/20 text-[#60A5FA] flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-[#60A5FA]/20 text-[#60A5FA] flex items-center justify-center shrink-0">
                     <FileText className="w-5 h-5" />
                   </div>
-                  <div className="-mt-1 -mr-1">
+                  <div className="-mt-1 -mr-2">
                     <AuthorAvatar proposicaoId={pl.id_externo || pl.dados_json?.id} />
                   </div>
                 </div>
                 
                 <h3 className="font-sans font-semibold text-[15px] sm:text-[16px] leading-tight line-clamp-2">
-                  {pl.sigla_tipo || pl.dados_json?.siglaTipo} {pl.numero || pl.dados_json?.numero}/{pl.ano || pl.dados_json?.ano}
+                  {pl.sigla_tipo ?? pl.dados_json?.siglaTipo ?? 'PL'} {pl.numero ?? pl.dados_json?.numero ?? ''}/{pl.ano ?? pl.dados_json?.ano ?? ''}
                 </h3>
-                <p className="text-muted-foreground text-[13px] sm:text-[14px] line-clamp-2">{pl.ementa || pl.dados_json?.ementa}</p>
+                <p className="text-muted-foreground text-[13px] sm:text-[14px] line-clamp-2">{pl.ementa ?? pl.dados_json?.ementa ?? 'Sem ementa disponível.'}</p>
                 <div className="mt-auto pt-2 flex items-center justify-between">
                   <span className="text-[11px] sm:text-[12px] text-muted-foreground/70 font-medium line-clamp-1 max-w-[120px]">
                     {pl.dados_json?.statusProposicao?.descricaoTramitacao || 'Em tramitação'}
@@ -246,7 +246,7 @@ const Atualizacoes = () => {
           </p>
           <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 hide-scrollbar px-1 -mr-4 pr-4">
             {[1, 2].map((i) => (
-              <div key={i} className="w-[240px] h-[160px] sm:w-[280px] sm:h-[180px] shrink-0 snap-start bg-card rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden">
+              <div key={i} className="w-[240px] h-[180px] sm:w-[280px] sm:h-[190px] shrink-0 snap-start bg-card rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <Smartphone className="w-16 h-16 sm:w-20 sm:h-20" />
                 </div>
