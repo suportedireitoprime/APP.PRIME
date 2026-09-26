@@ -14,6 +14,11 @@ import { getLeisCatalog, fetchArtigosLei } from '@/services/legislacaoService';
 import type { ArtigoLei } from '@/data/mockData';
 import { supabase } from '@/integrations/supabase/client';
 import { useGoBack } from '@/hooks/useGoBack';
+import {
+  gerarNarracaoArtigoFatiada,
+  obterConfigAutomacao,
+  ESTILOS_TOM,
+} from '@/services/narracaoLeisService';
 
 const ALL_LAWS = (() => {
   const catalog = getLeisCatalog();
@@ -103,45 +108,32 @@ export default function NarracaoLei() {
     setGeneratingId(artigo.id);
 
     try {
-      const projectId = LEIS_SUPABASE_PROJECT_ID;
-      const res = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/narrar-artigo`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${LEIS_SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify((() => {
-            const STRUCT_RE = /^(PARTE|LIVRO|T[IÍ]TULO|CAP[IÍ]TULO|SEÇ[AÃ]O|SUBSEÇ[AÃ]O)\b/i;
-            const tituloIsEpig = artigo.titulo && !STRUCT_RE.test(artigo.titulo);
-            const epig = tituloIsEpig ? artigo.titulo : null;
-            const hier = artigo.capitulo || (!tituloIsEpig ? artigo.titulo : null) || null;
-            return {
-              tabela_nome: selectedLei.tabela_nome,
-              artigo_numero: artigo.numero,
-              artigo_texto: artigo.caput,
-              lei_nome: selectedLei.nome,
-              hierarquia: hier,
-              epigrafe: epig,
-            };
-          })()),
-        }
+      let voz = 'Kore';
+      let estiloPrompt = ESTILOS_TOM[0].prompt;
+      try {
+        const config = await obterConfigAutomacao();
+        if (config?.voz_padrao) voz = config.voz_padrao;
+        if (config?.estilo_tom) estiloPrompt = config.estilo_tom;
+      } catch {}
+
+      const res = await gerarNarracaoArtigoFatiada(
+        artigo,
+        selectedLei.tabela_nome,
+        selectedLei.nome,
+        voz,
+        estiloPrompt
       );
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        console.error('Erro ao narrar:', err);
-        // Fallback: voz do próprio aparelho (TTS nativo / Web Speech), funciona offline.
-        const falou = await speakNative(artigo.caput, { lang: 'pt-BR' });
-        if (!falou) toast.error('Não foi possível narrar este artigo agora.');
-        return;
+      if (res?.audioUrl) {
+        setNarracaoCache(prev => ({ ...prev, [artigo.numero]: res.audioUrl }));
+        toast.success(`Artigo ${artigo.numero} narrado com sucesso!`);
+      } else {
+        throw new Error('Sem URL de áudio gerada.');
       }
-
-      const { audio_url } = await res.json();
-      setNarracaoCache(prev => ({ ...prev, [artigo.numero]: audio_url }));
     } catch (e) {
-      console.error('Erro ao narrar:', e);
+      console.error('Erro ao narrar via Gemini fatiada:', e);
+      const falou = await speakNative(artigo.caput, { lang: 'pt-BR' });
+      if (!falou) toast.error('Não foi possível narrar este artigo agora.');
     } finally {
       setGeneratingId(null);
     }

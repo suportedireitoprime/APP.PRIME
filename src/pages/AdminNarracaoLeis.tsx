@@ -398,7 +398,7 @@ export default function AdminNarracaoLeis() {
     buscarLogsAutomacao().then(setLogsAuto).catch(() => {});
   }, []);
 
-  // Carrega artigos quando uma lei é selecionada
+  // Carrega artigos quando uma lei é selecionada e escuta novidades em tempo real
   useEffect(() => {
     if (!selectedLei) return;
     setCarregandoArtigos(true);
@@ -420,6 +420,33 @@ export default function AdminNarracaoLeis() {
     }).finally(() => {
       setCarregandoArtigos(false);
     });
+
+    // Realtime: atualiza instantaneamente quando uma narração é gerada pelo Vade Mecum ou automação
+    const canalNarracoes = supabase
+      .channel(`admin-narracoes-${selectedLei.tabela_nome}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'narracoes_artigos',
+        },
+        async () => {
+          try {
+            const statusAtualizado = await buscarStatusNarracoes(selectedLei.tabela_nome);
+            if (statusAtualizado) {
+              setStatusNarracoes(statusAtualizado);
+            }
+          } catch (e) {
+            console.warn('[AdminNarracaoLeis] Erro ao sincronizar realtime de narrações:', e);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(canalNarracoes);
+    };
   }, [selectedLei]);
 
   // Contadores da lei selecionada

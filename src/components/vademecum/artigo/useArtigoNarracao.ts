@@ -16,70 +16,11 @@ import {
   prefetchNextArticleAudio,
 } from '@/services/audioOfflineCache';
 import { obterAliasesTabela, obterVariantesArtigoNumero } from '@/utils/narracaoLookup';
-
-const SB_URL = LEIS_SUPABASE_URL;
-const SB_KEY = LEIS_SUPABASE_ANON_KEY;
-
-async function saveGeneratedAudioToSupabase(
-  tabelaNome: string,
-  artigoNumero: string,
-  leiNome: string,
-  tituloArtigo: string | null,
-  audioUrlOrData: string,
-  wordTimings: any[] | null
-): Promise<string> {
-  let finalAudioUrl = audioUrlOrData;
-  try {
-    if (audioUrlOrData.startsWith('data:audio/')) {
-      // Item 17: Use fetch() to convert data URI to Blob efficiently
-      // This avoids the expensive atob() + charCodeAt loop that caused 50-80MB memory spikes
-      try {
-        const response = await fetch(audioUrlOrData);
-        const blob = await response.blob();
-        const safeNum = String(artigoNumero).replace(/[^a-zA-Z0-9]/g, '_');
-        const filePath = `narracoes/${tabelaNome}/${safeNum}.wav`;
-
-        const { error: uploadErr } = await supabase.storage
-          .from('audios')
-          .upload(filePath, blob, { contentType: 'audio/wav', upsert: true });
-
-        if (!uploadErr) {
-          const { data: signed } = await supabase.storage
-            .from('audios')
-            .createSignedUrl(filePath, 60 * 60 * 24 * 365 * 5);
-          if (signed?.signedUrl) {
-            finalAudioUrl = signed.signedUrl;
-          }
-        } else {
-          console.warn('[useArtigoNarracao] Upload de áudio para Supabase falhou:', uploadErr);
-        }
-      } catch (fetchErr) {
-        console.warn('[useArtigoNarracao] Falha ao converter data URI para Blob via fetch:', fetchErr);
-      }
-    }
-
-    const { error: dbErr } = await supabase
-      .from('narracoes_artigos')
-      .upsert(
-        {
-          tabela_nome: tabelaNome,
-          artigo_numero: artigoNumero,
-          lei_nome: leiNome,
-          titulo_artigo: tituloArtigo,
-          audio_url: finalAudioUrl,
-          word_timings: wordTimings || null,
-        },
-        { onConflict: 'tabela_nome,artigo_numero' }
-      );
-
-    if (dbErr) {
-      console.warn('[useArtigoNarracao] Salvar narração no Supabase DB falhou:', dbErr);
-    }
-  } catch (err) {
-    console.error('[useArtigoNarracao] Erro em saveGeneratedAudioToSupabase:', err);
-  }
-  return finalAudioUrl;
-}
+import {
+  gerarNarracaoArtigoFatiada,
+  obterConfigAutomacao,
+  ESTILOS_TOM,
+} from '@/services/narracaoLeisService';
 
 export const RING_CIRCUMFERENCE = 2 * Math.PI * 26;
 
@@ -237,6 +178,9 @@ export function useArtigoNarracao({
           : ((row.word_timings as any)?.partes || null);
         if (timings && timings.length > 0) {
           setNarracaoWordTimings(timings as any[]);
+        }
+        if (row.word_timings && typeof row.word_timings === 'object' && (row.word_timings as any).duracao_segundos) {
+          setNarracaoDuration(Number((row.word_timings as any).duracao_segundos));
         }
 
         // Salva/renova no IndexedDB em background para próximas reproduções offline
@@ -537,6 +481,9 @@ export function useArtigoNarracao({
           if (timings && timings.length > 0) {
             setNarracaoWordTimings(timings as any[]);
           }
+          if (row.word_timings && typeof row.word_timings === 'object' && (row.word_timings as any).duracao_segundos) {
+            setNarracaoDuration(Number((row.word_timings as any).duracao_segundos));
+          }
           if (!silent) setNarracaoLoading(false);
           if (autoplay) await playNarracao(foundUrl);
 
@@ -563,160 +510,85 @@ export function useArtigoNarracao({
       setNarracaoLoading(true);
       setNarracaoStepIdx(0);
     }
+
+    let toastId: string | number | undefined;
+    if (!silent) {
+      toastId = toast.loading(`Narrando Artigo ${artigo.numero}...`);
+    }
+
     try {
       const leiCatalog = (await import('@/services/legislacaoService')).getLeisCatalog();
       const lei = leiCatalog.find((l: any) => l.tabela_nome === tabelaNome);
+      const leiNome = lei?.nome || tabelaNome;
 
-      if (!silent) {
-        await new Promise((r) => setTimeout(r, 350));
-        setNarracaoStepIdx(1);
-      }
-
-      const STRUCT_RE = /^(PARTE|LIVRO|T[IÍ]TULO|CAP[IÍ]TULO|SEÇ[AÃ]O|SUBSEÇ[AÃ]O)\b/i;
-      const tituloIsEpig = artigo.titulo && !STRUCT_RE.test(artigo.titulo);
-      const epig = tituloIsEpig ? artigo.titulo : null;
-      const breadcrumbParts = [breadcrumb?.parte, breadcrumb?.titulo, breadcrumb?.tituloDesc].filter(Boolean);
-      const hier = breadcrumbParts.length > 0
-        ? breadcrumbParts.join('. ')
-        : (artigo.capitulo || (!tituloIsEpig ? artigo.titulo : null) || null);
-
-      const payload = {
-        tabela_nome: tabelaNome,
-        artigo_numero: artigo.numero,
-        artigo_texto: artigo.caput,
-        lei_nome: lei?.nome || tabelaNome,
-        hierarquia: hier,
-        titulo_artigo: hier,
-        epigrafe: epig,
-        force_regenerate: forceRegenerate,
-      };
-
-      let audio_url: string | null = null;
-      let word_timings: any[] | null = null;
-
-      // 1ª Tentativa: cache no banco com aliases e variantes
+      // Obtém configuração do banco ou utiliza valores padrão (Super Animado & Fluido)
+      let voz = 'Kore';
+      let estiloPrompt = ESTILOS_TOM[0].prompt; // Super animado & contagiante
       try {
-        const aliases = obterAliasesTabela(tabelaNome);
-        const variantesNum = obterVariantesArtigoNumero(artigo.numero);
-
-        const { data: rows } = await supabase
-          .from('narracoes_artigos')
-          .select('audio_url, word_timings')
-          .in('tabela_nome', aliases)
-          .in('artigo_numero', variantesNum)
-          .order('created_at', { ascending: false })
-          .limit(1);
-
-        const row = rows?.[0];
-        const cachedUrl = row?.audio_url || null;
-        const cachedTimings = Array.isArray(row?.word_timings)
-          ? (row!.word_timings as any[])
-          : ((row?.word_timings as any)?.partes || null);
-        if (cachedUrl) {
-          audio_url = cachedUrl;
-          word_timings = cachedTimings;
-        }
-      } catch (errDb) {
-        console.warn('[useArtigoNarracao] Erro ao consultar narracoes_artigos:', errDb);
+        const config = await obterConfigAutomacao();
+        if (config?.voz_padrao) voz = config.voz_padrao;
+        if (config?.estilo_tom) estiloPrompt = config.estilo_tom;
+      } catch (cErr) {
+        console.warn('[useArtigoNarracao] Falha ao obter config, usando padrão Super Animado:', cErr);
       }
 
-      // 2ª Tentativa: backend de legislação
-      if (!audio_url) {
-        try {
-          const { data: sessionData } = await supabase.auth.getSession();
-          const userJwt = sessionData.session?.access_token || null;
-          const res = await fetch(`${SB_URL}/functions/v1/narracao?fn=artigo`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              apikey: SB_KEY,
-              Authorization: `Bearer ${SB_KEY}`,
-              ...(userJwt ? { 'x-user-jwt': userJwt } : {}),
-            },
-            body: JSON.stringify({ ...payload, fn: 'artigo' }),
-          });
+      if (!silent) setNarracaoStepIdx(1);
 
-          if (res.ok) {
-            const json = await res.json();
-            audio_url = json.audio_url || null;
-            word_timings = json.word_timings || null;
-          } else {
-            console.warn('[useArtigoNarracao] narracao?fn=artigo falhou:', res.status, await res.text().catch(() => ''));
-          }
-        } catch (fetchErr) {
-          console.warn('[useArtigoNarracao] Fetch direto narracao?fn=artigo falhou:', fetchErr);
-        }
-      }
-
-      // 3ª Tentativa: Gemini 2.5 Flash TTS
-      if (!audio_url) {
-        try {
-          const textoFormatado = formatTextoArtigoParaNarracao(artigo, breadcrumb);
-          const { data: fnData, error: fnErr } = await supabase.functions.invoke('narracao', {
-            body: {
-              fn: 'blog_preview',
-              voz: 'Kore',
-              texto: textoFormatado,
-              estilo: 'Diga em português brasileiro com tom vibrante, animado e muito empolgante, como uma professora jovem apaixonada por Direito explicando aos seus alunos',
-            },
-          });
-
-          if (!fnErr && fnData?.audio_data_url) {
-            const savedUrl = await saveGeneratedAudioToSupabase(
-              tabelaNome,
-              String(artigo.numero),
-              lei?.nome || tabelaNome,
-              hier,
-              fnData.audio_data_url,
-              null
+      const res = await gerarNarracaoArtigoFatiada(
+        artigo,
+        tabelaNome,
+        leiNome,
+        voz,
+        estiloPrompt,
+        (parteAtual, totalPartes, rotulo) => {
+          if (!silent && toastId) {
+            toast.loading(
+              `Narrando Artigo ${artigo.numero}: ${rotulo} (${parteAtual}/${totalPartes})...`,
+              { id: toastId }
             );
-            audio_url = savedUrl || fnData.audio_data_url;
-          } else if (fnErr) {
-            console.warn('[useArtigoNarracao] Edge function narracao error:', fnErr);
           }
-        } catch (errFn) {
-          console.warn('[useArtigoNarracao] Chamada Gemini 2.5 Flash TTS falhou:', errFn);
         }
-      }
+      );
 
-      if (audio_url) {
+      if (res?.audioUrl) {
         if (!silent) setNarracaoStepIdx(2);
-        setNarracaoUrl(audio_url);
-        if (Array.isArray(word_timings)) setNarracaoWordTimings(word_timings);
+        setNarracaoUrl(res.audioUrl);
+        if (res.duracaoSegundos) setNarracaoDuration(res.duracaoSegundos);
+        if (Array.isArray(res.partes) && res.partes.length > 0) {
+          setNarracaoWordTimings(res.partes as any[]);
+        }
 
-        // Item 14: Salva o novo áudio gerado no cache IndexedDB
+        // Salva novo áudio gerado no cache IndexedDB
         if (artigo?.numero && tabelaNome) {
           const cKey = buildAudioCacheKey(tabelaNome, artigo.numero);
           void (async () => {
             try {
-              const resp = await fetch(audio_url!);
+              const resp = await fetch(res.audioUrl);
               if (resp.ok) {
                 const blob = await resp.blob();
-                await saveCachedAudio(cKey, blob, word_timings as any);
+                await saveCachedAudio(cKey, blob, res.partes as any);
               }
             } catch {}
           })();
         }
 
+        if (!silent && toastId) {
+          toast.success(`Artigo ${artigo.numero} narrado com sucesso!`, { id: toastId });
+        }
+
         if (!silent) setNarracaoLoading(false);
-        await playNarracao(audio_url);
+        if (autoplay) {
+          await playNarracao(res.audioUrl);
+        }
         return;
       }
 
-      // Fallback nativo
-      console.warn('[useArtigoNarracao] Narração em áudio via Gemini indisponível. Acionando síntese nativa...');
-      const textoFormatadoFallback = formatTextoArtigoParaNarracao(artigo, breadcrumb);
-      const ok = await speakNative(textoFormatadoFallback);
-      setNarracaoLoading(false);
-      setNarracaoStepIdx(0);
-      if (ok) {
-        setNarracaoPlaying(true);
-        toast.success('Reproduzindo narração nativa do artigo.');
-      } else if (!silent) {
-        toast.error('Não consegui gerar a narração agora. Tente novamente.');
+      throw new Error('Sem URL de áudio gerada.');
+    } catch (e: any) {
+      console.error('Erro ao gerar narração via Gemini fatiada. Tentando narração nativa...', e);
+      if (!silent && toastId) {
+        toast.dismiss(toastId);
       }
-    } catch (e) {
-      console.error('Erro ao gerar narração via Gemini. Tentando narração nativa...', e);
       if (artigo) {
         const textoFormatadoFallback = formatTextoArtigoParaNarracao(artigo, breadcrumb);
         const ok = await speakNative(textoFormatadoFallback);
@@ -728,12 +600,12 @@ export function useArtigoNarracao({
           return;
         }
       }
-      if (!silent) toast.error('Não consegui gerar a narração agora. Tente novamente.');
+      if (!silent) toast.error(e?.message || 'Não consegui gerar a narração agora. Tente novamente.');
     } finally {
       isGeneratingAudioRef.current = false;
+      if (!silent) setNarracaoLoading(false);
     }
-    if (!silent) setNarracaoLoading(false);
-  }, [artigo, tabelaNome, breadcrumb, narracaoUrl, playNarracao, openPremiumGate, isPremium]);
+  }, [artigo, tabelaNome, breadcrumb, narracaoUrl, playNarracao]);
 
   // ─── handleNarrar ───
   const handleNarrar = async () => {
