@@ -11,12 +11,14 @@ import {
   ExternalLink,
   MapPin,
   Briefcase,
-  SlidersHorizontal,
   ChevronRight,
   ShieldCheck,
   Zap,
   Volume2,
-  X
+  X,
+  Share2,
+  SlidersHorizontal,
+  ChevronDown
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -24,6 +26,7 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import horusAsset from '@/assets/horus/horus-owl.webp';
+import { getConcursoVisual } from '@/lib/concursosVisuais';
 import { toast } from 'sonner';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
@@ -45,20 +48,47 @@ interface ConcursoItem {
   data_publicacao?: string;
 }
 
-const UFS_BRASIL = [
-  'NACIONAL', 'SP', 'RJ', 'MG', 'RS', 'PR', 'SC', 'BA', 'PE', 'CE', 'GO',
-  'DF', 'ES', 'MT', 'MS', 'MA', 'PA', 'PB', 'RN', 'PI', 'AL', 'SE', 'RO',
-  'TO', 'AC', 'AP', 'AM', 'RR'
+const UFS_LIST = [
+  { value: 'TODOS', label: 'Todos os Estados (Brasil)' },
+  { value: 'NACIONAL', label: '🇧🇷 Âmbito Nacional' },
+  { value: 'SP', label: 'São Paulo (SP)' },
+  { value: 'RJ', label: 'Rio de Janeiro (RJ)' },
+  { value: 'MG', label: 'Minas Gerais (MG)' },
+  { value: 'RS', label: 'Rio Grande do Sul (RS)' },
+  { value: 'PR', label: 'Paraná (PR)' },
+  { value: 'SC', label: 'Santa Catarina (SC)' },
+  { value: 'BA', label: 'Bahia (BA)' },
+  { value: 'PE', label: 'Pernambuco (PE)' },
+  { value: 'CE', label: 'Ceará (CE)' },
+  { value: 'GO', label: 'Goiás (GO)' },
+  { value: 'DF', label: 'Distrito Federal (DF)' },
+  { value: 'ES', label: 'Espírito Santo (ES)' },
+  { value: 'MT', label: 'Mato Grosso (MT)' },
+  { value: 'MS', label: 'Mato Grosso do Sul (MS)' },
+  { value: 'MA', label: 'Maranhão (MA)' },
+  { value: 'PA', label: 'Pará (PA)' },
+  { value: 'PB', label: 'Paraíba (PB)' },
+  { value: 'RN', label: 'Rio Grande do Norte (RN)' },
+  { value: 'PI', label: 'Piauí (PI)' },
+  { value: 'AL', label: 'Alagoas (AL)' },
+  { value: 'SE', label: 'Sergipe (SE)' },
+  { value: 'RO', label: 'Rondônia (RO)' },
+  { value: 'TO', label: 'Tocantins (TO)' },
+  { value: 'AC', label: 'Acre (AC)' },
+  { value: 'AP', label: 'Amapá (AP)' },
+  { value: 'AM', label: 'Amazonas (AM)' },
+  { value: 'RR', label: 'Roraima (RR)' },
 ];
 
-const CARREIRAS_PRESETS = [
-  { id: 'juridico', label: 'Carreiras Jurídicas', termos: ['ADVOGADO', 'PROCURADOR', 'DEFENSOR', 'JUIZ', 'PROMOTOR', 'MAGISTRATURA'] },
-  { id: 'tribunais', label: 'Tribunais & Judiciário', termos: ['ANALISTA JUDICIÁRIO', 'TÉCNICO JUDICIÁRIO', 'OFICIAL DE JUSTIÇA', 'ESCREVENTE'] },
-  { id: 'seguranca', label: 'Segurança Pública & Polícia', termos: ['DELEGADO', 'AGENTE', 'ESCRIVÃO', 'POLÍCIA', 'PERITO', 'GUARDA CIVIL', 'OFICIAL'] },
-  { id: 'fiscal', label: 'Fiscal & Controle', termos: ['AUDITOR FISCAL', 'ANALISTA TRIBUTÁRIO', 'TCE', 'TCU', 'CONTADOR', 'CONTROLADOR'] },
-  { id: 'administrativo', label: 'Administrativo & Gestão', termos: ['ADMINISTRATIVO', 'AUXILIAR', 'ASSISTENTE', 'ANALISTA', 'GESTÃO'] },
-  { id: 'professores', label: 'Educação & Professores', termos: ['PROFESSOR', 'PEDAGOGO', 'DOCENTE', 'EDUCADOR'] },
-  { id: 'saude', label: 'Saúde & Medicina', termos: ['MÉDICO', 'ENFERMEIRO', 'PSICÓLOGO', 'FARMACÊUTICO'] },
+const CARREIRAS_OPTIONS = [
+  { value: 'TODOS', label: 'Todos os Cargos & Carreiras', termos: [] },
+  { value: 'juridico', label: '⚖️ Carreiras Jurídicas (Advogado, Juiz, Promotor...)', termos: ['ADVOGADO', 'PROCURADOR', 'DEFENSOR', 'JUIZ', 'PROMOTOR', 'MAGISTRATURA'] },
+  { value: 'tribunais', label: '🏛️ Tribunais & Judiciário (Analista, Técnico...)', termos: ['ANALISTA JUDICIÁRIO', 'TÉCNICO JUDICIÁRIO', 'OFICIAL DE JUSTIÇA', 'ESCREVENTE'] },
+  { value: 'seguranca', label: '👮 Segurança Pública (Delegado, Policial, Perito...)', termos: ['DELEGADO', 'AGENTE', 'ESCRIVÃO', 'POLÍCIA', 'PERITO', 'GUARDA CIVIL', 'OFICIAL'] },
+  { value: 'fiscal', label: '📊 Fiscal & Controle (Auditor, TCE, TCU...)', termos: ['AUDITOR FISCAL', 'ANALISTA TRIBUTÁRIO', 'TCE', 'TCU', 'CONTADOR', 'CONTROLADOR'] },
+  { value: 'administrativo', label: '🏢 Administrativo & Gestão', termos: ['ADMINISTRATIVO', 'AUXILIAR', 'ASSISTENTE', 'ANALISTA', 'GESTÃO'] },
+  { value: 'professores', label: '🎓 Educação & Professores', termos: ['PROFESSOR', 'PEDAGOGO', 'DOCENTE', 'EDUCADOR'] },
+  { value: 'saude', label: '🩺 Saúde & Medicina', termos: ['MÉDICO', 'ENFERMEIRO', 'PSICÓLOGO', 'FARMACÊUTICO'] },
 ];
 
 export default function RadarConcursos() {
@@ -67,32 +97,34 @@ export default function RadarConcursos() {
   const { isPremium } = useSubscription();
   const [, startTransition] = useTransition();
 
-  // Estados dos filtros
-  const [selectedUfs, setSelectedUfs] = useState<string[]>(['NACIONAL', 'SP', 'RJ', 'MG']);
-  const [selectedCarreiras, setSelectedCarreiras] = useState<string[]>(['juridico', 'tribunais']);
-  const [cargoCustom, setCargoCustom] = useState('');
-  const [customCargosList, setCustomCargosList] = useState<string[]>([]);
+  // Filtros em menu de suspensão
+  const [selectedUf, setSelectedUf] = useState<string>('TODOS');
+  const [selectedCarreira, setSelectedCarreira] = useState<string>('TODOS');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Notificações
   const [notifPush, setNotifPush] = useState(true);
   const [notifHorus, setNotifHorus] = useState(true);
 
-  // Estados de dados
+  // Dados
   const [concursos, setConcursos] = useState<ConcursoItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+
+  // Modal de Conteúdo Completo do Edital
+  const [selectedEdital, setSelectedEdital] = useState<ConcursoItem | null>(null);
 
   // Modal de Simulação do Hórus
   const [simulacaoOpen, setSimulacaoOpen] = useState(false);
   const [simulacaoItem, setSimulacaoItem] = useState<ConcursoItem | null>(null);
 
-  // Carregar preferências salvas e lista de concursos
   useEffect(() => {
     let cancel = false;
 
     async function loadData() {
       setLoading(true);
       try {
-        // 1. Carregar preferências salvas do usuário
+        // Carregar preferências
         if (user?.id) {
           const { data: alertaData } = await supabase
             .from('usuario_alertas_concursos')
@@ -101,41 +133,29 @@ export default function RadarConcursos() {
             .maybeSingle();
 
           if (alertaData && !cancel) {
-            if (alertaData.ufs && alertaData.ufs.length > 0) setSelectedUfs(alertaData.ufs);
-            if (alertaData.cargos && alertaData.cargos.length > 0) {
-              const presetsFound = CARREIRAS_PRESETS.filter(p => alertaData.cargos.includes(p.id)).map(p => p.id);
-              const customs = alertaData.cargos.filter((c: string) => !CARREIRAS_PRESETS.some(p => p.id === c));
-              setSelectedCarreiras(presetsFound);
-              setCustomCargosList(customs);
+            if (alertaData.ufs && alertaData.ufs.length === 1) {
+              setSelectedUf(alertaData.ufs[0]);
+            }
+            if (alertaData.cargos && alertaData.cargos.length === 1) {
+              setSelectedCarreira(alertaData.cargos[0]);
             }
             if (alertaData.notificar_push !== undefined) setNotifPush(alertaData.notificar_push);
             if (alertaData.notificar_horus !== undefined) setNotifHorus(alertaData.notificar_horus);
           }
-        } else {
-          // Fallback para localStorage
-          const saved = localStorage.getItem('app_prime_radar_concursos');
-          if (saved && !cancel) {
-            try {
-              const parsed = JSON.parse(saved);
-              if (parsed.ufs) setSelectedUfs(parsed.ufs);
-              if (parsed.carreiras) setSelectedCarreiras(parsed.carreiras);
-              if (parsed.customs) setCustomCargosList(parsed.customs);
-            } catch { /* ignore */ }
-          }
         }
 
-        // 2. Carregar concursos do Supabase enriquecidos pelo MCP
+        // Carregar editais do Supabase
         const { data: concursosData } = await supabase
           .from('concursos_noticias')
           .select('*')
           .order('data_publicacao', { ascending: false })
-          .limit(200);
+          .limit(300);
 
         if (!cancel && concursosData) {
           setConcursos(concursosData as ConcursoItem[]);
         }
       } catch (err) {
-        console.error('Erro ao carregar radar de concursos:', err);
+        console.error('Erro ao carregar concursos:', err);
       } finally {
         if (!cancel) setLoading(false);
       }
@@ -145,52 +165,10 @@ export default function RadarConcursos() {
     return () => { cancel = true; };
   }, [user]);
 
-  // Alternar UF
-  const toggleUf = (uf: string) => {
-    haptic.selection();
-    setSelectedUfs(prev => {
-      if (uf === 'TODOS') {
-        return prev.length === UFS_BRASIL.length ? ['NACIONAL'] : [...UFS_BRASIL];
-      }
-      if (prev.includes(uf)) {
-        const next = prev.filter(item => item !== uf);
-        return next.length === 0 ? ['NACIONAL'] : next;
-      }
-      return [...prev, uf];
-    });
-  };
-
-  // Alternar Carreira
-  const toggleCarreira = (carreiraId: string) => {
-    haptic.selection();
-    setSelectedCarreiras(prev =>
-      prev.includes(carreiraId)
-        ? prev.filter(c => c !== carreiraId)
-        : [...prev, carreiraId]
-    );
-  };
-
-  // Adicionar cargo personalizado
-  const addCustomCargo = () => {
-    if (!cargoCustom.trim()) return;
-    haptic.impact();
-    const termo = cargoCustom.trim().toUpperCase();
-    if (!customCargosList.includes(termo)) {
-      setCustomCargosList(prev => [...prev, termo]);
-    }
-    setCargoCustom('');
-  };
-
-  const removeCustomCargo = (termo: string) => {
-    haptic.light();
-    setCustomCargosList(prev => prev.filter(c => c !== termo));
-  };
-
   // Salvar configurações
   const salvarConfiguracoes = async () => {
     haptic.success();
     setSaving(true);
-    const todosCargos = [...selectedCarreiras, ...customCargosList];
 
     try {
       if (user?.id) {
@@ -198,80 +176,68 @@ export default function RadarConcursos() {
           .from('usuario_alertas_concursos')
           .upsert({
             user_id: user.id,
-            ufs: selectedUfs,
-            cargos: todosCargos,
+            ufs: [selectedUf],
+            cargos: [selectedCarreira],
             notificar_push: notifPush,
             notificar_horus: notifHorus,
             updated_at: new Date().toISOString()
           }, { onConflict: 'user_id' });
       }
 
-      // Salva no localStorage também
-      localStorage.setItem('app_prime_radar_concursos', JSON.stringify({
-        ufs: selectedUfs,
-        carreiras: selectedCarreiras,
-        customs: customCargosList,
-        notifPush,
-        notifHorus
-      }));
-
-      toast.success('Radar de Concursos atualizado com sucesso!', {
-        description: `${selectedUfs.length} estados e ${todosCargos.length} áreas monitoradas.`
+      toast.success('Alertas atualizados!', {
+        description: `Estado: ${selectedUf} · Filtro: ${selectedCarreira === 'TODOS' ? 'Todos os cargos' : selectedCarreira}`
       });
     } catch (err) {
       console.error(err);
-      toast.error('Não foi possível salvar as configurações.');
+      toast.error('Erro ao salvar preferências.');
     } finally {
       setSaving(false);
     }
   };
 
-  // Filtragem dos concursos de acordo com os alertas
+  // Filtragem dos concursos pelos dropdowns
   const concursosFiltrados = useMemo(() => {
     if (!concursos.length) return [];
 
-    // Termos de cargos ativos
-    const termosAtivos: string[] = [];
-    selectedCarreiras.forEach(carreiraId => {
-      const preset = CARREIRAS_PRESETS.find(p => p.id === carreiraId);
-      if (preset) termosAtivos.push(...preset.termos);
-    });
-    termosAtivos.push(...customCargosList);
+    const carreiraConfig = CARREIRAS_OPTIONS.find(c => c.value === selectedCarreira);
+    const termosCarreira = carreiraConfig ? carreiraConfig.termos : [];
 
     return concursos.filter(item => {
-      // 1. Filtro de UF
-      const ufConcurso = (item.uf || '').toUpperCase();
-      const bateUf = selectedUfs.length === 0 ||
-        selectedUfs.includes('TODOS') ||
-        selectedUfs.includes(ufConcurso) ||
-        (selectedUfs.includes('NACIONAL') && (!item.uf || item.regiao === 'NACIONAL'));
+      // 1. Filtro de Estado (UF)
+      if (selectedUf !== 'TODOS') {
+        const ufConcurso = (item.uf || '').toUpperCase();
+        if (selectedUf === 'NACIONAL') {
+          if (item.uf && item.regiao !== 'NACIONAL') return false;
+        } else if (ufConcurso !== selectedUf) {
+          return false;
+        }
+      }
 
-      if (!bateUf) return false;
-
-      // 2. Filtro de Cargo / Área
-      if (termosAtivos.length > 0) {
+      // 2. Filtro de Cargo / Carreira
+      if (selectedCarreira !== 'TODOS' && termosCarreira.length > 0) {
         const cargosTexto = (item.cargos || []).join(' ').toUpperCase();
         const tituloTexto = (item.titulo || '').toUpperCase();
         const resumoTexto = (item.resumo || '').toUpperCase();
         const textoCompleto = `${tituloTexto} ${resumoTexto} ${cargosTexto}`;
 
-        const bateCargo = termosAtivos.some(termo => textoCompleto.includes(termo));
+        const bateCargo = termosCarreira.some(termo => textoCompleto.includes(termo));
         if (!bateCargo) return false;
       }
 
-      // 3. Busca livre opcional
+      // 3. Busca por texto livre
       if (searchTerm.trim()) {
         const q = searchTerm.toLowerCase();
         const matchSearch =
           (item.titulo || '').toLowerCase().includes(q) ||
           (item.resumo || '').toLowerCase().includes(q) ||
-          (item.uf || '').toLowerCase().includes(q);
+          (item.uf || '').toLowerCase().includes(q) ||
+          (item.vagas_salario || '').toLowerCase().includes(q);
         if (!matchSearch) return false;
       }
 
       return true;
     });
-  }, [concursos, selectedUfs, selectedCarreiras, customCargosList, searchTerm]);
+  }, [concursos, selectedUf, selectedCarreira, searchTerm]);
 
   // Abertura de link externo segura
   const openExternalLink = async (url: string) => {
@@ -292,7 +258,7 @@ export default function RadarConcursos() {
     haptic.impact();
     const itemDestaque = concursosFiltrados[0] || concursos[0];
     if (!itemDestaque) {
-      toast.info('Nenhum edital encontrado no momento para simular.');
+      toast.info('Nenhum edital disponível no momento.');
       return;
     }
     setSimulacaoItem(itemDestaque);
@@ -326,263 +292,178 @@ export default function RadarConcursos() {
               </h1>
             </div>
             <span className="text-[10px] font-semibold text-emerald-400 uppercase tracking-wider">
-              PCI Concursos MCP · 470+ Editais
+              PCI Concursos Oficial · 470+ Editais
             </span>
           </div>
 
           <button
             type="button"
-            onClick={salvarConfiguracoes}
-            disabled={saving}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs shadow-lg shadow-emerald-500/20 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+            onClick={() => { haptic.selection(); startTransition(() => navigate('/concursos')); }}
+            className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3.5 py-1.5 rounded-full text-white font-medium transition-colors active:scale-95 cursor-pointer"
           >
-            <Check className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Salvar</span>
+            <span>Ver todos</span>
+            <ChevronRight className="w-4 h-4" />
           </button>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-6 space-y-8 relative z-10 pb-36">
+      <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-5 space-y-6 relative z-10 pb-36">
 
-        {/* Hero Card Informativo & Hórus Banner */}
-        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-950/40 via-card to-card border border-emerald-500/20 p-5 sm:p-6 shadow-xl">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
-            <div className="space-y-2 flex-1">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Radar Inteligente 24h</span>
-              </div>
-              <h2 className="text-xl sm:text-2xl font-display font-bold text-white leading-tight">
-                Nunca mais perca um edital de seu interesse.
-              </h2>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Configure os estados e cargos que você deseja. Assim que uma vaga abrir, o app alerta você instantaneamente via notificação push e pelo <strong className="text-emerald-400">Hórus IA</strong>.
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:items-center shrink-0 w-full sm:w-auto gap-2">
-              <div className="relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 mx-auto">
-                <div className="absolute inset-0 rounded-full bg-emerald-500/20 blur-xl animate-pulse" />
-                <img
-                  src={horusAsset}
-                  alt="Hórus IA"
-                  className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-2xl relative z-10"
-                />
-              </div>
-              <button
-                type="button"
-                onClick={testarAlertaHorus}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white text-xs font-semibold backdrop-blur-md active:scale-95 transition-all cursor-pointer shadow-md"
-              >
-                <Zap className="w-3.5 h-3.5 text-amber-400" />
-                <span>Testar Alerta do Hórus</span>
-              </button>
-            </div>
-          </div>
-        </section>
-
-        {/* 1. SELEÇÃO DE ESTADOS / UFS */}
-        <section className="space-y-3 bg-card/60 border border-border/60 rounded-3xl p-5 shadow-sm">
-          <div className="flex items-center justify-between pb-2 border-b border-border/40">
+        {/* 1. CARROSSEL DE ÚLTIMAS NOTÍCIAS / CONCURSOS ABERTOS */}
+        <section className="space-y-3">
+          <div className="flex items-center justify-between px-1">
             <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-emerald-400" />
-              <h3 className="font-display font-bold text-base text-foreground">1. Estados de Interesse</h3>
+              <span className="w-1.5 h-4 rounded-full bg-emerald-500" />
+              <h2 className="font-display text-foreground text-[16px] sm:text-[17px] font-bold uppercase tracking-widest">
+                Últimos Editais Abertos
+              </h2>
             </div>
             <button
               type="button"
-              onClick={() => toggleUf('TODOS')}
-              className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer"
+              onClick={() => { haptic.light(); startTransition(() => navigate('/concursos')); }}
+              className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-0.5 cursor-pointer"
             >
-              {selectedUfs.length === UFS_BRASIL.length ? 'Desmarcar Todos' : 'Marcar Todos'}
+              Ver todos <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <p className="text-xs text-muted-foreground">
-            Selecione onde você tem disponibilidade para prestar provas:
-          </p>
+          <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 pb-2 hide-scrollbar px-1 -mr-4 pr-4">
+            {concursos.length > 0 ? concursos.slice(0, 15).map((conc) => {
+              const visual = getConcursoVisual(conc.titulo, conc.imagem_url);
+              const dias = conc.dias_restantes ?? null;
 
-          <div className="flex flex-wrap gap-2 pt-1">
-            {UFS_BRASIL.map(uf => {
-              const active = selectedUfs.includes(uf);
               return (
-                <button
-                  key={uf}
-                  type="button"
-                  onClick={() => toggleUf(uf)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95 ${
-                    active
-                      ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25 border border-emerald-400'
-                      : 'bg-card border border-border/80 text-muted-foreground hover:bg-muted/40 hover:text-foreground'
-                  }`}
+                <div
+                  key={conc.id}
+                  onClick={() => {
+                    haptic.selection();
+                    setSelectedEdital(conc);
+                  }}
+                  className="w-[240px] h-[210px] sm:w-[270px] sm:h-[220px] shrink-0 snap-start relative overflow-hidden rounded-2xl cursor-pointer active:scale-[0.98] transition-transform block bg-card/60 border border-white/10 group shadow-lg"
                 >
-                  {uf === 'NACIONAL' ? '🇧🇷 NACIONAL' : uf}
-                </button>
-              );
-            })}
-          </div>
-        </section>
+                  <img
+                    src={visual.imagemUrl}
+                    alt={conc.titulo}
+                    className="absolute inset-0 w-full h-full object-cover brightness-[0.7] contrast-105 group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 via-50% to-black/25 pointer-events-none" />
 
-        {/* 2. SELEÇÃO DE CARGOS & CARREIRAS */}
-        <section className="space-y-4 bg-card/60 border border-border/60 rounded-3xl p-5 shadow-sm">
-          <div className="flex items-center gap-2 pb-2 border-b border-border/40">
-            <Briefcase className="w-4 h-4 text-emerald-400" />
-            <h3 className="font-display font-bold text-base text-foreground">2. Cargos & Áreas de Foco</h3>
-          </div>
+                  {/* Tag superior de UF e Urgência */}
+                  <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between z-20">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide text-white bg-emerald-500/90 backdrop-blur-md border border-white/20 shadow-md">
+                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse shrink-0" />
+                      <span>{conc.uf || visual.tag}</span>
+                    </span>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            {CARREIRAS_PRESETS.map(carreira => {
-              const active = selectedCarreiras.includes(carreira.id);
-              return (
-                <button
-                  key={carreira.id}
-                  type="button"
-                  onClick={() => toggleCarreira(carreira.id)}
-                  className={`flex items-center justify-between p-3 rounded-2xl border text-left transition-all cursor-pointer active:scale-98 ${
-                    active
-                      ? 'bg-emerald-500/15 border-emerald-500 text-foreground shadow-sm'
-                      : 'bg-card/40 border-border/70 text-muted-foreground hover:bg-card/70'
-                  }`}
-                >
-                  <div>
-                    <p className={`text-sm font-semibold ${active ? 'text-emerald-400' : 'text-foreground'}`}>
-                      {carreira.label}
-                    </p>
-                    <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">
-                      {carreira.termos.slice(0, 3).join(', ')}...
+                    {dias !== null && dias <= 7 && dias >= 0 && (
+                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-amber-500/90 text-black shadow-md">
+                        {dias === 0 ? 'ÚLTIMO DIA' : `${dias}d restantes`}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Conteúdo inferior */}
+                  <div className="absolute inset-0 flex flex-col justify-end px-4 pb-3.5 pt-4 z-10">
+                    <div className="flex items-center gap-2 mb-1.5 text-[11px] text-white/80 font-medium">
+                      <Clock className="w-3 h-3 text-emerald-400" />
+                      <span className="truncate">{conc.vagas_salario || visual.subtitulo}</span>
+                    </div>
+                    <p className="font-display text-white text-[14px] sm:text-[15px] font-semibold leading-snug line-clamp-3 drop-shadow-md group-hover:text-emerald-300 transition-colors">
+                      {conc.titulo}
                     </p>
                   </div>
-                  <div className={`w-5 h-5 rounded-full flex items-center justify-center border transition-all ${
-                    active ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-border/80'
-                  }`}>
-                    {active && <Check className="w-3 h-3 stroke-[3]" />}
-                  </div>
-                </button>
+                </div>
               );
-            })}
-          </div>
-
-          {/* Adicionar cargo personalizado */}
-          <div className="space-y-2 pt-2">
-            <label className="text-xs font-semibold text-muted-foreground">
-              Procurando um cargo específico? Digite e adicione:
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={cargoCustom}
-                onChange={e => setCargoCustom(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && addCustomCargo()}
-                placeholder="Ex: Delegado, Auditor, Enfermeiro..."
-                className="flex-1 px-4 py-2.5 rounded-xl bg-card border border-border text-sm text-foreground focus:outline-none focus:border-emerald-500 transition-colors"
-              />
-              <button
-                type="button"
-                onClick={addCustomCargo}
-                className="px-4 py-2.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-semibold text-xs active:scale-95 transition-all cursor-pointer"
-              >
-                Adicionar
-              </button>
-            </div>
-
-            {customCargosList.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 pt-2">
-                {customCargosList.map(cargo => (
-                  <span
-                    key={cargo}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-semibold border border-emerald-500/30"
-                  >
-                    <span>{cargo}</span>
-                    <button
-                      type="button"
-                      onClick={() => removeCustomCargo(cargo)}
-                      className="hover:text-white cursor-pointer"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                ))}
-              </div>
+            }) : (
+              [1, 2, 3].map(n => (
+                <div key={n} className="w-[240px] h-[210px] shrink-0 bg-card/30 rounded-2xl animate-pulse" />
+              ))
             )}
           </div>
         </section>
 
-        {/* 3. CANAIS DE ALERTA & HÓRUS IA */}
-        <section className="space-y-3 bg-card/60 border border-border/60 rounded-3xl p-5 shadow-sm">
-          <div className="flex items-center gap-2 pb-2 border-b border-border/40">
-            <Bell className="w-4 h-4 text-emerald-400" />
-            <h3 className="font-display font-bold text-base text-foreground">3. Canais de Disparo</h3>
+        {/* 2. FILTROS VIA MENU DE SUSPENSÃO (DROPDOWNS) */}
+        <section className="bg-card/60 border border-border/60 rounded-3xl p-4 sm:p-5 shadow-sm space-y-4">
+          <div className="flex items-center justify-between pb-1 border-b border-border/30">
+            <div className="flex items-center gap-2">
+              <SlidersHorizontal className="w-4 h-4 text-emerald-400" />
+              <h3 className="font-display font-bold text-sm sm:text-base text-foreground">
+                Filtrar Oportunidades
+              </h3>
+            </div>
+            <span className="text-xs text-muted-foreground">
+              {concursosFiltrados.length} encontrados
+            </span>
           </div>
 
-          <div className="space-y-3">
-            {/* Push Notification Switch */}
-            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-card/40 border border-border/60">
-              <div className="space-y-0.5">
-                <p className="text-sm font-semibold text-foreground">Notificações Push no Celular</p>
-                <p className="text-xs text-muted-foreground">Dispara um aviso assim que a PCI Concursos publicar o edital.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Dropdown de Estado */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Estado de Interesse</span>
+              </label>
+              <div className="relative">
+                <select
+                  value={selectedUf}
+                  onChange={e => { haptic.selection(); setSelectedUf(e.target.value); }}
+                  className="w-full appearance-none px-4 py-3 rounded-2xl bg-card border border-border/80 text-sm text-foreground font-medium focus:outline-none focus:border-emerald-500 transition-colors pr-10 cursor-pointer shadow-sm"
+                >
+                  {UFS_LIST.map(uf => (
+                    <option key={uf.value} value={uf.value} className="bg-zinc-900 text-white">
+                      {uf.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
-              <button
-                type="button"
-                onClick={() => { haptic.selection(); setNotifPush(!notifPush); }}
-                className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer ${
-                  notifPush ? 'bg-emerald-500' : 'bg-muted'
-                }`}
-              >
-                <div className={`w-5 h-5 rounded-full bg-white transition-transform absolute top-0.5 ${
-                  notifPush ? 'right-0.5' : 'left-0.5'
-                }`} />
-              </button>
             </div>
 
-            {/* Hórus IA Switch */}
-            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-emerald-950/20 to-card/40 border border-emerald-500/30">
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-semibold text-emerald-400">Radar Hórus IA</p>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                    {isPremium ? 'ASSINANTE PRIME' : 'ATIVO'}
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground">O Hórus gera um resumo estratégico das disciplinas e prazos para você.</p>
+            {/* Dropdown de Cargos / Carreiras */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+                <Briefcase className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Cargo ou Carreira</span>
+              </label>
+              <div className="relative">
+                <select
+                  value={selectedCarreira}
+                  onChange={e => { haptic.selection(); setSelectedCarreira(e.target.value); }}
+                  className="w-full appearance-none px-4 py-3 rounded-2xl bg-card border border-border/80 text-sm text-foreground font-medium focus:outline-none focus:border-emerald-500 transition-colors pr-10 cursor-pointer shadow-sm"
+                >
+                  {CARREIRAS_OPTIONS.map(carreira => (
+                    <option key={carreira.value} value={carreira.value} className="bg-zinc-900 text-white">
+                      {carreira.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
-              <button
-                type="button"
-                onClick={() => { haptic.selection(); setNotifHorus(!notifHorus); }}
-                className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer ${
-                  notifHorus ? 'bg-emerald-500' : 'bg-muted'
-                }`}
-              >
-                <div className={`w-5 h-5 rounded-full bg-white transition-transform absolute top-0.5 ${
-                  notifHorus ? 'right-0.5' : 'left-0.5'
-                }`} />
-              </button>
             </div>
+          </div>
+
+          {/* Busca livre opcional */}
+          <div className="relative">
+            <Search className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              placeholder="Ou busque por órgão, cidade ou termo livre..."
+              className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-card/40 border border-border/60 text-xs sm:text-sm text-foreground focus:outline-none focus:border-emerald-500 transition-colors"
+            />
           </div>
         </section>
 
-        {/* FEED DE EDITAIS EM TEMPO REAL COMPATÍVEIS */}
-        <section className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-border/40">
-            <div>
-              <h3 className="font-display font-bold text-lg text-foreground">
-                Editais Abertos Compatíveis
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                {concursosFiltrados.length} oportunidades correspondentes aos seus filtros de estado e cargo.
-              </p>
-            </div>
-
-            {/* Barra de busca rápida */}
-            <div className="relative w-full sm:w-64">
-              <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                placeholder="Filtrar por órgão ou termo..."
-                className="w-full pl-9 pr-4 py-2 rounded-xl bg-card border border-border text-xs text-foreground focus:outline-none focus:border-emerald-500"
-              />
-            </div>
+        {/* 3. FEED DE CONCURSOS COM IMAGEM E CONTEÚDO */}
+        <section className="space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <h3 className="font-display font-bold text-base text-foreground">
+              Editais Abertos ({concursosFiltrados.length})
+            </h3>
+            <span className="text-xs text-muted-foreground">Toque para ver o conteúdo completo</span>
           </div>
 
           {loading ? (
@@ -592,72 +473,77 @@ export default function RadarConcursos() {
               ))}
             </div>
           ) : concursosFiltrados.length === 0 ? (
-            <div className="text-center py-12 bg-card/30 rounded-3xl border border-dashed border-border/60 p-6 space-y-3">
-              <Briefcase className="w-10 h-10 text-muted-foreground/40 mx-auto" />
-              <p className="text-base font-semibold text-foreground">Nenhum edital encontrado para esses filtros no momento</p>
-              <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-                Tente selecionar mais estados ou marcar outras áreas de formação para ampliar seu radar.
-              </p>
+            <div className="text-center py-12 bg-card/30 rounded-3xl border border-dashed border-border/60 p-6 space-y-2">
+              <Briefcase className="w-9 h-9 text-muted-foreground/40 mx-auto" />
+              <p className="text-sm font-semibold text-foreground">Nenhum edital encontrado para estes filtros</p>
+              <p className="text-xs text-muted-foreground">Altere o estado ou cargo selecionado acima para ver mais oportunidades.</p>
             </div>
           ) : (
             <div className="space-y-3">
               {concursosFiltrados.map((item, i) => {
+                const visual = getConcursoVisual(item.titulo, item.imagem_url);
                 const dias = item.dias_restantes ?? null;
-                const isUrgente = dias !== null && dias <= 5 && dias >= 0;
 
                 return (
                   <motion.div
                     key={item.id}
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: Math.min(i * 0.03, 0.3) }}
-                    onClick={() => openExternalLink(item.link)}
-                    className="group bg-card border border-border/70 hover:border-emerald-500/40 rounded-2xl p-4 sm:p-5 transition-all cursor-pointer shadow-sm hover:shadow-md relative overflow-hidden"
+                    transition={{ delay: Math.min(i * 0.02, 0.2) }}
+                    onClick={() => {
+                      haptic.selection();
+                      setSelectedEdital(item);
+                    }}
+                    className="group flex items-stretch gap-3 bg-card border border-border/70 hover:border-emerald-500/40 rounded-2xl p-3 sm:p-4 transition-all cursor-pointer shadow-sm hover:shadow-md overflow-hidden relative"
                   >
-                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                      <div className="space-y-1.5 flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap text-xs">
-                          {item.uf && (
-                            <span className="font-bold px-2 py-0.5 rounded-md bg-emerald-500 text-white text-[10px]">
-                              {item.uf}
-                            </span>
-                          )}
-                          {item.regiao && !item.uf && (
-                            <span className="font-bold px-2 py-0.5 rounded-md bg-emerald-500/80 text-white text-[10px]">
-                              {item.regiao}
-                            </span>
-                          )}
+                    {/* Imagem real com fallback */}
+                    <div className="w-24 sm:w-28 h-24 sm:h-28 shrink-0 rounded-xl overflow-hidden relative bg-black/30">
+                      <img
+                        src={visual.imagemUrl}
+                        alt={item.titulo}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                      />
+                      {item.uf && (
+                        <span className="absolute bottom-1.5 left-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500 text-white shadow-sm">
+                          {item.uf}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Informações */}
+                    <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 flex-wrap text-[11px]">
                           {dias !== null && (
-                            <span className={`inline-flex items-center gap-1 font-semibold text-[11px] ${
-                              isUrgente ? 'text-amber-400 font-bold' : 'text-emerald-400'
+                            <span className={`inline-flex items-center gap-1 font-semibold ${
+                              dias <= 5 && dias >= 0 ? 'text-amber-400 font-bold' : 'text-emerald-400'
                             }`}>
                               <Clock className="w-3 h-3" />
-                              {dias > 0 ? `${dias} dias restantes` : dias === 0 ? 'Último dia de inscrição!' : 'Encerrado'}
+                              {dias > 0 ? `${dias}d restantes` : dias === 0 ? 'Último dia!' : 'Encerrado'}
                             </span>
                           )}
                           {item.vagas_salario && (
-                            <span className="text-muted-foreground/80 font-medium text-[11px]">
+                            <span className="text-muted-foreground/90 font-medium truncate">
                               · {item.vagas_salario}
                             </span>
                           )}
                         </div>
 
-                        <h4 className="font-display font-semibold text-base sm:text-lg text-foreground group-hover:text-emerald-400 transition-colors leading-snug">
+                        <h4 className="font-display font-semibold text-sm sm:text-[15px] text-foreground group-hover:text-emerald-400 transition-colors leading-snug line-clamp-2">
                           {item.titulo}
                         </h4>
-
-                        {item.resumo && (
-                          <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-                            {item.resumo}
-                          </p>
-                        )}
                       </div>
 
-                      <div className="shrink-0 flex items-center sm:self-center">
-                        <div className="w-10 h-10 rounded-full bg-secondary/60 flex items-center justify-center text-muted-foreground group-hover:bg-emerald-500 group-hover:text-white transition-all shadow-sm">
-                          <ExternalLink className="w-4 h-4" />
-                        </div>
-                      </div>
+                      {item.resumo && (
+                        <p className="text-xs text-muted-foreground line-clamp-1 mt-1">
+                          {item.resumo}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="self-center shrink-0 pr-1 text-muted-foreground group-hover:text-emerald-400 transition-colors">
+                      <ChevronRight className="w-5 h-5" />
                     </div>
                   </motion.div>
                 );
@@ -665,31 +551,218 @@ export default function RadarConcursos() {
             </div>
           )}
         </section>
+
+        {/* 4. CONFIGURAÇÃO DE NOTIFICAÇÕES COMPACTA NO RODAPÉ */}
+        <section className="bg-card/70 border border-emerald-500/25 rounded-3xl p-4 sm:p-5 shadow-md space-y-3.5">
+          <div className="flex items-center justify-between pb-2 border-b border-border/40">
+            <div className="flex items-center gap-2">
+              <Bell className="w-4 h-4 text-emerald-400" />
+              <h3 className="font-display font-bold text-sm text-foreground">
+                Alertas & Notificações Automáticas
+              </h3>
+            </div>
+            <button
+              type="button"
+              onClick={testarAlertaHorus}
+              className="text-xs font-semibold text-amber-400 hover:text-amber-300 flex items-center gap-1 cursor-pointer"
+            >
+              <Zap className="w-3.5 h-3.5" />
+              <span>Testar Alerta</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Toggle Push */}
+            <div className="flex items-center justify-between p-3 rounded-2xl bg-card/40 border border-border/60">
+              <div className="space-y-0.5 pr-2">
+                <p className="text-xs font-semibold text-foreground">Push no Celular</p>
+                <p className="text-[11px] text-muted-foreground">Notifica assim que o edital sair</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => { haptic.selection(); setNotifPush(!notifPush); }}
+                className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer shrink-0 ${
+                  notifPush ? 'bg-emerald-500' : 'bg-muted'
+                }`}
+              >
+                <div className={`w-5 h-5 rounded-full bg-white transition-transform absolute top-0.5 ${
+                  notifPush ? 'right-0.5' : 'left-0.5'
+                }`} />
+              </button>
+            </div>
+
+            {/* Toggle Hórus IA */}
+            <div className="flex items-center justify-between p-3 rounded-2xl bg-emerald-950/20 border border-emerald-500/30">
+              <div className="space-y-0.5 pr-2">
+                <p className="text-xs font-semibold text-emerald-400 flex items-center gap-1">
+                  <span>Radar Hórus IA</span>
+                  {isPremium && <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300">VIP</span>}
+                </p>
+                <p className="text-[11px] text-muted-foreground">Análise e resumo estratégico</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => { haptic.selection(); setNotifHorus(!notifHorus); }}
+                className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer shrink-0 ${
+                  notifHorus ? 'bg-emerald-500' : 'bg-muted'
+                }`}
+              >
+                <div className={`w-5 h-5 rounded-full bg-white transition-transform absolute top-0.5 ${
+                  notifHorus ? 'right-0.5' : 'left-0.5'
+                }`} />
+              </button>
+            </div>
+          </div>
+
+          <div className="flex justify-end pt-1">
+            <button
+              type="button"
+              onClick={salvarConfiguracoes}
+              disabled={saving}
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs shadow-md shadow-emerald-500/25 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
+            >
+              <Check className="w-3.5 h-3.5" />
+              <span>Salvar Preferências de Alerta</span>
+            </button>
+          </div>
+        </section>
       </main>
 
-      {/* MODAL DE SIMULAÇÃO DO HÓRUS IA */}
+      {/* 5. MODAL DE CONTEÚDO COMPLETO DO CONCURSO */}
+      <AnimatePresence>
+        {selectedEdital && (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/85 backdrop-blur-md">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 50 }}
+              className="bg-card border border-border/80 rounded-t-3xl sm:rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 shadow-2xl relative space-y-5"
+            >
+              {/* Botão Fechar */}
+              <button
+                type="button"
+                onClick={() => setSelectedEdital(null)}
+                className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-white hover:bg-black/80 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              {/* Imagem de Capa Grande */}
+              <div className="relative h-48 sm:h-56 -mx-5 -mt-5 sm:-mx-6 sm:-mt-6 overflow-hidden rounded-t-3xl">
+                <img
+                  src={getConcursoVisual(selectedEdital.titulo, selectedEdital.imagem_url).imagemUrl}
+                  alt={selectedEdital.titulo}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-card via-black/40 to-transparent" />
+                <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between">
+                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500 text-white shadow-md">
+                    {selectedEdital.uf ? `Estado: ${selectedEdital.uf}` : selectedEdital.regiao || 'NACIONAL'}
+                  </span>
+                  {selectedEdital.dias_restantes !== undefined && (
+                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-black/70 border border-white/20 text-emerald-400 backdrop-blur-md">
+                      {selectedEdital.dias_restantes > 0
+                        ? `${selectedEdital.dias_restantes} dias para o encerramento`
+                        : 'Inscrições encerrando'}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Título & Detalhes Principais */}
+              <div className="space-y-2">
+                <h3 className="font-display font-bold text-lg sm:text-xl text-foreground leading-snug">
+                  {selectedEdital.titulo}
+                </h3>
+
+                {selectedEdital.vagas_salario && (
+                  <div className="p-3 rounded-xl bg-emerald-950/30 border border-emerald-500/30 flex items-center gap-2 text-emerald-300 font-semibold text-sm">
+                    <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>{selectedEdital.vagas_salario}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Cargos Oferecidos */}
+              {selectedEdital.cargos && selectedEdital.cargos.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="font-display font-bold text-xs uppercase tracking-wider text-muted-foreground">
+                    Cargos Ofertados ({selectedEdital.cargos.length})
+                  </h4>
+                  <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1">
+                    {selectedEdital.cargos.map((cargo, idx) => (
+                      <span
+                        key={idx}
+                        className="text-[11px] px-2.5 py-1 rounded-lg bg-secondary/80 border border-border/80 text-foreground font-medium"
+                      >
+                        {cargo}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Conteúdo / Resumo */}
+              <div className="space-y-2">
+                <h4 className="font-display font-bold text-xs uppercase tracking-wider text-muted-foreground">
+                  Informações do Edital
+                </h4>
+                <p className="text-sm text-foreground/90 leading-relaxed font-body">
+                  {selectedEdital.resumo || 'Acompanhe todas as regras e convocações deste concurso pelo link oficial.'}
+                </p>
+              </div>
+
+              {/* Análise Inteligente do Hórus IA */}
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-950/40 via-card to-card border border-emerald-500/30 flex items-start gap-3">
+                <img src={horusAsset} alt="Hórus" className="w-10 h-10 object-contain shrink-0" />
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                    <span>Recomendação do Hórus IA</span>
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                  </p>
+                  <p className="text-xs text-white/85 leading-relaxed font-body">
+                    Para este concurso ({selectedEdital.uf || 'Nacional'}), priorize o estudo de Direito Constitucional, Administrativo e a legislação específica do órgão.
+                  </p>
+                </div>
+              </div>
+
+              {/* Botões de Ação */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => openExternalLink(selectedEdital.link)}
+                  className="flex-1 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs active:scale-95 transition-all cursor-pointer shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span>Acessar Edital Oficial & Inscrições</span>
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* 6. MODAL DE SIMULAÇÃO DO HÓRUS IA */}
       <AnimatePresence>
         {simulacaoOpen && simulacaoItem && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-card border border-emerald-500/40 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative overflow-hidden space-y-5"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-card border border-emerald-500/40 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative space-y-4"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
-
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
-                    <img src={horusAsset} alt="Hórus" className="w-9 h-9 object-contain" />
+                  <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
+                    <img src={horusAsset} alt="Hórus" className="w-8 h-8 object-contain" />
                   </div>
                   <div>
                     <h3 className="font-display font-bold text-base text-foreground flex items-center gap-1.5">
-                      <span>Alerta do Hórus IA</span>
-                      <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                      <span>Simulação: Alerta do Hórus IA</span>
+                      <Zap className="w-4 h-4 text-amber-400" />
                     </h3>
-                    <p className="text-xs text-emerald-400 font-medium">Edital Recém-Publicado no seu Radar</p>
+                    <p className="text-xs text-emerald-400 font-medium">Novo Edital no seu Radar</p>
                   </div>
                 </div>
 
@@ -702,40 +775,39 @@ export default function RadarConcursos() {
                 </button>
               </div>
 
-              {/* Mensagem simulada do Hórus */}
-              <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/20 space-y-2.5">
+              <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/20 space-y-2">
                 <div className="flex items-center gap-2 text-xs font-semibold text-emerald-300">
                   <Volume2 className="w-4 h-4" />
-                  <span>Mensagem enviada pelo Hórus:</span>
+                  <span>Mensagem do Hórus:</span>
                 </div>
                 <p className="text-sm text-white/90 leading-relaxed font-body">
-                  "Olá! Um novo edital compatível com suas carreiras foi aberto: <strong>{simulacaoItem.titulo}</strong> ({simulacaoItem.uf || 'Nacional'}).
-                  {simulacaoItem.vagas_salario && ` Oportunidade com ${simulacaoItem.vagas_salario}.`} As inscrições já estão abertas e se encerram em breve. Preparei o link do edital e o cronograma para você."
+                  "Um novo edital compatível com suas carreiras foi aberto: <strong>{simulacaoItem.titulo}</strong> ({simulacaoItem.uf || 'Nacional'}).
+                  {simulacaoItem.vagas_salario && ` ${simulacaoItem.vagas_salario}.`} As inscrições estão abertas!"
                 </p>
               </div>
 
-              {/* Push Banner simulado */}
+              {/* Push simulado */}
               <div className="p-3.5 rounded-xl bg-black/60 border border-white/10 flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-white shrink-0">
                   <Bell className="w-4 h-4" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-bold text-white truncate">APP.PRIME · Radar de Concursos</p>
-                  <p className="text-[11px] text-white/70 truncate">Novo edital: {simulacaoItem.titulo}</p>
+                  <p className="text-[11px] font-bold text-white truncate">APP.PRIME · Alerta de Concurso</p>
+                  <p className="text-[11px] text-white/70 truncate">{simulacaoItem.titulo}</p>
                 </div>
                 <span className="text-[10px] text-white/40">Agora</span>
               </div>
 
-              <div className="flex gap-3 pt-2">
+              <div className="flex gap-2.5 pt-2">
                 <button
                   type="button"
                   onClick={() => {
                     setSimulacaoOpen(false);
-                    openExternalLink(simulacaoItem.link);
+                    setSelectedEdital(simulacaoItem);
                   }}
-                  className="flex-1 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs active:scale-95 transition-all cursor-pointer shadow-lg shadow-emerald-500/20 text-center"
+                  className="flex-1 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs active:scale-95 transition-all cursor-pointer text-center"
                 >
-                  Abrir Edital Oficial
+                  Ver Conteúdo Completo
                 </button>
                 <button
                   type="button"
