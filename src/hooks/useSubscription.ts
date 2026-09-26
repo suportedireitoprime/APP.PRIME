@@ -19,6 +19,15 @@ interface SubscriptionState {
 // Evita repetir o resgate de assinatura legada a cada montagem do hook.
 const claimedOnce = new Set<string>();
 
+// Cache compartilhado em memória para eliminar waterfalls e checagens redundantes a cada rota
+interface CachedSubEntry {
+  timestamp: number;
+  data: Omit<SubscriptionState, 'refresh'>;
+}
+const subMemoryCache = new Map<string, CachedSubEntry>();
+const inflightFetches = new Map<string, Promise<boolean>>();
+const SUB_CACHE_TTL_MS = 3 * 60 * 1000; // 3 minutos de validade em memória
+
 const ACTIVE_STATUSES = [
   'SUBSCRIPTION_STATE_ACTIVE',
   'SUBSCRIPTION_STATE_IN_GRACE_PERIOD',
@@ -55,6 +64,14 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         isTrial: false,
       };
     }
+    // 1. Memória imediata (0ms)
+    if (user && subMemoryCache.has(user.id)) {
+      const mem = subMemoryCache.get(user.id)!;
+      if (Date.now() - mem.timestamp < SUB_CACHE_TTL_MS) {
+        return mem.data;
+      }
+    }
+    // 2. LocalStorage (offline)
     if (cacheKey && typeof localStorage !== 'undefined') {
       try {
         const raw = localStorage.getItem(cacheKey);
@@ -74,18 +91,35 @@ export function useSubscription(options: Options = {}): SubscriptionState {
   });
   const persist = useCallback((s: Omit<SubscriptionState, 'refresh'>) => {
     setState(s);
+    if (user) {
+      subMemoryCache.set(user.id, { timestamp: Date.now(), data: s });
+    }
     if (cacheKey && typeof localStorage !== 'undefined') {
       try { localStorage.setItem(cacheKey, JSON.stringify({ ...s, loading: false, __cache_timestamp: Date.now() })); } catch { /* ignore */ }
     }
-  }, [cacheKey]);
+  }, [cacheKey, user]);
   const [nonce, setNonce] = useState(0);
-  const refresh = useCallback(() => setNonce(n => n + 1), []);
+  const refresh = useCallback(() => {
+    if (user) {
+      subMemoryCache.delete(user.id);
+      inflightFetches.delete(user.id);
+    }
+    setNonce(n => n + 1);
+  }, [user]);
   const pollActivated = useRef(false);
 
   useEffect(() => {
     if (!user) {
       setState({ isPremium: false, loading: false, plano: null, expiresAt: null, startedAt: null, source: null, status: null, isAdminOverride: false, isTrial: false });
       return;
+    }
+    // Se já temos cache fresco em memória e não é polling forçado pós-compra nem refresh explícito, reutiliza sem fazer 5 queries
+    if (!pollOnMount && nonce === 0 && subMemoryCache.has(user.id)) {
+      const mem = subMemoryCache.get(user.id)!;
+      if (Date.now() - mem.timestamp < SUB_CACHE_TTL_MS) {
+        setState(mem.data);
+        return;
+      }
     }
     // Offline: mantém o snapshot em cache (já hidratado no useState), mas
     // valida estritamente a expiração do trial para evitar bypass desligando a rede (Item 32).
@@ -285,7 +319,23 @@ export function useSubscription(options: Options = {}): SubscriptionState {
 
     void (async () => {
       try {
-        const found = await fetchOnce();
+        let found = false;
+        if (inflightFetches.has(user.id)) {
+          found = await inflightFetches.get(user.id)!;
+          if (cancelled) return;
+          if (subMemoryCache.has(user.id)) {
+            setState(subMemoryCache.get(user.id)!.data);
+          }
+        } else {
+          const fetchPromise = fetchOnce();
+          inflightFetches.set(user.id, fetchPromise);
+          try {
+            found = await fetchPromise;
+          } finally {
+            inflightFetches.delete(user.id);
+          }
+        }
+        if (cancelled) return;
         // Polling curto para cobrir latência entre validate-purchase e leitura
         if (!found && pollOnMount && !pollActivated.current) {
           pollActivated.current = true;

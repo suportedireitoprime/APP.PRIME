@@ -584,7 +584,7 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
 
   // Se a rota exige triagem concluída e o usuário ainda não possui confirmação em cache nem checagem finalizada,
   // exibe um container escuro mínimo temporário para não vazar a interface restrita antes da validação (Item 21).
-  if (requireOnboarding && cachedDone !== '1' && !initialCheckDone && location.pathname !== '/onboarding') {
+  if (requireOnboarding && !cachedDone && !initialCheckDone && location.pathname !== '/onboarding') {
     return <div className="min-h-dvh bg-[#0d0f12]" />;
   }
 
