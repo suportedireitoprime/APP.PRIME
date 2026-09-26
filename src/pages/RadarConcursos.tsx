@@ -365,9 +365,8 @@ export default function RadarConcursos() {
             </button>
           </div>
 
-          {/* Quick UF Filters */}
           <div className="flex overflow-x-auto gap-2 pb-1 hide-scrollbar px-1 -mr-4 pr-4">
-            {UFS_LIST.map(uf => {
+            {UFS_LIST.filter(uf => uf.value !== 'NACIONAL').map(uf => {
               const isActive = selectedUf === uf.value;
               return (
                 <button
@@ -379,7 +378,7 @@ export default function RadarConcursos() {
                       : 'bg-card border-border/50 text-muted-foreground hover:bg-card/80 hover:text-foreground'
                   }`}
                 >
-                  {uf.value === 'TODOS' ? 'Todos' : uf.value === 'NACIONAL' ? 'Nacional' : uf.value}
+                  {uf.value === 'TODOS' ? 'Todos' : uf.value}
                 </button>
               );
             })}

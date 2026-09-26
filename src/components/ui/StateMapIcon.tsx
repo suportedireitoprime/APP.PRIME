@@ -20,7 +20,10 @@ export function StateMapIcon({ uf, className, ...props }: StateMapIconProps) {
   }
 
   // viewBox customizada calculada
-  const viewBox = stateData.viewBox || "0 0 100 100";
+  let viewBox = stateData.viewBox || "0 0 100 100";
+  if (ufLower === 'sp') {
+    viewBox = "325.65 395.17 140.42 93.01";
+  }
 
   return (
     <div className={`relative flex items-center justify-center ${className}`}>
