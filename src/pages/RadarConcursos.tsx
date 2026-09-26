@@ -365,6 +365,26 @@ export default function RadarConcursos() {
             </button>
           </div>
 
+          {/* Quick UF Filters */}
+          <div className="flex overflow-x-auto gap-2 pb-1 hide-scrollbar px-1 -mr-4 pr-4">
+            {UFS_LIST.map(uf => {
+              const isActive = selectedUf === uf.value;
+              return (
+                <button
+                  key={uf.value}
+                  onClick={() => { haptic.selection(); setSelectedUf(uf.value); }}
+                  className={`whitespace-nowrap px-4 py-1.5 rounded-full text-[11px] font-bold transition-all cursor-pointer border ${
+                    isActive 
+                      ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm shadow-emerald-500/20' 
+                      : 'bg-card border-border/50 text-muted-foreground hover:bg-card/80 hover:text-foreground'
+                  }`}
+                >
+                  {uf.value === 'TODOS' ? 'Todos' : uf.value === 'NACIONAL' ? 'Nacional' : uf.value}
+                </button>
+              );
+            })}
+          </div>
+
           <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 pb-2 hide-scrollbar px-1 -mr-4 pr-4">
             {concursosFiltrados.length > 0 ? concursosFiltrados.slice(0, 15).map((conc) => {
               const visual = getConcursoVisual(conc.titulo, conc.imagem_url);
