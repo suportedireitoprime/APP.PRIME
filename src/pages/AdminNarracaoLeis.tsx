@@ -69,6 +69,66 @@ function isArtigoReal(art: ArtigoLei): boolean {
   return true;
 }
 
+/**
+ * Limpa duplicações consecutivas como "TÍTULO I - TÍTULO I" ou "CAPÍTULO I - CAPÍTULO I"
+ */
+function deduplicarHierarquiaTexto(texto: string): string {
+  if (!texto) return '';
+  return texto
+    // Deduplica "TÍTULO I - TÍTULO I" -> "TÍTULO I"
+    .replace(/(T[ÍI]TULO\s+[IVXLCDM0-9]+)\s*[-–—:]*\s*\1\b/gi, '$1')
+    // Deduplica "CAPÍTULO I - CAPÍTULO I" -> "CAPÍTULO I"
+    .replace(/(CAP[ÍI]TULO\s+(?:[IVXLCDM0-9]+|[ÚU]NICO))\s*[-–—:]*\s*\1\b/gi, '$1')
+    // Deduplica "PARTE GERAL - PARTE GERAL" -> "PARTE GERAL"
+    .replace(/(PARTE\s+(?:GERAL|ESPECIAL|[IVXLCDM0-9]+))\s*[-–—:]*\s*\1\b/gi, '$1')
+    // Deduplica "LIVRO I - LIVRO I" -> "LIVRO I"
+    .replace(/(LIVRO\s+[IVXLCDM0-9]+)\s*[-–—:]*\s*\1\b/gi, '$1')
+    // Limpa múltiplos hífens ou espaços estranhos
+    .replace(/\s*[-–—]\s*[-–—]\s*/g, ' - ')
+    .trim();
+}
+
+/**
+ * Extrai e deduplica títulos ou capítulos que venham repetidos da raspagem/banco.
+ * Ex: num="TÍTULO I", caput="TÍTULO I\nDA APLICAÇÃO DA LEI PENAL"
+ * -> "TÍTULO I - DA APLICAÇÃO DA LEI PENAL"
+ */
+function normalizarTextoEstrutural(num: string, caput: string): string {
+  const linhasCandidatas = `${num}\n${caput}`
+    .split(/[\r\n]+/)
+    .map((l) => l.trim())
+    .filter(Boolean);
+
+  const linhasUnicas: string[] = [];
+  for (const l of linhasCandidatas) {
+    const lNorm = l.toLowerCase();
+    const jaExiste = linhasUnicas.some((existente) => existente.toLowerCase() === lNorm);
+    if (!jaExiste) {
+      linhasUnicas.push(l);
+    }
+  }
+
+  if (linhasUnicas.length === 0) return num.trim();
+  if (linhasUnicas.length === 1) return linhasUnicas[0];
+
+  const primeira = linhasUnicas[0];
+  const demais = linhasUnicas.slice(1);
+
+  // Se alguma linha restante começar repetindo a primeira linha (ex: "TÍTULO I - DA APLICAÇÃO"), limpa o prefixo
+  const escapedPrimeira = primeira.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+  const regexPrimeira = new RegExp(`^${escapedPrimeira}\\s*[-–—:]*\\s*`, 'i');
+
+  const subtitulos = demais
+    .map((d) => d.replace(regexPrimeira, '').trim())
+    .filter((d) => Boolean(d) && d.toLowerCase() !== primeira.toLowerCase());
+
+  if (subtitulos.length > 0) {
+    return deduplicarHierarquiaTexto(`${primeira} - ${subtitulos.join(' - ')}`);
+  }
+
+  return deduplicarHierarquiaTexto(primeira);
+}
+
 /** Enriquecer artigos legislativos reais com seu contexto hierárquico (Parte, Livro, Título, Capítulo) */
 function enriquecerArtigosComHierarquia(artigosBrutos: ArtigoLei[]): ArtigoLei[] {
   let currentParte = '';
@@ -86,7 +146,7 @@ function enriquecerArtigosComHierarquia(artigosBrutos: ArtigoLei[]): ArtigoLei[]
     // 1. Detecta Linha de Parte (ex: "PARTE GERAL", "PARTE ESPECIAL")
     if (/^\s*PARTE\s+(?:GERAL|ESPECIAL|[IVXLCDM0-9]+)/i.test(num) || /^\s*PARTE\s+(?:GERAL|ESPECIAL|[IVXLCDM0-9]+)/i.test(caput)) {
       const match = textoCompleto.match(/PARTE\s+(?:GERAL|ESPECIAL|[IVXLCDM0-9]+)/i);
-      currentParte = match ? match[0].trim() : num;
+      currentParte = match ? match[0].trim() : normalizarTextoEstrutural(num, caput);
       currentTitulo = '';
       currentCapitulo = '';
       continue;
@@ -94,8 +154,7 @@ function enriquecerArtigosComHierarquia(artigosBrutos: ArtigoLei[]): ArtigoLei[]
 
     // 2. Detecta Linha de Livro (ex: "LIVRO I")
     if (/^\s*LIVRO\s+[IVXLCDM0-9]+/i.test(num) || /^\s*LIVRO\s+[IVXLCDM0-9]+/i.test(caput)) {
-      const match = textoCompleto.match(/LIVRO\s+[IVXLCDM0-9]+[^\n]*/i);
-      currentLivro = match ? match[0].trim() : num;
+      currentLivro = normalizarTextoEstrutural(num, caput);
       currentTitulo = '';
       currentCapitulo = '';
       continue;
@@ -103,20 +162,14 @@ function enriquecerArtigosComHierarquia(artigosBrutos: ArtigoLei[]): ArtigoLei[]
 
     // 3. Detecta Linha de Título (ex: "TÍTULO I\nDA APLICAÇÃO DA LEI PENAL")
     if (/^\s*T[ÍI]TULO\s+[IVXLCDM0-9]+/i.test(num) || /^\s*T[ÍI]TULO\s+[IVXLCDM0-9]+/i.test(caput)) {
-      const linhas = textoCompleto.split('\n').map((l) => l.trim()).filter(Boolean);
-      const linha0 = linhas[0] || num;
-      const linha1 = linhas.slice(1).join(' - ');
-      currentTitulo = linha1 ? `${linha0} - ${linha1}` : linha0;
+      currentTitulo = normalizarTextoEstrutural(num, caput);
       currentCapitulo = '';
       continue;
     }
 
     // 4. Detecta Linha de Capítulo (ex: "CAPÍTULO I\nDO CRIME")
     if (/^\s*CAP[ÍI]TULO\s+(?:[IVXLCDM0-9]+|[ÚU]NICO)/i.test(num) || /^\s*CAP[ÍI]TULO\s+(?:[IVXLCDM0-9]+|[ÚU]NICO)/i.test(caput)) {
-      const linhas = textoCompleto.split('\n').map((l) => l.trim()).filter(Boolean);
-      const linha0 = linhas[0] || num;
-      const linha1 = linhas.slice(1).join(' - ');
-      currentCapitulo = linha1 ? `${linha0} - ${linha1}` : linha0;
+      currentCapitulo = normalizarTextoEstrutural(num, caput);
       continue;
     }
 
@@ -124,10 +177,10 @@ function enriquecerArtigosComHierarquia(artigosBrutos: ArtigoLei[]): ArtigoLei[]
     if (isArtigoReal(item)) {
       artigosEnriquecidos.push({
         ...item,
-        parte: currentParte || item.parte,
-        livro: currentLivro || item.livro,
-        titulo: currentTitulo || item.titulo,
-        capitulo: currentCapitulo || item.capitulo,
+        parte: deduplicarHierarquiaTexto(currentParte || item.parte || ''),
+        livro: deduplicarHierarquiaTexto(currentLivro || item.livro || ''),
+        titulo: deduplicarHierarquiaTexto(currentTitulo || item.titulo || ''),
+        capitulo: deduplicarHierarquiaTexto(currentCapitulo || item.capitulo || ''),
       });
     }
   }
@@ -1001,7 +1054,12 @@ export default function AdminNarracaoLeis() {
                         {([artigo.parte, artigo.livro, artigo.titulo, artigo.capitulo].filter(Boolean).length > 0) && (
                           <p className="text-xs font-semibold text-primary/90 truncate mb-1">
                             <span className="text-muted-foreground/80 font-normal">
-                              {[artigo.parte, artigo.livro, artigo.titulo, artigo.capitulo].filter(Boolean).join(' › ')}
+                              {[
+                                deduplicarHierarquiaTexto(artigo.parte || ''),
+                                deduplicarHierarquiaTexto(artigo.livro || ''),
+                                deduplicarHierarquiaTexto(artigo.titulo || ''),
+                                deduplicarHierarquiaTexto(artigo.capitulo || ''),
+                              ].filter(Boolean).join(' › ')}
                             </span>
                           </p>
                         )}

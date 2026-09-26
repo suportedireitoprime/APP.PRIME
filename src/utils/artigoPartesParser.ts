@@ -209,6 +209,11 @@ export function formatarContextoEstruturalParaTTS(
   // 3. Título (ex: "Título I - Da Aplicação da Lei Penal")
   if (titulo && titulo.trim()) {
     let t = limparAnotacoesEditoriais(titulo).trim();
+    // Remove repetições acidentais como "TÍTULO I - TÍTULO I"
+    t = t.replace(/(T[ÍI]TULO\s+[IVXLCDM0-9]+)\s*[-–—:]*\s*\1\b/gi, '$1')
+         .replace(/\s*[-–—]\s*[-–—]\s*/g, ' - ')
+         .trim();
+
     if (/^PARTE\s+(GERAL|ESPECIAL)/i.test(t) && !parte) {
       const matchParte = t.match(/^PARTE\s+(GERAL|ESPECIAL)\s*(?:[•–—\-:]\s*)?(.*)$/i);
       if (matchParte) {
@@ -220,7 +225,9 @@ export function formatarContextoEstruturalParaTTS(
     if (/^T[ÍI]TULO\s+([IVXLCDM]+)/i.test(t)) {
       t = t.replace(/^T[ÍI]TULO\s+([IVXLCDM]+)\s*[-–—:]?\s*(.*)$/i, (_m, rom, resto) => {
         const ord = ROMANOS_ORDINAIS[rom.toUpperCase()] || rom;
-        const restoFmt = resto ? capitalizarTituloJuridico(resto) : '';
+        // Limpa se o resto repetir "Título X"
+        const restoLimpo = (resto || '').replace(/^T[ÍI]TULO\s+[IVXLCDM0-9]+\s*[-–—:]*\s*/i, '').trim();
+        const restoFmt = restoLimpo ? capitalizarTituloJuridico(restoLimpo) : '';
         return restoFmt ? `Título ${ord}, ${restoFmt}` : `Título ${ord}`;
       });
     } else if (/^PARTE\s+(GERAL|ESPECIAL)/i.test(t)) {
@@ -232,15 +239,22 @@ export function formatarContextoEstruturalParaTTS(
   // 4. Capítulo (ex: "Capítulo I - Da Tentativa")
   if (capitulo && capitulo.trim()) {
     let c = limparAnotacoesEditoriais(capitulo).trim();
+    // Remove repetições acidentais como "CAPÍTULO I - CAPÍTULO I"
+    c = c.replace(/(CAP[ÍI]TULO\s+(?:[IVXLCDM0-9]+|[ÚU]NICO))\s*[-–—:]*\s*\1\b/gi, '$1')
+         .replace(/\s*[-–—]\s*[-–—]\s*/g, ' - ')
+         .trim();
+
     if (/^CAP[ÍI]TULO\s+([IVXLCDM]+)/i.test(c)) {
       c = c.replace(/^CAP[ÍI]TULO\s+([IVXLCDM]+)\s*[-–—:]?\s*(.*)$/i, (_m, rom, resto) => {
         const ord = ROMANOS_ORDINAIS[rom.toUpperCase()] || rom;
-        const restoFmt = resto ? capitalizarTituloJuridico(resto) : '';
+        const restoLimpo = (resto || '').replace(/^CAP[ÍI]TULO\s+(?:[IVXLCDM0-9]+|[ÚU]NICO)\s*[-–—:]*\s*/i, '').trim();
+        const restoFmt = restoLimpo ? capitalizarTituloJuridico(restoLimpo) : '';
         return restoFmt ? `Capítulo ${ord}, ${restoFmt}` : `Capítulo ${ord}`;
       });
     } else if (/^CAP[ÍI]TULO\s+[ÚU]NICO/i.test(c)) {
       c = c.replace(/^CAP[ÍI]TULO\s+[ÚU]NICO\s*[-–—:]?\s*(.*)$/i, (_m, resto) => {
-        const restoFmt = resto ? capitalizarTituloJuridico(resto) : '';
+        const restoLimpo = (resto || '').replace(/^CAP[ÍI]TULO\s+[ÚU]NICO\s*[-–—:]*\s*/i, '').trim();
+        const restoFmt = restoLimpo ? capitalizarTituloJuridico(restoLimpo) : '';
         return restoFmt ? `Capítulo único, ${restoFmt}` : 'Capítulo único';
       });
     }
