@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, useRef } from 'react';
-import { Radio, UserPlus, Sparkles, Loader2, Mail, BarChart3, ChevronRight, Crown, Zap, DollarSign, Check } from 'lucide-react';
+import { Radio, UserPlus, Sparkles, Loader2, Mail, BarChart3, ChevronRight, Crown, Zap, DollarSign, Check, RefreshCw } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
@@ -124,22 +124,41 @@ const ProviderTag = ({ provider }: { provider?: string | null }) => {
   );
 };
 
-const dayRange = (d: Date) => {
-  const start = new Date(d);
-  start.setHours(0, 0, 0, 0);
-  const end = new Date(start);
-  end.setDate(end.getDate() + 1);
-  return { start: start.toISOString(), end: end.toISOString() };
+const getHojeBrasilia = (): Date => {
+  const agora = new Date();
+  const spStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(agora);
+  const [ano, mes, dia] = spStr.split('-').map(Number);
+  return new Date(ano, mes - 1, dia);
 };
 
-const isoDate = (d: Date) =>
-  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const isoDate = (d: Date) => {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(d);
+};
 
-const sameDay = (a: Date, b: Date) =>
-  a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+const getBrasiliaDayRange = (datas: Date[]) => {
+  const dataMin = datas[datas.length - 1];
+  const dataMax = datas[0];
+  const isoMin = isoDate(dataMin);
+  const isoMax = isoDate(dataMax);
+  const startIso = new Date(`${isoMin}T00:00:00-03:00`).toISOString();
+  const nextDay = new Date(`${isoMax}T00:00:00-03:00`);
+  nextDay.setDate(nextDay.getDate() + 1);
+  const endIso = nextDay.toISOString();
+  return { startIso, endIso };
+};
+
+const dayRange = (d: Date) => {
+  const iso = isoDate(d);
+  const startIso = new Date(`${iso}T00:00:00-03:00`).toISOString();
+  const nextDay = new Date(`${iso}T00:00:00-03:00`);
+  nextDay.setDate(nextDay.getDate() + 1);
+  return { start: startIso, end: nextDay.toISOString() };
+};
+
+const sameDay = (a: Date, b: Date) => isoDate(a) === isoDate(b);
 
 const hora = (v?: string | null) =>
-  v ? new Date(v).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+  v ? new Date(v).toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' }) : '';
 
 const DIAS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
 
@@ -169,13 +188,14 @@ const writeSeen = (id: CardId, d: Date, seen: Seen) => {
 export function AdminHojeCards() {
   const [counts, setCounts] = useState<Record<CardId | 'trialValor', number>>(() => {
     try {
-      const cached = localStorage.getItem('admin_hoje_counts_cache');
+      const hojeIso = isoDate(getHojeBrasilia());
+      const cached = localStorage.getItem(`admin_hoje_counts_cache_${hojeIso}`);
       if (cached) return JSON.parse(cached);
     } catch {}
     return { online5m: 0, online: 0, cadastros: 0, paywall: 0, viu_planos: 0, trial: 0, trialValor: 0 };
   });
   const [seenCounts, setSeenCounts] = useState<Record<CardId, number>>(() => {
-    const hoje = new Date();
+    const hoje = getHojeBrasilia();
     return {
       online5m: readSeen('online5m', hoje).count,
       online: readSeen('online', hoje).count,
@@ -192,11 +212,15 @@ export function AdminHojeCards() {
   const [loading, setLoading] = useState(false);
   const [dossie, setDossie] = useState<Row | null>(null);
   const [periodo, setPeriodo] = useState<PeriodoId>('hoje');
-  const [dia, setDia] = useState<Date>(() => new Date());
+  const [dia, setDia] = useState<Date>(() => getHojeBrasilia());
   const [totaisOpen, setTotaisOpen] = useState(false);
   const [totais, setTotais] = useState<any>(null);
   const [totaisLoading, setTotaisLoading] = useState(false);
   const isFetching = useRef(false);
+  const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const currentDayRef = useRef(isoDate(getHojeBrasilia()));
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [ultimaAtualizacao, setUltimaAtualizacao] = useState<Date>(() => new Date());
   const [provOpen, setProvOpen] = useState<string | null>(null);
   const [provRows, setProvRows] = useState<Row[]>([]);
   const [provLoading, setProvLoading] = useState(false);
@@ -245,20 +269,33 @@ export function AdminHojeCards() {
   }, [open]);
 
   const getDatasPeriodo = useCallback((p: PeriodoId) => {
-    const hoje = new Date();
+    const hoje = getHojeBrasilia();
     if (p === 'hoje') return [hoje];
     if (p === 'ontem') {
-      const ontem = new Date(); ontem.setDate(hoje.getDate() - 1); return [ontem];
+      const ontem = new Date(hoje);
+      ontem.setDate(hoje.getDate() - 1);
+      return [ontem];
     }
     const dias = p === '7d' ? 7 : 30;
     return Array.from({ length: dias }, (_, i) => {
-      const d = new Date(); d.setDate(hoje.getDate() - i); return d;
+      const d = new Date(hoje);
+      d.setDate(hoje.getDate() - i);
+      return d;
     });
   }, []);
 
   const load = useCallback(async () => {
     if (isFetching.current) return;
     isFetching.current = true;
+    setIsUpdating(true);
+
+    if (fetchTimeoutRef.current) clearTimeout(fetchTimeoutRef.current);
+    // Timeout de segurança: nunca deixa isFetching travado por mais de 8s
+    fetchTimeoutRef.current = setTimeout(() => {
+      isFetching.current = false;
+      setIsUpdating(false);
+    }, 8000);
+
     try {
       const datas = getDatasPeriodo(periodo);
       
@@ -267,17 +304,13 @@ export function AdminHojeCards() {
       const listOnlinePromise = supabase.rpc('admin_lista_dia' as any, { _tipo: 'online', _dia: isoDate(datas[0]) });
       const trialPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));
 
-      const [metricasResults, list5mResult, listOnlineResult, trialResults] = await Promise.allSettled([
+      const [metricasResults, list5mResult, listOnlineResult] = await Promise.allSettled([
         Promise.allSettled(metricasPromises),
         list5mPromise,
         listOnlinePromise,
         Promise.allSettled(trialPromises)
       ]);
 
-
-
-      // === FIM DIAGNÓSTICO ===
-      
       const list5m = list5mResult.status === 'fulfilled' ? list5mResult.value.data : [];
       const listOnline = listOnlineResult.status === 'fulfilled' ? listOnlineResult.value.data : [];
       
@@ -310,24 +343,19 @@ export function AdminHojeCards() {
       (window as any)._adminRpcDebug = rawRpcResponse;
 
       try {
-        const minDateStr = new Date(datas[datas.length - 1]);
-        minDateStr.setHours(0, 0, 0, 0);
-        
-        const maxDateStr = new Date(datas[0]);
-        maxDateStr.setDate(maxDateStr.getDate() + 1);
-        maxDateStr.setHours(0, 0, 0, 0);
+        const { startIso, endIso } = getBrasiliaDayRange(datas);
 
         // Buscar eventos de paywall e checkout
-        const { data: events, error } = await supabase
+        const { data: events, error: evError } = await supabase
           .from('app_events')
           .select('user_id, id, email, event_name')
           .in('event_name', ['trial_click', 'assinatura_aberta', 'paywall_view'])
-          .gte('created_at', minDateStr.toISOString())
-          .lt('created_at', maxDateStr.toISOString());
+          .gte('created_at', startIso)
+          .lt('created_at', endIso);
           
-        if (error) throw error;
-          
-        if (events) {
+        if (evError) {
+          console.warn('app_events fallback warning:', evError.message);
+        } else if (events) {
           const nonAdminEvents = events.filter((e: any) => {
             const em = (e.email || '').toLowerCase().trim();
             return !ADMIN_EMAILS.includes(em);
@@ -347,22 +375,22 @@ export function AdminHojeCards() {
           supabase
             .from('asaas_subscriptions')
             .select('id, user_id, created_at, started_at, plano, status')
-            .or(`and(created_at.gte.${minDateStr.toISOString()},created_at.lt.${maxDateStr.toISOString()}),and(started_at.gte.${minDateStr.toISOString()},started_at.lt.${maxDateStr.toISOString()})`),
+            .or(`and(created_at.gte.${startIso},created_at.lt.${endIso}),and(started_at.gte.${startIso},started_at.lt.${endIso})`),
           supabase
             .from('play_subscriptions')
             .select('id, user_id, created_at, product_id, status')
-            .gte('created_at', minDateStr.toISOString())
-            .lt('created_at', maxDateStr.toISOString()),
+            .gte('created_at', startIso)
+            .lt('created_at', endIso),
           supabase
             .from('apple_subscriptions')
             .select('id, user_id, created_at, start_time, product_id, status')
-            .or(`created_at.gte.${minDateStr.toISOString()},start_time.gte.${minDateStr.toISOString()}`)
-            .lt('created_at', maxDateStr.toISOString()),
+            .or(`created_at.gte.${startIso},start_time.gte.${startIso}`)
+            .lt('created_at', endIso),
           supabase
             .from('legacy_subscribers')
             .select('id, created_at, email, tipo, status, claimed_user_id')
-            .gte('created_at', minDateStr.toISOString())
-            .lt('created_at', maxDateStr.toISOString())
+            .gte('created_at', startIso)
+            .lt('created_at', endIso)
         ]);
 
         const subUsers = new Map<string, { plano: string; valor: number }>();
@@ -430,7 +458,7 @@ export function AdminHojeCards() {
       
       // Para online (dia inteiro), pega o totalOnline extraído do RPC (se disponível) ou da lista
       const countOnlineFromList = ((listOnline as any[]) || []).filter(r => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim())).length;
-      const countOnline = Math.max(totalOnline, countOnlineFromList);
+      const countOnline = Math.max(totalOnline, countOnlineFromList, count5m);
       const novos: Record<CardId | 'trialValor', number> = {
         online5m: count5m, 
         online: countOnline, 
@@ -443,12 +471,21 @@ export function AdminHojeCards() {
       setCounts(novos);
     
     if (periodo === 'hoje') {
+      const hojeIso = isoDate(datas[0]);
       try {
-        localStorage.setItem('admin_hoje_counts_cache', JSON.stringify(novos));
+        localStorage.setItem(`admin_hoje_counts_cache_${hojeIso}`, JSON.stringify(novos));
+        // Remove caches de dias anteriores para manter o storage limpo
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith('admin_hoje_counts_cache_') && !k.endsWith(hojeIso)) {
+            localStorage.removeItem(k);
+          }
+        }
       } catch {}
 
       (['online5m', 'online', 'cadastros', 'paywall', 'viu_planos', 'trial'] as CardId[]).forEach((id) => {
-        if (!localStorage.getItem(seenStorageKey(id, datas[0]))) {
+        const seenKey = seenStorageKey(id, datas[0]);
+        if (!localStorage.getItem(seenKey)) {
           writeSeen(id, datas[0], { count: novos[id], keys: [] });
           setSeenCounts((c) => ({ ...c, [id]: novos[id] }));
         }
@@ -459,59 +496,116 @@ export function AdminHojeCards() {
   } catch (err) {
     console.error('Erro em AdminHojeCards load():', err);
   } finally {
+    if (fetchTimeoutRef.current) clearTimeout(fetchTimeoutRef.current);
     isFetching.current = false;
+    setIsUpdating(false);
+    setUltimaAtualizacao(new Date());
   }
   }, [periodo, getDatasPeriodo]);
 
 
+  // Polling automático e detector de virada de meia-noite
   useEffect(() => {
-    load();
+    void load();
     if (periodo === 'hoje') {
-      // Polling a cada 15s para manter Online 5 min responsivo
-      const t = setInterval(load, 15_000);
+      // Polling a cada 10s para manter dados e Online 5 min 100% responsivos
+      const t = setInterval(() => {
+        const hojeAtual = isoDate(getHojeBrasilia());
+        if (currentDayRef.current !== hojeAtual) {
+          currentDayRef.current = hojeAtual;
+          setDia(getHojeBrasilia());
+        }
+        void load();
+      }, 10_000);
       return () => clearInterval(t);
     }
   }, [load, periodo]);
 
-  // Supabase Realtime: atualiza dashboard instantaneamente quando há mudanças
+  // Atualização instantânea ao retomar visibilidade da aba ou foco
+  useEffect(() => {
+    const handleReactivate = () => {
+      if (document.visibilityState === 'visible') {
+        const hojeAtual = isoDate(getHojeBrasilia());
+        if (currentDayRef.current !== hojeAtual) {
+          currentDayRef.current = hojeAtual;
+          setDia(getHojeBrasilia());
+        }
+        void load();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleReactivate);
+    window.addEventListener('focus', handleReactivate);
+    window.addEventListener('online', handleReactivate);
+    return () => {
+      document.removeEventListener('visibilitychange', handleReactivate);
+      window.removeEventListener('focus', handleReactivate);
+      window.removeEventListener('online', handleReactivate);
+    };
+  }, [load]);
+
+  // Supabase Realtime: atualiza dashboard instantaneamente quando há qualquer atividade
   useEffect(() => {
     if (periodo !== 'hoje') return;
+
+    let debounceTimer: NodeJS.Timeout | null = null;
+    const triggerDebouncedLoad = () => {
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        void load();
+      }, 400);
+    };
 
     const channel = supabase
       .channel('admin-dashboard-realtime')
       .on(
         'postgres_changes' as any,
         { event: '*', schema: 'public', table: 'user_activity_log' },
-        () => { void load(); }
+        triggerDebouncedLoad
+      )
+      .on(
+        'postgres_changes' as any,
+        { event: '*', schema: 'public', table: 'user_sessions' },
+        triggerDebouncedLoad
       )
       .on(
         'postgres_changes' as any,
         { event: 'INSERT', schema: 'public', table: 'profiles' },
-        () => { void load(); }
+        triggerDebouncedLoad
       )
       .on(
         'postgres_changes' as any,
         { event: 'INSERT', schema: 'public', table: 'app_events' },
-        () => { void load(); }
+        triggerDebouncedLoad
       )
       .on(
         'postgres_changes' as any,
         { event: 'INSERT', schema: 'public', table: 'legacy_subscribers' },
-        () => { void load(); }
+        triggerDebouncedLoad
       )
       .on(
         'postgres_changes' as any,
         { event: 'INSERT', schema: 'public', table: 'play_subscriptions' },
-        () => { void load(); }
+        triggerDebouncedLoad
+      )
+      .on(
+        'postgres_changes' as any,
+        { event: '*', schema: 'public', table: 'apple_subscriptions' },
+        triggerDebouncedLoad
       )
       .on(
         'postgres_changes' as any,
         { event: '*', schema: 'public', table: 'asaas_subscriptions' },
-        () => { void load(); }
+        triggerDebouncedLoad
       )
-      .subscribe();
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          triggerDebouncedLoad();
+        }
+      });
 
     return () => {
+      if (debounceTimer) clearTimeout(debounceTimer);
       void supabase.removeChannel(channel);
     };
   }, [periodo, load]);
@@ -533,12 +627,7 @@ export function AdminHojeCards() {
       let listPromises: any[] = [];
       
       if (id === 'trial') {
-        const minDate = new Date(datas[datas.length - 1]);
-        minDate.setHours(0, 0, 0, 0);
-        
-        const maxDate = new Date(datas[0]);
-        maxDate.setDate(maxDate.getDate() + 1);
-        maxDate.setHours(0, 0, 0, 0);
+        const { startIso, endIso } = getBrasiliaDayRange(datas);
 
         // 1. Chamar admin_lista_dia para todos os dias do período
         const rpcPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));
@@ -551,29 +640,29 @@ export function AdminHojeCards() {
             .select(`
               id, user_id, created_at, started_at, plano, status, asaas_customer_id, asaas_subscription_id
             `)
-            .or(`and(created_at.gte.${minDate.toISOString()},created_at.lt.${maxDate.toISOString()}),and(started_at.gte.${minDate.toISOString()},started_at.lt.${maxDate.toISOString()})`)
+            .or(`and(created_at.gte.${startIso},created_at.lt.${endIso}),and(started_at.gte.${startIso},started_at.lt.${endIso})`)
             .order('created_at', { ascending: false }),
           supabase
             .from('play_subscriptions')
             .select(`
               id, user_id, created_at, product_id, status
             `)
-            .gte('created_at', minDate.toISOString())
-            .lt('created_at', maxDate.toISOString())
+            .gte('created_at', startIso)
+            .lt('created_at', endIso)
             .order('created_at', { ascending: false }),
           supabase
             .from('apple_subscriptions')
             .select(`
               id, user_id, created_at, start_time, product_id, status
             `)
-            .or(`created_at.gte.${minDate.toISOString()},start_time.gte.${minDate.toISOString()}`)
-            .lt('created_at', maxDate.toISOString())
+            .or(`created_at.gte.${startIso},start_time.gte.${startIso}`)
+            .lt('created_at', endIso)
             .order('created_at', { ascending: false }),
           supabase
             .from('legacy_subscribers')
             .select('id, created_at, email, tipo, status, claimed_user_id, asaas_customer_id, nome')
-            .gte('created_at', minDate.toISOString())
-            .lt('created_at', maxDate.toISOString())
+            .gte('created_at', startIso)
+            .lt('created_at', endIso)
             .order('created_at', { ascending: false })
         ]);
 
@@ -944,8 +1033,13 @@ export function AdminHojeCards() {
     if (id === 'online' || id === 'online5m') {
       setFiltroUser('gratuitos');
     }
-    fetchRows(id, new Date()); // Date argument is mostly ignored now, uses getDatasPeriodo
-  }, [fetchRows]);
+    const hoje = getHojeBrasilia();
+    // Ao abrir o card, limpa o indicador de novas notificações
+    writeSeen(id, hoje, { count: counts[id] || 0, keys: [] });
+    setSeenCounts((c) => ({ ...c, [id]: counts[id] || 0 }));
+
+    fetchRows(id, hoje);
+  }, [fetchRows, counts]);
 
   // Deep link vindo do push do admin: /admin-funcoes?card=cadastros|trial|online
   useEffect(() => {
@@ -966,18 +1060,20 @@ export function AdminHojeCards() {
   };
 
   const dias = Array.from({ length: 14 }, (_, i) => {
-    const d = new Date();
+    const d = getHojeBrasilia();
     d.setHours(0, 0, 0, 0);
     d.setDate(d.getDate() - i);
     return d;
   });
 
+  const dataHojePtBr = new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit' }).format(dia);
+  const horaAtualizacao = ultimaAtualizacao.toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
   const CARDS: { id: CardId; label: string; icon: any }[] = [
     { id: 'online5m', label: 'Online 5 min', icon: Zap },
     { 
       id: 'online', 
-      label: periodo === 'ontem' ? 'Online ontem' : periodo === '7d' ? 'Online (7 dias)' : periodo === '30d' ? 'Online (30 dias)' : 'Online hoje', 
+      label: periodo === 'ontem' ? 'Online ontem' : periodo === '7d' ? 'Online (7 dias)' : periodo === '30d' ? 'Online (30 dias)' : `Online hoje`, 
       icon: Radio 
     },
     { id: 'cadastros', label: 'Cadastrados', icon: UserPlus },
@@ -996,7 +1092,7 @@ export function AdminHojeCards() {
   };
 
   const rotuloPeriodo = {
-    hoje: 'Hoje',
+    hoje: `Hoje (${dataHojePtBr})`,
     ontem: 'Ontem',
     '7d': 'Últimos 7 dias',
     '30d': 'Últimos 30 dias',
@@ -1013,17 +1109,45 @@ export function AdminHojeCards() {
   return (
     <>
       <div className="flex items-center justify-between mb-3">
-        <h2 className="font-display text-sm font-bold tracking-wider text-muted-foreground uppercase opacity-70">Visão Geral</h2>
-        <select 
-          value={periodo} 
-          onChange={(e) => selecionarPeriodo(e.target.value as PeriodoId)}
-          className="bg-secondary/40 border border-border/60 text-foreground text-xs font-semibold py-1.5 px-3 rounded-xl outline-none appearance-none cursor-pointer hover:bg-secondary/60 focus:border-primary/50 transition-colors"
-        >
-          <option value="hoje">Hoje</option>
-          <option value="ontem">Ontem</option>
-          <option value="7d">Últimos 7 dias</option>
-          <option value="30d">Últimos 30 dias</option>
-        </select>
+        <div className="flex items-center gap-2">
+          <h2 className="font-display text-sm font-bold tracking-wider text-muted-foreground uppercase opacity-70">
+            Visão Geral
+          </h2>
+          {periodo === 'hoje' && (
+            <span 
+              title={`Atualização automática ativa · Última: ${horaAtualizacao}`}
+              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 select-none"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              AO VIVO
+            </span>
+          )}
+          {isUpdating && (
+            <RefreshCw className="w-3 h-3 text-muted-foreground animate-spin" />
+          )}
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <select 
+            value={periodo} 
+            onChange={(e) => selecionarPeriodo(e.target.value as PeriodoId)}
+            className="bg-secondary/40 border border-border/60 text-foreground text-xs font-semibold py-1.5 px-3 rounded-xl outline-none appearance-none cursor-pointer hover:bg-secondary/60 focus:border-primary/50 transition-colors"
+          >
+            <option value="hoje">Hoje ({dataHojePtBr})</option>
+            <option value="ontem">Ontem</option>
+            <option value="7d">Últimos 7 dias</option>
+            <option value="30d">Últimos 30 dias</option>
+          </select>
+          <button
+            type="button"
+            onClick={() => void load()}
+            disabled={isUpdating}
+            title={`Atualizar agora · Última sincronização: ${horaAtualizacao}`}
+            className="p-1.5 rounded-xl border border-border/60 bg-secondary/40 hover:bg-secondary/60 active:scale-95 text-muted-foreground hover:text-foreground transition-all disabled:opacity-50"
+          >
+            <RefreshCw className={cn("w-3.5 h-3.5", isUpdating && "animate-spin text-primary")} />
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-2 sm:gap-2.5 mb-3">
