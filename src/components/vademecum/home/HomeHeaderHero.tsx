@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef, useMemo, Suspense } from 'react';
+import { useState, useEffect, useRef, useMemo, Suspense } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 import { useNavigate } from 'react-router-dom';
@@ -29,7 +29,6 @@ import { leiToSlug, tipoToSlug } from '@/lib/legislacaoSlugs';
 import heroEstudanteImg from '@/assets/covers/hero-estudante-v3.jpg';
 
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
-import HeroCoverCarousel from '@/components/vademecum/home/HeroCoverCarousel';
 import HomeUserHeader from './HomeUserHeader';
 import HomeBrandBanner from './HomeBrandBanner';
 import HomeSearchButton from './HomeSearchButton';

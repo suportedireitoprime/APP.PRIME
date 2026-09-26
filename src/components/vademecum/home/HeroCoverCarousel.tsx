@@ -1,5 +1,4 @@
 import { useState, useEffect, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 const COVER_POSITIONS = ['right', 'left', 'right', 'left'] as const;
 
@@ -20,7 +19,7 @@ const HeroCoverCarousel = ({ covers, forcePosition }: HeroCoverCarouselProps) =>
     setCoverIndex((curr) => curr % covers.length);
   }, [covers]);
 
-  // Preload caching logic for smooth transitions
+  // Preload caching logic para transições suaves
   useEffect(() => {
     if (!covers || covers.length <= 1) return;
     const next = covers[(coverIndex + 1) % covers.length];
@@ -35,13 +34,13 @@ const HeroCoverCarousel = ({ covers, forcePosition }: HeroCoverCarouselProps) =>
     return () => cancel(handle as number);
   }, [coverIndex, covers]);
 
-  // Interval driver isolated here
+  // Troca de capa espaçada a cada 10s (pausada quando a aba está em background)
   useEffect(() => {
     if (!covers || covers.length <= 1) return;
     let id: ReturnType<typeof setInterval> | null = null;
     const start = () => {
       if (id) return;
-      id = setInterval(() => setCoverIndex((i) => (i + 1) % covers.length), 9000);
+      id = setInterval(() => setCoverIndex((i) => (i + 1) % covers.length), 10000);
     };
     const stop = () => { if (id) { clearInterval(id); id = null; } };
     if (!document.hidden) start();
@@ -52,62 +51,36 @@ const HeroCoverCarousel = ({ covers, forcePosition }: HeroCoverCarouselProps) =>
 
   if (!covers || covers.length === 0) return null;
 
+  const current = covers[coverIndex % covers.length];
+  if (!current) return null;
+  const pos = forcePosition ? forcePosition : COVER_POSITIONS[coverIndex % COVER_POSITIONS.length];
+  const posClass =
+    pos === 'right'
+      ? 'right-[2%] sm:right-[4%] left-auto'
+      : 'left-[2%] sm:left-[4%] right-auto';
+
   return (
     <div className="pointer-events-none absolute inset-0 select-none overflow-hidden">
-      <AnimatePresence initial={false}>
-        {(() => {
-          const safeLen = covers.length;
-          if (safeLen === 0) return null;
-          const current = covers[coverIndex % safeLen];
-          if (!current) return null;
-          const pos = forcePosition ? forcePosition : COVER_POSITIONS[coverIndex % COVER_POSITIONS.length];
-          const posClass =
-            pos === 'right'
-              ? 'right-[2%] sm:right-[4%] left-auto origin-bottom-right'
-              : 'left-[2%] sm:left-[4%] right-auto origin-bottom-left';
-
-          // Fade-in com um leve zoom
-          const preset = {
-            initial: { opacity: 0 },
-            animate: { opacity: 1 },
-            exit: { opacity: 0 },
-            transition: { duration: 1.4, ease: [0.22, 1, 0.36, 1] as const },
-          };
-          
-          const kenBurnsAnim = (coverIndex % 2 === 0)
-            ? 'ken-burns-a 12s ease-in-out infinite alternate'
-            : 'ken-burns-b 12s ease-in-out infinite alternate';
-
-          return (
-            <motion.img
-              key={coverIndex}
-              src={current.url}
-              alt=""
-              loading="eager"
-              decoding="async"
-              // @ts-expect-error non-standard yet-widely-supported hint
-              fetchpriority="high"
-              width={1024}
-              height={1024}
-              onError={(e) => {
-                const el = e.currentTarget as HTMLImageElement;
-                el.style.opacity = '0';
-              }}
-              initial={preset.initial}
-              animate={preset.animate}
-              exit={preset.exit}
-              transition={preset.transition}
-              style={{
-                animation: kenBurnsAnim,
-                willChange: 'transform',
-                maskImage: 'linear-gradient(to bottom, black 0%, black 72%, transparent 98%)',
-                WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 72%, transparent 98%)',
-              }}
-              className={`absolute bottom-0 h-[68%] sm:h-[75%] md:h-[85%] w-auto max-w-[56%] sm:max-w-[48%] md:max-w-[40%] landscape:max-w-[34%] landscape:h-[88%] object-contain object-bottom drop-shadow-[0_8px_24px_rgba(0,0,0,0.4)] opacity-80 sm:opacity-90 ${posClass}`}
-            />
-          );
-        })()}
-      </AnimatePresence>
+      <img
+        key={current.url}
+        src={current.url}
+        alt=""
+        loading="eager"
+        decoding="async"
+        fetchPriority="high"
+        width={1024}
+        height={1024}
+        onError={(e) => {
+          const el = e.currentTarget as HTMLImageElement;
+          el.style.opacity = '0';
+        }}
+        style={{
+          transform: 'translateZ(0)',
+          maskImage: 'linear-gradient(to bottom, black 0%, black 72%, transparent 98%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 72%, transparent 98%)',
+        }}
+        className={`absolute bottom-0 h-[68%] sm:h-[75%] md:h-[85%] w-auto max-w-[56%] sm:max-w-[48%] md:max-w-[40%] landscape:max-w-[34%] landscape:h-[88%] object-contain object-bottom drop-shadow-[0_8px_24px_rgba(0,0,0,0.4)] opacity-80 sm:opacity-90 transition-opacity duration-700 ease-out animate-fade-in ${posClass}`}
+      />
     </div>
   );
 };
