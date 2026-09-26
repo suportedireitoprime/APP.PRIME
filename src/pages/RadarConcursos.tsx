@@ -451,12 +451,16 @@ export default function RadarConcursos() {
 
         {/* 1.5. CARGOS EM ALTA (NEW) */}
         <section className="space-y-4">
-          <div className="flex items-center gap-2 px-1">
-            <span className="w-1.5 h-4 rounded-full bg-emerald-500" />
-            <h2 className="font-display text-foreground text-base sm:text-lg font-bold uppercase tracking-widest">
-              Cargos em Alta
-            </h2>
-            <TrendingUp className="w-4 h-4 text-emerald-400" />
+          <div className="flex flex-col gap-1 px-1">
+            <div className="flex items-center gap-2">
+              <span className="w-1.5 h-4 rounded-full bg-emerald-500" />
+              <h2 className="font-display text-foreground text-base sm:text-lg font-bold uppercase tracking-widest">
+                Cargos em Alta
+              </h2>
+            </div>
+            <p className="text-xs text-muted-foreground ml-3.5">
+              As carreiras mais buscadas e com mais oportunidades no momento.
+            </p>
           </div>
           
           <div className="flex overflow-x-auto gap-3 pb-4 hide-scrollbar snap-x snap-mandatory px-1 -mr-4 pr-4">
@@ -580,13 +584,13 @@ export default function RadarConcursos() {
         </section>
 
         {/* 4. CONFIGURAÇÃO DE NOTIFICAÇÕES COMPACTA NO RODAPÉ */}
-        <section className="bg-card/70 border border-emerald-500/25 rounded-3xl p-4 sm:p-5 shadow-md space-y-3.5 mt-8 relative">
-          <img src={horusAsset} alt="Hórus" className="absolute -top-10 right-2 sm:-top-12 sm:right-6 w-20 h-20 sm:w-24 sm:h-24 drop-shadow-2xl z-20 pointer-events-none" />
+        <section className="bg-card/70 border border-emerald-500/25 rounded-3xl p-4 sm:p-5 shadow-md space-y-3.5 mt-12 sm:mt-16 relative">
+          <img src={horusAsset} alt="Hórus" className="absolute -top-6 right-2 sm:-top-8 sm:right-6 w-20 h-20 sm:w-24 sm:h-24 drop-shadow-2xl z-20 pointer-events-none" />
 
           <div className="flex items-center justify-between pb-2 border-b border-border/40">
             <div className="flex items-center gap-2">
-              <Bell className="w-4 h-4 text-emerald-400" />
-              <h3 className="font-display font-bold text-sm text-foreground uppercase tracking-widest">
+              <span className="w-1.5 h-4 rounded-full bg-emerald-500" />
+              <h3 className="font-display text-foreground text-base sm:text-lg font-bold uppercase tracking-widest">
                 Alertas & Notificações Automáticas
               </h3>
             </div>
@@ -617,7 +621,6 @@ export default function RadarConcursos() {
               <div className="space-y-0.5 pr-2">
                 <p className="text-xs font-semibold text-foreground flex items-center gap-1">
                   <span>Notificação pelo Hórus</span>
-                  {isPremium && <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300">VIP</span>}
                 </p>
                 <p className="text-[11px] text-muted-foreground">Análise e resumo estratégico</p>
               </div>
