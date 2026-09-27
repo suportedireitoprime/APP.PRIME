@@ -147,13 +147,6 @@ export function VisuaisPassoItens({
         ) : (
           /* Grade Padrão de Matérias, Códigos, Estatutos, Leis Especiais e Previdenciário */
           <>
-            {(carregando || carregandoMaterias) && (
-              <p className="flex items-center gap-2 px-1 py-2 text-xs text-muted-foreground">
-                <Loader2 className="h-3.5 w-3.5 animate-spin text-purple-400" />
-                {carregandoMaterias ? 'Carregando matérias…' : 'Verificando conteúdos prontos…'}
-              </p>
-            )}
-
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2 md:gap-4">
               {lista.slice(0, limiteLista).map((i, idx) => {
                 const Icon = iconeDoItem(i.key, i.label, i.sub);
