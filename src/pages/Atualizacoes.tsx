@@ -344,8 +344,11 @@ const Atualizacoes = () => {
                       
                       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 via-50% to-black/30 pointer-events-none" />
                       
-                      <div className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-md">
-                        <ArrowUpRight className="w-3.5 h-3.5 text-white" strokeWidth={2.2} />
+                      <div className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center shadow-md z-20">
+                        <span className="text-white/90 text-[10px] sm:text-[10.5px] font-bold tracking-wide flex items-center gap-1">
+                          <Clock className="w-3 h-3 text-emerald-400" />
+                          {formatDate(conc.data_publicacao)}
+                        </span>
                       </div>
 
                       <span className="absolute top-2.5 left-2.5 z-20 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] sm:text-[10.5px] font-bold tracking-wide text-white bg-emerald-500/80 backdrop-blur-md border border-white/20 shadow-md">
@@ -355,8 +358,7 @@ const Atualizacoes = () => {
 
                       <div className="absolute inset-0 flex flex-col justify-end px-4 pb-3.5 pt-4 z-10">
                         <div className="flex items-center gap-2 mb-1.5 text-[11px] text-white/80 font-medium">
-                          <Clock className="w-3 h-3 text-emerald-400" />
-                          <span className="truncate">{formatDate(conc.data_publicacao)} · {visual.subtitulo}</span>
+                          <span className="truncate">{visual.subtitulo}</span>
                         </div>
                         <p className="font-sans text-white text-[13px] sm:text-[14px] font-medium leading-snug line-clamp-2 drop-shadow-md">
                           {conc.titulo}
@@ -462,7 +464,7 @@ const Atualizacoes = () => {
                     <div className="w-10 h-10 rounded-xl bg-[#F59E0B]/20 text-[#F59E0B] flex items-center justify-center mb-1">
                       <Headphones className="w-5 h-5" />
                     </div>
-                    <h3 className="font-sans font-semibold text-[15px] sm:text-[16px] leading-tight line-clamp-2">{bol.titulo}</h3>
+                    <h3 className="font-sans font-semibold text-[15px] sm:text-[16px] leading-tight line-clamp-2">{bol.titulo.replace(/\s*[—\-]\s*/g, ' ')}</h3>
                     <p className="text-muted-foreground text-[13px] sm:text-[14px] line-clamp-2">{bol.subtitulo || `Boletim ${bol.tipo}`}</p>
                     <div className="mt-auto pt-2 flex items-center justify-between">
                       <span className="text-[11px] sm:text-[12px] text-muted-foreground/70 font-medium">{formatDate(bol.data_ref)}</span>
@@ -480,7 +482,7 @@ const Atualizacoes = () => {
             <section>
               <div className="flex items-center justify-between mb-1 px-1">
                 <div className="flex items-center gap-2">
-                  <span className="w-1 h-5 rounded-full bg-[#F59E0B]" />
+                  <span className="w-1 h-5 rounded-full bg-[#EF4444]" />
                   <h2 className="font-display text-foreground text-[18px] font-bold uppercase tracking-widest">
                     Boletins de Notícias
                   </h2>
@@ -498,14 +500,14 @@ const Atualizacoes = () => {
                     <div className="absolute top-0 right-0 p-3 opacity-10">
                       <Headphones className="w-16 h-16 sm:w-20 sm:h-20" />
                     </div>
-                    <div className="w-10 h-10 rounded-xl bg-[#F59E0B]/20 text-[#F59E0B] flex items-center justify-center mb-1">
+                    <div className="w-10 h-10 rounded-xl bg-[#EF4444]/20 text-[#EF4444] flex items-center justify-center mb-1">
                       <Headphones className="w-5 h-5" />
                     </div>
-                    <h3 className="font-sans font-semibold text-[15px] sm:text-[16px] leading-tight line-clamp-2">{bol.titulo}</h3>
+                    <h3 className="font-sans font-semibold text-[15px] sm:text-[16px] leading-tight line-clamp-2">{bol.titulo.replace(/\s*[—\-]\s*/g, ' ')}</h3>
                     <p className="text-muted-foreground text-[13px] sm:text-[14px] line-clamp-2">{bol.subtitulo || `Boletim ${bol.tipo}`}</p>
                     <div className="mt-auto pt-2 flex items-center justify-between">
                       <span className="text-[11px] sm:text-[12px] text-muted-foreground/70 font-medium">{formatDate(bol.data_ref)}</span>
-                      <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest bg-[#F59E0B]/10 text-[#F59E0B] px-2.5 py-1 rounded-full flex items-center gap-1">
+                      <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest bg-[#EF4444]/10 text-[#EF4444] px-2.5 py-1 rounded-full flex items-center gap-1">
                         Ouvir <ChevronRight className="w-3 h-3" />
                       </span>
                     </div>
