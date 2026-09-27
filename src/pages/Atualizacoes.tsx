@@ -438,7 +438,7 @@ const Atualizacoes = () => {
         <section>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="flex items-center gap-2">
-              <span className="w-1 h-5 rounded-full bg-[#EC4899]" />
+              <span className="w-1 h-5 rounded-full bg-[#F59E0B]" />
               <h2 className="font-display text-foreground text-[18px] font-bold uppercase tracking-widest">
                 Boletins Jurídicos
               </h2>
@@ -456,14 +456,14 @@ const Atualizacoes = () => {
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <Newspaper className="w-16 h-16 sm:w-20 sm:h-20" />
                 </div>
-                <div className="w-10 h-10 rounded-xl bg-[#EC4899]/20 text-[#EC4899] flex items-center justify-center mb-1">
+                <div className="w-10 h-10 rounded-xl bg-[#F59E0B]/20 text-[#F59E0B] flex items-center justify-center mb-1">
                   <Newspaper className="w-5 h-5" />
                 </div>
                 <h3 className="font-sans font-semibold text-[15px] sm:text-[16px] leading-tight line-clamp-2">{bol.titulo}</h3>
                 <p className="text-muted-foreground text-[13px] sm:text-[14px] line-clamp-2">{bol.subtitulo || `Boletim ${bol.tipo}`}</p>
                 <div className="mt-auto pt-2 flex items-center justify-between">
                   <span className="text-[11px] sm:text-[12px] text-muted-foreground/70 font-medium">{formatDate(bol.data_ref)}</span>
-                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest bg-[#EC4899]/10 text-[#EC4899] px-2.5 py-1 rounded-full flex items-center gap-1">
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest bg-[#F59E0B]/10 text-[#F59E0B] px-2.5 py-1 rounded-full flex items-center gap-1">
                     Ler <ChevronRight className="w-3 h-3" />
                   </span>
                 </div>
