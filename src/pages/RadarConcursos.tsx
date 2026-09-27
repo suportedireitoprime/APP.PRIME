@@ -207,7 +207,7 @@ export default function RadarConcursos() {
       setEditalFullText(null);
       try {
         const { data, error } = await supabase.functions.invoke('scrape-concurso-full', {
-          body: { url: link }
+          body: { url: link, titulo: selectedEdital.titulo }
         });
         if (error) throw error;
         if (!cancel && data && data.text) {

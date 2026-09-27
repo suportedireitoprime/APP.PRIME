@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { url } = await req.json();
+    const { url, titulo } = await req.json();
     if (!url) throw new Error("URL é obrigatória");
 
     const FIRECRAWL_KEY = Deno.env.get("FIRECRAWL_API_KEY");
@@ -55,8 +55,21 @@ serve(async (req) => {
       markdown = markdown.substring(0, mapIndex);
     }
 
+    // Strip everything before the title (if provided and found)
+    if (titulo) {
+      // Escape regex chars but allow whitespace differences
+      const safeTitle = titulo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
+      const titleRegex = new RegExp(safeTitle, 'i');
+      const titleMatch = markdown.match(titleRegex);
+      if (titleMatch && titleMatch.index !== undefined) {
+        markdown = markdown.substring(titleMatch.index);
+      }
+    }
+
     // Clean up PCI Concursos specific generic headers, footers, and logo images
     markdown = markdown
+      // Remove generic login/search headers
+      .replace(/^(Entrar com Google|Pesquisar)\s*\n+/gmi, '')
       // Remove regional navigation
       .replace(/- \[(Nacional|Sudeste|Sul|Centro-Oeste|Norte|Nordeste)\].*?\n/gi, '')
       // Remove PCI logos and headers
