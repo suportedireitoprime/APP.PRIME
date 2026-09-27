@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState, startTransition } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Scale, MicVocal, FileText, Smartphone, ChevronRight, GraduationCap, Clock, ArrowUpRight, Newspaper, X, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Scale, MicVocal, FileText, Smartphone, ChevronRight, GraduationCap, Clock, ArrowUpRight, Newspaper, X, ExternalLink, Headphones } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { cn } from '@/lib/utils';
@@ -430,44 +430,85 @@ const Atualizacoes = () => {
         )}
 
         {(activeTab === 'novidades' || activeTab === 'boletins') && (
-        <section>
-          <div className="flex items-center justify-between mb-1 px-1">
-            <div className="flex items-center gap-2">
-              <span className="w-1 h-5 rounded-full bg-[#F59E0B]" />
-              <h2 className="font-display text-foreground text-[18px] font-bold uppercase tracking-widest">
-                Boletins Jurídicos
-              </h2>
-            </div>
-          </div>
-          <p className="text-muted-foreground text-[13px] px-1 mb-4 truncate">
-            Resumos e boletins oficiais
-          </p>
-          <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 hide-scrollbar px-1 -mr-4 pr-4">
-            {boletins.length > 0 ? boletins.map((bol) => (
-              <div 
-                key={bol.id} 
-                className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
-              >
-                <div className="absolute top-0 right-0 p-3 opacity-10">
-                  <Newspaper className="w-16 h-16 sm:w-20 sm:h-20" />
-                </div>
-                <div className="w-10 h-10 rounded-xl bg-[#F59E0B]/20 text-[#F59E0B] flex items-center justify-center mb-1">
-                  <Newspaper className="w-5 h-5" />
-                </div>
-                <h3 className="font-sans font-semibold text-[15px] sm:text-[16px] leading-tight line-clamp-2">{bol.titulo}</h3>
-                <p className="text-muted-foreground text-[13px] sm:text-[14px] line-clamp-2">{bol.subtitulo || `Boletim ${bol.tipo}`}</p>
-                <div className="mt-auto pt-2 flex items-center justify-between">
-                  <span className="text-[11px] sm:text-[12px] text-muted-foreground/70 font-medium">{formatDate(bol.data_ref)}</span>
-                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest bg-[#F59E0B]/10 text-[#F59E0B] px-2.5 py-1 rounded-full flex items-center gap-1">
-                    Ler <ChevronRight className="w-3 h-3" />
-                  </span>
+          <>
+            <section>
+              <div className="flex items-center justify-between mb-1 px-1">
+                <div className="flex items-center gap-2">
+                  <span className="w-1 h-5 rounded-full bg-[#F59E0B]" />
+                  <h2 className="font-display text-foreground text-[18px] font-bold uppercase tracking-widest">
+                    Boletins Jurídicos
+                  </h2>
                 </div>
               </div>
-            )) : (
-              <div className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
-            )}
-          </div>
-        </section>
+              <p className="text-muted-foreground text-[13px] px-1 mb-4 truncate">
+                Resumos e boletins oficiais
+              </p>
+              <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 hide-scrollbar px-1 -mr-4 pr-4">
+                {boletins.filter(b => b.tipo !== 'noticias' && !b.titulo.toLowerCase().includes('notícia')).length > 0 ? boletins.filter(b => b.tipo !== 'noticias' && !b.titulo.toLowerCase().includes('notícia')).map((bol) => (
+                  <div 
+                    key={bol.id} 
+                    className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
+                  >
+                    <div className="absolute top-0 right-0 p-3 opacity-10">
+                      <Headphones className="w-16 h-16 sm:w-20 sm:h-20" />
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-[#F59E0B]/20 text-[#F59E0B] flex items-center justify-center mb-1">
+                      <Headphones className="w-5 h-5" />
+                    </div>
+                    <h3 className="font-sans font-semibold text-[15px] sm:text-[16px] leading-tight line-clamp-2">{bol.titulo}</h3>
+                    <p className="text-muted-foreground text-[13px] sm:text-[14px] line-clamp-2">{bol.subtitulo || `Boletim ${bol.tipo}`}</p>
+                    <div className="mt-auto pt-2 flex items-center justify-between">
+                      <span className="text-[11px] sm:text-[12px] text-muted-foreground/70 font-medium">{formatDate(bol.data_ref)}</span>
+                      <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest bg-[#F59E0B]/10 text-[#F59E0B] px-2.5 py-1 rounded-full flex items-center gap-1">
+                        Ouvir <ChevronRight className="w-3 h-3" />
+                      </span>
+                    </div>
+                  </div>
+                )) : (
+                  <div className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+                )}
+              </div>
+            </section>
+
+            <section>
+              <div className="flex items-center justify-between mb-1 px-1">
+                <div className="flex items-center gap-2">
+                  <span className="w-1 h-5 rounded-full bg-[#F59E0B]" />
+                  <h2 className="font-display text-foreground text-[18px] font-bold uppercase tracking-widest">
+                    Boletins de Notícias
+                  </h2>
+                </div>
+              </div>
+              <p className="text-muted-foreground text-[13px] px-1 mb-4 truncate">
+                Resumo em áudio das notícias
+              </p>
+              <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 hide-scrollbar px-1 -mr-4 pr-4">
+                {boletins.filter(b => b.tipo === 'noticias' || b.titulo.toLowerCase().includes('notícia')).length > 0 ? boletins.filter(b => b.tipo === 'noticias' || b.titulo.toLowerCase().includes('notícia')).map((bol) => (
+                  <div 
+                    key={bol.id} 
+                    className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
+                  >
+                    <div className="absolute top-0 right-0 p-3 opacity-10">
+                      <Headphones className="w-16 h-16 sm:w-20 sm:h-20" />
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-[#F59E0B]/20 text-[#F59E0B] flex items-center justify-center mb-1">
+                      <Headphones className="w-5 h-5" />
+                    </div>
+                    <h3 className="font-sans font-semibold text-[15px] sm:text-[16px] leading-tight line-clamp-2">{bol.titulo}</h3>
+                    <p className="text-muted-foreground text-[13px] sm:text-[14px] line-clamp-2">{bol.subtitulo || `Boletim ${bol.tipo}`}</p>
+                    <div className="mt-auto pt-2 flex items-center justify-between">
+                      <span className="text-[11px] sm:text-[12px] text-muted-foreground/70 font-medium">{formatDate(bol.data_ref)}</span>
+                      <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest bg-[#F59E0B]/10 text-[#F59E0B] px-2.5 py-1 rounded-full flex items-center gap-1">
+                        Ouvir <ChevronRight className="w-3 h-3" />
+                      </span>
+                    </div>
+                  </div>
+                )) : (
+                  <div className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+                )}
+              </div>
+            </section>
+          </>
         )}
 
       </main>
