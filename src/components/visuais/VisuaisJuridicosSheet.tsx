@@ -134,10 +134,10 @@ export default function VisuaisJuridicosSheet({
   useEffect(() => {
     if (!temaSlugInicial || !temas.length) return;
     const hit = temas.find((t) => slugTema(t.tema) === temaSlugInicial);
-    if (hit && hit.tema !== tema?.tema) {
-      setTema(hit);
+    if (hit) {
+      setTema((prev) => prev?.tema === hit.tema ? prev : hit);
     }
-  }, [temaSlugInicial, temas, tema?.tema]);
+  }, [temaSlugInicial, temas]);
 
   const [subtemas, setSubtemas] = useState<SubtemaResumo[]>([]);
   const [carregandoSubtemas, setCarregandoSubtemas] = useState(false);
