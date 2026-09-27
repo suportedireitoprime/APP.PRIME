@@ -364,7 +364,7 @@ const Concursos = () => {
       <div className="max-w-3xl mx-auto px-4 py-4 space-y-4">
         {/* Filtros em Menus de Alternância: Cargos, Dias Faltantes e Salário */}
         <div className="bg-card/60 border border-border/70 rounded-2xl p-3 sm:p-4 shadow-sm">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-3 gap-2 sm:gap-2.5">
             {/* 1. Menu de Cargos / Carreiras */}
             <div className="space-y-1">
               <label className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5 px-0.5">
@@ -444,81 +444,9 @@ const Concursos = () => {
 
         {finalFiltered.length > 0 ? (
           <>
-            {/* Hero card — Destaque com Personagem 3D e Bandeira do Estado em Segundo Plano */}
-            {(() => {
-              const hero = finalFiltered[0];
-              if (!hero) return null;
-              const heroVisual = getConcursoVisual(hero.titulo, hero.imagem_url, (hero as any).cargos_resumo || (hero as any).cargos);
-              const heroUf = extractConcursoUf(hero);
-              const heroFlagUrl = getBandeiraUrl(heroUf);
-
-              return (
-                <motion.div
-                  key={`hero-${hero.id}`}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  onClick={() => handleOpenItem(hero)}
-                  className="relative overflow-hidden bg-gradient-to-r from-card via-card/95 to-emerald-950/20 border-y md:border md:rounded-2xl border-border cursor-pointer hover:border-[#10B981]/50 active:bg-secondary/30 transition-all -mx-4 md:mx-0 p-4 sm:p-5 flex items-center justify-between gap-4 group shadow-md"
-                >
-                  <div className="flex-1 min-w-0 space-y-2 z-10">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#10B981] text-white uppercase tracking-wider shadow-sm">
-                        {heroVisual.tag}
-                      </span>
-                      {hero.dias_restantes !== undefined && hero.dias_restantes !== null && (
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
-                          hero.dias_restantes <= 5 ? 'bg-rose-600 text-white' : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                        }`}>
-                          {hero.dias_restantes > 0 ? `${hero.dias_restantes} dias p/ fechar` : 'Encerrando hoje!'}
-                        </span>
-                      )}
-                    </div>
-                    <h2 className="font-display text-base sm:text-lg text-foreground font-bold leading-snug group-hover:text-[#10B981] transition-colors line-clamp-2">
-                      {hero.titulo}
-                    </h2>
-                    <div className="flex items-center gap-2 text-[11px] sm:text-xs text-muted-foreground font-body">
-                      <span className="inline-flex items-center gap-1 text-[#10B981] font-semibold">
-                        <Clock className="w-3 h-3" />
-                        {formatDateFull(hero.created_at || hero.data_publicacao)}
-                      </span>
-                      <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
-                      <span className="font-medium text-foreground/80 truncate">
-                        {(hero.vagas_salario || heroVisual.subtitulo).replace(/.*?até\s+R\$/i, 'Salários até R$')}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Thumbnail do Hero com a Bandeira do Estado em Segundo Plano */}
-                  <div className="w-28 h-28 sm:w-36 sm:h-36 shrink-0 relative flex items-center justify-center overflow-hidden rounded-2xl">
-                    <img
-                      src={heroFlagUrl}
-                      alt={`Bandeira ${heroUf}`}
-                      className="absolute inset-0 w-full h-full object-cover opacity-20 filter brightness-90 scale-110 pointer-events-none transition-opacity duration-300 group-hover:opacity-30"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-card/85 via-transparent to-transparent pointer-events-none" />
-
-                    <img
-                      src={heroVisual.imagemUrl}
-                      alt={hero.titulo}
-                      className="w-full h-full object-contain drop-shadow-[0_8px_18px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-transform duration-300 relative z-10"
-                      fetchPriority="high"
-                      decoding="async"
-                    />
-                    {heroUf !== 'BR' && (
-                      <span className="absolute top-1 right-1 z-20 text-[9px] font-black px-1.5 py-0.5 rounded bg-black/70 text-emerald-300 border border-emerald-500/30 backdrop-blur-sm shadow">
-                        {heroUf}
-                      </span>
-                    )}
-                  </div>
-                </motion.div>
-              );
-            })()}
-
             {/* List cards com Personagem 3D e Bandeira do Estado em Segundo Plano */}
             <div className="space-y-3 -mx-4 md:mx-0">
-              {finalFiltered.slice(1).map((item, i) => {
+              {finalFiltered.map((item, i) => {
                 const { time } = formatDateParts(item.created_at || item.data_publicacao);
                 const visual = getConcursoVisual(item.titulo, item.imagem_url, (item as any).cargos_resumo || (item as any).cargos);
                 const itemUf = extractConcursoUf(item);
