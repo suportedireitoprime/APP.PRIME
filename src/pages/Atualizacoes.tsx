@@ -183,7 +183,7 @@ const Atualizacoes = () => {
               <div 
                 key={lei.id} 
                 onClick={() => { haptic.selection(); startTransition(() => navigate(`/radar-360?lei=${lei.id}`)); }}
-                className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
+                className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
               >
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <Scale className="w-16 h-16 sm:w-20 sm:h-20" />
@@ -201,7 +201,7 @@ const Atualizacoes = () => {
                 </div>
               </div>
             )) : (
-              <div className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+              <div className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
             )}
           </div>
         </section>
@@ -222,7 +222,7 @@ const Atualizacoes = () => {
           </p>
           <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 hide-scrollbar px-1 -mr-4 pr-4">
             {[1, 2].map((i) => (
-              <div key={i} className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden">
+              <div key={i} className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <Smartphone className="w-16 h-16 sm:w-20 sm:h-20" />
                 </div>
@@ -264,7 +264,7 @@ const Atualizacoes = () => {
                   <div 
                     key={noticia.id} 
                     onClick={() => { haptic.selection(); startTransition(() => navigate(`/noticias?item=${noticia.id}`)); }}
-                    className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start relative overflow-hidden rounded-2xl cursor-pointer active:scale-[0.98] transition-transform"
+                    className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start relative overflow-hidden rounded-2xl cursor-pointer active:scale-[0.98] transition-transform"
                   >
                     <div className="absolute inset-0 flex items-center justify-center bg-card">
                       <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(noticia.fonte || 'Noticia')}&background=FACC15&color=000&size=128&bold=true`} alt="" className="w-16 h-16 rounded-full object-contain drop-shadow-md border border-white/10 opacity-80" />
@@ -302,8 +302,8 @@ const Atualizacoes = () => {
                   </div>
                 )) : (
                   <>
-                    <div className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
-                    <div className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+                    <div className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+                    <div className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
                   </>
                 )}
               </div>
@@ -333,7 +333,7 @@ const Atualizacoes = () => {
                         haptic.selection();
                         openExternalLink(conc.link);
                       }}
-                      className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start relative overflow-hidden rounded-2xl cursor-pointer active:scale-[0.98] transition-transform block bg-card/60 border border-white/10 group shadow-lg"
+                      className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start relative overflow-hidden rounded-2xl cursor-pointer active:scale-[0.98] transition-transform block bg-card/60 border border-white/10 group shadow-lg"
                     >
                       <img 
                         src={visual.imagemUrl} 
@@ -366,8 +366,8 @@ const Atualizacoes = () => {
                   );
                 }) : (
                   <>
-                    <div className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
-                    <div className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+                    <div className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+                    <div className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
                   </>
                 )}
               </div>
@@ -399,7 +399,7 @@ const Atualizacoes = () => {
               <div 
                 key={pl.id_externo || pl.dados_json?.id || pl.numero} 
                 onClick={() => { haptic.selection(); startTransition(() => navigate(`/radar/pl/${pl.id_externo || pl.dados_json?.id}`)); }}
-                className="w-[260px] min-h-[250px] sm:w-[300px] sm:min-h-[260px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
+                className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
               >
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <FileText className="w-16 h-16 sm:w-20 sm:h-20" />
@@ -428,7 +428,7 @@ const Atualizacoes = () => {
                 </div>
               </div>
             )) : (
-              <div className="w-[260px] min-h-[250px] sm:w-[300px] sm:min-h-[260px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+              <div className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
             )}
           </div>
         </section>
@@ -451,7 +451,7 @@ const Atualizacoes = () => {
             {boletins.length > 0 ? boletins.map((bol) => (
               <div 
                 key={bol.id} 
-                className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
+                className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
               >
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <Newspaper className="w-16 h-16 sm:w-20 sm:h-20" />
@@ -469,7 +469,7 @@ const Atualizacoes = () => {
                 </div>
               </div>
             )) : (
-              <div className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+              <div className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
             )}
           </div>
         </section>
