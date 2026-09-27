@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Users, MessageSquare, Send, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -15,15 +15,37 @@ const isoDate = (d: Date) => {
 };
 
 export function AdminHorusHojeCards() {
+  const [periodo, setPeriodo] = useState<'hoje' | 'ontem' | '7d' | '30d'>('hoje');
   const [counts, setCounts] = useState({ users: 0, msgs: 0, proactive: 0 });
   const [loading, setLoading] = useState(true);
 
-  const load = async () => {
+  const getDatasPeriodo = useCallback((p: 'hoje' | 'ontem' | '7d' | '30d') => {
+    const hoje = getHojeBrasilia();
+    if (p === 'hoje') return [hoje];
+    if (p === 'ontem') {
+      const ontem = new Date(hoje);
+      ontem.setDate(hoje.getDate() - 1);
+      return [ontem];
+    }
+    const dias = p === '7d' ? 7 : 30;
+    return Array.from({ length: dias }, (_, i) => {
+      const d = new Date(hoje);
+      d.setDate(hoje.getDate() - i);
+      return d;
+    });
+  }, []);
+
+  const load = useCallback(async () => {
     try {
-      const hoje = getHojeBrasilia();
-      const iso = isoDate(hoje);
-      const startIso = new Date(`${iso}T00:00:00-03:00`).toISOString();
-      const nextDay = new Date(`${iso}T00:00:00-03:00`);
+      const datas = getDatasPeriodo(periodo);
+      const dataMin = datas[datas.length - 1];
+      const dataMax = datas[0];
+
+      const isoMin = isoDate(dataMin);
+      const isoMax = isoDate(dataMax);
+
+      const startIso = new Date(`${isoMin}T00:00:00-03:00`).toISOString();
+      const nextDay = new Date(`${isoMax}T00:00:00-03:00`);
       nextDay.setDate(nextDay.getDate() + 1);
       const endIso = nextDay.toISOString();
 
@@ -53,16 +75,24 @@ export function AdminHorusHojeCards() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [periodo, getDatasPeriodo]);
 
   useEffect(() => {
+    setLoading(true);
     load();
-  }, []);
+  }, [load]);
+
+  const labels = {
+    hoje: 'Hoje',
+    ontem: 'Ontem',
+    '7d': '7 Dias',
+    '30d': '30 Dias'
+  };
 
   const CARDS = [
-    { id: 'users', label: 'Pessoas (Hoje)', icon: Users, value: counts.users },
-    { id: 'msgs', label: 'Mensagens (Hoje)', icon: MessageSquare, value: counts.msgs },
-    { id: 'proactive', label: 'Pró-ativas (Hoje)', icon: Send, value: counts.proactive },
+    { id: 'users', label: `Pessoas (${labels[periodo]})`, icon: Users, value: counts.users },
+    { id: 'msgs', label: `Mensagens (${labels[periodo]})`, icon: MessageSquare, value: counts.msgs },
+    { id: 'proactive', label: `Pró-ativas (${labels[periodo]})`, icon: Send, value: counts.proactive },
   ];
 
   return (
@@ -75,6 +105,19 @@ export function AdminHorusHojeCards() {
           {loading && (
             <RefreshCw className="w-3 h-3 text-muted-foreground animate-spin" />
           )}
+        </div>
+        
+        <div className="flex items-center gap-1.5">
+          <select 
+            value={periodo} 
+            onChange={(e) => setPeriodo(e.target.value as any)}
+            className="bg-secondary/40 border border-border/60 text-foreground text-xs font-semibold py-1.5 px-3 rounded-xl outline-none appearance-none cursor-pointer hover:bg-secondary/60 transition-colors"
+          >
+            <option value="hoje">Hoje</option>
+            <option value="ontem">Ontem</option>
+            <option value="7d">Últimos 7 dias</option>
+            <option value="30d">Últimos 30 dias</option>
+          </select>
         </div>
       </div>
       
