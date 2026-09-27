@@ -8,7 +8,6 @@ import MentorOverlay from '@/components/vademecum/overlays/MentorOverlay';
 // PessoalSheet removido — Meu Espaço agora é rota dedicada (/meu-espaco).
 import AssistenteOverlay from '@/components/vademecum/overlays/AssistenteOverlay';
 
-import { motion, AnimatePresence } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import { useKeyboardHeight } from '@/hooks/useKeyboardListeners';
 
@@ -239,49 +238,43 @@ const BottomNav = () => {
         <div className="max-w-2xl mx-auto px-1 xs:px-2 py-1.5 md:py-8 md:h-full md:flex md:flex-col md:justify-center md:gap-6">
         <div className="grid grid-cols-5 md:grid-cols-1 items-stretch md:gap-6">
           {/* Slot 1: Blog */}
-          <motion.button
-            whileTap={{ scale: 0.90 }}
-            transition={{ type: "spring", stiffness: 450, damping: 25 }}
+          <button
             onPointerDown={() => prefetchRoute('blog')}
             onMouseEnter={() => prefetchRoute('blog')}
             onClick={() => { haptic.selection(); startTransition(() => navigate('/blog')); }}
             data-track="bottom_nav_click"
             data-track-destino="blog"
-            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-colors relative ${
+            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-all active:scale-95 duration-100 touch-manipulation cursor-pointer relative ${
               path.startsWith('/blog') ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
             }`}
             aria-label="Blog"
           >
             <ScrollText className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/blog') ? 'scale-110' : ''}`} strokeWidth={1.2} />
             <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Blog</span>
-          </motion.button>
+          </button>
 
           {/* Slot 2: Atualizações / Giro */}
-          <motion.button
-            whileTap={{ scale: 0.90 }}
-            transition={{ type: "spring", stiffness: 450, damping: 25 }}
+          <button
             onClick={() => { haptic.selection(); startTransition(() => navigate('/atualizacoes')); }}
             data-track="bottom_nav_click"
             data-track-destino="atualizacoes"
-            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-colors ${
+            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-all active:scale-95 duration-100 touch-manipulation cursor-pointer ${
               path.startsWith('/atualizacoes') ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
             }`}
             aria-label="Giro Jurídico"
           >
             <Flame className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/atualizacoes') ? 'scale-110' : ''}`} strokeWidth={1.2} />
             <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Giro Jurídico</span>
-          </motion.button>
+          </button>
 
           {/* Slot 3: Vade Mecum (destaque flutuante central no mobile, normal no tablet) */}
-          <motion.button
-            whileTap={{ scale: 0.92 }}
-            transition={{ type: "spring", stiffness: 450, damping: 25 }}
+          <button
             onPointerDown={() => prefetchRoute('vadeMecum')}
             onMouseEnter={() => prefetchRoute('vadeMecum')}
             onClick={() => { haptic.selection(); if (!path.startsWith('/vade-mecum')) startTransition(() => navigate('/vade-mecum')); }}
             data-track="bottom_nav_click"
             data-track-destino="vade-mecum"
-            className="relative flex flex-col items-center justify-end gap-1 py-1.5 md:py-3 md:justify-center md:rounded-xl md:hover:bg-white/10"
+            className="relative flex flex-col items-center justify-end gap-1 py-1.5 md:py-3 md:justify-center md:rounded-xl md:hover:bg-white/10 active:scale-95 transition-transform duration-100 touch-manipulation cursor-pointer"
             aria-label="Vade Mecum"
           >
             <span
@@ -299,12 +292,10 @@ const BottomNav = () => {
             {/* Spacer invisível ocupando o mesmo espaço do ícone dos outros slots no mobile */}
             <span aria-hidden className="w-8 h-8 xs:w-9 xs:h-9 md:hidden" />
             <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-white md:text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Vade Mecum</span>
-          </motion.button>
+          </button>
 
           {/* Slot 4: Ferramentas */}
-          <motion.button
-            whileTap={{ scale: 0.90 }}
-            transition={{ type: "spring", stiffness: 450, damping: 25 }}
+          <button
             onPointerDown={() => prefetchRoute('ferramentas')}
             onMouseEnter={() => prefetchRoute('ferramentas')}
             onClick={() => {
@@ -313,50 +304,46 @@ const BottomNav = () => {
             }}
             data-track="bottom_nav_click"
             data-track-destino="ferramentas"
-            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-colors ${
+            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-all active:scale-95 duration-100 touch-manipulation cursor-pointer ${
               location.pathname.startsWith('/ferramentas') ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
             }`}
             aria-label="Ferramentas"
           >
             <Gavel className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform text-white/90 drop-shadow-md ${location.pathname.startsWith('/ferramentas') ? 'scale-110' : ''}`} strokeWidth={1.2} />
             <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Ferramentas</span>
-          </motion.button>
+          </button>
 
           {/* Slot 5: Pílulas */}
-          <motion.button
-            whileTap={{ scale: 0.90 }}
-            transition={{ type: "spring", stiffness: 450, damping: 25 }}
+          <button
             onPointerDown={() => prefetchRoute('pilulas')}
             onMouseEnter={() => prefetchRoute('pilulas')}
             onClick={() => { haptic.selection(); startTransition(() => navigate('/pilulas')); }}
             data-track="bottom_nav_click"
             data-track-destino="pilulas"
-            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-colors ${
+            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-all active:scale-95 duration-100 touch-manipulation cursor-pointer ${
               path.startsWith('/pilulas') ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
             }`}
             aria-label="Pílulas"
           >
             <Pill className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/pilulas') ? 'scale-110' : ''}`} strokeWidth={1.2} />
             <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Pílulas</span>
-          </motion.button>
+          </button>
 
           {/* Slot 6: Me Explique (Apenas Desktop) */}
-          <motion.button
-            whileTap={{ scale: 0.90 }}
-            transition={{ type: "spring", stiffness: 450, damping: 25 }}
-            onPointerDown={() => prefetchRoute('me-explique')}
-            onMouseEnter={() => prefetchRoute('me-explique')}
+          <button
+            onPointerDown={() => prefetchRoute('meExplique')}
+            onMouseEnter={() => prefetchRoute('meExplique')}
             onClick={() => { haptic.selection(); startTransition(() => navigate('/me-explique')); }}
             data-track="bottom_nav_click"
             data-track-destino="me-explique"
-            className={`hidden md:flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-colors ${
+            className={`hidden md:flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-all active:scale-95 duration-100 touch-manipulation cursor-pointer ${
               path.startsWith('/me-explique') ? 'text-amber-400 bg-amber-500/10 ring-1 ring-amber-500/25 shadow-sm' : 'text-white/80 hover:bg-white/10 hover:text-amber-300'
             }`}
             aria-label="Me Explique"
           >
             <Bot className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/me-explique') ? 'scale-110 text-amber-400' : ''}`} strokeWidth={1.2} />
             <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Me Explique</span>
-          </motion.button>
+          </button>
         </div>
       </div>
     </div>
@@ -369,461 +356,374 @@ const BottomNav = () => {
 
 
     {/* Estudos Sheet */}
-    <AnimatePresence>
-      {estudosOpen && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.18, ease: 'easeOut' }}
-            onClick={() => setEstudosOpen(false)}
-            className="fixed inset-0 z-[70] bg-background/80 "
-          />
-          <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
-            style={{ willChange: 'transform', transform: 'translateZ(0)' }}
-            className="fixed bottom-0 left-0 right-0 z-[80] bg-card border-t border-border rounded-t-2xl pb-safe "
-          >
-            <div className="flex items-center justify-center pt-2 pb-1">
-              <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
+    {estudosOpen && (
+      <>
+        <div
+          onClick={() => setEstudosOpen(false)}
+          className="fixed inset-0 z-[70] bg-background/80"
+        />
+        <div
+          className="fixed bottom-0 left-0 right-0 z-[80] bg-card border-t border-border rounded-t-2xl pb-safe shadow-2xl"
+        >
+          <div className="flex items-center justify-center pt-2 pb-1">
+            <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
+          </div>
+          <div className="flex items-center justify-between px-4 pb-3">
+            <div className="flex items-center gap-2">
+              <GraduationCap className="w-5 h-5 text-primary" />
+              <h3 className="font-display text-lg text-foreground">Estudos</h3>
+              <span className="ml-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-[#F59E0B]/40 bg-[#F59E0B]/10 text-[10px] font-body font-bold uppercase tracking-wider text-[#FBBF24] shadow-[0_0_10px_rgba(245,158,11,0.2)]">
+                 <Crown className="w-3 h-3 text-[#F59E0B]" strokeWidth={2.4} /> Premium
+              </span>
             </div>
-            <div className="flex items-center justify-between px-4 pb-3">
-              <div className="flex items-center gap-2">
-                <GraduationCap className="w-5 h-5 text-primary" />
-                <h3 className="font-display text-lg text-foreground">Estudos</h3>
-                <span className="ml-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-[#F59E0B]/40 bg-[#F59E0B]/10 text-[10px] font-body font-bold uppercase tracking-wider text-[#FBBF24] shadow-[0_0_10px_rgba(245,158,11,0.2)]">
-                   <Crown className="w-3 h-3 text-[#F59E0B]" strokeWidth={2.4} /> Premium
-                </span>
-              </div>
-              <button
-                onClick={() => { haptic.light(); setEstudosOpen(false); }}
-                aria-label="Fechar estudos"
-                className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center"
-              >
-                <X className="w-4 h-4 text-foreground" aria-hidden="true" />
-              </button>
-            </div>
-            <div className="px-4 pb-8 flex flex-col gap-3">
-              {ESTUDOS_ITENS.map((f, i) => {
-                const Icon = f.icon;
-                return (
-                  <motion.button
-                    key={f.id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    onPointerEnter={() => { if (f.prefetch) prefetchRoute(f.prefetch); }}
-                    onFocus={() => { if (f.prefetch) prefetchRoute(f.prefetch); }}
-                    onClick={() => handleEstudo(f.action)}
-                    data-track="estudo_abrir"
-                    data-estudo-id={f.id}
-                    data-estudo-nome={f.label}
-                    className="group flex items-center gap-4 p-4 min-h-[76px] rounded-xl bg-secondary/50 border border-border hover:border-primary/40 hover:bg-secondary transition-all text-left"
-                  >
-                    <Icon className="w-6 h-6 text-primary stroke-[1.5] shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-body text-base font-bold text-foreground leading-tight">{f.label}</p>
-                      <p className="font-body text-sm text-muted-foreground line-clamp-1">{f.desc}</p>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                  </motion.button>
-                );
-              })}
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+            <button
+              onClick={() => { haptic.light(); setEstudosOpen(false); }}
+              aria-label="Fechar estudos"
+              className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center cursor-pointer"
+            >
+              <X className="w-4 h-4 text-foreground" aria-hidden="true" />
+            </button>
+          </div>
+          <div className="px-4 pb-8 flex flex-col gap-3">
+            {ESTUDOS_ITENS.map((f) => {
+              const Icon = f.icon;
+              return (
+                <button
+                  key={f.id}
+                  onPointerEnter={() => { if (f.prefetch) prefetchRoute(f.prefetch); }}
+                  onFocus={() => { if (f.prefetch) prefetchRoute(f.prefetch); }}
+                  onClick={() => handleEstudo(f.action)}
+                  data-track="estudo_abrir"
+                  data-estudo-id={f.id}
+                  data-estudo-nome={f.label}
+                  className="group flex items-center gap-4 p-4 min-h-[76px] rounded-xl bg-secondary/50 border border-border hover:border-primary/40 hover:bg-secondary active:scale-[0.98] transition-all text-left cursor-pointer"
+                >
+                  <Icon className="w-6 h-6 text-primary stroke-[1.5] shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-body text-base font-bold text-foreground leading-tight">{f.label}</p>
+                    <p className="font-body text-sm text-muted-foreground line-clamp-1">{f.desc}</p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </>
+    )}
 
 
     {/* Ferramentas Sheet */}
-    <AnimatePresence>
-      {ferramentasOpen && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.18, ease: 'easeOut' }}
-            onClick={() => setFerramentasOpen(false)}
-            className="fixed inset-0 z-[70] bg-background/80 "
-          />
-          <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
-            style={{ willChange: 'transform', transform: 'translateZ(0)' }}
-            className="fixed inset-0 z-[80] bg-card  flex flex-col h-[100dvh] pt-[var(--sai-top)] pb-safe"
-          >
+    {ferramentasOpen && (
+      <>
+        <div
+          onClick={() => setFerramentasOpen(false)}
+          className="fixed inset-0 z-[70] bg-background/80"
+        />
+        <div
+          className="fixed inset-0 z-[80] bg-card flex flex-col h-[100dvh] pt-[var(--sai-top)] pb-safe shadow-2xl"
+        >
 
-            <div className="flex items-center justify-between px-5 pb-4 shrink-0">
-              <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
-                  <Gavel className="w-5 h-5 text-primary" />
+          <div className="flex items-center justify-between px-5 pb-4 shrink-0">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
+                <Gavel className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-display text-xl font-bold text-foreground leading-tight">Ferramentas</h3>
+                <p className="font-body text-xs text-muted-foreground">Recursos jurídicos e utilitários</p>
+              </div>
+            </div>
+            <button
+              onClick={() => { haptic.light(); setFerramentasOpen(false); }}
+              aria-label="Fechar ferramentas"
+              className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center cursor-pointer"
+            >
+              <ChevronDown className="w-5 h-5 text-foreground" aria-hidden="true" />
+            </button>
+          </div>
+          <div className="px-4 pb-8 overflow-y-auto flex-1">
+            <div className="rounded-2xl border border-border/60 bg-secondary/30 divide-y divide-border/50 overflow-hidden">
+              {FERRAMENTAS.map((f) => {
+                const Icon = f.icon;
+                return (
+                  <button
+                    key={f.id}
+                    onPointerEnter={() => { if (f.prefetch) prefetchRoute(f.prefetch); }}
+                    onFocus={() => { if (f.prefetch) prefetchRoute(f.prefetch); }}
+                    onClick={() => handleFerramenta(f.action)}
+                    data-track="ferramenta_abrir"
+                    data-ferramenta-id={f.id}
+                    data-ferramenta-nome={f.label}
+                    data-ferramenta-origin="bottom_sheet"
+                    className="w-full flex items-center gap-4 px-4 py-5 min-h-[84px] text-left hover:bg-secondary/60 active:bg-secondary transition-colors cursor-pointer"
+                  >
+                    <div className="w-14 h-14 rounded-2xl bg-background flex items-center justify-center text-primary shrink-0">
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <div className="font-body text-base font-semibold text-foreground truncate">{f.label}</div>
+                      </div>
+                      <div className="font-body text-[12px] text-muted-foreground truncate mt-0.5">{f.desc}</div>
+                    </div>
+                    {f.hot && (
+                      <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/15 text-primary text-[10px] font-bold uppercase tracking-wide border border-primary/30">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                        Em alta
+                      </span>
+                    )}
+                    <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </>
+    )}
+
+    {/* Assistente Chooser Sheet — grande, tela cheia */}
+    {/* Assistente Chooser Sheet — grande, tela cheia */}
+    {assistenteChooserOpen && (
+      <>
+        <div
+          onClick={() => setAssistenteChooserOpen(false)}
+          className="fixed inset-0 z-[70] bg-background/85"
+        />
+        <div
+          className="fixed bottom-0 left-0 right-0 z-[80] h-[92vh] bg-card border-t border-border rounded-t-3xl pb-safe flex flex-col md:max-w-3xl md:mx-auto md:max-h-[88vh] md:h-auto md:min-h-[70vh] md:rounded-3xl md:mb-6 md:border shadow-2xl"
+        >
+          <div className="flex items-center justify-center pt-3 pb-2 shrink-0">
+            <div className="w-12 h-1.5 rounded-full bg-muted-foreground/30" />
+          </div>
+          <div className="flex items-center justify-between px-5 pb-4 shrink-0">
+            <div className="flex items-center gap-2.5 min-w-0">
+              {horusView !== 'chooser' && (
+                <button
+                  onClick={() => setHorusView(horusView === 'main' ? 'chooser' : 'main')}
+                  aria-label="Voltar"
+                  className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center shrink-0 cursor-pointer"
+                >
+                  <ChevronRight className="w-5 h-5 text-foreground rotate-180" />
+                </button>
+              )}
+              <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shadow-lg shrink-0 ${horusView === 'chooser' ? 'bg-primary shadow-primary/30' : 'bg-emerald-500 shadow-emerald-500/30'}`}>
+                {horusView === 'chooser'
+                  ? <Scale className="w-6 h-6 text-primary-foreground" />
+                  : <WhatsAppIcon className="w-6 h-6 text-primary-foreground" />}
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-display text-xl font-bold text-foreground leading-tight truncate">
+                  {horusView === 'chooser'
+                    ? 'Assistente'
+                    : horusView === 'funcoes'
+                    ? 'Funções'
+                    : horusView === 'notificacoes'
+                    ? 'Notificações'
+                    : 'Assistente Horus'}
+                </h3>
+                <p className="font-body text-xs text-muted-foreground truncate">
+                  {horusView === 'chooser'
+                    ? 'Escolha onde falar com seu assistente'
+                    : horusView === 'funcoes'
+                    ? 'O que o Horus faz por você'
+                    : horusView === 'notificacoes'
+                    ? 'Escolha o que quer receber'
+                    : 'Seu assistente jurídico no WhatsApp'}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => { setAssistenteChooserOpen(false); setHorusView('chooser'); }}
+              aria-label="Fechar"
+              className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center shrink-0 cursor-pointer"
+            >
+              <X className="w-5 h-5 text-foreground" aria-hidden="true" />
+            </button>
+          </div>
+
+
+          <div className="flex-1 overflow-y-auto px-5 pt-2 pb-8">
+            {horusView === 'chooser' && (
+              <div className="flex flex-col gap-3 pt-2">
+                <button
+                  onClick={() => {
+                    haptic.selection();
+                    setAssistenteChooserOpen(false);
+                    setHorusView('chooser');
+                    setMentorOpen(true);
+                  }}
+                  className="group flex items-center gap-4 p-4 min-h-[80px] rounded-2xl bg-secondary/50 border border-border hover:border-primary/40 active:scale-[0.98] transition-all text-left cursor-pointer"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-primary/20 ring-1 ring-primary/40 flex items-center justify-center shrink-0">
+                    <Scale className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-body text-base font-bold text-foreground leading-tight">Assistente no app</p>
+                    <p className="font-body text-sm text-muted-foreground line-clamp-2">Converse aqui dentro, sem sair do app</p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                </button>
+
+                <button
+                  onClick={() => { haptic.selection(); setHorusView('main'); }}
+                  className="group flex items-center gap-4 p-4 min-h-[80px] rounded-2xl bg-secondary/50 border border-border hover:border-emerald-500/40 active:scale-[0.98] transition-all text-left cursor-pointer"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-emerald-500/20 ring-1 ring-emerald-400/40 flex items-center justify-center shrink-0">
+                    <WhatsAppIcon className="w-6 h-6 text-emerald-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-body text-base font-bold text-foreground leading-tight">Assistente no WhatsApp</p>
+                    <p className="font-body text-sm text-muted-foreground line-clamp-2">Fale com o Horus direto no WhatsApp</p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-400 transition-colors shrink-0" />
+                </button>
+              </div>
+            )}
+
+            {horusView === 'main' && (
+              <div className="flex flex-col gap-6">
+                {/* Logo + descrição + tags */}
+                <div className="flex flex-col items-center text-center gap-4">
+                  <div
+                    className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-xl shadow-primary/40 overflow-hidden ring-4 ring-background"
+                  >
+                    <img
+                      src={primeLogo}
+                      alt="Direito Prime"
+                      className="w-14 h-14 object-contain"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <h4 className="font-display text-lg font-bold text-foreground">Assistente Horus</h4>
+                    <p className="font-body text-sm text-muted-foreground max-w-[260px] leading-snug">
+                      Seu assistente jurídico no WhatsApp. Tire dúvidas, resuma documentos e receba avisos sobre o que importa para você.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {HORUS_TAGS.map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-3 py-1.5 rounded-full bg-secondary/70 border border-border/60 text-[11px] font-semibold text-foreground/80"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-display text-xl font-bold text-foreground leading-tight">Ferramentas</h3>
-                  <p className="font-body text-xs text-muted-foreground">Recursos jurídicos e utilitários</p>
+
+                {/* CTA centralizado — Falar com Horus */}
+                <a
+                  href={`https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(WHATSAPP_MSG)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setAssistenteChooserOpen(false)}
+                  className="mx-auto w-full max-w-sm h-14 rounded-full bg-gradient-to-r from-emerald-500 to-green-600 shadow-lg shadow-emerald-500/30 active:scale-[0.98] transition-transform flex items-center justify-center gap-2.5 cursor-pointer"
+                >
+                  <WhatsAppIcon className="w-6 h-6 text-primary-foreground" />
+                  <span className="font-display text-base font-bold text-primary-foreground">Falar com Horus</span>
+                </a>
+
+                {/* Lista com 2 opções */}
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={() => { haptic.selection(); setHorusView('funcoes'); }}
+                    className="group flex items-center gap-4 p-4 min-h-[76px] rounded-2xl bg-secondary/50 border border-border hover:border-emerald-500/40 active:scale-[0.98] transition-all text-left cursor-pointer"
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-emerald-500/20 ring-1 ring-emerald-400/40 flex items-center justify-center shrink-0">
+                      <Sparkles className="w-6 h-6 text-emerald-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-body text-base font-bold text-foreground leading-tight">Funções</p>
+                      <p className="font-body text-sm text-muted-foreground line-clamp-1">O que o Horus pode fazer</p>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-400 transition-colors shrink-0" />
+                  </button>
+
+                  <button
+                    onClick={() => { haptic.selection(); setHorusView('notificacoes'); }}
+                    className="group flex items-center gap-4 p-4 min-h-[76px] rounded-2xl bg-secondary/50 border border-border hover:border-emerald-500/40 active:scale-[0.98] transition-all text-left cursor-pointer"
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-amber-500/20 ring-1 ring-amber-400/40 flex items-center justify-center shrink-0">
+                      <Bell className="w-6 h-6 text-amber-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-body text-base font-bold text-foreground leading-tight">Notificações</p>
+                      <p className="font-body text-sm text-muted-foreground line-clamp-1">Escolha o que receber no WhatsApp</p>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-400 transition-colors shrink-0" />
+                  </button>
                 </div>
               </div>
-              <button
-                onClick={() => { haptic.light(); setFerramentasOpen(false); }}
-                aria-label="Fechar ferramentas"
-                className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center"
-              >
-                <ChevronDown className="w-5 h-5 text-foreground" aria-hidden="true" />
-              </button>
-            </div>
-            <div className="px-4 pb-8 overflow-y-auto flex-1">
-              <div className="rounded-2xl border border-border/60 bg-secondary/30 divide-y divide-border/50 overflow-hidden">
-                {FERRAMENTAS.map((f) => {
+            )}
+
+
+            {horusView === 'funcoes' && (
+              <div className="flex flex-col gap-2.5">
+                {[
+                  { icon: Send, color: 'emerald', label: 'Enviar mensagem', desc: 'Mande qualquer dúvida por texto no WhatsApp e receba resposta na hora.' },
+                  { icon: Mic, color: 'sky', label: 'Áudio por voz', desc: 'Grave um áudio explicando sua dúvida. O Horus entende e responde em áudio também.' },
+                  { icon: FileText, color: 'rose', label: 'Ler PDF', desc: 'Envie um PDF de prova, artigo ou trabalho e peça resumo, correção ou explicação.' },
+                  { icon: ImageIcon, color: 'violet', label: 'Ler imagem', desc: 'Envie foto do caderno, prova ou documento — ele lê e comenta.' },
+                  { icon: Gavel, color: 'amber', label: 'Dúvidas jurídicas', desc: 'Explica artigos, súmulas, jurisprudência e conceitos de forma simples.' },
+                  { icon: BookOpen, color: 'cyan', label: 'Explicar lição', desc: 'Peça explicação passo a passo de qualquer conteúdo que estiver estudando.' },
+                ].map((f) => {
                   const Icon = f.icon;
                   return (
-                    <button
-                      key={f.id}
-                      onPointerEnter={() => { if (f.prefetch) prefetchRoute(f.prefetch); }}
-                      onFocus={() => { if (f.prefetch) prefetchRoute(f.prefetch); }}
-                      onClick={() => handleFerramenta(f.action)}
-                      data-track="ferramenta_abrir"
-                      data-ferramenta-id={f.id}
-                      data-ferramenta-nome={f.label}
-                      data-ferramenta-origin="bottom_sheet"
-                      className="w-full flex items-center gap-4 px-4 py-5 min-h-[84px] text-left hover:bg-secondary/60 active:bg-secondary transition-colors"
+                    <div
+                      key={f.label}
+                      className="flex items-start gap-3 p-4 rounded-2xl bg-secondary/50 border border-border"
                     >
-                      <div className="w-14 h-14 rounded-2xl bg-background flex items-center justify-center text-primary shrink-0">
-                        <Icon className="w-6 h-6" />
+                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${HORUS_COLOR[f.color].bg}`}>
+                        <Icon className={`w-5 h-5 ${HORUS_COLOR[f.color].text}`} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <div className="font-body text-base font-semibold text-foreground truncate">{f.label}</div>
-                        </div>
-                        <div className="font-body text-[12px] text-muted-foreground truncate mt-0.5">{f.desc}</div>
+                        <p className="font-body text-base font-bold text-foreground leading-tight">{f.label}</p>
+                        <p className="font-body text-sm text-muted-foreground leading-snug mt-1">{f.desc}</p>
                       </div>
-                      {f.hot && (
-                        <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/15 text-primary text-[10px] font-bold uppercase tracking-wide border border-primary/30">
-                          <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                          Em alta
-                        </span>
-                      )}
-                      <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
-                    </button>
+                    </div>
                   );
                 })}
               </div>
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+            )}
 
-    {/* Assistente Chooser Sheet — grande, tela cheia */}
-    <AnimatePresence>
-      {assistenteChooserOpen && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.18, ease: 'easeOut' }}
-            onClick={() => setAssistenteChooserOpen(false)}
-            className="fixed inset-0 z-[70] bg-background/85 "
-          />
-          <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
-            style={{ willChange: 'transform', transform: 'translateZ(0)' }}
-            className="fixed bottom-0 left-0 right-0 z-[80] h-[92vh] bg-card border-t border-border rounded-t-3xl pb-safe  flex flex-col md:max-w-3xl md:mx-auto md:max-h-[88vh] md:h-auto md:min-h-[70vh] md:rounded-3xl md:mb-6 md:border"
-          >
-            <div className="flex items-center justify-center pt-3 pb-2 shrink-0">
-              <div className="w-12 h-1.5 rounded-full bg-muted-foreground/30" />
-            </div>
-            <div className="flex items-center justify-between px-5 pb-4 shrink-0">
-              <div className="flex items-center gap-2.5 min-w-0">
-                {horusView !== 'chooser' && (
-                  <button
-                    onClick={() => setHorusView(horusView === 'main' ? 'chooser' : 'main')}
-                    aria-label="Voltar"
-                    className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center shrink-0"
-                  >
-                    <ChevronRight className="w-5 h-5 text-foreground rotate-180" />
-                  </button>
-                )}
-                <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shadow-lg shrink-0 ${horusView === 'chooser' ? 'bg-primary shadow-primary/30' : 'bg-emerald-500 shadow-emerald-500/30'}`}>
-                  {horusView === 'chooser'
-                    ? <Scale className="w-6 h-6 text-primary-foreground" />
-                    : <WhatsAppIcon className="w-6 h-6 text-primary-foreground" />}
-                </div>
-                <div className="min-w-0">
-                  <h3 className="font-display text-xl font-bold text-foreground leading-tight truncate">
-                    {horusView === 'chooser'
-                      ? 'Assistente'
-                      : horusView === 'funcoes'
-                      ? 'Funções'
-                      : horusView === 'notificacoes'
-                      ? 'Notificações'
-                      : 'Assistente Horus'}
-                  </h3>
-                  <p className="font-body text-xs text-muted-foreground truncate">
-                    {horusView === 'chooser'
-                      ? 'Escolha onde falar com seu assistente'
-                      : horusView === 'funcoes'
-                      ? 'O que o Horus faz por você'
-                      : horusView === 'notificacoes'
-                      ? 'Escolha o que quer receber'
-                      : 'Seu assistente jurídico no WhatsApp'}
-                  </p>
-                </div>
+            {horusView === 'notificacoes' && (
+              <div className="flex flex-col gap-2.5">
+                {[
+                  { icon: Newspaper, color: 'sky', label: 'Boletim jurídico diário', desc: 'Resumo diário das principais notícias do Direito.' },
+                  { icon: Gavel, color: 'amber', label: 'Boletim de leis diárias', desc: 'Novas leis e decretos publicados no DOU.' },
+                  { icon: Star, color: 'rose', label: 'Mudança em artigo favorito', desc: 'Aviso quando um artigo que você favoritou for alterado.' },
+                  { icon: ScanEye, color: 'violet', label: 'Radar Legislativo', desc: 'Andamento de PLs que você acompanha.' },
+                ].map((n) => {
+                  const Icon = n.icon;
+                  return (
+                    <label
+                      key={n.label}
+                      className="flex items-center gap-3 p-4 rounded-2xl bg-secondary/50 border border-border cursor-pointer"
+                    >
+                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${HORUS_COLOR[n.color].bg}`}>
+                        <Icon className={`w-5 h-5 ${HORUS_COLOR[n.color].text}`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-body text-sm font-bold text-foreground leading-tight">{n.label}</p>
+                        <p className="font-body text-xs text-muted-foreground leading-snug mt-0.5 line-clamp-2">{n.desc}</p>
+                      </div>
+                      <input type="checkbox" className="w-5 h-5 accent-emerald-500 shrink-0" defaultChecked />
+                    </label>
+                  );
+                })}
+                <p className="font-body text-xs text-muted-foreground mt-3 px-1 leading-snug">
+                  As notificações são enviadas pelo WhatsApp do Horus. Você pode desativar a qualquer momento.
+                </p>
               </div>
-              <button
-                onClick={() => { setAssistenteChooserOpen(false); setHorusView('chooser'); }}
-                aria-label="Fechar"
-                className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center shrink-0"
-              >
-                <X className="w-5 h-5 text-foreground" aria-hidden="true" />
-              </button>
-            </div>
-
-
-            <div className="flex-1 overflow-y-auto px-5 pt-2 pb-8">
-              {horusView === 'chooser' && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
-                  className="flex flex-col gap-3 pt-2"
-                >
-                  <motion.button
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.05 }}
-                    onClick={() => {
-                      haptic.selection();
-                      setAssistenteChooserOpen(false);
-                      setHorusView('chooser');
-                      setMentorOpen(true);
-                    }}
-                    className="group flex items-center gap-4 p-4 min-h-[80px] rounded-2xl bg-secondary/50 border border-border hover:border-primary/40 transition-all text-left"
-                  >
-                    <div className="w-12 h-12 rounded-xl bg-primary/20 ring-1 ring-primary/40 flex items-center justify-center shrink-0">
-                      <Scale className="w-6 h-6 text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-body text-base font-bold text-foreground leading-tight">Assistente no app</p>
-                      <p className="font-body text-sm text-muted-foreground line-clamp-2">Converse aqui dentro, sem sair do app</p>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                  </motion.button>
-
-                  <motion.button
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.12 }}
-                    onClick={() => { haptic.selection(); setHorusView('main'); }}
-                    className="group flex items-center gap-4 p-4 min-h-[80px] rounded-2xl bg-secondary/50 border border-border hover:border-emerald-500/40 transition-all text-left"
-                  >
-                    <div className="w-12 h-12 rounded-xl bg-emerald-500/20 ring-1 ring-emerald-400/40 flex items-center justify-center shrink-0">
-                      <WhatsAppIcon className="w-6 h-6 text-emerald-400" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-body text-base font-bold text-foreground leading-tight">Assistente no WhatsApp</p>
-                      <p className="font-body text-sm text-muted-foreground line-clamp-2">Fale com o Horus direto no WhatsApp</p>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-400 transition-colors shrink-0" />
-                  </motion.button>
-                </motion.div>
-              )}
-
-              {horusView === 'main' && (
-                <div className="flex flex-col gap-6">
-                  {/* Logo + descrição + tags */}
-                  <div className="flex flex-col items-center text-center gap-4">
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
-                      className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-xl shadow-primary/40 overflow-hidden ring-4 ring-background"
-                    >
-                      <img
-                        src={primeLogo}
-                        alt="Direito Prime"
-                        className="w-14 h-14 object-contain"
-                      />
-                    </motion.div>
-
-                    <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.05 }}
-                      className="space-y-1"
-                    >
-                      <h4 className="font-display text-lg font-bold text-foreground">Assistente Horus</h4>
-                      <p className="font-body text-sm text-muted-foreground max-w-[260px] leading-snug">
-                        Seu assistente jurídico no WhatsApp. Tire dúvidas, resuma documentos e receba avisos sobre o que importa para você.
-                      </p>
-                    </motion.div>
-
-                    <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 }}
-                      className="flex flex-wrap justify-center gap-2"
-                    >
-                      {HORUS_TAGS.map((tag, i) => (
-                        <motion.span
-                          key={tag}
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: 0.12 + i * 0.03 }}
-                          className="px-3 py-1.5 rounded-full bg-secondary/70 border border-border/60 text-[11px] font-semibold text-foreground/80"
-                        >
-                          {tag}
-                        </motion.span>
-                      ))}
-                    </motion.div>
-                  </div>
-
-                  {/* CTA centralizado — Falar com Horus */}
-                  <motion.a
-                    href={`https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(WHATSAPP_MSG)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2, duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
-                    onClick={() => setAssistenteChooserOpen(false)}
-                    className="mx-auto w-full max-w-sm h-14 rounded-full bg-gradient-to-r from-emerald-500 to-green-600 shadow-lg shadow-emerald-500/30 active:scale-[0.98] transition-transform flex items-center justify-center gap-2.5"
-                  >
-                    <WhatsAppIcon className="w-6 h-6 text-primary-foreground" />
-                    <span className="font-display text-base font-bold text-primary-foreground">Falar com Horus</span>
-                  </motion.a>
-
-                  {/* Lista com 2 opções */}
-                  <div className="flex flex-col gap-3">
-                    <motion.button
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.25 }}
-                      onClick={() => { haptic.selection(); setHorusView('funcoes'); }}
-                      className="group flex items-center gap-4 p-4 min-h-[76px] rounded-2xl bg-secondary/50 border border-border hover:border-emerald-500/40 transition-all text-left"
-                    >
-                      <div className="w-12 h-12 rounded-xl bg-emerald-500/20 ring-1 ring-emerald-400/40 flex items-center justify-center shrink-0">
-                        <Sparkles className="w-6 h-6 text-emerald-400" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-body text-base font-bold text-foreground leading-tight">Funções</p>
-                        <p className="font-body text-sm text-muted-foreground line-clamp-1">O que o Horus pode fazer</p>
-                      </div>
-                      <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-400 transition-colors shrink-0" />
-                    </motion.button>
-
-                    <motion.button
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 }}
-                      onClick={() => { haptic.selection(); setHorusView('notificacoes'); }}
-                      className="group flex items-center gap-4 p-4 min-h-[76px] rounded-2xl bg-secondary/50 border border-border hover:border-emerald-500/40 transition-all text-left"
-                    >
-                      <div className="w-12 h-12 rounded-xl bg-amber-500/20 ring-1 ring-amber-400/40 flex items-center justify-center shrink-0">
-                        <Bell className="w-6 h-6 text-amber-400" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-body text-base font-bold text-foreground leading-tight">Notificações</p>
-                        <p className="font-body text-sm text-muted-foreground line-clamp-1">Escolha o que receber no WhatsApp</p>
-                      </div>
-                      <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-400 transition-colors shrink-0" />
-                    </motion.button>
-                  </div>
-                </div>
-              )}
-
-
-              {horusView === 'funcoes' && (
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
-                  className="flex flex-col gap-2.5"
-                >
-                  {[
-                    { icon: Send, color: 'emerald', label: 'Enviar mensagem', desc: 'Mande qualquer dúvida por texto no WhatsApp e receba resposta na hora.' },
-                    { icon: Mic, color: 'sky', label: 'Áudio por voz', desc: 'Grave um áudio explicando sua dúvida. O Horus entende e responde em áudio também.' },
-                    { icon: FileText, color: 'rose', label: 'Ler PDF', desc: 'Envie um PDF de prova, artigo ou trabalho e peça resumo, correção ou explicação.' },
-                    { icon: ImageIcon, color: 'violet', label: 'Ler imagem', desc: 'Envie foto do caderno, prova ou documento — ele lê e comenta.' },
-                    { icon: Gavel, color: 'amber', label: 'Dúvidas jurídicas', desc: 'Explica artigos, súmulas, jurisprudência e conceitos de forma simples.' },
-                    { icon: BookOpen, color: 'cyan', label: 'Explicar lição', desc: 'Peça explicação passo a passo de qualquer conteúdo que estiver estudando.' },
-                  ].map((f, i) => {
-                    const Icon = f.icon;
-                    return (
-                      <motion.div
-                        key={f.label}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.04 }}
-                        className="flex items-start gap-3 p-4 rounded-2xl bg-secondary/50 border border-border"
-                      >
-                        <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${HORUS_COLOR[f.color].bg}`}>
-                          <Icon className={`w-5 h-5 ${HORUS_COLOR[f.color].text}`} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-body text-base font-bold text-foreground leading-tight">{f.label}</p>
-                          <p className="font-body text-sm text-muted-foreground leading-snug mt-1">{f.desc}</p>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </motion.div>
-              )}
-
-              {horusView === 'notificacoes' && (
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
-                  className="flex flex-col gap-2.5"
-                >
-                  {[
-                    { icon: Newspaper, color: 'sky', label: 'Boletim jurídico diário', desc: 'Resumo diário das principais notícias do Direito.' },
-                    { icon: Gavel, color: 'amber', label: 'Boletim de leis diárias', desc: 'Novas leis e decretos publicados no DOU.' },
-                    { icon: Star, color: 'rose', label: 'Mudança em artigo favorito', desc: 'Aviso quando um artigo que você favoritou for alterado.' },
-                    { icon: ScanEye, color: 'violet', label: 'Radar Legislativo', desc: 'Andamento de PLs que você acompanha.' },
-                  ].map((n, i) => {
-                    const Icon = n.icon;
-                    return (
-                      <motion.label
-                        key={n.label}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.04 }}
-                        className="flex items-center gap-3 p-4 rounded-2xl bg-secondary/50 border border-border cursor-pointer"
-                      >
-                        <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${HORUS_COLOR[n.color].bg}`}>
-                          <Icon className={`w-5 h-5 ${HORUS_COLOR[n.color].text}`} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-body text-sm font-bold text-foreground leading-tight">{n.label}</p>
-                          <p className="font-body text-xs text-muted-foreground leading-snug mt-0.5 line-clamp-2">{n.desc}</p>
-                        </div>
-                        <input type="checkbox" className="w-5 h-5 accent-emerald-500 shrink-0" defaultChecked />
-                      </motion.label>
-                    );
-                  })}
-                  <p className="font-body text-xs text-muted-foreground mt-3 px-1 leading-snug">
-                    As notificações são enviadas pelo WhatsApp do Horus. Você pode desativar a qualquer momento.
-                  </p>
-                </motion.div>
-              )}
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+            )}
+          </div>
+        </div>
+      </>
+    )}
 
 
 

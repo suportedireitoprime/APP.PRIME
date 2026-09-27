@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import {
   GraduationCap, Layers, ListChecks, Camera, Scale, Gavel, ScrollText,
   BookOpen, Library, FileText, Video, Headphones, Workflow, BookA, Bookmark,
@@ -135,47 +135,39 @@ export function SideMenuFuncoes({ onNavigate }: SideMenuFuncoesProps) {
                     >
                       <Icon className="w-5 h-5 shrink-0 text-hero-panel" aria-hidden="true" />
                       <span className="font-body text-[15px] font-medium text-foreground/90 flex-1">{item.label}</span>
-                      <motion.div
-                        animate={{ rotate: legislacaoAberta ? 180 : 0 }}
-                        transition={{ duration: 0.08, ease: 'easeInOut' }}
-                        className="shrink-0"
+                      <div
+                        className={`shrink-0 transition-transform duration-150 ${legislacaoAberta ? 'rotate-180' : ''}`}
                       >
                         <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                      </motion.div>
+                      </div>
                     </button>
 
-                    <AnimatePresence initial={false}>
-                      {legislacaoAberta && (
-                        <motion.div
-                          initial={{ y: -5, opacity: 0 }}
-                          animate={{ y: 0, opacity: 1 }}
-                          exit={{ y: -5, opacity: 0 }}
-                          transition={{ duration: 0.08, ease: [0.16, 1, 0.3, 1] }}
-                          className="overflow-hidden bg-background/50 border-t border-border/40 divide-y divide-border/30"
-                        >
-                          {item.subItems?.map((sub) => {
-                            const SubIcon = sub.icon;
-                            return (
-                              <button
-                                key={sub.id}
-                                type="button"
-                                onPointerDown={() => handleWarm('vadeMecum')}
-                                onMouseEnter={() => handleWarm('vadeMecum')}
-                                onClick={() => {
-                                  haptic.selection();
-                                  onNavigate(sub.route);
-                                }}
-                                className="w-full flex items-center gap-3 pl-8 pr-4 py-3 text-left transition-all duration-[80ms] hover:bg-secondary/70 active:scale-[0.99] active:bg-muted/60"
-                              >
-                                <SubIcon className="w-4 h-4 shrink-0 text-muted-foreground" />
-                                <span className="font-body text-[13.5px] text-foreground/80 flex-1">{sub.label}</span>
-                                <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/60" />
-                              </button>
-                            );
-                          })}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                    {legislacaoAberta && (
+                      <div
+                        className="overflow-hidden bg-background/50 border-t border-border/40 divide-y divide-border/30"
+                      >
+                        {item.subItems?.map((sub) => {
+                          const SubIcon = sub.icon;
+                          return (
+                            <button
+                              key={sub.id}
+                              type="button"
+                              onPointerDown={() => handleWarm('vadeMecum')}
+                              onMouseEnter={() => handleWarm('vadeMecum')}
+                              onClick={() => {
+                                haptic.selection();
+                                onNavigate(sub.route);
+                              }}
+                              className="w-full flex items-center gap-3 pl-8 pr-4 py-3 text-left transition-all duration-[80ms] hover:bg-secondary/70 active:scale-[0.99] active:bg-muted/60"
+                            >
+                              <SubIcon className="w-4 h-4 shrink-0 text-muted-foreground" />
+                              <span className="font-body text-[13.5px] text-foreground/80 flex-1">{sub.label}</span>
+                              <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/60" />
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 );
               }

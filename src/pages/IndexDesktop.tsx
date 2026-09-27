@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, Suspense, useCallback } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate } from 'react-router-dom';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { motion } from 'framer-motion';
 import { Scale, Gavel, BookOpenText, GraduationCap, Library, MessageSquare, Search, Bell, Bird } from 'lucide-react';
 import heroImageAsset from '@/assets/hero-vademecum.webp';
 const heroImage = heroImageAsset;
@@ -195,31 +194,17 @@ const IndexDesktop = () => {
                           <p className="mb-3 border-b border-border pb-2 text-[11px] font-body font-semibold uppercase tracking-widest text-muted-foreground">
                             {group.label}
                           </p>
-                          <motion.div 
-                            className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3"
-                            variants={{
-                              hidden: { opacity: 0 },
-                              show: { opacity: 1, transition: { staggerChildren: 0.05 } }
-                            }}
-                            initial="hidden"
-                            animate="show"
-                          >
+                          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3">
                             {group.tools.map((tool) => {
                               const Icon = tool.icon;
                               return (
-                                <motion.button
+                                <button
                                   key={tool.id}
-                                  variants={{
-                                    hidden: { opacity: 0, y: 15 },
-                                    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-                                  }}
-                                  whileHover={{ scale: 1.02 }}
-                                  whileTap={{ scale: 0.95 }}
                                   onClick={() => {
                                     if (tool.id === 'assistente') { setAssistenteOpen(true); return; }
                                     navigate(tool.route);
                                   }}
-                                  className="flex items-center gap-3 p-3 rounded-2xl bg-card border border-border hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/10 transition-all text-left group cursor-pointer focus-visible:outline-none"
+                                  className="flex items-center gap-3 p-3 rounded-2xl bg-card border border-border hover:border-primary/40 hover:-translate-y-0.5 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg hover:shadow-primary/10 transition-all text-left group cursor-pointer focus-visible:outline-none"
                                 >
                                   <span
                                     className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center shadow-sm"
@@ -231,10 +216,10 @@ const IndexDesktop = () => {
                                     <span className="block font-display text-[13px] font-bold text-foreground group-hover:text-primary transition-colors truncate">{tool.label}</span>
                                     <span className="block text-[11px] text-muted-foreground leading-tight line-clamp-1">{tool.desc}</span>
                                   </span>
-                                </motion.button>
+                                </button>
                               );
                             })}
-                          </motion.div>
+                          </div>
                         </section>
                       ))}
                     </div>

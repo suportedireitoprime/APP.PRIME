@@ -1,5 +1,4 @@
 import { lazy, Suspense, useEffect, useState } from "react";
-import { AnimatePresence } from "framer-motion";
 import { initAnalytics, trackPageview, setAnalyticsUserWithProfile } from "@/lib/analytics";
 import { useScreenTracking } from "@/lib/screenTracking";
 import { initNavTelemetry, markRouteChange } from "@/lib/navTelemetry";
@@ -75,11 +74,7 @@ import { useAppUpdateStore } from "@/lib/appUpdateStore";
 
 function ForceUpdateWrapper() {
   const isUpdateRequired = useAppUpdateStore((s) => s.isUpdateRequired);
-  return (
-    <AnimatePresence>
-      {isUpdateRequired && <ForceUpdateScreen />}
-    </AnimatePresence>
-  );
+  return isUpdateRequired ? <ForceUpdateScreen /> : null;
 }
 
 // Eagerly loaded (critical path)

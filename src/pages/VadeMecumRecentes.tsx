@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, History, Calendar, Sparkles } from 'lucide-react';
-import { motion } from 'framer-motion';
 import VadeMecumSubpage from '@/components/vademecum/outros/VadeMecumSubpage';
 import { supabase } from '@/integrations/supabase/client';
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
@@ -62,14 +61,12 @@ const VadeMecumRecentes = () => {
       ) : (
         <div className="space-y-3">
           {alteracoes.map((alt) => (
-            <motion.button
+            <button
               key={alt.id}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
               onClick={() => {
                 navigate(`/legislacao/${tipoToSlug(alt.lei.tipo)}/${leiToSlug({ id: alt.lei_id, nome: alt.lei.nome })}`);
               }}
-              className="w-full group flex flex-col p-4 rounded-2xl bg-card border border-border text-left hover:border-primary/50 transition-colors focus-visible:outline-none"
+              className="w-full group flex flex-col p-4 rounded-2xl bg-card border border-border text-left hover:border-primary/50 hover:scale-[1.01] active:scale-[0.98] transition-all focus-visible:outline-none cursor-pointer"
             >
               <div className="w-full flex items-center justify-between mb-2">
                 <span className="font-display font-bold text-[15px] text-foreground truncate max-w-[85%] group-hover:text-primary transition-colors">{alt.lei.nome}</span>
@@ -85,7 +82,7 @@ const VadeMecumRecentes = () => {
                 <Calendar className="w-3.5 h-3.5" />
                 <span>Atualizado em {new Date(alt.data_alteracao || alt.criado_em).toLocaleDateString('pt-BR')}</span>
               </div>
-            </motion.button>
+            </button>
           ))}
         </div>
       )}

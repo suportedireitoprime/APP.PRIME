@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ArrowLeft, Calendar, ChevronRight, FileText, Loader2, Scale, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -140,10 +140,7 @@ const LeiOrdinariaView: React.FC<LeiOrdinariaViewProps> = ({
                     }}
                     className="pb-2"
                   >
-                    <motion.button
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i < 10 ? i * 0.015 : 0 }}
+                    <button
                       onClick={() => setOpenLeiOrd(lei)}
                       className="w-full text-left rounded-2xl bg-card hover:bg-secondary/60 active:scale-[0.98] transition-all group flex overflow-hidden min-h-[82px]"
                     >
@@ -169,7 +166,7 @@ const LeiOrdinariaView: React.FC<LeiOrdinariaViewProps> = ({
                         </div>
                         <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0 mt-3 transition-colors" />
                       </div>
-                    </motion.button>
+                    </button>
                   </div>
                 );
               })}
@@ -210,13 +207,10 @@ const LeiOrdinariaView: React.FC<LeiOrdinariaViewProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
           {ANOS_LEIS_ORDINARIAS.map((ano, i) => (
-            <motion.button
+            <button
               key={ano}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
               onClick={() => setSelectedAno(ano)}
-              className="w-full text-left rounded-xl p-5 bg-card hover:bg-secondary/50 transition-all group flex items-center gap-4"
+              className="w-full text-left rounded-xl p-5 bg-card hover:bg-secondary/50 active:scale-[0.98] transition-all group flex items-center gap-4"
               style={{ borderLeft: '3px solid hsl(var(--primary))' }}
             >
               <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -229,7 +223,7 @@ const LeiOrdinariaView: React.FC<LeiOrdinariaViewProps> = ({
                 <p className="text-muted-foreground text-sm">Leis Ordinárias</p>
               </div>
               <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors ml-auto" />
-            </motion.button>
+            </button>
           ))}
         </div>
       </div>

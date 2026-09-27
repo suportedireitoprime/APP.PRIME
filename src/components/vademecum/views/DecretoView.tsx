@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ArrowLeft, Calendar, ChevronRight, Loader2, ScrollText, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -142,12 +142,9 @@ const DecretoView: React.FC<DecretoViewProps> = ({
                       }}
                       className="pb-2"
                     >
-                      <motion.button
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i < 10 ? i * 0.015 : 0 }}
+                      <button
                         onClick={() => setOpenDecreto(dec)}
-                        className={`w-full text-left rounded-2xl transition-all group flex overflow-hidden min-h-[82px] ${isActive ? 'bg-primary shadow-md' : 'bg-card hover:bg-secondary/50 border border-transparent'}`}
+                        className={`w-full text-left rounded-2xl active:scale-[0.98] transition-all group flex overflow-hidden min-h-[82px] ${isActive ? 'bg-primary shadow-md' : 'bg-card hover:bg-secondary/50 border border-transparent'}`}
                       >
                         <div className={`w-1.5 shrink-0 rounded-l-2xl ${isActive ? 'bg-primary-foreground' : 'bg-primary/50'}`} />
                         <div className="flex items-center gap-3 p-4 flex-1 min-w-0">
@@ -171,7 +168,7 @@ const DecretoView: React.FC<DecretoViewProps> = ({
                           </div>
                           <ChevronRight className={`w-4 h-4 shrink-0 mt-3 transition-colors ${isActive ? 'text-primary-foreground' : 'text-muted-foreground group-hover:text-primary'}`} />
                         </div>
-                      </motion.button>
+                      </button>
                     </div>
                   );
                 })}
@@ -225,13 +222,10 @@ const DecretoView: React.FC<DecretoViewProps> = ({
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 py-6">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {ANOS_DECRETOS.map((ano, i) => (
-            <motion.button
+            <button
               key={ano}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
               onClick={() => setSelectedAnoDecreto(ano)}
-              className="w-full text-left rounded-xl p-5 bg-card hover:bg-secondary/50 transition-all group flex items-center gap-4"
+              className="w-full text-left rounded-xl p-5 bg-card hover:bg-secondary/50 active:scale-[0.98] transition-all group flex items-center gap-4"
               style={{ borderLeft: '3px solid hsl(var(--primary))' }}
             >
               <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -244,7 +238,7 @@ const DecretoView: React.FC<DecretoViewProps> = ({
                 <p className="text-muted-foreground text-sm">Decretos</p>
               </div>
               <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors ml-auto" />
-            </motion.button>
+            </button>
           ))}
         </div>
       </div>

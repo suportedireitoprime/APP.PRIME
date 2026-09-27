@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import { useNavigationType } from "react-router-dom";
 
 interface PageTransitionProps {
   children: ReactNode;
@@ -9,13 +8,8 @@ interface PageTransitionProps {
 }
 
 /**
- * Transição de página CSS-only nativa (idêntica ao VACATIO-APP).
- * Em navegações POP (voltar do browser/gesto/botão voltar nativo) ou instant,
- * pula a animação de entrada para resposta instantânea a 0ms (comportamento nativo puro).
- * Em PUSH/REPLACE utiliza a animação acelerada por GPU `animate-page-in`.
- *
- * Elimina o framer-motion na troca de rotas e remove o <Suspense> aninhado,
- * impedindo o piscar de esqueletos durante a navegação.
+ * Contêiner de página nativo puro (Padrão Ouro 0ms Latência).
+ * Renderização 100% instantânea sem wrappers de animação ou delays de JS.
  */
 const PageTransition = ({ children, className }: PageTransitionProps) => {
   const cls = `min-h-dvh w-full max-w-full overflow-x-hidden ${className || ""}`.trim();

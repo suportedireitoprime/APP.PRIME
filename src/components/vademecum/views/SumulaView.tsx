@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ArrowLeft, BadgeCheck, Ban, ChevronRight, Gavel, Loader2, Scale, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -134,12 +134,9 @@ const SumulaView: React.FC<SumulaViewProps> = ({
                     }}
                     className="pb-2"
                   >
-                    <motion.button
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: Math.min(i * 0.01, 0.5) }}
+                    <button
                       onClick={() => setOpenSumula(sumula)}
-                      className="w-full text-left rounded-2xl bg-card hover:bg-secondary/60 transition-all group flex overflow-hidden min-h-[82px]"
+                      className="w-full text-left rounded-2xl bg-card hover:bg-secondary/60 active:scale-[0.98] transition-all group flex overflow-hidden min-h-[82px]"
                     >
                       <div
                         className="w-1.5 rounded-l-2xl shrink-0"
@@ -171,7 +168,7 @@ const SumulaView: React.FC<SumulaViewProps> = ({
                         </div>
                         <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0 mt-3 transition-colors" />
                       </div>
-                    </motion.button>
+                    </button>
                   </div>
                 );
               })}
@@ -227,13 +224,10 @@ const SumulaView: React.FC<SumulaViewProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6">
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {SUMULA_TRIBUNAIS.map((trib, i) => (
-            <motion.button
+            <button
               key={trib.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
               onClick={() => setSelectedTribunal(trib.id)}
-              className="w-full text-left rounded-xl p-5 bg-card hover:bg-secondary/50 transition-all group flex items-center gap-4"
+              className="w-full text-left rounded-xl p-5 bg-card hover:bg-secondary/50 active:scale-[0.98] transition-all group flex items-center gap-4"
               style={{ borderLeft: `3px solid ${trib.iconColor}` }}
             >
               <div
@@ -249,7 +243,7 @@ const SumulaView: React.FC<SumulaViewProps> = ({
                 <p className="text-muted-foreground text-xs">{trib.descricao}</p>
               </div>
               <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
-            </motion.button>
+            </button>
           ))}
         </div>
       </div>

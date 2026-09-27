@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, ScrollText, Gavel, Scale, Newspaper, ListChecks } from 'lucide-react';
-import { motion } from 'framer-motion';
 import VadeMecumSubpage from '@/components/vademecum/outros/VadeMecumSubpage';
 
 const ITENS = [
@@ -21,12 +20,10 @@ const VadeMecumSumulas = () => {
         {ITENS.map((i) => {
           const Icon = i.icon;
           return (
-            <motion.button
+            <button
               key={i.to}
-              whileHover={{ scale: 1.015 }}
-              whileTap={{ scale: 0.98 }}
               onClick={() => navigate(i.to)}
-              className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-card border border-border text-left hover:border-primary/50 transition-colors focus-visible:outline-none"
+              className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-card border border-border text-left hover:border-primary/50 hover:scale-[1.015] active:scale-[0.98] transition-all focus-visible:outline-none cursor-pointer"
             >
               <span className="w-10 h-10 rounded-xl bg-primary/15 text-primary flex items-center justify-center shrink-0">
                 <Icon className="w-5 h-5 transition-transform group-hover:scale-110" />
@@ -36,7 +33,7 @@ const VadeMecumSumulas = () => {
                 <span className="block text-muted-foreground text-xs">{i.desc}</span>
               </span>
               <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 transition-transform group-hover:translate-x-0.5" />
-            </motion.button>
+            </button>
           );
         })}
       </div>

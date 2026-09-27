@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Search, PocketKnife } from 'lucide-react';
-import { motion } from 'framer-motion';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { leiPath } from '@/lib/legislacaoSlugs';
 import { pushRecente } from '@/lib/leisRecentes';
@@ -36,10 +35,8 @@ const VadeMecumEspeciais = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
         {leisEspeciais.map((l) => (
-          <motion.button
+          <button
             key={l.id}
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.98 }}
             onClick={() => {
               pushRecente({
                 tipo: l.tipo,
@@ -50,7 +47,7 @@ const VadeMecumEspeciais = () => {
               });
               navigate(leiPath(l));
             }}
-            className="w-full group flex items-center gap-3 p-3.5 sm:p-4 rounded-2xl bg-card border border-border/70 text-left hover:border-primary/50 hover:bg-card/90 transition-all focus-visible:outline-none shadow-sm"
+            className="w-full group flex items-center gap-3 p-3.5 sm:p-4 rounded-2xl bg-card border border-border/70 text-left hover:border-primary/50 hover:bg-card/90 hover:scale-[1.01] active:scale-[0.98] transition-all focus-visible:outline-none shadow-sm cursor-pointer"
           >
             <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-400 flex items-center justify-center shrink-0 font-bold text-xs font-display">
               {l.sigla || <PocketKnife className="w-5 h-5" />}
@@ -64,7 +61,7 @@ const VadeMecumEspeciais = () => {
               </p>
             </div>
             <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 transition-transform group-hover:translate-x-0.5" />
-          </motion.button>
+          </button>
         ))}
 
         {leisEspeciais.length === 0 && (

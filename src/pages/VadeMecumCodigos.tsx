@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Search } from 'lucide-react';
-import { motion } from 'framer-motion';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { leiPath } from '@/lib/legislacaoSlugs';
 import { pushRecente } from '@/lib/leisRecentes';
@@ -48,10 +47,8 @@ const VadeMecumCodigos = () => {
             <h2 className="font-display text-foreground text-[17px] font-bold mb-3">{g.label}</h2>
             <div className="space-y-2">
               {g.leis.map((l) => (
-                <motion.button
+                <button
                   key={l.id}
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
                   onClick={() => {
                     pushRecente({
                       tipo: l.tipo,
@@ -62,14 +59,14 @@ const VadeMecumCodigos = () => {
                     });
                     navigate(leiPath(l));
                   }}
-                  className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-card border border-border text-left hover:border-primary/50 transition-colors focus-visible:outline-none"
+                  className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-card border border-border text-left hover:border-primary/50 hover:scale-[1.01] active:scale-[0.98] transition-all focus-visible:outline-none cursor-pointer"
                 >
                   <div className="min-w-0 flex-1">
                     <p className="text-foreground font-semibold text-sm truncate group-hover:text-primary transition-colors">{l.nome}</p>
                     <p className="text-muted-foreground text-xs truncate">{l.descricao}</p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 transition-transform group-hover:translate-x-0.5" />
-                </motion.button>
+                </button>
               ))}
             </div>
           </section>

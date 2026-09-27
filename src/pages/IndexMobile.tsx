@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, Suspense, useCallback } from 'react';
-import { motion } from 'framer-motion';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useLocation } from 'react-router-dom';
 

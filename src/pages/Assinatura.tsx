@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo, startTransition } from "react";
 import { useNavigate, useSearchParams, Navigate, useLocation, Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import { Capacitor } from '@capacitor/core';
 import { CreditCard, QrCode, Smartphone, RotateCw, Gift, ArrowRight, Headphones } from "lucide-react";
 
@@ -252,28 +251,22 @@ export default function Assinatura() {
           onRedeem={() => { setShowHorusPromo(false); setHasClosedPromo(true); setTab('promocao'); startPurchase('anual_pix'); }}
         />
 
-        <AnimatePresence>
-          {!showHorusPromo && hasClosedPromo && isNewUser && tab !== 'promocao' && (
-             <motion.button
-               initial={{ scale: 0, opacity: 0 }}
-               animate={{ scale: 1, opacity: 1 }}
-               exit={{ scale: 0, opacity: 0 }}
-               whileHover={{ scale: 1.05 }}
-               whileTap={{ scale: 0.95 }}
-               onClick={() => {
-                 setTab('promocao');
-                 window.scrollTo({ top: 0, behavior: 'smooth' });
-               }}
-               className="fixed bottom-[calc(5.5rem+var(--sai-bottom,0px))] right-6 z-40 w-14 h-14 bg-emerald-500 rounded-full shadow-[0_10px_30px_rgba(16,185,129,0.5)] flex items-center justify-center border-2 border-white/20 hover:bg-emerald-400 transition-colors"
-             >
-               <Gift className="w-6 h-6 text-white" />
-               <span className="absolute -top-2 -right-2 flex h-5 w-5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-5 w-5 bg-primary items-center justify-center text-[10px] font-black text-white shadow-sm">1</span>
-               </span>
-             </motion.button>
-          )}
-        </AnimatePresence>
+        {!showHorusPromo && hasClosedPromo && isNewUser && tab !== 'promocao' && (
+          <button
+            onClick={() => {
+              setTab('promocao');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="fixed bottom-[calc(5.5rem+var(--sai-bottom,0px))] right-6 z-40 w-14 h-14 bg-emerald-500 rounded-full shadow-[0_10px_30px_rgba(16,185,129,0.5)] flex items-center justify-center border-2 border-white/20 hover:bg-emerald-400 active:scale-95 transition-transform hover:scale-105"
+            aria-label="Abrir promoção"
+          >
+            <Gift className="w-6 h-6 text-white" />
+            <span className="absolute -top-2 -right-2 flex h-5 w-5">
+               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+               <span className="relative inline-flex rounded-full h-5 w-5 bg-primary items-center justify-center text-[10px] font-black text-white shadow-sm">1</span>
+            </span>
+          </button>
+        )}
 
         <PageHeader
           title={<span className="tracking-widest font-display uppercase font-black text-[15px]">Assinatura Premium</span>}

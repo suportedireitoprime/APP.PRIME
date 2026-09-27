@@ -1,7 +1,6 @@
 import React, { useMemo, useState, useEffect, useCallback, useRef, useLayoutEffect, useDeferredValue } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, BookOpen, LayoutGrid, History, Mic, MicOff, Camera, X as XIcon, Heart, ListMusic, StickyNote, Radar, ArrowUp, ArrowLeft, Info, Layers } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { useSubscription } from '@/hooks/useSubscription';
@@ -701,10 +700,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           onOpenVerTodos={() => setOverlayPanel('novidades')}
         />
 
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.28, ease: [0.22, 0.61, 0.36, 1], delay: 0.06 }}
+        <div
           className="sticky top-0 z-40 -mx-3 sm:-mx-4 md:-mx-6 px-3 sm:px-4 md:px-6 pt-[calc(0.6rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-2.5 bg-[#0e0e10]/95 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-black/40 space-y-2.5"
         >
           {/* Barra de Pesquisa posicionada fora e abaixo do painel */}
@@ -745,20 +741,15 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
             </form>
 
             {/* Dropdown suspenso de pesquisa (100% opaco, sem transparência, com menu de alternância dos recentes) */}
-            <AnimatePresence>
-              {isSearchFocused && (
-                <>
-                  <div
-                    className="fixed inset-0 z-50 bg-black/75"
-                    onClick={() => setIsSearchFocused(false)}
-                  />
-                  <motion.div
-                    initial={{ opacity: 0, y: -6, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -6, scale: 0.98 }}
-                    transition={{ duration: 0.16, ease: 'easeOut' }}
-                    className="absolute left-0 right-0 top-full mt-2 z-[60] bg-[#0E0F12] border border-zinc-800 rounded-2xl shadow-2xl shadow-black overflow-hidden max-h-[65vh] flex flex-col select-none"
-                  >
+            {isSearchFocused && (
+              <>
+                <div
+                  className="fixed inset-0 z-50 bg-black/75"
+                  onClick={() => setIsSearchFocused(false)}
+                />
+                <div
+                  className="absolute left-0 right-0 top-full mt-2 z-[60] bg-[#0E0F12] border border-zinc-800 rounded-2xl shadow-2xl shadow-black overflow-hidden max-h-[65vh] flex flex-col select-none"
+                >
                     {/* Cabeçalho do Dropdown */}
                     <div className="px-4 py-3 border-b border-zinc-800/80 flex items-center justify-between text-xs bg-[#121318]">
                       <div className="flex items-center gap-2">
@@ -944,10 +935,9 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                         </p>
                       </div>
                     )}
-                  </motion.div>
+                  </div>
                 </>
               )}
-            </AnimatePresence>
           </div>
 
           {/* Abas no Desktop (no mobile a navegação fica no rodapé) */}
@@ -985,7 +975,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
               </div>
             </div>
           )}
-        </motion.div>
+        </div>
 
         {/* Item 61: Layout Master-Detail adaptativo para Tablets (iPad/Android) e Desktop */}
         <div className={`flex ${isMasterDetail ? 'md:gap-6 md:items-start' : 'flex-col'}`}>
@@ -1143,12 +1133,9 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           )}
         </div>
 
-        <motion.nav
+        <nav
           aria-label="Navegação do Código"
-          initial={false}
-          animate={showFooter ? { y: 0, opacity: 1, pointerEvents: 'auto' as const } : { y: 120, opacity: 0, pointerEvents: 'none' as const }}
-          transition={{ duration: 0.18, ease: 'easeOut' }}
-          className="fixed bottom-0 left-0 right-0 z-[65] md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto lg:hidden"
+          className={`fixed bottom-0 left-0 right-0 z-[65] md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto lg:hidden transition-all duration-200 ${showFooter ? 'translate-y-0 opacity-100 pointer-events-auto' : 'translate-y-24 opacity-0 pointer-events-none'}`}
         >
           <div className="bg-[#0e0f12]/98 backdrop-blur-xl border-t border-white/10 rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.7)] pb-[calc(0.5rem+var(--sai-bottom))] md:border md:rounded-full md:shadow-2xl md:shadow-black/40 md:pb-0">
             <div className="grid grid-cols-4 items-center justify-items-stretch w-full max-w-lg mx-auto px-2 sm:px-4 py-2 md:gap-1 md:px-3 md:py-2">
@@ -1177,10 +1164,8 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                     aria-label={tab.label}
                   >
                     {active && (
-                      <motion.span
-                        layoutId="cp-nav-active-pill"
+                      <span
                         className="absolute inset-x-0.5 inset-y-0.5 rounded-xl bg-white/10 ring-1 ring-white/20"
-                        transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                         aria-hidden="true"
                       />
                     )}
@@ -1198,32 +1183,20 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
               })}
             </div>
           </div>
-        </motion.nav>
+        </nav>
 
       </div>
 
       {/* Painéis Rápidos (Favoritos, Anotações, Radar, Playlist, Novidades) em Tela Cheia cobrindo 100% por cima da capa */}
-      <AnimatePresence>
-        {overlayPanel && (
-          <>
-            <motion.div
-              key={`${overlayPanel}-backdrop`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              onClick={() => setOverlayPanel(null)}
-              className="fixed inset-0 z-[99] bg-black/75 backdrop-blur-md"
-            />
-            <motion.div
-              key={overlayPanel}
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 30, stiffness: 320 }}
-              className="fixed inset-0 z-[100] h-[100dvh] max-h-[100dvh] bg-[#0f0f0f] flex flex-col shadow-2xl lg:max-w-[780px] lg:mx-auto pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))]"
-              style={{ willChange: 'transform' }}
-            >
+      {overlayPanel && (
+        <>
+          <div
+            onClick={() => setOverlayPanel(null)}
+            className="fixed inset-0 z-[99] bg-black/75 backdrop-blur-md"
+          />
+          <div
+            className="fixed inset-0 z-[100] h-[100dvh] max-h-[100dvh] bg-[#0f0f0f] flex flex-col shadow-2xl lg:max-w-[780px] lg:mx-auto pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))]"
+          >
               <div className="flex items-center gap-3 px-4 py-2 border-b border-white/5 shrink-0">
                 <button
                   onClick={() => {
@@ -1260,10 +1233,9 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
               <div className="flex-1 overflow-y-auto px-4 pt-4 pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] overscroll-contain">
                 {overlayContents[overlayPanel]}
               </div>
-            </motion.div>
+            </div>
           </>
         )}
-      </AnimatePresence>
 
       {openArtigo && (
         <ArtigoBottomSheet
@@ -1306,19 +1278,15 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
       />
 
 
-      <AnimatePresence>
-        {showScrollTop && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className={`fixed ${isDesktop ? 'bottom-8 right-8' : 'bottom-[100px] right-4'} z-40 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 flex items-center justify-center active:scale-95 transition-all`}
-          >
-            <ArrowUp className="w-6 h-6" />
-          </motion.button>
-        )}
-      </AnimatePresence>
+      {showScrollTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className={`fixed ${isDesktop ? 'bottom-8 right-8' : 'bottom-[100px] right-4'} z-40 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 flex items-center justify-center active:scale-95 transition-all`}
+          aria-label="Voltar ao topo"
+        >
+          <ArrowUp className="w-6 h-6" />
+        </button>
+      )}
     </div>
   );
 };

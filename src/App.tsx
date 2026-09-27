@@ -1,5 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
-import { AnimatePresence } from "framer-motion";
+import { lazy, Suspense, useEffect } from "react";
 import { initAnalytics, trackPageview, setAnalyticsUserWithProfile } from "@/lib/analytics";
 import { useScreenTracking } from "@/lib/screenTracking";
 import { initNavTelemetry, markRouteChange } from "@/lib/navTelemetry";
@@ -139,38 +138,10 @@ const queryPersister = typeof window !== 'undefined'
 
 function ForceUpdateWrapper() {
   const isUpdateRequired = useAppUpdateStore((s) => s.isUpdateRequired);
-  return (
-    <AnimatePresence>
-      {isUpdateRequired && <ForceUpdateScreen />}
-    </AnimatePresence>
-  );
+  return isUpdateRequired ? <ForceUpdateScreen /> : null;
 }
 
 const AnimatedRoutes = lazy(() => import("./AppRoutes"));
-
-import { CustomSplashScreen } from "@/components/CustomSplashScreen";
-
-import heroEstudanteImg from '@/assets/covers/hero-estudante-v3.jpg';
-
-function AppBootSplash() {
-  const [show, setShow] = useState(true);
-
-  // Preload silencioso em background da imagem principal da Home para 0ms de carregamento visual pós-splash
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const img = new Image();
-      img.decoding = 'async';
-      img.fetchPriority = 'high';
-      img.src = heroEstudanteImg;
-    }
-  }, []);
-  
-  return (
-    <AnimatePresence>
-      {show && <CustomSplashScreen onComplete={() => setShow(false)} />}
-    </AnimatePresence>
-  );
-}
 
 function AppWarmupInitializer() {
   const qc = useQueryClient();
@@ -219,9 +190,6 @@ const App = () => (
           <ThemeProvider>
             <RecordingProvider>
               <UniversalMediaPlayerProvider>
-                <Suspense fallback={null}>
-                  <AppBootSplash />
-                </Suspense>
                 <TooltipProvider>
                   <SkipToContent />
                   <Sonner />
