@@ -460,7 +460,6 @@ export default function RadarConcursos() {
           <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 pb-2 hide-scrollbar px-1 -mr-4 pr-4">
             {concursosFiltrados.length > 0 ? concursosFiltrados.slice(0, 15).map((conc) => {
               const visual = getConcursoVisual(conc.titulo, conc.imagem_url);
-              const dias = conc.dias_restantes ?? null;
 
               return (
                 <div
@@ -488,14 +487,8 @@ export default function RadarConcursos() {
                         />
                      </div>
 
-                    <div className="flex flex-col items-end gap-1.5 -mr-1">
+                    <div className="flex flex-col items-end -mr-1">
                       <StateMapIcon uf={conc.uf || visual.tag} className="w-[72px] h-[72px] sm:w-[84px] sm:h-[84px]" />
-
-                      {dias !== null && dias <= 7 && dias >= 0 && (
-                        <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-amber-500/90 text-black shadow-md mt-1">
-                          {dias === 0 ? 'ÚLTIMO DIA' : `${dias}d restantes`}
-                        </span>
-                      )}
                     </div>
                   </div>
 
@@ -519,9 +512,15 @@ export default function RadarConcursos() {
                         </span>
                       ) : <span />}
                       {conc.dias_restantes !== undefined && conc.dias_restantes !== null && (
-                        <span className={conc.dias_restantes <= 5 ? "text-rose-400" : "text-amber-400/90"}>
-                          {conc.dias_restantes > 0 ? `${conc.dias_restantes} dias p/ fechar` : 'Encerrando hoje!'}
-                        </span>
+                        conc.dias_restantes <= 5 ? (
+                          <span className="text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-600 text-white shadow-sm flex items-center shrink-0">
+                            {conc.dias_restantes > 0 ? `${conc.dias_restantes} dias p/ fechar` : 'Encerrando hoje!'}
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground/80 text-[11px] font-medium">
+                            {`${conc.dias_restantes} dias p/ fechar`}
+                          </span>
+                        )
                       )}
                     </div>
                   </div>
@@ -784,7 +783,11 @@ export default function RadarConcursos() {
                       {selectedEdital.uf ? `Estado: ${selectedEdital.uf}` : selectedEdital.regiao || 'NACIONAL'}
                     </span>
                     {selectedEdital.dias_restantes !== undefined && (
-                      <span className="px-3 py-1 w-max rounded-full text-[10px] font-bold bg-black/70 border border-white/20 text-emerald-400 backdrop-blur-md shrink-0">
+                      <span className={`px-3 py-1 w-max rounded-full text-[10px] font-bold backdrop-blur-md shrink-0 shadow-md ${
+                        selectedEdital.dias_restantes <= 5
+                          ? 'bg-rose-600 text-white border border-rose-400/40'
+                          : 'bg-black/70 border border-white/20 text-emerald-400'
+                      }`}>
                         {selectedEdital.dias_restantes > 0
                           ? `${selectedEdital.dias_restantes} dias p/ encerrar`
                           : 'Inscrições encerrando'}
