@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import type { VisualCategoria } from '@/lib/visuaisJuridicos/types';
 import { CATEGORIA_INFO } from '@/lib/visuaisJuridicos/catalogo';
-import { CATEGORIAS, FILTROS, type Filtro } from './mapasConstants';
+import { CATEGORIAS, FILTROS, CATEGORIA_ICON, CATEGORIA_COR, type Filtro } from './mapasConstants';
 import { useDictation } from '@/hooks/useDictation';
 import socratesThemisHeroImg from '@/assets/covers/socrates-themis-hero.jpg';
 import cerebroRoxo from '@/assets/covers/cerebro-vazado-roxo.png';
@@ -49,8 +49,9 @@ export function MapasMentaisHeader({
   const ouvindo = state === 'recording';
 
   return (
-    <div
-      className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/80 pt-[var(--sai-top)] flex flex-col z-20 shrink-0"
+    <>
+      <div
+        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/80 pt-[var(--sai-top)] flex flex-col z-20 shrink-0"
       style={{
         transform: 'translateZ(0)',
         backgroundColor: '#050505',
@@ -161,7 +162,7 @@ export function MapasMentaisHeader({
       </header>
 
       {/* Conteúdo: Logo e Título à esquerda sobre a área roxa */}
-      <div className="relative z-10 pt-3 sm:pt-4 flex flex-col justify-start min-h-[140px] sm:min-h-[160px] px-4 sm:px-6 max-w-[55%] sm:max-w-[48%] items-start text-left">
+      <div className="relative z-10 pt-3 sm:pt-4 flex flex-col justify-start min-h-[100px] px-4 sm:px-6 max-w-[55%] sm:max-w-[48%] items-start text-left">
         <h1 className="font-display uppercase tracking-widest text-white text-[20px] sm:text-[24px] md:text-[26px] font-black leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
           Mapas Mentais
         </h1>
@@ -170,7 +171,7 @@ export function MapasMentaisHeader({
         </p>
       </div>
 
-      {/* ── Elementos Integrados DENTRO da Capa (Pesquisa, Categorias e Funções) ── */}
+      {/* ── Elementos Integrados DENTRO da Capa (Pesquisa e Funções) ── */}
       <div className="relative z-10 px-4 sm:px-6 w-full pt-4 pb-5 space-y-3 max-w-[1400px] mx-auto">
         {/* 1. Barra de Pesquisa Rápida */}
         <div className="flex items-center gap-2.5">
@@ -209,34 +210,8 @@ export function MapasMentaisHeader({
           </button>
         </div>
 
-        {/* 2. Abas de Categorias (Matérias, Códigos, Estatutos, Leis Especiais) */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-          {CATEGORIAS.map((catKey) => {
-            const info = CATEGORIA_INFO[catKey];
-            const isAtiva = categoria === catKey;
-            return (
-              <button
-                key={catKey}
-                type="button"
-                onClick={() => {
-                  haptic.selection();
-                  setCategoria(catKey);
-                  setBusca('');
-                }}
-                className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold tracking-wide whitespace-nowrap transition-all border cursor-pointer active:scale-95 ${
-                  isAtiva
-                    ? 'bg-purple-600 text-white border-purple-400 shadow-md shadow-purple-600/35 ring-1 ring-purple-400/40'
-                    : 'bg-black/50 hover:bg-black/70 text-zinc-300 hover:text-white border-white/10'
-                }`}
-              >
-                {info?.label ?? catKey}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* 3. Funções (Todos, Favoritos, Recentes, Pastas) dentro da capa */}
-        <div className="grid grid-cols-4 gap-1.5 sm:gap-2 pt-1 border-t border-white/10">
+        {/* 2. Funções (Todos, Favoritos, Recentes, Pastas) dentro da capa (Estilo Vade Mecum) */}
+        <div className="grid grid-cols-4 gap-2 mx-1 mt-1">
           {FILTROS.map(({ id, label, Icone }) => {
             const isAtivo = filtro === id;
             return (
@@ -247,34 +222,59 @@ export function MapasMentaisHeader({
                   haptic.selection();
                   setFiltro(id);
                 }}
-                className={`flex items-center justify-center gap-1.5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all border cursor-pointer active:scale-95 ${
+                className={`group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-2 text-center min-h-[48px] cursor-pointer ${
                   isAtivo
-                    ? 'bg-purple-600/40 text-white border-purple-400/80 shadow-[0_0_15px_rgba(168,85,247,0.35)] ring-1 ring-purple-400/50'
-                    : 'bg-black/45 hover:bg-black/65 text-zinc-400 hover:text-white border-white/10'
+                    ? 'border border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.35)]'
+                    : 'border border-white/10'
                 }`}
               >
-                <Icone className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${id === 'favoritos' && isAtivo ? 'fill-rose-400 text-rose-300' : ''}`} />
-                <span className="truncate">{label}</span>
-                {id === 'favoritos' && favoritosCount > 0 && (
-                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-rose-500/25 text-rose-300 font-bold">
-                    {favoritosCount}
-                  </span>
-                )}
-                {id === 'recentes' && recentesCount > 0 && (
-                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-purple-500/25 text-purple-300 font-bold">
-                    {recentesCount}
-                  </span>
-                )}
-                {id === 'pastas' && pastasCount > 0 && (
-                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/25 text-amber-300 font-bold">
-                    {pastasCount}
-                  </span>
-                )}
+                <Icone className={`w-5 h-5 transition-all group-hover:scale-110 ${isAtivo ? 'text-purple-400' : 'text-white/70 group-hover:text-white'}`} strokeWidth={2} />
+                <span className={`text-[9px] font-extrabold leading-tight uppercase tracking-wider ${isAtivo ? 'text-white' : 'text-white/90'}`}>
+                  {label}
+                  {id === 'favoritos' && favoritosCount > 0 && ` (${favoritosCount})`}
+                  {id === 'recentes' && recentesCount > 0 && ` (${recentesCount})`}
+                  {id === 'pastas' && pastasCount > 0 && ` (${pastasCount})`}
+                </span>
               </button>
             );
           })}
         </div>
       </div>
     </div>
+
+    {/* 3. Abas de Categorias ABAIXO do painel (Matérias, Códigos, Estatutos, Leis Especiais) com Ícones */}
+    <div className="px-4 sm:px-6 pt-6 pb-4 flex items-center gap-1.5 overflow-x-auto no-scrollbar max-w-[1400px] mx-auto w-full">
+      {CATEGORIAS.map((catKey) => {
+        const info = CATEGORIA_INFO[catKey];
+        const isAtiva = categoria === catKey;
+        const CatIcon = CATEGORIA_ICON[catKey];
+        const cor = CATEGORIA_COR[catKey];
+        return (
+          <button
+            key={catKey}
+            type="button"
+            onClick={() => {
+              haptic.selection();
+              setCategoria(catKey);
+              setBusca('');
+            }}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold tracking-wide whitespace-nowrap transition-all border cursor-pointer active:scale-95 ${
+              isAtiva
+                ? 'bg-purple-600 text-white border-purple-400 shadow-md shadow-purple-600/35 ring-1 ring-purple-400/40'
+                : 'bg-black/50 hover:bg-black/70 text-zinc-300 hover:text-white border-white/10'
+            }`}
+          >
+            {CatIcon && (
+              <CatIcon 
+                className="w-4 h-4 transition-colors" 
+                style={{ color: isAtiva ? '#ffffff' : cor }} 
+              />
+            )}
+            {info?.label ?? catKey}
+          </button>
+        );
+      })}
+    </div>
+  </>
   );
 }
