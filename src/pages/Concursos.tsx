@@ -529,8 +529,8 @@ const Concursos = () => {
                         {item.titulo}
                       </h3>
                       <div className="flex items-center gap-2 flex-wrap text-[11px] sm:text-[12px] font-body text-muted-foreground mt-auto pt-1">
-                        <span className="inline-flex items-center text-[9px] font-bold px-1.5 py-[1px] rounded bg-[#10B981]/90 text-white uppercase tracking-wide shadow-sm">
-                          {visual.tag}
+                        <span className="inline-flex items-center text-[9px] font-bold px-1.5 py-[1px] rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 uppercase tracking-wide shadow-sm max-w-[130px] sm:max-w-[160px] truncate">
+                          {extractCargo(item)}
                         </span>
                         <span className="w-1 h-1 rounded-full bg-muted-foreground/40 hidden sm:block" />
                         <span className="inline-flex items-center gap-1 text-[#10B981] font-semibold">
