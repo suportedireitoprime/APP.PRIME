@@ -50,7 +50,10 @@ const VadeMecum = () => {
     <>
       {activeTab === 'emalta' && (
         <div className={isDesktop ? "-mx-8 -mt-6 2xl:-mx-14" : ""}>
-          <VadeMecumHero onSelectQuickAction={(action) => setActiveQuickSheet(action)} />
+          <VadeMecumHero 
+            onOpenSearch={() => setBuscaOpen(true)}
+            onSelectQuickAction={(action) => setActiveQuickSheet(action)} 
+          />
         </div>
       )}
 
