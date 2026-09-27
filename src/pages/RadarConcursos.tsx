@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo, useTransition } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import RadarBottomNav from '@/components/radar/RadarBottomNav';
-import RadarBottomNav from '@/components/radar/RadarBottomNav';
 import {
   ArrowLeft,
   Bell,
