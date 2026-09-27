@@ -1,4 +1,5 @@
 import React from 'react';
+import { toast } from 'sonner';
 import { BookOpen, ChevronRight, Loader2, Sparkles, Star } from 'lucide-react';
 import { iconeDoItem } from '@/lib/visuaisJuridicos/icones';
 import type { CatalogoItem } from '@/lib/visuaisJuridicos/catalogo';
@@ -184,7 +185,10 @@ export function VisuaisPassoDetalhes({
             return (
               <div key={s.subtema} className="relative">
                 <button
-                  onClick={() => gerar(item, s.subtema, 'tema', tema.tema)}
+                  onClick={() => {
+                    toast.info(`Clicou em: ${s.subtema}`);
+                    gerar(item, s.subtema, 'tema', tema.tema);
+                  }}
                   disabled={gerando}
                   className="w-full flex items-center gap-4 px-4 h-[84px] rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.99] transition disabled:opacity-70"
                 >
