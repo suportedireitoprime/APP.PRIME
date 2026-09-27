@@ -13,6 +13,14 @@ import { AuthorAvatar } from '@/components/radar/AuthorAvatar';
 import { getConcursoVisual } from '@/lib/concursosVisuais';
 import type { ResenhaItem } from '@/services/atualizacaoService';
 import type { Database } from '@/integrations/supabase/types';
+import { 
+  prefetchGiroJuridico, 
+  cacheLeis, 
+  cacheNoticias, 
+  cacheBoletins, 
+  cachePls, 
+  cacheConcursos 
+} from '@/services/giroJuridicoWarmup';
 
 type NoticiaJuridica = Database['public']['Tables']['noticias_juridicas']['Row'];
 type ConcursoNoticia = Database['public']['Tables']['concursos_noticias']['Row'];
@@ -46,52 +54,26 @@ const Atualizacoes = () => {
   type TabId = 'novidades' | 'noticias' | 'leis' | 'legislacao' | 'aplicativo' | 'boletins';
   const [activeTab, setActiveTab] = useState<TabId>('novidades');
   
-  const [leis, setLeis] = useState<ResenhaItem[]>([]);
-  const [noticias, setNoticias] = useState<NoticiaJuridica[]>([]);
-  const [boletins, setBoletins] = useState<BoletimJuridico[]>([]);
-  const [pls, setPls] = useState<RadarPL[]>([]);
-  const [concursos, setConcursos] = useState<ConcursoNoticia[]>([]);
+  const [leis, setLeis] = useState<ResenhaItem[]>((cacheLeis as ResenhaItem[]) || []);
+  const [noticias, setNoticias] = useState<NoticiaJuridica[]>((cacheNoticias as NoticiaJuridica[]) || []);
+  const [boletins, setBoletins] = useState<BoletimJuridico[]>((cacheBoletins as BoletimJuridico[]) || []);
+  const [pls, setPls] = useState<RadarPL[]>((cachePls as RadarPL[]) || []);
+  const [concursos, setConcursos] = useState<ConcursoNoticia[]>((cacheConcursos as ConcursoNoticia[]) || []);
 
   useEffect(() => {
-    // 1. Novas Leis
-    resenhaSelect<ResenhaItem>({ select: RESENHA_LIST_SELECT, order: 'data_dou.desc', limit: '10' })
-      .then(res => {
-        if (res) setLeis(res);
-      })
-      .catch(() => {});
-    
-    // 2. Notícias
-    supabase.from('noticias_juridicas')
-      .select('*')
-      .order('data_publicacao', { ascending: false })
-      .limit(10)
-      .then(res => {
-        if (res.data) setNoticias(res.data);
-      });
-    
-    // 2. Boletins
-    supabase.from('boletins_juridicos')
-      .select('id, data_ref, titulo, subtitulo, tipo')
-      .in('status', ['pronto', 'sem_leis'])
-      .order('data_ref', { ascending: false })
-      .limit(10)
-      .then(res => {
-        if (res.data) setBoletins(res.data);
-      });
-      
-    // 3. Proposições (Câmara)
-    fetchProposicoes().then(res => {
-       if (res) setPls(res.slice(0, 10));
-    });
+    if (cacheLeis && cacheNoticias && cacheBoletins && cachePls && cacheConcursos) {
+      return;
+    }
 
-    // 4. Concursos
-    supabase.from('concursos_noticias')
-      .select('*')
-      .order('data_publicacao', { ascending: false })
-      .limit(50)
-      .then(res => {
-        if (res.data) setConcursos(res.data);
+    prefetchGiroJuridico().then(() => {
+      startTransition(() => {
+        if (cacheLeis) setLeis(cacheLeis as ResenhaItem[]);
+        if (cacheNoticias) setNoticias(cacheNoticias as NoticiaJuridica[]);
+        if (cacheBoletins) setBoletins(cacheBoletins as BoletimJuridico[]);
+        if (cachePls) setPls(cachePls as RadarPL[]);
+        if (cacheConcursos) setConcursos(cacheConcursos as ConcursoNoticia[]);
       });
+    });
   }, []);
 
   const handleBack = () => {

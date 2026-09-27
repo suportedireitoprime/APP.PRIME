@@ -242,8 +242,8 @@ export function MapasMentaisHeader({
       </div>
     </div>
 
-    {/* 3. Abas de Categorias ABAIXO do painel (Matérias, Códigos, Estatutos, Leis Especiais) com Ícones */}
-    <div className="px-4 sm:px-6 pt-6 pb-4 flex items-center gap-1.5 overflow-x-auto no-scrollbar max-w-[1400px] mx-auto w-full">
+    {/* 3. Abas de Categorias ABAIXO do painel (Matérias, Códigos, Estatutos, Leis Especiais) com Margem de Segurança */}
+    <div className="px-4 sm:px-6 mt-4 sm:mt-6 mb-3 sm:mb-4 flex items-center gap-2 overflow-x-auto no-scrollbar max-w-[1400px] mx-auto w-full relative z-10">
       {CATEGORIAS.map((catKey) => {
         const info = CATEGORIA_INFO[catKey];
         const isAtiva = categoria === catKey;
@@ -258,10 +258,10 @@ export function MapasMentaisHeader({
               setCategoria(catKey);
               setBusca('');
             }}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold tracking-wide whitespace-nowrap transition-all border cursor-pointer active:opacity-70 ${
+            className={`flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold tracking-wide whitespace-nowrap transition-all border cursor-pointer active:scale-[0.98] ${
               isAtiva
-                ? 'bg-purple-600 text-white border-purple-400 shadow-md shadow-purple-600/35 ring-1 ring-purple-400/40'
-                : 'bg-black/50 hover:bg-black/70 text-zinc-300 hover:text-white border-white/10'
+                ? 'bg-purple-600 text-white border-purple-400 shadow-lg shadow-purple-600/30 ring-1 ring-purple-400/40'
+                : 'bg-zinc-900/80 hover:bg-zinc-800 text-zinc-300 hover:text-white border-white/10'
             }`}
           >
             {CatIcon && (

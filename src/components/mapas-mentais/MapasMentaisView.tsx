@@ -9,7 +9,7 @@ import PremiumGate from '@/components/PremiumGate';
 import { haptic } from '@/lib/nativeHaptics';
 
 import { CATEGORIA_INFO, itensDaCategoria, MATERIAS, type CatalogoItem } from '@/lib/visuaisJuridicos/catalogo';
-import { fetchAreasResumos, fetchTemasResumos, fetchSubtemasResumos, type TemaResumo, type SubtemaResumo } from '@/lib/visuaisJuridicos/materias';
+import { fetchAreasResumos, fetchTemasResumos, fetchSubtemasResumos, getCachedAreasResumos, type TemaResumo, type SubtemaResumo } from '@/lib/visuaisJuridicos/materias';
 import { fetchArtigosLei, getCachedArtigos } from '@/services/legislacaoService';
 import type { ArtigoLei } from '@/data/mockData';
 import type { VisualCategoria, VisualRecord, VisualTipo } from '@/lib/visuaisJuridicos/types';
@@ -67,8 +67,8 @@ export default function MapasMentaisView({
     }
   }, [item, filtro, categoria]);
 
-  // Dados carregados de matérias / resumos
-  const [areas, setAreas] = useState<CatalogoItem[]>([]);
+  // Dados carregados de matérias / resumos — 0ms instantâneo do cache compilado
+  const [areas, setAreas] = useState<CatalogoItem[]>(() => getCachedAreasResumos() || MATERIAS);
   const [carregandoAreas, setCarregandoAreas] = useState(false);
   const [temas, setTemas] = useState<TemaResumo[]>([]);
   const [carregandoTemas, setCarregandoTemas] = useState(false);
@@ -125,18 +125,19 @@ export default function MapasMentaisView({
     };
   }, []);
 
-  // Busca áreas/matérias reais do banco de resumos_juridicos
+  // Busca áreas/matérias reais do catálogo compilado / resumos
   useEffect(() => {
     if (categoria !== 'materias') return;
     let cancelado = false;
-    setCarregandoAreas(true);
+    const cacheAtual = getCachedAreasResumos();
+    if (!cacheAtual || cacheAtual.length === 0) {
+      setCarregandoAreas(true);
+    }
     fetchAreasResumos()
       .then((rows) => {
-        if (!cancelado) setAreas(rows);
+        if (!cancelado && rows?.length) setAreas(rows);
       })
-      .catch(() => {
-        if (!cancelado) setAreas([]);
-      })
+      .catch(() => {})
       .finally(() => {
         if (!cancelado) setCarregandoAreas(false);
       });
@@ -430,43 +431,58 @@ export default function MapasMentaisView({
                   setTema(null);
                   setFiltro('todos');
                 }}
-                className="hover:text-white cursor-pointer"
+                className="hover:text-white cursor-pointer transition-colors"
               >
                 Início
               </span>
-              {filtro === 'pastas' && (
+
+              {filtro === 'pastas' ? (
                 <>
                   <ChevronRight className="w-3.5 h-3.5 text-purple-400 shrink-0" />
                   <span className="text-white font-bold">Pastas Salvas</span>
                 </>
-              )}
-              {item && (
+              ) : item ? (
                 <>
                   <ChevronRight className="w-3.5 h-3.5 text-purple-400 shrink-0" />
                   <span
-                    onClick={() => setTema(null)}
-                    className={`cursor-pointer ${!tema ? 'text-white font-bold' : 'hover:text-white'}`}
+                    onClick={() => {
+                      setItem(null);
+                      setTema(null);
+                    }}
+                    className="hover:text-white cursor-pointer transition-colors"
                   >
-                    {item.label}
+                    {CATEGORIA_INFO[categoria]?.label ?? 'Catálogo'}
                   </span>
+
+                  {tema && (
+                    <>
+                      <ChevronRight className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                      <span
+                        onClick={() => setTema(null)}
+                        className="hover:text-white cursor-pointer transition-colors truncate max-w-[130px] sm:max-w-[200px]"
+                      >
+                        {item.label}
+                      </span>
+                    </>
+                  )}
                 </>
-              )}
-              {tema && (
-                <>
-                  <ChevronRight className="w-3.5 h-3.5 text-purple-400 shrink-0" />
-                  <span className="text-white font-bold truncate max-w-[200px]">
-                    {tema.tema}
-                  </span>
-                </>
+              ) : null}
+            </div>
+
+            <div className="flex items-center gap-2 mt-0.5 min-w-0">
+              <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-sm sm:text-base font-bold text-white truncate leading-tight">
+                {filtro === 'pastas'
+                  ? 'Pastas de Mapas e PDFs'
+                  : tema
+                  ? tema.tema
+                  : item?.label ?? 'Detalhes'}
+              </h2>
+              {item && !tema && item.sub && item.sub.includes('—') && (
+                <span className="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 uppercase tracking-wide">
+                  {item.sub.split('—')[0].trim()}
+                </span>
               )}
             </div>
-            <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-sm sm:text-base font-bold text-white truncate mt-0.5">
-              {filtro === 'pastas'
-                ? 'Pastas de Mapas e PDFs'
-                : tema
-                ? tema.tema
-                : item?.label ?? 'Detalhes'}
-            </h2>
           </div>
         </header>
       )}

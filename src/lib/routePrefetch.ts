@@ -115,6 +115,15 @@ export function prefetchMainTabsIdle(): void {
       warmVideoaulasStartup();
     } catch { /* noop */ }
     try {
+      import('@/services/giroJuridicoWarmup').then(m => m.prefetchGiroJuridico());
+    } catch { /* noop */ }
+    try {
+      import('@/lib/visuaisJuridicos/materias').then(m => m.fetchAreasResumos());
+    } catch { /* noop */ }
+    try {
+      import('@/lib/visuaisJuridicos/cache').then(m => m.prefetchVisuais());
+    } catch { /* noop */ }
+    try {
       warmQuestoesStartup();
     } catch { /* noop */ }
   };
