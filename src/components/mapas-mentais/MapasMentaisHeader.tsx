@@ -209,13 +209,13 @@ export function MapasMentaisHeader({
 
         {/* 2. Barra de Pesquisa Rápida (Estilo Home / Vade Mecum) */}
         <div className="relative flex-1 h-16 w-full flex items-center mt-3">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 sm:w-6 sm:h-6 text-[#E01F47] shrink-0 pointer-events-none" strokeWidth={2.2} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 sm:w-6 sm:h-6 text-purple-400 shrink-0 pointer-events-none" strokeWidth={2.2} />
           <input
             type="text"
             value={busca}
             onChange={(e) => setBusca(e.target.value.slice(0, 60))}
             placeholder="Pesquisar matéria, código, tema ou artigo..."
-            className="h-full w-full rounded-2xl bg-black/75 backdrop-blur-sm border border-white/15 shadow-lg shadow-black/30 pl-12 pr-[140px] font-sans text-[14px] sm:text-[15px] font-medium text-white placeholder:text-white/40 outline-none focus:border-red-500/50 transition-all"
+            className="h-full w-full rounded-2xl bg-black/75 backdrop-blur-sm border border-white/15 shadow-lg shadow-black/30 pl-12 pr-[140px] font-sans text-[14px] sm:text-[15px] font-medium text-white placeholder:text-white/40 outline-none focus:border-purple-500/50 transition-all"
           />
           {busca && (
             <button
@@ -233,7 +233,7 @@ export function MapasMentaisHeader({
                if (ouvindo) stop(); else start();
             }}
             className={`absolute right-1.5 top-1/2 -translate-y-1/2 h-12 px-4 rounded-xl text-white font-display text-[13px] font-bold tracking-wider flex items-center justify-center cursor-pointer uppercase shadow-md active:opacity-70 transition-all ${
-               ouvindo ? 'bg-red-500 animate-pulse' : 'bg-brand-gradient'
+               ouvindo ? 'bg-red-500 animate-pulse' : 'bg-purple-600 hover:bg-purple-700'
             }`}
           >
              {ouvindo ? <Mic className="w-5 h-5" /> : 'PESQUISAR'}
