@@ -43,7 +43,8 @@ const Atualizacoes = () => {
   };
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState<'novidades' | 'noticias'>('noticias');
+  type TabId = 'novidades' | 'noticias' | 'leis' | 'legislacao' | 'aplicativo' | 'boletins';
+  const [activeTab, setActiveTab] = useState<TabId>('novidades');
   
   const [leis, setLeis] = useState<ResenhaItem[]>([]);
   const [noticias, setNoticias] = useState<NoticiaJuridica[]>([]);
@@ -133,30 +134,33 @@ const Atualizacoes = () => {
       <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-8 space-y-10 pb-32">
         
         {/* Menu de Alternância */}
-        <div className="flex justify-center -mt-2 mb-2">
-          <div className="bg-white/5 border border-white/10 p-1 rounded-full flex items-center backdrop-blur-md">
-            <button 
-              onClick={() => { haptic.selection(); setActiveTab('novidades'); }}
-              className={cn("px-6 py-2 rounded-full text-[14px] font-medium transition-all duration-300 cursor-pointer", 
-                activeTab === 'novidades' ? 'bg-white/10 text-white shadow-sm' : 'text-muted-foreground hover:text-white'
-              )}
-            >
-              Novidades
-            </button>
-            <button 
-              onClick={() => { haptic.selection(); setActiveTab('noticias'); }}
-              className={cn("px-6 py-2 rounded-full text-[14px] font-medium transition-all duration-300 cursor-pointer", 
-                activeTab === 'noticias' ? 'bg-white/10 text-white shadow-sm' : 'text-muted-foreground hover:text-white'
-              )}
-            >
-              Notícias
-            </button>
+        <div className="flex overflow-x-auto no-scrollbar -mt-2 mb-4 px-4 -mx-4 pb-2">
+          <div className="flex items-center gap-2 px-1">
+            {[
+              { id: 'novidades', label: 'Novidades' },
+              { id: 'noticias', label: 'Notícias' },
+              { id: 'leis', label: 'Leis' },
+              { id: 'legislacao', label: 'Legislação' },
+              { id: 'aplicativo', label: 'Aplicativo' },
+              { id: 'boletins', label: 'Boletins' }
+            ].map(tab => (
+              <button 
+                key={tab.id}
+                onClick={() => { haptic.selection(); setActiveTab(tab.id as TabId); }}
+                className={cn("px-5 py-2 rounded-full text-[13.5px] font-medium transition-all duration-300 cursor-pointer whitespace-nowrap border", 
+                  activeTab === tab.id 
+                    ? 'bg-white/15 border-white/20 text-white shadow-sm' 
+                    : 'bg-white/5 border-transparent text-muted-foreground hover:text-white hover:bg-white/10'
+                )}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
         </div>
 
-        {activeTab === 'novidades' && (
-          <>
-            {/* Carrossel 1: Leis */}
+        {(activeTab === 'novidades' || activeTab === 'leis') && (
+          {/* Carrossel 1: Leis */}
         <section>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="flex items-center gap-2">
@@ -180,7 +184,7 @@ const Atualizacoes = () => {
               <div 
                 key={lei.id} 
                 onClick={() => { haptic.selection(); startTransition(() => navigate(`/radar-360?lei=${lei.id}`)); }}
-                className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
+                className="w-[300px] h-[180px] sm:w-[320px] sm:h-[200px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
               >
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <Scale className="w-16 h-16 sm:w-20 sm:h-20" />
@@ -198,52 +202,14 @@ const Atualizacoes = () => {
                 </div>
               </div>
             )) : (
-              <div className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+              <div className="w-[300px] h-[180px] sm:w-[320px] sm:h-[200px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
             )}
           </div>
         </section>
-
-        {/* Carrossel 3: Propostas */}
-        {/* Carrossel 4: Atualizações do App */}
-        <section>
-          <div className="flex items-center justify-between mb-1 px-1">
-            <div className="flex items-center gap-2">
-              <span className="w-1 h-5 rounded-full bg-[#C084FC]" />
-              <h2 className="font-display text-foreground text-[18px] font-bold uppercase tracking-widest">
-                Novidades do App
-              </h2>
-            </div>
-          </div>
-          <p className="text-muted-foreground text-[13px] px-1 mb-4 truncate">
-            Fique sabendo dos últimos recursos adicionados
-          </p>
-          <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 hide-scrollbar px-1 -mr-4 pr-4">
-            {[1, 2].map((i) => (
-              <div key={i} className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-3 opacity-10">
-                  <Smartphone className="w-16 h-16 sm:w-20 sm:h-20" />
-                </div>
-                <div className="w-10 h-10 rounded-xl bg-[#C084FC]/20 text-[#C084FC] flex items-center justify-center mb-1">
-                  <Smartphone className="w-5 h-5" />
-                </div>
-                <h3 className="font-sans font-semibold text-[15px] sm:text-[16px] leading-tight line-clamp-2">Versão 2.4 Liberada</h3>
-                <p className="text-muted-foreground text-[13px] sm:text-[14px] line-clamp-2">Novo painel de explicações ao vivo e melhorias no Vade Mecum.</p>
-                <div className="mt-auto pt-2 flex items-center justify-between">
-                  <span className="text-[11px] sm:text-[12px] text-muted-foreground/70 font-medium">Versão atual</span>
-                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest bg-[#C084FC]/10 text-[#C084FC] px-2.5 py-1 rounded-full flex items-center gap-1">
-                    Ver <ChevronRight className="w-3 h-3" />
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-          </>
         )}
 
-        {activeTab === 'noticias' && (
-          <>
-            {/* Carrossel 2: Notícias Jurídicas */}
+        {(activeTab === 'novidades' || activeTab === 'noticias') && (
+          {/* Carrossel 2: Notícias Jurídicas */}
             <section>
               <div className="flex items-center justify-between mb-1 px-1">
                 <div className="flex items-center gap-2">
@@ -262,7 +228,7 @@ const Atualizacoes = () => {
                   <div 
                     key={noticia.id} 
                     onClick={() => { haptic.selection(); startTransition(() => navigate(`/noticias?item=${noticia.id}`)); }}
-                    className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start relative overflow-hidden rounded-2xl cursor-pointer active:scale-[0.98] transition-transform"
+                    className="w-[300px] h-[180px] sm:w-[320px] sm:h-[200px] shrink-0 snap-start relative overflow-hidden rounded-2xl cursor-pointer active:scale-[0.98] transition-transform"
                   >
                     <div className="absolute inset-0 flex items-center justify-center bg-card">
                       <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(noticia.fonte || 'Noticia')}&background=FACC15&color=000&size=128&bold=true`} alt="" className="w-16 h-16 rounded-full object-contain drop-shadow-md border border-white/10 opacity-80" />
@@ -300,14 +266,119 @@ const Atualizacoes = () => {
                   </div>
                 )) : (
                   <>
-                    <div className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
-                    <div className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+                    <div className="w-[300px] h-[180px] sm:w-[320px] sm:h-[200px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+                    <div className="w-[300px] h-[180px] sm:w-[320px] sm:h-[200px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
                   </>
                 )}
               </div>
             </section>
+        )}
 
-            {/* Carrossel 5: Concursos Públicos */}
+        {(activeTab === 'novidades' || activeTab === 'boletins') && (
+          
+        {/* Carrossel: Boletins */}
+        <section>
+          <div className="flex items-center justify-between mb-1 px-1">
+            <div className="flex items-center gap-2">
+              <span className="w-1 h-5 rounded-full bg-[#EC4899]" />
+              <h2 className="font-display text-foreground text-[18px] font-bold uppercase tracking-widest">
+                Boletins Jurídicos
+              </h2>
+            </div>
+          </div>
+          <p className="text-muted-foreground text-[13px] px-1 mb-4 truncate">
+            Resumos e boletins oficiais
+          </p>
+          <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 hide-scrollbar px-1 -mr-4 pr-4">
+            {boletins.length > 0 ? boletins.map((bol) => (
+              <div 
+                key={bol.id} 
+                className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
+              >
+                <div className="absolute top-0 right-0 p-3 opacity-10">
+                  <Newspaper className="w-16 h-16 sm:w-20 sm:h-20" />
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-[#EC4899]/20 text-[#EC4899] flex items-center justify-center mb-1">
+                  <Newspaper className="w-5 h-5" />
+                </div>
+                <h3 className="font-sans font-semibold text-[15px] sm:text-[16px] leading-tight line-clamp-2">{bol.titulo}</h3>
+                <p className="text-muted-foreground text-[13px] sm:text-[14px] line-clamp-2">{bol.subtitulo || `Boletim ${bol.tipo}`}</p>
+                <div className="mt-auto pt-2 flex items-center justify-between">
+                  <span className="text-[11px] sm:text-[12px] text-muted-foreground/70 font-medium">{formatDate(bol.data_ref)}</span>
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest bg-[#EC4899]/10 text-[#EC4899] px-2.5 py-1 rounded-full flex items-center gap-1">
+                    Ler <ChevronRight className="w-3 h-3" />
+                  </span>
+                </div>
+              </div>
+            )) : (
+              <div className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+            )}
+          </div>
+        </section>
+
+        )}
+
+        {(activeTab === 'novidades' || activeTab === 'legislacao') && (
+          <section>
+          <div className="flex items-center justify-between mb-1 px-1">
+            <div className="flex items-center gap-2">
+              <span className="w-1 h-5 rounded-full bg-[#60A5FA]" />
+              <h2 className="font-display text-foreground text-[18px] font-bold uppercase tracking-widest">
+                Câmara dos Deputados
+              </h2>
+            </div>
+            <button 
+              onClick={() => { haptic.light(); startTransition(() => navigate('/radar/proposicoes')); }}
+              className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-white font-medium transition-colors active:opacity-70 cursor-pointer"
+            >
+              Ver todos <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+          <p className="text-muted-foreground text-[13px] px-1 mb-4 truncate">
+            Acompanhe projetos de lei e pautas em votação
+          </p>
+          <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 hide-scrollbar px-1 -mr-4 pr-4">
+            {pls.length > 0 ? pls.map((pl) => (
+              <div 
+                key={pl.id_externo || pl.dados_json?.id || pl.numero} 
+                onClick={() => { haptic.selection(); startTransition(() => navigate(`/radar/pl/${pl.id_externo || pl.dados_json?.id}`)); }}
+                className="w-[300px] h-[180px] sm:w-[320px] sm:h-[200px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
+              >
+                <div className="absolute top-0 right-0 p-3 opacity-10">
+                  <FileText className="w-16 h-16 sm:w-20 sm:h-20" />
+                </div>
+                
+                <div className="flex items-start justify-between mb-1">
+                  <div className="w-10 h-10 rounded-xl bg-[#60A5FA]/20 text-[#60A5FA] flex items-center justify-center shrink-0">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <div className="-mt-1 -mr-2">
+                    <AuthorAvatar proposicaoId={pl.id_externo || pl.dados_json?.id} />
+                  </div>
+                </div>
+                
+                <h3 className="font-sans font-semibold text-[15px] sm:text-[16px] leading-tight line-clamp-2">
+                  {pl.sigla_tipo ?? pl.dados_json?.siglaTipo ?? 'PL'} {pl.numero ?? pl.dados_json?.numero ?? ''}/{pl.ano ?? pl.dados_json?.ano ?? ''}
+                </h3>
+                <p className="text-muted-foreground text-[13px] sm:text-[14px] line-clamp-2">{pl.ementa ?? pl.dados_json?.ementa ?? 'Sem ementa disponível.'}</p>
+                <div className="mt-auto pt-2 flex items-center justify-between">
+                  <span className="text-[11px] sm:text-[12px] text-muted-foreground/70 font-medium line-clamp-1 max-w-[120px]">
+                    {pl.dados_json?.statusProposicao?.descricaoTramitacao || 'Em tramitação'}
+                  </span>
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest bg-[#60A5FA]/10 text-[#60A5FA] px-2.5 py-1 rounded-full flex items-center gap-1 shrink-0">
+                    Ver <ChevronRight className="w-3 h-3" />
+                  </span>
+                </div>
+              </div>
+            )) : (
+              <div className="w-[300px] h-[180px] sm:w-[320px] sm:h-[200px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+            )}
+          </div>
+        </section>
+        )}
+
+        {(activeTab === 'novidades' || activeTab === 'noticias') && (
+          {/* Carrossel 5: Concursos Públicos */}
             <section>
               <div className="flex items-center justify-between mb-1 px-1">
                 <div className="flex items-center gap-2">
@@ -331,7 +402,7 @@ const Atualizacoes = () => {
                         haptic.selection();
                         openExternalLink(conc.link);
                       }}
-                      className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start relative overflow-hidden rounded-2xl cursor-pointer active:scale-[0.98] transition-transform block bg-card/60 border border-white/10 group shadow-lg"
+                      className="w-[300px] h-[180px] sm:w-[320px] sm:h-[200px] shrink-0 snap-start relative overflow-hidden rounded-2xl cursor-pointer active:scale-[0.98] transition-transform block bg-card/60 border border-white/10 group shadow-lg"
                     >
                       <img 
                         src={visual.imagemUrl} 
@@ -364,72 +435,50 @@ const Atualizacoes = () => {
                   );
                 }) : (
                   <>
-                    <div className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
-                    <div className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+                    <div className="w-[300px] h-[180px] sm:w-[320px] sm:h-[200px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+                    <div className="w-[300px] h-[180px] sm:w-[320px] sm:h-[200px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
                   </>
                 )}
               </div>
             </section>
-          </>
         )}
+
+        {(activeTab === 'novidades' || activeTab === 'aplicativo') && (
+          {/* Carrossel 4: Atualizações do App */}
         <section>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="flex items-center gap-2">
-              <span className="w-1 h-5 rounded-full bg-[#60A5FA]" />
+              <span className="w-1 h-5 rounded-full bg-[#C084FC]" />
               <h2 className="font-display text-foreground text-[18px] font-bold uppercase tracking-widest">
-                Câmara dos Deputados
+                Novidades do App
               </h2>
             </div>
-            <button 
-              onClick={() => { haptic.light(); startTransition(() => navigate('/radar/proposicoes')); }}
-              className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-white font-medium transition-colors active:opacity-70 cursor-pointer"
-            >
-              Ver todos <ChevronRight className="w-4 h-4" />
-            </button>
           </div>
           <p className="text-muted-foreground text-[13px] px-1 mb-4 truncate">
-            Acompanhe projetos de lei e pautas em votação
+            Fique sabendo dos últimos recursos adicionados
           </p>
           <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 hide-scrollbar px-1 -mr-4 pr-4">
-            {pls.length > 0 ? pls.map((pl) => (
-              <div 
-                key={pl.id_externo || pl.dados_json?.id || pl.numero} 
-                onClick={() => { haptic.selection(); startTransition(() => navigate(`/radar/pl/${pl.id_externo || pl.dados_json?.id}`)); }}
-                className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
-              >
+            {[1, 2].map((i) => (
+              <div key={i} className="w-[300px] h-[180px] sm:w-[320px] sm:h-[200px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-3 opacity-10">
-                  <FileText className="w-16 h-16 sm:w-20 sm:h-20" />
+                  <Smartphone className="w-16 h-16 sm:w-20 sm:h-20" />
                 </div>
-                
-                <div className="flex items-start justify-between mb-1">
-                  <div className="w-10 h-10 rounded-xl bg-[#60A5FA]/20 text-[#60A5FA] flex items-center justify-center shrink-0">
-                    <FileText className="w-5 h-5" />
-                  </div>
-                  <div className="-mt-1 -mr-2">
-                    <AuthorAvatar proposicaoId={pl.id_externo || pl.dados_json?.id} />
-                  </div>
+                <div className="w-10 h-10 rounded-xl bg-[#C084FC]/20 text-[#C084FC] flex items-center justify-center mb-1">
+                  <Smartphone className="w-5 h-5" />
                 </div>
-                
-                <h3 className="font-sans font-semibold text-[15px] sm:text-[16px] leading-tight line-clamp-2">
-                  {pl.sigla_tipo ?? pl.dados_json?.siglaTipo ?? 'PL'} {pl.numero ?? pl.dados_json?.numero ?? ''}/{pl.ano ?? pl.dados_json?.ano ?? ''}
-                </h3>
-                <p className="text-muted-foreground text-[13px] sm:text-[14px] line-clamp-2">{pl.ementa ?? pl.dados_json?.ementa ?? 'Sem ementa disponível.'}</p>
+                <h3 className="font-sans font-semibold text-[15px] sm:text-[16px] leading-tight line-clamp-2">Versão 2.4 Liberada</h3>
+                <p className="text-muted-foreground text-[13px] sm:text-[14px] line-clamp-2">Novo painel de explicações ao vivo e melhorias no Vade Mecum.</p>
                 <div className="mt-auto pt-2 flex items-center justify-between">
-                  <span className="text-[11px] sm:text-[12px] text-muted-foreground/70 font-medium line-clamp-1 max-w-[120px]">
-                    {pl.dados_json?.statusProposicao?.descricaoTramitacao || 'Em tramitação'}
-                  </span>
-                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest bg-[#60A5FA]/10 text-[#60A5FA] px-2.5 py-1 rounded-full flex items-center gap-1 shrink-0">
+                  <span className="text-[11px] sm:text-[12px] text-muted-foreground/70 font-medium">Versão atual</span>
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest bg-[#C084FC]/10 text-[#C084FC] px-2.5 py-1 rounded-full flex items-center gap-1">
                     Ver <ChevronRight className="w-3 h-3" />
                   </span>
                 </div>
               </div>
-            )) : (
-              <div className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
-            )}
+            ))}
           </div>
         </section>
-
-
+        )}
 
       </main>
     </div>
