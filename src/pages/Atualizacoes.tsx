@@ -338,7 +338,7 @@ const Atualizacoes = () => {
                       <img 
                         src={visual.imagemUrl} 
                         alt="" 
-                        className="absolute inset-0 w-full h-full object-cover brightness-75 contrast-105 group-hover:scale-105 transition-transform duration-500" 
+                        className="absolute inset-0 w-full h-full object-cover object-top brightness-75 contrast-105 group-hover:scale-105 transition-transform duration-500" 
                         loading="lazy"
                       />
                       
