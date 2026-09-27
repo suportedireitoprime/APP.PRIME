@@ -172,12 +172,12 @@ export function VisuaisPassoItens({
                     <HomeCard
                       icon={Icon}
                       label={limparNomeCard(i.label)}
-                      sublabel={i.sub || ''}
+                      sublabel=""
                       color={cor}
                       delay={0}
                       badge={isPronto ? 'PRONTO' : undefined}
                       className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm min-h-[96px] h-[96px]"
-                      titleClassName="font-['Plus_Jakarta_Sans',sans-serif] font-bold text-[13px] xs:text-[14px] sm:text-[15px] leading-snug tracking-tight text-zinc-100 normal-case line-clamp-2"
+                      titleClassName="font-['Plus_Jakarta_Sans',sans-serif] font-bold text-[14px] xs:text-[15.5px] sm:text-[16.5px] leading-snug tracking-tight text-zinc-100 normal-case line-clamp-2"
                       iconClassName="w-7 h-7"
                       iconStrokeWidth={1.5}
                       onClick={() => {
