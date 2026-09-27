@@ -11,6 +11,7 @@ import { HorusPoderesTab } from '@/components/admin/horus/HorusPoderesTab';
 import { HorusRankingTab } from '@/components/admin/horus/HorusRankingTab';
 import { HorusCanalTab } from '@/components/admin/horus/HorusCanalTab';
 import { HorusUsuariosTab } from '@/components/admin/horus/HorusUsuariosTab';
+import { AdminHorusHojeCards } from '@/components/admin/horus/AdminHorusHojeCards';
 import { Users, ImageIcon } from 'lucide-react';
 
 type Section = {
@@ -60,7 +61,7 @@ export default function AdminHorus() {
           </div>
         ) : (
           <>
-            <>
+            <AdminHorusHojeCards />
             <div className="rounded-2xl border border-border/60 bg-secondary/30 divide-y divide-border/50 overflow-hidden">
               {SECTIONS.map(({ id, label, desc, icon: Icon, color, route }) => (
                 <button
