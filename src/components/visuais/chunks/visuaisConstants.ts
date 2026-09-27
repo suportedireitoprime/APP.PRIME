@@ -1,4 +1,4 @@
-import { Brain, Layers, GitBranch, Network, BookOpen, Scale, Gavel, Star, Clock, Award, Folder, Sparkles } from 'lucide-react';
+import { Brain, Layers, GitBranch, Network, BookOpen, Scale, Gavel, Heart, Clock, Award, Folder, Sparkles, FileText, ShieldCheck } from 'lucide-react';
 import type { VisualCategoria, VisualTipo } from '@/lib/visuaisJuridicos/types';
 import type { ArtigoLei } from '@/data/mockData';
 
@@ -10,7 +10,7 @@ export const TIPO_ICON: Record<VisualTipo, typeof Brain> = {
 };
 
 export const TIPO_COR: Record<VisualTipo, string> = {
-  mapa_mental: '#ef3a5d',
+  mapa_mental: '#a855f7',
   infografico: '#f59e0b',
   fluxograma: '#22c55e',
   diagrama: '#8b5cf6',
@@ -20,6 +20,8 @@ export const CATEGORIA_ICON: Record<VisualCategoria, typeof Brain> = {
   materias: BookOpen,
   codigos: Scale,
   estatutos: Award,
+  leis_especiais: FileText,
+  previdenciario: ShieldCheck,
   leis: Scale,
   jurisprudencia: Gavel,
 };
@@ -28,14 +30,16 @@ export const CATEGORIA_COR: Record<VisualCategoria, string> = {
   materias: '#38bdf8',
   codigos: '#ef4444',
   estatutos: '#10b981',
+  leis_especiais: '#f59e0b',
+  previdenciario: '#a855f7',
   leis: '#e01f47',
   jurisprudencia: '#a78bfa',
 };
 
-export const ITEM_CORES = ['#e01f47', '#38bdf8', '#f59e0b', '#22c55e', '#a78bfa', '#ec4899', '#14b8a6', '#f97316'];
+export const ITEM_CORES = ['#a855f7', '#38bdf8', '#f59e0b', '#22c55e', '#ec4899', '#14b8a6', '#f97316', '#8b5cf6'];
 
 export const TIPOS: VisualTipo[] = ['mapa_mental', 'infografico', 'fluxograma', 'diagrama'];
-export const CATEGORIAS: VisualCategoria[] = ['materias', 'codigos', 'estatutos'];
+export const CATEGORIAS: VisualCategoria[] = ['materias', 'codigos', 'estatutos', 'leis_especiais', 'previdenciario'];
 
 export const norm = (v: string) => v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
@@ -43,7 +47,7 @@ export type Filtro = 'todos' | 'favoritos' | 'recentes' | 'pastas';
 
 export const FILTROS: { id: Filtro; label: string; Icone: typeof Layers }[] = [
   { id: 'todos', label: 'Todos', Icone: Layers },
-  { id: 'favoritos', label: 'Favoritos', Icone: Star },
+  { id: 'favoritos', label: 'Favoritos', Icone: Heart },
   { id: 'recentes', label: 'Recentes', Icone: Clock },
   { id: 'pastas', label: 'Pastas', Icone: Folder },
 ];

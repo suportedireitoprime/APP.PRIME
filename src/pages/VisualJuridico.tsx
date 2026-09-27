@@ -8,9 +8,7 @@ export default function VisualJuridico() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Extrai os segmentos da URL a partir de /visuais
-  // Ex.: /visuais/mapa-mental/materias/direito-administrativo
-  const pathSegs = location.pathname.replace(/^\/visuais\/?/, '').split('/').filter(Boolean);
+  const pathSegs = location.pathname.replace(/^\/(mapas-mentais|visuais)\/?/, '').split('/').filter(Boolean);
 
   let tipo: VisualTipo | undefined = undefined;
   let categoriaInicial: VisualCategoria | undefined = undefined;
@@ -22,20 +20,23 @@ export default function VisualJuridico() {
     const primeiro = pathSegs[0];
     if (SLUG_TIPO[primeiro]) {
       tipo = SLUG_TIPO[primeiro];
-      const catRaw = pathSegs[1];
-      if (catRaw === 'materias' || catRaw === 'leis' || catRaw === 'jurisprudencia' || catRaw === 'codigos' || catRaw === 'estatutos') {
+      const catRaw = pathSegs[1]?.replace('-', '_');
+      if (catRaw === 'materias' || catRaw === 'leis' || catRaw === 'jurisprudencia' || catRaw === 'codigos' || catRaw === 'estatutos' || catRaw === 'leis_especiais' || catRaw === 'previdenciario') {
         categoriaInicial = catRaw as VisualCategoria;
       }
       itemSlugInicial = pathSegs[2];
       temaSlugInicial = pathSegs[3];
-    } else if (primeiro === 'materias' || primeiro === 'leis' || primeiro === 'jurisprudencia' || primeiro === 'codigos' || primeiro === 'estatutos') {
-      // Se omitiu o formato e entrou direto na categoria (ex.: /visuais/materias ou /visuais/codigos)
-      tipo = 'mapa_mental';
-      categoriaInicial = primeiro as VisualCategoria;
-      itemSlugInicial = pathSegs[1];
-      temaSlugInicial = pathSegs[2];
     } else {
-      formatoInvalido = true;
+      const primeiroNorm = primeiro.replace('-', '_');
+      if (primeiroNorm === 'materias' || primeiroNorm === 'leis' || primeiroNorm === 'jurisprudencia' || primeiroNorm === 'codigos' || primeiroNorm === 'estatutos' || primeiroNorm === 'leis_especiais' || primeiroNorm === 'previdenciario') {
+        // Se omitiu o formato e entrou direto na categoria
+        tipo = 'mapa_mental';
+        categoriaInicial = primeiroNorm as VisualCategoria;
+        itemSlugInicial = pathSegs[1];
+        temaSlugInicial = pathSegs[2];
+      } else {
+        formatoInvalido = true;
+      }
     }
   }
 
@@ -45,7 +46,7 @@ export default function VisualJuridico() {
 
   const aoMudarRota = useCallback(
     (segs: string[]) => {
-      const destino = segs.length ? ['/visuais', ...segs].join('/') : '/visuais';
+      const destino = segs.length ? ['/mapas-mentais', ...segs].join('/') : '/mapas-mentais';
       if (location.pathname !== destino) {
         navigate(destino, { replace: true });
       }

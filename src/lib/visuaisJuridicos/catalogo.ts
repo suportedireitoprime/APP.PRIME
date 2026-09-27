@@ -54,6 +54,24 @@ export const ESTATUTOS: CatalogoItem[] = LEIS_CATALOG.filter((l) => l.tipo === '
   tabela: l.tabela_nome,
 }));
 
+export const LEIS_ESPECIAIS: CatalogoItem[] = LEIS_CATALOG.filter((l) => l.tipo === 'lei-especial').map((l) => ({
+  key: `lei:${l.id}`,
+  label: l.nome,
+  sub: `${l.sigla} — ${l.descricao}`,
+  contexto: `${l.nome} (${l.sigla}) — ${l.descricao}. Legislação especial brasileira vigente.`,
+  leiId: l.id,
+  tabela: l.tabela_nome,
+}));
+
+export const PREVIDENCIARIO: CatalogoItem[] = LEIS_CATALOG.filter((l) => l.tipo === 'previdenciario').map((l) => ({
+  key: `lei:${l.id}`,
+  label: l.nome,
+  sub: `${l.sigla} — ${l.descricao}`,
+  contexto: `${l.nome} (${l.sigla}) — ${l.descricao}. Legislação previdenciária e seguridade social brasileira vigente.`,
+  leiId: l.id,
+  tabela: l.tabela_nome,
+}));
+
 export const LEIS: CatalogoItem[] = LEIS_CATALOG.map((l) => ({
   key: `lei:${l.id}`,
   label: l.nome,
@@ -83,6 +101,8 @@ export function itensDaCategoria(categoria: VisualCategoria): CatalogoItem[] {
   if (categoria === 'materias') return MATERIAS;
   if (categoria === 'codigos') return CODIGOS;
   if (categoria === 'estatutos') return ESTATUTOS;
+  if (categoria === 'leis_especiais') return LEIS_ESPECIAIS;
+  if (categoria === 'previdenciario') return PREVIDENCIARIO;
   if (categoria === 'leis') return LEIS;
   return JURISPRUDENCIA;
 }
@@ -91,6 +111,8 @@ export const CATEGORIA_INFO: Record<VisualCategoria, { label: string; desc: stri
   materias: { label: 'Matérias', desc: 'Disciplinas e ramos do Direito com temas e princípios' },
   codigos: { label: 'Códigos', desc: 'Códigos fundamentais do ordenamento jurídico brasileiro' },
   estatutos: { label: 'Estatutos', desc: 'Estatutos específicos e legislação temática consolidada' },
+  leis_especiais: { label: 'Leis Especiais', desc: 'Leis penais, administrativas e cíveis extravagantes' },
+  previdenciario: { label: 'Previdenciário', desc: 'Benefícios, custeio e previdência social' },
   leis: { label: 'Leis', desc: 'Códigos, estatutos e leis do Vade Mecum — com artigo opcional' },
   jurisprudencia: { label: 'Jurisprudência', desc: 'Súmulas, precedentes e teses dos tribunais' },
 };

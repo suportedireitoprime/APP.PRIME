@@ -1,6 +1,6 @@
-﻿import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search, NotebookText, ChevronRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { ArrowLeft, Search, NotebookText, ChevronRight, Brain } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -102,6 +102,8 @@ const ResumosHero = ({
   totalTemas = 527,
 }: Props) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isMapas = location.pathname.startsWith('/mapas-mentais') || location.pathname.startsWith('/visuais') || location.pathname.startsWith('/mapas');
 
   return (
     <div
@@ -181,13 +183,17 @@ const ResumosHero = ({
           
           <div className="w-full flex flex-col items-center">
             <div className="relative w-16 h-16 sm:w-20 sm:h-20 mb-3 flex items-center justify-center rounded-[20px] bg-white/15 backdrop-blur-md border border-white/20 shadow-xl">
-              <NotebookText className="w-8 h-8 sm:w-10 sm:h-10 text-white drop-shadow-md" strokeWidth={1.5} />
+              {isMapas ? (
+                <Brain className="w-8 h-8 sm:w-10 sm:h-10 text-white drop-shadow-md" strokeWidth={1.5} />
+              ) : (
+                <NotebookText className="w-8 h-8 sm:w-10 sm:h-10 text-white drop-shadow-md" strokeWidth={1.5} />
+              )}
             </div>
             <h1 className="font-display text-white text-[18px] sm:text-[22px] leading-[1.05] font-black tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] uppercase text-center w-full max-w-[160px] sm:max-w-[200px]">
-              Resumos JurÃ­dicos
+              {isMapas ? 'Mapas Mentais' : 'Resumos JurÃ­dicos'}
             </h1>
             <p className="mt-1.5 font-body text-white/90 text-[10px] sm:text-[11px] font-semibold tracking-wide uppercase drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]">
-              Inteligentes e Estruturados
+              {isMapas ? 'Esquemas e Infográficos' : 'Inteligentes e Estruturados'}
             </p>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import ShapeGrid from "@/components/ui/ShapeGrid";
 import ResumosHero from "@/components/resumos/ResumosHero";
@@ -10,6 +10,7 @@ import { ResumosTemaCard } from "@/components/resumos/home/ResumosTemaCard";
 
 export default function ResumosJuridicosAreas() {
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     rows,
     loading,
@@ -57,9 +58,10 @@ export default function ResumosJuridicosAreas() {
                   <ResumosAreaCard
                     key={r.area}
                     areaRow={r}
-                    onClick={(selectedArea) =>
-                      navigate(`/resumos-juridicos/${encodeURIComponent(selectedArea)}`)
-                    }
+                    onClick={(selectedArea) => {
+                      const basePath = location.pathname.startsWith('/mapas-mentais') ? '/mapas-mentais' : '/resumos-juridicos';
+                      navigate(`${basePath}/${encodeURIComponent(selectedArea)}`);
+                    }}
                   />
                 ))}
               </div>
@@ -75,11 +77,10 @@ export default function ResumosJuridicosAreas() {
                   key={tema}
                   tema={tema}
                   coverUrl={getAreaCover(activeTab)?.cover}
-                  onClick={() =>
-                    navigate(
-                      `/resumos-juridicos/${encodeURIComponent(activeTab)}/${encodeURIComponent(tema)}`,
-                    )
-                  }
+                  onClick={() => {
+                    const basePath = location.pathname.startsWith('/mapas-mentais') ? '/mapas-mentais' : '/resumos-juridicos';
+                    navigate(`${basePath}/${encodeURIComponent(activeTab)}/${encodeURIComponent(tema)}`);
+                  }}
                 />
               ))}
             </div>

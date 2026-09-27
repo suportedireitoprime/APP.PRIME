@@ -138,6 +138,7 @@ const Concursos = lazy(() => import("./pages/Concursos.tsx"));
 const RadarConcursos = lazy(() => import("./pages/RadarConcursos.tsx"));
 const RadarEstatisticas = lazy(() => import("./pages/RadarEstatisticas.tsx"));
 const RadarConstrucao = lazy(() => import("./pages/RadarConstrucao.tsx"));
+const VisualJuridico = lazy(() => import("./pages/VisualJuridico.tsx"));
 
 const MeusDownloads = lazy(() => import("./pages/MeusDownloads.tsx"));
 const MinhasLeituras = lazy(() => import("./pages/MinhasLeituras.tsx"));
@@ -1374,9 +1375,8 @@ function AnimatedRoutes() {
           <Route path="/tres-poderes/stf/podcasts" element={<PageTransition><PodcastsLista /></PageTransition>} />
           <Route path="/notificacoes" element={<Navigate to="/?notificacoes=1" replace />} />
           <Route path="/meus-lembretes" element={<Navigate to="/?notificacoes=1" replace />} />
-          <Route path="/mapas-mentais" element={<ProtectedRoute><PageTransition instant><ResumosJuridicosAreas /></PageTransition></ProtectedRoute>} />
-          <Route path="/mapas-mentais/:area" element={<ProtectedRoute><PageTransition instant><ResumosJuridicosTemas /></PageTransition></ProtectedRoute>} />
-          <Route path="/mapas-mentais/:area/:tema" element={<ProtectedRoute><PageTransition instant><ResumosJuridicosSubtemas /></PageTransition></ProtectedRoute>} />
+          <Route path="/mapas-mentais" element={<ProtectedRoute><PageTransition instant><VisualJuridico /></PageTransition></ProtectedRoute>} />
+          <Route path="/mapas-mentais/*" element={<ProtectedRoute><PageTransition instant><VisualJuridico /></PageTransition></ProtectedRoute>} />
           <Route path="/mapas" element={<Navigate to="/mapas-mentais" replace />} />
           <Route path="/visuais" element={<Navigate to="/mapas-mentais" replace />} />
           <Route path="/visuais/*" element={<Navigate to="/mapas-mentais" replace />} />

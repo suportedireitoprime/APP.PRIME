@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { FILTROS, type Filtro } from './visuaisConstants';
 
@@ -20,7 +20,7 @@ export function VisuaisAbasFiltro({ valor, onChange }: VisuaisAbasFiltroProps) {
             onChange(id);
           }}
           className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold transition-all ${
-            valor === id ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+            valor === id ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/30' : 'bg-muted text-muted-foreground'
           }`}
         >
           <Icone className={`w-5 h-5 ${id === 'favoritos' && valor === id ? 'fill-current' : ''}`} />
@@ -36,7 +36,7 @@ interface EstrelaFavoritoProps {
   onToggle: () => void;
 }
 
-/** Estrela de favorito posicionada no canto da linha. */
+/** Coração de favorito posicionado no canto do card. */
 export function EstrelaFavorito({ ativo, onToggle }: EstrelaFavoritoProps) {
   return (
     <button
@@ -46,9 +46,12 @@ export function EstrelaFavorito({ ativo, onToggle }: EstrelaFavoritoProps) {
         onToggle();
       }}
       aria-label={ativo ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
-      className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full"
+      className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full transition-transform active:scale-90"
     >
-      <Star className={`w-4 h-4 ${ativo ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/60'}`} />
+      <Heart className={`w-4 h-4 transition-all duration-300 ${ativo ? 'fill-purple-500 text-purple-400 scale-110 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]' : 'text-zinc-400/60 hover:text-white'}`} />
     </button>
   );
 }
+
+export const CoracaoFavorito = EstrelaFavorito;
+
