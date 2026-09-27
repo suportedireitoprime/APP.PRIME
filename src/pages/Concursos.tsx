@@ -502,7 +502,7 @@ const Concursos = () => {
                     />
 
                     {/* Thumbnail - Ilustração 3D */}
-                    <div className="w-24 sm:w-28 shrink-0 relative flex items-center justify-center p-2 bg-gradient-to-br from-emerald-500/10 via-card to-card/40 overflow-hidden z-10">
+                    <div className="w-24 sm:w-28 shrink-0 relative flex items-center justify-center p-2 bg-card z-20 border-r border-border/40">
                       {/* Personagem 3D em Primeiro Plano */}
                       <img
                         src={visual.imagemUrl}
@@ -532,7 +532,7 @@ const Concursos = () => {
                           )
                         )}
                       </div>
-                      <h3 className="font-display text-[13px] sm:text-[14px] text-foreground font-semibold leading-snug line-clamp-2 group-hover:text-[#10B981] transition-colors mt-0.5">
+                      <h3 className="font-sans text-[13px] sm:text-[14px] text-foreground font-semibold leading-snug line-clamp-2 group-hover:text-[#10B981] transition-colors mt-0.5">
                         {item.titulo}
                       </h3>
                       <div className="flex items-center gap-2 flex-wrap text-[11px] sm:text-[12px] font-body text-muted-foreground mt-auto pt-1">
