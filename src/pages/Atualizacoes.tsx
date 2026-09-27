@@ -399,7 +399,7 @@ const Atualizacoes = () => {
               <div 
                 key={pl.id_externo || pl.dados_json?.id || pl.numero} 
                 onClick={() => { haptic.selection(); startTransition(() => navigate(`/radar/pl/${pl.id_externo || pl.dados_json?.id}`)); }}
-                className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
+                className="w-[290px] min-h-[220px] sm:w-[340px] sm:min-h-[230px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
               >
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <FileText className="w-16 h-16 sm:w-20 sm:h-20" />
@@ -428,7 +428,7 @@ const Atualizacoes = () => {
                 </div>
               </div>
             )) : (
-              <div className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+              <div className="w-[290px] min-h-[220px] sm:w-[340px] sm:min-h-[230px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
             )}
           </div>
         </section>
