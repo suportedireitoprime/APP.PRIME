@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, memo, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight, ArrowRight, Brain, Layers, GitBranch, Network, Sparkles, type LucideIcon } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
@@ -267,10 +268,10 @@ export const VisuaisDeckModal = memo(({
 
   if (!open) return null;
 
-  return (
+  return typeof window !== 'undefined' ? createPortal(
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-[65] flex items-center justify-center p-3 sm:p-5 select-none overflow-hidden">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 select-none overflow-hidden">
           {/* ── Fundo Animado com Quadradinhos (ShapeGrid Oficial) ── */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -675,8 +676,9 @@ export const VisuaisDeckModal = memo(({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
-  );
+    </AnimatePresence>,
+    document.body
+  ) : null;
 });
 
 VisuaisDeckModal.displayName = 'VisuaisDeckModal';

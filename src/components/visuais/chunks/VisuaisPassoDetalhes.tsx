@@ -115,7 +115,7 @@ export function VisuaisPassoDetalhes({
                     />
                   </div>
                   <div className="flex-1 min-w-0 text-left">
-                    <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
+                    <p className="font-['Plus_Jakarta_Sans',sans-serif] text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-tight">
                       {t.tema}
                     </p>
                     <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-1">
@@ -200,7 +200,7 @@ export function VisuaisPassoDetalhes({
                     />
                   </div>
                   <div className="flex-1 min-w-0 text-left">
-                    <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
+                    <p className="font-['Plus_Jakarta_Sans',sans-serif] text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-tight">
                       {s.subtema}
                     </p>
                     <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-1">
@@ -248,7 +248,7 @@ export function VisuaisPassoDetalhes({
                     />
                   </div>
                   <div className="flex-1 min-w-0 text-left">
-                    <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
+                    <p className="font-['Plus_Jakarta_Sans',sans-serif] text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-tight">
                       {tema.tema}
                     </p>
                     <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-1">
@@ -318,7 +318,7 @@ export function VisuaisPassoDetalhes({
                     />
                   </div>
                   <div className="flex-1 min-w-0 text-left">
-                    <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
+                    <p className="font-['Plus_Jakarta_Sans',sans-serif] text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-tight">
                       Art. {a.numero}
                     </p>
                     <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-1">
