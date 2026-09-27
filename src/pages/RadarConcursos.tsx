@@ -459,7 +459,7 @@ export default function RadarConcursos() {
 
           <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 pb-2 hide-scrollbar px-1 -mr-4 pr-4">
             {concursosFiltrados.length > 0 ? concursosFiltrados.slice(0, 15).map((conc) => {
-              const visual = getConcursoVisual(conc.titulo, conc.imagem_url);
+              const visual = getConcursoVisual(conc.titulo, conc.imagem_url, conc.cargos_resumo || conc.cargos);
 
               return (
                 <div
@@ -773,7 +773,7 @@ export default function RadarConcursos() {
                 <div className="absolute bottom-4 left-4 sm:left-6 right-4 sm:right-6 z-10 flex items-center gap-3">
                   <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center p-2 shadow-xl border-4 border-card shrink-0">
                     <img
-                      src={getConcursoVisual(selectedEdital.titulo, selectedEdital.imagem_url).imagemUrl}
+                      src={getConcursoVisual(selectedEdital.titulo, selectedEdital.imagem_url, selectedEdital.cargos_resumo || selectedEdital.cargos).imagemUrl}
                       alt={selectedEdital.titulo}
                       className="w-full h-full object-contain rounded-full"
                     />

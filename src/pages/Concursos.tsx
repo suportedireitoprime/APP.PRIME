@@ -300,7 +300,7 @@ const Concursos = () => {
             {(() => {
               const hero = finalFiltered[0];
               if (!hero) return null;
-              const visual = getConcursoVisual(hero.titulo, hero.imagem_url);
+              const visual = getConcursoVisual(hero.titulo, hero.imagem_url, (hero as any).cargos_resumo || (hero as any).cargos);
               return (
                 <motion.div
                   key={`hero-${hero.id}`}
@@ -346,7 +346,7 @@ const Concursos = () => {
             <div className="space-y-3 -mx-4 md:mx-0">
               {finalFiltered.slice(1).map((item, i) => {
                 const { time } = formatDateParts(item.created_at || item.data_publicacao);
-                const visual = getConcursoVisual(item.titulo, item.imagem_url);
+                const visual = getConcursoVisual(item.titulo, item.imagem_url, (item as any).cargos_resumo || (item as any).cargos);
                 return (
                   <motion.div
                     key={item.id}
@@ -426,7 +426,7 @@ const Concursos = () => {
               {/* Header Image */}
               <div className="relative h-64 w-full shrink-0">
                 <img
-                  src={getConcursoVisual(selectedItem.titulo, selectedItem.imagem_url).imagemUrl}
+                  src={getConcursoVisual(selectedItem.titulo, selectedItem.imagem_url, (selectedItem as any).cargos_resumo || (selectedItem as any).cargos).imagemUrl}
                   alt={selectedItem.titulo}
                   className="w-full h-full object-cover"
                 />

@@ -1,31 +1,10 @@
-# Checklist de Execução — Fluidez Absoluta e Navegação Instantânea (0ms)
+# Task Checklist — Imagens das 14 Profissões para Concursos
 
-- [x] 1. Otimizar Camada Global de Rota (`PageTransition.tsx`, `index.css`, `AppRoutes.tsx`) <!-- id: 1 -->
-  - [x] Remover `animate-page-in` com `opacity: 0` e `translateY` de `PageTransition.tsx`
-  - [x] Neutralizar `@keyframes page-in` em `src/index.css`
-  - [x] Garantir `instant` na rota `/vade-mecum` em `src/AppRoutes.tsx`
-- [x] 2. Eliminar Atrasos e Animações de Entrada no Hub Vade Mecum <!-- id: 2 -->
-  - [x] `src/pages/VadeMecum.tsx`: Remover `AnimatePresence mode="wait"` e `motion.div` com `opacity: 0`
-  - [x] `src/components/vademecum/home/MobileHomeSections.tsx`: Remover `AnimatePresence mode="wait"` nas abas
-  - [x] `src/components/vademecum/home/sections/HomeTabEmAlta.tsx`: Eliminar `motion.div`, delays escalonados de cards e stagger de radares
-  - [x] `src/components/vademecum/home/carousel/HomeEmAltaCarousel.tsx`: Remover `motion.button` com delay e opacity 0
-  - [x] `src/components/vademecum/outros/AprendaSobreLeis.tsx`: Remover `motion.button` com delay e opacity 0
-  - [x] `src/components/vademecum/home/sections/HomeTabCategorias.tsx` e `HomeTabAreas.tsx`: Remover motion wrappers e delays de cards
-- [x] 3. Otimizar Subpáginas do Vade Mecum para Exibição Instantânea <!-- id: 3 -->
-  - [x] `src/pages/VadeMecumCodigos.tsx`: Remover `initial="hidden"` e stagger de entrada
-  - [x] `src/pages/VadeMecumEstatutos.tsx`: Remover `initial="hidden"` e stagger de entrada
-  - [x] `src/pages/VadeMecumEspeciais.tsx`: Remover `initial="hidden"` e stagger de entrada
-  - [x] `src/pages/VadeMecumSumulas.tsx`: Remover `initial="hidden"` e stagger de entrada
-  - [x] `src/pages/VadeMecumFavoritos.tsx`: Remover `initial="hidden"` e stagger de entrada
-  - [x] `src/pages/VadeMecumRecentes.tsx`: Remover `initial="hidden"` e stagger de entrada
-- [x] 4. Limpeza de Artigos e Demais Delays em Componentes <!-- id: 4 -->
-  - [x] `src/components/vademecum/artigo/ArtigoCard.tsx`: Remover `animate-cascade-in` e delays em `style`
-  - [x] `tailwind.config.ts`: Neutralizar keyframe `cascade-in`
-  - [x] `src/pages/LeiSeca/LeiSecaParte.tsx`: Remover `animate-fade-in-up` e `animationDelay`
-  - [x] `src/components/vademecum/ui_elements/ResultadoConteudoCard.tsx`: Remover `animationDelay`
-  - [x] `src/index.css`: Neutralizar keyframes de `resultado-fade-up`
-  - [x] `src/pages/IndexDesktop.tsx`: Remover `animate-fade-in` da troca de abas
-- [x] 5. Validação, Build e Versionamento Git <!-- id: 5 -->
-  - [x] Executar checagem de tipos `tsc --noEmit`
-  - [x] Executar build de produção `vite build`
-  - [x] Commit e push automático no repositório GitHub
+- [x] 1. Otimizar e comprimir as 14 imagens WebP de `docs/` para 384x384 com `sharp` <!-- id: 1 -->
+- [x] 2. Salvar as 14 imagens otimizadas em `public/profissoes/` para suporte offline e 0ms <!-- id: 2 -->
+- [x] 3. Fazer upload das 14 imagens para o Supabase Storage no bucket `imagens/profissoes/` <!-- id: 3 -->
+- [x] 4. Atualizar `src/lib/concursosVisuais.ts` com o dicionário das 14 profissões e a lógica de correspondência inteligente <!-- id: 4 -->
+- [x] 5. Integrar a detecção em `RadarConcursos.tsx`, `Concursos.tsx` e `Atualizacoes.tsx` <!-- id: 5 -->
+- [x] 6. Validar com `tsc.CMD --noEmit` <!-- id: 6 -->
+- [x] 7. Realizar build com `vite.CMD build` <!-- id: 7 -->
+- [x] 8. Fazer auto-commit e push para o GitHub <!-- id: 8 -->

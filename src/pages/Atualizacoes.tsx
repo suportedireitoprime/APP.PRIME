@@ -323,7 +323,7 @@ const Atualizacoes = () => {
               </p>
               <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 hide-scrollbar px-1 -mr-4 pr-4">
                 {concursos.length > 0 ? concursos.map((conc) => {
-                  const visual = getConcursoVisual(conc.titulo, conc.imagem_url);
+                  const visual = getConcursoVisual(conc.titulo, conc.imagem_url, (conc as any).cargos_resumo || (conc as any).cargos);
                   return (
                     <div
                       key={conc.id} 

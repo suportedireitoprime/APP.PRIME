@@ -429,7 +429,7 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.02, type: 'spring', stiffness: 260, damping: 22 }}
                         onClick={() => openArtigoInLei(lei)}
-                        className="w-full flex items-center animate-in fade-in slide-in-from-right-4" style={{ animationFillMode: 'both', animationDelay: `${i * 30}ms` }} className="w-full flex items-center gap-4 p-3.5 rounded-xl bg-card border border-border hover:border-primary/40 transition-all text-left"
+                        className="w-full flex items-center gap-4 p-3.5 rounded-xl bg-card border border-border hover:border-primary/40 transition-all text-left animate-in fade-in slide-in-from-right-4" style={{ animationFillMode: 'both', animationDelay: `${i * 30}ms` }}
                       >
                         <div className="w-12 h-12 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0">
                           <span className="text-xs font-bold text-red-500">{lei.sigla}</span>

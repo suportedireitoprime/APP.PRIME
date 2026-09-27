@@ -1,70 +1,65 @@
-# Plano de Implementação — Fluidez Absoluta e Navegação Instantânea (0ms) no Vade Mecum e Rotas
+# Plano de Implementação — Imagens das 14 Profissões para Concursos
 
-Eliminar a percepção de engasgo, lentidão, movimento vertical (`translateY`) e elementos inicialmente invisíveis (`opacity: 0`) nas navegações do aplicativo (especialmente Vade Mecum, Constituição, Códigos, Estatutos, Súmulas e subpáginas).
-
----
-
-## 1. Diagnóstico e Causas Identificadas
-
-1. **Camada de Rota (`PageTransition.tsx` e `index.css`)**:
-   - `PageTransition.tsx` aplicava `animate-page-in` em navegações PUSH/REPLACE.
-   - `@keyframes page-in` em `index.css` iniciava em `opacity: 0; transform: translateY(4px) scale(0.994)` com duração de 200ms.
-   - A rota `/vade-mecum` em `AppRoutes.tsx` não tinha a prop `instant`.
-
-2. **Hub do Vade Mecum (`VadeMecum.tsx` e `MobileHomeSections.tsx`)**:
-   - `VadeMecum.tsx` envolvia o conteúdo em `<AnimatePresence mode="wait">` com `<motion.div initial={{ opacity: 0 }} transition={{ duration: 0.15 }}>`.
-   - `MobileHomeSections.tsx` envolvia as abas em `<AnimatePresence mode="wait" initial={false}>`, atrasando a troca e montagem das abas.
-
-3. **Abas e Seções do Vade Mecum (`HomeTabEmAlta.tsx`, `HomeTabCategorias.tsx`, `HomeTabAreas.tsx`)**:
-   - `HomeTabEmAlta.tsx`: container com `initial={{ opacity: 0, y: 16 }}`; cards de legislação com `initial={{ opacity: 0, scale: 0.95 }}` e `delay={Math.min(i * 0.03, 0.25)}`; radares com `staggerChildren: 0.05, delayChildren: 0.1`.
-   - `HomeEmAltaCarousel.tsx`: botões com `initial={{ opacity: 0, y: 6 }}` e `transition={{ delay: Math.min(i * 0.03, 0.2) }}`.
-   - `AprendaSobreLeis.tsx`: botões com `initial={{ opacity: 0, y: 8 }}` e `transition={{ delay: Math.min(i * 0.04, 0.2) }}`.
-   - `HomeTabCategorias.tsx` e `HomeTabAreas.tsx`: containers com `initial={{ opacity: 0, y: 16 }}` e cards com `delay={i * 0.05}` / `delay={Math.min(i * 0.04, 0.3)}`.
-
-4. **Subpáginas do Vade Mecum (`VadeMecumCodigos.tsx`, `VadeMecumEstatutos.tsx`, `VadeMecumEspeciais.tsx`, `VadeMecumSumulas.tsx`, `VadeMecumFavoritos.tsx`, `VadeMecumRecentes.tsx`)**:
-   - Todas usavam `initial="hidden"` com `opacity: 0`, `staggerChildren` (30ms a 100ms) e itens com `y: 8`, `y: 10` ou `x: -10`.
-
-5. **Artigos e Listas de Leis (`ArtigoCard.tsx` e `tailwind.config.ts`)**:
-   - `ArtigoCard.tsx` usava `animate-cascade-in` com `animationDelay: cascadeDelay / structuralDelay`.
-   - `cascade-in` em `tailwind.config.ts` iniciava com `opacity: 0, transform: translateY(14px)` e `fill-mode: both`.
-
-6. **Outras Ocorrências de Atraso**:
-   - `LeiSecaParte.tsx`: `animate-fade-in-up` com delays escalonados.
-   - `ResultadoConteudoCard.tsx`: `animationDelay: Math.min(index * 20, 200)ms`.
-   - `ForcaRanking.tsx`: delays artificiais na montagem.
+Substituir os brasões e logos genéricos de prefeituras nos cards de concursos pelas novas ilustrações das 14 profissões fornecidas em `docs/`, otimizando com compressão WebP de alta performance, subindo para o Supabase Storage e integrando a detecção inteligente de carreira/cargo em `concursosVisuais.ts`.
 
 ---
 
-## 2. Ações Planejadas
+## 1. Otimização e Compressão WebP das 14 Imagens
+- Ler as 14 imagens da pasta `docs/`:
+  - `01_educacao_professor.webp`
+  - `02_enfermagem_saude_geral.webp`
+  - `03_odontologia.webp`
+  - `04_delegado_de_policia.webp`
+  - `05_juiz_magistratura.webp`
+  - `06_advocacia_publica.webp`
+  - `07_tribunais_judiciario_analistas.webp`
+  - `08_fiscal_controle_auditores.webp`
+  - `09_administrativo.webp`
+  - `10_engenharia_arquitetura.webp`
+  - `11_tecnologia_da_informacao.webp`
+  - `12_contabilidade_e_financas.webp`
+  - `13_operacional_servicos_gerais.webp`
+  - `14_curinga_cargo_generico.webp`
+- Redimensionar de 1254x1254 para 384x384 (proporção ideal para avatares circulares de 56-64px com 3x retina) e comprimir com `sharp` (WebP qualidade 82, lossless=false).
+- Reduzir o peso de ~3.5MB no total para menos de 300KB (economia de >90% de dados).
+- Salvar cópia local em `public/profissoes/` para carregamento imediato a 0ms (Web/PWA/Offline).
 
-### Fase 1: Zero Latência Global na Transição de Rotas
-- Ajustar `PageTransition.tsx` para não aplicar animação que inicie com `opacity: 0` ou `translateY`.
-- Neutralizar `animate-page-in` em `src/index.css`.
-- Adicionar `instant` à rota `/vade-mecum` em `src/AppRoutes.tsx`.
+---
 
-### Fase 2: Eliminar Animações de Entrada no Hub Vade Mecum
-- `src/pages/VadeMecum.tsx`: Remover `AnimatePresence mode="wait"` e `motion.div` com `initial={{ opacity: 0 }}`. Renderização direta em elementos estáveis.
-- `src/components/vademecum/home/MobileHomeSections.tsx`: Remover `AnimatePresence mode="wait"`. Renderizar abas diretamente.
-- `src/components/vademecum/home/sections/HomeTabEmAlta.tsx`: Substituir `motion.div` por `div` padrão, remover delays de cards e stagger de radares.
-- `src/components/vademecum/home/carousel/HomeEmAltaCarousel.tsx`: Remover `motion.button` com delay e opacity 0.
-- `src/components/vademecum/outros/AprendaSobreLeis.tsx`: Remover `motion.button` com delay e opacity 0.
-- `src/components/vademecum/home/sections/HomeTabCategorias.tsx` e `HomeTabAreas.tsx`: Remover motion wrappers e delays de entrada dos cards.
+## 2. Upload para o Supabase Storage
+- Subir os 14 arquivos otimizados para o bucket público `imagens` (pasta `profissoes/`):
+  - URL base: `https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/imagens/profissoes/<arquivo>.webp`
+- Garantir fallback suave entre a URL pública do Supabase e o asset local `/profissoes/<arquivo>.webp`.
 
-### Fase 3: Subpáginas do Vade Mecum Instantâneas
-- `src/pages/VadeMecumCodigos.tsx`: Remover `initial="hidden"`, stagger e translateY de entrada.
-- `src/pages/VadeMecumEstatutos.tsx`: Remover `initial="hidden"`, stagger e translateY de entrada.
-- `src/pages/VadeMecumEspeciais.tsx`: Remover `initial="hidden"`, stagger e translateY de entrada.
-- `src/pages/VadeMecumSumulas.tsx`: Remover `initial="hidden"`, stagger e translateX de entrada.
-- `src/pages/VadeMecumFavoritos.tsx`: Remover `initial="hidden"`, stagger e delays de entrada.
-- `src/pages/VadeMecumRecentes.tsx`: Remover `initial="hidden"`, stagger e delays de entrada.
+---
 
-### Fase 4: Limpeza de Artigos e Demais Delays
-- `src/components/vademecum/artigo/ArtigoCard.tsx`: Remover `animate-cascade-in` e delays em `style`.
-- `tailwind.config.ts`: Ajustar keyframe `cascade-in` para não manter `opacity: 0` nem `translateY`.
-- `src/pages/LeiSeca/LeiSecaParte.tsx`: Remover `animate-fade-in-up` e `animationDelay`.
-- `src/components/vademecum/ui_elements/ResultadoConteudoCard.tsx`: Remover `animationDelay`.
+## 3. Mapeamento Inteligente em `src/lib/concursosVisuais.ts`
+- Implementar a função classificadora que analisa o título, termos de cargos (`cargos`, `cargos_resumo`) e mapeia com precisão para uma das 14 profissões:
+  1. **Educação / Professores**: professor, docente, pedagogo, educador, magistério, seduc...
+  2. **Enfermagem / Saúde Geral**: enfermagem, enfermeiro, técnico de enfermagem, médico, hospital, samu, saúde...
+  3. **Odontologia**: dentista, odontologia, cirurgião dentista, saúde bucal...
+  4. **Segurança / Polícia**: delegado, policial, polícia, guarda municipal, bombeiro, trânsito, perito, agente...
+  5. **Magistratura / Juiz**: juiz, juíza, magistratura, juiz substituto...
+  6. **Advocacia Pública**: procurador, advogado, defensoria, defensor, pgm, pge, agu...
+  7. **Tribunais / Analistas**: tribunal, tj, trt, trf, tre, analista judiciário, técnico judiciário, escrevente...
+  8. **Fiscal / Controle**: auditor fiscal, fiscal, receita, iss, sefaz, tce, tcu, controlador...
+  9. **Administrativo**: administrativo, assistente administrativo, auxiliar de escritório, gestão...
+  10. **Engenharia / Arquitetura**: engenharia, engenheiro, arquiteto, arquitetura, obras...
+  11. **Tecnologia da Informação**: ti, tecnologia, informática, programador, desenvolvedor, sistemas, redes...
+  12. **Contabilidade / Finanças**: contabilidade, contador, finanças, tesoureiro, economista...
+  13. **Operacional / Serviços Gerais**: operacional, serviços gerais, motorista, merendeira, gari, eletricista, vigilante...
+  14. **Curinga / Cargo Genérico**: fallback quando houver múltiplos cargos heterogêneos ou quando não especificado.
+- Substituir o uso preferencial de logos de prefeituras pela ilustração da profissão correspondente.
 
-### Fase 5: Validação e Versionamento
-- Executar `tsc.CMD --noEmit` para validação rigorosa de tipagem.
-- Executar `vite.CMD build` para testar empacotamento de produção.
-- Git commit e push automáticos no repositório.
+---
+
+## 4. Integração nos Cards e Modais
+- Atualizar as chamadas de `getConcursoVisual` em `src/pages/RadarConcursos.tsx`, `src/pages/Concursos.tsx` e `src/pages/Atualizacoes.tsx` para passar também `conc.cargos_resumo` ou `conc.cargos` (quando disponíveis) para que a detecção seja ainda mais assertiva.
+- Garantir que a imagem seja carregada com `loading="lazy"` e bordas arredondadas perfeitas dentro do contêiner circular.
+
+---
+
+## 5. Validação e Deploy
+- Executar `.\node_modules\.bin\tsc.CMD --noEmit` para garantir ausência de erros de compilação.
+- Realizar teste de build `.\node_modules\.bin\vite.CMD build`.
+- Enviar automaticamente para o GitHub (`git add . ; git commit ... ; git push`).
