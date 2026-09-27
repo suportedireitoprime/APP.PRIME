@@ -1,6 +1,4 @@
 // Mapeamento oficial das 14 ilustrações de profissões e padrões visuais para concursos
-const SUPABASE_STORAGE_URL = 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/imagens/profissoes';
-
 export interface ProfissaoInfo {
   id: string;
   tag: string;
@@ -14,98 +12,98 @@ export const PROFISSOES_MAP: Record<string, ProfissaoInfo> = {
     id: '01_educacao_professor',
     tag: 'Educação',
     subtitulo: 'Carreiras da Educação & Docência',
-    imagemUrl: `${SUPABASE_STORAGE_URL}/01_educacao_professor.webp`,
+    imagemUrl: '/profissoes/01_educacao_professor.webp',
     localPath: '/profissoes/01_educacao_professor.webp',
   },
   enfermagem_saude_geral: {
     id: '02_enfermagem_saude_geral',
     tag: 'Saúde',
     subtitulo: 'Área da Saúde & Enfermagem',
-    imagemUrl: `${SUPABASE_STORAGE_URL}/02_enfermagem_saude_geral.webp`,
+    imagemUrl: '/profissoes/02_enfermagem_saude_geral.webp',
     localPath: '/profissoes/02_enfermagem_saude_geral.webp',
   },
   odontologia: {
     id: '03_odontologia',
     tag: 'Odontologia',
     subtitulo: 'Saúde Bucal & Odontologia',
-    imagemUrl: `${SUPABASE_STORAGE_URL}/03_odontologia.webp`,
+    imagemUrl: '/profissoes/03_odontologia.webp',
     localPath: '/profissoes/03_odontologia.webp',
   },
   delegado_de_policia: {
     id: '04_delegado_de_policia',
     tag: 'Segurança',
     subtitulo: 'Carreiras Policiais & Segurança Pública',
-    imagemUrl: `${SUPABASE_STORAGE_URL}/04_delegado_de_policia.webp`,
+    imagemUrl: '/profissoes/04_delegado_de_policia.webp',
     localPath: '/profissoes/04_delegado_de_policia.webp',
   },
   juiz_magistratura: {
     id: '05_juiz_magistratura',
     tag: 'Magistratura',
     subtitulo: 'Poder Judiciário & Magistratura',
-    imagemUrl: `${SUPABASE_STORAGE_URL}/05_juiz_magistratura.webp`,
+    imagemUrl: '/profissoes/05_juiz_magistratura.webp',
     localPath: '/profissoes/05_juiz_magistratura.webp',
   },
   advocacia_publica: {
     id: '06_advocacia_publica',
     tag: 'Advocacia Pública',
     subtitulo: 'Procuradoria & Defensoria Pública',
-    imagemUrl: `${SUPABASE_STORAGE_URL}/06_advocacia_publica.webp`,
+    imagemUrl: '/profissoes/06_advocacia_publica.webp',
     localPath: '/profissoes/06_advocacia_publica.webp',
   },
   tribunais_judiciario_analistas: {
     id: '07_tribunais_judiciario_analistas',
     tag: 'Tribunais',
     subtitulo: 'Analistas & Técnicos Judiciários',
-    imagemUrl: `${SUPABASE_STORAGE_URL}/07_tribunais_judiciario_analistas.webp`,
+    imagemUrl: '/profissoes/07_tribunais_judiciario_analistas.webp',
     localPath: '/profissoes/07_tribunais_judiciario_analistas.webp',
   },
   fiscal_controle_auditores: {
     id: '08_fiscal_controle_auditores',
     tag: 'Fiscal & Controle',
     subtitulo: 'Auditoria, Tributação & Controle Externo',
-    imagemUrl: `${SUPABASE_STORAGE_URL}/08_fiscal_controle_auditores.webp`,
+    imagemUrl: '/profissoes/08_fiscal_controle_auditores.webp',
     localPath: '/profissoes/08_fiscal_controle_auditores.webp',
   },
   administrativo: {
     id: '09_administrativo',
     tag: 'Administrativo',
     subtitulo: 'Gestão & Apoio Administrativo',
-    imagemUrl: `${SUPABASE_STORAGE_URL}/09_administrativo.webp`,
+    imagemUrl: '/profissoes/09_administrativo.webp',
     localPath: '/profissoes/09_administrativo.webp',
   },
   engenharia_arquitetura: {
     id: '10_engenharia_arquitetura',
     tag: 'Engenharia',
     subtitulo: 'Engenharia, Arquitetura & Obras',
-    imagemUrl: `${SUPABASE_STORAGE_URL}/10_engenharia_arquitetura.webp`,
+    imagemUrl: '/profissoes/10_engenharia_arquitetura.webp',
     localPath: '/profissoes/10_engenharia_arquitetura.webp',
   },
   tecnologia_da_informacao: {
     id: '11_tecnologia_da_informacao',
     tag: 'Tecnologia',
     subtitulo: 'TI, Sistemas & Computação',
-    imagemUrl: `${SUPABASE_STORAGE_URL}/11_tecnologia_da_informacao.webp`,
+    imagemUrl: '/profissoes/11_tecnologia_da_informacao.webp',
     localPath: '/profissoes/11_tecnologia_da_informacao.webp',
   },
   contabilidade_e_financas: {
     id: '12_contabilidade_e_financas',
     tag: 'Contabilidade',
     subtitulo: 'Finanças, Orçamento & Contabilidade',
-    imagemUrl: `${SUPABASE_STORAGE_URL}/12_contabilidade_e_financas.webp`,
+    imagemUrl: '/profissoes/12_contabilidade_e_financas.webp',
     localPath: '/profissoes/12_contabilidade_e_financas.webp',
   },
   operacional_servicos_gerais: {
     id: '13_operacional_servicos_gerais',
     tag: 'Operacional',
     subtitulo: 'Serviços Gerais, Logística & Operação',
-    imagemUrl: `${SUPABASE_STORAGE_URL}/13_operacional_servicos_gerais.webp`,
+    imagemUrl: '/profissoes/13_operacional_servicos_gerais.webp',
     localPath: '/profissoes/13_operacional_servicos_gerais.webp',
   },
   curinga_cargo_generico: {
     id: '14_curinga_cargo_generico',
     tag: 'Vários Cargos',
     subtitulo: 'Concurso Público',
-    imagemUrl: `${SUPABASE_STORAGE_URL}/14_curinga_cargo_generico.webp`,
+    imagemUrl: '/profissoes/14_curinga_cargo_generico.webp',
     localPath: '/profissoes/14_curinga_cargo_generico.webp',
   },
 };
@@ -115,6 +113,36 @@ export interface ConcursoVisualInfo {
   subtitulo: string;
   imagemUrl: string;
   profissaoKey: string;
+}
+
+const VALID_UFS = new Set([
+  'ac', 'al', 'ap', 'am', 'ba', 'ce', 'df', 'es', 'go', 'ma', 'mt', 'ms', 'mg',
+  'pa', 'pb', 'pr', 'pe', 'pi', 'rj', 'rn', 'rs', 'ro', 'rr', 'sc', 'sp', 'se', 'to', 'br'
+]);
+
+export function getBandeiraUrl(uf?: string | null): string {
+  if (!uf) return '/bandeiras/br.svg';
+  const clean = uf.toLowerCase().trim();
+  if (VALID_UFS.has(clean)) {
+    return `/bandeiras/${clean}.svg`;
+  }
+  return '/bandeiras/br.svg';
+}
+
+export function extractConcursoUf(item: { uf?: string | null; titulo?: string | null }): string {
+  if (item.uf && item.uf.trim()) {
+    const clean = item.uf.trim().toLowerCase();
+    if (VALID_UFS.has(clean)) return clean.toUpperCase();
+  }
+  // Try matching standard patterns like "- GO", "/RO", "em PB", "no MT"
+  const match = (item.titulo || '').match(/(?:-|\/|\bem\b|\bno\b|\bna\b|\bdo\b|\bda\b)\s*([A-Z]{2})\b/);
+  if (match && match[1]) {
+    const candidate = match[1].toLowerCase();
+    if (VALID_UFS.has(candidate)) {
+      return candidate.toUpperCase();
+    }
+  }
+  return 'BR';
 }
 
 /**
@@ -139,13 +167,13 @@ export function getConcursoVisual(
     return { ...PROFISSOES_MAP.juiz_magistratura, profissaoKey: 'juiz_magistratura' };
   }
 
-  // 3. Advocacia Pública / Procurador / Defensor
-  if (/\b(procurador[oa]?s?|defensor[oa]?s?|advogad[oa]s?|pgm|pge|agu|defensoria|procuradoria)\b/i.test(t)) {
+  // 3. Advocacia Pública / Procurador / Defensor / DPE / DPU
+  if (/\b(procurador[oa]?s?|defensor[oa]?s?|advogad[oa]s?|\bpgm\b|\bpge\b|\bagu\b|\bdpe\b|\bdpu\b|defensoria|procuradoria)\b/i.test(t)) {
     return { ...PROFISSOES_MAP.advocacia_publica, profissaoKey: 'advocacia_publica' };
   }
 
   // 4. Delegado & Carreiras Policiais / Segurança / Militar
-  if (/\b(delegad[oa]s?|pol[ií]cia|policial|policiais|pm[a-z]{0,2}|bombeir[oa]s?|perito criminal|papiloscopista|investigador[oa]?s?|guarda municipal|guarda civil|gcm|guarda vidas|salva vidas|tr[aâ]nsito|agente penitenci[aá]ri[oa]s?|pol[ií]cia penal|cadete|militar|militares|for[cç]as armadas)\b/i.test(t)) {
+  if (/\b(delegad[oa]s?|pol[ií]cia|policial|policiais|\bpm[a-z]{0,2}\b|bombeir[oa]s?|perito criminal|papiloscopista|investigador[oa]?s?|guarda municipal|guarda civil|\bgcm\b|guarda vidas|salva vidas|tr[aâ]nsito|agente penitenci[aá]ri[oa]s?|pol[ií]cia penal|cadete|militar|militares|for[cç]as armadas)\b/i.test(t)) {
     return { ...PROFISSOES_MAP.delegado_de_policia, profissaoKey: 'delegado_de_policia' };
   }
 
@@ -169,13 +197,13 @@ export function getConcursoVisual(
     return { ...PROFISSOES_MAP.contabilidade_e_financas, profissaoKey: 'contabilidade_e_financas' };
   }
 
-  // 9. Engenharia e Arquitetura
-  if (/\b(engenheir[oa]s?|engenharia|arquiteto|arquiteta|arquitetura|urbanismo|edifica[cç][oõ]es|obras|agrimensor|top[oó]grafo)\b/i.test(t)) {
+  // 9. Engenharia, Arquitetura e Meio Ambiente
+  if (/\b(engenheir[oa]s?|engenharia|arquiteto|arquiteta|arquitetura|urbanismo|edifica[cç][oõ]es|obras|agrimensor|top[oó]grafo|ambiental|meio ambiente|bi[oó]log[oa]s?)\b/i.test(t)) {
     return { ...PROFISSOES_MAP.engenharia_arquitetura, profissaoKey: 'engenharia_arquitetura' };
   }
 
-  // 10. Educação e Professores
-  if (/\b(professor[oa]?s?|docente|doc[eê]ncia|pedagog[oa]s?|pedagogia|educador[oa]?s?|educa[cç][aã]o|magist[eé]rio|seduc|creche|escola|col[eé]gio|universidade|ifsp|ifrj|ifmg|ifba)\b/i.test(t)) {
+  // 10. Educação, Professores e Apoio Escolar
+  if (/\b(professor[oa]?s?|docente|doc[eê]ncia|pedagog[oa]s?|pedagogia|educador[oa]?s?|educa[cç][aã]o|magist[eé]rio|seduc|creche|escola|col[eé]gio|universidade|\bif[a-z]{2}\b|desenvolvimento escolar|apoio escolar|monitor escolar)\b/i.test(t)) {
     return { ...PROFISSOES_MAP.educacao_professor, profissaoKey: 'educacao_professor' };
   }
 
@@ -197,3 +225,4 @@ export function getConcursoVisual(
   // 14. Curinga / Genérico (fallback oficial e padrão do app)
   return { ...PROFISSOES_MAP.curinga_cargo_generico, profissaoKey: 'curinga_cargo_generico' };
 }
+

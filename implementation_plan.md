@@ -1,46 +1,44 @@
-# Plano de Implementação — Filtros Avançados, Imagens Ampliadas sem Fundo Branco e Cache Instantâneo a 0ms
+# Plano de Implementação — Imagem de Equipe (Vários Cargos) & Bandeiras dos Estados em Lista
 
-Atender rigorosamente aos 3 pontos solicitados pelo usuário nos áudios:
-1. **Data Vigente e Filtros em Concursos (`/concursos`)**:
-   - Por padrão, abrir marcando a data vigente de hoje (`todayYMD`).
-   - Implementar os 3 menus de alternância/filtros: **Cargos / Carreiras**, **Dias faltantes para encerrar** (urgência/prazo) e **Salário**.
-2. **Navegação a 0ms sem Loading**:
-   - Manter cache em memória a nível de módulo compartilhado para editais, garantindo que ao alternar entre "Radar de Concursos" e "Ver Todos" os cards apareçam instantaneamente a 0ms sem loading/flicker.
-3. **Imagens das Profissões sem Fundo Branco e Significativamente Maiores**:
-   - Remover contêiner circular branco (`bg-white rounded-full border`).
-   - Aumentar expressivamente as dimensões da ilustração 3D para `w-20 h-20 sm:w-24 sm:h-24` (ou mais), aplicando drop-shadow natural e deixando o personagem se destacar diretamente no card escuro.
+## 1. Visão Geral das Solicitações do Usuário
 
----
-
-## Detalhamento das Alterações
-
-### 1. `src/pages/RadarConcursos.tsx`
-- **Imagens das Profissões**:
-  - Remover `bg-white rounded-full flex items-center justify-center p-1.5 shrink-0 shadow-md border border-border/50`.
-  - Substituir por contêiner transparente ampliado: `w-20 h-20 sm:w-24 sm:h-24 -ml-2 -mt-1 flex items-center justify-center shrink-0`.
-  - A imagem recebe `w-full h-full object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] group-hover:scale-110 transition-transform duration-300`.
-  - No modal de edital, remover também o círculo branco e exibir o avatar ampliado com drop-shadow cinematográfico.
-- **Cache de Latência Zero (0ms)**:
-  - Definir `let memoryConcursosCache: ConcursoItem[] = [];` no módulo.
-  - Inicializar `useState(() => memoryConcursosCache)` e `loading` como `false` se o cache já tiver itens.
-  - Atualizar o cache silenciosamente em background sem exibir spinner quando já houver dados.
-
-### 2. `src/pages/Concursos.tsx`
-- **Data Vigente Padrão**:
-  - `dataFiltro` inicializado com `todayYMD` (data de hoje).
-  - Caso hoje não contenha editais naquele instante, o seletor visual exibe o botão HOJE selecionado com facilidade para alternar para outros dias ou limpar.
-- **Menus de Filtros**:
-  - Menu 1: **Cargos / Carreiras** (Todos os Cargos ou filtro por uma das 14 carreiras categorizadas).
-  - Menu 2: **Dias Faltantes / Prazo** (Todos, Encerrando em até 3 dias, Encerrando esta semana ≤ 7 dias, Mais de 7 dias).
-  - Menu 3: **Salário** (Todos, + R$ 3.000, + R$ 5.000, + R$ 10.000, + R$ 15.000).
-- **Lista de Editais**:
-  - Renderizar a thumbnail do card da lista sem esticar ou cortar, utilizando `object-contain p-2` com a nova ilustração da profissão.
-- **Cache 0ms**:
-  - Compartilhar dados em memória para abertura instantânea.
+O usuário enviou 2 áudios e 2 mídias com duas solicitações claras:
+1. **Áudio 1 & Imagem de Equipe:**
+   - Quando o edital for para **"Vários Cargos"** (curinga / múltiplos cargos), substituir a imagem anterior (escudo dourado) pela nova imagem enviada pelo usuário contendo a **equipe de diversos profissionais** (professora, policial/delegado, engenheiro, profissional de saúde, auxiliar de limpeza e juíza).
+   - A imagem deve ter o fundo preto removido com transparência pura (RGBA WebP) e antialiasing suave, sem bordas brancas, preservando as roupas escuras.
+2. **Áudio 2 & Screenshot da Lista (`/concursos`):**
+   - Na exibição em lista, atrás dos avatares 3D de cada cargo, renderizar a **bandeira do estado correspondente** em segundo plano (`opacity-20` a `opacity-25` suave), atuando como marca d'água / contorno sutil que contextualiza a UF da vaga sem poluir o visual.
+   - Fornecer os assets oficiais em vetor SVG de todas as 27 UFs brasileiras + Brasil em `public/bandeiras/` para carregamento instantâneo a 0ms e operação offline.
 
 ---
 
-## Validação e Verificação
-1. `.\node_modules\.bin\tsc.CMD --noEmit` para validação estrita de tipos TypeScript.
-2. `.\node_modules\.bin\vite.CMD build` para testar o bundle de produção.
-3. `git add . ; git commit ... ; git push` automático.
+## 2. Detalhamento Técnico
+
+### A. Imagem de Equipe ("Vários Cargos")
+- Imagem enviada: `media_1790479193678.jpg` (1024x1024).
+- Processamento:
+  - Fundo preto recortado via flood-fill de bordas com threshold de antialiasing suave para canal alfa.
+  - Redimensionada para 384x384 WebP otimizada (`public/profissoes/14_curinga_cargo_generico.webp`).
+  - Atualização em `concursosVisuais.ts` para que `PROFISSOES_MAP` aponte para os assets locais em `/profissoes/` com carregamento 0ms e offline.
+  - Refinamento do classificador para reconhecer `\bdpe\b`, `\bdpu\b` (Defensoria), `\bif[a-z]{2}\b` (Institutos Federais), `ambiental`, etc.
+
+### B. Bandeiras dos Estados em Segundo Plano na Lista (`Concursos.tsx`)
+- 28 bandeiras vetoriais SVG baixadas e salvas em `public/bandeiras/`:
+  - `ac.svg`, `al.svg`, `ap.svg`, `am.svg`, `ba.svg`, `ce.svg`, `df.svg`, `es.svg`, `go.svg`, `ma.svg`, `mt.svg`, `ms.svg`, `mg.svg`, `pa.svg`, `pb.svg`, `pr.svg`, `pe.svg`, `pi.svg`, `rj.svg`, `rn.svg`, `rs.svg`, `ro.svg`, `rr.svg`, `sc.svg`, `sp.svg`, `se.svg`, `to.svg`, `br.svg`.
+- Criação do utilitário `extractConcursoUf(item)` e `getBandeiraUrl(uf)` em `src/lib/concursosVisuais.ts`.
+- No componente de lista de [Concursos.tsx](file:///c:/Users/ext_wpereira/OneDrive%20-%20Vitamina%20Work%20Life%20S.A/Documentos/APP.PRIME/src/pages/Concursos.tsx):
+  - No contêiner de thumbnail do card (`w-24 sm:w-28`), posicionar a bandeira do estado com:
+    - `absolute inset-0 w-full h-full object-cover opacity-20 filter brightness-90 pointer-events-none`
+    - Gradiente escuro sutil sobreposto para garantir alto contraste do personagem 3D.
+    - O avatar 3D do cargo em primeiro plano com `relative z-10 drop-shadow-[0_6px_14px_rgba(0,0,0,0.7)]`.
+    - Tag do cargo no canto inferior e badge da UF no topo.
+- No Hero Card de destaque no topo de [Concursos.tsx](file:///c:/Users/ext_wpereira/OneDrive%20-%20Vitamina%20Work%20Life%20S.A/Documentos/APP.PRIME/src/pages/Concursos.tsx):
+  - Aplicar também a bandeira do estado em marca d'água no fundo à direita com `opacity-15`.
+
+---
+
+## 3. Validação e Qualidade
+
+1. Checagem estrita de tipos com `.\node_modules\.bin\tsc.CMD --noEmit`.
+2. Empacotamento de produção com `.\node_modules\.bin\vite.CMD build`.
+3. Auto-commit e push para o GitHub (`git add . ; git commit -m "..." ; git push`).

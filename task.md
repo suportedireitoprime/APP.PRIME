@@ -1,11 +1,9 @@
-# Task Checklist — Filtros Avançados, Imagens sem Fundo Branco e Cache 0ms
+# Task Checklist — Imagem de Equipe (Vários Cargos) & Bandeiras em Segundo Plano
 
-- [x] 1. Em `RadarConcursos.tsx`: remover fundo branco das imagens de profissões e ampliá-las expressivamente (`w-20 sm:w-24`) <!-- id: 1 -->
-- [x] 2. Em `RadarConcursos.tsx`: implementar cache de memória a nível de módulo para carregamento instantâneo a 0ms ao voltar da tela "Ver Todos" <!-- id: 2 -->
-- [x] 3. Em `Concursos.tsx`: configurar data vigente de hoje (`todayYMD`) por padrão <!-- id: 3 -->
-- [x] 4. Em `Concursos.tsx`: implementar menus de alternância/filtros (Cargos, Dias Faltantes e Salário) <!-- id: 4 -->
-- [x] 5. Em `Concursos.tsx`: otimizar thumbnails dos cards na lista para exibir as ilustrações com `object-contain` sem corte <!-- id: 5 -->
-- [x] 6. Em `Concursos.tsx`: adicionar cache em memória compartilhado para transição fluida a 0ms <!-- id: 6 -->
-- [x] 7. Validar tipos com `tsc.CMD --noEmit` <!-- id: 7 -->
-- [x] 8. Realizar build com `vite.CMD build` <!-- id: 8 -->
-- [x] 9. Executar auto-commit e push para o GitHub <!-- id: 9 -->
+- [x] 1. Integrar imagem de equipe tratada em `public/profissoes/14_curinga_cargo_generico.webp` e atualizar `PROFISSOES_MAP` para usar `/profissoes/` localmente <!-- id: 1 -->
+- [x] 2. Aprimorar classificador em `concursosVisuais.ts` com DPE/DPU, IFs e criação dos utilitários `getBandeiraUrl` e `extractConcursoUf` <!-- id: 2 -->
+- [x] 3. Atualizar `Concursos.tsx` para renderizar a bandeira do estado em marca d'água (`opacity-25` suave) atrás do personagem 3D no thumbnail da lista <!-- id: 3 -->
+- [x] 4. Atualizar Hero Card em `Concursos.tsx` com a bandeira em segundo plano do lado direito <!-- id: 4 -->
+- [x] 5. Validar compilação TypeScript com `.\node_modules\.bin\tsc.CMD --noEmit` <!-- id: 5 -->
+- [x] 6. Validar build com `.\node_modules\.bin\vite.CMD build` <!-- id: 6 -->
+- [x] 7. Executar auto-commit e push para o repositório GitHub <!-- id: 7 -->

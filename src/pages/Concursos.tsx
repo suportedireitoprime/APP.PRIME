@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useGoBack } from '@/hooks/useGoBack';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
-import { getConcursoVisual } from '@/lib/concursosVisuais';
+import { getConcursoVisual, getBandeiraUrl, extractConcursoUf } from '@/lib/concursosVisuais';
 import { getSharedConcursos, setSharedConcursos } from '@/lib/concursosCache';
 import { haptic } from '@/lib/nativeHaptics';
 import { Drawer, DrawerContent, DrawerClose } from "@/components/ui/drawer";
@@ -24,6 +24,7 @@ type ConcursoNoticia = {
   titulo: string;
   imagem_url?: string;
   link: string;
+  uf?: string;
   cargos?: string[];
   cargos_resumo?: string;
   vagas_salario?: string;
@@ -443,11 +444,14 @@ const Concursos = () => {
 
         {finalFiltered.length > 0 ? (
           <>
-            {/* Hero card — Destaque com Personagem 3D Sem Fundo Branco */}
+            {/* Hero card — Destaque com Personagem 3D e Bandeira do Estado em Segundo Plano */}
             {(() => {
               const hero = finalFiltered[0];
               if (!hero) return null;
               const heroVisual = getConcursoVisual(hero.titulo, hero.imagem_url, (hero as any).cargos_resumo || (hero as any).cargos);
+              const heroUf = extractConcursoUf(hero);
+              const heroFlagUrl = getBandeiraUrl(heroUf);
+
               return (
                 <motion.div
                   key={`hero-${hero.id}`}
@@ -484,24 +488,42 @@ const Concursos = () => {
                     </div>
                   </div>
 
-                  <div className="w-28 h-28 sm:w-36 sm:h-36 shrink-0 relative flex items-center justify-center">
+                  {/* Thumbnail do Hero com a Bandeira do Estado em Segundo Plano */}
+                  <div className="w-28 h-28 sm:w-36 sm:h-36 shrink-0 relative flex items-center justify-center overflow-hidden rounded-2xl">
+                    <img
+                      src={heroFlagUrl}
+                      alt={`Bandeira ${heroUf}`}
+                      className="absolute inset-0 w-full h-full object-cover opacity-20 filter brightness-90 scale-110 pointer-events-none transition-opacity duration-300 group-hover:opacity-30"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-card/85 via-transparent to-transparent pointer-events-none" />
+
                     <img
                       src={heroVisual.imagemUrl}
                       alt={hero.titulo}
-                      className="w-full h-full object-contain drop-shadow-[0_8px_18px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-contain drop-shadow-[0_8px_18px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-transform duration-300 relative z-10"
                       fetchPriority="high"
                       decoding="async"
                     />
+                    {heroUf !== 'BR' && (
+                      <span className="absolute top-1 right-1 z-20 text-[9px] font-black px-1.5 py-0.5 rounded bg-black/70 text-emerald-300 border border-emerald-500/30 backdrop-blur-sm shadow">
+                        {heroUf}
+                      </span>
+                    )}
                   </div>
                 </motion.div>
               );
             })()}
 
-            {/* List cards com Personagem 3D Sem Fundo Branco e Maior */}
+            {/* List cards com Personagem 3D e Bandeira do Estado em Segundo Plano */}
             <div className="space-y-3 -mx-4 md:mx-0">
               {finalFiltered.slice(1).map((item, i) => {
                 const { time } = formatDateParts(item.created_at || item.data_publicacao);
                 const visual = getConcursoVisual(item.titulo, item.imagem_url, (item as any).cargos_resumo || (item as any).cargos);
+                const itemUf = extractConcursoUf(item);
+                const flagUrl = getBandeiraUrl(itemUf);
+
                 return (
                   <motion.div
                     key={item.id}
@@ -511,18 +533,38 @@ const Concursos = () => {
                     onClick={() => handleOpenItem(item)}
                     className="group flex items-stretch gap-0 bg-card border-y md:border md:rounded-2xl border-border hover:border-[#10B981]/40 active:bg-secondary/30 transition-colors cursor-pointer overflow-hidden relative shadow-sm"
                   >
-                    {/* Thumbnail - Ilustração 3D Sem Fundo Branco e Ampla */}
-                    <div className="w-24 sm:w-28 shrink-0 relative flex items-center justify-center p-2 bg-gradient-to-br from-emerald-500/10 via-card to-card/40">
+                    {/* Thumbnail - Ilustração 3D com Bandeira do Estado em Marca d'Água Atrás */}
+                    <div className="w-24 sm:w-28 shrink-0 relative flex items-center justify-center p-2 bg-gradient-to-br from-emerald-500/10 via-card to-card/40 overflow-hidden">
+                      {/* Bandeira do Estado em marca d'água / contorno transparente */}
                       <img
-                        src={visual.imagemUrl}
-                        alt={item.titulo}
-                        className="w-20 h-20 sm:w-22 sm:h-22 object-contain drop-shadow-[0_6px_14px_rgba(0,0,0,0.65)] group-hover:scale-105 transition-transform duration-300"
+                        src={flagUrl}
+                        alt={`Bandeira ${itemUf}`}
+                        className="absolute inset-0 w-full h-full object-cover opacity-20 filter brightness-90 scale-110 pointer-events-none transition-opacity duration-300 group-hover:opacity-30"
                         loading="lazy"
                         decoding="async"
                       />
-                      <span className="absolute bottom-1.5 left-1.5 z-10 inline-flex items-center text-[8px] sm:text-[9px] font-bold px-1.5 py-[1px] rounded bg-[#10B981]/90 text-white border border-[#10B981]/60 backdrop-blur-sm uppercase tracking-wide">
+                      <div className="absolute inset-0 bg-gradient-to-t from-card/85 via-card/25 to-transparent pointer-events-none" />
+
+                      {/* Personagem 3D em Primeiro Plano */}
+                      <img
+                        src={visual.imagemUrl}
+                        alt={item.titulo}
+                        className="w-20 h-20 sm:w-22 sm:h-22 object-contain drop-shadow-[0_6px_14px_rgba(0,0,0,0.7)] group-hover:scale-105 transition-transform duration-300 relative z-10"
+                        loading="lazy"
+                        decoding="async"
+                      />
+
+                      {/* Tag do Cargo */}
+                      <span className="absolute bottom-1.5 left-1.5 z-20 inline-flex items-center text-[8px] sm:text-[9px] font-bold px-1.5 py-[1px] rounded bg-[#10B981]/90 text-white border border-[#10B981]/60 backdrop-blur-sm uppercase tracking-wide shadow">
                         {visual.tag}
                       </span>
+
+                      {/* Sigla da UF */}
+                      {itemUf !== 'BR' && (
+                        <span className="absolute top-1.5 right-1.5 z-20 text-[8px] sm:text-[9px] font-black px-1.5 py-0.5 rounded bg-black/60 text-emerald-300 border border-emerald-500/30 backdrop-blur-sm shadow-sm">
+                          {itemUf}
+                        </span>
+                      )}
                     </div>
 
                     {/* Content */}
@@ -591,23 +633,44 @@ const Concursos = () => {
 
           {selectedItem && (
             <div className="flex-1 overflow-y-auto hide-scrollbar pb-safe relative">
-              {/* Header Image com Personagem 3D Sem Fundo Branco */}
-              <div className="relative h-60 w-full shrink-0 flex items-center justify-center bg-gradient-to-b from-emerald-950/40 via-card to-background p-6">
-                <img
-                  src={getConcursoVisual(selectedItem.titulo, selectedItem.imagem_url, (selectedItem as any).cargos_resumo || (selectedItem as any).cargos).imagemUrl}
-                  alt={selectedItem.titulo}
-                  className="h-44 max-w-[200px] object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.8)]"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent pointer-events-none" />
-                <div className="absolute bottom-0 left-0 right-0 p-6 space-y-2">
-                  <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#10B981] text-white uppercase tracking-wide">
-                    {extractCargo(selectedItem)}
-                  </span>
-                  <h2 className="font-display text-lg sm:text-xl font-bold text-foreground leading-tight line-clamp-2">
-                    {selectedItem.titulo}
-                  </h2>
-                </div>
-              </div>
+              {/* Header Image com Personagem 3D e Bandeira do Estado em Segundo Plano */}
+              {(() => {
+                const modalUf = extractConcursoUf(selectedItem);
+                const modalFlagUrl = getBandeiraUrl(modalUf);
+                const modalVisual = getConcursoVisual(selectedItem.titulo, selectedItem.imagem_url, (selectedItem as any).cargos_resumo || (selectedItem as any).cargos);
+
+                return (
+                  <div className="relative h-60 w-full shrink-0 flex items-center justify-center bg-gradient-to-b from-emerald-950/40 via-card to-background p-6 overflow-hidden">
+                    <img
+                      src={modalFlagUrl}
+                      alt={`Bandeira ${modalUf}`}
+                      className="absolute inset-0 w-full h-full object-cover opacity-15 filter brightness-75 pointer-events-none"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent pointer-events-none" />
+
+                    <img
+                      src={modalVisual.imagemUrl}
+                      alt={selectedItem.titulo}
+                      className="h-44 max-w-[200px] object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.8)] relative z-10"
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 p-6 space-y-2 z-20">
+                      <div className="flex items-center gap-2">
+                        <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#10B981] text-white uppercase tracking-wide">
+                          {extractCargo(selectedItem)}
+                        </span>
+                        {modalUf !== 'BR' && (
+                          <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-black/70 text-emerald-300 border border-emerald-500/30 backdrop-blur-sm">
+                            {modalUf}
+                          </span>
+                        )}
+                      </div>
+                      <h2 className="font-display text-lg sm:text-xl font-bold text-foreground leading-tight line-clamp-2">
+                        {selectedItem.titulo}
+                      </h2>
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Content Body */}
               <div className="px-6 py-6 space-y-6">
