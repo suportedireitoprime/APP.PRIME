@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { ArrowLeft, ChevronRight, X, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -44,6 +44,7 @@ export default function MapasMentaisView({
   modo = 'page',
   onRotaChange,
 }: MapasMentaisViewProps) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const { isPremium } = useSubscription();
   const podeGerar = isPremium || isAdminEmail(user?.email);
@@ -58,6 +59,13 @@ export default function MapasMentaisView({
   // Itens selecionados na navegação
   const [item, setItem] = useState<CatalogoItem | null>(null);
   const [tema, setTema] = useState<TemaResumo | null>(null);
+
+  // Garante posicionamento no topo ao iniciar ou mudar de visualização
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
+  }, [item, filtro, categoria]);
 
   // Dados carregados de matérias / resumos
   const [areas, setAreas] = useState<CatalogoItem[]>([]);
@@ -369,7 +377,10 @@ export default function MapasMentaisView({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col bg-[#0D0D0D] text-white overflow-y-auto overscroll-contain">
+    <div
+      ref={scrollContainerRef}
+      className="fixed inset-0 z-[100] flex flex-col bg-[#0D0D0D] text-white overflow-y-auto overscroll-contain"
+    >
       {/* Fundo Padrão com Grid Animado (ShapeGrid) */}
       <div className="fixed inset-0 pointer-events-none z-0 opacity-20">
         <ShapeGrid 

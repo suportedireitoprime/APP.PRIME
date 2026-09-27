@@ -1,11 +1,15 @@
 import React from 'react';
 import { ArrowLeft, Search, Mic, X, Brain } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import type { VisualCategoria } from '@/lib/visuaisJuridicos/types';
 import { CATEGORIA_INFO } from '@/lib/visuaisJuridicos/catalogo';
 import { CATEGORIAS, FILTROS, type Filtro } from './mapasConstants';
 import { useDictation } from '@/hooks/useDictation';
 import socratesThemisHeroImg from '@/assets/covers/socrates-themis-hero.jpg';
+import cerebroRoxo from '@/assets/covers/cerebro-vazado-roxo.png';
+import cerebroCiano from '@/assets/covers/cerebro-vazado-ciano.png';
+import cerebroDourado from '@/assets/covers/cerebro-vazado-dourado.png';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 
 interface MapasMentaisHeaderProps {
@@ -20,6 +24,12 @@ interface MapasMentaisHeaderProps {
   pastasCount?: number;
   onBack: () => void;
 }
+
+const BRAIN_VARIANTS = [
+  { img: cerebroRoxo, glow: 'rgba(168,85,247,0.75)' },
+  { img: cerebroCiano, glow: 'rgba(56,189,248,0.75)' },
+  { img: cerebroDourado, glow: 'rgba(251,191,36,0.75)' },
+];
 
 export function MapasMentaisHeader({
   categoria,
@@ -40,7 +50,7 @@ export function MapasMentaisHeader({
 
   return (
     <div
-      className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/80 pt-[var(--sai-top)] flex flex-col z-20"
+      className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/80 pt-[var(--sai-top)] flex flex-col z-20 shrink-0"
       style={{
         transform: 'translateZ(0)',
         backgroundColor: '#050505',
@@ -60,8 +70,56 @@ export function MapasMentaisHeader({
         aria-hidden="true"
         loading="eager"
         decoding="async"
-        className="absolute inset-0 w-full h-full object-cover object-[75%_center] sm:object-[70%_center] md:object-center z-0 pointer-events-none opacity-50"
+        className="absolute inset-0 w-full h-full object-cover object-[75%_center] sm:object-[70%_center] md:object-center z-0 pointer-events-none"
       />
+
+      {/* 3 Cérebros Vazados (Transparentes) em Cores Diferentes Orbitando */}
+      <div className="absolute right-[-10px] sm:right-6 top-[28%] -translate-y-1/2 w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] pointer-events-none z-[2]">
+        {BRAIN_VARIANTS.map((brain, i) => {
+          const delay = i * 4.6; // Ciclo total de 14s dividido pelos 3 cérebros
+          return (
+            <motion.div
+              key={i}
+              className="absolute w-12 h-12 sm:w-16 sm:h-16"
+              animate={{
+                x: [
+                  100 * Math.cos(0),
+                  100 * Math.cos((2 * Math.PI) / 3),
+                  100 * Math.cos((4 * Math.PI) / 3),
+                  100 * Math.cos(2 * Math.PI),
+                ],
+                y: [
+                  42 * Math.sin(0),
+                  42 * Math.sin((2 * Math.PI) / 3),
+                  42 * Math.sin((4 * Math.PI) / 3),
+                  42 * Math.sin(2 * Math.PI),
+                ],
+                scale: [1, 0.72, 1.15, 1],
+                opacity: [0.92, 0.5, 1, 0.92],
+              }}
+              transition={{
+                duration: 14,
+                repeat: Infinity,
+                ease: 'linear',
+                delay: -delay,
+              }}
+              style={{
+                left: '50%',
+                top: '50%',
+                marginLeft: -24,
+                marginTop: -24,
+              }}
+            >
+              <img
+                src={brain.img}
+                alt=""
+                className="w-full h-full object-contain filter drop-shadow-[0_0_12px_var(--glow)]"
+                style={{ ['--glow' as string]: brain.glow }}
+              />
+            </motion.div>
+          );
+        })}
+      </div>
 
       {/* Overlay com corte angular estilo menu Vade Mecum na cor roxa */}
       <div
@@ -103,12 +161,12 @@ export function MapasMentaisHeader({
       </header>
 
       {/* Conteúdo: Logo e Título à esquerda sobre a área roxa */}
-      <div className="relative z-10 pt-4 sm:pt-6 flex flex-col justify-start px-4 sm:px-6 max-w-[55%] sm:max-w-[48%] items-start text-left">
+      <div className="relative z-10 pt-3 sm:pt-4 flex flex-col justify-start min-h-[140px] sm:min-h-[160px] px-4 sm:px-6 max-w-[55%] sm:max-w-[48%] items-start text-left">
         <h1 className="font-display uppercase tracking-widest text-white text-[20px] sm:text-[24px] md:text-[26px] font-black leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
           Mapas Mentais
         </h1>
         <p className="font-serif italic text-purple-200/90 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mt-1 line-clamp-2">
-          Revisão visual e esquematizada de matérias, códigos e leis
+          Conexões neurais, resumos esquematizados e fixação acelerada.
         </p>
       </div>
 
