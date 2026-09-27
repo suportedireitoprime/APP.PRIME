@@ -1,6 +1,6 @@
 import React from 'react';
 import { toast } from 'sonner';
-import { BookOpen, ChevronRight, Loader2, Sparkles, Star } from 'lucide-react';
+import { BookOpen, ChevronRight, Loader2, Sparkles, Star, FolderOpen } from 'lucide-react';
 import { iconeDoItem } from '@/lib/visuaisJuridicos/icones';
 import type { CatalogoItem } from '@/lib/visuaisJuridicos/catalogo';
 import type { VisualCategoria, VisualRecord } from '@/lib/visuaisJuridicos/types';
