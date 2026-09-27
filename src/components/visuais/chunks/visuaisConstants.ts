@@ -61,3 +61,22 @@ export function isArtigoReal(a: ArtigoLei) {
   if (RE_ESTRUTURA.test(num)) return false;
   return /\d/.test(num);
 }
+
+/** Simplifica nomes nos cards para torná-los concisos e elegantes (remove prefixos redundantes) */
+export function limparNomeCard(label: string): string {
+  if (!label) return '';
+  return label
+    .replace(/^Estatuto\s+(da\s+Pessoa\s+com\s+Câncer|da\s+Pessoa\s+com\s+Deficiência|da\s+Criança\s+e\s+do\s+Adolescente|da\s+Igualdade\s+Racial|Nacional\s+da\s+Microempresa|do\s+|da\s+|de\s+|dos\s+|das\s+)?/i, (_m, p1) => {
+      if (p1?.toLowerCase().includes('criança')) return 'Criança e Adolescente';
+      if (p1?.toLowerCase().includes('deficiência')) return 'Pessoa com Deficiência';
+      if (p1?.toLowerCase().includes('câncer')) return 'Pessoa com Câncer';
+      if (p1?.toLowerCase().includes('igualdade')) return 'Igualdade Racial';
+      if (p1?.toLowerCase().includes('microempresa')) return 'Microempresa';
+      return '';
+    })
+    .replace(/^Direito\s+Processual\s+Civil/i, 'Processo Civil')
+    .replace(/^Direito\s+Processual\s+Penal/i, 'Processo Penal')
+    .replace(/^Direito\s+(do\s+|da\s+|de\s+|dos\s+|das\s+)?/i, '')
+    .trim();
+}
+

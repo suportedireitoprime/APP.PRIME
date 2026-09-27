@@ -1,12 +1,14 @@
 import React from 'react';
-import { ArrowLeft, X, Heart, Folder, Sparkles, Brain } from 'lucide-react';
+import { ArrowLeft, X, Heart, Folder, Brain } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import type { VisualCategoria } from '@/lib/visuaisJuridicos/types';
 import type { Filtro } from './visuaisConstants';
 import { VisuaisBarraBusca } from './VisuaisBarraBusca';
-import socratesMapasHeroImg from '@/assets/covers/socrates-mapas-hero.jpg';
-import cerebroNeuralImg from '@/assets/covers/cerebro-neural-roxo.jpg';
+import socratesThemisHeroImg from '@/assets/covers/socrates-themis-hero.jpg';
+import cerebroRoxo from '@/assets/covers/cerebro-vazado-roxo.png';
+import cerebroCiano from '@/assets/covers/cerebro-vazado-ciano.png';
+import cerebroDourado from '@/assets/covers/cerebro-vazado-dourado.png';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 
 interface VisuaisHeroPanelProps {
@@ -23,6 +25,12 @@ interface VisuaisHeroPanelProps {
   onClose: () => void;
 }
 
+const BRAIN_VARIANTS = [
+  { img: cerebroRoxo, glow: 'rgba(168,85,247,0.75)' },
+  { img: cerebroCiano, glow: 'rgba(56,189,248,0.75)' },
+  { img: cerebroDourado, glow: 'rgba(251,191,36,0.75)' },
+];
+
 export function VisuaisHeroPanel({
   categoria,
   filtro,
@@ -36,52 +44,52 @@ export function VisuaisHeroPanel({
 }: VisuaisHeroPanelProps) {
   return (
     <div
-      className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/90 flex flex-col z-20"
+      className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/80 pt-[var(--sai-top)] flex flex-col z-20"
       style={{
         transform: 'translateZ(0)',
-        backgroundColor: '#0a0314',
+        backgroundColor: '#050505',
       }}
     >
       {/* Blindagem de overscroll superior contra vazamento do fundo */}
       <div
         className="pointer-events-none absolute -top-[1200px] left-0 right-0 h-[1200px] z-0"
-        style={{ backgroundColor: '#0a0314' }}
+        style={{ backgroundColor: '#050505' }}
         aria-hidden="true"
       />
 
-      {/* Imagem de Capa de Sócrates / Filósofo à Direita */}
+      {/* Imagem de Capa: Sócrates e Deusa Têmis no Fundo */}
       <img
-        src={socratesMapasHeroImg}
-        alt="Sócrates - Mapas Mentais"
+        src={socratesThemisHeroImg}
+        alt="Sócrates e Deusa Têmis - Mapas Mentais"
         aria-hidden="true"
         loading="eager"
         decoding="async"
-        className="absolute inset-0 w-full h-full object-cover object-[72%_center] sm:object-[68%_center] md:object-center z-0 pointer-events-none translate-x-[4%] sm:translate-x-[2%]"
+        className="absolute inset-0 w-full h-full object-cover object-[75%_center] sm:object-[70%_center] md:object-center z-0 pointer-events-none"
       />
 
-      {/* 3 Cérebros Orbitais em Movimento 3D em torno da composição */}
-      <div className="absolute right-[-15px] sm:right-10 top-1/2 -translate-y-1/2 w-[240px] h-[240px] sm:w-[320px] sm:h-[320px] pointer-events-none z-0">
-        {[0, 1, 2].map((i) => {
-          const delay = i * 4.6; // 14s total cycle
+      {/* 3 Cérebros Vazados (Transparentes) em Cores Diferentes Orbitando */}
+      <div className="absolute right-[-10px] sm:right-6 top-1/2 -translate-y-1/2 w-[220px] h-[220px] sm:w-[300px] sm:h-[300px] pointer-events-none z-0">
+        {BRAIN_VARIANTS.map((brain, i) => {
+          const delay = i * 4.6; // Ciclo total de 14s dividido pelos 3 cérebros
           return (
             <motion.div
               key={i}
-              className="absolute w-14 h-14 sm:w-18 sm:h-18"
+              className="absolute w-12 h-12 sm:w-16 sm:h-16"
               animate={{
                 x: [
-                  115 * Math.cos(0),
-                  115 * Math.cos((2 * Math.PI) / 3),
-                  115 * Math.cos((4 * Math.PI) / 3),
-                  115 * Math.cos(2 * Math.PI),
+                  100 * Math.cos(0),
+                  100 * Math.cos((2 * Math.PI) / 3),
+                  100 * Math.cos((4 * Math.PI) / 3),
+                  100 * Math.cos(2 * Math.PI),
                 ],
                 y: [
-                  45 * Math.sin(0),
-                  45 * Math.sin((2 * Math.PI) / 3),
-                  45 * Math.sin((4 * Math.PI) / 3),
-                  45 * Math.sin(2 * Math.PI),
+                  42 * Math.sin(0),
+                  42 * Math.sin((2 * Math.PI) / 3),
+                  42 * Math.sin((4 * Math.PI) / 3),
+                  42 * Math.sin(2 * Math.PI),
                 ],
-                scale: [1, 0.72, 1.18, 1],
-                opacity: [0.92, 0.45, 1, 0.92],
+                scale: [1, 0.72, 1.15, 1],
+                opacity: [0.92, 0.5, 1, 0.92],
               }}
               transition={{
                 duration: 14,
@@ -90,78 +98,69 @@ export function VisuaisHeroPanel({
                 delay: -delay,
               }}
               style={{
-                left: 'calc(50% - 28px)',
-                top: 'calc(50% - 28px)',
+                left: 'calc(50% - 24px)',
+                top: 'calc(50% - 24px)',
               }}
             >
-              <div className="relative w-full h-full filter drop-shadow-[0_0_16px_rgba(168,85,247,0.85)]">
-                <img
-                  src={cerebroNeuralImg}
-                  alt=""
-                  className="w-full h-full object-contain mix-blend-screen"
-                />
-              </div>
+              <img
+                src={brain.img}
+                alt=""
+                className="w-full h-full object-contain pointer-events-none select-none"
+                style={{
+                  filter: `drop-shadow(0 0 10px ${brain.glow})`,
+                }}
+              />
             </motion.div>
           );
         })}
       </div>
 
-      {/* Overlay com corte angular roxo estilo Direito Prime */}
+      {/* Overlay com corte angular estilo menu Vade Mecum na cor roxa */}
       <div
         className="absolute inset-0 z-[1] pointer-events-none"
-        style={{ filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.85)) drop-shadow(8px 0 12px rgba(124,58,237,0.4))' }}
+        style={{ filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.8)) drop-shadow(8px 0 10px rgba(0,0,0,0.95))' }}
       >
         <div
           className="absolute inset-0 overflow-hidden"
-          style={{ clipPath: 'polygon(0 0, 52% 0, 38% 100%, 0% 100%)' }}
+          style={{ clipPath: 'polygon(0 0, 47% 0, 36% 100%, 0% 100%)' }}
         >
           <div className="absolute inset-0 bg-gradient-to-br from-[#120524] via-[#240845] to-[#3B0764]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(192,132,252,0.35),transparent_65%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(76,29,149,0.55),transparent_70%)]" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-
-          {/* ShapeGrid suave no fundo do corte */}
           <div className="absolute inset-0 opacity-15 mix-blend-overlay">
             <ShapeGrid />
           </div>
-
-          {/* Grid pontilhado sutil */}
-          <div
-            className="absolute inset-0 opacity-15"
-            style={{
-              backgroundImage: 'radial-gradient(rgba(216, 180, 254, 0.4) 1px, transparent 1px)',
-              backgroundSize: '22px 22px',
-            }}
-          />
         </div>
       </div>
 
-      {/* Header superior: Voltar (esquerda) e Fechar (direita) colados no topo da safe area */}
-      <header className="relative z-20 pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] px-4 sm:px-6 flex items-center justify-between pointer-events-auto">
-        <button
-          onClick={() => {
-            haptic.light();
-            onBack();
-          }}
-          aria-label="Voltar"
-          className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/60 border border-purple-500/20 text-white backdrop-blur-md transition-colors hover:bg-black/80 active:scale-95 shadow-lg"
-        >
-          <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
-        </button>
-        <button
-          onClick={() => {
-            haptic.light();
-            onClose();
-          }}
-          aria-label="Fechar"
-          className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/60 border border-purple-500/20 text-white backdrop-blur-md transition-colors hover:bg-black/80 active:scale-95 shadow-lg"
-        >
-          <X className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
-        </button>
+      {/* Cabeçalho Transparente Superior (Posicionamento absoluto exato do Vade Mecum Hero) */}
+      <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
+        <div className="pointer-events-auto px-4 sm:px-6 flex items-center justify-between">
+          <button
+            onClick={() => {
+              haptic.light();
+              onBack();
+            }}
+            aria-label="Voltar"
+            className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/60 border border-purple-500/20 text-white backdrop-blur-md transition-colors hover:bg-black/80 active:scale-95 shadow-lg"
+          >
+            <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
+          </button>
+          <button
+            onClick={() => {
+              haptic.light();
+              onClose();
+            }}
+            aria-label="Fechar"
+            className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/60 border border-purple-500/20 text-white backdrop-blur-md transition-colors hover:bg-black/80 active:scale-95 shadow-lg"
+          >
+            <X className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
+          </button>
+        </div>
       </header>
 
-      {/* Brand / Título do Banner — na área esquerda sobre o corte roxo */}
-      <div className="relative z-10 pt-2 sm:pt-3 px-4 sm:px-6 max-w-[58%] sm:max-w-[50%] flex flex-col items-start text-left">
+      {/* Conteúdo: Logo / Título à esquerda — centralizado na área roxa (mesmo espaçamento pt-8 sm:pt-10 do Vade Mecum) */}
+      <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[100px] px-4 sm:px-6 max-w-[50%] sm:max-w-[46%] items-start text-left">
         <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-950/70 border border-purple-400/30 text-[10px] font-bold uppercase tracking-wider text-purple-200 backdrop-blur-md shadow-sm mb-1.5">
           <Brain className="w-3 h-3 text-purple-400" />
           <span>Memorização Ativa</span>
@@ -174,8 +173,8 @@ export function VisuaisHeroPanel({
         </p>
       </div>
 
-      {/* 2 Funções Exclusivas no Painel: Favoritos (Coração) e Pastas */}
-      <div className="relative z-10 px-4 sm:px-6 pt-3 pb-2">
+      {/* ── 2 Funções de Ação Rápida (Favoritos e Pastas) ── */}
+      <div className="relative z-10 px-4 sm:px-6 pt-2 pb-2">
         <div className="grid grid-cols-2 gap-3 max-w-[420px]">
           {/* Botão Favoritos com Coração */}
           <button
@@ -184,7 +183,7 @@ export function VisuaisHeroPanel({
               haptic.selection();
               setFiltro(filtro === 'favoritos' ? 'todos' : 'favoritos');
             }}
-            className={`relative group flex items-center justify-center py-2.5 px-3 rounded-2xl backdrop-blur-md transition-all active:scale-95 gap-2.5 min-h-[54px] select-none cursor-pointer overflow-hidden border ${
+            className={`relative group flex items-center justify-center py-2 px-3 rounded-2xl backdrop-blur-md transition-all active:scale-95 gap-2.5 min-h-[50px] select-none cursor-pointer overflow-hidden border ${
               filtro === 'favoritos'
                 ? 'bg-purple-600/40 border-purple-400/80 shadow-[0_0_20px_rgba(168,85,247,0.45)] ring-1 ring-purple-400/50 text-white'
                 : 'bg-black/55 border-white/10 hover:bg-black/75 text-white/80 hover:text-white'
@@ -220,7 +219,7 @@ export function VisuaisHeroPanel({
               haptic.selection();
               setFiltro(filtro === 'pastas' ? 'todos' : 'pastas');
             }}
-            className={`relative group flex items-center justify-center py-2.5 px-3 rounded-2xl backdrop-blur-md transition-all active:scale-95 gap-2.5 min-h-[54px] select-none cursor-pointer overflow-hidden border ${
+            className={`relative group flex items-center justify-center py-2 px-3 rounded-2xl backdrop-blur-md transition-all active:scale-95 gap-2.5 min-h-[50px] select-none cursor-pointer overflow-hidden border ${
               filtro === 'pastas'
                 ? 'bg-purple-600/40 border-purple-400/80 shadow-[0_0_20px_rgba(168,85,247,0.45)] ring-1 ring-purple-400/50 text-white'
                 : 'bg-black/55 border-white/10 hover:bg-black/75 text-white/80 hover:text-white'
@@ -251,8 +250,8 @@ export function VisuaisHeroPanel({
         </div>
       </div>
 
-      {/* Barra de Pesquisa dentro do Hero Panel */}
-      <div className="relative z-10 px-4 sm:px-6 pb-4 sm:pb-5 pt-1">
+      {/* Barra de Pesquisa (mesmo pb-5 do Vade Mecum) */}
+      <div className="relative z-10 px-4 sm:px-6 w-full pb-5">
         <VisuaisBarraBusca
           valor={busca}
           onChange={setBusca}
@@ -272,4 +271,5 @@ export function VisuaisHeroPanel({
     </div>
   );
 }
+
 

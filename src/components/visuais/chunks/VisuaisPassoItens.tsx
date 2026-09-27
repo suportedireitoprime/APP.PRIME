@@ -5,7 +5,7 @@ import { haptic } from '@/lib/nativeHaptics';
 import { iconeDoItem } from '@/lib/visuaisJuridicos/icones';
 import type { CatalogoItem } from '@/lib/visuaisJuridicos/catalogo';
 import type { VisualCategoria, VisualRecord } from '@/lib/visuaisJuridicos/types';
-import { ITEM_CORES, type Filtro } from './visuaisConstants';
+import { ITEM_CORES, type Filtro, limparNomeCard } from './visuaisConstants';
 import { EstrelaFavorito } from './VisuaisAbasFiltro';
 import { VisuaisHeroPanel } from './VisuaisHeroPanel';
 import { VisuaisPastasView } from './VisuaisPastasView';
@@ -164,12 +164,12 @@ export function VisuaisPassoItens({
                   >
                     <HomeCard
                       icon={Icon}
-                      label={i.label}
+                      label={limparNomeCard(i.label)}
                       sublabel={i.sub || ''}
                       color={cor}
                       delay={0}
                       badge={isPronto ? 'PRONTO' : undefined}
-                      className="transition-all bg-[#181520] hover:bg-[#231e30] border-white/5 hover:border-purple-500/30 shadow-sm min-h-[96px] h-[96px]"
+                      className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm min-h-[96px] h-[96px]"
                       titleClassName="font-['Plus_Jakarta_Sans',sans-serif] font-bold text-[13px] xs:text-[14px] sm:text-[15px] leading-snug tracking-tight text-zinc-100 normal-case line-clamp-2"
                       iconClassName="w-7 h-7"
                       iconStrokeWidth={1.5}
