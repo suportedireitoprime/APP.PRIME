@@ -150,8 +150,17 @@ const Concursos = () => {
 
   const todayYMD = toYMD(new Date());
 
-  // Data ativa padrão na data vigente de hoje
-  const [dataFiltro, setDataFiltro] = useState<string>(() => todayYMD);
+  // Data ativa padrão na data vigente de hoje ou mais recente se cache existir
+  const [dataFiltro, setDataFiltro] = useState<string>(() => {
+    const cached = getSharedConcursos();
+    if (cached && cached.length > 0) {
+      const dates = Array.from(new Set(cached.map((d: any) => toYMD(new Date(d.created_at || d.data_publicacao))))).sort((a,b) => b.localeCompare(a));
+      if (!dates.includes(todayYMD) && dates.length > 0) {
+        return dates[0];
+      }
+    }
+    return todayYMD;
+  });
 
   // 3 Filtros em menus de alternância / suspensão
   const [cargoFiltro, setCargoFiltro] = useState<string>('TODOS');
@@ -179,6 +188,15 @@ const Concursos = () => {
           setSharedConcursos(data as any);
           setConcursos(data as any);
           setLoading(false);
+          
+          const dates = Array.from(new Set(data.map(d => toYMD(new Date(d.created_at || d.data_publicacao))))).sort((a,b) => b.localeCompare(a));
+          setDataFiltro(prev => {
+            // Só ajusta se estava apontando para hoje e hoje não tem concurso
+            if (prev === todayYMD && !dates.includes(todayYMD) && dates.length > 0) {
+              return dates[0];
+            }
+            return prev;
+          });
         }
       });
     return () => { cancel = true; };
@@ -461,18 +479,17 @@ const Concursos = () => {
                     onClick={() => handleOpenItem(item)}
                     className="group flex items-stretch gap-0 bg-card border-y md:border md:rounded-2xl border-border hover:border-[#10B981]/40 active:bg-secondary/30 transition-colors cursor-pointer overflow-hidden relative shadow-sm"
                   >
-                    {/* Thumbnail - Ilustração 3D com Bandeira do Estado em Marca d'Água Atrás */}
-                    <div className="w-24 sm:w-28 shrink-0 relative flex items-center justify-center p-2 bg-gradient-to-br from-emerald-500/10 via-card to-card/40 overflow-hidden">
-                      {/* Bandeira do Estado em marca d'água / contorno transparente */}
-                      <img
-                        src={flagUrl}
-                        alt={`Bandeira ${itemUf}`}
-                        className="absolute inset-0 w-full h-full object-cover opacity-20 filter brightness-90 scale-110 pointer-events-none transition-opacity duration-300 group-hover:opacity-30"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-card/85 via-card/25 to-transparent pointer-events-none" />
+                    {/* Bandeira do Estado na lateral direita com degradê suave */}
+                    <img
+                      src={flagUrl}
+                      alt={`Bandeira ${itemUf}`}
+                      className="absolute inset-y-0 right-0 w-2/3 sm:w-1/2 h-full object-cover opacity-[0.06] pointer-events-none transition-opacity duration-300 group-hover:opacity-10 [mask-image:linear-gradient(to_left,black_20%,transparent_100%)] z-0"
+                      loading="lazy"
+                      decoding="async"
+                    />
 
+                    {/* Thumbnail - Ilustração 3D */}
+                    <div className="w-24 sm:w-28 shrink-0 relative flex items-center justify-center p-2 bg-gradient-to-br from-emerald-500/10 via-card to-card/40 overflow-hidden z-10">
                       {/* Personagem 3D em Primeiro Plano */}
                       <img
                         src={visual.imagemUrl}
@@ -496,7 +513,7 @@ const Concursos = () => {
                     </div>
 
                     {/* Content */}
-                    <div className="flex-1 min-w-0 flex flex-col justify-between gap-1.5 p-3.5 sm:p-4">
+                    <div className="flex-1 min-w-0 flex flex-col justify-between gap-1.5 p-3.5 sm:p-4 relative z-10">
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-[9px] sm:text-[10px] font-bold text-emerald-400 uppercase tracking-widest truncate">
                           {item.cargos_resumo || (item.cargos && item.cargos.length > 0 ? item.cargos[0] : (item.titulo.match(/(?:para|cargo(?:s)? de|função de)\s+(.+?)(?:\s*-|\s*$)/i)?.[1] || "Vários Cargos"))}
@@ -538,11 +555,11 @@ const Concursos = () => {
           ) : (
             <EmptyState
               icon={Newspaper}
-              title={concursos.length === 0 ? 'Nenhum concurso disponível' : 'Sem resultados'}
+              title={concursos.length === 0 ? 'Carregando concursos...' : 'Nenhum edital'}
               description={
                 concursos.length === 0
-                  ? 'Ainda não há concursos carregados. Tente novamente em instantes.'
-                  : 'Não encontramos editais para esta busca ou data. Tente outro filtro.'
+                  ? 'Aguarde enquanto carregamos as últimas vagas.'
+                  : 'Ainda não houve publicação de edital para esta data. Selecione outra data acima.'
               }
             />
           )
