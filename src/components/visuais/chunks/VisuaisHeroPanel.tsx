@@ -150,7 +150,7 @@ export function VisuaisHeroPanel({
       </header>
 
       {/* Conteúdo: Logo / Título à esquerda — centralizado na área roxa (mesmo espaçamento pt-8 sm:pt-10 do Vade Mecum) */}
-      <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[90px] px-4 sm:px-6 max-w-[50%] sm:max-w-[46%] items-start text-left">
+      <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[180px] sm:min-h-[190px] px-4 sm:px-6 max-w-[50%] sm:max-w-[46%] items-start text-left">
         <h1 className="font-display uppercase tracking-widest text-white text-[21px] sm:text-[25px] font-black leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
           Mapas Mentais
         </h1>
