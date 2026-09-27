@@ -123,6 +123,45 @@ export const handler = async (req: Request) => {
       return json({ ok: true, result: r });
     }
 
+    if (action === "users_info") {
+      const uids = body.user_ids || [];
+      if (!Array.isArray(uids) || uids.length === 0) return json({ ok: true, users: [] });
+      
+      // Fetch batch of users from auth schema using admin client
+      const limit = Math.min(uids.length, 100);
+      const queryUids = uids.slice(0, limit);
+      
+      const { data: authUsers, error } = await admin.auth.admin.listUsers();
+      // Since listUsers returns paginated data and we can't filter by IDs easily using admin.auth,
+      // we can do a query to auth.users using raw SQL if we had it, or we can just fetch via select if there's a view.
+      // Wait, we can fetch via the profiles table!
+      // Actually, since we are using service role key, can we select from auth.users? No.
+      // Let's use listUsers but we don't know how many users there are.
+      // Better alternative: `adminDb.rpc('get_admin_users_info')` doesn't exist.
+      // What about `adminDb.from('profiles')`? We can get `display_name` but not `email` or `avatar_url`.
+      // Let's try `admin.auth.admin.getUserById(id)` for the limited list of uids!
+      
+      const userInfos = await Promise.all(
+        queryUids.map(async (uid: string) => {
+          try {
+            const { data } = await admin.auth.admin.getUserById(uid);
+            return data?.user || null;
+          } catch {
+            return null;
+          }
+        })
+      );
+      
+      const validUsers = userInfos.filter(Boolean).map((u: any) => ({
+        id: u.id,
+        email: u.email,
+        avatar_url: u.user_metadata?.avatar_url || u.user_metadata?.picture || null,
+        name: u.user_metadata?.name || u.user_metadata?.full_name || null
+      }));
+      
+      return json({ ok: true, users: validUsers });
+    }
+
     const canalRes = await handleCanalAction(action, body, admin);
     if (canalRes) {
       const status = Number((canalRes as any).status || 200);

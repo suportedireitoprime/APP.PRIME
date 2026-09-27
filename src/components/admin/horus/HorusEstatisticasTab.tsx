@@ -59,6 +59,7 @@ export function HorusEstatisticasTab() {
 
 function UsersPanel() {
   const [items, setItems] = useState<Stats[]>([]);
+  const [usersInfo, setUsersInfo] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState('');
   const [selected, setSelected] = useState<Stats | null>(null);
@@ -69,8 +70,31 @@ function UsersPanel() {
     let query = supabase.from('horus_user_stats').select('*').order('updated_at', { ascending: false }).limit(50);
     if (q) query = query.or(`telefone.ilike.%${q}%,nome_preferido.ilike.%${q}%`);
     const { data, error } = await query;
-    if (error) toast.error('Falha ao carregar');
-    setItems((data as any) || []);
+    if (error) {
+      toast.error('Falha ao carregar');
+      setLoading(false);
+      return;
+    }
+    
+    const statsList = (data as any) || [];
+    setItems(statsList);
+    
+    // Fetch extra info via Edge Function
+    if (statsList.length > 0) {
+      const uids = statsList.map((s: any) => s.user_id).filter(Boolean);
+      try {
+        const res = await supabase.functions.invoke('horus', {
+          body: { fn: 'admin', action: 'users_info', user_ids: uids }
+        });
+        if (res.data?.users) {
+          const dict: Record<string, any> = {};
+          res.data.users.forEach((u: any) => { dict[u.id] = u; });
+          setUsersInfo(dict);
+        }
+      } catch (err) {
+        console.error('Failed to fetch users_info', err);
+      }
+    }
     setLoading(false);
   }
   useEffect(() => { load(); }, [q]);
@@ -95,25 +119,41 @@ function UsersPanel() {
       ) : items.length === 0 ? (
         <div className="text-center py-8 text-sm text-muted-foreground">Nenhum usuário com estatísticas ainda. Elas são geradas quando alguém usa o app.</div>
       ) : (
-        items.map((s) => (
-          <button
-            key={s.user_id}
-            onClick={() => setSelected(s)}
-            className="w-full text-left rounded-xl border border-border bg-card p-3 hover:bg-accent/50"
-          >
-            <div className="flex items-center justify-between">
-              <div className="font-medium text-sm">{s.nome_preferido || s.telefone || 'Sem nome'}</div>
-              <span className={`text-[10px] px-2 py-0.5 rounded-full ${s.plano_atual === 'pro' ? 'bg-emerald-500/15 text-emerald-500' : 'bg-muted text-muted-foreground'}`}>
-                {s.plano_atual}
-              </span>
-            </div>
-            <div className="text-xs text-muted-foreground mt-1 flex flex-wrap gap-x-3 gap-y-1">
-              {s.dias_streak_estudo > 0 && <span>🔥 {s.dias_streak_estudo}d</span>}
-              {s.materia_mais_estudada_7d && <span>📚 {s.materia_mais_estudada_7d}</span>}
-              {s.total_questoes_respondidas > 0 && <span>✓ {s.pct_acerto_geral}%</span>}
-            </div>
-          </button>
-        ))
+        items.map((s) => {
+          const ui = usersInfo[s.user_id] || {};
+          const displayName = ui.name || s.nome_preferido || s.telefone || 'Sem nome';
+          return (
+            <button
+              key={s.user_id}
+              onClick={() => setSelected(s)}
+              className="w-full text-left rounded-xl border border-border bg-card p-3 hover:bg-accent/50"
+            >
+              <div className="flex items-center gap-3">
+                {ui.avatar_url ? (
+                  <img src={ui.avatar_url} alt="Avatar" className="w-10 h-10 rounded-full object-cover shrink-0" />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                    <User className="w-5 h-5 text-muted-foreground" />
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <div className="font-medium text-sm truncate">{displayName}</div>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full shrink-0 ${s.plano_atual === 'pro' ? 'bg-emerald-500/15 text-emerald-500' : 'bg-muted text-muted-foreground'}`}>
+                      {s.plano_atual}
+                    </span>
+                  </div>
+                  {ui.email && <div className="text-xs text-muted-foreground truncate">{ui.email}</div>}
+                  <div className="text-xs text-muted-foreground mt-1 flex flex-wrap gap-x-3 gap-y-1">
+                    {s.dias_streak_estudo > 0 && <span>🔥 {s.dias_streak_estudo}d</span>}
+                    {s.materia_mais_estudada_7d && <span>📚 {s.materia_mais_estudada_7d}</span>}
+                    {s.total_questoes_respondidas > 0 && <span>✓ {s.pct_acerto_geral}%</span>}
+                  </div>
+                </div>
+              </div>
+            </button>
+          );
+        })
       )}
 
       {selected && (
