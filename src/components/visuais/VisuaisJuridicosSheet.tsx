@@ -336,13 +336,15 @@ export default function VisuaisJuridicosSheet({
   const temasFiltrados = useMemo(() => {
     const q = norm(buscaArtigo.trim());
     const base = q ? temas.filter((t) => norm(t.tema).includes(q)) : temas;
-    return aplicarFiltro(base, (t) => chaveDe(item!, t.tema, 'tema'));
+    const filtrados = aplicarFiltro(base, (t) => chaveDe(item!, t.tema, 'tema'));
+    return [...filtrados].sort((a, b) => a.tema.localeCompare(b.tema));
   }, [temas, buscaArtigo, aplicarFiltro, chaveDe, item]);
 
   const subtemasFiltrados = useMemo(() => {
     const q = norm(buscaArtigo.trim());
     const base = q ? subtemas.filter((s) => norm(s.subtema).includes(q)) : subtemas;
-    return aplicarFiltro(base, (s) => chaveDe(item!, `${tema?.tema ?? ''} ${s.subtema}`, 'tema'));
+    const filtrados = aplicarFiltro(base, (s) => chaveDe(item!, `${tema?.tema ?? ''} ${s.subtema}`, 'tema'));
+    return [...filtrados].sort((a, b) => a.subtema.localeCompare(b.subtema));
   }, [subtemas, buscaArtigo, aplicarFiltro, chaveDe, item, tema]);
 
   // Carrega os artigos da lei/código/estatuto escolhido — reaproveita a tabela do Vade Mecum.
@@ -388,8 +390,8 @@ export default function VisuaisJuridicosSheet({
     const filtrados = q ? todos.filter((i) => norm(`${i.label} ${i.sub ?? ''}`).includes(q)) : todos;
     const porAba = aplicarFiltro(filtrados, (i) => i.key);
     if (filtro === 'recentes') return porAba;
-    return [...porAba].sort((a, b) => Number(Boolean(prontos[b.key])) - Number(Boolean(prontos[a.key])));
-  }, [categoria, areas, busca, prontos, aplicarFiltro, filtro]);
+    return [...porAba].sort((a, b) => a.label.localeCompare(b.label));
+  }, [categoria, areas, busca, aplicarFiltro, filtro]);
 
   /**
    * Disparado quando o usuário clica num tópico/artigo para gerar.
