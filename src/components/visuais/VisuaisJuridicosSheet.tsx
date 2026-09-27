@@ -397,7 +397,10 @@ export default function VisuaisJuridicosSheet({
    */
   const gerar = (alvo?: CatalogoItem, sub?: string, kind: 'artigo' | 'tema' = 'artigo', temaPai?: string) => {
     const base = alvo || item;
-    if (!base) return;
+    if (!base) {
+      toast.error('Erro: item base não encontrado.');
+      return;
+    }
     if (!podeGerar) {
       setGateOpen(true);
       return;
@@ -490,7 +493,11 @@ export default function VisuaisJuridicosSheet({
     }
   };
 
-  const voltar = () => {
+  const voltar = useCallback(() => {
+    if (aberto) {
+      setAberto(null);
+      return;
+    }
     if (pastaAtiva) {
       setPastaAtiva(null);
     } else if (topicoPasta) {
@@ -502,13 +509,19 @@ export default function VisuaisJuridicosSheet({
     } else if (tema) {
       setTema(null);
       setBuscaArtigo('');
+      if (onRotaRef.current && item) {
+        onRotaRef.current([TIPO_SLUG[tipo], categoria, slugTema(item.label)]);
+      }
     } else if (item) {
       setItem(null);
       setBuscaArtigo('');
+      if (onRotaRef.current) {
+        onRotaRef.current([TIPO_SLUG[tipo], categoria]);
+      }
     } else {
       onClose();
     }
-  };
+  }, [aberto, pastaAtiva, topicoPasta, materiaPasta, filtro, tema, item, tipo, categoria, onClose]);
 
   const getTitle = () => {
     if (pastaAtiva) return pastaAtiva;
