@@ -45,11 +45,11 @@ export const norm = (v: string) => v.toLowerCase().normalize('NFD').replace(/[\u
 
 export type Filtro = 'todos' | 'favoritos' | 'recentes' | 'pastas';
 
-export const FILTROS: { id: Filtro; label: string; Icone: typeof Layers }[] = [
-  { id: 'todos', label: 'Todos', Icone: Layers },
-  { id: 'favoritos', label: 'Favoritos', Icone: Heart },
-  { id: 'recentes', label: 'Recentes', Icone: Clock },
-  { id: 'pastas', label: 'Pastas', Icone: Folder },
+export const FILTROS: { id: Filtro; label: string; Icone: typeof Layers; color: string }[] = [
+  { id: 'todos', label: 'Todos', Icone: Layers, color: '#FACC15' },
+  { id: 'favoritos', label: 'Favoritos', Icone: Heart, color: '#34D399' },
+  { id: 'recentes', label: 'Recentes', Icone: Clock, color: '#F87171' },
+  { id: 'pastas', label: 'Pastas', Icone: Folder, color: '#F97316' },
 ];
 
 /** Cabeçalhos estruturais (PARTE GERAL, TÍTULO, CAPÍTULO…) não são artigos. */

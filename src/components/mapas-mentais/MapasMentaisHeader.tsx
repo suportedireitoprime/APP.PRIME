@@ -171,48 +171,11 @@ export function MapasMentaisHeader({
         </p>
       </div>
 
-      {/* ── Elementos Integrados DENTRO da Capa (Pesquisa e Funções) ── */}
+      {/* ── Elementos Integrados DENTRO da Capa (Funções e Pesquisa) ── */}
       <div className="relative z-10 px-4 sm:px-6 w-full pt-4 pb-5 space-y-3 max-w-[1400px] mx-auto">
-        {/* 1. Barra de Pesquisa Rápida */}
-        <div className="flex items-center gap-2.5">
-          <div className="relative flex-1">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-purple-300" strokeWidth={2.2} />
-            <input
-              type="text"
-              value={busca}
-              onChange={(e) => setBusca(e.target.value.slice(0, 60))}
-              placeholder="Pesquisar matéria, código, tema ou artigo..."
-              className="h-12 sm:h-13 w-full rounded-2xl border border-purple-500/30 bg-black/60 backdrop-blur-md pl-10 sm:pl-11 pr-10 font-sans text-sm sm:text-base text-white placeholder:text-white/40 outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400/30 transition-all shadow-inner"
-            />
-            {busca && (
-              <button
-                type="button"
-                onClick={() => setBusca('')}
-                aria-label="Limpar pesquisa"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white p-1 cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-
-          <button
-            type="button"
-            onClick={() => (ouvindo ? stop() : start())}
-            aria-label={ouvindo ? 'Parar ditado' : 'Pesquisar por voz'}
-            className={`flex h-12 w-12 sm:h-13 sm:w-13 shrink-0 items-center justify-center rounded-2xl border transition-all cursor-pointer shadow-lg active:opacity-70 ${
-              ouvindo
-                ? 'bg-red-500 border-red-400 text-white animate-pulse'
-                : 'bg-purple-600/90 hover:bg-purple-600 border-purple-400/50 text-white'
-            }`}
-          >
-            <Mic className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* 2. Funções (Todos, Favoritos, Recentes, Pastas) dentro da capa (Estilo Vade Mecum) */}
+        {/* 1. Funções (Todos, Favoritos, Recentes, Pastas) estilo Home */}
         <div className="grid grid-cols-4 gap-2 mx-1 mt-1">
-          {FILTROS.map(({ id, label, Icone }) => {
+          {FILTROS.map(({ id, label, Icone, color }) => {
             const isAtivo = filtro === id;
             return (
               <button
@@ -222,13 +185,17 @@ export function MapasMentaisHeader({
                   haptic.selection();
                   setFiltro(id);
                 }}
-                className={`group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-2 text-center min-h-[48px] cursor-pointer ${
+                className={`group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-2 text-center min-h-[48px] select-none cursor-pointer overflow-hidden ${
                   isAtivo
                     ? 'border border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.35)]'
                     : 'border border-white/10'
                 }`}
               >
-                <Icone className={`w-5 h-5 transition-all group-hover:scale-110 ${isAtivo ? 'text-purple-400' : 'text-white/70 group-hover:text-white'}`} strokeWidth={2} />
+                <Icone 
+                  className="w-5 h-5 shrink-0 transition-all group-hover:scale-110" 
+                  style={{ color: color }} 
+                  strokeWidth={2} 
+                />
                 <span className={`text-[9px] font-extrabold leading-tight uppercase tracking-wider ${isAtivo ? 'text-white' : 'text-white/90'}`}>
                   {label}
                   {id === 'favoritos' && favoritosCount > 0 && ` (${favoritosCount})`}
@@ -238,6 +205,39 @@ export function MapasMentaisHeader({
               </button>
             );
           })}
+        </div>
+
+        {/* 2. Barra de Pesquisa Rápida (Estilo Home / Vade Mecum) */}
+        <div className="relative flex-1 h-16 w-full flex items-center mt-3">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 sm:w-6 sm:h-6 text-[#E01F47] shrink-0 pointer-events-none" strokeWidth={2.2} />
+          <input
+            type="text"
+            value={busca}
+            onChange={(e) => setBusca(e.target.value.slice(0, 60))}
+            placeholder="Pesquisar matéria, código, tema ou artigo..."
+            className="h-full w-full rounded-2xl bg-black/75 backdrop-blur-sm border border-white/15 shadow-lg shadow-black/30 pl-12 pr-[140px] font-sans text-[14px] sm:text-[15px] font-medium text-white placeholder:text-white/40 outline-none focus:border-red-500/50 transition-all"
+          />
+          {busca && (
+            <button
+              type="button"
+              onClick={() => setBusca('')}
+              aria-label="Limpar pesquisa"
+              className="absolute right-[115px] top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white p-1 cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+          <button 
+            type="button"
+            onClick={() => {
+               if (ouvindo) stop(); else start();
+            }}
+            className={`absolute right-1.5 top-1/2 -translate-y-1/2 h-12 px-4 rounded-xl text-white font-display text-[13px] font-bold tracking-wider flex items-center justify-center cursor-pointer uppercase shadow-md active:opacity-70 transition-all ${
+               ouvindo ? 'bg-red-500 animate-pulse' : 'bg-brand-gradient'
+            }`}
+          >
+             {ouvindo ? <Mic className="w-5 h-5" /> : 'PESQUISAR'}
+          </button>
         </div>
       </div>
     </div>
