@@ -16,6 +16,16 @@ import { haptic } from '@/lib/nativeHaptics';
 import { Drawer, DrawerContent, DrawerClose } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 
+const ESTADOS_MAP: Record<string, string> = {
+  'AC': 'Acre', 'AL': 'Alagoas', 'AP': 'Amapá', 'AM': 'Amazonas', 'BA': 'Bahia',
+  'CE': 'Ceará', 'DF': 'Distrito Federal', 'ES': 'Espírito Santo', 'GO': 'Goiás',
+  'MA': 'Maranhão', 'MT': 'Mato Grosso', 'MS': 'Mato Grosso do Sul', 'MG': 'Minas Gerais',
+  'PA': 'Pará', 'PB': 'Paraíba', 'PR': 'Paraná', 'PE': 'Pernambuco', 'PI': 'Piauí',
+  'RJ': 'Rio de Janeiro', 'RN': 'Rio Grande do Norte', 'RS': 'Rio Grande do Sul',
+  'RO': 'Rondônia', 'RR': 'Roraima', 'SC': 'Santa Catarina', 'SP': 'São Paulo',
+  'SE': 'Sergipe', 'TO': 'Tocantins', 'BR': 'Nacional'
+};
+
 type ConcursoNoticia = {
   id: string;
   data_publicacao: string;
@@ -502,17 +512,14 @@ const Concursos = () => {
                         decoding="async"
                       />
 
-                      {/* Sigla da UF */}
-                      {itemUf !== 'BR' && (
-                        <span className="absolute top-1.5 right-1.5 z-20 text-[8px] sm:text-[9px] font-black px-1.5 py-0.5 rounded bg-black/60 text-emerald-300 border border-emerald-500/30 backdrop-blur-sm shadow-sm">
-                          {itemUf}
-                        </span>
-                      )}
                     </div>
 
                     {/* Content */}
                     <div className="flex-1 min-w-0 flex flex-col justify-between gap-1.5 p-3.5 sm:p-4 relative z-10">
-                      <div className="flex justify-end gap-2">
+                      <div className="flex justify-between items-center gap-2">
+                        <span className="text-[10px] sm:text-[11px] font-bold text-emerald-400/90 uppercase tracking-widest truncate">
+                          {ESTADOS_MAP[itemUf] || itemUf}
+                        </span>
                         {item.dias_restantes !== undefined && item.dias_restantes !== null && (
                           item.dias_restantes <= 5 ? (
                             <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-rose-600 text-white shrink-0">
