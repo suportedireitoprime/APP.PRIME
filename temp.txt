@@ -1,4 +1,4 @@
-// Mapeamento oficial das ilustrações de profissões e padrões visuais para concursos
+// Mapeamento oficial das 14 ilustrações de profissões e padrões visuais para concursos
 export interface ProfissaoInfo {
   id: string;
   tag: string;
@@ -7,7 +7,7 @@ export interface ProfissaoInfo {
   localPath: string;
 }
 
-export const PROFISSOES_MAP: Record<string, ProfissaoInfo> = {
+REPLACED
   educacao_professor: {
     id: '01_educacao_professor',
     tag: 'Educação',
@@ -106,78 +106,6 @@ export const PROFISSOES_MAP: Record<string, ProfissaoInfo> = {
     imagemUrl: '/profissoes/14_curinga_cargo_generico.webp',
     localPath: '/profissoes/14_curinga_cargo_generico.webp',
   },
-
-  // --- NOVAS ---
-  agente_tatica_mulher: {
-    id: '15_agente_tatica_mulher',
-    tag: 'Guarda Municipal',
-    subtitulo: 'GCM & Guardas',
-    imagemUrl: '/profissoes/01_agente_tatica_sorridente_com_radio.webp',
-    localPath: '/profissoes/01_agente_tatica_sorridente_com_radio.webp',
-  },
-  policial_tatico_negro: {
-    id: '16_policial_tatico_negro',
-    tag: 'Polícia Militar',
-    subtitulo: 'Polícia Militar & Forças Especiais',
-    imagemUrl: '/profissoes/02_policial_tatico_negro_em_pose_confiante.webp',
-    localPath: '/profissoes/02_policial_tatico_negro_em_pose_confiante.webp',
-  },
-  bombeiro_militar: {
-    id: '17_bombeiro_militar',
-    tag: 'Bombeiros',
-    subtitulo: 'Corpo de Bombeiros Militar',
-    imagemUrl: '/profissoes/03_bombeira_confiante_com_mangueira_enrolada.webp',
-    localPath: '/profissoes/03_bombeira_confiante_com_mangueira_enrolada.webp',
-  },
-  policial_tatico_preto: {
-    id: '18_policial_tatico_preto',
-    tag: 'Operações Especiais',
-    subtitulo: 'Polícia Civil & Operações',
-    imagemUrl: '/profissoes/04_agente_tatico_imponente_em_uniforme_preto.webp',
-    localPath: '/profissoes/04_agente_tatico_imponente_em_uniforme_preto.webp',
-  },
-  perito_criminal_forense: {
-    id: '19_perito_criminal_forense',
-    tag: 'Perícia Criminal',
-    subtitulo: 'Polícia Científica & Forense',
-    imagemUrl: '/profissoes/05_cientista_forense_examinando_evidencia.webp',
-    localPath: '/profissoes/05_cientista_forense_examinando_evidencia.webp',
-  },
-  medico_saude: {
-    id: '20_medico_saude',
-    tag: 'Medicina',
-    subtitulo: 'Carreira Médica & Especialistas',
-    imagemUrl: '/profissoes/06_medico_negro_com_prancheta_e_estetoscopio.webp',
-    localPath: '/profissoes/06_medico_negro_com_prancheta_e_estetoscopio.webp',
-  },
-  perita_cientifica: {
-    id: '21_perita_cientifica',
-    tag: 'Polícia Científica',
-    subtitulo: 'Papiloscopia & Perícia',
-    imagemUrl: '/profissoes/07_cientista_ruiva_com_amostras_azuis.webp',
-    localPath: '/profissoes/07_cientista_ruiva_com_amostras_azuis.webp',
-  },
-  fisioterapeuta: {
-    id: '22_fisioterapeuta',
-    tag: 'Fisioterapia',
-    subtitulo: 'Saúde & Fisioterapia',
-    imagemUrl: '/profissoes/08_fisioterapeuta_com_faixa_elastica_e_prancheta.webp',
-    localPath: '/profissoes/08_fisioterapeuta_com_faixa_elastica_e_prancheta.webp',
-  },
-  enfermeira: {
-    id: '23_enfermeira',
-    tag: 'Enfermagem',
-    subtitulo: 'Enfermeiros & Assistentes Sociais',
-    imagemUrl: '/profissoes/09_mulher_profissional_com_prancheta_azul.webp',
-    localPath: '/profissoes/09_mulher_profissional_com_prancheta_azul.webp',
-  },
-  oficial_justica: {
-    id: '24_oficial_justica',
-    tag: 'Oficial de Justiça',
-    subtitulo: 'Oficialato & Cartório',
-    imagemUrl: '/profissoes/10_oficial_apresenta_envelope_e_documentos.webp',
-    localPath: '/profissoes/10_oficial_apresenta_envelope_e_documentos.webp',
-  },
 };
 
 export interface ConcursoVisualInfo {
@@ -206,6 +134,7 @@ export function extractConcursoUf(item: { uf?: string | null; titulo?: string | 
     const clean = item.uf.trim().toLowerCase();
     if (VALID_UFS.has(clean)) return clean.toUpperCase();
   }
+  // Try matching standard patterns like "- GO", "/RO", "em PB", "no MT"
   const match = (item.titulo || '').match(/(?:-|\/|\bem\b|\bno\b|\bna\b|\bdo\b|\bda\b)\s*([A-Z]{2})\b/);
   if (match && match[1]) {
     const candidate = match[1].toLowerCase();
@@ -218,7 +147,7 @@ export function extractConcursoUf(item: { uf?: string | null; titulo?: string | 
 
 /**
  * Classifica um concurso com base em seu título e cargos para selecionar
- * uma das ilustrações oficiais de profissões.
+ * uma das 14 ilustrações oficiais de profissões.
  */
 export function getConcursoVisual(
   titulo: string,
@@ -228,117 +157,73 @@ export function getConcursoVisual(
   const cargosStr = Array.isArray(cargosContext) ? cargosContext.join(' ') : (cargosContext || '');
   const t = `${titulo || ''} ${cargosStr}`.toLowerCase();
 
-  // Odontologia
+  // 1. Odontologia (específico antes de saúde geral)
   if (/\b(dentista|dentistas|odont[oó]log[oa]s?|odontologia|sa[uú]de bucal|asb|tsb)\b/i.test(t)) {
     return { ...PROFISSOES_MAP.odontologia, profissaoKey: 'odontologia' };
   }
-  
-  // Médicos
-  if (/\b(m[eé]dic[oa]s?|medicina)\b/i.test(t)) {
-    return { ...PROFISSOES_MAP.medico_saude, profissaoKey: 'medico_saude' };
-  }
 
-  // Fisioterapeuta
-  if (/\b(fisioterapeuta|fisioterapia)\b/i.test(t)) {
-    return { ...PROFISSOES_MAP.fisioterapeuta, profissaoKey: 'fisioterapeuta' };
-  }
-
-  // Enfermagem / Assistente Social
-  if (/\b(enferm|enfermeir[oa]s?|assistente social|t[eé]cnico em enfermagem)\b/i.test(t)) {
-    return { ...PROFISSOES_MAP.enfermeira, profissaoKey: 'enfermeira' };
-  }
-
-  // Saúde Geral
-  if (/\b(sa[uú]de|samu|hospital|farmac[eê]utic[oa]s?|nutricionist[oa]s?|psic[oó]log[oa]s?|fonoaudi[oó]log[oa]s?|biom[eé]dic[oa]s?|radiolog|veterin[aá]ri[oa]s?|agente comunit[aá]rio de sa[uú]de|combate [aà]s endemias|ubs|upa|sms|terapeuta ocupacional)\b/i.test(t)) {
-    return { ...PROFISSOES_MAP.enfermagem_saude_geral, profissaoKey: 'enfermagem_saude_geral' };
-  }
-
-  // Juiz / Magistratura
+  // 2. Juiz / Magistratura
   if (/\b(juiz|ju[ií]za|ju[ií]zes|magistratura|magistrado|magistrada)\b/i.test(t)) {
     return { ...PROFISSOES_MAP.juiz_magistratura, profissaoKey: 'juiz_magistratura' };
   }
 
-  // Advocacia Pública / Procurador
+  // 3. Advocacia Pública / Procurador / Defensor / DPE / DPU
   if (/\b(procurador[oa]?s?|defensor[oa]?s?|advogad[oa]s?|\bpgm\b|\bpge\b|\bagu\b|\bdpe\b|\bdpu\b|defensoria|procuradoria)\b/i.test(t)) {
     return { ...PROFISSOES_MAP.advocacia_publica, profissaoKey: 'advocacia_publica' };
   }
 
-  // Oficial de Justiça / Cartório
-  if (/\b(oficial de justi[cç]a|oficialato|tabeli[aã]o|cart[oó]rio)\b/i.test(t)) {
-    return { ...PROFISSOES_MAP.oficial_justica, profissaoKey: 'oficial_justica' };
-  }
-
-  // Tribunais / Judiciário / Analistas
-  if (/\b(analista judici[aá]ri[oa]s?|t[eé]cnico judici[aá]ri[oa]s?|escrevente|tribunal de justi[cç]a|tribunal regional|\btj[a-z]{0,2}\b|\btrt\b|\btrf\b|\btre\b|\bstj\b|\bstf\b|\btst\b|t[eé]cnico legislativo|analista legislativo)\b/i.test(t)) {
-    return { ...PROFISSOES_MAP.tribunais_judiciario_analistas, profissaoKey: 'tribunais_judiciario_analistas' };
-  }
-
-  // Bombeiros
-  if (/\b(bombeir[oa]s?|cbm|corpo de bombeiros)\b/i.test(t)) {
-    return { ...PROFISSOES_MAP.bombeiro_militar, profissaoKey: 'bombeiro_militar' };
-  }
-
-  // Polícia Científica / Perito
-  if (/\b(perit[oa]s? criminal|per[ií]cia criminal|forense|papiloscopista|pol[ií]cia cient[ií]fica|politec)\b/i.test(t)) {
-    // Vamos alternar ou usar a perita cientifica pra dar destaque a imagem feminina também
-    return { ...PROFISSOES_MAP.perito_criminal_forense, profissaoKey: 'perito_criminal_forense' };
-  }
-
-  // Guarda Municipal / GCM
-  if (/\b(guarda municipal|guarda civil|\bgcm\b|guarda civil metropolitana)\b/i.test(t)) {
-    return { ...PROFISSOES_MAP.agente_tatica_mulher, profissaoKey: 'agente_tatica_mulher' };
-  }
-
-  // Polícia Militar / Forças Especiais
-  if (/\b(pm|pol[ií]cia militar|\bpm[a-z]{0,2}\b|militar|militares|for[cç]as armadas|cadete|choque|bope|t[aá]tico)\b/i.test(t)) {
-    return { ...PROFISSOES_MAP.policial_tatico_negro, profissaoKey: 'policial_tatico_negro' };
-  }
-
-  // Delegado / Polícia Civil / Polícia Penal
-  if (/\b(delegad[oa]s?|pol[ií]cia|pol[ií]cia civil|policial|policiais|investigador[oa]?s?|inspetor|agente penitenci[aá]ri[oa]s?|pol[ií]cia penal)\b/i.test(t)) {
-    return { ...PROFISSOES_MAP.policial_tatico_preto, profissaoKey: 'policial_tatico_preto' };
-  }
-
-  // Trânsito / Guarda Vidas
-  if (/\b(tr[aâ]nsito|agente de tr[aâ]nsito|salva vidas|guarda vidas)\b/i.test(t)) {
+  // 4. Delegado & Carreiras Policiais / Segurança / Militar
+  if (/\b(delegad[oa]s?|pol[ií]cia|policial|policiais|\bpm[a-z]{0,2}\b|bombeir[oa]s?|perito criminal|papiloscopista|investigador[oa]?s?|guarda municipal|guarda civil|\bgcm\b|guarda vidas|salva vidas|tr[aâ]nsito|agente penitenci[aá]ri[oa]s?|pol[ií]cia penal|cadete|militar|militares|for[cç]as armadas)\b/i.test(t)) {
     return { ...PROFISSOES_MAP.delegado_de_policia, profissaoKey: 'delegado_de_policia' };
   }
 
-  // Fiscal / Auditor / Controle
+  // 5. Tribunais / Judiciário / Analistas / Técnicos
+  if (/\b(analista judici[aá]ri[oa]s?|t[eé]cnico judici[aá]ri[oa]s?|oficial de justi[cç]a|escrevente|tribunal de justi[cç]a|tribunal regional|\btj[a-z]{0,2}\b|\btrt\b|\btrf\b|\btre\b|\bstj\b|\bstf\b|\btst\b|cart[oó]rio|tabeli[aã]o|t[eé]cnico legislativo|analista legislativo)\b/i.test(t)) {
+    return { ...PROFISSOES_MAP.tribunais_judiciario_analistas, profissaoKey: 'tribunais_judiciario_analistas' };
+  }
+
+  // 6. Fiscal / Auditor / Controle
   if (/\b(auditor[oa]?s?|fiscal|fiscaliza[cç][aã]o|tribut[aá]ri[oa]s?|sefaz|\biss\b|\btce[a-z]{0,2}\b|\btcu\b|\bcge\b|\bcgu\b|controlador[oa]?s?|controle interno|receita federal|arrecada[cç][aã]o)\b/i.test(t)) {
     return { ...PROFISSOES_MAP.fiscal_controle_auditores, profissaoKey: 'fiscal_controle_auditores' };
   }
 
-  // Tecnologia da Informação / TI
+  // 7. Tecnologia da Informação / TI
   if (/\b(tecnologia da informa[cç][aã]o|inform[aá]tica|programador[oa]?s?|desenvolvedor[oa]?s?|analista de sistemas|banco de dados|suporte t[eé]cnico|software|redes de computadores|devops|computa[cç][aã]o|\bti\b)\b/i.test(t)) {
     return { ...PROFISSOES_MAP.tecnologia_da_informacao, profissaoKey: 'tecnologia_da_informacao' };
   }
 
-  // Contabilidade e Finanças
+  // 8. Contabilidade e Finanças
   if (/\b(contador[oa]?s?|contabilidade|t[eé]cnico em contabilidade|finan[cç]as|financeir[oa]s?|tesoureir[oa]s?|economista|economia|or[cç]amento|banc[aá]ri[oa]s?|banco do brasil|caixa econ[oô]mica)\b/i.test(t)) {
     return { ...PROFISSOES_MAP.contabilidade_e_financas, profissaoKey: 'contabilidade_e_financas' };
   }
 
-  // Engenharia, Arquitetura e Meio Ambiente
+  // 9. Engenharia, Arquitetura e Meio Ambiente
   if (/\b(engenheir[oa]s?|engenharia|arquiteto|arquiteta|arquitetura|urbanismo|edifica[cç][oõ]es|obras|agrimensor|top[oó]grafo|ambiental|meio ambiente|bi[oó]log[oa]s?)\b/i.test(t)) {
     return { ...PROFISSOES_MAP.engenharia_arquitetura, profissaoKey: 'engenharia_arquitetura' };
   }
 
-  // Educação, Professores e Apoio Escolar
+  // 10. Educação, Professores e Apoio Escolar
   if (/\b(professor[oa]?s?|docente|doc[eê]ncia|pedagog[oa]s?|pedagogia|educador[oa]?s?|educa[cç][aã]o|magist[eé]rio|seduc|creche|escola|col[eé]gio|universidade|\bif[a-z]{2}\b|desenvolvimento escolar|apoio escolar|monitor escolar)\b/i.test(t)) {
     return { ...PROFISSOES_MAP.educacao_professor, profissaoKey: 'educacao_professor' };
   }
 
-  // Operacional e Serviços Gerais
+  // 11. Enfermagem e Saúde Geral
+  if (/\b(enferm|m[eé]dic[oa]s?|medicina|sa[uú]de|samu|hospital|farmac[eê]utic[oa]s?|fisioterapeut[oa]s?|nutricionist[oa]s?|psic[oó]log[oa]s?|fonoaudi[oó]log[oa]s?|biom[eé]dic[oa]s?|radiolog|veterin[aá]ri[oa]s?|agente comunit[aá]rio de sa[uú]de|combate [aà]s endemias|ubs|upa|sms|terapeuta ocupacional)\b/i.test(t)) {
+    return { ...PROFISSOES_MAP.enfermagem_saude_geral, profissaoKey: 'enfermagem_saude_geral' };
+  }
+
+  // 12. Operacional e Serviços Gerais
   if (/\b(servi[cç]os gerais|operacional|motorista|operador de m[aá]quinas|merendeir[oa]s?|cozinheir[oa]s?|gari|limpeza|zelador[oa]?s?|vigilante|porteiro|eletricista|mec[aâ]nico|pedreiro|tratorista|jardineiro|coveiro|servente)\b/i.test(t)) {
     return { ...PROFISSOES_MAP.operacional_servicos_gerais, profissaoKey: 'operacional_servicos_gerais' };
   }
 
-  // Administrativo
+  // 13. Administrativo
   if (/\b(administrativ[oa]s?|assistente|auxiliar|escritur[aá]ri[oa]s?|atendente|recepcionista|recursos humanos|\brh\b|secret[aá]ri[oa]s?|almoxarife|gest[aã]o p[uú]blica|apoio administrativo)\b/i.test(t)) {
     return { ...PROFISSOES_MAP.administrativo, profissaoKey: 'administrativo' };
   }
 
-  // Curinga / Genérico
+  // 14. Curinga / Genérico (fallback oficial e padrão do app)
   return { ...PROFISSOES_MAP.curinga_cargo_generico, profissaoKey: 'curinga_cargo_generico' };
 }
+
+
