@@ -492,15 +492,6 @@ const Concursos = () => {
                     onClick={() => handleOpenItem(item)}
                     className="group flex items-stretch gap-0 bg-card border-y md:border md:rounded-2xl border-border hover:border-[#10B981]/40 active:bg-secondary/30 transition-colors cursor-pointer overflow-hidden relative shadow-sm"
                   >
-                    {/* Bandeira do Estado na lateral direita com degradê suave */}
-                    <img
-                      src={flagUrl}
-                      alt={`Bandeira ${itemUf}`}
-                      className="absolute inset-y-0 right-0 w-2/3 sm:w-1/2 h-full object-cover opacity-[0.06] pointer-events-none transition-opacity duration-300 group-hover:opacity-10 [mask-image:linear-gradient(to_left,black_20%,transparent_100%)] z-0"
-                      loading="lazy"
-                      decoding="async"
-                    />
-
                     {/* Thumbnail - Ilustração 3D */}
                     <div className="w-24 sm:w-28 shrink-0 relative flex items-center justify-center p-2 bg-card z-20 border-r border-border/40">
                       {/* Personagem 3D em Primeiro Plano */}
@@ -515,8 +506,17 @@ const Concursos = () => {
                     </div>
 
                     {/* Content */}
-                    <div className="flex-1 min-w-0 flex flex-col justify-between gap-1.5 p-3.5 sm:p-4 relative z-10">
-                      <div className="flex justify-between items-center gap-2">
+                    <div className="flex-1 min-w-0 flex flex-col justify-between gap-1.5 p-3.5 sm:p-4 relative z-10 overflow-hidden">
+                      {/* Bandeira do Estado na lateral direita com degradê suave (agora dentro do Content para não invadir a Thumbnail) */}
+                      <img
+                        src={flagUrl}
+                        alt={`Bandeira ${itemUf}`}
+                        className="absolute inset-y-0 right-0 w-full sm:w-[150%] h-full object-cover opacity-[0.06] pointer-events-none transition-opacity duration-300 group-hover:opacity-10 [mask-image:linear-gradient(to_left,black_30%,transparent_80%)] z-0"
+                        loading="lazy"
+                        decoding="async"
+                      />
+
+                      <div className="flex justify-between items-center gap-2 relative z-10">
                         <span className="text-[10px] sm:text-[11px] font-bold text-emerald-400/90 uppercase tracking-widest truncate">
                           {ESTADOS_MAP[itemUf] || itemUf}
                         </span>
@@ -532,10 +532,10 @@ const Concursos = () => {
                           )
                         )}
                       </div>
-                      <h3 className="font-sans text-[13px] sm:text-[14px] text-foreground font-semibold leading-snug line-clamp-2 group-hover:text-[#10B981] transition-colors mt-0.5">
+                      <h3 className="font-sans text-[13px] sm:text-[14px] text-foreground font-semibold leading-snug line-clamp-2 group-hover:text-[#10B981] transition-colors mt-0.5 relative z-10">
                         {item.titulo}
                       </h3>
-                      <div className="flex items-center gap-2 flex-wrap text-[11px] sm:text-[12px] font-body text-muted-foreground mt-auto pt-1">
+                      <div className="flex items-center gap-2 flex-wrap text-[11px] sm:text-[12px] font-body text-muted-foreground mt-auto pt-1 relative z-10">
                         <span className="inline-flex items-center text-[9px] font-bold px-1.5 py-[1px] rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 uppercase tracking-wide shadow-sm max-w-[130px] sm:max-w-[160px] truncate">
                           {extractCargo(item)}
                         </span>
@@ -643,7 +643,7 @@ const Concursos = () => {
                 </div>
 
                 <div 
-                  className="prose prose-invert prose-emerald max-w-none font-body text-foreground/90 space-y-4"
+                  className="prose prose-invert prose-emerald max-w-none font-body text-foreground/90 space-y-4 prose-headings:font-sans prose-headings:font-bold prose-h1:text-[1.3em] prose-h2:text-[1.1em] prose-h1:leading-tight prose-h2:leading-snug"
                   style={{ fontSize: `${fontSize}px`, lineHeight: 1.6 }}
                 >
                   {loadingFull ? (
