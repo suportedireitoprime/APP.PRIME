@@ -172,6 +172,7 @@ const Concursos = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [loadingFull, setLoadingFull] = useState(false);
   const [fullContent, setFullContent] = useState<string | null>(null);
+  const [fontSize, setFontSize] = useState(17);
 
   useEffect(() => {
     let cancel = false;
@@ -222,7 +223,9 @@ const Concursos = () => {
       });
       if (error) throw error;
       if (data && data.success) {
-        setFullContent(data.html);
+        // Remove imagens de prefeituras/brasões vindas do html original
+        const cleanHtml = data.html.replace(/<img[^>]*>/gi, '');
+        setFullContent(cleanHtml);
       } else {
         setFullContent('<p>Não foi possível carregar o edital completo.</p>');
       }
@@ -499,11 +502,6 @@ const Concursos = () => {
                         decoding="async"
                       />
 
-                      {/* Tag do Cargo */}
-                      <span className="absolute bottom-1.5 left-1.5 z-20 inline-flex items-center text-[8px] sm:text-[9px] font-bold px-1.5 py-[1px] rounded bg-[#10B981]/90 text-white border border-[#10B981]/60 backdrop-blur-sm uppercase tracking-wide shadow">
-                        {visual.tag}
-                      </span>
-
                       {/* Sigla da UF */}
                       {itemUf !== 'BR' && (
                         <span className="absolute top-1.5 right-1.5 z-20 text-[8px] sm:text-[9px] font-black px-1.5 py-0.5 rounded bg-black/60 text-emerald-300 border border-emerald-500/30 backdrop-blur-sm shadow-sm">
@@ -514,10 +512,7 @@ const Concursos = () => {
 
                     {/* Content */}
                     <div className="flex-1 min-w-0 flex flex-col justify-between gap-1.5 p-3.5 sm:p-4 relative z-10">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-[9px] sm:text-[10px] font-bold text-emerald-400 uppercase tracking-widest truncate">
-                          {item.cargos_resumo || (item.cargos && item.cargos.length > 0 ? item.cargos[0] : (item.titulo.match(/(?:para|cargo(?:s)? de|função de)\s+(.+?)(?:\s*-|\s*$)/i)?.[1] || "Vários Cargos"))}
-                        </span>
+                      <div className="flex justify-end gap-2">
                         {item.dias_restantes !== undefined && item.dias_restantes !== null && (
                           item.dias_restantes <= 5 ? (
                             <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-rose-600 text-white shrink-0">
@@ -534,6 +529,10 @@ const Concursos = () => {
                         {item.titulo}
                       </h3>
                       <div className="flex items-center gap-2 flex-wrap text-[11px] sm:text-[12px] font-body text-muted-foreground mt-auto pt-1">
+                        <span className="inline-flex items-center text-[9px] font-bold px-1.5 py-[1px] rounded bg-[#10B981]/90 text-white uppercase tracking-wide shadow-sm">
+                          {visual.tag}
+                        </span>
+                        <span className="w-1 h-1 rounded-full bg-muted-foreground/40 hidden sm:block" />
                         <span className="inline-flex items-center gap-1 text-[#10B981] font-semibold">
                           <Clock className="w-3 h-3" />
                           {time}
@@ -570,8 +569,8 @@ const Concursos = () => {
         <DrawerContent className="h-[92vh] max-h-[92vh] flex flex-col p-0 bg-background overflow-hidden">
           <div className="absolute right-4 top-4 z-[60]">
             <DrawerClose asChild>
-              <button className="p-2 bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full text-white transition-colors">
-                <X className="w-5 h-5" />
+              <button className="p-3 bg-black/60 hover:bg-black/80 backdrop-blur-xl rounded-full text-white transition-colors shadow-lg">
+                <X className="w-6 h-6" />
               </button>
             </DrawerClose>
           </div>
@@ -585,40 +584,42 @@ const Concursos = () => {
                 const modalVisual = getConcursoVisual(selectedItem.titulo, selectedItem.imagem_url, (selectedItem as any).cargos_resumo || (selectedItem as any).cargos);
 
                 return (
-                  <div className="relative h-60 w-full shrink-0 flex items-center justify-center bg-gradient-to-b from-emerald-950/40 via-card to-background p-6 overflow-hidden">
-                    <img
-                      src={modalFlagUrl}
-                      alt={`Bandeira ${modalUf}`}
-                      className="absolute inset-0 w-full h-full object-cover opacity-15 filter brightness-75 pointer-events-none"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent pointer-events-none" />
+                  <div className="p-4 pt-10">
+                    <div className="relative h-64 w-full shrink-0 flex items-center justify-center bg-gradient-to-b from-emerald-950/50 via-card to-card rounded-3xl overflow-hidden border border-border shadow-xl">
+                      <img
+                        src={modalFlagUrl}
+                        alt={`Bandeira ${modalUf}`}
+                        className="absolute inset-0 w-full h-full object-cover opacity-15 filter brightness-75 pointer-events-none"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent pointer-events-none" />
 
-                    <img
-                      src={modalVisual.imagemUrl}
-                      alt={selectedItem.titulo}
-                      className="h-44 max-w-[200px] object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.8)] relative z-10"
-                    />
-                    <div className="absolute bottom-0 left-0 right-0 p-6 space-y-2 z-20">
-                      <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#10B981] text-white uppercase tracking-wide">
-                          {extractCargo(selectedItem)}
-                        </span>
-                        {modalUf !== 'BR' && (
-                          <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-black/70 text-emerald-300 border border-emerald-500/30 backdrop-blur-sm">
-                            {modalUf}
+                      <img
+                        src={modalVisual.imagemUrl}
+                        alt={selectedItem.titulo}
+                        className="h-44 max-w-[200px] object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.8)] relative z-10 mb-8"
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 p-5 space-y-2 z-20">
+                        <div className="flex items-center gap-2">
+                          <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#10B981] text-white uppercase tracking-wide">
+                            {extractCargo(selectedItem)}
                           </span>
-                        )}
+                          {modalUf !== 'BR' && (
+                            <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-black/70 text-emerald-300 border border-emerald-500/30 backdrop-blur-sm">
+                              {modalUf}
+                            </span>
+                          )}
+                        </div>
+                        <h2 className="font-sans text-base sm:text-lg font-semibold text-foreground leading-snug line-clamp-2">
+                          {selectedItem.titulo}
+                        </h2>
                       </div>
-                      <h2 className="font-display text-lg sm:text-xl font-bold text-foreground leading-tight line-clamp-2">
-                        {selectedItem.titulo}
-                      </h2>
                     </div>
                   </div>
                 );
               })()}
 
               {/* Content Body */}
-              <div className="px-6 py-6 space-y-6">
+              <div className="px-6 py-2 space-y-6">
                 <div className="flex flex-col gap-3 text-sm font-body text-muted-foreground bg-secondary/30 p-4 rounded-xl border border-border">
                   <div className="flex justify-between items-center border-b border-border/50 pb-2">
                     <span className="text-[10px] uppercase font-bold text-muted-foreground">Salário / Vagas</span>
@@ -634,7 +635,10 @@ const Concursos = () => {
                   </div>
                 </div>
 
-                <div className="prose prose-invert prose-emerald max-w-none prose-sm sm:prose-base font-body text-foreground/90 space-y-4">
+                <div 
+                  className="prose prose-invert prose-emerald max-w-none font-body text-foreground/90 space-y-4"
+                  style={{ fontSize: `${fontSize}px`, lineHeight: 1.6 }}
+                >
                   {loadingFull ? (
                     <div className="flex flex-col items-center justify-center py-12 space-y-3 text-muted-foreground">
                       <Loader2 className="w-8 h-8 animate-spin text-[#10B981]" />
@@ -645,6 +649,22 @@ const Concursos = () => {
                   ) : (
                     <p>{selectedItem.resumo}</p>
                   )}
+                </div>
+
+                {/* Floating Action Buttons para Fonte */}
+                <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2">
+                  <button 
+                    onClick={() => setFontSize(f => Math.min(f + 2, 28))}
+                    className="w-11 h-11 rounded-full bg-card border border-border shadow-lg flex items-center justify-center text-foreground hover:bg-secondary active:scale-95 transition-all"
+                  >
+                    <span className="text-sm font-bold">A+</span>
+                  </button>
+                  <button 
+                    onClick={() => setFontSize(f => Math.max(f - 2, 12))}
+                    className="w-11 h-11 rounded-full bg-card border border-border shadow-lg flex items-center justify-center text-foreground hover:bg-secondary active:scale-95 transition-all"
+                  >
+                    <span className="text-sm font-bold">A-</span>
+                  </button>
                 </div>
 
                 {/* Footer Action */}
