@@ -48,6 +48,15 @@ import { getConcursoVisual } from '@/lib/concursosVisuais';
 import { toast } from 'sonner';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
+function cleanEditalMd(text: string): string {
+  if (!text) return '';
+  let out = text;
+  out = out.replace(/!\[[^\]]*\]\([^)]+\)/g, '');
+  out = out.replace(/<img[^>]*>/gi, '');
+  out = out.replace(/\r\n/g, '\n');
+  out = out.replace(/\n{3,}/g, '\n\n');
+  return out.trim();
+}
 
 interface ConcursoItem {
   id: string;
@@ -714,19 +723,10 @@ export default function RadarConcursos() {
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 50 }}
-              className="bg-card border border-border/80 rounded-t-3xl sm:rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 shadow-2xl relative space-y-5"
+              className="bg-card border border-border/80 rounded-t-3xl sm:rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative flex flex-col"
             >
-              {/* Botão Fechar */}
-              <button
-                type="button"
-                onClick={() => setSelectedEdital(null)}
-                className="absolute top-4 right-4 z-20 w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-white hover:bg-black/80 cursor-pointer backdrop-blur-md shadow-xl"
-              >
-                <X className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.4]" />
-              </button>
-
-              {/* Imagem de Capa Grande */}
-              <div className="relative h-48 sm:h-56 -mx-5 -mt-5 sm:-mx-6 sm:-mt-6 rounded-t-3xl bg-black">
+              {/* Imagem de Capa Grande — colada diretamente no topo sem margem */}
+              <div className="relative h-48 sm:h-56 w-full rounded-t-3xl overflow-hidden bg-black shrink-0">
                 {/* Imagem Padrão de Fundo */}
                 <div className="absolute inset-0">
                   <img
@@ -736,32 +736,40 @@ export default function RadarConcursos() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-card via-black/40 to-transparent" />
                 </div>
+
+                {/* Botão Fechar */}
+                <button
+                  type="button"
+                  onClick={() => setSelectedEdital(null)}
+                  className="absolute top-4 right-4 z-20 w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-white hover:bg-black/80 cursor-pointer backdrop-blur-md shadow-xl active:scale-95 transition-all"
+                  aria-label="Fechar edital"
+                >
+                  <X className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.4]" />
+                </button>
                 
                 {/* Logo da Instituição vazada/branca sobre a capa */}
-                <div className="absolute bottom-4 left-4 sm:left-6 z-10 flex items-center gap-3">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center p-2 shadow-xl border-4 border-card">
+                <div className="absolute bottom-4 left-4 sm:left-6 right-4 sm:right-6 z-10 flex items-center gap-3">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center p-2 shadow-xl border-4 border-card shrink-0">
                     <img
                       src={getConcursoVisual(selectedEdital.titulo, selectedEdital.imagem_url).imagemUrl}
                       alt={selectedEdital.titulo}
                       className="w-full h-full object-contain rounded-full"
                     />
                   </div>
-                  <div className="flex flex-col gap-1.5 mt-1.5">
-                    <div className="flex gap-2">
-                      <span className="px-3 py-1 w-max rounded-full text-[10px] font-bold bg-emerald-500 text-white shadow-md">
-                        {selectedEdital.uf ? `Estado: ${selectedEdital.uf}` : selectedEdital.regiao || 'NACIONAL'}
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-1.5">
+                    <span className="px-3 py-1 w-max rounded-full text-[10px] font-bold bg-emerald-500 text-white shadow-md shrink-0">
+                      {selectedEdital.uf ? `Estado: ${selectedEdital.uf}` : selectedEdital.regiao || 'NACIONAL'}
+                    </span>
+                    {selectedEdital.dias_restantes !== undefined && (
+                      <span className="px-3 py-1 w-max rounded-full text-[10px] font-bold bg-black/70 border border-white/20 text-emerald-400 backdrop-blur-md shrink-0">
+                        {selectedEdital.dias_restantes > 0
+                          ? `${selectedEdital.dias_restantes} dias p/ encerrar`
+                          : 'Inscrições encerrando'}
                       </span>
-                      {selectedEdital.dias_restantes !== undefined && (
-                        <span className="px-3 py-1 w-max rounded-full text-[10px] font-bold bg-black/70 border border-white/20 text-emerald-400 backdrop-blur-md">
-                          {selectedEdital.dias_restantes > 0
-                            ? `${selectedEdital.dias_restantes} dias p/ encerrar`
-                            : 'Inscrições encerrando'}
-                        </span>
-                      )}
-                    </div>
+                    )}
                     {selectedEdital.vagas_salario && (
-                      <span className="px-3 py-1.5 w-max rounded-full text-[11px] font-bold bg-emerald-950/90 border border-emerald-500/40 text-emerald-300 backdrop-blur-md flex items-center gap-1.5 shadow-lg">
-                        <Sparkles className="w-3.5 h-3.5 shrink-0" />
+                      <span className="px-3 py-1 w-max rounded-full text-[10px] sm:text-[11px] font-bold bg-emerald-950/90 border border-emerald-500/40 text-emerald-300 backdrop-blur-md flex items-center gap-1.5 shadow-lg shrink-0">
+                        <DollarSign className="w-3.5 h-3.5 shrink-0 text-emerald-400" />
                         {selectedEdital.vagas_salario}
                       </span>
                     )}
@@ -769,72 +777,77 @@ export default function RadarConcursos() {
                 </div>
               </div>
 
-              {/* Título & Detalhes Principais */}
-              <div className="space-y-2">
-                <h3 className="font-display font-bold text-lg sm:text-xl text-foreground leading-snug">
-                  {selectedEdital.titulo}
-                </h3>
-              </div>
+              {/* Corpo de Conteúdo com Espaçamento e Tipografia de Artigo */}
+              <div className="p-5 sm:p-6 pt-4 space-y-5 flex-1">
+                {/* Título & Detalhes Principais */}
+                <div className="space-y-2">
+                  <h3 className="font-display font-bold text-lg sm:text-xl text-foreground leading-snug">
+                    {selectedEdital.titulo}
+                  </h3>
+                </div>
 
-              {/* Cargos Oferecidos */}
-              {selectedEdital.cargos && selectedEdital.cargos.length > 0 && (
+                {/* Cargos Oferecidos */}
+                {selectedEdital.cargos && selectedEdital.cargos.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="font-display font-bold text-xs uppercase tracking-wider text-muted-foreground">
+                      Cargos Ofertados ({selectedEdital.cargos.length})
+                    </h4>
+                    <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1">
+                      {selectedEdital.cargos.map((cargo, idx) => (
+                        <span
+                          key={idx}
+                          className="text-[11px] px-2.5 py-1 rounded-lg bg-secondary/80 border border-border/80 text-foreground font-medium"
+                        >
+                          {cargo}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Conteúdo / Resumo */}
                 <div className="space-y-2">
                   <h4 className="font-display font-bold text-xs uppercase tracking-wider text-muted-foreground">
-                    Cargos Ofertados ({selectedEdital.cargos.length})
+                    Informações do Edital
                   </h4>
-                  <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1">
-                    {selectedEdital.cargos.map((cargo, idx) => (
-                      <span
-                        key={idx}
-                        className="text-[11px] px-2.5 py-1 rounded-lg bg-secondary/80 border border-border/80 text-foreground font-medium"
-                      >
-                        {cargo}
-                      </span>
-                    ))}
+                  <div className="text-[15px] sm:text-base text-foreground/90 leading-relaxed font-body pb-4">
+                    {loadingFullText ? (
+                      <div className="flex items-center gap-2 text-muted-foreground py-3 text-sm">
+                        <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />
+                        <span>Extraindo conteúdo completo do edital...</span>
+                      </div>
+                    ) : editalFullText ? (
+                      <div className="
+                        prose prose-base max-w-none dark:prose-invert font-body text-foreground/90
+                        prose-headings:font-display prose-headings:text-foreground prose-headings:mt-6 prose-headings:mb-3
+                        prose-h2:text-xl prose-h3:text-lg
+                        prose-p:text-foreground/90 prose-p:leading-[1.75] prose-p:my-3.5 prose-p:text-[15px] sm:prose-p:text-base
+                        prose-a:text-emerald-400 prose-a:no-underline hover:prose-a:underline
+                        prose-strong:text-foreground
+                        prose-ul:my-4 prose-li:my-1
+                        prose-img:hidden
+                      ">
+                        <ReactMarkdown>{cleanEditalMd(editalFullText)}</ReactMarkdown>
+                      </div>
+                    ) : (
+                      <p className="text-[15px] sm:text-base leading-relaxed text-foreground/90">
+                        {cleanEditalMd(selectedEdital.resumo || 'Acompanhe todas as regras e convocações deste concurso pelo link oficial.')}
+                      </p>
+                    )}
                   </div>
                 </div>
-              )}
 
-              {/* Conteúdo / Resumo */}
-              <div className="space-y-2">
-                <h4 className="font-display font-bold text-xs uppercase tracking-wider text-muted-foreground">
-                  Informações do Edital
-                </h4>
-                <div className="text-sm text-foreground/90 leading-relaxed font-body whitespace-pre-wrap pb-4">
-                  {loadingFullText ? (
-                    <div className="flex items-center gap-2 text-muted-foreground py-2">
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Extraindo conteúdo completo do edital...</span>
-                    </div>
-                  ) : editalFullText ? (
-                    <div className="
-                      prose prose-sm md:prose-base max-w-none dark:prose-invert font-body text-foreground/90
-                      prose-headings:font-display prose-headings:text-foreground prose-headings:mt-6 prose-headings:mb-3
-                      prose-h2:text-xl prose-h3:text-lg
-                      prose-p:text-foreground/90 prose-p:leading-[1.75] prose-p:my-3
-                      prose-a:text-emerald-400 prose-a:no-underline hover:prose-a:underline
-                      prose-strong:text-foreground
-                      prose-ul:my-4 prose-li:my-1
-                      prose-img:hidden
-                    ">
-                      <ReactMarkdown>{editalFullText}</ReactMarkdown>
-                    </div>
-                  ) : (
-                    <p>{selectedEdital.resumo || 'Acompanhe todas as regras e convocações deste concurso pelo link oficial.'}</p>
-                  )}
+                {/* Botões de Ação */}
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => openExternalLink(selectedEdital.link)}
+                    className="flex-1 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs sm:text-sm active:scale-95 transition-all cursor-pointer shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    <span>Acessar Edital Oficial & Inscrições</span>
+                  </button>
                 </div>
-              </div>
-
-              {/* Botões de Ação */}
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => openExternalLink(selectedEdital.link)}
-                  className="flex-1 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs active:scale-95 transition-all cursor-pointer shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  <span>Acessar Edital Oficial & Inscrições</span>
-                </button>
               </div>
             </motion.div>
           </div>
