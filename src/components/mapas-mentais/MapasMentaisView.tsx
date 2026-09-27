@@ -23,6 +23,7 @@ import { MapasMentaisDetalhes } from './MapasMentaisDetalhes';
 import { MapasMentaisFormatModal } from './MapasMentaisFormatModal';
 import { MapasMentaisViewer } from './MapasMentaisViewer';
 import { MapasMentaisPastas } from './MapasMentaisPastas';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 
 export interface MapasMentaisViewProps {
   onClose: () => void;
@@ -368,8 +369,21 @@ export default function MapasMentaisView({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col bg-[#0D0D0D] text-white overflow-hidden">
-      {/* 1. Header Fixo Superior (apenas na visualização inicial do catálogo) */}
+    <div className="fixed inset-0 z-[100] flex flex-col bg-[#0D0D0D] text-white overflow-y-auto overscroll-contain">
+      {/* Fundo Padrão com Grid Animado (ShapeGrid) */}
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-20">
+        <ShapeGrid 
+          speed={0.4} 
+          squareSize={40}
+          direction='diagonal'
+          borderColor='rgba(255, 255, 255, 0.08)'
+          hoverFillColor='rgba(168, 85, 247, 0.15)'
+          shape='square'
+          hoverTrailAmount={5}
+        />
+      </div>
+
+      {/* 1. Header com Capa Roxa (na visualização inicial do catálogo) */}
       {!item && filtro !== 'pastas' && (
         <MapasMentaisHeader
           categoria={categoria}
@@ -380,20 +394,21 @@ export default function MapasMentaisView({
           setBusca={setBusca}
           favoritosCount={favoritos.length}
           recentesCount={recentes.length}
+          pastasCount={Object.keys(prontos).length}
           onBack={voltar}
         />
       )}
 
       {/* 2. Barra de Navegação / Trilha quando estiver em detalhes ou pastas */}
       {(item || filtro === 'pastas') && (
-        <header className="flex items-center gap-3 px-4 py-3 pt-[max(0.75rem,var(--sai-top))] bg-[#141416] border-b border-white/10 shrink-0">
+        <header className="sticky top-0 z-30 flex items-center gap-3 px-4 py-3 pt-[max(0.75rem,var(--sai-top))] bg-[#141416]/95 backdrop-blur-md border-b border-white/10 shrink-0">
           <button
             type="button"
             onClick={voltar}
             aria-label="Voltar"
-            className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/15 flex items-center justify-center text-white active:scale-95 transition-all shrink-0 cursor-pointer"
+            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/10 hover:bg-white/15 flex items-center justify-center text-white active:scale-95 transition-all shrink-0 cursor-pointer"
           >
-            <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
+            <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           </button>
 
           <div className="min-w-0 flex-1">
@@ -445,8 +460,8 @@ export default function MapasMentaisView({
         </header>
       )}
 
-      {/* 3. Área de Conteúdo Rolável Principal */}
-      <main className="flex-1 overflow-y-auto overscroll-contain pb-[calc(1.5rem+var(--sai-bottom))]">
+      {/* 3. Área de Conteúdo Principal */}
+      <main className="relative z-10 flex-1 pb-[calc(2.5rem+var(--sai-bottom))]">
         {filtro === 'pastas' ? (
           <MapasMentaisPastas
             prontos={prontos}

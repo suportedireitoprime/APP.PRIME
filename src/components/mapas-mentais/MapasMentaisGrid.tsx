@@ -73,13 +73,9 @@ export function MapasMentaisGrid({
               }}
               className="relative group bg-zinc-900/90 hover:bg-zinc-800/90 border border-white/5 hover:border-purple-500/40 rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between min-h-[110px] sm:min-h-[120px] transition-all cursor-pointer shadow-sm active:scale-[0.98]"
             >
-              {/* Topo do Card: Ícone e Botão de Favorito */}
               <div className="flex items-start justify-between gap-2">
-                <div
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0 border border-white/5"
-                  style={{ backgroundColor: `${cor}20`, color: cor }}
-                >
-                  <Icon className="w-5 h-5 sm:w-5.5 sm:h-5.5" strokeWidth={1.8} />
+                <div className="shrink-0 flex items-center justify-center pt-0.5">
+                  <Icon className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 transition-transform group-hover:scale-110" style={{ color: cor }} strokeWidth={2} />
                 </div>
 
                 <div className="flex items-center gap-1.5">
