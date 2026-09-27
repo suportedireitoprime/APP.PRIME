@@ -332,7 +332,7 @@ export default function LocaisJuridicos() {
           <button
             onClick={() => request()}
             aria-label="Usar minha localização"
-            className="w-11 h-11 rounded-full bg-muted flex items-center justify-center active:scale-95 transition-transform"
+            className="w-11 h-11 rounded-full bg-muted flex items-center justify-center active:opacity-70 transition-transform"
           >
             {geoLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <LocateFixed className="w-5 h-5" />}
           </button>

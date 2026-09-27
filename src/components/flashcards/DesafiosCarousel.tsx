@@ -42,7 +42,7 @@ export function DesafiosCarousel({ dash, onVerTodos }: { dash: Dash | null, onVe
           <section
             key={desafio.id}
             onClick={() => handleDesafioClick(desafio.id)}
-            className="snap-center shrink-0 w-[42%] max-w-[160px] relative overflow-hidden rounded-2xl p-4 bg-card border border-border/80 shadow-sm active:scale-95 transition-all cursor-pointer flex flex-col justify-between"
+            className="snap-center shrink-0 w-[42%] max-w-[160px] relative overflow-hidden rounded-2xl p-4 bg-card border border-border/80 shadow-sm active:opacity-70 transition-all cursor-pointer flex flex-col justify-between"
           >
             <div>
               <div className="mb-2 w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: '#10b9811a' }}>
@@ -71,7 +71,7 @@ export function DesafiosCarousel({ dash, onVerTodos }: { dash: Dash | null, onVe
         {/* CARD VER TODOS */}
         <section
           onClick={() => { haptic.selection(); onVerTodos(); }}
-          className="snap-center shrink-0 w-[30%] max-w-[110px] relative overflow-hidden rounded-2xl bg-muted/30 border border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors active:scale-95"
+          className="snap-center shrink-0 w-[30%] max-w-[110px] relative overflow-hidden rounded-2xl bg-muted/30 border border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors active:opacity-70"
         >
           <div className="w-10 h-10 rounded-full flex items-center justify-center mb-2" style={{ backgroundColor: '#10b9811a' }}>
             <Trophy className="w-5 h-5" style={{ color: '#10b981' }} />

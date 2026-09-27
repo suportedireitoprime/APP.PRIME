@@ -92,7 +92,7 @@ class TriagemErrorBoundary extends React.Component<{ children: React.ReactNode }
         <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center p-6 bg-[#0A0A0A] text-white">
           <h2 className="text-2xl font-bold text-[#C94C4C] mb-2">Ops, algo deu errado</h2>
           <p className="text-center opacity-70 mb-6">Ocorreu um problema ao carregar a triagem.</p>
-          <button onClick={() => { sessionStorage.removeItem('triagem_step'); window.location.reload(); }} className="h-12 px-6 rounded-xl bg-white/10 active:scale-95 transition">Tentar novamente</button>
+          <button onClick={() => { sessionStorage.removeItem('triagem_step'); window.location.reload(); }} className="h-12 px-6 rounded-xl bg-white/10 active:opacity-70 transition">Tentar novamente</button>
         </div>
       );
     }
@@ -234,7 +234,7 @@ function TriagemVersaoCInner({ open, onFinished, previewMode, initialName }: Pro
         >
           <button
             onClick={toggleMute}
-            className="w-10 h-10 rounded-full bg-white/15 backdrop-blur-md text-white flex items-center justify-center active:scale-95 hover:bg-white/20 transition-colors"
+            className="w-10 h-10 rounded-full bg-white/15 backdrop-blur-md text-white flex items-center justify-center active:opacity-70 hover:bg-white/20 transition-colors"
           >
             {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
@@ -266,7 +266,7 @@ function TriagemVersaoCInner({ open, onFinished, previewMode, initialName }: Pro
           {previewMode && (
             <button
               onClick={() => onFinished(data)}
-              className="w-10 h-10 rounded-full bg-white/15 backdrop-blur-md text-white flex items-center justify-center active:scale-95 ml-3 hover:bg-white/20 transition-colors"
+              className="w-10 h-10 rounded-full bg-white/15 backdrop-blur-md text-white flex items-center justify-center active:opacity-70 ml-3 hover:bg-white/20 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -397,14 +397,14 @@ function AberturaCinematografica({
       >
         <button
           onClick={toggleMute}
-          className="w-10 h-10 rounded-full bg-white/15 backdrop-blur text-white flex items-center justify-center active:scale-95 transition-transform"
+          className="w-10 h-10 rounded-full bg-white/15 backdrop-blur text-white flex items-center justify-center active:opacity-70 transition-transform"
         >
           {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
         </button>
         {previewMode && onClose && (
           <button
             onClick={onClose}
-            className="w-10 h-10 rounded-full bg-white/15 backdrop-blur text-white flex items-center justify-center active:scale-95 transition-transform"
+            className="w-10 h-10 rounded-full bg-white/15 backdrop-blur text-white flex items-center justify-center active:opacity-70 transition-transform"
           >
             <X className="w-4 h-4" />
           </button>
@@ -921,7 +921,7 @@ function ContinueBtn({ disabled, onClick, isSubmitting, icon }: { disabled?: boo
     <button
       disabled={disabled || isSubmitting}
       onClick={onClick}
-      className="mt-3 shrink-0 h-14 w-full rounded-2xl bg-[#C94C4C] text-[#150C05] font-black flex items-center justify-center gap-2 active:scale-95 disabled:opacity-30"
+      className="mt-3 shrink-0 h-14 w-full rounded-2xl bg-[#C94C4C] text-[#150C05] font-black flex items-center justify-center gap-2 active:opacity-70 disabled:opacity-30"
     >
       {isSubmitting ? 'Aguarde...' : 'Continuar'} {icon || <ArrowRight className="w-5 h-5" strokeWidth={2.5} />}
     </button>

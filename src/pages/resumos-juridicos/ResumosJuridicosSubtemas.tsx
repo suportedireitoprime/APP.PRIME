@@ -241,7 +241,7 @@ export default function ResumosJuridicosSubtemas() {
             />
             <button
               onClick={() => { haptic.selection(); toast({ title: 'Em breve: Pesquisa por Voz' }); }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10 active:scale-95 transition-all text-white/70 hover:text-white"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10 active:opacity-70 transition-all text-white/70 hover:text-white"
             >
               <Mic className="w-5 h-5" />
             </button>
@@ -310,7 +310,7 @@ export default function ResumosJuridicosSubtemas() {
             {q && (
               <button 
                 onClick={() => { haptic.selection(); setQ(""); }}
-                className="px-6 py-2.5 rounded-xl text-white font-bold text-sm active:scale-95 transition-all shadow-md"
+                className="px-6 py-2.5 rounded-xl text-white font-bold text-sm active:opacity-70 transition-all shadow-md"
                 style={{ backgroundColor: palette.primary, boxShadow: `0 4px 14px ${palette.primary}4D` }}
               >
                 Limpar Pesquisa
@@ -408,7 +408,7 @@ export default function ResumosJuridicosSubtemas() {
                             });
                             refreshFavs();
                           }}
-                          className="p-1 -mr-1 rounded-full hover:bg-secondary/50 active:scale-90 transition-transform"
+                          className="p-1 -mr-1 rounded-full hover:bg-secondary/50 active:opacity-70 transition-transform"
                         >
                           {isFav ? (
                             <Heart className="w-5 h-5" style={{ fill: palette.primary, color: palette.primary }} />
@@ -470,7 +470,7 @@ export default function ResumosJuridicosSubtemas() {
                 <button
                   type="button"
                   onClick={() => setModalResumo(null)}
-                  className="w-9 h-9 shrink-0 rounded-full bg-white/10 hover:bg-white/20 active:scale-90 flex items-center justify-center text-white/70 hover:text-white transition-all"
+                  className="w-9 h-9 shrink-0 rounded-full bg-white/10 hover:bg-white/20 active:opacity-70 flex items-center justify-center text-white/70 hover:text-white transition-all"
                   aria-label="Fechar"
                 >
                   <X className="w-5 h-5" />

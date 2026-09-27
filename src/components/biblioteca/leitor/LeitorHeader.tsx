@@ -55,7 +55,7 @@ export const LeitorHeader: React.FC<LeitorHeaderProps> = ({
       <button
         onClick={onClose}
         aria-label="Voltar"
-        className="w-12 h-12 md:w-11 md:h-11 rounded-full flex items-center justify-center shrink-0 active:scale-95 transition-transform border"
+        className="w-12 h-12 md:w-11 md:h-11 rounded-full flex items-center justify-center shrink-0 active:opacity-70 transition-transform border"
         style={{
           background: dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
           borderColor: tema.border,
@@ -78,7 +78,7 @@ export const LeitorHeader: React.FC<LeitorHeaderProps> = ({
         <button
           onClick={onShare}
           aria-label="Compartilhar"
-          className="w-10 h-10 rounded-full flex items-center justify-center active:scale-95 transition-transform"
+          className="w-10 h-10 rounded-full flex items-center justify-center active:opacity-70 transition-transform"
           style={{ color: dark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)' }}
         >
           <Share2 className="w-5 h-5" />

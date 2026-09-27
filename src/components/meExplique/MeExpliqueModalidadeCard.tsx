@@ -42,7 +42,7 @@ const MeExpliqueModalidadeCard: React.FC<Props> = ({
       {/* Ícone no topo */}
       <div className="relative shrink-0 flex items-center justify-center p-1 rounded-full bg-black/20">
         <Icon
-          className="w-7 h-7 xs:w-8 xs:h-8 relative transition-transform duration-300 group-hover:scale-110 group-active:scale-95"
+          className="w-7 h-7 xs:w-8 xs:h-8 relative transition-transform duration-300 group-hover:scale-110 group-active:opacity-70"
           style={{ color }}
           strokeWidth={1.75}
         />

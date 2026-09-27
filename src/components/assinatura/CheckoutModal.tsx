@@ -793,7 +793,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                       <Button 
                         onClick={handleNextStep}
                         disabled={loading}
-                        className="w-full h-12 rounded-xl font-black bg-primary hover:bg-primary/90 text-white text-sm transition-all active:scale-95 shadow-[0_8px_30px_rgba(224,31,71,0.3)]"
+                        className="w-full h-12 rounded-xl font-black bg-primary hover:bg-primary/90 text-white text-sm transition-all active:opacity-70 shadow-[0_8px_30px_rgba(224,31,71,0.3)]"
                       >
                         {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 
                         isPix ? 'Gerar PIX' : 'Continuar para Pagamento'}
@@ -915,7 +915,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                       <Button 
                         onClick={processCheckout}
                         disabled={loading}
-                        className="w-full h-12 rounded-xl font-black bg-primary hover:bg-primary/90 text-white text-sm transition-all active:scale-95 shadow-[0_8px_30px_rgba(224,31,71,0.4)]"
+                        className="w-full h-12 rounded-xl font-black bg-primary hover:bg-primary/90 text-white text-sm transition-all active:opacity-70 shadow-[0_8px_30px_rgba(224,31,71,0.4)]"
                       >
                         {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Confirmar Assinatura'}
                         {!loading && <CheckCircle2 className="w-5 h-5 ml-2" />}
@@ -967,7 +967,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                       <Button
                         onClick={handleRegeneratePixQr}
                         disabled={loading}
-                        className="w-full h-14 rounded-2xl font-black bg-primary hover:bg-primary/90 text-white text-base transition-transform active:scale-95 shadow-[0_8px_30px_rgba(224,31,71,0.4)] flex items-center justify-center gap-2"
+                        className="w-full h-14 rounded-2xl font-black bg-primary hover:bg-primary/90 text-white text-base transition-transform active:opacity-70 shadow-[0_8px_30px_rgba(224,31,71,0.4)] flex items-center justify-center gap-2"
                       >
                         {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <RefreshCw className="w-5 h-5" />}
                         {loading ? 'Gerando...' : 'Gerar Novo QR Code PIX'}
@@ -984,7 +984,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                          <Button 
                            onClick={handleVerifyPayment}
                            disabled={verifyingPayment || verifyCooldown > 0}
-                           className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black h-14 rounded-2xl text-base transition-transform active:scale-95 shadow-[0_10px_30px_rgba(16,185,129,0.3)]"
+                           className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black h-14 rounded-2xl text-base transition-transform active:opacity-70 shadow-[0_10px_30px_rgba(16,185,129,0.3)]"
                          >
                            {verifyingPayment ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Clock className="w-5 h-5 mr-2" />}
                            {verifyingPayment ? 'Verificando...' : verifyCooldown > 0 ? `Aguarde ${verifyCooldown}s para verificar` : 'Já realizei o pagamento'}

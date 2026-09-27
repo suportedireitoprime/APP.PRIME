@@ -201,7 +201,7 @@ export function MapaBase({
           type="button"
           onClick={recentralizar}
           aria-label="Centralizar no meu local"
-          className="absolute bottom-3 right-3 flex h-11 w-11 items-center justify-center rounded-full border border-border bg-background/90 text-primary shadow-md backdrop-blur active:scale-95"
+          className="absolute bottom-3 right-3 flex h-11 w-11 items-center justify-center rounded-full border border-border bg-background/90 text-primary shadow-md backdrop-blur active:opacity-70"
         >
           <Navigation2 className="h-5 w-5" />
         </button>

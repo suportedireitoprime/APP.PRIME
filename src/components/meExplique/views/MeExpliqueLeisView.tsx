@@ -131,7 +131,7 @@ export const MeExpliqueLeisView: React.FC<Props> = ({ onVoltar }) => {
                     void haptic.selection();
                     setLeiId(l.id);
                   }}
-                  className={`flex shrink-0 items-center gap-2 rounded-2xl border px-4 py-2 text-xs font-bold transition-all active:scale-95 cursor-pointer ${
+                  className={`flex shrink-0 items-center gap-2 rounded-2xl border px-4 py-2 text-xs font-bold transition-all active:opacity-70 cursor-pointer ${
                     ativo
                       ? 'border-amber-400 bg-amber-500 text-black shadow-lg shadow-amber-500/20'
                       : 'border-white/10 bg-zinc-900/80 text-zinc-300 hover:bg-zinc-800'
@@ -205,7 +205,7 @@ export const MeExpliqueLeisView: React.FC<Props> = ({ onVoltar }) => {
             <button
               type="submit"
               disabled={!inputCustomArtigo.trim()}
-              className="h-11 px-4 rounded-xl bg-amber-500 disabled:opacity-40 text-black font-bold text-xs shadow flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer shrink-0"
+              className="h-11 px-4 rounded-xl bg-amber-500 disabled:opacity-40 text-black font-bold text-xs shadow flex items-center gap-1.5 active:opacity-70 transition-all cursor-pointer shrink-0"
             >
               <Volume2 className="w-4 h-4" /> Explicar ao Vivo
             </button>

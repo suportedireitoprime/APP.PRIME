@@ -225,7 +225,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
                       onMouseEnter={() => { import('@/pages/Assinatura.tsx').catch(() => {}); }}
                       onPointerDown={() => { import('@/pages/Assinatura.tsx').catch(() => {}); }}
                       onClick={() => { navigate('/assinatura'); onClose(); }}
-                      className="px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-body font-semibold whitespace-nowrap active:scale-95 transition-transform"
+                      className="px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-body font-semibold whitespace-nowrap active:opacity-70 transition-transform"
                     >
                       Atualizar
                     </button>

@@ -315,7 +315,7 @@ const FlashcardsCornell = () => {
             <Button
               onClick={marcarRevisado}
               disabled={salvando}
-              className="w-full h-15 rounded-2xl text-base font-black gap-2 bg-primary text-white hover:bg-primary/90 shadow-xl active:scale-98 transition-all"
+              className="w-full h-15 rounded-2xl text-base font-black gap-2 bg-primary text-white hover:bg-primary/90 shadow-xl active:opacity-70 transition-all"
             >
               <CheckCircle2 className="h-6 w-6" />
               <span>{salvando ? 'Salvando…' : 'Marcar como Revisado (Próxima revisão em 2 dias)'}</span>

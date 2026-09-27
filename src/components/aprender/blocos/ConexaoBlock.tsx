@@ -135,7 +135,7 @@ export function ConexaoBlock({ pares, onCompleto }: Props) {
         {ligados.length > 0 && (
           <button
             onClick={recomecar}
-            className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors cursor-pointer py-1 px-2.5 rounded-lg hover:bg-white/5 active:scale-95"
+            className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors cursor-pointer py-1 px-2.5 rounded-lg hover:bg-white/5 active:opacity-70"
           >
             <RotateCw className="h-3 w-3" /> Reiniciar
           </button>

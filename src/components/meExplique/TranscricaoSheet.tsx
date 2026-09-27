@@ -106,7 +106,7 @@ const TranscricaoSheet = memo(function TranscricaoSheet({ open, onClose, falas }
           <button
             onClick={onClose}
             aria-label="Fechar"
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-muted active:scale-95"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-muted active:opacity-70"
           >
             <X className="h-5 w-5" />
           </button>
@@ -139,7 +139,7 @@ const TranscricaoSheet = memo(function TranscricaoSheet({ open, onClose, falas }
           <button
             onClick={() => void baixarPdf()}
             disabled={!falas.length || gerando !== null}
-            className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-primary px-5 text-[15px] font-bold text-primary-foreground active:scale-95 disabled:opacity-60"
+            className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-primary px-5 text-[15px] font-bold text-primary-foreground active:opacity-70 disabled:opacity-60"
           >
             {gerando === 'pdf' ? <Loader2 className="h-5 w-5 animate-spin" /> : <FileText className="h-5 w-5" />}
             Baixar PDF
@@ -147,7 +147,7 @@ const TranscricaoSheet = memo(function TranscricaoSheet({ open, onClose, falas }
           <button
             onClick={() => void baixarTxt()}
             disabled={!falas.length || gerando !== null}
-            className="flex h-12 items-center justify-center gap-2 rounded-full bg-muted px-5 text-[15px] font-semibold active:scale-95 disabled:opacity-60"
+            className="flex h-12 items-center justify-center gap-2 rounded-full bg-muted px-5 text-[15px] font-semibold active:opacity-70 disabled:opacity-60"
           >
             {gerando === 'txt' ? <Loader2 className="h-5 w-5 animate-spin" /> : <Download className="h-5 w-5" />}
             TXT
@@ -156,7 +156,7 @@ const TranscricaoSheet = memo(function TranscricaoSheet({ open, onClose, falas }
             onClick={() => void copiarTexto(texto)}
             disabled={!falas.length}
             aria-label="Copiar transcrição"
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-muted active:scale-95 disabled:opacity-60"
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-muted active:opacity-70 disabled:opacity-60"
           >
             <Copy className="h-5 w-5" />
           </button>

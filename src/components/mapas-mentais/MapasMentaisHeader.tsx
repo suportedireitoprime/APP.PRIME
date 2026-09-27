@@ -155,7 +155,7 @@ export function MapasMentaisHeader({
             onBack();
           }}
           aria-label="Voltar"
-          className="w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 flex items-center justify-center rounded-full bg-black/60 border border-purple-500/20 text-white backdrop-blur-md transition-colors hover:bg-black/80 active:scale-95 shadow-lg cursor-pointer"
+          className="w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 flex items-center justify-center rounded-full bg-black/60 border border-purple-500/20 text-white backdrop-blur-md transition-colors hover:bg-black/80 active:opacity-70 shadow-lg cursor-pointer"
         >
           <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
         </button>
@@ -200,7 +200,7 @@ export function MapasMentaisHeader({
             type="button"
             onClick={() => (ouvindo ? stop() : start())}
             aria-label={ouvindo ? 'Parar ditado' : 'Pesquisar por voz'}
-            className={`flex h-12 w-12 sm:h-13 sm:w-13 shrink-0 items-center justify-center rounded-2xl border transition-all cursor-pointer shadow-lg active:scale-95 ${
+            className={`flex h-12 w-12 sm:h-13 sm:w-13 shrink-0 items-center justify-center rounded-2xl border transition-all cursor-pointer shadow-lg active:opacity-70 ${
               ouvindo
                 ? 'bg-red-500 border-red-400 text-white animate-pulse'
                 : 'bg-purple-600/90 hover:bg-purple-600 border-purple-400/50 text-white'
@@ -222,7 +222,7 @@ export function MapasMentaisHeader({
                   haptic.selection();
                   setFiltro(id);
                 }}
-                className={`group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-2 text-center min-h-[48px] cursor-pointer ${
+                className={`group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-2 text-center min-h-[48px] cursor-pointer ${
                   isAtivo
                     ? 'border border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.35)]'
                     : 'border border-white/10'
@@ -258,7 +258,7 @@ export function MapasMentaisHeader({
               setCategoria(catKey);
               setBusca('');
             }}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold tracking-wide whitespace-nowrap transition-all border cursor-pointer active:scale-95 ${
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold tracking-wide whitespace-nowrap transition-all border cursor-pointer active:opacity-70 ${
               isAtiva
                 ? 'bg-purple-600 text-white border-purple-400 shadow-md shadow-purple-600/35 ring-1 ring-purple-400/40'
                 : 'bg-black/50 hover:bg-black/70 text-zinc-300 hover:text-white border-white/10'

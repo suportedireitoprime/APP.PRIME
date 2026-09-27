@@ -88,7 +88,7 @@ export function LeiSecaTrilhaCard({
           haptic.selection();
           onToggleFav(trilha.slug);
         }}
-        className="h-11 w-11 min-h-[44px] min-w-[44px] rounded-full grid place-items-center hover:bg-rose-500/10 active:scale-90 transition-all duration-[80ms] shrink-0 touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
+        className="h-11 w-11 min-h-[44px] min-w-[44px] rounded-full grid place-items-center hover:bg-rose-500/10 active:opacity-70 transition-all duration-[80ms] shrink-0 touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
         aria-label={isFav ? "Desfavoritar" : "Favoritar"}
       >
         <Heart

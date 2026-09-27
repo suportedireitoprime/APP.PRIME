@@ -81,7 +81,7 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
           <button
             onClick={() => setAberto(false)}
             aria-label="Minimizar player"
-            className="h-11 w-11 grid place-items-center rounded-full hover:bg-white/10 text-white transition active:scale-95"
+            className="h-11 w-11 grid place-items-center rounded-full hover:bg-white/10 text-white transition active:opacity-70"
           >
             <ChevronDown className="h-6 w-6" />
           </button>
@@ -101,7 +101,7 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
             <button
               onClick={() => alternarFavorito(atual)}
               aria-label={favoritos.has(audioIdOf(atual)) ? 'Remover dos favoritos' : 'Favoritar'}
-              className="absolute right-2 top-1/2 -translate-y-1/2 grid h-12 w-12 place-items-center rounded-full border border-white/10 bg-black/40 backdrop-blur-md transition hover:bg-white/20 active:scale-95"
+              className="absolute right-2 top-1/2 -translate-y-1/2 grid h-12 w-12 place-items-center rounded-full border border-white/10 bg-black/40 backdrop-blur-md transition hover:bg-white/20 active:opacity-70"
             >
               <Heart
                 className={`h-6 w-6 transition ${
@@ -153,7 +153,7 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
               onClick={() => seek(Math.max(0, tempo - 15))}
               aria-label="Voltar 15 segundos"
               title="Voltar 15s"
-              className="h-10 w-10 grid place-items-center rounded-full text-zinc-400 hover:bg-white/10 hover:text-white transition active:scale-95"
+              className="h-10 w-10 grid place-items-center rounded-full text-zinc-400 hover:bg-white/10 hover:text-white transition active:opacity-70"
             >
               <RotateCcw className="h-5 w-5" />
             </button>
@@ -162,7 +162,7 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
               onClick={() => pular(-1)}
               disabled={atualIdx <= 0}
               aria-label="Aula anterior"
-              className="h-12 w-12 grid place-items-center rounded-full text-white hover:bg-white/10 disabled:opacity-30 transition active:scale-95"
+              className="h-12 w-12 grid place-items-center rounded-full text-white hover:bg-white/10 disabled:opacity-30 transition active:opacity-70"
             >
               <SkipBack className="h-6 w-6" />
             </button>
@@ -170,7 +170,7 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
             <button
               onClick={togglePlay}
               aria-label={tocando ? 'Pausar' : 'Tocar'}
-              className="h-16 w-16 grid place-items-center rounded-full bg-primary text-primary-foreground shadow-xl shadow-primary/40 active:scale-95 transition hover:scale-105"
+              className="h-16 w-16 grid place-items-center rounded-full bg-primary text-primary-foreground shadow-xl shadow-primary/40 active:opacity-70 transition hover:scale-105"
             >
               {tocando ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8 ml-1" />}
             </button>
@@ -179,7 +179,7 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
               onClick={() => pular(1)}
               disabled={atualIdx < 0 || atualIdx >= fila.length - 1}
               aria-label="Próxima aula"
-              className="h-12 w-12 grid place-items-center rounded-full text-white hover:bg-white/10 disabled:opacity-30 transition active:scale-95"
+              className="h-12 w-12 grid place-items-center rounded-full text-white hover:bg-white/10 disabled:opacity-30 transition active:opacity-70"
             >
               <SkipForward className="h-6 w-6" />
             </button>
@@ -188,7 +188,7 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
               onClick={() => seek(Math.min(dur, tempo + 15))}
               aria-label="Avançar 15 segundos"
               title="Avançar 15s"
-              className="h-10 w-10 grid place-items-center rounded-full text-zinc-400 hover:bg-white/10 hover:text-white transition active:scale-95"
+              className="h-10 w-10 grid place-items-center rounded-full text-zinc-400 hover:bg-white/10 hover:text-white transition active:opacity-70"
             >
               <RotateCw className="h-5 w-5" />
             </button>
@@ -228,7 +228,7 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
             <h3 className="text-sm font-black text-white uppercase tracking-widest">Descrição da Aula</h3>
             <button 
               onClick={() => setExpandirDesc(false)}
-              className="h-8 w-8 grid place-items-center rounded-full bg-white/10 text-white hover:bg-white/20 transition active:scale-95"
+              className="h-8 w-8 grid place-items-center rounded-full bg-white/10 text-white hover:bg-white/20 transition active:opacity-70"
             >
               <X className="h-4 w-4" />
             </button>

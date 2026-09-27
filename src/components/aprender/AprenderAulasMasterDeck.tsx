@@ -202,7 +202,7 @@ export const AprenderAulasMasterDeck: React.FC<AprenderAulasMasterDeckProps> = m
                 handlePrev();
               }}
               aria-label="Matéria anterior"
-              className="absolute left-2 sm:left-6 md:left-10 bottom-4 sm:bottom-8 z-[60] w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-black/65 hover:bg-black/90 active:scale-95 border border-white/20 text-white shadow-2xl backdrop-blur-md flex items-center justify-center transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-rose-500"
+              className="absolute left-2 sm:left-6 md:left-10 bottom-4 sm:bottom-8 z-[60] w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-black/65 hover:bg-black/90 active:opacity-70 border border-white/20 text-white shadow-2xl backdrop-blur-md flex items-center justify-center transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-rose-500"
             >
               <ChevronLeft className="w-8 h-8 sm:w-9 sm:h-9 stroke-[2.4]" />
             </button>
@@ -217,7 +217,7 @@ export const AprenderAulasMasterDeck: React.FC<AprenderAulasMasterDeckProps> = m
                 handleNext();
               }}
               aria-label="Próxima matéria"
-              className="absolute right-2 sm:right-6 md:right-10 bottom-4 sm:bottom-8 z-[60] w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-black/65 hover:bg-black/90 active:scale-95 border border-white/20 text-white shadow-2xl backdrop-blur-md flex items-center justify-center transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-rose-500"
+              className="absolute right-2 sm:right-6 md:right-10 bottom-4 sm:bottom-8 z-[60] w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-black/65 hover:bg-black/90 active:opacity-70 border border-white/20 text-white shadow-2xl backdrop-blur-md flex items-center justify-center transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-rose-500"
             >
               <ChevronRight className="w-8 h-8 sm:w-9 sm:h-9 stroke-[2.4]" />
             </button>

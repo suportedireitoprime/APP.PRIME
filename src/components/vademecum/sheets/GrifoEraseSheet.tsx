@@ -94,7 +94,7 @@ const GrifoEraseSheet = ({ open, onClose, highlights, onRemoveByColor, onClearAl
                 onClose();
               }}
               aria-label="Fechar"
-              className="w-10 h-10 rounded-full hover:bg-secondary flex items-center justify-center text-foreground/70 transition-colors cursor-pointer touch-manipulation active:scale-95"
+              className="w-10 h-10 rounded-full hover:bg-secondary flex items-center justify-center text-foreground/70 transition-colors cursor-pointer touch-manipulation active:opacity-70"
             >
               <X className="w-5 h-5" />
             </button>
@@ -147,7 +147,7 @@ const GrifoEraseSheet = ({ open, onClose, highlights, onRemoveByColor, onClearAl
                         onClose();
                       }
                     }}
-                    className="min-h-[44px] px-3.5 py-2 rounded-xl bg-red-500/15 text-red-400 hover:bg-red-500/25 active:bg-red-500/35 text-xs font-bold flex items-center gap-1.5 transition-colors active:scale-95 shrink-0 cursor-pointer touch-manipulation"
+                    className="min-h-[44px] px-3.5 py-2 rounded-xl bg-red-500/15 text-red-400 hover:bg-red-500/25 active:bg-red-500/35 text-xs font-bold flex items-center gap-1.5 transition-colors active:opacity-70 shrink-0 cursor-pointer touch-manipulation"
                     aria-label={`Apagar grifos ${g.name}`}
                   >
                     <Trash2 className="w-4 h-4" />

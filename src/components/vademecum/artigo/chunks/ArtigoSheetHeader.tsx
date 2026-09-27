@@ -251,7 +251,7 @@ export const ArtigoSheetHeader = memo(function ArtigoSheetHeader({
                   <div className="flex items-center gap-1.5 bg-background/60 p-0.5 rounded-xl border border-border/50">
                     <button
                       onClick={() => setFontSize((prev) => Math.max(prev - 1, 12))}
-                      className="w-7 h-7 rounded-lg bg-card hover:bg-card/80 flex items-center justify-center text-foreground active:scale-95 transition"
+                      className="w-7 h-7 rounded-lg bg-card hover:bg-card/80 flex items-center justify-center text-foreground active:opacity-70 transition"
                       aria-label="Diminuir fonte"
                     >
                       <Minus className="w-3 h-3" />
@@ -261,7 +261,7 @@ export const ArtigoSheetHeader = memo(function ArtigoSheetHeader({
                     </span>
                     <button
                       onClick={() => setFontSize((prev) => Math.min(prev + 1, 26))}
-                      className="w-7 h-7 rounded-lg bg-card hover:bg-card/80 flex items-center justify-center text-foreground active:scale-95 transition"
+                      className="w-7 h-7 rounded-lg bg-card hover:bg-card/80 flex items-center justify-center text-foreground active:opacity-70 transition"
                       aria-label="Aumentar fonte"
                     >
                       <Plus className="w-3 h-3" />
@@ -380,7 +380,7 @@ export const ArtigoSheetHeader = memo(function ArtigoSheetHeader({
             href={planaltoUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 pl-3.5 pr-4 py-2 rounded-full bg-neutral-900/85 border border-white/10 shadow-lg shadow-black/40 text-white/90 hover:text-white hover:bg-neutral-800 active:scale-95 transition shrink-0"
+            className="inline-flex items-center gap-2 pl-3.5 pr-4 py-2 rounded-full bg-neutral-900/85 border border-white/10 shadow-lg shadow-black/40 text-white/90 hover:text-white hover:bg-neutral-800 active:opacity-70 transition shrink-0"
             aria-label="Ver no Planalto"
           >
             <ExternalLink className="w-4 h-4" />

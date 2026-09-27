@@ -401,7 +401,7 @@ export default function RadarConcursos() {
             type="button"
             onClick={() => { haptic.light(); navigate(-1); }}
             aria-label="Voltar"
-            className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/50 border border-white/15 text-white backdrop-blur-md hover:bg-black/70 active:scale-95 shadow-xl transition-all cursor-pointer"
+            className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/50 border border-white/15 text-white backdrop-blur-md hover:bg-black/70 active:opacity-70 shadow-xl transition-all cursor-pointer"
           >
             <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           </button>
@@ -440,7 +440,7 @@ export default function RadarConcursos() {
             <button
               type="button"
               onClick={() => { haptic.selection(); startTransition(() => navigate('/concursos')); }}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold shadow-md shadow-emerald-500/25 active:scale-95 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold shadow-md shadow-emerald-500/25 active:opacity-70 transition-all cursor-pointer"
             >
               <span>Ver todos</span>
               <ChevronRight className="w-3.5 h-3.5" />
@@ -567,7 +567,7 @@ export default function RadarConcursos() {
                     haptic.selection();
                     startTransition(() => navigate('/concursos', { state: { preFiltroCargo: cargo.id } }));
                   }}
-                  className={`flex flex-col items-center justify-center gap-2 min-w-[120px] w-[120px] sm:min-w-[130px] sm:w-[130px] h-[110px] shrink-0 snap-start rounded-2xl border ${cargo.cor} shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer bg-card/40 backdrop-blur-sm`}
+                  className={`flex flex-col items-center justify-center gap-2 min-w-[120px] w-[120px] sm:min-w-[130px] sm:w-[130px] h-[110px] shrink-0 snap-start rounded-2xl border ${cargo.cor} shadow-md hover:scale-105 active:opacity-70 transition-all cursor-pointer bg-card/40 backdrop-blur-sm`}
                 >
                   {cargo.img ? (
                     <img src={cargo.img} alt={cargo.titulo} className="w-10 h-10 object-contain drop-shadow-md" loading="lazy" />
@@ -737,7 +737,7 @@ export default function RadarConcursos() {
               type="button"
               onClick={salvarConfiguracoes}
               disabled={saving}
-              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs shadow-md shadow-emerald-500/25 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs shadow-md shadow-emerald-500/25 active:opacity-70 transition-all cursor-pointer flex items-center justify-center gap-2"
             >
               <Check className="w-3.5 h-3.5" />
               <span>Salvar Preferências de Alerta</span>
@@ -772,7 +772,7 @@ export default function RadarConcursos() {
                 <button
                   type="button"
                   onClick={() => setSelectedEdital(null)}
-                  className="absolute top-4 right-4 z-20 w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-white hover:bg-black/80 cursor-pointer backdrop-blur-md shadow-xl active:scale-95 transition-all"
+                  className="absolute top-4 right-4 z-20 w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-white hover:bg-black/80 cursor-pointer backdrop-blur-md shadow-xl active:opacity-70 transition-all"
                   aria-label="Fechar edital"
                 >
                   <X className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.4]" />
@@ -877,7 +877,7 @@ export default function RadarConcursos() {
                   <button
                     type="button"
                     onClick={() => openExternalLink(selectedEdital.link)}
-                    className="flex-1 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs sm:text-sm active:scale-95 transition-all cursor-pointer shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2"
+                    className="flex-1 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs sm:text-sm active:opacity-70 transition-all cursor-pointer shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2"
                   >
                     <ExternalLink className="w-4 h-4" />
                     <span>Acessar Edital Oficial & Inscrições</span>
@@ -952,14 +952,14 @@ export default function RadarConcursos() {
                     setSimulacaoOpen(false);
                     setSelectedEdital(simulacaoItem);
                   }}
-                  className="flex-1 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs active:scale-95 transition-all cursor-pointer text-center"
+                  className="flex-1 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs active:opacity-70 transition-all cursor-pointer text-center"
                 >
                   Ver Conteúdo Completo
                 </button>
                 <button
                   type="button"
                   onClick={() => setSimulacaoOpen(false)}
-                  className="px-4 py-3 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-semibold text-xs active:scale-95 transition-all cursor-pointer"
+                  className="px-4 py-3 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-semibold text-xs active:opacity-70 transition-all cursor-pointer"
                 >
                   Fechar
                 </button>

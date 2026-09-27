@@ -27,7 +27,7 @@ export const AudioaulasHero = React.memo(function AudioaulasHero({
         <button
           onClick={() => (areaAtual ? navigate('/audioaulas') : navigate('/'))}
           aria-label="Voltar"
-          className="mb-6 w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition shrink-0 active:scale-95 z-10 relative"
+          className="mb-6 w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition shrink-0 active:opacity-70 z-10 relative"
         >
           <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
         </button>

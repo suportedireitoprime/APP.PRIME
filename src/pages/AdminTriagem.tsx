@@ -101,19 +101,19 @@ export default function AdminTriagem() {
               <div className="mt-4 flex flex-wrap items-center gap-2.5">
                 <button
                   onClick={() => setPreviewCadastro(true)}
-                  className="h-12 px-5 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center gap-2 active:scale-95 shadow-lg shadow-primary/25 cursor-pointer"
+                  className="h-12 px-5 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center gap-2 active:opacity-70 shadow-lg shadow-primary/25 cursor-pointer"
                 >
                   <Play className="w-5 h-5 fill-current" /> Preview Fluxo Completo
                 </button>
                 <button
                   onClick={() => setPreviewPromo(true)}
-                  className="h-12 px-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-semibold flex items-center gap-2 hover:bg-emerald-500/25 active:scale-95 cursor-pointer transition-colors"
+                  className="h-12 px-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-semibold flex items-center gap-2 hover:bg-emerald-500/25 active:opacity-70 cursor-pointer transition-colors"
                 >
                   <Sparkles className="w-4 h-4" /> Ver Oferta PIX
                 </button>
                 <button
                   onClick={() => setPreviewTrial(true)}
-                  className="h-12 px-4 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 font-semibold flex items-center gap-2 hover:bg-rose-500/25 active:scale-95 cursor-pointer transition-colors"
+                  className="h-12 px-4 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 font-semibold flex items-center gap-2 hover:bg-rose-500/25 active:opacity-70 cursor-pointer transition-colors"
                 >
                   <Sparkles className="w-4 h-4" /> Ver 3 Dias Grátis
                 </button>
@@ -204,7 +204,7 @@ export default function AdminTriagem() {
               </p>
               <button
                 onClick={() => setPreviewHorus(true)}
-                className="mt-4 h-12 px-5 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center gap-2 active:scale-95"
+                className="mt-4 h-12 px-5 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center gap-2 active:opacity-70"
               >
                 <Play className="w-5 h-5" /> Preview ao vivo
               </button>

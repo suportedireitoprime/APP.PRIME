@@ -1528,7 +1528,7 @@ export default function AdminOmniRouteTeste() {
                       key={sug}
                       type="button"
                       onClick={() => setTextPrompt(sug)}
-                      className="text-xs bg-white/5 hover:bg-white/10 active:scale-95 border border-white/10 px-2.5 py-1.5 rounded-lg text-white/80 hover:text-white transition-all"
+                      className="text-xs bg-white/5 hover:bg-white/10 active:opacity-70 border border-white/10 px-2.5 py-1.5 rounded-lg text-white/80 hover:text-white transition-all"
                     >
                       {sug}
                     </button>
@@ -1581,7 +1581,7 @@ export default function AdminOmniRouteTeste() {
                   <Button
                     onClick={handleRunTextTest}
                     disabled={textLoading}
-                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold text-xs sm:text-sm px-6 h-11 rounded-xl shadow-lg shadow-amber-500/20 shrink-0 gap-2 transition-all active:scale-95"
+                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold text-xs sm:text-sm px-6 h-11 rounded-xl shadow-lg shadow-amber-500/20 shrink-0 gap-2 transition-all active:opacity-70"
                   >
                     {textLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                     {textLoading ? 'Gerando Resposta...' : 'Executar Teste'}
@@ -1699,7 +1699,7 @@ export default function AdminOmniRouteTeste() {
                   <Button
                     onClick={handleRunImageGeneration}
                     disabled={imageLoading}
-                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold text-xs sm:text-sm px-6 h-11 rounded-xl shadow-lg shadow-amber-500/20 gap-2 active:scale-95 transition-all !font-sans cursor-pointer"
+                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold text-xs sm:text-sm px-6 h-11 rounded-xl shadow-lg shadow-amber-500/20 gap-2 active:opacity-70 transition-all !font-sans cursor-pointer"
                   >
                     {imageLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImageIcon className="w-4 h-4" />}
                     {imageLoading ? 'Gerando Imagem...' : 'Gerar Imagem'}
@@ -1734,7 +1734,7 @@ export default function AdminOmniRouteTeste() {
                       <a
                         href={imageUrl}
                         download={`omniroute-${Date.now()}.jpg`}
-                        className="inline-flex items-center gap-1.5 text-xs text-white font-medium bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl border border-white/15 transition-all active:scale-95 !font-sans"
+                        className="inline-flex items-center gap-1.5 text-xs text-white font-medium bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl border border-white/15 transition-all active:opacity-70 !font-sans"
                       >
                         <Download className="w-3.5 h-3.5" />
                         Baixar Imagem
@@ -1743,7 +1743,7 @@ export default function AdminOmniRouteTeste() {
                         href={imageUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs text-amber-400 font-medium bg-amber-500/10 hover:bg-amber-500/20 px-4 py-2 rounded-xl border border-amber-500/20 transition-all active:scale-95 !font-sans"
+                        className="inline-flex items-center gap-1.5 text-xs text-amber-400 font-medium bg-amber-500/10 hover:bg-amber-500/20 px-4 py-2 rounded-xl border border-amber-500/20 transition-all active:opacity-70 !font-sans"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
                         Abrir em Nova Aba
@@ -1833,7 +1833,7 @@ export default function AdminOmniRouteTeste() {
                   <Button
                     onClick={handleRunVisionAnalysis}
                     disabled={visionLoading || !visionImageBase64}
-                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold text-xs sm:text-sm px-6 h-11 rounded-xl shadow-lg shadow-amber-500/20 gap-2 active:scale-95 transition-all !font-sans cursor-pointer"
+                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold text-xs sm:text-sm px-6 h-11 rounded-xl shadow-lg shadow-amber-500/20 gap-2 active:opacity-70 transition-all !font-sans cursor-pointer"
                   >
                     {visionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Eye className="w-4 h-4" />}
                     {visionLoading ? 'Analisando Imagem...' : 'Analisar Imagem'}
@@ -1997,7 +1997,7 @@ export default function AdminOmniRouteTeste() {
                   <Button
                     onClick={handleTranscribeAudio}
                     disabled={audioLoading || !audioBlob}
-                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold text-xs sm:text-sm px-6 h-11 rounded-xl shadow-lg shadow-amber-500/20 gap-2 active:scale-95 transition-all !font-sans cursor-pointer"
+                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold text-xs sm:text-sm px-6 h-11 rounded-xl shadow-lg shadow-amber-500/20 gap-2 active:opacity-70 transition-all !font-sans cursor-pointer"
                   >
                     {audioLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileAudio className="w-4 h-4" />}
                     {audioLoading ? 'Transcrevendo Áudio...' : 'Transcrever Áudio com IA'}

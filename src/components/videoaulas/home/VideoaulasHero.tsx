@@ -66,7 +66,7 @@ export const VideoaulasHero = React.memo(function VideoaulasHero({
       <div className="relative p-4 sm:p-5 lg:flex lg:items-center lg:gap-10 lg:p-8">
         <div className="flex items-start gap-3 lg:min-w-0 lg:flex-1 lg:items-center lg:gap-6">
           <div
-              className="relative h-[72px] w-[72px] sm:h-20 sm:w-20 lg:h-24 lg:w-24 shrink-0 active:scale-95 transition-transform cursor-pointer"
+              className="relative h-[72px] w-[72px] sm:h-20 sm:w-20 lg:h-24 lg:w-24 shrink-0 active:opacity-70 transition-transform cursor-pointer"
               onClick={() => { haptic.selection(); setShowDesempenho(true); }}
             >
               <svg className="absolute inset-0 h-full w-full -rotate-90 transform" viewBox="0 0 100 100">

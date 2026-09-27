@@ -22,7 +22,7 @@ export function PilulaExtraActions({ livro, onOpenGraph, onOpenText }: PilulaExt
             haptic.selection();
             onOpenGraph();
           }}
-          className="flex items-center gap-2 px-4 min-h-[44px] py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full transition-colors backdrop-blur-sm text-sm font-semibold active:scale-95"
+          className="flex items-center gap-2 px-4 min-h-[44px] py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full transition-colors backdrop-blur-sm text-sm font-semibold active:opacity-70"
           aria-label="Abrir Grafo de Conexões"
         >
           <Network className="w-4 h-4 text-primary" />
@@ -35,7 +35,7 @@ export function PilulaExtraActions({ livro, onOpenGraph, onOpenText }: PilulaExt
             haptic.selection();
             onOpenText();
           }}
-          className="flex items-center gap-2 px-4 min-h-[44px] py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full transition-colors backdrop-blur-sm text-sm font-semibold active:scale-95"
+          className="flex items-center gap-2 px-4 min-h-[44px] py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full transition-colors backdrop-blur-sm text-sm font-semibold active:opacity-70"
           aria-label="Ler Lei Seca"
         >
           <BookOpen className="w-4 h-4 text-primary" />

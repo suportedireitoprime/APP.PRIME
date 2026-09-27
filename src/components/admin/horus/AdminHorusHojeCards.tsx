@@ -187,7 +187,7 @@ export function AdminHorusHojeCards() {
               }}
               className={cn(
                 "group relative rounded-xl border border-border/60 bg-secondary/30 p-2.5 sm:p-3 text-left overflow-hidden flex flex-col justify-between min-h-[76px] transition-colors",
-                !isZero && "hover:bg-secondary/50 cursor-pointer active:scale-95"
+                !isZero && "hover:bg-secondary/50 cursor-pointer active:opacity-70"
               )}
             >
               <div className="flex items-start justify-between w-full">

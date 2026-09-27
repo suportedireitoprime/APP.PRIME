@@ -146,7 +146,7 @@ const ArtigoCard = ({ artigo, index, onClick, highlightText, isHighlighted, with
             : isADCT
               ? 'border-sky-400/40 hover:border-sky-300/60 hover:bg-card'
               : 'border-border/60 hover:border-amber-400/40 hover:bg-card'
-        } ${isFastScrolling ? 'shadow-none transition-none active:scale-100' : ''}`}
+        } ${isFastScrolling ? 'shadow-none transition-none active:opacity-70' : ''}`}
       >
         {withShine && !isFastScrolling && (
           <span

@@ -42,13 +42,13 @@ export default function PdfContinuarPrompt({
           <div className="flex items-center gap-2 pt-1">
             <button
               onClick={() => onContinue(page)}
-              className="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 text-white text-xs font-bold shadow-lg hover:brightness-110 active:scale-95 transition"
+              className="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 text-white text-xs font-bold shadow-lg hover:brightness-110 active:opacity-70 transition"
             >
               Ir para pág. {page}
             </button>
             <button
               onClick={() => onContinue(1)}
-              className="py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-neutral-200 text-xs font-semibold active:scale-95 transition"
+              className="py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-neutral-200 text-xs font-semibold active:opacity-70 transition"
             >
               Pág. 1
             </button>

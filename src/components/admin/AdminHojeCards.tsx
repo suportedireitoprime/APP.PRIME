@@ -1147,7 +1147,7 @@ export function AdminHojeCards() {
             onClick={() => void load()}
             disabled={isUpdating}
             title={`Atualizar agora · Última sincronização: ${horaAtualizacao}`}
-            className="p-1.5 rounded-xl border border-border/60 bg-secondary/40 hover:bg-secondary/60 active:scale-95 text-muted-foreground hover:text-foreground transition-all disabled:opacity-50"
+            className="p-1.5 rounded-xl border border-border/60 bg-secondary/40 hover:bg-secondary/60 active:opacity-70 text-muted-foreground hover:text-foreground transition-all disabled:opacity-50"
           >
             <RefreshCw className={cn("w-3.5 h-3.5", isUpdating && "animate-spin text-primary")} />
           </button>

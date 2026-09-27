@@ -37,7 +37,7 @@ const VideoaulasLeiSeca = () => {
                 haptic.selection();
                 navigate(`/videoaulas/lei-seca/categoria/${cat.id}`);
               }}
-              className="flex flex-col items-center justify-center p-6 rounded-3xl bg-card border border-border/80 hover:border-primary/50 transition-all active:scale-95 gap-3 text-center shadow-sm"
+              className="flex flex-col items-center justify-center p-6 rounded-3xl bg-card border border-border/80 hover:border-primary/50 transition-all active:opacity-70 gap-3 text-center shadow-sm"
             >
               <div className="w-14 h-14 flex items-center justify-center">
                 <cat.icon className="w-8 h-8 text-zinc-400" strokeWidth={1.25} />

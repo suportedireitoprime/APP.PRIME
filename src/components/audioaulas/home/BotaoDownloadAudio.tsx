@@ -60,7 +60,7 @@ export const BotaoDownloadAudio = React.memo(function BotaoDownloadAudio({
       }}
       disabled={baixando}
       aria-label={baixado ? 'Remover download' : 'Baixar aula'}
-      className={`${size} grid place-items-center rounded-full shrink-0 transition hover:bg-white/10 active:scale-95 disabled:opacity-60 ${
+      className={`${size} grid place-items-center rounded-full shrink-0 transition hover:bg-white/10 active:opacity-70 disabled:opacity-60 ${
         grande ? 'border border-white/10 bg-white/10 backdrop-blur' : ''
       }`}
     >

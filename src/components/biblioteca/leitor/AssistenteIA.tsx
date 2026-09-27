@@ -118,7 +118,7 @@ export default function AssistenteIA({
               {aba !== 'menu' && (
                 <button
                   onClick={() => setAba('menu')}
-                  className="mt-1 w-8 h-8 rounded-full flex items-center justify-center shrink-0 active:scale-95 transition"
+                  className="mt-1 w-8 h-8 rounded-full flex items-center justify-center shrink-0 active:opacity-70 transition"
                   style={{ background: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }}
                 >
                   <ArrowLeft className="w-4 h-4 opacity-70" />
@@ -136,7 +136,7 @@ export default function AssistenteIA({
               <button
                 onClick={() => { import('@/lib/nativeHaptics').then(m => m.haptic.selection()); onClose(); }}
                 aria-label="Fechar"
-                className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 active:scale-95 transition"
+                className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 active:opacity-70 transition"
                 style={{
                   background: dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
                   color: tema.text,

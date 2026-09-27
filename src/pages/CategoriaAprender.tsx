@@ -53,7 +53,7 @@ const CategoriaAprender = () => {
             goBack();
           }}
           aria-label="Voltar para Aprender"
-          className="absolute top-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] left-[calc(1rem+var(--sai-left,env(safe-area-inset-left,0px)))] z-20 w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-black/50 backdrop-blur-md border border-white/10 flex items-center justify-center active:scale-95 transition-transform"
+          className="absolute top-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] left-[calc(1rem+var(--sai-left,env(safe-area-inset-left,0px)))] z-20 w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-black/50 backdrop-blur-md border border-white/10 flex items-center justify-center active:opacity-70 transition-transform"
         >
           <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
         </button>

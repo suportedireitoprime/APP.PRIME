@@ -99,7 +99,7 @@ export default function ModoOffline() {
           type="button"
           onClick={voltar}
           aria-label="Voltar"
-          className="h-12 w-12 sm:h-[52px] sm:w-[52px] shrink-0 rounded-full bg-white/15 border border-white/25 flex items-center justify-center active:scale-95 transition touch-manipulation"
+          className="h-12 w-12 sm:h-[52px] sm:w-[52px] shrink-0 rounded-full bg-white/15 border border-white/25 flex items-center justify-center active:opacity-70 transition touch-manipulation"
         >
           <ArrowLeft className="h-6 w-6 sm:h-7 sm:w-7 text-white" strokeWidth={2.4} />
         </button>

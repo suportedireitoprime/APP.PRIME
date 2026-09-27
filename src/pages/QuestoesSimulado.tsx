@@ -114,7 +114,7 @@ const QuestoesSimulado = () => {
                       key={c.id}
                       type="button"
                       onClick={() => { haptic.selection(); navigate(`/questoes/simulado/${c.slug || c.id}`); }}
-                      className="group flex flex-col justify-between h-36 p-4 rounded-2xl border border-border/80 bg-card hover:border-primary/50 transition-all active:scale-98 shadow-sm text-left"
+                      className="group flex flex-col justify-between h-36 p-4 rounded-2xl border border-border/80 bg-card hover:border-primary/50 transition-all active:opacity-70 shadow-sm text-left"
                     >
                       <div className="flex items-center justify-between w-full">
                         {logo ? (

@@ -279,7 +279,7 @@ export default function LeiSecaPlayer() {
           <button
             onClick={() => setConfirmarSair(true)}
             aria-label="Sair da lição"
-            className="h-11 w-11 min-h-[44px] min-w-[44px] -ml-1 grid place-items-center rounded-full bg-white/10 ring-1 ring-white/15 text-white/90 hover:text-white hover:bg-white/15 active:scale-95 transition touch-manipulation"
+            className="h-11 w-11 min-h-[44px] min-w-[44px] -ml-1 grid place-items-center rounded-full bg-white/10 ring-1 ring-white/15 text-white/90 hover:text-white hover:bg-white/15 active:opacity-70 transition touch-manipulation"
           >
             <X className="h-6 w-6" strokeWidth={2.4} />
           </button>

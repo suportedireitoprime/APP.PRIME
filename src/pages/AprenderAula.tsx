@@ -759,7 +759,7 @@ const AprenderAula = () => {
                   haptic.selection();
                   setSumarioOpen(true);
                 }}
-                className="flex items-center gap-2.5 h-12 px-4 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white/90 hover:text-white hover:bg-white/10 active:scale-95 transition-all shadow-xl shadow-black/40 min-h-[48px]"
+                className="flex items-center gap-2.5 h-12 px-4 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white/90 hover:text-white hover:bg-white/10 active:opacity-70 transition-all shadow-xl shadow-black/40 min-h-[48px]"
                 aria-label="Abrir sumário da aula"
               >
                 <List className="h-5 w-5 text-primary" />
@@ -772,7 +772,7 @@ const AprenderAula = () => {
                     onClick={() => goToPage(currentIdx - 1)}
                     disabled={currentIdx <= 0}
                     aria-label="Página anterior"
-                    className="flex h-12 w-14 sm:w-16 items-center justify-center rounded-xl bg-white/5 text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none active:scale-95 transition-all shadow-sm cursor-pointer min-h-[48px]"
+                    className="flex h-12 w-14 sm:w-16 items-center justify-center rounded-xl bg-white/5 text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none active:opacity-70 transition-all shadow-sm cursor-pointer min-h-[48px]"
                   >
                     <ChevronLeft className="h-6 w-6" />
                   </button>
@@ -793,7 +793,7 @@ const AprenderAula = () => {
                     className={`flex h-12 w-14 sm:w-16 items-center justify-center rounded-xl transition-all shadow-lg cursor-pointer min-h-[48px] ${
                       !podeAvancar || currentIdx >= total - 1
                         ? 'opacity-25 pointer-events-none bg-white/5 text-white/30 shadow-none cursor-not-allowed'
-                        : 'bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 shadow-primary/25'
+                        : 'bg-primary text-primary-foreground hover:bg-primary/90 active:opacity-70 shadow-primary/25'
                     }`}
                   >
                     <ChevronRight className="h-6 w-6" />
@@ -806,7 +806,7 @@ const AprenderAula = () => {
                       haptic.impact('medium');
                       concluirAula();
                     }}
-                    className="flex h-10 items-center gap-1.5 rounded-xl bg-primary text-primary-foreground px-4 text-[13px] font-bold hover:bg-primary/90 active:scale-95 transition-all shadow-md shadow-primary/25 min-h-[44px]"
+                    className="flex h-10 items-center gap-1.5 rounded-xl bg-primary text-primary-foreground px-4 text-[13px] font-bold hover:bg-primary/90 active:opacity-70 transition-all shadow-md shadow-primary/25 min-h-[44px]"
                   >
                     Concluir <CheckCircle2 className="h-4 w-4" />
                   </button>

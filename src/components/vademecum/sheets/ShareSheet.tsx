@@ -92,7 +92,7 @@ export default function ShareSheet({ open, onClose, title, text, url }: Props) {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={onClose}
-                  className="flex flex-col items-center gap-2 active:scale-95 transition-transform"
+                  className="flex flex-col items-center gap-2 active:opacity-70 transition-transform"
                 >
                   <span className="w-14 h-14 rounded-2xl bg-[#25D366] flex items-center justify-center shadow-md">
                     <WhatsAppIcon className="w-7 h-7 text-white" />
@@ -104,7 +104,7 @@ export default function ShareSheet({ open, onClose, title, text, url }: Props) {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={onClose}
-                  className="flex flex-col items-center gap-2 active:scale-95 transition-transform"
+                  className="flex flex-col items-center gap-2 active:opacity-70 transition-transform"
                 >
                   <span className="w-14 h-14 rounded-2xl bg-[#229ED9] flex items-center justify-center shadow-md">
                     <TelegramIcon className="w-7 h-7 text-white" />
@@ -113,7 +113,7 @@ export default function ShareSheet({ open, onClose, title, text, url }: Props) {
                 </a>
                 <button
                   onClick={copiar}
-                  className="flex flex-col items-center gap-2 active:scale-95 transition-transform"
+                  className="flex flex-col items-center gap-2 active:opacity-70 transition-transform"
                 >
                   <span className="w-14 h-14 rounded-2xl bg-secondary flex items-center justify-center shadow-md">
                     <Link2 className="w-6 h-6 text-foreground" />
@@ -122,7 +122,7 @@ export default function ShareSheet({ open, onClose, title, text, url }: Props) {
                 </button>
                 <button
                   onClick={nativeShare}
-                  className="flex flex-col items-center gap-2 active:scale-95 transition-transform"
+                  className="flex flex-col items-center gap-2 active:opacity-70 transition-transform"
                 >
                   <span className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center shadow-md">
                     <Share2 className="w-6 h-6 text-primary-foreground" />

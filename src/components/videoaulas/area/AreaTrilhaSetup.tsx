@@ -58,7 +58,7 @@ export const AreaTrilhaSetup = ({ onFinish }: AreaTrilhaSetupProps) => {
             haptic.success();
             onFinish(dias);
           }}
-          className="w-full mt-10 bg-primary text-primary-foreground font-bold py-4 rounded-2xl shadow-[0_0_20px_rgba(var(--primary),0.3)] hover:shadow-[0_0_30px_rgba(var(--primary),0.5)] transition-all active:scale-95"
+          className="w-full mt-10 bg-primary text-primary-foreground font-bold py-4 rounded-2xl shadow-[0_0_20px_rgba(var(--primary),0.3)] hover:shadow-[0_0_30px_rgba(var(--primary),0.5)] transition-all active:opacity-70"
         >
           Gerar Minha Trilha
         </button>

@@ -299,7 +299,7 @@ export function FlashcardsTermosFiltro({
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-zinc-950 via-zinc-950 to-transparent pt-6 pb-6 px-6">
           <button
             onClick={handleStart}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#36AF85] px-4 py-4 text-[16px] font-black uppercase tracking-wide text-white transition-all hover:bg-[#2C9570] active:scale-95 shadow-lg shadow-[#36AF85]/20"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#36AF85] px-4 py-4 text-[16px] font-black uppercase tracking-wide text-white transition-all hover:bg-[#2C9570] active:opacity-70 shadow-lg shadow-[#36AF85]/20"
           >
             Iniciar Sessão
             <ChevronRight className="h-5 w-5" strokeWidth={3} />

@@ -34,7 +34,7 @@ const LeiSecaBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
                   haptic.selection();
                   if (!active) navigate(tab.to);
                 }}
-                className={`relative flex flex-col items-center justify-center gap-1 min-h-[48px] py-1.5 px-1 rounded-2xl touch-manipulation active:scale-95 transition-all ${
+                className={`relative flex flex-col items-center justify-center gap-1 min-h-[48px] py-1.5 px-1 rounded-2xl touch-manipulation active:opacity-70 transition-all ${
                   active ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
                 }`}
                 aria-label={tab.label}

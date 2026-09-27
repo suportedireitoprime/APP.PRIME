@@ -73,7 +73,7 @@ export const LeitorFnRailDesktop: React.FC<LeitorFnRailDesktopProps> = ({
           disabled={currentIndex === 0}
           aria-label="Página anterior"
           title="Página anterior"
-          className={`w-12 h-12 rounded-full flex items-center justify-center transition active:scale-95 disabled:opacity-30 ${
+          className={`w-12 h-12 rounded-full flex items-center justify-center transition active:opacity-70 disabled:opacity-30 ${
             dark ? 'bg-white/[0.06] hover:bg-white/10' : 'bg-black/[0.04] hover:bg-black/10'
           }`}
         >
@@ -84,7 +84,7 @@ export const LeitorFnRailDesktop: React.FC<LeitorFnRailDesktopProps> = ({
           disabled={currentIndex >= paginasLength - 1}
           aria-label="Próxima página"
           title="Próxima página"
-          className={`w-12 h-12 rounded-full flex items-center justify-center transition active:scale-95 disabled:opacity-30 ${
+          className={`w-12 h-12 rounded-full flex items-center justify-center transition active:opacity-70 disabled:opacity-30 ${
             dark ? 'bg-white/[0.06] hover:bg-white/10' : 'bg-black/[0.04] hover:bg-black/10'
           }`}
         >
@@ -97,7 +97,7 @@ export const LeitorFnRailDesktop: React.FC<LeitorFnRailDesktopProps> = ({
           onClick={onOpenAjustes}
           aria-label="Ajustes de leitura"
           title="Ajustes"
-          className={`w-12 h-12 rounded-full flex items-center justify-center transition active:scale-95 ${
+          className={`w-12 h-12 rounded-full flex items-center justify-center transition active:opacity-70 ${
             dark ? 'bg-white/[0.06] hover:bg-white/10' : 'bg-black/[0.04] hover:bg-black/10'
           }`}
         >
@@ -108,7 +108,7 @@ export const LeitorFnRailDesktop: React.FC<LeitorFnRailDesktopProps> = ({
           onClick={toggleNarracao}
           aria-label={speaking ? 'Parar narração' : 'Ouvir narração'}
           title={speaking ? 'Parar narração' : audioPaginaAtual ? 'Ouvir narração' : 'Narração em breve'}
-          className={`w-12 h-12 rounded-full flex items-center justify-center transition active:scale-95 ${
+          className={`w-12 h-12 rounded-full flex items-center justify-center transition active:opacity-70 ${
             speaking
               ? 'bg-primary text-primary-foreground'
               : dark
@@ -123,7 +123,7 @@ export const LeitorFnRailDesktop: React.FC<LeitorFnRailDesktopProps> = ({
           onClick={onOpenBookmarks}
           aria-label="Marcadores"
           title="Marcadores"
-          className={`w-12 h-12 rounded-full flex items-center justify-center transition active:scale-95 relative ${
+          className={`w-12 h-12 rounded-full flex items-center justify-center transition active:opacity-70 relative ${
             dark ? 'bg-white/[0.06] hover:bg-white/10' : 'bg-black/[0.04] hover:bg-black/10'
           }`}
         >
@@ -147,7 +147,7 @@ export const LeitorFnRailDesktop: React.FC<LeitorFnRailDesktopProps> = ({
               onClick={onOpenAssistente}
               aria-label="Assistente de leitura"
               title="Assistente IA"
-              className="w-12 h-12 rounded-full flex items-center justify-center transition active:scale-95 shadow-lg"
+              className="w-12 h-12 rounded-full flex items-center justify-center transition active:opacity-70 shadow-lg"
               style={{
                 background: 'hsl(var(--primary))',
                 color: 'hsl(var(--primary-foreground))',
@@ -161,7 +161,7 @@ export const LeitorFnRailDesktop: React.FC<LeitorFnRailDesktopProps> = ({
               onClick={onOpenCompartilhar}
               aria-label="Compartilhar frase"
               title="Compartilhar"
-              className={`w-12 h-12 rounded-full flex items-center justify-center transition active:scale-95 ${
+              className={`w-12 h-12 rounded-full flex items-center justify-center transition active:opacity-70 ${
                 dark ? 'bg-white/[0.06] hover:bg-white/10' : 'bg-black/[0.04] hover:bg-black/10'
               }`}
             >

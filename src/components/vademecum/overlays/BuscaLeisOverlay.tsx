@@ -362,7 +362,7 @@ const BuscaLeisOverlay = ({ open, onClose, onSelectLei }: Props) => {
                 <button
                   onClick={onClose}
                   aria-label="Voltar"
-                  className="w-11 h-11 rounded-full bg-black/40 border border-white/20 flex items-center justify-center active:scale-95 transition shrink-0"
+                  className="w-11 h-11 rounded-full bg-black/40 border border-white/20 flex items-center justify-center active:opacity-70 transition shrink-0"
                 >
                   <ArrowLeft className="w-6 h-6 text-white" />
                 </button>
@@ -396,7 +396,7 @@ const BuscaLeisOverlay = ({ open, onClose, onSelectLei }: Props) => {
                   <button
                     onClick={() => setQuery('')}
                     aria-label="Limpar campo"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/80 active:scale-90 transition"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/80 active:opacity-70 transition"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -701,7 +701,7 @@ const BuscaLeisOverlay = ({ open, onClose, onSelectLei }: Props) => {
                             setFavVersion((v) => v + 1);
                           }}
                           aria-label={fav ? 'Remover dos favoritos' : 'Favoritar lei'}
-                          className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition ${
+                          className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 active:opacity-70 transition ${
                             fav ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
                           }`}
                         >

@@ -32,7 +32,7 @@ export const MeExpliqueHubHeader: React.FC<Props> = ({
               onVoltar();
             }}
             aria-label="Voltar"
-            className="w-11 h-11 rounded-2xl bg-white/10 hover:bg-white/15 active:scale-95 flex items-center justify-center text-white shrink-0 transition-all cursor-pointer border border-white/10"
+            className="w-11 h-11 rounded-2xl bg-white/10 hover:bg-white/15 active:opacity-70 flex items-center justify-center text-white shrink-0 transition-all cursor-pointer border border-white/10"
           >
             <ArrowLeft className="w-5 h-5" strokeWidth={2.4} />
           </button>
@@ -82,7 +82,7 @@ export const MeExpliqueHubHeader: React.FC<Props> = ({
                 onOpenConfig();
               }}
               aria-label="Configurações do Me Explique"
-              className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-white hover:bg-white/15 active:scale-95 transition-all cursor-pointer"
+              className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-white hover:bg-white/15 active:opacity-70 transition-all cursor-pointer"
             >
               <Settings className="h-4 w-4" />
             </button>

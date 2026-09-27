@@ -776,7 +776,7 @@ function ActionPill({
     <button
       onClick={onClick}
       className={cn(
-        "flex flex-col items-center justify-center gap-1 h-16 px-1 rounded-2xl border font-semibold whitespace-nowrap transition-all active:scale-95 backdrop-blur-sm",
+        "flex flex-col items-center justify-center gap-1 h-16 px-1 rounded-2xl border font-semibold whitespace-nowrap transition-all active:opacity-70 backdrop-blur-sm",
         "text-[10px] sm:text-xs leading-none",
         active ? t.activeCls : t.base,
       )}

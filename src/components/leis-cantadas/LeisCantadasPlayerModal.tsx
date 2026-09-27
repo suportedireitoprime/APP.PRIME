@@ -151,7 +151,7 @@ export function LeisCantadasPlayerModal({
             onClick={() => alternarFavorito(atual.id)}
             aria-label={favoritos.has(atual.id) ? 'Remover dos favoritos' : 'Favoritar'}
             title={favoritos.has(atual.id) ? 'Remover dos favoritos' : 'Favoritar'}
-            className="absolute right-0 top-1/2 -translate-y-1/2 grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-white/10 backdrop-blur transition hover:bg-white/20 active:scale-95"
+            className="absolute right-0 top-1/2 -translate-y-1/2 grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-white/10 backdrop-blur transition hover:bg-white/20 active:opacity-70"
           >
             <Heart
               className={`h-5 w-5 transition ${

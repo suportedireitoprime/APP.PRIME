@@ -94,7 +94,7 @@ export function LeiSecaParteHero({
             onBack();
           }}
           aria-label="Voltar para leis"
-          className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full touch-manipulation bg-white/15 ring-1 ring-white/25 backdrop-blur-sm flex items-center justify-center text-white mb-3 active:scale-95 transition-all duration-[80ms]"
+          className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full touch-manipulation bg-white/15 ring-1 ring-white/25 backdrop-blur-sm flex items-center justify-center text-white mb-3 active:opacity-70 transition-all duration-[80ms]"
         >
           <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
         </button>

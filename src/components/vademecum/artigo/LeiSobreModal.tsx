@@ -107,7 +107,7 @@ export const LeiSobreModal: React.FC<LeiSobreModalProps> = ({
                 haptic.selection();
                 onClose();
               }}
-              className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/50 backdrop-blur-md border border-white/10 text-white shadow-xl transition-all hover:bg-black/70 active:scale-95 cursor-pointer"
+              className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/50 backdrop-blur-md border border-white/10 text-white shadow-xl transition-all hover:bg-black/70 active:opacity-70 cursor-pointer"
               title="Voltar ao Código Penal"
             >
               <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
@@ -280,7 +280,7 @@ export const LeiSobreModal: React.FC<LeiSobreModalProps> = ({
                 haptic.impact();
                 setRelatarOpen(true);
               }}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-hero-panel hover:bg-primary text-white text-xs sm:text-sm font-bold shadow-md shadow-red-950/40 active:scale-95 transition-all cursor-pointer border border-red-500/30"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-hero-panel hover:bg-primary text-white text-xs sm:text-sm font-bold shadow-md shadow-red-950/40 active:opacity-70 transition-all cursor-pointer border border-red-500/30"
             >
               <AlertTriangle className="w-4 h-4" />
               <span>Relatar Erro ou Sugestão</span>
@@ -367,7 +367,7 @@ export const LeiSobreModal: React.FC<LeiSobreModalProps> = ({
                     <button
                       type="submit"
                       disabled={enviado}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-hero-panel hover:bg-primary text-xs font-bold text-white shadow-md shadow-red-950/40 active:scale-95 transition-all"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-hero-panel hover:bg-primary text-xs font-bold text-white shadow-md shadow-red-950/40 active:opacity-70 transition-all"
                     >
                       {enviado ? (
                         <>

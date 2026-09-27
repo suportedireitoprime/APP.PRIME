@@ -91,7 +91,7 @@ export const FlipFlashcards = ({ cards, onClose }: { cards: Flashcard[]; onClose
           <button
             onClick={() => go(-1)}
             disabled={i === 0}
-            className="w-12 h-12 rounded-full bg-white/10 backdrop-blur flex items-center justify-center disabled:opacity-30 active:scale-95"
+            className="w-12 h-12 rounded-full bg-white/10 backdrop-blur flex items-center justify-center disabled:opacity-30 active:opacity-70"
           >
             <ChevronLeft className="w-6 h-6 text-white" />
           </button>
@@ -106,7 +106,7 @@ export const FlipFlashcards = ({ cards, onClose }: { cards: Flashcard[]; onClose
           <button
             onClick={() => go(1)}
             disabled={i === total - 1}
-            className="w-12 h-12 rounded-full bg-white/10 backdrop-blur flex items-center justify-center disabled:opacity-30 active:scale-95"
+            className="w-12 h-12 rounded-full bg-white/10 backdrop-blur flex items-center justify-center disabled:opacity-30 active:opacity-70"
           >
             <ChevronRight className="w-6 h-6 text-white" />
           </button>
@@ -366,10 +366,10 @@ export const MapaMentalCanvas = ({ data, onClose }: { data: MapaNode; onClose: (
           <p className="text-[11px] text-white/60 truncate max-w-[60vw]">{data.titulo}</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={exportPng} className="h-9 px-3 rounded-full bg-white/10 text-white text-xs font-semibold flex items-center gap-1.5 active:scale-95">
+          <button onClick={exportPng} className="h-9 px-3 rounded-full bg-white/10 text-white text-xs font-semibold flex items-center gap-1.5 active:opacity-70">
             <ImageDown className="w-4 h-4" /> PNG
           </button>
-          <button onClick={exportPdf} className="h-9 px-3 rounded-full bg-accent text-accent-foreground text-xs font-semibold flex items-center gap-1.5 active:scale-95">
+          <button onClick={exportPdf} className="h-9 px-3 rounded-full bg-accent text-accent-foreground text-xs font-semibold flex items-center gap-1.5 active:opacity-70">
             <FileDown className="w-4 h-4" /> PDF
           </button>
           <button onClick={onClose} className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center">
@@ -545,7 +545,7 @@ export const ShareSheet = ({ text, onClose }: { text: string; onClose: () => voi
 };
 
 const ShareBtn = ({ onClick, label, className, children }: { onClick: () => void; label: string; className: string; children: React.ReactNode }) => (
-  <button onClick={onClick} className={`flex flex-col items-center gap-2 p-4 rounded-2xl border ${className} active:scale-95 transition-transform`}>
+  <button onClick={onClick} className={`flex flex-col items-center gap-2 p-4 rounded-2xl border ${className} active:opacity-70 transition-transform`}>
     {children}
     <span className="text-xs font-body font-semibold">{label}</span>
   </button>

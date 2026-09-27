@@ -68,7 +68,7 @@ const MeExpliqueHeroPanel: React.FC<Props> = ({ onVoltar, onOpenConfig }) => {
             onVoltar();
           }}
           aria-label="Voltar"
-          className="pointer-events-auto grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/50 border border-white/15 text-white backdrop-blur-md transition-colors hover:bg-black/70 active:scale-95 shadow-xl cursor-pointer"
+          className="pointer-events-auto grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/50 border border-white/15 text-white backdrop-blur-md transition-colors hover:bg-black/70 active:opacity-70 shadow-xl cursor-pointer"
         >
           <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
         </button>
@@ -83,7 +83,7 @@ const MeExpliqueHeroPanel: React.FC<Props> = ({ onVoltar, onOpenConfig }) => {
                 onOpenConfig();
               }}
               aria-label="Configurações"
-              className="grid w-10 h-10 shrink-0 place-items-center rounded-2xl bg-black/50 border border-white/15 text-white backdrop-blur-md transition-colors hover:bg-black/70 active:scale-95 cursor-pointer shadow-lg"
+              className="grid w-10 h-10 shrink-0 place-items-center rounded-2xl bg-black/50 border border-white/15 text-white backdrop-blur-md transition-colors hover:bg-black/70 active:opacity-70 cursor-pointer shadow-lg"
             >
               <Settings className="w-4 h-4" />
             </button>

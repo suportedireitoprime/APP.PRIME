@@ -132,7 +132,7 @@ export const ResumosMetodosDeck: React.FC<ResumosMetodosDeckProps> = ({
           type="button"
           onClick={handlePrev}
           aria-label="Método anterior"
-          className="absolute left-1 sm:left-2 z-[45] w-9 h-9 rounded-full bg-black/50 hover:bg-black/80 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:scale-95 shadow-md"
+          className="absolute left-1 sm:left-2 z-[45] w-9 h-9 rounded-full bg-black/50 hover:bg-black/80 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:opacity-70 shadow-md"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
@@ -142,7 +142,7 @@ export const ResumosMetodosDeck: React.FC<ResumosMetodosDeckProps> = ({
           type="button"
           onClick={handleNext}
           aria-label="Próximo método"
-          className="absolute right-1 sm:right-2 z-[45] w-9 h-9 rounded-full bg-black/50 hover:bg-black/80 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:scale-95 shadow-md"
+          className="absolute right-1 sm:right-2 z-[45] w-9 h-9 rounded-full bg-black/50 hover:bg-black/80 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:opacity-70 shadow-md"
         >
           <ChevronRight className="w-5 h-5" />
         </button>

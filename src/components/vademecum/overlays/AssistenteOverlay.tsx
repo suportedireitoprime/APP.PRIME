@@ -805,7 +805,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                     abortStream();
                     setLoading(false);
                   }}
-                  className="flex items-center gap-2 px-4 py-2 bg-zinc-800 dark:bg-zinc-700 hover:bg-zinc-700 dark:hover:bg-zinc-600 active:scale-95 transition-all rounded-full text-white text-[13px] font-body shadow-lg"
+                  className="flex items-center gap-2 px-4 py-2 bg-zinc-800 dark:bg-zinc-700 hover:bg-zinc-700 dark:hover:bg-zinc-600 active:opacity-70 transition-all rounded-full text-white text-[13px] font-body shadow-lg"
                 >
                   <Square className="w-3.5 h-3.5 fill-current" />
                   Parar

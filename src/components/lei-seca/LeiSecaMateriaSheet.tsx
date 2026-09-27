@@ -119,7 +119,7 @@ export function LeiSecaMateriaSheet({ materia, trilhas, resumo, open, onOpenChan
                         e.stopPropagation();
                         toggle(t.slug);
                       }}
-                      className="h-10 w-10 min-h-[40px] rounded-full grid place-items-center hover:bg-rose-500/10 active:scale-90 transition-all shrink-0 touch-manipulation"
+                      className="h-10 w-10 min-h-[40px] rounded-full grid place-items-center hover:bg-rose-500/10 active:opacity-70 transition-all shrink-0 touch-manipulation"
                       aria-label={fav ? "Desfavoritar" : "Favoritar"}
                     >
                       <Heart

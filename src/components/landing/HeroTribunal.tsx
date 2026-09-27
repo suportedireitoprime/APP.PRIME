@@ -211,7 +211,7 @@ const HeroTribunal = ({ onAcessar, onConhecer }: Props) => {
         >
           <button
             onClick={onAcessar}
-            className="group lp-sheen lp-sheen-loop relative overflow-hidden rounded-full h-14 w-[15rem] text-base sm:text-lg font-bold transition-transform hover:scale-105 active:scale-95"
+            className="group lp-sheen lp-sheen-loop relative overflow-hidden rounded-full h-14 w-[15rem] text-base sm:text-lg font-bold transition-transform hover:scale-105 active:opacity-70"
             style={{
               background: 'linear-gradient(135deg, hsl(352 58% 44%), hsl(345 55% 30%))',
               color: 'hsl(40 30% 98%)',

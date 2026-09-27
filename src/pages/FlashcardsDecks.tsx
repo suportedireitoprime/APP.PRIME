@@ -199,7 +199,7 @@ const FlashcardsDecks = () => {
               </Button>
               <button 
                 onClick={() => { haptic.selection(); setAberto(true); }} 
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white shadow-md active:scale-95 transition-transform shrink-0"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white shadow-md active:opacity-70 transition-transform shrink-0"
               >
                 <Plus className="h-5 w-5" />
               </button>

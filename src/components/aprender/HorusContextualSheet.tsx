@@ -73,7 +73,7 @@ export const HorusContextualSheet = ({ contexto, hideFab, open: openProp, onOpen
         <button
           onClick={() => setOpen(true)}
           aria-label="Perguntar ao Mentor"
-          className="fixed bottom-24 right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-transform hover:scale-105 active:scale-95"
+          className="fixed bottom-24 right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-transform hover:scale-105 active:opacity-70"
           style={{ background: 'hsl(348 78% 38%)' }}
         >
           <MessageCircle className="h-6 w-6 text-primary-foreground" strokeWidth={2} />

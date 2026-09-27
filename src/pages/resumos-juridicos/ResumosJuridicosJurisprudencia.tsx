@@ -15,7 +15,7 @@ export default function ResumosJuridicosJurisprudencia() {
         <div className="flex items-center h-16 px-4 gap-3">
           <button
             onClick={() => navigate(-1)}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 active:scale-95 transition-transform"
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 active:opacity-70 transition-transform"
           >
             <ArrowLeft className="w-5 h-5 text-white" />
           </button>
@@ -38,7 +38,7 @@ export default function ResumosJuridicosJurisprudencia() {
         
         <button
           onClick={() => navigate(-1)}
-          className="mt-8 px-6 py-3 rounded-full bg-primary text-primary-foreground font-bold font-display text-sm active:scale-95 transition-transform"
+          className="mt-8 px-6 py-3 rounded-full bg-primary text-primary-foreground font-bold font-display text-sm active:opacity-70 transition-transform"
         >
           Voltar para Matérias
         </button>

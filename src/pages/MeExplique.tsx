@@ -200,7 +200,7 @@ export default function MeExplique() {
                 haptic.selection();
                 navegarModo('livre');
               }}
-              className="relative overflow-hidden w-full h-[60px] rounded-2xl bg-[#E11D48] text-white font-black text-sm shadow-md hover:bg-rose-600 active:scale-95 transition-all flex items-center justify-center gap-2"
+              className="relative overflow-hidden w-full h-[60px] rounded-2xl bg-[#E11D48] text-white font-black text-sm shadow-md hover:bg-rose-600 active:opacity-70 transition-all flex items-center justify-center gap-2"
             >
               <div className="absolute inset-0 bg-white/10 opacity-0 hover:opacity-100 transition-opacity" />
               <MessageSquare className="w-5 h-5" />
@@ -241,7 +241,7 @@ export default function MeExplique() {
                       cota.setLimiteModalAberto(false);
                       setGateAberto(true);
                     }}
-                    className="w-full h-12 rounded-2xl bg-amber-500 text-black font-black text-sm shadow-md hover:bg-amber-400 active:scale-95 transition-all flex items-center justify-center gap-2"
+                    className="w-full h-12 rounded-2xl bg-amber-500 text-black font-black text-sm shadow-md hover:bg-amber-400 active:opacity-70 transition-all flex items-center justify-center gap-2"
                   >
                     <Crown className="w-4 h-4" /> Assinar o PRIME
                   </button>

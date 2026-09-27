@@ -315,7 +315,7 @@ export const MeExpliqueLivrosView: React.FC<Props> = ({ onVoltar }) => {
                 <div className="shrink-0 flex flex-col items-end gap-1">
                   <button
                     type="button"
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500 text-black font-bold text-xs shadow-md group-hover:bg-amber-400 active:scale-95 transition-all"
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500 text-black font-bold text-xs shadow-md group-hover:bg-amber-400 active:opacity-70 transition-all"
                   >
                     <Volume2 className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">Explicar</span> Ao Vivo

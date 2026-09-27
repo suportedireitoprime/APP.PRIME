@@ -72,7 +72,7 @@ export default function GlobalPilulasMiniPlayer() {
             {/* Imagem/Ícone do lado esquerdo - Clicável para reabrir */}
             <button
               onClick={handleReopen}
-              className="relative w-12 h-12 shrink-0 rounded-full overflow-hidden flex items-center justify-center bg-black/40 mr-3 active:scale-95 transition-transform"
+              className="relative w-12 h-12 shrink-0 rounded-full overflow-hidden flex items-center justify-center bg-black/40 mr-3 active:opacity-70 transition-transform"
               aria-label="Voltar para Pílula"
             >
               {livro.capa ? (
@@ -114,7 +114,7 @@ export default function GlobalPilulasMiniPlayer() {
             <div className="flex items-center gap-1 shrink-0 ml-2 pr-1">
               <button
                 onClick={togglePlay}
-                className="w-10 h-10 rounded-full flex items-center justify-center text-white bg-white/5 hover:bg-white/10 active:scale-95 transition-all"
+                className="w-10 h-10 rounded-full flex items-center justify-center text-white bg-white/5 hover:bg-white/10 active:opacity-70 transition-all"
                 aria-label={isPlaying ? 'Pausar' : 'Tocar'}
               >
                 {isPlaying ? (
@@ -126,7 +126,7 @@ export default function GlobalPilulasMiniPlayer() {
               
               <button
                 onClick={fechar}
-                className="w-10 h-10 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 active:scale-95 transition-all"
+                className="w-10 h-10 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 active:opacity-70 transition-all"
                 aria-label="Fechar player"
               >
                 <X className="w-4 h-4" />

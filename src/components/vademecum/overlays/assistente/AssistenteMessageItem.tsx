@@ -42,7 +42,7 @@ export const ActionBtn: React.FC<{
       haptic.light();
       onClick();
     }}
-    className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-900/90 ${hoverClass} border border-white/10 text-xs font-body text-zinc-200 hover:text-white transition-all active:scale-95 touch-manipulation shadow-sm`}
+    className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-900/90 ${hoverClass} border border-white/10 text-xs font-body text-zinc-200 hover:text-white transition-all active:opacity-70 touch-manipulation shadow-sm`}
   >
     <Icon
       className={`w-3.5 h-3.5 ${colorClass} transition-transform group-hover:scale-110 shrink-0`}

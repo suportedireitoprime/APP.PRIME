@@ -233,7 +233,7 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
         <button
           type="button"
           onClick={onOpenVerTodos}
-          className="group pointer-events-auto shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.14] active:scale-95 backdrop-blur-md border border-white/10 hover:border-white/20 text-[12px] font-semibold text-foreground/90 hover:text-white transition-all shadow-sm cursor-pointer"
+          className="group pointer-events-auto shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.14] active:opacity-70 backdrop-blur-md border border-white/10 hover:border-white/20 text-[12px] font-semibold text-foreground/90 hover:text-white transition-all shadow-sm cursor-pointer"
         >
           <span>Ver todos</span>
           <ChevronRight className="w-3.5 h-3.5 text-primary group-hover:translate-x-0.5 transition-transform" />

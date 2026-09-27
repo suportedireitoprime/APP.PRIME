@@ -212,7 +212,7 @@ export function LocaisListaView({
                       e.stopPropagation();
                       openInNewTab(googleMapsUrl(local));
                     }}
-                    className="w-10 h-10 rounded-full bg-white border border-border flex items-center justify-center shrink-0 active:scale-95 transition-transform shadow-sm"
+                    className="w-10 h-10 rounded-full bg-white border border-border flex items-center justify-center shrink-0 active:opacity-70 transition-transform shadow-sm"
                     aria-label="Traçar rota no Google Maps"
                   >
                     <img src={gmapsLogo} alt="Google Maps" className="w-5 h-5" />

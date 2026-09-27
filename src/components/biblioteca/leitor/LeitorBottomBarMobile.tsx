@@ -89,7 +89,7 @@ export const LeitorBottomBarMobile: React.FC<LeitorBottomBarMobileProps> = ({
           onClick={prev}
           disabled={currentIndex === 0}
           aria-label="Página anterior"
-          className={`w-14 h-14 rounded-full flex items-center justify-center transition active:scale-95 disabled:opacity-30 ${
+          className={`w-14 h-14 rounded-full flex items-center justify-center transition active:opacity-70 disabled:opacity-30 ${
             dark ? 'bg-white/[0.06] hover:bg-white/10' : 'bg-black/[0.04] hover:bg-black/10'
           }`}
         >
@@ -99,7 +99,7 @@ export const LeitorBottomBarMobile: React.FC<LeitorBottomBarMobileProps> = ({
         <button
           onClick={onOpenAjustes}
           aria-label="Ajustes de leitura"
-          className={`w-14 h-14 rounded-full flex items-center justify-center transition active:scale-95 ${
+          className={`w-14 h-14 rounded-full flex items-center justify-center transition active:opacity-70 ${
             dark ? 'bg-white/[0.06] hover:bg-white/10' : 'bg-black/[0.04] hover:bg-black/10'
           }`}
         >
@@ -110,7 +110,7 @@ export const LeitorBottomBarMobile: React.FC<LeitorBottomBarMobileProps> = ({
           onClick={onOpenAssistente}
           aria-label="Assistente IA"
           title="Assistente IA"
-          className="w-14 h-14 rounded-full flex items-center justify-center transition active:scale-95 text-white shadow-lg"
+          className="w-14 h-14 rounded-full flex items-center justify-center transition active:opacity-70 text-white shadow-lg"
           style={{
             background: 'hsl(var(--primary))',
             boxShadow: '0 8px 20px -6px hsl(var(--primary) / 0.5)',
@@ -122,7 +122,7 @@ export const LeitorBottomBarMobile: React.FC<LeitorBottomBarMobileProps> = ({
         <button
           onClick={onOpenBookmarks}
           aria-label="Marcadores"
-          className={`w-14 h-14 rounded-full flex items-center justify-center transition active:scale-95 relative ${
+          className={`w-14 h-14 rounded-full flex items-center justify-center transition active:opacity-70 relative ${
             dark ? 'bg-white/[0.06] hover:bg-white/10' : 'bg-black/[0.04] hover:bg-black/10'
           }`}
         >
@@ -141,7 +141,7 @@ export const LeitorBottomBarMobile: React.FC<LeitorBottomBarMobileProps> = ({
         <button
           onClick={onOpenToc}
           aria-label="Sumário"
-          className={`w-14 h-14 rounded-full flex items-center justify-center transition active:scale-95 ${
+          className={`w-14 h-14 rounded-full flex items-center justify-center transition active:opacity-70 ${
             dark ? 'bg-white/[0.06] hover:bg-white/10' : 'bg-black/[0.04] hover:bg-black/10'
           }`}
         >
@@ -152,7 +152,7 @@ export const LeitorBottomBarMobile: React.FC<LeitorBottomBarMobileProps> = ({
           onClick={next}
           disabled={currentIndex >= paginasLength - 1}
           aria-label="Próxima página"
-          className={`w-14 h-14 rounded-full flex items-center justify-center transition active:scale-95 disabled:opacity-30 ${
+          className={`w-14 h-14 rounded-full flex items-center justify-center transition active:opacity-70 disabled:opacity-30 ${
             dark ? 'bg-white/[0.06] hover:bg-white/10' : 'bg-black/[0.04] hover:bg-black/10'
           }`}
         >

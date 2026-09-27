@@ -1095,7 +1095,7 @@ export default function AdminNarracaoLeis() {
                 <button
                   onClick={() => handleDispararLoteAgora()}
                   disabled={disparandoManual}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 active:scale-95 transition-all shadow-md disabled:opacity-50"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 active:opacity-70 transition-all shadow-md disabled:opacity-50"
                 >
                   {disparandoManual ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
                   <span>Narrar Maior Pendente</span>
@@ -1317,7 +1317,7 @@ export default function AdminNarracaoLeis() {
                                 setArtigoParaExcluir(artigo);
                               }}
                               disabled={apagandoArtigoNum === artigo.numero || apagandoArtigo}
-                              className="p-2.5 rounded-xl bg-destructive/10 text-destructive border border-destructive/20 hover:bg-destructive/20 active:scale-95 transition-all disabled:opacity-50"
+                              className="p-2.5 rounded-xl bg-destructive/10 text-destructive border border-destructive/20 hover:bg-destructive/20 active:opacity-70 transition-all disabled:opacity-50"
                               title="Excluir Narração do Supabase"
                             >
                               {apagandoArtigoNum === artigo.numero ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
@@ -1328,7 +1328,7 @@ export default function AdminNarracaoLeis() {
                             onClick={() => handleGerarNarraçãoIndividual(artigo)}
                             disabled={estaGerando}
                             className={cn(
-                              'flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold active:scale-95 transition-all disabled:opacity-60',
+                              'flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold active:opacity-70 transition-all disabled:opacity-60',
                               estaGerando
                                 ? 'bg-primary/20 border-primary text-primary shadow-sm'
                                 : 'bg-primary/10 border-primary/20 text-primary hover:bg-primary/20'
@@ -1893,7 +1893,7 @@ export default function AdminNarracaoLeis() {
                 onClick={handleGerarTodas4Versoes}
                 disabled={gerandoTodas || totalVersoesSalvas === ESTILOS_TOM.length}
                 className={cn(
-                  'flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all active:scale-95 disabled:opacity-50',
+                  'flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all active:opacity-70 disabled:opacity-50',
                   totalVersoesSalvas === ESTILOS_TOM.length
                     ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400'
                     : 'bg-primary text-primary-foreground hover:bg-primary/90'
@@ -1974,7 +1974,7 @@ export default function AdminNarracaoLeis() {
                             type="button"
                             onClick={() => handleApagarEstilo(estilo.id)}
                             disabled={isApagando}
-                            className="p-1.5 rounded-lg text-muted-foreground hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 active:scale-90 transition-all shrink-0"
+                            className="p-1.5 rounded-lg text-muted-foreground hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 active:opacity-70 transition-all shrink-0"
                             title="Apagar áudio do Supabase e regenerar"
                           >
                             {isApagando ? (
@@ -1999,7 +1999,7 @@ export default function AdminNarracaoLeis() {
                             type="button"
                             onClick={() => handleTocarEstilo(estilo.id, cacheItem.audio_url)}
                             className={cn(
-                              'w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all shadow-md shrink-0 active:scale-95',
+                              'w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all shadow-md shrink-0 active:opacity-70',
                               isTocando
                                 ? 'bg-primary text-primary-foreground animate-pulse'
                                 : 'bg-emerald-500 text-black hover:bg-emerald-400'
@@ -2040,7 +2040,7 @@ export default function AdminNarracaoLeis() {
                           type="button"
                           onClick={() => handleGerarEstilo(estilo)}
                           disabled={isGerando || gerandoTodas}
-                          className="w-full py-2 px-3 rounded-xl bg-secondary/70 hover:bg-secondary border border-border/60 text-xs font-semibold text-foreground flex items-center justify-center gap-2 hover:border-primary/50 active:scale-98 transition-all disabled:opacity-50"
+                          className="w-full py-2 px-3 rounded-xl bg-secondary/70 hover:bg-secondary border border-border/60 text-xs font-semibold text-foreground flex items-center justify-center gap-2 hover:border-primary/50 active:opacity-70 transition-all disabled:opacity-50"
                         >
                           {isGerando ? (
                             <>
@@ -2097,7 +2097,7 @@ export default function AdminNarracaoLeis() {
               <button
                 onClick={handleToggleCron}
                 disabled={salvandoAuto}
-                className={`px-5 py-2.5 rounded-xl font-bold text-xs transition-all shadow-md active:scale-95 disabled:opacity-50 ${
+                className={`px-5 py-2.5 rounded-xl font-bold text-xs transition-all shadow-md active:opacity-70 disabled:opacity-50 ${
                   configAuto?.ativa
                     ? 'bg-rose-500/15 border border-rose-500/40 text-rose-400 hover:bg-rose-500/25'
                     : 'bg-emerald-500 text-black hover:bg-emerald-400'
@@ -2212,7 +2212,7 @@ export default function AdminNarracaoLeis() {
                       onClick={() => jaAtiva ? handleRemoverLeiFila(item.tab) : handleAdicionarLeiFila(item.tab)}
                       disabled={salvandoAuto}
                       className={cn(
-                        'px-2.5 py-1 rounded-lg text-xs font-medium border transition-all flex items-center gap-1.5 active:scale-95',
+                        'px-2.5 py-1 rounded-lg text-xs font-medium border transition-all flex items-center gap-1.5 active:opacity-70',
                         jaAtiva
                           ? 'bg-primary/20 border-primary/40 text-primary font-bold'
                           : 'bg-secondary/40 border-border/60 text-muted-foreground hover:text-foreground hover:bg-secondary/80'
@@ -2276,7 +2276,7 @@ export default function AdminNarracaoLeis() {
                 <button
                   onClick={() => handleDispararLoteAgora()}
                   disabled={disparandoManual || filaIntercalada.length === 0}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs shadow-md hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs shadow-md hover:bg-primary/90 active:opacity-70 transition-all disabled:opacity-50"
                 >
                   {disparandoManual ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
                   <span>Disparar Próximo da Fila (#1)</span>
@@ -2343,7 +2343,7 @@ export default function AdminNarracaoLeis() {
                       <button
                         onClick={() => handleGerarNarraçãoIndividual(filaIntercalada[0].artigo, filaIntercalada[0].lei)}
                         disabled={!!gerandoArtigoNum}
-                        className="px-3 py-1.5 rounded-lg bg-emerald-500 text-black font-bold text-xs hover:bg-emerald-400 transition-all flex items-center gap-1 active:scale-95 disabled:opacity-50"
+                        className="px-3 py-1.5 rounded-lg bg-emerald-500 text-black font-bold text-xs hover:bg-emerald-400 transition-all flex items-center gap-1 active:opacity-70 disabled:opacity-50"
                       >
                         {gerandoArtigoNum === `${filaIntercalada[0].tabelaNome}_${filaIntercalada[0].artigo.numero}` ? (
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -2410,7 +2410,7 @@ export default function AdminNarracaoLeis() {
                           <button
                             onClick={() => handleGerarNarraçãoIndividual(item.artigo, item.lei)}
                             disabled={!!gerandoArtigoNum}
-                            className="px-2.5 py-1 rounded-md bg-secondary border border-border text-foreground hover:bg-primary hover:text-primary-foreground font-semibold text-[11px] transition-all flex items-center gap-1 active:scale-95 disabled:opacity-50"
+                            className="px-2.5 py-1 rounded-md bg-secondary border border-border text-foreground hover:bg-primary hover:text-primary-foreground font-semibold text-[11px] transition-all flex items-center gap-1 active:opacity-70 disabled:opacity-50"
                             title="Gravar este artigo antecipadamente"
                           >
                             {gerandoArtigoNum === `${item.tabelaNome}_${item.artigo.numero}` ? (

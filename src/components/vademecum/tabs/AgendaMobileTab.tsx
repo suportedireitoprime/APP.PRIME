@@ -115,7 +115,7 @@ export default function AgendaMobileTab() {
       
       <div className="mt-4 rounded-2xl bg-card border border-border/60 overflow-hidden pb-4">
         <div className="bg-muted/30 px-3 py-2 border-b border-border/50 flex justify-between items-center">
-          <button onClick={() => setAgendaOffset(prev => prev - 1)} className="p-1.5 active:scale-95 text-muted-foreground hover:text-foreground">
+          <button onClick={() => setAgendaOffset(prev => prev - 1)} className="p-1.5 active:opacity-70 text-muted-foreground hover:text-foreground">
             <ChevronLeft className="w-5 h-5" />
           </button>
           <div className="flex flex-col items-center">
@@ -126,7 +126,7 @@ export default function AgendaMobileTab() {
             </h3>
             <span className="text-[10px] font-bold text-[#ef4444] uppercase tracking-wider">{agendaTasks.length > 0 ? `${agendaTasks.length} pendentes` : 'livre'}</span>
           </div>
-          <button onClick={() => setAgendaOffset(prev => prev + 1)} className="p-1.5 active:scale-95 text-muted-foreground hover:text-foreground">
+          <button onClick={() => setAgendaOffset(prev => prev + 1)} className="p-1.5 active:opacity-70 text-muted-foreground hover:text-foreground">
             <ChevronRight className="w-5 h-5" />
           </button>
         </div>
@@ -178,13 +178,13 @@ export default function AgendaMobileTab() {
           <div className="flex-1 overflow-y-auto px-6 pb-12">
             <div className="rounded-2xl bg-card border border-border/60 p-4">
               <div className="flex items-center justify-between mb-4">
-                <button onClick={() => setCalendarMonthOffset(p => p - 1)} className="p-1.5 active:scale-95 text-muted-foreground hover:text-foreground">
+                <button onClick={() => setCalendarMonthOffset(p => p - 1)} className="p-1.5 active:opacity-70 text-muted-foreground hover:text-foreground">
                   <ChevronLeft className="w-5 h-5" />
                 </button>
                 <h3 className="font-display font-bold text-foreground text-[16px] capitalize">
                   {calendarDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
                 </h3>
-                <button onClick={() => setCalendarMonthOffset(p => p + 1)} className="p-1.5 active:scale-95 text-muted-foreground hover:text-foreground">
+                <button onClick={() => setCalendarMonthOffset(p => p + 1)} className="p-1.5 active:opacity-70 text-muted-foreground hover:text-foreground">
                   <ChevronRight className="w-5 h-5" />
                 </button>
               </div>

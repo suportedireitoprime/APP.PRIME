@@ -44,7 +44,7 @@ export const MeExpliqueTutorial = memo(function MeExpliqueTutorial({ open, onClo
 
           <button
             onClick={onClose}
-            className="w-full h-12 rounded-2xl bg-amber-600 hover:bg-amber-500 text-white font-black text-sm tracking-wide shadow-lg shadow-amber-600/30 active:scale-95 transition-all"
+            className="w-full h-12 rounded-2xl bg-amber-600 hover:bg-amber-500 text-white font-black text-sm tracking-wide shadow-lg shadow-amber-600/30 active:opacity-70 transition-all"
           >
             ENTENDI, CONTINUAR
           </button>

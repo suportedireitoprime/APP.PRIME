@@ -397,7 +397,7 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
             <div className="flex items-center gap-2">
               <button 
                 onClick={() => { import('@/lib/nativeHaptics').then((m) => m.haptic.selection()); onClose(); }} 
-                className="w-11 h-11 rounded-full bg-primary hover:bg-primary/90 transition-colors flex items-center justify-center shadow-lg active:scale-95" 
+                className="w-11 h-11 rounded-full bg-primary hover:bg-primary/90 transition-colors flex items-center justify-center shadow-lg active:opacity-70" 
                 aria-label="Fechar"
               >
                 <X className="w-5 h-5 text-primary-foreground" />

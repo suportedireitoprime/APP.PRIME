@@ -254,7 +254,7 @@ export default function QuestoesTrilhas() {
                   
                   <button 
                     onClick={() => handlePraticar(t)}
-                    className="mt-auto w-full py-2 bg-hero-panel rounded-xl text-[12px] font-bold text-white shadow-lg active:scale-95 transition-transform"
+                    className="mt-auto w-full py-2 bg-hero-panel rounded-xl text-[12px] font-bold text-white shadow-lg active:opacity-70 transition-transform"
                   >
                     Praticar
                   </button>
@@ -378,7 +378,7 @@ export default function QuestoesTrilhas() {
             <div className="flex items-center justify-between px-4 py-4 pt-safe-header border-b border-white/10 bg-zinc-900/50">
               <button 
                 onClick={() => { haptic.selection(); setIsMateriasSheetOpen(false); }}
-                className="w-10 h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 active:scale-95 transition-all text-white"
+                className="w-10 h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 active:opacity-70 transition-all text-white"
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>

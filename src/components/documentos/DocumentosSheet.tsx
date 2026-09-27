@@ -174,7 +174,7 @@ const DocumentosSheet = ({ categoria, open, onClose }: Props) => {
           <button
             onClick={voltar}
             aria-label="Voltar"
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border/60 bg-card active:scale-95 transition"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border/60 bg-card active:opacity-70 transition"
           >
             <ChevronLeft className="h-6 w-6 text-foreground" />
           </button>
@@ -189,7 +189,7 @@ const DocumentosSheet = ({ categoria, open, onClose }: Props) => {
           <button
             onClick={() => refetch()}
             aria-label="Atualizar lista"
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border/60 bg-card active:scale-95 transition"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border/60 bg-card active:opacity-70 transition"
           >
             <RefreshCw className={`h-5 w-5 text-muted-foreground ${isFetching ? 'animate-spin' : ''}`} />
           </button>
@@ -292,7 +292,7 @@ const DocumentosSheet = ({ categoria, open, onClose }: Props) => {
                 <button
                   onClick={() => fetchNextPage()}
                   disabled={isFetchingNextPage}
-                  className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-border/60 bg-card font-body text-[14px] font-semibold text-foreground active:scale-95 transition disabled:opacity-60"
+                  className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-border/60 bg-card font-body text-[14px] font-semibold text-foreground active:opacity-70 transition disabled:opacity-60"
                 >
                   {isFetchingNextPage && <Loader2 className="h-4 w-4 animate-spin" />}
                   Carregar mais modelos
@@ -340,7 +340,7 @@ const DocumentosSheet = ({ categoria, open, onClose }: Props) => {
                   <button
                     onClick={() => setAcoesDoc(null)}
                     aria-label="Fechar"
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-background active:scale-95 transition"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-background active:opacity-70 transition"
                   >
                     <X className="h-5 w-5 text-muted-foreground" />
                   </button>
@@ -350,7 +350,7 @@ const DocumentosSheet = ({ categoria, open, onClose }: Props) => {
                   <button
                     onClick={() => { const d = acoesDoc; setAcoesDoc(null); ver(d); }}
                     disabled={ocupado === acoesDoc.id}
-                    className="flex h-12 flex-col items-center justify-center gap-1 rounded-2xl border border-border/60 bg-background font-body text-[12.5px] font-semibold text-foreground active:scale-95 transition disabled:opacity-60"
+                    className="flex h-12 flex-col items-center justify-center gap-1 rounded-2xl border border-border/60 bg-background font-body text-[12.5px] font-semibold text-foreground active:opacity-70 transition disabled:opacity-60"
                   >
                     <Eye className="h-[18px] w-[18px]" />
                     Ver
@@ -358,7 +358,7 @@ const DocumentosSheet = ({ categoria, open, onClose }: Props) => {
                   <button
                     onClick={() => { const d = acoesDoc; setAcoesDoc(null); baixarPremium(d, 'docx'); }}
                     disabled={ocupado === acoesDoc.id}
-                    className="flex h-12 flex-col items-center justify-center gap-1 rounded-2xl border border-border/60 bg-background font-body text-[12.5px] font-semibold text-foreground active:scale-95 transition disabled:opacity-60"
+                    className="flex h-12 flex-col items-center justify-center gap-1 rounded-2xl border border-border/60 bg-background font-body text-[12.5px] font-semibold text-foreground active:opacity-70 transition disabled:opacity-60"
                   >
                     <FileText className="h-[18px] w-[18px] text-blue-500" />
                     Word
@@ -366,7 +366,7 @@ const DocumentosSheet = ({ categoria, open, onClose }: Props) => {
                   <button
                     onClick={() => { const d = acoesDoc; setAcoesDoc(null); baixarPremium(d, 'pdf'); }}
                     disabled={ocupado === acoesDoc.id}
-                    className="flex h-12 flex-col items-center justify-center gap-1 rounded-2xl border border-border/60 bg-background font-body text-[12.5px] font-semibold text-foreground active:scale-95 transition disabled:opacity-60"
+                    className="flex h-12 flex-col items-center justify-center gap-1 rounded-2xl border border-border/60 bg-background font-body text-[12.5px] font-semibold text-foreground active:opacity-70 transition disabled:opacity-60"
                   >
                     <FileBadge className="h-[18px] w-[18px] text-red-500" />
                     PDF

@@ -321,7 +321,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
               sessaoRef.current?.encerrar();
               onVoltar();
             }}
-            className="w-10 h-10 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-white active:scale-95 transition-all cursor-pointer shrink-0"
+            className="w-10 h-10 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-white active:opacity-70 transition-all cursor-pointer shrink-0"
             aria-label="Voltar"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -341,7 +341,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
             <button
               type="button"
               onClick={() => setGateAberto(true)}
-              className="p-2 rounded-xl bg-amber-500 text-black active:scale-95 transition-all shadow"
+              className="p-2 rounded-xl bg-amber-500 text-black active:opacity-70 transition-all shadow"
               title="Liberar 5 min diários"
             >
               <Crown className="w-4 h-4" />
@@ -403,7 +403,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
             <button
               type="button"
               onClick={alternarMic}
-              className={`absolute bottom-6 left-1/2 -translate-x-1/2 w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border shadow-2xl active:scale-95 transition-all cursor-pointer z-50 backdrop-blur-md ${
+              className={`absolute bottom-6 left-1/2 -translate-x-1/2 w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border shadow-2xl active:opacity-70 transition-all cursor-pointer z-50 backdrop-blur-md ${
                 micAtivo
                   ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 hover:bg-emerald-500/30'
                   : 'bg-zinc-800/80 text-zinc-400 border-zinc-700'
@@ -495,7 +495,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
             <button
               type="button"
               onClick={conectar}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-600 text-white text-xs font-bold active:scale-95 transition-all shadow cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-600 text-white text-xs font-bold active:opacity-70 transition-all shadow cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5" /> Tentar Novamente
             </button>
@@ -513,7 +513,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
                 key={idx}
                 type="button"
                 onClick={() => handleEnviarMensagem(sug)}
-                className="shrink-0 px-4 py-2 rounded-xl bg-zinc-900 border border-white/10 text-xs sm:text-sm font-medium text-zinc-300 hover:text-white hover:border-amber-500/40 active:scale-95 transition-all cursor-pointer shadow-sm"
+                className="shrink-0 px-4 py-2 rounded-xl bg-zinc-900 border border-white/10 text-xs sm:text-sm font-medium text-zinc-300 hover:text-white hover:border-amber-500/40 active:opacity-70 transition-all cursor-pointer shadow-sm"
               >
                 <Sparkles className="w-4 h-4 inline mr-1 text-amber-400" />
                 {sug}
@@ -527,7 +527,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
               <button
                 type="button"
                 onClick={() => setMostrarInput(true)}
-                className="w-12 h-12 rounded-full bg-zinc-900 border border-white/10 text-zinc-400 hover:text-white flex items-center justify-center shadow-lg active:scale-95 transition-all"
+                className="w-12 h-12 rounded-full bg-zinc-900 border border-white/10 text-zinc-400 hover:text-white flex items-center justify-center shadow-lg active:opacity-70 transition-all"
                 aria-label="Digitar mensagem"
               >
                 <MessageSquare className="w-5 h-5" />
@@ -560,7 +560,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
                   type="button"
                   onClick={() => handleEnviarMensagem()}
                   disabled={!inputTexto.trim()}
-                  className="absolute right-2 w-8 h-8 rounded-xl bg-amber-500 disabled:opacity-30 text-black flex items-center justify-center active:scale-95 transition-all cursor-pointer shadow-md"
+                  className="absolute right-2 w-8 h-8 rounded-xl bg-amber-500 disabled:opacity-30 text-black flex items-center justify-center active:opacity-70 transition-all cursor-pointer shadow-md"
                   aria-label="Enviar"
                 >
                   <Send className="w-4 h-4" />
@@ -602,7 +602,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
                       cota.setLimiteModalAberto(false);
                       setGateAberto(true);
                     }}
-                    className="w-full h-12 rounded-2xl bg-amber-500 text-black font-black text-sm shadow hover:bg-amber-400 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full h-12 rounded-2xl bg-amber-500 text-black font-black text-sm shadow hover:bg-amber-400 active:opacity-70 transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Crown className="w-4 h-4" /> Assinar o PRIME
                   </button>

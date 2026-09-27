@@ -242,7 +242,7 @@ const HomeHorusBannerCarousel = () => {
             type="button"
             onClick={() => paginate(-1)}
             aria-label="Anterior"
-            className="w-7 h-7 rounded-full bg-secondary/60 hover:bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground transition active:scale-90"
+            className="w-7 h-7 rounded-full bg-secondary/60 hover:bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground transition active:opacity-70"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
@@ -250,7 +250,7 @@ const HomeHorusBannerCarousel = () => {
             type="button"
             onClick={() => paginate(1)}
             aria-label="Próximo"
-            className="w-7 h-7 rounded-full bg-secondary/60 hover:bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground transition active:scale-90"
+            className="w-7 h-7 rounded-full bg-secondary/60 hover:bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground transition active:opacity-70"
           >
             <ChevronRight className="w-4 h-4" />
           </button>

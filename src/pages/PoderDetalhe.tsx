@@ -98,7 +98,7 @@ const PoderDetalhe = () => {
         <header className="relative z-20 px-3 md:px-6 pt-2 flex items-center justify-start">
           <button
              onClick={() => { haptic.selection(); goBack(); }}
-             className="w-11 h-11 md:w-12 md:h-12 rounded-full bg-black/60 hover:bg-black/80 border border-white/20 backdrop-blur-md shadow-lg shadow-black/30 flex items-center justify-center active:scale-95 transition"
+             className="w-11 h-11 md:w-12 md:h-12 rounded-full bg-black/60 hover:bg-black/80 border border-white/20 backdrop-blur-md shadow-lg shadow-black/30 flex items-center justify-center active:opacity-70 transition"
              aria-label="Voltar"
           >
             <ArrowLeft className="w-5 h-5 text-white" />
@@ -126,7 +126,7 @@ const PoderDetalhe = () => {
                 <>
                   <button
                     onClick={() => { haptic.selection(); navigate('/resumos-juridicos/jurisprudencia/stf'); }}
-                    className="flex flex-col items-center justify-center py-2 px-4 rounded-xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] min-w-[72px]"
+                    className="flex flex-col items-center justify-center py-2 px-4 rounded-xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-1.5 text-center min-h-[48px] min-w-[72px]"
                   >
                     <ScrollText className="w-4 h-4 text-[#FACC15]" strokeWidth={2} />
                     <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
@@ -136,7 +136,7 @@ const PoderDetalhe = () => {
                   
                   <button
                     onClick={() => { haptic.selection(); navigate('/ferramentas/stf/biografias'); }}
-                    className="flex flex-col items-center justify-center py-2 px-4 rounded-xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] min-w-[72px]"
+                    className="flex flex-col items-center justify-center py-2 px-4 rounded-xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-1.5 text-center min-h-[48px] min-w-[72px]"
                   >
                     <Users className="w-4 h-4 text-[#34D399]" strokeWidth={2} />
                     <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
@@ -149,7 +149,7 @@ const PoderDetalhe = () => {
               {id === 'senado' && (
                 <button
                   onClick={() => { haptic.selection(); navigate('/tres-poderes/senado/agenda?tab=senadores'); }}
-                  className="flex flex-col items-center justify-center py-2 px-4 rounded-xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] min-w-[72px]"
+                  className="flex flex-col items-center justify-center py-2 px-4 rounded-xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-1.5 text-center min-h-[48px] min-w-[72px]"
                 >
                   <Users className="w-4 h-4 text-[#22C55E]" strokeWidth={2} />
                   <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
@@ -161,7 +161,7 @@ const PoderDetalhe = () => {
               {id === 'camara' && (
                 <button
                   onClick={() => { haptic.selection(); navigate('/radar/deputados'); }}
-                  className="flex flex-col items-center justify-center py-2 px-4 rounded-xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] min-w-[72px]"
+                  className="flex flex-col items-center justify-center py-2 px-4 rounded-xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-1.5 text-center min-h-[48px] min-w-[72px]"
                 >
                   <Users className="w-4 h-4 text-[#0EA5E9]" strokeWidth={2} />
                   <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">

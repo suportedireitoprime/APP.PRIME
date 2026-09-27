@@ -45,7 +45,7 @@ const RecentesOverlay = ({ open, onClose, onSelectLei }: Props) => {
               <button
                 onClick={() => { haptic.light(); onClose(); }}
                 aria-label="Fechar"
-                className="w-12 h-12 md:w-11 md:h-11 rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center active:scale-95 transition"
+                className="w-12 h-12 md:w-11 md:h-11 rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center active:opacity-70 transition"
               >
                 <X className="w-[22px] h-[22px] text-white" />
               </button>
@@ -61,7 +61,7 @@ const RecentesOverlay = ({ open, onClose, onSelectLei }: Props) => {
                 <button
                   onClick={() => { haptic.warning(); clearRecentes(); setList([]); }}
                   aria-label="Limpar histórico"
-                  className="w-12 h-12 md:w-11 md:h-11 rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center active:scale-95 transition"
+                  className="w-12 h-12 md:w-11 md:h-11 rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center active:opacity-70 transition"
                 >
                   <Trash2 className="w-5 h-5 text-white/70" />
                 </button>

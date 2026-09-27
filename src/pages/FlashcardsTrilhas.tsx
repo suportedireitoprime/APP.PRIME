@@ -302,7 +302,7 @@ const TrilhaMapaEstudo = ({ trilha, onBack }: { trilha: FlashcardTrilhaAtiva, on
                       <button
                         onClick={() => handlePraticarDia(dia)}
                         className={`flex-1 py-2 px-4 rounded-xl text-xs font-bold transition-all ${
-                          isCompleted ? 'bg-muted text-muted-foreground hover:bg-muted/80' : 'bg-success text-white shadow-md shadow-success/20 active:scale-95'
+                          isCompleted ? 'bg-muted text-muted-foreground hover:bg-muted/80' : 'bg-success text-white shadow-md shadow-success/20 active:opacity-70'
                         }`}
                       >
                         Estudar
@@ -413,7 +413,7 @@ export default function FlashcardsTrilhas() {
                             haptic.selection();
                             setTrilhaParaDeletar(trilha.id);
                           }}
-                          className="w-10 h-10 -mr-2 -mt-2 rounded-full flex items-center justify-center text-destructive/60 hover:bg-destructive/10 hover:text-destructive transition-colors shrink-0 z-10 active:scale-95"
+                          className="w-10 h-10 -mr-2 -mt-2 rounded-full flex items-center justify-center text-destructive/60 hover:bg-destructive/10 hover:text-destructive transition-colors shrink-0 z-10 active:opacity-70"
                         >
                           <Trash2 className="w-5 h-5" />
                         </button>
@@ -504,7 +504,7 @@ export default function FlashcardsTrilhas() {
                 <button
                   type="button"
                   onClick={() => setTrilhaParaDeletar(null)}
-                  className="flex-1 py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm transition-all active:scale-95 border border-white/5"
+                  className="flex-1 py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm transition-all active:opacity-70 border border-white/5"
                 >
                   Não, Cancelar
                 </button>
@@ -516,7 +516,7 @@ export default function FlashcardsTrilhas() {
                     setTrilhaParaDeletar(null);
                     toast.success("Trilha apagada com sucesso!");
                   }}
-                  className="flex-1 py-3.5 rounded-2xl bg-destructive hover:bg-destructive/90 text-white font-bold text-sm transition-all active:scale-95 shadow-lg shadow-destructive/25"
+                  className="flex-1 py-3.5 rounded-2xl bg-destructive hover:bg-destructive/90 text-white font-bold text-sm transition-all active:opacity-70 shadow-lg shadow-destructive/25"
                 >
                   Sim, Apagar
                 </button>

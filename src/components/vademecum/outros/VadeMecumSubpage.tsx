@@ -19,7 +19,7 @@ const VadeMecumSubpage = ({ titulo, descricao, children }: Props) => {
         <div className="max-w-5xl mx-auto">
           <button
             onClick={() => navigate('/vade-mecum')}
-            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/15 ring-1 ring-white/25 flex items-center justify-center text-white mb-3 active:scale-95 transition touch-manipulation"
+            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/15 ring-1 ring-white/25 flex items-center justify-center text-white mb-3 active:opacity-70 transition touch-manipulation"
             aria-label="Voltar"
           >
             <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />

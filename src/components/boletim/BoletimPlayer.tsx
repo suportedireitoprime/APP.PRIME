@@ -452,7 +452,7 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
           <button onClick={() => goTo(idx - 1)} disabled={idx === 0} className="w-12 h-12 rounded-full bg-white/10 backdrop-blur border border-white/10 flex items-center justify-center disabled:opacity-30 hover:bg-white/20 transition">
             <SkipBack className="w-5 h-5 text-white" />
           </button>
-          <button onClick={() => setPlaying((p) => !p)} className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-[0_0_24px_rgba(255,255,255,0.4)] hover:scale-105 active:scale-95 transition-all">
+          <button onClick={() => setPlaying((p) => !p)} className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-[0_0_24px_rgba(255,255,255,0.4)] hover:scale-105 active:opacity-70 transition-all">
             {playing ? <Pause className="w-7 h-7 text-black" fill="black" /> : <Play className="w-7 h-7 text-black ml-1" fill="black" />}
           </button>
           <button onClick={() => goTo(idx + 1)} disabled={idx === scenes.length - 1} className="w-12 h-12 rounded-full bg-white/10 backdrop-blur border border-white/10 flex items-center justify-center disabled:opacity-30 hover:bg-white/20 transition">

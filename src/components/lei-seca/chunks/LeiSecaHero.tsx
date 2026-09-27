@@ -126,7 +126,7 @@ export function LeiSecaHero({
             type="button"
             onClick={handleBack}
             aria-label="Voltar para tela inicial"
-            className="w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/45 hover:bg-black/65 border border-white/15 text-white backdrop-blur-md flex items-center justify-center active:scale-95 transition-all shadow-lg"
+            className="w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/45 hover:bg-black/65 border border-white/15 text-white backdrop-blur-md flex items-center justify-center active:opacity-70 transition-all shadow-lg"
           >
             <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           </button>

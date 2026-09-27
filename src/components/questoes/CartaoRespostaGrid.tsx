@@ -43,7 +43,7 @@ export const CartaoRespostaGrid = ({
               onSelect(i);
             }}
             className={cn(
-              "relative flex aspect-square w-full items-center justify-center rounded-full border-2 text-[15px] font-bold transition-transform active:scale-90",
+              "relative flex aspect-square w-full items-center justify-center rounded-full border-2 text-[15px] font-bold transition-transform active:opacity-70",
               bgClass
             )}
           >

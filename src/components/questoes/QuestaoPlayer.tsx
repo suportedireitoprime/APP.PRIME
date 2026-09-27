@@ -174,7 +174,7 @@ const QuestaoPlayer = ({ questoes, loading, contexto = 'pratica', onRegistrar, o
         </span>
         <div className="flex items-center gap-3">
           <span className="text-[12px] tabular-nums text-muted-foreground">{acertos} acertos</span>
-          <button onClick={favoritar} aria-label="Favoritar questão" className="text-muted-foreground hover:text-primary transition-transform active:scale-90">
+          <button onClick={favoritar} aria-label="Favoritar questão" className="text-muted-foreground hover:text-primary transition-transform active:opacity-70">
             <Heart className={`h-5 w-5 ${atual && isFavorito(atual.id) ? 'fill-primary text-primary' : ''}`} />
           </button>
         </div>
@@ -243,7 +243,7 @@ const QuestaoPlayer = ({ questoes, loading, contexto = 'pratica', onRegistrar, o
           <button
             onClick={() => setIdx((i) => i + 1)}
             disabled={!resp}
-            className="inline-flex h-12 items-center gap-1.5 rounded-xl bg-primary px-5 text-[15px] font-bold text-primary-foreground disabled:opacity-40 active:scale-95 transition-transform"
+            className="inline-flex h-12 items-center gap-1.5 rounded-xl bg-primary px-5 text-[15px] font-bold text-primary-foreground disabled:opacity-40 active:opacity-70 transition-transform"
           >
             Próxima <ChevronRight className="h-4 w-4" />
           </button>
@@ -251,7 +251,7 @@ const QuestaoPlayer = ({ questoes, loading, contexto = 'pratica', onRegistrar, o
           <button
             onClick={onNovoBloco}
             disabled={!resp}
-            className="inline-flex h-12 items-center gap-1.5 rounded-xl bg-primary px-5 text-[15px] font-bold text-primary-foreground disabled:opacity-40 active:scale-95 transition-transform"
+            className="inline-flex h-12 items-center gap-1.5 rounded-xl bg-primary px-5 text-[15px] font-bold text-primary-foreground disabled:opacity-40 active:opacity-70 transition-transform"
           >
             <RotateCw className="h-4 w-4" /> Novo bloco
           </button>

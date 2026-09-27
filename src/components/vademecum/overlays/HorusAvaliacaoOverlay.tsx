@@ -146,7 +146,7 @@ export function HorusAvaliacaoOverlay() {
                 <button
                   onClick={handleAvaliar}
                   disabled={submitting}
-                  className="w-full relative group overflow-hidden rounded-xl bg-primary text-primary-foreground font-body font-bold text-[14px] py-3 shadow-lg shadow-primary/25 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-95"
+                  className="w-full relative group overflow-hidden rounded-xl bg-primary text-primary-foreground font-body font-bold text-[14px] py-3 shadow-lg shadow-primary/25 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:opacity-70"
                 >
                   <Star className="w-4 h-4 fill-primary-foreground" />
                   {submitting ? 'Abrindo...' : 'Avaliar o Aplicativo'}

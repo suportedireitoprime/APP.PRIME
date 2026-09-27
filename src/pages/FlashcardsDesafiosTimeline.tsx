@@ -256,7 +256,7 @@ export const FlashcardsDesafiosTimeline = () => {
                 haptic.selection();
                 setMenuAssuntosAberto(true);
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-900/80 border border-white/10 hover:border-white/20 text-xs font-bold text-white transition-colors active:scale-95 shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-900/80 border border-white/10 hover:border-white/20 text-xs font-bold text-white transition-colors active:opacity-70 shadow-sm"
             >
               <Layers className="w-3.5 h-3.5 text-zinc-400" />
               <span>Ver todos ({decksDaMateria.length})</span>
@@ -272,7 +272,7 @@ export const FlashcardsDesafiosTimeline = () => {
             {/* Opção "Todos os Assuntos" */}
             <button
               onClick={() => handleSelecionarTema('todos')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-2xl border shrink-0 text-xs font-bold transition-all active:scale-95 select-none ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-2xl border shrink-0 text-xs font-bold transition-all active:opacity-70 select-none ${
                 temaAtivo === 'todos'
                   ? 'bg-white text-zinc-950 font-black shadow-lg shadow-white/10 border-white'
                   : 'bg-zinc-900/70 text-zinc-400 border-white/10 hover:bg-zinc-800 hover:text-white'
@@ -297,7 +297,7 @@ export const FlashcardsDesafiosTimeline = () => {
                 <button
                   key={d.id}
                   onClick={() => handleSelecionarTema(d.tema)}
-                  className={`flex items-center gap-2 px-3.5 py-2 rounded-2xl border shrink-0 text-xs font-bold transition-all active:scale-95 select-none ${
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-2xl border shrink-0 text-xs font-bold transition-all active:opacity-70 select-none ${
                     isSelected
                       ? 'text-white shadow-lg'
                       : 'bg-zinc-900/60 border-white/10 text-zinc-400 hover:bg-zinc-800 hover:text-white'

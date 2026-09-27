@@ -189,7 +189,7 @@ const SheetLeis = ({ area, open, onOpenChange }: Props) => {
               <div className="flex items-center gap-2 border-b px-3 pt-2 pb-3 shrink-0">
                 <button
                   onClick={() => { haptic.selection(); setPasso('main'); }}
-                  className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-muted/50 hover:bg-muted text-foreground transition-colors active:scale-95"
+                  className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-muted/50 hover:bg-muted text-foreground transition-colors active:opacity-70"
                 >
                   <ChevronLeft className="h-6 w-6" />
                 </button>

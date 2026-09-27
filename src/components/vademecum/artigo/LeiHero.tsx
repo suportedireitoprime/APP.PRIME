@@ -104,7 +104,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
             type="button"
             onClick={goBack}
             aria-label="Voltar"
-            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full flex items-center justify-center bg-black/45 backdrop-blur-md border border-white/10 text-white shadow-xl transition-all hover:bg-black/60 active:scale-95 cursor-pointer"
+            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full flex items-center justify-center bg-black/45 backdrop-blur-md border border-white/10 text-white shadow-xl transition-all hover:bg-black/60 active:opacity-70 cursor-pointer"
           >
             <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           </button>
@@ -114,7 +114,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
               <button
                 type="button"
                 onClick={() => setShowEmentaDialog(true)}
-                className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-all font-semibold bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full border border-white/20 active:scale-95 shadow-lg"
+                className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-all font-semibold bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full border border-white/20 active:opacity-70 shadow-lg"
               >
                 <ScrollText className="w-3.5 h-3.5" />
                 <span>Ementa</span>
@@ -126,7 +126,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                 href={planaltoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs sm:text-sm text-white hover:text-white transition-all font-bold bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full border border-white/25 active:scale-95 shadow-xl hover:border-white/40"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs sm:text-sm text-white hover:text-white transition-all font-bold bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full border border-white/25 active:opacity-70 shadow-xl hover:border-white/40"
               >
                 <ExternalLink className="w-3.5 h-3.5 text-zinc-300" />
                 <span>Planalto</span>
@@ -170,7 +170,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                 haptic.selection();
                 onOpenOverlay?.('fav');
               }}
-              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] select-none cursor-pointer relative"
+              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-1.5 text-center min-h-[48px] select-none cursor-pointer relative"
             >
               {favCount > 0 && (
                 <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] px-1 rounded-full text-white text-[10px] font-bold leading-none flex items-center justify-center border-2 border-[#050505] shadow-lg z-20 bg-[#F43F5E] pointer-events-none">
@@ -194,7 +194,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                 haptic.selection();
                 onOpenOverlay?.('anotacoes');
               }}
-              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] select-none cursor-pointer relative"
+              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-1.5 text-center min-h-[48px] select-none cursor-pointer relative"
             >
               {anotacoesCount > 0 && (
                 <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] px-1 rounded-full text-zinc-950 text-[10px] font-bold leading-none flex items-center justify-center border-2 border-[#050505] shadow-lg z-20 bg-[#FACC15] pointer-events-none">
@@ -217,7 +217,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                 haptic.selection();
                 onOpenOverlay?.('radar');
               }}
-              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] select-none cursor-pointer relative"
+              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-1.5 text-center min-h-[48px] select-none cursor-pointer relative"
             >
               {radarCount > 0 && (
                 <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] px-1 rounded-full text-white text-[10px] font-bold leading-none flex items-center justify-center border-2 border-[#050505] shadow-lg z-20 bg-[#38BDF8] pointer-events-none">
@@ -240,7 +240,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                 haptic.selection();
                 onOpenOverlay?.('playlist');
               }}
-              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-1.5 text-center min-h-[48px] select-none cursor-pointer relative"
+              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-1.5 text-center min-h-[48px] select-none cursor-pointer relative"
             >
               {playlistCount > 0 && (
                 <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] px-1 rounded-full text-white text-[10px] font-bold leading-none flex items-center justify-center border-2 border-[#050505] shadow-lg z-20 bg-[#A855F7] pointer-events-none">

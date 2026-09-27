@@ -583,7 +583,7 @@ const ApresentacaoPlayer = () => {
             </div>
 
             <div className="flex items-center gap-3">
-              <button onClick={handleVoltar} className="w-12 h-12 sm:w-[52px] sm:h-[52px] flex items-center justify-center active:scale-95"><ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} /></button>
+              <button onClick={handleVoltar} className="w-12 h-12 sm:w-[52px] sm:h-[52px] flex items-center justify-center active:opacity-70"><ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} /></button>
               <div className="min-w-0 flex-1">
                 <p className="font-heading font-bold text-sm truncate">{apres.titulo}</p>
                 <p className="text-[11px] text-white/60 font-body truncate">
@@ -708,8 +708,8 @@ const ApresentacaoPlayer = () => {
 
               {/* Centro de Playback */}
               <div className="flex items-center gap-5">
-                <button onClick={() => irPara(idx - 1)} disabled={idx === 0} className="w-12 h-12 rounded-full bg-zinc-800/80 flex items-center justify-center disabled:opacity-30 active:scale-95 transition-transform"><ChevronLeft className="w-6 h-6" /></button>
-                <button onClick={alternarPlay} aria-label={tocando ? 'Pausar' : 'Reproduzir'} className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center active:scale-90 transition-transform shadow-[0_0_20px_rgba(233,30,99,0.3)]">
+                <button onClick={() => irPara(idx - 1)} disabled={idx === 0} className="w-12 h-12 rounded-full bg-zinc-800/80 flex items-center justify-center disabled:opacity-30 active:opacity-70 transition-transform"><ChevronLeft className="w-6 h-6" /></button>
+                <button onClick={alternarPlay} aria-label={tocando ? 'Pausar' : 'Reproduzir'} className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center active:opacity-70 transition-transform shadow-[0_0_20px_rgba(233,30,99,0.3)]">
                   {preparando ? (
                     <Loader2 className="w-7 h-7 animate-spin" />
                   ) : (
@@ -722,7 +722,7 @@ const ApresentacaoPlayer = () => {
                     </AnimatePresence>
                   )}
                 </button>
-                <button onClick={() => irPara(idx + 1)} disabled={idx === slides.length - 1} className="w-12 h-12 rounded-full bg-zinc-800/80 flex items-center justify-center disabled:opacity-30 active:scale-95 transition-transform"><ChevronRight className="w-6 h-6" /></button>
+                <button onClick={() => irPara(idx + 1)} disabled={idx === slides.length - 1} className="w-12 h-12 rounded-full bg-zinc-800/80 flex items-center justify-center disabled:opacity-30 active:opacity-70 transition-transform"><ChevronRight className="w-6 h-6" /></button>
               </div>
 
               {/* Opções à direita */}

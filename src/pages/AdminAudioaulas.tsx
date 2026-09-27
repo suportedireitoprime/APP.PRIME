@@ -488,7 +488,7 @@ const AdminAudioaulas = () => {
               <button
                 key={lei.id}
                 onClick={() => abrirLei(lei)}
-                className="flex items-center gap-3 p-4 rounded-xl border border-border/60 bg-card text-left transition hover:bg-card/80 active:scale-95"
+                className="flex items-center gap-3 p-4 rounded-xl border border-border/60 bg-card text-left transition hover:bg-card/80 active:opacity-70"
               >
                 <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: `${lei.iconColor}20`, color: lei.iconColor }}>
                   <Headphones className="w-5 h-5" />

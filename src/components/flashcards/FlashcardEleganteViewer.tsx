@@ -576,7 +576,7 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               onClick={() => handleManualAction('erro')}
-              className="h-12 px-6 rounded-xl text-sm font-bold inline-flex items-center justify-center gap-2 transition-all active:scale-95 text-white shadow-lg bg-red-500 hover:bg-red-600"
+              className="h-12 px-6 rounded-xl text-sm font-bold inline-flex items-center justify-center gap-2 transition-all active:opacity-70 text-white shadow-lg bg-red-500 hover:bg-red-600"
             >
               Errei
             </motion.button>
@@ -584,7 +584,7 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               onClick={() => handleManualAction('acerto')}
-              className="h-12 px-6 rounded-xl text-sm font-bold inline-flex items-center justify-center gap-2 transition-all active:scale-95 text-white shadow-lg bg-green-500 hover:bg-green-600"
+              className="h-12 px-6 rounded-xl text-sm font-bold inline-flex items-center justify-center gap-2 transition-all active:opacity-70 text-white shadow-lg bg-green-500 hover:bg-green-600"
             >
               Lembrei
             </motion.button>

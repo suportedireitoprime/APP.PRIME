@@ -284,7 +284,7 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
                   haptic.selection();
                   onClose();
                 }}
-                className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full flex items-center justify-center bg-zinc-800/90 hover:bg-zinc-700/90 border border-white/10 text-white shadow-xl active:scale-95 transition-all cursor-pointer shrink-0"
+                className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full flex items-center justify-center bg-zinc-800/90 hover:bg-zinc-700/90 border border-white/10 text-white shadow-xl active:opacity-70 transition-all cursor-pointer shrink-0"
                 title="Voltar ao Vade Mecum"
               >
                 <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
@@ -312,7 +312,7 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
                 href={data.linkLei}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/[0.08] hover:bg-white/[0.15] text-white border border-white/15 text-xs font-semibold transition-all shadow-md active:scale-95 cursor-pointer shrink-0"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/[0.08] hover:bg-white/[0.15] text-white border border-white/15 text-xs font-semibold transition-all shadow-md active:opacity-70 cursor-pointer shrink-0"
               >
                 <span>Planalto</span>
                 <ExternalLink className="w-3.5 h-3.5 text-zinc-300" />
@@ -392,7 +392,7 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
                 haptic.selection();
                 setTextoView('vigente');
               }}
-              className={`flex items-center justify-center gap-2 py-3 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all select-none cursor-pointer active:scale-98 ${
+              className={`flex items-center justify-center gap-2 py-3 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all select-none cursor-pointer active:opacity-70 ${
                 textoView === 'vigente'
                   ? 'bg-hero-panel text-white shadow-lg shadow-red-950/60 border border-red-500/40 ring-1 ring-white/10'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.05]'
@@ -412,7 +412,7 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
                 haptic.selection();
                 setTextoView('anterior');
               }}
-              className={`flex items-center justify-center gap-2 py-3 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all select-none cursor-pointer active:scale-98 ${
+              className={`flex items-center justify-center gap-2 py-3 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all select-none cursor-pointer active:opacity-70 ${
                 textoView === 'anterior'
                   ? 'bg-hero-panel text-white shadow-lg shadow-red-950/60 border border-red-500/40 ring-1 ring-white/10'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.05]'
@@ -515,7 +515,7 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
                     <button
                       type="button"
                       onClick={() => setShowExplicacaoSheet(false)}
-                      className="w-10 h-10 rounded-full flex items-center justify-center bg-white/[0.08] hover:bg-white/15 border border-white/10 text-white active:scale-95 transition-all shrink-0"
+                      className="w-10 h-10 rounded-full flex items-center justify-center bg-white/[0.08] hover:bg-white/15 border border-white/10 text-white active:opacity-70 transition-all shrink-0"
                       title="Fechar explicação"
                     >
                       <ArrowLeft className="w-5 h-5 text-white" />
@@ -542,7 +542,7 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
                       void gerarExplicacaoIA(data, true);
                     }}
                     disabled={aiLoading}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] active:scale-95 text-xs font-semibold text-zinc-200 border border-white/10 transition-all shrink-0 disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] active:opacity-70 text-xs font-semibold text-zinc-200 border border-white/10 transition-all shrink-0 disabled:opacity-50"
                     title="Regerar análise"
                   >
                     <RotateCcw className={`w-3.5 h-3.5 ${aiLoading ? 'animate-spin' : ''}`} />
@@ -605,7 +605,7 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
                             onClose();
                             onIrParaArtigo(data.artigo);
                           }}
-                          className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl bg-hero-panel hover:bg-primary text-white text-sm font-bold shadow-lg shadow-red-950/40 active:scale-95 transition-all cursor-pointer border border-red-500/30"
+                          className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl bg-hero-panel hover:bg-primary text-white text-sm font-bold shadow-lg shadow-red-950/40 active:opacity-70 transition-all cursor-pointer border border-red-500/30"
                         >
                           <Bookmark className="w-4 h-4 text-white" />
                           <span>Ir para o Artigo Completo</span>

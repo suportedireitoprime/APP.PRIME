@@ -119,7 +119,7 @@ const Atualizacoes = () => {
             type="button"
             onClick={handleBack}
             aria-label="Voltar"
-            className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/50 border border-white/15 text-white backdrop-blur-md transition-colors hover:bg-black/70 active:scale-95 shadow-xl cursor-pointer"
+            className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/50 border border-white/15 text-white backdrop-blur-md transition-colors hover:bg-black/70 active:opacity-70 shadow-xl cursor-pointer"
           >
             <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           </button>
@@ -167,7 +167,7 @@ const Atualizacoes = () => {
             </div>
             <button 
               onClick={() => { haptic.light(); startTransition(() => navigate('/radar-360')); }}
-              className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-white font-medium transition-colors active:scale-95 cursor-pointer"
+              className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-white font-medium transition-colors active:opacity-70 cursor-pointer"
             >
               Ver todos <ChevronRight className="w-4 h-4" />
             </button>
@@ -180,7 +180,7 @@ const Atualizacoes = () => {
               <div 
                 key={lei.id} 
                 onClick={() => { haptic.selection(); startTransition(() => navigate(`/radar-360?lei=${lei.id}`)); }}
-                className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:scale-95"
+                className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
               >
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <Scale className="w-16 h-16 sm:w-20 sm:h-20" />
@@ -252,7 +252,7 @@ const Atualizacoes = () => {
                     Notícias Jurídicas
                   </h2>
                 </div>
-                <button onClick={() => { haptic.light(); startTransition(() => navigate('/noticias')); }} className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-white font-medium transition-colors active:scale-95 cursor-pointer">Ver todos <ChevronRight className="w-4 h-4" /></button>
+                <button onClick={() => { haptic.light(); startTransition(() => navigate('/noticias')); }} className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-white font-medium transition-colors active:opacity-70 cursor-pointer">Ver todos <ChevronRight className="w-4 h-4" /></button>
               </div>
               <p className="text-muted-foreground text-[13px] px-1 mb-4 truncate">
                 Principais destaques do mundo jurídico
@@ -316,7 +316,7 @@ const Atualizacoes = () => {
                     Concursos Públicos
                   </h2>
                 </div>
-                <button onClick={() => { haptic.light(); startTransition(() => navigate('/concursos')); }} className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-white font-medium transition-colors active:scale-95 cursor-pointer">Ver todos <ChevronRight className="w-4 h-4" /></button>
+                <button onClick={() => { haptic.light(); startTransition(() => navigate('/concursos')); }} className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-white font-medium transition-colors active:opacity-70 cursor-pointer">Ver todos <ChevronRight className="w-4 h-4" /></button>
               </div>
               <p className="text-muted-foreground text-[13px] px-1 mb-4 truncate">
                 Últimas oportunidades e editais abertos
@@ -382,7 +382,7 @@ const Atualizacoes = () => {
             </div>
             <button 
               onClick={() => { haptic.light(); startTransition(() => navigate('/radar/proposicoes')); }}
-              className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-white font-medium transition-colors active:scale-95 cursor-pointer"
+              className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-white font-medium transition-colors active:opacity-70 cursor-pointer"
             >
               Ver todos <ChevronRight className="w-4 h-4" />
             </button>
@@ -395,7 +395,7 @@ const Atualizacoes = () => {
               <div 
                 key={pl.id_externo || pl.dados_json?.id || pl.numero} 
                 onClick={() => { haptic.selection(); startTransition(() => navigate(`/radar/pl/${pl.id_externo || pl.dados_json?.id}`)); }}
-                className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:scale-95"
+                className="w-[240px] h-[220px] sm:w-[280px] sm:h-[230px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
               >
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <FileText className="w-16 h-16 sm:w-20 sm:h-20" />

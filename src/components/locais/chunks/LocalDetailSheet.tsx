@@ -153,7 +153,7 @@ export function LocalDetailSheet({
               <button
                 onClick={onClose}
                 aria-label="Fechar"
-                className="absolute top-3 left-3 w-10 h-10 rounded-full bg-background/90 backdrop-blur border border-border flex items-center justify-center active:scale-95 transition shadow-lg"
+                className="absolute top-3 left-3 w-10 h-10 rounded-full bg-background/90 backdrop-blur border border-border flex items-center justify-center active:opacity-70 transition shadow-lg"
               >
                 <ChevronDown className="w-5 h-5 text-foreground" />
               </button>
@@ -178,14 +178,14 @@ export function LocalDetailSheet({
                   <button
                     onClick={() => onToggleFavorito(selecionado.id)}
                     aria-label={isFav ? 'Remover dos favoritos' : 'Favoritar'}
-                    className="w-10 h-10 rounded-full bg-black/60 backdrop-blur border border-white/20 text-white flex items-center justify-center active:scale-95 transition hover:bg-black/75"
+                    className="w-10 h-10 rounded-full bg-black/60 backdrop-blur border border-white/20 text-white flex items-center justify-center active:opacity-70 transition hover:bg-black/75"
                   >
                     <Heart className={`w-5 h-5 ${isFav ? 'fill-red-500 text-red-500' : 'text-white'}`} />
                   </button>
                   <button
                     onClick={() => onCompartilhar(selecionado)}
                     aria-label="Compartilhar"
-                    className="w-10 h-10 rounded-full bg-black/60 backdrop-blur border border-white/20 text-white flex items-center justify-center active:scale-95 transition hover:bg-black/75"
+                    className="w-10 h-10 rounded-full bg-black/60 backdrop-blur border border-white/20 text-white flex items-center justify-center active:opacity-70 transition hover:bg-black/75"
                   >
                     <Share2 className="w-5 h-5 text-white" />
                   </button>
@@ -225,7 +225,7 @@ export function LocalDetailSheet({
                     copiarTexto(texto).then(() => toast.success('Endereço copiado'));
                   }}
                   aria-label="Copiar endereço"
-                  className="w-11 h-11 rounded-full border border-border bg-card flex items-center justify-center active:scale-95 transition hover:border-primary/40 shrink-0"
+                  className="w-11 h-11 rounded-full border border-border bg-card flex items-center justify-center active:opacity-70 transition hover:border-primary/40 shrink-0"
                 >
                   <Copy className="w-[18px] h-[18px] text-foreground" />
                 </button>

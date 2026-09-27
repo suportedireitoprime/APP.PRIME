@@ -556,7 +556,7 @@ export default function ResumoJuridicoReaderSheet({
                   <button
                     onClick={handleClose}
                     aria-label="Fechar"
-                    className="w-11 h-11 flex items-center justify-center rounded-full bg-secondary text-foreground shrink-0 hover:bg-secondary/80 active:scale-95 transition-all"
+                    className="w-11 h-11 flex items-center justify-center rounded-full bg-secondary text-foreground shrink-0 hover:bg-secondary/80 active:opacity-70 transition-all"
                   >
                     <ChevronDown className="w-5 h-5" strokeWidth={2.5} />
                   </button>
@@ -571,7 +571,7 @@ export default function ResumoJuridicoReaderSheet({
                   <button
                     onClick={toggleFav}
                     aria-label={fav ? "Remover dos favoritos" : "Favoritar"}
-                    className="w-11 h-11 flex items-center justify-center rounded-full bg-secondary text-foreground shrink-0 hover:bg-secondary/80 active:scale-95 transition-all"
+                    className="w-11 h-11 flex items-center justify-center rounded-full bg-secondary text-foreground shrink-0 hover:bg-secondary/80 active:opacity-70 transition-all"
                   >
                     <Heart
                       className="w-5 h-5 transition-transform"
@@ -660,7 +660,7 @@ export default function ResumoJuridicoReaderSheet({
                             <button
                               onClick={() => gerarMetodologia("conceitos", true)}
                               disabled={!!gerando}
-                              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-display font-bold text-sm tracking-wide active:scale-95 transition bg-[#ef4444] text-white hover:bg-[#ef4444]/90"
+                              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-display font-bold text-sm tracking-wide active:opacity-70 transition bg-[#ef4444] text-white hover:bg-[#ef4444]/90"
                             >
                               <Sparkles className="w-4 h-4" /> TENTAR GERAR NOVAMENTE
                             </button>
@@ -703,7 +703,7 @@ export default function ResumoJuridicoReaderSheet({
                         <button
                           onClick={() => gerarMetodologia(metodo)}
                           disabled={!!gerando}
-                          className={`inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-display font-bold text-sm tracking-wide active:scale-95 transition disabled:opacity-60 shadow-xl ${
+                          className={`inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-display font-bold text-sm tracking-wide active:opacity-70 transition disabled:opacity-60 shadow-xl ${
                             metodo === "cornell"
                               ? "bg-[#38bdf8] text-zinc-950 hover:bg-[#38bdf8]/90"
                               : "bg-[#fbbf24] text-zinc-950 hover:bg-[#fbbf24]/90"
@@ -738,7 +738,7 @@ export default function ResumoJuridicoReaderSheet({
                     <button
                       onClick={decFont}
                       aria-label="Diminuir fonte"
-                      className="w-10 h-11 flex items-center justify-center text-foreground hover:bg-secondary active:scale-95 transition-all"
+                      className="w-10 h-11 flex items-center justify-center text-foreground hover:bg-secondary active:opacity-70 transition-all"
                     >
                       <Minus className="w-4 h-4" strokeWidth={2.5} />
                     </button>
@@ -748,7 +748,7 @@ export default function ResumoJuridicoReaderSheet({
                     <button
                       onClick={incFont}
                       aria-label="Aumentar fonte"
-                      className="w-10 h-11 flex items-center justify-center text-foreground hover:bg-secondary active:scale-95 transition-all"
+                      className="w-10 h-11 flex items-center justify-center text-foreground hover:bg-secondary active:opacity-70 transition-all"
                     >
                       <Plus className="w-4 h-4" strokeWidth={2.5} />
                     </button>
@@ -761,7 +761,7 @@ export default function ResumoJuridicoReaderSheet({
                   onClick={() => setFontOpen((v) => !v)}
                   aria-label="Tamanho da fonte"
                   aria-expanded={fontOpen}
-                  className="w-11 h-11 flex items-center justify-center rounded-full bg-card/95 backdrop-blur-md border border-border shadow-xl text-foreground hover:bg-secondary active:scale-95 transition-all"
+                  className="w-11 h-11 flex items-center justify-center rounded-full bg-card/95 backdrop-blur-md border border-border shadow-xl text-foreground hover:bg-secondary active:opacity-70 transition-all"
                 >
                   <Type className="w-5 h-5" strokeWidth={2.5} />
                 </button>
@@ -775,7 +775,7 @@ export default function ResumoJuridicoReaderSheet({
                   }}
                   disabled={salvandoDrive}
                   aria-label="Baixar em PDF"
-                  className="w-12 h-12 flex items-center justify-center rounded-full bg-[#E11D48] text-white shadow-2xl hover:brightness-110 active:scale-95 transition-all disabled:opacity-60"
+                  className="w-12 h-12 flex items-center justify-center rounded-full bg-[#E11D48] text-white shadow-2xl hover:brightness-110 active:opacity-70 transition-all disabled:opacity-60"
                 >
                   {salvandoDrive ? (
                     <Loader2 className="w-5 h-5 animate-spin text-white" />

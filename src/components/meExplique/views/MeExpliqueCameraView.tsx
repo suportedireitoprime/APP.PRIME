@@ -160,7 +160,7 @@ export const MeExpliqueCameraView: React.FC<Props> = ({ onVoltar }) => {
             {engine.erroCamera && !engine.erro && (
               <button
                 onClick={() => void engine.abrirPreview()}
-                className="mt-3 flex h-12 min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-white/20 px-4 text-[14px] font-bold text-white hover:bg-white/30 active:scale-95 transition-all"
+                className="mt-3 flex h-12 min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-white/20 px-4 text-[14px] font-bold text-white hover:bg-white/30 active:opacity-70 transition-all"
               >
                 <RefreshCw className="h-4 w-4" /> Tentar de novo
               </button>
@@ -174,7 +174,7 @@ export const MeExpliqueCameraView: React.FC<Props> = ({ onVoltar }) => {
               <button
                 key={s}
                 onClick={() => engine.perguntar(s)}
-                className="flex shrink-0 items-center gap-1.5 rounded-full bg-white/15 px-3.5 py-2.5 min-h-[44px] text-[13px] font-medium backdrop-blur active:scale-95 transition-transform"
+                className="flex shrink-0 items-center gap-1.5 rounded-full bg-white/15 px-3.5 py-2.5 min-h-[44px] text-[13px] font-medium backdrop-blur active:opacity-70 transition-transform"
               >
                 <MessageSquare className="h-3.5 w-3.5" />
                 {s}
@@ -250,7 +250,7 @@ export const MeExpliqueCameraView: React.FC<Props> = ({ onVoltar }) => {
                       engine.setLimiteModal(false);
                       engine.setGateAberto(true);
                     }}
-                    className="w-full h-12 rounded-2xl bg-amber-500 text-black font-black text-sm shadow-md hover:bg-amber-400 active:scale-95 transition-all flex items-center justify-center gap-2"
+                    className="w-full h-12 rounded-2xl bg-amber-500 text-black font-black text-sm shadow-md hover:bg-amber-400 active:opacity-70 transition-all flex items-center justify-center gap-2"
                   >
                     <Crown className="w-4 h-4" /> Assinar o PRIME
                   </button>

@@ -169,7 +169,7 @@ const ResumosHero = ({
           <button
             onClick={() => { haptic.selection(); navigate('/'); }}
             aria-label="Voltar"
-            className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:scale-95"
+            className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70"
           >
             <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           </button>
@@ -204,7 +204,7 @@ const ResumosHero = ({
          <div className="relative mt-1 rounded-[20px] bg-[#0A0A0A] text-white shadow-xl ring-1 ring-white/5 overflow-hidden mx-1">
           <div className="grid grid-cols-3 divide-x divide-white/5">
             {/* Box 1: Total Resumos */}
-            <div className="flex flex-col items-center justify-center px-1.5 py-3.5 transition-colors hover:bg-white/5 active:scale-95 group select-none relative overflow-hidden">
+            <div className="flex flex-col items-center justify-center px-1.5 py-3.5 transition-colors hover:bg-white/5 active:opacity-70 group select-none relative overflow-hidden">
               <div className="flex items-center gap-0.5">
                 <span className="text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest text-white/50 group-hover:text-white transition-colors">
                   Total Resumos
@@ -218,7 +218,7 @@ const ResumosHero = ({
             </div>
 
             {/* Box 2: Total Ãreas */}
-            <div className="flex flex-col items-center justify-center px-1.5 py-3.5 transition-colors hover:bg-white/5 active:scale-95 group select-none">
+            <div className="flex flex-col items-center justify-center px-1.5 py-3.5 transition-colors hover:bg-white/5 active:opacity-70 group select-none">
               <div className="flex items-center gap-0.5">
                 <span className="text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest text-white/50 group-hover:text-white transition-colors">
                   Total Ãreas
@@ -231,7 +231,7 @@ const ResumosHero = ({
             </div>
 
             {/* Box 3: Total Temas */}
-            <div className="flex flex-col items-center justify-center px-1.5 py-3.5 transition-colors hover:bg-white/5 active:scale-95 group select-none">
+            <div className="flex flex-col items-center justify-center px-1.5 py-3.5 transition-colors hover:bg-white/5 active:opacity-70 group select-none">
               <div className="flex items-center gap-0.5">
                 <span className="text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest text-white/50 group-hover:text-white transition-colors">
                   Total Temas
@@ -272,7 +272,7 @@ const ResumosHero = ({
             <span className="relative z-[2] font-body text-white/70 text-[14.5px] font-medium truncate text-left">
               <TypingHint />
             </span>
-            <div className="absolute right-1.5 top-1/2 -translate-y-1/2 h-11 px-4 rounded-[14px] bg-hero-panel text-white font-display text-[12px] font-bold tracking-wider flex items-center justify-center shadow-md shadow-black/40 active:scale-95 transition">
+            <div className="absolute right-1.5 top-1/2 -translate-y-1/2 h-11 px-4 rounded-[14px] bg-hero-panel text-white font-display text-[12px] font-bold tracking-wider flex items-center justify-center shadow-md shadow-black/40 active:opacity-70 transition">
               PESQUISAR
             </div>
           </button>

@@ -383,7 +383,7 @@ export default function FlashcardsCargosDetalhes() {
               <div className="flex items-center gap-3 py-4">
                 <button 
                   onClick={() => { haptic.selection(); navigate('/flashcards/cargos'); }}
-                  className="w-10 h-10 flex items-center justify-center rounded-full bg-card border border-border shadow-sm active:scale-95 transition-transform"
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-card border border-border shadow-sm active:opacity-70 transition-transform"
                 >
                   <ArrowLeft className="w-5 h-5" />
                 </button>
@@ -521,7 +521,7 @@ export default function FlashcardsCargosDetalhes() {
             <div className="flex items-center gap-3 py-4">
               <button 
                 onClick={() => { haptic.selection(); navigate('/flashcards/cargos'); }}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-card border border-border shadow-sm active:scale-95 transition-transform"
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-card border border-border shadow-sm active:opacity-70 transition-transform"
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
@@ -615,7 +615,7 @@ export default function FlashcardsCargosDetalhes() {
             <p className="text-muted-foreground mb-8 max-w-sm">
               Revise os flashcards de {cargo.orgao} que estão agendados para hoje através da repetição espaçada.
             </p>
-            <button className="h-14 px-8 rounded-2xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 active:scale-95 transition-transform flex items-center gap-2">
+            <button className="h-14 px-8 rounded-2xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 active:opacity-70 transition-transform flex items-center gap-2">
               <Play className="w-5 h-5 fill-current" />
               Iniciar Revisão
             </button>
@@ -634,7 +634,7 @@ export default function FlashcardsCargosDetalhes() {
             </p>
             <button 
               onClick={() => setActiveTab('livre')}
-              className="h-12 px-6 rounded-xl bg-card border border-border font-bold hover:bg-accent active:scale-95 transition-all"
+              className="h-12 px-6 rounded-xl bg-card border border-border font-bold hover:bg-accent active:opacity-70 transition-all"
             >
               Voltar ao Edital
             </button>

@@ -241,7 +241,7 @@ export const MateriaAulasDeckSection: React.FC<MateriaAulasDeckSectionProps> = m
             {/* Botão de Player Centralizado */}
             <div className="my-auto flex items-center justify-center relative z-10 py-1">
               <div 
-                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center transition-all duration-300 shadow-[0_6px_20px_rgba(0,0,0,0.6)] bg-black/50 backdrop-blur-md border border-white/50 text-white group-hover:scale-110 group-active:scale-95"
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center transition-all duration-300 shadow-[0_6px_20px_rgba(0,0,0,0.6)] bg-black/50 backdrop-blur-md border border-white/50 text-white group-hover:scale-110 group-active:opacity-70"
                 style={{
                   boxShadow: `0 0 18px ${palette.accent}66, 0 4px 14px rgba(0,0,0,0.8)`
                 }}

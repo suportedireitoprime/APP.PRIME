@@ -224,7 +224,7 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
             haptic.selection();
             setIsCustomizerOpen(true);
           }}
-          className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-300 hover:text-red-100 transition-all text-xs font-semibold shadow-sm shadow-red-950/20 active:scale-95 touch-manipulation cursor-pointer"
+          className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-300 hover:text-red-100 transition-all text-xs font-semibold shadow-sm shadow-red-950/20 active:opacity-70 touch-manipulation cursor-pointer"
         >
           <Settings2 className="w-3.5 h-3.5 text-red-400" />
           <span>Personalizar</span>

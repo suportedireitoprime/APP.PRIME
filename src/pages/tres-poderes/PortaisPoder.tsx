@@ -64,7 +64,7 @@ const PortaisPoder = () => {
         <div className="flex items-center justify-between px-4 pb-3">
           <button
             onClick={() => { haptic.selection(); goBack(); }}
-            className="w-10 h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 active:scale-95 transition-all border border-white/10"
+            className="w-10 h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 active:opacity-70 transition-all border border-white/10"
           >
             <ArrowLeft className="w-5 h-5 text-white/80" />
           </button>
@@ -232,7 +232,7 @@ const PortaisPoder = () => {
 
                 <button
                   onClick={() => handleOpenWebView(selectedPortal.url)}
-                  className="w-full h-[52px] rounded-xl flex items-center justify-center gap-2 font-bold text-[15px] text-white shadow-lg transition-transform active:scale-95 mt-4"
+                  className="w-full h-[52px] rounded-xl flex items-center justify-center gap-2 font-bold text-[15px] text-white shadow-lg transition-transform active:opacity-70 mt-4"
                   style={{ backgroundColor: selectedPortal.color }}
                 >
                   <Globe className="w-5 h-5" />

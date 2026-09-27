@@ -258,7 +258,7 @@ export default function LeiArtigosSheet({ lei, area, onClose }: Props) {
                 </div>
                 <button
                   onClick={() => setArtigoSelecionado(null)}
-                  className="w-8 h-8 rounded-full bg-secondary/60 flex items-center justify-center shrink-0 active:scale-95 transition"
+                  className="w-8 h-8 rounded-full bg-secondary/60 flex items-center justify-center shrink-0 active:opacity-70 transition"
                 >
                   <X className="w-4 h-4 text-foreground/70" />
                 </button>

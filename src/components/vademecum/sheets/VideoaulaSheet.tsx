@@ -596,7 +596,7 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
                   )}
                   <button
                     onClick={() => setChatOpen(true)}
-                    className="w-12 h-12 rounded-xl bg-yellow-400 text-primary-foreground flex items-center justify-center shadow-md active:scale-95 transition-transform"
+                    className="w-12 h-12 rounded-xl bg-yellow-400 text-primary-foreground flex items-center justify-center shadow-md active:opacity-70 transition-transform"
                     title="Professora"
                   >
                     <MessageCircle className="w-5 h-5" />

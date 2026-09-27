@@ -32,7 +32,7 @@ export function LeiSecaEmptyState({
         <button
           type="button"
           onClick={onAcao}
-          className="mt-4 px-4 py-2 rounded-xl text-xs font-bold bg-secondary text-foreground hover:bg-secondary/80 active:scale-95 transition-all duration-[80ms]"
+          className="mt-4 px-4 py-2 rounded-xl text-xs font-bold bg-secondary text-foreground hover:bg-secondary/80 active:opacity-70 transition-all duration-[80ms]"
         >
           {acaoLabel}
         </button>

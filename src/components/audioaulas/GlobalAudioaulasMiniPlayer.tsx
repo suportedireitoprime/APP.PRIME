@@ -88,7 +88,7 @@ export default function GlobalAudioaulasMiniPlayer() {
             <button
               onClick={togglePlay}
               aria-label={tocando ? 'Pausar' : 'Continuar'}
-              className="flex-shrink-0 w-10 h-10 rounded-full bg-primary hover:bg-primary/90 active:scale-95 transition flex items-center justify-center relative z-10 shadow-md shadow-primary/30"
+              className="flex-shrink-0 w-10 h-10 rounded-full bg-primary hover:bg-primary/90 active:opacity-70 transition flex items-center justify-center relative z-10 shadow-md shadow-primary/30"
             >
               {tocando ? (
                 <Pause className="w-4 h-4 text-primary-foreground" fill="currentColor" />
@@ -136,7 +136,7 @@ export default function GlobalAudioaulasMiniPlayer() {
             <button
               onClick={fechar}
               aria-label="Fechar player"
-              className="flex-shrink-0 w-9 h-9 rounded-full hover:bg-white/10 active:scale-95 transition flex items-center justify-center relative z-10"
+              className="flex-shrink-0 w-9 h-9 rounded-full hover:bg-white/10 active:opacity-70 transition flex items-center justify-center relative z-10"
             >
               <X className="w-4 h-4 text-white/70" />
             </button>
@@ -146,7 +146,7 @@ export default function GlobalAudioaulasMiniPlayer() {
               onClick={handleReopen}
               aria-label="Ir para áudio aula"
               title="Abrir aula completa"
-              className="flex-shrink-0 w-9 h-9 rounded-full hover:bg-white/10 active:scale-95 transition flex items-center justify-center relative z-10 overflow-hidden"
+              className="flex-shrink-0 w-9 h-9 rounded-full hover:bg-white/10 active:opacity-70 transition flex items-center justify-center relative z-10 overflow-hidden"
             >
               <motion.span
                 className="inline-flex"

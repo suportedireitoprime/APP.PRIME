@@ -125,7 +125,7 @@ export default function PilulasPlayer() {
         <button
           onClick={handleVoltar}
           aria-label="Voltar para acervo de pílulas"
-          className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/5 backdrop-blur-md flex items-center justify-center border border-white/10 active:scale-95 transition-transform"
+          className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/5 backdrop-blur-md flex items-center justify-center border border-white/10 active:opacity-70 transition-transform"
         >
           <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white/70" strokeWidth={2.4} />
         </button>

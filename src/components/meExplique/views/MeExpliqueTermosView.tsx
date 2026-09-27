@@ -140,7 +140,7 @@ export const MeExpliqueTermosView: React.FC<Props> = ({ onVoltar }) => {
                 void haptic.medium();
                 setTermoAoVivo(busca.trim());
               }}
-              className="absolute right-1.5 px-3 py-1.5 rounded-xl bg-amber-500 text-black font-bold text-xs shadow flex items-center gap-1 active:scale-95 transition-all cursor-pointer"
+              className="absolute right-1.5 px-3 py-1.5 rounded-xl bg-amber-500 text-black font-bold text-xs shadow flex items-center gap-1 active:opacity-70 transition-all cursor-pointer"
             >
               <Volume2 className="w-3.5 h-3.5" /> Explicar
             </button>
@@ -243,7 +243,7 @@ export const MeExpliqueTermosView: React.FC<Props> = ({ onVoltar }) => {
               <div className="shrink-0">
                 <button
                   type="button"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 text-black font-bold text-xs shadow group-hover:bg-amber-400 active:scale-95 transition-all"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 text-black font-bold text-xs shadow group-hover:bg-amber-400 active:opacity-70 transition-all"
                 >
                   <Volume2 className="w-3.5 h-3.5" />
                   <span>Ouvir</span>

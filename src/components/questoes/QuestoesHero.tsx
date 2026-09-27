@@ -67,7 +67,7 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis, onBack }: Props)
       <div className="bg-zinc-950 px-4 pb-4 pt-safe-header flex items-center justify-between">
         <button 
           onClick={() => { haptic.selection(); onBack?.(); }} 
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 active:scale-95"
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 active:opacity-70"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
@@ -150,7 +150,7 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis, onBack }: Props)
             <button
               type="button"
               onClick={() => { haptic.selection(); setSheetAberto('respondidas'); }}
-              className="flex flex-col items-center justify-center px-1.5 py-2.5 transition-colors hover:bg-white/10 active:scale-95 group"
+              className="flex flex-col items-center justify-center px-1.5 py-2.5 transition-colors hover:bg-white/10 active:opacity-70 group"
             >
               <div className="flex items-center gap-0.5">
                 <span className="text-[9px] font-extrabold uppercase tracking-wider text-white/60 group-hover:text-white">Respondidas</span>
@@ -165,7 +165,7 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis, onBack }: Props)
             <button
               type="button"
               onClick={() => { haptic.selection(); setSheetAberto('precisao'); }}
-              className="flex flex-col items-center justify-center px-1.5 py-2.5 transition-colors hover:bg-white/10 active:scale-95 group"
+              className="flex flex-col items-center justify-center px-1.5 py-2.5 transition-colors hover:bg-white/10 active:opacity-70 group"
             >
               <div className="flex items-center gap-0.5">
                 <span className="text-[9px] font-extrabold uppercase tracking-wider text-white/60 group-hover:text-white">Taxa de Acerto</span>
@@ -180,7 +180,7 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis, onBack }: Props)
             <button
               type="button"
               onClick={() => { haptic.selection(); setSheetAberto('banco'); }}
-              className="flex flex-col items-center justify-center px-1.5 py-2.5 transition-colors hover:bg-white/10 active:scale-95 group"
+              className="flex flex-col items-center justify-center px-1.5 py-2.5 transition-colors hover:bg-white/10 active:opacity-70 group"
             >
               <div className="flex items-center gap-0.5">
                 <span className="text-[9px] font-extrabold uppercase tracking-wider text-white/60 group-hover:text-white">Banco Total</span>

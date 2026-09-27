@@ -249,7 +249,7 @@ export default function HorusVerifyPhoneSheet({ open, onClose, onVerified }: Pro
               <button
                 type="button"
                 onClick={onClose}
-                className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-white transition-colors active:scale-95"
+                className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-white transition-colors active:opacity-70"
                 aria-label="Fechar"
               >
                 <X className="w-5 h-5" />
@@ -277,7 +277,7 @@ export default function HorusVerifyPhoneSheet({ open, onClose, onVerified }: Pro
                       <button
                         type="button"
                         onClick={() => setDdiOpen(!ddiOpen)}
-                        className="h-[52px] px-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-white flex items-center gap-1.5 transition-all text-sm font-semibold active:scale-95"
+                        className="h-[52px] px-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-white flex items-center gap-1.5 transition-all text-sm font-semibold active:opacity-70"
                       >
                         <span className="text-xl leading-none">{selectedCountry.flag}</span>
                         <span className="font-mono text-white/90">{selectedCountry.ddi}</span>

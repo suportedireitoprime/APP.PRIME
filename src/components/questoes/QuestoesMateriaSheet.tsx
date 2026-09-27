@@ -120,7 +120,7 @@ export function QuestoesMateriaSheet({ materia, aberto, onOpenChange }: Questoes
             className="theme-questoes fixed inset-0 z-[71] flex flex-col overflow-hidden bg-zinc-950 text-foreground md:inset-y-0 md:left-auto md:right-0 md:w-full md:max-w-md md:border-l md:border-zinc-800/80 md:shadow-2xl"
           >
             <div className="flex items-center gap-3 px-4 pb-4 pt-safe-header border-b border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md">
-              <button onClick={() => onOpenChange(false)} aria-label="Voltar" className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 transition-colors active:scale-95">
+              <button onClick={() => onOpenChange(false)} aria-label="Voltar" className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 transition-colors active:opacity-70">
                 <ChevronLeft className="h-6 w-6" />
               </button>
               <div className="min-w-0 flex-1">
@@ -186,7 +186,7 @@ export function QuestoesMateriaSheet({ materia, aberto, onOpenChange }: Questoes
               <button
                 onClick={handlePraticar}
                 disabled={carregando}
-                className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-hero-panel hover:brightness-110 text-[16px] font-black text-white shadow-lg shadow-black/40 active:scale-[0.98] transition-all disabled:opacity-50 disabled:active:scale-100 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]"
+                className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-hero-panel hover:brightness-110 text-[16px] font-black text-white shadow-lg shadow-black/40 active:scale-[0.98] transition-all disabled:opacity-50 disabled:active:opacity-70 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]"
               >
                 {carregando ? <Loader2 className="h-5 w-5 animate-spin" /> : <Filter className="h-5 w-5 drop-shadow-md" fill="currentColor" />}
                 Começar a Praticar

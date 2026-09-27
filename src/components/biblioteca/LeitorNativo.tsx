@@ -518,7 +518,7 @@ const LeitorNativo = ({
             <div className="flex items-center gap-3 mt-2">
               <button
                 onClick={recarregar}
-                className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-semibold transition active:scale-95 flex items-center gap-2 border border-white/10"
+                className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-semibold transition active:opacity-70 flex items-center gap-2 border border-white/10"
               >
                 <RefreshCcw className="w-3.5 h-3.5" />
                 Tentar novamente
@@ -526,7 +526,7 @@ const LeitorNativo = ({
               {onOpenPdf && (
                 <button
                   onClick={onOpenPdf}
-                  className="px-4 py-2 rounded-xl bg-primary text-black text-xs font-semibold transition active:scale-95 flex items-center gap-2 hover:bg-primary/90"
+                  className="px-4 py-2 rounded-xl bg-primary text-black text-xs font-semibold transition active:opacity-70 flex items-center gap-2 hover:bg-primary/90"
                 >
                   <BookOpen className="w-3.5 h-3.5" />
                   Ler em PDF
@@ -683,7 +683,7 @@ const LeitorNativo = ({
           onClick={() => setModoFoco((v) => !v)}
           aria-label={focoOn ? 'Sair do modo foco (F)' : 'Modo foco (F)'}
           title={focoOn ? 'Sair do modo foco (F)' : 'Modo foco (F)'}
-          className={`hidden md:flex fixed top-4 right-4 z-[1320] w-11 h-11 rounded-full items-center justify-center border backdrop-blur transition active:scale-95 ${
+          className={`hidden md:flex fixed top-4 right-4 z-[1320] w-11 h-11 rounded-full items-center justify-center border backdrop-blur transition active:opacity-70 ${
             focoOn ? 'opacity-40 hover:opacity-100' : ''
           }`}
           style={{

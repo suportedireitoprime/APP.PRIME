@@ -66,7 +66,7 @@ const MeExpliqueConfigSheet = memo(function MeExpliqueConfigSheet({ open, onClos
           <button
             onClick={onClose}
             aria-label="Fechar"
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-muted active:scale-95 transition-transform"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-muted active:opacity-70 transition-transform"
           >
             <X className="h-5 w-5" />
           </button>
@@ -140,7 +140,7 @@ const MeExpliqueConfigSheet = memo(function MeExpliqueConfigSheet({ open, onClos
         <div className="border-t border-border p-4 pb-[max(1rem,var(--sai-bottom))]">
           <button
             onClick={handleSave}
-            className="w-full h-14 bg-primary text-primary-foreground font-black text-base rounded-2xl shadow-lg shadow-primary/20 active:scale-95 transition-transform"
+            className="w-full h-14 bg-primary text-primary-foreground font-black text-base rounded-2xl shadow-lg shadow-primary/20 active:opacity-70 transition-transform"
           >
             SALVAR CONFIGURAÇÕES
           </button>

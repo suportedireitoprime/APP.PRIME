@@ -52,7 +52,7 @@ export function LocaisCategoriasView({
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: idx * 0.04 }}
                   onClick={() => onSelectLocal(local)}
-                  className="relative snap-start shrink-0 w-[62vw] max-w-[280px] text-left active:scale-95 transition-transform"
+                  className="relative snap-start shrink-0 w-[62vw] max-w-[280px] text-left active:opacity-70 transition-transform"
                 >
                   <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-muted">
                     <img

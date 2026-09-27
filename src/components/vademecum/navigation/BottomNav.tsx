@@ -244,7 +244,7 @@ const BottomNav = () => {
             onClick={() => { haptic.selection(); startTransition(() => navigate('/blog')); }}
             data-track="bottom_nav_click"
             data-track-destino="blog"
-            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-all active:scale-95 duration-100 touch-manipulation cursor-pointer relative ${
+            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
               path.startsWith('/blog') ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
             }`}
             aria-label="Blog"
@@ -258,7 +258,7 @@ const BottomNav = () => {
             onClick={() => { haptic.selection(); startTransition(() => navigate('/atualizacoes')); }}
             data-track="bottom_nav_click"
             data-track-destino="atualizacoes"
-            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-all active:scale-95 duration-100 touch-manipulation cursor-pointer ${
+            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer ${
               path.startsWith('/atualizacoes') ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
             }`}
             aria-label="Giro Jurídico"
@@ -274,7 +274,7 @@ const BottomNav = () => {
             onClick={() => { haptic.selection(); if (!path.startsWith('/vade-mecum')) startTransition(() => navigate('/vade-mecum')); }}
             data-track="bottom_nav_click"
             data-track-destino="vade-mecum"
-            className="relative flex flex-col items-center justify-end gap-1 py-1.5 md:py-3 md:justify-center md:rounded-xl md:hover:bg-white/10 active:scale-95 transition-transform duration-100 touch-manipulation cursor-pointer"
+            className="relative flex flex-col items-center justify-end gap-1 py-1.5 md:py-3 md:justify-center md:rounded-xl md:hover:bg-white/10 active:opacity-70 transition-transform duration-100 touch-manipulation cursor-pointer"
             aria-label="Vade Mecum"
           >
             <span
@@ -304,7 +304,7 @@ const BottomNav = () => {
             }}
             data-track="bottom_nav_click"
             data-track-destino="ferramentas"
-            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-all active:scale-95 duration-100 touch-manipulation cursor-pointer ${
+            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer ${
               location.pathname.startsWith('/ferramentas') ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
             }`}
             aria-label="Ferramentas"
@@ -320,7 +320,7 @@ const BottomNav = () => {
             onClick={() => { haptic.selection(); startTransition(() => navigate('/pilulas')); }}
             data-track="bottom_nav_click"
             data-track-destino="pilulas"
-            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-all active:scale-95 duration-100 touch-manipulation cursor-pointer ${
+            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer ${
               path.startsWith('/pilulas') ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
             }`}
             aria-label="Pílulas"
@@ -336,7 +336,7 @@ const BottomNav = () => {
             onClick={() => { haptic.selection(); startTransition(() => navigate('/me-explique')); }}
             data-track="bottom_nav_click"
             data-track-destino="me-explique"
-            className={`hidden md:flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-all active:scale-95 duration-100 touch-manipulation cursor-pointer ${
+            className={`hidden md:flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer ${
               path.startsWith('/me-explique') ? 'text-amber-400 bg-amber-500/10 ring-1 ring-amber-500/25 shadow-sm' : 'text-white/80 hover:bg-white/10 hover:text-amber-300'
             }`}
             aria-label="Me Explique"

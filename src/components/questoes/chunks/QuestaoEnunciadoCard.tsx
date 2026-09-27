@@ -70,7 +70,7 @@ export function QuestaoEnunciadoCard({
           <div className="flex items-center gap-2 lg:hidden">
             <button
               onClick={onToggleRecursos}
-              className="relative overflow-hidden flex h-10 items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 text-[14px] font-semibold text-primary transition-colors hover:bg-primary/20 active:scale-95"
+              className="relative overflow-hidden flex h-10 items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 text-[14px] font-semibold text-primary transition-colors hover:bg-primary/20 active:opacity-70"
             >
               <Plus className="h-4 w-4 z-10" />
               <span className="z-10">Recursos</span>

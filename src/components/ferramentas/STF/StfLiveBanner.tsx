@@ -280,7 +280,7 @@ export default function StfLiveBanner() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       transition={{ type: 'spring', damping: 15, stiffness: 200 }}
                       onClick={handleWatch}
-                      className="relative group flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider text-white px-8 py-3.5 rounded-2xl transition-all active:scale-95 w-full max-w-[260px] overflow-hidden"
+                      className="relative group flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider text-white px-8 py-3.5 rounded-2xl transition-all active:opacity-70 w-full max-w-[260px] overflow-hidden"
                     >
                       {/* Button background with shimmer */}
                       <div className="absolute inset-0 bg-gradient-to-r from-red-600 via-red-500 to-red-600 rounded-2xl" />

@@ -78,7 +78,7 @@ const HomeCardImpl = ({
     <div className="flex items-center gap-2.5 w-full min-w-0 z-10">
       <div className="relative shrink-0 flex items-center justify-center p-1">
         <Icon
-          className={`relative transition-transform duration-300 group-hover:scale-110 group-active:scale-95 group-active:-translate-y-1 ${iconClassName || 'w-7 h-7 xs:w-8 xs:h-8'}`}
+          className={`relative transition-transform duration-300 group-hover:scale-110 group-active:opacity-70 group-active:-translate-y-1 ${iconClassName || 'w-7 h-7 xs:w-8 xs:h-8'}`}
           style={{ color: color, ...iconStyle }}
           strokeWidth={iconStrokeWidth ?? (solidColor ? 1.6 : 1.25)}
         />
@@ -97,7 +97,7 @@ const HomeCardImpl = ({
     </div>
 
     {solidColor && !hideWatermark && (
-      <div className="absolute -right-3 -bottom-3 w-[84px] h-[84px] pointer-events-none transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6 group-active:scale-95">
+      <div className="absolute -right-3 -bottom-3 w-[84px] h-[84px] pointer-events-none transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6 group-active:opacity-70">
         <div className="absolute inset-0 opacity-[0.15]">
           <Icon className="w-full h-full" style={{ color }} strokeWidth={1.5} />
         </div>

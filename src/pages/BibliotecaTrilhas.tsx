@@ -142,7 +142,7 @@ const TimelineView = ({
                 <button 
                   onClick={() => { haptic.selection(); onOpenReader(livro); }}
                   className={`w-[45%] text-left rounded-3xl p-3 relative z-30 transition-all duration-300 backdrop-blur-md border overflow-hidden ${
-                    concluido ? 'bg-primary/5 border-primary/20 shadow-sm opacity-90' : 'bg-card/80 border-border/50 shadow-lg hover:border-primary/50 cursor-pointer active:scale-95'
+                    concluido ? 'bg-primary/5 border-primary/20 shadow-sm opacity-90' : 'bg-card/80 border-border/50 shadow-lg hover:border-primary/50 cursor-pointer active:opacity-70'
                 }`}>
                   <div className="w-full h-24 mb-2 bg-muted rounded-xl overflow-hidden relative">
                     {livro.capa ? (

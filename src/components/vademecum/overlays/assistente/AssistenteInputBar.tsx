@@ -86,7 +86,7 @@ export const AssistenteInputBar: React.FC<AssistenteInputBarProps> = ({
                 onAbrirAnexos();
               }}
               aria-label="Anexar"
-              className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shrink-0 text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all active:scale-90 touch-manipulation cursor-pointer"
+              className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shrink-0 text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all active:opacity-70 touch-manipulation cursor-pointer"
             >
               <Plus className="w-6 h-6" strokeWidth={2.2} />
             </button>
@@ -124,7 +124,7 @@ export const AssistenteInputBar: React.FC<AssistenteInputBarProps> = ({
                 }}
                 disabled={loading}
                 aria-label="Enviar mensagem"
-                className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white hover:bg-zinc-100 text-zinc-950 flex items-center justify-center shrink-0 shadow-[0_4px_18px_rgba(255,255,255,0.35)] transition-all active:scale-90 disabled:opacity-50 touch-manipulation cursor-pointer"
+                className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white hover:bg-zinc-100 text-zinc-950 flex items-center justify-center shrink-0 shadow-[0_4px_18px_rgba(255,255,255,0.35)] transition-all active:opacity-70 disabled:opacity-50 touch-manipulation cursor-pointer"
               >
                 {loading ? (
                   <Loader2 className="w-5 h-5 animate-spin text-zinc-900" />
@@ -140,7 +140,7 @@ export const AssistenteInputBar: React.FC<AssistenteInputBarProps> = ({
                   onToggleMic();
                 }}
                 aria-label="Gravar áudio"
-                className={`relative w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shrink-0 transition-all active:scale-90 touch-manipulation cursor-pointer ${
+                className={`relative w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shrink-0 transition-all active:opacity-70 touch-manipulation cursor-pointer ${
                   voice.listening
                     ? 'bg-red-500 text-white shadow-[0_0_16px_rgba(239,68,68,0.5)]'
                     : 'text-muted-foreground hover:text-foreground hover:bg-white/10'

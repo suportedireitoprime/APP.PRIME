@@ -106,7 +106,7 @@ export default function PilulasViewer() {
         <p className="text-zinc-400">Deck de pílulas não encontrado ou vazio.</p>
         <button 
           onClick={() => navigate('/pilulas')} 
-          className="min-h-[48px] min-w-[48px] px-6 py-2.5 rounded-xl bg-white/10 text-[#36AF85] font-bold active:scale-95 transition-transform"
+          className="min-h-[48px] min-w-[48px] px-6 py-2.5 rounded-xl bg-white/10 text-[#36AF85] font-bold active:opacity-70 transition-transform"
         >
           Voltar
         </button>

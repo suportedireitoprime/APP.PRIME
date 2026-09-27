@@ -83,7 +83,7 @@ const PodcastPlayer = () => {
       <header className="sticky top-0 z-40 bg-[#0A0A0A]/80 backdrop-blur-md pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] px-4 pb-3 flex items-center justify-between border-b border-white/5">
         <button 
           onClick={() => { haptic.selection(); navigate(-1); }}
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 active:scale-95 transition-transform"
+          className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 active:opacity-70 transition-transform"
         >
           <ArrowLeft className="w-5 h-5 text-white" />
         </button>
@@ -94,7 +94,7 @@ const PodcastPlayer = () => {
         </div>
         <button 
           onClick={handleShare}
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 active:scale-95 transition-transform"
+          className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 active:opacity-70 transition-transform"
         >
           <Share2 className="w-4 h-4 text-white" />
         </button>

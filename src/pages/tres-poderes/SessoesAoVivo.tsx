@@ -36,7 +36,7 @@ export default function SessoesAoVivo() {
         <div className="flex items-center gap-3">
           <button 
             onClick={() => goBack()}
-            className="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 border border-white/10 active:scale-95 transition-transform"
+            className="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 border border-white/10 active:opacity-70 transition-transform"
           >
             <ArrowLeft className="w-6 h-6 text-white" strokeWidth={2.4} />
           </button>
@@ -96,7 +96,7 @@ export default function SessoesAoVivo() {
               <div 
                 key={session.id}
                 onClick={() => navigate(`/tres-poderes/stf/podcast/${session.youtube_video_id}`)}
-                className="flex gap-4 group cursor-pointer active:scale-95 transition-transform"
+                className="flex gap-4 group cursor-pointer active:opacity-70 transition-transform"
               >
                 <div className="relative w-[140px] aspect-video bg-[#1A1A1D] rounded-xl overflow-hidden border border-white/5 shrink-0 shadow-lg">
                   <img 

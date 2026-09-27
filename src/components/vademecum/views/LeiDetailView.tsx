@@ -724,7 +724,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                       <XIcon className="w-4 h-4" />
                     </button>
                   )}
-                  <button type="button" onClick={() => setOcrOpen(true)} aria-label="Fotografar artigo (OCR)" className="w-8 h-8 rounded-full flex items-center justify-center bg-red-500/15 text-red-400 hover:bg-red-500/25 active:scale-95 transition-all">
+                  <button type="button" onClick={() => setOcrOpen(true)} aria-label="Fotografar artigo (OCR)" className="w-8 h-8 rounded-full flex items-center justify-center bg-red-500/15 text-red-400 hover:bg-red-500/25 active:opacity-70 transition-all">
                     <Camera className="w-4 h-4" />
                   </button>
                 </div>
@@ -777,7 +777,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                       <button
                         type="button"
                         onClick={() => setIsSearchFocused(false)}
-                        className="text-xs text-zinc-400 hover:text-white px-2.5 py-1 rounded-lg hover:bg-white/10 active:scale-95 transition-all"
+                        className="text-xs text-zinc-400 hover:text-white px-2.5 py-1 rounded-lg hover:bg-white/10 active:opacity-70 transition-all"
                       >
                         Fechar
                       </button>
@@ -805,7 +805,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                                       setIsSearchFocused(false);
                                       haptic.selection();
                                     }}
-                                    className="shrink-0 px-2.5 py-1 rounded-lg bg-[#181920] hover:bg-primary/20 hover:text-primary border border-zinc-800 text-[11px] font-bold text-zinc-300 transition-all active:scale-95 cursor-pointer"
+                                    className="shrink-0 px-2.5 py-1 rounded-lg bg-[#181920] hover:bg-primary/20 hover:text-primary border border-zinc-800 text-[11px] font-bold text-zinc-300 transition-all active:opacity-70 cursor-pointer"
                                   >
                                     Art. {cleanNum}
                                   </button>
@@ -887,7 +887,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                                     setIsSearchFocused(false);
                                     haptic.selection();
                                   }}
-                                  className="shrink-0 px-4 py-2 rounded-xl bg-[#17181f] hover:bg-primary/20 hover:text-primary active:scale-95 border border-zinc-800 hover:border-primary/40 text-xs sm:text-sm font-bold text-white transition-all shadow-md flex items-center gap-1.5 cursor-pointer group"
+                                  className="shrink-0 px-4 py-2 rounded-xl bg-[#17181f] hover:bg-primary/20 hover:text-primary active:opacity-70 border border-zinc-800 hover:border-primary/40 text-xs sm:text-sm font-bold text-white transition-all shadow-md flex items-center gap-1.5 cursor-pointer group"
                                 >
                                   <History className="w-3.5 h-3.5 text-zinc-500 group-hover:text-primary transition-colors" />
                                   <span>{displayLabel}</span>
@@ -918,7 +918,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                                           setIsSearchFocused(false);
                                           haptic.selection();
                                         }}
-                                        className="px-3.5 py-1.5 rounded-xl bg-[#17181f] hover:bg-primary/20 text-xs font-bold text-zinc-200 hover:text-primary border border-zinc-800 transition-all active:scale-95 cursor-pointer"
+                                        className="px-3.5 py-1.5 rounded-xl bg-[#17181f] hover:bg-primary/20 text-xs font-bold text-zinc-200 hover:text-primary border border-zinc-800 transition-all active:opacity-70 cursor-pointer"
                                       >
                                         Art. {cleanNum}
                                       </button>
@@ -1032,7 +1032,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                             haptic.impact();
                             openArtigoWithRecent(a);
                           }}
-                          className="aspect-square rounded-2xl bg-[#14151a] hover:bg-primary hover:text-white border border-white/[0.06] hover:border-primary/40 flex flex-col items-center justify-center text-zinc-100 font-black text-sm sm:text-base active:scale-90 transition-all shadow-md shadow-black/40 cursor-pointer select-none group"
+                          className="aspect-square rounded-2xl bg-[#14151a] hover:bg-primary hover:text-white border border-white/[0.06] hover:border-primary/40 flex flex-col items-center justify-center text-zinc-100 font-black text-sm sm:text-base active:opacity-70 transition-all shadow-md shadow-black/40 cursor-pointer select-none group"
                           title={`Artigo ${a.numero}`}
                         >
                           <span className="group-hover:scale-110 transition-transform">
@@ -1204,7 +1204,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                     setOverlayPanel(null);
                   }}
                   aria-label="Voltar para a lei"
-                  className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center active:scale-95 transition-transform cursor-pointer"
+                  className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center active:opacity-70 transition-transform cursor-pointer"
                 >
                   <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
                 </button>
@@ -1281,7 +1281,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
       {showScrollTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className={`fixed ${isDesktop ? 'bottom-8 right-8' : 'bottom-[100px] right-4'} z-40 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 flex items-center justify-center active:scale-95 transition-all`}
+          className={`fixed ${isDesktop ? 'bottom-8 right-8' : 'bottom-[100px] right-4'} z-40 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 flex items-center justify-center active:opacity-70 transition-all`}
           aria-label="Voltar ao topo"
         >
           <ArrowUp className="w-6 h-6" />

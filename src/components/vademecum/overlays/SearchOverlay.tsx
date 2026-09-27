@@ -259,7 +259,7 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
               <button
                 onClick={onClose}
                 aria-label="Fechar busca"
-                className="w-11 h-11 rounded-full bg-black/40 border border-white/20 flex items-center justify-center active:scale-95 transition shrink-0"
+                className="w-11 h-11 rounded-full bg-black/40 border border-white/20 flex items-center justify-center active:opacity-70 transition shrink-0"
               >
                 <ChevronDown className="w-6 h-6 text-white" />
               </button>
@@ -293,7 +293,7 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
                 type="button"
                 onClick={voice.toggle}
                 aria-label={voice.listening ? "Parar gravação" : "Pesquisar por voz"}
-                className={`shrink-0 w-12 h-12 rounded-full flex items-center justify-center shadow-lg active:scale-95 transition ${
+                className={`shrink-0 w-12 h-12 rounded-full flex items-center justify-center shadow-lg active:opacity-70 transition ${
                   voice.listening
                     ? "bg-red-500 text-white animate-pulse shadow-red-500/40"
                     : "bg-black/40 border border-white/25 text-white hover:bg-black/50"
@@ -397,7 +397,7 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
                             <button
                               onClick={(e) => { e.stopPropagation(); toggleFavorito({ tipo: lei.tipo, leiId: lei.id, nome: lei.nome, descricao: lei.descricao, tabela_nome: lei.tabela_nome }); }}
                               aria-label={fav ? 'Remover dos favoritos' : 'Favoritar lei'}
-                              className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-transform ${fav ? 'text-primary' : 'text-muted-foreground'}`}
+                              className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 active:opacity-70 transition-transform ${fav ? 'text-primary' : 'text-muted-foreground'}`}
                             >
                               <Heart className={`w-6 h-6 ${fav ? 'fill-current' : ''}`} />
                             </button>

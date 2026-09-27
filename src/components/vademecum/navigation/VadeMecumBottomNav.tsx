@@ -94,7 +94,7 @@ const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
                       navigate(tab.to);
                     }
                   }}
-                  className={`relative flex flex-col items-center justify-end gap-1 py-1.5 px-1 rounded-2xl transition-colors active:scale-95 duration-100 ${
+                  className={`relative flex flex-col items-center justify-end gap-1 py-1.5 px-1 rounded-2xl transition-colors active:opacity-70 duration-100 ${
                     active ? 'text-white' : 'text-muted-foreground hover:text-white/80'
                   }`}
                   aria-label={tab.label}

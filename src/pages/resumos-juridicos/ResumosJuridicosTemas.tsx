@@ -201,7 +201,7 @@ export default function ResumosJuridicosTemas() {
             />
             <button
               onClick={() => { haptic.selection(); toast({ title: 'Em breve: Pesquisa por Voz' }); }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10 active:scale-95 transition-all text-white/70 hover:text-white"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10 active:opacity-70 transition-all text-white/70 hover:text-white"
             >
               <Mic className="w-5 h-5" />
             </button>
@@ -269,7 +269,7 @@ export default function ResumosJuridicosTemas() {
             {q && (
               <button 
                 onClick={() => { haptic.selection(); setQ(""); }}
-                className="px-6 py-2.5 rounded-xl text-white font-bold text-sm active:scale-95 transition-all shadow-md"
+                className="px-6 py-2.5 rounded-xl text-white font-bold text-sm active:opacity-70 transition-all shadow-md"
                 style={{ backgroundColor: palette.primary, boxShadow: `0 4px 14px ${palette.primary}4D` }}
               >
                 Limpar Pesquisa

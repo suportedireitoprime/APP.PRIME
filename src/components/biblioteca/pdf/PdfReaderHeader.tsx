@@ -31,7 +31,7 @@ export default function PdfReaderHeader({
       <button
         onClick={onClose}
         aria-label="Voltar"
-        className="w-12 h-12 md:w-11 md:h-11 rounded-full bg-white/[0.06] border border-white/10 hover:bg-white/15 flex items-center justify-center shrink-0 active:scale-95 transition"
+        className="w-12 h-12 md:w-11 md:h-11 rounded-full bg-white/[0.06] border border-white/10 hover:bg-white/15 flex items-center justify-center shrink-0 active:opacity-70 transition"
       >
         <ArrowLeft className="w-[22px] h-[22px] text-white" />
       </button>

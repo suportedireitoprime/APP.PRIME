@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Player, type PlayerRef } from '@remotion/player';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Play } from 'lucide-react';
@@ -34,7 +34,7 @@ export default function AppIntroOverlay({
   const [playing, setPlaying] = useState(false);
 
   const inputProps: AppIntroProps = useMemo(
-    () => ({ owlSrc, nome: nome || 'vocÃª' }),
+    () => ({ owlSrc, nome: nome || 'você' }),
     [nome]
   );
 
@@ -54,7 +54,7 @@ export default function AppIntroOverlay({
       try {
         p.play();
         setPlaying(true);
-        // Verificar se realmente tocou apÃ³s 300ms
+        // Verificar se realmente tocou após 300ms
         setTimeout(() => {
           if (!p.isPlaying()) {
             setShowPlayFallback(true);
@@ -108,8 +108,8 @@ export default function AppIntroOverlay({
         {/* Skip button */}
         <button
           onClick={handleSkip}
-          aria-label="Pular apresentaÃ§Ã£o"
-          className="absolute top-4 right-4 z-20 w-11 h-11 rounded-full bg-white/10 backdrop-blur-md text-white flex items-center justify-center active:scale-95 transition"
+          aria-label="Pular apresentação"
+          className="absolute top-4 right-4 z-20 w-11 h-11 rounded-full bg-white/10 backdrop-blur-md text-white flex items-center justify-center active:opacity-70 transition"
           style={{ marginTop: 'var(--sai-top)' }}
         >
           <X className="w-5 h-5" />
@@ -147,7 +147,7 @@ export default function AppIntroOverlay({
                   setPlaying(true);
                 }
               }}
-              className="w-20 h-20 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+              className="w-20 h-20 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 active:opacity-70 transition-transform"
             >
               <Play className="w-10 h-10 ml-1" />
             </button>

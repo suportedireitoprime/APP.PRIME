@@ -178,7 +178,7 @@ export const PilulasDeck3D = memo(({ items, onItemClick, defaultBorderColor = '#
           type="button"
           onClick={handlePrev}
           aria-label="Item anterior"
-          className="absolute bottom-1 sm:bottom-3 left-2 sm:left-4 z-[75] w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:scale-95"
+          className="absolute bottom-1 sm:bottom-3 left-2 sm:left-4 z-[75] w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:opacity-70"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
@@ -188,7 +188,7 @@ export const PilulasDeck3D = memo(({ items, onItemClick, defaultBorderColor = '#
           type="button"
           onClick={handleNext}
           aria-label="Próximo item"
-          className="absolute bottom-1 sm:bottom-3 right-2 sm:right-4 z-[75] w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:scale-95"
+          className="absolute bottom-1 sm:bottom-3 right-2 sm:right-4 z-[75] w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 border border-white/15 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all active:opacity-70"
         >
           <ChevronRight className="w-5 h-5" />
         </button>

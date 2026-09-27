@@ -183,7 +183,7 @@ export function FlashcardsLeisWizardSheet({
             type="button"
             onClick={onClose}
             aria-label="Voltar"
-            className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 transition-colors active:scale-95"
+            className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 transition-colors active:opacity-70"
           >
             <ChevronLeft className="h-6 w-6" />
           </button>

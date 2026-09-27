@@ -24,7 +24,7 @@ export const MeExpliqueControls = memo(function MeExpliqueControls({
           <button
             onClick={onAlternarMic}
             aria-label={micAtivo ? 'Desligar microfone' : 'Ligar microfone'}
-            className={`flex h-14 w-14 min-h-[48px] min-w-[48px] items-center justify-center rounded-full backdrop-blur active:scale-95 transition-transform ${
+            className={`flex h-14 w-14 min-h-[48px] min-w-[48px] items-center justify-center rounded-full backdrop-blur active:opacity-70 transition-transform ${
               micAtivo ? 'bg-white/20' : 'bg-white text-black'
             }`}
           >
@@ -32,7 +32,7 @@ export const MeExpliqueControls = memo(function MeExpliqueControls({
           </button>
           <button
             onClick={onEncerrar}
-            className="flex h-16 min-h-[52px] items-center justify-center gap-2.5 rounded-full bg-success px-7 text-[15px] font-bold text-success-foreground shadow-lg active:scale-95 transition-transform"
+            className="flex h-16 min-h-[52px] items-center justify-center gap-2.5 rounded-full bg-success px-7 text-[15px] font-bold text-success-foreground shadow-lg active:opacity-70 transition-transform"
           >
             {status === 'conectando' ? (
               <>
@@ -54,7 +54,7 @@ export const MeExpliqueControls = memo(function MeExpliqueControls({
         <button
           onClick={onIniciar}
           disabled={iniciando || carregandoPlano}
-          className="flex h-14 min-h-[52px] w-full max-w-sm items-center justify-center gap-2.5 rounded-full bg-purple-600 hover:bg-purple-500 text-white font-black text-base shadow-xl shadow-purple-600/30 active:scale-95 disabled:opacity-70 transition-all"
+          className="flex h-14 min-h-[52px] w-full max-w-sm items-center justify-center gap-2.5 rounded-full bg-purple-600 hover:bg-purple-500 text-white font-black text-base shadow-xl shadow-purple-600/30 active:opacity-70 disabled:opacity-70 transition-all"
         >
           {iniciando ? (
             <Loader2 className="h-5 w-5 animate-spin" />

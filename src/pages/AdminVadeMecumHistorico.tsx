@@ -486,7 +486,7 @@ export default function AdminVadeMecumHistorico() {
                         <button
                           onClick={() => handleSubstituirArtigo(item)}
                           disabled={isSubstituindo}
-                          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-black font-semibold text-xs sm:text-sm active:scale-95 disabled:opacity-50 transition-all shadow-md shadow-amber-500/10 min-h-[44px]"
+                          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-black font-semibold text-xs sm:text-sm active:opacity-70 disabled:opacity-50 transition-all shadow-md shadow-amber-500/10 min-h-[44px]"
                         >
                           {isSubstituindo ? (
                             <>

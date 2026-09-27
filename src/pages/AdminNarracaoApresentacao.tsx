@@ -323,7 +323,7 @@ const AdminNarracaoApresentacao = () => {
                     localStorage.setItem(CAT_KEY, 'favoritos');
                     setView('books');
                   }}
-                  className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-border bg-card p-4 text-center hover:border-primary/50 transition-colors active:scale-95"
+                  className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-border bg-card p-4 text-center hover:border-primary/50 transition-colors active:opacity-70"
                 >
                   <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
                   <div>
@@ -339,7 +339,7 @@ const AdminNarracaoApresentacao = () => {
                       localStorage.setItem(CAT_KEY, c);
                       setView('books');
                     }}
-                    className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-border bg-card p-4 text-center hover:border-primary/50 transition-colors active:scale-95"
+                    className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-border bg-card p-4 text-center hover:border-primary/50 transition-colors active:opacity-70"
                   >
                     <Folder className="w-6 h-6 text-muted-foreground" />
                     <div>

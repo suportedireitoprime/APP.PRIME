@@ -152,7 +152,7 @@ export const JumpToArticleModal: React.FC<JumpToArticleModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="w-8 h-8 rounded-full bg-secondary/80 hover:bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground transition active:scale-95"
+                className="w-8 h-8 rounded-full bg-secondary/80 hover:bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground transition active:opacity-70"
                 aria-label="Fechar modal"
               >
                 <X className="w-4 h-4" />
@@ -180,7 +180,7 @@ export const JumpToArticleModal: React.FC<JumpToArticleModalProps> = ({
                     key={suffix}
                     type="button"
                     onClick={() => handleSuffix(suffix)}
-                    className="px-2.5 py-1 text-xs font-bold rounded-lg bg-secondary hover:bg-secondary/80 border border-border/50 text-foreground transition active:scale-95"
+                    className="px-2.5 py-1 text-xs font-bold rounded-lg bg-secondary hover:bg-secondary/80 border border-border/50 text-foreground transition active:opacity-70"
                   >
                     {suffix}
                   </button>
@@ -195,7 +195,7 @@ export const JumpToArticleModal: React.FC<JumpToArticleModalProps> = ({
                       key={`recent-${item}`}
                       type="button"
                       onClick={() => setTypedNumber(item)}
-                      className="px-2 py-0.5 text-xs font-semibold rounded-md bg-primary/10 text-primary hover:bg-primary/20 transition active:scale-95"
+                      className="px-2 py-0.5 text-xs font-semibold rounded-md bg-primary/10 text-primary hover:bg-primary/20 transition active:opacity-70"
                     >
                       Art. {item}
                     </button>
@@ -211,7 +211,7 @@ export const JumpToArticleModal: React.FC<JumpToArticleModalProps> = ({
                   key={digit}
                   type="button"
                   onClick={() => handleDigit(digit)}
-                  className="h-12 py-2.5 rounded-2xl bg-secondary/80 hover:bg-secondary active:scale-95 border border-border/60 text-xl font-bold text-foreground transition flex items-center justify-center shadow-sm select-none"
+                  className="h-12 py-2.5 rounded-2xl bg-secondary/80 hover:bg-secondary active:opacity-70 border border-border/60 text-xl font-bold text-foreground transition flex items-center justify-center shadow-sm select-none"
                 >
                   {digit}
                 </button>
@@ -221,7 +221,7 @@ export const JumpToArticleModal: React.FC<JumpToArticleModalProps> = ({
               <button
                 type="button"
                 onClick={typedNumber ? handleBackspace : handleClear}
-                className="h-12 py-2.5 rounded-2xl bg-secondary/50 hover:bg-secondary active:scale-95 border border-border/60 text-sm font-bold text-muted-foreground hover:text-foreground transition flex items-center justify-center shadow-sm select-none"
+                className="h-12 py-2.5 rounded-2xl bg-secondary/50 hover:bg-secondary active:opacity-70 border border-border/60 text-sm font-bold text-muted-foreground hover:text-foreground transition flex items-center justify-center shadow-sm select-none"
                 title="Apagar dígito"
               >
                 {typedNumber ? <Delete className="w-5 h-5" /> : 'C'}
@@ -231,7 +231,7 @@ export const JumpToArticleModal: React.FC<JumpToArticleModalProps> = ({
               <button
                 type="button"
                 onClick={() => handleDigit('0')}
-                className="h-12 py-2.5 rounded-2xl bg-secondary/80 hover:bg-secondary active:scale-95 border border-border/60 text-xl font-bold text-foreground transition flex items-center justify-center shadow-sm select-none"
+                className="h-12 py-2.5 rounded-2xl bg-secondary/80 hover:bg-secondary active:opacity-70 border border-border/60 text-xl font-bold text-foreground transition flex items-center justify-center shadow-sm select-none"
               >
                 0
               </button>
@@ -241,7 +241,7 @@ export const JumpToArticleModal: React.FC<JumpToArticleModalProps> = ({
                 type="button"
                 disabled={!typedNumber}
                 onClick={handleConfirm}
-                className="h-12 py-2.5 rounded-2xl bg-primary hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 text-primary-foreground font-extrabold text-sm transition flex items-center justify-center gap-1.5 shadow-md shadow-primary/20 select-none"
+                className="h-12 py-2.5 rounded-2xl bg-primary hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed active:opacity-70 text-primary-foreground font-extrabold text-sm transition flex items-center justify-center gap-1.5 shadow-md shadow-primary/20 select-none"
               >
                 <span>IR</span>
                 <ArrowRight className="w-4 h-4" />

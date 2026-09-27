@@ -312,7 +312,7 @@ export const GrifoCommentPrompt = ({
                     <button
                       type="button"
                       onClick={isRecordingVoice ? () => stopVoiceRecording(false) : startVoiceRecording}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer active:scale-95 ${
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer active:opacity-70 ${
                         isRecordingVoice
                           ? 'bg-red-500/20 text-red-400 border border-red-500/40 animate-pulse'
                           : 'bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 border border-emerald-500/30'
@@ -336,7 +336,7 @@ export const GrifoCommentPrompt = ({
                       type="button"
                       disabled={isGeneratingAiNote || isRecordingVoice}
                       onClick={handleGerarAnotacaoIa}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-primary/15 text-primary hover:bg-primary/25 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-primary/15 text-primary hover:bg-primary/25 active:opacity-70 transition-all cursor-pointer disabled:opacity-50"
                     >
                       {isGeneratingAiNote ? (
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -354,7 +354,7 @@ export const GrifoCommentPrompt = ({
                     <button
                       type="button"
                       onClick={togglePlayAudio}
-                      className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow hover:scale-105 active:scale-95 transition-transform shrink-0"
+                      className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow hover:scale-105 active:opacity-70 transition-transform shrink-0"
                       aria-label={isPlayingAudio ? 'Pausar áudio gravado' : 'Ouvir áudio gravado'}
                     >
                       {isPlayingAudio ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}

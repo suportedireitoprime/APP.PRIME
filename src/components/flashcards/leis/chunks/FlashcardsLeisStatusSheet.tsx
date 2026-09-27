@@ -211,7 +211,7 @@ export function FlashcardsLeisStatusSheet({
           type="button"
           onClick={handleConfirm}
           disabled={selecionados.length === 0}
-          className="flex h-12 w-full items-center justify-center rounded-xl bg-[#36AF85] hover:bg-[#2C9570] text-[15px] font-bold text-white shadow-lg active:scale-[0.98] transition-all disabled:opacity-50 disabled:active:scale-100"
+          className="flex h-12 w-full items-center justify-center rounded-xl bg-[#36AF85] hover:bg-[#2C9570] text-[15px] font-bold text-white shadow-lg active:scale-[0.98] transition-all disabled:opacity-50 disabled:active:opacity-70"
         >
           Confirmar Status
         </button>

@@ -47,7 +47,7 @@ export function GlobalResumoMiniPlayer() {
               togglePlay();
             }}
             aria-label={tocando ? 'Pausar' : 'Continuar'}
-            className="flex-shrink-0 w-10 h-10 rounded-full bg-primary hover:bg-primary/90 active:scale-95 transition flex items-center justify-center relative z-10"
+            className="flex-shrink-0 w-10 h-10 rounded-full bg-primary hover:bg-primary/90 active:opacity-70 transition flex items-center justify-center relative z-10"
           >
             {tocando ? (
               <Pause className="w-4 h-4 text-primary-foreground" fill="currentColor" />
@@ -64,7 +64,7 @@ export function GlobalResumoMiniPlayer() {
                 setAberto(true);
               }}
               aria-label={`Ver capa de ${livroAtual.titulo}`}
-              className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-white/20 relative z-10 shadow-sm active:scale-95 transition"
+              className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-white/20 relative z-10 shadow-sm active:opacity-70 transition"
             >
               <PrimeImage
                 src={livroAtual.capa}
@@ -122,7 +122,7 @@ export function GlobalResumoMiniPlayer() {
               fechar();
             }}
             aria-label="Fechar player"
-            className="flex-shrink-0 w-9 h-9 rounded-full hover:bg-white/10 active:scale-95 transition flex items-center justify-center relative z-10"
+            className="flex-shrink-0 w-9 h-9 rounded-full hover:bg-white/10 active:opacity-70 transition flex items-center justify-center relative z-10"
           >
             <X className="w-4 h-4 text-white/70" />
           </button>
@@ -133,7 +133,7 @@ export function GlobalResumoMiniPlayer() {
               setAberto(true);
             }}
             aria-label="Abrir player expandido"
-            className="flex-shrink-0 w-9 h-9 rounded-full hover:bg-white/10 active:scale-95 transition flex items-center justify-center relative z-10 overflow-hidden"
+            className="flex-shrink-0 w-9 h-9 rounded-full hover:bg-white/10 active:opacity-70 transition flex items-center justify-center relative z-10 overflow-hidden"
           >
             <motion.span
               className="inline-flex"

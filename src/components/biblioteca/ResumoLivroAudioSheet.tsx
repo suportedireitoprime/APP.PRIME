@@ -164,7 +164,7 @@ export default function ResumoLivroAudioSheet() {
                     haptic.selection();
                     togglePlay();
                   }}
-                  className="w-20 h-20 flex items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xl hover:scale-105 active:scale-95 transition-all"
+                  className="w-20 h-20 flex items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xl hover:scale-105 active:opacity-70 transition-all"
                 >
                   {tocando ? (
                     <Pause className="w-10 h-10 fill-current" />

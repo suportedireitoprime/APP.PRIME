@@ -47,7 +47,7 @@ export function FlashcardsSegmentoSheet({
               </div>
               <button
                 onClick={onFechar}
-                className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 transition-colors active:scale-95"
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 transition-colors active:opacity-70"
               >
                 <X className="h-5 w-5" />
               </button>

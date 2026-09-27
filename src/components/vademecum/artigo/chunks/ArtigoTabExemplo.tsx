@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Loader2, Crown } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { TabsContent } from '@/components/ui/tabs';
@@ -34,24 +34,24 @@ export const ArtigoTabExemplo: React.FC<ArtigoTabExemploProps> = ({
             <img src={horusOwl} alt="Horus" className="w-12 h-12 object-contain" />
           </div>
           <h4 className="font-display text-lg font-bold text-foreground mb-1.5">
-            Exemplos PrÃ¡ticos sÃ£o Exclusivos Prime
+            Exemplos Práticos são Exclusivos Prime
           </h4>
           <p className="text-xs text-muted-foreground max-w-xs mb-4 leading-relaxed">
-            Veja a norma aplicada em casos concretos do dia a dia e situaÃ§Ãµes reais cobradas nas
-            provas da OAB e concursos pÃºblicos.
+            Veja a norma aplicada em casos concretos do dia a dia e situações reais cobradas nas
+            provas da OAB e concursos públicos.
           </p>
           <button
             onClick={() => openPremiumGate('exemplo')}
-            className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-xs shadow-lg shadow-primary/30 active:scale-95 transition-all flex items-center gap-2"
+            className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-xs shadow-lg shadow-primary/30 active:opacity-70 transition-all flex items-center gap-2"
           >
-            <Crown className="w-4 h-4 fill-current" /> ComeÃ§ar 3 dias grÃ¡tis
+            <Crown className="w-4 h-4 fill-current" /> Começar 3 dias grátis
           </button>
         </div>
       ) : aiLoading ? (
         <div className="flex flex-col items-center justify-center py-12 gap-3">
           <Loader2 className="w-6 h-6 animate-spin text-primary" />
           <p className="text-sm text-muted-foreground font-body">
-            Gerando exemplos prÃ¡ticos com IA...
+            Gerando exemplos práticos com IA...
           </p>
         </div>
       ) : aiContent ? (

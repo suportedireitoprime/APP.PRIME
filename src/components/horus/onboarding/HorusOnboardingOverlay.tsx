@@ -126,7 +126,7 @@ export default function HorusOnboardingOverlay({
         <button
           onClick={handleSkip}
           aria-label="Pular apresentaÃ§Ã£o"
-          className="absolute top-4 right-4 z-20 w-11 h-11 rounded-full bg-white/10 backdrop-blur-md text-white flex items-center justify-center active:scale-95 transition"
+          className="absolute top-4 right-4 z-20 w-11 h-11 rounded-full bg-white/10 backdrop-blur-md text-white flex items-center justify-center active:opacity-70 transition"
           style={{ marginTop: 'var(--sai-top)' }}
         >
           <X className="w-5 h-5" />
@@ -191,7 +191,7 @@ export default function HorusOnboardingOverlay({
                   <button
                     onClick={handleContinue}
                     disabled={!nome.trim() || saving}
-                    className="h-14 w-14 rounded-2xl bg-[#F5C518] text-black flex items-center justify-center active:scale-95 transition disabled:opacity-40"
+                    className="h-14 w-14 rounded-2xl bg-[#F5C518] text-black flex items-center justify-center active:opacity-70 transition disabled:opacity-40"
                     aria-label="Continuar"
                   >
                     {saving ? (

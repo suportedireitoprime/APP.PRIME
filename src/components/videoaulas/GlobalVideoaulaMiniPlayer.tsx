@@ -279,7 +279,7 @@ export default function GlobalVideoaulaMiniPlayer() {
             />
             <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-300" />
             <button 
-              className="absolute w-[68px] h-[48px] bg-[#E3262F] hover:bg-[#c91e26] shadow-lg shadow-[#E3262F]/30 rounded-xl flex items-center justify-center backdrop-blur-sm transition-all duration-300 group-hover:scale-105 active:scale-95"
+              className="absolute w-[68px] h-[48px] bg-[#E3262F] hover:bg-[#c91e26] shadow-lg shadow-[#E3262F]/30 rounded-xl flex items-center justify-center backdrop-blur-sm transition-all duration-300 group-hover:scale-105 active:opacity-70"
               aria-label="Reproduzir vídeo"
             >
               {tentouTocar && !playing ? (
@@ -315,7 +315,7 @@ export default function GlobalVideoaulaMiniPlayer() {
                 fechar();
               }}
               aria-label="Fechar vídeo"
-              className="absolute top-2 right-2 z-20 p-1.5 rounded-full bg-rose-600/90 text-white shadow-[0_4px_12px_rgba(0,0,0,0.5)] pointer-events-auto hover:bg-rose-500 hover:scale-105 active:scale-95 transition-all border border-white/20"
+              className="absolute top-2 right-2 z-20 p-1.5 rounded-full bg-rose-600/90 text-white shadow-[0_4px_12px_rgba(0,0,0,0.5)] pointer-events-auto hover:bg-rose-500 hover:scale-105 active:opacity-70 transition-all border border-white/20"
             >
               <X className="w-5 h-5 drop-shadow-md" />
             </button>

@@ -101,7 +101,7 @@ export function OrdenacaoBlock({ payload }: { payload: any }) {
                   type="button"
                   onClick={() => mover(i, -1)}
                   disabled={i === 0}
-                  className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-neutral-300 hover:bg-white/10 hover:text-white active:scale-95 disabled:opacity-20 disabled:pointer-events-none transition-all cursor-pointer"
+                  className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-neutral-300 hover:bg-white/10 hover:text-white active:opacity-70 disabled:opacity-20 disabled:pointer-events-none transition-all cursor-pointer"
                   aria-label="Mover para cima"
                 >
                   <ArrowUp className="h-4 w-4" />
@@ -110,7 +110,7 @@ export function OrdenacaoBlock({ payload }: { payload: any }) {
                   type="button"
                   onClick={() => mover(i, 1)}
                   disabled={i === ordem.length - 1}
-                  className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-neutral-300 hover:bg-white/10 hover:text-white active:scale-95 disabled:opacity-20 disabled:pointer-events-none transition-all cursor-pointer"
+                  className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-neutral-300 hover:bg-white/10 hover:text-white active:opacity-70 disabled:opacity-20 disabled:pointer-events-none transition-all cursor-pointer"
                   aria-label="Mover para baixo"
                 >
                   <ArrowDown className="h-4 w-4" />
@@ -125,14 +125,14 @@ export function OrdenacaoBlock({ payload }: { payload: any }) {
         <button
           type="button"
           onClick={handleVerificar}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white hover:bg-primary-light active:scale-95 transition-all shadow-md shadow-primary/20 min-h-[44px] cursor-pointer"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white hover:bg-primary-light active:opacity-70 transition-all shadow-md shadow-primary/20 min-h-[44px] cursor-pointer"
         >
           <CheckCircle2 className="h-4 w-4" /> Verificar Ordem
         </button>
         <button
           type="button"
           onClick={handleReiniciar}
-          className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-neutral-300 hover:bg-white/10 hover:text-white active:scale-95 transition-all min-h-[44px] cursor-pointer"
+          className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-neutral-300 hover:bg-white/10 hover:text-white active:opacity-70 transition-all min-h-[44px] cursor-pointer"
         >
           <RotateCcw className="h-4 w-4" /> Reiniciar
         </button>

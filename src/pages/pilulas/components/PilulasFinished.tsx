@@ -25,7 +25,7 @@ export function PilulasFinished({ onRestart }: PilulasFinishedProps) {
           haptic.selection();
           onRestart();
         }}
-        className="mt-4 px-8 min-h-[48px] h-14 bg-[#36AF85] hover:bg-[#2C9570] text-white font-bold rounded-2xl flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-lg shadow-[#36AF85]/20"
+        className="mt-4 px-8 min-h-[48px] h-14 bg-[#36AF85] hover:bg-[#2C9570] text-white font-bold rounded-2xl flex items-center justify-center gap-2 transition-transform active:opacity-70 shadow-lg shadow-[#36AF85]/20"
       >
         <RotateCcw className="w-5 h-5" />
         Ver Novamente

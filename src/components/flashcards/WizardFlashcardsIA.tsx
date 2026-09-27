@@ -353,7 +353,7 @@ Descrição: ${desc.substring(0, 1500)}`;
             {step === 4 && 'Plano de Estudo'}
             {step === 5 && 'Salvar Deck'}
           </h2>
-          <button onClick={() => { haptic.selection(); onOpenChange(false); }} className="p-2 bg-muted hover:bg-muted/80 rounded-full transition-colors active:scale-95">
+          <button onClick={() => { haptic.selection(); onOpenChange(false); }} className="p-2 bg-muted hover:bg-muted/80 rounded-full transition-colors active:opacity-70">
             <X className="w-4 h-4 text-foreground" />
           </button>
         </div>
@@ -362,20 +362,20 @@ Descrição: ${desc.substring(0, 1500)}`;
           <AnimatePresence mode="wait">
             {step === 1 && (
               <motion.div key="step1" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="grid grid-cols-2 gap-4">
-                <div onClick={() => handleSourceSelect('document')} className="bg-card border border-border/80 rounded-2xl p-4 flex flex-col items-start gap-3 hover:border-[#36AF85]/50 transition-all cursor-pointer active:scale-95 group">
+                <div onClick={() => handleSourceSelect('document')} className="bg-card border border-border/80 rounded-2xl p-4 flex flex-col items-start gap-3 hover:border-[#36AF85]/50 transition-all cursor-pointer active:opacity-70 group">
                   <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform"><FileText className="w-6 h-6 text-blue-500" /></div>
                   <div><h3 className="font-bold text-foreground">Documentos</h3><p className="text-[10px] text-muted-foreground mt-0.5">PDF, Word, Slides</p></div>
                 </div>
-                <div onClick={() => handleSourceSelect('image')} className="bg-card border border-border/80 rounded-2xl p-4 flex flex-col items-start gap-3 hover:border-[#36AF85]/50 transition-all cursor-pointer active:scale-95 group">
+                <div onClick={() => handleSourceSelect('image')} className="bg-card border border-border/80 rounded-2xl p-4 flex flex-col items-start gap-3 hover:border-[#36AF85]/50 transition-all cursor-pointer active:opacity-70 group">
                   <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform"><ImageIcon className="w-6 h-6 text-blue-500" /></div>
                   <div><h3 className="font-bold text-foreground">Imagem</h3><p className="text-[10px] text-muted-foreground mt-0.5">Fotos de caderno</p></div>
                 </div>
-                <div onClick={() => handleSourceSelect('youtube')} className="bg-card border border-border/80 rounded-2xl p-4 flex flex-col items-start gap-3 hover:border-[#36AF85]/50 transition-all cursor-pointer active:scale-95 group relative overflow-hidden">
+                <div onClick={() => handleSourceSelect('youtube')} className="bg-card border border-border/80 rounded-2xl p-4 flex flex-col items-start gap-3 hover:border-[#36AF85]/50 transition-all cursor-pointer active:opacity-70 group relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent pointer-events-none" />
                   <div className="w-12 h-12 bg-red-600/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform relative z-10"><Youtube className="w-6 h-6 text-red-600" /></div>
                   <div className="relative z-10"><h3 className="font-bold text-foreground flex items-center gap-1.5">YouTube <Sparkles className="w-3 h-3 text-[#36AF85]" /></h3><p className="text-[10px] text-muted-foreground mt-0.5">Aulas em vídeo</p></div>
                 </div>
-                <div onClick={() => handleSourceSelect('audio')} className="bg-card border border-border/80 rounded-2xl p-4 flex flex-col items-start gap-3 hover:border-[#36AF85]/50 transition-all cursor-pointer active:scale-95 group opacity-60">
+                <div onClick={() => handleSourceSelect('audio')} className="bg-card border border-border/80 rounded-2xl p-4 flex flex-col items-start gap-3 hover:border-[#36AF85]/50 transition-all cursor-pointer active:opacity-70 group opacity-60">
                   <div className="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform"><Mic className="w-6 h-6 text-amber-500" /></div>
                   <div><h3 className="font-bold text-foreground">Áudio (Breve)</h3><p className="text-[10px] text-muted-foreground mt-0.5">Aulas gravadas</p></div>
                 </div>
@@ -395,7 +395,7 @@ Descrição: ${desc.substring(0, 1500)}`;
                             <Input placeholder="https://youtube.com/watch?v=..." className="pl-12 h-14 rounded-full bg-muted/30 border-border/80 focus-visible:ring-[#36AF85]" value={youtubeLink} onChange={e => setYoutubeLink(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearchYoutube()} />
                           </div>
                         </div>
-                        <Button onClick={handleSearchYoutube} disabled={!youtubeLink.trim() || loadingPreview} className="w-full h-14 rounded-full bg-[#36AF85] hover:bg-[#2b8c6a] text-white font-bold text-base shadow-lg shadow-[#36AF85]/20 active:scale-95 transition-all">
+                        <Button onClick={handleSearchYoutube} disabled={!youtubeLink.trim() || loadingPreview} className="w-full h-14 rounded-full bg-[#36AF85] hover:bg-[#2b8c6a] text-white font-bold text-base shadow-lg shadow-[#36AF85]/20 active:opacity-70 transition-all">
                           {loadingPreview ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Procurar Vídeo'}
                         </Button>
                       </>
@@ -599,7 +599,7 @@ function SourceCard({ icon, title, desc, onClick }: { icon: React.ReactNode, tit
   return (
     <div 
       onClick={() => { haptic.selection(); onClick(); }}
-      className="bg-card border border-border/80 rounded-2xl p-4 flex flex-col items-start gap-3 hover:border-[#36AF85]/50 transition-all cursor-pointer active:scale-95"
+      className="bg-card border border-border/80 rounded-2xl p-4 flex flex-col items-start gap-3 hover:border-[#36AF85]/50 transition-all cursor-pointer active:opacity-70"
     >
       <div className="mb-1">
         {icon}

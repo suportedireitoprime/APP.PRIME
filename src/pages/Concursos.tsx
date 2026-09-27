@@ -662,13 +662,13 @@ const Concursos = () => {
                 <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2">
                   <button 
                     onClick={() => setFontSize(f => Math.min(f + 2, 28))}
-                    className="w-11 h-11 rounded-full bg-card border border-border shadow-lg flex items-center justify-center text-foreground hover:bg-secondary active:scale-95 transition-all"
+                    className="w-11 h-11 rounded-full bg-card border border-border shadow-lg flex items-center justify-center text-foreground hover:bg-secondary active:opacity-70 transition-all"
                   >
                     <span className="text-sm font-bold">A+</span>
                   </button>
                   <button 
                     onClick={() => setFontSize(f => Math.max(f - 2, 12))}
-                    className="w-11 h-11 rounded-full bg-card border border-border shadow-lg flex items-center justify-center text-foreground hover:bg-secondary active:scale-95 transition-all"
+                    className="w-11 h-11 rounded-full bg-card border border-border shadow-lg flex items-center justify-center text-foreground hover:bg-secondary active:opacity-70 transition-all"
                   >
                     <span className="text-sm font-bold">A-</span>
                   </button>

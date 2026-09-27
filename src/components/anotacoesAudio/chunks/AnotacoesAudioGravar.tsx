@@ -161,7 +161,7 @@ export const AnotacoesAudioGravar: React.FC<AnotacoesAudioGravarProps> = ({ onDo
             <Button
               size="lg"
               onClick={rec.start}
-              className="h-32 w-32 rounded-full p-0 bg-primary hover:bg-primary/90 shadow-2xl shadow-primary/40 relative z-10 transition-transform active:scale-95"
+              className="h-32 w-32 rounded-full p-0 bg-primary hover:bg-primary/90 shadow-2xl shadow-primary/40 relative z-10 transition-transform active:opacity-70"
             >
               <Mic className="h-12 w-12 text-white" strokeWidth={1.5} />
             </Button>

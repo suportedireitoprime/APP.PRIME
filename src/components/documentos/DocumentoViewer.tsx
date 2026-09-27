@@ -121,7 +121,7 @@ const DocumentoViewer = ({ blob, nome, mime, onClose, onBaixar, baixando }: Prop
         <button
           onClick={() => { import('@/lib/nativeHaptics').then(m => m.haptic.selection()); onClose(); }}
           aria-label="Voltar"
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border/60 bg-card active:scale-95 transition"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border/60 bg-card active:opacity-70 transition"
         >
           <ChevronLeft className="h-6 w-6 text-foreground" />
         </button>
@@ -133,7 +133,7 @@ const DocumentoViewer = ({ blob, nome, mime, onClose, onBaixar, baixando }: Prop
             onClick={onBaixar}
             disabled={baixando}
             aria-label="Baixar documento"
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border/60 bg-card active:scale-95 transition disabled:opacity-60"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border/60 bg-card active:opacity-70 transition disabled:opacity-60"
           >
             {baixando ? (
               <Loader2 className="h-5 w-5 animate-spin text-foreground" />
@@ -209,7 +209,7 @@ const DocumentoViewer = ({ blob, nome, mime, onClose, onBaixar, baixando }: Prop
               <button
                 onClick={onBaixar}
                 disabled={baixando}
-                className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary font-body text-[14px] font-semibold text-primary-foreground active:scale-95 transition disabled:opacity-60"
+                className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary font-body text-[14px] font-semibold text-primary-foreground active:opacity-70 transition disabled:opacity-60"
               >
                 {baixando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
                 Baixar documento

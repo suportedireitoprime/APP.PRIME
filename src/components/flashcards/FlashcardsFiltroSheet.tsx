@@ -190,14 +190,14 @@ export function SelecaoSheet({
         <button
           onClick={onFechar}
           aria-label="Voltar"
-          className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 transition-colors active:scale-95"
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 transition-colors active:opacity-70"
         >
           <ChevronLeft className="h-6 w-6" />
         </button>
         <p className="flex-1 text-center text-[18px] font-extrabold text-zinc-100">{titulo}</p>
         <button
           onClick={() => { haptic.selection?.(); setLocal([]); }}
-          className="px-3 text-[14px] font-bold text-[#36AF85] hover:text-[#2C9570] active:scale-95 transition-colors"
+          className="px-3 text-[14px] font-bold text-[#36AF85] hover:text-[#2C9570] active:opacity-70 transition-colors"
         >
           Limpar
         </button>
@@ -459,7 +459,7 @@ const FlashcardsFiltroSheet = ({
             className="fixed inset-0 z-[71] flex flex-col overflow-hidden bg-zinc-950 text-foreground md:inset-y-0 md:left-auto md:right-0 md:w-full md:max-w-md md:border-l md:border-zinc-800/80 md:shadow-2xl"
           >
             <div className="flex items-center gap-3 px-4 pb-4 pt-safe-header border-b border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md">
-              <button onClick={onFechar} aria-label="Voltar" className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 transition-colors active:scale-95">
+              <button onClick={onFechar} aria-label="Voltar" className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 transition-colors active:opacity-70">
                 <ChevronLeft className="h-6 w-6" />
               </button>
               <div className="min-w-0 flex-1">
@@ -470,7 +470,7 @@ const FlashcardsFiltroSheet = ({
                   Refine por matéria, assunto, status e mais.
                 </p>
               </div>
-              <button onClick={limpar} className="px-3 text-[14px] font-bold text-[#36AF85] hover:text-[#2C9570] active:scale-95 transition-colors">
+              <button onClick={limpar} className="px-3 text-[14px] font-bold text-[#36AF85] hover:text-[#2C9570] active:opacity-70 transition-colors">
                 Limpar
               </button>
             </div>

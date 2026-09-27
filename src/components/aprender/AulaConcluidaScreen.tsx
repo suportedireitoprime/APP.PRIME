@@ -149,7 +149,7 @@ export function AulaConcluidaScreen({
           <div className="grid gap-3 sm:grid-cols-2">
             <button
               onClick={onRefazer}
-              className="flex h-14 items-center justify-center rounded-xl border border-border/80 bg-card px-5 text-sm font-bold text-foreground hover:bg-accent active:scale-95 transition-transform"
+              className="flex h-14 items-center justify-center rounded-xl border border-border/80 bg-card px-5 text-sm font-bold text-foreground hover:bg-accent active:opacity-70 transition-transform"
             >
               <RotateCw className="mr-2 inline h-4 w-4" /> Refazer Aula
             </button>
@@ -159,7 +159,7 @@ export function AulaConcluidaScreen({
                 navigate(`/aprender/aula/${proximaAula.id}`);
               }}
               disabled={!proximaAula}
-              className="flex h-14 items-center justify-center rounded-xl bg-primary px-5 text-sm font-extrabold text-white shadow-lg hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-40 active:scale-95 transition-transform"
+              className="flex h-14 items-center justify-center rounded-xl bg-primary px-5 text-sm font-extrabold text-white shadow-lg hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-40 active:opacity-70 transition-transform"
             >
               Próxima aula <ArrowRight className="ml-2 inline h-4 w-4 text-white" strokeWidth={2.5} />
             </button>
@@ -171,7 +171,7 @@ export function AulaConcluidaScreen({
           </div>
           <button
             onClick={() => navigate('/aprender')}
-            className="flex h-14 w-full items-center justify-center rounded-xl border border-border/80 bg-card px-5 text-sm font-bold text-foreground hover:bg-accent active:scale-95 transition-transform"
+            className="flex h-14 w-full items-center justify-center rounded-xl border border-border/80 bg-card px-5 text-sm font-bold text-foreground hover:bg-accent active:opacity-70 transition-transform"
           >
             Voltar para trilhas de estudo
           </button>

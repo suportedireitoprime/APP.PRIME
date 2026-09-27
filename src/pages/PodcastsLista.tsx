@@ -30,7 +30,7 @@ const PodcastsLista = () => {
       <header className="sticky top-0 z-40 bg-[#0A0A0A]/90 backdrop-blur-md pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] px-4 pb-4 flex items-center gap-3 border-b border-white/5 shadow-md">
         <button 
           onClick={() => { haptic.selection(); navigate(-1); }}
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 active:scale-95 transition-transform"
+          className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 active:opacity-70 transition-transform"
         >
           <ArrowLeft className="w-5 h-5 text-white" />
         </button>

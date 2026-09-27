@@ -105,7 +105,7 @@ export default function RadarEstatisticas() {
         <div className="flex items-center justify-between">
           <button
             onClick={() => { haptic.selection(); navigate(-1); }}
-            className="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 active:scale-95 transition-all"
+            className="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 active:opacity-70 transition-all"
           >
             <ArrowLeft className="w-6 h-6 text-white" strokeWidth={2.4} />
           </button>

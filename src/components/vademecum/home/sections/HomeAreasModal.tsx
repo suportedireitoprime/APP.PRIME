@@ -19,7 +19,7 @@ const HomeAreasModal = ({ open, onClose, onSelectArea }: HomeAreasModalProps) =>
         <button
           onClick={onClose}
           aria-label="Voltar"
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border/60 bg-card active:scale-95 transition"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border/60 bg-card active:opacity-70 transition"
         >
           <ChevronRight className="h-6 w-6 rotate-180 text-foreground" />
         </button>

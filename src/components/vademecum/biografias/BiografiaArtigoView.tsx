@@ -87,7 +87,7 @@ export const BiografiaArtigoView = ({ personagemId, onBack }: Props) => {
           <button
             onClick={handleClose}
             aria-label="Fechar"
-            className="absolute top-4 left-4 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/60 text-white shadow-xl hover:bg-white/30 active:scale-95 transition-all z-30 mt-[var(--sai-top,0px)]"
+            className="absolute top-4 left-4 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/60 text-white shadow-xl hover:bg-white/30 active:opacity-70 transition-all z-30 mt-[var(--sai-top,0px)]"
           >
             <ChevronDown className="w-6 h-6 text-white" strokeWidth={3} />
           </button>
@@ -260,7 +260,7 @@ export const BiografiaArtigoView = ({ personagemId, onBack }: Props) => {
 
             <button
               onClick={() => { haptic.medium(); setShowPresentation(true); }}
-              className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-2xl shadow-primary/50 hover:bg-primary/90 active:scale-95 transition-all group"
+              className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-2xl shadow-primary/50 hover:bg-primary/90 active:opacity-70 transition-all group"
               aria-label="Ver Apresentação"
             >
               <Play className="w-7 h-7 ml-1 fill-current group-hover:scale-110 transition-transform" />

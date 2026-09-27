@@ -71,7 +71,7 @@ export default function LembreteCard({
             <button
               onClick={onRemover}
               aria-label="Excluir lembrete"
-              className="h-11 w-11 grid place-items-center rounded-xl text-muted-foreground active:scale-95 transition"
+              className="h-11 w-11 grid place-items-center rounded-xl text-muted-foreground active:opacity-70 transition"
             >
               <Trash2 className="w-5 h-5" />
             </button>
@@ -80,7 +80,7 @@ export default function LembreteCard({
           <button
             onClick={onAbrir}
             aria-label="Gerenciar lembrete"
-            className="h-11 w-11 grid place-items-center rounded-xl text-muted-foreground active:scale-95 transition"
+            className="h-11 w-11 grid place-items-center rounded-xl text-muted-foreground active:opacity-70 transition"
           >
             <ChevronRight className="w-5 h-5" />
           </button>

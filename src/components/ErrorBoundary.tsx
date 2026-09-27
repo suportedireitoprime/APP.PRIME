@@ -95,14 +95,14 @@ export class ErrorBoundary extends Component<Props, State> {
             <button
               type="button"
               onClick={this.reset}
-              className="w-full py-3 px-5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-95 active:scale-95 transition-all"
+              className="w-full py-3 px-5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-95 active:opacity-70 transition-all"
             >
               Tentar novamente
             </button>
             <button
               type="button"
               onClick={() => { window.location.href = '/'; }}
-              className="w-full py-3 px-5 rounded-xl bg-white/10 text-white font-medium text-sm hover:bg-white/15 active:scale-95 transition-all"
+              className="w-full py-3 px-5 rounded-xl bg-white/10 text-white font-medium text-sm hover:bg-white/15 active:opacity-70 transition-all"
             >
               Ir para o Início
             </button>
@@ -124,14 +124,14 @@ export class ErrorBoundary extends Component<Props, State> {
           <button
             type="button"
             onClick={this.reset}
-            className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 active:scale-95 transition-all"
+            className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 active:opacity-70 transition-all"
           >
             Tentar novamente
           </button>
           <button
             type="button"
             onClick={() => { window.location.href = '/'; }}
-            className="px-5 py-2.5 rounded-xl bg-white/10 text-white font-medium text-sm hover:bg-white/15 active:scale-95 transition-all"
+            className="px-5 py-2.5 rounded-xl bg-white/10 text-white font-medium text-sm hover:bg-white/15 active:opacity-70 transition-all"
           >
             Ir para o Início
           </button>

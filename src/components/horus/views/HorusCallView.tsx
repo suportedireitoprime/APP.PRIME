@@ -440,7 +440,7 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar, displayName, profil
           {/* Botão Speaker (fictício, só para compor UI de chamada) */}
           <button 
             type="button"
-            className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-zinc-800/80 border border-zinc-700/50 flex flex-col items-center justify-center gap-1 active:scale-95 transition-all text-zinc-400"
+            className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-zinc-800/80 border border-zinc-700/50 flex flex-col items-center justify-center gap-1 active:opacity-70 transition-all text-zinc-400"
             aria-label="Alto-falante"
           >
             <Volume2 className="w-6 h-6 sm:w-7 sm:h-7" />
@@ -451,7 +451,7 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar, displayName, profil
             type="button"
             onClick={alternarMic}
             aria-label={micAtivo ? 'Silenciar microfone' : 'Ativar microfone'}
-            className={`w-18 h-18 sm:w-20 sm:h-20 rounded-full flex flex-col items-center justify-center shadow-lg active:scale-95 transition-all border ${
+            className={`w-18 h-18 sm:w-20 sm:h-20 rounded-full flex flex-col items-center justify-center shadow-lg active:opacity-70 transition-all border ${
               micAtivo 
                 ? 'bg-zinc-800 border-zinc-700 text-white' 
                 : 'bg-white border-white text-zinc-900'
@@ -465,7 +465,7 @@ export const HorusCallView: React.FC<Props> = ({ onEncerrar, displayName, profil
             type="button"
             onClick={desligar}
             aria-label="Encerrar ligação"
-            className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-600 border border-red-500 flex flex-col items-center justify-center shadow-lg shadow-red-600/30 active:scale-95 transition-all text-white"
+            className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-600 border border-red-500 flex flex-col items-center justify-center shadow-lg shadow-red-600/30 active:opacity-70 transition-all text-white"
           >
             <PhoneOff className="w-6 h-6 sm:w-7 sm:h-7" />
           </button>

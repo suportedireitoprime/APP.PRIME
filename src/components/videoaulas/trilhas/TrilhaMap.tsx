@@ -72,7 +72,7 @@ export const TrilhaMap = ({ concursos, onBack }: TrilhaMapProps) => {
               setDrawerOpen(true);
             }}
             aria-label="Ajustes da Missão"
-            className="p-2 rounded-full bg-white/5 text-muted-foreground hover:text-foreground active:scale-95 transition-all"
+            className="p-2 rounded-full bg-white/5 text-muted-foreground hover:text-foreground active:opacity-70 transition-all"
           >
             <Settings2 className="w-5 h-5" />
           </button>

@@ -343,7 +343,7 @@ export default function JurisprudenciaArtigo({
             </p>
             <Button
               onClick={() => setShowPremiumGate(true)}
-              className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-lg shadow-primary/30 active:scale-95 transition-all flex items-center justify-center gap-2"
+              className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-lg shadow-primary/30 active:opacity-70 transition-all flex items-center justify-center gap-2"
             >
               <Crown className="w-4 h-4 fill-current" />
               Começar 3 dias grátis

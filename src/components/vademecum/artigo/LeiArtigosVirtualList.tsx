@@ -233,7 +233,7 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
             <button
               type="button"
               onClick={handleResumeLastRead}
-              className="px-3 py-1.5 text-xs font-bold rounded-lg bg-primary text-white hover:bg-primary/90 active:scale-95 transition-all shadow-sm"
+              className="px-3 py-1.5 text-xs font-bold rounded-lg bg-primary text-white hover:bg-primary/90 active:opacity-70 transition-all shadow-sm"
             >
               Ir para artigo
             </button>

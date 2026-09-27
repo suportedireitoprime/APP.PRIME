@@ -417,7 +417,7 @@ export default function MapasMentaisView({
             type="button"
             onClick={voltar}
             aria-label="Voltar"
-            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/10 hover:bg-white/15 flex items-center justify-center text-white active:scale-95 transition-all shrink-0 cursor-pointer"
+            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/10 hover:bg-white/15 flex items-center justify-center text-white active:opacity-70 transition-all shrink-0 cursor-pointer"
           >
             <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           </button>

@@ -154,7 +154,7 @@ export const DesktopRadarLeisCarousel = memo(() => {
           <button
             type="button"
             onClick={() => navigate('/radar-360')}
-            className="group inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] active:scale-95 border border-white/10 hover:border-white/20 text-[11.5px] font-semibold text-white transition-all shadow-sm"
+            className="group inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] active:opacity-70 border border-white/10 hover:border-white/20 text-[11.5px] font-semibold text-white transition-all shadow-sm"
           >
             <span>Ver todas</span>
             <ChevronRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />

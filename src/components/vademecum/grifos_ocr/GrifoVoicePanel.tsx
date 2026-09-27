@@ -304,7 +304,7 @@ const GrifoVoicePanel = forwardRef<GrifoVoicePanelHandle, Props>(function GrifoV
                       key={c.name}
                       type="button"
                       onClick={() => pickColor(c)}
-                      className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-secondary/60 hover:bg-secondary transition-colors active:scale-95"
+                      className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-secondary/60 hover:bg-secondary transition-colors active:opacity-70"
                     >
                       <span
                         className="w-9 h-9 rounded-full border-2 flex items-center justify-center"

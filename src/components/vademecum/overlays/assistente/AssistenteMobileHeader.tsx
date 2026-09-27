@@ -33,7 +33,7 @@ export const AssistenteMobileHeader: React.FC<AssistenteMobileHeaderProps> = ({
           setTimeout(newSession, 300);
         }}
         aria-label="Fechar"
-        className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-zinc-900/80 hover:bg-zinc-800 active:scale-90 transition-all shadow-md z-10 border border-white/10"
+        className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-zinc-900/80 hover:bg-zinc-800 active:opacity-70 transition-all shadow-md z-10 border border-white/10"
       >
         <X className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" strokeWidth={2.2} />
       </button>
@@ -51,7 +51,7 @@ export const AssistenteMobileHeader: React.FC<AssistenteMobileHeaderProps> = ({
               toggleWebSearch();
             }
           }}
-          className="flex items-center gap-1.5 mt-0.5 px-3 py-1 rounded-full transition-all active:scale-95 bg-zinc-900/80 hover:bg-zinc-800 border border-white/10 shadow-sm"
+          className="flex items-center gap-1.5 mt-0.5 px-3 py-1 rounded-full transition-all active:opacity-70 bg-zinc-900/80 hover:bg-zinc-800 border border-white/10 shadow-sm"
         >
           <Globe
             className={`w-3.5 h-3.5 ${
@@ -85,7 +85,7 @@ export const AssistenteMobileHeader: React.FC<AssistenteMobileHeaderProps> = ({
           setHistoryOpen(true);
         }}
         aria-label="Histórico"
-        className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-zinc-900/80 hover:bg-zinc-800 active:scale-90 transition-all shadow-md z-10 border border-white/10"
+        className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-zinc-900/80 hover:bg-zinc-800 active:opacity-70 transition-all shadow-md z-10 border border-white/10"
       >
         <HistoryIcon className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" strokeWidth={2} />
       </button>

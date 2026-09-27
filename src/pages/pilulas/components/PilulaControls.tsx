@@ -99,7 +99,7 @@ export function PilulaControls({
             haptic.selection();
             handleSeek(progress - 15);
           }}
-          className="w-12 h-12 min-h-[48px] min-w-[48px] rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors active:scale-95"
+          className="w-12 h-12 min-h-[48px] min-w-[48px] rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors active:opacity-70"
           aria-label="Voltar 15 segundos"
         >
           <span className="text-sm font-bold">-15s</span>
@@ -111,7 +111,7 @@ export function PilulaControls({
             onTogglePlay();
           }}
           disabled={!livro.audioResumoUrl}
-          className={`w-20 h-20 flex items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform hover:scale-105 active:scale-95 shadow-2xl shadow-primary/30 ${
+          className={`w-20 h-20 flex items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform hover:scale-105 active:opacity-70 shadow-2xl shadow-primary/30 ${
             !livro.audioResumoUrl ? 'opacity-50 cursor-not-allowed' : ''
           }`}
           aria-label={isThisPlaying ? "Pausar áudio" : "Reproduzir áudio"}
@@ -128,7 +128,7 @@ export function PilulaControls({
             haptic.selection();
             handleSeek(progress + 15);
           }}
-          className="w-12 h-12 min-h-[48px] min-w-[48px] rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors active:scale-95"
+          className="w-12 h-12 min-h-[48px] min-w-[48px] rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors active:opacity-70"
           aria-label="Avançar 15 segundos"
         >
           <span className="text-sm font-bold">+15s</span>

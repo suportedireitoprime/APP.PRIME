@@ -178,7 +178,7 @@ export function AulaSettingsSheet({
                   {estado !== 'falando' ? (
                     <button
                       onClick={estado === 'pausado' ? resume : play}
-                      className="col-span-2 flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 min-h-12 text-[15px] font-semibold text-primary-foreground hover:opacity-90 active:scale-95 transition-transform"
+                      className="col-span-2 flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 min-h-12 text-[15px] font-semibold text-primary-foreground hover:opacity-90 active:opacity-70 transition-transform"
                     >
                       <Play className="h-5 w-5" />
                       {estado === 'pausado' ? 'Continuar' : 'Ouvir agora'}
@@ -186,7 +186,7 @@ export function AulaSettingsSheet({
                   ) : (
                     <button
                       onClick={pause}
-                      className="col-span-2 flex items-center justify-center gap-2 rounded-xl border-2 border-primary/50 bg-primary/10 px-4 py-3 min-h-12 text-[15px] font-semibold text-foreground hover:bg-primary/20 active:scale-95 transition-transform"
+                      className="col-span-2 flex items-center justify-center gap-2 rounded-xl border-2 border-primary/50 bg-primary/10 px-4 py-3 min-h-12 text-[15px] font-semibold text-foreground hover:bg-primary/20 active:opacity-70 transition-transform"
                     >
                       <Pause className="h-5 w-5" />
                       Pausar
@@ -195,7 +195,7 @@ export function AulaSettingsSheet({
                   <button
                     onClick={stop}
                     disabled={estado === 'parado'}
-                    className="flex items-center justify-center gap-2 rounded-xl border border-border px-4 py-3 min-h-12 text-[15px] font-semibold text-foreground hover:bg-accent disabled:opacity-40 active:scale-95 transition-transform"
+                    className="flex items-center justify-center gap-2 rounded-xl border border-border px-4 py-3 min-h-12 text-[15px] font-semibold text-foreground hover:bg-accent disabled:opacity-40 active:opacity-70 transition-transform"
                   >
                     <Square className="h-4 w-4" />
                     Parar

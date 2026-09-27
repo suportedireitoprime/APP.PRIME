@@ -200,7 +200,7 @@ const ArtigoIAFullscreen = ({
               <button
                 onClick={() => { haptic.light(); onClose(); }}
                 aria-label="Fechar"
-                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-secondary/70 text-foreground/80 transition-colors hover:bg-secondary active:scale-95"
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-secondary/70 text-foreground/80 transition-colors hover:bg-secondary active:opacity-70"
               >
                 <X className="h-6 w-6" />
               </button>
@@ -218,7 +218,7 @@ const ArtigoIAFullscreen = ({
                     data-chip-idx={i}
                     onClick={() => handleSetIndex(i)}
                     className={[
-                      'inline-flex min-h-[44px] shrink-0 items-center rounded-full px-4 text-[14px] font-bold transition-colors active:scale-95',
+                      'inline-flex min-h-[44px] shrink-0 items-center rounded-full px-4 text-[14px] font-bold transition-colors active:opacity-70',
                       i === index
                         ? 'bg-primary text-primary-foreground'
                         : 'bg-secondary/70 text-muted-foreground hover:text-foreground',
@@ -275,7 +275,7 @@ const ArtigoIAFullscreen = ({
                 <button
                   onClick={() => { haptic.light(); handleSetIndex((i) => Math.max(i - 1, 0)); }}
                   disabled={index === 0}
-                  className="inline-flex min-h-[48px] items-center gap-1.5 rounded-full bg-secondary px-5 text-[15px] font-semibold text-foreground active:scale-95 disabled:opacity-35"
+                  className="inline-flex min-h-[48px] items-center gap-1.5 rounded-full bg-secondary px-5 text-[15px] font-semibold text-foreground active:opacity-70 disabled:opacity-35"
                 >
                   <ChevronLeft className="h-5 w-5" />
                   Anterior
@@ -286,7 +286,7 @@ const ArtigoIAFullscreen = ({
                 <button
                   onClick={() => { haptic.light(); handleSetIndex((i) => Math.min(i + 1, sections.length - 1)); }}
                   disabled={index >= sections.length - 1}
-                  className="inline-flex min-h-[48px] items-center gap-1.5 rounded-full bg-primary px-5 text-[15px] font-semibold text-primary-foreground active:scale-95 disabled:opacity-35"
+                  className="inline-flex min-h-[48px] items-center gap-1.5 rounded-full bg-primary px-5 text-[15px] font-semibold text-primary-foreground active:opacity-70 disabled:opacity-35"
                 >
                   Próximo
                   <ChevronRight className="h-5 w-5" />

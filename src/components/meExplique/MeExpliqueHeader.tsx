@@ -34,7 +34,7 @@ export const MeExpliqueHeader = memo(function MeExpliqueHeader({
       <button
         onClick={onClose}
         aria-label="Fechar"
-        className="flex h-11 w-11 min-h-[48px] min-w-[48px] items-center justify-center rounded-full bg-white/15 backdrop-blur active:scale-95 transition-transform"
+        className="flex h-11 w-11 min-h-[48px] min-w-[48px] items-center justify-center rounded-full bg-white/15 backdrop-blur active:opacity-70 transition-transform"
       >
         <X className="h-5 w-5" />
       </button>
@@ -47,7 +47,7 @@ export const MeExpliqueHeader = memo(function MeExpliqueHeader({
       <button
         onClick={onOpenConfig}
         aria-label="Configurações do professor"
-        className="flex h-11 w-11 min-h-[48px] min-w-[48px] items-center justify-center rounded-full bg-white/15 backdrop-blur active:scale-95 transition-transform"
+        className="flex h-11 w-11 min-h-[48px] min-w-[48px] items-center justify-center rounded-full bg-white/15 backdrop-blur active:opacity-70 transition-transform"
       >
         <Settings2 className="h-5 w-5" />
       </button>
@@ -61,7 +61,7 @@ export const MeExpliqueHeader = memo(function MeExpliqueHeader({
         <button
           onClick={onOpenTranscricao}
           aria-label="Ver e baixar a explicação"
-          className="relative flex h-11 w-11 min-h-[48px] min-w-[48px] items-center justify-center rounded-full bg-white/15 backdrop-blur active:scale-95 transition-transform"
+          className="relative flex h-11 w-11 min-h-[48px] min-w-[48px] items-center justify-center rounded-full bg-white/15 backdrop-blur active:opacity-70 transition-transform"
         >
           <FileText className="h-5 w-5" />
           <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
@@ -74,7 +74,7 @@ export const MeExpliqueHeader = memo(function MeExpliqueHeader({
         <button
           onClick={onToggleLanterna}
           aria-label={lanternaAtiva ? 'Desligar lanterna' : 'Ligar lanterna'}
-          className={`flex h-11 w-11 min-h-[48px] min-w-[48px] items-center justify-center rounded-full backdrop-blur active:scale-95 transition-transform ${
+          className={`flex h-11 w-11 min-h-[48px] min-w-[48px] items-center justify-center rounded-full backdrop-blur active:opacity-70 transition-transform ${
             lanternaAtiva ? 'bg-white text-black' : 'bg-white/15'
           }`}
         >

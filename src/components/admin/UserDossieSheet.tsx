@@ -261,7 +261,7 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
                 <img 
                   src={avatarUrl} 
                   alt="Avatar" 
-                  className="w-12 h-12 rounded-full border border-border object-cover shrink-0 cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all active:scale-95" 
+                  className="w-12 h-12 rounded-full border border-border object-cover shrink-0 cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all active:opacity-70" 
                   onClick={() => setFotoFull(true)}
                   referrerPolicy="no-referrer"
                 />

@@ -428,7 +428,7 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
                 handlePrev();
               }}
               aria-label={`Flashcard anterior de ${area.nome}`}
-              className="absolute left-1 sm:left-4 z-40 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black/60 hover:bg-black/85 active:scale-95 border border-white/25 text-white shadow-xl backdrop-blur-md flex items-center justify-center transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-400"
+              className="absolute left-1 sm:left-4 z-40 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black/60 hover:bg-black/85 active:opacity-70 border border-white/25 text-white shadow-xl backdrop-blur-md flex items-center justify-center transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-400"
             >
               <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.4]" />
             </button>
@@ -443,7 +443,7 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
                 handleNext();
               }}
               aria-label={`Próximo flashcard de ${area.nome}`}
-              className="absolute right-1 sm:right-4 z-40 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black/60 hover:bg-black/85 active:scale-95 border border-white/25 text-white shadow-xl backdrop-blur-md flex items-center justify-center transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-400"
+              className="absolute right-1 sm:right-4 z-40 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black/60 hover:bg-black/85 active:opacity-70 border border-white/25 text-white shadow-xl backdrop-blur-md flex items-center justify-center transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-400"
             >
               <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.4]" />
             </button>
@@ -562,7 +562,7 @@ export const MateriaFlashcardsDeckSection: React.FC<MateriaFlashcardsDeckSection
                             borderColor: 'rgba(255, 255, 255, 0.22)',
                             boxShadow: `0 6px 16px -2px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.18)`,
                           }}
-                          className="w-full py-1.5 px-3 rounded-xl flex items-center justify-center gap-1.5 text-white font-black text-[11px] sm:text-xs uppercase tracking-wider border hover:brightness-125 active:scale-95 transition-all cursor-pointer select-none"
+                          className="w-full py-1.5 px-3 rounded-xl flex items-center justify-center gap-1.5 text-white font-black text-[11px] sm:text-xs uppercase tracking-wider border hover:brightness-125 active:opacity-70 transition-all cursor-pointer select-none"
                         >
                           <span className="drop-shadow-sm">Entrar</span>
                           <ArrowRight className="w-3.5 h-3.5 stroke-[2.5] text-white/95" />

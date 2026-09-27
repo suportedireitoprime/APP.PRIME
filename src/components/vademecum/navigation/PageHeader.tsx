@@ -45,7 +45,7 @@ export function PageHeader({
           type="button"
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); haptic.light(); onBack(); }}
           aria-label="Voltar"
-          className={`w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full ${buttonBg} flex items-center justify-center shrink-0 active:scale-95 transition-transform touch-manipulation select-none`}
+          className={`w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full ${buttonBg} flex items-center justify-center shrink-0 active:opacity-70 transition-transform touch-manipulation select-none`}
         >
           <ArrowLeft className={`w-6 h-6 sm:w-7 sm:h-7 ${textColor}`} strokeWidth={2.4} />
         </button>

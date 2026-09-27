@@ -240,7 +240,7 @@ const QuestoesFiltroSheet = ({
           <button
                 onClick={onFechar}
                 aria-label="Voltar"
-                className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 transition-colors active:scale-95"
+                className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 transition-colors active:opacity-70"
               >
                 <ChevronLeft className="h-6 w-6" />
               </button>
@@ -254,7 +254,7 @@ const QuestoesFiltroSheet = ({
               </div>
               <button
                 onClick={limpar}
-                className="px-3 text-[14px] font-bold text-[#E11D48] hover:text-[#BE123C] active:scale-95 transition-colors"
+                className="px-3 text-[14px] font-bold text-[#E11D48] hover:text-[#BE123C] active:opacity-70 transition-colors"
               >
                 Limpar
               </button>

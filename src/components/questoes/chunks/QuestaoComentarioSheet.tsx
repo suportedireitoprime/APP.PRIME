@@ -54,7 +54,7 @@ export function TamanhoTextoFab({ fs, setFs }: { fs: number; setFs: (n: number) 
         type="button"
         aria-label="Tamanho do texto"
         onClick={() => setAberto((v) => !v)}
-        className="pointer-events-auto grid h-12 w-12 place-items-center rounded-full bg-primary text-primary-foreground shadow-xl transition-transform active:scale-95"
+        className="pointer-events-auto grid h-12 w-12 place-items-center rounded-full bg-primary text-primary-foreground shadow-xl transition-transform active:opacity-70"
       >
         {aberto ? <X className="h-5 w-5" /> : <Type className="h-5 w-5" />}
       </button>

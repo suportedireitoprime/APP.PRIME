@@ -105,7 +105,7 @@ export default function ArtigoEducacional() {
             onClick={() => carregar(true)}
             aria-label="Recarregar artigo"
             disabled={loading}
-            className="w-10 h-10 rounded-full bg-muted flex items-center justify-center active:scale-95 transition-transform disabled:opacity-50"
+            className="w-10 h-10 rounded-full bg-muted flex items-center justify-center active:opacity-70 transition-transform disabled:opacity-50"
           >
             <RefreshCw className={`w-[18px] h-[18px] text-foreground ${loading ? 'animate-spin' : ''}`} />
           </button>

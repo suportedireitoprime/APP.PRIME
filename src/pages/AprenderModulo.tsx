@@ -628,7 +628,7 @@ const AprenderModulo = () => {
         navigate('/aprender');
       }}
       aria-label="Ir para o início do Aprender"
-      className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-muted flex items-center justify-center shrink-0 active:scale-95 transition-transform touch-manipulation select-none cursor-pointer"
+      className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-muted flex items-center justify-center shrink-0 active:opacity-70 transition-transform touch-manipulation select-none cursor-pointer"
     >
       <Home className="w-6 h-6 sm:w-7 sm:h-7 text-foreground" strokeWidth={2.2} />
     </button>
@@ -1006,7 +1006,7 @@ const AprenderModulo = () => {
                         type="button"
                         disabled={isGeneratingSyllabus}
                         onClick={handleGerarAulasManual}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs sm:text-sm font-semibold shadow-lg hover:bg-primary/90 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs sm:text-sm font-semibold shadow-lg hover:bg-primary/90 transition-all cursor-pointer active:opacity-70 disabled:opacity-50"
                       >
                         {isGeneratingSyllabus ? (
                           <>

@@ -195,7 +195,7 @@ export const DocumentarioSettingsModal: React.FC<Props> = ({
             <div className="p-6 border-t border-white/10 bg-[#0A0A0A]">
               <button
                 onClick={onClose}
-                className="w-full py-4 bg-primary text-white font-bold rounded-xl shadow-xl hover:bg-primary/90 transition-all active:scale-95 text-lg"
+                className="w-full py-4 bg-primary text-white font-bold rounded-xl shadow-xl hover:bg-primary/90 transition-all active:opacity-70 text-lg"
               >
                 Confirmar Configurações
               </button>

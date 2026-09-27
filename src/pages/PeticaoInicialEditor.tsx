@@ -63,7 +63,7 @@ export default function PeticaoInicialEditor() {
               else goBack();
             }}
             aria-label="Voltar etapa"
-            className="w-12 h-12 sm:w-[52px] sm:h-[52px] -ml-2 rounded-full grid place-items-center hover:bg-muted active:scale-95 transition-transform"
+            className="w-12 h-12 sm:w-[52px] sm:h-[52px] -ml-2 rounded-full grid place-items-center hover:bg-muted active:opacity-70 transition-transform"
           >
             <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           </button>

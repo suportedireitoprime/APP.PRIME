@@ -75,7 +75,7 @@ const LinhaAula = React.memo(function LinhaAula({
       <button
         onClick={() => alternarFavorito(a)}
         aria-label={fav ? 'Remover dos favoritos' : 'Favoritar'}
-        className="h-8 w-8 grid place-items-center rounded-full hover:bg-white/10 shrink-0 transition active:scale-95"
+        className="h-8 w-8 grid place-items-center rounded-full hover:bg-white/10 shrink-0 transition active:opacity-70"
       >
         <Heart className={`h-4 w-4 ${fav ? 'fill-rose-400 text-rose-400' : 'text-muted-foreground'}`} />
       </button>

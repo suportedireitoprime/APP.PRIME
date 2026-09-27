@@ -400,7 +400,7 @@ export default function NotificationsSheet({ open, onClose }: Props) {
             <div className="px-4 sm:px-5 pb-3 flex justify-end">
               <button
                 onClick={markAllRead}
-                className="text-xs font-semibold text-muted-foreground hover:text-foreground flex items-center gap-1.5 px-4 py-2 rounded-xl bg-secondary/80 hover:bg-secondary transition-colors active:scale-95"
+                className="text-xs font-semibold text-muted-foreground hover:text-foreground flex items-center gap-1.5 px-4 py-2 rounded-xl bg-secondary/80 hover:bg-secondary transition-colors active:opacity-70"
               >
                 <CheckCheck className="w-4 h-4" />
                 Marcar todas como lidas

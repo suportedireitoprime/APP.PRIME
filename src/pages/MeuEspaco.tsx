@@ -385,7 +385,7 @@ const MeuEspaco = () => {
         />
         <button
           onClick={() => setCoverPickerOpen(true)}
-          className="absolute top-[calc(0.75rem+var(--sai-top))] right-3 h-12 px-4 rounded-full bg-black/55 backdrop-blur flex items-center gap-2 text-white text-sm font-medium active:scale-95 transition"
+          className="absolute top-[calc(0.75rem+var(--sai-top))] right-3 h-12 px-4 rounded-full bg-black/55 backdrop-blur flex items-center gap-2 text-white text-sm font-medium active:opacity-70 transition"
         >
           <Camera className="w-4 h-4" />
           Trocar capa
@@ -546,7 +546,7 @@ const MeuEspaco = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <motion.button
                     onClick={() => go('/anotacoes/audio')}
-                    className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-emerald-500/50 transition-colors active:scale-95 shadow-sm relative group overflow-hidden"
+                    className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-emerald-500/50 transition-colors active:opacity-70 shadow-sm relative group overflow-hidden"
                   >
                     <div className="absolute top-3 right-3 text-muted-foreground group-hover:text-emerald-500 group-hover:translate-x-1 transition-all">
                       <ChevronRight className="w-5 h-5" strokeWidth={2.5} />
@@ -559,7 +559,7 @@ const MeuEspaco = () => {
                   
                   <motion.button
                     onClick={() => go('/faculdade/lousa')}
-                    className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-blue-500/50 transition-colors active:scale-95 shadow-sm relative group overflow-hidden"
+                    className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-blue-500/50 transition-colors active:opacity-70 shadow-sm relative group overflow-hidden"
                   >
                     <div className="absolute top-3 right-3 text-muted-foreground group-hover:text-blue-500 group-hover:translate-x-1 transition-all">
                       <ChevronRight className="w-5 h-5" strokeWidth={2.5} />
@@ -581,7 +581,7 @@ const MeuEspaco = () => {
                 <div className="grid grid-cols-4 gap-2">
                   <motion.button
                     onClick={() => go('/faculdade/resumos')}
-                    className="flex flex-col items-center justify-start gap-2 rounded-2xl border border-border/60 bg-card p-3 text-center hover:border-primary/50 transition-colors active:scale-95"
+                    className="flex flex-col items-center justify-start gap-2 rounded-2xl border border-border/60 bg-card p-3 text-center hover:border-primary/50 transition-colors active:opacity-70"
                   >
                     <FileText className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
                     <span className="font-display font-bold text-[11px] text-foreground leading-tight">Resumos</span>
@@ -589,7 +589,7 @@ const MeuEspaco = () => {
                   
                   <motion.button
                     onClick={() => go('/flashcards-personalizados')}
-                    className="flex flex-col items-center justify-start gap-2 rounded-2xl border border-border/60 bg-card p-3 text-center hover:border-primary/50 transition-colors active:scale-95"
+                    className="flex flex-col items-center justify-start gap-2 rounded-2xl border border-border/60 bg-card p-3 text-center hover:border-primary/50 transition-colors active:opacity-70"
                   >
                     <Layers className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
                     <span className="font-display font-bold text-[11px] text-foreground leading-tight">Flashcards</span>
@@ -597,7 +597,7 @@ const MeuEspaco = () => {
 
                   <motion.button
                     onClick={() => go('/assistente')}
-                    className="flex flex-col items-center justify-start gap-2 rounded-2xl border border-border/60 bg-card p-3 text-center hover:border-primary/50 transition-colors active:scale-95"
+                    className="flex flex-col items-center justify-start gap-2 rounded-2xl border border-border/60 bg-card p-3 text-center hover:border-primary/50 transition-colors active:opacity-70"
                   >
                     <Brain className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
                     <span className="font-display font-bold text-[11px] text-foreground leading-tight">Mapas</span>
@@ -605,7 +605,7 @@ const MeuEspaco = () => {
 
                   <motion.button
                     onClick={() => go('/faculdade/lembretes')}
-                    className="flex flex-col items-center justify-start gap-2 rounded-2xl border border-border/60 bg-card p-3 text-center hover:border-primary/50 transition-colors active:scale-95"
+                    className="flex flex-col items-center justify-start gap-2 rounded-2xl border border-border/60 bg-card p-3 text-center hover:border-primary/50 transition-colors active:opacity-70"
                   >
                     <BellRing className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
                     <span className="font-display font-bold text-[11px] text-foreground leading-tight">Lembretes</span>

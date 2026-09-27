@@ -360,7 +360,7 @@ export default function CompartilharFrase({
             {modo !== 'menu' && (
               <button
                 onClick={() => setModo('menu')}
-                className="h-9 px-3 rounded-full text-sm active:scale-95"
+                className="h-9 px-3 rounded-full text-sm active:opacity-70"
                 style={{ background: 'hsl(var(--muted))' }}
               >
                 Início
@@ -369,7 +369,7 @@ export default function CompartilharFrase({
             <button
               onClick={onClose}
               aria-label="Fechar"
-              className="w-9 h-9 rounded-full flex items-center justify-center active:scale-95"
+              className="w-9 h-9 rounded-full flex items-center justify-center active:opacity-70"
               style={{ background: 'hsl(var(--muted))' }}
             >
               <X className="w-4 h-4" />
@@ -443,7 +443,7 @@ export default function CompartilharFrase({
                 <button
                   onClick={gerarFrasesLivro}
                   disabled={gerandoLivro || !livroTabela}
-                  className="px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 active:scale-95 disabled:opacity-50"
+                  className="px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 active:opacity-70 disabled:opacity-50"
                   style={{ background: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))' }}
                 >
                   <Sparkles className={`w-3.5 h-3.5 ${gerandoLivro ? 'animate-pulse' : ''}`} />
@@ -662,7 +662,7 @@ export default function CompartilharFrase({
                 <button
                   onClick={copiarTexto}
                   disabled={!frase}
-                  className="py-3 rounded-xl flex flex-col items-center gap-1 text-xs disabled:opacity-40 active:scale-95"
+                  className="py-3 rounded-xl flex flex-col items-center gap-1 text-xs disabled:opacity-40 active:opacity-70"
                   style={{ background: 'hsl(var(--muted))', border: '1px solid hsl(var(--border))' }}
                 >
                   <Copy className="w-5 h-5" /> Copiar
@@ -670,7 +670,7 @@ export default function CompartilharFrase({
                 <button
                   onClick={baixar}
                   disabled={!frase || exportando}
-                  className="py-3 rounded-xl flex flex-col items-center gap-1 text-xs disabled:opacity-40 active:scale-95"
+                  className="py-3 rounded-xl flex flex-col items-center gap-1 text-xs disabled:opacity-40 active:opacity-70"
                   style={{ background: 'hsl(var(--muted))', border: '1px solid hsl(var(--border))' }}
                 >
                   <Download className="w-5 h-5" /> Baixar
@@ -678,7 +678,7 @@ export default function CompartilharFrase({
                 <button
                   onClick={compartilhar}
                   disabled={!frase || exportando}
-                  className="py-3 rounded-xl flex flex-col items-center gap-1 text-xs disabled:opacity-40 active:scale-95 font-medium"
+                  className="py-3 rounded-xl flex flex-col items-center gap-1 text-xs disabled:opacity-40 active:opacity-70 font-medium"
                   style={{ background: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))' }}
                 >
                   <Share2 className="w-5 h-5" /> Compartilhar

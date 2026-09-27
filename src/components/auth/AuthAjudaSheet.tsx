@@ -17,7 +17,7 @@ export const AuthAjudaSheet = ({ open, onClose }: AuthAjudaSheetProps) => {
         <h2 className="text-xl font-display font-bold text-white">Central de Ajuda</h2>
         <button
           onClick={onClose}
-          className="p-2 -mr-2 text-white/70 hover:text-white rounded-full bg-white/5 active:scale-95 transition-transform"
+          className="p-2 -mr-2 text-white/70 hover:text-white rounded-full bg-white/5 active:opacity-70 transition-transform"
           aria-label="Fechar"
         >
           <X className="w-6 h-6" />

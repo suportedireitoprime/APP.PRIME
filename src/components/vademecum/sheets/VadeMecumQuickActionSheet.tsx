@@ -472,7 +472,7 @@ export const VadeMecumQuickActionSheet: React.FC<VadeMecumQuickActionSheetProps>
                   onClose();
                 }}
                 aria-label="Voltar para o Vade Mecum"
-                className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center active:scale-95 transition-transform cursor-pointer shrink-0"
+                className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center active:opacity-70 transition-transform cursor-pointer shrink-0"
               >
                 <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
               </button>

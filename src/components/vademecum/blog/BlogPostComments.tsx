@@ -119,7 +119,7 @@ const BlogPostComments = ({ postId, open, onClose }: Props) => {
               <button
                 onClick={onClose}
                 aria-label="Fechar comentários"
-                className="w-9 h-9 flex items-center justify-center rounded-full bg-secondary text-foreground hover:bg-secondary/80 active:scale-95 transition-all"
+                className="w-9 h-9 flex items-center justify-center rounded-full bg-secondary text-foreground hover:bg-secondary/80 active:opacity-70 transition-all"
               >
                 <X className="w-4 h-4" strokeWidth={2.5} />
               </button>

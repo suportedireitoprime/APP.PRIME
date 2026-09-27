@@ -72,7 +72,7 @@ export function QuestaoAcoesBar({
             }
             onClick();
           }}
-          className="flex h-16 flex-col items-center justify-center gap-1.5 rounded-2xl border border-white/5 bg-black/20 px-1 text-white/60 transition-all hover:bg-black/40 hover:text-white active:scale-95"
+          className="flex h-16 flex-col items-center justify-center gap-1.5 rounded-2xl border border-white/5 bg-black/20 px-1 text-white/60 transition-all hover:bg-black/40 hover:text-white active:opacity-70"
         >
           <Icon className="h-5 w-5 text-primary" strokeWidth={1.5} />
           <span className="text-[11px] font-semibold tracking-tight">{label}</span>

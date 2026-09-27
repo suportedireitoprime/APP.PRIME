@@ -80,7 +80,7 @@ export default function ItemDownloadRow({ item, categoria, offline }: Props) {
         onClick={() => void alternar()}
         disabled={baixando || indisponivel}
         aria-label={baixado ? 'Remover download' : 'Baixar'}
-        className={`h-11 w-11 shrink-0 rounded-full border border-border flex items-center justify-center active:scale-95 transition disabled:opacity-50 ${
+        className={`h-11 w-11 shrink-0 rounded-full border border-border flex items-center justify-center active:opacity-70 transition disabled:opacity-50 ${
           baixado ? 'text-destructive' : 'text-primary'
         }`}
       >

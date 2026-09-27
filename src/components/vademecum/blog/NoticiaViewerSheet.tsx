@@ -135,7 +135,7 @@ export default function NoticiaViewerSheet({ noticia, onClose }: Props) {
                 <button
                   onClick={handleClose}
                   aria-label="Fechar"
-                  className="absolute top-4 left-4 w-11 h-11 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white shadow-lg hover:bg-white/30 active:scale-95 transition-all z-20 pointer-events-auto"
+                  className="absolute top-4 left-4 w-11 h-11 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white shadow-lg hover:bg-white/30 active:opacity-70 transition-all z-20 pointer-events-auto"
                 >
                   {isDesktop ? <X className="w-5 h-5" strokeWidth={2.5} /> : <ChevronDown className="w-5 h-5" strokeWidth={2.5} />}
                 </button>
@@ -143,7 +143,7 @@ export default function NoticiaViewerSheet({ noticia, onClose }: Props) {
                   onClick={toggleFav}
                   aria-label={fav ? 'Desfavoritar' : 'Favoritar'}
                   aria-pressed={fav}
-                  className={`absolute top-4 right-4 w-11 h-11 flex items-center justify-center rounded-full shadow-lg active:scale-95 transition-all z-10 ${
+                  className={`absolute top-4 right-4 w-11 h-11 flex items-center justify-center rounded-full shadow-lg active:opacity-70 transition-all z-10 ${
                     fav
                       ? 'bg-rose-500 text-white'
                       : 'bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30'
@@ -161,21 +161,21 @@ export default function NoticiaViewerSheet({ noticia, onClose }: Props) {
                   rel="noopener noreferrer"
                   onClick={() => toast('Abrindo notícia original', { description: 'Você vai sair do app.' })}
                   aria-label="Ver notícia na íntegra"
-                  className="pointer-events-auto w-11 h-11 flex items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xl hover:brightness-110 active:scale-95 transition-all"
+                  className="pointer-events-auto w-11 h-11 flex items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xl hover:brightness-110 active:opacity-70 transition-all"
                 >
                   <ExternalLink className="w-5 h-5" strokeWidth={2.2} />
                 </a>
                 <button
                   onClick={() => setShareOpen(true)}
                   aria-label="Compartilhar"
-                  className="pointer-events-auto w-11 h-11 flex items-center justify-center rounded-full bg-card/95 backdrop-blur-md border border-border text-foreground shadow-xl hover:bg-secondary active:scale-95 transition-all"
+                  className="pointer-events-auto w-11 h-11 flex items-center justify-center rounded-full bg-card/95 backdrop-blur-md border border-border text-foreground shadow-xl hover:bg-secondary active:opacity-70 transition-all"
                 >
                   <Share2 className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => setComentariosOpen(true)}
                   aria-label="Comentar"
-                  className="pointer-events-auto relative w-11 h-11 flex items-center justify-center rounded-full bg-card/95 backdrop-blur-md border border-border text-foreground shadow-xl hover:bg-secondary active:scale-95 transition-all"
+                  className="pointer-events-auto relative w-11 h-11 flex items-center justify-center rounded-full bg-card/95 backdrop-blur-md border border-border text-foreground shadow-xl hover:bg-secondary active:opacity-70 transition-all"
                 >
                   <MessageCircle className="w-5 h-5" />
                   {comentariosCount > 0 && (
@@ -198,7 +198,7 @@ export default function NoticiaViewerSheet({ noticia, onClose }: Props) {
                         <button
                           onClick={decFont}
                           aria-label="Diminuir fonte"
-                          className="w-10 h-11 flex items-center justify-center text-foreground hover:bg-secondary active:scale-95 transition-all"
+                          className="w-10 h-11 flex items-center justify-center text-foreground hover:bg-secondary active:opacity-70 transition-all"
                         >
                           <Minus className="w-4 h-4" strokeWidth={2.5} />
                         </button>
@@ -208,7 +208,7 @@ export default function NoticiaViewerSheet({ noticia, onClose }: Props) {
                         <button
                           onClick={incFont}
                           aria-label="Aumentar fonte"
-                          className="w-10 h-11 flex items-center justify-center text-foreground hover:bg-secondary active:scale-95 transition-all"
+                          className="w-10 h-11 flex items-center justify-center text-foreground hover:bg-secondary active:opacity-70 transition-all"
                         >
                           <Plus className="w-4 h-4" strokeWidth={2.5} />
                         </button>
@@ -220,7 +220,7 @@ export default function NoticiaViewerSheet({ noticia, onClose }: Props) {
                     onClick={() => setFontOpen((v) => !v)}
                     aria-label="Ajustar tamanho do texto"
                     aria-expanded={fontOpen}
-                    className="w-11 h-11 flex items-center justify-center text-foreground hover:bg-secondary active:scale-95 transition-all"
+                    className="w-11 h-11 flex items-center justify-center text-foreground hover:bg-secondary active:opacity-70 transition-all"
                   >
                     <Type className="w-5 h-5" strokeWidth={2.5} />
                   </button>

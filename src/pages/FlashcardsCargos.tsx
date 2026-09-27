@@ -140,7 +140,7 @@ export default function FlashcardsCargos() {
                               haptic.selection();
                               navigate(`/flashcards/cargos/${cargo.id}`);
                             }}
-                            className="w-full text-left bg-card rounded-3xl p-5 border border-border/50 shadow-sm active:scale-95 transition-all hover:border-primary/50 aspect-square flex flex-col relative overflow-hidden group"
+                            className="w-full text-left bg-card rounded-3xl p-5 border border-border/50 shadow-sm active:opacity-70 transition-all hover:border-primary/50 aspect-square flex flex-col relative overflow-hidden group"
                           >
                             <div className="flex flex-col h-full">
                               <div className="flex-1">

@@ -18,7 +18,7 @@ const VadeMecumHeroHeader: React.FC = () => {
             navigate('/'); 
           }} 
           aria-label="Voltar para tela inicial"
-          className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:scale-95 cursor-pointer"
+          className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70 cursor-pointer"
         >
           <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
         </button>
@@ -28,7 +28,7 @@ const VadeMecumHeroHeader: React.FC = () => {
             setNotifOpen(true);
           }} 
           aria-label={`Notificações e novidades legislativas${unreadCount > 0 ? ` (${unreadCount} não lidas)` : ''}`}
-          className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:scale-95 relative cursor-pointer"
+          className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70 relative cursor-pointer"
         >
           <BellRing className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           {unreadCount > 0 && (

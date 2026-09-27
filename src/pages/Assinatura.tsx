@@ -257,7 +257,7 @@ export default function Assinatura() {
               setTab('promocao');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className="fixed bottom-[calc(5.5rem+var(--sai-bottom,0px))] right-6 z-40 w-14 h-14 bg-emerald-500 rounded-full shadow-[0_10px_30px_rgba(16,185,129,0.5)] flex items-center justify-center border-2 border-white/20 hover:bg-emerald-400 active:scale-95 transition-transform hover:scale-105"
+            className="fixed bottom-[calc(5.5rem+var(--sai-bottom,0px))] right-6 z-40 w-14 h-14 bg-emerald-500 rounded-full shadow-[0_10px_30px_rgba(16,185,129,0.5)] flex items-center justify-center border-2 border-white/20 hover:bg-emerald-400 active:opacity-70 transition-transform hover:scale-105"
             aria-label="Abrir promoção"
           >
             <Gift className="w-6 h-6 text-white" />

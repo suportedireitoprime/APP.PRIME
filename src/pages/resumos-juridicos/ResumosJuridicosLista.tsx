@@ -100,7 +100,7 @@ export default function ResumosJuridicosLista({ modo }: { modo: "favoritos" | "r
  <button
  onClick={() => navigate("/resumos-juridicos")}
  aria-label="Voltar"
- className="w-11 h-11 rounded-full bg-black/80 border border-white/20 flex items-center justify-center active:scale-95 transition"
+ className="w-11 h-11 rounded-full bg-black/80 border border-white/20 flex items-center justify-center active:opacity-70 transition"
  >
  <ChevronDown className="w-6 h-6 text-white" />
  </button>

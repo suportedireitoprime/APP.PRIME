@@ -350,7 +350,7 @@ export default function QuestoesSimuladoCargoConfig() {
                     <button
                       type="button"
                       onClick={() => { haptic.selection(); setTamanhoOpcao('todas'); }}
-                      className={`h-11 rounded-xl text-xs sm:text-sm font-extrabold transition-all active:scale-95 flex items-center justify-center ${
+                      className={`h-11 rounded-xl text-xs sm:text-sm font-extrabold transition-all active:opacity-70 flex items-center justify-center ${
                         tamanhoOpcao === 'todas'
                           ? 'bg-amber-500 text-black shadow-md shadow-amber-500/20 ring-2 ring-amber-400/40'
                           : 'bg-secondary text-foreground hover:bg-secondary/80 border border-border/50'
@@ -364,7 +364,7 @@ export default function QuestoesSimuladoCargoConfig() {
                         key={t}
                         type="button"
                         onClick={() => { haptic.selection(); setTamanhoOpcao(t); }}
-                        className={`h-11 rounded-xl text-xs sm:text-sm font-extrabold transition-all active:scale-95 flex items-center justify-center ${
+                        className={`h-11 rounded-xl text-xs sm:text-sm font-extrabold transition-all active:opacity-70 flex items-center justify-center ${
                           tamanhoOpcao === t
                             ? 'bg-amber-500 text-black shadow-md shadow-amber-500/20 ring-2 ring-amber-400/40'
                             : 'bg-secondary text-foreground hover:bg-secondary/80 border border-border/50'
@@ -599,7 +599,7 @@ export default function QuestoesSimuladoCargoConfig() {
                 }}
                 className={`w-full h-15 sm:h-16 rounded-2xl font-black text-base sm:text-lg tracking-wide flex items-center justify-center gap-3 shadow-xl transition-all ${
                   selMaterias.length > 0
-                    ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 text-black shadow-amber-500/25 active:scale-98 cursor-pointer'
+                    ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 text-black shadow-amber-500/25 active:opacity-70 cursor-pointer'
                     : 'bg-muted/80 text-muted-foreground border border-border/80 opacity-75 cursor-not-allowed'
                 }`}
               >
@@ -645,7 +645,7 @@ export default function QuestoesSimuladoCargoConfig() {
               <button
                 type="button"
                 onClick={iniciar}
-                className="w-full h-14 rounded-2xl bg-amber-500 text-black font-bold text-sm hover:bg-amber-400 transition-all shadow-md active:scale-95"
+                className="w-full h-14 rounded-2xl bg-amber-500 text-black font-bold text-sm hover:bg-amber-400 transition-all shadow-md active:opacity-70"
               >
                 Refazer Simulado
               </button>
@@ -673,7 +673,7 @@ export default function QuestoesSimuladoCargoConfig() {
             <button
               type="button"
               onClick={finalizar}
-              className="mt-6 w-full h-12 rounded-2xl border border-red-500/30 bg-red-500/10 text-red-400 font-bold text-sm hover:bg-red-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+              className="mt-6 w-full h-12 rounded-2xl border border-red-500/30 bg-red-500/10 text-red-400 font-bold text-sm hover:bg-red-500/20 active:opacity-70 transition-all flex items-center justify-center gap-2"
             >
               <AlertCircle className="w-4 h-4" />
               <span>Encerrar Simulado e Ver Resultado</span>

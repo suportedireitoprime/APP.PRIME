@@ -45,7 +45,7 @@ export const MeExpliqueCardResultado: React.FC<Props> = ({
             type="button"
             onClick={onToggleAudio}
             aria-label={falando ? 'Parar leitura por voz' : 'Ouvir explicação'}
-            className={`flex h-10 shrink-0 items-center gap-2 rounded-2xl px-3.5 text-xs font-bold transition-all active:scale-95 cursor-pointer ${
+            className={`flex h-10 shrink-0 items-center gap-2 rounded-2xl px-3.5 text-xs font-bold transition-all active:opacity-70 cursor-pointer ${
               falando
                 ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20 animate-pulse'
                 : 'bg-white/10 text-white hover:bg-white/15'

@@ -169,7 +169,7 @@ export default function FilosofoPresentationOverlay({ open, personagemId, custom
           {/* Close Button */}
           <button
             onClick={handleClose}
-            className="absolute top-12 right-6 z-[210] w-12 h-12 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/40 text-white shadow-xl hover:bg-white/20 active:scale-95 transition-all"
+            className="absolute top-12 right-6 z-[210] w-12 h-12 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/40 text-white shadow-xl hover:bg-white/20 active:opacity-70 transition-all"
           >
             <X className="w-6 h-6 text-white" strokeWidth={2.5} />
           </button>

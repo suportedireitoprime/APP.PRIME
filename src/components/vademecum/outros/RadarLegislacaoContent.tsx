@@ -117,7 +117,7 @@ export const RadarLegislacaoContent: React.FC<RadarLegislacaoContentProps> = ({
             loadData(true);
           }}
           disabled={refreshing}
-          className="inline-flex items-center gap-1.5 text-[11px] font-medium text-zinc-300 hover:text-white px-2.5 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] transition-colors cursor-pointer shrink-0 border border-white/5 active:scale-95"
+          className="inline-flex items-center gap-1.5 text-[11px] font-medium text-zinc-300 hover:text-white px-2.5 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] transition-colors cursor-pointer shrink-0 border border-white/5 active:opacity-70"
         >
           <RefreshCw className={`w-3 h-3 ${refreshing ? 'animate-spin text-primary' : 'text-zinc-400'}`} />
           <span>{refreshing ? 'Atualizando' : 'Atualizar'}</span>
@@ -285,7 +285,7 @@ export const RadarLegislacaoContent: React.FC<RadarLegislacaoContentProps> = ({
                           haptic.selection();
                           onSelectArtigoNumero(artNum);
                         }}
-                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 text-[11px] font-medium border border-white/10 active:scale-95 transition-all cursor-pointer"
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 text-[11px] font-medium border border-white/10 active:opacity-70 transition-all cursor-pointer"
                       >
                         <BookOpen className="w-3 h-3 text-primary" />
                         <span>Art. {artNum}</span>
@@ -296,7 +296,7 @@ export const RadarLegislacaoContent: React.FC<RadarLegislacaoContentProps> = ({
                       href={item.linkCamara}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 text-[11px] font-medium border border-white/10 active:scale-95 transition-all cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 text-[11px] font-medium border border-white/10 active:opacity-70 transition-all cursor-pointer"
                     >
                       <span>Câmara</span>
                       <ExternalLink className="w-2.5 h-2.5 text-zinc-400" />

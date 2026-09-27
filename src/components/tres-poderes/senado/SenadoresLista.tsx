@@ -290,7 +290,7 @@ export const SenadoresLista = () => {
             <button
               type="button"
               aria-label="Fechar detalhes do senador"
-              className="absolute right-4 top-3.5 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-90 text-white transition-all cursor-pointer z-30 shadow-md shadow-black/50"
+              className="absolute right-4 top-3.5 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:opacity-70 text-white transition-all cursor-pointer z-30 shadow-md shadow-black/50"
               onClick={(e) => {
                 e.stopPropagation();
                 haptic.selection();

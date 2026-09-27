@@ -124,7 +124,7 @@ export function MapasMentaisGrid({
           <button
             type="button"
             onClick={onCarregarMais}
-            className="w-full sm:w-auto px-6 py-3 rounded-xl bg-zinc-800/80 hover:bg-zinc-800 border border-white/10 text-xs sm:text-sm font-bold text-white transition-all active:scale-95 cursor-pointer shadow-sm"
+            className="w-full sm:w-auto px-6 py-3 rounded-xl bg-zinc-800/80 hover:bg-zinc-800 border border-white/10 text-xs sm:text-sm font-bold text-white transition-all active:opacity-70 cursor-pointer shadow-sm"
           >
             Carregar mais itens ({itens.length - limite} restantes)...
           </button>

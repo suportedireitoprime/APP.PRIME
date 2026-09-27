@@ -248,7 +248,7 @@ export default function AbaChatPagina({
           onClick={() => enviar(input)}
           disabled={enviando || !input.trim()}
           aria-label="Enviar"
-          className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 disabled:opacity-40 active:scale-95 transition"
+          className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 disabled:opacity-40 active:opacity-70 transition"
           style={{ background: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))' }}
         >
           <Send className="w-4 h-4" />

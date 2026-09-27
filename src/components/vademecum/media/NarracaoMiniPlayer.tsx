@@ -88,7 +88,7 @@ const NarracaoMiniPlayer = () => {
             <button
               onClick={toggle}
               aria-label={isPlaying ? 'Pausar' : 'Continuar'}
-              className="flex-shrink-0 w-10 h-10 rounded-full bg-primary hover:bg-primary/90 active:scale-95 transition flex items-center justify-center relative z-10"
+              className="flex-shrink-0 w-10 h-10 rounded-full bg-primary hover:bg-primary/90 active:opacity-70 transition flex items-center justify-center relative z-10"
             >
               {isPlaying ? (
                 <Pause className="w-4 h-4 text-primary-foreground" fill="currentColor" />
@@ -135,7 +135,7 @@ const NarracaoMiniPlayer = () => {
             <button
               onClick={close}
               aria-label="Fechar player"
-              className="flex-shrink-0 w-9 h-9 rounded-full hover:bg-white/10 active:scale-95 transition flex items-center justify-center relative z-10"
+              className="flex-shrink-0 w-9 h-9 rounded-full hover:bg-white/10 active:opacity-70 transition flex items-center justify-center relative z-10"
             >
               <X className="w-4 h-4 text-white/70" />
             </button>
@@ -144,7 +144,7 @@ const NarracaoMiniPlayer = () => {
             <button
               onClick={handleReopen}
               aria-label="Abrir artigo"
-              className="flex-shrink-0 w-9 h-9 rounded-full hover:bg-white/10 active:scale-95 transition flex items-center justify-center relative z-10 overflow-hidden"
+              className="flex-shrink-0 w-9 h-9 rounded-full hover:bg-white/10 active:opacity-70 transition flex items-center justify-center relative z-10 overflow-hidden"
             >
               <motion.span
                 className="inline-flex"

@@ -338,7 +338,7 @@ function NoDetalhe({
           type="button"
           onClick={onClose}
           aria-label="Fechar"
-          className="absolute top-2 right-2 w-11 h-11 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 transition flex items-center justify-center text-white"
+          className="absolute top-2 right-2 w-11 h-11 rounded-full bg-white/15 hover:bg-white/25 active:opacity-70 transition flex items-center justify-center text-white"
         >
           <X className="w-5 h-5" />
         </button>
@@ -522,7 +522,7 @@ function ArtigoDetalhe({
           type="button"
           onClick={onClose}
           aria-label="Fechar"
-          className="absolute top-2 right-2 w-11 h-11 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 transition flex items-center justify-center text-white"
+          className="absolute top-2 right-2 w-11 h-11 rounded-full bg-white/15 hover:bg-white/25 active:opacity-70 transition flex items-center justify-center text-white"
         >
           <X className="w-5 h-5" />
         </button>

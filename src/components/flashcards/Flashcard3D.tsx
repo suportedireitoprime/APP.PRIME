@@ -289,14 +289,14 @@ const Flashcard3D = memo(function Flashcard3D({
           >
             <Button
               variant="outline"
-              className="h-14 sm:h-16 rounded-2xl text-base font-bold gap-2 border-border/80 hover:border-emerald-500/50 hover:bg-emerald-500/10 active:scale-95 transition-all shadow-sm"
+              className="h-14 sm:h-16 rounded-2xl text-base font-bold gap-2 border-border/80 hover:border-emerald-500/50 hover:bg-emerald-500/10 active:opacity-70 transition-all shadow-sm"
               onClick={() => handleResponder('revisar')}
             >
               <RotateCcw className="h-5 w-5 text-emerald-500" />
               <span>Revisar</span>
             </Button>
             <Button
-              className="h-14 sm:h-16 rounded-2xl text-base font-black gap-2 active:scale-95 transition-all shadow-md hover:opacity-90"
+              className="h-14 sm:h-16 rounded-2xl text-base font-black gap-2 active:opacity-70 transition-all shadow-md hover:opacity-90"
               style={{ backgroundColor: palette.primary, color: '#ffffff' }}
               onClick={() => handleResponder('compreendido')}
             >

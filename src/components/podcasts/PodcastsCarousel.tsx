@@ -47,7 +47,7 @@ const PodcastsCarousel = () => {
         </div>
         <button 
           onClick={() => navigate('/tres-poderes/stf/podcasts')}
-          className="text-[12px] font-semibold text-white/70 bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full active:scale-95 transition-transform mt-0.5"
+          className="text-[12px] font-semibold text-white/70 bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full active:opacity-70 transition-transform mt-0.5"
         >
           Ver todos
         </button>
@@ -59,7 +59,7 @@ const PodcastsCarousel = () => {
           <div 
             key={podcast.id}
             onClick={() => navigate(`/tres-poderes/stf/podcast/${podcast.youtube_video_id}`)}
-            className="snap-start flex-none w-[240px] sm:w-[280px] rounded-xl overflow-hidden bg-[#1A1A1D] border border-white/5 relative group cursor-pointer shadow-lg active:scale-95 transition-transform"
+            className="snap-start flex-none w-[240px] sm:w-[280px] rounded-xl overflow-hidden bg-[#1A1A1D] border border-white/5 relative group cursor-pointer shadow-lg active:opacity-70 transition-transform"
           >
             {/* Thumbnail Box */}
             <div className="relative aspect-video w-full bg-black/50 overflow-hidden">
