@@ -17,7 +17,7 @@ const TABS: Tab[] = [
     label: 'Concursos',
     to: '/radar-concursos',
     icon: Radar,
-    match: (p) => p === '/radar-concursos' || p === '/radar-concursos/' || p === '/concursos/radar',
+    match: (p) => p === '/radar-concursos' || p === '/radar-concursos/' || p === '/concursos/radar' || p === '/ferramentas/radar-concursos',
   },
   {
     id: 'cargos',
@@ -84,7 +84,7 @@ const RadarBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
                 {active && (
                   <motion.span
                     layoutId="radar-nav-active-pill"
-                    className="absolute inset-0 rounded-2xl bg-white/10 ring-1 ring-white/20"
+                    className="absolute inset-0 rounded-2xl bg-white/20 ring-1 ring-white/40 shadow-[0_0_15px_rgba(255,255,255,0.15)]"
                     transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                     aria-hidden="true"
                   />

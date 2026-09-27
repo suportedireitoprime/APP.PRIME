@@ -137,6 +137,7 @@ const PessoalTematicas = lazy(() => import("./pages/pessoal/Tematicas.tsx"));
 const Concursos = lazy(() => import("./pages/Concursos.tsx"));
 const RadarConcursos = lazy(() => import("./pages/RadarConcursos.tsx"));
 const RadarEstatisticas = lazy(() => import("./pages/RadarEstatisticas.tsx"));
+const RadarConstrucao = lazy(() => import("./pages/RadarConstrucao.tsx"));
 
 const MeusDownloads = lazy(() => import("./pages/MeusDownloads.tsx"));
 const MinhasLeituras = lazy(() => import("./pages/MinhasLeituras.tsx"));
@@ -1053,6 +1054,9 @@ function AnimatedRoutes() {
           <Route path="/concursos/radar" element={<ProtectedRoute><PageTransition><RadarConcursos /></PageTransition></ProtectedRoute>} />
           <Route path="/radar-concursos" element={<ProtectedRoute><PageTransition><RadarConcursos /></PageTransition></ProtectedRoute>} />
           <Route path="/radar-concursos/estatisticas" element={<ProtectedRoute><PageTransition><RadarEstatisticas /></PageTransition></ProtectedRoute>} />
+          <Route path="/radar-concursos/cargos" element={<ProtectedRoute><PageTransition><RadarConstrucao /></PageTransition></ProtectedRoute>} />
+          <Route path="/radar-concursos/regioes" element={<ProtectedRoute><PageTransition><RadarConstrucao /></PageTransition></ProtectedRoute>} />
+          <Route path="/radar-concursos/alertas" element={<ProtectedRoute><PageTransition><RadarConstrucao /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/radar-concursos" element={<ProtectedRoute><PageTransition><RadarConcursos /></PageTransition></ProtectedRoute>} />
           <Route path="/atualizacoes" element={<ProtectedRoute><PageTransition instant><Atualizacoes /></PageTransition></ProtectedRoute>} />
           <Route path="/novidades" element={<ProtectedRoute><PageTransition><Novidades /></PageTransition></ProtectedRoute>} />
