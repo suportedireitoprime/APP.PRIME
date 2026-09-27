@@ -399,27 +399,22 @@ const Atualizacoes = () => {
               <div 
                 key={pl.id_externo || pl.dados_json?.id || pl.numero} 
                 onClick={() => { haptic.selection(); startTransition(() => navigate(`/radar/pl/${pl.id_externo || pl.dados_json?.id}`)); }}
-                className="w-[290px] min-h-[220px] sm:w-[340px] sm:min-h-[230px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
+                className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-1.5 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
               >
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <FileText className="w-16 h-16 sm:w-20 sm:h-20" />
                 </div>
                 
-                <div className="flex items-start justify-between mb-1">
-                  <div className="w-10 h-10 rounded-xl bg-[#60A5FA]/20 text-[#60A5FA] flex items-center justify-center shrink-0">
-                    <FileText className="w-5 h-5" />
-                  </div>
-                  <div className="-mt-1 -mr-2">
-                    <AuthorAvatar proposicaoId={pl.id_externo || pl.dados_json?.id} />
-                  </div>
+                <div className="w-8 h-8 rounded-lg bg-[#60A5FA]/20 text-[#60A5FA] flex items-center justify-center shrink-0">
+                  <FileText className="w-4 h-4" />
                 </div>
                 
-                <h3 className="font-sans font-semibold text-[15px] sm:text-[16px] leading-tight line-clamp-2">
+                <h3 className="font-sans font-semibold text-[14px] sm:text-[15px] leading-tight line-clamp-1">
                   {pl.sigla_tipo ?? pl.dados_json?.siglaTipo ?? 'PL'} {pl.numero ?? pl.dados_json?.numero ?? ''}/{pl.ano ?? pl.dados_json?.ano ?? ''}
                 </h3>
-                <p className="text-muted-foreground text-[13px] sm:text-[14px] line-clamp-2">{pl.ementa ?? pl.dados_json?.ementa ?? 'Sem ementa disponível.'}</p>
-                <div className="mt-auto pt-2 flex items-center justify-between">
-                  <span className="text-[11px] sm:text-[12px] text-muted-foreground/70 font-medium line-clamp-1 max-w-[120px]">
+                <p className="text-muted-foreground text-[12px] sm:text-[13px] line-clamp-2">{pl.ementa ?? pl.dados_json?.ementa ?? 'Sem ementa disponível.'}</p>
+                <div className="mt-auto pt-1 flex items-center justify-between">
+                  <span className="text-[11px] sm:text-[12px] text-muted-foreground/70 font-medium line-clamp-1 max-w-[140px]">
                     {pl.dados_json?.statusProposicao?.descricaoTramitacao || 'Em tramitação'}
                   </span>
                   <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest bg-[#60A5FA]/10 text-[#60A5FA] px-2.5 py-1 rounded-full flex items-center gap-1 shrink-0">
@@ -428,7 +423,7 @@ const Atualizacoes = () => {
                 </div>
               </div>
             )) : (
-              <div className="w-[290px] min-h-[220px] sm:w-[340px] sm:min-h-[230px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+              <div className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
             )}
           </div>
         </section>
