@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import VisuaisJuridicosSheet from '@/components/visuais/VisuaisJuridicosSheet';
+import MapasMentaisView from '@/components/mapas-mentais/MapasMentaisView';
 import { SLUG_TIPO } from '@/lib/visuaisJuridicos/rotas';
 import type { VisualCategoria, VisualTipo } from '@/lib/visuaisJuridicos/types';
 
@@ -29,7 +29,6 @@ export default function VisualJuridico() {
     } else {
       const primeiroNorm = primeiro.replace('-', '_');
       if (primeiroNorm === 'materias' || primeiroNorm === 'leis' || primeiroNorm === 'jurisprudencia' || primeiroNorm === 'codigos' || primeiroNorm === 'estatutos' || primeiroNorm === 'leis_especiais' || primeiroNorm === 'previdenciario') {
-        // Se omitiu o formato e entrou direto na categoria
         tipo = 'mapa_mental';
         categoriaInicial = primeiroNorm as VisualCategoria;
         itemSlugInicial = pathSegs[1];
@@ -59,19 +58,18 @@ export default function VisualJuridico() {
       <div className="flex min-h-[100dvh] flex-col items-center justify-center gap-4 bg-background px-6 text-center">
         <p className="font-body text-sm text-muted-foreground">Formato de visual não encontrado.</p>
         <button
-          onClick={() => navigate('/visuais', { replace: true })}
-          className="rounded-full bg-secondary/70 px-5 py-2 font-display text-sm font-bold uppercase tracking-wider text-foreground"
+          onClick={() => navigate('/mapas-mentais', { replace: true })}
+          className="rounded-full bg-secondary/70 px-5 py-2 font-display text-sm font-bold uppercase tracking-wider text-foreground cursor-pointer"
         >
-          Ver todos os visuais
+          Ver todos os mapas
         </button>
       </div>
     );
   }
 
   return (
-    <VisuaisJuridicosSheet
+    <MapasMentaisView
       key={tipo || 'root'}
-      open
       modo="page"
       tipoInicial={tipo}
       categoriaInicial={categoriaInicial}
@@ -82,3 +80,4 @@ export default function VisualJuridico() {
     />
   );
 }
+

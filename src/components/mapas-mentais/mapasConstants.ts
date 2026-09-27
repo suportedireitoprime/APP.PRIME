@@ -1,4 +1,4 @@
-import { Brain, Layers, GitBranch, Network, BookOpen, Scale, Gavel, Heart, Clock, Award, Folder, Sparkles, FileText, ShieldCheck } from 'lucide-react';
+import { Brain, Layers, GitBranch, Network, BookOpen, Scale, Gavel, Heart, Clock, Award, Folder, FileText, ShieldCheck } from 'lucide-react';
 import type { VisualCategoria, VisualTipo } from '@/lib/visuaisJuridicos/types';
 import type { ArtigoLei } from '@/data/mockData';
 
@@ -79,4 +79,3 @@ export function limparNomeCard(label: string): string {
     .replace(/^Direito\s+(do\s+|da\s+|de\s+|dos\s+|das\s+)?/i, '')
     .trim();
 }
-

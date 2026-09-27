@@ -1312,13 +1312,18 @@ export function AdminHojeCards() {
                         )}
                         {!r.planTag && (
                           <div className="font-body text-[10.5px] text-muted-foreground/60 truncate flex items-center gap-1.5">
-                            {formatTempoCadastro(r.created_at, r.subtitle)}
+                            {formatTempoCadastro(r.created_at, null)}
                             {r.faixaEtaria && (
                               <>
                                 <span>·</span>
                                 <span>{r.faixaEtaria}</span>
                               </>
                             )}
+                          </div>
+                        )}
+                        {(open === 'online' || open === 'online5m') && r.subtitle && r.subtitle !== 'Desconhecida' && r.subtitle !== 'App aberto' && (
+                          <div className="font-body text-[10.5px] text-emerald-400 font-medium truncate mt-0.5">
+                            Em {r.subtitle}
                           </div>
                         )}
                         {r.planTag && (

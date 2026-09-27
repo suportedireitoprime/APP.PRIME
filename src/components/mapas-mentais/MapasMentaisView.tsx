@@ -1,0 +1,545 @@
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { ArrowLeft, ChevronRight, X, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useSubscription } from '@/hooks/useSubscription';
+import { isAdminEmail } from '@/lib/adminEmails';
+import { toast } from 'sonner';
+import PremiumGate from '@/components/PremiumGate';
+import { haptic } from '@/lib/nativeHaptics';
+
+import { CATEGORIA_INFO, itensDaCategoria, MATERIAS, type CatalogoItem } from '@/lib/visuaisJuridicos/catalogo';
+import { fetchAreasResumos, fetchTemasResumos, fetchSubtemasResumos, type TemaResumo, type SubtemaResumo } from '@/lib/visuaisJuridicos/materias';
+import { fetchArtigosLei, getCachedArtigos } from '@/services/legislacaoService';
+import type { ArtigoLei } from '@/data/mockData';
+import type { VisualCategoria, VisualRecord, VisualTipo } from '@/lib/visuaisJuridicos/types';
+import { prefetchVisuais, registrarVisual, visuaisEmCache } from '@/lib/visuaisJuridicos/cache';
+import { listarFavoritos, listarRecentes, registrarRecente, toggleFavorito } from '@/lib/visuaisJuridicos/prefs';
+
+import { norm, isArtigoReal, type Filtro } from './mapasConstants';
+import { MapasMentaisHeader } from './MapasMentaisHeader';
+import { MapasMentaisGrid } from './MapasMentaisGrid';
+import { MapasMentaisDetalhes } from './MapasMentaisDetalhes';
+import { MapasMentaisFormatModal } from './MapasMentaisFormatModal';
+import { MapasMentaisViewer } from './MapasMentaisViewer';
+import { MapasMentaisPastas } from './MapasMentaisPastas';
+
+export interface MapasMentaisViewProps {
+  onClose: () => void;
+  tipoInicial?: VisualTipo;
+  categoriaInicial?: VisualCategoria;
+  itemSlugInicial?: string;
+  temaSlugInicial?: string;
+  modo?: 'sheet' | 'page';
+  onRotaChange?: (segmentos: string[]) => void;
+}
+
+export default function MapasMentaisView({
+  onClose,
+  tipoInicial = 'mapa_mental',
+  categoriaInicial = 'materias',
+  itemSlugInicial,
+  temaSlugInicial,
+  modo = 'page',
+  onRotaChange,
+}: MapasMentaisViewProps) {
+  const { user } = useAuth();
+  const { isPremium } = useSubscription();
+  const podeGerar = isPremium || isAdminEmail(user?.email);
+
+  // Estados principais
+  const [categoria, setCategoria] = useState<VisualCategoria>(categoriaInicial);
+  const [filtro, setFiltro] = useState<Filtro>('todos');
+  const [busca, setBusca] = useState('');
+  const [buscaDetalhe, setBuscaDetalhe] = useState('');
+  const [limite, setLimite] = useState(30);
+
+  // Itens selecionados na navegação
+  const [item, setItem] = useState<CatalogoItem | null>(null);
+  const [tema, setTema] = useState<TemaResumo | null>(null);
+
+  // Dados carregados de matérias / resumos
+  const [areas, setAreas] = useState<CatalogoItem[]>([]);
+  const [carregandoAreas, setCarregandoAreas] = useState(false);
+  const [temas, setTemas] = useState<TemaResumo[]>([]);
+  const [carregandoTemas, setCarregandoTemas] = useState(false);
+  const [subtemas, setSubtemas] = useState<SubtemaResumo[]>([]);
+  const [carregandoSubtemas, setCarregandoSubtemas] = useState(false);
+
+  // Dados carregados de leis / códigos
+  const [artigos, setArtigos] = useState<ArtigoLei[]>([]);
+  const [carregandoArtigos, setCarregandoArtigos] = useState(false);
+
+  // Cache e persistência
+  const [prontos, setProntos] = useState<Record<string, VisualRecord>>({});
+  const [favoritos, setFavoritos] = useState<string[]>(() => listarFavoritos());
+  const [recentes, setRecentes] = useState<string[]>(() => listarRecentes());
+
+  // Modal de formato e visualizador
+  const [modalFormatoOpen, setModalFormatoOpen] = useState(false);
+  const [targetGeracao, setTargetGeracao] = useState<{
+    alvo: CatalogoItem;
+    sub?: string;
+    kind: 'artigo' | 'tema';
+    temaPai?: string;
+    rotulo: string;
+  } | null>(null);
+  const [gerando, setGerando] = useState(false);
+  const [aberto, setAberto] = useState<VisualRecord | null>(null);
+  const [gateOpen, setGateOpen] = useState(false);
+
+  // Reseta limite ao mudar categoria ou filtro
+  useEffect(() => {
+    setLimite(30);
+  }, [categoria, filtro, busca]);
+
+  // Carrega visuais em cache
+  useEffect(() => {
+    let cancelado = false;
+    const aplicar = (rows: VisualRecord[]) => {
+      if (cancelado) return;
+      const map: Record<string, VisualRecord> = {};
+      rows.forEach((r) => {
+        map[r.item_key] = r;
+      });
+      setProntos(map);
+    };
+
+    const cache = visuaisEmCache();
+    if (cache) {
+      aplicar(cache);
+    } else {
+      prefetchVisuais().then(aplicar).catch(() => {});
+    }
+    return () => {
+      cancelado = true;
+    };
+  }, []);
+
+  // Busca áreas/matérias reais do banco de resumos_juridicos
+  useEffect(() => {
+    if (categoria !== 'materias') return;
+    let cancelado = false;
+    setCarregandoAreas(true);
+    fetchAreasResumos()
+      .then((rows) => {
+        if (!cancelado) setAreas(rows);
+      })
+      .catch(() => {
+        if (!cancelado) setAreas([]);
+      })
+      .finally(() => {
+        if (!cancelado) setCarregandoAreas(false);
+      });
+    return () => {
+      cancelado = true;
+    };
+  }, [categoria]);
+
+  // Busca tópicos da matéria selecionada
+  useEffect(() => {
+    if (categoria !== 'materias' || !item) {
+      setTemas([]);
+      return;
+    }
+    let cancelado = false;
+    setCarregandoTemas(true);
+    fetchTemasResumos(item.label)
+      .then((rows) => {
+        if (!cancelado) setTemas(rows);
+      })
+      .catch(() => {
+        if (!cancelado) setTemas([]);
+      })
+      .finally(() => {
+        if (!cancelado) setCarregandoTemas(false);
+      });
+    return () => {
+      cancelado = true;
+    };
+  }, [categoria, item]);
+
+  // Busca subtemas do tópico selecionado
+  useEffect(() => {
+    if (categoria !== 'materias' || !item || !tema) {
+      setSubtemas([]);
+      return;
+    }
+    let cancelado = false;
+    setCarregandoSubtemas(true);
+    fetchSubtemasResumos(item.label, tema.tema)
+      .then((rows) => {
+        if (!cancelado) setSubtemas(rows);
+      })
+      .catch(() => {
+        if (!cancelado) setSubtemas([]);
+      })
+      .finally(() => {
+        if (!cancelado) setCarregandoSubtemas(false);
+      });
+    return () => {
+      cancelado = true;
+    };
+  }, [categoria, item, tema]);
+
+  // Busca artigos quando for código/estatuto/lei
+  useEffect(() => {
+    if (categoria === 'materias' || !item?.tabela) {
+      setArtigos([]);
+      return;
+    }
+    let cancelado = false;
+    const cache = getCachedArtigos(item.tabela);
+    if (cache?.length) {
+      setArtigos(cache);
+      setCarregandoArtigos(false);
+      return;
+    }
+    setCarregandoArtigos(true);
+    fetchArtigosLei(item.leiId || item.key, item.tabela)
+      .then((rows) => {
+        if (!cancelado) setArtigos(rows || []);
+      })
+      .catch(() => {
+        if (!cancelado) setArtigos([]);
+      })
+      .finally(() => {
+        if (!cancelado) setCarregandoArtigos(false);
+      });
+    return () => {
+      cancelado = true;
+    };
+  }, [categoria, item]);
+
+  // Função utilitária de chave única
+  const chaveDe = useCallback((base: CatalogoItem, sub?: string, kind: 'artigo' | 'tema' = 'artigo') => {
+    const a = (sub || '').trim().replace(/^art\.?\s*/i, '');
+    if (!a) return base.key;
+    return `${base.key}#${kind === 'tema' ? 'tema' : 'art'}-${norm(a).replace(/[^a-z0-9]+/g, '-')}`;
+  }, []);
+
+  const alternarFavorito = useCallback((key: string) => {
+    toggleFavorito(key);
+    setFavoritos(listarFavoritos());
+  }, []);
+
+  const marcarRecente = useCallback((key: string) => {
+    registrarRecente(key);
+    setRecentes(listarRecentes());
+  }, []);
+
+  // Lista de itens filtrados para o catálogo principal
+  const listaItens = useMemo(() => {
+    const todos = categoria === 'materias' ? (areas.length ? areas : MATERIAS) : itensDaCategoria(categoria);
+    const q = norm(busca.trim());
+    let filtrados = q ? todos.filter((i) => norm(`${i.label} ${i.sub ?? ''}`).includes(q)) : todos;
+
+    if (filtro === 'favoritos') {
+      filtrados = filtrados.filter((i) => favoritos.includes(i.key));
+    } else if (filtro === 'recentes') {
+      const ordem = new Map(recentes.map((k, idx) => [k, idx]));
+      filtrados = filtrados.filter((i) => ordem.has(i.key)).sort((a, b) => (ordem.get(a.key) ?? 0) - (ordem.get(b.key) ?? 0));
+    } else {
+      filtrados = [...filtrados].sort((a, b) => a.label.localeCompare(b.label));
+    }
+    return filtrados;
+  }, [categoria, areas, busca, filtro, favoritos, recentes]);
+
+  // Tópicos filtrados por busca
+  const temasFiltrados = useMemo(() => {
+    const q = norm(buscaDetalhe.trim());
+    const base = q ? temas.filter((t) => norm(t.tema).includes(q)) : temas;
+    return [...base].sort((a, b) => a.tema.localeCompare(b.tema));
+  }, [temas, buscaDetalhe]);
+
+  // Subtemas filtrados por busca
+  const subtemasFiltrados = useMemo(() => {
+    const q = norm(buscaDetalhe.trim());
+    const base = q ? subtemas.filter((s) => norm(s.subtema).includes(q)) : subtemas;
+    return [...base].sort((a, b) => a.subtema.localeCompare(b.subtema));
+  }, [subtemas, buscaDetalhe]);
+
+  // Artigos filtrados por busca
+  const artigosFiltrados = useMemo(() => {
+    const reais = artigos.filter(isArtigoReal);
+    const q = norm(buscaDetalhe.trim());
+    if (!q) return reais;
+    return reais.filter((a) => norm(`art ${a.numero} ${a.caput ?? ''} ${a.titulo ?? ''}`).includes(q));
+  }, [artigos, buscaDetalhe]);
+
+  // Navegação de Voltar Padrão e Limpa
+  const voltar = useCallback(() => {
+    if (aberto) {
+      setAberto(null);
+      return;
+    }
+    if (tema) {
+      setTema(null);
+      setBuscaDetalhe('');
+      return;
+    }
+    if (item) {
+      setItem(null);
+      setBuscaDetalhe('');
+      return;
+    }
+    if (filtro !== 'todos') {
+      setFiltro('todos');
+      return;
+    }
+    onClose();
+  }, [aberto, tema, item, filtro, onClose]);
+
+  // Disparo para abrir o modal de formato
+  const handleSolicitarGeracao = (
+    alvo: CatalogoItem,
+    sub?: string,
+    kind: 'artigo' | 'tema' = 'artigo',
+    temaPai?: string
+  ) => {
+    if (!podeGerar) {
+      setGateOpen(true);
+      return;
+    }
+    const valor = (sub ?? '').trim();
+    const rotulo = valor
+      ? kind === 'tema'
+        ? `${alvo.label} — ${temaPai ? `${temaPai} · ${valor}` : valor}`
+        : `${alvo.label} — Art. ${valor.replace(/^art\.?\s*/i, '')}`
+      : alvo.label;
+
+    setTargetGeracao({ alvo, sub: valor, kind, temaPai, rotulo });
+    setModalFormatoOpen(true);
+  };
+
+  // Executa geração na Edge Function
+  const handleExecutarGeracao = async (tipoEscolhido: VisualTipo) => {
+    setModalFormatoOpen(false);
+    if (!targetGeracao) return;
+
+    const base = targetGeracao.alvo;
+    const valor = targetGeracao.sub ?? '';
+    const chave = chaveDe(base, targetGeracao.temaPai ? `${targetGeracao.temaPai} ${valor}` : valor, targetGeracao.kind);
+
+    // Se já estiver pronto no cache, abre instantaneamente a 0ms
+    const cache = visuaisEmCache();
+    const prontoEmCache = cache?.find((r) => r.item_key === chave && r.tipo === tipoEscolhido);
+    if (prontoEmCache) {
+      marcarRecente(chave);
+      setAberto(prontoEmCache);
+      return;
+    }
+
+    setGerando(true);
+    try {
+      const contexto = valor
+        ? targetGeracao.kind === 'tema'
+          ? targetGeracao.temaPai
+            ? `${base.contexto} Foque no subtópico "${valor}", dentro de "${targetGeracao.temaPai}".`
+            : `${base.contexto} Foque no tópico "${valor}".`
+          : `${base.contexto} Foque no artigo ${valor}.`
+        : base.contexto;
+
+      const { data, error } = await supabase.functions.invoke('visual-juridico-gerar', {
+        body: {
+          tipo: tipoEscolhido,
+          categoria,
+          item_key: chave,
+          item_label: targetGeracao.rotulo,
+          contexto,
+        },
+      });
+
+      if (error) throw new Error(error.message || 'Erro ao gerar o mapa');
+      const registro = (data as Record<string, unknown>)?.visual as VisualRecord | undefined;
+      if (!registro) throw new Error('Resposta vazia');
+
+      registrarVisual(registro);
+      setProntos((prev) => ({ ...prev, [registro.item_key]: registro }));
+      marcarRecente(registro.item_key);
+      setAberto(registro);
+      toast.success('Visual gerado com sucesso!');
+    } catch (err: unknown) {
+      const msg = String((err as { message?: string })?.message || '');
+      toast.error(msg ? `Falha ao gerar: ${msg.slice(0, 60)}` : 'Não foi possível gerar no momento.');
+    } finally {
+      setGerando(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] flex flex-col bg-[#0D0D0D] text-white overflow-hidden">
+      {/* 1. Header Fixo Superior (apenas na visualização inicial do catálogo) */}
+      {!item && filtro !== 'pastas' && (
+        <MapasMentaisHeader
+          categoria={categoria}
+          setCategoria={setCategoria}
+          filtro={filtro}
+          setFiltro={setFiltro}
+          busca={busca}
+          setBusca={setBusca}
+          favoritosCount={favoritos.length}
+          recentesCount={recentes.length}
+          onBack={voltar}
+        />
+      )}
+
+      {/* 2. Barra de Navegação / Trilha quando estiver em detalhes ou pastas */}
+      {(item || filtro === 'pastas') && (
+        <header className="flex items-center gap-3 px-4 py-3 pt-[max(0.75rem,var(--sai-top))] bg-[#141416] border-b border-white/10 shrink-0">
+          <button
+            type="button"
+            onClick={voltar}
+            aria-label="Voltar"
+            className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/15 flex items-center justify-center text-white active:scale-95 transition-all shrink-0 cursor-pointer"
+          >
+            <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
+          </button>
+
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 text-xs text-zinc-400 overflow-x-auto no-scrollbar whitespace-nowrap">
+              <span
+                onClick={() => {
+                  setItem(null);
+                  setTema(null);
+                  setFiltro('todos');
+                }}
+                className="hover:text-white cursor-pointer"
+              >
+                Início
+              </span>
+              {filtro === 'pastas' && (
+                <>
+                  <ChevronRight className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                  <span className="text-white font-bold">Pastas Salvas</span>
+                </>
+              )}
+              {item && (
+                <>
+                  <ChevronRight className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                  <span
+                    onClick={() => setTema(null)}
+                    className={`cursor-pointer ${!tema ? 'text-white font-bold' : 'hover:text-white'}`}
+                  >
+                    {item.label}
+                  </span>
+                </>
+              )}
+              {tema && (
+                <>
+                  <ChevronRight className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                  <span className="text-white font-bold truncate max-w-[200px]">
+                    {tema.tema}
+                  </span>
+                </>
+              )}
+            </div>
+            <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-sm sm:text-base font-bold text-white truncate mt-0.5">
+              {filtro === 'pastas'
+                ? 'Pastas de Mapas e PDFs'
+                : tema
+                ? tema.tema
+                : item?.label ?? 'Detalhes'}
+            </h2>
+          </div>
+        </header>
+      )}
+
+      {/* 3. Área de Conteúdo Rolável Principal */}
+      <main className="flex-1 overflow-y-auto overscroll-contain pb-[calc(1.5rem+var(--sai-bottom))]">
+        {filtro === 'pastas' ? (
+          <MapasMentaisPastas
+            prontos={prontos}
+            onAbrir={(reg) => {
+              marcarRecente(reg.item_key);
+              setAberto(reg);
+            }}
+          />
+        ) : item ? (
+          <MapasMentaisDetalhes
+            categoria={categoria}
+            item={item}
+            busca={buscaDetalhe}
+            setBusca={setBuscaDetalhe}
+            tema={tema}
+            setTema={setTema}
+            carregandoTemas={carregandoTemas}
+            temas={temasFiltrados}
+            carregandoSubtemas={carregandoSubtemas}
+            subtemas={subtemasFiltrados}
+            carregandoArtigos={carregandoArtigos}
+            artigos={artigosFiltrados}
+            prontos={prontos}
+            favoritos={favoritos}
+            chaveDe={chaveDe}
+            onGerar={handleSolicitarGeracao}
+            onAbrir={(reg) => {
+              marcarRecente(reg.item_key);
+              setAberto(reg);
+            }}
+            onToggleFavorito={alternarFavorito}
+          />
+        ) : (
+          <div className="max-w-[1400px] mx-auto w-full px-4 sm:px-6 pt-4">
+            <MapasMentaisGrid
+              itens={listaItens}
+              limite={limite}
+              onCarregarMais={() => setLimite((l) => l + 30)}
+              prontos={prontos}
+              favoritos={favoritos}
+              onToggleFavorito={alternarFavorito}
+              onSelect={(selecionado) => {
+                setItem(selecionado);
+                setTema(null);
+                setBuscaDetalhe('');
+              }}
+              carregando={categoria === 'materias' && carregandoAreas}
+            />
+          </div>
+        )}
+      </main>
+
+      {/* 4. Modal Limpo de Escolha de Formato */}
+      <MapasMentaisFormatModal
+        open={modalFormatoOpen}
+        onClose={() => setModalFormatoOpen(false)}
+        onSelectTipo={handleExecutarGeracao}
+        targetRotulo={targetGeracao?.rotulo}
+        initialTipo={tipoInicial}
+      />
+
+      {/* 5. Overlay de Loading quando estiver gerando na IA */}
+      {gerando && (
+        <div className="fixed inset-0 z-[140] bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center space-y-4">
+          <div className="relative">
+            <div className="w-16 h-16 rounded-full border-3 border-purple-500/20 border-t-purple-500 animate-spin" />
+            <Loader2 className="w-8 h-8 text-purple-400 absolute inset-0 m-auto animate-spin" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="font-['Plus_Jakarta_Sans',sans-serif] text-lg font-bold text-white">
+              Estruturando Mapa Mental com IA
+            </h3>
+            <p className="text-xs text-zinc-400 max-w-xs mx-auto">
+              Lendo conteúdo jurídico e conectando institutos essenciais...
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* 6. Visualizador em Tela Cheia */}
+      {aberto && (
+        <MapasMentaisViewer
+          registro={aberto}
+          onClose={() => setAberto(null)}
+        />
+      )}
+
+      {/* 7. Gate Premium */}
+      <PremiumGate
+        open={gateOpen}
+        onClose={() => setGateOpen(false)}
+        feature="mapa_mental"
+      />
+    </div>
+  );
+}

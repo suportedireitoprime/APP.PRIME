@@ -71,6 +71,10 @@ const Estudar = () => {
       setView('questoes-dashboard');
       return;
     }
+    if (mode === 'mapa_mental') {
+      navigate('/mapas-mentais');
+      return;
+    }
     setSelectedMode(mode);
     setView('select-lei');
   };

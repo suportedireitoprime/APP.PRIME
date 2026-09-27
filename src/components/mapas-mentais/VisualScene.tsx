@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { pdf, Document, Page, Image as PdfImage } from '@react-pdf/renderer';
 import { buildScene, PALETA, type Scene, type SceneNode } from '@/lib/visuaisJuridicos/layout';
 import type { VisualContent, VisualEstilo } from '@/lib/visuaisJuridicos/types';
@@ -74,8 +74,6 @@ function renderNode(node: SceneNode, i: number) {
 export function sceneToSvgMarkup(scene: Scene, estilo: VisualEstilo): string {
   const esc = (s: string) =>
     s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  // Em atributos XML as aspas duplas da pilha de fontes precisam ser escapadas,
-  // senão o SVG fica inválido e a exportação (PNG/PDF) falha ao carregar.
   const fam = (serif?: boolean) => esc(serif ? SERIF : SANS);
 
   const body = scene.nodes
@@ -240,18 +238,20 @@ export async function exportarPng(content: VisualContent, estilo: VisualEstilo, 
 
 /** Envia uma cópia do arquivo para a pasta do Google Drive (best-effort). */
 async function espelhar(content: VisualContent, dataUrl: string, mime: string) {
-  const { espelharNoDrive } = await import('@/services/driveMirror');
-  const categoria = (['mapa_mental', 'infografico', 'fluxograma', 'diagrama'] as const).includes(
-    (content as any).tipo,
-  )
-    ? ((content as any).tipo as 'mapa_mental')
-    : 'outro';
-  await espelharNoDrive({
-    categoria,
-    titulo: content.titulo,
-    base64: dataUrl.slice(dataUrl.indexOf(',') + 1),
-    mime,
-  });
+  try {
+    const { espelharNoDrive } = await import('@/services/driveMirror');
+    const categoria = (['mapa_mental', 'infografico', 'fluxograma', 'diagrama'] as const).includes(
+      (content as any).tipo,
+    )
+      ? ((content as any).tipo as 'mapa_mental')
+      : 'outro';
+    await espelharNoDrive({
+      categoria,
+      titulo: content.titulo,
+      base64: dataUrl.slice(dataUrl.indexOf(',') + 1),
+      mime,
+    });
+  } catch {
+    // Best-effort
+  }
 }
-
-
