@@ -17,12 +17,16 @@ import { Button } from "@/components/ui/button";
 type ConcursoNoticia = {
   id: string;
   data_publicacao: string;
+  created_at?: string;
+  conteudo_md?: string | null;
   titulo: string;
   imagem_url?: string;
   link: string;
   cargos?: string[];
   cargos_resumo?: string;
   vagas_salario?: string;
+  formacao?: string;
+  resumo?: string;
 };
 
 const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
@@ -97,7 +101,7 @@ const Concursos = () => {
     supabase
       .from('concursos_noticias')
       .select('*')
-      .order('data_publicacao', { ascending: false })
+      .order('created_at', { ascending: false })
       .limit(100)
       .then(({ data }) => {
         if (!cancel && data) {
@@ -341,7 +345,7 @@ const Concursos = () => {
             {/* List cards */}
             <div className="space-y-3 -mx-4 md:mx-0">
               {finalFiltered.slice(1).map((item, i) => {
-                const { time } = formatDateParts(item.data_publicacao);
+                const { time } = formatDateParts(item.created_at || item.data_publicacao);
                 const visual = getConcursoVisual(item.titulo, item.imagem_url);
                 return (
                   <motion.div
@@ -449,8 +453,8 @@ const Concursos = () => {
                     <p className="text-foreground font-medium text-right text-xs">{selectedItem.formacao || "Não informado"}</p>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] uppercase font-bold text-muted-foreground">Publicado</span>
-                    <p className="text-foreground font-medium text-right text-xs">{formatDateFull(selectedItem.data_publicacao)}</p>
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground">Disponibilizado</span>
+                    <p className="text-foreground font-medium text-right text-xs">{formatDateFull(selectedItem.created_at || selectedItem.data_publicacao)}</p>
                   </div>
                 </div>
 

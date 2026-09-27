@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,8 +12,34 @@ serve(async (req) => {
   }
 
   try {
-    const { url, titulo } = await req.json();
-    if (!url) throw new Error("URL é obrigatória");
+    const { url, titulo, id } = await req.json();
+    if (!url && !id) throw new Error("URL ou ID é obrigatório");
+
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+    let supabaseClient = null;
+    if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
+      supabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    }
+
+    // 1. Checar se já existe no Supabase persistido
+    if (supabaseClient) {
+      let query = supabaseClient.from("concursos_noticias").select("id, conteudo_md, link, titulo");
+      if (id) {
+        query = query.eq("id", id);
+      } else if (url) {
+        query = query.eq("link", url);
+      }
+
+      const { data: existingRow } = await query.maybeSingle();
+      if (existingRow && existingRow.conteudo_md && existingRow.conteudo_md.trim().length > 20) {
+        console.log(`[scrape-concurso-full] Retornando cache do Supabase para: ${id || url}`);
+        return new Response(JSON.stringify({ text: existingRow.conteudo_md, cached: true }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
 
     const FIRECRAWL_KEY = Deno.env.get("FIRECRAWL_API_KEY");
     if (!FIRECRAWL_KEY) throw new Error("FIRECRAWL_API_KEY não configurado.");
@@ -57,7 +84,6 @@ serve(async (req) => {
 
     // Strip everything before the title (if provided and found)
     if (titulo) {
-      // Escape regex chars but allow whitespace differences
       const safeTitle = titulo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
       const titleRegex = new RegExp(safeTitle, 'i');
       const titleMatch = markdown.match(titleRegex);
@@ -68,24 +94,38 @@ serve(async (req) => {
 
     // Clean up PCI Concursos specific generic headers, footers, and logo images
     markdown = markdown
-      // Remove generic login/search headers
       .replace(/^(Entrar com Google|Pesquisar)\s*\n+/gmi, '')
-      // Remove regional navigation
       .replace(/- \[(Nacional|Sudeste|Sul|Centro-Oeste|Norte|Nordeste)\].*?\n/gi, '')
-      // Remove PCI logos and headers
       .replace(/\[!\[\]\(https:\/\/www\.pciconcursos\.com\.br\/img\/.*?\)\].*?\n/g, '')
       .replace(/\[!\[\]\(.*?\)\].*?\n/g, '')
-      // Remove navigation links like [Página Inicial](...)
       .replace(/- \[(Página Inicial|Apostilas|Provas|Videoaulas|Aulas em Áudio|Dicas|Questões|Gabaritos)\].*?\n/gi, '')
-      // Remove more generic links if they are alone
       .replace(/^\[.*?\]\(.*?\)$/gm, '')
       .replace(/Busca.*?Apostilas.*?/gi, '')
-      // Reduce multiple line breaks to maximum two
       .replace(/\n{3,}/g, '\n\n')
       .replace(/ {2,}/g, ' ')
       .trim();
 
-    return new Response(JSON.stringify({ text: markdown }), {
+    // 2. Persistir no Supabase para nunca mais precisar reextrair
+    if (supabaseClient && markdown && markdown.length > 20) {
+      try {
+        let updateQuery = supabaseClient.from("concursos_noticias").update({ conteudo_md: markdown });
+        if (id) {
+          updateQuery = updateQuery.eq("id", id);
+        } else if (url) {
+          updateQuery = updateQuery.eq("link", url);
+        }
+        const { error: updateErr } = await updateQuery;
+        if (updateErr) {
+          console.error("[scrape-concurso-full] Erro ao persistir conteudo_md no Supabase:", updateErr.message);
+        } else {
+          console.log(`[scrape-concurso-full] Conteúdo persistido com sucesso no Supabase para ${id || url}`);
+        }
+      } catch (persistErr) {
+        console.error("[scrape-concurso-full] Exceção ao persistir no Supabase:", persistErr);
+      }
+    }
+
+    return new Response(JSON.stringify({ text: markdown, cached: false }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 

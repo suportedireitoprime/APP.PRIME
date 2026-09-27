@@ -64,6 +64,7 @@ interface ConcursoItem {
   titulo: string;
   link: string;
   resumo?: string;
+  conteudo_md?: string | null;
   imagem_url?: string;
   uf?: string;
   regiao?: string;
@@ -73,6 +74,7 @@ interface ConcursoItem {
   formacao?: string;
   dias_restantes?: number;
   data_publicacao?: string;
+  created_at?: string;
 }
 
 const UFS_LIST = [
@@ -187,10 +189,11 @@ export default function RadarConcursos() {
         }
 
         // Carregar editais do Supabase
+        // Carregar editais do Supabase ordenados pela data em que foram disponibilizados
         const { data: concursosData } = await supabase
           .from('concursos_noticias')
           .select('*')
-          .order('data_publicacao', { ascending: false })
+          .order('created_at', { ascending: false })
           .limit(300);
 
         if (!cancel && concursosData) {
@@ -207,40 +210,60 @@ export default function RadarConcursos() {
     return () => { cancel = true; };
   }, [user]);
 
-  // Carregar texto completo do edital quando selecionado
+  // Carregar texto completo do edital (0ms instantâneo se já houver cache local ou no Supabase)
   useEffect(() => {
     let cancel = false;
     
-    async function loadFullText(link: string) {
+    async function loadFullText(item: ConcursoItem) {
+      // 1. Já está no item (veio direto do Supabase com o edital já salvo)
+      if (item.conteudo_md && item.conteudo_md.trim().length > 20) {
+        setEditalFullText(item.conteudo_md);
+        setLoadingFullText(false);
+        try { localStorage.setItem(`concurso:md:${item.id}`, item.conteudo_md); } catch {}
+        return;
+      }
+
+      // 2. Já está no cache local do dispositivo (0ms)
+      const cached = typeof window !== 'undefined' ? localStorage.getItem(`concurso:md:${item.id}`) : null;
+      if (cached && cached.trim().length > 20) {
+        setEditalFullText(cached);
+        setLoadingFullText(false);
+        return;
+      }
+
+      // 3. Primeira extração: invoca edge function que raspa e persiste no Supabase
       setLoadingFullText(true);
       setEditalFullText(null);
       try {
         const { data, error } = await supabase.functions.invoke('scrape-concurso-full', {
-          body: { url: link, titulo: selectedEdital.titulo }
+          body: { id: item.id, url: item.link, titulo: item.titulo }
         });
         if (error) throw error;
         if (!cancel && data && data.text) {
           setEditalFullText(data.text);
+          // Atualiza lista em memória e cache local para que novos cliques sejam imediatos
+          setConcursos(prev => prev.map(c => c.id === item.id ? { ...c, conteudo_md: data.text } : c));
+          try { localStorage.setItem(`concurso:md:${item.id}`, data.text); } catch {}
         } else if (!cancel) {
-          setEditalFullText('Não foi possível extrair o texto completo. Acesse o edital oficial para ler.');
+          setEditalFullText(item.resumo || 'Acompanhe todas as regras e convocações deste concurso pelo link oficial.');
         }
       } catch (err) {
         console.error('Erro ao extrair edital:', err);
-        if (!cancel) setEditalFullText('Erro ao carregar o conteúdo. Por favor, acesse o link oficial.');
+        if (!cancel) setEditalFullText(item.resumo || 'Erro ao carregar o conteúdo. Por favor, acesse o link oficial.');
       } finally {
         if (!cancel) setLoadingFullText(false);
       }
     }
 
-    if (selectedEdital && selectedEdital.link) {
-      loadFullText(selectedEdital.link);
+    if (selectedEdital) {
+      loadFullText(selectedEdital);
     } else {
       setEditalFullText(null);
       setLoadingFullText(false);
     }
 
     return () => { cancel = true; };
-  }, [selectedEdital]);
+  }, [selectedEdital?.id, selectedEdital?.link]);
 
   // Salvar configurações
   const salvarConfiguracoes = async () => {
@@ -489,10 +512,10 @@ export default function RadarConcursos() {
                     </div>
                     {/* Datas / Status */}
                     <div className="flex items-center justify-between mt-1 text-[11px] font-medium">
-                      {conc.data_publicacao ? (
-                        <span className="text-muted-foreground/70 flex items-center gap-1">
+                      {(conc.created_at || conc.data_publicacao) ? (
+                        <span className="text-muted-foreground/70 flex items-center gap-1" title="Disponibilizado em">
                           <Calendar className="w-3 h-3" />
-                          {new Date(conc.data_publicacao).toLocaleDateString('pt-BR')}
+                          {new Date(conc.created_at || conc.data_publicacao).toLocaleDateString('pt-BR')}
                         </span>
                       ) : <span />}
                       {conc.dias_restantes !== undefined && conc.dias_restantes !== null && (
