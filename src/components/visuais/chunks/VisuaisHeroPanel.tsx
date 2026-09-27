@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, Heart, Folder } from 'lucide-react';
+import { ArrowLeft, Heart, Folder, Brain } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import type { VisualCategoria } from '@/lib/visuaisJuridicos/types';
@@ -130,6 +130,12 @@ export function VisuaisHeroPanel({
           <div className="absolute inset-0 opacity-15 mix-blend-overlay">
             <ShapeGrid />
           </div>
+          
+          {/* SVGs flutuantes de Cérebro (translúcidos e em diferentes tamanhos/rotações) */}
+          <Brain className="absolute top-[5%] left-[5%] w-24 h-24 text-white opacity-[0.07] -rotate-[15deg] pointer-events-none" />
+          <Brain className="absolute top-[40%] left-[25%] w-40 h-40 text-white opacity-[0.05] rotate-[20deg] pointer-events-none" />
+          <Brain className="absolute -bottom-[10%] left-[10%] w-32 h-32 text-white opacity-[0.08] -rotate-[5deg] pointer-events-none" />
+          <Brain className="absolute top-[20%] left-[40%] w-20 h-20 text-white opacity-[0.06] rotate-[45deg] pointer-events-none" />
         </div>
       </div>
 
