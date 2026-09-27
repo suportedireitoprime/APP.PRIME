@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, X, Heart, Folder, Brain } from 'lucide-react';
+import { ArrowLeft, Heart, Folder } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import type { VisualCategoria } from '@/lib/visuaisJuridicos/types';
@@ -133,9 +133,9 @@ export function VisuaisHeroPanel({
         </div>
       </div>
 
-      {/* Cabeçalho Transparente Superior (Posicionamento absoluto exato do Vade Mecum Hero) */}
+      {/* Cabeçalho Transparente Superior (Apenas botão voltar, conforme solicitado) */}
       <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
-        <div className="pointer-events-auto px-4 sm:px-6 flex items-center justify-between">
+        <div className="pointer-events-auto px-4 sm:px-6 flex items-center justify-start">
           <button
             onClick={() => {
               haptic.light();
@@ -146,25 +146,11 @@ export function VisuaisHeroPanel({
           >
             <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           </button>
-          <button
-            onClick={() => {
-              haptic.light();
-              onClose();
-            }}
-            aria-label="Fechar"
-            className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/60 border border-purple-500/20 text-white backdrop-blur-md transition-colors hover:bg-black/80 active:scale-95 shadow-lg"
-          >
-            <X className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
-          </button>
         </div>
       </header>
 
       {/* Conteúdo: Logo / Título à esquerda — centralizado na área roxa (mesmo espaçamento pt-8 sm:pt-10 do Vade Mecum) */}
-      <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[100px] px-4 sm:px-6 max-w-[50%] sm:max-w-[46%] items-start text-left">
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-950/70 border border-purple-400/30 text-[10px] font-bold uppercase tracking-wider text-purple-200 backdrop-blur-md shadow-sm mb-1.5">
-          <Brain className="w-3 h-3 text-purple-400" />
-          <span>Memorização Ativa</span>
-        </div>
+      <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[90px] px-4 sm:px-6 max-w-[50%] sm:max-w-[46%] items-start text-left">
         <h1 className="font-display uppercase tracking-widest text-white text-[21px] sm:text-[25px] font-black leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
           Mapas Mentais
         </h1>

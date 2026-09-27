@@ -92,10 +92,10 @@ export function VisuaisPassoItens({
         onClose={onClose}
       />
 
-      {/* ── Menu de Alternância de Categoria: 5 Abas Elegantes ── */}
+      {/* ── Menu de Alternância de Categoria: 5 Abas Elegantes com Scroll Horizontal e Continuidade (Semi-infinito) ── */}
       {filtro !== 'pastas' && (
-        <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto pt-4 pb-2">
-          <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-zinc-900/95 border border-white/10 backdrop-blur-md shadow-lg overflow-x-auto no-scrollbar max-w-[820px] mx-auto">
+        <div className="relative w-full max-w-[1400px] mx-auto pt-4 pb-2 overflow-hidden">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth px-4 sm:px-6 lg:px-8 py-1 md:justify-center">
             {CATEGORIAS_PAINEL.map((cat) => {
               const ativa = categoria === cat.id;
               const Icone = cat.icone;
@@ -103,14 +103,15 @@ export function VisuaisPassoItens({
                 <button
                   key={cat.id}
                   type="button"
-                  onClick={() => {
+                  onClick={(e) => {
                     haptic.selection();
+                    e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                     onSelectCategoria(cat.id);
                   }}
-                  className={`flex-1 min-w-[105px] xs:min-w-0 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 px-2.5 sm:px-3 rounded-xl font-['Plus_Jakarta_Sans',sans-serif] text-[11.5px] sm:text-[13px] font-bold tracking-tight transition-all duration-200 select-none ${
+                  className={`shrink-0 whitespace-nowrap flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-['Plus_Jakarta_Sans',sans-serif] text-[12.5px] sm:text-[13px] font-bold tracking-tight transition-all duration-200 select-none ${
                     ativa
-                      ? 'bg-purple-900/60 text-white shadow-md border border-purple-500/50 shadow-purple-900/40 ring-1 ring-purple-400/30'
-                      : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                      ? 'bg-purple-900/70 text-white shadow-md border border-purple-500/50 shadow-purple-900/40 ring-1 ring-purple-400/30'
+                      : 'bg-zinc-900/80 border border-white/10 text-zinc-400 hover:text-white hover:bg-zinc-800/80'
                   }`}
                 >
                   <Icone
@@ -118,11 +119,17 @@ export function VisuaisPassoItens({
                     style={{ color: ativa ? '#c084fc' : cat.cor }}
                     strokeWidth={ativa ? 2.2 : 1.8}
                   />
-                  <span className="truncate">{cat.label}</span>
+                  <span className="whitespace-nowrap font-bold">{cat.label}</span>
                 </button>
               );
             })}
           </div>
+
+          {/* Gradiente indicador de continuidade à direita (semi-infinito) no mobile */}
+          <div
+            className="pointer-events-none absolute right-0 top-4 bottom-2 w-12 bg-gradient-to-l from-[#0D0D0D] via-[#0D0D0D]/70 to-transparent z-10 md:hidden"
+            aria-hidden="true"
+          />
         </div>
       )}
 
