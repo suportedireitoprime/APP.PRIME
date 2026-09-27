@@ -30,6 +30,13 @@ Deno.serve(async (req) => {
       throw new Error('Plano inválido');
     }
 
+    if (plan === 'promocao' || plan === 'anual_pix') {
+      const isNewUser = !!(user.created_at && (Date.now() - new Date(user.created_at).getTime() < 24 * 60 * 60 * 1000));
+      if (!isNewUser) {
+        throw new Error('Promoção expirada');
+      }
+    }
+
     const apiKey = Deno.env.get('ASAAS_API_KEY') || Deno.env.get('ASAAS_WEBHOOK_TOKEN');
 
     if (!apiKey) {

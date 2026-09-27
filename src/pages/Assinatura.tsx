@@ -106,7 +106,7 @@ export default function Assinatura() {
   
   const [devSheetOpen, setDevSheetOpen] = useState(false);
   const [paymentMethodSheetOpen, setPaymentMethodSheetOpen] = useState(false);
-  const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_pix' | null>(null);
+  const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_pix' | 'anual_regular_pix' | null>(null);
 
   const handleBack = () => {
     if (showWelcome) return closeWelcome();
@@ -136,7 +136,7 @@ export default function Assinatura() {
     setDevSheetOpen(false);
   };
 
-  const startPurchase = async (plano: 'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_pix') => {
+  const startPurchase = async (plano: 'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_pix' | 'anual_regular_pix') => {
     track('subscription_started', { plano, metodo: 'asaas', source: 'planos_page' });
     import('@/lib/appEvents')
       .then(({ appEvents }) => {
@@ -228,7 +228,7 @@ export default function Assinatura() {
                   className="h-auto py-5 flex items-center justify-start gap-4 px-5 border-2 border-border/80 hover:border-emerald-500 hover:bg-emerald-500/5 transition-all rounded-3xl group"
                   onClick={() => {
                     setPaymentMethodSheetOpen(false);
-                    startPurchase('anual_pix');
+                    startPurchase('anual_regular_pix');
                   }}
                 >
                   <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
