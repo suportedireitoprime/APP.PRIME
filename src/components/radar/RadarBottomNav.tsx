@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Radar, LayoutGrid, TrendingUp, Newspaper, Plus, BarChart3, Trophy, X, ChevronRight } from 'lucide-react';
+import { Radar, Briefcase, MapPin, Bell, Menu, Plus, BarChart3, Trophy, X, ChevronRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 type Tab = {
@@ -15,37 +15,37 @@ type Tab = {
 
 const TABS: Tab[] = [
   {
-    id: 'radares',
-    label: 'Radares',
-    to: '/radares',
+    id: 'concursos',
+    label: 'Concursos',
+    to: '/radar-concursos',
     icon: Radar,
-    match: (p) => p === '/radares',
+    match: (p) => p === '/radar-concursos' || p === '/concursos/radar',
   },
   {
-    id: 'categorias',
-    label: 'Categorias',
-    to: '/radar/categorias',
-    icon: LayoutGrid,
-    match: (p) => p.startsWith('/radar/categorias'),
+    id: 'cargos',
+    label: 'Cargos',
+    to: '/radar-concursos/cargos',
+    icon: Briefcase,
+    match: (p) => p.startsWith('/radar-concursos/cargos'),
   },
   {
-    id: 'em-alta',
-    label: 'Em alta',
-    to: '/radar/em-alta',
-    icon: TrendingUp,
-    match: (p) => p.startsWith('/radar/em-alta'),
+    id: 'regioes',
+    label: 'Regiões',
+    to: '/radar-concursos/regioes',
+    icon: MapPin,
+    match: (p) => p.startsWith('/radar-concursos/regioes'),
   },
   {
-    id: 'boletins',
-    label: 'Boletins',
-    to: '/boletins',
-    icon: Newspaper,
-    match: (p) => p.startsWith('/boletins'),
+    id: 'alertas',
+    label: 'Alertas',
+    to: '/radar-concursos/alertas',
+    icon: Bell,
+    match: (p) => p.startsWith('/radar-concursos/alertas'),
   },
   {
     id: 'mais',
     label: 'Mais',
-    icon: Plus,
+    icon: Menu,
     match: () => false,
     isAction: true,
   },

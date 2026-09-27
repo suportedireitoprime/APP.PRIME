@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo, useTransition } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import RadarBottomNav from '@/components/radar/RadarBottomNav';
+import RadarBottomNav from '@/components/radar/RadarBottomNav';
 import {
   ArrowLeft,
   Bell,
@@ -387,7 +389,7 @@ export default function RadarConcursos() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground flex flex-col relative overflow-hidden pb-24 md:pb-6">
       {/* Background ShapeGrid oficial */}
       <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
         <ShapeGrid speed={0.5} squareSize={38} direction="diagonal" borderColor="rgba(255,255,255,0.06)" />
@@ -967,6 +969,7 @@ export default function RadarConcursos() {
           </div>
         )}
       </AnimatePresence>
+      <RadarBottomNav />
     </div>
   );
 }
