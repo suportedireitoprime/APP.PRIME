@@ -83,7 +83,7 @@ export const EMALTA_CATS: EmAltaCat[] = [
   { id: 'ea-resumos',     label: 'Resumos',        sublabel: 'Anotações',   icon: NotebookPen, color: 'hsl(var(--primary))', route: '/resumos-juridicos' },
   { id: 'ea-videoaulas',  label: 'Videoaulas',     sublabel: 'Aulas',       icon: Video,       color: 'hsl(var(--primary))', route: '/videoaulas' },
   { id: 'ea-audioaulas',  label: 'Audioaulas',     sublabel: 'Podcasts',    icon: Headphones,  color: 'hsl(var(--primary))', route: '/audioaulas' },
-  { id: 'ea-mapas',       label: 'Mapas Mentais',  sublabel: 'Esquemas',    icon: Brain,       color: 'hsl(var(--primary))', route: '/resumos-juridicos' },
+  { id: 'ea-mapas',       label: 'Mapas Mentais',  sublabel: 'Esquemas',    icon: Brain,       color: 'hsl(var(--primary))', route: '/mapas-mentais' },
   { id: 'ea-dicionario',  label: 'Dicionário',     sublabel: 'Termos',      icon: BookA,       color: 'hsl(var(--primary))', route: '/ferramentas/dicionario' },
 ];
 

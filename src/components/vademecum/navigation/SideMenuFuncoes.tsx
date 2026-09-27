@@ -43,7 +43,7 @@ const MENU_CATEGORIES: MenuCategory[] = [
       { id: 'videoaulas', label: 'Videoaulas', icon: Video, route: '/videoaulas', prefetchKey: 'videoaulas' },
       { id: 'audioaulas', label: 'Audioaulas', icon: Headphones, route: '/audioaulas', prefetchKey: 'audioaulas' },
       { id: 'resumos', label: 'Resumos Jurídicos', icon: FileText, route: '/resumos-juridicos', prefetchKey: 'resumosJuridicos' },
-      { id: 'visuais', label: 'Mapas Mentais & Visuais', icon: Workflow, route: '/resumos-juridicos', prefetchKey: 'resumosJuridicos', badge: 'Mapas', badgeColor: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
+      { id: 'visuais', label: 'Mapas Mentais & Visuais', icon: Workflow, route: '/mapas-mentais', prefetchKey: 'resumosJuridicos', badge: 'Mapas', badgeColor: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
       { id: 'pilulas', label: 'Pílulas do Conhecimento', icon: Flame, route: '/pilulas', prefetchKey: 'pilulas' },
       { id: 'biblioteca', label: 'Biblioteca', icon: Library, route: '/bibliotecas', prefetchKey: 'biblioteca' },
       { id: 'lei-seca', label: 'Lei Seca', icon: Bookmark, route: '/lei-seca', prefetchKey: 'leiSeca' },

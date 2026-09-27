@@ -30,7 +30,7 @@ interface HomeTabEstudosProps {
   noticiasAutoplay?: boolean;
   onNewsOpenChange?: (open: boolean) => void;
   onOpenCategory: (cat: Cat) => void;
-  onOpenVisuais: () => void;
+  onOpenVisuais?: () => void;
   onOpenAreas: () => void;
 }
 
@@ -133,11 +133,7 @@ const HomeTabEstudos = ({
                 badge={c.emBreve ? 'Em breve' : undefined}
                 onClick={() => {
                   if (c.emBreve) {
-                    toast({ title: 'Em breve', description: 'Essa funÃ§Ã£o estÃ¡ sendo preparada.' });
-                    return;
-                  }
-                  if (c.id === 'ea-mapas') {
-                    onOpenVisuais();
+                    toast({ title: 'Em breve', description: 'Essa função está sendo preparada.' });
                     return;
                   }
                   if (c.id === 'ea-areas') {

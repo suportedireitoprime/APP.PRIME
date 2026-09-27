@@ -25,7 +25,7 @@ const ESTUDOS: Item[] = [
   { id: 'resumos', label: 'Resumos', sublabel: 'Resumos jurídicos por tema', icon: NotebookPen, color: 'hsl(var(--primary))', route: '/resumos-juridicos' },
   { id: 'videoaulas', label: 'Videoaulas', sublabel: 'Aulas em vídeo por área', icon: Video, color: 'hsl(var(--primary))', route: '/videoaulas' },
   { id: 'audioaulas', label: 'Audioaulas', sublabel: 'Estude ouvindo, onde estiver', icon: Headphones, color: 'hsl(var(--primary))', route: '/audioaulas' },
-  { id: 'mapas', label: 'Mapas Mentais', sublabel: 'Mapas, infográficos e fluxogramas', icon: Brain, color: 'hsl(var(--primary))', route: '/assistente' },
+  { id: 'mapas', label: 'Mapas Mentais', sublabel: 'Mapas, infográficos e fluxogramas', icon: Brain, color: 'hsl(var(--primary))', route: '/mapas-mentais' },
   { id: 'dicionario', label: 'Dicionário', sublabel: 'Termos jurídicos explicados', icon: BookA, color: 'hsl(var(--primary))', route: '/ferramentas/dicionario' },
 ];
 
@@ -49,9 +49,7 @@ const DesktopEstudosGrid = (_props: Props) => {
           {ESTUDOS.map((it) => {
             const Icon = it.icon;
             const handleClick = () => {
-              if (it.id === 'mapas' && _props.onChatClick) {
-                _props.onChatClick();
-              } else if (it.onClick) {
+              if (it.onClick) {
                 it.onClick();
               } else if (it.route) {
                 navigate(it.route);

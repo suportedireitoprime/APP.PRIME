@@ -17,6 +17,7 @@ const NEARBY: Array<[RegExp, PrefetchKey[]]> = [
   [/^\/perfil/,               ['pessoal']],
   [/^\/resumos-juridicos$/,   ['resumosJuridicosTemas', 'resumosJuridicosSubtemas', 'resumosJuridicosLista']],
   [/^\/resumos-juridicos\//,  ['resumosJuridicos', 'resumosJuridicosTemas', 'resumosJuridicosSubtemas', 'resumosJuridicosLista']],
+  [/^\/mapas-mentais/,        ['resumosJuridicos', 'resumosJuridicosTemas', 'resumosJuridicosSubtemas', 'resumosJuridicosLista']],
   [/^\/audioaulas/,           ['videoaulas', 'videoaulasCatalogo', 'resumosJuridicos']],
   [/^\/bibliotecas?/,         ['bibliotecaCategoria', 'bibliotecaOffline', 'modoOffline', 'blog']],
   [/^\/ferramentas\/dicionario/, ['ferramentas', 'biblioteca']],

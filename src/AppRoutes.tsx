@@ -1374,7 +1374,12 @@ function AnimatedRoutes() {
           <Route path="/tres-poderes/stf/podcasts" element={<PageTransition><PodcastsLista /></PageTransition>} />
           <Route path="/notificacoes" element={<Navigate to="/?notificacoes=1" replace />} />
           <Route path="/meus-lembretes" element={<Navigate to="/?notificacoes=1" replace />} />
-          <Route path="/visuais" element={<Navigate to="/resumos-juridicos" replace />} />
+          <Route path="/mapas-mentais" element={<ProtectedRoute><PageTransition instant><ResumosJuridicosAreas /></PageTransition></ProtectedRoute>} />
+          <Route path="/mapas-mentais/:area" element={<ProtectedRoute><PageTransition instant><ResumosJuridicosTemas /></PageTransition></ProtectedRoute>} />
+          <Route path="/mapas-mentais/:area/:tema" element={<ProtectedRoute><PageTransition instant><ResumosJuridicosSubtemas /></PageTransition></ProtectedRoute>} />
+          <Route path="/mapas" element={<Navigate to="/mapas-mentais" replace />} />
+          <Route path="/visuais" element={<Navigate to="/mapas-mentais" replace />} />
+          <Route path="/visuais/*" element={<Navigate to="/mapas-mentais" replace />} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
 
           </Routes>

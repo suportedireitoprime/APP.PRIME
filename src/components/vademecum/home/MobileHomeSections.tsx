@@ -213,7 +213,6 @@ const MobileHomeSections = ({
             setCategorySearch('');
             setCategoryOpen(cat);
           }}
-          onOpenVisuais={() => {}} // Feature removida
           onOpenAreas={() => startTransition(() => setAreasOpen(true))}
         />
       )}
