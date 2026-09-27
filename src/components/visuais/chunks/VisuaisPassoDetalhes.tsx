@@ -62,7 +62,7 @@ export function VisuaisPassoDetalhes({
 }: VisuaisPassoDetalhesProps) {
   return (
     <div className="space-y-2">
-      <div className="sticky top-0 z-10 -mx-1 space-y-3 bg-background/95 backdrop-blur-md px-1 pb-3 pt-0.5">
+      <div className="-mx-1 space-y-3 px-1 pb-3 pt-0.5">
         <VisuaisAbasFiltro valor={filtro} onChange={setFiltro} />
         <VisuaisBarraBusca
           valor={buscaArtigo}

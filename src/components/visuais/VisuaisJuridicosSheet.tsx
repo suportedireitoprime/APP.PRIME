@@ -662,8 +662,8 @@ export default function VisuaisJuridicosSheet({
                 />
               </div>
 
-              <div className="relative z-10 flex h-full flex-col overflow-hidden">
-                {/* Cabeçalho fixo padrão apenas quando em detalhes, tela solo de pasta OU abas solo (pastas, favoritos, recentes) */}
+              <div className="relative z-10 flex h-full flex-col overflow-y-auto overscroll-contain pb-[calc(1.25rem+var(--sai-bottom))]">
+                {/* Cabeçalho rolável padrão apenas quando em detalhes, tela solo de pasta OU abas solo (pastas, favoritos, recentes) */}
                 {(item || pastaAtiva || filtro !== 'todos') && (
                   emPagina ? (
                     <PageHeader
@@ -733,7 +733,7 @@ export default function VisuaisJuridicosSheet({
                   </div>
                 )}
 
-                <div className={`flex-1 overflow-y-auto overscroll-contain pb-[calc(1.25rem+var(--sai-bottom))] ${(item || pastaAtiva || filtro !== 'todos') ? 'px-4 pt-3 lg:mx-auto lg:w-full lg:max-w-[1400px] lg:px-8' : ''}`}>
+                <div className={`flex-1 flex flex-col min-h-0 ${(item || pastaAtiva || filtro !== 'todos') ? 'px-4 pt-3 lg:mx-auto lg:w-full lg:max-w-[1400px] lg:px-8' : ''}`}>
                   {/* 1 — Tela Solo da Pasta de PDFs */}
                   {pastaAtiva ? (
                     <VisuaisPastaSoloView

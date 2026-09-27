@@ -270,12 +270,12 @@ export function VisuaisPastasView({
                     }}
                     className="relative group cursor-pointer"
                   >
-                    {/* Cabinho escuro no topo */}
+                    {/* Cabinho mais claro no topo, acompanhando o gradiente */}
                     <div
                       className={`w-16 h-3.5 rounded-t-lg -mb-[1px] ml-3 transition-colors ${
                         temPdfs
-                          ? 'bg-[#180406] border-t border-x border-red-900/70'
-                          : 'bg-[#141416] border-t border-x border-white/10'
+                          ? 'bg-[#4a0e14] border-t border-x border-red-500/40 group-hover:bg-[#5c1219] group-hover:border-red-400/80'
+                          : 'bg-[#260a0d] border-t border-x border-red-900/30 group-hover:bg-[#320d11] group-hover:border-red-700/50'
                       }`}
                     />
 
@@ -349,12 +349,12 @@ export function VisuaisPastasView({
                 }}
                 className="relative group cursor-pointer"
               >
-                {/* Cabinho escuro no topo */}
+                {/* Cabinho mais claro no topo, acompanhando o gradiente */}
                 <div
                   className={`w-16 h-3.5 rounded-t-lg -mb-[1px] ml-3 transition-colors ${
                     temPdfs
-                      ? 'bg-[#180406] border-t border-x border-red-900/70'
-                      : 'bg-[#141416] border-t border-x border-white/10'
+                      ? 'bg-[#4a0e14] border-t border-x border-red-500/40 group-hover:bg-[#5c1219] group-hover:border-red-400/80'
+                      : 'bg-[#260a0d] border-t border-x border-red-900/30 group-hover:bg-[#320d11] group-hover:border-red-700/50'
                   }`}
                 />
 
