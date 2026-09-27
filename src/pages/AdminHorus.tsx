@@ -60,30 +60,29 @@ export default function AdminHorus() {
           </div>
         ) : (
           <>
-            <p className="font-body text-[12px] text-muted-foreground mb-3 px-1">
-              Toque em um card para abrir a seção.
-            </p>
-            <div className="grid grid-cols-2 gap-3">
+            <>
+            <div className="rounded-2xl border border-border/60 bg-secondary/30 divide-y divide-border/50 overflow-hidden">
               {SECTIONS.map(({ id, label, desc, icon: Icon, color, route }) => (
                 <button
                   key={id}
                   onClick={() => route ? navigate(route) : setParams({ tab: id }, { replace: true })}
-                  className="text-left rounded-2xl border border-border/60 bg-secondary/30 p-4 min-h-[140px] flex flex-col gap-3 hover:bg-secondary/60 active:bg-secondary transition-colors"
+                  className="w-full flex items-center gap-4 px-4 py-5 min-h-[84px] text-left hover:bg-secondary/60 active:bg-secondary transition-colors"
                 >
                   <div
-                    className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: `${color}22` }}
+                    className="w-14 h-14 flex items-center justify-center shrink-0"
+                    style={{ color }}
                   >
-                    <Icon className="w-6 h-6" style={{ color }} />
+                    <Icon className="w-7 h-7" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="font-body text-sm font-semibold text-foreground leading-tight">
+                    <div className="font-body text-base font-semibold text-foreground truncate">
                       {label}
                     </div>
-                    <div className="font-body text-[11.5px] text-muted-foreground mt-1 line-clamp-3">
+                    <div className="font-body text-[13px] text-muted-foreground mt-1 line-clamp-2 pr-4 leading-relaxed">
                       {desc}
                     </div>
                   </div>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground/50 shrink-0" />
                 </button>
               ))}
             </div>

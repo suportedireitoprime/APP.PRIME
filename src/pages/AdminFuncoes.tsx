@@ -6,7 +6,7 @@ import {
   Rss, Palette, Users, GitBranch, Github, ImageIcon, KeyRound, Bug, Newspaper,
   Quote, Monitor, Send, RefreshCcw, Lock, Wrench, FileText, Crown, Search, Target, MapPin, PlayCircle,
   Sparkles, UserPlus, GraduationCap, Scale, Store, Mail, FileSignature,
-  ListChecks, Headphones, ShieldAlert, Layers, Star, CloudDownload, Pill, UserCheck
+  ListChecks, Headphones, ShieldAlert, Layers, Star, CloudDownload, Pill, UserCheck, Bird
 } from 'lucide-react';
 
 import { toast } from 'sonner';
@@ -167,6 +167,13 @@ const CATEGORIES: Category[] = [
     ],
   },
   {
+    id: 'horus-exclusivo',
+    title: 'Horus',
+    desc: 'Assistente Horus no WhatsApp — instância, usuários e conversas',
+    icon: Bird,
+    route: '/admin-horus',
+  },
+  {
     id: 'geracao-conteudo',
     title: 'Geração de Conteúdo',
     desc: 'IA, biblioteca e estudos',
@@ -269,13 +276,6 @@ const CATEGORIES: Category[] = [
       { id: 'monitor-apis', label: 'APIs', icon: Activity, desc: 'Funções que usam IA (custo, manual/auto)', route: '/admin-monitor-apis' },
       { id: 'ranking-funcoes', label: 'Ranking de Funções', icon: Activity, desc: 'Funções e subfunções mais acessadas pelos usuários', route: '/admin-ranking-funcoes' },
     ],
-  },
-  {
-    id: 'horus-exclusivo',
-    title: 'Horus (Exclusivo)',
-    desc: 'Assistente Horus no WhatsApp — instância, usuários e conversas',
-    icon: MessageCircle,
-    route: '/admin-horus',
   },
   {
     id: 'radares-admin',
