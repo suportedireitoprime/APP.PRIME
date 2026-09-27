@@ -358,9 +358,16 @@ const Atualizacoes = () => {
                           <Clock className="w-3 h-3 text-emerald-400" />
                           <span className="truncate">{formatDate(conc.data_publicacao)} · {visual.subtitulo}</span>
                         </div>
-                        <p className="font-display text-white text-[14.5px] sm:text-[15px] font-semibold leading-snug line-clamp-3 drop-shadow-md">
+                        <p className="font-sans text-white text-[13px] sm:text-[14px] font-medium leading-snug line-clamp-2 drop-shadow-md">
                           {conc.titulo}
                         </p>
+                        {((conc as any).vagas_salario) && (
+                          <div className="mt-1.5 flex items-center">
+                            <span className="bg-emerald-500 text-white text-[10.5px] sm:text-[11px] font-bold px-2 py-0.5 rounded shadow-sm truncate max-w-full">
+                              {((conc as any).vagas_salario).replace(/.*?até\s+R\$/i, 'Até R$')}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
