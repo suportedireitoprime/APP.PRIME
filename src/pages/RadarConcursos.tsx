@@ -45,6 +45,7 @@ import ReactMarkdown from 'react-markdown';
 import logoPRF from '@/assets/logos/prf.png';
 import logoPC from '@/assets/logos/pc.png';
 import { getConcursoVisual } from '@/lib/concursosVisuais';
+import { getSharedConcursos, setSharedConcursos } from '@/lib/concursosCache';
 import { toast } from 'sonner';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
@@ -148,9 +149,9 @@ export default function RadarConcursos() {
   const [notifPush, setNotifPush] = useState(false);
   const [notifHorus, setNotifHorus] = useState(false);
 
-  // Dados
-  const [concursos, setConcursos] = useState<ConcursoItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Dados com cache de memória permanente a 0ms compartilhado
+  const [concursos, setConcursos] = useState<ConcursoItem[]>(() => getSharedConcursos() as ConcursoItem[]);
+  const [loading, setLoading] = useState(() => getSharedConcursos().length === 0);
   const [saving, setSaving] = useState(false);
 
   // Modal de Conteúdo Completo do Edital
@@ -166,7 +167,9 @@ export default function RadarConcursos() {
     let cancel = false;
 
     async function loadData() {
-      setLoading(true);
+      if (getSharedConcursos().length === 0) {
+        setLoading(true);
+      }
       try {
         // Carregar preferências
         if (user?.id) {
@@ -197,6 +200,7 @@ export default function RadarConcursos() {
           .limit(300);
 
         if (!cancel && concursosData) {
+          setSharedConcursos(concursosData);
           setConcursos(concursosData as ConcursoItem[]);
         }
       } catch (err) {
@@ -242,7 +246,11 @@ export default function RadarConcursos() {
         if (!cancel && data && data.text) {
           setEditalFullText(data.text);
           // Atualiza lista em memória e cache local para que novos cliques sejam imediatos
-          setConcursos(prev => prev.map(c => c.id === item.id ? { ...c, conteudo_md: data.text } : c));
+          setConcursos(prev => {
+            const updated = prev.map(c => c.id === item.id ? { ...c, conteudo_md: data.text } : c);
+            setSharedConcursos(updated);
+            return updated;
+          });
           try { localStorage.setItem(`concurso:md:${item.id}`, data.text); } catch {}
         } else if (!cancel) {
           setEditalFullText(item.resumo || 'Acompanhe todas as regras e convocações deste concurso pelo link oficial.');
@@ -478,14 +486,14 @@ export default function RadarConcursos() {
                   </div>
 
                   <div className="flex items-start justify-between w-full mb-auto z-20">
-                     <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center p-1.5 shrink-0 shadow-md border border-border/50">
-                        <img
-                          src={visual.imagemUrl}
-                          alt={conc.titulo}
-                          className="w-full h-full object-contain rounded-full group-hover:scale-105 transition-transform duration-300"
-                          loading="lazy"
-                        />
-                     </div>
+                    <div className="w-[84px] h-[84px] sm:w-[96px] sm:h-[96px] -ml-3 -mt-2.5 flex items-center justify-center shrink-0">
+                      <img
+                        src={visual.imagemUrl}
+                        alt={conc.titulo}
+                        className="w-full h-full object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.7)] group-hover:scale-110 transition-transform duration-300"
+                        loading="lazy"
+                      />
+                    </div>
 
                     <div className="flex flex-col items-end -mr-1">
                       <StateMapIcon uf={conc.uf || visual.tag} className="w-[72px] h-[72px] sm:w-[84px] sm:h-[84px]" />
@@ -769,13 +777,13 @@ export default function RadarConcursos() {
                   <X className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.4]" />
                 </button>
                 
-                {/* Logo da Instituição vazada/branca sobre a capa */}
-                <div className="absolute bottom-4 left-4 sm:left-6 right-4 sm:right-6 z-10 flex items-center gap-3">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center p-2 shadow-xl border-4 border-card shrink-0">
+                {/* Ilustração da Profissão / Carreira sem fundo branco */}
+                <div className="absolute bottom-3 left-4 sm:left-6 right-4 sm:right-6 z-10 flex items-center gap-3">
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center shrink-0 filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.85)]">
                     <img
                       src={getConcursoVisual(selectedEdital.titulo, selectedEdital.imagem_url, selectedEdital.cargos_resumo || selectedEdital.cargos).imagemUrl}
                       alt={selectedEdital.titulo}
-                      className="w-full h-full object-contain rounded-full"
+                      className="w-full h-full object-contain"
                     />
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-1.5">

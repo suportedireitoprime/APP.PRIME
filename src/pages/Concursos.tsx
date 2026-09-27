@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Clock, Calendar, ExternalLink, Newspaper, X, Loader2 } from 'lucide-react';
+import { Clock, Calendar, ExternalLink, Newspaper, X, Loader2, ChevronDown, Briefcase, DollarSign } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useIsDesktop } from '@/hooks/use-desktop';
@@ -11,6 +11,8 @@ import { useGoBack } from '@/hooks/useGoBack';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
 import { getConcursoVisual } from '@/lib/concursosVisuais';
+import { getSharedConcursos, setSharedConcursos } from '@/lib/concursosCache';
+import { haptic } from '@/lib/nativeHaptics';
 import { Drawer, DrawerContent, DrawerClose } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 
@@ -27,10 +29,57 @@ type ConcursoNoticia = {
   vagas_salario?: string;
   formacao?: string;
   resumo?: string;
+  dias_restantes?: number;
 };
 
 const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
 const MONTHS = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+
+const CARGOS_FILTRO_OPTIONS = [
+  { value: 'TODOS', label: 'Todos os Cargos' },
+  { value: 'delegado_de_policia', label: '👮 Segurança Pública & Policial' },
+  { value: 'tribunais_judiciario_analistas', label: '🏛️ Tribunais & Judiciário' },
+  { value: 'juiz_magistratura', label: '⚖️ Magistratura' },
+  { value: 'advocacia_publica', label: '📜 Advocacia Pública' },
+  { value: 'fiscal_controle_auditores', label: '📊 Fiscal & Auditoria' },
+  { value: 'enfermagem_saude_geral', label: '🩺 Saúde & Enfermagem' },
+  { value: 'educacao_professor', label: '🎓 Educação & Docência' },
+  { value: 'administrativo', label: '🏢 Gestão & Administrativo' },
+  { value: 'tecnologia_da_informacao', label: '💻 Tecnologia da Informação' },
+  { value: 'engenharia_arquitetura', label: '📐 Engenharia & Arquitetura' },
+  { value: 'contabilidade_e_financas', label: '💰 Contabilidade & Finanças' },
+  { value: 'odontologia', label: '🦷 Odontologia & Saúde Bucal' },
+  { value: 'operacional_servicos_gerais', label: '🛠️ Operacional & Serviços Gerais' },
+  { value: 'curinga_cargo_generico', label: '📋 Outros / Vários Cargos' },
+];
+
+const PRAZOS_FILTRO_OPTIONS = [
+  { value: 'TODOS', label: 'Todos os Prazos' },
+  { value: 'urgente_3', label: '🔥 Urgente: Até 3 dias' },
+  { value: 'urgente_7', label: '⚡ Esta semana: Até 7 dias' },
+  { value: 'mais_7', label: '📅 Mais de 7 dias' },
+  { value: 'mais_15', label: '⏳ Mais de 15 dias' },
+];
+
+const SALARIOS_FILTRO_OPTIONS = [
+  { value: 'TODOS', label: 'Todos os Salários' },
+  { value: '3000', label: '+ R$ 3.000' },
+  { value: '5000', label: '+ R$ 5.000' },
+  { value: '8000', label: '+ R$ 8.000' },
+  { value: '10000', label: '+ R$ 10.000' },
+  { value: '15000', label: '+ R$ 15.000' },
+];
+
+function extractSalarioNumber(text: string): number | null {
+  if (!text) return null;
+  const match = text.match(/R\$\s*([\d.]+)(?:,\d{2})?/i);
+  if (match && match[1]) {
+    const clean = match[1].replace(/\./g, '');
+    const num = parseFloat(clean);
+    return isNaN(num) ? null : num;
+  }
+  return null;
+}
 
 function formatDateParts(dateStr: string) {
   const d = new Date(dateStr);
@@ -85,10 +134,28 @@ function extractCargo(item: ConcursoNoticia): string {
 const Concursos = () => {
   const navigate = useNavigate();
   const goBack = useGoBack();
-  const [concursos, setConcursos] = useState<ConcursoNoticia[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [dataFiltro, setDataFiltro] = useState<string>('');
-  const [cargoFiltro, setCargoFiltro] = useState<string>('Todos');
+  const location = useLocation();
+
+  // Cache instantâneo de 0ms
+  const [concursos, setConcursos] = useState<ConcursoNoticia[]>(() => getSharedConcursos() as ConcursoNoticia[]);
+  const [loading, setLoading] = useState<boolean>(() => getSharedConcursos().length === 0);
+
+  const toYMD = (d: Date) => {
+    const y = d.getFullYear();
+    const m = (d.getMonth() + 1).toString().padStart(2, '0');
+    const day = d.getDate().toString().padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  };
+
+  const todayYMD = toYMD(new Date());
+
+  // Data ativa padrão na data vigente de hoje
+  const [dataFiltro, setDataFiltro] = useState<string>(() => todayYMD);
+
+  // 3 Filtros em menus de alternância / suspensão
+  const [cargoFiltro, setCargoFiltro] = useState<string>('TODOS');
+  const [prazoFiltro, setPrazoFiltro] = useState<string>('TODOS');
+  const [salarioFiltro, setSalarioFiltro] = useState<string>('TODOS');
 
   // Modal/Drawer state
   const [selectedItem, setSelectedItem] = useState<ConcursoNoticia | null>(null);
@@ -98,13 +165,17 @@ const Concursos = () => {
 
   useEffect(() => {
     let cancel = false;
+    if (getSharedConcursos().length === 0) {
+      setLoading(true);
+    }
     supabase
       .from('concursos_noticias')
       .select('*')
       .order('created_at', { ascending: false })
-      .limit(100)
+      .limit(300)
       .then(({ data }) => {
         if (!cancel && data) {
+          setSharedConcursos(data as any);
           setConcursos(data as any);
           setLoading(false);
         }
@@ -144,55 +215,58 @@ const Concursos = () => {
     }
   };
 
-  const toYMD = (d: Date) => {
-    const y = d.getFullYear();
-    const m = (d.getMonth() + 1).toString().padStart(2, '0');
-    const day = d.getDate().toString().padStart(2, '0');
-    return `${y}-${m}-${day}`;
-  };
-
-  const todayYMD = toYMD(new Date());
-
   const datasDisponiveis = useMemo(() => {
     const set = new Set<string>();
-    for (const n of concursos) set.add(toYMD(new Date(n.data_publicacao)));
+    for (const n of concursos) set.add(toYMD(new Date(n.created_at || n.data_publicacao)));
     return Array.from(set).sort((a, b) => b.localeCompare(a));
   }, [concursos]);
 
-  // Removido useEffect que forçava uma data específica, para que a tela inicie exibindo TODOS os concursos (dataFiltro = '').
-
-  const location = useLocation();
   const preFiltroCargo = (location.state as any)?.preFiltroCargo as string | undefined;
 
   const dateFiltered = useMemo(() => {
     return !dataFiltro
       ? concursos
-      : concursos.filter(n => toYMD(new Date(n.data_publicacao)) === dataFiltro);
+      : concursos.filter(n => toYMD(new Date(n.created_at || n.data_publicacao)) === dataFiltro);
   }, [concursos, dataFiltro]);
-
-  const availableCargos = useMemo(() => {
-    const set = new Set<string>();
-    dateFiltered.forEach(n => {
-      const c = extractCargo(n).toUpperCase();
-      if (c) set.add(c);
-    });
-    return ['Todos', ...Array.from(set).sort()];
-  }, [dateFiltered]);
 
   const finalFiltered = useMemo(() => {
     let filtered = dateFiltered;
 
-    // Apply strict "pill" filter if not "Todos"
-    if (cargoFiltro !== 'Todos') {
-      filtered = filtered.filter(n => extractCargo(n).toUpperCase() === cargoFiltro);
+    // 1. Filtro de Cargo / Carreira
+    if (cargoFiltro !== 'TODOS') {
+      filtered = filtered.filter(n => {
+        const visual = getConcursoVisual(n.titulo, n.imagem_url, n.cargos_resumo || n.cargos);
+        return visual.profissaoKey === cargoFiltro;
+      });
     }
 
-    // Apply generic category filter from RadarConcursos if present
-    if (preFiltroCargo) {
+    // 2. Filtro de Dias Faltantes para Encerrar
+    if (prazoFiltro !== 'TODOS') {
+      filtered = filtered.filter(item => {
+        if (item.dias_restantes === undefined || item.dias_restantes === null) return true;
+        if (prazoFiltro === 'urgente_3') return item.dias_restantes <= 3 && item.dias_restantes >= 0;
+        if (prazoFiltro === 'urgente_7') return item.dias_restantes <= 7 && item.dias_restantes >= 0;
+        if (prazoFiltro === 'mais_7') return item.dias_restantes > 7;
+        if (prazoFiltro === 'mais_15') return item.dias_restantes > 15;
+        return true;
+      });
+    }
+
+    // 3. Filtro de Salário
+    if (salarioFiltro !== 'TODOS') {
+      const minVal = parseInt(salarioFiltro, 10);
+      filtered = filtered.filter(item => {
+        const sal = extractSalarioNumber(`${item.vagas_salario || ''} ${item.titulo || ''}`);
+        if (!sal) return false;
+        return sal >= minVal;
+      });
+    }
+
+    // 4. Pre-filtro de cargo vindo de tela anterior
+    if (preFiltroCargo && cargoFiltro === 'TODOS') {
       const term = preFiltroCargo.toLowerCase();
       filtered = filtered.filter(n => {
         const textToSearch = `${n.titulo} ${n.cargos_resumo || ''} ${(n.cargos || []).join(' ')}`.toLowerCase();
-        
         if (term === 'pf') return textToSearch.includes('polícia federal') || textToSearch.includes('pf ');
         if (term === 'prf') return textToSearch.includes('polícia rodoviária federal') || textToSearch.includes('prf');
         if (term === 'delegado') return textToSearch.includes('delegado');
@@ -202,20 +276,17 @@ const Concursos = () => {
         if (term === 'bancaria') return textToSearch.includes('banco') || textToSearch.includes('caixa') || textToSearch.includes('escriturário');
         if (term === 'saude') return textToSearch.includes('médico') || textToSearch.includes('enfermeiro') || textToSearch.includes('saúde') || textToSearch.includes('fisioterapeuta') || textToSearch.includes('psicólogo');
         if (term === 'educacao') return textToSearch.includes('professor') || textToSearch.includes('educação') || textToSearch.includes('pedagogo') || textToSearch.includes('docente');
-
         return textToSearch.includes(term);
       });
     }
 
     return [...filtered].sort((a, b) => {
-      const dateDiff = new Date(b.data_publicacao).getTime() - new Date(a.data_publicacao).getTime();
+      const dateDiff = new Date(b.created_at || b.data_publicacao).getTime() - new Date(a.created_at || a.data_publicacao).getTime();
       if (dateDiff !== 0) return dateDiff;
       return b.id.localeCompare(a.id);
     });
-  }, [dateFiltered, cargoFiltro, preFiltroCargo]);
+  }, [dateFiltered, cargoFiltro, prazoFiltro, salarioFiltro, preFiltroCargo]);
 
-  // Adjust dayList to ensure it includes the most recent date with data if it's within 5 days,
-  // or just center it around today as before.
   const centerDate = useMemo(() => new Date(), []);
   const dayList = useMemo(() => getDayList(centerDate, 5), [centerDate]);
   const availableDatesSet = useMemo(() => new Set(datasDisponiveis), [datasDisponiveis]);
@@ -229,6 +300,7 @@ const Concursos = () => {
           onBack={() => goBack()}
         />
 
+        {/* Barra de 5 Dias */}
         <div className="flex justify-between gap-1.5 px-3 py-3 max-w-3xl mx-auto">
           {dayList.map((day, idx) => {
             const key = toYMD(day);
@@ -240,7 +312,10 @@ const Concursos = () => {
             return (
               <button
                 key={key}
-                onClick={() => setDataFiltro(isSelected ? '' : key)}
+                onClick={() => {
+                  haptic.selection();
+                  setDataFiltro(isSelected ? '' : key);
+                }}
                 className={`relative flex-1 flex flex-col items-center justify-center gap-1 py-3 min-h-[64px] rounded-2xl transition-all shadow-lg shadow-black/20 ${
                   isSelected
                     ? 'bg-[#10B981] shadow-[#10B981]/30'
@@ -266,83 +341,163 @@ const Concursos = () => {
           })}
         </div>
 
-        <div className="flex items-center gap-2 px-5 pb-1 max-w-3xl mx-auto">
-          <Calendar className="w-3.5 h-3.5 text-[#10B981]" />
-          <span className="text-[11px] font-display text-[#10B981] font-bold tracking-wider uppercase">
-            {dataFiltro ? formatFullDate(new Date(dataFiltro + 'T00:00:00')) : 'Exibindo Todos os Editais'}
-          </span>
+        {/* Indicador de Data Ativa com Ação Rápida */}
+        <div className="flex items-center justify-between px-5 pb-1 max-w-3xl mx-auto">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-3.5 h-3.5 text-[#10B981]" />
+            <span className="text-[11px] font-display text-[#10B981] font-bold tracking-wider uppercase">
+              {dataFiltro ? formatFullDate(new Date(dataFiltro + 'T00:00:00')) : 'Exibindo Todos os Editais'}
+            </span>
+          </div>
+          {dataFiltro && (
+            <button
+              onClick={() => { haptic.selection(); setDataFiltro(''); }}
+              className="text-[10px] font-semibold text-muted-foreground hover:text-white transition-colors underline cursor-pointer"
+            >
+              Ver todas as datas
+            </button>
+          )}
         </div>
       </div>
 
       <div className="max-w-3xl mx-auto px-4 py-4 space-y-4">
-        {/* Menu de Alternância (Cargos) */}
-        {availableCargos.length > 1 && (
-          <div className="flex overflow-x-auto gap-2 pb-2 hide-scrollbar snap-x">
-            {availableCargos.map((cargo) => (
-              <button
-                key={cargo}
-                onClick={() => setCargoFiltro(cargo)}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide shrink-0 snap-start transition-colors border ${
-                  cargoFiltro === cargo
-                    ? 'bg-[#10B981] text-white border-[#10B981]'
-                    : 'bg-card text-muted-foreground border-border hover:border-[#10B981]/50'
-                }`}
-              >
-                {cargo}
-              </button>
-            ))}
+        {/* Filtros em Menus de Alternância: Cargos, Dias Faltantes e Salário */}
+        <div className="bg-card/60 border border-border/70 rounded-2xl p-3 sm:p-4 shadow-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            {/* 1. Menu de Cargos / Carreiras */}
+            <div className="space-y-1">
+              <label className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5 px-0.5">
+                <Briefcase className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Cargo / Carreira</span>
+              </label>
+              <div className="relative">
+                <select
+                  value={cargoFiltro}
+                  onChange={(e) => {
+                    haptic.selection();
+                    setCargoFiltro(e.target.value);
+                  }}
+                  className="w-full appearance-none px-3 py-2 rounded-xl bg-card border border-border/80 text-xs sm:text-sm text-foreground font-medium focus:outline-none focus:border-emerald-500 transition-colors pr-7 cursor-pointer shadow-sm truncate"
+                >
+                  {CARGOS_FILTRO_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value} className="bg-zinc-900 text-white">
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* 2. Menu de Dias Faltantes para Encerrar */}
+            <div className="space-y-1">
+              <label className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5 px-0.5">
+                <Clock className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Dias p/ Encerrar</span>
+              </label>
+              <div className="relative">
+                <select
+                  value={prazoFiltro}
+                  onChange={(e) => {
+                    haptic.selection();
+                    setPrazoFiltro(e.target.value);
+                  }}
+                  className="w-full appearance-none px-3 py-2 rounded-xl bg-card border border-border/80 text-xs sm:text-sm text-foreground font-medium focus:outline-none focus:border-emerald-500 transition-colors pr-7 cursor-pointer shadow-sm truncate"
+                >
+                  {PRAZOS_FILTRO_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value} className="bg-zinc-900 text-white">
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* 3. Menu de Salário */}
+            <div className="space-y-1">
+              <label className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5 px-0.5">
+                <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Remuneração</span>
+              </label>
+              <div className="relative">
+                <select
+                  value={salarioFiltro}
+                  onChange={(e) => {
+                    haptic.selection();
+                    setSalarioFiltro(e.target.value);
+                  }}
+                  className="w-full appearance-none px-3 py-2 rounded-xl bg-card border border-border/80 text-xs sm:text-sm text-foreground font-medium focus:outline-none focus:border-emerald-500 transition-colors pr-7 cursor-pointer shadow-sm truncate"
+                >
+                  {SALARIOS_FILTRO_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value} className="bg-zinc-900 text-white">
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+            </div>
           </div>
-        )}
+        </div>
 
         {finalFiltered.length > 0 ? (
           <>
-            {/* Hero card — edge-to-edge no mobile */}
+            {/* Hero card — Destaque com Personagem 3D Sem Fundo Branco */}
             {(() => {
               const hero = finalFiltered[0];
               if (!hero) return null;
-              const visual = getConcursoVisual(hero.titulo, hero.imagem_url, (hero as any).cargos_resumo || (hero as any).cargos);
+              const heroVisual = getConcursoVisual(hero.titulo, hero.imagem_url, (hero as any).cargos_resumo || (hero as any).cargos);
               return (
                 <motion.div
                   key={`hero-${hero.id}`}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   onClick={() => handleOpenItem(hero)}
-                  className="overflow-hidden bg-card border-y md:border md:rounded-2xl border-border cursor-pointer hover:border-[#10B981]/30 transition-colors -mx-4 md:mx-0"
+                  className="relative overflow-hidden bg-gradient-to-r from-card via-card/95 to-emerald-950/20 border-y md:border md:rounded-2xl border-border cursor-pointer hover:border-[#10B981]/50 active:bg-secondary/30 transition-all -mx-4 md:mx-0 p-4 sm:p-5 flex items-center justify-between gap-4 group shadow-md"
                 >
-                  <div className="relative h-44 md:h-40 overflow-hidden">
+                  <div className="flex-1 min-w-0 space-y-2 z-10">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#10B981] text-white uppercase tracking-wider shadow-sm">
+                        {heroVisual.tag}
+                      </span>
+                      {hero.dias_restantes !== undefined && hero.dias_restantes !== null && (
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
+                          hero.dias_restantes <= 5 ? 'bg-rose-600 text-white' : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                        }`}>
+                          {hero.dias_restantes > 0 ? `${hero.dias_restantes} dias p/ fechar` : 'Encerrando hoje!'}
+                        </span>
+                      )}
+                    </div>
+                    <h2 className="font-display text-base sm:text-lg text-foreground font-bold leading-snug group-hover:text-[#10B981] transition-colors line-clamp-2">
+                      {hero.titulo}
+                    </h2>
+                    <div className="flex items-center gap-2 text-[11px] sm:text-xs text-muted-foreground font-body">
+                      <span className="inline-flex items-center gap-1 text-[#10B981] font-semibold">
+                        <Clock className="w-3 h-3" />
+                        {formatDateFull(hero.created_at || hero.data_publicacao)}
+                      </span>
+                      <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
+                      <span className="font-medium text-foreground/80 truncate">
+                        {(hero.vagas_salario || heroVisual.subtitulo).replace(/.*?até\s+R\$/i, 'Salários até R$')}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="w-28 h-28 sm:w-36 sm:h-36 shrink-0 relative flex items-center justify-center">
                     <img
-                      src={visual.imagemUrl}
+                      src={heroVisual.imagemUrl}
                       alt={hero.titulo}
-                      className="w-full h-full object-cover brightness-90 hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-contain drop-shadow-[0_8px_18px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-transform duration-300"
                       fetchPriority="high"
                       decoding="async"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
-                    <span className="absolute bottom-3 left-3 z-10 inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#10B981]/90 text-white border border-[#10B981]/60 backdrop-blur-sm uppercase tracking-wide shadow-lg">
-                      {visual.tag}
-                    </span>
-                    <div className="absolute bottom-0 left-0 right-0 p-4 space-y-2">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        {visual.subtitulo && (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#10B981] text-white uppercase tracking-wide">
-                            {visual.subtitulo}
-                          </span>
-                        )}
-                      </div>
-                      <h2 className="font-display text-lg text-white leading-tight">
-                        {hero.titulo}
-                      </h2>
-                      <div className="flex items-center gap-1.5 text-white/70 text-[11px] font-body">
-                        <Clock className="w-3 h-3" />
-                        {formatDateFull(hero.data_publicacao)}
-                      </div>
-                    </div>
                   </div>
                 </motion.div>
               );
             })()}
 
-            {/* List cards */}
+            {/* List cards com Personagem 3D Sem Fundo Branco e Maior */}
             <div className="space-y-3 -mx-4 md:mx-0">
               {finalFiltered.slice(1).map((item, i) => {
                 const { time } = formatDateParts(item.created_at || item.data_publicacao);
@@ -354,28 +509,41 @@ const Concursos = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.03 }}
                     onClick={() => handleOpenItem(item)}
-                    className="group flex items-stretch gap-0 bg-card border-y md:border md:rounded-2xl border-border hover:border-[#10B981]/40 active:bg-secondary/30 transition-colors cursor-pointer overflow-hidden relative"
+                    className="group flex items-stretch gap-0 bg-card border-y md:border md:rounded-2xl border-border hover:border-[#10B981]/40 active:bg-secondary/30 transition-colors cursor-pointer overflow-hidden relative shadow-sm"
                   >
-                    {/* Thumbnail */}
-                    <div className="w-28 sm:w-32 shrink-0 relative overflow-hidden">
+                    {/* Thumbnail - Ilustração 3D Sem Fundo Branco e Ampla */}
+                    <div className="w-24 sm:w-28 shrink-0 relative flex items-center justify-center p-2 bg-gradient-to-br from-emerald-500/10 via-card to-card/40">
                       <img
                         src={visual.imagemUrl}
                         alt={item.titulo}
-                        className="absolute inset-0 w-full h-full object-cover brightness-90 group-hover:scale-105 transition-transform duration-300"
+                        className="w-20 h-20 sm:w-22 sm:h-22 object-contain drop-shadow-[0_6px_14px_rgba(0,0,0,0.65)] group-hover:scale-105 transition-transform duration-300"
                         loading="lazy"
                         decoding="async"
                       />
-                      <span className="absolute bottom-1.5 left-1.5 z-10 inline-flex items-center text-[9px] font-bold px-1.5 py-[1px] rounded bg-[#10B981]/90 text-white border border-[#10B981]/60 backdrop-blur-sm uppercase tracking-wide">
+                      <span className="absolute bottom-1.5 left-1.5 z-10 inline-flex items-center text-[8px] sm:text-[9px] font-bold px-1.5 py-[1px] rounded bg-[#10B981]/90 text-white border border-[#10B981]/60 backdrop-blur-sm uppercase tracking-wide">
                         {visual.tag}
                       </span>
                     </div>
 
                     {/* Content */}
-                    <div className="flex-1 min-w-0 flex flex-col justify-between gap-1.5 p-4">
-                      <span className="text-[9px] sm:text-[10px] font-bold text-emerald-400 uppercase tracking-widest truncate w-full">
-                        {item.cargos_resumo || (item.cargos && item.cargos.length > 0 ? item.cargos[0] : (item.titulo.match(/(?:para|cargo(?:s)? de|função de)\s+(.+?)(?:\s*-|\s*$)/i)?.[1] || "Vários Cargos"))}
-                      </span>
-                      <h3 className="font-display text-[14px] sm:text-[15px] text-foreground leading-snug line-clamp-2 group-hover:text-[#10B981] transition-colors mt-0.5">
+                    <div className="flex-1 min-w-0 flex flex-col justify-between gap-1.5 p-3.5 sm:p-4">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[9px] sm:text-[10px] font-bold text-emerald-400 uppercase tracking-widest truncate">
+                          {item.cargos_resumo || (item.cargos && item.cargos.length > 0 ? item.cargos[0] : (item.titulo.match(/(?:para|cargo(?:s)? de|função de)\s+(.+?)(?:\s*-|\s*$)/i)?.[1] || "Vários Cargos"))}
+                        </span>
+                        {item.dias_restantes !== undefined && item.dias_restantes !== null && (
+                          item.dias_restantes <= 5 ? (
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-rose-600 text-white shrink-0">
+                              {item.dias_restantes > 0 ? `${item.dias_restantes}d p/ fechar` : 'Hoje!'}
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-muted-foreground/80 shrink-0 font-medium">
+                              {`${item.dias_restantes} dias`}
+                            </span>
+                          )
+                        )}
+                      </div>
+                      <h3 className="font-display text-[13px] sm:text-[14px] text-foreground font-semibold leading-snug line-clamp-2 group-hover:text-[#10B981] transition-colors mt-0.5">
                         {item.titulo}
                       </h3>
                       <div className="flex items-center gap-2 flex-wrap text-[11px] sm:text-[12px] font-body text-muted-foreground mt-auto pt-1">
@@ -423,19 +591,19 @@ const Concursos = () => {
 
           {selectedItem && (
             <div className="flex-1 overflow-y-auto hide-scrollbar pb-safe relative">
-              {/* Header Image */}
-              <div className="relative h-64 w-full shrink-0">
+              {/* Header Image com Personagem 3D Sem Fundo Branco */}
+              <div className="relative h-60 w-full shrink-0 flex items-center justify-center bg-gradient-to-b from-emerald-950/40 via-card to-background p-6">
                 <img
                   src={getConcursoVisual(selectedItem.titulo, selectedItem.imagem_url, (selectedItem as any).cargos_resumo || (selectedItem as any).cargos).imagemUrl}
                   alt={selectedItem.titulo}
-                  className="w-full h-full object-cover"
+                  className="h-44 max-w-[200px] object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.8)]"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-6 space-y-3">
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent pointer-events-none" />
+                <div className="absolute bottom-0 left-0 right-0 p-6 space-y-2">
                   <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#10B981] text-white uppercase tracking-wide">
                     {extractCargo(selectedItem)}
                   </span>
-                  <h2 className="font-display text-xl sm:text-2xl font-bold text-foreground leading-tight">
+                  <h2 className="font-display text-lg sm:text-xl font-bold text-foreground leading-tight line-clamp-2">
                     {selectedItem.titulo}
                   </h2>
                 </div>
