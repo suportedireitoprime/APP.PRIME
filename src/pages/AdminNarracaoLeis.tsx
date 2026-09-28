@@ -14,7 +14,7 @@ import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { LEIS_CATALOG, type LeiCatalogItem } from '@/data/leisCatalog';
 import { fetchArtigosLei } from '@/services/legislacaoService';
 import type { ArtigoLei } from '@/data/mockData';
-import { isLineEpigrafe } from '@/components/vademecum/artigo/artigoTextUtils';
+import { isLineEpigrafe, stripStructuralSuffix } from '@/components/vademecum/artigo/artigoTextUtils';
 import { parseArtigoEmPartes, type ArtigoParte, type ArtigoEstruturado } from '@/utils/artigoPartesParser';
 import {
   VOZES_DISPONIVEIS,
@@ -141,8 +141,11 @@ function normalizarTextoEstrutural(num: string, caput: string): string {
 function extrairEpigrafeFinal(texto: string): { textoLimpo: string; epigrafe: string | null } {
   if (!texto) return { textoLimpo: texto, epigrafe: null };
 
+  // 0. Remove qualquer cabeçalho estrutural que tenha ficado no fim do texto (ex: CAPÍTULO III...)
+  const textoBase = stripStructuralSuffix(texto);
+
   // 1. Caso haja quebra de linha: última linha é epígrafe?
-  const lines = texto.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const lines = textoBase.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
   if (lines.length > 1) {
     const lastLine = lines[lines.length - 1];
     if (isLineEpigrafe(lastLine)) {
@@ -152,16 +155,16 @@ function extrairEpigrafeFinal(texto: string): { textoLimpo: string; epigrafe: st
   }
 
   // 2. Caso esteja colada após pontuação final no mesmo parágrafo (ex: "...sua vigência. Tempo do crime")
-  const match = texto.match(/([.;:!?])\s+([A-ZÁÀÂÃÉÈÊÍÓÔÕÚÇ][A-Za-zÁÀÂÃÉÈÊÍÓÔÕÚÇáàâãéèêíóôõúç\s–-]{2,60})$/);
+  const match = textoBase.match(/([.;:!?])\s+([A-ZÁÀÂÃÉÈÊÍÓÔÕÚÇ][A-Za-zÁÀÂÃÉÈÊÍÓÔÕÚÇáàâãéèêíóôõúç\s–-]{2,60})$/);
   if (match) {
     const candidate = match[2].trim();
     if (isLineEpigrafe(candidate)) {
-      const textoLimpo = texto.slice(0, match.index! + 1).trim();
+      const textoLimpo = textoBase.slice(0, match.index! + 1).trim();
       return { textoLimpo, epigrafe: candidate };
     }
   }
 
-  return { textoLimpo: texto, epigrafe: null };
+  return { textoLimpo: textoBase, epigrafe: null };
 }
 
 /** Enriquecer artigos legislativos reais com seu contexto hierárquico (Parte, Livro, Título, Capítulo) e Nomen Juris */

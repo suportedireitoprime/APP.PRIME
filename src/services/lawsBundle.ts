@@ -10,6 +10,7 @@
 
 import { setPersistedArtigosCache, getPersistedArtigosCache } from '@/services/offlineDb';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
+import { stripStructuralSuffix } from '@/components/vademecum/artigo/artigoTextUtils';
 
 const MANIFEST_URL = '/laws-bundle/manifest.json';
 
@@ -54,7 +55,7 @@ function normalizeArtigos(rows: any[]) {
     .map((r: any) => ({
       id: r.id,
       numero: (r.numero || '').replace(/(\d)o\b/g, '$1º').replace(/°/g, 'º'),
-      caput: (r.texto || '').replace(/(\d)o\b/g, '$1º').replace(/°/g, 'º'),
+      caput: stripStructuralSuffix((r.texto || '').replace(/(\d)o\b/g, '$1º').replace(/°/g, 'º')),
       titulo: undefined,
       epigrafe: r.epigrafe || undefined,
       nomen_juris: r.epigrafe || undefined,

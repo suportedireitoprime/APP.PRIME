@@ -14,7 +14,7 @@
  */
 
 import type { ArtigoLei } from '@/data/mockData';
-import { normalizeLegalLineBreaks, isLineEpigrafe } from '@/components/vademecum/artigo/artigoTextUtils';
+import { normalizeLegalLineBreaks, isLineEpigrafe, stripStructuralSuffix } from '@/components/vademecum/artigo/artigoTextUtils';
 
 export type TipoParteArtigo = 'caput' | 'pena' | 'paragrafo' | 'inciso' | 'alinea' | 'epigrafe' | 'outro' | 'artigo_completo' | 'continua';
 
@@ -110,8 +110,9 @@ export function numeroExtensoJuridico(n: number): string {
 /** Limpa anotações editoriais do Planalto entre parênteses como (Redação dada pela...) */
 export function limparAnotacoesEditoriais(texto: string): string {
   return (texto || '')
-    .replace(/\(\s*(?:Reda[çc][ãa]o\s+dada|Inclu[ií]d[oa]|Acrescid[oa]|Alterad[oa]|Renumerad[oa]|Vide|Vig[êe]ncia|Regulamento|Produ[çc][ãa]o\s+de\s+efeitos|NR)[^)]*\)/gi, '')
+    .replace(/\(\s*(?:Reda[çc][ãa]o\s+dada|Inclu[ií]d[oa]|Acrescid[oa]|Alterad[oa]|Renumerad[oa]|Vide|Vig[êe]ncia|Vigencia|Regulamento|Produ[çc][ãa]o\s+de\s+efeitos|Revogado|Vetado|NR)[^)]*\)/gi, '')
     .replace(/\(\s*(?:Lei\s+(?:n[ºo°]?\s*)?\d|Decreto|Medida\s+Provis[oó]ria|Emenda\s+Constitucional|Lei\s+Complementar)[^)]*\)/gi, '')
+    .replace(/(?:^|[\s,;])Vig[êe]ncia(?:\s*[.:;]|\s+|$)/gi, ' ')
     .replace(/\s{2,}/g, ' ')
     .trim();
 }
@@ -401,7 +402,7 @@ export function parseArtigoEmNarracaoContinua(
   opcoes?: OpcoesParseArtigo
 ): ArtigoEstruturado {
   const maxChars = opcoes?.maxCharsPorParte || 850;
-  const rawCaput = artigo.caput || '';
+  const rawCaput = stripStructuralSuffix(artigo.caput || '');
   const numArtigoLimpo = String(artigo.numero).replace(/^[Aa]rt\.?\s*/i, '').trim();
 
   // 1. Monta os elementos da introdução

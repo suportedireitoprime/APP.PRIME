@@ -4,9 +4,12 @@ import { toast } from 'sonner';
 
 // ─── Pure text processing functions ───
 
-/** Remove metadata between parentheses: (Redação...), (Incluído...), etc. */
+/** Remove metadata between parentheses: (Redação...), (Incluído...), etc., e anotações avulsas de Vigência */
 export function stripRedacao(text: string): string {
-  return text.replace(/\s*\((?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Vetado)[^)]*\)/gi, '');
+  return text
+    .replace(/\s*\((?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Vigencia|Revogado|Vetado)[^)]*\)/gi, '')
+    .replace(/(?:^|[\s,;])Vig[êe]ncia(?:\s*[\.:;]|\s+|$)/gi, ' ')
+    .trim();
 }
 
 /** Normalize a word token for narration alignment (removes accents, lowercases). */
@@ -185,8 +188,17 @@ export function isLineRevogado(line: string): boolean {
 // Regex que identifica INÍCIO de uma unidade lógica de texto legal.
 export const LEGAL_LINE_START_RE = /^(?:Art\s*\.|§|Parágrafo\b|[IVXLCDM]+\s*[-–.)]|[a-z]\)|LIVRO\b|PARTE\b|TÍTULO\b|CAPÍTULO\b|SEÇÃO\b|SUBSEÇÃO\b)/i;
 
-// Se a linha inteira for só uma nota entre parênteses
-export const LEGAL_NOTE_ONLY_RE = /^\((?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Revogado|Vetado)\b/i;
+// Se a linha inteira for só uma nota (com ou sem parênteses, ex: "(Vigência)" ou "Vigência")
+export const LEGAL_NOTE_ONLY_RE = /^(?:[\(\[]\s*)?(?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Vigencia|Revogado|Vetado)\b/i;
+
+/** Regex para detectar cabeçalhos estruturais no fim de um artigo */
+export const STRUCTURAL_SUFFIX_RE = /(^|[.;:)])\s+(?=(?:PARTE|LIVRO|T[ÍI]TULO|CAP[ÍI]TULO|SE[ÇC][ÃA]O|SUBSE[ÇC][ÃA]O)\s+(?:[IVXLCDM]+|[0-9]+|[ÚU]NICO|PRELIMINAR)\b)[\s\S]*$/i;
+
+/** Remove qualquer cabeçalho estrutural acidentalmente concatenado no fim do texto do artigo */
+export function stripStructuralSuffix(text: string): string {
+  if (!text) return '';
+  return text.replace(STRUCTURAL_SUFFIX_RE, '$1').trim();
+}
 
 /** Verifica se uma linha é uma epígrafe/subtítulo interno dentro do artigo (ex: 'Superveniência de causa independente') */
 export function isLineEpigrafe(line: string): boolean {
@@ -194,7 +206,9 @@ export function isLineEpigrafe(line: string): boolean {
   if (!clean || clean.length > 75) return false;
   // Não pode ser dispositivo canônico nem nota nem subdivisão estrutural do código
   if (/^(?:Art\s*\.|§|Parágrafo\b|[IVXLCDM]+\s*[-–.)]|[a-z]\)|LIVRO\b|PARTE\b|TÍTULO\b|CAPÍTULO\b|SEÇÃO\b|SUBSEÇÃO\b)/i.test(clean)) return false;
-  if (/^\((?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Revogado|Vetado)\b/i.test(line.trim())) return false;
+  // Não pode ser nota editorial do Planalto (com ou sem parênteses: Vigência, Redação dada, Incluído, etc.)
+  if (/^(?:[\(\[]\s*)?(?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Vigencia|Revogado|Vetado)\b/i.test(clean)) return false;
+  if (/^Vig[êe]ncia\b/i.test(clean)) return false;
   // Não pode começar com preposições, conjunções ou locuções de início de oração
   if (/^(?:No|Nos|Na|Nas|Do|Dos|Da|Das|Em|Para|Com|Sem|Pelo|Pela|Pelos|Pelas|Se|Quando|Salvo|Exceto|Ressalvado|Mediante|Segundo|Conforme|Durante)\b/i.test(clean)) return false;
   // Deve começar com letra maiúscula
@@ -222,8 +236,11 @@ export function desmembrarEpigrafesEmbutidas(text: string): string {
 
 /** Merge physical line breaks into logical legal units, preservando epígrafes em sua própria linha. */
 export function normalizeLegalLineBreaks(text: string): string {
+  // Corta cabeçalho estrutural que possa ter ficado no fim do texto do artigo (ex: CAPÍTULO III...)
+  let normalizedText = stripStructuralSuffix(text);
+
   // Corrige espaçamento anômalo entre número e indicador ordinal (ex: "§ 2 º" -> "§ 2º")
-  let normalizedText = text
+  normalizedText = normalizedText
     .replace(/(§\s*\d+)\s+([º°ª])/g, '$1$2')
     .replace(/(Art\.\s*\d+)\s+([º°ª])/gi, '$1$2');
 
@@ -323,7 +340,7 @@ export function highlightSearchInNodes(nodes: React.ReactNode[], termoBusca?: st
 
 /** Highlight legal tokens (Art., §, incisos, alíneas) and optional search terms with colored spans. */
 export function highlightTermos(text: string, showRedacao?: boolean, termoBusca?: string): React.ReactNode[] {
-  const redacaoPattern = /\((?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Revogado|Vetado)[^)]*\)/gi;
+  const redacaoPattern = /(?:\((?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Vigencia|Revogado|Vetado)[^)]*\)|(?:^|[\s,;])Vig[êe]ncia(?:\s*[\.:;]|\s+|$))/gi;
 
   let baseNodes: React.ReactNode[] = [];
   if (showRedacao) {
@@ -333,9 +350,11 @@ export function highlightTermos(text: string, showRedacao?: boolean, termoBusca?
     redacaoPattern.lastIndex = 0;
     while ((m = redacaoPattern.exec(text)) !== null) {
       if (m.index > lastIndex) parts.push(...highlightTermosOnly(text.slice(lastIndex, m.index)));
+      const rawMatch = m[0].trim();
+      const label = rawMatch.startsWith('(') ? rawMatch : `(${rawMatch})`;
       parts.push(
-        <span key={`r${m.index}`} className="text-primary text-xs font-normal bg-primary/10 rounded px-0.5">
-          {m[0]}
+        <span key={`r${m.index}`} className="text-primary text-xs font-normal bg-primary/10 rounded px-1 py-0.5 mx-0.5">
+          {label}
         </span>
       );
       lastIndex = m.index + m[0].length;

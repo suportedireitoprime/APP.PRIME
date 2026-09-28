@@ -209,16 +209,32 @@ function extractBlocos(html: string): Bloco[] {
     return inner;
   });
 
-  // manter parágrafos como separadores
+  // Normaliza links de vigência do Planalto para formato de anotação editorial padrão (Vigência)
+  body = body.replace(/<a\b[^>]*>\s*\(?\s*Vig[êe]ncia\s*\)?\s*<\/a>/gi, " (Vigência) ");
+
+  // manter parágrafos e quebras como separadores — inclui <p> e <div> de abertura para tratar tags não fechadas
   body = body
-    .replace(/<blockquote[^>]*>/gi, "")
-    .replace(/<\/blockquote>/gi, "")
+    .replace(/<blockquote[^>]*>/gi, "\n\n")
+    .replace(/<\/blockquote>/gi, "\n\n")
+    .replace(/<p\b[^>]*>/gi, "\n\n")
     .replace(/<\/p>/gi, "\n\n")
     .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<div\b[^>]*>/gi, "\n\n")
     .replace(/<\/div>/gi, "\n\n")
     .replace(/<\/tr>/gi, "\n")
     .replace(/<[^>]+>/g, "");
   body = decodeHtmlEntities(body);
+
+  // Quebra linhas explicitamente antes de rótulos estruturais que possam ter ficado no meio de texto
+  body = body.replace(
+    /(?<!^)(?<!\n)\s*(?=(?:PARTE|LIVRO|T[ÍI]TULO|CAP[ÍI]TULO|SE[ÇC][ÃA]O|SUBSE[ÇC][ÃA]O)\s+(?:[IVXLCDM]+|[0-9]+|[ÚU]NICO|PRELIMINAR)\b)/gi,
+    "\n\n"
+  );
+
+  // Normaliza ocorrências soltas de "Vigência" em notas legais para "(Vigência)"
+  body = body.replace(/(?<=\S)\s+Vig[êe]ncia\b/g, " (Vigência)");
+  body = body.replace(/^\s*Vig[êe]ncia\s*$/gm, "(Vigência)");
+
   // Remove anotações editoriais do Planalto antes de separar linhas.
   // Em páginas como a Lei de Drogas, o HTML quebra "(Redação dada pela\nLei nº...)"
   // em duas linhas; se não limpar aqui, o parser confunde a anotação com o
@@ -343,11 +359,29 @@ function extractBlocos(html: string): Bloco[] {
         j += 1;
       }
 
+      const STRUCTURAL_SUFFIX_RE = /(^|[.;:)])\s+(?=(?:PARTE|LIVRO|T[ÍI]TULO|CAP[ÍI]TULO|SE[ÇC][ÃA]O|SUBSE[ÇC][ÃA]O)\s+(?:[IVXLCDM]+|[0-9]+|[ÚU]NICO|PRELIMINAR)\b)[\s\S]*$/i;
+
+      // Limpa fragmentos de dispositivos revogados que ficaram desprovidos de texto (ex: "VI -", "§ 7º")
+      const cleanedResto: string[] = [];
+      for (const l of restoParts) {
+        const lTrim = l.trim();
+        if (/^(?:[IVXLCDM]+\s*[-–.]|§\s*\d+[º°ª]?)\s*$/i.test(lTrim)) {
+          continue;
+        }
+        if (lTrim.toLowerCase() === 'feminicídio' && numero === '121') {
+          continue;
+        }
+        cleanedResto.push(l);
+      }
+
       const caputLinha = caputParts.join(" ").replace(/\s+/g, " ").trim();
-      const texto = [caputLinha, ...restoParts]
+      const texto = [caputLinha, ...cleanedResto]
         .join("\n")
         .replace(/(\d)o(?=[\s.,;:])/g, "$1º")
-        .replace(/([0-9])[º°]\s+[º°]/g, "$1º");
+        .replace(/([0-9])[º°]\s+[º°]/g, "$1º")
+        .replace(STRUCTURAL_SUFFIX_RE, "$1")
+        .trim();
+
       blocos.push({ tipo: "art", numero, texto });
       i = j;
       continue;
