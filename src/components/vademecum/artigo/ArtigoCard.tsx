@@ -109,11 +109,20 @@ const ArtigoCard = ({ artigo, index, onClick, highlightText, isHighlighted, with
     const caputLines = stopIdx >= 0 ? body.slice(0, stopIdx) : body;
     previewText = caputLines.join(' ').replace(/\s+/g, ' ').trim() || first;
   }
-  previewText = previewText.replace(/\s*\((?:Redação|Incluído|Revogado|Acrescido|Alterado|Vide|Regulamento)[^)]*\)/gi, '');
+  // Guarda o texto antes de limpar as anotações
+  const previewTextWithTags = previewText;
+
+  previewText = previewText.replace(/\s*\((?:Redação|Incluído|Revogado|Vetado|Acrescido|Alterado|Vide|Regulamento)[^)]*\)/gi, '');
   previewText = previewText.replace(/^Art\.?\s*\d+[º°]?(-[A-Z])?\s*[\.\-]?\s*/i, '').trim();
 
   const isRevogado = previewText.trim().length === 0 && cleanCaput.trim().length > 0;
-  if (isRevogado) previewText = artigo.caput.trim();
+  let revogadoTag = '';
+  
+  if (isRevogado) {
+    const match = previewTextWithTags.match(/\((Revogado|Vetado)[^)]*\)/i);
+    revogadoTag = match ? match[0] : '(Revogado)';
+    previewText = revogadoTag;
+  }
 
   const renderCaput = highlightText ? highlightText(previewText) : previewText;
   const artLabel = /^Art\.?/i.test(displayNumero) ? displayNumero.replace(/\s+/g, ' ').trim() : `Art. ${badgeLabel}`;
@@ -186,15 +195,21 @@ const ArtigoCard = ({ artigo, index, onClick, highlightText, isHighlighted, with
             </span>
           )}
           {/* Item 66 (max-w-prose), Item 73 (text-zinc-300 contraste), Item 74 (sr-only aviso revogado) */}
-          <p className={`text-[12.5px] leading-snug line-clamp-2 max-w-prose ${isRevogado ? 'text-purple-300/90 italic' : 'text-zinc-300'}`}>
-            {isRevogado && <span className="sr-only">Trecho revogado: </span>}
-            {!isRevogado && (
+          <p className={`text-[12.5px] leading-snug line-clamp-2 max-w-prose text-zinc-300`}>
+            {isRevogado ? (
+              <>
+                <span className="sr-only">Trecho revogado: </span>
+                <span className="font-bold text-foreground">{artLabel}</span>
+                <span className="mx-1.5 text-zinc-400/60">—</span>
+                <span className="text-red-400 font-bold">{renderCaput}</span>
+              </>
+            ) : (
               <>
                 <span className="font-bold text-foreground">{artLabel}</span>
                 <span className="mx-1.5 text-zinc-400/60">—</span>
+                {renderCaput}
               </>
             )}
-            {renderCaput}
           </p>
         </div>
         <div className="shrink-0 flex items-start pt-1">
