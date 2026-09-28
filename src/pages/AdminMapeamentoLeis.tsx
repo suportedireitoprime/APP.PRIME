@@ -262,6 +262,10 @@ export default function AdminMapeamentoLeis() {
       clearInterval(progressTimer);
       console.error(err);
       
+      let errMsg = err.message || 'Falha na conexão';
+      // Tenta extrair mensagem interna do Supabase se houver
+      if (err.context?.error) errMsg = err.context.error;
+      
       const agora = new Date().toLocaleString('pt-BR', {
         day: '2-digit', month: '2-digit', year: 'numeric',
         hour: '2-digit', minute: '2-digit'
@@ -272,7 +276,7 @@ export default function AdminMapeamentoLeis() {
         timestamp: Date.now(),
         artigos: 0,
         status: 'erro',
-        detalhe: err.message || 'Falha na conexão com o Planalto'
+        detalhe: errMsg
       };
       setHistoricoExtracoes(prev => {
         const prevHist = prev[lei.id] || [];
@@ -281,7 +285,7 @@ export default function AdminMapeamentoLeis() {
         return { ...prev, [lei.id]: updatedHist };
       });
 
-      toast.error(`Erro ao extrair ${lei.sigla}: ${err.message || 'Falha na conexão'}`, { id: toastId });
+      toast.error(`Erro ao extrair ${lei.sigla}: ${errMsg}`, { id: toastId });
     } finally {
       setTimeout(() => {
         setExtraindoSlug(null);
@@ -431,7 +435,7 @@ export default function AdminMapeamentoLeis() {
     localStorage.setItem(`vade_triagem_${lei.id}`, 'false');
     setAprovados(prev => ({ ...prev, [lei.id]: true }));
     setTriagem(prev => ({ ...prev, [lei.id]: false }));
-    toast.success(`${lei.nome} aprovada com sucesso! Movida para Aprovadas.`);
+    toast.success(`${lei.nome} aprovada! O conteúdo atualizado agora está ativo e visível no Vade Mecum.`);
   };
 
   // Função para devolver a lei de Triagem de volta para Todos / Pendentes
@@ -975,13 +979,16 @@ export default function AdminMapeamentoLeis() {
                       {/* Nome + Sigla + Status */}
                       <div className="flex-1 min-w-0 flex items-center gap-2">
                         <span className="text-sm font-semibold text-foreground truncate">{lei.nome}</span>
+                        {!lei.url_planalto && (
+                          <AlertTriangle className="w-3.5 h-3.5 text-rose-500 shrink-0" title="URL do Planalto não configurada" />
+                        )}
                         <span className="text-[10px] font-bold px-1.5 py-px rounded bg-primary/10 text-primary border border-primary/20 shrink-0">
                           {lei.sigla}
                         </span>
                         {isAprovada ? (
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" title="Aprovada" />
                         ) : isEmTriagem ? (
-                          <ListFilter className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                          <ListFilter className="w-3.5 h-3.5 text-blue-400 shrink-0" title="Em Triagem" />
                         ) : null}
                       </div>
 
