@@ -557,13 +557,16 @@ export default function MapasMentaisView({
             <div className="w-16 h-16 rounded-full border-3 border-purple-500/20 border-t-purple-500 animate-spin" />
             <Loader2 className="w-8 h-8 text-purple-400 absolute inset-0 m-auto animate-spin" />
           </div>
-          <div className="space-y-1">
-            <h3 className="font-['Plus_Jakarta_Sans',sans-serif] text-lg font-bold text-white">
-              Estruturando Mapa Mental com IA
-            </h3>
-            <p className="text-xs text-zinc-400 max-w-xs mx-auto">
-              Lendo conteúdo jurídico e conectando institutos essenciais...
-            </p>
+          <div className="space-y-1 text-left w-full max-w-[280px] mx-auto bg-[#141416]/90 p-5 rounded-2xl border border-white/10 shadow-2xl mt-6">
+            <div className="flex items-center gap-3 text-sm font-medium text-white mb-3">
+               <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" /> Analisando legislação e doutrina...
+            </div>
+            <div className="flex items-center gap-3 text-sm font-medium text-zinc-300 mb-3">
+               <div className="w-2 h-2 rounded-full bg-purple-500/60 animate-pulse" style={{ animationDelay: '0.2s' }} /> Estruturando tópicos e conexões...
+            </div>
+            <div className="flex items-center gap-3 text-sm font-medium text-zinc-500">
+               <div className="w-2 h-2 rounded-full bg-purple-500/30 animate-pulse" style={{ animationDelay: '0.4s' }} /> Renderizando material visual...
+            </div>
           </div>
         </div>
       )}

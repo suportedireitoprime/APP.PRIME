@@ -85,60 +85,33 @@ export function MapasMentaisViewer({ registro, onClose }: MapasMentaisViewerProp
           </button>
 
           <div className="min-w-0">
-            <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-sm sm:text-base font-bold text-white truncate">
+            <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-sm sm:text-base font-bold text-white break-words">
               {registro.titulo}
             </h2>
-            <p className="text-xs text-zinc-400 truncate">
+            <p className="text-xs text-zinc-400 break-words mt-0.5">
               {TIPO_INFO[registro.tipo]?.label ?? 'Visual'} · {registro.item_label}
             </p>
           </div>
         </div>
-
-        {/* Botão de Exportação */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              disabled={baixando}
-              className="gap-2 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs sm:text-sm px-3.5 sm:px-4 cursor-pointer shadow-md"
-            >
-              {baixando ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-              <span className="hidden sm:inline">Baixar</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="z-[160] bg-zinc-900 border-white/10 text-white">
-            <DropdownMenuItem
-              onClick={() => baixar('pdf')}
-              className="gap-2.5 cursor-pointer hover:bg-zinc-800 text-xs sm:text-sm"
-            >
-              <FileText className="w-4 h-4 text-purple-400" /> Baixar PDF
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => baixar('png')}
-              className="gap-2.5 cursor-pointer hover:bg-zinc-800 text-xs sm:text-sm"
-            >
-              <FileImage className="w-4 h-4 text-emerald-400" /> Baixar Imagem (PNG)
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </header>
 
       {/* Área Central Rolável com a Cena SVG */}
-      <div ref={wrapRef} className="flex-1 overflow-auto bg-[#070708] p-3 sm:p-6 flex items-start justify-center">
+      <div ref={wrapRef} className="flex-1 overflow-auto bg-[#070708] sm:p-6 flex items-start justify-center">
         <div
           style={{
             width: `${Math.round(zoom * 100)}%`,
             maxWidth: `${Math.round(zoom * 1100)}px`,
             transition: 'width 0.15s ease-out',
           }}
-          className="mx-auto my-auto shadow-2xl rounded-2xl overflow-hidden bg-white"
+          className="mx-auto my-auto sm:shadow-2xl sm:rounded-2xl overflow-hidden bg-white"
         >
           <VisualScene content={content} estilo={estilo} />
         </div>
       </div>
 
-      {/* Rodapé com Controles de Zoom Flutuantes */}
-      <footer className="flex items-center justify-between border-t border-white/10 px-4 py-2.5 pb-[max(0.75rem,var(--sai-bottom))] bg-[#141416]/95 backdrop-blur-md shrink-0">
-        <div className="flex items-center gap-1.5 bg-zinc-900 border border-white/10 rounded-full px-2 py-1 shadow-md">
+      {/* Rodapé com Controles de Zoom Flutuantes e Botão Baixar */}
+      <footer className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-white/10 px-4 py-3 pb-[max(0.75rem,var(--sai-bottom))] bg-[#141416]/95 backdrop-blur-md shrink-0">
+        <div className="flex items-center gap-1.5 bg-zinc-900 border border-white/10 rounded-full px-2 py-1 shadow-md order-2 sm:order-1">
           <button
             type="button"
             onClick={() => setZoom((z) => Math.max(0.6, +(z - 0.2).toFixed(2)))}
@@ -169,9 +142,36 @@ export function MapasMentaisViewer({ registro, onClose }: MapasMentaisViewerProp
           </button>
         </div>
 
-        <span className="text-[11px] text-zinc-500 hidden sm:inline">
+        <span className="text-[11px] text-zinc-500 hidden sm:inline order-2">
           Use a roda do mouse com Ctrl para aproximar
         </span>
+
+        {/* Botão de Exportação Movido para o Rodapé */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              disabled={baixando}
+              className="gap-2 bg-red-600 hover:bg-red-500 text-white font-bold text-xs sm:text-sm px-4 h-10 w-full sm:w-auto cursor-pointer shadow-md order-1 sm:order-3"
+            >
+              {baixando ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              <span>Baixar Arquivo</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="z-[160] bg-zinc-900 border-white/10 text-white min-w-[200px] mb-2">
+            <DropdownMenuItem
+              onClick={() => baixar('pdf')}
+              className="gap-2.5 cursor-pointer hover:bg-zinc-800 text-xs sm:text-sm py-2"
+            >
+              <FileText className="w-4 h-4 text-purple-400" /> Baixar PDF
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => baixar('png')}
+              className="gap-2.5 cursor-pointer hover:bg-zinc-800 text-xs sm:text-sm py-2"
+            >
+              <FileImage className="w-4 h-4 text-emerald-400" /> Baixar Imagem (PNG)
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </footer>
     </div>
   );

@@ -1,6 +1,7 @@
 import { Brain, Layers, GitBranch, Network, BookOpen, Scale, Gavel, Heart, Clock, Award, Folder, FileText, ShieldCheck } from 'lucide-react';
 import type { VisualCategoria, VisualTipo } from '@/lib/visuaisJuridicos/types';
 import type { ArtigoLei } from '@/data/mockData';
+import { itensDaCategoria } from '@/lib/visuaisJuridicos/catalogo';
 
 export const TIPO_ICON: Record<VisualTipo, typeof Brain> = {
   mapa_mental: Brain,
@@ -37,6 +38,20 @@ export const CATEGORIA_COR: Record<VisualCategoria, string> = {
 };
 
 export const ITEM_CORES = ['#a855f7', '#38bdf8', '#f59e0b', '#22c55e', '#ec4899', '#14b8a6', '#f97316', '#8b5cf6'];
+
+export function getCorParaItem(key: string, categoria: VisualCategoria | string = 'materias'): string {
+  try {
+    const list = itensDaCategoria(categoria as VisualCategoria);
+    const idx = list.findIndex(i => i.key === key);
+    if (idx !== -1) return ITEM_CORES[idx % ITEM_CORES.length];
+  } catch (e) {}
+
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) {
+    hash = key.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return ITEM_CORES[Math.abs(hash) % ITEM_CORES.length];
+}
 
 export const TIPOS: VisualTipo[] = ['mapa_mental', 'infografico', 'fluxograma', 'diagrama'];
 export const CATEGORIAS: VisualCategoria[] = ['materias', 'codigos', 'estatutos', 'leis_especiais', 'previdenciario'];

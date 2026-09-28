@@ -1,6 +1,6 @@
 import React from 'react';
 import { Search, X, Heart, ChevronRight, FileText, Sparkles, BookOpen, Layers } from 'lucide-react';
-import { CATEGORIA_COR } from './mapasConstants';
+import { CATEGORIA_COR, getCorParaItem } from './mapasConstants';
 import { iconeDoItem } from '@/lib/visuaisJuridicos/icones';
 import { haptic } from '@/lib/nativeHaptics';
 import type { CatalogoItem } from '@/lib/visuaisJuridicos/catalogo';
@@ -53,7 +53,7 @@ export function MapasMentaisDetalhes({
   onToggleFavorito,
 }: MapasMentaisDetalhesProps) {
   const isMateria = categoria === 'materias';
-  const corCategoria = CATEGORIA_COR[categoria] || '#a855f7';
+  const corCategoria = getCorParaItem(item.key, categoria);
 
   return (
     <div className="space-y-4 max-w-[1400px] mx-auto w-full px-4 sm:px-6 py-2">
