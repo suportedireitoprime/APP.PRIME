@@ -285,7 +285,7 @@ export default function AdminNarracaoLeis() {
   const [selectedCat, setSelectedCat] = useState<CategoriaDef | null>(null);
   const [selectedLei, setSelectedLei] = useState<LeiCatalogItem | null>(null);
   const [busca, setBusca] = useState('');
-  const [abaAuto, setAbaAuto] = useState<'config' | 'fila'>('config');
+  const [abaAuto, setAbaAuto] = useState<'config' | 'fila' | 'finalizados'>('config');
 
   // Artigos da lei selecionada
   const [artigos, setArtigos] = useState<ArtigoLei[]>([]);
@@ -2190,6 +2190,16 @@ export default function AdminNarracaoLeis() {
             >
               Lista Geral (Fila)
             </button>
+            <button
+              onClick={() => setAbaAuto('finalizados')}
+              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+                abaAuto === 'finalizados'
+                  ? 'bg-card border-border/80 text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'
+              }`}
+            >
+              Finalizados
+            </button>
           </div>
 
           {abaAuto === 'config' && (
@@ -2560,6 +2570,7 @@ export default function AdminNarracaoLeis() {
           </div>
           )}
           {/* Histórico de Execuções e Logs */}
+          {abaAuto === 'finalizados' && (
           <div className="p-5 rounded-2xl border border-border/60 bg-card/60 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
@@ -2609,6 +2620,7 @@ export default function AdminNarracaoLeis() {
               </div>
             )}
           </div>
+          )}
         </div>
       </div>
     );
