@@ -77,12 +77,24 @@ Deno.serve(async (req) => {
 
     if (!legacy) {
       // Caso não seja um legado pelo Asaas ID, verificamos externalReference (user_id do app)
-      const externalRef = payment.externalReference || body?.customer?.externalReference;
-      if (externalRef) {
+      const rawExternalRef = payment.externalReference || body?.customer?.externalReference || '';
+      let externalRefUserId = rawExternalRef;
+      let externalRefPlan = null;
+      if (rawExternalRef.includes('|')) {
+        const parts = rawExternalRef.split('|');
+        externalRefUserId = parts[0];
+        externalRefPlan = parts[1];
+      }
+
+      if (externalRefUserId) {
+        if (externalRefPlan === 'vitalicio') inferredPlan = 'vitalicio';
+        else if (externalRefPlan === 'mensal') inferredPlan = 'mensal';
+        else if (externalRefPlan === 'anual') inferredPlan = 'anual';
+        
         legacy = {
           id: 'new_user',
           tipo: inferredPlan,
-          claimed_user_id: externalRef,
+          claimed_user_id: externalRefUserId,
           asaas_customer_id: customerId,
           asaas_subscription_id: subscriptionId,
         };
@@ -91,7 +103,12 @@ Deno.serve(async (req) => {
 
     // Se ainda não achou legacy mas temos customerEmail, busca por profile existente
     const customerEmail: string | null = payment?.customerEmail || body?.customerEmail || null;
-    let targetUserId: string | null = legacy?.claimed_user_id || payment.externalReference || body?.customer?.externalReference || null;
+    let targetUserId: string | null = legacy?.claimed_user_id || null;
+    
+    if (!targetUserId && (payment.externalReference || body?.customer?.externalReference)) {
+        const rawRef = payment.externalReference || body?.customer?.externalReference;
+        targetUserId = rawRef.includes('|') ? rawRef.split('|')[0] : rawRef;
+    }
 
     if (!targetUserId && customerEmail) {
       const { data: userProfile } = await admin.from('profiles').select('id').ilike('email', customerEmail.trim()).limit(1).maybeSingle();

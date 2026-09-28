@@ -1,7 +1,5 @@
-import { memo, useState, useEffect, useRef, useCallback } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Zap, Star, ChevronRight, ChevronLeft, LucideIcon } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
@@ -10,182 +8,175 @@ import horusOwl1 from '@/assets/horus/01_coruja_oratoria.webp';
 import horusOwl2 from '@/assets/horus/02_coruja_estudando.webp';
 import horusOwl3 from '@/assets/horus/03_coruja_balanca_justica.webp';
 import horusOwl4 from '@/assets/horus/04_coruja_maleta_balanca.webp';
+import horusWhatsapp from '@/assets/horus/coruja_whatsapp.png';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 
 const horusOwl = pickAsset(horusOwlBundled, srcOf(horusOwlAsset));
 
-interface BannerConfig {
+interface EmAltaItem {
   id: string;
-  headerTitle: string;
-  headerSub: string;
-  accentColor: string;
-  bgGradient: string;
-  borderColor: string;
-  shadowColor: string;
-  sparkleColor: string;
   title: string;
   route: string;
-  textColor: string;
+  bgGradient: string;
+  sparkleColor: string;
   owlImage: string;
-  descriptions: string[];
 }
 
-const BANNERS: BannerConfig[] = [
-  {
-    id: 'horus',
-    headerTitle: 'Horus',
-    headerSub: 'Assistente e tutor inteligente 24h no WhatsApp',
-    accentColor: '#E11D48',
-    bgGradient: 'from-[#E11D48] via-[#BE123C] to-[#7F1D1D]',
-    borderColor: 'border-rose-400/30',
-    shadowColor: 'shadow-rose-950/40',
-    sparkleColor: 'text-rose-200',
-    title: 'ASSISTENTE NO WHATSAPP',
-    route: '/assistente-horus',
-    textColor: 'text-rose-100/90',
-    owlImage: horusOwl,
-    descriptions: [
-      'Crie flashcards de revisão',
-      'Seu tutor inteligente 24h',
-      'Tire dúvidas pelo WhatsApp',
-      'Peça resumos de leis',
-      'Pesquise jurisprudência',
-      'Explique termos difíceis',
-      'Gere casos práticos',
-      'Tabelas comparativas na hora',
-      'Entenda a Lei Seca rápido',
-      'Simule questões de provas',
-    ],
-  },
-  {
-    id: 'radar',
-    headerTitle: 'Radar de Leis',
-    headerSub: 'Acompanhe mudanças e projetos em tempo real',
-    accentColor: '#2563EB',
-    bgGradient: 'from-[#2563EB] via-[#1D4ED8] to-[#1E3A8A]',
-    borderColor: 'border-blue-400/35',
-    shadowColor: 'shadow-blue-950/40',
+const EM_ALTA_ITEMS: EmAltaItem[] = [
+  { 
+    id: 'biblioteca', 
+    title: 'Biblioteca', 
+    route: '/bibliotecas', 
+    bgGradient: 'from-[#2563EB] via-[#1D4ED8] to-[#1E3A8A]', // Azul (Radar)
     sparkleColor: 'text-blue-200',
-    title: 'RADAR DE LEIS',
-    route: '/radares',
-    textColor: 'text-blue-100/90',
-    owlImage: horusOwl4,
-    descriptions: [
-      'Monitore novas leis e prazos',
-      'Acompanhe projetos em tempo real',
-      'Alertas de mudanças legislativas',
-      'Tramitações no Congresso',
-      'Atualizações diárias de normas',
-      'Novidades do DOU em primeira mão',
-      'Prazos e vigências comentadas',
-    ],
+    owlImage: horusOwl1 
   },
-  {
-    id: 'boletins',
-    headerTitle: 'Boletins',
-    headerSub: 'Informativos e notícias jurídicas diárias',
-    accentColor: '#D97706',
-    bgGradient: 'from-[#D97706] via-[#B45309] to-[#78350F]',
-    borderColor: 'border-amber-400/35',
-    shadowColor: 'shadow-amber-950/40',
+  { 
+    id: 'resumos', 
+    title: 'Resumos', 
+    route: '/resumos-juridicos', 
+    bgGradient: 'from-[#E11D48] via-[#BE123C] to-[#7F1D1D]', // Vermelho
+    sparkleColor: 'text-rose-200',
+    owlImage: horusOwl2 
+  },
+  { 
+    id: 'assistente', 
+    title: 'Assistente no WhatsApp', 
+    route: '/assistente-horus', 
+    bgGradient: 'from-[#059669] via-[#047857] to-[#064E3B]', // Verde
+    sparkleColor: 'text-emerald-200',
+    owlImage: horusWhatsapp 
+  },
+  { 
+    id: 'audioaulas', 
+    title: 'Audioaulas', 
+    route: '/audioaulas', 
+    bgGradient: 'from-[#D97706] via-[#B45309] to-[#78350F]', // Laranja (Boletins)
     sparkleColor: 'text-amber-200',
-    title: 'BOLETINS JURÍDICOS',
-    route: '/boletins',
-    textColor: 'text-amber-100/95',
-    owlImage: horusOwl2,
-    descriptions: [
-      'Informativos do STF e STJ',
-      'Resumos diários dos Tribunais',
-      'Jurisprudência comentada',
-      'Notícias jurídicas essenciais',
-      'Teses e súmulas recentes',
-      'Áudios e vídeos diários',
-      'Atualização rápida para advogados',
-    ],
+    owlImage: horusOwl3 
+  },
+  { 
+    id: 'vademecum', 
+    title: 'Vade Mecum', 
+    route: '/vade-mecum', 
+    bgGradient: 'from-[#7C3AED] via-[#6D28D9] to-[#4C1D95]', // Roxo
+    sparkleColor: 'text-purple-200',
+    owlImage: horusOwl4 
   },
 ];
 
-const AUTOPLAY_INTERVAL = 5000;
+// Array multiplicado para criar efeito de loop infinito
+const INFINITE_ITEMS = Array.from({ length: 14 }).flatMap((_, index) => 
+  EM_ALTA_ITEMS.map(item => ({ ...item, uniqueId: `${item.id}-${index}` }))
+);
+// Total = 70 itens. O centro aproximado é o index 35.
 
 const HomeHorusBannerCarousel = () => {
   const navigate = useNavigate();
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [descIndices, setDescIndices] = useState<number[]>([0, 0, 0]);
-  const isInteractingRef = useRef(false);
-  const pauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
+  // Inicializamos no meio do array gigantesco para permitir scroll para trás e para frente infinitamente
+  const [activeIndex, setActiveIndex] = useState(35);
+  const userInteractingRef = useRef(false);
+  const isInitialScrollDone = useRef(false);
 
-  const activeBanner = BANNERS[currentIndex];
+  // Define a posição inicial no meio do array sem animação para o usuário não perceber
+  useEffect(() => {
+    if (!scrollerRef.current || isInitialScrollDone.current) return;
+    const scroller = scrollerRef.current;
+    const targetChild = scroller.children[35 + 1] as HTMLElement;
+    if (targetChild) {
+      const containerWidth = scroller.clientWidth;
+      const targetLeft = targetChild.offsetLeft;
+      const targetWidth = targetChild.clientWidth;
+      const scrollPos = targetLeft - containerWidth / 2 + targetWidth / 2;
+      scroller.scrollTo({ left: scrollPos, behavior: 'instant' });
+      isInitialScrollDone.current = true;
+    }
+  }, []);
 
-  const getCardWidth = (el: HTMLDivElement) => {
-    return el.firstElementChild ? (el.firstElementChild as HTMLElement).offsetWidth + 16 : 300;
+  // IntersectionObserver para detectar qual card está no centro
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+
+    const ratios = new Map<Element, number>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          ratios.set(entry.target, entry.intersectionRatio);
+        });
+
+        let maxRatio = -1;
+        let bestTarget: Element | null = null;
+        ratios.forEach((ratio, target) => {
+          if (ratio > maxRatio) {
+            maxRatio = ratio;
+            bestTarget = target;
+          }
+        });
+
+        if (bestTarget) {
+          const idx = Array.from(scroller.children).indexOf(bestTarget) - 1;
+          if (idx >= 0 && idx < INFINITE_ITEMS.length) {
+            setActiveIndex(idx);
+          }
+        }
+      },
+      {
+        root: scroller,
+        threshold: Array.from({ length: 11 }, (_, i) => i / 10),
+      }
+    );
+
+    Array.from(scroller.children).forEach((child) => observer.observe(child));
+    return () => observer.disconnect();
+  }, []);
+
+  // Autoplay
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (userInteractingRef.current) return;
+      const scroller = scrollerRef.current;
+      if (!scroller) return;
+
+      let nextIndex = activeIndex + 1;
+      // Se por um milagre chegar no final, joga de volta pro meio invisivelmente
+      if (nextIndex >= INFINITE_ITEMS.length - 2) {
+        nextIndex = 35;
+        const targetChild = scroller.children[nextIndex + 1] as HTMLElement;
+        if (targetChild) {
+          const containerWidth = scroller.clientWidth;
+          const targetLeft = targetChild.offsetLeft;
+          const targetWidth = targetChild.clientWidth;
+          scroller.scrollTo({ left: targetLeft - containerWidth / 2 + targetWidth / 2, behavior: 'instant' });
+          setActiveIndex(nextIndex);
+          return;
+        }
+      }
+      
+      const targetChild = scroller.children[nextIndex + 1] as HTMLElement;
+      if (targetChild) {
+        const containerWidth = scroller.clientWidth;
+        const targetLeft = targetChild.offsetLeft;
+        const targetWidth = targetChild.clientWidth;
+        const scrollPos = targetLeft - containerWidth / 2 + targetWidth / 2;
+        scroller.scrollTo({ left: scrollPos, behavior: 'smooth' });
+      }
+    }, 4500);
+
+    return () => clearInterval(timer);
+  }, [activeIndex]);
+
+  const pauseInteraction = () => {
+    userInteractingRef.current = true;
+    setTimeout(() => {
+      userInteractingRef.current = false;
+    }, 6000); // pausa por mais tempo ao interagir
   };
 
-  const pauseInteraction = useCallback(() => {
-    isInteractingRef.current = true;
-    if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
-    pauseTimerRef.current = setTimeout(() => {
-      isInteractingRef.current = false;
-    }, 12000);
-  }, []);
-
-  const paginate = useCallback((direction: number) => {
+  const handleItemClick = (route: string) => {
     haptic.selection();
     pauseInteraction();
-    const el = scrollerRef.current;
-    if (!el) return;
-    const nextIndex = (currentIndex + direction + BANNERS.length) % BANNERS.length;
-    el.scrollTo({ left: nextIndex * getCardWidth(el), behavior: 'smooth' });
-    setCurrentIndex(nextIndex);
-  }, [currentIndex, pauseInteraction]);
-
-  const handleScroll = useCallback(() => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    
-    // Calcula qual banner está mais próximo do centro
-    const containerCenter = el.getBoundingClientRect().left + el.offsetWidth / 2;
-    let closestIdx = 0;
-    let minDiff = Infinity;
-    
-    Array.from(el.children).forEach((child, idx) => {
-      const childCenter = child.getBoundingClientRect().left + (child as HTMLElement).offsetWidth / 2;
-      const diff = Math.abs(containerCenter - childCenter);
-      if (diff < minDiff) {
-        minDiff = diff;
-        closestIdx = idx;
-      }
-    });
-    
-    setCurrentIndex((prev) => (prev !== closestIdx ? closestIdx : prev));
-  }, []);
-
-  // Rotação periódica de descrições dentro de cada banner
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setDescIndices((prev) =>
-        prev.map((idx, i) => (idx + 1) % BANNERS[i].descriptions.length)
-      );
-    }, 3200);
-    return () => clearInterval(timer);
-  }, []);
-
-  // Auto-play do carrossel infinito
-  useEffect(() => {
-    const timer = setInterval(() => {
-      if (isInteractingRef.current || document.hidden) return;
-      const el = scrollerRef.current;
-      if (!el) return;
-      const nextIndex = (currentIndex + 1) % BANNERS.length;
-      el.scrollTo({ left: nextIndex * getCardWidth(el), behavior: 'smooth' });
-      setCurrentIndex(nextIndex);
-    }, AUTOPLAY_INTERVAL);
-
-    return () => clearInterval(timer);
-  }, [currentIndex]);
-
-  const handleBannerClick = (route: string) => {
-    haptic.selection();
     try {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     } catch {}
@@ -196,162 +187,105 @@ const HomeHorusBannerCarousel = () => {
   };
 
   return (
-    <div className="flex flex-col mb-8 mt-6 w-full">
-      {/* 1. TÍTULO DINÂMICO COM RISQUINHO SUPERIOR (PADRÃO ESTUDOS) */}
-      <div className="mb-1 relative z-10 flex items-start justify-between gap-3 w-full">
-        <div className="min-w-0 flex-1">
-          <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 uppercase tracking-widest">
-            <motion.span
-              key={`bar-${activeBanner.id}`}
-              initial={{ scaleY: 0.6, opacity: 0.5 }}
-              animate={{ scaleY: 1, opacity: 1 }}
-              transition={{ duration: 0.25 }}
-              className="w-1 h-5 rounded-full shrink-0"
-              style={{ backgroundColor: activeBanner.accentColor }}
-            />
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={`title-${activeBanner.id}`}
-                initial={{ opacity: 0, x: -5 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 5 }}
-                transition={{ duration: 0.2 }}
-                className="truncate block"
-              >
-                {activeBanner.headerTitle}
-              </motion.span>
-            </AnimatePresence>
+    <div className="flex flex-col mb-4 mt-2 w-full">
+      <div className="mb-1 relative z-10 flex items-start justify-between gap-3 px-1">
+        <div>
+          <h3 className="font-display text-foreground text-[18px] font-bold mb-0.5 flex items-center gap-2 uppercase tracking-widest">
+            <span className="w-1 h-5 rounded-full bg-[#E11D48]" />
+            Em alta
           </h3>
-          <AnimatePresence mode="wait">
-            <motion.p
-              key={`sub-${activeBanner.id}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3 truncate"
-            >
-              {activeBanner.headerSub}
-            </motion.p>
-          </AnimatePresence>
-        </div>
-
-        {/* Setinhas de navegação rápidas */}
-        <div className="flex items-center gap-1 shrink-0 mt-1">
-          <button
-            type="button"
-            onClick={() => paginate(-1)}
-            aria-label="Anterior"
-            className="w-7 h-7 rounded-full bg-secondary/60 hover:bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground transition active:opacity-70"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => paginate(1)}
-            aria-label="Próximo"
-            className="w-7 h-7 rounded-full bg-secondary/60 hover:bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground transition active:opacity-70"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
+          <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3 truncate">
+            Ferramentas complementares para seus estudos
+          </p>
         </div>
       </div>
 
-      {/* 2. ÁREA DO CARROSSEL SCROLLÁVEL */}
-      <div
+      {/* Container com scroll horizontal (margin negativa para permitir as laterais vazadas) */}
+      <div 
         ref={scrollerRef}
-        onScroll={handleScroll}
-        className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-4 sm:px-6 md:px-8 lg:px-12 flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-8 pt-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-        onMouseEnter={pauseInteraction}
+        onPointerDown={pauseInteraction}
         onTouchStart={pauseInteraction}
+        onScroll={pauseInteraction}
+        className="flex overflow-x-auto snap-x snap-mandatory gap-3 hide-scrollbar -mx-4 pb-4 pt-2 scroll-smooth"
       >
-        {BANNERS.map((banner, i) => (
-          <button
-            key={banner.id}
-            type="button"
-            onClick={() => handleBannerClick(banner.route)}
-            className={`snap-center shrink-0 w-[86vw] max-w-[315px] h-[115px] group relative flex items-center bg-gradient-to-r ${banner.bgGradient} text-white pl-7 sm:pl-8 pr-22 py-3 rounded-[1.2rem] shadow-xl ${banner.shadowColor} transition-all active:scale-[0.98] border ${banner.borderColor} overflow-visible text-left`}
-          >
-            {/* SVGs decorativos de fundo */}
-            <div className="absolute inset-0 overflow-hidden rounded-[1.2rem] pointer-events-none">
-              <Sparkles className={`absolute top-2 left-4 w-5 h-5 ${banner.sparkleColor} opacity-20`} />
-              <Zap className={`absolute bottom-1 left-24 w-8 h-8 ${banner.sparkleColor} opacity-10`} />
-              <Star className={`absolute top-1/2 left-32 w-4 h-4 ${banner.sparkleColor} opacity-15`} />
-              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay" />
-            </div>
+        <div className="w-[calc(50vw-72.5px-16px)] shrink-0 pointer-events-none" />
 
-            {/* Textos à esquerda */}
-            <div className="flex flex-col items-start text-left z-10 min-w-0 flex-1">
-              <span className="text-[18px] sm:text-[19px] font-display font-black uppercase tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] leading-[1.15] w-full line-clamp-2">
-                {banner.title}
-                <motion.span
-                  animate={{ x: [0, 3, 0] }}
-                  transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
-                  className="inline-block align-middle ml-1 -mt-0.5"
+        {INFINITE_ITEMS.map((item, i) => {
+          const isActive = i === activeIndex;
+          
+          return (
+            <div
+              key={item.uniqueId}
+              onClick={() => {
+                if (!isActive && scrollerRef.current) {
+                  haptic.selection();
+                  pauseInteraction();
+                  const targetChild = scrollerRef.current.children[i + 1] as HTMLElement;
+                  if (targetChild) {
+                    const containerWidth = scrollerRef.current.clientWidth;
+                    const targetLeft = targetChild.offsetLeft;
+                    const targetWidth = targetChild.clientWidth;
+                    const scrollPos = targetLeft - containerWidth / 2 + targetWidth / 2;
+                    scrollerRef.current.scrollTo({ left: scrollPos, behavior: 'smooth' });
+                  }
+                } else {
+                  handleItemClick(item.route);
+                }
+              }}
+              className={`w-[145px] h-[135px] shrink-0 snap-center relative cursor-pointer transition-all duration-500 ease-out group ${
+                isActive ? 'scale-105 opacity-100 z-10' : 'scale-[0.92] opacity-70 grayscale-[20%]'
+              }`}
+            >
+              {/* Background Layer */}
+              <div className={`absolute inset-x-0 bottom-0 top-7 rounded-[1.2rem] shadow-xl bg-gradient-to-br ${item.bgGradient} border border-white/10 overflow-hidden transition-transform duration-500 ${isActive ? 'shadow-2xl' : 'shadow-none'}`}>
+                {/* SVGs jurídicos decorativos ao fundo */}
+                <svg
+                  aria-hidden
+                  viewBox="0 0 200 200"
+                  className="pointer-events-none absolute -right-2 -bottom-4 w-[110px] h-[110px] text-white/10"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
                 >
-                  <ChevronRight className="w-3.5 h-3.5 opacity-80 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
-                </motion.span>
-              </span>
+                  <path d="M100 30 V170 M70 170 H130 M100 55 L55 95 M100 55 L145 95" strokeLinecap="round" />
+                  <path d="M35 95 Q55 135 75 95 Z" />
+                  <path d="M125 95 Q145 135 165 95 Z" />
+                </svg>
+                <svg
+                  aria-hidden
+                  viewBox="0 0 100 100"
+                  className="pointer-events-none absolute top-1 right-8 w-[45px] h-[45px] text-white/10"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                >
+                  <path d="M18 78 L58 38" />
+                  <rect x="52" y="20" width="30" height="14" rx="2" transform="rotate(45 67 27)" />
+                  <path d="M10 88 H50" />
+                </svg>
+              </div>
 
-              {/* Subtítulo dinâmico com transição vertical */}
-              <div className="h-4 sm:h-5 relative w-full overflow-hidden mt-1 sm:mt-1.5">
-                <AnimatePresence mode="popLayout">
-                  <motion.span
-                    key={descIndices[i]}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -12 }}
-                    transition={{ duration: 0.28 }}
-                    className={`absolute text-[13px] sm:text-[14px] font-body ${banner.textColor} leading-snug font-medium whitespace-nowrap truncate w-[95%] drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]`}
-                  >
-                    {banner.descriptions[descIndices[i]]}
-                  </motion.span>
-                </AnimatePresence>
+              {/* Owl Image vazado no topo */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90px] h-[90px] pointer-events-none z-20 flex justify-center">
+                <img
+                  src={item.owlImage}
+                  alt={item.title}
+                  className={`w-full h-full object-contain filter transition-all duration-500 ${isActive ? 'drop-shadow-[0_8px_8px_rgba(0,0,0,0.6)] saturate-[1.1] translate-y-0' : 'drop-shadow-none saturate-[0.8] translate-y-1'}`}
+                  loading="lazy"
+                />
+              </div>
+
+              {/* Text Content */}
+              <div className="absolute inset-x-0 bottom-0 top-7 flex items-end justify-center px-3 pb-3.5 z-30">
+                <h3 className={`font-sans font-bold leading-tight text-center transition-colors duration-500 ${isActive ? 'text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] text-[13px]' : 'text-white/80 text-[12.5px]'}`}>
+                  {item.title}
+                </h3>
               </div>
             </div>
-
-            {/* Imagem do mascote Horus e texto no pé */}
-            <div className="absolute -right-3 -top-7 w-[105px] flex flex-col items-center pointer-events-none z-20">
-              <img
-                src={banner.owlImage}
-                alt="Horus"
-                loading="eager"
-                decoding="async"
-                className="w-full h-[105px] object-contain drop-shadow-2xl filter saturate-[1.1]"
-              />
-              <span className="text-[10px] sm:text-[10.5px] font-display font-black uppercase tracking-widest text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] -mt-2.5 relative z-10 bg-black/40 px-2 py-0.5 rounded-full border border-white/20">
-                HORUS
-              </span>
-            </div>
-          </button>
-        ))}
-      </div>
-
-      {/* 3. DOTS INDICADORES DE POSIÇÃO */}
-      <div className="flex items-center justify-center gap-1.5 mt-2.5">
-        {BANNERS.map((b, i) => (
-          <button
-            key={b.id}
-            type="button"
-            onClick={() => {
-              haptic.selection();
-              pauseInteraction();
-              const el = scrollerRef.current;
-              if (!el) return;
-              el.scrollTo({ left: i * getCardWidth(el), behavior: 'smooth' });
-              setCurrentIndex(i);
-            }}
-            aria-label={`Ir para banner ${b.headerTitle}`}
-            className={`h-1.5 rounded-full transition-all ${
-              i === currentIndex
-                ? 'w-5'
-                : 'w-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/50'
-            }`}
-            style={{
-              backgroundColor: i === currentIndex ? activeBanner.accentColor : undefined,
-            }}
-          />
-        ))}
+          );
+        })}
+        <div className="w-[calc(50vw-72.5px-16px)] shrink-0 pointer-events-none" />
       </div>
     </div>
   );

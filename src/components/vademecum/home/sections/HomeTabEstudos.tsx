@@ -64,7 +64,12 @@ const HomeTabEstudos = ({
       transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
       className="space-y-6"
     >
-      {/* Carrossel de NotÃ­cias JurÃ­dicas ou Livros no topo */}
+      {/* Carrossel Em Alta (Antigo Horus Banner) no topo */}
+      <div className="pt-2">
+        <HomeHorusBannerCarousel />
+      </div>
+
+      {/* Carrossel de Notícias Jurídicas ou Livros logo abaixo */}
       {!hideNoticias && (
         <div className="pt-2 pb-2 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
           <Suspense fallback={<div className="h-48 bg-muted/20 animate-pulse rounded-xl mx-4" />}>
@@ -77,7 +82,7 @@ const HomeTabEstudos = ({
         </div>
       )}
 
-      {/* Em Alta â€” leis (Vade Mecum) ou funÃ§Ãµes de estudo (home) */}
+      {/* Em Alta — leis (Vade Mecum) ou funções de estudo (home) */}
       {emAltaLeis ? (
         <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 md:gap-4">
           {GRID_CATS.map((c, i) => (
@@ -103,9 +108,6 @@ const HomeTabEstudos = ({
         </div>
       ) : (
         <div className="flex flex-col gap-3 pt-2">
-          {/* Carrossel Infinito dos Banners: Horus, Radar de Leis e Boletins Jurídicos */}
-          <HomeHorusBannerCarousel />
-
           <div className="mb-1 relative z-10 flex items-start justify-between gap-3">
             <div>
               <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 uppercase tracking-widest">
