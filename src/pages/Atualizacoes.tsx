@@ -431,8 +431,8 @@ const Atualizacoes = () => {
                   </h2>
                 </div>
                 <button
-                  onClick={() => navigate('/boletins')}
-                  className="text-xs font-semibold text-[#F59E0B] hover:text-[#F59E0B]/80 flex items-center"
+                  onClick={() => { haptic.light(); navigate('/boletins'); }}
+                  className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-white font-medium transition-colors active:opacity-70 cursor-pointer"
                 >
                   Ver todos <ChevronRight className="w-4 h-4" />
                 </button>
@@ -477,8 +477,8 @@ const Atualizacoes = () => {
                   </h2>
                 </div>
                 <button
-                  onClick={() => navigate('/boletins-noticias')}
-                  className="text-xs font-semibold text-[#EF4444] hover:text-[#EF4444]/80 flex items-center"
+                  onClick={() => { haptic.light(); navigate('/boletins-noticias'); }}
+                  className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-white font-medium transition-colors active:opacity-70 cursor-pointer"
                 >
                   Ver todos <ChevronRight className="w-4 h-4" />
                 </button>
