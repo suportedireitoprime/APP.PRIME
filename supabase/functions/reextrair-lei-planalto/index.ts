@@ -36,8 +36,16 @@ async function fetchHtmlOnce(url: string): Promise<string> {
   const res = await fetch(fullUrl, { headers: FETCH_HEADERS });
   if (!res.ok) throw new Error(`HTTP ${res.status} em ${fullUrl}`);
   const bytes = new Uint8Array(await res.arrayBuffer());
+  // Heurística de Encoding: Tenta detectar ISO-8859-1 / windows-1252 no HTML brutro
+  let isIso = false;
+  const headerPreview = new TextDecoder("ascii").decode(bytes.slice(0, 1024));
+  if (/charset=["']?(iso-8859-1|windows-1252)/i.test(headerPreview)) {
+    isIso = true;
+  }
+
   let html: string;
   try {
+    if (isIso) throw new Error("Force ISO");
     html = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
   } catch {
     html = new TextDecoder("windows-1252").decode(bytes);
@@ -86,7 +94,7 @@ async function fetchHtml(url: string): Promise<string> {
 // ÚNICO, PRELIMINAR, GERAL, etc.) OU esteja sozinho na linha — evita casar
 // sentenças como "PARTE QUE CONSTITUA SUA CONTRIBUIÇÃO...".
 const HIER_RE =
-  /^(PARTE|LIVRO|T[ÍI]TULO|CAP[ÍI]TULO|SE[ÇC][ÃA]O|SUBSE[ÇC][ÃA]O)(?:\s+(?:[IVXLCDM]+|[ÚU]NICO|[ÚU]NICA|PRELIMINAR|GERAL|ESPECIAL|PRIMEIRA|SEGUNDA|TERCEIRA|QUARTA|QUINTA|SEXTA|S[ÉE]TIMA|OITAVA|NONA|D[ÉE]CIMA|\d+[ºª°]?)\b[\s\S]*|\s*)$/i;
+  /^(PARTE|LIVRO|T[ÍI]TULO|CAP[ÍI]TULO|SE[ÇC][ÃA]O|SUBSE[ÇC][ÃA]O)(?:\s+(?:[IVXLCDM]+|[ÚU]NICO|[ÚU]NICA|PRELIMINAR|GERAL|ESPECIAL|PRIMEIRA|SEGUNDA|TERCEIRA|QUARTA|QUINTA|SEXTA|S[ÉE]TIMA|OITAVA|NONA|D[ÉE]CIMA|\d+[ºª°]?)\b[\s\S]{0,100}?|\s*)$/i;
 
 // Aceita "Art. 1", "Art. 1º", "Art. 1.368-C", "Art. 15-A", etc.
 // Exige "Art." com A maiúsculo: referências internas em minúscula
@@ -103,7 +111,7 @@ const PLANALTO_NOTE_START_RE =
   /^(?:[\(\[]\s*)?(?:Reda[çc][ãa]o\s+dada|Inclu[íi]d[oa]|Acrescid[oa]|Alterad[oa]|Vide|Vig[êe]ncia|Regulamento|Nova\s+reda[çc][ãa]o|Renumerad[oa]|Transformad[oa]|Restabelecid[oa]|Produ[çc][ãa]o\s+de\s+efeito)\b/i;
 
 const PLANALTO_NOTE_BLOCK_RE =
-  /[\(\[]\s*(?:Reda[çc][ãa]o\s+dada|Inclu[íi]d[oa]|Acrescid[oa]|Alterad[oa]|Vide|Vig[êe]ncia|Regulamento|Nova\s+reda[çc][ãa]o|Renumerad[oa]|Transformad[oa]|Restabelecid[oa]|Produ[çc][ãa]o\s+de\s+efeito)[\s\S]{0,320}?[\)\]]/gi;
+  /[\(\[]\s*(?:Reda[çc][ãa]o\s+dada|Inclu[íi]d[oa]|Acrescid[oa]|Alterad[oa]|Vide|Vig[êe]ncia|Regulamento|Nova\s+reda[çc][ãa]o|Renumerad[oa]|Transformad[oa]|Restabelecid[oa]|Produ[çc][ãa]o\s+de\s+efeito)[^\)\]]{0,250}?[\)\]]/gi;
 
 const PLANALTO_NOTE_CONTINUATION_RE =
   /^(?:Lei|Leis|Decreto|Decretos|Medida\s+Provis[óo]ria|Emenda\s+Constitucional|Lei\s+Complementar)\s+n[º°o]?\s*[\d.]+/i;
@@ -191,13 +199,9 @@ function extractBlocos(html: string): Bloco[] {
     .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
     .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
     // 1) remove tags dedicadas de strike com seu conteúdo interno
-    .replace(/<s\b[^>]*>[\s\S]*?<\/s>/gi, " ")
-    .replace(/<strike\b[^>]*>[\s\S]*?<\/strike>/gi, " ")
-    .replace(/<del\b[^>]*>[\s\S]*?<\/del>/gi, " ")
+    .replace(/<(?:s|strike|del)\b[^>]*>[\s\S]*?<\/(?:s|strike|del)>/gi, " ")
     // 2) remove qualquer elemento com style contendo line-through
-    //    (span, p, font, div, a — Planalto varia bastante)
-    .replace(/<([a-z]+)\b[^>]*style\s*=\s*"[^"]*text-decoration\s*:\s*[^"]*line-through[^"]*"[^>]*>[\s\S]*?<\/\1>/gi, " ")
-    .replace(/<([a-z]+)\b[^>]*style\s*=\s*'[^']*text-decoration\s*:\s*[^']*line-through[^']*'[^>]*>[\s\S]*?<\/\1>/gi, " ");
+    .replace(/<([a-z]+)\b[^>]*style\s*=\s*["'][^"']*text-decoration\s*:\s*[^"']*line-through[^"']*["'][^>]*>[\s\S]*?<\/\1>/gi, " ");
 
   // NÃO recortar por <body>: os HTMLs compilada do Planalto costumam ter
   // </body> prematuramente e cortar quase todo o conteúdo. Usar o HTML inteiro.

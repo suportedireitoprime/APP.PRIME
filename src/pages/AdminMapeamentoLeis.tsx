@@ -158,6 +158,10 @@ export default function AdminMapeamentoLeis() {
 
   // Função para executar a extração / re-extração da lei com porcentagem e histórico
   const handleExtrairLei = async (lei: LeiCatalogItem) => {
+    if (extraindoSlug === lei.id || (progressoExtraindo[lei.id] && progressoExtraindo[lei.id] > 0)) {
+      return; // Previne duplo-clique / concorrência
+    }
+
     if (!lei.url_planalto) {
       toast.error(`A lei ${lei.sigla} não possui URL oficial do Planalto configurada.`);
       return;
