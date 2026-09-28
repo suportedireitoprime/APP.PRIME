@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Search, NotebookText, ChevronRight, Brain } from 'lucide-react';
+import { ArrowLeft, Search, NotebookText, ChevronRight, Brain, Scale, PenTool, BookText } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
 import { motion, AnimatePresence } from 'framer-motion';
