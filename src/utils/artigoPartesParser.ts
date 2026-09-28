@@ -479,91 +479,50 @@ export function parseArtigoEmNarracaoContinua(
     });
   }
 
-  // 3. Agrupamento em fatias contínuas de até ~1 minuto (~maxChars) parando estritamente no ponto final
-  // Monta o texto TTS completo com introdução
-  const corpoTTSCompleto = blocosBrutos.map((b) => b.textoTTS.trim()).filter(Boolean).join(' ');
-  const textoOriginalCompleto = blocosBrutos.map((b) => b.textoOriginal.trim()).filter(Boolean).join('\n\n');
-  const textoTTSIntegral = `${introTTS}${corpoTTSCompleto}`.trim();
-
+  // 3. Agrupamento estrutural contínuo (Caput, Parágrafos)
   const partes: ArtigoParte[] = [];
+  
+  const grupos: Array<{
+    tipo: TipoParteArtigo;
+    blocos: typeof blocosBrutos;
+  }> = [];
 
-  // Se o artigo completo cabe dentro de ~1 minuto (~850 caracteres), gera 1 ÚNICA parte contínua
-  if (textoTTSIntegral.length <= maxChars) {
-    partes.push({
-      id: `art_${numArtigoLimpo}_parte_1`,
-      ordem: 1,
-      tipo: 'artigo_completo',
-      rotulo: 'Artigo Completo',
-      texto: textoOriginalCompleto,
-      textoTTS: textoTTSIntegral,
-    });
-  } else {
-    // Ultrapassou 1 minuto: fatia estritamente no próximo ponto final para não distorcer a voz
-    // Divide o corpo em sentenças respeitando pontos finais (. ? !)
-    const sentencasComPontuacao: string[] = [];
-    // Regex que divide mantendo a pontuação final de cada frase
-    const regexSentencas = /[^.!?]+[.!?]+(?:\s+|$)|[^.!?]+$/g;
-    let matchSentenca: RegExpExecArray | null;
+  let grupoAtual: { tipo: TipoParteArtigo; blocos: typeof blocosBrutos } | null = null;
 
-    while ((matchSentenca = regexSentencas.exec(corpoTTSCompleto)) !== null) {
-      const s = matchSentenca[0].trim();
-      if (s) sentencasComPontuacao.push(s);
-    }
-
-    if (sentencasComPontuacao.length === 0) {
-      sentencasComPontuacao.push(corpoTTSCompleto);
-    }
-
-    let parteIndex = 1;
-    let acumuladoTTS = introTTS;
-    let acumuladoOrig: string[] = [];
-
-    for (let sIdx = 0; sIdx < sentencasComPontuacao.length; sIdx++) {
-      const sentenca = sentencasComPontuacao[sIdx];
-      const espaco = acumuladoTTS.endsWith(' ') || acumuladoTTS.endsWith(': ') ? '' : ' ';
-      const tamanhoProjetado = acumuladoTTS.length + espaco.length + sentenca.length;
-
-      // Se cabe dentro do teto de ~1 minuto (~850 chars) ou é a primeira sentença da parte
-      if (tamanhoProjetado <= maxChars || acumuladoTTS === introTTS || acumuladoTTS === '') {
-        acumuladoTTS += `${espaco}${sentenca}`;
-      } else {
-        // Ultrapassaria 1 minuto: fecha a parte no ponto final anterior
-        partes.push({
-          id: `art_${numArtigoLimpo}_parte_${parteIndex}`,
-          ordem: parteIndex,
-          tipo: parteIndex === 1 ? 'caput' : 'continua',
-          rotulo: `Parte ${parteIndex}`,
-          texto: acumuladoOrig.length > 0 ? acumuladoOrig.join('\n\n') : acumuladoTTS.replace(introTTS, '').trim(),
-          textoTTS: acumuladoTTS.trim(),
-        });
-        parteIndex++;
-
-        // Inicia a nova parte com a sentença atual
-        acumuladoTTS = sentenca;
-        acumuladoOrig = [];
+  for (const bloco of blocosBrutos) {
+    if (bloco.tipo === 'paragrafo') {
+      if (grupoAtual && grupoAtual.blocos.length > 0) {
+        grupos.push(grupoAtual);
       }
-    }
-
-    // Fecha a última parte acumulada
-    if (acumuladoTTS.trim().length > 0) {
-      partes.push({
-        id: `art_${numArtigoLimpo}_parte_${parteIndex}`,
-        ordem: parteIndex,
-        tipo: parteIndex === 1 ? 'artigo_completo' : 'continua',
-        rotulo: `Parte ${parteIndex}`,
-        texto: acumuladoOrig.length > 0 ? acumuladoOrig.join('\n\n') : acumuladoTTS.replace(introTTS, '').trim(),
-        textoTTS: acumuladoTTS.trim(),
-      });
-    }
-
-    // Preenche textos originais correspondentes caso vazios
-    partes.forEach((p, idx) => {
-      p.rotulo = `Parte ${idx + 1} de ${partes.length}`;
-      if (!p.texto || p.texto.length < 5) {
-        p.texto = p.textoTTS.replace(introTTS, '').trim();
+      grupoAtual = { tipo: 'paragrafo', blocos: [bloco] };
+    } else {
+      if (!grupoAtual) {
+        grupoAtual = { tipo: 'caput', blocos: [] };
       }
-    });
+      grupoAtual.blocos.push(bloco);
+    }
   }
+  if (grupoAtual && grupoAtual.blocos.length > 0) {
+    grupos.push(grupoAtual);
+  }
+
+  grupos.forEach((grupo, idx) => {
+    const textoOrig = grupo.blocos.map((b) => b.textoOriginal.trim()).filter(Boolean).join('\n\n');
+    let textoTTS = grupo.blocos.map((b) => b.textoTTS.trim()).filter(Boolean).join(' ');
+
+    if (idx === 0) {
+      textoTTS = `${introTTS}${textoTTS}`.trim();
+    }
+
+    partes.push({
+      id: `art_${numArtigoLimpo}_parte_${idx + 1}`,
+      ordem: idx + 1,
+      tipo: grupos.length === 1 ? 'artigo_completo' : grupo.tipo,
+      rotulo: grupos.length === 1 ? 'Artigo Completo' : `Parte ${idx + 1} de ${grupos.length}`,
+      texto: textoOrig,
+      textoTTS: textoTTS,
+    });
+  });
 
   const totalCaracteres = partes.reduce((acc, p) => acc + p.texto.length, 0);
 

@@ -16,3 +16,4 @@ export { ArtigoTabExemplo } from './ArtigoTabExemplo';
 export { ArtigoDesktopRails } from './ArtigoDesktopRails';
 export { useArtigoTextProcessing } from './useArtigoTextProcessing';
 export { useArtigoCommentsAndAi } from './useArtigoCommentsAndAi';
+export { NarracaoMenuDrawer } from './NarracaoMenuDrawer';

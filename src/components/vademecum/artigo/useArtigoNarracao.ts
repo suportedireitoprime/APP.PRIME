@@ -6,6 +6,7 @@ import { setupMediaSession, clearMediaSession } from '@/lib/mediaSession';
 import { useNarracaoFlutuante } from '@/stores/useNarracaoFlutuante';
 import { speakNative, stopNativeSpeech } from '@/lib/nativeTts';
 import { formatTextoArtigoParaNarracao, formatNarracaoTime } from './artigoTextUtils';
+import { parseArtigoEmNarracaoContinua } from '@/utils/artigoPartesParser';
 import { LEIS_SUPABASE_URL, LEIS_SUPABASE_ANON_KEY } from '@/lib/legislacaoBackend';
 import type { ArtigoLei } from '@/data/mockData';
 import {
@@ -47,6 +48,8 @@ export function useArtigoNarracao({
   const [narracaoPlaying, setNarracaoPlaying] = useState(false);
   const [narracaoActiveWordIndex, setNarracaoActiveWordIndex] = useState(-1);
   const [narracaoDuration, setNarracaoDuration] = useState(0);
+  const [showNarracaoMenu, setShowNarracaoMenu] = useState(false);
+  const [narracaoMenuOptions, setNarracaoMenuOptions] = useState<Array<{ rotulo: string; playFn: () => void; duracao?: number }>>([]);
 
   // ─── Refs ───
   const narracaoAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -580,7 +583,7 @@ export function useArtigoNarracao({
         if (autoplay) {
           await playNarracao(res.audioUrl);
         }
-        return;
+        return res;
       }
 
       throw new Error('Sem URL de áudio gerada.');
@@ -665,6 +668,51 @@ export function useArtigoNarracao({
         openPremiumGate('narracao');
         return;
       }
+      if (narracaoPlaying) {
+        await handleNarrar();
+        return;
+      }
+      if (narracaoUrl && narracaoWordTimings && narracaoWordTimings.length > 1) {
+        const options: any[] = [];
+        options.push({ rotulo: 'Ouvir Tudo Completo', playFn: () => playNarracao(narracaoUrl) });
+        narracaoWordTimings.forEach((p: any, idx) => {
+          if (p.audioUrl) {
+            options.push({ 
+              rotulo: p.rotulo || `Parte ${idx + 1}`, 
+              duracao: p.duracaoSegundos,
+              playFn: () => playNarracao(p.audioUrl) 
+            });
+          }
+        });
+        setNarracaoMenuOptions(options);
+        setShowNarracaoMenu(true);
+        return;
+      }
+      if (!narracaoUrl && artigo && tabelaNome) {
+        const estruturado = parseArtigoEmNarracaoContinua(artigo, {
+          leiNome: tabelaNome,
+          tabelaNome,
+          maxCharsPorParte: 850,
+        });
+        if (estruturado.partes.length > 1) {
+          const options: any[] = [];
+          options.push({ rotulo: 'Narrar Tudo Completo', playFn: () => gerarNarracao({ autoplay: true, forceRegenerate: false }) });
+          estruturado.partes.forEach((p, idx) => {
+            options.push({
+              rotulo: `Narrar ${p.rotulo || `Parte ${idx + 1}`}`,
+              playFn: async () => {
+                const res: any = await gerarNarracao({ autoplay: false, forceRegenerate: false });
+                if (res && Array.isArray(res.partes) && res.partes[idx]?.audioUrl) {
+                  playNarracao(res.partes[idx].audioUrl);
+                }
+              }
+            });
+          });
+          setNarracaoMenuOptions(options);
+          setShowNarracaoMenu(true);
+          return;
+        }
+      }
       await handleNarrar();
     } catch (e) {
       console.error('Erro ao acionar narração:', e);
@@ -676,7 +724,7 @@ export function useArtigoNarracao({
     } finally {
       narrarActionInFlightRef.current = false;
     }
-  }, [handleNarrar, isPremium, narracaoLoading, narracaoPlaying]);
+  }, [handleNarrar, isPremium, narracaoLoading, narracaoPlaying, narracaoUrl, narracaoWordTimings, artigo, tabelaNome, playNarracao, gerarNarracao]);
 
   return {
     // State
@@ -712,5 +760,8 @@ export function useArtigoNarracao({
     closeFlutuante,
     playbackRate,
     setPlaybackRate,
+    showNarracaoMenu,
+    setShowNarracaoMenu,
+    narracaoMenuOptions,
   };
 }

@@ -74,6 +74,7 @@ import {
   ArtigoDesktopRails,
   useArtigoTextProcessing,
   useArtigoCommentsAndAi,
+  NarracaoMenuDrawer,
 } from './chunks';
 
 import { highlightTermos, stripRedacao } from './artigoTextUtils';
@@ -479,6 +480,9 @@ const ArtigoBottomSheet = ({
     handleNarrarButtonPress,
     stopProgressTracking,
     adoptNarracao,
+    showNarracaoMenu,
+    setShowNarracaoMenu,
+    narracaoMenuOptions,
   } = useArtigoNarracao({
     artigo,
     tabelaNome,
@@ -1720,6 +1724,13 @@ const ArtigoBottomSheet = ({
         setShowCommentPanel={setShowCommentPanel}
         anyPanelOpen={anyPanelOpen}
         selectionPill={selectionPill}
+      />
+
+      <NarracaoMenuDrawer
+        open={showNarracaoMenu}
+        onOpenChange={setShowNarracaoMenu}
+        options={narracaoMenuOptions}
+        artigoNumero={artigo?.numero}
       />
 
       <ArtigoIAFullscreen
