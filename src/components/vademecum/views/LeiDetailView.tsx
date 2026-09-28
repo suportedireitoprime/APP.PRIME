@@ -1251,6 +1251,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           modInfo={openModInfo}
           showTimelineFirst={openFromNovidades}
           isFavorito={isArtigoFav(openArtigo)}
+          showNomenJuris={true}
           onToggleFavorito={() => handleToggleFavorito(openArtigo)}
           breadcrumb={
             artigoBreadcrumbsMap.get(String(openArtigo.id)) ||

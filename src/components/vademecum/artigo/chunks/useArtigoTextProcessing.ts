@@ -55,10 +55,14 @@ export function useArtigoTextProcessing({
       .split('\n')
       .map((l) => l.trim())
       .filter(Boolean);
-    let nomenJuris: string | null = null;
+    let nomenJuris: string | null = (artigo as any).nomen_juris || null;
     let contentLines = lines;
     const structuralPattern = /^(LIVRO|PARTE|TÍTULO)\s+/i;
     contentLines = contentLines.filter((l) => !structuralPattern.test(l.trim()));
+
+    if (!nomenJuris && artigo.titulo && !structuralPattern.test(artigo.titulo)) {
+      nomenJuris = artigo.titulo;
+    }
 
     // Nomen juris apenas para CP e CPM
     const isCodigoPenal = tabelaNome && /^(CP_|CPM_)/i.test(tabelaNome);

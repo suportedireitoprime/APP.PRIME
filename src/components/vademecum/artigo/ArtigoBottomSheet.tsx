@@ -1271,14 +1271,6 @@ const ArtigoBottomSheet = ({
                     </div>
                   )}
 
-                  {artigo.titulo &&
-                    !/^(PARTE|LIVRO|T[IÍ]TULO|CAP[IÍ]TULO|SEÇ[AÃ]O|SUBSEÇ[AÃ]O)\b/i.test(
-                      artigo.titulo
-                    ) && (
-                      <p className="mb-3 border-l-2 border-primary/70 pl-3 text-[13px] italic text-primary/90 font-body leading-snug">
-                        {artigo.titulo}
-                      </p>
-                    )}
 
                   {/* Item 04: Barra de Saltos Diretos por Dispositivos (Landmarks) e Colapso de Incisos */}
                   {dispositivosLandmarks.length > 1 && (

@@ -471,6 +471,7 @@ const LeiOrdinariaDetail = ({ lei, onBack, isEmbedded = false }: LeiOrdinariaDet
             caput: openArtigo.texto,
           }}
           tabelaNome={`resenha_${lei.id}`}
+          showNomenJuris={true}
           onClose={() => setOpenArtigo(null)}
         />
       )}
