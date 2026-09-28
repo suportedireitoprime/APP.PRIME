@@ -980,11 +980,14 @@ export default function AdminMapeamentoLeis() {
                   return (
                     <div
                       key={lei.id}
-                      className="group px-3 py-2 flex items-center gap-2 hover:bg-secondary/40 transition-colors"
+                      className="group px-4 py-3.5 flex items-center gap-3 hover:bg-secondary/40 transition-colors"
                     >
+                      {/* Ícone fixo à esquerda */}
+                      <ScrollText className="w-4 h-4 text-muted-foreground shrink-0" />
+
                       {/* Nome + Sigla + Status */}
                       <div className="flex-1 min-w-0 flex items-center gap-2">
-                        <span className="text-sm font-semibold text-foreground truncate">{lei.nome}</span>
+                        <span className="text-sm font-semibold text-foreground leading-snug">{lei.nome}</span>
                         {!lei.url_planalto && (
                           <AlertTriangle className="w-3.5 h-3.5 text-rose-500 shrink-0" title="URL do Planalto não configurada" />
                         )}
