@@ -140,6 +140,7 @@ interface Bloco {
   tipo: "hier" | "art";
   numero: string;
   texto: string;
+  vetado?: boolean;
 }
 
 const CATEGORIAS_VADE_MECUM = new Set(["codigo", "estatuto", "lei", "sumula"]);
@@ -230,7 +231,9 @@ function extractBlocos(html: string): Bloco[] {
     .replace(/<\/div>/gi, "\n\n")
     .replace(/<\/tr>/gi, "\n")
     .replace(/<[^>]+>/g, "");
-  body = decodeHtmlEntities(body);
+  
+  // Limpeza de entidades HTML e espaços em branco problemáticos invisíveis (zero-width)
+  body = decodeHtmlEntities(body).replace(/[\u200B-\u200D\uFEFF\u00A0]/g, " ");
 
   // Quebra linhas explicitamente antes de rótulos estruturais que possam ter ficado no meio de texto
   body = body.replace(
@@ -394,7 +397,9 @@ function extractBlocos(html: string): Bloco[] {
         .replace(STRUCTURAL_SUFFIX_RE, "$1")
         .trim();
 
-      blocos.push({ tipo: "art", numero, texto });
+      const isVetado = /\(Vetado\)/i.test(texto) || /^VETADO$/i.test(texto);
+      
+      blocos.push({ tipo: "art", numero, texto, ...(isVetado ? { vetado: true } : {}) });
       i = j;
       continue;
     }
@@ -621,6 +626,9 @@ ${rawText}`,
 
     console.log(`Baixando ${lei.planalto_url}`);
     const html = await fetchHtml(lei.planalto_url);
+    if (!html.trim()) {
+      throw new Error(`O site do Planalto retornou um documento HTML vazio para ${lei.planalto_url}.`);
+    }
     const blocos = addSyntheticHierarchy(lei.slug, extractBlocos(html));
     const ementa = extractEmenta(html);
 
