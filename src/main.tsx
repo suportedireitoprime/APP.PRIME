@@ -33,6 +33,7 @@ import { bootstrapCriticalNative, bootstrapIdleNative } from "./lib/boot/nativeB
 // paralelo ao parse do JS. Sem isso, a webp só começa a baixar depois do primeiro render.
 import horusOwlUrl from "./assets/horus/horus-owl.webp?url";
 import primeLogoUrl from "./assets/bundled/logo-direitoprime-v2.webp?url";
+import themisBgUrl from "./assets/themis-bg.webp?url";
 
 bootstrapCriticalNative();
 
@@ -51,6 +52,7 @@ function preloadImage(url: string) {
 }
 preloadImage(primeLogoUrl);
 preloadImage(horusOwlUrl);
+preloadImage(themisBgUrl);
 
 
 
