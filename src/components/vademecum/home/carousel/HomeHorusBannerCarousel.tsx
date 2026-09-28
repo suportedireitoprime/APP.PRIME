@@ -286,7 +286,7 @@ const HomeHorusBannerCarousel = () => {
                 <img
                   src={item.owlImage}
                   alt={item.title}
-                  className={`w-full h-full object-contain filter transition-all duration-500 ${isActive ? 'drop-shadow-[0_8px_8px_rgba(0,0,0,0.6)] saturate-[1.1] animate-float' : 'drop-shadow-none saturate-[0.8] translate-y-2'}`}
+                  className={`w-full h-full object-contain filter transition-all duration-500 ${isActive ? 'drop-shadow-[0_8px_8px_rgba(0,0,0,0.6)] saturate-[1.1] translate-y-0' : 'drop-shadow-none saturate-[0.8] translate-y-2'}`}
                   loading="lazy"
                 />
               </div>
