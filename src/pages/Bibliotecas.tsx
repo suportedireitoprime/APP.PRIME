@@ -15,6 +15,9 @@ const Bibliotecas = () => {
   // Adia o ShapeGrid para não competir com o primeiro paint da tela
   const [gridReady, setGridReady] = useState(false);
   useEffect(() => {
+    // Força o topo assim que a página renderizar (evita scroll indesejado herdado)
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    
     const t = setTimeout(() => setGridReady(true), 300);
     return () => clearTimeout(t);
   }, []);
