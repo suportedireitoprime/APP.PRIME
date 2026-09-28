@@ -228,7 +228,7 @@ export default {
         "cascade-in": "none",
         shimmer: "shimmer 2.5s ease-in-out infinite",
         "shimmer-once": "shimmer 1.5s ease-out forwards",
-        float: "float 3s ease-in-out infinite",
+        float: "float 8s ease-in-out infinite",
       },
     },
   },
