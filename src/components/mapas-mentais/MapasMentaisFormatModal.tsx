@@ -129,14 +129,14 @@ export function MapasMentaisFormatModal({
                   haptic.selection();
                   onSelectTipo(f.tipo);
                 }}
-                className="w-full text-left p-3.5 sm:p-4 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 border border-white/5 hover:border-purple-500/50 transition-all flex items-center gap-3.5 group cursor-pointer active:scale-[0.98] shadow-sm"
+                className="w-full text-left p-3.5 sm:p-4 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 border border-white/5 hover:border-purple-500/50 transition-all flex items-center gap-3.5 group cursor-pointer active:scale-[0.98] shadow-sm min-h-[104px]"
               >
                 {/* Ícone */}
                 <div
-                  className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border border-white/5"
-                  style={{ backgroundColor: `${f.cor}18`, color: f.cor }}
+                  className="w-11 h-11 flex items-center justify-center shrink-0"
+                  style={{ color: f.cor }}
                 >
-                  <Icon className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2} />
+                  <Icon className="w-7 h-7 sm:w-8 sm:h-8" strokeWidth={1.5} />
                 </div>
 
                 {/* Texto */}
@@ -151,11 +151,6 @@ export function MapasMentaisFormatModal({
                     >
                       {f.tag}
                     </span>
-                    {isPadrao && (
-                      <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                        RECOMENDADO
-                      </span>
-                    )}
                   </div>
                   <p className="text-xs text-zinc-400 font-medium mt-0.5">
                     {f.subtitulo}
