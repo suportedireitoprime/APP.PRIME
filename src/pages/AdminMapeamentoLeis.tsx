@@ -966,198 +966,106 @@ export default function AdminMapeamentoLeis() {
                   return (
                     <div
                       key={lei.id}
-                      className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-secondary/40 transition-colors"
+                      className="group px-3 py-2 flex items-center gap-2 hover:bg-secondary/40 transition-colors"
                     >
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-body text-base font-semibold text-foreground">
-                            {lei.nome}
-                          </span>
-                          <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
-                            {lei.sigla}
-                          </span>
-                          {isAprovada ? (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                              <CheckCircle2 className="w-3 h-3" /> Aprovada
-                            </span>
-                          ) : isEmTriagem ? (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                              <ListFilter className="w-3 h-3" /> Em Triagem
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded bg-zinc-500/10 text-muted-foreground border border-border/40">
-                              Pendente
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="font-body text-[12px] text-muted-foreground mt-1 line-clamp-2">
-                          {lei.descricao}
-                        </div>
-
-                        <div className="flex items-center gap-3 mt-2.5 flex-wrap text-[11px]">
-                          {/* Data da última extração */}
-                          <div className="flex items-center gap-1.5 text-muted-foreground">
-                            <Clock className="w-3.5 h-3.5 shrink-0" />
-                            <span>
-                              Última extração:{' '}
-                              {lastScrape ? (
-                                <strong className="text-foreground">{lastScrape}</strong>
-                              ) : (
-                                <span className="text-muted-foreground/80 italic">Pendente / Nunca</span>
-                              )}
-                            </span>
-                          </div>
-
-                          {/* Histórico das últimas vezes que foi extraído */}
-                          {histList.length > 0 && (
-                            <button
-                              onClick={() => setModalHistoricoExtracoesLei(lei)}
-                              className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-secondary hover:bg-secondary/80 text-primary border border-primary/20 transition-all hover:scale-105 active:opacity-70"
-                              title="Ver histórico de todas as vezes que esta lei foi extraída"
-                            >
-                              <History className="w-3 h-3 text-primary shrink-0" />
-                              <span>{histList.length} extraç{histList.length === 1 ? 'ão' : 'ões'}</span>
-                            </button>
-                          )}
-
-                          {/* Link oficial Planalto */}
-                          {lei.url_planalto && (
-                            <a
-                              href={lei.url_planalto}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="inline-flex items-center gap-1 text-primary hover:underline ml-auto sm:ml-0"
-                            >
-                              Planalto oficial <ExternalLink className="w-3 h-3 shrink-0" />
-                            </a>
-                          )}
-                        </div>
-
-                        {/* Barra de Progresso em Tempo Real durante a Extração */}
-                        {isExtracting && (
-                          <div className="mt-3 p-3 rounded-xl bg-primary/10 border border-primary/25 space-y-2 animate-in fade-in duration-300">
-                            <div className="flex items-center justify-between text-xs font-semibold">
-                              <span className="text-primary inline-flex items-center gap-1.5 min-w-0 truncate">
-                                <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0 text-primary" />
-                                <span className="truncate">{etapa}</span>
-                              </span>
-                              <span className="font-mono text-primary font-bold text-sm shrink-0 ml-2">
-                                {progresso}%
-                              </span>
-                            </div>
-                            <div className="w-full h-2 rounded-full bg-secondary/80 overflow-hidden relative">
-                              <div
-                                className="h-full bg-gradient-to-r from-primary via-blue-500 to-emerald-400 transition-all duration-300 rounded-full shadow-sm"
-                                style={{ width: `${progresso}%` }}
-                              />
-                            </div>
-                          </div>
-                        )}
+                      {/* Nome + Sigla + Status */}
+                      <div className="flex-1 min-w-0 flex items-center gap-2">
+                        <span className="text-sm font-semibold text-foreground truncate">{lei.nome}</span>
+                        <span className="text-[10px] font-bold px-1.5 py-px rounded bg-primary/10 text-primary border border-primary/20 shrink-0">
+                          {lei.sigla}
+                        </span>
+                        {isAprovada ? (
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        ) : isEmTriagem ? (
+                          <ListFilter className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                        ) : null}
                       </div>
 
-                      {/* Botões de Ação Responsivos */}
-                      <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto shrink-0 mt-2 sm:mt-0">
-                        {/* Botão Ver Prévia */}
+                      {/* Barra de progresso inline */}
+                      {isExtracting && (
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
+                          <span className="text-xs font-mono font-bold text-primary">{progresso}%</span>
+                        </div>
+                      )}
+
+                      {/* Ações em ícones compactos */}
+                      <div className="flex items-center gap-1 shrink-0">
+                        {/* Prévia */}
                         <button
                           onClick={() => setPreviaLei(lei)}
-                          className="col-span-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border/60 text-xs sm:text-sm font-medium whitespace-nowrap active:opacity-70 transition-all min-h-[40px]"
-                          title="Abrir Prévia Oficial do Vade Mecum"
+                          className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-secondary/80 text-muted-foreground hover:text-foreground transition-colors"
+                          title="Ver Prévia"
                         >
-                          <Eye className="w-4 h-4 text-primary shrink-0" />
-                          <span className="whitespace-nowrap">Ver Prévia</span>
+                          <Eye className="w-4 h-4" />
                         </button>
 
-                        {/* Botão Histórico da Lei */}
+                        {/* Histórico alterações */}
                         <button
                           onClick={() => handleAbrirHistorico(lei)}
-                          className="col-span-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border/60 text-xs sm:text-sm font-medium whitespace-nowrap active:opacity-70 transition-all min-h-[40px]"
-                          title="Ver histórico de alterações por artigo do Planalto"
+                          className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-secondary/80 text-muted-foreground hover:text-amber-400 transition-colors"
+                          title="Histórico de alterações"
                         >
-                          <History className="w-4 h-4 text-amber-400 shrink-0" />
-                          <span className="whitespace-nowrap">Histórico</span>
+                          <History className="w-4 h-4" />
                         </button>
 
-                        {/* Fluxo de Triagem e Decisão Administrativa */}
-                        {isEmTriagem ? (
+                        {/* Planalto */}
+                        {lei.url_planalto && (
+                          <a
+                            href={lei.url_planalto}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-secondary/80 text-muted-foreground hover:text-primary transition-colors"
+                            title="Planalto oficial"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        )}
+
+                        {/* Triagem: Devolver / Aprovar */}
+                        {isEmTriagem && (
                           <>
-                            {/* Botão Devolver para Todos */}
                             <button
                               onClick={() => handleDevolverTriagem(lei)}
-                              className="col-span-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-secondary/80 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 text-xs sm:text-sm font-semibold whitespace-nowrap active:opacity-70 transition-all min-h-[40px]"
-                              title="Devolver para Todos / Pendentes"
+                              className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-rose-500/20 text-muted-foreground hover:text-rose-400 transition-colors"
+                              title="Devolver para Pendentes"
                             >
-                              <RotateCcw className="w-4 h-4 text-rose-400 shrink-0" />
-                              <span className="whitespace-nowrap">Devolver</span>
+                              <RotateCcw className="w-4 h-4" />
                             </button>
-
-                            {/* Botão Aprovar Lei */}
                             <button
                               onClick={() => handleAprovarLei(lei)}
-                              className="col-span-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-semibold whitespace-nowrap active:opacity-70 transition-all min-h-[40px] shadow-sm"
-                              title="Aprovar Lei para o Vade Mecum"
+                              className="w-8 h-8 rounded-lg flex items-center justify-center bg-emerald-600/80 hover:bg-emerald-500 text-white transition-colors"
+                              title="Aprovar Lei"
                             >
-                              <CheckCircle2 className="w-4 h-4 shrink-0" />
-                              <span className="whitespace-nowrap">Aprovar Lei</span>
+                              <Check className="w-4 h-4" />
                             </button>
                           </>
-                        ) : isAprovada ? (
-                          <>
-                            {/* Botão Revogar Aprovação */}
-                            <button
-                              onClick={() => handleRevogarAprovacao(lei)}
-                              className="col-span-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500/15 hover:bg-rose-500/20 text-emerald-300 hover:text-rose-300 border border-emerald-500/30 hover:border-rose-500/30 text-xs sm:text-sm font-medium whitespace-nowrap active:opacity-70 transition-all min-h-[40px]"
-                              title="Revogar aprovação e mover de volta para Triagem"
-                            >
-                              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                              <span className="whitespace-nowrap">Aprovada</span>
-                            </button>
+                        )}
 
-                            {/* Botão Re-extrair Lei */}
-                            <button
-                              onClick={() => handleExtrairLei(lei)}
-                              disabled={isExtracting}
-                              className="col-span-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-primary text-primary-foreground font-medium text-xs sm:text-sm whitespace-nowrap hover:opacity-90 active:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed transition-all min-h-[40px]"
-                              title="Re-extrair Lei do Planalto"
-                            >
-                              {isExtracting ? (
-                                <>
-                                  <Loader2 className="w-4 h-4 animate-spin shrink-0" />
-                                  <span className="whitespace-nowrap">{progresso}%</span>
-                                </>
-                              ) : (
-                                <>
-                                  <RefreshCw className="w-4 h-4 shrink-0" />
-                                  <span className="whitespace-nowrap">Re-extrair</span>
-                                </>
-                              )}
-                            </button>
-                          </>
-                        ) : (
-                          /* Lei Pendente */
+                        {/* Aprovada: badge clicável para revogar */}
+                        {isAprovada && (
                           <button
-                            onClick={() => handleExtrairLei(lei)}
-                            disabled={isExtracting}
-                            className="col-span-2 sm:col-span-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-primary-foreground font-medium text-xs sm:text-sm whitespace-nowrap hover:opacity-90 active:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed transition-all min-h-[40px]"
-                            title={lastScrape ? 'Re-extrair Lei e enviar para Triagem' : 'Extrair Lei e enviar para Triagem'}
+                            onClick={() => handleRevogarAprovacao(lei)}
+                            className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-rose-500/20 text-emerald-400 hover:text-rose-400 transition-colors"
+                            title="Revogar aprovação"
                           >
-                            {isExtracting ? (
-                              <>
-                                <Loader2 className="w-4 h-4 animate-spin shrink-0" />
-                                <span className="whitespace-nowrap">
-                                  {lastScrape ? 'Re-extraindo' : 'Extraindo'} {progresso}%
-                                </span>
-                              </>
-                            ) : (
-                              <>
-                                <RefreshCw className="w-4 h-4 shrink-0" />
-                                <span className="whitespace-nowrap">
-                                  {lastScrape ? 'Re-extrair' : 'Extrair Lei'}
-                                </span>
-                              </>
-                            )}
+                            <CheckCircle2 className="w-4 h-4" />
                           </button>
                         )}
+
+                        {/* Extrair / Re-extrair */}
+                        <button
+                          onClick={() => handleExtrairLei(lei)}
+                          disabled={isExtracting}
+                          className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary/90 hover:bg-primary text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                          title={lastScrape ? 'Re-extrair Lei' : 'Extrair Lei'}
+                        >
+                          {isExtracting ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <RefreshCw className="w-4 h-4" />
+                          )}
+                        </button>
                       </div>
                     </div>
                   );
