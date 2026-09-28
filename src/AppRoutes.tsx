@@ -632,20 +632,9 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
     const isTrialActive = !isClockTampered && !isDeviceAbuse && nowMs < trialEndsAt.getTime();
 
     const cleanPath = (location.pathname || '').replace(/\/+$/, '') || '/';
-    // Item 29: Home ('/') não é isenta de bloqueio pós-trial. Apenas telas de assinatura, planos, perfil, configurações e termos são permitidas sem plano ativo.
+    // Item 29: Home ('/') é permitida para visualização, mas cliques serão interceptados pelo GlobalTrialGate
     const isAllowedPath = 
       cleanPath === '/' ||
-      cleanPath === '/biblioteca' ||
-      cleanPath === '/aprender' ||
-      cleanPath === '/questoes' ||
-      cleanPath === '/radar' ||
-      cleanPath === '/resumos' ||
-      cleanPath === '/flashcards' ||
-      cleanPath === '/audioaulas' ||
-      cleanPath === '/videoaulas' ||
-      cleanPath === '/leis-cantadas' ||
-      cleanPath === '/noticias' ||
-      cleanPath === '/novidades' ||
       cleanPath === '/assinatura' ||
       cleanPath.startsWith('/assinatura/') ||
       cleanPath === '/planos/ativos' ||
@@ -662,19 +651,8 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
     const isUserPremium = !!profile.isPremium || (isSubPremium && !isSubTrial) || isAdminEmail(user.email);
 
     if (!isUserPremium && !isTrialActive && !isAllowedPath) {
-      return (
-        <div className="fixed inset-0 z-50 bg-[#0A0A0A]">
-          <Suspense fallback={null}>
-            <TrialExpiredModal 
-              open={true} 
-              onClose={() => {
-                // Quando o usuário fecha o modal de tempo expirado, volta para a tela anterior
-                window.history.back();
-              }} 
-            />
-          </Suspense>
-        </div>
-      );
+      // Redireciona para o início disparando a exibição do painel
+      return <Navigate to="/?expired=true" replace />;
     }
   }
 
@@ -917,6 +895,48 @@ function DeepLinkBootstrap() {
   return null;
 }
 
+function GlobalTrialGate() {
+  const { user } = useAuth();
+  const { isPremium: isSubPremium, isTrial, expiresAt, status } = useSubscription();
+  const location = useLocation();
+  const [showModal, setShowModal] = useState(false);
+
+  const isTrialActive = isTrial && expiresAt && new Date(expiresAt).getTime() > Date.now();
+  const isUserPremium = !!user?.user_metadata?.isPremium || (isSubPremium && status !== 'trialing') || isAdminEmail(user?.email);
+
+  useEffect(() => {
+    if (location.search.includes('expired=true')) {
+      setShowModal(true);
+    }
+  }, [location.search]);
+
+  useEffect(() => {
+    if (isUserPremium || isTrialActive) return;
+
+    const handler = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as HTMLElement;
+      // Permite cliques se estiverem dentro de um modal (dialog) ou z-9999 (TrialExpiredModal)
+      if (target.closest('.z-\\[9999\\]') || target.closest('[role="dialog"]')) {
+        return;
+      }
+      e.stopPropagation();
+      e.preventDefault();
+      setShowModal(true);
+    };
+
+    document.addEventListener('click', handler, true);
+    return () => document.removeEventListener('click', handler, true);
+  }, [isUserPremium, isTrialActive]);
+
+  if (isUserPremium || isTrialActive) return null;
+
+  return showModal ? (
+    <Suspense fallback={null}>
+      <TrialExpiredModal open={true} onClose={() => setShowModal(false)} />
+    </Suspense>
+  ) : null;
+}
+
 function AnimatedRoutes() {
   const location = useLocation();
   const { user, loading: authLoading } = useAuth();
@@ -1022,6 +1042,7 @@ function AnimatedRoutes() {
       <GlobalDesktopHeader />
       <DesktopFileDropOverlay />
       <PersistentHome />
+      <GlobalTrialGate />
       <Suspense fallback={<LazyFallback />}>
         <Routes>
             <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />

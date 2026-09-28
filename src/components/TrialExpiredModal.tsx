@@ -56,6 +56,34 @@ interface TrialExpiredModalProps {
   onClose?: () => void;
 }
 
+const COPIES = [
+  {
+    title: "SEU TEMPO ACABOU",
+    message: "{name}, sua degustação gratuita chegou ao fim. Tenha acesso completo e ilimitado a todas as matérias de Direito, questões comentadas, Vade Mecum inteligente e resumos exclusivos.",
+    cta: "DESTRAVAR MEU ACESSO"
+  },
+  {
+    title: "A APROVAÇÃO ESPERA",
+    message: "{name}, os 3 dias passaram rápido, mas seu futuro não pode esperar. Junte-se aos estudantes que mais aprovam no país e tenha o melhor material jurídico na palma da mão.",
+    cta: "QUERO SER APROVADO"
+  },
+  {
+    title: "NÃO PERCA TEMPO",
+    message: "{name}, o tempo é seu maior ativo. Continue economizando horas de estudo com nossas ferramentas baseadas em IA, resumos otimizados e mapas mentais exclusivos.",
+    cta: "RECUPERAR MEU ACESSO"
+  },
+  {
+    title: "INVISTA EM VOCÊ",
+    message: "{name}, o período de testes acabou, mas o conhecimento fica para sempre. Faça o investimento que vai mudar sua carreira no Direito por menos do que um café por dia.",
+    cta: "ASSINAR AGORA"
+  },
+  {
+    title: "ACESSO BLOQUEADO",
+    message: "{name}, você perdeu o acesso ao Vade Mecum inteligente e banco de questões. Não deixe seu ritmo de estudos cair agora que você já conheceu o método mais eficiente.",
+    cta: "LIBERAR MEU APLICATIVO"
+  }
+];
+
 export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -63,6 +91,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
   const { refresh: refreshSubscription } = useSubscription();
   const [ativo, setAtivo] = useState(0);
   const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'anual' | 'anual_pix' | null>(null);
+  const [copyIndex] = useState(() => Math.floor(Math.random() * COPIES.length));
 
   const isAdmin = isAdminEmail(user?.email);
 
@@ -86,6 +115,8 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
     user?.user_metadata?.full_name?.split(' ')[0] ||
     user?.user_metadata?.name?.split(' ')[0] ||
     'Doutor(a)';
+    
+  const currentCopy = COPIES[copyIndex];
 
   useEffect(() => {
     const reduz = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -220,13 +251,11 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
 
           {/* Título com espaço maior entre as letras */}
           <h2 className="text-xl sm:text-2xl font-display font-black tracking-[0.25em] sm:tracking-[0.3em] text-foreground uppercase text-center mt-2">
-            SEU TEMPO ACABOU
+            {currentCopy.title}
           </h2>
 
           {/* Mensagem persuasiva elegante citando o nome */}
-          <p className="text-[13px] sm:text-[14px] text-muted-foreground leading-relaxed text-center max-w-sm mx-auto line-clamp-3">
-            <strong className="text-foreground font-bold">{firstName}</strong>, sua degustação gratuita chegou ao fim. Tenha acesso completo e ilimitado a todas as matérias de Direito, questões comentadas, Vade Mecum inteligente e resumos exclusivos.
-          </p>
+          <p className="text-[13px] sm:text-[14px] text-muted-foreground leading-relaxed text-center max-w-sm mx-auto line-clamp-3" dangerouslySetInnerHTML={{__html: currentCopy.message.replace('{name}', `<strong class="text-foreground font-bold">${firstName}</strong>`)}} />
 
           {/* Botões de Ação */}
           <div className="w-full space-y-2.5 pt-2">
@@ -238,7 +267,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
               }}
               className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display font-black text-base tracking-wider bg-primary text-primary-foreground active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/30 group cursor-pointer"
             >
-              <span>DESTRAVAR MEU ACESSO</span>
+              <span>{currentCopy.cta}</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
 
