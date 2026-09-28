@@ -5,6 +5,7 @@ import { listarTrilhas } from "@/lib/leiSeca";
 import { persistedInitial, savePersisted } from "@/lib/queryPersist";
 import { prefetchHandlers, prefetchTrilha } from "@/lib/leiSecaPrefetch";
 import { prefetchImages } from '@/lib/coverLoader';
+import fallbackTrilhas from "../../../public/offline-bundle/lei-seca-trilhas.json";
 import { BookOpen, Clock, Heart } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLeiSecaResumoGlobal } from "@/hooks/useLeiSecaResumoGlobal";
@@ -27,9 +28,10 @@ export default function LeiSecaIndex({ modo = "todos" }: { modo?: LeiSecaFiltro 
   const navigate = useNavigate();
   const qc = useQueryClient();
 
-  const { data: trilhas, isLoading } = useQuery({
+  const { data: trilhas = fallbackTrilhas as any[], isLoading } = useQuery({
     queryKey: ["lei-seca-trilhas"],
     queryFn: listarTrilhas,
+    initialData: fallbackTrilhas as any[],
     staleTime: 10 * 60_000,
     gcTime: 30 * 60_000,
     ...persistedInitial<Awaited<ReturnType<typeof listarTrilhas>>>("lei-seca-trilhas"),
