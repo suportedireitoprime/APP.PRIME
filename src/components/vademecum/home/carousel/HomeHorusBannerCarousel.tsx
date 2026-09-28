@@ -11,6 +11,7 @@ import horusOwl4 from '@/assets/horus/04_coruja_maleta_balanca.webp';
 import horusWhatsapp from '@/assets/horus/coruja_whatsapp.png';
 import horusBiblioteca from '@/assets/horus/coruja_biblioteca.png';
 import horusAudioaulas from '@/assets/horus/coruja_audioaulas.png';
+import horusVideoaulas from '@/assets/horus/coruja_videoaulas.png';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 
 const horusOwl = pickAsset(horusOwlBundled, srcOf(horusOwlAsset));
@@ -58,6 +59,14 @@ const EM_ALTA_ITEMS: EmAltaItem[] = [
     owlImage: horusAudioaulas 
   },
   { 
+    id: 'videoaulas', 
+    title: 'Videoaulas', 
+    route: '/videoaulas', 
+    bgGradient: 'from-[#0891B2] via-[#0E7490] to-[#164E63]', // Cyan
+    sparkleColor: 'text-cyan-200',
+    owlImage: horusVideoaulas 
+  },
+  { 
     id: 'vademecum', 
     title: 'Vade Mecum', 
     route: '/vade-mecum', 
@@ -71,13 +80,13 @@ const EM_ALTA_ITEMS: EmAltaItem[] = [
 const INFINITE_ITEMS = Array.from({ length: 14 }).flatMap((_, index) => 
   EM_ALTA_ITEMS.map(item => ({ ...item, uniqueId: `${item.id}-${index}` }))
 );
-// Total = 70 itens. O centro aproximado é o index 35.
+// Total = 84 itens. O centro aproximado é o index 42.
 
 const HomeHorusBannerCarousel = () => {
   const navigate = useNavigate();
   const scrollerRef = useRef<HTMLDivElement>(null);
   // Inicializamos no meio do array gigantesco para permitir scroll para trás e para frente infinitamente
-  const [activeIndex, setActiveIndex] = useState(35);
+  const [activeIndex, setActiveIndex] = useState(42);
   const userInteractingRef = useRef(false);
   const isInitialScrollDone = useRef(false);
 
@@ -85,7 +94,7 @@ const HomeHorusBannerCarousel = () => {
   useEffect(() => {
     if (!scrollerRef.current || isInitialScrollDone.current) return;
     const scroller = scrollerRef.current;
-    const targetChild = scroller.children[35 + 1] as HTMLElement;
+    const targetChild = scroller.children[42 + 1] as HTMLElement;
     if (targetChild) {
       const containerWidth = scroller.clientWidth;
       const targetLeft = targetChild.offsetLeft;
@@ -144,7 +153,7 @@ const HomeHorusBannerCarousel = () => {
       let nextIndex = activeIndex + 1;
       // Se por um milagre chegar no final, joga de volta pro meio invisivelmente
       if (nextIndex >= INFINITE_ITEMS.length - 2) {
-        nextIndex = 35;
+        nextIndex = 42;
         const targetChild = scroller.children[nextIndex + 1] as HTMLElement;
         if (targetChild) {
           const containerWidth = scroller.clientWidth;
