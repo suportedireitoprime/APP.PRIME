@@ -159,7 +159,7 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
 
               <div className="absolute top-0 right-0 bg-primary text-primary-foreground font-black text-[9px] px-2.5 py-0.5 rounded-bl-xl tracking-wider z-10 flex items-center gap-1">
                 <Crown className="w-3 h-3 fill-amber-300 text-amber-300" />
-                PLANO ANUAL
+                O MAIS ADQUIRIDO
               </div>
 
               <div className="flex justify-between items-start mb-1.5 relative z-10">
@@ -229,9 +229,9 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
             >
               <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent pointer-events-none" />
               
-              <div className="absolute top-0 right-0 bg-primary text-primary-foreground font-black text-[9px] px-2.5 py-0.5 rounded-bl-xl tracking-wider z-10 flex items-center gap-1">
-                <Crown className="w-3 h-3 fill-amber-300 text-amber-300" />
-                ACESSO VITALÍCIO
+              {/* Imagem de Fundo Vazada */}
+              <div className="absolute top-0 bottom-0 right-0 w-3/5 pointer-events-none overflow-hidden rounded-r-3xl z-0" style={{ WebkitMaskImage: 'linear-gradient(to right, transparent, black 40%)' }}>
+                <img src="/vitalicio_premium.jpg" alt="" className="w-full h-full object-cover opacity-60 mix-blend-screen scale-125 translate-x-4 translate-y-1" loading="lazy" />
               </div>
 
               <div className="flex justify-between items-start mb-1.5 relative z-10">
@@ -244,7 +244,7 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
               </div>
 
               <div className="flex items-baseline gap-1.5 mb-1 text-foreground relative z-10">
-                <span className="font-display text-3xl font-black shadow-black/50 drop-shadow-md">R$ 29,90</span>
+                <span className="font-display text-3xl font-black shadow-black/50 drop-shadow-md">R$ 25,90</span>
                 <span className="font-display text-lg font-bold shadow-black/50 drop-shadow-md text-muted-foreground">em 12x</span>
               </div>
 
