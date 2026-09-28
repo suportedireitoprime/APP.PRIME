@@ -188,6 +188,16 @@ export async function setPersistedArtigosCache(tabelaNome: string, artigos: any[
   } catch { /* ignore quota errors */ }
 }
 
+export async function invalidateArtigosCache(tabelaNome?: string): Promise<void> {
+  try {
+    if (tabelaNome) {
+      await db.artigosCache.delete(tabelaNome);
+    } else {
+      await db.artigosCache.clear();
+    }
+  } catch { /* ignore */ }
+}
+
 // ─────────── Resumos jurídicos persistidos (favoritos e recentes) ───────────
 export async function getPersistedResumo<T = any>(id: string): Promise<T | null> {
   try {

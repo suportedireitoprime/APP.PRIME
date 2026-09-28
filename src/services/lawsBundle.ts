@@ -8,9 +8,9 @@
  *  4. Da próxima vez que o usuário abrir a lei, já está na memória em 0ms.
  */
 
-import { setPersistedArtigosCache, getPersistedArtigosCache } from '@/services/offlineDb';
+import { setPersistedArtigosCache, getPersistedArtigosCache, invalidateArtigosCache } from '@/services/offlineDb';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
-import { stripStructuralSuffix } from '@/components/vademecum/artigo/artigoTextUtils';
+import { sanitizeLegalArticleText } from '@/components/vademecum/artigo/artigoTextUtils';
 
 const MANIFEST_URL = '/laws-bundle/manifest.json';
 
@@ -55,7 +55,7 @@ function normalizeArtigos(rows: any[]) {
     .map((r: any) => ({
       id: r.id,
       numero: (r.numero || '').replace(/(\d)o\b/g, '$1º').replace(/°/g, 'º'),
-      caput: stripStructuralSuffix((r.texto || '').replace(/(\d)o\b/g, '$1º').replace(/°/g, 'º')),
+      caput: sanitizeLegalArticleText((r.texto || '').replace(/(\d)o\b/g, '$1º').replace(/°/g, 'º')),
       titulo: undefined,
       epigrafe: r.epigrafe || undefined,
       nomen_juris: r.epigrafe || undefined,
@@ -105,6 +105,13 @@ export function primeMemoryCacheFromBundle(concurrency = 6): Promise<void> {
           // Se for uma lei especial dinâmica que não está no catalog, a `tabelaNome` é o próprio slug
           slugToTabela.set(m.slug, m.slug);
       }
+    }
+
+    // Invalidação de versão de cache local (purga dados anteriores com resíduos de extração)
+    const BUNDLE_CACHE_VER = 'vade_bundle_v7';
+    if (typeof localStorage !== 'undefined' && localStorage.getItem('vade_bundle_cache_ver') !== BUNDLE_CACHE_VER) {
+      await invalidateArtigosCache();
+      localStorage.setItem('vade_bundle_cache_ver', BUNDLE_CACHE_VER);
     }
 
     // Processa apenas as leis que AINDA NÃO estão no cache.

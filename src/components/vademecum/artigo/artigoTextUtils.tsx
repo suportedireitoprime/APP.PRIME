@@ -4,11 +4,12 @@ import { toast } from 'sonner';
 
 // ─── Pure text processing functions ───
 
-/** Remove metadata between parentheses: (Redação...), (Incluído...), etc., e anotações avulsas de Vigência */
+/** Remove metadata between parentheses: (Redação...), (Incluído...), etc., e anotações avulsas de Vigência.
+ *  Nota: (Revogado...) é PRESERVADO para exibição informativa ao usuário. */
 export function stripRedacao(text: string): string {
   return text
-    .replace(/\s*\((?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Vigencia|Revogado|Vetado)[^)]*\)/gi, '')
-    .replace(/(?:^|[\s,;])Vig[êe]ncia(?:\s*[\.:;]|\s+|$)/gi, ' ')
+    .replace(/\s*\((?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Vigencia|Vetado)[^)]*\)/gi, '')
+    .replace(/(?:^|[\s,;])Vig[êe]ncia(?:\s*[.:;]|\s+|$)/gi, ' ')
     .trim();
 }
 
@@ -189,7 +190,7 @@ export function isLineRevogado(line: string): boolean {
 export const LEGAL_LINE_START_RE = /^(?:Art\s*\.|§|Parágrafo\b|[IVXLCDM]+\s*[-–.)]|[a-z]\)|LIVRO\b|PARTE\b|TÍTULO\b|CAPÍTULO\b|SEÇÃO\b|SUBSEÇÃO\b)/i;
 
 // Se a linha inteira for só uma nota (com ou sem parênteses, ex: "(Vigência)" ou "Vigência")
-export const LEGAL_NOTE_ONLY_RE = /^(?:[\(\[]\s*)?(?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Vigencia|Revogado|Vetado)\b/i;
+export const LEGAL_NOTE_ONLY_RE = /^(?:[(\[]\s*)?(?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Vigencia|Revogado|Vetado)\b/i;
 
 /** Regex para detectar cabeçalhos estruturais no fim de um artigo */
 export const STRUCTURAL_SUFFIX_RE = /(^|[.;:)])\s+(?=(?:PARTE|LIVRO|T[ÍI]TULO|CAP[ÍI]TULO|SE[ÇC][ÃA]O|SUBSE[ÇC][ÃA]O)\s+(?:[IVXLCDM]+|[0-9]+|[ÚU]NICO|PRELIMINAR)\b)[\s\S]*$/i;
@@ -207,7 +208,7 @@ export function isLineEpigrafe(line: string): boolean {
   // Não pode ser dispositivo canônico nem nota nem subdivisão estrutural do código
   if (/^(?:Art\s*\.|§|Parágrafo\b|[IVXLCDM]+\s*[-–.)]|[a-z]\)|LIVRO\b|PARTE\b|TÍTULO\b|CAPÍTULO\b|SEÇÃO\b|SUBSEÇÃO\b)/i.test(clean)) return false;
   // Não pode ser nota editorial do Planalto (com ou sem parênteses: Vigência, Redação dada, Incluído, etc.)
-  if (/^(?:[\(\[]\s*)?(?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Vigencia|Revogado|Vetado)\b/i.test(clean)) return false;
+  if (/^(?:[(\[]\s*)?(?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Vigencia|Revogado|Vetado)\b/i.test(clean)) return false;
   if (/^Vig[êe]ncia\b/i.test(clean)) return false;
   // Não pode começar com preposições, conjunções ou locuções de início de oração
   if (/^(?:No|Nos|Na|Nas|Do|Dos|Da|Das|Em|Para|Com|Sem|Pelo|Pela|Pelos|Pelas|Se|Quando|Salvo|Exceto|Ressalvado|Mediante|Segundo|Conforme|Durante)\b/i.test(clean)) return false;
@@ -218,6 +219,61 @@ export function isLineEpigrafe(line: string): boolean {
   // Não pode conter verbos típicos de corpo de norma jurídica
   if (/\b(?:considera-se|aplica-se|será|serão|não\s+será|deve|podem|ficam|sujeitos)\b/i.test(clean)) return false;
   return true;
+}
+
+/** Verifica se a linha é apenas um marcador legal vazio (ex: "§ 7º", "VI -", "§ 2º-A") sem texto.
+ *  Linhas que contenham nota de revogação (ex: "§ 7º (Revogado...)") NÃO são consideradas vazias. */
+export function isLineEmptyMarker(line: string): boolean {
+  // Se a linha contém nota de revogação, ela tem conteúdo informativo → não é vazia
+  if (/\(Revogado[^)]*\)/i.test(line)) return false;
+  const clean = line.replace(/\s*\([^)]*\)/g, '').trim();
+  if (/^(?:§\s*\d+[ºo°]?(?:-[A-Za-z0-9]+)?\.?|Parágrafo\s+único\.?)\s*$/i.test(clean)) return true;
+  if (/^[IVXLCDM]+\s*[-–—.]?\s*$/i.test(clean)) return true;
+  if (/^[a-z]\)\s*$/i.test(clean)) return true;
+  return false;
+}
+
+/** Remove marcadores órfãos e anotações anômalas resultantes de scraping/revogação.
+ *  Dispositivos revogados com nota "(Revogado...)" são PRESERVADOS para exibição. */
+export function sanitizeLegalArticleText(text: string): string {
+  if (!text) return '';
+  let sanitized = stripStructuralSuffix(text);
+
+  // 1. Remove epígrafes órfãs de dispositivos revogados (ex: "Feminicídio" sem dispositivo abaixo),
+  //    mas PRESERVA parágrafos/incisos com nota de revogação (ex: "§ 7º (Revogado pela Lei...)")
+  sanitized = sanitized.replace(/\n?Feminic[íi]dio\s*(?:\((?!Revogado)[^)]*\))?\s*(?=\n|$)/gi, '\n');
+
+  // 2. Normaliza notas de vigência avulsas
+  sanitized = sanitized.replace(/(?:^|[\s,;])Vig[êe]ncia(?:\s*[.:;]|\s+|$)/gi, ' (Vigência) ');
+
+  // 3. Quebra em linhas e remove trailing órfãos (marcadores vazios, notas ou epígrafes sem dispositivo)
+  const lines = sanitized.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  while (lines.length > 0) {
+    const last = lines[lines.length - 1];
+    if (isLineEmptyMarker(last) || isLineEpigrafe(last) || LEGAL_NOTE_ONLY_RE.test(last)) {
+      lines.pop();
+    } else {
+      break;
+    }
+  }
+
+  // 4. Remove linhas intermediárias que sejam marcadores vazios ou epígrafes órfãs
+  const filteredLines: string[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    const current = lines[i];
+    if (isLineEmptyMarker(current)) {
+      continue;
+    }
+    if (isLineEpigrafe(current)) {
+      const next = lines[i + 1];
+      if (!next || isLineEpigrafe(next) || isLineEmptyMarker(next) || LEGAL_NOTE_ONLY_RE.test(next)) {
+        continue;
+      }
+    }
+    filteredLines.push(current);
+  }
+
+  return filteredLines.join('\n');
 }
 
 /** Desmembra títulos/epígrafes colados após ponto final para sua própria linha */
@@ -236,8 +292,8 @@ export function desmembrarEpigrafesEmbutidas(text: string): string {
 
 /** Merge physical line breaks into logical legal units, preservando epígrafes em sua própria linha. */
 export function normalizeLegalLineBreaks(text: string): string {
-  // Corta cabeçalho estrutural que possa ter ficado no fim do texto do artigo (ex: CAPÍTULO III...)
-  let normalizedText = stripStructuralSuffix(text);
+  // Corta cabeçalho estrutural e resíduos de scraping/revogação
+  let normalizedText = sanitizeLegalArticleText(text);
 
   // Corrige espaçamento anômalo entre número e indicador ordinal (ex: "§ 2 º" -> "§ 2º")
   normalizedText = normalizedText

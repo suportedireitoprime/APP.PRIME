@@ -1,6 +1,7 @@
 import type { ArtigoLei } from '@/data/mockData';
 import { getPersistedArtigosCache, setPersistedArtigosCache, getOfflineArtigos } from '@/services/offlineDb';
 import { LEIS_SUPABASE_URL, LEIS_SUPABASE_ANON_KEY } from '@/lib/legislacaoBackend';
+import { sanitizeLegalArticleText } from '@/components/vademecum/artigo/artigoTextUtils';
 
 const supabaseUrl = LEIS_SUPABASE_URL;
 const supabaseKey = LEIS_SUPABASE_ANON_KEY;
@@ -28,11 +29,12 @@ let _leiIndexPromise: Promise<Map<string, LeiRef>> | null = null;
 const STRUCTURAL_SUFFIX_RE = /(^|[.;:)])\s+(?=(?:PARTE|LIVRO|T[ÍI]TULO|CAP[ÍI]TULO|SE[ÇC][ÃA]O|SUBSE[ÇC][ÃA]O)\s+(?:[IVXLCDM]+|[0-9]+|[ÚU]NICO|PRELIMINAR)\b)[\s\S]*$/i;
 
 function cleanArticleText(value?: string | null): string {
-  return fixMojibake(value || '')
+  const fixed = fixMojibake(value || '')
     .replace(/(\d)o\b/g, '$1º')
     .replace(/°/g, 'º')
     .replace(STRUCTURAL_SUFFIX_RE, '$1')
     .trim();
+  return sanitizeLegalArticleText(fixed);
 }
 
 async function getLegacyToVMIndex(forceRefresh = false): Promise<Map<string, LeiRef>> {
@@ -267,6 +269,7 @@ export async function fetchArtigosLei(_leiId: string, tabelaNome?: string | null
     return cached.map((artigo) => ({ 
       ...artigo, 
       numero: normalizeArtigoLabel(artigo.numero),
+      caput: cleanArticleText(artigo.caput),
       nomen_juris: artigo.nomen_juris || artigo.titulo
     }));
   }
@@ -275,7 +278,7 @@ export async function fetchArtigosLei(_leiId: string, tabelaNome?: string | null
 
 export async function fetchArtigosInstant(tabelaNome: string, count = 10): Promise<ArtigoLei[]> {
   const cached = artigosCache.get(tabelaNome);
-  if (cached) return cached.slice(0, count).map((a) => ({ ...a, numero: normalizeArtigoLabel(a.numero) }));
+  if (cached) return cached.slice(0, count).map((a) => ({ ...a, numero: normalizeArtigoLabel(a.numero), caput: cleanArticleText(a.caput) }));
 
   // Bundle nativo — se existir JSON embutido no APK, usa direto (offline, instantâneo).
   try {
@@ -286,9 +289,10 @@ export async function fetchArtigosInstant(tabelaNome: string, count = 10): Promi
       if (slug) {
         const bundled = await loadBundledLei(slug);
         if (bundled && bundled.length > 0) {
-          artigosCache.set(tabelaNome, bundled);
-          setPersistedArtigosCache(tabelaNome, bundled);
-          return bundled.slice(0, count);
+          const sanitized = bundled.map(a => ({ ...a, caput: cleanArticleText(a.caput) }));
+          artigosCache.set(tabelaNome, sanitized);
+          setPersistedArtigosCache(tabelaNome, sanitized);
+          return sanitized.slice(0, count);
         }
       }
     }
@@ -299,7 +303,7 @@ export async function fetchArtigosInstant(tabelaNome: string, count = 10): Promi
     try {
       const persisted = await getPersistedArtigosCache(tabelaNome);
       if (persisted && persisted.length > 0) {
-        return persisted.slice(0, count);
+        return persisted.slice(0, count).map(a => ({ ...a, caput: cleanArticleText(a.caput) }));
       }
       const offlineRows = await getOfflineArtigos(tabelaNome);
       if (offlineRows && offlineRows.length > 0) {
@@ -370,11 +374,12 @@ export async function fetchArtigosPaginado(tabelaNome: string, offset: number, l
       if (slug) {
         const bundled = await loadBundledLei(slug);
         if (bundled && bundled.length > 0) {
+          const sanitized = bundled.map((a) => ({ ...a, caput: cleanArticleText(a.caput) }));
           if (offset === 0) {
-            artigosCache.set(tabelaNome, bundled);
-            setPersistedArtigosCache(tabelaNome, bundled);
+            artigosCache.set(tabelaNome, sanitized);
+            setPersistedArtigosCache(tabelaNome, sanitized);
           }
-          return bundled.slice(offset, offset + limit);
+          return sanitized.slice(offset, offset + limit);
         }
       }
     }
@@ -402,7 +407,7 @@ export async function fetchArtigosPaginado(tabelaNome: string, offset: number, l
       }
       const persisted = await getPersistedArtigosCache(tabelaNome);
       if (persisted && persisted.length > 0) {
-        return persisted.slice(offset, offset + limit);
+        return persisted.slice(offset, offset + limit).map((a) => ({ ...a, caput: cleanArticleText(a.caput) }));
       }
     } catch {}
     return [];
@@ -425,11 +430,14 @@ export async function fetchArtigosPaginado(tabelaNome: string, offset: number, l
         if (rows.length < take) break;
         cursor += take;
       }
-      if (all.length > 0 && offset === 0) {
-        artigosCache.set(tabelaNome, all);
-        setPersistedArtigosCache(tabelaNome, all);
+      if (all.length > 0) {
+        const sanitized = all.map((a) => ({ ...a, caput: cleanArticleText(a.caput) }));
+        if (offset === 0) {
+          artigosCache.set(tabelaNome, sanitized);
+          setPersistedArtigosCache(tabelaNome, sanitized);
+        }
+        return sanitized;
       }
-      if (all.length > 0) return all;
     }
   } catch (e) { console.error('vm paginado', e); }
 

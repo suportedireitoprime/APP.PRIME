@@ -8,6 +8,8 @@ import {
   alinharTimingsComTexto,
   isLineRevogado,
   normalizeLegalLineBreaks,
+  isLineEmptyMarker,
+  isLineEpigrafe,
 } from '../artigoTextUtils';
 import { buildLineSegmentMap } from '@/lib/artigoSegments';
 
@@ -84,7 +86,23 @@ export function useArtigoTextProcessing({
         if (isLineRevogado(l)) return l;
         return showRedacao ? l : stripRedacao(l);
       })
-      .filter((l) => l.trim() !== '');
+      .filter((l) => {
+        const trimmed = l.trim();
+        if (!trimmed) return false;
+        // Elimina marcadores vazios isolados (ex: "§ 7º" ou "VI -" sem texto)
+        if (isLineEmptyMarker(trimmed)) return false;
+        return true;
+      });
+
+    // Se as últimas linhas forem marcadores vazios ou epígrafes órfãs sem dispositivo abaixo delas, remove
+    while (processedLines.length > 0) {
+      const last = processedLines[processedLines.length - 1];
+      if (isLineEmptyMarker(last) || isLineEpigrafe(last)) {
+        processedLines.pop();
+      } else {
+        break;
+      }
+    }
     const isRevogado = processedLines.length === 0 && rawLines.length > 0;
     const displayLines = isRevogado ? rawLines : processedLines;
 
