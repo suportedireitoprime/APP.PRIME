@@ -1,12 +1,42 @@
 import { useEffect, useState, memo } from 'react';
-import { motion } from 'framer-motion';
 import { Scale, Gavel, BookOpen } from 'lucide-react';
 import laurel from '@/assets/landing-tribunal/laurel-leaf.webp';
 
+/**
+ * FallingMotifs — 120fps otimizado:
+ *
+ * Antes: 24 motion.div com repeat: Infinity = 24 rAF loops simultâneos na main thread.
+ * Agora: CSS @keyframes com transform (translateY, rotate) = compositor GPU puro, zero JS.
+ *
+ * - FallingLeaves: CSS `falling-leaf` keyframe (translateY + rotate + opacity)
+ * - FloatingSVGs: CSS `floating-svg` keyframe (translate + rotate)
+ * - prefers-reduced-motion: animações desativadas automaticamente
+ */
+
 const SVGS = [Scale, Gavel, BookOpen];
 
+interface LeafData {
+  id: string;
+  left: number;
+  duration: number;
+  delay: number;
+  size: number;
+  rotationFinal: number;
+}
+
+interface SvgData {
+  id: string;
+  Icon: typeof Scale;
+  left: number;
+  top: number;
+  duration: number;
+  delay: number;
+  size: number;
+  rotationInitial: number;
+}
+
 export const FallingLeaves = memo(() => {
-  const [leaves, setLeaves] = useState<any[]>([]);
+  const [leaves, setLeaves] = useState<LeafData[]>([]);
 
   useEffect(() => {
     const newLeaves = Array.from({ length: 12 }).map((_, i) => ({
@@ -15,7 +45,6 @@ export const FallingLeaves = memo(() => {
       duration: 10 + Math.random() * 15,
       delay: Math.random() * 10,
       size: 16 + Math.random() * 24,
-      rotationInitial: Math.random() * 360,
       rotationFinal: (Math.random() > 0.5 ? 1 : -1) * (360 + Math.random() * 360),
     }));
     setLeaves(newLeaves);
@@ -24,29 +53,20 @@ export const FallingLeaves = memo(() => {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-[2]">
       {leaves.map((m) => (
-        <motion.img
+        <img
           key={m.id}
           src={laurel}
           alt=""
           aria-hidden="true"
-          initial={{ y: -60, opacity: 0, rotate: m.rotationInitial }}
-          animate={{ 
-            y: [null, 200, 500, 800], 
-            opacity: [0, 1, 1, 0], 
-            rotate: m.rotationFinal 
-          }}
-          transition={{
-            duration: m.duration,
-            delay: m.delay,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="absolute drop-shadow-md"
-          style={{ 
-            left: `${m.left}%`, 
-            width: m.size, 
+          className="absolute css-falling-leaf"
+          style={{
+            left: `${m.left}%`,
+            width: m.size,
             height: m.size,
-            filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.45))'
+            // CSS custom properties drive the keyframe
+            ['--leaf-rotate' as string]: `${m.rotationFinal}deg`,
+            animation: `falling-leaf ${m.duration}s linear ${m.delay}s infinite`,
+            willChange: 'transform, opacity',
           }}
         />
       ))}
@@ -54,8 +74,10 @@ export const FallingLeaves = memo(() => {
   );
 });
 
+FallingLeaves.displayName = 'FallingLeaves';
+
 export const FloatingSVGs = memo(() => {
-  const [svgs, setSvgs] = useState<any[]>([]);
+  const [svgs, setSvgs] = useState<SvgData[]>([]);
 
   useEffect(() => {
     const newSvgs = Array.from({ length: 12 }).map((_, i) => ({
@@ -63,7 +85,7 @@ export const FloatingSVGs = memo(() => {
       Icon: SVGS[i % SVGS.length],
       left: Math.random() * 90,
       top: Math.random() * 90,
-      duration: 10 + Math.random() * 15, // Animação mais suave (vai e volta)
+      duration: 10 + Math.random() * 15,
       delay: Math.random() * 5,
       size: 40 + Math.random() * 40,
       rotationInitial: Math.random() * 60 - 30,
@@ -76,33 +98,28 @@ export const FloatingSVGs = memo(() => {
       {svgs.map((m) => {
         const { Icon } = m;
         return (
-          <motion.div
+          <div
             key={m.id}
-            initial={{ opacity: 0 }}
-            animate={{ 
-              opacity: 0.4, // Mais visível
-              x: [0, 20, -15, 0],
-              y: [0, -20, 15, 0],
-              rotate: [m.rotationInitial, m.rotationInitial + 20, m.rotationInitial - 20, m.rotationInitial] 
-            }}
-            transition={{
-              duration: m.duration,
-              delay: m.delay,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-            className="absolute text-black"
-            style={{ 
-              left: `${m.left}%`, 
+            className="absolute text-black css-floating-svg"
+            style={{
+              left: `${m.left}%`,
               top: `${m.top}%`,
-              width: m.size, 
-              height: m.size 
+              width: m.size,
+              height: m.size,
+              opacity: 0.4,
+              ['--float-rotate-start' as string]: `${m.rotationInitial}deg`,
+              ['--float-rotate-mid' as string]: `${m.rotationInitial + 20}deg`,
+              ['--float-rotate-end' as string]: `${m.rotationInitial - 20}deg`,
+              animation: `floating-svg ${m.duration}s ease-in-out ${m.delay}s infinite`,
+              willChange: 'transform',
             }}
           >
             <Icon className="w-full h-full drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]" strokeWidth={1.5} />
-          </motion.div>
+          </div>
         );
       })}
     </div>
   );
 });
+
+FloatingSVGs.displayName = 'FloatingSVGs';

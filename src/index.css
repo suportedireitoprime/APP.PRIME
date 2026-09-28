@@ -1982,11 +1982,30 @@ html[data-route-transitioning="true"] * {
   50%      { transform: translateX(4px); }
 }
 
+/* Falling leaf — translateY + rotate + opacity (compositor GPU) */
+@keyframes falling-leaf {
+  0%   { transform: translateY(-60px) rotate(0deg);                opacity: 0; }
+  10%  { transform: translateY(60px) rotate(calc(var(--leaf-rotate) * 0.1));  opacity: 1; }
+  80%  { transform: translateY(600px) rotate(calc(var(--leaf-rotate) * 0.8)); opacity: 1; }
+  100% { transform: translateY(800px) rotate(var(--leaf-rotate));             opacity: 0; }
+}
+
+/* Floating SVG — translate + rotate drift (compositor GPU) */
+@keyframes floating-svg {
+  0%   { transform: translate(0, 0)       rotate(var(--float-rotate-start)); }
+  25%  { transform: translate(20px, -20px) rotate(var(--float-rotate-mid)); }
+  50%  { transform: translate(-15px, 15px) rotate(var(--float-rotate-end)); }
+  75%  { transform: translate(10px, -10px) rotate(var(--float-rotate-mid)); }
+  100% { transform: translate(0, 0)       rotate(var(--float-rotate-start)); }
+}
+
 /* Respect reduced motion globally */
 @media (prefers-reduced-motion: reduce) {
   .css-eq-bar,
   .mini-player-shine,
-  .arrow-nudge-anim {
+  .arrow-nudge-anim,
+  .css-falling-leaf,
+  .css-floating-svg {
     animation: none !important;
   }
 }
