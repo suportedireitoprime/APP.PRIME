@@ -430,6 +430,12 @@ const Atualizacoes = () => {
                     Boletins Jurídicos
                   </h2>
                 </div>
+                <button
+                  onClick={() => navigate('/boletins')}
+                  className="text-xs font-semibold text-[#F59E0B] hover:text-[#F59E0B]/80 flex items-center"
+                >
+                  Ver todos <ChevronRight className="w-4 h-4" />
+                </button>
               </div>
               <p className="text-muted-foreground text-[13px] px-1 mb-4 truncate">
                 Resumos e boletins oficiais
@@ -438,6 +444,7 @@ const Atualizacoes = () => {
                 {boletins.filter(b => b.tipo !== 'noticias' && !b.titulo.toLowerCase().includes('notícia')).length > 0 ? boletins.filter(b => b.tipo !== 'noticias' && !b.titulo.toLowerCase().includes('notícia')).map((bol) => (
                   <div 
                     key={bol.id} 
+                    onClick={() => navigate(`/boletins/${bol.id}`)}
                     className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
                   >
                     <div className="absolute top-0 right-0 p-3 opacity-10">
@@ -469,6 +476,12 @@ const Atualizacoes = () => {
                     Boletins de Notícias
                   </h2>
                 </div>
+                <button
+                  onClick={() => navigate('/boletins-noticias')}
+                  className="text-xs font-semibold text-[#EF4444] hover:text-[#EF4444]/80 flex items-center"
+                >
+                  Ver todos <ChevronRight className="w-4 h-4" />
+                </button>
               </div>
               <p className="text-muted-foreground text-[13px] px-1 mb-4 truncate">
                 Resumo em áudio das notícias
@@ -477,6 +490,7 @@ const Atualizacoes = () => {
                 {boletins.filter(b => b.tipo === 'noticias' || b.titulo.toLowerCase().includes('notícia')).length > 0 ? boletins.filter(b => b.tipo === 'noticias' || b.titulo.toLowerCase().includes('notícia')).map((bol) => (
                   <div 
                     key={bol.id} 
+                    onClick={() => navigate(`/boletins-noticias/${bol.id}`)}
                     className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
                   >
                     <div className="absolute top-0 right-0 p-3 opacity-10">
