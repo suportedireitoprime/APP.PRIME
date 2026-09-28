@@ -432,8 +432,12 @@ export default function AdminNarracaoLeis() {
           return { artigo: art, score, isTopProva, lenChars };
         });
 
-      // Ordena por score decrescente (Top Prova + Artigos Maiores primeiro!)
-      pendentes.sort((a, b) => b.score - a.score);
+      // Mantém a ordem padrão (numérica/cronológica da lei: Art. 1, 2, 3...)
+      pendentes.sort((a, b) => {
+        const numA = parseInt(String(a.artigo.numero || '').match(/\d+/)?.[0] || '0', 10);
+        const numB = parseInt(String(b.artigo.numero || '').match(/\d+/)?.[0] || '0', 10);
+        return numA - numB;
+      });
 
       listasPorLei.push({ lei: leiItem, itens: pendentes });
     });
@@ -750,8 +754,10 @@ export default function AdminNarracaoLeis() {
 
       // Atualiza o toast com a identificação explícita da parte atual e total
       const textoParte = totalPartesNum > 1 ? ` · Parte ${parteAtualNum} de ${totalPartesNum}` : '';
+      const infoTempo = porcentagemGlobal >= 96 ? 'Finalizando áudio... aguarde' : `~${restantes}s restantes`;
+      
       toast.loading(
-        `Narrando Artigo ${artigo.numero} (${leiAlvo.sigla || leiAlvo.nome})${textoParte}... ${porcentagemGlobal}% (~${restantes}s restantes)`,
+        `Narrando Artigo ${artigo.numero} (${leiAlvo.sigla || leiAlvo.nome})${textoParte}... ${porcentagemGlobal}% (${infoTempo})`,
         { id: toastId }
       );
     }, 250);
@@ -775,8 +781,9 @@ export default function AdminNarracaoLeis() {
           porcentagemAcumulada = Math.min(96, Math.round(baseFatia + (10 / totalPartes)));
 
           const textoParte = totalPartes > 1 ? ` · Parte ${parteAtual} de ${totalPartes}` : '';
+          const infoTempo = porcentagemAcumulada >= 96 ? 'Finalizando áudio... aguarde' : `~${tempoEstimadoParteSegundos}s restantes`;
           toast.loading(
-            `Narrando Artigo ${artigo.numero} (${leiAlvo.sigla || leiAlvo.nome})${textoParte}... ${porcentagemAcumulada}% (~${tempoEstimadoParteSegundos}s restantes)`,
+            `Narrando Artigo ${artigo.numero} (${leiAlvo.sigla || leiAlvo.nome})${textoParte}... ${porcentagemAcumulada}% (${infoTempo})`,
             { id: toastId }
           );
         }
