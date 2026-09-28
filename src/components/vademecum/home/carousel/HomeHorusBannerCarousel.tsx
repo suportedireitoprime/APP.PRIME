@@ -9,6 +9,7 @@ import horusOwl2 from '@/assets/horus/02_coruja_estudando.webp';
 import horusOwl3 from '@/assets/horus/03_coruja_balanca_justica.webp';
 import horusOwl4 from '@/assets/horus/04_coruja_maleta_balanca.webp';
 import horusWhatsapp from '@/assets/horus/coruja_whatsapp.png';
+import horusBiblioteca from '@/assets/horus/coruja_biblioteca.png';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 
 const horusOwl = pickAsset(horusOwlBundled, srcOf(horusOwlAsset));
@@ -29,7 +30,7 @@ const EM_ALTA_ITEMS: EmAltaItem[] = [
     route: '/bibliotecas', 
     bgGradient: 'from-[#2563EB] via-[#1D4ED8] to-[#1E3A8A]', // Azul (Radar)
     sparkleColor: 'text-blue-200',
-    owlImage: horusOwl1 
+    owlImage: horusBiblioteca 
   },
   { 
     id: 'resumos', 
