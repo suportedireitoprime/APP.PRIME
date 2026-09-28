@@ -126,7 +126,14 @@ const ResumosHero = ({
       </div>
 
       {/* Imagem de Fundo */}
-      <HeroCoverCarousel covers={PHILOSOPHER_COVER} forcePosition="right" />
+      <div className="absolute inset-0 z-0 pointer-events-none select-none">
+        <img 
+          src="/resumos-philosopher.jpg" 
+          alt=""
+          className="w-full h-full object-cover opacity-90 object-center"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+      </div>
 
       {/* Overlay vermelho com gradiente estilo menu e sombra */}
       <div 
@@ -169,7 +176,7 @@ const ResumosHero = ({
       </header>
 
       {/* ConteÃºdo idÃªntico Ã  altura da Home (Textos animando) */}
-      <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[100px]">
+      <div className="relative z-10 pt-24 sm:pt-28 flex-1 flex flex-col justify-start min-h-[100px]">
         <div className="flex flex-col items-center text-center gap-1 z-[10] relative w-[48%] max-w-[200px] ml-2 sm:ml-4">
           <div className="h-[20px] sm:h-[40px] mb-1 w-full" />
           
