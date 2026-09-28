@@ -285,6 +285,7 @@ export default function AdminNarracaoLeis() {
   const [selectedCat, setSelectedCat] = useState<CategoriaDef | null>(null);
   const [selectedLei, setSelectedLei] = useState<LeiCatalogItem | null>(null);
   const [busca, setBusca] = useState('');
+  const [abaAuto, setAbaAuto] = useState<'config' | 'fila'>('config');
 
   // Artigos da lei selecionada
   const [artigos, setArtigos] = useState<ArtigoLei[]>([]);
@@ -2167,8 +2168,34 @@ export default function AdminNarracaoLeis() {
         />
 
         <div className="p-4 max-w-4xl mx-auto space-y-6">
-          {/* Card Status do Cron */}
-          <div className="p-5 rounded-2xl border border-border/70 bg-gradient-to-br from-card/90 via-card/50 to-secondary/30 shadow-lg space-y-4">
+          {/* Menu de Alternância (Abas) */}
+          <div className="flex items-center gap-2 p-1.5 bg-secondary/30 rounded-2xl border border-border/50 max-w-fit mx-auto sm:mx-0">
+            <button
+              onClick={() => setAbaAuto('config')}
+              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+                abaAuto === 'config'
+                  ? 'bg-card border-border/80 text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'
+              }`}
+            >
+              Configurações
+            </button>
+            <button
+              onClick={() => setAbaAuto('fila')}
+              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+                abaAuto === 'fila'
+                  ? 'bg-card border-border/80 text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'
+              }`}
+            >
+              Lista Geral (Fila)
+            </button>
+          </div>
+
+          {abaAuto === 'config' && (
+            <>
+              {/* Card Status do Cron */}
+              <div className="p-5 rounded-2xl border border-border/70 bg-gradient-to-br from-card/90 via-card/50 to-secondary/30 shadow-lg space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2">
@@ -2346,10 +2373,13 @@ export default function AdminNarracaoLeis() {
               </p>
             </div>
           </div>
+          </>
+          )}
 
           {/* PAINEL VIVO: FILA DE EXECUÇÃO DOS ARTIGOS (ORDEM DA AUTOMAÇÃO) */}
-          <div className="p-5 rounded-2xl border border-border/60 bg-card/60 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-border/40">
+          {abaAuto === 'fila' && (
+            <div className="p-5 rounded-2xl border border-border/60 bg-card/60 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-border/40">
               <div>
                 <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
                   <ListOrdered className="w-4 h-4 text-emerald-400" />
@@ -2528,7 +2558,7 @@ export default function AdminNarracaoLeis() {
               </div>
             )}
           </div>
-
+          )}
           {/* Histórico de Execuções e Logs */}
           <div className="p-5 rounded-2xl border border-border/60 bg-card/60 space-y-3">
             <div className="flex items-center justify-between">
