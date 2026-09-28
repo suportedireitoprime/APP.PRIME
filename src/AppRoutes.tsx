@@ -84,17 +84,16 @@ import Auth from "./pages/Auth.tsx";
 import Landing from "@/pages/Landing";
 import Onboarding from "./pages/Onboarding.tsx";
 
-// Hubs Críticos — eager para abrir sem Suspense fallback (Engenharia VACATIO-APP)
-import VadeMecum from "./pages/VadeMecum.tsx";
-import VadeMecumCodigos from "./pages/VadeMecumCodigos.tsx";
-import VadeMecumEstatutos from "./pages/VadeMecumEstatutos.tsx";
-import VadeMecumEspeciais from "./pages/VadeMecumEspeciais.tsx";
-import VadeMecumSumulas from "./pages/VadeMecumSumulas.tsx";
-import VadeMecumFavoritos from "./pages/VadeMecumFavoritos.tsx";
-import VadeMecumRecentes from "./pages/VadeMecumRecentes.tsx";
-import CategoriaLegislacao from "./pages/CategoriaLegislacao.tsx";
-import Ferramentas from "./pages/Ferramentas.tsx";
-import MeuEspaco from "./pages/MeuEspaco.tsx";
+const VadeMecum = lazy(() => import("./pages/VadeMecum.tsx"));
+const VadeMecumCodigos = lazy(() => import("./pages/VadeMecumCodigos.tsx"));
+const VadeMecumEstatutos = lazy(() => import("./pages/VadeMecumEstatutos.tsx"));
+const VadeMecumEspeciais = lazy(() => import("./pages/VadeMecumEspeciais.tsx"));
+const VadeMecumSumulas = lazy(() => import("./pages/VadeMecumSumulas.tsx"));
+const VadeMecumFavoritos = lazy(() => import("./pages/VadeMecumFavoritos.tsx"));
+const VadeMecumRecentes = lazy(() => import("./pages/VadeMecumRecentes.tsx"));
+const CategoriaLegislacao = lazy(() => import("./pages/CategoriaLegislacao.tsx"));
+const Ferramentas = lazy(() => import("./pages/Ferramentas.tsx"));
+const MeuEspaco = lazy(() => import("./pages/MeuEspaco.tsx"));
 
 // Lazy loaded
 const PilulasLista = lazy(() => import('@/pages/pilulas/PilulasLista'));
