@@ -2,6 +2,7 @@ import type { ArtigoLei } from '@/data/mockData';
 import { getPersistedArtigosCache, setPersistedArtigosCache, getOfflineArtigos } from '@/services/offlineDb';
 import { LEIS_SUPABASE_URL, LEIS_SUPABASE_ANON_KEY } from '@/lib/legislacaoBackend';
 import { sanitizeLegalArticleText } from '@/components/vademecum/artigo/artigoTextUtils';
+import { getCachedArtigosRAM } from '@/services/lawsBundle';
 
 const supabaseUrl = LEIS_SUPABASE_URL;
 const supabaseKey = LEIS_SUPABASE_ANON_KEY;
@@ -258,27 +259,35 @@ export async function fetchDecretosPorAno(ano: number): Promise<LeiOrdinaria[]> 
 }
 
 export function getCachedArtigos(tabelaNome: string): ArtigoLei[] | null {
-  const cached = artigosCache.get(tabelaNome) || null;
+  let cached = artigosCache.get(tabelaNome) || null;
+  
+  if (!cached) {
+    // ⚡ Lê síncrono da RAM (0ms) se a lei foi pré-carregada no boot pelo lawsBundle
+    const ramCache = getCachedArtigosRAM(tabelaNome);
+    if (ramCache && ramCache.length > 0) {
+      cached = ramCache.map((a: any) => ({
+         ...a,
+         caput: cleanArticleText(a.caput),
+         numero: normalizeArtigoLabel(a.numero),
+         nomen_juris: a.nomen_juris || a.titulo
+      }));
+      artigosCache.set(tabelaNome, cached);
+    }
+  }
+
   return cached?.map((artigo) => ({ ...artigo, numero: normalizeArtigoLabel(artigo.numero) })) || null;
 }
 
 export async function fetchArtigosLei(_leiId: string, tabelaNome?: string | null): Promise<ArtigoLei[]> {
   if (!tabelaNome) return [];
-  const cached = artigosCache.get(tabelaNome);
-  if (cached) {
-    return cached.map((artigo) => ({ 
-      ...artigo, 
-      numero: normalizeArtigoLabel(artigo.numero),
-      caput: cleanArticleText(artigo.caput),
-      nomen_juris: artigo.nomen_juris || artigo.titulo
-    }));
-  }
+  const cached = getCachedArtigos(tabelaNome);
+  if (cached) return cached;
   return fetchArtigosPaginado(tabelaNome, 0, 2000);
 }
 
 export async function fetchArtigosInstant(tabelaNome: string, count = 10): Promise<ArtigoLei[]> {
-  const cached = artigosCache.get(tabelaNome);
-  if (cached) return cached.slice(0, count).map((a) => ({ ...a, numero: normalizeArtigoLabel(a.numero), caput: cleanArticleText(a.caput) }));
+  const cached = getCachedArtigos(tabelaNome);
+  if (cached) return cached.slice(0, count);
 
   // Bundle nativo — se existir JSON embutido no APK, usa direto (offline, instantâneo).
   try {

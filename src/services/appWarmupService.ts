@@ -12,6 +12,7 @@ import { warmVideoaulasStartup } from '@/services/videoaulasWarmup';
 import { warmQuestoesStartup } from '@/services/questoesWarmup';
 import { prewarmFavoritosERecentesIdle } from '@/services/warmFavoritosService';
 import { routePrefetch } from '@/lib/routePrefetch';
+import { Capacitor } from '@capacitor/core';
 import brasaoImg from '@/assets/brasao-republica.webp';
 
 let appWarmupStarted = false;
@@ -20,8 +21,11 @@ export function scheduleAppWarmup(qc: QueryClient): void {
   if (appWarmupStarted || typeof window === 'undefined') return;
   appWarmupStarted = true;
 
-  // 1. Respeita economia de dados (Save-Data) e redes móveis lentas
-  if (typeof navigator !== 'undefined') {
+  const isNative = Capacitor.isNativePlatform();
+
+  // No nativo, dados já estão no APK — não precisa checar rede para aquecer.
+  // Na web, respeita economia de dados (Save-Data) e redes lentas.
+  if (!isNative && typeof navigator !== 'undefined') {
     if (!navigator.onLine) return;
     // @ts-expect-error NetworkInformation experimental
     if (navigator.connection?.saveData === true) return;
@@ -86,12 +90,17 @@ export function scheduleAppWarmup(qc: QueryClient): void {
     }
   };
 
-  // Aguarda 3.5s após a montagem da tela para garantir First Meaningful Paint suave a 120fps
+  // ⚡ NATIVO: O splash nativo já protegeu o primeiro paint, então podemos
+  // começar a aquecer caches em 1s (vs 3.5s na web). Isso faz o Vade Mecum,
+  // Biblioteca e Resumos estarem prontos ~4.5s mais cedo.
+  const delay = isNative ? 1000 : 3500;
+
   setTimeout(() => {
     if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      (window as any).requestIdleCallback(runWarmup, { timeout: 3000 });
+      (window as any).requestIdleCallback(runWarmup, { timeout: isNative ? 1500 : 3000 });
     } else {
-      setTimeout(runWarmup, 1000);
+      setTimeout(runWarmup, isNative ? 400 : 1000);
     }
-  }, 3500);
+  }, delay);
 }
+

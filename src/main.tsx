@@ -1,30 +1,45 @@
 import "./lib/domGuard";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
+
+// ───── Fontes Críticas (bloqueiam render — essenciais para o primeiro paint) ─────
 import "@fontsource/bebas-neue/400.css";
-import "@fontsource/barlow/300.css";
 import "@fontsource/barlow/400.css";
 import "@fontsource/barlow/500.css";
 import "@fontsource/barlow/600.css";
 import "@fontsource/barlow/700.css";
-import "@fontsource/barlow/800.css";
-import "@fontsource/barlow/900.css";
-import "@fontsource/barlow-condensed/400.css";
 import "@fontsource/barlow-condensed/600.css";
 import "@fontsource/barlow-condensed/700.css";
-import "@fontsource/barlow-condensed/800.css";
-import "@fontsource/plus-jakarta-sans/600.css";
-import "@fontsource/plus-jakarta-sans/700.css";
-import "@fontsource/plus-jakarta-sans/800.css";
-import "@fontsource/literata/400.css";
-import "@fontsource/literata/400-italic.css";
-import "@fontsource/literata/600.css";
-import "@fontsource/literata/600-italic.css";
-import "@fontsource/literata/700.css";
-import "@fontsource/jetbrains-mono/400.css";
-import "@fontsource/jetbrains-mono/500.css";
-import "@fontsource/jetbrains-mono/600.css";
+
 import "./index.css";
+
+// ───── Fontes Secundárias (carregadas após o primeiro paint — ~200-400ms de ganho) ─────
+// Pesos raramente usados no first paint, fontes de leitura (Literata) e
+// código (JetBrains Mono) são carregados em idle para não bloquear o render.
+const loadDeferredFonts = () => {
+  import("@fontsource/barlow/300.css");
+  import("@fontsource/barlow/800.css");
+  import("@fontsource/barlow/900.css");
+  import("@fontsource/barlow-condensed/400.css");
+  import("@fontsource/barlow-condensed/800.css");
+  import("@fontsource/plus-jakarta-sans/600.css");
+  import("@fontsource/plus-jakarta-sans/700.css");
+  import("@fontsource/plus-jakarta-sans/800.css");
+  import("@fontsource/literata/400.css");
+  import("@fontsource/literata/400-italic.css");
+  import("@fontsource/literata/600.css");
+  import("@fontsource/literata/600-italic.css");
+  import("@fontsource/literata/700.css");
+  import("@fontsource/jetbrains-mono/400.css");
+  import("@fontsource/jetbrains-mono/500.css");
+  import("@fontsource/jetbrains-mono/600.css");
+};
+
+if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+  (window as any).requestIdleCallback(loadDeferredFonts, { timeout: 2000 });
+} else {
+  setTimeout(loadDeferredFonts, 300);
+}
 import { bootstrapCriticalNative, bootstrapIdleNative } from "./lib/boot/nativeBootstrap";
 
 // Preload síncrono das duas imagens críticas de marca (aparecem no primeiro paint).

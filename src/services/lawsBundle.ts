@@ -12,6 +12,24 @@ import { setPersistedArtigosCache, getPersistedArtigosCache, invalidateArtigosCa
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { sanitizeLegalArticleText } from '@/components/vademecum/artigo/artigoTextUtils';
 
+// ── Cache em RAM para leitura síncrona (0ms) ──
+// Evita ir ao IndexedDB/Dexie a cada abertura de lei (50-200ms).
+const _ramCache = new Map<string, any[]>();
+
+// Leis mais acessadas — carregadas com prioridade máxima no boot.
+// Quando em RAM, abertura é literal 0ms.
+const PRIORITY_LAWS = ['cf88', 'cp', 'cc', 'cpc', 'cpp', 'clt', 'ctn', 'cdc'];
+
+/** Leitura síncrona do RAM cache. null = não carregada ainda. */
+export function getCachedArtigosRAM(tabelaNome: string): any[] | null {
+  return _ramCache.get(tabelaNome) ?? null;
+}
+
+/** Popula o RAM cache (chamado internamente ao carregar de IndexedDB ou bundle). */
+function setRAMCache(tabelaNome: string, artigos: any[]): void {
+  _ramCache.set(tabelaNome, artigos);
+}
+
 const MANIFEST_URL = '/laws-bundle/manifest.json';
 
 export interface ManifestLei {
@@ -96,32 +114,60 @@ export function primeMemoryCacheFromBundle(concurrency = 6): Promise<void> {
 
     const slugToTabela = new Map<string, string>();
     for (const m of manifest.leis) {
-      // O slug unificado no supabase bate com o `tabela_nome` no catalog?
-      // Usaremos a rotina de match fuzzy.
       const lei = LEIS_CATALOG.find((l) => matchesSlug(l as any, m.slug));
       if (lei) {
           slugToTabela.set(m.slug, lei.tabela_nome);
       } else {
-          // Se for uma lei especial dinâmica que não está no catalog, a `tabelaNome` é o próprio slug
           slugToTabela.set(m.slug, m.slug);
       }
     }
 
-    // Invalidação de versão de cache local (purga dados anteriores com resíduos de extração)
+    // Invalidação de versão de cache local
     const BUNDLE_CACHE_VER = 'vade_bundle_v7';
     if (typeof localStorage !== 'undefined' && localStorage.getItem('vade_bundle_cache_ver') !== BUNDLE_CACHE_VER) {
       await invalidateArtigosCache();
       localStorage.setItem('vade_bundle_cache_ver', BUNDLE_CACHE_VER);
     }
 
-    // Processa apenas as leis que AINDA NÃO estão no cache.
-    const queue = [];
-    for (const m of manifest.leis) {
+    // ⚡ FASE 1: Carregar as 8 leis prioritárias direto na RAM (0ms de abertura)
+    // Estas são as mais acessadas — carregamos primeiro e em paralelo.
+    const priorityManifest = manifest.leis.filter(m => 
+      PRIORITY_LAWS.some(p => matchesSlug({ tabela_nome: p, nome: p, id: p } as any, m.slug))
+    );
+    const restManifest = manifest.leis.filter(m => !priorityManifest.includes(m));
+
+    // Carrega leis prioritárias primeiro — tanto IndexedDB quanto RAM
+    for (const m of priorityManifest) {
+      const tabela = slugToTabela.get(m.slug);
+      if (!tabela) continue;
+      try {
+        // Tenta do IndexedDB primeiro
+        const cached = await getPersistedArtigosCache(tabela);
+        if (cached && cached.length > 0) {
+          setRAMCache(tabela, cached);
+          continue;
+        }
+        // Senão, carrega do bundle
+        const arts = await loadBundledLei(m.slug);
+        if (arts && arts.length > 0) {
+          await setPersistedArtigosCache(tabela, arts);
+          setRAMCache(tabela, arts);
+        }
+      } catch { /* segue */ }
+    }
+    console.info(`[lawsBundle] ⚡ ${priorityManifest.length} leis prioritárias em RAM`);
+
+    // FASE 2: Processar restante das leis (as que ainda não estão no cache)
+    const queue: typeof manifest.leis = [];
+    for (const m of restManifest) {
         const t = slugToTabela.get(m.slug);
         if (!t) continue;
         const exists = await getPersistedArtigosCache(t);
-        if (!exists || exists.length === 0) {
-            queue.push(m);
+        if (exists && exists.length > 0) {
+          // Já está no IndexedDB — popular RAM cache também
+          setRAMCache(t, exists);
+        } else {
+          queue.push(m);
         }
     }
 
@@ -135,7 +181,7 @@ export function primeMemoryCacheFromBundle(concurrency = 6): Promise<void> {
           const arts = await loadBundledLei(item.slug);
           if (arts && arts.length > 0) {
               await setPersistedArtigosCache(tabela, arts);
-              console.log(`[lawsBundle] ${item.slug} injetada offline (zero-load).`);
+              setRAMCache(tabela, arts);
           }
         } catch { /* segue */ }
       }
