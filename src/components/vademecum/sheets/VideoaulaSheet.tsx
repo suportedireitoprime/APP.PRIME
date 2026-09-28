@@ -354,7 +354,7 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
   return createPortal(
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-[10050] pointer-events-auto flex items-stretch justify-center">
+        <div className="fixed inset-0 pointer-events-auto flex items-stretch justify-center" style={{ zIndex: 100050 }}>
           <motion.div
             key="videoaula-backdrop"
             initial={{ opacity: 0 }}

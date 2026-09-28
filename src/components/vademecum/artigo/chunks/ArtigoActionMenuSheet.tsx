@@ -327,17 +327,17 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
               exit={{ opacity: 0 }}
               data-artigo-menu=""
               onClick={() => setActiveActionMenu(null)}
-              style={{ pointerEvents: 'auto' }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[10005]"
+              style={{ pointerEvents: 'auto', zIndex: 100005 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm"
             />
             <motion.aside
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               data-artigo-menu=""
-              style={{ pointerEvents: 'auto' }}
+              style={{ pointerEvents: 'auto', zIndex: 100006 }}
               transition={{ type: 'spring', damping: 32, stiffness: 350, mass: 0.8 }}
-              className="fixed bottom-0 left-0 right-0 z-[10006] bg-card border-t border-border rounded-t-3xl shadow-2xl flex flex-col pb-safe min-h-[74vh] max-h-[92vh] mx-auto max-w-lg md:left-1/2 md:right-auto md:-translate-x-1/2 md:bottom-6 md:top-auto md:w-[92vw] md:max-w-2xl md:rounded-3xl md:border md:border-border md:shadow-2xl md:min-h-0"
+              className="fixed bottom-0 left-0 right-0 bg-card border-t border-border rounded-t-3xl shadow-2xl flex flex-col pb-safe min-h-[74vh] max-h-[92vh] mx-auto max-w-lg md:left-1/2 md:right-auto md:-translate-x-1/2 md:bottom-6 md:top-auto md:w-[92vw] md:max-w-2xl md:rounded-3xl md:border md:border-border md:shadow-2xl md:min-h-0"
             >
               <div className="pt-3 pb-2 flex justify-center">
                 <span className="w-10 h-1 rounded-full bg-border" />

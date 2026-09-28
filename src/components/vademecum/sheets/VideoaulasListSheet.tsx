@@ -257,7 +257,7 @@ const VideoaulasListSheet = ({ open, onClose, tabelaNome, artigoNumero, leiNome,
   return createPortal(
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-[10050] pointer-events-auto flex items-end md:items-stretch justify-center">
+        <div className="fixed inset-0 pointer-events-auto flex items-end md:items-stretch justify-center" style={{ zIndex: 100050 }}>
           {/* Backdrop que fecha com clique */}
           <motion.div
             key="videoaulas-backdrop"

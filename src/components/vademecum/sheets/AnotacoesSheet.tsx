@@ -370,7 +370,8 @@ const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, 
         key="anotacoes-backdrop"
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, pointerEvents: 'none' }}
         onClick={onClose}
-        className="fixed inset-0 z-[10040] bg-black/60 backdrop-blur-sm pointer-events-auto touch-none"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto touch-none"
+        style={{ zIndex: 100040 }}
       />
       <motion.div
         initial={isDesktop ? { x: '100%' } : { y: '100%' }}
@@ -381,9 +382,10 @@ const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, 
         onClick={(e) => e.stopPropagation()}
         className={
           isDesktop
-            ? 'fixed right-0 top-0 bottom-0 z-[10041] w-[min(30rem,92vw)] border-l border-border bg-background shadow-2xl flex flex-col pointer-events-auto'
-            : 'fixed inset-x-0 bottom-0 z-[10041] bg-background h-[95dvh] max-h-[95dvh] rounded-t-[28px] border-t border-border shadow-2xl flex flex-col pointer-events-auto pb-[calc(1.25rem+var(--sai-bottom))]'
+            ? 'fixed right-0 top-0 bottom-0 w-[min(30rem,92vw)] border-l border-border bg-background shadow-2xl flex flex-col pointer-events-auto'
+            : 'fixed inset-x-0 bottom-0 bg-background h-[95dvh] max-h-[95dvh] rounded-t-[28px] border-t border-border shadow-2xl flex flex-col pointer-events-auto pb-[calc(1.25rem+var(--sai-bottom))]'
         }
+        style={{ zIndex: 100041 }}
       >
         {!isDesktop && (
           <div className="w-12 h-1.5 rounded-full bg-muted-foreground/30 mx-auto my-2.5 shrink-0" />

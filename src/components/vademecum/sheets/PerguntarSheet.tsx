@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Loader2, Sparkles } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -136,24 +137,29 @@ const PerguntarSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto }
     sendMessage(q);
   };
 
-  if (!open) return null;
+  if (typeof document === 'undefined') return null;
 
-  return (
+  return createPortal(
     <AnimatePresence>
+      {open && (
+        <>
+          <motion.div
+            key="perguntar-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50"
+            style={{ zIndex: 100040 }}
+            onClick={onClose}
+          />
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/50 z-[10040]"
-        onClick={onClose}
-      />
-      <motion.div
+        key="perguntar-sheet"
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="fixed bottom-0 left-0 right-0 z-[10041] bg-card rounded-t-3xl border-t border-border flex flex-col md:left-auto md:right-0 md:top-0 md:bottom-0 md:h-full md:max-h-none md:w-[min(30rem,92vw)] md:max-w-none md:rounded-none md:rounded-l-3xl md:border-l md:border-t-0 md:shadow-2xl md:mx-0"
-        style={{ maxHeight: '85vh' }}
+        className="fixed bottom-0 left-0 right-0 bg-card rounded-t-3xl border-t border-border flex flex-col md:left-auto md:right-0 md:top-0 md:bottom-0 md:h-full md:max-h-none md:w-[min(30rem,92vw)] md:max-w-none md:rounded-none md:rounded-l-3xl md:border-l md:border-t-0 md:shadow-2xl md:mx-0"
+        style={{ maxHeight: '85vh', zIndex: 100041 }}
       >
         <div className="w-10 h-1 rounded-full bg-muted-foreground/30 mx-auto mt-3 mb-2" />
         
@@ -257,7 +263,10 @@ const PerguntarSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto }
           </form>
         </div>
       </motion.div>
-    </AnimatePresence>
+        </>
+      )}
+    </AnimatePresence>,
+    document.body
   );
 };
 
