@@ -96,11 +96,14 @@ const ART_RE = /^Art\.\s*(\d+(?:\.\d+)*(?:-[A-Z0-9]+)?)/;
 // Início de §/parágrafo/inciso/alínea — usado para cortar o caput
 const CAPUT_STOP_RE = /^(§|Parágrafo\b|[IVXLCDM]+\s*[-–.)]|[a-z]\))/i;
 
+// Nota: "Revogad[oa]" é EXCLUÍDO propositalmente destes regex — notas de
+// revogação (ex: "(Revogado pela Lei nº 14.994, de 2024)") devem permanecer
+// no texto extraído para exibição informativa ao usuário no app.
 const PLANALTO_NOTE_START_RE =
-  /^(?:[\(\[]\s*)?(?:Reda[çc][ãa]o\s+dada|Inclu[íi]d[oa]|Acrescid[oa]|Revogad[oa]|Alterad[oa]|Vide|Vig[êe]ncia|Regulamento|Nova\s+reda[çc][ãa]o|Renumerad[oa]|Transformad[oa]|Restabelecid[oa]|Produ[çc][ãa]o\s+de\s+efeito)\b/i;
+  /^(?:[\(\[]\s*)?(?:Reda[çc][ãa]o\s+dada|Inclu[íi]d[oa]|Acrescid[oa]|Alterad[oa]|Vide|Vig[êe]ncia|Regulamento|Nova\s+reda[çc][ãa]o|Renumerad[oa]|Transformad[oa]|Restabelecid[oa]|Produ[çc][ãa]o\s+de\s+efeito)\b/i;
 
 const PLANALTO_NOTE_BLOCK_RE =
-  /[\(\[]\s*(?:Reda[çc][ãa]o\s+dada|Inclu[íi]d[oa]|Acrescid[oa]|Revogad[oa]|Alterad[oa]|Vide|Vig[êe]ncia|Regulamento|Nova\s+reda[çc][ãa]o|Renumerad[oa]|Transformad[oa]|Restabelecid[oa]|Produ[çc][ãa]o\s+de\s+efeito)[\s\S]{0,320}?[\)\]]/gi;
+  /[\(\[]\s*(?:Reda[çc][ãa]o\s+dada|Inclu[íi]d[oa]|Acrescid[oa]|Alterad[oa]|Vide|Vig[êe]ncia|Regulamento|Nova\s+reda[çc][ãa]o|Renumerad[oa]|Transformad[oa]|Restabelecid[oa]|Produ[çc][ãa]o\s+de\s+efeito)[\s\S]{0,320}?[\)\]]/gi;
 
 const PLANALTO_NOTE_CONTINUATION_RE =
   /^(?:Lei|Leis|Decreto|Decretos|Medida\s+Provis[óo]ria|Emenda\s+Constitucional|Lei\s+Complementar)\s+n[º°o]?\s*[\d.]+/i;
@@ -361,14 +364,19 @@ function extractBlocos(html: string): Bloco[] {
 
       const STRUCTURAL_SUFFIX_RE = /(^|[.;:)])\s+(?=(?:PARTE|LIVRO|T[ÍI]TULO|CAP[ÍI]TULO|SE[ÇC][ÃA]O|SUBSE[ÇC][ÃA]O)\s+(?:[IVXLCDM]+|[0-9]+|[ÚU]NICO|PRELIMINAR)\b)[\s\S]*$/i;
 
-      // Limpa fragmentos de dispositivos revogados que ficaram desprovidos de texto (ex: "VI -", "§ 7º")
+      // Limpa fragmentos de dispositivos que ficaram desprovidos de texto (ex: "VI -", "§ 7º")
+      // REGRA: marcadores que contenham "(Revogado...)" são PRESERVADOS — o usuário deve ver
+      // que o dispositivo foi revogado. Apenas marcadores realmente vazios são removidos.
       const cleanedResto: string[] = [];
       for (const l of restoParts) {
         const lTrim = l.trim();
-        if (/^(?:[IVXLCDM]+\s*[-–.]|§\s*\d+[º°ª]?)\s*$/i.test(lTrim)) {
+        // Preserva se contém nota de revogação
+        if (/\(Revogad[oa][^)]*\)/i.test(lTrim)) {
+          cleanedResto.push(l);
           continue;
         }
-        if (lTrim.toLowerCase() === 'feminicídio' && numero === '121') {
+        // Remove marcadores genuinamente vazios (sem texto após limpeza)
+        if (/^(?:[IVXLCDM]+\s*[-–.]|§\s*\d+[º°ª]?)\s*$/i.test(lTrim)) {
           continue;
         }
         cleanedResto.push(l);
