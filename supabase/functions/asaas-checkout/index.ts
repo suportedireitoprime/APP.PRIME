@@ -111,7 +111,11 @@ Deno.serve(async (req) => {
     if (isVitalicio || isInstallment) {
       // Cobrança avulsa / parcelada via /payments (sem recorrência anual para Vitalício)
       let baseValue = 199.90;
-      if (plan === 'vitalicio_pix' || plan === 'anual_pix' || plan === 'promocao') {
+      if (plan === 'vitalicio') {
+        baseValue = 299.00;
+      } else if (plan === 'vitalicio_pix') {
+        baseValue = 250.00;
+      } else if (plan === 'anual_pix' || plan === 'promocao') {
         baseValue = 149.90;
       }
 
@@ -127,14 +131,16 @@ Deno.serve(async (req) => {
         totalWithTax = Number(((baseValue + 0.29) / (1 - taxRate)).toFixed(2));
       }
       
-      const isPromo = plan === 'vitalicio_pix' || plan === 'anual_pix' || plan === 'promocao';
+      const isPromo = plan === 'anual_pix' || plan === 'promocao';
       const paymentPayload: any = {
         customer: customerId,
         billingType: billingType,
         dueDate: today,
-        description: isPromo
-          ? `Anual Estudos Jurídicos Promoção${num > 1 ? ` (Parcelado em ${num}x)` : ''}`
-          : `Anual Estudos Jurídicos${num > 1 ? ` (Parcelado em ${num}x)` : ''}`,
+        description: isVitalicio 
+          ? `Acesso Vitalício Estudos Jurídicos${num > 1 ? ` (Parcelado em ${num}x)` : ''}`
+          : isPromo
+            ? `Anual Estudos Jurídicos Promoção${num > 1 ? ` (Parcelado em ${num}x)` : ''}`
+            : `Anual Estudos Jurídicos${num > 1 ? ` (Parcelado em ${num}x)` : ''}`,
       };
 
       if (num > 1) {

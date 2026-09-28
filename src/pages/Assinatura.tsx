@@ -44,7 +44,7 @@ export default function Assinatura() {
 
   const isNewUser = !!(session?.user?.created_at && (Date.now() - new Date(session.user.created_at).getTime() < 24 * 60 * 60 * 1000));
 
-  const [tab, setTab] = useState<'mensal' | 'anual' | 'promocao'>(isNewUser ? 'promocao' : 'anual');
+  const [tab, setTab] = useState<'mensal' | 'anual' | 'promocao' | 'vitalicio'>(isNewUser ? 'promocao' : 'anual');
   const [showHorusPromo, setShowHorusPromo] = useState(false);
   const [hasClosedPromo, setHasClosedPromo] = useState(false);
   
@@ -209,7 +209,7 @@ export default function Assinatura() {
                   className="h-auto py-5 flex items-center justify-start gap-4 px-5 border-2 border-primary/30 hover:border-primary hover:bg-primary/5 transition-all rounded-3xl group"
                   onClick={() => {
                     setPaymentMethodSheetOpen(false);
-                    startPurchase('anual');
+                    startPurchase(tab === 'vitalicio' ? 'vitalicio' : 'anual');
                   }}
                 >
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
@@ -217,7 +217,11 @@ export default function Assinatura() {
                   </div>
                   <div className="flex flex-col items-start text-left flex-1">
                     <span className="font-bold text-lg text-foreground">Cartão de Crédito</span>
-                    <span className="text-[11px] font-bold text-primary">Até 12x de R$ 16,65 · Plano Anual</span>
+                    {tab === 'vitalicio' ? (
+                      <span className="text-[11px] font-bold text-primary">Até 12x de R$ 29,90 · Plano Vitalício</span>
+                    ) : (
+                      <span className="text-[11px] font-bold text-primary">Até 12x de R$ 16,65 · Plano Anual</span>
+                    )}
                   </div>
                   <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors group-hover:translate-x-1" />
                 </Button>
@@ -227,7 +231,7 @@ export default function Assinatura() {
                   className="h-auto py-5 flex items-center justify-start gap-4 px-5 border-2 border-border/80 hover:border-emerald-500 hover:bg-emerald-500/5 transition-all rounded-3xl group"
                   onClick={() => {
                     setPaymentMethodSheetOpen(false);
-                    startPurchase('anual_regular_pix');
+                    startPurchase(tab === 'vitalicio' ? 'vitalicio_pix' : 'anual_regular_pix');
                   }}
                 >
                   <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
@@ -235,7 +239,11 @@ export default function Assinatura() {
                   </div>
                   <div className="flex flex-col items-start text-left flex-1">
                     <span className="font-bold text-lg text-foreground">PIX</span>
-                    <span className="text-[11px] font-bold text-muted-foreground">R$ 199,90 à vista · Plano Anual</span>
+                    {tab === 'vitalicio' ? (
+                      <span className="text-[11px] font-bold text-muted-foreground">R$ 250,00 à vista · Acesso Vitalício</span>
+                    ) : (
+                      <span className="text-[11px] font-bold text-muted-foreground">R$ 199,90 à vista · Plano Anual</span>
+                    )}
                   </div>
                   <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-500 transition-colors group-hover:translate-x-1" />
                 </Button>
@@ -317,6 +325,8 @@ export default function Assinatura() {
                      startPurchase('anual_pix');
                   } else if (tab === 'anual') {
                      setPaymentMethodSheetOpen(true);
+                  } else if (tab === 'vitalicio') {
+                     setPaymentMethodSheetOpen(true);
                   } else {
                      startPurchase('mensal');
                   }
@@ -328,7 +338,7 @@ export default function Assinatura() {
                 }`}
               >
                 <span className="flex items-center justify-center gap-2">
-                  {tab === 'promocao' ? 'Garantir Plano Anual no PIX' : tab === 'anual' ? 'Garantir Plano Anual' : 'Assinar Mensal'}
+                  {tab === 'promocao' ? 'Garantir Plano Anual no PIX' : tab === 'vitalicio' ? 'Garantir Acesso Vitalício' : tab === 'anual' ? 'Garantir Plano Anual' : 'Assinar Mensal'}
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </span>
               </Button>

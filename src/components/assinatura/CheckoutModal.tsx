@@ -518,8 +518,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     if (activePlan === 'anual') return { title: 'Anual', price: 'R$ 199,90', sub: ' (em até 12x)' };
     if (activePlan === 'anual_pix') return { title: 'Anual Promoção', price: 'R$ 149,90', sub: ' (no PIX)' };
     if (activePlan === 'anual_regular_pix') return { title: 'Anual PIX', price: 'R$ 199,90', sub: ' (à vista)' };
-    if (activePlan === 'vitalicio') return { title: 'Vitalício', price: 'R$ 199,90', sub: ' (Pagamento Único)' };
-    if (activePlan === 'vitalicio_pix') return { title: 'Vitalício no PIX', price: 'R$ 149,90', sub: ' (Pagamento Único)' };
+    if (activePlan === 'vitalicio') return { title: 'Vitalício', price: 'R$ 299,00', sub: ' (em até 12x)' };
+    if (activePlan === 'vitalicio_pix') return { title: 'Vitalício PIX', price: 'R$ 250,00', sub: ' (à vista)' };
     return { title: '', price: '', sub: '' };
   };
 
@@ -572,8 +572,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                   <span className="font-display text-4xl font-black text-foreground">{planInfo.price}</span>
                   <span className="text-sm font-semibold text-muted-foreground">{planInfo.sub}</span>
                 </div>
-                {(activePlan === 'vitalicio' || activePlan === 'anual') && (
+                {(activePlan === 'anual') && (
                   <p className="text-xs text-emerald-400 font-bold mt-1">ou 12x de R$ 16,65 no cartão</p>
+                )}
+                {(activePlan === 'vitalicio') && (
+                  <p className="text-xs text-emerald-400 font-bold mt-1">ou 12x de R$ 29,90 no cartão</p>
                 )}
                 {(activePlan === 'vitalicio_pix' || activePlan === 'anual_pix') && (
                   <span className="absolute top-0 right-0 bg-emerald-500/80 backdrop-blur-md text-white font-black text-[9px] px-2 py-0.5 rounded-bl-lg tracking-wider">

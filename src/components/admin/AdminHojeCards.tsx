@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, useRef } from 'react';
-import { Radio, UserPlus, Sparkles, Loader2, Mail, BarChart3, ChevronRight, Crown, Zap, DollarSign, Check, RefreshCw } from 'lucide-react';
+import { Radio, UserPlus, Sparkles, Loader2, Mail, BarChart3, ChevronRight, Crown, Zap, DollarSign, Check, RefreshCw, Timer } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
@@ -53,6 +53,37 @@ function formatTempoCadastro(createdAt?: string | null, fallbackSubtitle?: strin
     return fallbackSubtitle;
   }
   return 'Cadastrado recentemente';
+}
+
+function renderTrialCountdown(createdAt?: string | null) {
+  if (!createdAt) return <>{formatTempoCadastro(createdAt, null)}</>;
+  
+  const dataCad = new Date(createdAt);
+  if (isNaN(dataCad.getTime())) return <>{formatTempoCadastro(createdAt, null)}</>;
+  
+  // 3 dias de acesso liberado
+  const expiresAt = new Date(dataCad.getTime() + 3 * 24 * 60 * 60 * 1000);
+  const now = new Date();
+  const diffMs = expiresAt.getTime() - now.getTime();
+  
+  if (diffMs <= 0) {
+    return (
+      <span className="inline-flex items-center rounded bg-rose-500/10 border border-rose-500/20 px-1.5 py-[1px] text-[9.5px] font-bold text-rose-400">
+        ACESSO EXPIRADO
+      </span>
+    );
+  }
+  
+  const totalMinutes = Math.floor(diffMs / (1000 * 60));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  
+  return (
+    <span className="inline-flex items-center gap-1 text-emerald-400 font-medium bg-emerald-500/10 border border-emerald-500/20 rounded px-1.5 py-[1px] text-[9.5px]">
+      <Timer className="w-2.5 h-2.5" />
+      {hours}h {minutes}m restantes
+    </span>
+  );
 }
 
 function formatStatusPt(status?: string | null): string {
@@ -1312,7 +1343,11 @@ export function AdminHojeCards() {
                         )}
                         {!r.planTag && (
                           <div className="font-body text-[10.5px] text-muted-foreground/60 truncate flex items-center gap-1.5">
-                            {formatTempoCadastro(r.created_at, null)}
+                            {(open === 'online' || open === 'online5m') ? (
+                              renderTrialCountdown(r.created_at)
+                            ) : (
+                              formatTempoCadastro(r.created_at, null)
+                            )}
                             {r.faixaEtaria && (
                               <>
                                 <span>·</span>

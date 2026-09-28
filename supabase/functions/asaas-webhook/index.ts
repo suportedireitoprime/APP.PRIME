@@ -69,6 +69,8 @@ Deno.serve(async (req) => {
     let inferredPlan = 'anual';
     if (desc.includes('mensal') || (!isParcelado && val > 0 && val < 50 && !desc.includes('anual') && !desc.includes('vitalicio'))) {
       inferredPlan = 'mensal';
+    } else if (desc.includes('vitalicio')) {
+      inferredPlan = 'vitalicio';
     } else if (desc.includes('promo') || (val >= 140 && val <= 165)) {
       inferredPlan = 'anual_promocional';
     } else {
