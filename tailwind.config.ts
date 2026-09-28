@@ -176,6 +176,10 @@ export default {
           "0%": { transform: "translateX(-100%) skewX(-20deg)" },
           "100%": { transform: "translateX(200%) skewX(-20deg)" },
         },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
         shinePratique: {
           "0%, 100%": { left: "-100%" },
           "50%": { left: "100%" },
@@ -223,6 +227,8 @@ export default {
         waveform: "waveform 1.1s ease-in-out infinite",
         "cascade-in": "none",
         shimmer: "shimmer 2.5s ease-in-out infinite",
+        "shimmer-once": "shimmer 1.5s ease-out forwards",
+        float: "float 3s ease-in-out infinite",
       },
     },
   },

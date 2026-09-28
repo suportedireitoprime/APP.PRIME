@@ -249,6 +249,10 @@ const HomeHorusBannerCarousel = () => {
             >
               {/* Background Layer */}
               <div className={`absolute inset-x-0 bottom-0 top-7 rounded-[1.2rem] shadow-xl bg-gradient-to-br ${item.bgGradient} border border-white/10 overflow-hidden transition-transform duration-500 ${isActive ? 'shadow-2xl' : 'shadow-none'}`}>
+                {/* Efeito de Reflexo (Shimmer) */}
+                {isActive && (
+                  <div className="absolute inset-0 z-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shimmer-once pointer-events-none" />
+                )}
                 {/* SVGs jurídicos decorativos ao fundo */}
                 <svg
                   aria-hidden
@@ -282,7 +286,7 @@ const HomeHorusBannerCarousel = () => {
                 <img
                   src={item.owlImage}
                   alt={item.title}
-                  className={`w-full h-full object-contain filter transition-all duration-500 ${isActive ? 'drop-shadow-[0_8px_8px_rgba(0,0,0,0.6)] saturate-[1.1] translate-y-0' : 'drop-shadow-none saturate-[0.8] translate-y-1'}`}
+                  className={`w-full h-full object-contain filter transition-all duration-500 ${isActive ? 'drop-shadow-[0_8px_8px_rgba(0,0,0,0.6)] saturate-[1.1] animate-float' : 'drop-shadow-none saturate-[0.8] translate-y-2'}`}
                   loading="lazy"
                 />
               </div>
