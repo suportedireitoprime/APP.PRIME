@@ -171,7 +171,7 @@ export function MapasMentaisDetalhes({
             </div>
           ) : (
             <div className="space-y-2">
-              {subtemas.map((s) => {
+              {subtemas.map((s, index) => {
                 const chave = chaveDe(item, `${tema.tema} ${s.subtema}`, 'tema');
                 const pronto = prontos[chave];
                 const isFavorito = favoritos.includes(chave);
@@ -181,12 +181,13 @@ export function MapasMentaisDetalhes({
                     key={s.subtema}
                     className="p-3.5 sm:p-4 rounded-xl bg-zinc-900/90 border border-white/5 hover:border-white/15 flex items-center justify-between gap-3 transition-all"
                   >
+                    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/5 flex items-center justify-center shrink-0 border border-white/5">
+                      <span className="text-xs font-bold text-zinc-400">{index + 1}</span>
+                    </div>
+                    
                     <div className="min-w-0 flex-1">
                       <p className="font-['Plus_Jakarta_Sans',sans-serif] text-sm font-semibold text-white">
                         {s.subtema}
-                      </p>
-                      <p className="text-[11px] text-zinc-400 mt-0.5 truncate">
-                        {tema.tema} · {item.label}
                       </p>
                     </div>
 
