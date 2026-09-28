@@ -27,16 +27,8 @@ import cover9Bundled from '@/assets/covers/cover-9.webp';
 import cover10Asset from '@/assets/covers/cover-10.webp.asset.json';
 import cover10Bundled from '@/assets/covers/cover-10.webp';
 
-const FALLBACK_COVERS = [
-  { url: pickAsset(cover2Bundled, srcOf(cover2Asset)), preset: 'ken-burns' },
-  { url: pickAsset(cover3Bundled, srcOf(cover3Asset)), preset: 'ken-burns' },
-  { url: pickAsset(cover4Bundled, srcOf(cover4Asset)), preset: 'ken-burns' },
-  { url: pickAsset(cover5Bundled, srcOf(cover5Asset)), preset: 'ken-burns' },
-  { url: pickAsset(cover6Bundled, srcOf(cover6Asset)), preset: 'ken-burns' },
-  { url: pickAsset(cover7Bundled, srcOf(cover7Asset)), preset: 'ken-burns' },
-  { url: pickAsset(cover8Bundled, srcOf(cover8Asset)), preset: 'ken-burns' },
-  { url: pickAsset(cover9Bundled, srcOf(cover9Asset)), preset: 'ken-burns' },
-  { url: pickAsset(cover10Bundled, srcOf(cover10Asset)), preset: 'ken-burns' },
+const PHILOSOPHER_COVER = [
+  { url: '/resumos-philosopher.jpg', preset: 'ken-burns' }
 ];
 
 const HINTS = [
@@ -133,8 +125,8 @@ const ResumosHero = ({
         />
       </div>
 
-      {/* Imagem de Fundo (Carrossel Original de Resumos) */}
-      <HeroCoverCarousel covers={FALLBACK_COVERS} forcePosition="right" />
+      {/* Imagem de Fundo */}
+      <HeroCoverCarousel covers={PHILOSOPHER_COVER} forcePosition="right" />
 
       {/* Overlay vermelho com gradiente estilo menu e sombra */}
       <div 
@@ -182,15 +174,8 @@ const ResumosHero = ({
           <div className="h-[20px] sm:h-[40px] mb-1 w-full" />
           
           <div className="w-full flex flex-col items-center">
-            <div className="relative w-16 h-16 sm:w-20 sm:h-20 mb-3 flex items-center justify-center rounded-[20px] bg-white/15 backdrop-blur-md border border-white/20 shadow-xl">
-              {isMapas ? (
-                <Brain className="w-8 h-8 sm:w-10 sm:h-10 text-white drop-shadow-md" strokeWidth={1.5} />
-              ) : (
-                <NotebookText className="w-8 h-8 sm:w-10 sm:h-10 text-white drop-shadow-md" strokeWidth={1.5} />
-              )}
-            </div>
             <h1 className="font-display text-white text-[18px] sm:text-[22px] leading-[1.05] font-black tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] uppercase text-center w-full max-w-[160px] sm:max-w-[200px]">
-              {isMapas ? 'Mapas Mentais' : 'Resumos JurÃ­dicos'}
+              {isMapas ? 'Mapas Mentais' : 'Resumos Jurídicos'}
             </h1>
             <p className="mt-1.5 font-body text-white/90 text-[10px] sm:text-[11px] font-semibold tracking-wide uppercase drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]">
               {isMapas ? 'Esquemas e Infográficos' : 'Inteligentes e Estruturados'}
@@ -217,11 +202,11 @@ const ResumosHero = ({
               <NotebookText className="pointer-events-none absolute -bottom-1 -left-1 h-8 w-8 text-white/5" />
             </div>
 
-            {/* Box 2: Total Ãreas */}
+            {/* Box 2: Total Áreas */}
             <div className="flex flex-col items-center justify-center px-1.5 py-3.5 transition-colors hover:bg-white/5 active:opacity-70 group select-none">
               <div className="flex items-center gap-0.5">
                 <span className="text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest text-white/50 group-hover:text-white transition-colors">
-                  Total Ãreas
+                  Total Áreas
                 </span>
                 <ChevronRight className="w-2.5 h-2.5 text-white/30 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
               </div>
