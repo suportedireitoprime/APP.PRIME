@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GraduationCap, ListChecks, Camera } from 'lucide-react';
+import { GraduationCap, ListChecks, MessageCircleQuestion } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { useShortcutBadges } from '@/hooks/useShortcutBadges';
 import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
@@ -10,7 +10,7 @@ const SHORTCUT_ITEMS = [
   { label: 'Aprender',    icon: GraduationCap,    to: '/aprender',     color: '#FACC15', badgeColor: null, badgeKey: null, prefetch: 'aprender' as PrefetchKey },
   { label: 'Flashcards',  icon: FlashcardsIcon,   to: '/flashcards',   color: '#34D399', badgeColor: null, badgeKey: null, prefetch: 'flashcards' as PrefetchKey },
   { label: 'Questões',    icon: ListChecks,       to: '/questoes',     color: '#F87171', badgeColor: null, badgeKey: null, prefetch: 'questoes' as PrefetchKey },
-  { label: 'Me Explique', icon: Camera,           to: '/me-explique',  color: '#F97316', badgeColor: null, badgeKey: null, prefetch: 'meExplique' as PrefetchKey },
+  { label: 'Me Explique', icon: MessageCircleQuestion, to: '/me-explique',  color: '#F97316', badgeColor: null, badgeKey: null, prefetch: 'meExplique' as PrefetchKey },
 ];
 
 const HomeActionShortcuts = () => {

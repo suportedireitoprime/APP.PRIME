@@ -11,7 +11,7 @@ import { pickAsset, srcOf } from "@/lib/assetUrl";
 import primeLogoAsset from "@/assets/logo-direitoprime-v2.webp.asset.json";
 import primeLogoBundled from "@/assets/bundled/logo-direitoprime-v2.webp";
 import { confirmar, avisar } from '@/lib/nativo';
-import { SphereCloud } from '@/components/vademecum/ui_elements/SphereCloud';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 
 const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 
@@ -410,34 +410,45 @@ const MentorOverlay = ({ open, onClose }: MentorOverlayProps) => {
 
 
           {/* Mensagens */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+          <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3 relative">
+            {/* Fundo com profundidade (ShapeGrid) - apenas visível quando vazio */}
             {messages.length === 0 && !loading && (
-              <div className="flex flex-col items-center justify-center py-8 text-center gap-5">
-                <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-xl shadow-primary/40 overflow-hidden">
-                  <img src={primeLogo} alt="Mentor" className="w-14 h-14 object-contain" />
-                </div>
-                <div>
+              <div className="absolute inset-0 z-0 pointer-events-none opacity-50">
+                <ShapeGrid
+                  squareSize={30}
+                  direction="top"
+                  borderColor="rgba(255, 255, 255, 0.04)"
+                  hoverFillColor="rgba(255, 255, 255, 0.05)"
+                />
+              </div>
+            )}
+
+            {messages.length === 0 && !loading && (
+              <div className="relative z-10 flex flex-col items-center justify-center py-6 text-center gap-6">
+                <div className="pt-2">
                   <p className="font-display text-xl font-bold text-foreground">Olá! Eu sou o Mentor 👋</p>
-                  <p className="font-body text-sm text-muted-foreground mt-1.5 max-w-xs mx-auto leading-snug">
+                  <p className="font-body text-sm text-muted-foreground mt-1 max-w-xs mx-auto leading-snug">
                     Peça para eu abrir artigos, listar leis por tema, resumir notícias ou lembrar de suas provas.
                   </p>
                 </div>
-                <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center mt-2 px-4 pb-2 h-[260px]">
-                  <SphereCloud
-                    tags={[
-                      "Art. 5º da CF",
-                      "Princípios Penais",
-                      "Notícias de hoje",
-                      "Dicas para OAB",
-                      "Habeas Corpus",
-                      "Lei de Drogas",
-                      "Súmulas do STF",
-                      "Como estudar",
-                      "Vade Mecum"
-                    ]}
-                    onSelect={(text) => send(text)}
-                    radius={110}
-                  />
+                <div className="flex flex-col gap-2.5 w-full max-w-sm mt-2">
+                  {SUGESTOES.map((s, i) => {
+                    const Icon = s.icon;
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => {
+                          setInput(s.text);
+                          if (inputRef.current) inputRef.current.focus();
+                        }}
+                        className="flex items-center gap-3 px-4 py-3.5 rounded-xl bg-secondary/40 border border-white/5 shadow-sm backdrop-blur-md hover:border-primary/40 hover:bg-secondary/60 transition-all text-left"
+                      >
+                        <Icon className="w-5 h-5 text-primary shrink-0 opacity-80" />
+                        <span className="text-sm font-medium text-foreground/90 flex-1">{s.text}</span>
+                        <ChevronRight className="w-4 h-4 text-muted-foreground/60" />
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
