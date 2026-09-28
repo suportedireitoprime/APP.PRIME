@@ -924,7 +924,13 @@ function GlobalTrialGate() {
     };
 
     document.addEventListener('click', handler, true);
-    return () => document.removeEventListener('click', handler, true);
+    document.addEventListener('touchstart', handler, { capture: true, passive: false });
+    document.addEventListener('touchend', handler, { capture: true, passive: false });
+    return () => {
+      document.removeEventListener('click', handler, true);
+      document.removeEventListener('touchstart', handler, true);
+      document.removeEventListener('touchend', handler, true);
+    };
   }, [isUserPremium, isTrialActive]);
 
   if (isUserPremium || isTrialActive) return null;
