@@ -11,6 +11,7 @@ import { pickAsset, srcOf } from "@/lib/assetUrl";
 import primeLogoAsset from "@/assets/logo-direitoprime-v2.webp.asset.json";
 import primeLogoBundled from "@/assets/bundled/logo-direitoprime-v2.webp";
 import { confirmar, avisar } from '@/lib/nativo';
+import { SphereCloud } from '@/components/vademecum/ui_elements/SphereCloud';
 
 const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 
@@ -421,21 +422,22 @@ const MentorOverlay = ({ open, onClose }: MentorOverlayProps) => {
                     Peça para eu abrir artigos, listar leis por tema, resumir notícias ou lembrar de suas provas.
                   </p>
                 </div>
-                <div className="flex flex-col gap-2 w-full max-w-sm">
-                  {SUGESTOES.map((s, i) => {
-                    const Icon = s.icon;
-                    return (
-                      <button
-                        key={i}
-                        onClick={() => send(s.text)}
-                        className="flex items-center gap-3 px-4 py-3 rounded-xl bg-secondary/60 border border-border hover:border-primary/40 hover:bg-secondary transition-all text-left"
-                      >
-                        <Icon className="w-4 h-4 text-primary shrink-0" />
-                        <span className="text-sm text-foreground flex-1">{s.text}</span>
-                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                      </button>
-                    );
-                  })}
+                <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center mt-2 px-4 pb-2 h-[260px]">
+                  <SphereCloud
+                    tags={[
+                      "Art. 5º da CF",
+                      "Princípios Penais",
+                      "Notícias de hoje",
+                      "Dicas para OAB",
+                      "Habeas Corpus",
+                      "Lei de Drogas",
+                      "Súmulas do STF",
+                      "Como estudar",
+                      "Vade Mecum"
+                    ]}
+                    onSelect={(text) => send(text)}
+                    radius={110}
+                  />
                 </div>
               </div>
             )}

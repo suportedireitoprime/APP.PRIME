@@ -188,19 +188,8 @@ export function ScrollRestorationWatcher() {
         return;
       }
 
-      // Item 23: Navegação do tipo 'POP' (botão Voltar ou Avançar no histórico)
-      if (navType === 'POP') {
-        const saved = scrollMemory.get(currentKey) || getSessionSaved(currentKey);
-        if (saved && (saved.windowY > 0 || saved.containerY > 0)) {
-          window.scrollTo(0, saved.windowY);
-          if (desktopContainer) {
-            desktopContainer.scrollTop = saved.containerY;
-          }
-          haptic.light(); // Item 31
-          prevKeyRef.current = currentKey;
-          return;
-        }
-      }
+      // A pedido do usuário, independente de ser 'POP' (Voltar) ou 'PUSH', sempre inicia no topo
+      // (Scroll restoration de POP foi removida)
 
       // Itens 21 e 24: Navegação PUSH / REPLACE comum reseta ambos para o topo (0, 0)
       window.scrollTo(0, 0);

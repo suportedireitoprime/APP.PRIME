@@ -250,7 +250,20 @@ export default function MapasMentaisView({
       const ordem = new Map(recentes.map((k, idx) => [k, idx]));
       filtrados = filtrados.filter((i) => ordem.has(i.key)).sort((a, b) => (ordem.get(a.key) ?? 0) - (ordem.get(b.key) ?? 0));
     } else {
-      filtrados = [...filtrados].sort((a, b) => a.label.localeCompare(b.label));
+      const prioridades: Record<string, number> = {
+        'lei:cf88': 1,
+        'lei:cp': 2,
+        'lei:cpp': 3,
+        'lei:cc': 4,
+        'lei:eoab': 1,
+        'lei:eca': 2,
+      };
+      filtrados = [...filtrados].sort((a, b) => {
+        const pesoA = prioridades[a.key] || 999;
+        const pesoB = prioridades[b.key] || 999;
+        if (pesoA !== pesoB) return pesoA - pesoB;
+        return a.label.localeCompare(b.label);
+      });
     }
     return filtrados;
   }, [categoria, areas, busca, filtro, favoritos, recentes]);
@@ -520,6 +533,7 @@ export default function MapasMentaisView({
               setAberto(reg);
             }}
             onToggleFavorito={alternarFavorito}
+            scrollRef={scrollContainerRef}
           />
         ) : (
           <div className="max-w-[1400px] mx-auto w-full px-4 sm:px-6 pt-4">

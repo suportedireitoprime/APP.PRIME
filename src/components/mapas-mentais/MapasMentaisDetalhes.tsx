@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search, X, Heart, ChevronRight, FileText, Sparkles, BookOpen, Layers } from 'lucide-react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { CATEGORIA_COR, getCorParaItem } from './mapasConstants';
 import { iconeDoItem } from '@/lib/visuaisJuridicos/icones';
 import { haptic } from '@/lib/nativeHaptics';
@@ -30,6 +31,7 @@ interface MapasMentaisDetalhesProps {
   onGerar: (alvo: CatalogoItem, sub?: string, kind?: 'artigo' | 'tema', temaPai?: string) => void;
   onAbrir: (registro: VisualRecord) => void;
   onToggleFavorito: (key: string) => void;
+  scrollRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export function MapasMentaisDetalhes({
@@ -51,9 +53,17 @@ export function MapasMentaisDetalhes({
   onGerar,
   onAbrir,
   onToggleFavorito,
+  scrollRef,
 }: MapasMentaisDetalhesProps) {
   const isMateria = categoria === 'materias';
   const corCategoria = getCorParaItem(item.key, categoria);
+
+  const rowVirtualizer = useVirtualizer({
+    count: artigos.length,
+    getScrollElement: () => scrollRef.current,
+    estimateSize: () => 100, // Altura aproximada de cada card
+    overscan: 10,
+  });
 
   return (
     <div className="space-y-4 max-w-[1400px] mx-auto w-full px-4 sm:px-6 py-2">
@@ -255,8 +265,15 @@ export function MapasMentaisDetalhes({
               Nenhum artigo encontrado.
             </div>
           ) : (
-            <div className="space-y-2">
-              {artigos.map((a) => {
+            <div 
+              style={{
+                height: `${rowVirtualizer.getTotalSize()}px`,
+                width: '100%',
+                position: 'relative',
+              }}
+            >
+              {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                const a = artigos[virtualRow.index];
                 const chave = chaveDe(item, a.numero, 'artigo');
                 const pronto = prontos[chave];
                 const isFavorito = favoritos.includes(chave);
@@ -264,61 +281,69 @@ export function MapasMentaisDetalhes({
                 return (
                   <div
                     key={a.numero}
-                    className="p-3.5 sm:p-3 sm:p-3.5 rounded-xl bg-zinc-900/90 border border-white/5 hover:border-white/15 flex items-start justify-between gap-3 transition-all"
+                    data-index={virtualRow.index}
+                    ref={rowVirtualizer.measureElement}
+                    className="absolute top-0 left-0 w-full"
+                    style={{
+                      transform: `translateY(${virtualRow.start}px)`,
+                      paddingBottom: '8px', // Espaço entre os itens
+                    }}
                   >
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-['Plus_Jakarta_Sans',sans-serif] text-[13px] font-bold text-white">
-                          Art. {a.numero.replace(/^art\.?\s*/i, '')}
-                        </span>
-                        {a.titulo && (
-                          <span className="text-xs font-medium text-purple-300">
-                            · {a.titulo}
+                    <div className="p-3.5 sm:p-3 sm:p-3.5 rounded-xl bg-zinc-900/90 border border-white/5 hover:border-white/15 flex items-start justify-between gap-3 transition-all h-full">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-['Plus_Jakarta_Sans',sans-serif] text-[13px] font-bold text-white">
+                            Art. {a.numero.replace(/^art\.?\s*/i, '')}
                           </span>
+                          {a.titulo && (
+                            <span className="text-xs font-medium text-purple-300">
+                              · {a.titulo}
+                            </span>
+                          )}
+                        </div>
+                        {a.caput && (
+                          <p className="text-xs text-zinc-400 leading-relaxed mt-1 line-clamp-2">
+                            {a.caput}
+                          </p>
                         )}
                       </div>
-                      {a.caput && (
-                        <p className="text-xs text-zinc-400 leading-relaxed mt-1 line-clamp-2">
-                          {a.caput}
-                        </p>
-                      )}
-                    </div>
 
-                    <div className="flex items-center gap-2 shrink-0 pt-0.5">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          haptic.light();
-                          onToggleFavorito(chave);
-                        }}
-                        className="p-1.5 text-zinc-500 hover:text-white"
-                      >
-                        <Heart className={`w-4 h-4 ${isFavorito ? 'fill-rose-500 text-rose-500' : ''}`} />
-                      </button>
-
-                      {pronto ? (
+                      <div className="flex items-center gap-2 shrink-0 pt-0.5">
                         <button
                           type="button"
                           onClick={() => {
-                            haptic.selection();
-                            onAbrir(pronto);
+                            haptic.light();
+                            onToggleFavorito(chave);
                           }}
-                          className="px-3.5 py-1.5 rounded-lg bg-emerald-600/90 hover:bg-emerald-600 text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
+                          className="p-1.5 text-zinc-500 hover:text-white"
                         >
-                          Ver Mapa
+                          <Heart className={`w-4 h-4 ${isFavorito ? 'fill-rose-500 text-rose-500' : ''}`} />
                         </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            haptic.selection();
-                            onGerar(item, a.numero, 'artigo');
-                          }}
-                          className="px-3.5 py-1.5 rounded-lg bg-[#9333ea] hover:bg-[#a855f7] text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
-                        >
-                          Gerar
-                        </button>
-                      )}
+
+                        {pronto ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              haptic.selection();
+                              onAbrir(pronto);
+                            }}
+                            className="px-3.5 py-1.5 rounded-lg bg-emerald-600/90 hover:bg-emerald-600 text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
+                          >
+                            Ver Mapa
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              haptic.selection();
+                              onGerar(item, a.numero, 'artigo');
+                            }}
+                            className="px-3.5 py-1.5 rounded-lg bg-[#9333ea] hover:bg-[#a855f7] text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
+                          >
+                            Gerar
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );

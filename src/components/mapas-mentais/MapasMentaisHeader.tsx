@@ -6,10 +6,10 @@ import type { VisualCategoria } from '@/lib/visuaisJuridicos/types';
 import { CATEGORIA_INFO } from '@/lib/visuaisJuridicos/catalogo';
 import { CATEGORIAS, FILTROS, CATEGORIA_ICON, CATEGORIA_COR, type Filtro } from './mapasConstants';
 import { useDictation } from '@/hooks/useDictation';
-import socratesThemisHeroImg from '@/assets/covers/socrates-themis-hero.jpg';
-import cerebroRoxo from '@/assets/covers/cerebro-vazado-roxo.png';
-import cerebroCiano from '@/assets/covers/cerebro-vazado-ciano.png';
-import cerebroDourado from '@/assets/covers/cerebro-vazado-dourado.png';
+import socratesThemisHeroImg from '@/assets/covers/socrates-themis-hero.webp';
+import cerebroRoxo from '@/assets/covers/cerebro-vazado-roxo.webp';
+import cerebroCiano from '@/assets/covers/cerebro-vazado-ciano.webp';
+import cerebroDourado from '@/assets/covers/cerebro-vazado-dourado.webp';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 
 interface MapasMentaisHeaderProps {

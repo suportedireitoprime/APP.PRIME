@@ -59,21 +59,34 @@ const Atualizacoes = () => {
   const [boletins, setBoletins] = useState<BoletimJuridico[]>((cacheBoletins as BoletimJuridico[]) || []);
   const [pls, setPls] = useState<RadarPL[]>((cachePls as RadarPL[]) || []);
   const [concursos, setConcursos] = useState<ConcursoNoticia[]>((cacheConcursos as ConcursoNoticia[]) || []);
+  const [novidadesApp, setNovidadesApp] = useState<any[]>([]);
 
   useEffect(() => {
-    if (cacheLeis && cacheNoticias && cacheBoletins && cachePls && cacheConcursos) {
-      return;
+    // Carrega dados locais (leis, noticias, etc)
+    if (!cacheLeis || !cacheNoticias || !cacheBoletins || !cachePls || !cacheConcursos) {
+      prefetchGiroJuridico().then(() => {
+        startTransition(() => {
+          if (cacheLeis) setLeis(cacheLeis as ResenhaItem[]);
+          if (cacheNoticias) setNoticias(cacheNoticias as NoticiaJuridica[]);
+          if (cacheBoletins) setBoletins(cacheBoletins as BoletimJuridico[]);
+          if (cachePls) setPls(cachePls as RadarPL[]);
+          if (cacheConcursos) setConcursos(cacheConcursos as ConcursoNoticia[]);
+        });
+      });
     }
 
-    prefetchGiroJuridico().then(() => {
-      startTransition(() => {
-        if (cacheLeis) setLeis(cacheLeis as ResenhaItem[]);
-        if (cacheNoticias) setNoticias(cacheNoticias as NoticiaJuridica[]);
-        if (cacheBoletins) setBoletins(cacheBoletins as BoletimJuridico[]);
-        if (cachePls) setPls(cachePls as RadarPL[]);
-        if (cacheConcursos) setConcursos(cacheConcursos as ConcursoNoticia[]);
-      });
-    });
+    // Carrega novidades do app da edge function
+    async function loadAppUpdates() {
+      try {
+        const { data, error } = await supabase.functions.invoke('app-updates');
+        if (data && !error) {
+          setNovidadesApp(data);
+        }
+      } catch (err) {
+        console.error('Erro ao buscar novidades do app', err);
+      }
+    }
+    loadAppUpdates();
   }, []);
 
   const handleBack = () => {
@@ -198,12 +211,18 @@ const Atualizacoes = () => {
                 Novidades do App
               </h2>
             </div>
+            <button 
+              onClick={() => { haptic.light(); startTransition(() => navigate('/novidades')); }} 
+              className="flex items-center gap-1 text-[12px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-white font-medium transition-colors active:opacity-70 cursor-pointer"
+            >
+              Ver mais <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
           <p className="text-muted-foreground text-[13px] px-1 mb-4 truncate">
             Fique sabendo dos últimos recursos adicionados
           </p>
           <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 hide-scrollbar px-1 -mr-4 pr-4">
-            {[1, 2].map((i) => (
+            {novidadesApp.length > 0 ? novidadesApp.slice(0, 5).map((update, i) => (
               <div key={i} className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <Smartphone className="w-16 h-16 sm:w-20 sm:h-20" />
@@ -211,16 +230,18 @@ const Atualizacoes = () => {
                 <div className="w-10 h-10 rounded-xl bg-[#C084FC]/20 text-[#C084FC] flex items-center justify-center mb-1">
                   <Smartphone className="w-5 h-5" />
                 </div>
-                <h3 className="font-sans font-semibold text-[15px] sm:text-[16px] leading-tight line-clamp-2">Versão 2.4 Liberada</h3>
-                <p className="text-muted-foreground text-[13px] sm:text-[14px] line-clamp-2">Novo painel de explicações ao vivo e melhorias no Vade Mecum.</p>
+                <h3 className="font-sans font-semibold text-[15px] sm:text-[16px] leading-tight line-clamp-2">{update.title}</h3>
+                <p className="text-muted-foreground text-[13px] sm:text-[14px] line-clamp-2">{update.description}</p>
                 <div className="mt-auto pt-2 flex items-center justify-between">
-                  <span className="text-[11px] sm:text-[12px] text-muted-foreground/70 font-medium">Versão atual</span>
+                  <span className="text-[11px] sm:text-[12px] text-muted-foreground/70 font-medium">{i === 0 ? 'Versão atual' : update.date}</span>
                   <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest bg-[#C084FC]/10 text-[#C084FC] px-2.5 py-1 rounded-full flex items-center gap-1">
                     Ver <ChevronRight className="w-3 h-3" />
                   </span>
                 </div>
               </div>
-            ))}
+            )) : (
+              <div className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/30 rounded-2xl animate-pulse" />
+            )}
           </div>
         </section>
         )}

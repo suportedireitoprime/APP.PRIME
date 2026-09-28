@@ -275,6 +275,10 @@ export function useArtigoCommentsAndAi({
         }
         return;
       }
+      const mode = activeTab as 'explicacao' | 'exemplo';
+      // Mostra o gatinho instantaneamente enquanto verifica o cache online
+      setAiGeneratingMode(mode);
+      setAiGeneratingStep(0);
 
       supabase
         .from('artigo_ai_cache')
@@ -296,13 +300,10 @@ export function useArtigoCommentsAndAi({
               setLocalAiCache(cacheKey.tabela, cacheKey.numero, cacheKey.modo, raw);
               setAiContent((prev) => ({ ...prev, [activeTab]: raw }));
               setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
+              setAiGeneratingMode(null); // Esconde o gatinho se achou no cache
               return;
             }
           }
-
-          const mode = activeTab as 'explicacao' | 'exemplo';
-          setAiGeneratingMode(mode);
-          setAiGeneratingStep(0);
 
           // Item 5: Aborta requisição de IA anterior e associa novo controller
           activeAiAbortCtrlRef.current?.abort();
@@ -426,6 +427,10 @@ export function useArtigoCommentsAndAi({
         }
         return;
       }
+      // Mostra o overlay animado instantaneamente
+      setAiGeneratingMode('termos');
+      setAiGeneratingStep(0);
+
       supabase
         .from('artigo_ai_cache')
         .select('conteudo')
@@ -439,10 +444,9 @@ export function useArtigoCommentsAndAi({
             setLocalAiCache(cacheKey.tabela, cacheKey.numero, 'termos', cached.conteudo as string);
             setAiContent((prev) => ({ ...prev, termos: cached.conteudo as string }));
             setAiLoading((prev) => ({ ...prev, termos: false }));
+            setAiGeneratingMode(null);
             return;
           }
-          setAiGeneratingMode('termos');
-          setAiGeneratingStep(0);
 
           // Item 5: Aborta chamada de termos anterior e associa novo controller
           activeTermosAbortCtrlRef.current?.abort();

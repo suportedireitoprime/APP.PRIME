@@ -17,7 +17,7 @@ const MeExpliqueHeroPanel: React.FC<Props> = ({ onVoltar, onOpenConfig }) => {
       {/* Imagem de Fundo à Direita (Filósofo Sócrates) */}
       <picture>
         <img
-          src="/images/me_explique_hero_socrates.jpg"
+          src="/images/me_explique_hero_socrates.webp"
           alt="Sócrates orientando um estudante de direito"
           loading="eager"
           decoding="async"

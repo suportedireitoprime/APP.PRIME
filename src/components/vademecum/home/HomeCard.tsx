@@ -59,7 +59,7 @@ const HomeCardImpl = ({
     data-track-name={dataTrackName}
     data-track-section={dataTrackSection}
     className={`group relative flex h-[100px] min-h-[100px] w-full min-w-0 flex-row items-center justify-between overflow-hidden p-3.5 ${
-      hideChevron ? 'pr-3.5' : 'pr-8'
+      badge ? 'pr-[90px]' : hideChevron ? 'pr-3.5' : 'pr-8'
     } rounded-2xl shadow-sm hover:shadow-md transition-all focus-visible:outline-none text-left active:scale-[0.97] border border-border/80 bg-zinc-800/80 hover:bg-zinc-700/80 ${className}`}
     style={style}
   >

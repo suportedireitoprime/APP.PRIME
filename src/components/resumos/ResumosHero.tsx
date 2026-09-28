@@ -28,7 +28,7 @@ import cover10Asset from '@/assets/covers/cover-10.webp.asset.json';
 import cover10Bundled from '@/assets/covers/cover-10.webp';
 
 const PHILOSOPHER_COVER = [
-  { url: '/resumos-philosopher.jpg', preset: 'ken-burns' }
+  { url: '/resumos-philosopher.webp', preset: 'ken-burns' }
 ];
 
 const HINTS = [
@@ -128,7 +128,7 @@ const ResumosHero = ({
       {/* Imagem de Fundo */}
       <div className="absolute inset-0 z-0 pointer-events-none select-none">
         <img 
-          src="/resumos-philosopher.jpg" 
+          src="/resumos-philosopher.webp" 
           alt=""
           className="w-full h-full object-cover opacity-90 object-center"
         />

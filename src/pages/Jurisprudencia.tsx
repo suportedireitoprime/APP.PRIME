@@ -7,7 +7,7 @@ import JurisBlogCarousel from '@/components/vademecum/blog/JurisBlogCarousel';
 import HeroOrnaments from '@/components/vademecum/home/HeroOrnaments';
 import HomeCard from '@/components/vademecum/home/HomeCard';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import jurisprudenciaHeroImg from '@/assets/jurisprudencia-hero.webp';
+import jurisprudenciaHeroImg from '@/assets/jurisprudencia-hero-themis.webp';
 import VadeMecumQuickActions from '@/components/vademecum/home/chunks/VadeMecumQuickActions';
 import VadeMecumBottomNav from '@/components/vademecum/navigation/VadeMecumBottomNav';
 import { prefetchRoute } from '@/lib/routePrefetch';
@@ -243,9 +243,6 @@ const Jurisprudencia = () => {
         {/* Logo à esquerda */}
         <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[100px]">
           <div className="flex flex-col items-center text-center gap-1 z-[10] relative w-[42%] max-w-[160px] ml-2 sm:ml-4">
-            <div className="relative h-[75px] mb-1 flex items-center justify-center">
-              <Gavel className="w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] text-[#fcd34d] drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]" strokeWidth={1.5} />
-            </div>
             <h1 className="font-serif italic text-white text-[18px] sm:text-[20px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] whitespace-nowrap">
               Jurisprudência
             </h1>
