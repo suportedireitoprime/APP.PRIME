@@ -305,7 +305,7 @@ export default function Assinatura() {
                 PROJETO DIREITO PRIME PRO
               </p>
               <h1 className="font-display text-3xl sm:text-4xl font-black text-foreground leading-[1.1]">
-                Domine o Direito e <span className="text-primary">acelere sua carreira.</span>
+                Tenha acesso a todo o <span className="text-primary">conteúdo de estudo jurídico.</span>
               </h1>
               <p className="text-[13px] text-muted-foreground font-medium max-w-sm mx-auto">
                 Libere seu potencial máximo agora na OAB, Concursos e na Advocacia.
