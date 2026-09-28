@@ -855,6 +855,7 @@ export default function AdminMapeamentoLeis() {
               {CATEGORIAS_DEF.map(cat => {
                 const Icon = cat.icon;
                 const totalLeis = LEIS_CATALOG.filter(l => l.tipo === cat.id).length;
+                const triagemCatCount = LEIS_CATALOG.filter(l => l.tipo === cat.id && triagem[l.id]).length;
 
                 return (
                   <button
@@ -878,6 +879,11 @@ export default function AdminMapeamentoLeis() {
                       </div>
                       <div className="font-body text-[12px] text-muted-foreground truncate mt-0.5">
                         {cat.desc} · {totalLeis} {totalLeis === 1 ? 'lei' : 'leis'}
+                        {triagemCatCount > 0 && (
+                          <span className="text-amber-400 font-bold ml-1.5 bg-amber-500/10 px-1.5 py-0.5 rounded">
+                            {triagemCatCount} pendente(s)
+                          </span>
+                        )}
                       </div>
                     </div>
 

@@ -5,10 +5,10 @@ import { toast } from 'sonner';
 // ─── Pure text processing functions ───
 
 /** Remove metadata between parentheses: (Redação...), (Incluído...), etc., e anotações avulsas de Vigência.
- *  Nota: (Revogado...) é PRESERVADO para exibição informativa ao usuário. */
+ *  Nota: (Revogado...) e (Vetado) são PRESERVADOS para exibição informativa ao usuário. */
 export function stripRedacao(text: string): string {
   return text
-    .replace(/\s*\((?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Vigencia|Vetado)[^)]*\)/gi, '')
+    .replace(/\s*\((?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Vigencia)[^)]*\)/gi, '')
     .replace(/(?:^|[\s,;])Vig[êe]ncia(?:\s*[.:;]|\s+|$)/gi, ' ')
     .trim();
 }
@@ -181,9 +181,9 @@ export function formatTextoArtigoParaNarracao(artigo: any, breadcrumb: any): str
   return partes.filter(Boolean).join(' ');
 }
 
-/** Check if a line of text is revoked. */
+/** Check if a line of text is revoked or vetoed. */
 export function isLineRevogado(line: string): boolean {
-  return /\(Revogado[^)]*\)/i.test(line);
+  return /\(Revogado[^)]*\)/i.test(line) || /\(Vetado[^)]*\)/i.test(line);
 }
 
 // Regex que identifica INÍCIO de uma unidade lógica de texto legal.
@@ -222,10 +222,10 @@ export function isLineEpigrafe(line: string): boolean {
 }
 
 /** Verifica se a linha é apenas um marcador legal vazio (ex: "§ 7º", "VI -", "§ 2º-A") sem texto.
- *  Linhas que contenham nota de revogação (ex: "§ 7º (Revogado...)") NÃO são consideradas vazias. */
+ *  Linhas que contenham nota de revogação/veto (ex: "§ 7º (Revogado...)") NÃO são consideradas vazias. */
 export function isLineEmptyMarker(line: string): boolean {
-  // Se a linha contém nota de revogação, ela tem conteúdo informativo → não é vazia
-  if (/\(Revogado[^)]*\)/i.test(line)) return false;
+  // Se a linha contém nota de revogação ou veto, ela tem conteúdo informativo → não é vazia
+  if (/\((?:Revogado|Vetado)[^)]*\)/i.test(line)) return false;
   const clean = line.replace(/\s*\([^)]*\)/g, '').trim();
   if (/^(?:§\s*\d+[ºo°]?(?:-[A-Za-z0-9]+)?\.?|Parágrafo\s+único\.?)\s*$/i.test(clean)) return true;
   if (/^[IVXLCDM]+\s*[-–—.]?\s*$/i.test(clean)) return true;
@@ -239,9 +239,9 @@ export function sanitizeLegalArticleText(text: string): string {
   if (!text) return '';
   let sanitized = stripStructuralSuffix(text);
 
-  // 1. Remove epígrafes órfãs de dispositivos revogados (ex: "Feminicídio" sem dispositivo abaixo),
+  // 1. Remove epígrafes órfãs de dispositivos revogados/vetados (ex: "Feminicídio" sem dispositivo abaixo),
   //    mas PRESERVA parágrafos/incisos com nota de revogação (ex: "§ 7º (Revogado pela Lei...)")
-  sanitized = sanitized.replace(/\n?Feminic[íi]dio\s*(?:\((?!Revogado)[^)]*\))?\s*(?=\n|$)/gi, '\n');
+  sanitized = sanitized.replace(/\n?Feminic[íi]dio\s*(?:\((?!Revogado|Vetado)[^)]*\))?\s*(?=\n|$)/gi, '\n');
 
   // 2. Normaliza notas de vigência avulsas
   sanitized = sanitized.replace(/(?:^|[\s,;])Vig[êe]ncia(?:\s*[.:;]|\s+|$)/gi, ' (Vigência) ');
