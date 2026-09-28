@@ -91,7 +91,7 @@ export function initAnalytics() {
 
 let scriptLoaded = false;
 function loadGtagScript() {
-  if (scriptLoaded || typeof document === "undefined") return;
+  if (scriptLoaded || typeof document === "undefined" || !navigator.onLine) return;
   scriptLoaded = true;
   const s = document.createElement("script");
   s.async = true;
@@ -144,7 +144,7 @@ export function denyConsent() {
  * para não duplicar o evento.
  */
 export function trackPageview(path: string, title?: string) {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined" || !navigator.onLine) return;
   if (isNativeApp()) return;
   ensureDataLayer();
   window.gtag("event", "page_view", {
@@ -159,7 +159,7 @@ export function trackPageview(path: string, title?: string) {
 
 /** Evento customizado. Use nomes em snake_case (padrão GA4). */
 export function trackEvent(name: string, params: Record<string, any> = {}) {
-  if (typeof window === "undefined" || isNativeApp()) return;
+  if (typeof window === "undefined" || isNativeApp() || !navigator.onLine) return;
   ensureDataLayer();
   window.gtag("event", name, { send_to: GA_MEASUREMENT_ID, ...params });
 }

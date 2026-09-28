@@ -41,7 +41,7 @@ let configured = false;
 /** Chamado após o consentimento, junto com o carregamento do gtag.js. */
 export function initGoogleAds() {
   const id = getAdsId();
-  if (!id || configured || isNativeApp() || typeof window === "undefined") return;
+  if (!id || configured || isNativeApp() || typeof window === "undefined" || !navigator.onLine) return;
   if (typeof window.gtag !== "function") return;
   configured = true;
   window.gtag("config", id, { allow_enhanced_conversions: true });
@@ -50,7 +50,7 @@ export function initGoogleAds() {
 /** Enhanced Conversions: envia identificadores do usuário (o gtag hasheia). */
 export function setAdsUserData(data: { email?: string | null; phone?: string | null }) {
   const id = getAdsId();
-  if (!id || isNativeApp() || typeof window === "undefined") return;
+  if (!id || isNativeApp() || typeof window === "undefined" || !navigator.onLine) return;
   if (typeof window.gtag !== "function") return;
   const payload: Record<string, string> = {};
   if (data.email) payload.email = data.email.trim().toLowerCase();
@@ -65,7 +65,7 @@ export function adsConversion(
   params: { value?: number; currency?: string; transaction_id?: string } = {}
 ) {
   const id = getAdsId();
-  if (!id || isNativeApp() || typeof window === "undefined") return;
+  if (!id || isNativeApp() || typeof window === "undefined" || !navigator.onLine) return;
   if (typeof window.gtag !== "function") return;
   const label = window.__GOOGLE_ADS_LABELS__?.[key];
   if (!label) return; // label não configurado ainda

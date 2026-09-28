@@ -46,7 +46,7 @@ let loaded = false;
 let advancedMatching: Record<string, string> | undefined;
 
 function injectScript() {
-  if (loaded || typeof document === 'undefined') return;
+  if (loaded || typeof document === 'undefined' || !navigator.onLine) return;
   loaded = true;
   /* eslint-disable */
   (function (f: any, b: Document, e: string, v: string) {
@@ -128,6 +128,7 @@ async function sendCapi(event: string, params: Record<string, unknown>, eventId:
 
 /** Evento padrão do Meta (com deduplicação Pixel x CAPI). */
 export function fbTrack(event: FbStandardEvent | string, params?: Record<string, unknown>) {
+  if (typeof navigator !== 'undefined' && !navigator.onLine) return;
   const eventId = newEventId();
   try {
     if (isPixelReady()) window.fbq!('track', event, params ?? {}, { eventID: eventId });
@@ -143,6 +144,7 @@ export function fbTrackCustom(event: string, params?: Record<string, unknown>) {
 }
 
 export function fbPageView() {
+  if (typeof navigator !== 'undefined' && !navigator.onLine) return;
   try {
     if (isPixelReady()) window.fbq!('track', 'PageView');
   } catch { /* noop */ }
