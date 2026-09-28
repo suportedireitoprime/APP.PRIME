@@ -218,12 +218,7 @@ const Onboarding = () => {
       />
 
       {/* Modal de Promoção 24h R$ 149,90 PIX */}
-      <HorusPromoModal
-        open={pedirPromo}
-        timeLeft={timeLeft}
-        onClose={fecharPromo}
-        onRedeem={resgatarPromo}
-      />
+      
 
       <AnimatePresence mode="wait">
         {!onboardingFinished ? (

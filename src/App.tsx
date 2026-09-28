@@ -90,6 +90,7 @@ import { useAppUpdateStore } from "@/lib/appUpdateStore";
 import { scheduleAppWarmup } from "@/services/appWarmupService";
 import { scheduleBackgroundImageWarmup } from "@/services/imageBackgroundSync";
 import { GlobalDelayedPrompts } from "@/components/GlobalDelayedPrompts";
+import { GlobalPromoFloatingCard } from "@/components/GlobalPromoFloatingCard";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -206,6 +207,7 @@ const App = () => (
                   <AppWarmupInitializer />
                   <NativeBackButtonHandler />
                   <GlobalDelayedPrompts />
+          <GlobalPromoFloatingCard />
                   
                   <Suspense fallback={null}>
                     <GeofencePresenceBanner />

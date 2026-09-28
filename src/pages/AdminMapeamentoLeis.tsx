@@ -156,6 +156,26 @@ export default function AdminMapeamentoLeis() {
     return list;
   }, [selectedCat, filtroStatus, aprovados, triagem, busca]);
 
+  // Contadores globais (Dashboard)
+  const globalCounts = useMemo(() => {
+    let total = LEIS_CATALOG.length;
+    let aprovadas = 0;
+    let emTriagem = 0;
+    let pendentes = 0;
+    
+    LEIS_CATALOG.forEach(l => {
+      if (aprovados[l.id]) {
+        aprovadas++;
+      } else if (triagem[l.id]) {
+        emTriagem++;
+      } else {
+        pendentes++;
+      }
+    });
+    
+    return { total, aprovadas, emTriagem, pendentes };
+  }, [aprovados, triagem]);
+
   // Função para executar a extração / re-extração da lei com porcentagem e histórico
   const handleExtrairLei = async (lei: LeiCatalogItem) => {
     if (extraindoSlug === lei.id || (progressoExtraindo[lei.id] && progressoExtraindo[lei.id] > 0)) {
@@ -846,13 +866,57 @@ export default function AdminMapeamentoLeis() {
       <div className="p-4 max-w-4xl mx-auto space-y-4">
         {/* NÍVEL 1: SELEÇÃO DE CATEGORIAS */}
         {!selectedCat && (
-          <div className="space-y-3">
-            <p className="font-body text-[12px] text-muted-foreground px-1">
-              Selecione uma categoria para visualizar as leis, o status de extração, histórico de alterações e a prévia do Vade Mecum.
-            </p>
+          <div className="space-y-6">
+            
+            {/* Dashboard Global */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="bg-secondary/40 border border-border/60 rounded-2xl p-4 flex flex-col justify-between">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                    <BookOpen className="w-4 h-4" />
+                  </div>
+                  <span className="text-xs font-semibold text-muted-foreground">Total de Leis</span>
+                </div>
+                <div className="text-2xl font-black text-foreground">{globalCounts.total}</div>
+              </div>
+              
+              <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-4 flex flex-col justify-between hover:bg-emerald-500/20 transition-colors">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
+                  <span className="text-xs font-semibold text-emerald-400/80">Aprovadas</span>
+                </div>
+                <div className="text-2xl font-black text-emerald-400">{globalCounts.aprovadas}</div>
+              </div>
+              
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4 flex flex-col justify-between hover:bg-blue-500/20 transition-colors">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+                    <ListFilter className="w-4 h-4" />
+                  </div>
+                  <span className="text-xs font-semibold text-blue-400/80">Em Triagem</span>
+                </div>
+                <div className="text-2xl font-black text-blue-400">{globalCounts.emTriagem}</div>
+              </div>
+              
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 flex flex-col justify-between hover:bg-amber-500/20 transition-colors">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400">
+                    <Clock className="w-4 h-4" />
+                  </div>
+                  <span className="text-xs font-semibold text-amber-400/80">Pendentes</span>
+                </div>
+                <div className="text-2xl font-black text-amber-400">{globalCounts.pendentes}</div>
+              </div>
+            </div>
 
-            <div className="rounded-2xl border border-border/60 bg-secondary/30 divide-y divide-border/50 overflow-hidden">
-              {CATEGORIAS_DEF.map(cat => {
+            <div className="space-y-3">
+              <p className="font-body text-[12px] font-semibold text-foreground px-1 uppercase tracking-wider">
+                Categorias
+              </p>
+              <div className="rounded-2xl border border-border/60 bg-secondary/30 divide-y divide-border/50 overflow-hidden">
+                {CATEGORIAS_DEF.map(cat => {
                 const Icon = cat.icon;
                 const totalLeis = LEIS_CATALOG.filter(l => l.tipo === cat.id).length;
                 const triagemCatCount = LEIS_CATALOG.filter(l => l.tipo === cat.id && triagem[l.id]).length;
