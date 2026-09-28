@@ -17,7 +17,7 @@ export default function ForceUpdateScreen() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/95 backdrop-blur-xl px-6"
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/95 px-6"
     >
       <div className="absolute top-0 w-full h-1 bg-gradient-to-r from-red-500 via-rose-500 to-red-500" />
       

@@ -99,7 +99,7 @@ export function HorusAvaliacaoOverlay() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm flex flex-col items-center justify-center p-6"
+        className="fixed inset-0 z-[9999] bg-black/40 flex flex-col items-center justify-center p-6"
       >
         <motion.div 
           initial={{ y: 50, opacity: 0, scale: 0.95 }}

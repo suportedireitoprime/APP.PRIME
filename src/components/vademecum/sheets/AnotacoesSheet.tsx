@@ -370,7 +370,7 @@ const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, 
         key="anotacoes-backdrop"
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, pointerEvents: 'none' }}
         onClick={onClose}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto touch-none"
+        className="fixed inset-0 bg-black/80 pointer-events-auto touch-none"
         style={{ zIndex: 100040 }}
       />
       <motion.div

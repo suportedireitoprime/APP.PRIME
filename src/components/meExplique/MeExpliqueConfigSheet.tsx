@@ -47,7 +47,7 @@ const MeExpliqueConfigSheet = memo(function MeExpliqueConfigSheet({ open, onClos
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[70] flex flex-col justify-end bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[70] flex flex-col justify-end bg-black/80">
       <button className="absolute inset-0" aria-label="Fechar" onClick={onClose} />
       <motion.div
         initial={{ y: '100%' }}

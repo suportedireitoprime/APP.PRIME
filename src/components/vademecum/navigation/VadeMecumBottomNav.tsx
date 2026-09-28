@@ -127,7 +127,7 @@ const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
         <>
           <div
             onClick={() => setMaisOpen(false)}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] transition-opacity duration-200"
+            className="fixed inset-0 bg-black/80 z-[60] transition-opacity duration-200"
           />
           <div
             className="fixed bottom-0 left-0 right-0 z-[70] bg-background border-t border-border rounded-t-3xl pb-[calc(2.5rem+var(--sai-bottom))] pt-6 px-4 shadow-2xl max-h-[85vh] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden transition-transform duration-200"

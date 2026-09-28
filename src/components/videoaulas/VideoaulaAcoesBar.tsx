@@ -148,7 +148,7 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
 
           <Drawer open={maisOpen} onOpenChange={setMaisOpen}>
             <DrawerPortal>
-              <DrawerOverlay className="fixed inset-0 bg-black/60 z-[60] backdrop-blur-sm" />
+              <DrawerOverlay className="fixed inset-0 bg-black/80 z-[60]" />
               <DrawerContent className="bg-card border-t border-border flex flex-col rounded-t-[32px] fixed bottom-0 left-0 right-0 z-[70] pb-[calc(1.25rem+var(--sai-bottom))] outline-none">
                 <div className="p-6 space-y-4">
                   <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-border mb-4" />

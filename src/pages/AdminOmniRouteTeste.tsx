@@ -1111,7 +1111,7 @@ export default function AdminOmniRouteTeste() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setSelectedFeature(null)}
-                className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50"
+                className="fixed inset-0 bg-black/85 z-50"
               />
               <motion.div
                 initial={{ y: '100%' }}
@@ -1350,7 +1350,7 @@ export default function AdminOmniRouteTeste() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setShowOmniRouteTestSheet(false)}
-                className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50"
+                className="fixed inset-0 bg-black/85 z-50"
               />
               <motion.div
                 initial={{ y: '100%' }}

@@ -341,7 +341,7 @@ export default function NotificationsSheet({ open, onClose }: Props) {
   return createPortal(
     <>
       <div
-        className="fixed inset-0 z-[9990] bg-black/70 backdrop-blur-sm transition-opacity duration-200"
+        className="fixed inset-0 z-[9990] bg-black/85 transition-opacity duration-200"
         style={{ opacity: entered ? 1 : 0 }}
         onClick={onClose}
       />

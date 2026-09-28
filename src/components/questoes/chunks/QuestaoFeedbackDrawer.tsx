@@ -48,7 +48,7 @@ export function QuestaoFeedbackDrawer({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-30 bg-black/70 backdrop-blur-sm"
+            className="fixed inset-0 z-30 bg-black/85"
             onClick={onHideFeedback}
           />
         )}
@@ -108,7 +108,7 @@ export function QuestaoFeedbackDrawer({
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   onClick={onHideFeedback}
-                  className="fixed inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto"
+                  className="fixed inset-0 bg-black/80 pointer-events-auto"
                   style={{ zIndex: -1 }}
                 />
                 <motion.div

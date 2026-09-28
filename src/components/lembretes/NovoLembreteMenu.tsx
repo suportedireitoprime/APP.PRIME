@@ -32,7 +32,7 @@ export default function NovoLembreteMenu({ open, onClose, onHorario, onLocal }: 
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-[1400] bg-black/70 backdrop-blur-sm"
+            className="fixed inset-0 z-[1400] bg-black/85"
           />
           <motion.div
             initial={{ y: '100%' }}

@@ -28,7 +28,7 @@ export default function VideoaulasDesempenhoSheet({ open, onClose, horasTotais }
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000]"
+        className="fixed inset-0 bg-black/80 z-[10000]"
         onClick={() => {
           haptic.selection();
           onClose();

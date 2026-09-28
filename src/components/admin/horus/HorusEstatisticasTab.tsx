@@ -157,7 +157,7 @@ function UsersPanel() {
       )}
 
       {selected && (
-        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-4" onClick={() => setSelected(null)}>
+        <div className="fixed inset-0 z-50 bg-background/80 flex items-end sm:items-center justify-center p-4" onClick={() => setSelected(null)}>
           <div className="bg-card border border-border rounded-2xl p-4 max-w-lg w-full max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <h3 className="font-semibold mb-3">{selected.nome_preferido || selected.telefone}</h3>
             <div className="text-xs text-muted-foreground mb-3">Atualizado {new Date(selected.updated_at).toLocaleString('pt-BR')}</div>

@@ -60,7 +60,7 @@ export default function AprenderGeracaoOverlay({ open, title, subtitle, batch, d
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/80">
       <div className="w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl border border-border bg-card p-5 shadow-xl">
         <div className="mb-3">
           <p className="font-display text-base font-bold text-foreground">

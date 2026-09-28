@@ -140,7 +140,7 @@ const BaixarArtigoSheet = ({ open, onClose, artigo, tabelaNome, leiLabel }: Prop
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={loading ? undefined : onClose}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/80"
         style={{ zIndex: 100040 }}
       />
       <motion.aside

@@ -30,7 +30,7 @@ export const FlipFlashcards = ({ cards, onClose }: { cards: Flashcard[]; onClose
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[85] bg-black/70 backdrop-blur-md flex flex-col items-center justify-center px-5"
+      className="fixed inset-0 z-[85] bg-black/85 flex flex-col items-center justify-center px-5"
       onClick={onClose}
     >
       <div className="w-full max-w-md flex items-center justify-between mb-4" onClick={e => e.stopPropagation()}>
@@ -137,7 +137,7 @@ export const QuestoesRunner = ({ questoes, onClose }: { questoes: Questao[]; onC
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[85] bg-black/70 backdrop-blur-sm flex items-end"
+      className="fixed inset-0 z-[85] bg-black/85 flex items-end"
       onClick={onClose}
     >
       <motion.div
@@ -358,7 +358,7 @@ export const MapaMentalCanvas = ({ data, onClose }: { data: MapaNode; onClose: (
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[85] bg-black/85 backdrop-blur-md flex flex-col"
+      className="fixed inset-0 z-[85] bg-black/85 flex flex-col"
     >
       <div className="flex items-center justify-between px-4 pt-[calc(0.75rem+var(--sai-top))] pb-3">
         <div>
@@ -441,7 +441,7 @@ export const TermosViewer = ({ termos, onClose }: { termos: Termo[]; onClose: ()
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[85] bg-black/70 backdrop-blur-sm flex items-end"
+      className="fixed inset-0 z-[85] bg-black/85 flex items-end"
       onClick={onClose}
     >
       <motion.div

@@ -108,7 +108,7 @@ function useInformativos(tribunal: 'STJ' | 'STF') {
 
 function VerbeteDetalhe({ verbete, onClose }: { verbete: Verbete; onClose: () => void }) {
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center" onClick={onClose}>
+    <div className="fixed inset-0 z-50 bg-black/85 flex items-end sm:items-center justify-center" onClick={onClose}>
       <div
         className="w-full sm:max-w-2xl h-[92vh] sm:h-[85vh] bg-background rounded-t-3xl sm:rounded-3xl border border-border shadow-2xl flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
@@ -198,7 +198,7 @@ function EdicaoSheet({ tribunal, edicao, onClose }: { tribunal: 'STJ' | 'STF'; e
   }, [verbetes, query]);
 
   return (
-    <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-end justify-center" onClick={onClose}>
+    <div className="fixed inset-0 z-40 bg-black/80 flex items-end justify-center" onClick={onClose}>
       <div
         className="w-full max-w-3xl h-[92vh] bg-background rounded-t-3xl border border-border shadow-2xl flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}

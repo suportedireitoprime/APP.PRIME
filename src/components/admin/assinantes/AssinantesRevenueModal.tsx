@@ -20,7 +20,7 @@ export const AssinantesRevenueModal: React.FC<AssinantesRevenueModalProps> = ({
   const total = users.reduce((acc, u) => acc + u.value, 0);
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-background/80 backdrop-blur-sm animate-in fade-in">
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-background/80 animate-in fade-in">
       <div className="bg-card w-full sm:max-w-2xl sm:rounded-2xl border-t sm:border border-border/50 shadow-2xl flex flex-col h-[85vh] sm:h-[80vh] animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4">
         <div className="flex items-center justify-between p-4 border-b border-border/50 shrink-0">
           <div>

@@ -270,7 +270,7 @@ export default function QuestoesTrilhas() {
       {/* DRAWER: CRIAR TRILHA */}
       <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
         <DrawerPortal>
-          <DrawerOverlay className="bg-black/60 backdrop-blur-sm fixed inset-0 z-[100]" />
+          <DrawerOverlay className="bg-black/80 fixed inset-0 z-[100]" />
           <DrawerContent className="bg-[#0A0A0A] border-white/10 z-[110] outline-none rounded-t-[32px]">
             <div className="mx-auto mt-4 h-1.5 w-[50px] rounded-full bg-white/20" />
             

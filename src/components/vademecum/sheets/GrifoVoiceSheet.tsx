@@ -185,7 +185,7 @@ const GrifoVoiceSheet = ({ open, onClose, linhas, onApplyPassages }: Props) => {
         onPointerDown={(e) => e.stopPropagation()}
         onPointerUp={(e) => { e.stopPropagation(); if (phase === 'idle') onClose(); }}
         onClick={(e) => { e.stopPropagation(); if (phase === 'idle') onClose(); }}
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[10050] pointer-events-auto"
+        className="fixed inset-0 bg-black/85 z-[10050] pointer-events-auto"
       />
       <motion.div
         key="grifo-voz-card"

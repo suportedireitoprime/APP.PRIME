@@ -617,7 +617,7 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
       {fotoFull && avatarUrl
         ? createPortal(
             <div
-              className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm flex items-center justify-center cursor-pointer transition-opacity duration-200"
+              className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center cursor-pointer transition-opacity duration-200"
               onClick={() => setFotoFull(false)}
             >
               <button

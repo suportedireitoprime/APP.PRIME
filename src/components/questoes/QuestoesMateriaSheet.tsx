@@ -112,7 +112,7 @@ export function QuestoesMateriaSheet({ materia, aberto, onOpenChange }: Questoes
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, pointerEvents: 'none' }}
             onClick={() => onOpenChange(false)}
-            className="fixed inset-0 z-[70] bg-black/75 backdrop-blur-sm"
+            className="fixed inset-0 z-[70] bg-black/85"
           />
           <motion.div
             initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0, pointerEvents: 'none' }}

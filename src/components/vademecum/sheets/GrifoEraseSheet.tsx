@@ -60,7 +60,7 @@ const GrifoEraseSheet = ({ open, onClose, highlights, onRemoveByColor, onClearAl
             e.stopPropagation();
             onClose();
           }}
-          className="fixed inset-0 bg-black/75 backdrop-blur-sm z-0 pointer-events-auto cursor-pointer"
+          className="fixed inset-0 bg-black/85 z-0 pointer-events-auto cursor-pointer"
         />
 
         {/* Floating Centered Card */}

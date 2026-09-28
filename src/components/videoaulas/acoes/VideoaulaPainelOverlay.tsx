@@ -66,7 +66,7 @@ export function PainelOverlay({ input, tipo, onClose }: PainelOverlayProps) {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
-        className="fixed inset-0 z-[80] bg-black/60 backdrop-blur-sm"
+        className="fixed inset-0 z-[80] bg-black/80"
         onClick={onClose}
       />
       <motion.div

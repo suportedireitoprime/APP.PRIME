@@ -360,7 +360,7 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/75 backdrop-blur-sm z-[10050] pointer-events-auto touch-none"
+            className="fixed inset-0 bg-black/85 z-[10050] pointer-events-auto touch-none"
             onClick={(e) => {
               e.stopPropagation();
               onClose();

@@ -138,7 +138,7 @@ export default function BlogPostSheet({ post, onClose, showGoTo = false, inline 
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, pointerEvents: 'none' }}
               transition={{ duration: 0.15 }}
-              className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md"
+              className="fixed inset-0 z-50 bg-black/80"
               onClick={handleClose}
             />
           )}

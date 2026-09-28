@@ -101,7 +101,7 @@ function EdicaoSheet({ tribunal, edicao, onClose }: { tribunal: 'STJ' | 'STF'; e
   }, [itens, query]);
 
   return (
-    <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-end justify-center" onClick={onClose}>
+    <div className="fixed inset-0 z-40 bg-black/80 flex items-end justify-center" onClick={onClose}>
       <div
         className="w-full max-w-3xl h-[92vh] bg-background rounded-t-3xl border border-border shadow-2xl flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}

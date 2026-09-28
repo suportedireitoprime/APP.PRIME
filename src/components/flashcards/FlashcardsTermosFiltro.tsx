@@ -145,7 +145,7 @@ export function FlashcardsTermosFiltro({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
-        className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-[2px]"
+        className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-[2px]"
         onClick={() => onOpenChange(false)}
       />
 

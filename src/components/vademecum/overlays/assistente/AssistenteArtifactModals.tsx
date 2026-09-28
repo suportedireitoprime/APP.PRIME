@@ -46,7 +46,7 @@ export const AssistenteArtifactModals: React.FC<AssistenteArtifactModalsProps> =
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm flex items-center justify-center"
+            className="fixed inset-0 z-[80] bg-black/85 flex items-center justify-center"
           >
             <motion.div
               initial={{ rotateY: 0, scale: 0.85, opacity: 0 }}

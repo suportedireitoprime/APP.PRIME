@@ -18,7 +18,7 @@ const VoiceCaptureOverlay = ({ open, partial, onStop }: Props) => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
-          className="fixed inset-0 z-[120] flex flex-col bg-background/95 backdrop-blur-2xl"
+          className="fixed inset-0 z-[120] flex flex-col bg-background/95"
         >
           {/* Close */}
           <div className="flex items-center justify-between px-5 pt-[calc(var(--sai-top)+1rem)] pb-3">

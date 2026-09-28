@@ -43,7 +43,7 @@ export default function VerTodosSheet({ open, titulo, eyebrow, obras, onAbrir, o
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[180] bg-black/70 backdrop-blur-md"
+            className="fixed inset-0 z-[180] bg-black/85"
             onClick={onClose}
           />
           <motion.div

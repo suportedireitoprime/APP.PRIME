@@ -749,7 +749,7 @@ export default function RadarConcursos() {
       {/* 5. MODAL DE CONTEÚDO COMPLETO DO CONCURSO */}
       <AnimatePresence>
         {selectedEdital && (
-          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/85 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/85">
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
@@ -892,7 +892,7 @@ export default function RadarConcursos() {
       {/* 6. MODAL DE SIMULAÇÃO DO HÓRUS IA */}
       <AnimatePresence>
         {simulacaoOpen && simulacaoItem && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}

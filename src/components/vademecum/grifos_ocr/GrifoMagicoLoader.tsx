@@ -33,7 +33,7 @@ export default function GrifoMagicoLoader({ open }: { open: boolean }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[999] flex items-center justify-center bg-background/70 backdrop-blur-sm px-6"
+          className="fixed inset-0 z-[999] flex items-center justify-center bg-background/70 px-6"
           role="status"
           aria-live="polite"
         >

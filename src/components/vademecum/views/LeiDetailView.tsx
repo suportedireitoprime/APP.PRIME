@@ -1195,7 +1195,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
         <>
           <div
             onClick={() => setOverlayPanel(null)}
-            className="fixed inset-0 z-[99] bg-black/75 backdrop-blur-md"
+            className="fixed inset-0 z-[99] bg-black/85"
           />
           <div
             className="fixed inset-0 z-[100] h-[100dvh] max-h-[100dvh] bg-[#0f0f0f] flex flex-col shadow-2xl lg:max-w-[780px] lg:mx-auto pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))]"

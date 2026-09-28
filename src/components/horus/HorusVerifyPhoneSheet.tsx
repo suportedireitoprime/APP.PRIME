@@ -212,7 +212,7 @@ export default function HorusVerifyPhoneSheet({ open, onClose, onVerified }: Pro
   return (
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-start overflow-y-auto px-4 pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-10 bg-black/75 backdrop-blur-md">
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-start overflow-y-auto px-4 pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-10 bg-black/85">
           {/* Backdrop click */}
           <div
             onClick={onClose}

@@ -242,7 +242,7 @@ export const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
-        className="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-md flex flex-col select-none overflow-hidden"
+        className="fixed inset-0 z-[9999] bg-black/95 flex flex-col select-none overflow-hidden"
       >
         {/* Barra superior de controle com Safe Area Inset */}
         <header className="relative z-20 flex items-center justify-between px-4 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-3 bg-gradient-to-b from-black/80 to-transparent">

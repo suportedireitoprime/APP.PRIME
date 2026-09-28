@@ -214,7 +214,7 @@ export function AdminHorusHojeCards() {
       </div>
 
       {openModal && (
-        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-4" onClick={() => setOpenModal(null)}>
+        <div className="fixed inset-0 z-50 bg-background/80 flex items-end sm:items-center justify-center p-4" onClick={() => setOpenModal(null)}>
           <div className="bg-card border border-border rounded-2xl w-full max-w-lg max-h-[80vh] flex flex-col overflow-hidden shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="p-4 border-b border-border flex items-center justify-between">
               <h3 className="font-bold text-lg">

@@ -490,7 +490,7 @@ const FlashcardsEstudo = () => {
 
       {/* Modal Minimalista de Retomada */}
       {savedIndexToResume !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 animate-in fade-in duration-300">
           <div className="bg-[#0d0f12] border border-white/10 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl animate-in zoom-in-95 duration-300">
             <h3 className="text-[19px] font-extrabold text-white mb-2">Retomar Estudo?</h3>
             <p className="text-sm text-zinc-400 mb-6">

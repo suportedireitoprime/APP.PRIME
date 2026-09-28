@@ -78,7 +78,7 @@ export function PrimeBottomSheet({
             exit={{ opacity: 0 }}
             onClick={(e) => { e.stopPropagation(); onClose(); }}
             style={{ zIndex: zIndex - 10 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm touch-none"
+            className="fixed inset-0 bg-black/80 touch-none"
           />
 
           {/* Painel Principal */}

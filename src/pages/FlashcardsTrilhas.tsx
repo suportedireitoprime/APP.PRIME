@@ -484,7 +484,7 @@ export default function FlashcardsTrilhas() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setTrilhaParaDeletar(null)}
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+              className="fixed inset-0 bg-black/80"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 12 }}

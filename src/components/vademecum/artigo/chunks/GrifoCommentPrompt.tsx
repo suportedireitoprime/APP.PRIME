@@ -259,7 +259,7 @@ export const GrifoCommentPrompt = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[10050] bg-black/65 backdrop-blur-sm"
+              className="fixed inset-0 z-[10050] bg-black/65"
               onClick={handleDismissComment}
             />
             <motion.div

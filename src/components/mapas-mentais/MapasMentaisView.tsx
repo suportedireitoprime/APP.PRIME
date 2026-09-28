@@ -552,7 +552,7 @@ export default function MapasMentaisView({
 
       {/* 5. Overlay de Loading quando estiver gerando na IA */}
       {gerando && (
-        <div className="fixed inset-0 z-[140] bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center space-y-4">
+        <div className="fixed inset-0 z-[140] bg-black/85 flex flex-col items-center justify-center p-6 text-center space-y-4">
           <div className="relative">
             <div className="w-16 h-16 rounded-full border-3 border-purple-500/20 border-t-purple-500 animate-spin" />
             <Loader2 className="w-8 h-8 text-purple-400 absolute inset-0 m-auto animate-spin" />

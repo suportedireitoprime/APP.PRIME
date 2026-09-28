@@ -439,7 +439,7 @@ export default function ResumosJuridicosSubtemas() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
               onClick={() => setModalResumo(null)}
-              className="fixed inset-0 bg-black/80 backdrop-blur-md"
+              className="fixed inset-0 bg-black/80"
             />
 
             {/* Card Flutuante Centralizado */}

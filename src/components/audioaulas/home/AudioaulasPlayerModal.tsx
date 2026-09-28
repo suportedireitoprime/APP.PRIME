@@ -54,7 +54,7 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
       <div
         onClick={() => setAberto(false)}
         aria-hidden
-        className={`fixed inset-0 z-50 bg-black/75 backdrop-blur-md transition-opacity duration-300 ${
+        className={`fixed inset-0 z-50 bg-black/85 transition-opacity duration-300 ${
           aberto ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
       />

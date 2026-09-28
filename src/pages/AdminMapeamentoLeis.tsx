@@ -1163,7 +1163,7 @@ export default function AdminMapeamentoLeis() {
 
       {/* Modal / Dialog: Histórico das Últimas Vezes que foi Extraído */}
       {modalHistoricoExtracoesLei && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="bg-[#121212] border border-border/80 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
             {/* Header do Modal */}
             <div className="p-4 sm:p-5 border-b border-border/60 flex items-center justify-between gap-3 bg-secondary/20">

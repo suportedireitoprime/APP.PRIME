@@ -57,7 +57,7 @@ const JurisprudenciaSheet = ({ open, onClose }: Props) => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        className="fixed inset-0 z-[10040] bg-black/75 backdrop-blur-md"
+        className="fixed inset-0 z-[10040] bg-black/85"
       />
       <motion.div
         initial={{ y: '100%' }}

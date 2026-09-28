@@ -71,7 +71,7 @@ const SuporteSheet = ({ open, onClose }: SuporteSheetProps) => {
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-[1100] bg-black/70 backdrop-blur-sm"
+            className="fixed inset-0 z-[1100] bg-black/85"
           />
           <motion.div
             initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}

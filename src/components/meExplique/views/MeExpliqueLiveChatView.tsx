@@ -574,7 +574,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
       {/* Modal de Limite de Tempo Compartilhado */}
       <AnimatePresence>
         {cota.limiteModalAberto && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 p-4 backdrop-blur-md">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}

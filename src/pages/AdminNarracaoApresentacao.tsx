@@ -459,7 +459,7 @@ const AdminNarracaoApresentacao = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => { if (!ocupado) { setBottomSheetOpen(false); setSel(null); } }}
-              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+              className="fixed inset-0 z-40 bg-black/80"
             />
             <motion.div
               initial={{ y: '100%' }}

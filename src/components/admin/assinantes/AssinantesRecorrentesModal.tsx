@@ -123,7 +123,7 @@ export function AssinantesRecorrentesModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-background/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-background/80">
       <div className="bg-card w-full max-w-[95vw] h-[95vh] sm:max-w-4xl sm:h-[85vh] rounded-2xl shadow-xl border border-border flex flex-col">
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-border flex items-center justify-between shrink-0">

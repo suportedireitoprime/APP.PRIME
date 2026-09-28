@@ -117,7 +117,7 @@ export default function LeiArtigosSheet({ lei, area, onClose }: Props) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={onClose}
-              className="fixed inset-0 z-[80] bg-black/60 backdrop-blur-sm"
+              className="fixed inset-0 z-[80] bg-black/80"
             />
             <motion.div
               initial={{ y: "100%" }}
@@ -235,7 +235,7 @@ export default function LeiArtigosSheet({ lei, area, onClose }: Props) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setArtigoSelecionado(null)}
-              className="fixed inset-0 z-[90] bg-black/60 backdrop-blur-sm"
+              className="fixed inset-0 z-[90] bg-black/80"
             />
             <motion.div
               initial={{ y: "100%" }}

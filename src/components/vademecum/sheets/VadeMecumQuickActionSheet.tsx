@@ -450,7 +450,7 @@ export const VadeMecumQuickActionSheet: React.FC<VadeMecumQuickActionSheetProps>
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 z-[99] bg-black/80 backdrop-blur-md"
+            className="fixed inset-0 z-[99] bg-black/80"
           />
 
           {/* Painel que desliza de baixo para cima cobrindo a tela */}

@@ -81,7 +81,7 @@ const AvaliarAppSheet = ({ open, onClose, onFeedback }: Props) => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 z-[2100] bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-[2100] bg-black/80"
             aria-hidden
           />
           <motion.div

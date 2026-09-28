@@ -85,7 +85,7 @@ export function MapasMentaisFormatModal({
           haptic.light();
           onClose();
         }}
-        className="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-black/80 transition-opacity"
       />
 
       {/* Conteúdo do Modal (Bottom-sheet no mobile, Diálogo central no desktop) */}

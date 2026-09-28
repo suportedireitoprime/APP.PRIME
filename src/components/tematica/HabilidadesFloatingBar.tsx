@@ -34,7 +34,7 @@ export default function HabilidadesFloatingBar({ ativa, onChange, contagens = {}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-md"
+            className="fixed inset-0 z-[300] bg-black/85"
             onClick={() => setAberto(false)}
           />
           <motion.div

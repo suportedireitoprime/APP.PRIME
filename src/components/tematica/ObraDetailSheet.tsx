@@ -308,7 +308,7 @@ export default function ObraDetailSheet({ obra, open, onClose }: Props) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 z-[200] bg-black/70 backdrop-blur-md"
+            className="fixed inset-0 z-[200] bg-black/85"
           />
           <motion.div
             initial={{ y: "100%" }}

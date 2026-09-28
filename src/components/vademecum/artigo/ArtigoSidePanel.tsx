@@ -35,7 +35,7 @@ const ArtigoSidePanel = ({ open, onClose, title, subtitle, children, widthClass 
             exit={{ opacity: 0 }}
             onClick={onClose}
             data-artigo-menu
-            className="fixed inset-0 z-[10040] bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-[10040] bg-black/80"
           />
           <motion.div
             data-artigo-menu

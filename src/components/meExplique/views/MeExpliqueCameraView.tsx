@@ -223,7 +223,7 @@ export const MeExpliqueCameraView: React.FC<Props> = ({ onVoltar }) => {
       {/* Modal de Limite de Tempo */}
       <AnimatePresence>
         {engine.limiteModal && (
-          <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/85 p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}

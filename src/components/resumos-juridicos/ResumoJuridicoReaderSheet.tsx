@@ -500,7 +500,7 @@ export default function ResumoJuridicoReaderSheet({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
-              className="fixed inset-0 z-[90] bg-black/80 backdrop-blur-md"
+              className="fixed inset-0 z-[90] bg-black/80"
               onClick={handleClose}
             />
           )}

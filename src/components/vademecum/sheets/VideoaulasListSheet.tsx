@@ -268,7 +268,7 @@ const VideoaulasListSheet = ({ open, onClose, tabelaNome, artigoNumero, leiNome,
               e.stopPropagation();
               onClose();
             }}
-            className="fixed inset-0 bg-black/75 backdrop-blur-sm pointer-events-auto touch-none"
+            className="fixed inset-0 bg-black/85 pointer-events-auto touch-none"
           />
 
           {/* Sheet deslizante */}

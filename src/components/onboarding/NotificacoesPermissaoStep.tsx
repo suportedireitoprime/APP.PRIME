@@ -185,7 +185,7 @@ export default function NotificacoesPermissaoStep({
   };
 
   return (
-    <div className="fixed inset-0 z-[130] flex flex-col items-center justify-center overflow-y-auto bg-neutral-900/60 backdrop-blur-md p-4">
+    <div className="fixed inset-0 z-[130] flex flex-col items-center justify-center overflow-y-auto bg-neutral-900/60 p-4">
       <div className="relative mx-auto w-full max-w-md pt-28">
         
         {/* Horus mascote animado */}

@@ -93,7 +93,7 @@ const TranscricaoSheet = memo(function TranscricaoSheet({ open, onClose, falas }
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex flex-col justify-end bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[60] flex flex-col justify-end bg-black/80">
       <button className="absolute inset-0" aria-label="Fechar" onClick={onClose} />
       <div className="relative max-h-[85vh] rounded-t-3xl bg-background text-foreground shadow-2xl">
         <div className="flex items-center gap-3 border-b border-border px-4 py-3.5">

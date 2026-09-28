@@ -212,7 +212,7 @@ export const GeracaoAnimacaoOverlay = ({
           className={
             inline
               ? "w-full flex items-center justify-center py-10 px-2"
-              : "fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center px-4 py-6 overflow-y-auto"
+              : "fixed inset-0 bg-black/80 flex items-center justify-center px-4 py-6 overflow-y-auto"
           }
         >
           <motion.div

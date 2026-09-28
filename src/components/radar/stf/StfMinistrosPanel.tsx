@@ -55,7 +55,7 @@ export default function StfMinistrosPanel({ selected, setSelected }: { selected:
 
       <AnimatePresence>
         {selected && (
-          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm" onClick={() => setSelected(null)}>
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80" onClick={() => setSelected(null)}>
             <motion.div
               initial={{ y: '100%' }}
               animate={{ y: 0 }}

@@ -272,7 +272,7 @@ const GrifoVoicePanel = forwardRef<GrifoVoicePanelHandle, Props>(function GrifoV
               key="color-overlay"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => { setCandidates(null); onDeactivate(); }}
-              className="fixed inset-0 z-[10020] bg-black/70 backdrop-blur-sm"
+              className="fixed inset-0 z-[10020] bg-black/85"
             />
             <motion.div
               key="color-sheet"

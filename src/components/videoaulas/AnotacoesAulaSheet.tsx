@@ -198,7 +198,7 @@ export function AnotacoesAulaSheet({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0, pointerEvents: 'none' }}
         onClick={onClose}
-        className="fixed inset-0 z-[10040] bg-black/60 backdrop-blur-sm pointer-events-auto touch-none"
+        className="fixed inset-0 z-[10040] bg-black/80 pointer-events-auto touch-none"
       />
       <motion.div
         initial={{ x: '100%' }}

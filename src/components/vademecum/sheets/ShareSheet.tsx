@@ -62,7 +62,7 @@ export default function ShareSheet({ open, onClose, title, text, url }: Props) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-[70] bg-black/80"
             onClick={onClose}
           />
           <motion.div

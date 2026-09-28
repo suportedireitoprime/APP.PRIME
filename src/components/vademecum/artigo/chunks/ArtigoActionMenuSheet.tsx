@@ -328,7 +328,7 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
               data-artigo-menu=""
               onClick={() => setActiveActionMenu(null)}
               style={{ pointerEvents: 'auto', zIndex: 100005 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+              className="fixed inset-0 bg-black/80"
             />
             <motion.aside
               initial={{ y: '100%' }}

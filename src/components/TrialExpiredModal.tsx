@@ -101,7 +101,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
   }
 
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-y-auto bg-black/70 backdrop-blur-md p-4 py-8">
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-y-auto bg-black/85 p-4 py-8">
       {/* Checkout direto mantendo o fundo fosco */}
       <CheckoutModal
         open={!!checkoutPlan}

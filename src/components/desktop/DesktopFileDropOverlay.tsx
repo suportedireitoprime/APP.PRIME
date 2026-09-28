@@ -109,7 +109,7 @@ export default function DesktopFileDropOverlay() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
-          className="fixed inset-0 z-[9999] pointer-events-none flex items-center justify-center bg-background/80 backdrop-blur-sm"
+          className="fixed inset-0 z-[9999] pointer-events-none flex items-center justify-center bg-background/80"
           role="status"
           aria-live="polite"
         >
