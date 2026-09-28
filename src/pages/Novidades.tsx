@@ -1,284 +1,135 @@
-import { useState, useMemo, useEffect } from 'react';
-import { Calendar, ChevronRight, Loader2, RefreshCw, Info } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, Rocket, Star, ShieldCheck, Zap, ArrowRight, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { getResenhaCache, prefetchResenha, getLatestDate, type ResenhaItem } from '@/services/atualizacaoService';
-import LeiOrdinariaDetail from '@/components/vademecum/artigo/LeiOrdinariaDetail';
-import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import type { LeiOrdinaria } from '@/services/legislacaoService';
-import brasaoImgAsset from '@/assets/brasao-republica.webp';
+import { supabase } from '@/integrations/supabase/client';
 import { useGoBack } from '@/hooks/useGoBack';
-const brasaoImg = brasaoImgAsset;
 
-
-const TIPO_COLORS: Record<string, { badge: string; border: string; card: string }> = {
-  'Lei': { badge: 'bg-primary/15 text-primary border-primary/20', border: 'border-l-primary', card: 'from-primary/10 to-transparent' },
-  'Lei Complementar': { badge: 'bg-copper-light/15 text-copper-light border-copper-light/20', border: 'border-l-copper-light', card: 'from-copper-light/10 to-transparent' },
-  'Decreto': { badge: 'bg-copper/15 text-copper border-copper/20', border: 'border-l-copper', card: 'from-copper/10 to-transparent' },
-  'Medida Provisória': { badge: 'bg-copper-dark/15 text-copper-dark border-copper-dark/20', border: 'border-l-copper-dark', card: 'from-copper-dark/10 to-transparent' },
-  'Outro': { badge: 'bg-muted text-muted-foreground border-border', border: 'border-l-muted-foreground', card: 'from-muted/10 to-transparent' },
-};
-
-const TIPO_FILTERS = ['Todos', 'Lei', 'Lei Complementar', 'Decreto', 'Medida Provisória'];
-
-const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
-const MONTHS = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
-
-function getDayList(centerDate: Date, range = 2): Date[] {
-  const days: Date[] = [];
-  for (let i = range; i >= -range; i--) {
-    const d = new Date(centerDate);
-    d.setDate(d.getDate() - i);
-    days.push(d);
-  }
-  return days;
+interface AppUpdate {
+  version: string;
+  title: string;
+  date: string;
+  description: string;
+  features: string[];
 }
 
-function formatDateLabel(date: Date): string {
-  const today = new Date();
-  if (date.toDateString() === today.toDateString()) return 'HOJE';
-  const weekday = WEEKDAYS[date.getDay()];
-  return weekday;
-}
-
-function formatFullDate(date: Date): string {
-  const weekdayFull = ['Domingo', 'Segunda-Feira', 'Terça-Feira', 'Quarta-Feira', 'Quinta-Feira', 'Sexta-Feira', 'Sábado'];
-  const monthFull = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-  return `${weekdayFull[date.getDay()]}, ${date.getDate()} De ${monthFull[date.getMonth()]} De ${date.getFullYear()}`;
-}
-
-function cleanResenhaTexto(texto: string | null): string | null {
-  if (!texto) return null;
-  return texto
-    .replace(/\\n/g, '\n')
-    .replace(/\\r/g, '')
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<\/p>/gi, '\n')
-    .replace(/<[^>]+>/g, '')
-    .replace(/\u00A0/g, ' ')
-    .replace(/\r/g, '')
-    .trim();
-}
-
-function toDateKey(d: Date): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
-
-const Novidades = () => {
+export default function NovidadesApp() {
   const navigate = useNavigate();
   const goBack = useGoBack();
-  const [items, setItems] = useState<ResenhaItem[]>([]);
+  const [updates, setUpdates] = useState<AppUpdate[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [tipoFiltro, setTipoFiltro] = useState('Todos');
-  const [detailItem, setDetailItem] = useState<LeiOrdinaria | null>(null);
-
-  const centerDate = useMemo(() => getLatestDate() || new Date(), [items]);
-  const dayList = useMemo(() => getDayList(centerDate, 2), [centerDate]);
 
   useEffect(() => {
-    const cached = getResenhaCache();
-    if (cached) {
-      setItems(cached);
-      setLoading(false);
-    } else {
-      prefetchResenha().then(() => {
-        const data = getResenhaCache();
-        if (data) setItems(data);
+    async function fetchUpdates() {
+      try {
+        const { data, error } = await supabase.functions.invoke('app-updates');
+        if (error) throw error;
+        setUpdates(data.updates || []);
+      } catch (err) {
+        console.error('Erro ao buscar novidades do app:', err);
+      } finally {
         setLoading(false);
-      });
+      }
     }
+    fetchUpdates();
   }, []);
 
-  // Items available dates for highlighting calendar
-  const availableDates = useMemo(() => {
-    const set = new Set<string>();
-    items.forEach(item => {
-      const d = item.data_dou || item.data_publicacao;
-      if (d) set.add(d.slice(0, 10));
-    });
-    return set;
-  }, [items]);
-
-  // Auto-select the most recent date that has data
-  useEffect(() => {
-    if (availableDates.size === 0) return;
-    const sorted = Array.from(availableDates).sort().reverse();
-    const mostRecent = sorted[0];
-    if (mostRecent && toDateKey(selectedDate) !== mostRecent) {
-      const [y, m, d] = mostRecent.split('-').map(Number);
-      setSelectedDate(new Date(y, m - 1, d));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [availableDates]);
-
-  // Filter by selected date and type
-  const filtered = useMemo(() => {
-    const dateKey = toDateKey(selectedDate);
-    let result = items.filter(item => {
-      const d = (item.data_dou || item.data_publicacao || '').slice(0, 10);
-      return d === dateKey;
-    });
-    if (tipoFiltro !== 'Todos') {
-      result = result.filter(item => item.tipo_ato === tipoFiltro);
-    }
-    return result;
-  }, [items, selectedDate, tipoFiltro]);
-
-  const openDetail = (item: ResenhaItem) => {
-    const cleaned = cleanResenhaTexto(item.texto_completo);
-    const lei: LeiOrdinaria = {
-      id: item.id,
-      numero_lei: item.numero_ato,
-      ementa: item.ementa,
-      ano: parseInt(item.data_publicacao?.slice(0, 4) || '2026'),
-      data_publicacao: item.data_publicacao,
-      texto_completo: cleaned,
-      url: item.url,
-      ordem: 0,
-      explicacao: item.explicacao,
-    };
-    setDetailItem(lei);
+  const getIconForFeature = (feature: string) => {
+    const text = feature.toLowerCase();
+    if (text.includes('desempenho') || text.includes('rápida') || text.includes('rápido')) return <Zap className="w-4 h-4 text-amber-500" />;
+    if (text.includes('segurança') || text.includes('correção') || text.includes('falha')) return <ShieldCheck className="w-4 h-4 text-emerald-500" />;
+    if (text.includes('novo') || text.includes('nova') || text.includes('inédito')) return <Star className="w-4 h-4 text-blue-500" />;
+    return <ArrowRight className="w-4 h-4 text-primary" />;
   };
 
-  if (detailItem) {
-    return (
-      <div className="min-h-dvh bg-background">
-        <LeiOrdinariaDetail lei={detailItem} onBack={() => setDetailItem(null)} />
-      </div>
-    );
-  }
-
-  const selectedDateKey = toDateKey(selectedDate);
-
   return (
-    <div className="min-h-dvh bg-background">
-      {/* Red gradient header */}
-      <div className="bg-gradient-to-b from-primary/30 via-primary/15 to-background pb-4">
-        {/* Top bar */}
-        <PageHeader
-          title="Leis do Dia"
-          subtitle="Novas leis publicadas no Diário Oficial"
-          onBack={() => goBack()}
-          rightAction={
-            <button className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
-              <Info className="w-4 h-4" />
-            </button>
-          }
-        />
-
-        {/* Day calendar strip */}
-
-        <div className="flex justify-between gap-1.5 px-3 py-3">
-          {dayList.map((day) => {
-            const key = toDateKey(day);
-            const isSelected = key === selectedDateKey;
-            const hasData = availableDates.has(key);
-            const label = formatDateLabel(day);
-
-            return (
-              <button
-                key={key}
-                onClick={() => setSelectedDate(day)}
-                className={`flex-1 flex flex-col items-center gap-0.5 py-2 rounded-xl transition-all shadow-lg shadow-black/20 ${
-                  isSelected
-                    ? 'bg-primary shadow-primary/20'
-                    : 'bg-card/40 text-foreground hover:bg-card/60'
-                }`}
-              >
-                <span className={`text-[9px] font-body font-semibold uppercase tracking-wide ${isSelected ? 'text-black' : 'text-foreground'}`}>{label}</span>
-                <span className={`text-base font-display font-bold leading-none ${isSelected ? 'text-black' : 'text-foreground'}`}>{day.getDate()}</span>
-                <span className={`text-[8px] font-body uppercase ${isSelected ? 'text-black/80' : 'text-foreground/80'}`}>{MONTHS[day.getMonth()]}</span>
-                {hasData && !isSelected && (
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary mt-0.5" />
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Selected date label */}
-        <div className="flex items-center gap-2 px-5 pb-1">
-          <Calendar className="w-3.5 h-3.5 text-primary" />
-          <span className="text-xs font-display text-primary">{formatFullDate(selectedDate)}</span>
-        </div>
-        <div className="px-5 pb-2">
-          <Badge className="bg-primary/15 text-primary border-primary/20 text-[10px]">
-            {filtered.length} {filtered.length === 1 ? 'lei' : 'leis'}
-          </Badge>
+    <div className="min-h-screen bg-background pb-20 overflow-x-hidden">
+      {/* Header Fixo */}
+      <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-white/5 pt-[calc(env(safe-area-inset-top,0px)+0.5rem)] pb-3 px-4">
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={goBack}
+            className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <h1 className="text-lg font-bold text-foreground leading-tight">Atualizações do App</h1>
+            <p className="text-xs text-muted-foreground font-medium">Veja tudo que construímos para você</p>
+          </div>
         </div>
       </div>
 
-      {/* Type filters */}
-      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border">
-        <ScrollArea className="w-full">
-          <div className="flex gap-2 px-4 py-2.5">
-            {TIPO_FILTERS.map(tipo => (
-              <button
-                key={tipo}
-                onClick={() => setTipoFiltro(tipo)}
-                className={`whitespace-nowrap text-xs font-body px-4 py-2 rounded-full transition-colors ${
-                  tipoFiltro === tipo
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-secondary text-foreground hover:bg-secondary/80'
-                }`}
+      <div className="px-4 pt-6 max-w-3xl mx-auto">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center border border-primary/30">
+            <Rocket className="w-6 h-6 text-primary" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-display font-black text-white uppercase tracking-wider">Histórico de Versões</h2>
+            <p className="text-sm text-white/50 mt-0.5">Estamos sempre evoluindo.</p>
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 opacity-50">
+            <Loader2 className="w-8 h-8 text-primary animate-spin mb-3" />
+            <p className="text-sm font-medium">Buscando atualizações...</p>
+          </div>
+        ) : (
+          <div className="relative pl-6 border-l-2 border-white/10 space-y-12 pb-12">
+            {updates.map((update, index) => (
+              <motion.div 
+                key={update.version}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                className="relative"
               >
-                {tipo}
-              </button>
-            ))}
-          </div>
-        </ScrollArea>
-      </div>
-
-      {/* Content */}
-      <main className="max-w-5xl lg:max-w-[1300px] mx-auto px-2 lg:px-6 py-3 space-y-2 lg:space-y-0 lg:grid lg:grid-cols-2 2xl:grid-cols-3 lg:gap-3">
-        {loading && (
-          <div className="lg:col-span-full flex items-center justify-center py-12">
-            <Loader2 className="w-6 h-6 animate-spin text-primary" />
-          </div>
-        )}
-
-        {!loading && filtered.length === 0 && (
-          <div className="lg:col-span-full text-center py-12 space-y-3">
-            <RefreshCw className="w-8 h-8 mx-auto text-muted-foreground" />
-            <p className="text-muted-foreground text-sm font-body">
-              Nenhuma lei publicada nesta data.
-            </p>
-          </div>
-        )}
-
-        {!loading && filtered.map((item, i) => {
-          const colors = TIPO_COLORS[item.tipo_ato] || TIPO_COLORS['Outro'];
-          return (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.03 }}
-              onClick={() => openDetail(item)}
-              className={`border border-border rounded-xl px-3 py-2.5 bg-gradient-to-r ${colors.card} bg-card hover:border-primary/20 transition-colors cursor-pointer border-l-[3px] ${colors.border} flex gap-2.5 items-center`}
-            >
-              <img src={brasaoImg} alt="" className="w-7 h-7 flex-shrink-0" />
-              <div className="flex-1 min-w-0 space-y-0.5">
-                <div className="flex items-center gap-2">
-                  <Badge className={`${colors.badge} border text-[10px] px-2 py-0.5`}>
-                    {item.tipo_ato}
-                  </Badge>
-                  <span className="font-display text-sm text-foreground font-semibold">{item.numero_ato}</span>
+                {/* Ponto na timeline */}
+                <div className="absolute -left-[35px] top-1 w-4 h-4 rounded-full bg-background border-2 border-primary z-10 shadow-[0_0_12px_rgba(var(--primary-rgb),0.5)]" />
+                
+                {/* Card de versão */}
+                <div className="bg-[#121417] border border-white/5 rounded-2xl p-5 sm:p-6 shadow-xl relative overflow-hidden group">
+                  {/* Gradiente sutil no fundo */}
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none transition-opacity group-hover:bg-primary/20" />
+                  
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3 relative z-10">
+                    <div className="flex items-center gap-3">
+                      <span className="bg-primary/20 text-primary border border-primary/30 px-3 py-1 rounded-full text-xs font-bold tracking-widest">
+                        v{update.version}
+                      </span>
+                      <span className="text-white font-bold text-lg">{update.title}</span>
+                    </div>
+                    <span className="text-xs font-semibold text-white/40 bg-white/5 px-2.5 py-1 rounded-md">
+                      {new Date(update.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                    </span>
+                  </div>
+                  
+                  <p className="text-sm text-white/70 leading-relaxed mb-5 relative z-10">
+                    {update.description}
+                  </p>
+                  
+                  <div className="space-y-3 relative z-10">
+                    {update.features.map((feature, i) => (
+                      <div key={i} className="flex items-start gap-3 bg-white/[0.02] p-3 rounded-xl border border-white/5">
+                        <div className="mt-0.5 p-1 bg-white/5 rounded-lg shrink-0">
+                          {getIconForFeature(feature)}
+                        </div>
+                        <span className="text-[13px] text-white/80 font-medium leading-snug">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <p className="text-muted-foreground text-xs font-body line-clamp-2 leading-relaxed">
-                  {item.ementa}
-                </p>
-              </div>
-              <ChevronRight className="w-4 h-4 text-foreground flex-shrink-0" />
-            </motion.div>
-          );
-        })}
-      </main>
+              </motion.div>
+            ))}
+
+            {updates.length === 0 && !loading && (
+              <p className="text-center text-white/50 py-10 text-sm">Nenhuma atualização encontrada.</p>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
-};
-
-export default Novidades;
+}
