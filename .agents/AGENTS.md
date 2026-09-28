@@ -137,3 +137,6 @@ ALWAYS implement SEO best practices automatically for every page/component.
 
 ## Comunicação e Dinâmica de Feedback
 - **Sugestão Pró-Ativa Pós-Tarefa**: Toda vez que a IA finalizar uma tarefa solicitada pelo usuário e concluir a build com sucesso, ela DEVE propor ativamente uma sugestão de melhoria (UI, performance, código, funcionalidade extra) baseada no que observou ao implementar o pedido. O objetivo é criar um ciclo de "tarefa concluída -> sugestão de próximo passo" para que o usuário possa acatar a ideia ou direcionar para outra.
+
+## 🤖 Super Poderes ECC (Agent Harness)
+- **Obrigatório Consultar Skills ECC:** Antes de sugerir qualquer alteração arquitetural, implementar novas features ou realizar tarefas complexas, você DEVE consultar as skills disponíveis do ECC (instaladas no diretório `.agents/skills/`) utilizando a tool `view_file` no arquivo `SKILL.md` correspondente à tarefa. Isso garante que você utilizará as melhores práticas e "super poderes" padronizados de engenharia no projeto.

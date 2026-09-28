@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, Clock, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useSubscription } from '@/hooks/useSubscription';
 import { haptic } from '@/lib/nativeHaptics';
 import { CheckoutModal } from '@/components/assinatura/CheckoutModal';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -9,6 +10,7 @@ import { useAppUpdateStore } from '@/lib/appUpdateStore';
 
 export function GlobalPromoFloatingCard() {
   const { user } = useAuth();
+  const { isPremium } = useSubscription();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -48,7 +50,7 @@ export function GlobalPromoFloatingCard() {
   }, [user]);
 
   useEffect(() => {
-    if (isHiddenRoute) {
+    if (isHiddenRoute || isPremium) {
       setShowCard(false);
       return;
     }
@@ -58,43 +60,57 @@ export function GlobalPromoFloatingCard() {
     // Regra 1: Não mostra na primeira vez
     if (count < 2) return;
 
-    // A partir da segunda vez, verificamos se a promo 24h já iniciou
-    const promoKey = getPromoKey();
-    let expiresAt = 0;
-    try {
-      const stored = localStorage.getItem(promoKey);
-      if (stored) {
-        expiresAt = parseInt(stored, 10);
-      } else {
-        // Se não iniciou, inicia agora (segundo acesso)
-        expiresAt = Date.now() + 24 * 60 * 60 * 1000;
-        localStorage.setItem(promoKey, String(expiresAt));
+    let isEligibleFor24h = true;
+    if (user?.created_at) {
+      const createdAt = new Date(user.created_at).getTime();
+      const ageHours = (Date.now() - createdAt) / (1000 * 60 * 60);
+      if (ageHours > 24) {
+        isEligibleFor24h = false;
       }
-    } catch {}
-
-    const diffSeconds = Math.floor((expiresAt - Date.now()) / 1000);
-
-    if (diffSeconds > 0) {
-      // Promo 24h ativa
-      setPromoType('24h');
-      setTimeLeft(diffSeconds);
-      setShowCard(true);
     } else {
-      // Promo 24h expirou, verificar o card de Trial (a cada 6h)
-      const trialKey = getTrialKey();
-      let lastShown = 0;
+      isEligibleFor24h = false;
+    }
+
+    if (isEligibleFor24h) {
+      // A partir da segunda vez, verificamos se a promo 24h já iniciou
+      const promoKey = getPromoKey();
+      let expiresAt = 0;
       try {
-        const stored = localStorage.getItem(trialKey);
-        if (stored) lastShown = parseInt(stored, 10);
+        const stored = localStorage.getItem(promoKey);
+        if (stored) {
+          expiresAt = parseInt(stored, 10);
+        } else {
+          // Se não iniciou, inicia agora (segundo acesso)
+          expiresAt = Date.now() + 24 * 60 * 60 * 1000;
+          localStorage.setItem(promoKey, String(expiresAt));
+        }
       } catch {}
 
-      const sixHours = 6 * 60 * 60 * 1000;
-      if (Date.now() - lastShown > sixHours) {
-        setPromoType('trial');
+      const diffSeconds = Math.floor((expiresAt - Date.now()) / 1000);
+
+      if (diffSeconds > 0) {
+        // Promo 24h ativa
+        setPromoType('24h');
+        setTimeLeft(diffSeconds);
         setShowCard(true);
+        return; // Retorna para não mostrar o trial
       }
     }
-  }, [isHiddenRoute, incrementAppOpenCount, getPromoKey, getTrialKey]);
+
+    // Se não for elegível ou a de 24h já expirou, mostramos o card de Trial (a cada 6h)
+    const trialKey = getTrialKey();
+    let lastShown = 0;
+    try {
+      const stored = localStorage.getItem(trialKey);
+      if (stored) lastShown = parseInt(stored, 10);
+    } catch {}
+
+    const sixHours = 6 * 60 * 60 * 1000;
+    if (Date.now() - lastShown > sixHours) {
+      setPromoType('trial');
+      setShowCard(true);
+    }
+  }, [isHiddenRoute, incrementAppOpenCount, getPromoKey, getTrialKey, isPremium, user?.created_at]);
 
   // Atualizar timer da promo 24h
   useEffect(() => {
