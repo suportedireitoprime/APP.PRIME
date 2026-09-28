@@ -1,6 +1,7 @@
 import React from 'react';
 import { Search, X, Heart, ChevronRight, FileText, Sparkles, BookOpen, Layers } from 'lucide-react';
 import { CATEGORIA_COR } from './mapasConstants';
+import { iconeDoItem } from '@/lib/visuaisJuridicos/icones';
 import { haptic } from '@/lib/nativeHaptics';
 import type { CatalogoItem } from '@/lib/visuaisJuridicos/catalogo';
 import type { VisualCategoria, VisualRecord } from '@/lib/visuaisJuridicos/types';
@@ -102,6 +103,7 @@ export function MapasMentaisDetalhes({
                 const chave = chaveDe(item, t.tema, 'tema');
                 const pronto = prontos[chave];
                 const isFavorito = favoritos.includes(chave);
+                const TemaIcon = iconeDoItem(item.key, t.tema);
 
                 return (
                   <div
@@ -113,8 +115,8 @@ export function MapasMentaisDetalhes({
                     className="p-4 rounded-xl bg-zinc-900/90 hover:bg-zinc-850 border border-white/5 hover:border-purple-500/40 flex items-center justify-between gap-3 transition-all cursor-pointer shadow-sm group active:scale-[0.99] min-h-[76px]"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-9 h-9 rounded-lg border flex items-center justify-center shrink-0" style={{ backgroundColor: `${corCategoria}15`, borderColor: `${corCategoria}30`, color: corCategoria }}>
-                        <BookOpen className="w-4 h-4" />
+                      <div className="w-10 h-10 flex items-center justify-center shrink-0" style={{ color: '#a855f7' }}>
+                        <TemaIcon className="w-8 h-8" strokeWidth={1.5} />
                       </div>
                       <div className="min-w-0">
                         <p className="font-['Plus_Jakarta_Sans',sans-serif] text-sm font-medium text-white group-hover:text-purple-300 transition-colors truncate">
