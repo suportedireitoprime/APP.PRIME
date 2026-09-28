@@ -8,10 +8,10 @@ import horusOwl1 from '@/assets/horus/01_coruja_oratoria.webp';
 import horusOwl2 from '@/assets/horus/02_coruja_estudando.webp';
 import horusOwl3 from '@/assets/horus/03_coruja_balanca_justica.webp';
 import horusOwl4 from '@/assets/horus/04_coruja_maleta_balanca.webp';
-import horusWhatsapp from '@/assets/horus/coruja_whatsapp.png';
-import horusBiblioteca from '@/assets/horus/coruja_biblioteca.png';
-import horusAudioaulas from '@/assets/horus/coruja_audioaulas.png';
-import horusVideoaulas from '@/assets/horus/coruja_videoaulas.png';
+import horusWhatsapp from '@/assets/horus/coruja_whatsapp.webp';
+import horusBiblioteca from '@/assets/horus/coruja_biblioteca.webp';
+import horusAudioaulas from '@/assets/horus/coruja_audioaulas.webp';
+import horusVideoaulas from '@/assets/horus/coruja_videoaulas.webp';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 
 const horusOwl = pickAsset(horusOwlBundled, srcOf(horusOwlAsset));
