@@ -835,10 +835,41 @@ export default function AdminNarracaoLeis() {
         ? `Artigo ${artigo.numero} (${leiAlvo.sigla || leiAlvo.nome}) gravado e persistido! ${duracaoSegundos}s (${estiloObj.label}).`
         : `Artigo ${artigo.numero} (${leiAlvo.sigla || leiAlvo.nome}) gravado em ${res.partes.length} partes! ${duracaoSegundos}s total.`;
       toast.success(msg, { id: toastId });
+
+      // Registra no banco para aparecer na aba "Finalizados"
+      try {
+        await supabase.from('narracao_leis_logs').insert({
+          tabela_nome: leiAlvo.tabela_nome,
+          artigo_numero: String(artigo.numero),
+          status: 'sucesso',
+          partes_geradas: res.partes.length,
+          mensagem: `[Manual] ${msg}`,
+          duracao_ms: Math.round(duracaoSegundos * 1000)
+        });
+        buscarLogsAutomacao().then(setLogsAuto).catch(() => {});
+      } catch (logErr) {
+        console.warn('Falha ao registrar log manual:', logErr);
+      }
     } catch (err: any) {
       clearInterval(timer);
       console.error('Erro na narração individual:', err);
-      toast.error(`Falha ao narrar: ${err.message || 'Erro desconhecido'}`, { id: toastId });
+      const errorMsg = err.message || 'Erro desconhecido';
+      toast.error(`Falha ao narrar: ${errorMsg}`, { id: toastId });
+
+      // Registra o erro no log manual
+      try {
+        await supabase.from('narracao_leis_logs').insert({
+          tabela_nome: leiAlvo?.tabela_nome || 'Desconhecida',
+          artigo_numero: String(artigo.numero),
+          status: 'erro',
+          partes_geradas: 0,
+          mensagem: `[Manual] Falha ao gerar: ${errorMsg.substring(0, 200)}`,
+          duracao_ms: 0
+        });
+        buscarLogsAutomacao().then(setLogsAuto).catch(() => {});
+      } catch (logErr) {
+        console.warn('Falha ao registrar log de erro:', logErr);
+      }
     } finally {
       clearInterval(timer);
       setGerandoArtigoNum(null);
