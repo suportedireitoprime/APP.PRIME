@@ -244,7 +244,7 @@ const VideoaulasConcurso = lazy(() => import("./pages/VideoaulasConcurso.tsx"));
 const AprenderDesempenho = lazy(() => import("./pages/AprenderDesempenho.tsx"));
 const AprenderAula = lazy(() => import("./pages/AprenderAula.tsx"));
 const AprenderModulo = lazy(routePrefetch.aprenderModulo);
-const JurisprudenciaArtigo = lazy(() => import("./pages/JurisprudenciaArtigo.tsx"));
+const JurisprudenciaArtigo = lazy(() => import("./pages/JurisprudenciaArtigo"));
 const Jurisprudencia = lazy(() => import("./pages/Jurisprudencia.tsx"));
 const PesquisasProntasLista = lazy(() => import("./pages/PesquisasProntasLista.tsx"));
 const SumulasVinculantes = lazy(() => import("./pages/SumulasTribunal.tsx").then(m => ({ default: m.SumulasVinculantes })));

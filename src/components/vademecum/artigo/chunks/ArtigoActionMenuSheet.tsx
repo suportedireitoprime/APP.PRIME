@@ -336,7 +336,7 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
               exit={{ y: '100%' }}
               data-artigo-menu=""
               style={{ pointerEvents: 'auto' }}
-              transition={{ type: 'spring', damping: 26, stiffness: 260 }}
+              transition={{ type: 'spring', damping: 32, stiffness: 350, mass: 0.8 }}
               className="fixed bottom-0 left-0 right-0 z-[10006] bg-card border-t border-border rounded-t-3xl shadow-2xl flex flex-col pb-safe min-h-[74vh] max-h-[92vh] mx-auto max-w-lg md:left-1/2 md:right-auto md:-translate-x-1/2 md:bottom-6 md:top-auto md:w-[92vw] md:max-w-2xl md:rounded-3xl md:border md:border-border md:shadow-2xl md:min-h-0"
             >
               <div className="pt-3 pb-2 flex justify-center">
