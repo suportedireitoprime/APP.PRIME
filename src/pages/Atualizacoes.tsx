@@ -441,10 +441,10 @@ const Atualizacoes = () => {
                     className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
                   >
                     <div className="absolute top-0 right-0 p-3 opacity-10">
-                      <Headphones className="w-16 h-16 sm:w-20 sm:h-20" />
+                      <Scale className="w-16 h-16 sm:w-20 sm:h-20" />
                     </div>
                     <div className="w-10 h-10 rounded-xl bg-[#F59E0B]/20 text-[#F59E0B] flex items-center justify-center mb-1">
-                      <Headphones className="w-5 h-5" />
+                      <Scale className="w-5 h-5" />
                     </div>
                     <h3 className="font-sans font-semibold text-[15px] sm:text-[16px] leading-tight line-clamp-2">{bol.titulo.replace(/\s*[—\-]\s*/g, ' ')}</h3>
                     <p className="text-muted-foreground text-[13px] sm:text-[14px] line-clamp-2">{bol.subtitulo || `Boletim ${bol.tipo}`}</p>
@@ -480,10 +480,10 @@ const Atualizacoes = () => {
                     className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
                   >
                     <div className="absolute top-0 right-0 p-3 opacity-10">
-                      <Headphones className="w-16 h-16 sm:w-20 sm:h-20" />
+                      <Newspaper className="w-16 h-16 sm:w-20 sm:h-20" />
                     </div>
                     <div className="w-10 h-10 rounded-xl bg-[#EF4444]/20 text-[#EF4444] flex items-center justify-center mb-1">
-                      <Headphones className="w-5 h-5" />
+                      <Newspaper className="w-5 h-5" />
                     </div>
                     <h3 className="font-sans font-semibold text-[15px] sm:text-[16px] leading-tight line-clamp-2">{bol.titulo.replace(/\s*[—\-]\s*/g, ' ')}</h3>
                     <p className="text-muted-foreground text-[13px] sm:text-[14px] line-clamp-2">{bol.subtitulo || `Boletim ${bol.tipo}`}</p>
