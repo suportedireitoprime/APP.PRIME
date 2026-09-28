@@ -957,6 +957,7 @@ export default function AdminMapeamentoLeis() {
               })}
             </div>
           </div>
+        </div>
         )}
 
         {/* NÍVEL 2: LEIS DA CATEGORIA SELECIONADA */}
