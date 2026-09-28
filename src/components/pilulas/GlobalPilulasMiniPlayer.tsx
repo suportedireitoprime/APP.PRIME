@@ -1,10 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, X } from 'lucide-react';
 import { usePilulasPlayer } from '@/contexts/PilulasPlayerContext';
+import CSSEqualizer from '@/components/ui/CSSEqualizer';
 
-export default function GlobalPilulasMiniPlayer() {
+/**
+ * Mini player global de Pílulas — 120fps otimizado:
+ * - Equalizer via CSS @keyframes scaleY (zero main thread)
+ * - Removido backdrop-blur-[1px] da thumbnail overlay
+ * - React.memo para evitar re-renders em troca de rota
+ */
+const GlobalPilulasMiniPlayer = memo(() => {
   const { livro, isPlaying, togglePlay, fechar } = usePilulasPlayer();
   const navigate = useNavigate();
   const location = useLocation();
@@ -81,12 +88,9 @@ export default function GlobalPilulasMiniPlayer() {
                 <div className="w-full h-full bg-primary/20 flex items-center justify-center" />
               )}
               {isPlaying && (
-                <div className="absolute inset-0 bg-black/20 flex items-center justify-center backdrop-blur-[1px]">
-                   <div className="w-full flex justify-center gap-0.5 items-end h-3">
-                     <motion.div animate={{ height: ["40%", "100%", "40%"] }} transition={{ repeat: Infinity, duration: 0.8 }} className="w-1 bg-white rounded-full" />
-                     <motion.div animate={{ height: ["70%", "30%", "70%"] }} transition={{ repeat: Infinity, duration: 0.8, delay: 0.2 }} className="w-1 bg-white rounded-full" />
-                     <motion.div animate={{ height: ["30%", "80%", "30%"] }} transition={{ repeat: Infinity, duration: 0.8, delay: 0.4 }} className="w-1 bg-white rounded-full" />
-                   </div>
+                <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                  {/* CSS equalizer — zero JS, zero reflow */}
+                  <CSSEqualizer playing bars={3} barWidth="4px" barColor="bg-white" height="12px" gap="1px" />
                 </div>
               )}
             </button>
@@ -137,4 +141,7 @@ export default function GlobalPilulasMiniPlayer() {
       )}
     </AnimatePresence>
   );
-}
+});
+
+GlobalPilulasMiniPlayer.displayName = 'GlobalPilulasMiniPlayer';
+export default GlobalPilulasMiniPlayer;

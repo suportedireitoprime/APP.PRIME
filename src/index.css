@@ -1956,4 +1956,37 @@ html[data-route-transitioning="true"] * {
   border-left-color: rgb(245 158 11 / 0.8) !important;
 }
 
+/* ==========================================================================
+   GPU-COMPOSITED KEYFRAMES — Mini Players & Equalizers (120fps)
+   Replaces Framer Motion height/width infinite loops that cause layout thrashing.
+   All animations use transform (scaleY, translateX) = compositor-only, zero reflow.
+   ========================================================================== */
 
+/* Equalizer bar — bounces via scaleY (no height reflow) */
+@keyframes eq-bar {
+  0%, 100% { transform: scaleY(0.2); }
+  25%      { transform: scaleY(0.9); }
+  50%      { transform: scaleY(0.45); }
+  75%      { transform: scaleY(1); }
+}
+
+/* Shine / reflexo sweep — translateX only (compositor) */
+@keyframes mini-player-shine {
+  0%   { transform: translateX(-120%) skewX(-12deg); }
+  100% { transform: translateX(320%) skewX(-12deg); }
+}
+
+/* Arrow nudge — translateX only */
+@keyframes arrow-nudge {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(4px); }
+}
+
+/* Respect reduced motion globally */
+@media (prefers-reduced-motion: reduce) {
+  .css-eq-bar,
+  .mini-player-shine,
+  .arrow-nudge-anim {
+    animation: none !important;
+  }
+}

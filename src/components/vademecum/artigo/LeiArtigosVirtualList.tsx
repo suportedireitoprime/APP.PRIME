@@ -72,7 +72,7 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
     return () => window.removeEventListener(`last-artigo-updated:${selectedTabelaNome}`, onUpdated);
   }, [selectedTabelaNome]);
 
-  const handleOpenArtigo = (artigo: ArtigoLei) => {
+  const handleOpenArtigo = useCallback((artigo: ArtigoLei) => {
     const cleanNum = String(artigo.numero).replace(/^art\.?\s*/i, '').trim();
     const item = { numero: cleanNum, id: String(artigo.id) };
     setLastReadArtigo(item);
@@ -84,7 +84,27 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
       } catch {}
     }
     openArtigoWithRecent(artigo);
-  };
+  }, [selectedTabelaNome, openArtigoWithRecent]);
+
+  // Stable memoized highlightText ref (avoids new function ref each render)
+  const stableHighlightText = useMemo(
+    () => (searchQuery ? highlightText : undefined),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [searchQuery]
+  );
+
+  // Pre-compute stable tags map to avoid creating new objects per ArtigoCard on every scroll
+  const artigoTagsMap = useMemo(() => {
+    const map = new Map<string, { favorito: boolean; grifado: boolean; anotado: boolean }>();
+    for (const a of visibleArtigos) {
+      map.set(String(a.id), {
+        favorito: isArtigoFav(a),
+        grifado: grifadoNumeros.has(a.numero),
+        anotado: anotadoNumeros.has(a.numero),
+      });
+    }
+    return map;
+  }, [visibleArtigos, isArtigoFav, grifadoNumeros, anotadoNumeros]);
 
   // Item 22: Real highlight implementation for search terms in article cards
   const highlightText = (text: string) => {
@@ -279,13 +299,13 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
                 <ArtigoCard
                   artigo={artigo}
                   index={virtualItem.index}
-                  onClick={() => handleOpenArtigo(artigo)}
-                  highlightText={searchQuery ? highlightText : undefined}
+                  onClick={handleOpenArtigo}
+                  highlightText={stableHighlightText}
                   isHighlighted={highlightedArtigoId === String(artigo.id)}
                   accentColor={leiAccent}
                   withShine={virtualItem.index < 6}
                   isFastScrolling={artigosVirtualizer.isScrolling}
-                  tags={{ favorito: isArtigoFav(artigo), grifado: grifadoNumeros.has(artigo.numero), anotado: anotadoNumeros.has(artigo.numero) }}
+                  tags={artigoTagsMap.get(String(artigo.id))}
                 />
               </div>
             );
@@ -297,12 +317,12 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
             key={artigo.id}
             artigo={artigo}
             index={i}
-            onClick={() => handleOpenArtigo(artigo)}
-            highlightText={searchQuery ? highlightText : undefined}
+            onClick={handleOpenArtigo}
+            highlightText={stableHighlightText}
             isHighlighted={highlightedArtigoId === String(artigo.id)}
             accentColor={leiAccent}
             withShine={i < 6}
-            tags={{ favorito: isArtigoFav(artigo), grifado: grifadoNumeros.has(artigo.numero), anotado: anotadoNumeros.has(artigo.numero) }}
+            tags={artigoTagsMap.get(String(artigo.id))}
           />
         ))
       )}

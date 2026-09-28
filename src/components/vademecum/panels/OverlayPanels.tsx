@@ -30,7 +30,7 @@ export const FavPanel: React.FC<FavPanelProps> = React.memo(({ artigos, isArtigo
   return (
     <div className="space-y-2 pb-8">
       {favArtigos.map((artigo, i) => (
-        <ArtigoCard key={artigo.id} artigo={artigo} index={i} onClick={() => onOpenArtigo(artigo)} accentColor={accentColor} tags={{ favorito: true, grifado: grifadoNumeros.has(artigo.numero), anotado: anotadoNumeros.has(artigo.numero) }} />
+        <ArtigoCard key={artigo.id} artigo={artigo} index={i} onClick={onOpenArtigo} accentColor={accentColor} tags={{ favorito: true, grifado: grifadoNumeros.has(artigo.numero), anotado: anotadoNumeros.has(artigo.numero) }} />
       ))}
     </div>
   );

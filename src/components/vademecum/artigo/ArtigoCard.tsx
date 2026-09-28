@@ -5,7 +5,7 @@ import type { ArtigoLei } from '@/data/mockData';
 interface ArtigoCardProps {
   artigo: ArtigoLei;
   index: number;
-  onClick: () => void;
+  onClick: (artigo: ArtigoLei) => void;
   highlightText?: (text: string) => React.ReactNode;
   isHighlighted?: boolean;
   /** Accent color for badge + structural headers (defaults to amber). */
@@ -147,7 +147,7 @@ const ArtigoCard = ({ artigo, index, onClick, highlightText, isHighlighted, with
               localStorage.setItem(key, String(seen.length));
             }
           } catch {}
-          onClick();
+          onClick(artigo);
         }}
         className={`group w-full min-h-[84px] text-left px-3 py-2.5 rounded-2xl bg-card/70 border transition-transform duration-75 active:scale-[0.97] touch-manipulation relative overflow-hidden flex items-stretch gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
           isHighlighted

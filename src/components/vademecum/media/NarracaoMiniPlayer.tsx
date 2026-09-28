@@ -1,14 +1,21 @@
-import { useEffect } from 'react';
+import { useEffect, memo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, ArrowRight, X } from 'lucide-react';
 import { useNarracaoFlutuante } from '@/stores/useNarracaoFlutuante';
+import CSSEqualizer from '@/components/ui/CSSEqualizer';
 
 /**
  * Mini player flutuante que aparece quando a pessoa fecha o artigo mas
  * a narração continua tocando. Renderizado globalmente no App.
+ *
+ * Otimizado para 120fps:
+ * - Equalizer via CSS @keyframes (scaleY) em vez de Framer Motion height
+ * - Shine via CSS animation em vez de Framer repeat: Infinity
+ * - Arrow nudge via CSS animation
+ * - Barra de progresso via scaleX em vez de width
  */
-const NarracaoMiniPlayer = () => {
+const NarracaoMiniPlayer = memo(() => {
   const navigate = useNavigate();
   const location = useLocation();
   const audio = useNarracaoFlutuante((s) => s.audio);
@@ -52,9 +59,6 @@ const NarracaoMiniPlayer = () => {
     }
   };
 
-  // Alturas das barras do equalizer — animam quando isPlaying
-  const eqBars = [0, 1, 2, 3];
-
   return (
     <AnimatePresence>
       {visible && artigo && (
@@ -70,19 +74,21 @@ const NarracaoMiniPlayer = () => {
           }}
         >
           <div className="pointer-events-auto mx-auto max-w-md rounded-full border border-white/10 bg-[#0f0f0f]/95 backdrop-blur-md shadow-2xl shadow-black/60 flex items-center gap-2 pl-1.5 pr-1.5 py-1.5 relative overflow-hidden">
-            {/* Reflexo passando */}
-            <motion.div
+            {/* Reflexo passando — CSS animation (compositor-only, zero JS) */}
+            <div
               aria-hidden
-              className="pointer-events-none absolute inset-y-0 w-1/3 -skew-x-12 bg-gradient-to-r from-transparent via-white/10 to-transparent"
-              initial={{ x: '-120%' }}
-              animate={{ x: '320%' }}
-              transition={{ duration: 2.6, repeat: Infinity, repeatDelay: 1.4, ease: 'easeInOut' }}
+              className="pointer-events-none absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/10 to-transparent mini-player-shine"
+              style={{ animation: 'mini-player-shine 4s ease-in-out infinite' }}
             />
 
-            {/* Barra de progresso interna sutil */}
+            {/* Barra de progresso — scaleX em vez de width (zero reflow) */}
             <div
-              className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-primary/80 to-amber-400/80 transition-[width] duration-200"
-              style={{ width: `${Math.round(progress * 100)}%` }}
+              className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-primary/80 to-amber-400/80"
+              style={{
+                transform: `scaleX(${progress})`,
+                transformOrigin: 'left',
+                transition: 'transform 0.2s linear',
+              }}
             />
 
             <button
@@ -97,26 +103,8 @@ const NarracaoMiniPlayer = () => {
               )}
             </button>
 
-            {/* Equalizer indicando áudio tocando */}
-            <div className="flex items-end gap-[2px] h-5 flex-shrink-0 pl-0.5 relative z-10" aria-hidden>
-              {eqBars.map((i) => (
-                <motion.span
-                  key={i}
-                  className="w-[3px] rounded-full bg-primary"
-                  initial={{ height: 4 }}
-                  animate={
-                    isPlaying
-                      ? { height: [4, 14, 7, 16, 5, 12, 4] }
-                      : { height: 4 }
-                  }
-                  transition={
-                    isPlaying
-                      ? { duration: 0.9 + i * 0.15, repeat: Infinity, ease: 'easeInOut', delay: i * 0.08 }
-                      : { duration: 0.2 }
-                  }
-                />
-              ))}
-            </div>
+            {/* Equalizer — CSS @keyframes scaleY (compositor GPU, zero main thread) */}
+            <CSSEqualizer playing={isPlaying} bars={4} height="20px" className="pl-0.5 relative z-10" />
 
             <button
               onClick={handleReopen}
@@ -131,7 +119,7 @@ const NarracaoMiniPlayer = () => {
               </p>
             </button>
 
-            {/* Fechar (vem antes da seta) */}
+            {/* Fechar */}
             <button
               onClick={close}
               aria-label="Fechar player"
@@ -140,25 +128,25 @@ const NarracaoMiniPlayer = () => {
               <X className="w-4 h-4 text-white/70" />
             </button>
 
-            {/* Seta com cabinho, animando pro lado direito */}
+            {/* Seta com nudge — CSS animation (zero JS) */}
             <button
               onClick={handleReopen}
               aria-label="Abrir artigo"
               className="flex-shrink-0 w-9 h-9 rounded-full hover:bg-white/10 active:opacity-70 transition flex items-center justify-center relative z-10 overflow-hidden"
             >
-              <motion.span
-                className="inline-flex"
-                animate={{ x: [0, 4, 0] }}
-                transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+              <span
+                className="inline-flex arrow-nudge-anim"
+                style={{ animation: 'arrow-nudge 1.2s ease-in-out infinite' }}
               >
                 <ArrowRight className="w-5 h-5 text-white/90" strokeWidth={2.4} />
-              </motion.span>
+              </span>
             </button>
           </div>
         </motion.div>
       )}
     </AnimatePresence>
   );
-};
+});
 
+NarracaoMiniPlayer.displayName = 'NarracaoMiniPlayer';
 export default NarracaoMiniPlayer;

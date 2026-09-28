@@ -148,9 +148,9 @@ const LeiCapitulosGrid: React.FC<LeiCapitulosGridProps> = ({
                         key={artigo.id || aIdx}
                         artigo={artigo}
                         index={aIdx}
-                        onClick={() => {
+                        onClick={(a) => {
                           haptic.selection();
-                          setOpenArtigo(artigo);
+                          setOpenArtigo(a);
                         }}
                         accentColor={leiAccent}
                         tags={{
