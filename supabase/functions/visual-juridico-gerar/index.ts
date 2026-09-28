@@ -25,7 +25,7 @@ const admin = createClient(SUPABASE_URL, SERVICE_KEY, {
 });
 
 const TIPOS: VisualTipo[] = ["mapa_mental", "infografico", "fluxograma", "diagrama"];
-const CATEGORIAS = ["materias", "leis", "jurisprudencia"];
+const CATEGORIAS = ["materias", "codigos", "estatutos", "leis_especiais", "previdenciario", "leis", "jurisprudencia"];
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
