@@ -504,13 +504,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     }
   };
 
-  // Item 47: Regenerar QR Code PIX com dados já preenchidos
   const handleRegeneratePixQr = () => {
     hasWarnedExpiryRef.current = false;
     setPixData(null);
     setPixTimeLeft(600);
     setPixExpiryTime(null);
     processCheckout();
+  };
+
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const target = e.target;
+    // Pequeno atraso para dar tempo de o teclado nativo subir antes de rolar
+    setTimeout(() => {
+      try {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch (err) {}
+    }, 400);
   };
 
   const getPlanInfo = () => {
@@ -667,6 +676,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                       <Input 
                         value={formData.name} 
                         onChange={handleChange('name')}
+                        onFocus={handleFocus}
                         placeholder="Nome Completo"
                         className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
                       />
@@ -690,6 +700,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                       <Input 
                         value={formData.cpf} 
                         onChange={handleChange('cpf', maskCPF)}
+                        onFocus={handleFocus}
                         placeholder="000.000.000-00" 
                         className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
                         inputMode="numeric"
@@ -703,6 +714,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                       <Input 
                         value={formData.phone} 
                         onChange={handleChange('phone', maskPhone)}
+                        onFocus={handleFocus}
                         placeholder="(00) 00000-0000" 
                         className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
                         inputMode="numeric"
@@ -719,6 +731,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                             <Input 
                               value={formData.cep} 
                               onChange={handleChange('cep', maskCEP)}
+                              onFocus={handleFocus}
                               placeholder="00000-000" 
                               className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
                               inputMode="numeric"
@@ -731,6 +744,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                             <Input 
                               value={formData.addressNumber} 
                               onChange={handleChange('addressNumber')}
+                              onFocus={handleFocus}
                               placeholder="123" 
                               className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
                             />
@@ -750,6 +764,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                                 <Input 
                                   value={formData.address} 
                                   onChange={handleChange('address')}
+                                  onFocus={handleFocus}
                                   placeholder="Rua, Avenida..." 
                                   className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
                                 />
@@ -760,6 +775,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                                   <Input 
                                     value={formData.neighborhood} 
                                     onChange={handleChange('neighborhood')}
+                                    onFocus={handleFocus}
                                     placeholder="Bairro" 
                                     className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
                                   />
@@ -770,6 +786,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                                     <Input 
                                       value={formData.city} 
                                       onChange={handleChange('city')}
+                                      onFocus={handleFocus}
                                       placeholder="Cidade" 
                                       className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
                                     />
@@ -779,6 +796,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                                     <Input 
                                       value={formData.uf} 
                                       onChange={handleChange('uf')}
+                                      onFocus={handleFocus}
                                       placeholder="SP" 
                                       maxLength={2}
                                       className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all uppercase"
@@ -830,7 +848,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                       <Input 
                         value={formData.cardNumber} 
                         onChange={handleChange('cardNumber', maskCard)}
-                        onFocus={() => setIsFlipped(false)}
+                        onFocus={(e) => { setIsFlipped(false); handleFocus(e); }}
                         placeholder="0000 0000 0000 0000" 
                         className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium font-mono text-sm backdrop-blur-md transition-all"
                         inputMode="numeric"
@@ -845,7 +863,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                       <Input 
                         value={formData.cardName} 
                         onChange={handleChange('cardName')}
-                        onFocus={() => setIsFlipped(false)}
+                        onFocus={(e) => { setIsFlipped(false); handleFocus(e); }}
                         placeholder="JOAO S SILVA" 
                         className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium uppercase text-sm backdrop-blur-md transition-all"
                         autoComplete="cc-name"
@@ -860,7 +878,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                         <Input 
                           value={formData.cardExpiry} 
                           onChange={handleChange('cardExpiry', maskExpiry)}
-                          onFocus={() => setIsFlipped(false)}
+                          onFocus={(e) => { setIsFlipped(false); handleFocus(e); }}
                           placeholder="MM/AA" 
                           className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium font-mono text-sm backdrop-blur-md transition-all"
                           inputMode="numeric"
@@ -874,7 +892,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                         <Input 
                           value={formData.cardCvc} 
                           onChange={handleChange('cardCvc', maskCVC)}
-                          onFocus={() => setIsFlipped(true)}
+                          onFocus={(e) => { setIsFlipped(true); handleFocus(e); }}
                           onBlur={() => setIsFlipped(false)}
                           placeholder="123" 
                           className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium font-mono text-sm backdrop-blur-md transition-all"
@@ -894,7 +912,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                           <select 
                             value={installmentCount}
                             onChange={(e) => setInstallmentCount(Number(e.target.value))}
-                            onFocus={() => setIsFlipped(false)}
+                            onFocus={(e) => { setIsFlipped(false); handleFocus(e); }}
                             className="w-full h-11 rounded-xl bg-black/40 border border-white/10 focus:border-primary focus:ring-1 focus:ring-primary font-medium px-3 text-sm appearance-none outline-none backdrop-blur-md transition-all text-white"
                           >
                           {[1,2,3,4,5,6,7,8,9,10,11,12].map(num => {
