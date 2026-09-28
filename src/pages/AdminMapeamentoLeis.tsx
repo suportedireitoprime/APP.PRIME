@@ -724,22 +724,22 @@ export default function AdminMapeamentoLeis() {
     return (
       <div className="min-h-dvh bg-background flex flex-col">
         {/* Barra Superior de Controle Administrativo */}
-        <div className="sticky top-0 z-50 bg-[#0D0D0D]/95 backdrop-blur-md border-b border-border/80 px-4 py-3 flex items-center justify-between gap-3 shadow-lg">
-          <div className="flex items-center gap-3 min-w-0">
+        <div className="sticky top-0 z-50 bg-[#0D0D0D]/95 backdrop-blur-md border-b border-border/80 px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
+          <div className="flex items-start sm:items-center gap-3 min-w-0">
             <button
               onClick={() => setPreviaLei(null)}
-              className="w-10 h-10 rounded-full flex items-center justify-center bg-secondary hover:bg-secondary/80 text-foreground shrink-0 transition-colors"
+              className="w-10 h-10 rounded-full flex items-center justify-center bg-secondary hover:bg-secondary/80 text-foreground shrink-0 transition-colors mt-1 sm:mt-0"
               title="Voltar ao Mapeamento"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
 
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1 space-y-1 sm:space-y-0.5">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary/20 text-primary border border-primary/30 uppercase tracking-wider">
-                  Prévia Oficial Vade Mecum
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary/20 text-primary border border-primary/30 uppercase tracking-wider whitespace-nowrap">
+                  Prévia Oficial
                 </span>
-                <span className="text-sm font-bold text-foreground truncate">
+                <span className="text-sm font-bold text-foreground leading-tight">
                   {previaLei.nome}
                 </span>
                 {isAprovada ? (

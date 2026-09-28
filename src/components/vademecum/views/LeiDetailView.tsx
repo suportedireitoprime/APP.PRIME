@@ -48,6 +48,7 @@ interface LeiDetailViewProps {
   goBack: () => void;
   pendingArtigoNumero: string | null;
   setPendingArtigoNumero: (v: string | null) => void;
+  hideBackButton?: boolean;
 }
 
 const LeiDetailView: React.FC<LeiDetailViewProps> = ({
@@ -62,6 +63,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   goBack,
   pendingArtigoNumero,
   setPendingArtigoNumero,
+  hideBackButton = false,
 }) => {
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
@@ -665,6 +667,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
         selectedLeiDescricao={selectedLeiDescricao}
         config={config}
         goBack={goBack}
+        hideBackButton={hideBackButton}
         leiFavToggle={leiFavToggle}
         setLeiFavToggle={setLeiFavToggle}
         selectedLeiEmenta={selectedLeiEmenta}

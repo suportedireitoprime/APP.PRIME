@@ -26,6 +26,7 @@ interface LeiHeroProps {
   anotacoesCount?: number;
   radarCount?: number;
   playlistCount?: number;
+  hideBackButton?: boolean;
 }
 
 const LeiHero: React.FC<LeiHeroProps> = ({
@@ -45,6 +46,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
   anotacoesCount = 0,
   radarCount = 0,
   playlistCount = 0,
+  hideBackButton = false,
 }) => {
   const [showEmentaDialog, setShowEmentaDialog] = useState(false);
 
@@ -99,15 +101,19 @@ const LeiHero: React.FC<LeiHeroProps> = ({
         </div>
 
         {/* Barra superior de navegação: Botão Voltar à esquerda e Planalto à direita */}
-        <header className="relative z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] px-4 pb-1.5 flex items-center justify-between">
-          <button
-            type="button"
-            onClick={goBack}
-            aria-label="Voltar"
-            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full flex items-center justify-center bg-black/45 backdrop-blur-md border border-white/10 text-white shadow-xl transition-all hover:bg-black/60 active:opacity-70 cursor-pointer"
-          >
-            <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
-          </button>
+        <header className="relative z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] px-4 pb-1.5 flex items-center justify-between min-h-[64px]">
+          <div>
+            {!hideBackButton && (
+              <button
+                type="button"
+                onClick={goBack}
+                aria-label="Voltar"
+                className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full flex items-center justify-center bg-black/45 backdrop-blur-md border border-white/10 text-white shadow-xl transition-all hover:bg-black/60 active:opacity-70 cursor-pointer"
+              >
+                <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
+              </button>
+            )}
+          </div>
 
           <div className="flex items-center gap-2">
             {selectedLeiEmenta && (
