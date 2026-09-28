@@ -113,6 +113,7 @@ async function saveReadState(userId: string | undefined | null, lastRead: number
 }
 
 async function fetchTodayNotifications(): Promise<NotifItem[]> {
+  if (typeof navigator !== 'undefined' && !navigator.onLine) return [];
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
   const since = startOfDay.toISOString();

@@ -5,7 +5,7 @@ import { listarTrilhas } from "@/lib/leiSeca";
 import { persistedInitial, savePersisted } from "@/lib/queryPersist";
 import { prefetchHandlers, prefetchTrilha } from "@/lib/leiSecaPrefetch";
 import { prefetchImages } from '@/lib/coverLoader';
-import fallbackTrilhas from "../../../public/offline-bundle/lei-seca-trilhas.json";
+import fallbackTrilhas from "@/data/lei-seca-trilhas.json";
 import { BookOpen, Clock, Heart } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLeiSecaResumoGlobal } from "@/hooks/useLeiSecaResumoGlobal";
