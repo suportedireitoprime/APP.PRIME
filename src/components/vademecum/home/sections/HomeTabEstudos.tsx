@@ -112,7 +112,7 @@ const HomeTabEstudos = ({
             <div>
               <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 uppercase tracking-widest">
                 <span className="w-1 h-5 rounded-full bg-[#E11D48]" />
-                Estudos
+                Estudos Livre
               </h3>
               <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3">
                 Ferramentas complementares para seus estudos
