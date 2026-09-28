@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search, X, Heart, ChevronRight, FileText, Sparkles, BookOpen, Layers } from 'lucide-react';
+import { CATEGORIA_COR } from './mapasConstants';
 import { haptic } from '@/lib/nativeHaptics';
 import type { CatalogoItem } from '@/lib/visuaisJuridicos/catalogo';
 import type { VisualCategoria, VisualRecord } from '@/lib/visuaisJuridicos/types';
@@ -51,6 +52,7 @@ export function MapasMentaisDetalhes({
   onToggleFavorito,
 }: MapasMentaisDetalhesProps) {
   const isMateria = categoria === 'materias';
+  const corCategoria = CATEGORIA_COR[categoria] || '#a855f7';
 
   return (
     <div className="space-y-4 max-w-[1400px] mx-auto w-full px-4 sm:px-6 py-2">
@@ -108,14 +110,14 @@ export function MapasMentaisDetalhes({
                       haptic.selection();
                       setTema(t);
                     }}
-                    className="p-4 rounded-xl bg-zinc-900/90 hover:bg-zinc-850 border border-white/5 hover:border-purple-500/40 flex items-center justify-between gap-3 transition-all cursor-pointer shadow-sm group active:scale-[0.99]"
+                    className="p-4 rounded-xl bg-zinc-900/90 hover:bg-zinc-850 border border-white/5 hover:border-purple-500/40 flex items-center justify-between gap-3 transition-all cursor-pointer shadow-sm group active:scale-[0.99] min-h-[76px]"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-9 h-9 rounded-lg bg-purple-500/15 border border-purple-500/25 flex items-center justify-center text-purple-300 shrink-0">
+                      <div className="w-9 h-9 rounded-lg border flex items-center justify-center shrink-0" style={{ backgroundColor: `${corCategoria}15`, borderColor: `${corCategoria}30`, color: corCategoria }}>
                         <BookOpen className="w-4 h-4" />
                       </div>
                       <div className="min-w-0">
-                        <p className="font-['Plus_Jakarta_Sans',sans-serif] text-sm font-bold text-white group-hover:text-purple-300 transition-colors truncate">
+                        <p className="font-['Plus_Jakarta_Sans',sans-serif] text-sm font-medium text-white group-hover:text-purple-300 transition-colors truncate">
                           {t.tema}
                         </p>
                         <p className="text-[11px] text-zinc-400 mt-0.5">
@@ -179,14 +181,17 @@ export function MapasMentaisDetalhes({
                 return (
                   <div
                     key={s.subtema}
-                    className="p-3.5 sm:p-4 rounded-xl bg-zinc-900/90 border border-white/5 hover:border-white/15 flex items-center justify-between gap-3 transition-all"
+                    className="p-3.5 sm:p-4 rounded-xl bg-zinc-900/90 border border-white/5 hover:border-white/15 flex items-center justify-between gap-3 transition-all min-h-[76px]"
                   >
-                    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/5 flex items-center justify-center shrink-0 border border-white/5">
-                      <span className="text-xs font-bold text-zinc-400">{index + 1}</span>
+                    <div 
+                      className="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shrink-0 border"
+                      style={{ backgroundColor: `${corCategoria}20`, borderColor: `${corCategoria}30` }}
+                    >
+                      <span className="text-xs font-bold" style={{ color: corCategoria }}>{index + 1}</span>
                     </div>
                     
                     <div className="min-w-0 flex-1">
-                      <p className="font-['Plus_Jakarta_Sans',sans-serif] text-sm font-semibold text-white">
+                      <p className="font-['Plus_Jakarta_Sans',sans-serif] text-sm font-medium text-white">
                         {s.subtema}
                       </p>
                     </div>
@@ -221,7 +226,7 @@ export function MapasMentaisDetalhes({
                             haptic.selection();
                             onGerar(item, s.subtema, 'tema', tema.tema);
                           }}
-                          className="px-3.5 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
+                          className="px-3.5 py-1.5 rounded-lg bg-[#9333ea] hover:bg-[#a855f7] text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
                         >
                           Gerar
                         </button>
@@ -307,7 +312,7 @@ export function MapasMentaisDetalhes({
                             haptic.selection();
                             onGerar(item, a.numero, 'artigo');
                           }}
-                          className="px-3.5 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
+                          className="px-3.5 py-1.5 rounded-lg bg-[#9333ea] hover:bg-[#a855f7] text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
                         >
                           Gerar
                         </button>

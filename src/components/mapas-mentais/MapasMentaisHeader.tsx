@@ -233,7 +233,7 @@ export function MapasMentaisHeader({
                if (ouvindo) stop(); else start();
             }}
             className={`absolute right-1.5 top-1/2 -translate-y-1/2 h-12 px-4 rounded-xl text-white font-display text-[13px] font-bold tracking-wider flex items-center justify-center cursor-pointer uppercase shadow-md active:opacity-70 transition-all ${
-               ouvindo ? 'bg-red-500 animate-pulse' : 'bg-purple-600 hover:bg-purple-700'
+               ouvindo ? 'bg-red-500 animate-pulse' : 'bg-[#9333ea] hover:bg-[#7e22ce]'
             }`}
           >
              {ouvindo ? <Mic className="w-5 h-5" /> : 'PESQUISAR'}
@@ -260,7 +260,7 @@ export function MapasMentaisHeader({
             }}
             className={`flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold tracking-wide whitespace-nowrap transition-all border cursor-pointer active:scale-[0.98] ${
               isAtiva
-                ? 'bg-purple-600 text-white border-purple-400 shadow-lg shadow-purple-600/30 ring-1 ring-purple-400/40'
+                ? 'bg-[#9333ea] text-white border-purple-400 shadow-lg shadow-purple-600/30 ring-1 ring-purple-400/40'
                 : 'bg-zinc-900/80 hover:bg-zinc-800 text-zinc-300 hover:text-white border-white/10'
             }`}
           >
