@@ -1274,7 +1274,7 @@ export default function AdminNarracaoLeis() {
                             </span>
                           )}
                           <span className="text-[11px] text-muted-foreground font-mono">
-                            {estruturado.totalCaracteres} chars · {estruturado.totalPartes === 1 ? '1 áudio contínuo (~1 min)' : `${estruturado.totalPartes} partes (~1 min cada)`}
+                            {estruturado.totalCaracteres} chars · {estruturado.totalPartes === 1 ? '1 áudio contínuo' : `${estruturado.totalPartes} partes`}
                           </span>
                         </div>
 
@@ -1290,10 +1290,12 @@ export default function AdminNarracaoLeis() {
                             </span>
                           </p>
                         )}
-
-                        <p className="text-xs text-muted-foreground line-clamp-2">
-                          {artigo.caput}
-                        </p>
+                        
+                        {(artigo as any).nomen_juris && (
+                          <p className="text-xs font-bold text-foreground truncate mb-1">
+                            {(artigo as any).nomen_juris}
+                          </p>
+                        )}
                       </div>
 
                       {/* Botões de Ação do Artigo */}
