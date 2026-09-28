@@ -117,6 +117,7 @@ async function fetchFromVadeMecum(leiId: string, offset: number, limit: number):
         numero: normalizeArtigoLabel(r.numero),
         caput: cleanArticleText(r.texto),
         titulo: r.epigrafe ? fixMojibake(r.epigrafe) : undefined,
+        nomen_juris: r.epigrafe ? fixMojibake(r.epigrafe) : undefined,
         capitulo: undefined,
         ordem: typeof r.ordem === 'number' ? r.ordem : undefined,
       }))
@@ -262,7 +263,13 @@ export function getCachedArtigos(tabelaNome: string): ArtigoLei[] | null {
 export async function fetchArtigosLei(_leiId: string, tabelaNome?: string | null): Promise<ArtigoLei[]> {
   if (!tabelaNome) return [];
   const cached = artigosCache.get(tabelaNome);
-  if (cached) return cached.map((artigo) => ({ ...artigo, numero: normalizeArtigoLabel(artigo.numero) }));
+  if (cached) {
+    return cached.map((artigo) => ({ 
+      ...artigo, 
+      numero: normalizeArtigoLabel(artigo.numero),
+      nomen_juris: artigo.nomen_juris || artigo.titulo
+    }));
+  }
   return fetchArtigosPaginado(tabelaNome, 0, 2000);
 }
 
@@ -301,6 +308,7 @@ export async function fetchArtigosInstant(tabelaNome: string, count = 10): Promi
           numero: normalizeArtigoLabel(row.rotulo || row.numero),
           caput: cleanArticleText(row.texto || row.caput),
           titulo: row.titulo || undefined,
+          nomen_juris: row.titulo || undefined,
           capitulo: row.capitulo || undefined,
           ordem: row.ordem,
         }));
@@ -339,6 +347,7 @@ export async function fetchArtigosInstant(tabelaNome: string, count = 10): Promi
         numero: normalizeArtigoLabel(row.rotulo || row.numero),
         caput: cleanArticleText(row.texto || row.caput),
         titulo: row.titulo || undefined,
+        nomen_juris: row.titulo || undefined,
         capitulo: row.capitulo || undefined,
         ordem: typeof row.ordem_numero === 'number' ? row.ordem_numero : undefined,
       }))
@@ -381,6 +390,7 @@ export async function fetchArtigosPaginado(tabelaNome: string, offset: number, l
           numero: normalizeArtigoLabel(row.rotulo || row.numero),
           caput: cleanArticleText(row.texto || row.caput),
           titulo: row.titulo || undefined,
+          nomen_juris: row.titulo || undefined,
           capitulo: row.capitulo || undefined,
           ordem: row.ordem,
         }));
@@ -451,6 +461,7 @@ export async function fetchArtigosPaginado(tabelaNome: string, offset: number, l
         numero: normalizeArtigoLabel(row.rotulo || row.numero),
         caput: cleanArticleText(row.texto || row.caput),
         titulo: row.titulo || undefined,
+        nomen_juris: row.titulo || undefined,
         capitulo: row.capitulo || undefined,
         ordem: typeof row.ordem_numero === 'number' ? row.ordem_numero : undefined,
       }))
@@ -488,14 +499,14 @@ export async function loadPersistedArtigos(tabelaNome: string): Promise<ArtigoLe
   // Memory hit first — synchronous fast path
   const mem = artigosCache.get(tabelaNome);
   if (mem && mem.length > 0) {
-    return mem.map((a) => ({ ...a, numero: normalizeArtigoLabel(a.numero) }));
+    return mem.map((a) => ({ ...a, numero: normalizeArtigoLabel(a.numero), nomen_juris: a.nomen_juris || a.titulo }));
   }
   try {
     const persisted = await getPersistedArtigosCache(tabelaNome);
     if (persisted && persisted.length > 0) {
       // Warm memory cache
       artigosCache.set(tabelaNome, persisted as ArtigoLei[]);
-      return (persisted as ArtigoLei[]).map((a) => ({ ...a, numero: normalizeArtigoLabel(a.numero) }));
+      return (persisted as ArtigoLei[]).map((a) => ({ ...a, numero: normalizeArtigoLabel(a.numero), nomen_juris: a.nomen_juris || a.titulo }));
     }
   } catch { /* ignore */ }
   return null;

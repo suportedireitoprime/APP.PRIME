@@ -14,6 +14,7 @@ import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { LEIS_CATALOG, type LeiCatalogItem } from '@/data/leisCatalog';
 import { fetchArtigosLei } from '@/services/legislacaoService';
 import type { ArtigoLei } from '@/data/mockData';
+import { isLineEpigrafe } from '@/components/vademecum/artigo/artigoTextUtils';
 import { parseArtigoEmPartes, type ArtigoParte, type ArtigoEstruturado } from '@/utils/artigoPartesParser';
 import {
   VOZES_DISPONIVEIS,
@@ -133,58 +134,140 @@ function normalizarTextoEstrutural(num: string, caput: string): string {
   return deduplicarHierarquiaTexto(primeira);
 }
 
-/** Enriquecer artigos legislativos reais com seu contexto hierárquico (Parte, Livro, Título, Capítulo) */
+/**
+ * Extrai epígrafe anexada ao final do texto de um artigo que pertence ao artigo subsequente.
+ * Ex: "...aplica-se ao fato praticado durante sua vigência. Tempo do crime" -> extrai "Tempo do crime"
+ */
+function extrairEpigrafeFinal(texto: string): { textoLimpo: string; epigrafe: string | null } {
+  if (!texto) return { textoLimpo: texto, epigrafe: null };
+
+  // 1. Caso haja quebra de linha: última linha é epígrafe?
+  const lines = texto.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  if (lines.length > 1) {
+    const lastLine = lines[lines.length - 1];
+    if (isLineEpigrafe(lastLine)) {
+      lines.pop();
+      return { textoLimpo: lines.join('\n'), epigrafe: lastLine };
+    }
+  }
+
+  // 2. Caso esteja colada após pontuação final no mesmo parágrafo (ex: "...sua vigência. Tempo do crime")
+  const match = texto.match(/([.;:!?])\s+([A-ZÁÀÂÃÉÈÊÍÓÔÕÚÇ][A-Za-zÁÀÂÃÉÈÊÍÓÔÕÚÇáàâãéèêíóôõúç\s–-]{2,60})$/);
+  if (match) {
+    const candidate = match[2].trim();
+    if (isLineEpigrafe(candidate)) {
+      const textoLimpo = texto.slice(0, match.index! + 1).trim();
+      return { textoLimpo, epigrafe: candidate };
+    }
+  }
+
+  return { textoLimpo: texto, epigrafe: null };
+}
+
+/** Enriquecer artigos legislativos reais com seu contexto hierárquico (Parte, Livro, Título, Capítulo) e Nomen Juris */
 function enriquecerArtigosComHierarquia(artigosBrutos: ArtigoLei[]): ArtigoLei[] {
   let currentParte = '';
   let currentLivro = '';
   let currentTitulo = '';
   let currentCapitulo = '';
+  let currentSecao = '';
+  let currentSubsecao = '';
+  let pendingNomenJuris: string | null = null;
 
   const artigosEnriquecidos: ArtigoLei[] = [];
 
   for (const item of artigosBrutos) {
     const num = String(item.numero || '').trim();
-    const caput = String(item.caput || '').trim();
-    const textoCompleto = `${num}\n${caput}`.trim();
+    const caputOriginal = String(item.caput || '').trim();
+    const textoCompleto = `${num}\n${caputOriginal}`.trim();
 
     // 1. Detecta Linha de Parte (ex: "PARTE GERAL", "PARTE ESPECIAL")
-    if (/^\s*PARTE\s+(?:GERAL|ESPECIAL|[IVXLCDM0-9]+)/i.test(num) || /^\s*PARTE\s+(?:GERAL|ESPECIAL|[IVXLCDM0-9]+)/i.test(caput)) {
+    if (/^\s*PARTE\s+(?:GERAL|ESPECIAL|[IVXLCDM0-9]+)/i.test(num) || /^\s*PARTE\s+(?:GERAL|ESPECIAL|[IVXLCDM0-9]+)/i.test(caputOriginal)) {
       const match = textoCompleto.match(/PARTE\s+(?:GERAL|ESPECIAL|[IVXLCDM0-9]+)/i);
-      currentParte = match ? match[0].trim() : normalizarTextoEstrutural(num, caput);
+      currentParte = match ? match[0].trim() : normalizarTextoEstrutural(num, caputOriginal);
       currentTitulo = '';
       currentCapitulo = '';
+      currentSecao = '';
+      currentSubsecao = '';
+      pendingNomenJuris = null;
       continue;
     }
 
     // 2. Detecta Linha de Livro (ex: "LIVRO I")
-    if (/^\s*LIVRO\s+[IVXLCDM0-9]+/i.test(num) || /^\s*LIVRO\s+[IVXLCDM0-9]+/i.test(caput)) {
-      currentLivro = normalizarTextoEstrutural(num, caput);
+    if (/^\s*LIVRO\s+[IVXLCDM0-9]+/i.test(num) || /^\s*LIVRO\s+[IVXLCDM0-9]+/i.test(caputOriginal)) {
+      currentLivro = normalizarTextoEstrutural(num, caputOriginal);
       currentTitulo = '';
       currentCapitulo = '';
+      currentSecao = '';
+      currentSubsecao = '';
+      pendingNomenJuris = null;
       continue;
     }
 
     // 3. Detecta Linha de Título (ex: "TÍTULO I\nDA APLICAÇÃO DA LEI PENAL")
-    if (/^\s*T[ÍI]TULO\s+[IVXLCDM0-9]+/i.test(num) || /^\s*T[ÍI]TULO\s+[IVXLCDM0-9]+/i.test(caput)) {
-      currentTitulo = normalizarTextoEstrutural(num, caput);
+    if (/^\s*T[ÍI]TULO\s+[IVXLCDM0-9]+/i.test(num) || /^\s*T[ÍI]TULO\s+[IVXLCDM0-9]+/i.test(caputOriginal)) {
+      currentTitulo = normalizarTextoEstrutural(num, caputOriginal);
       currentCapitulo = '';
+      currentSecao = '';
+      currentSubsecao = '';
+      pendingNomenJuris = null;
       continue;
     }
 
     // 4. Detecta Linha de Capítulo (ex: "CAPÍTULO I\nDO CRIME")
-    if (/^\s*CAP[ÍI]TULO\s+(?:[IVXLCDM0-9]+|[ÚU]NICO)/i.test(num) || /^\s*CAP[ÍI]TULO\s+(?:[IVXLCDM0-9]+|[ÚU]NICO)/i.test(caput)) {
-      currentCapitulo = normalizarTextoEstrutural(num, caput);
+    if (/^\s*CAP[ÍI]TULO\s+(?:[IVXLCDM0-9]+|[ÚU]NICO)/i.test(num) || /^\s*CAP[ÍI]TULO\s+(?:[IVXLCDM0-9]+|[ÚU]NICO)/i.test(caputOriginal)) {
+      currentCapitulo = normalizarTextoEstrutural(num, caputOriginal);
+      currentSecao = '';
+      currentSubsecao = '';
+      pendingNomenJuris = null;
+      continue;
+    }
+
+    // 5. Detecta Linha de Seção
+    if (/^\s*SE[ÇC][ÃA]O\s+[IVXLCDM0-9]+/i.test(num) || /^\s*SE[ÇC][ÃA]O\s+[IVXLCDM0-9]+/i.test(caputOriginal)) {
+      currentSecao = normalizarTextoEstrutural(num, caputOriginal);
+      currentSubsecao = '';
+      continue;
+    }
+
+    // 6. Detecta Linha de Subseção
+    if (/^\s*SUBSE[ÇC][ÃA]O\s+[IVXLCDM0-9]+/i.test(num) || /^\s*SUBSE[ÇC][ÃA]O\s+[IVXLCDM0-9]+/i.test(caputOriginal)) {
+      currentSubsecao = normalizarTextoEstrutural(num, caputOriginal);
       continue;
     }
 
     // Se for artigo real legislativo
     if (isArtigoReal(item)) {
+      // Determina o nomen_juris deste artigo
+      let nomenJurisArtigo = (item as any).nomen_juris || (item as any).epigrafe || '';
+
+      // Se item.titulo for uma epígrafe legítima (não estrutural)
+      if (!nomenJurisArtigo && item.titulo && !ROTULOS_ESTRUTURAIS.test(item.titulo.trim())) {
+        nomenJurisArtigo = item.titulo.trim();
+      }
+
+      // Se ainda não tem nomen_juris e havia uma epígrafe pendente do artigo anterior
+      if (!nomenJurisArtigo && pendingNomenJuris) {
+        nomenJurisArtigo = pendingNomenJuris;
+        pendingNomenJuris = null;
+      }
+
+      // Extrai qualquer epígrafe que tenha ficado no final do caput deste artigo (pertencente ao próximo artigo)
+      const { textoLimpo, epigrafe } = extrairEpigrafeFinal(caputOriginal);
+      if (epigrafe) {
+        pendingNomenJuris = epigrafe;
+      }
+
       artigosEnriquecidos.push({
         ...item,
+        caput: textoLimpo,
+        nomen_juris: nomenJurisArtigo || undefined,
         parte: deduplicarHierarquiaTexto(currentParte || item.parte || ''),
         livro: deduplicarHierarquiaTexto(currentLivro || item.livro || ''),
-        titulo: deduplicarHierarquiaTexto(currentTitulo || item.titulo || ''),
+        titulo: deduplicarHierarquiaTexto(currentTitulo || (item.titulo && ROTULOS_ESTRUTURAIS.test(item.titulo) ? item.titulo : '')),
         capitulo: deduplicarHierarquiaTexto(currentCapitulo || item.capitulo || ''),
+        secao: deduplicarHierarquiaTexto(currentSecao || item.secao || ''),
+        subsecao: deduplicarHierarquiaTexto(currentSubsecao || item.subsecao || ''),
       });
     }
   }
@@ -1278,22 +1361,22 @@ export default function AdminNarracaoLeis() {
                           </span>
                         </div>
 
-                        {([artigo.parte, artigo.livro, artigo.titulo, artigo.capitulo].filter(Boolean).length > 0) && (
-                          <p className="text-xs font-semibold text-primary/90 truncate mb-1">
+                        {([artigo.parte, artigo.livro, artigo.titulo, artigo.capitulo, artigo.secao, artigo.subsecao, artigo.nomen_juris].filter(Boolean).length > 0) && (
+                          <p className="text-xs font-semibold text-primary/90 mb-1 break-words">
                             <span className="text-muted-foreground/80 font-normal">
                               {[
                                 deduplicarHierarquiaTexto(artigo.parte || ''),
                                 deduplicarHierarquiaTexto(artigo.livro || ''),
                                 deduplicarHierarquiaTexto(artigo.titulo || ''),
                                 deduplicarHierarquiaTexto(artigo.capitulo || ''),
-                              ].filter(Boolean).join(' › ')}
+                                deduplicarHierarquiaTexto(artigo.secao || ''),
+                                deduplicarHierarquiaTexto(artigo.subsecao || ''),
+                                deduplicarHierarquiaTexto(artigo.nomen_juris || ''),
+                              ]
+                                .filter(Boolean)
+                                .filter((val, i, arr) => arr.indexOf(val) === i)
+                                .join(' › ')}
                             </span>
-                          </p>
-                        )}
-                        
-                        {(artigo as any).nomen_juris && (
-                          <p className="text-xs font-bold text-foreground truncate mb-1">
-                            {(artigo as any).nomen_juris}
                           </p>
                         )}
                       </div>

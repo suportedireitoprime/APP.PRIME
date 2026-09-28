@@ -175,7 +175,9 @@ export function formatarContextoEstruturalParaTTS(
   capitulo?: string,
   titulo?: string,
   parte?: string,
-  livro?: string
+  livro?: string,
+  secao?: string,
+  subsecao?: string
 ): string {
   const partes: string[] = [];
 
@@ -260,6 +262,54 @@ export function formatarContextoEstruturalParaTTS(
       });
     }
     if (c) partes.push(c);
+  }
+
+  // 5. Seção (ex: "Seção I - Das Regras Gerais")
+  if (secao && secao.trim()) {
+    let s = limparAnotacoesEditoriais(secao).trim();
+    s = s.replace(/(SE[ÇC][ÃA]O\s+(?:[IVXLCDM0-9]+|[ÚU]NICO))\s*[-–—:]*\s*\1\b/gi, '$1')
+         .replace(/\s*[-–—]\s*[-–—]\s*/g, ' - ')
+         .trim();
+
+    if (/^SE[ÇC][ÃA]O\s+([IVXLCDM]+)/i.test(s)) {
+      s = s.replace(/^SE[ÇC][ÃA]O\s+([IVXLCDM]+)\s*[-–—:]?\s*(.*)$/i, (_m, rom, resto) => {
+        const ord = ROMANOS_ORDINAIS[rom.toUpperCase()] || rom;
+        const restoLimpo = (resto || '').replace(/^SE[ÇC][ÃA]O\s+(?:[IVXLCDM0-9]+|[ÚU]NICO)\s*[-–—:]*\s*/i, '').trim();
+        const restoFmt = restoLimpo ? capitalizarTituloJuridico(restoLimpo) : '';
+        return restoFmt ? `Seção ${ord}, ${restoFmt}` : `Seção ${ord}`;
+      });
+    } else if (/^SE[ÇC][ÃA]O\s+[ÚU]NICO/i.test(s)) {
+      s = s.replace(/^SE[ÇC][ÃA]O\s+[ÚU]NICO\s*[-–—:]?\s*(.*)$/i, (_m, resto) => {
+        const restoLimpo = (resto || '').replace(/^SE[ÇC][ÃA]O\s+[ÚU]NICO\s*[-–—:]*\s*/i, '').trim();
+        const restoFmt = restoLimpo ? capitalizarTituloJuridico(restoLimpo) : '';
+        return restoFmt ? `Seção única, ${restoFmt}` : 'Seção única';
+      });
+    }
+    if (s) partes.push(s);
+  }
+
+  // 6. Subseção
+  if (subsecao && subsecao.trim()) {
+    let s = limparAnotacoesEditoriais(subsecao).trim();
+    s = s.replace(/(SUBSE[ÇC][ÃA]O\s+(?:[IVXLCDM0-9]+|[ÚU]NICO))\s*[-–—:]*\s*\1\b/gi, '$1')
+         .replace(/\s*[-–—]\s*[-–—]\s*/g, ' - ')
+         .trim();
+
+    if (/^SUBSE[ÇC][ÃA]O\s+([IVXLCDM]+)/i.test(s)) {
+      s = s.replace(/^SUBSE[ÇC][ÃA]O\s+([IVXLCDM]+)\s*[-–—:]?\s*(.*)$/i, (_m, rom, resto) => {
+        const ord = ROMANOS_ORDINAIS[rom.toUpperCase()] || rom;
+        const restoLimpo = (resto || '').replace(/^SUBSE[ÇC][ÃA]O\s+(?:[IVXLCDM0-9]+|[ÚU]NICO)\s*[-–—:]*\s*/i, '').trim();
+        const restoFmt = restoLimpo ? capitalizarTituloJuridico(restoLimpo) : '';
+        return restoFmt ? `Subseção ${ord}, ${restoFmt}` : `Subseção ${ord}`;
+      });
+    } else if (/^SUBSE[ÇC][ÃA]O\s+[ÚU]NICO/i.test(s)) {
+      s = s.replace(/^SUBSE[ÇC][ÃA]O\s+[ÚU]NICO\s*[-–—:]?\s*(.*)$/i, (_m, resto) => {
+        const restoLimpo = (resto || '').replace(/^SUBSE[ÇC][ÃA]O\s+[ÚU]NICO\s*[-–—:]*\s*/i, '').trim();
+        const restoFmt = restoLimpo ? capitalizarTituloJuridico(restoLimpo) : '';
+        return restoFmt ? `Subseção única, ${restoFmt}` : 'Subseção única';
+      });
+    }
+    if (s) partes.push(s);
   }
 
   if (partes.length === 0) return '';
@@ -360,7 +410,9 @@ export function parseArtigoEmNarracaoContinua(
     artigo.capitulo,
     artigo.titulo,
     artigo.parte,
-    artigo.livro
+    artigo.livro,
+    artigo.secao,
+    artigo.subsecao
   );
   const prefixoArtigoFalado = formatarNumeroArtigoParaTTS(artigo.numero);
 
@@ -371,6 +423,12 @@ export function parseArtigoEmNarracaoContinua(
   } else if (introTTS) {
     introTTS += '. ';
   }
+  
+  const nomenJuris = artigo.nomen_juris || artigo.epigrafe;
+  if (nomenJuris) {
+    introTTS += `${nomenJuris.trim().replace(/\.+$/, '')}. `;
+  }
+  
   introTTS += `${prefixoArtigoFalado}: `;
 
   // 2. Extrai os blocos textuais ordenados do artigo
@@ -495,9 +553,18 @@ export function parseArtigoEmNarracaoContinua(
         grupos.push(grupoAtual);
       }
       grupoAtual = { tipo: 'paragrafo', blocos: [bloco] };
+    } else if (bloco.tipo === 'caput' || bloco.tipo === 'epigrafe') {
+      if (grupoAtual && grupoAtual.blocos.length > 0) {
+        grupos.push(grupoAtual);
+      }
+      grupoAtual = { tipo: 'caput', blocos: [bloco] };
     } else {
+      if (grupoAtual && (grupoAtual.tipo === 'caput' || grupoAtual.tipo === 'epigrafe')) {
+        grupos.push(grupoAtual);
+        grupoAtual = { tipo: 'outro', blocos: [] };
+      }
       if (!grupoAtual) {
-        grupoAtual = { tipo: 'caput', blocos: [] };
+        grupoAtual = { tipo: 'outro', blocos: [] };
       }
       grupoAtual.blocos.push(bloco);
     }

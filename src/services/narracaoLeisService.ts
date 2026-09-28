@@ -632,13 +632,19 @@ export async function gerarNarracaoArtigoFatiada(
           setTimeout(() => resolve({ error: { message: 'Timeout na síntese de voz (45s)' }, data: null }), 45000)
         );
 
+        const isCaput = parte.tipo === 'caput' || parte.tipo === 'artigo_completo' || parte.tipo === 'epigrafe';
+        let estiloFinal = estilo;
+        if ((estilo === 'animado' || estilo === 'super_animado') && !isCaput) {
+          estiloFinal = 'acelerado';
+        }
+
         const res = await Promise.race([
           supabase.functions.invoke('narracao', {
             body: {
               fn: 'blog_preview',
               texto: parte.textoTTS.slice(0, 1500),
               voz,
-              estilo,
+              estilo: estiloFinal,
             },
           }),
           timeoutPromise,
