@@ -243,7 +243,7 @@ export function MapasMentaisHeader({
     </div>
 
     {/* 3. Abas de Categorias ABAIXO do painel (Matérias, Códigos, Estatutos, Leis Especiais) com Margem de Segurança */}
-    <div className="px-4 sm:px-6 mt-4 sm:mt-6 mb-3 sm:mb-4 flex items-center gap-2 overflow-x-auto no-scrollbar max-w-[1400px] mx-auto w-full relative z-10">
+    <div className="px-4 sm:px-6 mt-4 sm:mt-6 mb-3 sm:mb-4 flex items-center gap-2 overflow-x-auto no-scrollbar max-w-[1400px] mx-auto w-full relative z-10 shrink-0">
       {CATEGORIAS.map((catKey) => {
         const info = CATEGORIA_INFO[catKey];
         const isAtiva = categoria === catKey;
