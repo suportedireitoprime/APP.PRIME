@@ -71,7 +71,7 @@ export function MapasMentaisDetalhes({
                 : 'Pesquisar tópico da matéria...'
               : 'Pesquisar artigo (ex: 121, homicídio...)'
           }
-          className="h-11 sm:h-12 w-full rounded-xl border border-white/10 bg-zinc-900/90 pl-10 pr-10 font-sans text-xs sm:text-sm text-white placeholder:text-zinc-500 outline-none focus:border-purple-500/60 transition-colors"
+          className="h-11 sm:h-12 w-full rounded-xl border border-white/10 bg-zinc-900/90 pl-10 pr-10 font-sans text-xs sm:text-[13px] text-white placeholder:text-zinc-500 outline-none focus:border-purple-500/60 transition-colors"
         />
         {busca && (
           <button
@@ -112,14 +112,14 @@ export function MapasMentaisDetalhes({
                       haptic.selection();
                       setTema(t);
                     }}
-                    className="p-4 rounded-xl bg-zinc-900/90 hover:bg-zinc-850 border border-white/5 hover:border-purple-500/40 flex items-center justify-between gap-3 transition-all cursor-pointer shadow-sm group active:scale-[0.99] min-h-[76px]"
+                    className="p-3 sm:p-3.5 rounded-xl bg-zinc-900/90 hover:bg-zinc-850 border border-white/5 hover:border-purple-500/40 flex items-center justify-between gap-3 transition-all cursor-pointer shadow-sm group active:scale-[0.99] min-h-[64px]"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="w-10 h-10 flex items-center justify-center shrink-0" style={{ color: '#a855f7' }}>
                         <TemaIcon className="w-8 h-8" strokeWidth={1.5} />
                       </div>
                       <div className="min-w-0">
-                        <p className="font-['Plus_Jakarta_Sans',sans-serif] text-sm font-medium text-white group-hover:text-purple-300 transition-colors truncate">
+                        <p className="font-['Plus_Jakarta_Sans',sans-serif] text-[13px] font-medium text-white group-hover:text-purple-300 transition-colors truncate">
                           {t.tema}
                         </p>
                         <p className="text-[11px] text-zinc-400 mt-0.5">
@@ -183,7 +183,7 @@ export function MapasMentaisDetalhes({
                 return (
                   <div
                     key={s.subtema}
-                    className="p-3.5 sm:p-4 rounded-xl bg-zinc-900/90 border border-white/5 hover:border-white/15 flex items-center justify-between gap-3 transition-all min-h-[76px]"
+                    className="p-3.5 sm:p-3 sm:p-3.5 rounded-xl bg-zinc-900/90 border border-white/5 hover:border-white/15 flex items-center justify-between gap-3 transition-all min-h-[64px]"
                   >
                     <div 
                       className="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shrink-0 border"
@@ -193,7 +193,7 @@ export function MapasMentaisDetalhes({
                     </div>
                     
                     <div className="min-w-0 flex-1">
-                      <p className="font-['Plus_Jakarta_Sans',sans-serif] text-sm font-medium text-white">
+                      <p className="font-['Plus_Jakarta_Sans',sans-serif] text-[13px] font-medium text-white">
                         {s.subtema}
                       </p>
                     </div>
@@ -264,11 +264,11 @@ export function MapasMentaisDetalhes({
                 return (
                   <div
                     key={a.numero}
-                    className="p-3.5 sm:p-4 rounded-xl bg-zinc-900/90 border border-white/5 hover:border-white/15 flex items-start justify-between gap-3 transition-all"
+                    className="p-3.5 sm:p-3 sm:p-3.5 rounded-xl bg-zinc-900/90 border border-white/5 hover:border-white/15 flex items-start justify-between gap-3 transition-all"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-['Plus_Jakarta_Sans',sans-serif] text-sm font-bold text-white">
+                        <span className="font-['Plus_Jakarta_Sans',sans-serif] text-[13px] font-bold text-white">
                           Art. {a.numero.replace(/^art\.?\s*/i, '')}
                         </span>
                         {a.titulo && (
