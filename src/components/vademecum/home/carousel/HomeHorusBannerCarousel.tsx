@@ -10,6 +10,7 @@ import horusOwl3 from '@/assets/horus/03_coruja_balanca_justica.webp';
 import horusOwl4 from '@/assets/horus/04_coruja_maleta_balanca.webp';
 import horusWhatsapp from '@/assets/horus/coruja_whatsapp.png';
 import horusBiblioteca from '@/assets/horus/coruja_biblioteca.png';
+import horusAudioaulas from '@/assets/horus/coruja_audioaulas.png';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 
 const horusOwl = pickAsset(horusOwlBundled, srcOf(horusOwlAsset));
@@ -54,7 +55,7 @@ const EM_ALTA_ITEMS: EmAltaItem[] = [
     route: '/audioaulas', 
     bgGradient: 'from-[#D97706] via-[#B45309] to-[#78350F]', // Laranja (Boletins)
     sparkleColor: 'text-amber-200',
-    owlImage: horusOwl3 
+    owlImage: horusAudioaulas 
   },
   { 
     id: 'vademecum', 
