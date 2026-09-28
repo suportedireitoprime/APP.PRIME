@@ -537,40 +537,52 @@ export function parseArtigoEmNarracaoContinua(
     });
   }
 
-  // 3. Agrupamento estrutural contínuo (Caput, Parágrafos)
+  // 3. Agrupamento contínuo inteligente por teto de ~1 minuto (~850 caracteres)
   const partes: ArtigoParte[] = [];
-  
   const grupos: Array<{
     tipo: TipoParteArtigo;
     blocos: typeof blocosBrutos;
   }> = [];
 
-  let grupoAtual: { tipo: TipoParteArtigo; blocos: typeof blocosBrutos } | null = null;
+  const totalCharsBrutos = blocosBrutos.reduce((acc, b) => acc + b.textoOriginal.length, 0);
 
-  for (const bloco of blocosBrutos) {
-    if (bloco.tipo === 'paragrafo') {
-      if (grupoAtual && grupoAtual.blocos.length > 0) {
-        grupos.push(grupoAtual);
+  // Se o artigo inteiro cabe no teto de ~1 minuto (~850 caracteres), gera 1 ÚNICO áudio contínuo!
+  if (totalCharsBrutos <= maxChars) {
+    grupos.push({
+      tipo: 'artigo_completo',
+      blocos: blocosBrutos,
+    });
+  } else {
+    // Caso ultrapasse ~1 minuto (ex: Art. 129 CP, Art. 5º CF/88), agrupa blocos lógicos contínuos até ~850 caracteres por parte
+    let grupoAtual: typeof blocosBrutos = [];
+    let charsNoGrupo = 0;
+
+    for (let i = 0; i < blocosBrutos.length; i++) {
+      const bloco = blocosBrutos[i];
+      const tamBloco = bloco.textoOriginal.length;
+
+      // Se é epígrafe e adicioná-la com o próximo bloco ultrapassaria o limite, fecha agora para não deixar epígrafe órfã
+      const isOrfaProximo = bloco.tipo === 'epigrafe' && (i + 1 < blocosBrutos.length) && (charsNoGrupo + tamBloco + blocosBrutos[i + 1].textoOriginal.length > maxChars);
+
+      if (charsNoGrupo > 0 && (charsNoGrupo + tamBloco > maxChars || isOrfaProximo)) {
+        grupos.push({
+          tipo: grupos.length === 0 ? 'caput' : 'continua',
+          blocos: grupoAtual,
+        });
+        grupoAtual = [];
+        charsNoGrupo = 0;
       }
-      grupoAtual = { tipo: 'paragrafo', blocos: [bloco] };
-    } else if (bloco.tipo === 'caput' || bloco.tipo === 'epigrafe') {
-      if (grupoAtual && grupoAtual.blocos.length > 0) {
-        grupos.push(grupoAtual);
-      }
-      grupoAtual = { tipo: 'caput', blocos: [bloco] };
-    } else {
-      if (grupoAtual && (grupoAtual.tipo === 'caput' || grupoAtual.tipo === 'epigrafe')) {
-        grupos.push(grupoAtual);
-        grupoAtual = { tipo: 'outro', blocos: [] };
-      }
-      if (!grupoAtual) {
-        grupoAtual = { tipo: 'outro', blocos: [] };
-      }
-      grupoAtual.blocos.push(bloco);
+
+      grupoAtual.push(bloco);
+      charsNoGrupo += tamBloco + 2;
     }
-  }
-  if (grupoAtual && grupoAtual.blocos.length > 0) {
-    grupos.push(grupoAtual);
+
+    if (grupoAtual.length > 0) {
+      grupos.push({
+        tipo: grupos.length === 0 ? 'caput' : 'continua',
+        blocos: grupoAtual,
+      });
+    }
   }
 
   grupos.forEach((grupo, idx) => {

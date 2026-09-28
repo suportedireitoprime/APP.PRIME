@@ -195,6 +195,8 @@ export function isLineEpigrafe(line: string): boolean {
   // Não pode ser dispositivo canônico nem nota nem subdivisão estrutural do código
   if (/^(?:Art\s*\.|§|Parágrafo\b|[IVXLCDM]+\s*[-–.)]|[a-z]\)|LIVRO\b|PARTE\b|TÍTULO\b|CAPÍTULO\b|SEÇÃO\b|SUBSEÇÃO\b)/i.test(clean)) return false;
   if (/^\((?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Revogado|Vetado)\b/i.test(line.trim())) return false;
+  // Não pode começar com preposições, conjunções ou locuções de início de oração
+  if (/^(?:No|Nos|Na|Nas|Do|Dos|Da|Das|Em|Para|Com|Sem|Pelo|Pela|Pelos|Pelas|Se|Quando|Salvo|Exceto|Ressalvado|Mediante|Segundo|Conforme|Durante)\b/i.test(clean)) return false;
   // Deve começar com letra maiúscula
   if (!/^[A-ZÁÀÂÃÉÈÊÍÓÔÕÚÇ]/.test(clean)) return false;
   // Epígrafe não termina com ponto final, ponto e vírgula, dois pontos ou exclamação/interrogação
@@ -207,7 +209,7 @@ export function isLineEpigrafe(line: string): boolean {
 /** Desmembra títulos/epígrafes colados após ponto final para sua própria linha */
 export function desmembrarEpigrafesEmbutidas(text: string): string {
   return text.replace(
-    /([.;:])\s+([A-ZÁÀÂÃÉÈÊÍÓÔÕÚÇ][A-Za-zÁÀÂÃÉÈÊÍÓÔÕÚÇáàâãéèêíóôõúç\s–-]{2,60})\s*(?=\r?\n|§|Parágrafo|[IVXLCDM]+\s*[-–.)]|[a-z]\))/g,
+    /([.;:])\s+([A-ZÁÀÂÃÉÈÊÍÓÔÕÚÇ][A-Za-zÁÀÂÃÉÈÊÍÓÔÕÚÇáàâãéèêíóôõúç\s–-]{2,60})\s*(?=\r?\n|\n\s*(?:§|Parágrafo|[IVXLCDM]+\s*[-–.)]|[a-z]\)))/g,
     (match, punct, title) => {
       const cleanTitle = title.trim();
       if (isLineEpigrafe(cleanTitle)) {
@@ -224,6 +226,9 @@ export function normalizeLegalLineBreaks(text: string): string {
   let normalizedText = text
     .replace(/(§\s*\d+)\s+([º°ª])/g, '$1$2')
     .replace(/(Art\.\s*\d+)\s+([º°ª])/gi, '$1$2');
+
+  // Une § isolado na linha com o número na linha seguinte (ex: "§\n1º" -> "§ 1º", "§\n3º-A." -> "§ 3º-A.")
+  normalizedText = normalizedText.replace(/§\s*\r?\n\s*(\d+[º°ª]?(?:-[A-Za-z])?)/gi, '§ $1');
 
   // Quebras com múltiplos espaços (4+ espaços ou tabs) antes de dispositivos legais ou epígrafes viram nova linha
   normalizedText = normalizedText.replace(/\s{3,}(?=(?:§|Parágrafo|[IVXLCDM]+\s*[-–.)]|[a-z]\)|[A-ZÁÀÂÃÉÈÊÍÓÔÕÚÇ]))/g, '\n');
