@@ -112,9 +112,9 @@ Deno.serve(async (req) => {
       // Cobrança avulsa / parcelada via /payments (sem recorrência anual para Vitalício)
       let baseValue = 199.90;
       if (plan === 'vitalicio') {
-        baseValue = 299.00;
+        baseValue = 280.00;
       } else if (plan === 'vitalicio_pix') {
-        baseValue = 250.00;
+        baseValue = 280.00;
       } else if (plan === 'anual_pix' || plan === 'promocao') {
         baseValue = 149.90;
       }
@@ -122,14 +122,12 @@ Deno.serve(async (req) => {
       let totalWithTax = baseValue;
       const num = installmentCount || 1;
 
-      if (isCreditCard) {
-        let taxRate = 0;
-        if (num === 1) taxRate = 0.0339;
-        else if (num <= 6) taxRate = 0.0389;
-        else taxRate = 0.0439;
-        
-        totalWithTax = Number(((baseValue + 0.29) / (1 - taxRate)).toFixed(2));
-      }
+      if (isCreditCard && num > 1) {
+          let taxRate = 0;
+          if (num <= 6) taxRate = 0.0389;
+          else taxRate = 0.0439;
+          totalWithTax = Number(((baseValue + 0.29) / (1 - taxRate)).toFixed(2));
+        }
       
       const isPromo = plan === 'anual_pix' || plan === 'promocao';
       const paymentPayload: any = {
@@ -230,7 +228,7 @@ Deno.serve(async (req) => {
         );
 
         const isAnualPlan = plan === 'anual' || plan === 'anual_pix' || plan === 'anual_regular_pix' || plan === 'promocao' || plan === 'vitalicio' || plan === 'vitalicio_pix';
-        const planoFinal = plan === 'mensal' ? 'mensal' : (plan === 'promocao' ? 'anual_promocional' : 'anual');
+        const planoFinal = plan === 'mensal' ? 'mensal' : (plan === 'vitalicio' || plan === 'vitalicio_pix' ? 'vitalicio' : (plan === 'promocao' ? 'anual_promocional' : 'anual'));
         const diasCiclo = isAnualPlan ? 370 : 34;
         const now = new Date();
         const expiresAt = new Date(now.getTime() + diasCiclo * 24 * 3600 * 1000).toISOString();

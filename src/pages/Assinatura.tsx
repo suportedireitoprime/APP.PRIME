@@ -245,7 +245,7 @@ export default function Assinatura() {
                   <div className="flex flex-col items-start text-left flex-1">
                     <span className="font-bold text-lg text-foreground">PIX</span>
                     {tab === 'vitalicio' ? (
-                      <span className="text-[11px] font-bold text-muted-foreground">R$ 250,00 à vista · Acesso Vitalício</span>
+                      <span className="text-[11px] font-bold text-muted-foreground">R$ 280,00 Vitalício</span>
                     ) : (
                       <span className="text-[11px] font-bold text-muted-foreground">R$ 199,90 à vista · Plano Anual</span>
                     )}
@@ -308,7 +308,7 @@ export default function Assinatura() {
             <div className="space-y-2 text-center px-4 flex flex-col items-center">
               <img src={primeLogo} alt="Estudos Jurídicos" className="w-16 h-16 object-contain mb-2 drop-shadow-md" />
               <h1 className="font-display text-3xl sm:text-4xl font-black text-foreground leading-[1.1]">
-                Tenha acesso a todo o <span className="text-primary">conteúdo de estudo jurídico.</span>
+                Tenha acesso a todo o <span className="text-primary">conteúdo de estudo jurídico</span>
               </h1>
               <p className="text-[13px] text-muted-foreground font-medium max-w-sm mx-auto">
                 Libere seu potencial máximo agora na OAB, Concursos e na Advocacia.

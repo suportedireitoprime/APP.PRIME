@@ -249,7 +249,7 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
               </div>
 
               <p className="text-[10px] font-bold text-muted-foreground mb-2 relative z-10 drop-shadow-md shadow-black/50">
-                ou R$ 250,00 à vista no PIX (Acesso para sempre)
+                ou R$ 280,00 à vista (Acesso para sempre)
               </p>
               
               <div className="w-full pt-1 flex items-center justify-center relative z-10">
