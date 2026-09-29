@@ -22,10 +22,7 @@ export default function NovidadesApp() {
   useEffect(() => {
     async function fetchUpdates() {
       try {
-        const { data, error } = await supabase
-          .from('app_updates')
-          .select('*')
-          .order('date', { ascending: false });
+        const { data, error } = await supabase.functions.invoke('app-updates');
         if (error) throw error;
         setUpdates(data || []);
       } catch (err) {

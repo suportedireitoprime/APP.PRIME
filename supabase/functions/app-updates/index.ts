@@ -7,168 +7,332 @@ const corsHeaders = {
 
 const updates = [
   {
-    version: "2.4",
-    title: "Versão 2.4 Liberada",
-    date: "2026-09-28",
-    description: "Novo painel de explicações ao vivo e melhorias no Vade Mecum.",
-    features: [
-      "Integração do Mentor de IA em tempo real",
-      "Scroll inteligente ao alternar abas",
-      "Novas animações fluidas nas listas de leis"
+    "version": "3.9",
+    "title": "Versão 3.9 Liberada",
+    "date": "2026-09-29",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat: Implementa pesquisa web para o OmniRoute",
+      "Feat(Assistente): Adicionar suporte a anexos PDF e imagens via OmniRoute no Chat",
+      "Feat: atualiza headline e nova arte ajustada para plano vitalicio"
     ]
   },
   {
-    version: "2.3",
-    title: "Versão 2.3 Liberada",
-    date: "2026-09-14",
-    description: "Desempenho aprimorado e novos atalhos de estudo.",
-    features: [
-      "Pesquisa 40% mais rápida em legislações extensas",
-      "Modo escuro otimizado para economia de bateria",
-      "Novo sistema de flashcards para revisão"
+    "version": "3.8",
+    "title": "Versão 3.8 Liberada",
+    "date": "2026-09-27",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat(giro-juridico): divide boletins em juridicos e noticias, troca icone para fone de ouvido e tag para 'ouvir'",
+      "Feat(giro-juridico): reestrutura abas e altera cards de noticias para formato retangular",
+      "Feat(mapas-mentais): restaura cards de pastas vermelhas na aba Pastas Salvas e padroniza cor roxa na pesquisa"
     ]
   },
   {
-    version: "2.2",
-    title: "Versão 2.2 Liberada",
-    date: "2026-08-25",
-    description: "Expansão da biblioteca e suporte a tablets.",
-    features: [
-      "Layout totalmente adaptado para iPads e tablets",
-      "Mais de 500 novas súmulas adicionadas",
-      "Notificações personalizadas para editais"
+    "version": "3.7",
+    "title": "Versão 3.7 Liberada",
+    "date": "2026-09-26",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat(admin): exibe partes dinamicas (ex: 1 de 5, 2 de 3) durante a narracao de artigos",
+      "Feat(narracao): unificar pipeline de geracao automatica fatiada entre Vade Mecum e Admin com tom Super Animado e Realtime",
+      "Feat(vademecum): substituir lembretes e perguntar por novo menu interativo me explique"
     ]
   },
   {
-    version: "2.1",
-    title: "Versão 2.1 Liberada",
-    date: "2026-08-10",
-    description: "Nova seção de jurisprudências e melhorias de leitura.",
-    features: [
-      "Busca avançada com filtros por tribunal",
-      "Opção de ajustar o tamanho e a fonte do texto",
-      "Marcação de texto com múltiplas cores"
+    "version": "3.6",
+    "title": "Versão 3.6 Liberada",
+    "date": "2026-09-25",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat: adicionar Horus WhatsApp e Liga├º├úo Live no gateway OmniRoute",
+      "Feat: implementar fallback para gemini-3.1-flash-light e tornar cards minimalistas",
+      "Feat(omniroute): layout em lista com bottom sheets 95% para testar gateway e funcoes do app"
     ]
   },
   {
-    version: "2.0",
-    title: "Versão 2.0 Liberada",
-    date: "2026-07-22",
-    description: "A maior atualização do ano com design renovado.",
-    features: [
-      "Interface completamente redesenhada",
-      "Navegação por gestos mais intuitiva",
-      "Sincronização em nuvem instantânea"
+    "version": "3.5",
+    "title": "Versão 3.5 Liberada",
+    "date": "2026-09-21",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat(Auth): bypass onboarding and grant premium access to test account juridicosapp@gmail.com for Google Play review",
+      "Feat(questoes): adiciona animacoes staggered para os componentes da tela Questoes",
+      "Feat: substituir estilo cartoon por imagem conceitual com background removido no onboarding"
     ]
   },
   {
-    version: "1.9",
-    title: "Versão 1.9 Liberada",
-    date: "2026-07-05",
-    description: "Modo offline aprimorado e novos resumos.",
-    features: [
-      "Acesso completo ao Vade Mecum sem internet",
-      "Baixe resumos em áudio para ouvir no trânsito",
-      "Correção de falhas ao carregar arquivos pesados"
+    "version": "3.4",
+    "title": "Versão 3.4 Liberada",
+    "date": "2026-09-19",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat(MeExplique): avatar e UI ajustados baseados no feedback do ├íudio",
+      "Feat: Aumenta largura max do desktop e adiciona Me Explique na barra lateral",
+      "Feat: adjust FaceYellow gavel hand position and increase wig size, remove badge and center mic in MeExpliqueLiveChatView"
     ]
   },
   {
-    version: "1.8",
-    title: "Versão 1.8 Liberada",
-    date: "2026-06-18",
-    description: "Foco nos concursos e editais recentes.",
-    features: [
-      "Alerta automático de novos concursos",
-      "Simulados inéditos com foco na banca CESPE",
-      "Ranking de desempenho entre usuários"
+    "version": "3.3",
+    "title": "Versão 3.3 Liberada",
+    "date": "2026-09-18",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat: improve quick access menu with separators, larger hitboxes and chat option",
+      "Feat: redesign desktop hero banner and sidebar",
+      "Feat(desktop): capa alinhada a direita e icones notifica├º├úo movidos para header fixo"
     ]
   },
   {
-    version: "1.7",
-    title: "Versão 1.7 Liberada",
-    date: "2026-06-02",
-    description: "Melhorias de acessibilidade e leitura por voz.",
-    features: [
-      "Leitura em voz alta de artigos de lei",
-      "Suporte aprimorado para leitores de tela",
-      "Novo modo de alto contraste"
+    "version": "3.2",
+    "title": "Versão 3.2 Liberada",
+    "date": "2026-09-16",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat(stf): fallback offline para biografias e refat workflow github action com client payload",
+      "Feat(ui): adiciona descricao em portais, safe-area margin e corrige cores do modal",
+      "Feat(tres-poderes): adiciona portais da camara e senado e padroniza modulo"
     ]
   },
   {
-    version: "1.6",
-    title: "Versão 1.6 Liberada",
-    date: "2026-05-15",
-    description: "Mapas mentais integrados ao estudo.",
-    features: [
-      "Visualização de conexões entre artigos",
-      "Criação de anotações vinculadas aos mapas",
-      "Exportação rápida para PDF"
+    "version": "3.1",
+    "title": "Versão 3.1 Liberada",
+    "date": "2026-09-15",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat(home): adiciona barra praticar lei seca e linha do tempo de apresentacoes narradas",
+      "Feat(resumos): deck 3d de metodologias, carregamento instantaneo e capas dinamicas por materia",
+      "Feat: carrossel exclusivo de noticias na home e novo carrossel de livros em ferramentas"
     ]
   },
   {
-    version: "1.5",
-    title: "Versão 1.5 Liberada",
-    date: "2026-04-28",
-    description: "Painel de revisões espaçadas.",
-    features: [
-      "Algoritmo inteligente para agendar revisões",
-      "Estatísticas detalhadas de aprendizado",
-      "Lembretes diários configuráveis"
+    "version": "3.0",
+    "title": "Versão 3.0 Liberada",
+    "date": "2026-09-10",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat: Remove video de capa e substitui por imagem heroEstudanteImg",
+      "Feat(hero): adiciona video-capa.webm em loop no painel do inicio e unifica media providers",
+      "Feat(aulas): atualiza decks para cards 4x3 com capas ilustradas e play glassmorphic"
     ]
   },
   {
-    version: "1.4",
-    title: "Versão 1.4 Liberada",
-    date: "2026-04-10",
-    description: "Comunidade e fórum de dúvidas.",
-    features: [
-      "Espaço para interagir com outros estudantes",
-      "Resolução de questões comentadas por professores",
-      "Compartilhamento de cadernos de erros"
+    "version": "2.9",
+    "title": "Versão 2.9 Liberada",
+    "date": "2026-09-08",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat: recria layout da trilha em zigue-zague nativo com svg e pegadas rotacionadas",
+      "Feat: implementa proximo artigo, trilha com linha/pegadas e progresso com estrelas",
+      "Feat: padroniza botao voltar, fundo ShapeGrid e adiciona sons de acerto/erro no Forca"
     ]
   },
   {
-    version: "1.3",
-    title: "Versão 1.3 Liberada",
-    date: "2026-03-22",
-    description: "Otimização de armazenamento local.",
-    features: [
-      "O app agora ocupa 50% menos espaço no celular",
-      "Gerenciador de downloads aprimorado",
-      "Limpeza automática de cache antigo"
+    "version": "2.8",
+    "title": "Versão 2.8 Liberada",
+    "date": "2026-09-07",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat(lifecycle): resolve race conditions, sync transactions and layout shifts on background resume",
+      "Feat(resumos): usar capas por area do Aprender nos cards de areas",
+      "Feat(questoes): aplica otimizacoes finais de IA memoizada, TTL de cargos e responsividade no grid desktop (itens 11-20 da auditoria)"
     ]
   },
   {
-    version: "1.2",
-    title: "Versão 1.2 Liberada",
-    date: "2026-03-05",
-    description: "Novos cadernos de legislação penal.",
-    features: [
-      "Inclusão do Pacote Anticrime atualizado",
-      "Questões inéditas de Direito Penal",
-      "Marcadores inteligentes de artigos revogados"
+    "version": "2.7",
+    "title": "Versão 2.7 Liberada",
+    "date": "2026-09-06",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat(biblioteca): converte Acervos de Livros para lista com capa a esquerda e fixa ShapeGrid cobrindo 100% da tela",
+      "Feat(biblioteca): unifica Selecionados para voce com deck 3D em leque, timer de luzinha, reflexo e titulo fora da capa",
+      "Feat(aprender): reduz espessura da linha do contorno e adiciona luzinha animada sincronizada com tempo do proximo card"
     ]
   },
   {
-    version: "1.1",
-    title: "Versão 1.1 Liberada",
-    date: "2026-02-15",
-    description: "Suporte a vídeos e videoaulas.",
-    features: [
-      "Player de vídeo nativo sem interrupções",
-      "Controle de velocidade de reprodução",
-      "Modo picture-in-picture (PiP)"
+    "version": "2.6",
+    "title": "Versão 2.6 Liberada",
+    "date": "2026-09-05",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat(vademecum): modularizar em chunks e implementar cache aquecido para biblioteca, resumos e videoaulas",
+      "Feat(aprender): brighten materia icon colors and ensure ShapeGrid across area views",
+      "Feat(aprender): add ShapeGrid background and remove flashcards/questoes/progresso alternation menu in AprenderArea"
     ]
   },
   {
-    version: "1.0",
-    title: "Versão 1.0 Liberada",
-    date: "2026-01-20",
-    description: "Lançamento oficial do aplicativo.",
-    features: [
-      "Vade Mecum interativo e atualizado",
-      "Filtros de busca rápida",
-      "Sistema de favoritos e histórico"
+    "version": "2.5",
+    "title": "Versão 2.5 Liberada",
+    "date": "2026-09-03",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat(native): diretiva 100% nativo mobile no AGENTS.md e abas nativas de jurisprudencia e gravador de voz em Compose e SwiftUI",
+      "Feat(skill): criar skill nativas-compose-e-swiftui e aplicar leitor nativo no iOS e Android",
+      "Feat(vademecum): leitor de artigos 100% nativo em kotlin jetpack compose no android"
+    ]
+  },
+  {
+    "version": "2.4",
+    "title": "Versão 2.4 Liberada",
+    "date": "2026-09-02",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat(pilulas): add horizontal tab menu and ministros gallery to PilulasHome",
+      "Feat: Add POSSE and NOMEACAO to timeline dates and explain STF WAF blocking",
+      "Feat(stf): atualiza tipografia da linha do tempo e insere fallback visual de datas"
+    ]
+  },
+  {
+    "version": "2.3",
+    "title": "Versão 2.3 Liberada",
+    "date": "2026-08-31",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat: display text inside card and glassmorphic play button overlay",
+      "Feat: add CircularGallery to Pilulas R├ípidas with new categories",
+      "Feat: add ShapeGrid background to PilulasHome"
+    ]
+  },
+  {
+    "version": "2.2",
+    "title": "Versão 2.2 Liberada",
+    "date": "2026-08-30",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat: adiciona componente de audio customizado para a intro e para preview do audio final",
+      "Feat: adiciona card de instrucoes e preview de audio da intro na tela de envio de pilulas",
+      "Feat: adiciona fallback infalivel via window.prompt caso navegador bloqueie execCommand e navigator.clipboard"
+    ]
+  },
+  {
+    "version": "2.1",
+    "title": "Versão 2.1 Liberada",
+    "date": "2026-08-28",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat: replace Lembretes shortcut with Desktop in HomeHeaderHero",
+      "Feat: simplifica telas de download offline focando em pacotes inteiros",
+      "Feat: add PremiumGate and responsiveness to LeiSeca"
+    ]
+  },
+  {
+    "version": "2.0",
+    "title": "Versão 2.0 Liberada",
+    "date": "2026-08-21",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat: reestruturacao do cronograma de push notifications (6 disparos diarios)",
+      "Feat(admin): reorder ocr lists and add pending badges on categories",
+      "Feat(admin): track and display paywall views in admin dashboard"
+    ]
+  },
+  {
+    "version": "1.9",
+    "title": "Versão 1.9 Liberada",
+    "date": "2026-08-19",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat(performance): implement instant load and fluid native transitions",
+      "Feat: add TopProgressBar for seamless lazy loading indication",
+      "Feat: implement lazyWithRetry and replace all React.lazy calls to improve robustness against network/chunk errors"
+    ]
+  },
+  {
+    "version": "1.8",
+    "title": "Versão 1.8 Liberada",
+    "date": "2026-08-17",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat(edge-function): Atualiza modelo base para gemini-3.1-flash-lite para gera├º├úo de roteiros de apresenta├º├úo, seguindo padr├úo arquitetural do projeto",
+      "Feat(ux): adiciona efeitos haptic nas a├º├Áes do gravador de voz e corre├º├úo final de bugs",
+      "Feat(ux): adiciona visualizador de ondas sonoras no microfone (AudioVisualizer) nas anota├º├Áes"
+    ]
+  },
+  {
+    "version": "1.7",
+    "title": "Versão 1.7 Liberada",
+    "date": "2026-08-16",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat(flashcards): aprimorar selecao de titulos, status e animacao de quantidade total",
+      "Feat(flashcards): ordenar capitulos cronologicamente por artigos, badges com contagem e spinner de carregamento",
+      "Feat: refatorar AdminFlashcardsEditar para navegacao em 3 etapas (categoria > area > temas) com categoria enviada ao prompt da IA"
+    ]
+  },
+  {
+    "version": "1.6",
+    "title": "Versão 1.6 Liberada",
+    "date": "2026-08-15",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat(biografias): expandir kant e hans kelsen para padrao editorial elite e validar build",
+      "Feat(sync): fila de bg-sync via idb-keyval para offline; feat(gate): botao DEV para pular gate sem compras nativas",
+      "Feat(biografias): expans├úo em massa de biografias e adi├º├úo de anima├º├Áes Framer Motion"
+    ]
+  },
+  {
+    "version": "1.5",
+    "title": "Versão 1.5 Liberada",
+    "date": "2026-08-13",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat(ai): cria UI do AIGeneratorPanel com responsividade no AdminLaboratorio",
+      "Feat(3d): refatora Art 2 com detalhes e cria Art 3 com clima dinamico",
+      "Feat(3d): cria cena do art 2 (Abolitio Criminis) em Cel-Shading"
+    ]
+  },
+  {
+    "version": "1.4",
+    "title": "Versão 1.4 Liberada",
+    "date": "2026-08-11",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat: migrate heavy PDF processing to GitHub Actions with PyMuPDF",
+      "Feat(biblioteca): migra armazenamento de conteudo markdown para Storage",
+      "Feat(ui): adiciona efeito de folhas de louro caindo e balan├ºas flutuantes no header da home"
+    ]
+  },
+  {
+    "version": "1.3",
+    "title": "Versão 1.3 Liberada",
+    "date": "2026-08-10",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat(videoaulas): invalida cache e atualiza capas offline dos concursos",
+      "Feat(videoaulas): unifica titulos para medium, insere barra de progresso no catalogo e mic icon em vermelho vibrante",
+      "Feat: prompt to resume video playback or start from scratch"
+    ]
+  },
+  {
+    "version": "1.2",
+    "title": "Versão 1.2 Liberada",
+    "date": "2026-08-09",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat(videoaulas): create dedicated section for OAB exams in categories screen",
+      "Feat(videoaulas): create structured study plans per edital with horizontal carousels",
+      "Feat(forca): add stars and gamified phase path"
+    ]
+  },
+  {
+    "version": "1.1",
+    "title": "Versão 1.1 Liberada",
+    "date": "2026-08-06",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Feat(blog): refazer capas dos artigos antigos (Lei do Inquilinato, LGPD, Aristoteles e Terras Indigenas) no estilo vetor com contorno branco e atualizar cache v5",
+      "Feat(blog): ajustar geracao de capas com IA orientada ao sujeito, autor Redacao Estudos Juridicos, e artigos pedagogicos com leis do banco",
+      "Feat(ai): definir gemini-3.1-flash-lite como modelo padrao de geracao de texto"
+    ]
+  },
+  {
+    "version": "1.0",
+    "title": "Versão 1.0 Liberada",
+    "date": "2026-08-04",
+    "description": "Atualizações baseadas no seu feedback com novas funcionalidades e correções importantes.",
+    "features": [
+      "Fix: otimizacoes de busca, logo hero e deploy github pages",
+      "Fix(android): force compileSdk 36 em todos os modulos (send-intent AAR metadata)"
     ]
   }
 ];
