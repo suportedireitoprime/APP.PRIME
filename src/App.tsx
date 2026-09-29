@@ -89,6 +89,7 @@ const ForceUpdateScreen = lazy(() => import("@/components/ForceUpdateScreen"));
 import { useAppUpdateStore } from "@/lib/appUpdateStore";
 import { scheduleAppWarmup } from "@/services/appWarmupService";
 import { scheduleBackgroundImageWarmup } from "@/services/imageBackgroundSync";
+import { populateFTS5FromBundle } from "@/services/fts5Populator";
 import { GlobalDelayedPrompts } from "@/components/GlobalDelayedPrompts";
 import { GlobalPromoFloatingCard } from "@/components/GlobalPromoFloatingCard";
 
@@ -149,6 +150,7 @@ function AppWarmupInitializer() {
   useEffect(() => {
     scheduleAppWarmup(qc);
     scheduleBackgroundImageWarmup();
+    populateFTS5FromBundle();
   }, [qc]);
   return null;
 }

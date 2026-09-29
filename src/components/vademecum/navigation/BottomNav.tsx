@@ -1,12 +1,12 @@
-import { useState, useEffect, Suspense, startTransition } from 'react';
+﻿import { useState, useEffect, Suspense, startTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Flame, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, User, ArrowLeftRight, MicVocal, Pill, BookMarked, Microscope, Stethoscope, Podcast, Crown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import MentorOverlay from '@/components/vademecum/overlays/MentorOverlay';
-// PessoalSheet removido — Meu Espaço agora é rota dedicada (/meu-espaco).
 import AssistenteOverlay from '@/components/vademecum/overlays/AssistenteOverlay';
+// PessoalSheet removido — Meu Espaço agora é rota dedicada (/meu-espaco).
 
 import { haptic } from '@/lib/nativeHaptics';
 import { useKeyboardHeight } from '@/hooks/useKeyboardListeners';
@@ -75,9 +75,9 @@ const BottomNav = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [dicionarioOpen, setDicionarioOpen] = useState(false);
   const [mentorOpen, setMentorOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
   const [externalMenuOpen, setExternalMenuOpen] = useState(false);
   // pessoalOpen removido — Meu Espaço é rota agora.
-  const [chatOpen, setChatOpen] = useState(false);
   const [horusView, setHorusView] = useState<'chooser' | 'main' | 'funcoes' | 'notificacoes'>('chooser');
 
   // (Removido: intervalo do NavShine — animação contínua no BottomNav.)
@@ -748,11 +748,11 @@ const BottomNav = () => {
 
     {/* Mentor Jurídico */}
     <MentorOverlay open={mentorOpen} onClose={() => setMentorOpen(false)} />
+    <AssistenteOverlay open={chatOpen} onClose={() => setChatOpen(false)} />
 
     {/* Pessoal — agora é rota dedicada em /meu-espaco */}
 
     {/* Chat Jurídico */}
-    <AssistenteOverlay open={chatOpen} onClose={() => setChatOpen(false)} />
 
     </>
   );

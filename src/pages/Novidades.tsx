@@ -22,9 +22,12 @@ export default function NovidadesApp() {
   useEffect(() => {
     async function fetchUpdates() {
       try {
-        const { data, error } = await supabase.functions.invoke('app-updates');
+        const { data, error } = await supabase
+          .from('app_updates')
+          .select('*')
+          .order('date', { ascending: false });
         if (error) throw error;
-        setUpdates(data.updates || []);
+        setUpdates(data || []);
       } catch (err) {
         console.error('Erro ao buscar novidades do app:', err);
       } finally {

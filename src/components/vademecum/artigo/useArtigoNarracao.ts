@@ -520,8 +520,8 @@ export function useArtigoNarracao({
     }
 
     try {
-      const leiCatalog = (await import('@/services/legislacaoService')).getLeisCatalog();
-      const lei = leiCatalog.find((l: any) => l.tabela_nome === tabelaNome);
+      const { LEIS_CATALOG } = await import('@/services/legislacaoService');
+      const lei = LEIS_CATALOG.find((l: any) => l.tabela_nome === tabelaNome);
       const leiNome = lei?.nome || tabelaNome;
 
       // Obtém configuração do banco ou utiliza valores padrão (Super Animado & Fluido)

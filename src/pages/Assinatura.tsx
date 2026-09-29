@@ -23,6 +23,11 @@ import PaywallImageStack from '@/components/planos/PaywallImageStack';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 
 import { TrialCountdownBanner } from '@/components/assinatura/TrialCountdownBanner';
+
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
+import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
+import { pickAsset, srcOf } from '@/lib/assetUrl';
+const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 import { HorusPromoModal } from '@/components/assinatura/HorusPromoModal';
 import { PricingCards } from '@/components/assinatura/PricingCards';
 import { FeaturesList } from '@/components/assinatura/FeaturesList';
@@ -300,10 +305,8 @@ export default function Assinatura() {
         <div className="max-w-2xl mx-auto pt-4 space-y-7 pb-[calc(8.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
             <PaywallImageStack />
 
-            <div className="space-y-2 text-center px-4">
-              <p className="font-display text-[11px] font-black uppercase tracking-[0.25em] text-primary/80">
-                PROJETO DIREITO PRIME PRO
-              </p>
+            <div className="space-y-2 text-center px-4 flex flex-col items-center">
+              <img src={primeLogo} alt="Estudos Jurídicos" className="w-16 h-16 object-contain mb-2 drop-shadow-md" />
               <h1 className="font-display text-3xl sm:text-4xl font-black text-foreground leading-[1.1]">
                 Tenha acesso a todo o <span className="text-primary">conteúdo de estudo jurídico.</span>
               </h1>
@@ -338,7 +341,7 @@ export default function Assinatura() {
                 }`}
               >
                 <span className="flex items-center justify-center gap-2">
-                  {tab === 'promocao' ? 'Garantir Plano Anual no PIX' : tab === 'vitalicio' ? 'Garantir Acesso Vitalício' : tab === 'anual' ? 'Garantir Plano Anual' : 'Assinar Mensal'}
+                  {tab === 'promocao' ? 'Assinar Anual no PIX' : tab === 'vitalicio' ? 'Adquirir Vitalício' : tab === 'anual' ? 'Assinar Anual' : 'Assinar Mensal'}
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </span>
               </Button>
