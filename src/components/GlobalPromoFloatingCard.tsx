@@ -10,7 +10,7 @@ import { useAppUpdateStore } from '@/lib/appUpdateStore';
 
 export function GlobalPromoFloatingCard() {
   const { user } = useAuth();
-  const { isPremium } = useSubscription();
+  const { isPremium, loading: subLoading } = useSubscription();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -50,6 +50,8 @@ export function GlobalPromoFloatingCard() {
   }, [user]);
 
   useEffect(() => {
+    // Não decide nada enquanto a assinatura está carregando
+    if (subLoading) return;
     if (isHiddenRoute || isPremium) {
       setShowCard(false);
       return;
@@ -110,7 +112,7 @@ export function GlobalPromoFloatingCard() {
       setPromoType('trial');
       setShowCard(true);
     }
-  }, [isHiddenRoute, incrementAppOpenCount, getPromoKey, getTrialKey, isPremium, user?.created_at]);
+  }, [isHiddenRoute, incrementAppOpenCount, getPromoKey, getTrialKey, isPremium, subLoading, user?.created_at]);
 
   // Atualizar timer da promo 24h
   useEffect(() => {
