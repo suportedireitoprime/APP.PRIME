@@ -8,6 +8,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Upload, FileSpreadsheet, ChevronDown, ChevronUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+interface Simulado {
+  id: string;
+  year: number;
+  simulado_questions?: { count: number }[];
+}
+
+interface Categoria {
+  id: string;
+  name: string;
+  created_at: string;
+  simulados?: Simulado[];
+}
+
 export default function AdminSimulados() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -15,7 +28,7 @@ export default function AdminSimulados() {
   const [spreadsheetUrl, setSpreadsheetUrl] = useState("");
   const [examName, setExamName] = useState("");
 
-  const [categorias, setCategorias] = useState<any[]>([]);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [loadingCategorias, setLoadingCategorias] = useState(true);
 
   const [expandedCats, setExpandedCats] = useState<Record<string, boolean>>({});
@@ -37,7 +50,7 @@ export default function AdminSimulados() {
       .order('created_at', { ascending: false });
 
     if (!error && data) {
-      setCategorias(data);
+      setCategorias(data as unknown as Categoria[]);
     }
     setLoadingCategorias(false);
   };
@@ -81,8 +94,9 @@ export default function AdminSimulados() {
       setSpreadsheetUrl("");
       setExamName("");
       fetchCategorias();
-    } catch (error: any) {
-      toast.error(error.message || "Erro ao importar simulado");
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      toast.error(err.message || "Erro ao importar simulado");
     } finally {
       setLoading(false);
     }
@@ -175,7 +189,7 @@ export default function AdminSimulados() {
                   </div>
                   {expandedCats[cat.id] && cat.simulados && cat.simulados.length > 0 && (
                     <div className="bg-black/20 border-t border-white/5 p-4 space-y-2">
-                      {cat.simulados.sort((a: any, b: any) => b.year - a.year).map((sim: any) => (
+                      {cat.simulados.sort((a, b) => b.year - a.year).map((sim) => (
                         <div key={sim.id} className="flex items-center justify-between bg-white/[0.02] p-3 rounded-xl border border-white/5">
                           <span className="font-medium text-white/90">Ano {sim.year}</span>
                           <span className="text-sm text-white/50 bg-white/5 px-3 py-1 rounded-lg">

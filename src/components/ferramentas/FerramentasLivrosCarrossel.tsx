@@ -11,13 +11,20 @@ import { haptic } from '@/lib/nativeHaptics';
 import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
 import CarouselDots from '@/components/vademecum/home/carousel/CarouselDots';
 
+import coverCpArtigos from '@/assets/covers/cp_artigos_v2.jpg';
+import coverSobreALiberdade from '@/assets/covers/sobre_a_liberdade_manual.jpg';
+import coverOEspiritoDasLeis from '@/assets/covers/o_espirito_das_leis_manual.jpg';
+import coverAArteDaGuerra from '@/assets/covers/a_arte_da_guerra_manual.jpg';
+import coverALutaPeloDireito from '@/assets/covers/a_luta_pelo_direito_manual.jpg';
+import coverOMundoAssombrado from '@/assets/covers/o_mundo_assombrado_pelos_demonios_manual.jpg';
+
 const FALLBACK_CLASSICOS: LivroNormalizado[] = [
   {
     id: 12,
     titulo: 'A Luta pelo Direito',
     autor: 'Rudolf von Ihering',
     sobre: 'A luta pelo direito como dever ético e afirmação da própria existência humana.',
-    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_luta_pelo_direito_manual.jpg', 300),
+    capa: directImg(coverALutaPeloDireito, 300),
     link: null,
     download: 'https://drive.google.com/file/d/15oWYvvoQT3OLhS32VU2vB2MGz-8KnHTE/view?usp=drivesdk',
     area: 'Filosofia do Direito',
@@ -28,7 +35,7 @@ const FALLBACK_CLASSICOS: LivroNormalizado[] = [
     titulo: 'Sobre a Liberdade',
     autor: 'John Stuart Mill',
     sobre: 'Ensaio clássico sobre os limites do poder da sociedade sobre o indivíduo.',
-    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/sobre_a_liberdade_manual.jpg', 300),
+    capa: directImg(coverSobreALiberdade, 300),
     link: null,
     download: 'https://drive.google.com/file/d/1WeTT6eY67FoI7Jh9HuSKmrvgSwOF5iyr/view?usp=drivesdk',
     area: 'Filosofia Política',
@@ -39,7 +46,7 @@ const FALLBACK_CLASSICOS: LivroNormalizado[] = [
     titulo: 'A Arte da Guerra',
     autor: 'Sun Tzu',
     sobre: 'Tratado clássico de estratégia, disciplina e resolução de conflitos.',
-    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_arte_da_guerra_manual.jpg', 300),
+    capa: directImg(coverAArteDaGuerra, 300),
     link: null,
     download: 'https://drive.google.com/file/d/1fxskqftGKsAoCYWElzSX9NGZ3dj7E8O7/view?usp=drivesdk',
     area: 'Estratégia e Filosofia',
@@ -50,7 +57,7 @@ const FALLBACK_CLASSICOS: LivroNormalizado[] = [
     titulo: 'O Espírito das Leis',
     autor: 'Montesquieu',
     sobre: 'A formulação clássica da separação dos poderes e o princípio da moderação política.',
-    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.jpg', 300),
+    capa: directImg(coverOEspiritoDasLeis, 300),
     link: null,
     download: 'https://drive.google.com/file/d/1fDqngE5NhIvFiVD6GE2t_ebdepqP0uH9/view?usp=drivesdk',
     area: 'Teoria do Estado',
@@ -61,7 +68,7 @@ const FALLBACK_CLASSICOS: LivroNormalizado[] = [
     titulo: 'Teoria Pura do Direito',
     autor: 'Hans Kelsen',
     sobre: 'Obra fundamental da Teoria do Direito Positivo e do Normativismo Jurídico.',
-    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg', 300),
+    capa: directImg(coverCpArtigos, 300),
     link: null,
     download: 'https://drive.google.com/file/d/1XFuOCvzSjk_XWO4xGaWwNqWG_6MsxYYl/view?usp=drive_link',
     area: 'Teoria do Direito',
@@ -72,7 +79,7 @@ const FALLBACK_CLASSICOS: LivroNormalizado[] = [
     titulo: 'O Mundo Assombrado pelos Demônios',
     autor: 'Carl Sagan',
     sobre: 'Ciência, pensamento crítico e o ceticismo como arma contra as ilusões.',
-    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_mundo_assombrado_pelos_demonios_manual.jpg', 300),
+    capa: directImg(coverOMundoAssombrado, 300),
     link: null,
     download: null,
     area: 'Pensamento Crítico',
@@ -83,7 +90,7 @@ const FALLBACK_CLASSICOS: LivroNormalizado[] = [
     titulo: 'O Príncipe',
     autor: 'Nicolau Maquiavel',
     sobre: 'Tratado clássico de ciência política sobre o exercício e a manutenção do poder.',
-    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.jpg', 300),
+    capa: directImg(coverOEspiritoDasLeis, 300),
     link: null,
     download: 'https://drive.google.com/file/d/1fxskqftGKsAoCYWElzSX9NGZ3dj7E8O7/view?usp=drivesdk',
     area: 'Filosofia Política',
@@ -94,7 +101,7 @@ const FALLBACK_CLASSICOS: LivroNormalizado[] = [
     titulo: 'O Leviatã',
     autor: 'Thomas Hobbes',
     sobre: 'Tratado sobre soberania, contrato social e filosofia política moderna.',
-    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_luta_pelo_direito_manual.jpg', 300),
+    capa: directImg(coverALutaPeloDireito, 300),
     link: null,
     download: 'https://drive.google.com/file/d/15oWYvvoQT3OLhS32VU2vB2MGz-8KnHTE/view?usp=drivesdk',
     area: 'Filosofia Política',

@@ -1,3 +1,5 @@
+import coverCpArtigos from '@/assets/covers/cp_artigos_v2.jpg';
+
 export interface SubtemaItem {
   id: string;
   subtema: string;
@@ -45,7 +47,7 @@ export async function getResumosCatalog(): Promise<AreaItem[]> {
         const fallback: AreaItem[] = parsed.map((p) => ({
           area: p.area,
           total: p.total || (p.temas?.length || 0),
-          coverUrl: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg',
+          coverUrl: coverCpArtigos,
           temas: (p.temas || []).map((t) => typeof t === 'string' ? { tema: t, total: 1, subtemas: [] } : t)
         }));
         memoryCatalog = fallback;

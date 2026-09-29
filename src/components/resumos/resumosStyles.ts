@@ -66,5 +66,6 @@ export function styleForArea(area: string): { icon: LucideIcon; color: string } 
   return { icon: FileText, color: "#e5c34a" };
 }
 
-export const CAPA_PADRAO_RESUMOS =
-  directImg("https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg", 300);
+import coverCpArtigos from '@/assets/covers/cp_artigos_v2.jpg';
+
+export const CAPA_PADRAO_RESUMOS = coverCpArtigos;

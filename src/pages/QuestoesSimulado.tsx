@@ -129,7 +129,7 @@ const QuestoesSimulado = () => {
                         <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform shrink-0" />
                       </div>
                       <div className="min-w-0">
-                        <span className="block text-sm font-extrabold text-foreground leading-tight line-clamp-2 flex items-end min-h-[2.25rem]">
+                        <span className="flex items-end text-sm font-extrabold text-foreground leading-tight line-clamp-2 min-h-[2.25rem]">
                           {c.nome}
                         </span>
                         <span className="block text-[11px] text-muted-foreground mt-1 font-semibold">
