@@ -30,7 +30,7 @@ const VadeMecumCodigos = () => {
   }, [q]);
 
   return (
-    <VadeMecumSubpage titulo="Códigos" descricao="Constituição Federal e Códigos do Brasil na íntegra">
+    <VadeMecumSubpage titulo="Códigos" descricao="Constituição Federal e Códigos do Brasil na íntegra" hideBackButton={true}>
       <div className="relative mb-5">
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground" />
         <input

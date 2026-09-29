@@ -22,7 +22,7 @@ const VadeMecumEstatutos = () => {
   }, [q]);
 
   return (
-    <VadeMecumSubpage titulo="Estatutos" descricao="ECA, OAB, Idoso, Deficiência e legislação temático-estatutária">
+    <VadeMecumSubpage titulo="Estatutos" descricao="ECA, OAB, Idoso, Deficiência e legislação temático-estatutária" headerColorClass="bg-hero-panel" hideBackButton={true}>
       <div className="relative mb-5">
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground" />
         <input

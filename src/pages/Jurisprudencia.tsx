@@ -9,7 +9,7 @@ import HomeCard from '@/components/vademecum/home/HomeCard';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import jurisprudenciaHeroImg from '@/assets/jurisprudencia-hero-themis.webp';
 import VadeMecumQuickActions from '@/components/vademecum/home/chunks/VadeMecumQuickActions';
-import VadeMecumBottomNav from '@/components/vademecum/navigation/VadeMecumBottomNav';
+import VadeMecumSubpage from '@/components/vademecum/outros/VadeMecumSubpage';
 import { prefetchRoute } from '@/lib/routePrefetch';
 import { fetchSumulas } from '@/services/sumulasService';
 import { fetchPesquisasProntas } from '@/services/pesquisasProntasService';
@@ -167,106 +167,9 @@ const Jurisprudencia = () => {
 
 
   return (
-    <div className="w-full min-h-dvh bg-background pb-[calc(var(--sai-bottom)+5rem)] lg:pb-12 relative">
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <ShapeGrid 
-          speed={0.5} 
-          squareSize={40}
-          direction='diagonal'
-          borderColor='rgba(255, 255, 255, 0.05)'
-          hoverFillColor='rgba(255, 255, 255, 0.1)'
-          shape='square'
-          hoverTrailAmount={5}
-        />
-      </div>
-      <div
-        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[calc(var(--sai-top)+0.5rem)] flex flex-col z-20"
-        style={{
-          transform: 'translateZ(0)',
-          backgroundColor: '#050505',
-        }}
-      >
-        <div
-          className="pointer-events-none absolute -top-[1200px] left-0 right-0 h-[1200px] z-0"
-          style={{ backgroundColor: '#050505' }}
-          aria-hidden="true"
-        />
-
-        <img
-          src={jurisprudenciaHeroImg}
-          alt=""
-          aria-hidden="true"
-          loading="eager"
-          decoding="async"
-          className="absolute inset-0 w-full h-full object-cover object-[32%_center] md:object-center z-0 pointer-events-none translate-x-[12%] md:translate-x-[8%]"
-        />
-
-        {/* Overlay com divisória diagonal */}
-        <div 
-          className="absolute inset-0 z-[1] pointer-events-none"
-          style={{ filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.8)) drop-shadow(8px 0 10px rgba(0,0,0,0.95))' }}
-        >
-          <div 
-            className="absolute inset-0 overflow-hidden"
-            style={{ clipPath: 'polygon(0 0, 47% 0, 36% 100%, 0% 100%)' }}
-          >
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(150deg, hsl(164 45% 16%) 0%, hsl(158 52% 11%) 55%, hsl(150 45% 7%) 100%)' }} />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
-            
-            <div className="absolute inset-0 opacity-70 pointer-events-none [filter:hue-rotate(95deg)_saturate(0.85)]">
-              <HeroOrnaments />
-            </div>
-
-            {/* Grid Pattern Background */}
-            <div className="absolute inset-0 opacity-10" style={{
-              backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px)',
-              backgroundSize: '24px 24px'
-            }} />
-          </div>
-        </div>
-
-        {/* Glow decorativo opcional para ajudar no verde */}
-        <div className="absolute -top-16 -left-10 w-56 h-56 rounded-full bg-emerald-400/15 blur-3xl pointer-events-none z-[2]" />
-
-        {/* Header com voltar */}
-        <div className="relative z-10 flex items-center justify-between px-4 pb-2 lg:hidden pt-4">
-          <button
-            onClick={() => navigate('/vade-mecum')}
-            aria-label="Voltar"
-            className="w-11 h-11 rounded-full bg-black/25 hover:bg-black/35 backdrop-blur-sm flex items-center justify-center transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 text-white" />
-          </button>
-          <div className="w-11 h-11" />
-        </div>
-
-        {/* Logo à esquerda */}
-        <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[100px]">
-          <div className="flex flex-col items-center text-center gap-1 z-[10] relative w-[42%] max-w-[160px] ml-2 sm:ml-4">
-            <h1 className="font-serif italic text-white text-[18px] sm:text-[20px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] whitespace-nowrap">
-              Jurisprudência
-            </h1>
-            <p className="font-body text-white/95 text-[9px] sm:text-[10px] font-bold tracking-[0.25em] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mt-1">
-              Súmulas e Teses
-            </p>
-            
-            <div className="mt-3 flex items-center text-left gap-2 w-full justify-center">
-              <div className="w-[2px] h-7 bg-white/40 rounded-full" />
-              <p className="font-serif italic text-white/80 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                Decisões que<br/>mudam o jogo.
-              </p>
-            </div>
-          </div>
-        </div>
-
-
-
-        {/* 4 Botões de Ação Rápida */}
-        <div className="relative z-10 px-3 sm:px-5 pb-8 sm:pb-10">
-          <VadeMecumQuickActions />
-        </div>
-
-        {/* Busca Removida */}
+    <VadeMecumSubpage titulo="Jurisprudência" descricao="Súmulas e Teses" headerColorClass="bg-hero-panel" hideBackButton={true}>
+      <div className="mb-4 -mt-2">
+        <VadeMecumQuickActions />
       </div>
 
       <motion.div 
@@ -392,8 +295,7 @@ const Jurisprudencia = () => {
         </motion.div>
       </motion.div>
 
-      <VadeMecumBottomNav />
-    </div>
+    </VadeMecumSubpage>
   );
 };
 
