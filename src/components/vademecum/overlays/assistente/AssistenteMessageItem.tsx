@@ -62,6 +62,14 @@ interface AssistenteMessageItemProps {
   onOpenShare: (msg: Message) => void;
 }
 
+const formatForWhatsApp = (text: string) => {
+  let formatted = text.replace(/\*\*(.*?)\*\*/g, '*$1*'); // **bold** to *bold*
+  formatted = formatted.replace(/__(.*?)__/g, '*$1*'); // __bold__ to *bold*
+  formatted = formatted.replace(/^#+\s*(.*?)$/gm, '*$1*'); // headers to bold
+  formatted = formatted.replace(/\[(.*?)\]\((.*?)\)/g, '$1 ($2)'); // [text](url)
+  return formatted;
+};
+
 export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
   msg,
   isDesktop,
@@ -116,7 +124,7 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
                 const sel = window.getSelection()?.toString() ?? '';
                 if (!sel) return;
                 e.preventDefault();
-                e.clipboardData.setData('text/plain', stripCitations(sel));
+                e.clipboardData.setData('text/plain', formatForWhatsApp(stripCitations(sel)));
               }}
             >
               <ReactMarkdown
@@ -155,7 +163,7 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
                   colorClass="text-zinc-400 group-hover:text-zinc-300"
                   hoverClass="hover:border-zinc-500/40 hover:bg-zinc-500/10"
                   onClick={() => {
-                    const txt = stripCitations(msg.content);
+                    const txt = formatForWhatsApp(stripCitations(msg.content));
                     navigator.clipboard.writeText(txt).then(() => {
                       toast.success('Mensagem copiada!');
                       haptic.selection();
@@ -197,14 +205,8 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
                   hoverClass="hover:border-sky-500/40 hover:bg-sky-500/10"
                   onClick={() => onGenerateArtifact(msg, 'termos')}
                 />
-                <ActionBtn
-                  icon={Share2}
-                  label="Enviar"
-                  colorClass="text-pink-400 group-hover:text-pink-300"
-                  hoverClass="hover:border-pink-500/40 hover:bg-pink-500/10"
-                  onClick={() => onOpenShare(msg)}
-                />
                 <span className="ml-auto">
+
                   <ChatFeedback
                     messageId={msg.id}
                     sessionId={sessionId}

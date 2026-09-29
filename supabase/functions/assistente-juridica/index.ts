@@ -3,10 +3,7 @@ import { geminiFetch } from "../_shared/geminiFetch.ts";
 import { logAiCall } from "../_shared/ai-log.ts";
 import { isTabelaLeiPermitida } from "../_shared/leis-tabelas.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-};
+import { corsHeaders } from "../_shared/cors.ts";
 
 async function fetchFullArticleText(tabelaNome: string, artigoNumero: string): Promise<string | null> {
   // Segurança: a tabela vem do cliente — só aceitamos tabelas de legislação conhecidas.
