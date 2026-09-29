@@ -672,13 +672,16 @@ export function AdminHojeCards() {
             .select(`
               id, user_id, created_at, started_at, plano, status, asaas_customer_id, asaas_subscription_id
             `)
-            .or(`and(created_at.gte.${startIso},created_at.lt.${endIso}),and(started_at.gte.${startIso},started_at.lt.${endIso})`)
+            .eq('status', 'ACTIVE')
+            .gte('created_at', startIso)
+            .lt('created_at', endIso)
             .order('created_at', { ascending: false }),
           supabase
             .from('play_subscriptions')
             .select(`
               id, user_id, created_at, product_id, status
             `)
+            .in('status', ['SUBSCRIPTION_STATE_ACTIVE', 'SUBSCRIPTION_STATE_IN_GRACE_PERIOD', 'active'])
             .gte('created_at', startIso)
             .lt('created_at', endIso)
             .order('created_at', { ascending: false }),
@@ -687,6 +690,7 @@ export function AdminHojeCards() {
             .select(`
               id, user_id, created_at, start_time, product_id, status
             `)
+            .in('status', ['active', 'in_grace'])
             .or(`created_at.gte.${startIso},start_time.gte.${startIso}`)
             .lt('created_at', endIso)
             .order('created_at', { ascending: false }),
