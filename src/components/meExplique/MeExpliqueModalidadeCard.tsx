@@ -26,7 +26,7 @@ const MeExpliqueModalidadeCard: React.FC<Props> = ({
         haptic.selection();
         onClick();
       }}
-      className="group relative flex h-auto min-h-[140px] w-full min-w-0 flex-col items-start justify-center gap-3 overflow-hidden p-4 rounded-2xl shadow-sm hover:shadow-md transition-all focus-visible:outline-none text-left active:scale-[0.97] border border-border/80 bg-zinc-900/80 hover:bg-zinc-800/80 cursor-pointer select-none"
+      className="group relative flex h-[140px] w-full min-w-0 flex-col items-start justify-center gap-3 overflow-hidden p-4 rounded-2xl shadow-sm hover:shadow-md transition-all focus-visible:outline-none text-left active:scale-[0.97] border border-border/80 bg-zinc-900/80 hover:bg-zinc-800/80 cursor-pointer select-none"
     >
       {/* Seta ou Badge à Direita (Ajustado para o topo direito) */}
       <div className="absolute top-4 right-3 z-10">
