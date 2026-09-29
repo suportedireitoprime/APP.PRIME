@@ -376,7 +376,7 @@ export default function RadarConcursos() {
         <div className="flex items-center justify-between px-4 h-16 sm:h-20 max-w-4xl mx-auto w-full">
           <button
             type="button"
-            onClick={() => { haptic.light(); navigate(-1); }}
+            onClick={() => { haptic.light(); navigate('/ferramentas'); }}
             aria-label="Voltar"
             className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/50 border border-white/15 text-white backdrop-blur-md hover:bg-black/70 active:opacity-70 shadow-xl transition-all cursor-pointer"
           >

@@ -25,6 +25,7 @@ export default function RadarEstatisticas() {
     if (concursos.length === 0) return null;
 
     const ufsCount: Record<string, number> = {};
+    const monthsCount: Record<string, number> = {};
     const careersCount: Record<string, { tag: string; count: number; image: string }> = {};
     const salaries: any[] = [];
 
@@ -65,12 +66,25 @@ export default function RadarEstatisticas() {
           imagem: visual.imagemUrl
         });
       }
+
+      // Months
+      if (c.created_at) {
+        const date = new Date(c.created_at);
+        if (!isNaN(date.getTime())) {
+          const monthName = date.toLocaleString('pt-BR', { month: 'long', year: 'numeric' });
+          const capitalizedMonth = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+          monthsCount[capitalizedMonth] = (monthsCount[capitalizedMonth] || 0) + 1;
+        }
+      }
     });
 
     const topUfs = Object.entries(ufsCount)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
       .map(([uf, count]) => ({ uf, count }));
+
+    const topMonths = Object.entries(monthsCount)
+      .sort((a, b) => b[1] - a[1])
+      .map(([month, count]) => ({ month, count }));
 
     const topCareers = Object.values(careersCount)
       .sort((a, b) => b.count - a.count)
@@ -80,10 +94,10 @@ export default function RadarEstatisticas() {
       .sort((a, b) => b.valor - a.valor)
       .slice(0, 5);
 
-    return { total: concursos.length, topUfs, topCareers, topSalaries };
+    return { total: concursos.length, topUfs, topMonths, topCareers, topSalaries };
   }, [concursos]);
 
-  const containerVariants = {
+  const containerVariants: any = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
@@ -91,7 +105,7 @@ export default function RadarEstatisticas() {
     }
   };
 
-  const itemVariants = {
+  const itemVariants: any = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
   };
@@ -104,7 +118,7 @@ export default function RadarEstatisticas() {
       <div className="sticky top-0 z-40 bg-[#0d0f12]/80 backdrop-blur-xl border-b border-white/5 pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-4 px-4">
         <div className="flex items-center justify-between">
           <button
-            onClick={() => { haptic.selection(); navigate(-1); }}
+            onClick={() => { haptic.selection(); navigate('/ferramentas'); }}
             className="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 active:opacity-70 transition-all"
           >
             <ArrowLeft className="w-6 h-6 text-white" strokeWidth={2.4} />
@@ -149,7 +163,7 @@ export default function RadarEstatisticas() {
             {/* Top Estados */}
             <motion.div variants={itemVariants} className="space-y-4">
               <h2 className="text-lg font-bold flex items-center gap-2 text-white/90">
-                <MapPin className="w-5 h-5 text-blue-400" /> Estados com Mais Vagas
+                <MapPin className="w-5 h-5 text-blue-400" /> Distribuição por Estados
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {stats.topUfs.map((ufData, idx) => (
@@ -166,6 +180,25 @@ export default function RadarEstatisticas() {
                 ))}
               </div>
             </motion.div>
+
+            {/* Top Meses */}
+            {stats.topMonths.length > 0 && (
+              <motion.div variants={itemVariants} className="space-y-4">
+                <h2 className="text-lg font-bold flex items-center gap-2 text-white/90">
+                  <BarChart3 className="w-5 h-5 text-purple-400" /> Volume por Mês
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {stats.topMonths.map((m) => (
+                    <div key={m.month} className="flex items-center justify-between bg-white/5 border border-white/5 rounded-2xl p-4">
+                      <span className="font-bold text-white capitalize">{m.month}</span>
+                      <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-400 text-xs font-bold">
+                        {m.count} editais
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
 
             {/* Top Carreiras */}
             <motion.div variants={itemVariants} className="space-y-4">
