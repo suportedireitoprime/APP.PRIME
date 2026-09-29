@@ -537,7 +537,7 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
         // Perfil pode estar sendo criado pelo trigger (e-mail, Google, Apple).
         // Tenta algumas vezes antes de decidir, para não liberar o app por engano.
         let ok = false;
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 2; i++) {
           const { data, error } = await supabase
             .from('profiles')
             .select('onboarding_completed_at')
@@ -550,7 +550,7 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
             done = !!data.onboarding_completed_at;
             break;
           }
-          await new Promise((r) => setTimeout(r, 400));
+          await new Promise((r) => setTimeout(r, 200));
         }
         if (cancelled) return;
         if (ok) {

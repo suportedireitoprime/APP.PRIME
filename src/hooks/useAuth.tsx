@@ -106,42 +106,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!isMounted) return;
-      startTransition(() => {
+
+      // CRITICAL: Propagate auth state IMMEDIATELY (no startTransition).
+      // Login is high-priority — the user is actively waiting.
+      // Only use startTransition for background token refreshes.
+      if (_event === 'TOKEN_REFRESHED') {
+        startTransition(() => {
+          setSession(session);
+          setUser(session?.user ?? null);
+          setLoading(false);
+        });
+      } else {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
-      });
-      // Crashlytics: associa relatórios de crash ao usuário (ou limpa no logout)
-      import('@/lib/nativeCrashlytics').then((m) => m.setCrashlyticsUserId(session?.user?.id ?? null));
+      }
 
-      // Admin: libera captura de tela (remove FLAG_SECURE no próximo boot)
-      // para poder gravar vídeo de demonstração da Play Store.
-      Promise.all([
-        import('@/lib/adminEmails'),
-        import('@/lib/nativeScreenshotGuard'),
-      ]).then(([{ isAdminEmail }, { setAdminScreenCaptureAllowed }]) => {
-        setAdminScreenCaptureAllowed(isAdminEmail(session?.user?.email));
-      }).catch(() => {});
+      // Side-effects: deferred to NOT block the React re-render.
+      queueMicrotask(() => {
+        // Crashlytics
+        import('@/lib/nativeCrashlytics').then((m) => m.setCrashlyticsUserId(session?.user?.id ?? null));
 
-      // GA4: eventos de auth (respeitam Consent Mode v2)
-      import('@/lib/appEvents').then(({ appEvents, identifyUser }) => {
-        const provider = (session?.user?.app_metadata as Record<string, unknown>)?.provider || 'email';
-        if (_event === 'SIGNED_IN') {
-          const sent = typeof window !== 'undefined' ? window.sessionStorage.getItem('ga_login_sent') : '1';
-          if (sent !== '1') {
-            identifyUser({
-              id: session?.user?.id,
-              email: session?.user?.email,
-              phone: (session?.user?.user_metadata as Record<string, unknown>)?.telefone as string ?? null,
-            });
-            appEvents.login(provider as string);
-            try { window.sessionStorage.setItem('ga_login_sent', '1'); } catch {}
+        // Admin screenshot guard
+        Promise.all([
+          import('@/lib/adminEmails'),
+          import('@/lib/nativeScreenshotGuard'),
+        ]).then(([{ isAdminEmail }, { setAdminScreenCaptureAllowed }]) => {
+          setAdminScreenCaptureAllowed(isAdminEmail(session?.user?.email));
+        }).catch(() => {});
+
+        // GA4: eventos de auth (respeitam Consent Mode v2)
+        import('@/lib/appEvents').then(({ appEvents, identifyUser }) => {
+          const provider = (session?.user?.app_metadata as Record<string, unknown>)?.provider || 'email';
+          if (_event === 'SIGNED_IN') {
+            const sent = typeof window !== 'undefined' ? window.sessionStorage.getItem('ga_login_sent') : '1';
+            if (sent !== '1') {
+              identifyUser({
+                id: session?.user?.id,
+                email: session?.user?.email,
+                phone: (session?.user?.user_metadata as Record<string, unknown>)?.telefone as string ?? null,
+              });
+              appEvents.login(provider as string);
+              try { window.sessionStorage.setItem('ga_login_sent', '1'); } catch {}
+            }
+          } else if (_event === 'SIGNED_OUT') {
+            appEvents.logout();
+            try { window.sessionStorage.removeItem('ga_login_sent'); } catch {}
           }
-        } else if (_event === 'SIGNED_OUT') {
-          appEvents.logout();
-          try { window.sessionStorage.removeItem('ga_login_sent'); } catch {}
-        }
-      }).catch(() => {});
+        }).catch(() => {});
+      });
     });
 
     // getSession com timeout de 15s — se estourar, preserva o que já está em cache.
@@ -394,7 +407,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return { error: new Error('Google não retornou idToken via Firebase.') };
         }
 
-        const { error } = await supabase.auth.signInWithIdToken({
+        const { error, data: signInData } = await supabase.auth.signInWithIdToken({
           provider: 'google',
           token: idToken,
         });
@@ -402,6 +415,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (error) {
           console.error('[GoogleAuth] Supabase rejeitou idToken', error);
           return { error: new Error(error.message) };
+        }
+
+        // Eager session propagation: don't wait for onAuthStateChange event.
+        // signInWithIdToken returns the session — use it immediately.
+        if (signInData?.session) {
+          setSession(signInData.session);
+          setUser(signInData.session.user);
+          setLoading(false);
         }
 
         return { error: null };
