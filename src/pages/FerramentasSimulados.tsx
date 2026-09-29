@@ -7,40 +7,44 @@ import { useNavigate } from 'react-router-dom';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { Download, PlayCircle, Search, FileText, FileSignature } from 'lucide-react';
 
-interface SimuladoExam {
+interface SimuladoItem {
   id: string;
-  title: string;
-  banca: string;
-  institution: string;
   year: number;
-  pdf_prova_url: string;
-  pdf_gabarito_url: string;
-  pdf_edital_url: string;
+  prova_url: string;
+  gabarito_url: string;
+  edital_url: string;
   created_at: string;
+  exam: {
+    name: string;
+  };
 }
 
 export default function FerramentasSimulados() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
 
-  const { data: exams, isLoading } = useQuery({
-    queryKey: ['simulado_exams'],
+  const { data: simuladosList, isLoading } = useQuery({
+    queryKey: ['simulados_list'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('simulado_exams')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .from('simulados')
+        .select(`
+          *,
+          exam:simulado_exams(name)
+        `)
+        .order('year', { ascending: false });
         
       if (error) throw error;
-      return data as SimuladoExam[];
+      // We typecast it just for safety here
+      return data as any[];
     }
   });
 
-  const filteredExams = exams?.filter((exam) => 
-    exam.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    (exam.banca && exam.banca.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (exam.institution && exam.institution.toLowerCase().includes(searchTerm.toLowerCase()))
-  ) || [];
+  const filteredSimulados = simuladosList?.filter((sim) => {
+    const examName = sim.exam?.name || '';
+    return examName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+           sim.year?.toString().includes(searchTerm);
+  }) || [];
 
   const handleDownload = (url: string) => {
     if (!url) return;
@@ -79,7 +83,7 @@ export default function FerramentasSimulados() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <input 
             type="text" 
-            placeholder="Buscar por título, banca ou instituição..." 
+            placeholder="Buscar por título ou ano..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full h-12 pl-10 pr-4 rounded-xl bg-card border border-border focus:border-primary/50 transition-colors"
@@ -94,44 +98,44 @@ export default function FerramentasSimulados() {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredExams.map((exam) => (
-              <div key={exam.id} className="flex flex-col bg-card rounded-2xl border border-border overflow-hidden hover:border-primary/40 transition-colors group">
+            {filteredSimulados.map((sim) => (
+              <div key={sim.id} className="flex flex-col bg-card rounded-2xl border border-border overflow-hidden hover:border-primary/40 transition-colors group">
                 <div className="p-5 flex-1 flex flex-col items-start text-left">
                   <div className="flex justify-between items-start mb-3 w-full">
                     <span className="text-xs font-semibold px-2 py-1 bg-primary/10 text-primary rounded-md">
-                      {exam.year || 'Ano ND'}
+                      {sim.year || 'Ano ND'}
                     </span>
                     <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium truncate max-w-[120px]">
-                      {exam.banca || 'Banca ND'}
+                      Concurso
                     </span>
                   </div>
                   <h3 className="font-display font-bold text-[16px] leading-tight text-foreground mb-1 line-clamp-2">
-                    {exam.title}
+                    {sim.exam?.name || 'Sem título'}
                   </h3>
                   <p className="text-sm text-muted-foreground line-clamp-1">
-                    {exam.institution}
+                    Simulado Completo
                   </p>
                 </div>
                 
                 <div className="bg-muted/30 p-3 grid grid-cols-3 gap-2 border-t border-border">
                   <button 
-                    onClick={() => handleDownload(exam.pdf_prova_url)}
-                    disabled={!exam.pdf_prova_url}
+                    onClick={() => handleDownload(sim.prova_url)}
+                    disabled={!sim.prova_url}
                     className="flex flex-col items-center justify-center gap-1.5 py-2 px-1 rounded-lg hover:bg-card border border-transparent hover:border-border transition-colors disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:border-transparent text-[11px] font-medium text-muted-foreground hover:text-foreground active:scale-95"
                   >
                     <FileText className="w-4 h-4 text-primary shrink-0" />
                     <span className="truncate w-full text-center">Prova</span>
                   </button>
                   <button 
-                    onClick={() => handleDownload(exam.pdf_gabarito_url)}
-                    disabled={!exam.pdf_gabarito_url}
+                    onClick={() => handleDownload(sim.gabarito_url)}
+                    disabled={!sim.gabarito_url}
                     className="flex flex-col items-center justify-center gap-1.5 py-2 px-1 rounded-lg hover:bg-card border border-transparent hover:border-border transition-colors disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:border-transparent text-[11px] font-medium text-muted-foreground hover:text-foreground active:scale-95"
                   >
                     <FileText className="w-4 h-4 text-emerald-500 shrink-0" />
                     <span className="truncate w-full text-center">Gabarito</span>
                   </button>
                   <button 
-                    onClick={() => navigate(`/ferramentas/simulados/resolver/${exam.id}`)}
+                    onClick={() => navigate(`/ferramentas/simulados/resolver/${sim.id}`)}
                     className="flex flex-col items-center justify-center gap-1.5 py-2 px-1 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-[11px] font-medium active:scale-95"
                   >
                     <PlayCircle className="w-4 h-4 shrink-0" />
@@ -143,7 +147,7 @@ export default function FerramentasSimulados() {
           </div>
         )}
 
-        {!isLoading && filteredExams.length === 0 && (
+        {!isLoading && filteredSimulados.length === 0 && (
           <div className="text-center py-16 flex flex-col items-center gap-3">
             <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center">
               <FileSignature className="w-8 h-8 text-muted-foreground" />
