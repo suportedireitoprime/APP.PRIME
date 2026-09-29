@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Upload, FileSpreadsheet } from "lucide-react";
+import { ArrowLeft, Upload, FileSpreadsheet, ChevronDown, ChevronUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function AdminSimulados() {
@@ -18,6 +18,8 @@ export default function AdminSimulados() {
   const [categorias, setCategorias] = useState<any[]>([]);
   const [loadingCategorias, setLoadingCategorias] = useState(true);
 
+  const [expandedCats, setExpandedCats] = useState<Record<string, boolean>>({});
+
   const fetchCategorias = async () => {
     setLoadingCategorias(true);
     const { data, error } = await supabase
@@ -26,7 +28,11 @@ export default function AdminSimulados() {
         id,
         name,
         created_at,
-        simulados:simulados(count)
+        simulados (
+          id,
+          year,
+          simulado_questions (count)
+        )
       `)
       .order('created_at', { ascending: false });
 
@@ -149,16 +155,36 @@ export default function AdminSimulados() {
           ) : (
             <div className="grid gap-4">
               {categorias.map(cat => (
-                <div key={cat.id} className="bg-[#121214] border border-white/10 rounded-2xl p-5 flex items-center justify-between shadow-sm">
-                  <div>
-                    <h3 className="font-semibold text-lg tracking-tight text-white">{cat.name}</h3>
-                    <p className="text-xs text-white/50 mt-1 uppercase tracking-wider font-medium">
-                      Importado em {new Date(cat.created_at).toLocaleDateString('pt-BR')}
-                    </p>
+                <div key={cat.id} className="bg-[#121214] border border-white/10 rounded-2xl flex flex-col shadow-sm overflow-hidden transition-all duration-300">
+                  <div 
+                    className="p-5 flex items-center justify-between cursor-pointer hover:bg-white/[0.02]"
+                    onClick={() => setExpandedCats(prev => ({ ...prev, [cat.id]: !prev[cat.id] }))}
+                  >
+                    <div>
+                      <h3 className="font-semibold text-lg tracking-tight text-white">{cat.name}</h3>
+                      <p className="text-xs text-white/50 mt-1 uppercase tracking-wider font-medium">
+                        Importado em {new Date(cat.created_at).toLocaleDateString('pt-BR')}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="bg-primary/10 border border-primary/20 text-primary px-4 py-2 rounded-xl font-bold shadow-sm">
+                        {cat.simulados?.length || 0} simulado(s)
+                      </div>
+                      {expandedCats[cat.id] ? <ChevronUp className="w-5 h-5 text-white/50" /> : <ChevronDown className="w-5 h-5 text-white/50" />}
+                    </div>
                   </div>
-                  <div className="bg-primary/10 border border-primary/20 text-primary px-4 py-2 rounded-xl font-bold shadow-sm">
-                    {cat.simulados?.[0]?.count || 0} simulado(s)
-                  </div>
+                  {expandedCats[cat.id] && cat.simulados && cat.simulados.length > 0 && (
+                    <div className="bg-black/20 border-t border-white/5 p-4 space-y-2">
+                      {cat.simulados.sort((a: any, b: any) => b.year - a.year).map((sim: any) => (
+                        <div key={sim.id} className="flex items-center justify-between bg-white/[0.02] p-3 rounded-xl border border-white/5">
+                          <span className="font-medium text-white/90">Ano {sim.year}</span>
+                          <span className="text-sm text-white/50 bg-white/5 px-3 py-1 rounded-lg">
+                            {sim.simulado_questions?.[0]?.count || 0} questões
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
