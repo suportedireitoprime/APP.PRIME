@@ -49,7 +49,7 @@ export default function AdminSimulados() {
     <div className="min-h-screen bg-[#0D0D0D] pb-24 text-white">
       <header className="sticky top-0 z-40 bg-[#0d0f12]/90 backdrop-blur-md border-b border-white/[0.04] px-4 py-4 flex items-center pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
         <button
-          onClick={() => navigate("/admin/funcoes")}
+          onClick={() => navigate("/admin-funcoes")}
           className="w-12 h-12 sm:w-[52px] sm:h-[52px] flex items-center justify-center bg-white/[0.03] rounded-full border border-white/[0.06] shrink-0"
         >
           <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white/70" strokeWidth={2.4} />
