@@ -56,7 +56,15 @@ function formatTempoCadastro(createdAt?: string | null, fallbackSubtitle?: strin
   return 'Cadastrado recentemente';
 }
 
-function renderTrialCountdown(createdAt?: string | null) {
+function renderTrialCountdown(createdAt?: string | null, isPremium?: boolean) {
+  if (isPremium) {
+    return (
+      <span className="inline-flex items-center rounded bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-[1px] text-[9.5px] font-bold text-emerald-400">
+        ASSINANTE ATIVO
+      </span>
+    );
+  }
+
   if (!createdAt) return <>{formatTempoCadastro(createdAt, null)}</>;
   
   const dataCad = new Date(createdAt);
@@ -1408,7 +1416,7 @@ export function AdminHojeCards() {
                         {!r.planTag && (
                           <div className="font-body text-[10.5px] text-muted-foreground/60 truncate flex items-center gap-1.5">
                             {(open === 'online' || open === 'online5m') ? (
-                              renderTrialCountdown(r.created_at)
+                              renderTrialCountdown(r.created_at, (r as any).isPremium ?? r.is_premium)
                             ) : (
                               formatTempoCadastro(r.created_at, null)
                             )}

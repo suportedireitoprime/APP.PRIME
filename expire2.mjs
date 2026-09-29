@@ -1,33 +1,30 @@
 import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
-dotenv.config();
 
-const supabase = createClient(
-  process.env.VITE_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+const supabaseUrl = 'https://dnjrgpldcwcpoywamorr.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuanJncGxkY3djcG95d2Ftb3JyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjY4NjEzMywiZXhwIjoyMDk4MjYyMTMzfQ.M4cllbXRDvqgCt5T7_yFjnT4seIYU-Va7Bs6PhRDu-w';
 
-async function expireAccount() {
-  const email = 'conceicaoluisaugusto5@gmail.com';
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+async function main() {
+  const userId = '95fedf80-c9ee-44c5-a118-1bcbee48e21f';
   
-  const { data: users, error: userError } = await supabase.auth.admin.listUsers();
-  const targetUser = users.users.find(u => u.email === email);
-  if (!targetUser) return;
+  // Make created_at 4 days old
+  const fourDaysAgo = new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString();
   
-  const pastDate = new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString();
-  
-  const { data, error } = await supabase.auth.admin.updateUserById(targetUser.id, {
-    user_metadata: {
-      ...targetUser.user_metadata,
-      trial_ends_at: pastDate
-    }
-  });
-  
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({ 
+      created_at: fourDaysAgo,
+      onboarding_completed_at: fourDaysAgo
+    })
+    .eq('id', userId)
+    .select();
+    
   if (error) {
-    console.error('Error updating user auth:', error);
+    console.error("Error updating profile:", error);
   } else {
-    console.log('User metadata updated successfully, trial_ends_at:', data.user.user_metadata.trial_ends_at);
+    console.log("Profile updated successfully, trial should be expired:", data);
   }
 }
 
-expireAccount();
+main();

@@ -131,7 +131,7 @@ export default function FerramentasSimuladosResolver() {
           rodando ? (
             <button
               onClick={() => setShowConfirmModal(true)}
-              className="text-[15px] font-bold text-foreground hover:opacity-70 transition-opacity"
+              className="text-[15px] font-bold text-rose-500 hover:text-rose-400 transition-colors"
             >
               Encerrar
             </button>
@@ -154,9 +154,10 @@ export default function FerramentasSimuladosResolver() {
             <div className="px-4 pb-5">
               <button
                 onClick={finalizar}
-                className="mt-5 h-12 w-full rounded-xl border border-border text-[15px] font-semibold text-muted-foreground hover:bg-muted/50 transition-colors"
+                className="mt-5 h-12 w-full flex items-center justify-center gap-2 rounded-xl bg-rose-500/10 border border-rose-500/20 text-[15px] font-bold text-rose-500 hover:bg-rose-500/20 transition-colors"
               >
-                Encerrar simulado
+                <AlertTriangle className="w-4 h-4" />
+                <span>Encerrar simulado</span>
               </button>
             </div>
           </>
@@ -199,9 +200,10 @@ export default function FerramentasSimuladosResolver() {
                 setShowConfirmModal(false);
                 finalizar();
               }}
-              className="h-14 w-full rounded-2xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-colors"
+              className="h-14 w-full rounded-2xl bg-rose-600 text-white font-bold hover:bg-rose-700 transition-colors flex items-center justify-center gap-2"
             >
-              Encerrar simulado
+              <AlertTriangle className="w-5 h-5" />
+              <span>Encerrar simulado</span>
             </button>
           </div>
         </DialogContent>

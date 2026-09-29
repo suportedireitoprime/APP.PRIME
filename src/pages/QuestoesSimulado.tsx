@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Timer, Gavel, ChevronRight, Loader2 } from 'lucide-react';
+import { Timer, Gavel, ChevronRight, Loader2, AlertTriangle } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import QuestoesBottomNav from '@/components/questoes/QuestoesBottomNav';
 import ResolverPadrao from '@/components/questoes/ResolverPadrao';
@@ -154,9 +154,10 @@ const QuestoesSimulado = () => {
             />
             <button
               onClick={finalizar}
-              className="mt-5 h-12 w-full rounded-xl border border-border text-[15px] font-semibold text-muted-foreground"
+              className="mt-5 h-12 w-full flex items-center justify-center gap-2 rounded-xl bg-rose-500/10 border border-rose-500/20 text-[15px] font-bold text-rose-500 hover:bg-rose-500/20 transition-colors"
             >
-              Encerrar simulado
+              <AlertTriangle className="w-4 h-4" />
+              <span>Encerrar simulado</span>
             </button>
           </>
         )}
