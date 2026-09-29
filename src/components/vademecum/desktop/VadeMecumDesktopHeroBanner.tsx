@@ -1,4 +1,4 @@
-import { Search, Heart, NotebookPen, Radar, History, LayoutGrid, Scale, ChevronRight, Bookmark, Bell, BookA } from 'lucide-react';
+import { Search, Heart, NotebookPen, Radar, History, LayoutGrid, Scale, ChevronRight, Bookmark, Bell, BookA, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import heroBannerAsset from '@/assets/covers/vademecum-judge.webp';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
@@ -109,7 +109,7 @@ const VadeMecumDesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClic
                 { label: 'Favoritos', icon: Heart, action: 'favoritos' as QuickActionType, route: '/vade-mecum/favoritos' },
                 { label: 'Anotações', icon: NotebookPen, action: 'anotacoes' as QuickActionType, route: '/vade-mecum/anotacoes' },
                 { label: 'Radares', icon: Radar, action: 'radares' as QuickActionType, route: '/radares' },
-                { label: 'Histórico', icon: History, action: 'historico' as QuickActionType, route: '/vade-mecum/recentes' }
+                { label: 'Novidades', icon: Sparkles, action: 'historico' as QuickActionType, route: '/vade-mecum/recentes' }
               ].map((btn, i) => (
                 <button
                   key={i}
