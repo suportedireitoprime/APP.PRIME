@@ -51,10 +51,10 @@ export function MapasMentaisHeader({
   return (
     <>
       <div
-        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/80 pt-[var(--sai-top)] flex flex-col z-20 shrink-0"
+        className="bg-hero-panel-violet relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/80 pt-[var(--sai-top)] flex flex-col z-20 shrink-0"
       style={{
         transform: 'translateZ(0)',
-        backgroundColor: '#0D0D0D',
+        backgroundColor: '#120524',
       }}
     >
       {/* Blindagem de overscroll superior contra vazamento do fundo */}
