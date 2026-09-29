@@ -7,6 +7,7 @@ export let cacheNoticias: any[] | null = null;
 export let cacheBoletins: any[] | null = null;
 export let cachePls: any[] | null = null;
 export let cacheConcursos: any[] | null = null;
+export let cacheNovidadesApp: any[] | null = null;
 let loadPromise: Promise<void> | null = null;
 
 export const prefetchGiroJuridico = () => {
@@ -16,7 +17,8 @@ export const prefetchGiroJuridico = () => {
     supabase.from('noticias_juridicas').select('*').order('data_publicacao', { ascending: false }).limit(10).then(res => { if (res.data) cacheNoticias = res.data; }),
     supabase.from('boletins_juridicos').select('id, data_ref, titulo, subtitulo, tipo').in('status', ['pronto', 'sem_leis']).order('data_ref', { ascending: false }).limit(10).then(res => { if (res.data) cacheBoletins = res.data; }),
     fetchProposicoes().then(res => { if (res) cachePls = res.slice(0, 10); }),
-    supabase.from('concursos_noticias').select('*').order('data_publicacao', { ascending: false }).limit(50).then(res => { if (res.data) cacheConcursos = res.data; })
+    supabase.from('concursos_noticias').select('*').order('data_publicacao', { ascending: false }).limit(50).then(res => { if (res.data) cacheConcursos = res.data; }),
+    supabase.functions.invoke('app-updates').then(res => { if (res.data) cacheNovidadesApp = res.data; })
   ]).then(() => {}).catch(() => {});
   return loadPromise;
 };

@@ -19,7 +19,8 @@ import {
   cacheNoticias, 
   cacheBoletins, 
   cachePls, 
-  cacheConcursos 
+  cacheConcursos,
+  cacheNovidadesApp
 } from '@/services/giroJuridicoWarmup';
 
 type NoticiaJuridica = Database['public']['Tables']['noticias_juridicas']['Row'];
@@ -59,7 +60,7 @@ const Atualizacoes = () => {
   const [boletins, setBoletins] = useState<BoletimJuridico[]>((cacheBoletins as BoletimJuridico[]) || []);
   const [pls, setPls] = useState<RadarPL[]>((cachePls as RadarPL[]) || []);
   const [concursos, setConcursos] = useState<ConcursoNoticia[]>((cacheConcursos as ConcursoNoticia[]) || []);
-  const [novidadesApp, setNovidadesApp] = useState<any[]>([]);
+  const [novidadesApp, setNovidadesApp] = useState<any[]>((cacheNovidadesApp as any[]) || []);
 
   useEffect(() => {
     // Carrega dados locais (leis, noticias, etc)
@@ -71,6 +72,7 @@ const Atualizacoes = () => {
           if (cacheBoletins) setBoletins(cacheBoletins as BoletimJuridico[]);
           if (cachePls) setPls(cachePls as RadarPL[]);
           if (cacheConcursos) setConcursos(cacheConcursos as ConcursoNoticia[]);
+          if (cacheNovidadesApp) setNovidadesApp(cacheNovidadesApp as any[]);
         });
       });
     }
@@ -223,7 +225,11 @@ const Atualizacoes = () => {
           </p>
           <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 hide-scrollbar px-1 -mr-4 pr-4">
             {novidadesApp.length > 0 ? novidadesApp.slice(0, 5).map((update, i) => (
-              <div key={i} className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden">
+              <div 
+                key={i} 
+                onClick={() => { haptic.selection(); startTransition(() => navigate('/novidades')); }}
+                className="w-[290px] h-[185px] sm:w-[340px] sm:h-[195px] shrink-0 snap-start bg-card/80 backdrop-blur-md rounded-2xl border border-border/40 p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden cursor-pointer hover:bg-card transition-colors active:opacity-70"
+              >
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <Smartphone className="w-16 h-16 sm:w-20 sm:h-20" />
                 </div>
