@@ -1,6 +1,7 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { haptic } from '@/lib/nativeHaptics';
+import { Scale } from 'lucide-react';
 
 import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
@@ -239,37 +240,16 @@ const HomeHorusBannerCarousel = () => {
               }`}
             >
               {/* Background Layer */}
-              <div className={`absolute inset-x-0 bottom-0 top-7 rounded-[1.2rem] shadow-xl bg-gradient-to-br ${item.bgGradient} border border-white/10 overflow-hidden transition-transform duration-500 ${isActive ? 'shadow-2xl' : 'shadow-none'}`}>
+              <div className={`absolute inset-x-0 bottom-0 top-7 rounded-[1.2rem] shadow-xl bg-gradient-to-tr ${item.bgGradient} border border-white/10 overflow-hidden transition-transform duration-500 ${isActive ? 'shadow-2xl' : 'shadow-none'}`}>
                 {/* Efeito de Reflexo (Shimmer) */}
                 {isActive && (
                   <div className="absolute inset-0 z-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shimmer-once pointer-events-none" />
                 )}
-                {/* SVGs jurídicos decorativos ao fundo */}
-                <svg
-                  aria-hidden
-                  viewBox="0 0 200 200"
-                  className="pointer-events-none absolute -right-2 -bottom-4 w-[110px] h-[110px] text-white/10"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M100 30 V170 M70 170 H130 M100 55 L55 95 M100 55 L145 95" strokeLinecap="round" />
-                  <path d="M35 95 Q55 135 75 95 Z" />
-                  <path d="M125 95 Q145 135 165 95 Z" />
-                </svg>
-                <svg
-                  aria-hidden
-                  viewBox="0 0 100 100"
-                  className="pointer-events-none absolute top-1 right-8 w-[45px] h-[45px] text-white/10"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                >
-                  <path d="M18 78 L58 38" />
-                  <rect x="52" y="20" width="30" height="14" rx="2" transform="rotate(45 67 27)" />
-                  <path d="M10 88 H50" />
-                </svg>
+                {/* Ícone jurídico decorativo ao fundo */}
+                <Scale 
+                  className="pointer-events-none absolute -right-3 -bottom-3 w-[100px] h-[100px] text-white/[0.08] opacity-80" 
+                  strokeWidth={1.2} 
+                />
               </div>
 
               {/* Owl Image vazado no topo */}
