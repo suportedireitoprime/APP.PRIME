@@ -524,41 +524,27 @@ export function useArtigoNarracao({
       const lei = LEIS_CATALOG.find((l: any) => l.tabela_nome === tabelaNome);
       const leiNome = lei?.nome || tabelaNome;
 
-      // Obtém configuração do banco ou utiliza valores padrão (Super Animado & Fluido)
-      let voz = 'Kore';
-      let estiloPrompt = ESTILOS_TOM[0].prompt; // Super animado & contagiante
-      try {
-        const config = await obterConfigAutomacao();
-        if (config?.voz_padrao) voz = config.voz_padrao;
-        if (config?.estilo_tom) estiloPrompt = config.estilo_tom;
-      } catch (cErr) {
-        console.warn('[useArtigoNarracao] Falha ao obter config, usando padrão Super Animado:', cErr);
-      }
+      const { data, error } = await supabase.functions.invoke('narrar-artigo', {
+        body: {
+          tabela_nome: tabelaNome,
+          artigo_numero: artigo.numero,
+          artigo_texto: artigo.texto,
+          lei_nome: leiNome,
+          hierarquia: breadcrumb ? breadcrumb.map((b) => b.nome).join(' > ') : undefined,
+          epigrafe: artigo.epigrafe,
+          force_regenerate: true,
+        },
+      });
 
-      if (!silent) setNarracaoStepIdx(1);
+      if (error) throw error;
+      const res = data as any;
 
-      const res = await gerarNarracaoArtigoFatiada(
-        artigo,
-        tabelaNome,
-        leiNome,
-        voz,
-        estiloPrompt,
-        (parteAtual, totalPartes, rotulo) => {
-          if (!silent && toastId) {
-            toast.loading(
-              `Narrando Artigo ${artigo.numero}: ${rotulo} (${parteAtual}/${totalPartes})...`,
-              { id: toastId }
-            );
-          }
-        }
-      );
-
-      if (res?.audioUrl) {
+      if (res?.audio_url) {
         if (!silent) setNarracaoStepIdx(2);
-        setNarracaoUrl(res.audioUrl);
-        if (res.duracaoSegundos) setNarracaoDuration(res.duracaoSegundos);
-        if (Array.isArray(res.partes) && res.partes.length > 0) {
-          setNarracaoWordTimings(res.partes as any[]);
+        setNarracaoUrl(res.audio_url);
+        // The edge function might return duracaoSegundos or we just use metadata later
+        if (Array.isArray(res.word_timings) && res.word_timings.length > 0) {
+          setNarracaoWordTimings(res.word_timings);
         }
 
         // Salva novo áudio gerado no cache IndexedDB
@@ -566,10 +552,10 @@ export function useArtigoNarracao({
           const cKey = buildAudioCacheKey(tabelaNome, artigo.numero);
           void (async () => {
             try {
-              const resp = await fetch(res.audioUrl);
+              const resp = await fetch(res.audio_url);
               if (resp.ok) {
                 const blob = await resp.blob();
-                await saveCachedAudio(cKey, blob, res.partes as any);
+                await saveCachedAudio(cKey, blob, res.word_timings || []);
               }
             } catch {}
           })();
@@ -581,7 +567,7 @@ export function useArtigoNarracao({
 
         if (!silent) setNarracaoLoading(false);
         if (autoplay) {
-          await playNarracao(res.audioUrl);
+          await playNarracao(res.audio_url);
         }
         return res;
       }
