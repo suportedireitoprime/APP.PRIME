@@ -49,10 +49,11 @@ export const ArtigoTabsNavigation = memo(function ArtigoTabsNavigation({
         Exemplo
       </TabsTrigger>
       <TabsTrigger
-        value="historico"
+        value="termos"
         className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2"
       >
-        Histórico
+        <span className="hidden sm:inline">Termos Jurídicos</span>
+        <span className="sm:hidden">Termos</span>
       </TabsTrigger>
     </TabsList>
   );

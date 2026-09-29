@@ -403,7 +403,7 @@ export function useArtigoCommentsAndAi({
 
   // Fetch termos (Item 1 & Item 5: Protegido contra race conditions e com cancelamento via AbortController)
   useEffect(() => {
-    if (!showTermosSheet || !artigo) return;
+    if ((!showTermosSheet && activeTab !== 'termos') || !artigo) return;
     if (aiContent.termos || aiLoading.termos) return;
     const currentId = artigo.id;
     const cacheKey = { tabela: tabelaNome || 'unknown', numero: artigo.numero };
@@ -531,7 +531,7 @@ export function useArtigoCommentsAndAi({
       activeTermosAbortCtrlRef.current?.abort();
       if (stepInterval) clearInterval(stepInterval);
     };
-  }, [showTermosSheet, artigo?.id]);
+  }, [showTermosSheet, activeTab, artigo?.id]);
 
   return {
     isGeneratingAiNote,

@@ -58,6 +58,8 @@ export type { ModificationInfo } from './artigoConstants';
 import {
   ArtigoTabsNavigation,
   ArtigoTabHistorico,
+  ArtigoTabTermos,
+  ArtigoHistoricoSheet,
   ArtigoSheetHeader,
   ArtigoBottomBar,
   ArtigoActionMenuSheet,
@@ -360,6 +362,7 @@ const ArtigoBottomSheet = ({
   const [premiumGateDesc, setPremiumGateDesc] = useState<string | undefined>(undefined);
   const [premiumGateFeature, setPremiumGateFeature] = useState<PremiumFeatureKey>('default');
   const [showTermosSheet, setShowTermosSheet] = useState(false);
+  const [showHistoricoSheet, setShowHistoricoSheet] = useState(false);
   const [showLembretesLocal, setShowLembretesLocal] = useState(false);
   const [showQuestoesPanel, setShowQuestoesPanel] = useState(false);
   const [showJurisPanel, setShowJurisPanel] = useState(false);
@@ -377,6 +380,7 @@ const ArtigoBottomSheet = ({
     setShowVideoaulasListSheet(false);
     setShowVideoaulaSheet(false);
     setShowTermosSheet(false);
+    setShowHistoricoSheet(false);
     setShowSharePanel(false);
     setActiveActionMenu(null);
   }, [artigo?.numero, tabelaNome]);
@@ -1231,6 +1235,12 @@ const ArtigoBottomSheet = ({
                   openIA(v);
                   return;
                 }
+                if (v === 'termos') {
+                  if (!isPremium) {
+                    openPremiumGate('termos');
+                    return;
+                  }
+                }
                 setActiveTab(v);
               }}
               className="flex flex-col"
@@ -1491,7 +1501,14 @@ const ArtigoBottomSheet = ({
                 splitSections={splitSections}
               />
 
-              <ArtigoTabHistorico artigo={artigo} caput={artigo?.caput} />
+              <ArtigoTabTermos
+                isPremium={isPremium}
+                openPremiumGate={openPremiumGate}
+                aiLoading={Boolean(aiLoading.termos)}
+                aiContent={aiContent.termos}
+                fontSize={fontSize}
+                splitSections={splitSections}
+              />
             </Tabs>
           </div>
 
@@ -1506,6 +1523,7 @@ const ArtigoBottomSheet = ({
               navigate={navigate}
               setShowVideoaulasListSheet={setShowVideoaulasListSheet}
               setShowTermosSheet={setShowTermosSheet}
+              setShowHistoricoSheet={setShowHistoricoSheet}
               setShowPerguntarSheet={setShowPerguntarSheet}
               setShowGrafo={setShowGrafo}
               handleCopy={handleCopy}
@@ -1603,6 +1621,13 @@ const ArtigoBottomSheet = ({
             loading={aiLoading.termos}
             content={aiContent.termos}
             fontSize={fontSize}
+          />
+
+          <ArtigoHistoricoSheet
+            open={showHistoricoSheet}
+            onOpenChange={setShowHistoricoSheet}
+            artigo={artigo}
+            caput={artigo?.caput}
           />
         </SheetContent>
       </Sheet>
@@ -1716,6 +1741,7 @@ const ArtigoBottomSheet = ({
         navigate={navigate}
         setShowVideoaulasListSheet={setShowVideoaulasListSheet}
         setShowTermosSheet={setShowTermosSheet}
+        setShowHistoricoSheet={setShowHistoricoSheet}
         setShowPerguntarSheet={setShowPerguntarSheet}
         setShowGrafo={setShowGrafo}
         handleCopy={handleCopy}

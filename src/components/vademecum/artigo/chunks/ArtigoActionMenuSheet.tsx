@@ -5,6 +5,7 @@ import {
   Scale,
   Play,
   BookOpen,
+  History,
   MessageCircle,
   Network,
   Copy,
@@ -32,7 +33,8 @@ interface ArtigoActionMenuSheetProps {
   gateFeature: (feature: any, gateKey: string, label: string, action: () => void) => void;
   navigate: (path: string) => void;
   setShowVideoaulasListSheet: (v: boolean) => void;
-  setShowTermosSheet: (v: boolean) => void;
+  setShowTermosSheet?: (v: boolean) => void;
+  setShowHistoricoSheet?: (v: boolean) => void;
   setShowPerguntarSheet: (v: boolean) => void;
   setShowGrafo: (v: boolean) => void;
   handleCopy: () => void;
@@ -63,6 +65,7 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
   navigate,
   setShowVideoaulasListSheet,
   setShowTermosSheet,
+  setShowHistoricoSheet,
   setShowPerguntarSheet,
   setShowGrafo,
   handleCopy,
@@ -128,16 +131,13 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
             },
           },
           {
-            icon: BookOpen,
-            label: 'Termos jurídicos',
-            desc: 'Vocabulário do artigo explicado',
+            icon: History,
+            label: 'Histórico',
+            desc: 'Linha do tempo e alterações do artigo',
             color: '#F97316',
             onClick: () => {
               setActiveActionMenu(null);
-              if (!requireOnline('Termos jurídicos')) return;
-              gateFeature('termos', 'termos', 'Termos jurídicos', () =>
-                setShowTermosSheet(true)
-              );
+              setShowHistoricoSheet?.(true);
             },
           },
           {

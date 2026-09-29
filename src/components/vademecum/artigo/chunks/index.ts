@@ -13,6 +13,8 @@ export { ArtigoMagicTooltipModal } from './ArtigoMagicTooltipModal';
 export { ArtigoGrifoTopBar } from './ArtigoGrifoTopBar';
 export { ArtigoTabExplicacao } from './ArtigoTabExplicacao';
 export { ArtigoTabExemplo } from './ArtigoTabExemplo';
+export { ArtigoTabTermos } from './ArtigoTabTermos';
+export { ArtigoHistoricoSheet } from './ArtigoHistoricoSheet';
 export { ArtigoDesktopRails } from './ArtigoDesktopRails';
 export { useArtigoTextProcessing } from './useArtigoTextProcessing';
 export { useArtigoCommentsAndAi } from './useArtigoCommentsAndAi';

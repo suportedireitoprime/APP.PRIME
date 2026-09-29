@@ -1,0 +1,125 @@
+import React from 'react';
+import { Loader2, Crown, BookOpen } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import { TabsContent } from '@/components/ui/tabs';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import horusOwlBundled from '@/assets/horus/horus-owl.webp';
+import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
+import { pickAsset, srcOf } from '@/lib/assetUrl';
+
+const horusOwl = pickAsset(horusOwlBundled, srcOf(horusOwlAsset));
+
+interface ArtigoTabTermosProps {
+  isPremium: boolean;
+  openPremiumGate: (feature: any) => void;
+  aiLoading: boolean;
+  aiContent?: string | null;
+  fontSize: number;
+  splitSections: (text: string, marker: string) => Array<{ title: string; body: string }>;
+}
+
+export const ArtigoTabTermos: React.FC<ArtigoTabTermosProps> = ({
+  isPremium,
+  openPremiumGate,
+  aiLoading,
+  aiContent,
+  fontSize,
+  splitSections,
+}) => {
+  return (
+    <TabsContent value="termos" className="px-5 pb-[calc(8rem+var(--sai-bottom,0px))] pt-4">
+      {!isPremium ? (
+        <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-b from-amber-500/20 to-primary/20 p-2 border border-amber-500/30 flex items-center justify-center mb-3 shadow-lg shadow-primary/20">
+            <img src={horusOwl} alt="Horus" className="w-12 h-12 object-contain" />
+          </div>
+          <h4 className="font-display text-lg font-bold text-foreground mb-1.5">
+            Termos Jurídicos são Exclusivos Prime
+          </h4>
+          <p className="text-xs text-muted-foreground max-w-xs mb-4 leading-relaxed">
+            Consulte o vocabulário e o significado técnico-jurídico de cada expressão presente no artigo com explicação simplificada por IA.
+          </p>
+          <button
+            onClick={() => openPremiumGate('termos')}
+            className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-xs shadow-lg shadow-primary/30 active:opacity-70 transition-all flex items-center gap-2"
+          >
+            <Crown className="w-4 h-4 fill-current" /> Começar 3 dias grátis
+          </button>
+        </div>
+      ) : aiLoading ? (
+        <div className="flex flex-col items-center justify-center py-12 gap-3">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground font-body">
+            Analisando termos jurídicos com IA...
+          </p>
+        </div>
+      ) : aiContent ? (
+        (() => {
+          const sections = splitSections(aiContent, '---TERMO---');
+          if (sections.length <= 1) {
+            return (
+              <div
+                className="prose prose-sm dark:prose-invert max-w-none font-body leading-relaxed [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-1 [&_h2]:font-bold [&_h2]:text-foreground [&_h3]:font-bold [&_strong]:text-foreground"
+                style={{ fontSize: `${fontSize}px` }}
+              >
+                <ReactMarkdown>{aiContent}</ReactMarkdown>
+              </div>
+            );
+          }
+          return (
+            <Accordion type="single" collapsible className="space-y-2">
+              {sections.map((sec, i) => {
+                const borderColors = [
+                  'border-l-pink-500/70',
+                  'border-l-orange-500/70',
+                  'border-l-cyan-500/70',
+                  'border-l-red-500/70',
+                  'border-l-indigo-500/70',
+                  'border-l-lime-500/70',
+                ];
+                const strongColors = [
+                  '[&_strong]:text-pink-400',
+                  '[&_strong]:text-orange-400',
+                  '[&_strong]:text-cyan-400',
+                  '[&_strong]:text-red-400',
+                  '[&_strong]:text-indigo-400',
+                  '[&_strong]:text-lime-400',
+                ];
+                return (
+                  <AccordionItem
+                    key={i}
+                    value={`term-${i}`}
+                    className={`border border-border rounded-xl overflow-hidden bg-secondary/30 border-l-4 ${
+                      borderColors[i % borderColors.length]
+                    }`}
+                  >
+                    <AccordionTrigger className="px-4 py-4 text-base font-semibold text-foreground text-left hover:no-underline [&[data-state=open]>svg]:rotate-180">
+                      {sec.title}
+                    </AccordionTrigger>
+                    <AccordionContent className="px-4 pb-4">
+                      <div
+                        className={`prose prose-sm dark:prose-invert max-w-none font-body leading-relaxed [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-1 ${
+                          strongColors[i % strongColors.length]
+                        }`}
+                        style={{ fontSize: `${fontSize}px` }}
+                      >
+                        <ReactMarkdown>{sec.body}</ReactMarkdown>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                );
+              })}
+            </Accordion>
+          );
+        })()
+      ) : (
+        <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
+          <BookOpen className="w-8 h-8 text-muted-foreground/50" />
+          <p className="text-sm text-muted-foreground font-body">
+            Nenhum termo jurídico analisado para este artigo.
+          </p>
+        </div>
+      )}
+    </TabsContent>
+  );
+};

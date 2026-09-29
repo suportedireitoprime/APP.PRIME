@@ -10,6 +10,7 @@ import {
   Scale,
   Play,
   BookOpen,
+  History,
   MessageCircle,
   Network,
   Copy,
@@ -38,7 +39,8 @@ interface ArtigoDesktopRailsProps {
   setShowJurisPanel: (v: boolean) => void;
   navigate: (path: string) => void;
   setShowVideoaulasListSheet: (v: boolean) => void;
-  setShowTermosSheet: (v: boolean) => void;
+  setShowTermosSheet?: (v: boolean) => void;
+  setShowHistoricoSheet?: (v: boolean) => void;
   setShowPerguntarSheet: (v: boolean) => void;
   setShowGrafo: (v: boolean) => void;
   handleCopy: () => void;
@@ -78,6 +80,7 @@ export const ArtigoDesktopRails: React.FC<ArtigoDesktopRailsProps> = ({
   navigate,
   setShowVideoaulasListSheet,
   setShowTermosSheet,
+  setShowHistoricoSheet,
   setShowPerguntarSheet,
   setShowGrafo,
   handleCopy,
@@ -211,12 +214,11 @@ export const ArtigoDesktopRails: React.FC<ArtigoDesktopRailsProps> = ({
       },
     },
     {
-      icon: BookOpen,
-      label: 'Termos',
+      icon: History,
+      label: 'Histórico',
       color: '#F97316',
       onClick: () => {
-        if (!requireOnline('Termos jurídicos')) return;
-        gateFeature('termos', 'termos', 'Termos jurídicos', () => setShowTermosSheet(true));
+        setShowHistoricoSheet?.(true);
       },
     },
     {
