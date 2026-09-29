@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Loader2 } from 'lucide-react';
 import ResolverPadrao from '@/components/questoes/ResolverPadrao';
+import { Questao } from '@/hooks/useQuestoes';
 
 export default function FerramentasSimuladosResolver() {
   const { id } = useParams();
@@ -65,7 +66,7 @@ export default function FerramentasSimuladosResolver() {
         cargo: examName,
         orgao: 'TJSP',
         ano: simulado?.year || new Date().getFullYear(),
-        disciplina: '',
+        disciplina: q.disciplina || '',
         enunciado: q.text || '',
         alt_a: options.A || '',
         alt_b: options.B || '',
@@ -74,9 +75,9 @@ export default function FerramentasSimuladosResolver() {
         alt_e: options.E || '',
         gabarito: 'A', // Ideally we'd map this correctly, but currently gabarito isn't extracted
         cargo_id: id,
-        assunto: '',
+        assunto: q.assunto || '',
         modalidade: (options.C && options.C !== '') ? 'multipla_escolha' : 'certo_errado',
-      };
+      } as unknown as Questao;
     });
   }, [questoesData, simulado, id]);
 
