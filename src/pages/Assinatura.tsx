@@ -305,13 +305,16 @@ export default function Assinatura() {
         <div className="max-w-2xl mx-auto pt-4 space-y-7 pb-[calc(8.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
             <PaywallImageStack />
 
-            <div className="space-y-2 text-center px-4 flex flex-col items-center">
-              <img src={primeLogo} alt="Estudos Jurídicos" className="w-16 h-16 object-contain mb-2 drop-shadow-md" />
-              <h1 className="font-display text-3xl sm:text-4xl font-black text-foreground leading-[1.1]">
-                Tenha acesso a todo o <span className="text-primary">conteúdo de estudo jurídico</span>
+            <div className="space-y-3 text-center px-4 flex flex-col items-center">
+              <img src={primeLogo} alt="Estudos Jurídicos" className="w-16 h-16 object-contain drop-shadow-[0_0_20px_rgba(224,31,71,0.2)]" />
+              <div className="inline-flex items-center gap-1.5 bg-primary/10 border border-primary/20 text-primary px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-widest mb-1">
+                Acesso Total Liberado
+              </div>
+              <h1 className="font-display text-[32px] sm:text-4xl font-black text-foreground leading-[1.15]">
+                Desbloqueie o aplicativo <span className="text-primary">sem limites.</span>
               </h1>
-              <p className="text-[13px] text-muted-foreground font-medium max-w-sm mx-auto">
-                Libere seu potencial máximo agora na OAB, Concursos e na Advocacia.
+              <p className="text-[14px] text-muted-foreground font-medium max-w-sm mx-auto leading-relaxed">
+                Pare de esbarrar em bloqueios. Tenha a Inteligência Artificial, Vade Mecum e Simulados liberados para você.
               </p>
             </div>
 
@@ -321,7 +324,7 @@ export default function Assinatura() {
               onSelectPlan={setTab} 
             />
 
-            <div className="px-4 space-y-3 -mt-3">
+            <div className="px-4 space-y-4 -mt-1">
               <Button
                 onClick={() => {
                   if (tab === 'promocao') {
@@ -334,18 +337,26 @@ export default function Assinatura() {
                      startPurchase('mensal');
                   }
                 }}
-                className={`btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display text-lg font-black tracking-wider transition-all active:scale-[0.98] group ${
+                className={`btn-shine-loop relative overflow-hidden w-full h-[60px] rounded-[20px] font-display text-[19px] font-black tracking-wider transition-all active:scale-[0.98] group ${
                   tab === 'promocao' 
-                    ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-[0_10px_30px_rgba(16,185,129,0.3)]'
-                    : 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_10px_30px_rgba(224,31,71,0.4)]'
+                    ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-[0_12px_35px_rgba(16,185,129,0.35)]'
+                    : 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_12px_35px_rgba(224,31,71,0.4)]'
                 }`}
               >
                 <span className="flex items-center justify-center gap-2">
-                  {tab === 'promocao' ? 'Assinar Anual no PIX' : tab === 'vitalicio' ? 'Adquirir Vitalício' : tab === 'anual' ? 'Assinar Anual' : 'Assinar Mensal'}
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  {tab === 'promocao' ? 'ASSINAR ANUAL NO PIX' : tab === 'vitalicio' ? 'ADQUIRIR VITALÍCIO' : tab === 'anual' ? 'ASSINAR ANUAL' : 'ASSINAR MENSAL'}
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
                 </span>
               </Button>
-
+              
+              <div className="flex flex-col items-center gap-1.5 pt-1">
+                <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-500/90 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                  <ShieldCheck className="w-3.5 h-3.5" /> 7 dias de garantia
+                </div>
+                <span className="text-[12px] font-medium text-muted-foreground">
+                  Sem burocracia. Cancele quando quiser.
+                </span>
+              </div>
             </div>
 
             <FeaturesList tabKey={tab} />
