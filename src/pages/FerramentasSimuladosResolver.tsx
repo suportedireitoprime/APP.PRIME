@@ -13,15 +13,18 @@ export default function FerramentasSimuladosResolver() {
   const [segundos, setSegundos] = useState(0);
 
   const { data: simulado, isLoading: loadingSimulado } = useQuery({
-    queryKey: ['simulado_exam', id],
+    queryKey: ['simulados', id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('simulado_exams')
-        .select('*')
+        .from('simulados')
+        .select(`
+          *,
+          exam:simulado_exams(name)
+        `)
         .eq('id', id)
         .single();
       if (error) throw error;
-      return data;
+      return data as any;
     },
     enabled: !!id
   });
@@ -32,11 +35,11 @@ export default function FerramentasSimuladosResolver() {
       const { data, error } = await supabase
         .from('simulado_questions')
         .select('*')
-        .eq('simulado_exam_id', id)
-        .order('numero_questao', { ascending: true });
+        .eq('simulado_id', id);
+        // .order('numero_questao', { ascending: true }); // There is no numero_questao column in our schema yet
       
       if (error) throw error;
-      return data;
+      return data as any[];
     },
     enabled: !!id
   });
@@ -50,25 +53,31 @@ export default function FerramentasSimuladosResolver() {
   // Convert to standard "Questao" format expected by ResolverPadrao
   const questoesFormatadas = React.useMemo(() => {
     if (!questoesData) return [];
-    return questoesData.map(q => ({
-      id: q.id,
-      banca: simulado?.banca || '',
-      cargo: simulado?.title || '',
-      orgao: simulado?.institution || '',
-      ano: simulado?.year || new Date().getFullYear(),
-      disciplina: q.disciplina || '',
-      enunciado: q.enunciado || '',
-      alternativa_a: q.alternativa_a || '',
-      alternativa_b: q.alternativa_b || '',
-      alternativa_c: q.alternativa_c || '',
-      alternativa_d: q.alternativa_d || '',
-      alternativa_e: q.alternativa_e || '',
-      gabarito: q.gabarito || '',
-      // Map to ensure compatibility with other question fields
-      cargo_id: id,
-      assunto: '',
-      modalidade: (q.alternativa_c && q.alternativa_c !== '') ? 'multipla_escolha' : 'certo_errado',
-    }));
+    const examName = simulado?.exam?.name || '';
+    
+    return questoesData.map(q => {
+      // O banco salvou as opções como um JSONB object: { A: "", B: "", C: "", D: "", E: "" }
+      const options = q.options || {};
+      
+      return {
+        id: q.id,
+        banca: 'VUNESP', // hardcoded as fallback for now
+        cargo: examName,
+        orgao: 'TJSP',
+        ano: simulado?.year || new Date().getFullYear(),
+        disciplina: '',
+        enunciado: q.text || '',
+        alternativa_a: options.A || '',
+        alternativa_b: options.B || '',
+        alternativa_c: options.C || '',
+        alternativa_d: options.D || '',
+        alternativa_e: options.E || '',
+        gabarito: 'A', // Ideally we'd map this correctly, but currently gabarito isn't extracted
+        cargo_id: id,
+        assunto: '',
+        modalidade: (options.C && options.C !== '') ? 'multipla_escolha' : 'certo_errado',
+      };
+    });
   }, [questoesData, simulado, id]);
 
   const finalizar = () => {
@@ -105,7 +114,7 @@ export default function FerramentasSimuladosResolver() {
   return (
     <div className="theme-questoes min-h-screen bg-background pb-[calc(8.5rem+var(--sai-bottom))]">
       <PageHeader
-        title={simulado.title}
+        title={simulado.exam?.name || 'Simulado'}
         subtitle={rodando ? mmss : 'Simulado concluído'}
         onBack={() => (rodando ? finalizar() : navigate('/ferramentas/simulados'))}
       />
@@ -132,7 +141,7 @@ export default function FerramentasSimuladosResolver() {
           <div className="text-center py-12">
             <h2 className="text-2xl font-bold text-foreground mb-4">Simulado Encerrado</h2>
             <p className="text-muted-foreground mb-8">
-              Você finalizou o simulado "{simulado.title}" em {mmss}.
+              Você finalizou o simulado "{simulado.exam?.name || 'Simulado'}" em {mmss}.
             </p>
             <button
               onClick={() => navigate('/ferramentas/simulados')}
