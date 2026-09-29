@@ -364,7 +364,7 @@ export function AdminHojeCards() {
             totalOnline5m = Math.max(totalOnline5m, m.online5m || 0);
             totalOnline = Math.max(totalOnline, m.online || 0, totalOnline5m);
             totalCadastros += m.cadastros || 0;
-            totalTrial += m.trial || 0;
+            // totalTrial += m.trial || 0; // Ignorado, vamos usar apenas subUsers.size
             totalPaywall = Math.max(totalPaywall, m.paywall || 0);
             totalViuPlanos = Math.max(totalViuPlanos, m.checkout || 0);
           }
@@ -472,16 +472,14 @@ export function AdminHojeCards() {
           }
         });
 
-        totalTrial = Math.max(totalTrial, subUsers.size);
+        totalTrial = subUsers.size;
 
         // Soma real da receita dos assinantes
         let somaValores = 0;
         subUsers.forEach(({ valor }) => {
           somaValores += valor;
         });
-        if (totalTrial > subUsers.size) {
-          somaValores += (totalTrial - subUsers.size) * 29.90;
-        }
+        
         totalTrialValor = somaValores;
 
       } catch (e: any) {
