@@ -325,101 +325,18 @@ const VadeMecumHistoricoContent: React.FC<{ onClose: () => void }> = ({ onClose 
 // ─────────────────────────────────────────────────────────────
 const VadeMecumRadaresContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const navigate = useNavigate();
-  const [subTab, setSubTab] = useState<'cp' | 'hub'>('cp');
 
   return (
     <div className="space-y-4 pb-8">
-      {/* Alternância rápida entre o Radar de PLs e o Hub de Radares */}
-      <div className="flex items-center gap-2 p-1 rounded-xl bg-white/[0.04] border border-white/10 max-w-xs mx-auto">
-        <button
-          type="button"
-          onClick={() => {
-            haptic.selection();
-            setSubTab('cp');
-          }}
-          className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
-            subTab === 'cp' ? 'bg-primary text-white shadow-md' : 'text-zinc-400 hover:text-white'
-          }`}
-        >
-          Radar Código Penal (PLs)
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            haptic.selection();
-            setSubTab('hub');
-          }}
-          className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
-            subTab === 'hub' ? 'bg-primary text-white shadow-md' : 'text-zinc-400 hover:text-white'
-          }`}
-        >
-          Todos os Radares
-        </button>
-      </div>
-
-      {subTab === 'cp' ? (
-        <RadarLegislacaoContent
-          leiNome="Código Penal"
-          navigate={navigate}
-          onSelectArtigoNumero={(num) => {
-            const clean = (num || '').replace(/[^0-9]/g, '');
-            onClose();
-            navigate(`/legislacao/codigos/codigo-penal/${clean}`);
-          }}
-        />
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-          <div
-            onClick={() => {
-              haptic.selection();
-              onClose();
-              navigate('/radar-360');
-            }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#161820] to-[#101115] border border-white/10 hover:border-primary/50 transition-all cursor-pointer shadow-lg space-y-3 group"
-          >
-            <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/25 flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
-              <ScanEye className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-base font-bold text-white group-hover:text-primary transition-colors">
-                Radar 360 (Leis & DOU)
-              </h4>
-              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                Monitoramento contínuo de publicações no Diário Oficial e Planalto, com análises de impacto geradas por Inteligência Artificial.
-              </p>
-            </div>
-            <div className="flex items-center gap-1.5 text-xs font-bold text-primary pt-1">
-              <span>Acessar Radar 360</span>
-              <ArrowLeft className="w-3.5 h-3.5 rotate-180" />
-            </div>
-          </div>
-
-          <div
-            onClick={() => {
-              haptic.selection();
-              onClose();
-              navigate('/radar/deputados');
-            }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#161820] to-[#101115] border border-white/10 hover:border-emerald-500/50 transition-all cursor-pointer shadow-lg space-y-3 group"
-          >
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition-transform">
-              <Users className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-base font-bold text-white group-hover:text-emerald-400 transition-colors">
-                Deputados Federais (513)
-              </h4>
-              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                Acompanhe o perfil, gastos parlamentares, presença e projetos de lei apresentados por cada deputado federal.
-              </p>
-            </div>
-            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 pt-1">
-              <span>Explorar Parlamentares</span>
-              <ArrowLeft className="w-3.5 h-3.5 rotate-180" />
-            </div>
-          </div>
-        </div>
-      )}
+      <RadarLegislacaoContent
+        leiNome="Código Penal"
+        navigate={navigate}
+        onSelectArtigoNumero={(num) => {
+          const clean = (num || '').replace(/[^0-9]/g, '');
+          onClose();
+          navigate(`/legislacao/codigos/codigo-penal/${clean}`);
+        }}
+      />
     </div>
   );
 };

@@ -159,7 +159,7 @@ const VadeMecum = () => {
             <BuscaLeisOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
           </Suspense>
         )}
-        <VadeMecumBottomNav hidden={buscaOpen} />
+        <VadeMecumBottomNav hidden={buscaOpen || activeQuickSheet !== null} />
 
         <VadeMecumQuickActionSheet
           activeSheet={activeQuickSheet}
