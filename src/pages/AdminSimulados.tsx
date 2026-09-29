@@ -55,16 +55,20 @@ export default function AdminSimulados() {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       // Simular inserção no banco de dados para a categoria aparecer na listagem
-      const { data: examData } = await supabase
+      const { data: examData, error: examError } = await supabase
         .from("simulado_exams")
         .insert({ name: examName })
         .select()
         .single();
         
+      if (examError) throw examError;
+        
       if (examData) {
-        await supabase
+        const { error: simuladoError } = await supabase
           .from("simulados")
           .insert({ exam_id: examData.id, year: new Date().getFullYear(), prova_url: spreadsheetUrl });
+          
+        if (simuladoError) throw simuladoError;
       }
       
       toast.success("Simulado importado com sucesso (simulação)");
