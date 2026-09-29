@@ -177,7 +177,7 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
               </div>
 
               <p className="text-[10px] font-bold text-muted-foreground mb-2 relative z-10 drop-shadow-md shadow-black/50">
-                ou R$ 199,90 à vista (pagamento único)
+                ou R$ 199,90 à vista
               </p>
               
               <div className="w-full pt-1 flex items-center justify-center relative z-10">
