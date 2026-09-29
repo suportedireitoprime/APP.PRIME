@@ -1,0 +1,9 @@
+GRANT ALL ON TABLE public.simulado_exams TO authenticated;
+GRANT ALL ON TABLE public.simulado_exams TO anon;
+GRANT ALL ON TABLE public.simulado_exams TO service_role;
+GRANT ALL ON TABLE public.simulados TO authenticated;
+GRANT ALL ON TABLE public.simulados TO anon;
+GRANT ALL ON TABLE public.simulados TO service_role;
+GRANT ALL ON TABLE public.simulado_questions TO authenticated;
+GRANT ALL ON TABLE public.simulado_questions TO anon;
+GRANT ALL ON TABLE public.simulado_questions TO service_role;
