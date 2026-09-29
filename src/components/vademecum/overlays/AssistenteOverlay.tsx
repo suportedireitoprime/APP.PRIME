@@ -236,40 +236,53 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
   };
 
   const handleFile = async (file: File) => {
-    if (!file.type.startsWith('image/')) {
-      toast.error('Apenas imagens são suportadas');
-      return;
-    }
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      const maxW = 1200;
-      const maxH = 1200;
-      let { width, height } = img;
-      if (width > maxW || height > maxH) {
-        if (width > height) {
-          height = Math.round((height * maxW) / width);
-          width = maxW;
-        } else {
-          width = Math.round((width * maxH) / height);
-          height = maxH;
+    if (file.type.startsWith('image/')) {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const maxW = 1200;
+        const maxH = 1200;
+        let { width, height } = img;
+        if (width > maxW || height > maxH) {
+          if (width > height) {
+            height = Math.round((height * maxW) / width);
+            width = maxW;
+          } else {
+            width = Math.round((width * maxH) / height);
+            height = maxH;
+          }
         }
-      }
-      const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-      ctx.drawImage(img, 0, 0, width, height);
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-      const base64String = dataUrl.split(',')[1];
-      setAttachment({ mime: 'image/jpeg', data: base64String, name: file.name });
-      setAttachOpen(false);
-      toast.success('Foto anexada com sucesso');
-    };
-    img.onerror = () => toast.error('Erro ao ler a imagem');
-    img.src = url;
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        const base64String = dataUrl.split(',')[1];
+        setAttachment({ mime: 'image/jpeg', data: base64String, name: file.name });
+        setAttachOpen(false);
+        toast.success('Foto anexada com sucesso');
+      };
+      img.onerror = () => toast.error('Erro ao ler a imagem');
+      img.src = url;
+    } else if (file.type === 'application/pdf') {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        if (result) {
+          const base64String = result.split(',')[1];
+          setAttachment({ mime: 'application/pdf', data: base64String, name: file.name });
+          setAttachOpen(false);
+          toast.success('PDF anexado com sucesso');
+        }
+      };
+      reader.onerror = () => toast.error('Erro ao ler o PDF');
+      reader.readAsDataURL(file);
+    } else {
+      toast.error('Apenas imagens e PDFs são suportados');
+    }
   };
 
   const abrirAnexos = () => {

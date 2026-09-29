@@ -156,7 +156,7 @@ export const AssistenteInputBar: React.FC<AssistenteInputBarProps> = ({
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept="image/*,application/pdf"
             capture="environment"
             hidden
             onChange={(e) => {
@@ -206,7 +206,12 @@ export const AssistenteInputBar: React.FC<AssistenteInputBarProps> = ({
                 onClick={() => {
                   haptic.light();
                   setAttachOpen(false);
+                  fileInputRef.current?.removeAttribute('capture');
+                  fileInputRef.current?.setAttribute('accept', 'image/*');
                   fileInputRef.current?.click();
+                  setTimeout(() => {
+                    fileInputRef.current?.setAttribute('accept', 'image/*,application/pdf');
+                  }, 1000);
                 }}
                 className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-colors text-left"
               >
@@ -233,6 +238,28 @@ export const AssistenteInputBar: React.FC<AssistenteInputBarProps> = ({
                     Câmera
                   </span>
                   <span className="block text-[11px] text-muted-foreground/70">Tirar foto</span>
+                </span>
+              </button>
+              <button
+                onClick={() => {
+                  haptic.light();
+                  setAttachOpen(false);
+                  fileInputRef.current?.removeAttribute('capture');
+                  fileInputRef.current?.setAttribute('accept', 'application/pdf');
+                  fileInputRef.current?.click();
+                  // Reset after click so other buttons work
+                  setTimeout(() => {
+                    fileInputRef.current?.setAttribute('accept', 'image/*,application/pdf');
+                  }, 1000);
+                }}
+                className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-colors text-left"
+              >
+                <Paperclip className="w-[26px] h-[26px] text-purple-400" strokeWidth={1.5} />
+                <span className="flex-1">
+                  <span className="block text-[15px] font-body font-semibold text-foreground tracking-tight">
+                    Documento
+                  </span>
+                  <span className="block text-[11px] text-muted-foreground/70">Enviar PDF</span>
                 </span>
               </button>
             </motion.div>
