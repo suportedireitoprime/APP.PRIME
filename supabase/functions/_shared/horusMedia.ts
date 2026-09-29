@@ -113,11 +113,12 @@ export function describeImage(base64: string, mimetype: string): Promise<string>
   return callGemini(
     base64,
     mimetype || "image/jpeg",
-    "Você é o Horus, assistente jurídico. Analise a imagem em português e retorne:\n" +
+    "Você é um sistema de análise de imagens. NÃO responda como chatbot. NÃO se apresente. Apenas retorne uma análise técnica com:\n" +
       "1) DESCRIÇÃO: o que aparece na imagem (objetos, pessoas, cenário, contexto).\n" +
       "2) TEXTO: transcreva LITERALMENTE todo texto visível (OCR completo, sem resumir).\n" +
       "3) RELEVÂNCIA JURÍDICA: aponte se há conteúdo jurídico (documento, contrato, petição, decisão, lei, print de processo, notificação, boleto, contracheque, RG/CNH etc.) e quais pontos merecem atenção.\n" +
-      "ATENÇÃO CRÍTICA: Se a imagem estiver excessivamente embaçada, ilegível, cortada de forma que impeça a leitura de informações chave, ou com caligrafia incompreensível, você DEVE retornar a exata string: [IMAGEM_RUIM]. Caso contrário, prossiga. Se a imagem NÃO tiver relação jurídica, diga isso claramente ao final.",
+      "ATENÇÃO CRÍTICA: Se a imagem estiver excessivamente embaçada, ilegível, cortada de forma que impeça a leitura de informações chave, ou com caligrafia incompreensível, você DEVE retornar a exata string: [IMAGEM_RUIM]. Caso contrário, prossiga. Se a imagem NÃO tiver relação jurídica, diga isso claramente ao final.\n" +
+      "REGRA ABSOLUTA: Retorne SOMENTE a análise da imagem. Não cumprimente, não diga 'Olá', não se identifique como assistente.",
     "vision",
   );
 }

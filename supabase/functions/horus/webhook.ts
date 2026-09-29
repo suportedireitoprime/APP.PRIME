@@ -311,10 +311,29 @@ function extractMessage(body: any): ParsedMessage | null {
 }
 
 
+// Deduplicação em memória: evita processar o mesmo messageId duas vezes
+// (Evolution pode reenviar webhooks, especialmente para mídia)
+const _processedIds = new Set<string>();
+const DEDUP_MAX = 500;
+
 async function handleIncomingMessage(admin: any, body: any) {
   const parsed = extractMessage(body);
   if (!parsed) return;
   if (parsed.fromMe) return;
+
+  // Dedup: se já processamos esse messageId, ignora silenciosamente
+  if (parsed.id && parsed.id !== "") {
+    if (_processedIds.has(parsed.id)) {
+      console.log("horus-webhook dedup skip", { id: parsed.id, phone: parsed.from });
+      return;
+    }
+    _processedIds.add(parsed.id);
+    // Limita o tamanho do Set para não vazar memória
+    if (_processedIds.size > DEDUP_MAX) {
+      const iter = _processedIds.values();
+      for (let i = 0; i < 100; i++) _processedIds.delete(iter.next().value!);
+    }
+  }
 
   // Animação de "digitando…" desde o primeiro instante e renovada a cada 6s
   // (o WhatsApp expira o estado em ~10s) até a resposta sair.
