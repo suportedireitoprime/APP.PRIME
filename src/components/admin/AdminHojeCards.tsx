@@ -1104,7 +1104,7 @@ export function AdminHojeCards() {
               provider: rProv,
               funcaoPreferida: mapFav.get(rUid),
               tempo_tela: tempoMap.get(rUid) || null,
-              acessos: (calcAcessos !== undefined) ? Math.max(r.acessos || 0, calcAcessos) : r.acessos
+              acessos: (calcAcessos !== undefined && calcAcessos > 0) ? calcAcessos : 1
             };
           });
           if (periodo === 'hoje') rowsCache.current[id] = updated;
