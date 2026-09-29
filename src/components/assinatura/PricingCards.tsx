@@ -130,7 +130,7 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
 
               <div className="flex items-baseline gap-1 mb-1">
                 <span className="font-display text-3xl font-black text-foreground">R$ 149,90</span>
-                <span className="text-[10px] font-bold text-muted-foreground">pagamento único</span>
+                <span className="text-[10px] font-bold text-muted-foreground">à vista</span>
               </div>
 
               <p className="text-[10px] font-bold text-emerald-500 mb-2 flex items-center gap-1">

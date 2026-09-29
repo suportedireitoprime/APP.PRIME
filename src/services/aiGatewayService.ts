@@ -647,7 +647,6 @@ export async function executeAiTask(options: {
     }
 
     const elapsed = Math.round(performance.now() - start);
-    const data = await res.json();
     return {
       text: data?.choices?.[0]?.message?.content || 'Sem resposta gerada.',
       providerUsed: 'omniroute',
