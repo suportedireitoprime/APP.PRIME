@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import { initAnalytics, trackPageview, setAnalyticsUserWithProfile } from "@/lib/analytics";
 import { useScreenTracking } from "@/lib/screenTracking";
 import { initNavTelemetry, markRouteChange } from "@/lib/navTelemetry";
@@ -149,8 +150,11 @@ const CustomSplashScreen = lazy(() => import("@/components/CustomSplashScreen").
 
 function AppBootSplash() {
   const [show, setShow] = useState(true);
-  if (!show) return null;
-  return <CustomSplashScreen onComplete={() => setShow(false)} />;
+  return (
+    <AnimatePresence>
+      {show && <CustomSplashScreen onComplete={() => setShow(false)} />}
+    </AnimatePresence>
+  );
 }
 
 function AppWarmupInitializer() {

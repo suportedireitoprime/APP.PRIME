@@ -17,8 +17,8 @@ export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
       onComplete();
     };
 
-    // Permanece na tela exatamente por 1.5 segundos (um segundo e meio) antes de transicionar
-    const splashTimeout = setTimeout(finish, 1500);
+    // Permanece na tela exatamente por 2 segundos antes de transicionar
+    const splashTimeout = setTimeout(finish, 2000);
 
     return () => {
       clearTimeout(splashTimeout);
