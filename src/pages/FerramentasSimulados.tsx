@@ -235,33 +235,35 @@ export default function FerramentasSimulados() {
                 onClick={() => {
                   if (selectedSimulado) navigate(`/ferramentas/simulados/resolver/${selectedSimulado.id}`);
                 }}
-                className="w-full bg-primary text-primary-foreground font-bold text-[17px] py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-primary/90 active:scale-[0.98] transition-all shadow-lg shadow-primary/20"
+                className="w-full relative overflow-hidden bg-gradient-to-r from-primary/90 to-primary text-primary-foreground font-bold text-[16px] py-4 rounded-2xl flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-[0_4px_20px_-4px_rgba(239,68,68,0.3)]"
               >
-                <PlayCircle className="w-6 h-6" /> Iniciar Simulado
+                <div className="absolute inset-0 bg-white/10 opacity-0 hover:opacity-100 transition-opacity" />
+                <PlayCircle className="w-5 h-5 drop-shadow-sm" /> 
+                <span className="drop-shadow-sm tracking-wide">INICIAR SIMULADO</span>
               </button>
 
               <div className="grid grid-cols-2 gap-3">
                  <button 
                    onClick={(e) => selectedSimulado && handleDownload(e, selectedSimulado.prova_url)} 
                    disabled={!selectedSimulado?.prova_url}
-                   className="bg-muted hover:bg-muted/80 disabled:opacity-50 text-foreground py-3.5 rounded-xl flex items-center justify-center gap-2 transition-colors font-medium text-sm border border-border/50"
+                   className="bg-zinc-900/50 hover:bg-zinc-900 disabled:opacity-50 text-foreground py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all font-medium text-[13px] border border-white/5 hover:border-white/10 shadow-sm"
                  >
-                   <FileText className="w-4 h-4 text-primary" /> Ver Prova
+                   <FileText className="w-4 h-4 text-zinc-400" /> Ver Prova
                  </button>
                  <button 
                    onClick={(e) => selectedSimulado && handleDownload(e, selectedSimulado.gabarito_url)} 
                    disabled={!selectedSimulado?.gabarito_url}
-                   className="bg-muted hover:bg-muted/80 disabled:opacity-50 text-foreground py-3.5 rounded-xl flex items-center justify-center gap-2 transition-colors font-medium text-sm border border-border/50"
+                   className="bg-zinc-900/50 hover:bg-zinc-900 disabled:opacity-50 text-foreground py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all font-medium text-[13px] border border-white/5 hover:border-white/10 shadow-sm"
                  >
-                   <FileText className="w-4 h-4 text-emerald-500" /> Ver Gabarito
+                   <FileText className="w-4 h-4 text-emerald-500/80" /> Ver Gabarito
                  </button>
               </div>
               
               <button 
                 onClick={() => { /* Placeholder logic for history */ }}
-                className="w-full bg-card border border-border text-foreground hover:bg-muted py-3.5 rounded-xl flex items-center justify-center gap-2 transition-colors font-medium text-sm shadow-sm"
+                className="w-full bg-zinc-950 border border-white/5 text-zinc-300 hover:text-white hover:bg-zinc-900 py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all font-medium text-[13px] shadow-sm"
               >
-                 <History className="w-4 h-4 text-muted-foreground" /> Ver Histórico e Acertos
+                 <History className="w-4 h-4 opacity-70" /> Ver Histórico e Acertos
               </button>
             </div>
           </div>

@@ -101,14 +101,14 @@ export function QuestaoEnunciadoCard({
           )}
         </AnimatePresence>
 
-        <div className="flex flex-col gap-1.5 pt-4 pb-5 text-[14px] text-muted-foreground/90">
-          <div className="flex flex-wrap gap-x-4 gap-y-1.5">
-            {atual.ano && <span><strong className="font-semibold text-foreground/80">Ano:</strong> {atual.ano}</span>}
-            {atual.banca && <span><strong className="font-semibold text-foreground/80">Banca:</strong> {atual.banca}</span>}
+        <div className="flex flex-col gap-2.5 pt-4 pb-6 text-[13px]">
+          <div className="flex flex-wrap gap-2">
+            {atual.ano && <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-zinc-300 font-medium">Ano: <span className="text-white font-semibold">{atual.ano}</span></span>}
+            {atual.banca && <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-zinc-300 font-medium">Banca: <span className="text-white font-semibold">{atual.banca}</span></span>}
           </div>
           {atual.assunto && (
-            <div>
-              <strong className="font-semibold text-foreground/80">Assunto:</strong> {atual.assunto}
+            <div className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-zinc-300 leading-relaxed">
+              <span className="font-semibold text-white/70 mr-1">Assunto:</span> {atual.assunto}
             </div>
           )}
         </div>
@@ -160,7 +160,7 @@ export function QuestaoEnunciadoCard({
             animate={{ opacity: 1, y: 0 }}
           >
             <div className="flex flex-col gap-4 pb-6">
-              <p className="text-[16.5px] font-normal leading-[1.75] text-foreground sm:text-[17.5px] whitespace-pre-wrap">
+              <p className="text-[16.5px] font-normal leading-[1.75] text-zinc-100 sm:text-[17.5px] whitespace-pre-wrap">
                 {atual.enunciado}
               </p>
             </div>
@@ -181,38 +181,39 @@ export function QuestaoEnunciadoCard({
                     onPointerLeave={onLongPressEnd}
                     onContextMenu={(e) => e.preventDefault()}
                     className={cn(
-                      'relative flex min-h-[60px] w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all select-none',
+                      'group relative flex min-h-[64px] w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all select-none overflow-hidden',
                       revela
-                        ? 'border-green-500 bg-green-500/10'
+                        ? 'border-emerald-500/50 bg-emerald-500/10 shadow-[0_0_20px_-5px_rgba(16,185,129,0.2)]'
                         : errou
-                        ? 'border-red-500 bg-red-500/10'
+                        ? 'border-rose-500/50 bg-rose-500/10 shadow-[0_0_20px_-5px_rgba(244,63,94,0.2)]'
                         : riscada
-                        ? 'border-border/30 bg-muted/20 opacity-40'
+                        ? 'border-white/5 bg-white/5 opacity-40'
                         : escolhida
-                        ? 'border-[rgb(var(--tema-rgb))] bg-[rgba(var(--tema-rgb),0.15)]'
-                        : 'border-[rgba(var(--tema-rgb),0.2)] bg-[rgba(var(--tema-rgb),0.03)] hover:border-[rgba(var(--tema-rgb),0.4)] hover:bg-[rgba(var(--tema-rgb),0.08)]',
+                        ? 'border-[rgb(var(--tema-rgb))] bg-[rgba(var(--tema-rgb),0.12)] shadow-[0_0_20px_-5px_rgba(var(--tema-rgb),0.3)]'
+                        : 'border-white/10 bg-zinc-900/40 hover:border-white/20 hover:bg-zinc-900/80',
                     )}
                   >
                     <span
                       className={cn(
-                        'flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[15px] font-bold',
+                        'flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[15px] font-bold transition-all shadow-sm',
                         revela
-                          ? 'bg-green-500 text-white'
+                          ? 'bg-emerald-500 text-white'
                           : errou
-                          ? 'bg-red-500 text-white'
+                          ? 'bg-rose-500 text-white'
                           : riscada
-                          ? 'bg-muted/40 text-muted-foreground/30'
+                          ? 'bg-white/10 text-white/30'
                           : escolhida
-                          ? 'bg-[rgb(var(--tema-rgb))] text-white'
-                          : 'bg-[rgba(var(--tema-rgb),0.1)] text-[rgba(var(--tema-rgb),0.8)]',
+                          ? 'bg-[rgb(var(--tema-rgb))] text-white shadow-md'
+                          : 'bg-white/10 text-white/70 group-hover:bg-white/20 group-hover:text-white',
                       )}
                     >
                       {op.letra}
                     </span>
                     <span
                       className={cn(
-                        'flex-1 text-[16px] leading-[1.5] text-foreground/90',
-                        riscada && 'line-through text-muted-foreground/50',
+                        'flex-1 text-[15.5px] leading-[1.6] text-zinc-300 transition-colors',
+                        (escolhida || revela || errou) && 'text-zinc-100',
+                        riscada && 'line-through text-white/30',
                       )}
                     >
                       {op.texto}
@@ -220,14 +221,14 @@ export function QuestaoEnunciadoCard({
                     {/* Linha diagonal de eliminação */}
                     {riscada && !resp && (
                       <div className="absolute inset-y-0 left-4 right-4 flex items-center pointer-events-none">
-                        <div className="h-[2px] w-full bg-red-500/40 rounded-full" />
+                        <div className="h-[2px] w-full bg-rose-500/40 rounded-full" />
                       </div>
                     )}
                   </button>
                 );
               })}
               {!resp && (
-                <p className="text-center text-[12px] text-muted-foreground/50 pt-1">
+                <p className="text-center text-[13px] text-zinc-500/80 pt-2 font-medium">
                   Segure para eliminar uma alternativa
                 </p>
               )}
