@@ -48,13 +48,7 @@ export function QuestaoHeader({
             </AnimatePresence>
           </div>
         </div>
-        <button
-          onClick={onReportarErro}
-          aria-label="Reportar Erro"
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-black/15 hover:bg-black/25 transition-colors"
-        >
-          <AlertTriangle className="h-5 w-5" />
-        </button>
+        <div className="h-10 w-10 shrink-0" />
       </div>
 
       {/* Barra de Progresso Viva */}

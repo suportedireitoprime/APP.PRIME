@@ -8,3 +8,4 @@ export { PainelAcao, TITULOS, OPCOES_RESUMOS, type Fonte, type SeletorTipo, type
 export { ComentarioSheet, ComentarioInner, TamanhoTextoFab } from './QuestaoComentarioSheet';
 export { StepRow } from './FiltroStepRow';
 export { SelecaoSheet } from './FiltroSelecaoSheet';
+export * from './QuestaoReportDrawer';

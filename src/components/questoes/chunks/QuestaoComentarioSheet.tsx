@@ -62,6 +62,19 @@ export function TamanhoTextoFab({ fs, setFs }: { fs: number; setFs: (n: number) 
   );
 }
 
+// Helper to format plain text from spreadsheet into nice markdown
+function formatarComentario(texto: string | undefined): string {
+  if (!texto) return '';
+  return texto
+    // Add newlines before (A) Incorreta, (B) Incorreta, etc. and bold them
+    .replace(/\(([A-E])\)\s*(Incorreta|Correta|Correto|Incorreto)[\.:-]?/g, '\n\n**($1) $2:**')
+    // Highlight Súmulas
+    .replace(/(Súmula\s+\d+\s+do\s+[A-Z]+)/gi, '**$1**')
+    // Highlight Articles
+    .replace(/(Art\.\s+\d+.*?)(?=[,.]|\s|$)/gi, '**$1**')
+    .trim();
+}
+
 export function ComentarioInner({ source }: { source: Fonte }) {
   const [view, setView] = useState<'correta' | 'erradas'>('correta');
   const [fs, setFsState] = useState(17);
@@ -119,7 +132,7 @@ export function ComentarioInner({ source }: { source: Fonte }) {
           {error && !isLoading && <Erro onRetry={() => refetch()} />}
           {!isLoading && !error && (hasPrePopulatedComments || data) && (
             <div className="space-y-3">
-              <Md texto={hasPrePopulatedComments ? (source as any).gabarito_comentado : data.texto} className={mdClass} />
+              <Md texto={hasPrePopulatedComments ? formatarComentario((source as any).gabarito_comentado) : data.texto} className={mdClass} />
               {data?.fundamento && (
                 <div className="rounded-xl border border-primary/30 bg-primary/5 px-4 py-3">
                   <p className="mb-1 inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
@@ -162,7 +175,7 @@ export function ComentarioInner({ source }: { source: Fonte }) {
 
           {hasPrePopulatedComments && (source as any).comentario_incorretas && (
             <div className="rounded-xl border border-border bg-background p-4">
-              <Md texto={(source as any).comentario_incorretas} className={mdClass} />
+              <Md texto={formatarComentario((source as any).comentario_incorretas)} className={mdClass} />
             </div>
           )}
 

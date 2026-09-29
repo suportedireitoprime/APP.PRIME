@@ -70,11 +70,9 @@ export function PageHeader({
       </div>
 
 
-      {rightAction ? (
-        <div className="shrink-0">{rightAction}</div>
-      ) : (
-        <div className="w-12 sm:w-[52px] shrink-0" />
-      )}
+      <div id="page-header-right-action" className="shrink-0 flex items-center min-w-[3rem] sm:min-w-[52px] justify-end empty:hidden">
+        {rightAction}
+      </div>
     </header>
   );
 }

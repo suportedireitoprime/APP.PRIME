@@ -3,15 +3,23 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertTriangle } from 'lucide-react';
 import ResolverPadrao from '@/components/questoes/ResolverPadrao';
 import { Questao } from '@/hooks/useQuestoes';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 export default function FerramentasSimuladosResolver() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [rodando, setRodando] = useState(true);
   const [segundos, setSegundos] = useState(0);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const { data: simulado, isLoading: loadingSimulado } = useQuery({
     queryKey: ['simulados', id],
@@ -119,7 +127,17 @@ export default function FerramentasSimuladosResolver() {
       <PageHeader
         title={simulado.exam?.name || 'Simulado'}
         subtitle={rodando ? mmss : 'Simulado concluído'}
-        onBack={() => (rodando ? finalizar() : navigate('/ferramentas/simulados'))}
+        leading={
+          rodando ? (
+            <button
+              onClick={() => setShowConfirmModal(true)}
+              className="text-[15px] font-bold text-foreground hover:opacity-70 transition-opacity"
+            >
+              Encerrar
+            </button>
+          ) : undefined
+        }
+        onBack={rodando ? undefined : () => navigate('/ferramentas/simulados')}
       />
 
       <div className="mx-auto w-full max-w-3xl flex-1 flex flex-col">
@@ -157,6 +175,37 @@ export default function FerramentasSimuladosResolver() {
           </div>
         )}
       </div>
+
+      <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
+        <DialogContent className="w-[90vw] max-w-[400px] rounded-3xl p-6 border-border/50 bg-[#141414]">
+          <DialogHeader className="mb-2">
+            <DialogTitle className="text-xl font-bold text-white text-center">Opções do Simulado</DialogTitle>
+            <DialogDescription className="text-center text-muted-foreground pt-2 text-[15px]">
+              O que você deseja fazer com este simulado?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 mt-4">
+            <button
+              onClick={() => {
+                setShowConfirmModal(false);
+                navigate('/ferramentas/simulados');
+              }}
+              className="h-14 w-full rounded-2xl bg-white/[0.08] text-white font-semibold hover:bg-white/[0.12] transition-colors"
+            >
+              Pausar e sair
+            </button>
+            <button
+              onClick={() => {
+                setShowConfirmModal(false);
+                finalizar();
+              }}
+              className="h-14 w-full rounded-2xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-colors"
+            >
+              Encerrar simulado
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

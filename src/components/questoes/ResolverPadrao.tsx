@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { type PanInfo } from 'framer-motion';
 import { Sparkles, Grid2X2, Plus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -19,6 +20,7 @@ import {
   QuestaoEnunciadoCard,
   QuestaoFeedbackDrawer,
   ComentarioSheet,
+  QuestaoReportDrawer,
 } from './chunks';
 import { QuestaoAcoesBar } from './QuestaoAcoesBar';
 
@@ -413,12 +415,19 @@ const ResolverPadrao = ({
 
   const progresso = questoes.length > 0 ? (Object.keys(respostas).length / questoes.length) * 100 : 0;
 
+  const renderRightActionPortal = () => {
+    const el = document.getElementById('page-header-right-action');
+    if (!el) return null;
+    return createPortal(<QuestaoReportDrawer questaoId={atual.id} />, el);
+  };
+
   return (
     <div 
       ref={topoRef} 
       className={cn('flex min-h-screen flex-col bg-background', resp ? 'pb-[260px]' : 'pb-32')}
       style={{ '--tema-rgb': getDisciplinaColors(atual.disciplina) } as React.CSSProperties}
     >
+      {renderRightActionPortal()}
       {gateQuestoes.gateNode}
       {gateFuncoes.gateNode}
 
@@ -427,7 +436,6 @@ const ResolverPadrao = ({
         streak={streak}
         progresso={progresso}
         onBack={onBack}
-        onReportarErro={agendarNotificacaoErro}
       />
 
       <div
