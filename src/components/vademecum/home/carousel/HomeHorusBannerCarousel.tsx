@@ -105,43 +105,34 @@ const HomeHorusBannerCarousel = () => {
     }
   }, []);
 
-  // IntersectionObserver para detectar qual card está no centro
-  useEffect(() => {
+  // Detect active index using scroll position instead of IntersectionObserver 
+  // to avoid infinite loops caused by CSS transforms (scale) altering the bounding box.
+  const handleScroll = () => {
+    pauseInteraction();
     const scroller = scrollerRef.current;
     if (!scroller) return;
 
-    const ratios = new Map<Element, number>();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          ratios.set(entry.target, entry.intersectionRatio);
-        });
+    const center = scroller.scrollLeft + scroller.clientWidth / 2;
+    let closestIndex = activeIndex;
+    let minDistance = Infinity;
 
-        let maxRatio = -1;
-        let bestTarget: Element | null = null;
-        ratios.forEach((ratio, target) => {
-          if (ratio > maxRatio) {
-            maxRatio = ratio;
-            bestTarget = target;
-          }
-        });
-
-        if (bestTarget) {
-          const idx = Array.from(scroller.children).indexOf(bestTarget) - 1;
-          if (idx >= 0 && idx < INFINITE_ITEMS.length) {
-            setActiveIndex(idx);
-          }
-        }
-      },
-      {
-        root: scroller,
-        threshold: Array.from({ length: 11 }, (_, i) => i / 10),
+    // Skip the first and last spacer elements
+    const children = Array.from(scroller.children);
+    for (let i = 1; i < children.length - 1; i++) {
+      const child = children[i] as HTMLElement;
+      // offsetLeft and clientWidth are immune to CSS transform scale!
+      const childCenter = child.offsetLeft + child.clientWidth / 2;
+      const distance = Math.abs(center - childCenter);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestIndex = i - 1;
       }
-    );
+    }
 
-    Array.from(scroller.children).forEach((child) => observer.observe(child));
-    return () => observer.disconnect();
-  }, []);
+    if (closestIndex !== activeIndex && closestIndex >= 0 && closestIndex < INFINITE_ITEMS.length) {
+      setActiveIndex(closestIndex);
+    }
+  };
 
   // Autoplay
   useEffect(() => {
@@ -216,7 +207,7 @@ const HomeHorusBannerCarousel = () => {
         ref={scrollerRef}
         onPointerDown={pauseInteraction}
         onTouchStart={pauseInteraction}
-        onScroll={pauseInteraction}
+        onScroll={handleScroll}
         className="flex overflow-x-auto snap-x snap-mandatory gap-3 hide-scrollbar -mx-4 pb-4 pt-2 scroll-smooth"
       >
         <div className="w-[calc(50vw-72.5px-16px)] shrink-0 pointer-events-none" />
