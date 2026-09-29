@@ -4,7 +4,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { UserDossieSheet } from './UserDossieSheet';
-import { rotaParaFuncao } from '@/lib/rotaFuncoes';
+import { rotaParaFuncao, formatarDuracao } from '@/lib/rotaFuncoes';
 
 type CardId = 'online5m' | 'online' | 'cadastros' | 'paywall' | 'viu_planos' | 'trial';
 type PeriodoId = 'hoje' | 'ontem' | '7d' | '30d';
@@ -20,6 +20,7 @@ interface Row {
   email?: string | null;
   provider?: string | null;
   acessos?: number | null;
+  tempo_tela?: number | null;
   avatarUrl?: string | null;
   isPremium?: boolean;
   funcaoPreferida?: string | null;
@@ -1034,10 +1035,51 @@ export function AdminHojeCards() {
         const { data: provs } = await supabase.rpc('admin_user_auth_providers' as any, { _ids: ids });
         const map = new Map<string, string>(((provs as any[]) || []).map((p) => [p.user_id || p.id, p.provider]));
 
-        // Fetch favorite function (most frequent initial_route in user_sessions)
-        const { data: sessions } = await supabase.from('user_sessions')
-          .select('user_id, initial_route')
-          .in('user_id', ids);
+        // --- FETCH ACESSOS E TEMPO DE TELA ---
+        const minD = new Date(datas[datas.length - 1]);
+        minD.setHours(0, 0, 0, 0);
+        const maxD = new Date(datas[0]);
+        maxD.setDate(maxD.getDate() + 1);
+        maxD.setHours(0, 0, 0, 0);
+
+        const [{ data: acts }, { data: pvs }, { data: sessions }] = await Promise.all([
+          supabase.from('activity_logs').select('user_id, created_at').in('user_id', ids).gte('created_at', minD.toISOString()).lt('created_at', maxD.toISOString()).order('created_at', { ascending: true }),
+          supabase.from('app_events').select('user_id, created_at').eq('event_name', 'page_view').in('user_id', ids).gte('created_at', minD.toISOString()).lt('created_at', maxD.toISOString()),
+          supabase.from('user_sessions').select('user_id, initial_route').in('user_id', ids)
+        ]);
+        
+        const tempoMap = new Map<string, number>();
+        const acessosMap = new Map<string, number>();
+
+        if (acts) {
+          const logsByUser: Record<string, string[]> = {};
+          acts.forEach((log: any) => {
+            if (!logsByUser[log.user_id]) logsByUser[log.user_id] = [];
+            logsByUser[log.user_id].push(log.created_at);
+          });
+          Object.keys(logsByUser).forEach(uid => {
+            const logs = logsByUser[uid];
+            let segundos = 0;
+            for (let i = 1; i < logs.length; i++) {
+              const prev = new Date(logs[i - 1]).getTime();
+              const curr = new Date(logs[i]).getTime();
+              let delta = (curr - prev) / 1000;
+              if (delta > 30 * 60) delta = 60; 
+              segundos += delta;
+            }
+            tempoMap.set(uid, segundos);
+          });
+        }
+
+        if (pvs) {
+          const pvsByUser: Record<string, number> = {};
+          pvs.forEach((pv: any) => {
+             pvsByUser[pv.user_id] = (pvsByUser[pv.user_id] || 0) + 1;
+          });
+          Object.keys(pvsByUser).forEach(uid => {
+             acessosMap.set(uid, pvsByUser[uid]);
+          });
+        }
 
         const mapFav = new Map<string, string>();
         if (sessions && sessions.length > 0) {
@@ -1056,10 +1098,13 @@ export function AdminHojeCards() {
           const updated = current.map((r) => {
             const rUid = r.userId || r.key;
             const rProv = map.get(rUid) || (r.avatarUrl?.includes('googleusercontent.com') ? 'google' : r.provider);
+            const calcAcessos = acessosMap.get(rUid);
             return { 
               ...r, 
               provider: rProv,
-              funcaoPreferida: mapFav.get(rUid)
+              funcaoPreferida: mapFav.get(rUid),
+              tempo_tela: tempoMap.get(rUid) || null,
+              acessos: (calcAcessos !== undefined) ? Math.max(r.acessos || 0, calcAcessos) : r.acessos
             };
           });
           if (periodo === 'hoje') rowsCache.current[id] = updated;
@@ -1334,6 +1379,14 @@ export function AdminHojeCards() {
                             className="shrink-0 font-body text-[10.5px] font-bold text-rose-400"
                           >
                             {r.acessos}x
+                          </span>
+                        )}
+                        {typeof r.tempo_tela === 'number' && r.tempo_tela > 0 && (
+                          <span
+                            title="Tempo de tela"
+                            className="shrink-0 font-body text-[10.5px] font-bold text-emerald-500"
+                          >
+                            · {formatarDuracao(r.tempo_tela)}
                           </span>
                         )}
                         {novosKeys.has(r.key) && (
