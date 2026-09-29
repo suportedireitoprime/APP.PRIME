@@ -18,7 +18,7 @@ export function QuestaoHeader({
 }: QuestaoHeaderProps) {
   return (
     <div className="sticky top-0 z-50 flex flex-col">
-      <div className="flex items-center justify-between bg-primary px-4 pb-4 pt-safe-header text-primary-foreground shadow-sm">
+      <div className="flex items-center justify-between bg-[rgb(var(--tema-rgb))] px-4 pb-4 pt-safe-header text-white shadow-sm">
         {onBack ? (
           <button
             onClick={onBack}

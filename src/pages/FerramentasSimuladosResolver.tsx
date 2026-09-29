@@ -122,7 +122,7 @@ export default function FerramentasSimuladosResolver() {
         onBack={() => (rodando ? finalizar() : navigate('/ferramentas/simulados'))}
       />
 
-      <div className="mx-auto w-full max-w-3xl px-4 py-5">
+      <div className="mx-auto w-full max-w-3xl flex-1 flex flex-col">
         {rodando ? (
           <>
             <ResolverPadrao
@@ -133,12 +133,14 @@ export default function FerramentasSimuladosResolver() {
               onNovoBloco={() => {}}
               vazioTexto="Não há questões cadastradas para este simulado."
             />
-            <button
-              onClick={finalizar}
-              className="mt-5 h-12 w-full rounded-xl border border-border text-[15px] font-semibold text-muted-foreground hover:bg-muted/50 transition-colors"
-            >
-              Encerrar simulado
-            </button>
+            <div className="px-4 pb-5">
+              <button
+                onClick={finalizar}
+                className="mt-5 h-12 w-full rounded-xl border border-border text-[15px] font-semibold text-muted-foreground hover:bg-muted/50 transition-colors"
+              >
+                Encerrar simulado
+              </button>
+            </div>
           </>
         ) : (
           <div className="text-center py-12">

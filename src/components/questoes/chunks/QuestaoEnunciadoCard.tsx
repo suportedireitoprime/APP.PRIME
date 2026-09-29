@@ -189,8 +189,8 @@ export function QuestaoEnunciadoCard({
                         : riscada
                         ? 'border-border/30 bg-muted/20 opacity-40'
                         : escolhida
-                        ? 'border-primary bg-primary/5'
-                        : 'border-border/60 bg-muted/40 hover:border-border hover:bg-accent/50',
+                        ? 'border-[rgb(var(--tema-rgb))] bg-[rgba(var(--tema-rgb),0.15)]'
+                        : 'border-[rgba(var(--tema-rgb),0.2)] bg-[rgba(var(--tema-rgb),0.03)] hover:border-[rgba(var(--tema-rgb),0.4)] hover:bg-[rgba(var(--tema-rgb),0.08)]',
                     )}
                   >
                     <span
@@ -200,9 +200,11 @@ export function QuestaoEnunciadoCard({
                           ? 'bg-green-500 text-white'
                           : errou
                           ? 'bg-red-500 text-white'
+                          : riscada
+                          ? 'bg-muted/40 text-muted-foreground/30'
                           : escolhida
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-foreground/5 text-foreground/60',
+                          ? 'bg-[rgb(var(--tema-rgb))] text-white'
+                          : 'bg-[rgba(var(--tema-rgb),0.1)] text-[rgba(var(--tema-rgb),0.8)]',
                       )}
                     >
                       {op.letra}

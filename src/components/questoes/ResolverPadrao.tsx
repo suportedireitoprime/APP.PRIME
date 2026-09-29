@@ -12,6 +12,7 @@ import { useGatedFeature } from '@/hooks/useGatedFeature';
 import { CartaoRespostaSheet } from './CartaoRespostaSheet';
 import { CartaoRespostaGrid } from './CartaoRespostaGrid';
 import { getSessaoById, saveSessao } from '@/lib/questoesSessoes';
+import { getDisciplinaColors } from '@/lib/disciplinaColors';
 import {
   QuestaoCountdown,
   QuestaoHeader,
@@ -413,7 +414,11 @@ const ResolverPadrao = ({
   const progresso = questoes.length > 0 ? (Object.keys(respostas).length / questoes.length) * 100 : 0;
 
   return (
-    <div ref={topoRef} className={cn('flex min-h-screen flex-col bg-background', resp ? 'pb-[260px]' : 'pb-32')}>
+    <div 
+      ref={topoRef} 
+      className={cn('flex min-h-screen flex-col bg-background', resp ? 'pb-[260px]' : 'pb-32')}
+      style={{ '--tema-rgb': getDisciplinaColors(atual.disciplina) } as React.CSSProperties}
+    >
       {gateQuestoes.gateNode}
       {gateFuncoes.gateNode}
 
