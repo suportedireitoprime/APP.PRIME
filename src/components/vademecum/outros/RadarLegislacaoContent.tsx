@@ -35,6 +35,7 @@ export const RadarLegislacaoContent: React.FC<RadarLegislacaoContentProps> = ({
   const [refreshing, setRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState<string>('Todos');
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   // Carrega proposições da Câmara dos Deputados
   const loadData = async (forceRefresh = false) => {
@@ -265,10 +266,24 @@ export const RadarLegislacaoContent: React.FC<RadarLegislacaoContentProps> = ({
                   ))}
                 </div>
 
-                {/* Linha 3: Resumo Compacto do que muda (2 linhas max) */}
-                <p className="text-xs text-zinc-300 leading-relaxed line-clamp-2">
-                  {item.oQueQuerFazer}
-                </p>
+                {/* Linha 3: Resumo Compacto do que muda (2 linhas max, expansível) */}
+                <div 
+                  className="cursor-pointer group/desc" 
+                  onClick={() => {
+                    haptic.selection();
+                    setExpandedIds(prev => {
+                      const next = new Set(prev);
+                      const idStr = String(item.id);
+                      if (next.has(idStr)) next.delete(idStr);
+                      else next.add(idStr);
+                      return next;
+                    });
+                  }}
+                >
+                  <p className={`text-xs leading-relaxed transition-all ${expandedIds.has(String(item.id)) ? 'text-zinc-200' : 'text-zinc-300 line-clamp-2 group-hover/desc:text-zinc-200'}`}>
+                    {item.oQueQuerFazer}
+                  </p>
+                </div>
 
                 {/* Linha 4: Situação + Ações compactas */}
                 <div className="flex items-center justify-between gap-2 pt-1 border-t border-white/5 text-[11px]">

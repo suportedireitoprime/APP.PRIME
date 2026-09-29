@@ -70,7 +70,17 @@ const VadeMecumFavoritos = () => {
     let cancel = false;
     const load = () => {
       listArtigosFavoritos()
-        .then((r) => { if (!cancel) setArtigos(r); })
+        .then((r) => { 
+          if (!cancel) {
+            const map = new Map<string, ArtigoFav>();
+            for (const a of r) {
+              const key = `${a.tabela_codigo}::${a.numero_artigo}`;
+              if (!map.has(key)) map.set(key, a);
+            }
+            const validos = Array.from(map.values()).filter(a => getLeiByTabela(a.tabela_codigo) !== undefined);
+            setArtigos(validos);
+          }
+        })
         .finally(() => { if (!cancel) setLoadingArtigos(false); });
     };
     load();
