@@ -6,6 +6,8 @@
  * com sugestões inteligentes de modelos conforme o objetivo (Precisão Jurídica vs Custo Econômico).
  */
 
+import { supabase } from '@/integrations/supabase/client';
+
 export type AiFeatureKey =
   | 'chat_juridico'
   | 'resumo_inteligente'
@@ -573,21 +575,71 @@ export async function executeAiTask(options: {
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000);
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+    
+    const payload: any = {
+        model: config.selectedModel,
+        messages,
+        temperature: options.temperature ?? 0.7,
+        tools: [{
+          type: "function",
+          function: {
+            name: "search_web",
+            description: "Faça pesquisas na internet",
+            parameters: {
+              type: "object",
+              properties: { query: { type: "string" } },
+              required: ["query"]
+            }
+          }
+        }]
+    };
 
-    const res = await fetch(`${cleanUrl}/chat/completions`, {
+    let res = await fetch(`${cleanUrl}/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey.trim()}`,
       },
-      body: JSON.stringify({
-        model: config.selectedModel,
-        messages,
-        temperature: options.temperature ?? 0.7,
-      }),
+      body: JSON.stringify(payload),
       signal: controller.signal,
     });
+    
+    let data = await res.json();
+    
+    if (res.ok && data?.choices?.[0]?.message?.tool_calls) {
+       const toolCall = data.choices[0].message.tool_calls[0];
+       if (toolCall.function.name === 'search_web') {
+         const args = JSON.parse(toolCall.function.arguments);
+         messages.push(data.choices[0].message);
+         
+         try {
+           const searchRes = await supabase.functions.invoke('omniroute-web-search', { body: { query: args.query } });
+           const searchTxt = searchRes.data?.result || 'Sem resultados na internet.';
+           
+           messages.push({
+             role: 'tool',
+             tool_call_id: toolCall.id,
+             name: 'search_web',
+             content: searchTxt
+           });
+           
+           res = await fetch(`${cleanUrl}/chat/completions`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey.trim()}`,
+              },
+              body: JSON.stringify({ ...payload, messages }),
+              signal: controller.signal,
+           });
+           data = await res.json();
+         } catch (e) {
+           console.warn("Falha na tool search_web", e);
+         }
+       }
+    }
+    
     clearTimeout(timeoutId);
 
     if (!res.ok) {
