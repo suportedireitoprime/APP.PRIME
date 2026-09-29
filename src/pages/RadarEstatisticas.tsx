@@ -129,12 +129,20 @@ export default function RadarEstatisticas() {
           <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-8">
             
             {/* Resumo */}
-            <motion.div variants={itemVariants} className="bg-gradient-to-br from-emerald-500/10 to-blue-500/10 border border-white/10 rounded-3xl p-6 relative overflow-hidden backdrop-blur-md">
+            <motion.div variants={itemVariants} className="bg-gradient-to-br from-emerald-500/10 to-blue-500/10 border border-white/10 rounded-3xl p-6 sm:p-8 relative overflow-hidden backdrop-blur-md shadow-[0_0_40px_-15px_rgba(16,185,129,0.3)]">
               <TrendingUp className="absolute -right-4 -bottom-4 w-32 h-32 text-emerald-500/10" />
-              <p className="text-white/60 text-sm font-medium mb-1 uppercase tracking-widest">Oportunidades no Radar</p>
-              <div className="text-5xl font-display font-black text-white">{stats.total}</div>
-              <p className="text-emerald-400 text-sm font-medium mt-2 flex items-center gap-1.5">
-                <Check className="w-4 h-4" /> Edital publicado ou iminente
+              <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
+              <p className="text-white/70 text-sm font-semibold mb-2 uppercase tracking-widest flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                Oportunidades no Radar
+              </p>
+              <div className="flex items-baseline gap-1">
+                <div className="text-6xl sm:text-7xl font-display font-black bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400">
+                  +{stats.total}
+                </div>
+              </div>
+              <p className="text-emerald-400/90 text-sm sm:text-base font-medium mt-3 flex items-center gap-1.5 bg-emerald-500/10 w-fit px-3 py-1.5 rounded-full border border-emerald-500/20">
+                <Check className="w-4 h-4" strokeWidth={2.5} /> Editais publicados ou iminentes
               </p>
             </motion.div>
 

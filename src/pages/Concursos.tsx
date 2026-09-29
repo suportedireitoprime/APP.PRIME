@@ -193,7 +193,7 @@ const Concursos = () => {
       .from('concursos_noticias')
       .select('*')
       .order('created_at', { ascending: false })
-      .limit(300)
+      .limit(2500)
       .then(({ data }) => {
         if (!cancel && data) {
           setSharedConcursos(data as any);

@@ -1,7 +1,6 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { haptic } from '@/lib/nativeHaptics';
-import { Scale } from 'lucide-react';
 
 import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
@@ -246,10 +245,22 @@ const HomeHorusBannerCarousel = () => {
                   <div className="absolute inset-0 z-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shimmer-once pointer-events-none" />
                 )}
                 {/* Ícone jurídico decorativo ao fundo */}
-                <Scale 
-                  className="pointer-events-none absolute -right-3 -bottom-3 w-[100px] h-[100px] text-white/[0.08] opacity-80" 
-                  strokeWidth={1.2} 
-                />
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.2"
+                  className="pointer-events-none absolute -right-3 -bottom-3 w-[100px] h-[100px] text-white/[0.08] opacity-80"
+                >
+                  <path d="M12 3v19" />
+                  <path d="M12 3l-8 5v1" />
+                  <path d="M12 3l8 5v1" />
+                  <path d="M4 9c0 2.2 3.6 4 8 4s8-1.8 8-4" />
+                  <path d="M4 9l-2 6a3 3 0 0 0 3 3 3 3 0 0 0 3-3l-2-6" />
+                  <path d="M20 9l-2 6a3 3 0 0 0 3 3 3 3 0 0 0 3-3l-2-6" />
+                </svg>
               </div>
 
               {/* Owl Image vazado no topo */}

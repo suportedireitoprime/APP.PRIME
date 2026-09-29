@@ -198,7 +198,7 @@ export default function RadarConcursos() {
           .from('concursos_noticias')
           .select('*')
           .order('created_at', { ascending: false })
-          .limit(300);
+          .limit(2500);
 
         if (!cancel && concursosData) {
           setSharedConcursos(concursosData);
@@ -677,7 +677,8 @@ export default function RadarConcursos() {
           </div>
         </section>
 
-        {/* 4. CONFIGURAÇÃO DE NOTIFICAÇÕES COMPACTA NO RODAPÉ */}
+        {/* 4. CONFIGURAÇÃO DE NOTIFICAÇÕES COMPACTA NO RODAPÉ - OCULTADA TEMPORARIAMENTE */}
+        {false && (
         <section className="bg-card/70 border border-emerald-500/25 rounded-3xl p-4 sm:p-5 shadow-md space-y-3.5 mt-12 sm:mt-16 relative">
           <img src={horusAsset} alt="Hórus" className="absolute -top-6 right-2 sm:-top-8 sm:right-6 w-20 h-20 sm:w-24 sm:h-24 drop-shadow-2xl z-20 pointer-events-none" />
 
@@ -744,6 +745,7 @@ export default function RadarConcursos() {
             </button>
           </div>
         </section>
+        )}
       </main>
 
       {/* 5. MODAL DE CONTEÚDO COMPLETO DO CONCURSO */}
