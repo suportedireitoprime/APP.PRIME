@@ -15,6 +15,31 @@ export default function AdminSimulados() {
   const [spreadsheetUrl, setSpreadsheetUrl] = useState("");
   const [examName, setExamName] = useState("");
 
+  const [categorias, setCategorias] = useState<any[]>([]);
+  const [loadingCategorias, setLoadingCategorias] = useState(true);
+
+  const fetchCategorias = async () => {
+    setLoadingCategorias(true);
+    const { data, error } = await supabase
+      .from("simulado_exams")
+      .select(`
+        id,
+        name,
+        created_at,
+        simulados:simulados(count)
+      `)
+      .order('created_at', { ascending: false });
+
+    if (!error && data) {
+      setCategorias(data);
+    }
+    setLoadingCategorias(false);
+  };
+
+  React.useEffect(() => {
+    fetchCategorias();
+  }, []);
+
   const handleImport = async () => {
     if (!examName) {
       toast.error("Preencha o nome do concurso/profissão");
@@ -27,17 +52,25 @@ export default function AdminSimulados() {
 
     setLoading(true);
     try {
-      // Future integration: calling Supabase Edge Function to parse and import the Google Sheet
-      // For now, simulating the process
-      // const { data, error } = await supabase.functions.invoke("import-simulados", {
-      //   body: { url: spreadsheetUrl, name: examName }
-      // });
-      // if (error) throw error;
-      
       await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Simular inserção no banco de dados para a categoria aparecer na listagem
+      const { data: examData } = await supabase
+        .from("simulado_exams")
+        .insert({ name: examName })
+        .select()
+        .single();
+        
+      if (examData) {
+        await supabase
+          .from("simulados")
+          .insert({ exam_id: examData.id, year: new Date().getFullYear(), prova_url: spreadsheetUrl });
+      }
+      
       toast.success("Simulado importado com sucesso (simulação)");
       setSpreadsheetUrl("");
       setExamName("");
+      fetchCategorias();
     } catch (error: any) {
       toast.error(error.message || "Erro ao importar simulado");
     } finally {
@@ -100,6 +133,33 @@ export default function AdminSimulados() {
             </Button>
           </CardContent>
         </Card>
+
+        <div className="mt-8 space-y-4">
+          <h2 className="text-xl font-bold tracking-tight">Categorias Importadas</h2>
+          {loadingCategorias ? (
+            <div className="text-center text-white/50 py-8 animate-pulse font-medium">Carregando categorias...</div>
+          ) : categorias.length === 0 ? (
+            <div className="bg-[#121214] border border-white/10 rounded-2xl p-8 text-center text-white/50 font-medium">
+              Nenhum simulado importado ainda.
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {categorias.map(cat => (
+                <div key={cat.id} className="bg-[#121214] border border-white/10 rounded-2xl p-5 flex items-center justify-between shadow-sm">
+                  <div>
+                    <h3 className="font-semibold text-lg tracking-tight text-white">{cat.name}</h3>
+                    <p className="text-xs text-white/50 mt-1 uppercase tracking-wider font-medium">
+                      Importado em {new Date(cat.created_at).toLocaleDateString('pt-BR')}
+                    </p>
+                  </div>
+                  <div className="bg-primary/10 border border-primary/20 text-primary px-4 py-2 rounded-xl font-bold shadow-sm">
+                    {cat.simulados?.[0]?.count || 0} simulado(s)
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );
