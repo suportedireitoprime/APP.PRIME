@@ -174,6 +174,85 @@ export const AssistenteInputBar: React.FC<AssistenteInputBarProps> = ({
             </p>
           </div>
         )}
+        {/* Menu flutuante do + (Câmera / Tirar Foto) */}
+        <AnimatePresence>
+          {attachOpen && (
+            <>
+              <div
+                className="fixed inset-0 z-[68]"
+                onClick={() => setAttachOpen(false)}
+              />
+              <motion.div
+                initial={{ opacity: 0, y: 12, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 12, scale: 0.9 }}
+                transition={{ type: 'spring', damping: 22, stiffness: 320 }}
+                className="absolute bottom-[100%] mb-4 left-4 z-[69] bg-card border border-border rounded-2xl shadow-2xl p-2 flex flex-col gap-1 min-w-[200px]"
+              >
+                <button
+                  onClick={() => {
+                    haptic.light();
+                    setAttachOpen(false);
+                    fileInputRef.current?.removeAttribute('capture');
+                    fileInputRef.current?.setAttribute('accept', 'image/*');
+                    fileInputRef.current?.click();
+                    setTimeout(() => {
+                      fileInputRef.current?.setAttribute('accept', 'image/*,application/pdf');
+                    }, 1000);
+                  }}
+                  className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-colors text-left"
+                >
+                  <ImageIcon className="w-[26px] h-[26px] text-emerald-400" strokeWidth={1.5} />
+                  <span className="flex-1">
+                    <span className="block text-[15px] font-body font-semibold text-foreground tracking-tight">
+                      Galeria
+                    </span>
+                    <span className="block text-[11px] text-muted-foreground/70">Escolher foto</span>
+                  </span>
+                </button>
+                
+                <button
+                  onClick={() => {
+                    haptic.light();
+                    setAttachOpen(false);
+                    void onTirarFoto();
+                  }}
+                  className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-colors text-left"
+                >
+                  <Camera className="w-[26px] h-[26px] text-sky-400" strokeWidth={1.5} />
+                  <span className="flex-1">
+                    <span className="block text-[15px] font-body font-semibold text-foreground tracking-tight">
+                      Câmera
+                    </span>
+                    <span className="block text-[11px] text-muted-foreground/70">Tirar foto</span>
+                  </span>
+                </button>
+                <button
+                  onClick={() => {
+                    haptic.light();
+                    setAttachOpen(false);
+                    fileInputRef.current?.removeAttribute('capture');
+                    fileInputRef.current?.setAttribute('accept', 'application/pdf');
+                    fileInputRef.current?.click();
+                    // Reset after click so other buttons work
+                    setTimeout(() => {
+                      fileInputRef.current?.setAttribute('accept', 'image/*,application/pdf');
+                    }, 1000);
+                  }}
+                  className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-colors text-left"
+                >
+                  <Paperclip className="w-[26px] h-[26px] text-purple-400" strokeWidth={1.5} />
+                  <span className="flex-1">
+                    <span className="block text-[15px] font-body font-semibold text-foreground tracking-tight">
+                      Documento
+                    </span>
+                    <span className="block text-[11px] text-muted-foreground/70">Enviar PDF</span>
+                  </span>
+                </button>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </div>
 
       {voice.listening && (
@@ -186,86 +265,6 @@ export const AssistenteInputBar: React.FC<AssistenteInputBarProps> = ({
           </div>
         </div>
       )}
-
-      {/* Menu flutuante do + (Câmera / Tirar Foto) */}
-      <AnimatePresence>
-        {attachOpen && (
-          <>
-            <div
-              className="fixed inset-0 z-[68]"
-              onClick={() => setAttachOpen(false)}
-            />
-            <motion.div
-              initial={{ opacity: 0, y: 12, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 12, scale: 0.9 }}
-              transition={{ type: 'spring', damping: 22, stiffness: 320 }}
-              className="absolute bottom-[100%] mb-4 left-4 z-[69] bg-card border border-border rounded-2xl shadow-2xl p-2 flex flex-col gap-1 min-w-[200px]"
-            >
-              <button
-                onClick={() => {
-                  haptic.light();
-                  setAttachOpen(false);
-                  fileInputRef.current?.removeAttribute('capture');
-                  fileInputRef.current?.setAttribute('accept', 'image/*');
-                  fileInputRef.current?.click();
-                  setTimeout(() => {
-                    fileInputRef.current?.setAttribute('accept', 'image/*,application/pdf');
-                  }, 1000);
-                }}
-                className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-colors text-left"
-              >
-                <ImageIcon className="w-[26px] h-[26px] text-emerald-400" strokeWidth={1.5} />
-                <span className="flex-1">
-                  <span className="block text-[15px] font-body font-semibold text-foreground tracking-tight">
-                    Galeria
-                  </span>
-                  <span className="block text-[11px] text-muted-foreground/70">Escolher foto</span>
-                </span>
-              </button>
-              
-              <button
-                onClick={() => {
-                  haptic.light();
-                  setAttachOpen(false);
-                  void onTirarFoto();
-                }}
-                className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-colors text-left"
-              >
-                <Camera className="w-[26px] h-[26px] text-sky-400" strokeWidth={1.5} />
-                <span className="flex-1">
-                  <span className="block text-[15px] font-body font-semibold text-foreground tracking-tight">
-                    Câmera
-                  </span>
-                  <span className="block text-[11px] text-muted-foreground/70">Tirar foto</span>
-                </span>
-              </button>
-              <button
-                onClick={() => {
-                  haptic.light();
-                  setAttachOpen(false);
-                  fileInputRef.current?.removeAttribute('capture');
-                  fileInputRef.current?.setAttribute('accept', 'application/pdf');
-                  fileInputRef.current?.click();
-                  // Reset after click so other buttons work
-                  setTimeout(() => {
-                    fileInputRef.current?.setAttribute('accept', 'image/*,application/pdf');
-                  }, 1000);
-                }}
-                className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-colors text-left"
-              >
-                <Paperclip className="w-[26px] h-[26px] text-purple-400" strokeWidth={1.5} />
-                <span className="flex-1">
-                  <span className="block text-[15px] font-body font-semibold text-foreground tracking-tight">
-                    Documento
-                  </span>
-                  <span className="block text-[11px] text-muted-foreground/70">Enviar PDF</span>
-                </span>
-              </button>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
     </>
   );
 };
