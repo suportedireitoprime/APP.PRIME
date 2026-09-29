@@ -402,12 +402,13 @@ export function AdminHojeCards() {
           totalViuPlanos = Math.max(totalViuPlanos, uniqueVp.size);
         }
 
-        // Buscar novas assinaturas no Asaas, Play Store, Apple e Legado por data de criação/início
+        // Buscar novas assinaturas no Asaas, Play Store, Apple e Legado por data de criação
         const [asaasRes, playRes, appleRes, legRes] = await Promise.all([
           supabase
             .from('asaas_subscriptions')
             .select('id, user_id, created_at, started_at, plano, status')
-            .or(`and(created_at.gte.${startIso},created_at.lt.${endIso}),and(started_at.gte.${startIso},started_at.lt.${endIso})`),
+            .gte('created_at', startIso)
+            .lt('created_at', endIso),
           supabase
             .from('play_subscriptions')
             .select('id, user_id, created_at, product_id, status')
@@ -416,7 +417,7 @@ export function AdminHojeCards() {
           supabase
             .from('apple_subscriptions')
             .select('id, user_id, created_at, start_time, product_id, status')
-            .or(`created_at.gte.${startIso},start_time.gte.${startIso}`)
+            .gte('created_at', startIso)
             .lt('created_at', endIso),
           supabase
             .from('legacy_subscribers')
