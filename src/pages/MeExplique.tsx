@@ -17,7 +17,7 @@ import { MeExpliqueTermosView } from '@/components/meExplique/views/MeExpliqueTe
 import { MeExpliqueLivreView } from '@/components/meExplique/views/MeExpliqueLivreView';
 import { MeExpliqueLeisView } from '@/components/meExplique/views/MeExpliqueLeisView';
 import PremiumGate from '@/components/PremiumGate';
-import MentorOverlay from '@/components/vademecum/overlays/MentorOverlay';
+import AssistenteOverlay from '@/components/vademecum/overlays/AssistenteOverlay';
 
 export type ModoMeExplique = 'hub' | 'camera' | 'livros' | 'termos' | 'livre' | 'leis';
 
@@ -28,7 +28,7 @@ export default function MeExplique() {
 
   const cota = useMeExpliqueCota();
   const [gateAberto, setGateAberto] = useState(false);
-  const [mentorOpen, setMentorOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
 
   const modoUrl = searchParams.get('modo') as ModoMeExplique | null;
   const [modoAtual, setModoAtual] = useState<ModoMeExplique>(() => modoUrl || 'hub');
@@ -200,7 +200,7 @@ export default function MeExplique() {
               type="button"
               onClick={() => {
                 haptic.selection();
-                setMentorOpen(true);
+                setChatOpen(true);
               }}
               className="relative overflow-hidden w-full h-[60px] rounded-2xl bg-[#E11D48] text-white font-black text-sm shadow-md hover:bg-rose-600 active:opacity-70 transition-all flex items-center justify-center gap-2"
             >
@@ -269,7 +269,7 @@ export default function MeExplique() {
         description="Libere 5 minutos diários com IA em todas as modalidades do Me Explique."
       />
 
-      <MentorOverlay open={mentorOpen} onClose={() => setMentorOpen(false)} />
+      <AssistenteOverlay open={chatOpen} onClose={() => setChatOpen(false)} />
     </div>
   );
 }
