@@ -10,10 +10,7 @@ import { geminiFetch } from "../_shared/geminiFetch.ts";
 import { MODELS } from "../_shared/ai-models.ts";
 import { normalizeContent, promptFor, type VisualTipo } from "./prompt.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { corsHeaders } from "../_shared/cors.ts";
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") ?? "";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
