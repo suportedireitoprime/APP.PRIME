@@ -3,14 +3,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, Clock, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useSubscription } from '@/hooks/useSubscription';
+import { isAdminEmail } from '@/lib/adminEmails';
 import { haptic } from '@/lib/nativeHaptics';
 import { CheckoutModal } from '@/components/assinatura/CheckoutModal';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppUpdateStore } from '@/lib/appUpdateStore';
 
 export function GlobalPromoFloatingCard() {
-  const { user } = useAuth();
-  const { isPremium, loading: subLoading } = useSubscription();
+  const { user, loading: authLoading } = useAuth();
+  const { isPremium, loading: subLoading, isTrial } = useSubscription();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -20,20 +21,34 @@ export function GlobalPromoFloatingCard() {
   const [showCard, setShowCard] = useState(false);
   const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'anual_pix' | 'anual' | null>(null);
 
-  // Ocultar em algumas rotas críticas (como auth, etc)
-  const isHiddenRoute = ['/login', '/onboarding'].includes(location.pathname);
+  const isAdmin = isAdminEmail(user?.email);
+
+  // Ocultar em rotas públicas (Landing page, auth, login, etc) e área administrativa
+  const cleanPath = (location.pathname || '').replace(/\/+$/, '') || '/';
+  const isHiddenRoute =
+    cleanPath === '/' ||
+    cleanPath === '/landing' ||
+    cleanPath === '/inicio' ||
+    cleanPath === '/login' ||
+    cleanPath === '/auth' ||
+    cleanPath === '/cadastro' ||
+    cleanPath === '/recuperar-senha' ||
+    cleanPath === '/onboarding' ||
+    cleanPath === '/assinatura' ||
+    cleanPath.startsWith('/assinatura/') ||
+    cleanPath.startsWith('/admin');
 
   const getPromoKey = useCallback(() => {
-    return user?.id ? `promo_24h_expires_${user.id}` : 'promo_24h_expires_guest';
+    return user?.id ? `promo_24h_expires_${user.id}` : '';
   }, [user]);
 
   const getTrialKey = useCallback(() => {
-    return user?.id ? `last_trial_promo_shown_${user.id}` : 'last_trial_promo_shown_guest';
+    return user?.id ? `last_trial_promo_shown_${user.id}` : '';
   }, [user]);
 
   const incrementAppOpenCount = useCallback(() => {
-    if (typeof window === 'undefined') return 1;
-    const key = user?.id ? `app_open_count_${user.id}` : 'app_open_count_guest';
+    if (typeof window === 'undefined' || !user?.id) return 1;
+    const key = `app_open_count_${user.id}`;
     let count = 1;
     try {
       if (!sessionStorage.getItem('session_counted')) {
@@ -50,9 +65,9 @@ export function GlobalPromoFloatingCard() {
   }, [user]);
 
   useEffect(() => {
-    // Não decide nada enquanto a assinatura está carregando
-    if (subLoading) return;
-    if (isHiddenRoute || isPremium) {
+    // Só decide quando o usuário está autenticado e o plano identificado
+    if (authLoading || subLoading) return;
+    if (!user || isHiddenRoute || isAdmin || (isPremium && !isTrial)) {
       setShowCard(false);
       return;
     }
@@ -76,6 +91,7 @@ export function GlobalPromoFloatingCard() {
     if (isEligibleFor24h) {
       // A partir da segunda vez, verificamos se a promo 24h já iniciou
       const promoKey = getPromoKey();
+      if (!promoKey) return;
       let expiresAt = 0;
       try {
         const stored = localStorage.getItem(promoKey);
@@ -99,20 +115,25 @@ export function GlobalPromoFloatingCard() {
       }
     }
 
-    // Se não for elegível ou a de 24h já expirou, mostramos o card de Trial (a cada 6h)
-    const trialKey = getTrialKey();
-    let lastShown = 0;
-    try {
-      const stored = localStorage.getItem(trialKey);
-      if (stored) lastShown = parseInt(stored, 10);
-    } catch {}
+    // Se o usuário está em período de teste ativo (trial), exibe aviso a cada 6h
+    if (isTrial) {
+      const trialKey = getTrialKey();
+      if (!trialKey) return;
+      let lastShown = 0;
+      try {
+        const stored = localStorage.getItem(trialKey);
+        if (stored) lastShown = parseInt(stored, 10);
+      } catch {}
 
-    const sixHours = 6 * 60 * 60 * 1000;
-    if (Date.now() - lastShown > sixHours) {
-      setPromoType('trial');
-      setShowCard(true);
+      const sixHours = 6 * 60 * 60 * 1000;
+      if (Date.now() - lastShown > sixHours) {
+        setPromoType('trial');
+        setShowCard(true);
+      }
+    } else {
+      setShowCard(false);
     }
-  }, [isHiddenRoute, incrementAppOpenCount, getPromoKey, getTrialKey, isPremium, subLoading, user?.created_at]);
+  }, [authLoading, subLoading, user, isHiddenRoute, isAdmin, isPremium, isTrial, incrementAppOpenCount, getPromoKey, getTrialKey]);
 
   // Atualizar timer da promo 24h
   useEffect(() => {

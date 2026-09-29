@@ -1,10 +1,8 @@
-# Tarefa: Inverter Histórico e Termos Jurídicos no Artigo e Menu Funções
+# Tarefa: Corrigir exibição indevida do card/modal de tempo esgotado na Landing Page e para Admin
 
-- [x] Criar componente `ArtigoTabTermos.tsx` para exibição direta dos termos na aba do artigo <!-- id: 0 -->
-- [x] Criar componente `ArtigoHistoricoSheet.tsx` para abertura do histórico a partir do menu "Funções" <!-- id: 1 -->
-- [x] Atualizar menu de abas `ArtigoTabsNavigation.tsx` substituindo "Histórico" por "Termos" <!-- id: 2 -->
-- [x] Atualizar menu "Funções" em `ArtigoActionMenuSheet.tsx` e `ArtigoDesktopRails.tsx` <!-- id: 3 -->
-- [x] Atualizar `useArtigoCommentsAndAi.ts` para carregar termos ao ativar a aba `termos` <!-- id: 4 -->
-- [x] Integrar no `ArtigoBottomSheet.tsx` (estados, abas e sheets) <!-- id: 5 -->
-- [x] Validar integridade de tipos com `tsc --noEmit` <!-- id: 6 -->
-- [x] Auto-commit e push no GitHub <!-- id: 7 -->
+- [x] Corrigir `GlobalTrialGate` em `src/AppRoutes.tsx` (bloquear execução para `!user`, rotas públicas e admins) <!-- id: 0 -->
+- [x] Corrigir `GlobalPromoFloatingCard.tsx` (remover fallback guest, bloquear na Landing Page e para admin) <!-- id: 1 -->
+- [x] Otimizar bypass de admin em `useSubscription.ts` para resolução síncrona sem queries desnecessárias <!-- id: 2 -->
+- [x] Ajustar `TrialExpiredModal.tsx` e `PremiumGate.tsx` para validação estrita de usuário e bypass de admin <!-- id: 3 -->
+- [x] Validar com `tsc --noEmit` <!-- id: 4 -->
+- [x] Auto-commit e push no GitHub <!-- id: 5 -->

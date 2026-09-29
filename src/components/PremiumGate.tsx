@@ -15,6 +15,7 @@ import { track } from '@/lib/analyticsEvents';
 import { logAreaEvent } from '@/lib/appEvents';
 import { haptic } from '@/lib/nativeHaptics';
 import { useAuth } from '@/hooks/useAuth';
+import { isAdminEmail } from '@/lib/adminEmails';
 import { TrialExpiredModal } from '@/components/TrialExpiredModal';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
 import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
@@ -309,7 +310,7 @@ const PremiumGate = ({
 
   // Verifica se o trial expirou (usando a mesma lógica do AppRoutes)
   const isTrialExpired = useMemo(() => {
-    if (!user) return false;
+    if (!user || isAdminEmail(user?.email)) return false;
     const createdAt = new Date(user.created_at);
     let trialEndsAt = new Date(createdAt.getTime() + 3 * 24 * 60 * 60 * 1000);
     

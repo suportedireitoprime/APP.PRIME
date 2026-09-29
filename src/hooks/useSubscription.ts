@@ -113,6 +113,25 @@ export function useSubscription(options: Options = {}): SubscriptionState {
       setState({ isPremium: false, loading: false, plano: null, expiresAt: null, startedAt: null, source: null, status: null, isAdminOverride: false, isTrial: false });
       return;
     }
+    // Atalho instantâneo (0ms) para administradores sem bater em rede
+    if (isAdminEmail(user.email)) {
+      const startedAt = new Date();
+      const expiresAt = new Date(startedAt);
+      expiresAt.setFullYear(expiresAt.getFullYear() + 100);
+      const adminSub = {
+        isPremium: true,
+        loading: false,
+        plano: 'vitalício',
+        startedAt: startedAt.toISOString(),
+        expiresAt: expiresAt.toISOString(),
+        source: 'play' as const,
+        status: 'SUBSCRIPTION_STATE_ACTIVE',
+        isAdminOverride: true,
+        isTrial: false,
+      };
+      persist(adminSub);
+      return;
+    }
     // Se já temos cache fresco em memória e não é polling forçado pós-compra nem refresh explícito, reutiliza sem fazer 5 queries
     if (!pollOnMount && nonce === 0 && subMemoryCache.has(user.id)) {
       const mem = subMemoryCache.get(user.id)!;

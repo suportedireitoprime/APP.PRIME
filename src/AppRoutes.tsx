@@ -895,22 +895,47 @@ function DeepLinkBootstrap() {
 }
 
 function GlobalTrialGate() {
-  const { user } = useAuth();
-  const { isPremium: isSubPremium, isTrial, expiresAt, status } = useSubscription();
+  const { user, loading: authLoading } = useAuth();
+  const { isPremium: isSubPremium, isTrial, expiresAt, status, loading: subLoading } = useSubscription();
   const location = useLocation();
   const [showModal, setShowModal] = useState(false);
 
+  const isAdmin = isAdminEmail(user?.email);
   const isTrialActive = isTrial && expiresAt && new Date(expiresAt).getTime() > Date.now();
-  const isUserPremium = !!user?.user_metadata?.isPremium || (isSubPremium && status !== 'trialing') || isAdminEmail(user?.email);
+  const isUserPremium = isAdmin || !!user?.user_metadata?.isPremium || (isSubPremium && status !== 'trialing');
+
+  // Rotas públicas / Landing page: NUNCA devem ter interceptação de cliques nem modal de expiração
+  const cleanPath = (location.pathname || '').replace(/\/+$/, '') || '/';
+  const isPublicOrLanding =
+    !user ||
+    cleanPath === '/' ||
+    cleanPath === '/landing' ||
+    cleanPath === '/inicio' ||
+    cleanPath === '/login' ||
+    cleanPath === '/auth' ||
+    cleanPath === '/cadastro' ||
+    cleanPath === '/recuperar-senha' ||
+    cleanPath === '/onboarding' ||
+    cleanPath === '/termos' ||
+    cleanPath === '/privacidade';
 
   useEffect(() => {
+    // Se não há usuário logado, ou está carregando, ou é admin, ou é premium, ou trial ativo, fecha e não abre
+    if (!user || authLoading || subLoading || isAdmin || isUserPremium || isTrialActive || isPublicOrLanding) {
+      setShowModal(false);
+      return;
+    }
+
     if (location.search.includes('expired=true')) {
       setShowModal(true);
     }
-  }, [location.search]);
+  }, [user, authLoading, subLoading, isAdmin, isUserPremium, isTrialActive, isPublicOrLanding, location.search]);
 
   useEffect(() => {
-    if (isUserPremium || isTrialActive) return;
+    // Só anexa ouvintes se o usuário ESTIVER logado, o plano estiver identificado, não for admin, não for premium, o trial expirou E NÃO estiver na landing page
+    if (!user || authLoading || subLoading || isAdmin || isUserPremium || isTrialActive || isPublicOrLanding) {
+      return;
+    }
 
     const handler = (e: MouseEvent | TouchEvent) => {
       const target = e.target as HTMLElement;
@@ -931,9 +956,9 @@ function GlobalTrialGate() {
       document.removeEventListener('touchstart', handler, true);
       document.removeEventListener('touchend', handler, true);
     };
-  }, [isUserPremium, isTrialActive]);
+  }, [user, authLoading, subLoading, isAdmin, isUserPremium, isTrialActive, isPublicOrLanding]);
 
-  if (isUserPremium || isTrialActive) return null;
+  if (!user || authLoading || subLoading || isAdmin || isUserPremium || isTrialActive) return null;
 
   return showModal ? (
     <Suspense fallback={null}>

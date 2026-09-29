@@ -95,7 +95,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
 
   const isAdmin = isAdminEmail(user?.email);
 
-  useBodyScrollLock(!isAdmin);
+  useBodyScrollLock(Boolean(open && !isAdmin && user));
 
   useEffect(() => {
     // Pré-carregamento agressivo em background da página de assinatura e checkout
@@ -127,7 +127,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
     return () => clearInterval(interval);
   }, []);
 
-  if (isAdmin || !open) {
+  if (isAdmin || !open || !user) {
     return null;
   }
 
