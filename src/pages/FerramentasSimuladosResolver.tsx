@@ -73,7 +73,9 @@ export default function FerramentasSimuladosResolver() {
         alt_c: options.C || '',
         alt_d: options.D || '',
         alt_e: options.E || '',
-        gabarito: 'A', // Ideally we'd map this correctly, but currently gabarito isn't extracted
+        gabarito_oficial: q.gabarito || 'A',
+        gabarito_comentado: q.correct_comment || '',
+        comentario_incorretas: q.incorrect_comment || '',
         cargo_id: id,
         assunto: q.assunto || '',
         modalidade: (options.C && options.C !== '') ? 'multipla_escolha' : 'certo_errado',

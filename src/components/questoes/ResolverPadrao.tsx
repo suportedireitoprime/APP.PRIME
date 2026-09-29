@@ -518,7 +518,7 @@ const ResolverPadrao = ({
 
       <ComentarioSheet
         aberto={comentarioAberto && !!resp}
-        source={atual.id}
+        source={atual}
         onClose={() => setComentarioAberto(false)}
       />
 

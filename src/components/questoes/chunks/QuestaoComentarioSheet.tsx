@@ -65,8 +65,11 @@ export function TamanhoTextoFab({ fs, setFs }: { fs: number; setFs: (n: number) 
 export function ComentarioInner({ source }: { source: Fonte }) {
   const [view, setView] = useState<'correta' | 'erradas'>('correta');
   const [fs, setFsState] = useState(17);
-  const { data, isLoading, error, refetch } = useQuestaoAcao(source, 'comentario', true);
-  const erradasQ = useQuestaoAcao(source, 'lei-erradas', view === 'erradas');
+  const hasPrePopulatedComments = typeof source === 'object' && !!(source as any).gabarito_comentado;
+  const isEnabled = !hasPrePopulatedComments;
+
+  const { data, isLoading, error, refetch } = useQuestaoAcao(source, 'comentario', isEnabled && view === 'correta');
+  const erradasQ = useQuestaoAcao(source, 'lei-erradas', isEnabled && view === 'erradas');
   const erradas: any[] = erradasQ.data?.erradas ?? [];
 
   useEffect(() => {
@@ -114,10 +117,10 @@ export function ComentarioInner({ source }: { source: Fonte }) {
             />
           )}
           {error && !isLoading && <Erro onRetry={() => refetch()} />}
-          {!isLoading && !error && data && (
+          {!isLoading && !error && (hasPrePopulatedComments || data) && (
             <div className="space-y-3">
-              <Md texto={data.texto} className={mdClass} />
-              {data.fundamento && (
+              <Md texto={hasPrePopulatedComments ? (source as any).gabarito_comentado : data.texto} className={mdClass} />
+              {data?.fundamento && (
                 <div className="rounded-xl border border-primary/30 bg-primary/5 px-4 py-3">
                   <p className="mb-1 inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
                     <Scale className="h-3 w-3" /> Fundamento
@@ -125,7 +128,7 @@ export function ComentarioInner({ source }: { source: Fonte }) {
                   <Md texto={data.fundamento} className={mdClass} />
                 </div>
               )}
-              {data.dica && (
+              {data?.dica && (
                 <div className="rounded-xl border-l-2 border-primary bg-muted/50 px-4 py-3">
                   <p className="mb-1 inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
                     <Sparkles className="h-3 w-3" /> Dica de prova
@@ -151,13 +154,19 @@ export function ComentarioInner({ source }: { source: Fonte }) {
             />
           )}
           {erradasQ.error && !erradasQ.isLoading && <Erro onRetry={() => erradasQ.refetch()} />}
-          {!erradasQ.isLoading && !erradasQ.error && erradas.length === 0 && erradasQ.data && (
+          {!erradasQ.isLoading && !erradasQ.error && erradas.length === 0 && !hasPrePopulatedComments && erradasQ.data && (
             <p className="rounded-xl border border-border bg-background p-4 text-sm text-muted-foreground">
               Não foi possível identificar alternativas erradas para explicar.
             </p>
           )}
 
-          {erradas.length > 0 && (
+          {hasPrePopulatedComments && (source as any).comentario_incorretas && (
+            <div className="rounded-xl border border-border bg-background p-4">
+              <Md texto={(source as any).comentario_incorretas} className={mdClass} />
+            </div>
+          )}
+
+          {!hasPrePopulatedComments && erradas.length > 0 && (
             <div className="space-y-2.5">
               {erradas.map((e, i) => (
                 <motion.div

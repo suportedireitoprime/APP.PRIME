@@ -105,7 +105,8 @@ async function importAll() {
         },
         correct_comment: q.comentario_correta || '',
         incorrect_comment: q.comentario_incorretas || '',
-        image_url: q.figura || q.texto_apoio || ''
+        image_url: q.figura || q.texto_apoio || '',
+        gabarito: q.resposta_correta || ''
       }));
 
       const { error: qError } = await supabase

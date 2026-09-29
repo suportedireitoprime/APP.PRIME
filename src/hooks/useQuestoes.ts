@@ -26,6 +26,7 @@ export type Questao = {
   gabarito_oficial: string | null;
   gabarito_comentado: string | null;
   comentario_ia: string | null;
+  comentario_incorretas?: string | null;
 };
 
 export type Cargo = {
