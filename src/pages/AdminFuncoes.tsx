@@ -6,7 +6,7 @@ import {
   Rss, Palette, Users, GitBranch, Github, ImageIcon, KeyRound, Bug, Newspaper,
   Quote, Monitor, Send, RefreshCcw, Lock, Wrench, FileText, Crown, Search, Target, MapPin, PlayCircle,
   Sparkles, UserPlus, GraduationCap, Scale, Store, Mail, FileSignature,
-  ListChecks, Headphones, ShieldAlert, Layers, Star, CloudDownload, Pill, UserCheck, Bird
+  ListChecks, Headphones, ShieldAlert, Layers, Star, CloudDownload, Pill, UserCheck, Bird, FileSpreadsheet
 } from 'lucide-react';
 
 import { toast } from 'sonner';
@@ -45,6 +45,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-usuarios': () => import('./AdminUsuarios'),
   '/admin-boletins': () => import('./AdminBoletins'),
   '/admin-erros-questoes': () => import('./AdminErrosQuestoes'),
+  '/admin-simulados': () => import('./AdminSimulados'),
   '/admin-jurisprudencia': () => import('./AdminJurisprudencia'),
   '/admin-mapeamento-leis': () => import('./AdminMapeamentoLeis'),
   '/admin-narracao-leis': () => import('./AdminNarracaoLeis'),
@@ -215,12 +216,13 @@ const CATEGORIES: Category[] = [
   },
   {
     id: 'questoes',
-    title: 'Questões',
-    desc: 'Importar questões das planilhas, cargos, e visualizar reportes de erros',
+    title: 'Questões & Simulados',
+    desc: 'Importar questões e simulados, gerenciar cargos, e reportes',
     icon: ListChecks,
     items: [
       { id: 'admin-questoes', label: 'Questões — Editar', icon: ListChecks, desc: 'Buscar mais questões, novos cargos e importar do Google Sheets', route: '/admin-questoes' },
       { id: 'admin-erros-questoes', label: 'Reportes de Erro', icon: ShieldAlert, desc: 'Visualizar e resolver erros em questões reportados por alunos', route: '/admin-erros-questoes' },
+      { id: 'admin-simulados', label: 'Simulados — Editar', icon: FileSpreadsheet, desc: 'Importar simulados, gabaritos e provas do Google Sheets', route: '/admin-simulados' },
     ],
   },
   {

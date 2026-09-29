@@ -110,6 +110,9 @@ const AdminErrosQuestoes = lazy(() => import("./pages/AdminErrosQuestoes.tsx"));
 const AdminVadeMecumHistorico = lazy(() => import('./pages/AdminVadeMecumHistorico.tsx'));
 const AdminMapeamentoLeis = lazy(() => import('./pages/AdminMapeamentoLeis.tsx'));
 const AdminNarracaoLeis = lazy(() => import('./pages/AdminNarracaoLeis.tsx'));
+const AdminSimulados = lazy(() => import("./pages/AdminSimulados.tsx"));
+const FerramentasSimulados = lazy(() => import("./pages/FerramentasSimulados.tsx"));
+const FerramentasSimuladosResolver = lazy(() => import("./pages/FerramentasSimuladosResolver.tsx"));
 import { supabase } from "@/integrations/supabase/client";
 
 // Lazy loaded
@@ -1140,6 +1143,8 @@ function AnimatedRoutes() {
           <Route path="/ferramentas/stf/sessoes" element={<ProtectedRoute><PageTransition><SessoesSTF /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/stf/:id" element={<ProtectedRoute><PageTransition><SessaoSTFDetalhes /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/peticao-inicial" element={<ProtectedRoute><PageTransition><PeticaoInicial /></PageTransition></ProtectedRoute>} />
+          <Route path="/ferramentas/simulados" element={<ProtectedRoute><PageTransition><FerramentasSimulados /></PageTransition></ProtectedRoute>} />
+          <Route path="/ferramentas/simulados/resolver/:id" element={<ProtectedRoute><PageTransition><FerramentasSimuladosResolver /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/peticao-inicial/:id" element={<ProtectedRoute><PageTransition><PeticaoInicialEditor /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/plano-estudos" element={<ProtectedRoute><PageTransition><PlanoEstudos /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/locais" element={<ProtectedRoute><PageTransition><AdminLocais /></PageTransition></ProtectedRoute>} />
@@ -1282,6 +1287,7 @@ function AnimatedRoutes() {
           <Route path="/questoes/desempenho" element={<ProtectedRoute><PageTransition instant><QuestoesDesempenho /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/historico" element={<ProtectedRoute><PageTransition instant><QuestoesHistorico /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/questoes" element={<ProtectedRoute><PageTransition><AdminQuestoes /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-simulados" element={<ProtectedRoute><PageTransition><AdminSimulados /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/pilulas" element={<ProtectedRoute><PageTransition><AdminPilulas /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/resumo-livro-audio" element={<ProtectedRoute><PageTransition><AdminResumoLivroAudioEditar /></PageTransition></ProtectedRoute>} />
 
