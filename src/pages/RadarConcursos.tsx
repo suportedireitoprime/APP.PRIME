@@ -236,32 +236,9 @@ export default function RadarConcursos() {
         return;
       }
 
-      // 3. Primeira extração: invoca edge function que raspa e persiste no Supabase
-      setLoadingFullText(true);
-      setEditalFullText(null);
-      try {
-        const { data, error } = await supabase.functions.invoke('scrape-concurso-full', {
-          body: { id: item.id, url: item.link, titulo: item.titulo }
-        });
-        if (error) throw error;
-        if (!cancel && data && data.text) {
-          setEditalFullText(data.text);
-          // Atualiza lista em memória e cache local para que novos cliques sejam imediatos
-          setConcursos(prev => {
-            const updated = prev.map(c => c.id === item.id ? { ...c, conteudo_md: data.text } : c);
-            setSharedConcursos(updated);
-            return updated;
-          });
-          try { localStorage.setItem(`concurso:md:${item.id}`, data.text); } catch {}
-        } else if (!cancel) {
-          setEditalFullText(item.resumo || 'Acompanhe todas as regras e convocações deste concurso pelo link oficial.');
-        }
-      } catch (err) {
-        console.error('Erro ao extrair edital:', err);
-        if (!cancel) setEditalFullText(item.resumo || 'Erro ao carregar o conteúdo. Por favor, acesse o link oficial.');
-      } finally {
-        if (!cancel) setLoadingFullText(false);
-      }
+      // 3. Não extrai na hora. Traz o que já está pronto (resumo).
+      setLoadingFullText(false);
+      setEditalFullText(item.resumo || 'Acompanhe todas as regras e convocações deste concurso pelo link oficial.');
     }
 
     if (selectedEdital) {
@@ -751,7 +728,7 @@ export default function RadarConcursos() {
       {/* 5. MODAL DE CONTEÚDO COMPLETO DO CONCURSO */}
       <AnimatePresence>
         {selectedEdital && (
-          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/85">
+          <div className="fixed inset-0 z-[999] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/85">
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
