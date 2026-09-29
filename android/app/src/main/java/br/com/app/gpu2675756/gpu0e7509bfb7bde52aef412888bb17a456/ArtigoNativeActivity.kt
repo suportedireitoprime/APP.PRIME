@@ -134,26 +134,66 @@ class ArtigoNativeActivity : ComponentActivity(), TextToSpeech.OnInitListener {
     private fun playOrSpeak(text: String, streamUrl: String) {
         stopAllAudio()
         if (streamUrl.isNotBlank()) {
+            playStream(streamUrl)
+            return
+        }
+
+        // Se streamUrl veio vazia, busca do Supabase em background
+        val numeroExtra = intent.getStringExtra("numero") ?: ""
+        val cleanNum = numeroExtra.replace(Regex("(?i)^art\\.?\\s*"), "").trim()
+        
+        Toast.makeText(this, "Carregando narração com IA...", Toast.LENGTH_SHORT).show()
+
+        Thread {
             try {
-                mediaPlayer = MediaPlayer().apply {
-                    setAudioAttributes(
-                        AudioAttributes.Builder()
-                            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                            .setUsage(AudioAttributes.USAGE_MEDIA)
-                            .build()
-                    )
-                    setDataSource(streamUrl)
-                    prepareAsync()
-                    setOnPreparedListener { start() }
+                val apiUrl = "https://dnjrgpldcwcpoywamorr.supabase.co/rest/v1/narracoes_artigos?select=audio_url&order=created_at.desc&limit=1&artigo_numero=in.($numeroExtra,Art.%20$cleanNum,$cleanNum)"
+                val url = java.net.URL(apiUrl)
+                val conn = url.openConnection() as java.net.HttpURLConnection
+                conn.requestMethod = "GET"
+                conn.setRequestProperty("apikey", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuanJncGxkY3djcG95d2Ftb3JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2ODYxMzMsImV4cCI6MjA5ODI2MjEzM30.GuZuUn1ITbjsTYi_SjL-eFSCxdxxs3rUASArbMf62O0")
+                conn.setRequestProperty("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuanJncGxkY3djcG95d2Ftb3JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2ODYxMzMsImV4cCI6MjA5ODI2MjEzM30.GuZuUn1ITbjsTYi_SjL-eFSCxdxxs3rUASArbMf62O0")
+                conn.connectTimeout = 6000
+                conn.readTimeout = 6000
+
+                if (conn.responseCode == 200) {
+                    val respText = conn.inputStream.bufferedReader().use { it.readText() }
+                    val jsonArr = org.json.JSONArray(respText)
+                    if (jsonArr.length() > 0) {
+                        val firstObj = jsonArr.getJSONObject(0)
+                        val foundAudio = firstObj.optString("audio_url", "")
+                        if (foundAudio.isNotBlank()) {
+                            runOnUiThread {
+                                playStream(foundAudio)
+                            }
+                            return@Thread
+                        }
+                    }
                 }
-                return
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-        }
 
-        if (ttsReady && text.isNotBlank()) {
-            tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "ArtigoTTS")
+            runOnUiThread {
+                Toast.makeText(this, "Áudio com IA não disponível para este artigo.", Toast.LENGTH_SHORT).show()
+            }
+        }.start()
+    }
+
+    private fun playStream(streamUrl: String) {
+        try {
+            mediaPlayer = MediaPlayer().apply {
+                setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .build()
+                )
+                setDataSource(streamUrl)
+                prepareAsync()
+                setOnPreparedListener { start() }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

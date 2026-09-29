@@ -1,10 +1,10 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { setupMediaSession, clearMediaSession } from '@/lib/mediaSession';
 import { useNarracaoFlutuante } from '@/stores/useNarracaoFlutuante';
-import { speakNative, stopNativeSpeech } from '@/lib/nativeTts';
+import { stopNativeSpeech } from '@/lib/nativeTts';
 import { formatTextoArtigoParaNarracao, formatNarracaoTime } from './artigoTextUtils';
 import { parseArtigoEmNarracaoContinua } from '@/utils/artigoPartesParser';
 import { LEIS_SUPABASE_URL, LEIS_SUPABASE_ANON_KEY } from '@/lib/legislacaoBackend';
@@ -91,6 +91,27 @@ export function useArtigoNarracao({
   const reclaimNarracao = useNarracaoFlutuante((s) => s.reclaim);
   const closeFlutuante = useNarracaoFlutuante((s) => s.close);
 
+  // ─── Resolução Inteligente do Identificador da Tabela ───
+  const resolvedTabelaNome = useMemo(() => {
+    let effectiveTabelaNome = tabelaNome || (artigo as any)?.tabela_nome || (artigo as any)?.tabela || '';
+    if (!effectiveTabelaNome && breadcrumb) {
+      const bVals = (
+        Array.isArray(breadcrumb)
+          ? (breadcrumb as any[]).map((b) => b?.nome || b).filter(Boolean).join(' ')
+          : typeof breadcrumb === 'object'
+          ? Object.values(breadcrumb).filter((v): v is string => typeof v === 'string').join(' ')
+          : String(breadcrumb)
+      ).toLowerCase();
+      if (bVals.includes('penal') && !bVals.includes('processo')) effectiveTabelaNome = 'CP_CODIGO_PENAL';
+      else if (bVals.includes('civil') && !bVals.includes('processo')) effectiveTabelaNome = 'CC_CODIGO_CIVIL';
+      else if (bVals.includes('constitui')) effectiveTabelaNome = 'CF88_CONSTITUICAO_FEDERAL';
+      else if (bVals.includes('processo') && bVals.includes('penal')) effectiveTabelaNome = 'CPP_CODIGO_PROCESSO_PENAL';
+      else if (bVals.includes('processo') && bVals.includes('civil')) effectiveTabelaNome = 'CPC_CODIGO_PROCESSO_CIVIL';
+      else if (bVals.includes('trabalho') || bVals.includes('clt')) effectiveTabelaNome = 'CLT_CONSOLIDACAO_LEIS_TRABALHO';
+    }
+    return effectiveTabelaNome;
+  }, [tabelaNome, (artigo as any)?.tabela_nome, (artigo as any)?.tabela, breadcrumb]);
+
   // ─── Check for existing narration when artigo changes ───
   useEffect(() => {
     prefetchedNextRef.current = false;
@@ -124,11 +145,11 @@ export function useArtigoNarracao({
         narracaoAudioRef.current = null;
       }
     }
-    if (!tabelaNome || !artigo?.numero) return;
+    if (!resolvedTabelaNome || !artigo?.numero) return;
 
     (async () => {
       try {
-        const aliases = obterAliasesTabela(tabelaNome);
+        const aliases = obterAliasesTabela(resolvedTabelaNome);
         const variantesNum = obterVariantesArtigoNumero(artigo.numero);
 
         // 1. Se estiver offline, recorre diretamente ao IndexedDB
@@ -187,7 +208,7 @@ export function useArtigoNarracao({
         }
 
         // Salva/renova no IndexedDB em background para próximas reproduções offline
-        const primaryCacheKey = buildAudioCacheKey(tabelaNome, artigo.numero);
+        const primaryCacheKey = buildAudioCacheKey(resolvedTabelaNome, artigo.numero);
         void (async () => {
           try {
             const resp = await fetch(row.audio_url);
@@ -201,7 +222,7 @@ export function useArtigoNarracao({
         console.error('Erro ao verificar narração no banco principal:', e);
       }
     })();
-  }, [tabelaNome, artigo?.id, artigo?.numero]);
+  }, [resolvedTabelaNome, artigo?.id, artigo?.numero]);
 
   // ─── Item 11: Auto-adopt audio into floating miniplayer on unmount/route change ───
   useEffect(() => {
@@ -411,17 +432,13 @@ export function useArtigoNarracao({
 
     if (!artigo) return;
 
-    if (!tabelaNome) {
-      console.warn('[useArtigoNarracao] tabelaNome ausente. Acionando síntese de voz nativa...');
-      const textoFormatadoFallback = formatTextoArtigoParaNarracao(artigo, breadcrumb);
-      const ok = await speakNative(textoFormatadoFallback);
-      setNarracaoLoading(false);
-      setNarracaoStepIdx(0);
-      if (ok) {
-        setNarracaoPlaying(true);
-        toast.success('Reproduzindo narração nativa do artigo.');
-      } else if (!options?.silent) {
-        toast.error('Não consegui gerar a narração agora. Tente novamente.');
+    // Resolve tabelaNome com inteligência (artigo, breadcrumbs, aliases)
+    const effectiveTabelaNome = resolvedTabelaNome;
+
+    if (!effectiveTabelaNome) {
+      console.warn('[useArtigoNarracao] tabelaNome ausente para o artigo', artigo.numero);
+      if (!options?.silent) {
+        toast.error('Identificador da legislação não encontrado para este artigo.');
       }
       return;
     }
@@ -444,10 +461,10 @@ export function useArtigoNarracao({
         return;
       }
 
-      const aliases = obterAliasesTabela(tabelaNome);
+      const aliases = obterAliasesTabela(effectiveTabelaNome);
       const variantesNum = obterVariantesArtigoNumero(artigo.numero);
 
-      // A. Cache IndexedDB rápido
+      // A. Cache IndexedDB ultra-rápido (0ms)
       for (const v of variantesNum) {
         for (const a of aliases) {
           const cached = await getCachedAudio(buildAudioCacheKey(a, v));
@@ -463,7 +480,7 @@ export function useArtigoNarracao({
         }
       }
 
-      // B. Supabase narracoes_artigos
+      // B. Supabase narracoes_artigos (Gemini TTS salvo no banco)
       try {
         const { data: rows } = await supabase
           .from('narracoes_artigos')
@@ -490,7 +507,7 @@ export function useArtigoNarracao({
           if (!silent) setNarracaoLoading(false);
           if (autoplay) await playNarracao(foundUrl);
 
-          const cKey = buildAudioCacheKey(tabelaNome, artigo.numero);
+          const cKey = buildAudioCacheKey(effectiveTabelaNome, artigo.numero);
           void (async () => {
             try {
               const resp = await fetch(foundUrl);
@@ -516,23 +533,27 @@ export function useArtigoNarracao({
 
     let toastId: string | number | undefined;
     if (!silent) {
-      toastId = toast.loading(`Narrando Artigo ${artigo.numero}...`);
+      toastId = toast.loading(`Carregando narração do Artigo ${artigo.numero}...`);
     }
 
     try {
       const { LEIS_CATALOG } = await import('@/services/legislacaoService');
-      const lei = LEIS_CATALOG.find((l: any) => l.tabela_nome === tabelaNome);
-      const leiNome = lei?.nome || tabelaNome;
+      const lei = LEIS_CATALOG.find((l: any) => l.tabela_nome === effectiveTabelaNome);
+      const leiNome = lei?.nome || effectiveTabelaNome;
 
       const { data, error } = await supabase.functions.invoke('narrar-artigo', {
         body: {
-          tabela_nome: tabelaNome,
+          tabela_nome: effectiveTabelaNome,
           artigo_numero: artigo.numero,
-          artigo_texto: artigo.texto,
+          artigo_texto: (artigo as any).texto || artigo.caput || '',
           lei_nome: leiNome,
-          hierarquia: breadcrumb ? breadcrumb.map((b) => b.nome).join(' > ') : undefined,
-          epigrafe: artigo.epigrafe,
-          force_regenerate: true,
+          hierarquia: breadcrumb
+            ? (Array.isArray(breadcrumb)
+                ? (breadcrumb as any[]).map((b) => b?.nome || b).filter(Boolean).join(' > ')
+                : Object.values(breadcrumb).filter((v) => typeof v === 'string' && v.trim().length > 0).join(' > '))
+            : undefined,
+          epigrafe: (artigo as any).epigrafe || artigo.titulo || undefined,
+          force_regenerate: forceRegenerate,
         },
       });
 
@@ -542,14 +563,13 @@ export function useArtigoNarracao({
       if (res?.audio_url) {
         if (!silent) setNarracaoStepIdx(2);
         setNarracaoUrl(res.audio_url);
-        // The edge function might return duracaoSegundos or we just use metadata later
         if (Array.isArray(res.word_timings) && res.word_timings.length > 0) {
           setNarracaoWordTimings(res.word_timings);
         }
 
         // Salva novo áudio gerado no cache IndexedDB
-        if (artigo?.numero && tabelaNome) {
-          const cKey = buildAudioCacheKey(tabelaNome, artigo.numero);
+        if (artigo?.numero && effectiveTabelaNome) {
+          const cKey = buildAudioCacheKey(effectiveTabelaNome, artigo.numero);
           void (async () => {
             try {
               const resp = await fetch(res.audio_url);
@@ -562,7 +582,7 @@ export function useArtigoNarracao({
         }
 
         if (!silent && toastId) {
-          toast.success(`Artigo ${artigo.numero} narrado com sucesso!`, { id: toastId });
+          toast.success(`Artigo ${artigo.numero} pronto para reprodução!`, { id: toastId });
         }
 
         if (!silent) setNarracaoLoading(false);
@@ -572,32 +592,26 @@ export function useArtigoNarracao({
         return res;
       }
 
-      throw new Error('Sem URL de áudio gerada.');
+      throw new Error('Sem URL de áudio gerada pela IA.');
     } catch (e: any) {
-      console.error('Erro ao gerar narração via Gemini fatiada. Tentando narração nativa...', e);
+      console.error('Erro ao gerar narração Gemini TTS:', e);
       if (!silent && toastId) {
         toast.dismiss(toastId);
       }
-      if (artigo) {
-        const textoFormatadoFallback = formatTextoArtigoParaNarracao(artigo, breadcrumb);
-        const ok = await speakNative(textoFormatadoFallback);
-        setNarracaoLoading(false);
-        setNarracaoStepIdx(0);
-        if (ok) {
-          setNarracaoPlaying(true);
-          toast.success('Reproduzindo narração nativa do artigo.');
-          return;
-        }
+      setNarracaoLoading(false);
+      setNarracaoStepIdx(0);
+      setNarracaoPlaying(false);
+      if (!silent) {
+        toast.error(e?.message || 'Não consegui carregar a narração no momento. Toque para tentar novamente.');
       }
-      if (!silent) toast.error(e?.message || 'Não consegui gerar a narração agora. Tente novamente.');
     } finally {
       isGeneratingAudioRef.current = false;
       if (!silent) setNarracaoLoading(false);
     }
-  }, [artigo, tabelaNome, breadcrumb, narracaoUrl, playNarracao]);
+  }, [artigo, resolvedTabelaNome, breadcrumb, narracaoUrl, playNarracao]);
 
   // ─── handleNarrar ───
-  const handleNarrar = async () => {
+  const handleNarrar = useCallback(async () => {
     if (!artigo) {
       toast.error('Não encontrei os dados deste artigo para narrar.');
       return;
@@ -635,7 +649,7 @@ export function useArtigoNarracao({
     }
 
     await gerarNarracao();
-  };
+  }, [artigo, narracaoPlaying, narracaoUrl, playNarracao, gerarNarracao, stopProgressTracking]);
 
   const activeNarracaoWordIndex = narracaoPlaying ? narracaoActiveWordIndex : -1;
 
@@ -658,48 +672,11 @@ export function useArtigoNarracao({
         await handleNarrar();
         return;
       }
-      if (narracaoUrl && narracaoWordTimings && narracaoWordTimings.length > 1) {
-        const options: any[] = [];
-        options.push({ rotulo: 'Ouvir Tudo Completo', playFn: () => playNarracao(narracaoUrl) });
-        narracaoWordTimings.forEach((p: any, idx) => {
-          if (p.audioUrl) {
-            options.push({ 
-              rotulo: p.rotulo || `Parte ${idx + 1}`, 
-              duracao: p.duracaoSegundos,
-              playFn: () => playNarracao(p.audioUrl) 
-            });
-          }
-        });
-        setNarracaoMenuOptions(options);
-        setShowNarracaoMenu(true);
+      if (narracaoUrl) {
+        await playNarracao(narracaoUrl);
         return;
       }
-      if (!narracaoUrl && artigo && tabelaNome) {
-        const estruturado = parseArtigoEmNarracaoContinua(artigo, {
-          leiNome: tabelaNome,
-          tabelaNome,
-          maxCharsPorParte: 850,
-        });
-        if (estruturado.partes.length > 1) {
-          const options: any[] = [];
-          options.push({ rotulo: 'Narrar Tudo Completo', playFn: () => gerarNarracao({ autoplay: true, forceRegenerate: false }) });
-          estruturado.partes.forEach((p, idx) => {
-            options.push({
-              rotulo: `Narrar ${p.rotulo || `Parte ${idx + 1}`}`,
-              playFn: async () => {
-                const res: any = await gerarNarracao({ autoplay: false, forceRegenerate: false });
-                if (res && Array.isArray(res.partes) && res.partes[idx]?.audioUrl) {
-                  playNarracao(res.partes[idx].audioUrl);
-                }
-              }
-            });
-          });
-          setNarracaoMenuOptions(options);
-          setShowNarracaoMenu(true);
-          return;
-        }
-      }
-      await handleNarrar();
+      await gerarNarracao({ autoplay: true, forceRegenerate: false });
     } catch (e) {
       console.error('Erro ao acionar narração:', e);
       if (isPremium) {
@@ -710,7 +687,7 @@ export function useArtigoNarracao({
     } finally {
       narrarActionInFlightRef.current = false;
     }
-  }, [handleNarrar, isPremium, narracaoLoading, narracaoPlaying, narracaoUrl, narracaoWordTimings, artigo, tabelaNome, playNarracao, gerarNarracao]);
+  }, [handleNarrar, isPremium, narracaoLoading, narracaoPlaying, narracaoUrl, playNarracao, gerarNarracao, openPremiumGate]);
 
   return {
     // State

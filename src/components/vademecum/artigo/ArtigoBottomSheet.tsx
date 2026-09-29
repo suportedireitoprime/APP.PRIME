@@ -93,7 +93,16 @@ const ArtigoBottomSheet = ({
   breadcrumb: rawBreadcrumb,
   ...rest
 }: ArtigoBottomSheetProps) => {
-  const tabelaNome = propTabelaNome || tabela_nome || rest.tabela_nome || rest.tabelaNome || '';
+  const tabelaNome =
+    propTabelaNome ||
+    tabela_nome ||
+    rest.tabela_nome ||
+    rest.tabelaNome ||
+    (rawArtigo as any)?.tabela_nome ||
+    (rawArtigo as any)?.tabela ||
+    rest.leiInfo?.tabela_nome ||
+    rest.lei_id ||
+    '';
   // Estabiliza a referência de onClose para evitar re-execução de effects
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
@@ -602,6 +611,7 @@ const ArtigoBottomSheet = ({
               paragrafos: artigo.paragrafos || [],
               incisos: artigo.incisos || [],
               highlights: [],
+              audioUrl: narracaoUrl || '',
             });
             onCloseRef.current();
           } catch (e) {

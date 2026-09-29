@@ -3,7 +3,6 @@ import { LEIS_SUPABASE_URL, LEIS_SUPABASE_ANON_KEY, LEIS_SUPABASE_PROJECT_ID } f
 import { useLocation, useNavigate } from 'react-router-dom';
 import { registrarMidia, clearMediaSession } from '@/lib/mediaSession';
 import { toast } from 'sonner';
-import { speakNative } from '@/lib/nativeTts';
 import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { Mic, Loader2, Play, Pause, CheckCircle2 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
@@ -132,8 +131,7 @@ export default function NarracaoLei() {
       }
     } catch (e) {
       console.error('Erro ao narrar via Gemini fatiada:', e);
-      const falou = await speakNative(artigo.caput, { lang: 'pt-BR' });
-      if (!falou) toast.error('Não foi possível narrar este artigo agora.');
+      toast.error('Não foi possível narrar este artigo agora.');
     } finally {
       setGeneratingId(null);
     }

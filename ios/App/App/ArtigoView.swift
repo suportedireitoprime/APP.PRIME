@@ -67,7 +67,6 @@ public struct ArtigoView: View {
     // Áudio e Narração
     @State private var isPlayingNarration = false
     @State private var narrationPlayer: AVPlayer?
-    @State private var speechSynthesizer = AVSpeechSynthesizer()
     
     // Anotações em Texto
     @State private var userTextNote: String = ""
@@ -657,20 +656,35 @@ public struct ArtigoView: View {
             return
         }
         
-        let fullText = "\(artigo.caput). " + artigo.paragrafos.joined(separator: ". ")
-        let utterance = AVSpeechUtterance(string: fullText)
-        utterance.voice = AVSpeechSynthesisVoice(language: "pt-BR")
-        utterance.rate = 0.52
-        speechSynthesizer.speak(utterance)
-        isPlayingNarration = true
+        // Se audioUrl veio vazia, busca do Supabase em background sem sintetizador robótico
+        guard let numClean = artigo.numero.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return }
+        let urlStr = "https://dnjrgpldcwcpoywamorr.supabase.co/rest/v1/narracoes_artigos?select=audio_url&order=created_at.desc&limit=1&artigo_numero=in.(\(numClean),Art.%20\(numClean))"
+        guard let reqUrl = URL(string: urlStr) else { return }
+        var request = URLRequest(url: reqUrl)
+        request.httpMethod = "GET"
+        request.setValue("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuanJncGxkY3djcG95d2Ftb3JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2ODYxMzMsImV4cCI6MjA5ODI2MjEzM30.GuZuUn1ITbjsTYi_SjL-eFSCxdxxs3rUASArbMf62O0", forHTTPHeaderField: "apikey")
+        request.setValue("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuanJncGxkY3djcG95d2Ftb3JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2ODYxMzMsImV4cCI6MjA5ODI2MjEzM30.GuZuUn1ITbjsTYi_SjL-eFSCxdxxs3rUASArbMf62O0", forHTTPHeaderField: "Authorization")
+        
+        URLSession.shared.dataTask(with: request) { data, _, _ in
+            guard let data = data,
+                  let arr = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]],
+                  let first = arr.first,
+                  let audioUrlStr = first["audio_url"] as? String,
+                  let audioUrl = URL(string: audioUrlStr) else {
+                return
+            }
+            DispatchQueue.main.async {
+                let playerItem = AVPlayerItem(url: audioUrl)
+                self.narrationPlayer = AVPlayer(playerItem: playerItem)
+                self.narrationPlayer?.play()
+                self.isPlayingNarration = true
+            }
+        }.resume()
     }
     
     private func stopNarration() {
         narrationPlayer?.pause()
         narrationPlayer = nil
-        if speechSynthesizer.isSpeaking {
-            speechSynthesizer.stopSpeaking(at: .immediate)
-        }
         isPlayingNarration = false
     }
     

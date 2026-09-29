@@ -1,23 +1,15 @@
-# Task — Desempenho Perceptível
+# Tarefa: Eliminar Modelo Free de Voz e Padronizar Narração Gemini TTS Instantânea
 
-## Checklist
-
-### 1. Reduzir fontes bloqueantes no boot
-- [x] Mover fontes não-essenciais do main.tsx para carregamento assíncrono
-- [x] Manter apenas Barlow 400/600/700 + Bebas Neue 400 síncrono
-- [x] Carregar Literata, JetBrains Mono, pesos extras via requestIdleCallback
-
-### 2. Reduzir delay do warmup de 3.5s → 1s no nativo
-- [x] Detectar Capacitor.isNativePlatform() no appWarmupService
-- [x] Reduzir setTimeout de 3500ms para 1000ms no nativo
-- [x] Priorizar Vade Mecum antes de Biblioteca
-
-### 3. Pré-carregar 8 leis mais acessadas na RAM
-- [x] Criar cache síncrono em memória para CF, CP, CC, CPC, CPP, CLT, CTN, CDC
-- [x] Popular durante primeMemoryCacheFromBundle com prioridade
-- [x] Servir do Map estático antes de consultar IndexedDB
-
-### Validação
-- [x] tsc --noEmit sem erros
-- [x] Build Vite sem erros
-- [x] Git commit + push
+- [x] Criar plano de implementação detalhado (`implementation_plan.md`) <!-- id: 0 -->
+- [x] Refatorar `useArtigoNarracao.ts` <!-- id: 1 -->
+  - [x] Remover completamente o fallback para `speakNative` (SpeechSynthesis gratuito do navegador)
+  - [x] Corrigir `force_regenerate: false` para reutilizar o áudio gerado pelo Gemini instantaneamente
+  - [x] Otimizar `handleNarrarButtonPress` para disparar instantaneamente sem menus intermediários desnecessários
+  - [x] Garantir inferência resiliente de `tabelaNome` para nunca falhar por falta de identificador de lei
+  - [x] Tratar erros de áudio com feedback visual claro e retry, sem voz robótica
+- [x] Integrar no leitor nativo mobile (`ArtigoBottomSheet.tsx`, `ArtigoNativeActivity.kt`, `ArtigoView.swift`) <!-- id: 2 -->
+  - [x] Passar `audioUrl` na transição do `NativeVadeMecumPlugin.openArtigo`
+  - [x] Eliminar fallback de voz sintética robótica gratuita no mobile
+- [x] Testar e validar compilação TypeScript (`tsc --noEmit`) <!-- id: 3 -->
+- [x] Validar build de produção (`vite build`) <!-- id: 4 -->
+- [x] Git Auto-Commit & Push conforme regras do projeto <!-- id: 5 -->
