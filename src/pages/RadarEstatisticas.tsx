@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, BarChart3, TrendingUp, MapPin, DollarSign, Award, Trophy } from 'lucide-react';
+import { ArrowLeft, BarChart3, TrendingUp, MapPin, DollarSign, Award, Trophy, Check } from 'lucide-react';
 import RadarBottomNav from '@/components/radar/RadarBottomNav';
 import { getSharedConcursos } from '@/lib/concursosCache';
 import { getConcursoVisual } from '@/lib/concursosVisuais';
