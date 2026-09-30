@@ -5,6 +5,9 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import horusAsset from '@/assets/horus/03_coruja_balanca_justica.webp';
+import horusWhatsapp from '@/assets/horus/coruja_whatsapp.webp';
+import horusBiblioteca from '@/assets/horus/coruja_biblioteca.webp';
+import horusOwl2 from '@/assets/horus/02_coruja_estudando.webp';
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { isAdminEmail } from "@/lib/adminEmails";
@@ -38,6 +41,28 @@ const MATERIAS: MateriaCover[] = [
   { id: 'proc_penal', nome: 'Processo Penal', tag: 'PROCESSO PENAL', cover: procPenalCover },
   { id: 'trib', nome: 'Direito Tributário', tag: 'TRIBUTÁRIO', cover: tribCover },
   { id: 'proc_civil', nome: 'Processo Civil', tag: 'PROCESSO CIVIL', cover: procCivilCover },
+];
+
+const OWLS = [
+  horusAsset,
+  horusBiblioteca,
+  horusOwl2,
+  horusWhatsapp,
+  horusAsset,
+  horusBiblioteca,
+  horusOwl2,
+  horusWhatsapp
+];
+
+const OWL_TEXTS = [
+  "a jornada continua? 🚀",
+  "a biblioteca te espera! 📚",
+  "bora revisar com os resumos? ✍️",
+  "seu assistente no WhatsApp! 📱",
+  "o tempo está passando! ⏳",
+  "mergulhe na doutrina! 📖",
+  "mais questões comentadas? 🎯",
+  "estude em qualquer lugar! 🌍"
 ];
 
 const SLOTS = [
@@ -159,36 +184,44 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
             <X className="w-5 h-5" />
           </button>
         )}
-        {/* Horus mascote em cima do cartão, na parte de cima */}
-        <div className="absolute -top-[82px] sm:-top-[92px] left-4 sm:left-7 z-30 flex items-end pointer-events-none">
-          <div
-            className="w-28 h-28 sm:w-34 sm:h-34 drop-shadow-[0_18px_24px_rgba(0,0,0,0.65)] shrink-0"
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`owl-${ativo}`}
+            initial={{ opacity: 0, scale: 0.9, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 10 }}
+            transition={{ duration: 0.3 }}
+            className="absolute -top-[82px] sm:-top-[92px] left-4 sm:left-7 z-30 flex items-end pointer-events-none"
           >
-            <img
-              src={horusAsset}
-              alt="Horus"
-              draggable={false}
-              className="w-full h-full object-contain"
-            />
-          </div>
+            <div
+              className="w-28 h-28 sm:w-34 sm:h-34 drop-shadow-[0_18px_24px_rgba(0,0,0,0.65)] shrink-0"
+            >
+              <img
+                src={OWLS[ativo]}
+                alt="Horus"
+                draggable={false}
+                className="w-full h-full object-contain"
+              />
+            </div>
 
-          {/* Balão de fala ao lado do Horus */}
-          <div
-            className="relative -top-5 -left-1 max-w-[205px] sm:max-w-[235px] bg-white text-neutral-950 rounded-2xl px-3.5 py-2 shadow-2xl border-2 border-neutral-900 pointer-events-auto"
-          >
-            <p className="text-[12px] sm:text-[13px] font-black leading-snug text-neutral-900">
-              {firstName}, a jornada continua? 🚀
-            </p>
-            <span
-              className="absolute -bottom-2 left-4 w-0 h-0 pointer-events-none"
-              style={{ borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderTop: '9px solid #171717' }}
-            />
-            <span
-              className="absolute -bottom-[5px] left-[17px] w-0 h-0 pointer-events-none"
-              style={{ borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '7px solid #ffffff' }}
-            />
-          </div>
-        </div>
+            {/* Balão de fala ao lado do Horus */}
+            <div
+              className="relative -top-5 -left-1 max-w-[205px] sm:max-w-[235px] bg-white text-neutral-950 rounded-2xl px-3.5 py-2 shadow-2xl border-2 border-neutral-900 pointer-events-auto"
+            >
+              <p className="text-[12px] sm:text-[13px] font-black leading-snug text-neutral-900">
+                {firstName}, {OWL_TEXTS[ativo]}
+              </p>
+              <span
+                className="absolute -bottom-2 left-4 w-0 h-0 pointer-events-none"
+                style={{ borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderTop: '9px solid #171717' }}
+              />
+              <span
+                className="absolute -bottom-[5px] left-[17px] w-0 h-0 pointer-events-none"
+                style={{ borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '7px solid #ffffff' }}
+              />
+            </div>
+          </motion.div>
+        </AnimatePresence>
 
         {/* Card Principal */}
         <div
@@ -258,7 +291,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
           <p className="text-[13px] sm:text-[14px] text-muted-foreground leading-relaxed text-center max-w-sm mx-auto line-clamp-3" dangerouslySetInnerHTML={{__html: currentCopy.message.replace('{name}', `<strong class="text-foreground font-bold">${firstName}</strong>`)}} />
 
           {/* Botões de Ação */}
-          <div className="w-full space-y-2.5 pt-2">
+          <div className="w-full pt-2">
             <button
               onClick={() => {
                 haptic.medium();
@@ -267,20 +300,8 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
               }}
               className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display font-black text-base tracking-wider bg-primary text-primary-foreground active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/30 group cursor-pointer"
             >
-              <span>{currentCopy.cta}</span>
+              <span>VER PLANOS</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                haptic.light();
-                resetBodyScrollLock(true);
-                navigate('/assinatura?preview=plans', { replace: true });
-              }}
-              className="w-full text-xs font-semibold text-muted-foreground hover:text-foreground py-1.5 transition-colors flex items-center justify-center gap-1 cursor-pointer"
-            >
-              Conhecer outros planos e formas de pagamento
             </button>
           </div>
         </div>
