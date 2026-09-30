@@ -25,9 +25,10 @@ interface Props {
 function planoLabel(plano: string | null): string {
   if (!plano) return 'Premium';
   const p = plano.toLowerCase();
-  if (p.includes('anual') || p.includes('yearly') || p.includes('year') || p.includes('vitalício') || p.includes('vitalicio')) return 'Premium Anual';
-  if (p.includes('mensal') || p.includes('month')) return 'Premium Mensal';
-  return `Premium (${plano})`;
+  if (p.includes('vitalício') || p.includes('vitalicio')) return 'Plano Vitalício';
+  if (p.includes('anual') || p.includes('yearly') || p.includes('year')) return 'Plano Anual';
+  if (p.includes('mensal') || p.includes('month')) return 'Plano Mensal';
+  return `Plano ${plano}`;
 }
 
 function fmtDate(iso: string | null): string {
@@ -56,10 +57,6 @@ const STATUS_LABEL: Record<string, string> = {
   SUBSCRIPTION_STATE_EXPIRED: 'Expirada',
   SUBSCRIPTION_STATE_PENDING: 'Pendente',
 };
-const ACTIVE_STATUSES = new Set(['SUBSCRIPTION_STATE_ACTIVE', 'SUBSCRIPTION_STATE_IN_GRACE_PERIOD']);
-
-type Tab = 'beneficios' | 'historico' | 'pagamento';
-
 const BENEFICIOS = [
   { icon: Brain, title: 'IA Jurídica Ilimitada', desc: 'Tire dúvidas 24/7 sem limite diário.' },
   { icon: Monitor, title: 'Desktop, Web e Mobile', desc: 'Tudo sincronizado + 20 recursos exclusivos.' },
@@ -73,52 +70,9 @@ const BENEFICIOS = [
 
 export default function MinhaAssinaturaView({ plano, expiresAt, startedAt, source, status, isAdminOverride }: Props) {
   const { user } = useAuth();
-  const [tab, setTab] = useState<Tab>('beneficios');
   const [cancelOpen, setCancelOpen] = useState(false);
-  const [history, setHistory] = useState<HistoryRow[]>([]);
-  const [loadingHistory, setLoadingHistory] = useState(false);
+  // Histórico e abas removidos conforme solicitação
 
-  useEffect(() => {
-    if (tab !== 'historico' || !user) return;
-    let cancelled = false;
-    (async () => {
-      setLoadingHistory(true);
-      const [playRes, appleRes, asaasRes] = await Promise.all([
-        supabase
-          .from('play_subscriptions')
-          .select('id, product_id, status, expires_at, created_at')
-          .eq('user_id', user.id)
-          .order('expires_at', { ascending: false, nullsFirst: false }),
-        supabase
-          .from('apple_subscriptions')
-          .select('id, product_id, status, expires_at, created_at')
-          .eq('user_id', user.id)
-          .order('expires_at', { ascending: false, nullsFirst: false }),
-        supabase
-          .from('asaas_subscriptions' as any)
-          .select('id, plano, status, expires_at, created_at, started_at')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false, nullsFirst: false }),
-      ]);
-      const asaasRows = ((asaasRes.data ?? []) as any[]).map((r) => ({
-        id: r.id,
-        product_id: r.plano,
-        status: r.status,
-        expires_at: r.expires_at,
-        created_at: r.started_at || r.created_at,
-      }));
-      const rows = [...(playRes.data ?? []), ...(appleRes.data ?? []), ...asaasRows].sort((a, b) => {
-        const aDate = a.expires_at ? new Date(a.expires_at).getTime() : 0;
-        const bDate = b.expires_at ? new Date(b.expires_at).getTime() : 0;
-        return bDate - aDate;
-      });
-      if (!cancelled) {
-        setHistory(rows as HistoryRow[]);
-        setLoadingHistory(false);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [tab, user]);
 
   const openStore = () => {
     if (source === 'apple') {
@@ -137,8 +91,13 @@ export default function MinhaAssinaturaView({ plano, expiresAt, startedAt, sourc
   };
 
   const label = planoLabel(plano);
-  const isAnual = /anual|year|vitalício|vitalicio/i.test(plano ?? '');
+  const isVitalicio = /vitalício|vitalicio/i.test(plano ?? '');
+  const isAnual = !isVitalicio && /anual|year/i.test(plano ?? '');
+  const isMensal = /mensal|month/i.test(plano ?? '');
   const isApple = source === 'apple' || Capacitor.getPlatform() === 'ios';
+  
+  const imgCapa = isVitalicio ? '/vitalicio_premium_v2.jpg' : (isAnual ? '/anual_premium.webp' : '/mensal_premium.webp');
+
   const preco = isAnual ? (isApple ? 'R$ 238,80/ano' : 'R$ 199,90/ano') : 'R$ 29,90/mês';
   const equivalente = isAnual ? (isApple ? 'Equivalente a R$ 19,90/mês' : 'Equivalente a R$ 16,66/mês') : null;
 
@@ -161,6 +120,10 @@ export default function MinhaAssinaturaView({ plano, expiresAt, startedAt, sourc
         transition={{ duration: 0.4 }}
         className="relative overflow-hidden rounded-3xl border border-border/50 bg-black/40 shadow-2xl shadow-black/50 backdrop-blur-xl"
       >
+        {/* Imagem de Capa */}
+        <div className="absolute inset-0 right-0 left-[15%] sm:left-[35%] overflow-hidden pointer-events-none" style={{ maskImage: 'linear-gradient(to right, transparent, black 60%)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 60%)' }}>
+          <img src={imgCapa} alt="" className="w-full h-full object-cover opacity-40 mix-blend-screen scale-110 translate-x-4" loading="lazy" />
+        </div>
         {/* Glow sutil */}
         <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/20 rounded-full blur-[80px] pointer-events-none" />
 
@@ -183,8 +146,8 @@ export default function MinhaAssinaturaView({ plano, expiresAt, startedAt, sourc
               <Crown className="w-7 h-7 text-primary" />
             </div>
             <div className="min-w-0 flex-1">
-              <h2 className="font-display text-[22px] sm:text-[24px] leading-none font-bold tracking-tight text-foreground">
-                PLANO {label.replace('Premium ', '').toUpperCase().trim() || 'PREMIUM'}
+              <h2 className="font-display text-[22px] sm:text-[24px] leading-none font-bold tracking-tight text-foreground uppercase">
+                {label}
               </h2>
               <p className="font-body text-[13px] text-muted-foreground mt-1.5">
                 {preco}{equivalente ? ` · ${equivalente}` : ''}
@@ -233,19 +196,10 @@ export default function MinhaAssinaturaView({ plano, expiresAt, startedAt, sourc
           )}
 
           {/* Actions */}
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            {!isAdminOverride && (
-              <button
-                onClick={openStore}
-                className="h-11 rounded-xl bg-secondary/50 border border-border/50 text-foreground hover:bg-secondary transition-colors font-display font-semibold text-sm flex items-center justify-center gap-2 active:scale-[0.98]"
-              >
-                <ExternalLink className="w-4 h-4" />
-                {source === 'apple' ? 'App Store' : source === 'asaas' ? 'Asaas' : 'Google Play'}
-              </button>
-            )}
+          <div className="mt-4 grid grid-cols-1 gap-3">
             <button
               onClick={openSupport}
-              className={`h-11 rounded-xl bg-secondary/50 border border-border/50 text-foreground hover:bg-secondary transition-colors font-display font-semibold text-sm flex items-center justify-center gap-2 active:scale-[0.98] ${isAdminOverride ? 'col-span-2' : ''}`}
+              className={`h-11 rounded-xl bg-secondary/50 border border-border/50 text-foreground hover:bg-secondary transition-colors font-display font-semibold text-sm flex items-center justify-center gap-2 active:scale-[0.98]`}
             >
               <LifeBuoy className="w-4 h-4" />
               Suporte
@@ -254,124 +208,23 @@ export default function MinhaAssinaturaView({ plano, expiresAt, startedAt, sourc
         </div>
       </motion.div>
 
-      {/* Abas de detalhes */}
-      <div className="w-full p-1 rounded-2xl bg-secondary/70 border border-border flex items-center">
-        {([
-          { id: 'beneficios' as const, label: 'Benefícios' },
-          { id: 'historico' as const, label: 'Histórico' },
-          { id: 'pagamento' as const, label: 'Pagamento' },
-        ]).map((it) => (
-          <button
-            key={it.id}
-            onClick={() => setTab(it.id)}
-            className={`flex-1 px-2 py-2.5 rounded-xl font-body text-xs sm:text-sm font-semibold transition-all ${
-              tab === it.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            {it.label}
-          </button>
-        ))}
-      </div>
-
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={tab}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -4 }}
-          transition={{ duration: 0.2 }}
-        >
-          {tab === 'beneficios' && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {BENEFICIOS.map((b) => {
-                const Icon = b.icon;
-                return (
-                  <div key={b.title} className="flex gap-3 p-4 rounded-2xl bg-card/60 border border-border/60">
-                    <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
-                      <Icon className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-display text-[14px] font-semibold text-foreground leading-tight">{b.title}</p>
-                      <p className="font-body text-[12px] text-muted-foreground leading-snug mt-1">{b.desc}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {tab === 'historico' && (
-            <div className="space-y-3">
-              {isAdminOverride ? (
-                <div className="rounded-2xl border border-primary/30 bg-primary/10 p-5 text-center">
-                  <Sparkles className="w-8 h-8 text-primary mx-auto mb-2" />
-                  <p className="font-display text-sm font-bold text-foreground">Plano concedido pela equipe</p>
-                  <p className="font-body text-xs text-muted-foreground mt-1">
-                    Iniciado em {fmtDate(startedAt ?? null)} · sem histórico de cobranças.
-                  </p>
-                </div>
-              ) : loadingHistory ? (
-                <p className="text-sm text-muted-foreground text-center py-6">Carregando…</p>
-              ) : history.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-6">Nenhum registro anterior.</p>
-              ) : (
-                history.map((h) => (
-                  <div key={h.id} className="rounded-2xl border border-border/60 p-4 bg-card/40">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-display text-sm font-semibold text-foreground">
-                        {planoLabel(h.product_id)}
-                      </span>
-                      <span
-                        className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                          h.status && ACTIVE_STATUSES.has(h.status)
-                            ? 'bg-primary/20 text-primary'
-                            : 'bg-muted text-muted-foreground'
-                        }`}
-                      >
-                        {(h.status && STATUS_LABEL[h.status]) ?? h.status ?? '—'}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground">
-                      Expira em: {fmtDate(h.expires_at)}
-                    </p>
-                  </div>
-                ))
-              )}
-            </div>
-          )}
-
-          {tab === 'pagamento' && (
-            <div className="space-y-3">
-              <div className="rounded-2xl border border-border/60 bg-card/50 p-4 space-y-3">
-                <InfoLine icon={CreditCard} label="Método" value={
-                  isAdminOverride ? 'Concedido pela equipe' :
-                  source === 'play' ? 'Google Play' :
-                  source === 'apple' ? 'App Store' :
-                  source === 'asaas' ? 'Asaas (assinatura anterior)' : '—'
-                } />
-                <InfoLine icon={Wallet} label={isAdminOverride ? 'Cobrança' : 'Próxima cobrança'} value={
-                  isAdminOverride ? 'Não se aplica' : `${preco} em ${fmtDate(expiresAt)}`
-                } />
-                <InfoLine icon={Calendar} label="Início" value={fmtDate(startedAt ?? null)} />
-                <InfoLine icon={Calendar} label="Renovação" value={fmtDate(expiresAt)} />
+      {/* Benefícios */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+        {BENEFICIOS.map((b) => {
+          const Icon = b.icon;
+          return (
+            <div key={b.title} className="flex gap-3 p-4 rounded-2xl bg-card/60 border border-border/60">
+              <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+                <Icon className="w-5 h-5 text-primary" />
               </div>
-              {!isAdminOverride && (
-                <Button onClick={openStore} variant="secondary" className="w-full h-11">
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  Alterar forma de pagamento
-                </Button>
-              )}
-              <Button
-                onClick={() => setCancelOpen(true)}
-                variant="outline"
-                className="w-full h-11 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
-              >
-                Cancelar assinatura
-              </Button>
+              <div className="min-w-0">
+                <p className="font-display text-[14px] font-semibold text-foreground leading-tight">{b.title}</p>
+                <p className="font-body text-[12px] text-muted-foreground leading-snug mt-1">{b.desc}</p>
+              </div>
             </div>
-          )}
-        </motion.div>
-      </AnimatePresence>
+          );
+        })}
+      </div>
 
       <CancelarAssinaturaSheet
         open={cancelOpen}

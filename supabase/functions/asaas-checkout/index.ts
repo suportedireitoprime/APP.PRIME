@@ -219,7 +219,7 @@ Deno.serve(async (req) => {
     }
 
     // Se o pagamento no cartão foi aprovado instantaneamente pelo Asaas, ativa no banco a 0ms
-    const isApproved = billingType === 'CREDIT_CARD' || ['CONFIRMED', 'RECEIVED', 'PAYMENT_RECEIVED', 'PAYMENT_CONFIRMED'].includes(sub?.status);
+    const isApproved = ['CONFIRMED', 'RECEIVED', 'PAYMENT_RECEIVED', 'PAYMENT_CONFIRMED'].includes(sub?.status);
     if (isApproved) {
       try {
         const admin = createClient(
@@ -297,3 +297,4 @@ Deno.serve(async (req) => {
     });
   }
 });
+

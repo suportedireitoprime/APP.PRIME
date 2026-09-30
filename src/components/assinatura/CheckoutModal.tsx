@@ -419,8 +419,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         setPixExpiryTime(Date.now() + 600 * 1000);
         setStep(3);
       } else if (!isPix) {
-        if (data?.status === 'ACTIVE' || data?.status === 'CONFIRMED' || data?.invoiceUrl) {
+        const status = data?.status;
+        if (['CONFIRMED', 'RECEIVED', 'PAYMENT_RECEIVED', 'PAYMENT_CONFIRMED'].includes(status)) {
           toast.success('Assinatura ativada com sucesso!');
+          onSuccess();
+          onOpenChange(false);
+        } else if (status === 'REJECTED') {
+          throw new Error('Pagamento recusado. Verifique os dados e tente novamente.');
+        } else if (status === 'PENDING' || status === 'ACTIVE') {
+          toast.info('Pagamento em processamento. O acesso será liberado em instantes!');
           onSuccess();
           onOpenChange(false);
         } else {
