@@ -385,7 +385,7 @@ export default function Assinatura() {
                     left: `${(i * 8.5 + 3) % 100}%`,
                     width: `${16 + (i % 4) * 8}px`,
                     animationDuration: `${11 + (i % 5) * 3}s`,
-                    animationDelay: `${i * 1.2}s`,
+                    animationDelay: `-${i * 1.2}s`,
                     opacity: 0.7,
                     filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.45))',
                   }}

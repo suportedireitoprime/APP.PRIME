@@ -180,8 +180,27 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
                 ou R$ 199,90 à vista
               </p>
               
-              <div className="w-full pt-1 flex items-center justify-center relative z-10">
-                <TypewriterText messages={anualMessages} className="text-[11px] font-bold text-primary drop-shadow-md" />
+              <div className="flex flex-col gap-1.5 mb-3 mt-3 relative z-10 w-full pl-0.5">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Acesso 100% Ilimitado ao app</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Inteligência Artificial (Horus)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Offline + Resumos Automáticos</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Atualizações jurídicas diárias</span>
+                </div>
+              </div>
+
+              <div className="w-full pt-1 mt-1 border-t border-primary/20 flex items-center justify-center relative z-10">
+                <TypewriterText messages={anualMessages} className="text-[11px] font-bold text-primary drop-shadow-md mt-2" />
               </div>
             </button>
           )}
@@ -215,8 +234,23 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
                 Sem fidelidade. Cancele quando quiser.
               </p>
 
-              <div className="w-full pt-1 flex items-center justify-center relative z-10">
-                <TypewriterText messages={mensalMessages} className="text-[11px] font-bold text-muted-foreground drop-shadow-md" />
+              <div className="flex flex-col gap-1.5 mb-3 mt-3 relative z-10 w-full pl-0.5">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-zinc-400 shrink-0" />
+                  <span className="text-[12px] font-bold text-zinc-300 shadow-black/50 drop-shadow-md">Acesso Ilimitado ao app</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-zinc-400 shrink-0" />
+                  <span className="text-[12px] font-bold text-zinc-300 shadow-black/50 drop-shadow-md">IA + Biblioteca</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-zinc-400 shrink-0" />
+                  <span className="text-[12px] font-bold text-zinc-300 shadow-black/50 drop-shadow-md">Questões e Simulados</span>
+                </div>
+              </div>
+
+              <div className="w-full pt-1 mt-1 border-t border-white/10 flex items-center justify-center relative z-10">
+                <TypewriterText messages={mensalMessages} className="text-[11px] font-bold text-muted-foreground drop-shadow-md mt-2" />
               </div>
             </button>
           )}
@@ -252,8 +286,27 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
                 ou R$ 280,00 à vista (Acesso para sempre)
               </p>
               
-              <div className="w-full pt-1 flex items-center justify-center relative z-10">
-                <TypewriterText messages={["Pague uma vez e acesse para sempre", "Todas as atualizações inclusas", "Sem cobranças recorrentes"]} className="text-[11px] font-bold text-primary drop-shadow-md" />
+              <div className="flex flex-col gap-1.5 mb-3 mt-3 relative z-10 w-full pl-0.5">
+                <div className="flex items-center gap-2">
+                  <Crown className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Sua conta nunca expira</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Crown className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Sem renovação anual</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Crown className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">100% dos recursos desbloqueados</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Crown className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Bônus Exclusivos de Fundador</span>
+                </div>
+              </div>
+
+              <div className="w-full pt-1 mt-1 border-t border-primary/20 flex items-center justify-center relative z-10">
+                <TypewriterText messages={["Pague uma vez e acesse para sempre", "Todas as atualizações inclusas", "Sem cobranças recorrentes"]} className="text-[11px] font-bold text-primary drop-shadow-md mt-2" />
               </div>
             </button>
           )}
