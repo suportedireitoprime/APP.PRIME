@@ -152,6 +152,19 @@ export default function NovidadesRadarOverlay() {
         year: 'numeric', month: '2-digit', day: '2-digit',
       }).format(now);
 
+      // Regra 1: Não mostra para usuários cadastrados hoje
+      if (user?.created_at) {
+        const userCreatedISO = new Intl.DateTimeFormat('en-CA', {
+          timeZone: 'America/Sao_Paulo',
+          year: 'numeric', month: '2-digit', day: '2-digit',
+        }).format(new Date(user.created_at));
+        if (userCreatedISO === todayISO) return;
+      }
+
+      // Regra 2: Se já dispensou hoje (persistido no banco/planilha), não mostra mais hoje
+      const meta = user?.user_metadata as Record<string, any>;
+      if (meta?.radar_last_seen_date === todayISO) return;
+
       const [rawRadar, resBoletins, obras] = await Promise.all([
         resenhaSelect<any>({
           select: 'id,tipo_ato,numero_ato,ementa,data_dou,created_at',
@@ -276,6 +289,11 @@ export default function NovidadesRadarOverlay() {
       }).format(new Date());
       const topicKeys = items.map((i) => `${i.tipo_label}::${todayISO}`);
       markTopicSeen(user.id, topicKeys);
+
+      // Persiste no Supabase (planilha) para sobreviver a desinstalação
+      supabase.auth.updateUser({
+        data: { radar_last_seen_date: todayISO }
+      }).catch(() => {});
     }
   };
 
