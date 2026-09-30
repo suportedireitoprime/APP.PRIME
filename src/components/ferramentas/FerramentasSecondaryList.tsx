@@ -9,7 +9,7 @@ interface FerramentasSecondaryListProps {
 }
 
 export const FerramentasSecondaryList: React.FC<FerramentasSecondaryListProps> = ({ onToolClick }) => {
-  const secondaryTools = DESKTOP_TOOLS_FLAT.filter((t) => !PRIMARY_TOOL_IDS.includes(t.id));
+  const secondaryTools = DESKTOP_TOOLS_FLAT.filter((t) => !PRIMARY_TOOL_IDS.includes(t.id) && t.id !== 'locais');
 
   return (
     <section className="space-y-3 mt-4">

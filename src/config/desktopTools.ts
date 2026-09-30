@@ -63,14 +63,6 @@ export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
       { id: 'newsletter', label: 'Newsletter', desc: 'Receba o resumo por e-mail', icon: Mail, route: '/newsletter', color: '#F97316' },
     ],
   },
-  {
-    id: 'utilitarios',
-    label: 'Utilitários',
-    hint: 'Recursos adicionais do aplicativo',
-    tools: [
-      { id: 'locais', label: 'Locais Jurídicos', desc: 'Fóruns, cartórios e delegacias', icon: MapPin, route: '/ferramentas/locais', color: '#EAB308' },
-    ],
-  },
 ];
 
 export const DESKTOP_TOOLS_FLAT: DesktopTool[] = DESKTOP_TOOL_GROUPS.flatMap((g) => g.tools);
