@@ -57,50 +57,40 @@ export interface EventoBase {
   deep_link?: string;
 }
 
-export const SLOT_FUNCTION_MAP: Record<string, { edgeFunction: string; defaultUrl: string; label: string }> = {
-  boletim_leis_matinal: { edgeFunction: "radar-leis-notify", defaultUrl: "/radar-360", label: "Radar de Leis" },
-  boletim_juridico_diario: { edgeFunction: "notif-noticias-dia", defaultUrl: "/noticias", label: "Boletim Jurídico" },
-  "push-aleatorio-blog": { edgeFunction: "push-aleatorio-blog", defaultUrl: "/blog", label: "Artigo do Blog" },
-  "push-aleatorio-audio": { edgeFunction: "push-aleatorio-audio", defaultUrl: "/aprender", label: "Audioaula" },
-  "push-aleatorio-video": { edgeFunction: "push-aleatorio-video", defaultUrl: "/aprender", label: "Videoaula" },
-  "push-simulado-desafio": { edgeFunction: "send-push", defaultUrl: "/simulados", label: "Simulado & Fixação" },
-  boletim_noticias_diario: { edgeFunction: "notif-noticias-dia", defaultUrl: "/noticias", label: "Síntese Noturna" },
-};
-
 export const EVENTOS_FIXOS: EventoBase[] = [
   {
     hora: 7, minuto: 0, automation_key: "boletim_leis_matinal",
-    nome: "Radar de Leis & DOU", emoji: "📜", canal: "app",
+    nome: "Leis Publicadas", emoji: "📜", canal: "app",
     papel: "unico", deep_link: "/radar-360",
-    descricao: "Push matinal oficial com os novos atos normativos e leis publicadas nas últimas 24h.",
+    descricao: "Push oficial com os novos atos normativos e leis publicadas nas últimas 24h.",
     publico: "Todos com opt-in de push",
-    regra: "Dispara pontualmente às 07:00 caso haja novas leis ou atos normativos monitorados.",
-    titulo_exemplo: "📜 Novas leis publicadas no Diário Oficial hoje!",
+    regra: "Dispara automaticamente às 07:00 caso haja ao menos 1 nova lei no Radar.",
+    titulo_exemplo: "📜 [URGENTE] Novas leis publicadas no Diário Oficial hoje!",
     corpo_exemplo: "⚖️ Atos normativos de alto impacto acabam de entrar em vigor. Toque para ler o resumo.",
     capa_default: "/assets/push/capa-radar-leis.webp",
     tags_persuasao: ["Urgência Real", "Curadoria Oficial", "Alta Prioridade"],
     gatilho_mental: "Antecipação & Primazia da Informação",
   },
   {
-    hora: 9, minuto: 30, automation_key: "boletim_juridico_diario",
-    nome: "Boletim Jurídico & Tribunais", emoji: "📰", canal: "app",
+    hora: 9, minuto: 0, automation_key: "boletim_juridico_diario",
+    nome: "Boletim Jurídico", emoji: "📰", canal: "app",
     papel: "unico", deep_link: "/noticias",
-    descricao: "Boletim matinal consolidando as principais notícias e movimentações jurídicas do STF e STJ.",
+    descricao: "Boletim matinal consolidando as principais notícias e movimentações jurídicas.",
     publico: "Todos com push habilitado",
-    regra: "Dispara pontualmente às 09:30 (+2h30 do anterior) consolidando as manchetes jurídicas.",
+    regra: "Envia o boletim diário.",
     titulo_exemplo: "📰 Boletim do Dia: O que você precisa saber hoje",
-    corpo_exemplo: "☕ Leitura rápida para não ficar desatualizado na prática forense.",
+    corpo_exemplo: "☕ Leitura rápida para não ficar desatualizado na prática.",
     capa_default: "/assets/push/capa-noticias-juridicas.webp",
     tags_persuasao: ["Autoridade", "Prática Forense", "Micro-leitura"],
     gatilho_mental: "Prova Social & Conhecimento Estratégico",
   },
   {
     hora: 12, minuto: 0, automation_key: "push-aleatorio-blog",
-    nome: "Artigo Doutrinário & Blog", emoji: "✍️", canal: "app",
+    nome: "Artigo de Blog Aleatório", emoji: "✍️", canal: "app",
     papel: "unico", deep_link: "/blog",
     descricao: "Destaque do meio-dia: seleciona um artigo de doutrina ou jurisprudência aleatoriamente.",
     publico: "Todos os usuários",
-    regra: "Dispara pontualmente às 12:00 (+2h30 do anterior) para a pausa de almoço e estudo.",
+    regra: "Puxa um artigo aleatório do blog para manter a leitura em dia.",
     titulo_exemplo: "✍️ Leitura de Meio-Dia: Recomendação Especial para você",
     corpo_exemplo: "Aprofunde-se neste artigo selecionado para a sua pausa de descanso.",
     capa_default: "/assets/push/capa-estudo-horus.webp",
@@ -108,12 +98,12 @@ export const EVENTOS_FIXOS: EventoBase[] = [
     gatilho_mental: "Curiosidade & Recompensa Imprevisível",
   },
   {
-    hora: 14, minuto: 30, automation_key: "push-aleatorio-audio",
-    nome: "Audioaula Estratégica", emoji: "🎧", canal: "app",
+    hora: 15, minuto: 0, automation_key: "push-aleatorio-audio",
+    nome: "Audioaula Aleatória", emoji: "🎧", canal: "app",
     papel: "unico", deep_link: "/aprender",
-    descricao: "Notificação à tarde incentivando o estudo multitarefa com uma audioaula do acervo.",
+    descricao: "Notificação à tarde incentivando o estudo multitarefa com uma audioaula.",
     publico: "Todos os usuários",
-    regra: "Dispara pontualmente às 14:30 (+2h30 do anterior) para revisão passiva no fone de ouvido.",
+    regra: "Puxa uma audioaula aleatória para revisão passiva.",
     titulo_exemplo: "🎧 Coloque o fone de ouvido: Uma audioaula surpresa para sua tarde",
     corpo_exemplo: "Aproveite para revisar um conteúdo importante enquanto faz outras atividades.",
     capa_default: "/assets/push/capa-estudo-horus.webp",
@@ -121,12 +111,12 @@ export const EVENTOS_FIXOS: EventoBase[] = [
     gatilho_mental: "Facilidade & Aproveitamento de Tempo Ocioso",
   },
   {
-    hora: 17, minuto: 0, automation_key: "push-aleatorio-video",
-    nome: "Videoaula do Dia", emoji: "📺", canal: "app",
+    hora: 18, minuto: 0, automation_key: "push-aleatorio-video",
+    nome: "Videoaula Aleatória", emoji: "📺", canal: "app",
     papel: "unico", deep_link: "/aprender",
     descricao: "Convite visual no início da noite para assistir a uma videoaula estratégica.",
     publico: "Todos os usuários",
-    regra: "Dispara pontualmente às 17:00 (+2h30 do anterior) com uma videoaula recomendada.",
+    regra: "Puxa uma videoaula aleatória do acervo.",
     titulo_exemplo: "📺 Fim de Tarde de Foco: Sua videoaula recomendada de hoje",
     corpo_exemplo: "Assista agora a esta aula estratégica e garanta mais uma etapa vencida no dia.",
     capa_default: "/assets/push/capa-estudo-horus.webp",
@@ -134,27 +124,14 @@ export const EVENTOS_FIXOS: EventoBase[] = [
     gatilho_mental: "Conclusão de Meta & Reforço Positivo",
   },
   {
-    hora: 19, minuto: 30, automation_key: "push-simulado-desafio",
-    nome: "Fixação & Questão do Dia", emoji: "🎯", canal: "app",
-    papel: "unico", deep_link: "/simulados",
-    descricao: "Desafio prático noturno para treinar resolução de questões de concurso e OAB.",
-    publico: "Todos os usuários",
-    regra: "Dispara pontualmente às 19:30 (+2h30 do anterior) com uma questão comentada rápida.",
-    titulo_exemplo: "🎯 Desafio Noturno: Teste seus conhecimentos agora!",
-    corpo_exemplo: "Uma questão comentada selecionada para testar seu raciocínio jurídico hoje.",
-    capa_default: "/assets/push/capa-estudo-horus.webp",
-    tags_persuasao: ["Prática Ativa", "Desafio Rápido", "Preparação OAB"],
-    gatilho_mental: "Gamificação & Fixação Diária",
-  },
-  {
-    hora: 22, minuto: 0, automation_key: "boletim_noticias_diario",
-    nome: "Síntese Noturna dos Tribunais", emoji: "🌙", canal: "app",
+    hora: 21, minuto: 0, automation_key: "boletim_noticias_diario",
+    nome: "Notícias de Boletins", emoji: "🌙", canal: "app",
     papel: "unico", deep_link: "/noticias",
-    descricao: "O giro final com o fechamento do dia nos tribunais e noticiários jurídicos.",
+    descricao: "O giro final com o fechamento do dia nos tribunais e noticiários.",
     publico: "Todos os usuários",
-    regra: "Dispara pontualmente às 22:00 (+2h30 do anterior) fechando o expediente.",
+    regra: "Resumo final das notícias mais lidas.",
     titulo_exemplo: "🌙 Fechamento: O resumo das notícias mais quentes de hoje",
-    corpo_exemplo: "Confira as decisões de destaque antes de finalizar o expediente.",
+    corpo_exemplo: "Confira as manchetes antes de finalizar o expediente.",
     capa_default: "/assets/push/capa-noticias-juridicas.webp",
     tags_persuasao: ["Fechamento", "Giro Final", "Notícias Relevantes"],
     gatilho_mental: "Aversão à Perda & Informação Completa",
@@ -184,7 +161,7 @@ export interface LogRow {
   tipo: string;
   status: string;
   created_at: string;
-  payload: Record<string, unknown> | null;
+  payload: any;
 }
 
 export type EventoView = EventoBase & {
@@ -204,4 +181,6 @@ export type EventoView = EventoBase & {
 export function padHora(h: number, m: number) {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
+
+export { CanalBadge } from "./CanalBadge";
 
