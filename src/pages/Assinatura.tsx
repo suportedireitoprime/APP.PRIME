@@ -197,11 +197,10 @@ export default function Assinatura() {
         />
 
         <Sheet open={paymentMethodSheetOpen} onOpenChange={setPaymentMethodSheetOpen}>
-          <SheetContent side="bottom" className="h-[100dvh] max-h-[100dvh] w-full rounded-none px-0 pt-0 bg-background border-none flex flex-col overflow-hidden">
+          <SheetContent side="bottom" className="h-[100dvh] max-h-[100dvh] w-full rounded-none px-0 pt-0 bg-[#0D0D0D] border-none flex flex-col overflow-hidden">
             <div className="flex-1 w-full max-w-md mx-auto flex flex-col overflow-y-auto px-6 pb-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-16">
               <div className="absolute inset-0 pointer-events-none opacity-[0.15] -z-10">
                 <ShapeGrid />
-                <div className="absolute top-0 left-0 right-0 h-96 bg-gradient-to-b from-primary/10 to-transparent" />
               </div>
 
               <SheetHeader className="mb-10 shrink-0 relative z-10 text-center flex flex-col items-center">
@@ -220,15 +219,12 @@ export default function Assinatura() {
               <div className="flex flex-col gap-4 relative z-10 mb-10 w-full">
                 <Button
                   variant="outline"
-                  className="h-auto py-5 flex items-center justify-start gap-5 px-6 border-2 border-primary/40 bg-card hover:border-primary hover:bg-primary/5 transition-all rounded-[1.5rem] group relative overflow-hidden shadow-lg shadow-primary/5"
+                  className="h-auto py-5 flex items-center justify-start gap-5 px-6 border-2 border-[#27272a] bg-[#121212] hover:border-primary hover:bg-primary/5 transition-all rounded-[1.5rem] group relative overflow-hidden shadow-lg"
                   onClick={() => {
                     setPaymentMethodSheetOpen(false);
                     startPurchase(tab === 'vitalicio' ? 'vitalicio' : 'anual');
                   }}
                 >
-                  <div className="absolute top-0 right-0 p-2 bg-primary/10 rounded-bl-2xl">
-                    <span className="text-[9px] font-black uppercase text-primary tracking-wider px-2">Recomendado</span>
-                  </div>
                   <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden relative shadow-inner">
                     <svg
                       viewBox="0 0 24 24"
@@ -251,45 +247,46 @@ export default function Assinatura() {
                     </svg>
                   </div>
                   <div className="flex flex-col items-start text-left flex-1">
-                    <span className="font-black text-xl text-foreground">Cartão de Crédito</span>
+                    <span className="font-black text-xl text-white">Cartão de Crédito</span>
                     {tab === 'vitalicio' ? (
-                      <span className="text-xs font-bold text-muted-foreground mt-0.5">Até 12x de R$ 29,90</span>
+                      <span className="text-xs font-bold text-zinc-400 mt-0.5">Até 12x de R$ 29,90</span>
                     ) : (
-                      <span className="text-xs font-bold text-muted-foreground mt-0.5">Até 12x de R$ 16,65</span>
+                      <span className="text-xs font-bold text-zinc-400 mt-0.5">Até 12x de R$ 16,65</span>
                     )}
                   </div>
-                  <ArrowRight className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors group-hover:translate-x-1" />
+                  <ArrowRight className="w-6 h-6 text-zinc-500 group-hover:text-primary transition-colors group-hover:translate-x-1" />
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="h-auto py-5 flex items-center justify-start gap-5 px-6 border-2 border-border/80 bg-card hover:border-emerald-500 hover:bg-emerald-500/5 transition-all rounded-[1.5rem] group relative overflow-hidden shadow-md"
+                  className="h-auto py-5 flex items-center justify-start gap-5 px-6 border-2 border-[#27272a] bg-[#121212] hover:border-emerald-500 hover:bg-emerald-500/5 transition-all rounded-[1.5rem] group relative overflow-hidden shadow-md"
                   onClick={() => {
                     setPaymentMethodSheetOpen(false);
                     startPurchase(tab === 'vitalicio' ? 'vitalicio_pix' : 'anual_regular_pix');
                   }}
                 >
+                  <div className="absolute top-0 right-0 p-2 bg-emerald-500/10 rounded-bl-2xl">
+                    <span className="text-[10px] font-black uppercase text-emerald-500 tracking-wider px-2">10% OFF</span>
+                  </div>
                   <div className="w-14 h-14 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0 shadow-inner">
-                    <svg className="w-6 h-6 text-emerald-500" viewBox="0 0 512 512" fill="currentColor">
-                      <path d="M119.2 386.6l-80.1-80.1c-19.4-19.4-19.4-51 0-70.4l80.1-80.1c19.4-19.4 51-19.4 70.4 0l17.7 17.7c5.2 5.2 13.6 5.2 18.8 0l18.8-18.8c5.2-5.2 5.2-13.6 0-18.8l-17.7-17.7c-39.1-39.1-102.7-39.1-141.8 0l-80.1 80.1c-39.1 39.1-39.1 102.7 0 141.8l80.1 80.1c39.1 39.1 102.7 39.1 141.8 0l17.7-17.7c5.2-5.2 5.2-13.6 0-18.8l-18.8-18.8c-5.2-5.2-13.6-5.2-18.8 0l-17.7 17.7c-19.3 19.5-50.9 19.5-70.4 0z" />
-                      <path d="M473.4 155.8l-80.1-80.1c-39.1-39.1-102.7-39.1-141.8 0l-17.7 17.7c-5.2 5.2-5.2 13.6 0 18.8l18.8 18.8c5.2 5.2 13.6 5.2 18.8 0l17.7-17.7c19.4-19.4 51-19.4 70.4 0l80.1 80.1c19.4 19.4 19.4 51 0 70.4l-80.1 80.1c-19.4 19.4-51 19.4-70.4 0l-17.7-17.7c-5.2-5.2-13.6-5.2-18.8 0l-18.8 18.8c-5.2 5.2-5.2 13.6 0 18.8l17.7 17.7c39.1 39.1 102.7 39.1 141.8 0l80.1-80.1c39.2-39.1 39.2-102.6 0-141.8z" />
-                      <path d="M256 166.4L166.4 256 256 345.6 345.6 256 256 166.4zM256 308c-28.7 0-52-23.3-52-52s23.3-52 52-52 52 23.3 52 52-23.3 52-52 52z" />
+                    <svg className="w-7 h-7 text-emerald-500" viewBox="0 0 512 512" fill="currentColor">
+                      <path d="M125 381.1l-75.4-75.4c-22.1-22.1-22.1-58 0-80.1l75.4-75.4c22.1-22.1 58-22.1 80.1 0L222.8 168c5.9 5.9 15.5 5.9 21.4 0l17.7-17.7c5.9-5.9 5.9-15.5 0-21.4l-17.7-17.7c-44.5-44.5-116.8-44.5-161.3 0l-75.4 75.4c-44.5 44.5-44.5 116.8 0 161.3l75.4 75.4c44.5 44.5 116.8 44.5 161.3 0l17.7-17.7c5.9-5.9 5.9-15.5 0-21.4l-17.7-17.7c-5.9 5.9-15.5 5.9-21.4 0l-17.7 17.7c-22.2 22.1-58.1 22.1-80.2 0zM387 130.9l-75.4-75.4c-44.5-44.5-116.8-44.5-161.3 0L132.6 73.2c-5.9 5.9-5.9 15.5 0 21.4l17.7 17.7c5.9 5.9 15.5 5.9 21.4 0l17.7-17.7c22.1-22.1 58-22.1 80.1 0l75.4 75.4c22.1 22.1 22.1 58 0 80.1l-75.4 75.4c-22.1 22.1-58 22.1-80.1 0l-17.7-17.7c-5.9-5.9-15.5-5.9-21.4 0l-17.7 17.7c-5.9 5.9-5.9 15.5 0 21.4l17.7 17.7c44.5 44.5 116.8 44.5 161.3 0l75.4-75.4c44.5-44.5 44.5-116.8 0-161.3zM256 181.7l-74.3 74.3 74.3 74.3 74.3-74.3-74.3-74.3z"/>
                     </svg>
                   </div>
                   <div className="flex flex-col items-start text-left flex-1">
-                    <span className="font-black text-xl text-foreground">PIX</span>
+                    <span className="font-black text-xl text-white">PIX</span>
                     {tab === 'vitalicio' ? (
-                      <span className="text-xs font-bold text-muted-foreground mt-0.5">R$ 280,00 à vista</span>
+                      <span className="text-xs font-bold text-zinc-400 mt-0.5">R$ 252,00 à vista</span>
                     ) : (
-                      <span className="text-xs font-bold text-muted-foreground mt-0.5">R$ 199,90 à vista</span>
+                      <span className="text-xs font-bold text-emerald-500 mt-0.5">R$ 179,90 à vista</span>
                     )}
                   </div>
-                  <ArrowRight className="w-6 h-6 text-muted-foreground group-hover:text-emerald-500 transition-colors group-hover:translate-x-1" />
+                  <ArrowRight className="w-6 h-6 text-zinc-500 group-hover:text-emerald-500 transition-colors group-hover:translate-x-1" />
                 </Button>
               </div>
 
               <div className="flex flex-col gap-4 mt-auto relative z-10 w-full">
-                <div className="bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-sm border border-border/50 rounded-3xl p-6 shadow-sm flex flex-col gap-4 relative overflow-hidden">
+                <div className="bg-[#121212] border border-[#27272a] rounded-3xl p-6 shadow-sm flex flex-col gap-4 relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
                   
                   <div className="flex items-start gap-4">
