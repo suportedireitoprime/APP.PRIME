@@ -197,62 +197,82 @@ export default function Assinatura() {
         />
 
         <Sheet open={paymentMethodSheetOpen} onOpenChange={setPaymentMethodSheetOpen}>
-          <SheetContent side="bottom" className="rounded-t-3xl px-6 pb-[calc(3rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-10 bg-background border-border">
-            <div className="relative">
-              <div className="absolute inset-0 pointer-events-none opacity-20 -z-10">
-                <ShapeGrid />
-              </div>
-              <SheetHeader className="mb-8 text-left shrink-0 relative z-10">
-                <SheetTitle className="text-3xl font-display font-black text-foreground leading-tight uppercase">Escolha como<br/>prefere pagar.</SheetTitle>
-                <SheetDescription className="text-[13px] font-medium mt-2 text-muted-foreground">
-                  Acesso imediato ao plano Anual. Selecione a forma de pagamento abaixo.
-                </SheetDescription>
-              </SheetHeader>
-              <div className="flex flex-col gap-4 relative z-10">
-                <Button
-                  variant="outline"
-                  className="h-auto py-5 flex items-center justify-start gap-4 px-5 border-2 border-primary/30 hover:border-primary hover:bg-primary/5 transition-all rounded-3xl group"
-                  onClick={() => {
-                    setPaymentMethodSheetOpen(false);
-                    startPurchase(tab === 'vitalicio' ? 'vitalicio' : 'anual');
-                  }}
-                >
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <CreditCard className="w-6 h-6 text-primary" />
-                  </div>
-                  <div className="flex flex-col items-start text-left flex-1">
-                    <span className="font-bold text-lg text-foreground">Cartão de Crédito</span>
-                    {tab === 'vitalicio' ? (
-                      <span className="text-[11px] font-bold text-primary">Até 12x de R$ 29,90 · Plano Vitalício</span>
-                    ) : (
-                      <span className="text-[11px] font-bold text-primary">Até 12x de R$ 16,65 · Plano Anual</span>
-                    )}
-                  </div>
-                  <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors group-hover:translate-x-1" />
-                </Button>
+          <SheetContent side="bottom" className="h-[100dvh] max-h-[100dvh] w-full rounded-none px-6 pb-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-14 bg-background border-none flex flex-col overflow-y-auto">
+            <div className="absolute inset-0 pointer-events-none opacity-20 -z-10">
+              <ShapeGrid />
+            </div>
+            <SheetHeader className="mb-6 text-left shrink-0 relative z-10">
+              <SheetTitle className="text-3xl font-display font-black text-foreground leading-tight uppercase">Último passo.</SheetTitle>
+              <SheetDescription className="text-sm font-medium mt-2 text-muted-foreground">
+                Escolha como prefere ativar seu plano {tab === 'vitalicio' ? 'Vitalício' : 'Anual'}. O acesso é liberado na hora.
+              </SheetDescription>
+            </SheetHeader>
 
-                <Button
-                  variant="outline"
-                  className="h-auto py-5 flex items-center justify-start gap-4 px-5 border-2 border-border/80 hover:border-emerald-500 hover:bg-emerald-500/5 transition-all rounded-3xl group"
-                  onClick={() => {
-                    setPaymentMethodSheetOpen(false);
-                    startPurchase(tab === 'vitalicio' ? 'vitalicio_pix' : 'anual_regular_pix');
-                  }}
-                >
-                  <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
-                    <QrCode className="w-6 h-6 text-emerald-500" />
-                  </div>
-                  <div className="flex flex-col items-start text-left flex-1">
-                    <span className="font-bold text-lg text-foreground">PIX</span>
-                    {tab === 'vitalicio' ? (
-                      <span className="text-[11px] font-bold text-muted-foreground">R$ 280,00 Vitalício</span>
-                    ) : (
-                      <span className="text-[11px] font-bold text-muted-foreground">R$ 199,90 à vista · Plano Anual</span>
-                    )}
-                  </div>
-                  <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-500 transition-colors group-hover:translate-x-1" />
-                </Button>
+            <div className="flex flex-col gap-3 mb-8 relative z-10 p-5 rounded-3xl bg-card border border-border/60 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
+                  <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                </div>
+                <div className="flex-1 text-sm font-bold text-foreground">7 dias de garantia incondicional</div>
               </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                </div>
+                <div className="flex-1 text-sm font-bold text-foreground">Acesso imediato à inteligência artificial</div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center shrink-0">
+                  <RotateCw className="w-4 h-4 text-blue-500" />
+                </div>
+                <div className="flex-1 text-sm font-bold text-foreground">Leis sempre atualizadas em tempo real</div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4 relative z-10 mt-auto">
+              <Button
+                variant="outline"
+                className="h-auto py-5 flex items-center justify-start gap-4 px-5 border-2 border-primary/30 hover:border-primary hover:bg-primary/5 transition-all rounded-3xl group"
+                onClick={() => {
+                  setPaymentMethodSheetOpen(false);
+                  startPurchase(tab === 'vitalicio' ? 'vitalicio' : 'anual');
+                }}
+              >
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <CreditCard className="w-6 h-6 text-primary" />
+                </div>
+                <div className="flex flex-col items-start text-left flex-1">
+                  <span className="font-bold text-lg text-foreground">Cartão de Crédito</span>
+                  {tab === 'vitalicio' ? (
+                    <span className="text-[11px] font-bold text-primary">Até 12x de R$ 29,90 · Plano Vitalício</span>
+                  ) : (
+                    <span className="text-[11px] font-bold text-primary">Até 12x de R$ 16,65 · Plano Anual</span>
+                  )}
+                </div>
+                <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors group-hover:translate-x-1" />
+              </Button>
+
+              <Button
+                variant="outline"
+                className="h-auto py-5 flex items-center justify-start gap-4 px-5 border-2 border-border/80 hover:border-emerald-500 hover:bg-emerald-500/5 transition-all rounded-3xl group"
+                onClick={() => {
+                  setPaymentMethodSheetOpen(false);
+                  startPurchase(tab === 'vitalicio' ? 'vitalicio_pix' : 'anual_regular_pix');
+                }}
+              >
+                <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
+                  <QrCode className="w-6 h-6 text-emerald-500" />
+                </div>
+                <div className="flex flex-col items-start text-left flex-1">
+                  <span className="font-bold text-lg text-foreground">PIX</span>
+                  {tab === 'vitalicio' ? (
+                    <span className="text-[11px] font-bold text-muted-foreground">R$ 280,00 Vitalício</span>
+                  ) : (
+                    <span className="text-[11px] font-bold text-muted-foreground">R$ 199,90 à vista · Plano Anual</span>
+                  )}
+                </div>
+                <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-500 transition-colors group-hover:translate-x-1" />
+              </Button>
             </div>
           </SheetContent>
         </Sheet>
