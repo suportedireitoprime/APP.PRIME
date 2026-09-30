@@ -34,7 +34,9 @@ import { useHideSplashScreen } from '@/hooks/useHideSplashScreen';
 import { Capacitor } from '@capacitor/core';
 
 import { useProfileSummary } from '@/hooks/useProfileSummary';
+import { useSubscription } from '@/hooks/useSubscription';
 import { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
+import PromoHeaderBanner from '@/components/assinatura/PromoHeaderBanner';
 
 const HERO_CONFIG = { radar: camaraHero, legislacao: heroImage, noticias: senadoHero } as const;
 
@@ -43,6 +45,8 @@ type Tab = 'legislacao' | 'noticias' | 'ferramentas';
 const IndexMobile = () => {
   const navigate = useNavigate();
   const { data: profileSummary } = useProfileSummary();
+  const { isPremium, isTrial } = useSubscription();
+  const hasPromoBanner = !isPremium || isTrial;
   const unreadCount = useUnreadNotifCount();
   useHideSplashScreen(250, Boolean(profileSummary !== undefined || !Capacitor.isNativePlatform()));
 
@@ -122,10 +126,12 @@ const IndexMobile = () => {
         />
       </div>
       <div className="relative z-10">
+        <PromoHeaderBanner />
         <HomeHeaderHero
           onOpenMenu={() => setMenuOpen(true)}
           onOpenSearch={() => setSearchOpen(true)}
           onSearchOpenChange={setHeroSearchOpen}
+          hasTopBanner={hasPromoBanner}
         />
         <div>
           <main ref={contentRef} className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-2">

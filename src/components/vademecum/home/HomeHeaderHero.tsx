@@ -62,9 +62,10 @@ interface HomeHeaderHeroProps {
   onSearchOpenChange?: (open: boolean) => void;
   onOpenMenu?: () => void;
   onOpenSearch?: () => void;
+  hasTopBanner?: boolean;
 }
 
-const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHeaderHeroProps = {}) => {
+const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBanner = false }: HomeHeaderHeroProps = {}) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data: profileSummary } = useProfileSummary();
@@ -191,12 +192,16 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           </div>
         </div>
 
-        {/* BotÃµes de NotificaÃ§Ã£o e Menu â€” alinhados com Vade Mecum */}
-        <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
+        {/* Botões de Notificação e Menu — alinhados com Vade Mecum */}
+        <header className={`absolute top-0 right-0 left-0 z-20 pointer-events-none transition-all duration-300 ${
+          hasTopBanner 
+            ? 'pt-2 sm:pt-3' 
+            : 'pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))]'
+        }`}>
           <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center justify-end gap-2 sm:gap-3">
             <button
               onClick={() => { haptic.light(); setNotifOpen(true); }}
-              aria-label={`Abrir notificaÃ§Ãµes${unreadCount > 0 ? ` (${unreadCount} nÃ£o lidas)` : ''}`}
+              aria-label={`Abrir notificações${unreadCount > 0 ? ` (${unreadCount} não lidas)` : ''}`}
               className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70 relative"
             >
               <Bell className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
@@ -217,8 +222,10 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch }: HomeHe
           </div>
         </header>
 
-        {/* ConteÃºdo: Logo Ã  esquerda â€” centralizado na Ã¡rea vermelha com recuo idÃªntico ao Vade Mecum */}
-        <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[100px]">
+        {/* Conteúdo: Logo à esquerda — centralizado na área vermelha com recuo idêntico ao Vade Mecum */}
+        <div className={`relative z-10 transition-all duration-300 flex-1 flex flex-col justify-start min-h-[100px] ${
+          hasTopBanner ? 'pt-2 sm:pt-3' : 'pt-8 sm:pt-10'
+        }`}>
           <HomeBrandBanner />
         </div>
 

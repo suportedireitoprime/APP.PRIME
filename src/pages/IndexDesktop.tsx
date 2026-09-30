@@ -20,6 +20,7 @@ import DesktopTopHeader from '@/components/vademecum/desktop/DesktopTopHeader';
 import DesktopOnboardingOverlay from '@/components/desktop/DesktopOnboardingOverlay';
 import DesktopBreadcrumb from '@/components/vademecum/desktop/DesktopBreadcrumb';
 import DesktopSidebar from '@/components/vademecum/desktop/DesktopSidebar';
+import PromoHeaderBanner from '@/components/assinatura/PromoHeaderBanner';
 import AtualizacaoTab from '@/components/vademecum/outros/AtualizacaoTab';
 import DesktopEstudosGrid from '@/components/desktop/DesktopEstudosGrid';
 import NoticiasJuridicasCarousel from '@/components/vademecum/blog/NoticiasJuridicasCarousel';
@@ -140,6 +141,7 @@ const IndexDesktop = () => {
               <div key={activeTab}>
                 {activeTab === 'legislacao' && (
                   <>
+                    <PromoHeaderBanner isDesktop={true} className="mb-4" />
                     <div className="mb-8 mt-4 relative z-0 pointer-events-auto">
                       <DesktopHeroBanner 
                         typingHint={typingHint} 

@@ -1,8 +1,14 @@
-# Tarefa: Corrigir exibição indevida do card/modal de tempo esgotado na Landing Page e para Admin
+# Tarefa: Banner de Promoção 24h & Teste Gratuito no Cabeçalho
 
-- [x] Corrigir `GlobalTrialGate` em `src/AppRoutes.tsx` (bloquear execução para `!user`, rotas públicas e admins) <!-- id: 0 -->
-- [x] Corrigir `GlobalPromoFloatingCard.tsx` (remover fallback guest, bloquear na Landing Page e para admin) <!-- id: 1 -->
-- [x] Otimizar bypass de admin em `useSubscription.ts` para resolução síncrona sem queries desnecessárias <!-- id: 2 -->
-- [x] Ajustar `TrialExpiredModal.tsx` e `PremiumGate.tsx` para validação estrita de usuário e bypass de admin <!-- id: 3 -->
-- [x] Validar com `tsc --noEmit` <!-- id: 4 -->
-- [x] Auto-commit e push no GitHub <!-- id: 5 -->
+- [x] 1. Criar componente `src/components/assinatura/PromoHeaderBanner.tsx` <!-- id: 1 -->
+  - [x] 1.1 Lógica de detecção dos 3 estados (Promo 24h Dourado, Teste Gratuito Vermelho, Assinante Oculto)
+  - [x] 1.2 Cronômetro regressivo com atualização a cada segundo (HH:MM:SS ou Dd HH:MM:SS)
+  - [x] 1.3 Design idêntico à altura da barra de pesquisa (`h-16`, `rounded-2xl`, botão CTA na direita)
+  - [x] 1.4 Abertura do CheckoutModal ao clicar no banner
+- [x] 2. Integrar `PromoHeaderBanner` no Cabeçalho Mobile (`IndexMobile.tsx` e `HomeHeaderHero.tsx`) <!-- id: 2 -->
+  - [x] 2.1 Posicionar no topo com respeito a Safe Area (`var(--sai-top)`)
+  - [x] 2.2 Transição suave e layout responsivo com prop `hasTopBanner`
+- [x] 3. Integrar `PromoHeaderBanner` no Cabeçalho Desktop (`IndexDesktop.tsx`) <!-- id: 3 -->
+  - [x] 3.1 Garantir visual widescreen e layout responsivo
+- [x] 4. Validação com TypeScript (`tsc --noEmit`) <!-- id: 4 -->
+- [x] 5. Auto-Commit e Push para o GitHub <!-- id: 5 -->
