@@ -186,10 +186,18 @@ Deno.serve(async (req) => {
     const finalUserId = targetUserId || legacy.claimed_user_id;
 
     if (finalUserId) {
+      let currentStatus = 'PENDING';
+      const { data: currSub } = await admin.from('asaas_subscriptions').select('status').eq('user_id', finalUserId).maybeSingle();
+      if (currSub?.status) {
+        currentStatus = currSub.status;
+      }
+      
+      const nextStatus = pago ? 'ACTIVE' : (cortarAgora ? 'CANCELED' : currentStatus);
+
       const subUpsertPayload: any = {
         user_id: finalUserId,
         plano: effectivePlan,
-        status: cortarAgora ? 'CANCELED' : 'ACTIVE',
+        status: nextStatus,
         asaas_customer_id: customerId ?? legacy.asaas_customer_id,
         asaas_subscription_id: subscriptionId ?? legacy.asaas_subscription_id,
         expires_at: vitalicio ? null : (proximo ?? legacy.expires_at),
