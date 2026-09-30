@@ -373,16 +373,15 @@ export default function Assinatura() {
         <div className="max-w-2xl mx-auto pt-4 space-y-7 pb-[calc(8.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
             <PaywallImageStack />
 
-            <div className="space-y-3 text-center px-4 flex flex-col items-center">
-              <img src={primeLogo} alt="Estudos Jurídicos" className="w-16 h-16 object-contain drop-shadow-[0_0_20px_rgba(224,31,71,0.2)]" />
+            <div className="space-y-3 text-center px-4 flex flex-col items-center mt-2">
               <div className="inline-flex items-center gap-1.5 bg-primary/10 border border-primary/20 text-primary px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-widest mb-1">
                 Acesso Total Liberado
               </div>
-              <h1 className="font-display text-[32px] sm:text-4xl font-black text-foreground leading-[1.15]">
-                Desbloqueie o aplicativo <span className="text-primary">sem limites.</span>
+              <h1 className="font-display text-[32px] sm:text-4xl font-black text-foreground leading-[1.15] uppercase tracking-tight">
+                Acesso a todo conteúdo <span className="text-primary">do aplicativo.</span>
               </h1>
-              <p className="text-[14px] text-muted-foreground font-medium max-w-sm mx-auto leading-relaxed">
-                Pare de esbarrar em bloqueios. Tenha a Inteligência Artificial, Vade Mecum e Simulados liberados para você.
+              <p className="text-[14px] text-muted-foreground font-medium max-w-[280px] sm:max-w-sm mx-auto leading-relaxed">
+                Acelere sua aprovação com o ecossistema de estudos mais completo do país. Tenha a Inteligência Artificial, Vade Mecum interativo e Simulados ilimitados sempre à mão.
               </p>
             </div>
 
