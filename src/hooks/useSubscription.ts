@@ -413,19 +413,23 @@ export function useSubscription(options: Options = {}): SubscriptionState {
   }, [user, nonce, pollOnMount]);
 
   // GA4 / Telemetria: dispara `assinatura_ativada` na primeira vez que o Premium fica ativo
-  // Deduplicado via sessionStorage e ref para não poluir app_events com remontagens.
+  // Deduplicado via localStorage para não registrar a mesma compra toda vez que o app for aberto (sessão).
   useEffect(() => {
     if (!state.isPremium || state.loading || state.isAdminOverride) return;
     if (wasPremium.current) return;
     
-    const sessKey = `direitoprime:sub_event:${user?.id}:${state.plano}`;
+    // Adicionamos a data de início (startedAt) se existir, para que renovações ou 
+    // re-assinaturas futuras do mesmo plano sejam registradas corretamente.
+    const startedAtSuffix = state.startedAt ? `:${state.startedAt.split('T')[0]}` : '';
+    const localKey = `direitoprime:sub_logged_v2:${user?.id}:${state.plano}${startedAtSuffix}`;
+    
     if (typeof window !== 'undefined') {
       try {
-        if (window.sessionStorage.getItem(sessKey)) {
+        if (window.localStorage.getItem(localKey)) {
           wasPremium.current = true;
           return;
         }
-        window.sessionStorage.setItem(sessKey, '1');
+        window.localStorage.setItem(localKey, '1');
       } catch {}
     }
 
@@ -433,7 +437,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
     import('@/lib/appEvents').then(({ appEvents }) =>
       appEvents.assinaturaAtivada({ plano: state.plano, source: state.source })
     ).catch(() => {});
-  }, [state.isPremium, state.loading, state.isAdminOverride, state.plano, state.source, user?.id]);
+  }, [state.isPremium, state.loading, state.isAdminOverride, state.plano, state.source, state.startedAt, user?.id]);
 
   return { ...state, refresh };
 }

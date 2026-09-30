@@ -262,6 +262,16 @@ export const appEvents = {
   assinaturaAtivada: (p: { plano?: string | null; source?: string | null; transaction_id?: string | null }) => {
     const value = planValue(p.plano);
     const transaction_id = p.transaction_id ?? `${p.plano ?? "premium"}-${Date.now()}`;
+    
+    // Normaliza o nome do plano para o Analytics ficar mais limpo
+    const rawPlano = (p.plano ?? "").toLowerCase();
+    let cleanName = "Premium";
+    if (rawPlano.includes("vitalicio") || rawPlano.includes("vitalício")) cleanName = "Premium Vitalício";
+    else if (rawPlano.includes("anual")) cleanName = "Premium Anual";
+    else if (rawPlano.includes("mensal")) cleanName = "Premium Mensal";
+    else if (rawPlano.includes("teste") || rawPlano.includes("trial") || rawPlano.includes("dias")) cleanName = "Premium Teste";
+    else cleanName = `Premium ${rawPlano}`;
+
     fanout({
       ga: "purchase",
       meta: "Purchase",
@@ -274,7 +284,7 @@ export const appEvents = {
         content_type: "product",
         plano: p.plano ?? "",
         source: p.source ?? "",
-        items: [{ item_id: p.plano ?? "premium", item_name: `Premium ${p.plano ?? ""}`, price: value, quantity: 1 }],
+        items: [{ item_id: p.plano ?? "premium", item_name: cleanName, price: value, quantity: 1 }],
       },
       db: true,
     });
