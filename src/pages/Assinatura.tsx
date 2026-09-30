@@ -210,8 +210,8 @@ export default function Assinatura() {
                   <ShieldCheck className="w-4 h-4 text-primary" />
                   <span className="text-[11px] font-bold text-primary uppercase tracking-wider">Checkout Seguro</span>
                 </div>
-                <SheetTitle className="text-4xl font-display font-black text-foreground leading-tight uppercase tracking-tight">
-                  Último passo.
+                <SheetTitle className="text-4xl font-display font-black text-foreground leading-tight tracking-tight">
+                  Finalize sua assinatura
                 </SheetTitle>
                 <SheetDescription className="text-sm font-medium mt-3 text-muted-foreground max-w-[280px]">
                   Escolha como prefere ativar seu plano {tab === 'vitalicio' ? 'Vitalício' : 'Anual'}. O acesso é liberado na hora.
@@ -227,27 +227,18 @@ export default function Assinatura() {
                     startPurchase(tab === 'vitalicio' ? 'vitalicio' : 'anual');
                   }}
                 >
-                  <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden relative shadow-inner">
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="w-7 h-7 text-primary absolute animate-[pulse_2s_ease-in-out_infinite]"
-                      style={{ animation: 'bounce-horizontal 2s infinite alternate ease-in-out' }}
-                    >
-                      <style>{`
-                        @keyframes bounce-horizontal {
-                          0% { transform: translateX(-2px) rotate(-3deg); }
-                          100% { transform: translateX(2px) rotate(3deg); }
-                        }
-                      `}</style>
-                      <rect width="20" height="14" x="2" y="5" rx="2" />
-                      <line x1="2" x2="22" y1="10" y2="10" />
-                    </svg>
-                  </div>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-10 h-10 text-primary shrink-0"
+                  >
+                    <rect width="20" height="14" x="2" y="5" rx="2" />
+                    <line x1="2" x2="22" y1="10" y2="10" />
+                  </svg>
                   <div className="flex flex-col items-start text-left flex-1">
                     <span className="font-black text-xl text-white">Cartão de Crédito</span>
                     {tab === 'vitalicio' ? (
@@ -270,11 +261,9 @@ export default function Assinatura() {
                   <div className="absolute top-0 right-0 p-2 bg-emerald-500/10 rounded-bl-2xl">
                     <span className="text-[10px] font-black uppercase text-emerald-500 tracking-wider px-2">10% OFF</span>
                   </div>
-                  <div className="w-14 h-14 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0 shadow-inner">
-                    <svg className="w-7 h-7 text-emerald-500" viewBox="0 0 512 512" fill="currentColor">
-                      <path d="M125 381.1l-75.4-75.4c-22.1-22.1-22.1-58 0-80.1l75.4-75.4c22.1-22.1 58-22.1 80.1 0L222.8 168c5.9 5.9 15.5 5.9 21.4 0l17.7-17.7c5.9-5.9 5.9-15.5 0-21.4l-17.7-17.7c-44.5-44.5-116.8-44.5-161.3 0l-75.4 75.4c-44.5 44.5-44.5 116.8 0 161.3l75.4 75.4c44.5 44.5 116.8 44.5 161.3 0l17.7-17.7c5.9-5.9 5.9-15.5 0-21.4l-17.7-17.7c-5.9 5.9-15.5 5.9-21.4 0l-17.7 17.7c-22.2 22.1-58.1 22.1-80.2 0zM387 130.9l-75.4-75.4c-44.5-44.5-116.8-44.5-161.3 0L132.6 73.2c-5.9 5.9-5.9 15.5 0 21.4l17.7 17.7c5.9 5.9 15.5 5.9 21.4 0l17.7-17.7c22.1-22.1 58-22.1 80.1 0l75.4 75.4c22.1 22.1 22.1 58 0 80.1l-75.4 75.4c-22.1 22.1-58 22.1-80.1 0l-17.7-17.7c-5.9-5.9-15.5-5.9-21.4 0l-17.7 17.7c-5.9 5.9-5.9 15.5 0 21.4l17.7 17.7c44.5 44.5 116.8 44.5 161.3 0l75.4-75.4c44.5-44.5 44.5-116.8 0-161.3zM256 181.7l-74.3 74.3 74.3 74.3 74.3-74.3-74.3-74.3z"/>
-                    </svg>
-                  </div>
+                  <svg className="w-9 h-9 text-emerald-500 shrink-0" viewBox="0 0 512 512" fill="currentColor">
+                    <path d="M119.2 384l136.8-136.8L119.2 110.4 72 157.6v196.8l47.2 47.2-47.2 47.2V512h62.4l52-52v-24.8l-52-52H72v-114.4l112 112L184 384h-64.8zm273.6 0l-136.8-136.8 136.8-136.8L440 157.6V52.8L392.8 5.6V5.6l-52 52v24.8l52 52H440v114.4l-112-112L328 128h64.8zm-136.8-136.8L392.8 384l47.2-47.2v-196.8l-47.2-47.2-136.8 136.8zm0 0L119.2 128 72 175.2v196.8l47.2 47.2 136.8-136.8z"/>
+                  </svg>
                   <div className="flex flex-col items-start text-left flex-1">
                     <span className="font-black text-xl text-white">PIX</span>
                     {tab === 'vitalicio' ? (
@@ -292,30 +281,24 @@ export default function Assinatura() {
                   <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
                   
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-emerald-500/15 flex items-center justify-center shrink-0 border border-emerald-500/20">
-                      <ShieldCheck className="w-5 h-5 text-emerald-500" />
-                    </div>
+                    <ShieldCheck className="w-6 h-6 text-emerald-500 shrink-0 mt-0.5" />
                     <div className="flex flex-col">
                       <span className="text-sm font-black text-foreground">7 dias de garantia incondicional</span>
                       <span className="text-[11px] text-muted-foreground font-medium mt-0.5">Se não gostar, devolvemos 100% do valor.</span>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center shrink-0 border border-primary/20">
-                      <Sparkles className="w-5 h-5 text-primary" />
-                    </div>
+                    <Sparkles className="w-6 h-6 text-primary shrink-0 mt-0.5" />
                     <div className="flex flex-col">
-                      <span className="text-sm font-black text-foreground">Inteligência Artificial Imediata</span>
-                      <span className="text-[11px] text-muted-foreground font-medium mt-0.5">Acesso instantâneo a todos os recursos.</span>
+                      <span className="text-sm font-black text-foreground">Pagamento 100% Seguro</span>
+                      <span className="text-[11px] text-muted-foreground font-medium mt-0.5">Ambiente criptografado. Seus dados protegidos.</span>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-blue-500/15 flex items-center justify-center shrink-0 border border-blue-500/20">
-                      <RotateCw className="w-5 h-5 text-blue-500" />
-                    </div>
+                    <RotateCw className="w-6 h-6 text-blue-500 shrink-0 mt-0.5" />
                     <div className="flex flex-col">
-                      <span className="text-sm font-black text-foreground">Atualizações em tempo real</span>
-                      <span className="text-[11px] text-muted-foreground font-medium mt-0.5">Vade Mecum e questões sempre em dia.</span>
+                      <span className="text-sm font-black text-foreground">Acesso Imediato</span>
+                      <span className="text-[11px] text-muted-foreground font-medium mt-0.5">Comece a usar agora mesmo, liberação na hora.</span>
                     </div>
                   </div>
                 </div>
