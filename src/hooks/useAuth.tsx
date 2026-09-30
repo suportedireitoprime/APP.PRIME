@@ -146,7 +146,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 email: session?.user?.email,
                 phone: (session?.user?.user_metadata as Record<string, unknown>)?.telefone as string ?? null,
               });
-              appEvents.login(provider as string);
+              const createdAt = new Date(session?.user?.created_at || 0).getTime();
+              const lastSignInAt = new Date(session?.user?.last_sign_in_at || 0).getTime();
+              const isNewAccount = Math.abs(lastSignInAt - createdAt) < 10000; // 10s de tolerância
+              const isEmailSignup = typeof window !== 'undefined' && window.sessionStorage.getItem('just_signed_up') === '1';
+
+              if (isNewAccount && !isEmailSignup) {
+                // Dispara sign_up para contas recém-criadas via Social (Google/Apple)
+                appEvents.signUp(provider as string);
+              } else if (!isNewAccount && !isEmailSignup) {
+                // Login normal de contas existentes
+                appEvents.login(provider as string);
+              }
+
               try { window.sessionStorage.setItem('ga_login_sent', '1'); } catch {}
             }
           } else if (_event === 'SIGNED_OUT') {

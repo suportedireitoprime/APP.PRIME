@@ -23,6 +23,7 @@ export const PromoHeaderBanner = memo(function PromoHeaderBanner({
   const [promoSecondsLeft, setPromoSecondsLeft] = useState<number>(0);
   const [trialSecondsLeft, setTrialSecondsLeft] = useState<number>(0);
   const [is24hActive, setIs24hActive] = useState<boolean>(true);
+  const [isTrialEnded, setIsTrialEnded] = useState<boolean>(false);
 
   // Chave local para controlar a contagem regressiva da oferta de 24h
   const getPromoKey = useCallback(() => {
@@ -82,7 +83,13 @@ export const PromoHeaderBanner = memo(function PromoHeaderBanner({
           trialExp = now + 2 * 24 * 60 * 60 * 1000;
         }
         const diffTrial = Math.floor((trialExp - now) / 1000);
-        setTrialSecondsLeft(diffTrial > 0 ? diffTrial : 0);
+        if (diffTrial > 0) {
+          setTrialSecondsLeft(diffTrial);
+          setIsTrialEnded(false);
+        } else {
+          setTrialSecondsLeft(0);
+          setIsTrialEnded(true);
+        }
       }
     };
 
@@ -93,6 +100,11 @@ export const PromoHeaderBanner = memo(function PromoHeaderBanner({
 
   // Regra Suprema: Se o usuário é assinante ativo pago, o banner some de cima
   if (!subLoading && isPremium && !isTrial) {
+    return null;
+  }
+
+  // Se o período de teste expirou, não mostra mais o banner
+  if (isTrialEnded) {
     return null;
   }
 
