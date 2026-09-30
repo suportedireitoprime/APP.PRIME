@@ -920,7 +920,9 @@ function GlobalTrialGate() {
     cleanPath === '/recuperar-senha' ||
     cleanPath === '/onboarding' ||
     cleanPath === '/termos' ||
-    cleanPath === '/privacidade';
+    cleanPath === '/privacidade' ||
+    cleanPath === '/assinatura' ||
+    cleanPath.startsWith('/planos');
 
   useEffect(() => {
     // Se não há usuário logado, ou está carregando, ou é admin, ou é premium, ou trial ativo, fecha e não abre
