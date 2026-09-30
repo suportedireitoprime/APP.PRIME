@@ -3,9 +3,9 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "br.com.direito.app",
+      "package_name": "br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456",
       "sha256_cert_fingerprints": [
-        "REPLACE_WITH_RELEASE_SHA256_FINGERPRINT"
+        "E4:08:21:56:72:C7:74:4A:48:BE:44:AB:B6:CA:24:99:C6:B4:6B:7C:6E:80:2F:53:49:F9:D6:C2:13:63:0D:1C"
       ]
     }
   }

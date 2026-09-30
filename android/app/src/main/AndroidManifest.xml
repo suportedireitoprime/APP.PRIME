@@ -23,6 +23,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- App Links / Deep Links para vacatio.com.br -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="vacatio.com.br" />
+                <data android:scheme="http" android:host="vacatio.com.br" />
+                <data android:scheme="https" android:host="www.vacatio.com.br" />
+                <data android:scheme="http" android:host="www.vacatio.com.br" />
+            </intent-filter>
+
         </activity>
 
         <activity
