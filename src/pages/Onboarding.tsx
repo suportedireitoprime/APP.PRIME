@@ -165,16 +165,17 @@ const Onboarding = () => {
   }, [user]);
 
   const finalizar = useCallback(() => {
-    // Marca o onboarding como concluído no fluxo e apresenta a promoção exclusiva
-    setTimeLeft(calculatePromoTimeLeft());
     setOnboardingFinished(true);
-    setPedirPromo(true);
-  }, [calculatePromoTimeLeft]);
+    setPedirTrial(true);
+  }, []);
 
   const fecharPromo = useCallback(() => {
     setPedirPromo(false);
-    setPedirTrial(true);
-  }, []);
+    toast.success('Seja bem-vindo(a)!');
+    startTransition(() => {
+      navigate('/', { replace: true });
+    });
+  }, [navigate]);
 
   const resgatarPromo = useCallback(() => {
     setCheckoutPlan('anual_pix');
@@ -191,11 +192,9 @@ const Onboarding = () => {
 
   const concluirTrial = useCallback(() => {
     setPedirTrial(false);
-    toast.success('Seja bem-vindo(a)!');
-    startTransition(() => {
-      navigate('/', { replace: true });
-    });
-  }, [navigate]);
+    setTimeLeft(calculatePromoTimeLeft());
+    setPedirPromo(true);
+  }, [calculatePromoTimeLeft]);
 
   const userEmail = user?.email || '';
   const initialName = user?.user_metadata?.full_name || user?.user_metadata?.name || userEmail.split('@')[0] || '';
@@ -208,7 +207,7 @@ const Onboarding = () => {
         onOpenChange={(v) => { 
           if (!v) {
             setCheckoutPlan(null);
-            setPedirTrial(true);
+            fecharPromo();
           }
         }}
         plan={checkoutPlan}
@@ -218,7 +217,12 @@ const Onboarding = () => {
       />
 
       {/* Modal de Promoção 24h R$ 149,90 PIX */}
-      
+      <HorusPromoModal
+        open={pedirPromo}
+        timeLeft={timeLeft}
+        onClose={fecharPromo}
+        onRedeem={resgatarPromo}
+      />
 
       <AnimatePresence mode="wait">
         {!onboardingFinished ? (
