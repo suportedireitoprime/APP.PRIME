@@ -911,9 +911,7 @@ function GlobalTrialGate() {
   const cleanPath = (location.pathname || '').replace(/\/+$/, '') || '/';
   const isPublicOrLanding =
     !user ||
-    cleanPath === '/' ||
     cleanPath === '/landing' ||
-    cleanPath === '/inicio' ||
     cleanPath === '/login' ||
     cleanPath === '/auth' ||
     cleanPath === '/cadastro' ||
@@ -967,7 +965,7 @@ function GlobalTrialGate() {
 
   return showModal ? (
     <Suspense fallback={null}>
-      <TrialExpiredModal open={true} onClose={() => setShowModal(false)} />
+      <TrialExpiredModal open={true} />
     </Suspense>
   ) : null;
 }
