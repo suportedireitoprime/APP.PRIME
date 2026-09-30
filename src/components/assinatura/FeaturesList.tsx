@@ -406,20 +406,20 @@ export function FeaturesList({ tabKey: _tabKey }: { tabKey: string }) {
           return (
             <div 
               key={i} 
-              className={`rounded-2xl border ${cat.highlight ? 'border-primary/30 bg-primary/5' : 'border-white/5 bg-black/20'} p-3.5 sm:p-4 flex flex-col transition-all duration-300 hover:border-white/10 hover:bg-black/40 ${
+              className={`rounded-2xl border border-white/5 bg-black/20 p-3.5 sm:p-4 flex flex-col transition-all duration-300 hover:border-white/10 hover:bg-black/40 ${
                 isLastOdd ? 'md:col-span-2' : ''
               }`}
             >
               {/* Cabeçalho */}
-              <div className={`flex items-center justify-between gap-2 pb-2.5 mb-2.5 border-b ${cat.highlight ? 'border-primary/20' : 'border-white/5'}`}>
+              <div className="flex items-center justify-between gap-2 pb-2.5 mb-2.5 border-b border-white/5">
                 <div className="flex items-center gap-2">
-                  <Icon className={`w-4 h-4 shrink-0 ${cat.highlight ? 'text-primary' : 'text-zinc-400'}`} />
-                  <h4 className={`font-display font-black text-[12px] sm:text-[13px] tracking-wide leading-tight ${cat.highlight ? 'text-white' : 'text-zinc-200'}`}>
+                  <Icon className="w-4 h-4 shrink-0 text-zinc-400" />
+                  <h4 className="font-display font-black text-[12px] sm:text-[13px] tracking-wide leading-tight text-white">
                     {cat.category}
                   </h4>
                 </div>
-                <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full whitespace-nowrap ${cat.highlight ? 'bg-primary/10 text-primary border border-primary/20' : 'bg-white/5 text-zinc-400 border border-white/5'}`}>
-                  {cat.badge}
+                <span className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full whitespace-nowrap bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                  INCLUSO
                 </span>
               </div>
 

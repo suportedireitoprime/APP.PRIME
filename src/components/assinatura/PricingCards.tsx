@@ -182,20 +182,20 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
               
               <div className="flex flex-col gap-1.5 mb-3 mt-3 relative z-10 w-full pl-0.5">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Acesso 100% Ilimitado ao app</span>
+                  <Crown className="w-4 h-4 text-primary shrink-0" />
+                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Acesso ao conteúdo por 12 meses</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Inteligência Artificial (Horus)</span>
+                  <Crown className="w-4 h-4 text-primary shrink-0" />
+                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Acesso 100% ilimitado ao APP</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Offline + Resumos Automáticos</span>
+                  <Crown className="w-4 h-4 text-primary shrink-0" />
+                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">+200 ferramentas desbloqueadas</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Atualizações jurídicas diárias</span>
+                  <Crown className="w-4 h-4 text-primary shrink-0" />
+                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Inteligência Artificial Horus no WhatsApp</span>
                 </div>
               </div>
 
@@ -236,16 +236,20 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
 
               <div className="flex flex-col gap-1.5 mb-3 mt-3 relative z-10 w-full pl-0.5">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-zinc-400 shrink-0" />
-                  <span className="text-[12px] font-bold text-zinc-300 shadow-black/50 drop-shadow-md">Acesso Ilimitado ao app</span>
+                  <Crown className="w-4 h-4 text-primary shrink-0" />
+                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Acesso flexível mês a mês</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-zinc-400 shrink-0" />
-                  <span className="text-[12px] font-bold text-zinc-300 shadow-black/50 drop-shadow-md">IA + Biblioteca</span>
+                  <Crown className="w-4 h-4 text-primary shrink-0" />
+                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Acesso 100% ilimitado ao APP</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-zinc-400 shrink-0" />
-                  <span className="text-[12px] font-bold text-zinc-300 shadow-black/50 drop-shadow-md">Questões e Simulados</span>
+                  <Crown className="w-4 h-4 text-primary shrink-0" />
+                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">+200 ferramentas desbloqueadas</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Crown className="w-4 h-4 text-primary shrink-0" />
+                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Inteligência Artificial Horus no WhatsApp</span>
                 </div>
               </div>
 
@@ -288,20 +292,20 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
               
               <div className="flex flex-col gap-1.5 mb-3 mt-3 relative z-10 w-full pl-0.5">
                 <div className="flex items-center gap-2">
-                  <Crown className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Sua conta nunca expira</span>
+                  <Crown className="w-4 h-4 text-primary shrink-0" />
+                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Acesso para sempre</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Crown className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Sem renovação anual</span>
+                  <Crown className="w-4 h-4 text-primary shrink-0" />
+                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Acesso 100% ilimitado ao APP</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Crown className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">100% dos recursos desbloqueados</span>
+                  <Crown className="w-4 h-4 text-primary shrink-0" />
+                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">+200 ferramentas desbloqueadas</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Crown className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Bônus Exclusivos de Fundador</span>
+                  <Crown className="w-4 h-4 text-primary shrink-0" />
+                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Inteligência Artificial Horus no WhatsApp</span>
                 </div>
               </div>
 
