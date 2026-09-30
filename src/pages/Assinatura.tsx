@@ -208,28 +208,7 @@ export default function Assinatura() {
               </SheetDescription>
             </SheetHeader>
 
-            <div className="flex flex-col gap-3 mb-8 relative z-10 p-5 rounded-3xl bg-card border border-border/60 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
-                  <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                </div>
-                <div className="flex-1 text-sm font-bold text-foreground">7 dias de garantia incondicional</div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <Sparkles className="w-4 h-4 text-primary" />
-                </div>
-                <div className="flex-1 text-sm font-bold text-foreground">Acesso imediato à inteligência artificial</div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center shrink-0">
-                  <RotateCw className="w-4 h-4 text-blue-500" />
-                </div>
-                <div className="flex-1 text-sm font-bold text-foreground">Leis sempre atualizadas em tempo real</div>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-4 relative z-10 mt-auto">
+            <div className="flex flex-col gap-4 relative z-10 mb-8">
               <Button
                 variant="outline"
                 className="h-auto py-5 flex items-center justify-start gap-4 px-5 border-2 border-primary/30 hover:border-primary hover:bg-primary/5 transition-all rounded-3xl group"
@@ -238,8 +217,26 @@ export default function Assinatura() {
                   startPurchase(tab === 'vitalicio' ? 'vitalicio' : 'anual');
                 }}
               >
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <CreditCard className="w-6 h-6 text-primary" />
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden relative">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-6 h-6 text-primary absolute animate-[pulse_2s_ease-in-out_infinite]"
+                    style={{ animation: 'bounce-horizontal 2s infinite alternate ease-in-out' }}
+                  >
+                    <style>{`
+                      @keyframes bounce-horizontal {
+                        0% { transform: translateX(-2px) rotate(-3deg); }
+                        100% { transform: translateX(2px) rotate(3deg); }
+                      }
+                    `}</style>
+                    <rect width="20" height="14" x="2" y="5" rx="2" />
+                    <line x1="2" x2="22" y1="10" y2="10" />
+                  </svg>
                 </div>
                 <div className="flex flex-col items-start text-left flex-1">
                   <span className="font-bold text-lg text-foreground">Cartão de Crédito</span>
@@ -261,7 +258,11 @@ export default function Assinatura() {
                 }}
               >
                 <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
-                  <QrCode className="w-6 h-6 text-emerald-500" />
+                  <svg className="w-5 h-5 text-emerald-500" viewBox="0 0 512 512" fill="currentColor">
+                    <path d="M119.2 386.6l-80.1-80.1c-19.4-19.4-19.4-51 0-70.4l80.1-80.1c19.4-19.4 51-19.4 70.4 0l17.7 17.7c5.2 5.2 13.6 5.2 18.8 0l18.8-18.8c5.2-5.2 5.2-13.6 0-18.8l-17.7-17.7c-39.1-39.1-102.7-39.1-141.8 0l-80.1 80.1c-39.1 39.1-39.1 102.7 0 141.8l80.1 80.1c39.1 39.1 102.7 39.1 141.8 0l17.7-17.7c5.2-5.2 5.2-13.6 0-18.8l-18.8-18.8c-5.2-5.2-13.6-5.2-18.8 0l-17.7 17.7c-19.3 19.5-50.9 19.5-70.4 0z" />
+                    <path d="M473.4 155.8l-80.1-80.1c-39.1-39.1-102.7-39.1-141.8 0l-17.7 17.7c-5.2 5.2-5.2 13.6 0 18.8l18.8 18.8c5.2 5.2 13.6 5.2 18.8 0l17.7-17.7c19.4-19.4 51-19.4 70.4 0l80.1 80.1c19.4 19.4 19.4 51 0 70.4l-80.1 80.1c-19.4 19.4-51 19.4-70.4 0l-17.7-17.7c-5.2-5.2-13.6-5.2-18.8 0l-18.8 18.8c-5.2 5.2-5.2 13.6 0 18.8l17.7 17.7c39.1 39.1 102.7 39.1 141.8 0l80.1-80.1c39.2-39.1 39.2-102.6 0-141.8z" />
+                    <path d="M256 166.4L166.4 256 256 345.6 345.6 256 256 166.4zM256 308c-28.7 0-52-23.3-52-52s23.3-52 52-52 52 23.3 52 52-23.3 52-52 52z" />
+                  </svg>
                 </div>
                 <div className="flex flex-col items-start text-left flex-1">
                   <span className="font-bold text-lg text-foreground">PIX</span>
@@ -273,6 +274,27 @@ export default function Assinatura() {
                 </div>
                 <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-500 transition-colors group-hover:translate-x-1" />
               </Button>
+            </div>
+
+            <div className="flex flex-col gap-3 mt-auto relative z-10 p-5 rounded-3xl bg-card border border-border/60 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
+                  <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                </div>
+                <div className="flex-1 text-sm font-bold text-foreground">7 dias de garantia incondicional</div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                </div>
+                <div className="flex-1 text-sm font-bold text-foreground">Acesso imediato à inteligência artificial</div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center shrink-0">
+                  <RotateCw className="w-4 h-4 text-blue-500" />
+                </div>
+                <div className="flex-1 text-sm font-bold text-foreground">Leis sempre atualizadas em tempo real</div>
+              </div>
             </div>
           </SheetContent>
         </Sheet>
