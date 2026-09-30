@@ -904,8 +904,40 @@ function GlobalTrialGate() {
   const [showModal, setShowModal] = useState(false);
 
   const isAdmin = isAdminEmail(user?.email);
-  const isTrialActive = isTrial && expiresAt && new Date(expiresAt).getTime() > Date.now();
   const isUserPremium = isAdmin || !!user?.user_metadata?.isPremium || (isSubPremium && status !== 'trialing');
+
+  let isTrialActive = isTrial && expiresAt && new Date(expiresAt).getTime() > Date.now();
+  
+  if (user && !isTrialActive && !isUserPremium) {
+    const createdAt = new Date(user.created_at);
+    const maxAllowedTrialMs = createdAt.getTime() + 3 * 24 * 60 * 60 * 1000;
+    let trialEndsAt = new Date(maxAllowedTrialMs);
+
+    if (user.user_metadata?.trial_ends_at) {
+      const metaTrial = new Date(user.user_metadata.trial_ends_at);
+      if (!isNaN(metaTrial.getTime()) && metaTrial.getTime() <= maxAllowedTrialMs) {
+        trialEndsAt = metaTrial;
+      }
+    }
+
+    const nowMs = Date.now();
+    let maxKnownTime = createdAt.getTime();
+    try {
+      const saved = localStorage.getItem('direitoprime:time:max');
+      if (saved) maxKnownTime = Math.max(maxKnownTime, Number(saved));
+    } catch {}
+
+    const isClockTampered = nowMs < maxKnownTime;
+    let isDeviceAbuse = false;
+    try {
+      const claimedUser = localStorage.getItem('direitoprime:device:trial_claimed');
+      if (claimedUser && claimedUser !== user.id) {
+        isDeviceAbuse = true;
+      }
+    } catch {}
+
+    isTrialActive = !isClockTampered && !isDeviceAbuse && nowMs < trialEndsAt.getTime();
+  }
 
   // Rotas públicas / Landing page: NUNCA devem ter interceptação de cliques nem modal de expiração
   const cleanPath = (location.pathname || '').replace(/\/+$/, '') || '/';
