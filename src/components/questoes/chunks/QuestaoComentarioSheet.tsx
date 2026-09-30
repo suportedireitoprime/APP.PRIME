@@ -78,7 +78,9 @@ function formatarComentario(texto: string | undefined): string {
 export function ComentarioInner({ source }: { source: Fonte }) {
   const [view, setView] = useState<'correta' | 'erradas'>('correta');
   const [fs, setFsState] = useState(17);
-  const hasPrePopulatedComments = typeof source === 'object' && !!(source as any).gabarito_comentado;
+  const isDbQuestion = typeof source === 'object' && source !== null && 'id' in source;
+  const isSimulado = !isDbQuestion;
+  const hasPrePopulatedComments = typeof source === 'object' && source !== null && !!(source as any).gabarito_comentado && isSimulado;
   const isEnabled = !hasPrePopulatedComments;
 
   const { data, isLoading, error, refetch } = useQuestaoAcao(source, 'comentario', isEnabled && view === 'correta');

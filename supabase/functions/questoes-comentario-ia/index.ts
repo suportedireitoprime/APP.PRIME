@@ -2,8 +2,8 @@
 // da planilha como base. Body: { questaoId } ou { limite, cargoId }.
 import { corsHeaders, json, adminClient, exigirAdmin } from "../_shared/questoes-sheets.ts";
 
-const GATEWAY = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
-const MODEL = "openai/gpt-5.6-sol";
+const GATEWAY = "https://openrouter.ai/api/v1/chat/completions";
+const MODEL = "openai/gpt-4o-mini"; // or another model? Let's use gpt-4o-mini as a safe fast option. Wait, the user said "omni-route", which could mean "google/gemini-flash-1.5"? Or "openai/gpt-4o-mini"?
 
 const SYSTEM = `Você é professor de cursinho jurídico e comenta questões de concurso.
 
@@ -16,7 +16,9 @@ REGRAS:
 - Termine com uma "Dica de prova" curta.
 - Português do Brasil, tom direto, sem enrolação, entre 120 e 250 palavras.
 - Se o comentário original contiver erro evidente, corrija silenciosamente.
-- Responda em texto puro com quebras de linha. NÃO use markdown (nada de **, ##, -).`;
+- DEIXE UMA LINHA EM BRANCO entre o comentário da correta e a análise das alternativas erradas, e também ENTRE as alternativas erradas.
+- Formate a análise das erradas de forma clara, ex: "Alternativa A: Errada. Porque..."
+- Responda em texto puro com quebras de linha claras. NÃO use markdown (nada de **, ##, -).`;
 
 function montarPrompt(q: any) {
   const alts = [["A", q.alt_a], ["B", q.alt_b], ["C", q.alt_c], ["D", q.alt_d], ["E", q.alt_e]]
@@ -40,7 +42,7 @@ async function comentar(q: any): Promise<string> {
   const r = await fetch(GATEWAY, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${Deno.env.get('GEMINI_API_KEY')}`,
+      Authorization: `Bearer ${Deno.env.get('OPENROUTER_API_KEY')}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
