@@ -68,7 +68,6 @@ export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
     label: 'Utilitários',
     hint: 'Recursos adicionais do aplicativo',
     tools: [
-      { id: 'simulados', label: 'Simulados & Provas', desc: 'Realize simulados e baixe cadernos', icon: FileSignature, route: '/ferramentas/simulados', color: '#8B5CF6' },
       { id: 'locais', label: 'Locais Jurídicos', desc: 'Fóruns, cartórios e delegacias', icon: MapPin, route: '/ferramentas/locais', color: '#EAB308' },
     ],
   },
