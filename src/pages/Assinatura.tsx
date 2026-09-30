@@ -24,6 +24,7 @@ import ShapeGrid from '@/components/ui/ShapeGrid';
 
 import { TrialCountdownBanner } from '@/components/assinatura/TrialCountdownBanner';
 
+import laurel from '@/assets/landing-tribunal/laurel-leaf.webp';
 import primeLogoAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
 import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
@@ -46,6 +47,7 @@ export default function Assinatura() {
   const [showWelcome, setShowWelcome] = useState(welcomeFlag);
 
   const { data: profileSummary } = useProfileSummary();
+  const falling = useMemo(() => Array.from({ length: 12 }, (_, i) => i), []);
 
   const isNewUser = !!(session?.user?.created_at && (Date.now() - new Date(session.user.created_at).getTime() < 24 * 60 * 60 * 1000));
 
@@ -367,7 +369,30 @@ export default function Assinatura() {
 
         {isTrial && <TrialCountdownBanner expiresAt={expiresAt} />}
 
-        <div className="max-w-2xl mx-auto pt-4 space-y-7 pb-[calc(8.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+        <div className="max-w-2xl mx-auto pt-4 space-y-7 pb-[calc(8.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative">
+            {/* Folhas de louro caindo */}
+            <div className="pointer-events-none absolute inset-0 overflow-hidden z-0">
+              {falling.map((i) => (
+                <img
+                  key={i}
+                  src={laurel}
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
+                  className="absolute top-0 lp-fall"
+                  style={{
+                    left: `${(i * 8.5 + 3) % 100}%`,
+                    width: `${16 + (i % 4) * 8}px`,
+                    animationDuration: `${11 + (i % 5) * 3}s`,
+                    animationDelay: `${i * 1.2}s`,
+                    opacity: 0.7,
+                    filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.45))',
+                  }}
+                />
+              ))}
+            </div>
+
             <PaywallImageStack />
 
             <div className="space-y-3 text-center px-4 flex flex-col items-center mt-2">
@@ -375,7 +400,7 @@ export default function Assinatura() {
                 Acesso Total Liberado
               </div>
               <h1 className="font-display text-[32px] sm:text-4xl font-black text-foreground leading-[1.15] uppercase tracking-tight">
-                Acesso a todo conteúdo <span className="text-primary">do aplicativo.</span>
+                Acesso a todo conteúdo <span className="text-primary">do aplicativo</span>
               </h1>
               <p className="text-[14px] text-muted-foreground font-medium max-w-[280px] sm:max-w-sm mx-auto leading-relaxed">
                 Acelere sua aprovação com o ecossistema de estudos mais completo do país. Tenha a Inteligência Artificial, Vade Mecum interativo e Simulados ilimitados sempre à mão.

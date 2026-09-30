@@ -427,7 +427,7 @@ export function FeaturesList({ tabKey: _tabKey }: { tabKey: string }) {
               <ul className="grid grid-cols-2 gap-x-2.5 gap-y-1.5 flex-1">
                 {cat.features.map((feat, idx) => (
                   <li key={idx} className="flex items-center gap-1.5 min-w-0">
-                    <CheckCircle2 className={`w-3 h-3 shrink-0 ${cat.highlight ? 'text-primary' : 'text-emerald-500/70'}`} />
+                    <CheckCircle2 className="w-3 h-3 shrink-0 text-emerald-500/90" />
                     <span className="font-body text-[10.5px] sm:text-[11px] text-zinc-400 leading-tight font-medium truncate">
                       {feat}
                     </span>
