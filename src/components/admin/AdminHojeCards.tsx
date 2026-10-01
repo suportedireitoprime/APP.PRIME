@@ -9,7 +9,7 @@ import { rotaParaFuncao, formatarDuracao } from '@/lib/rotaFuncoes';
 type CardId = 'online5m' | 'online' | 'cadastros' | 'paywall' | 'viu_planos' | 'trial';
 type PeriodoId = 'hoje' | 'ontem' | '7d' | '30d';
 
-const ADMIN_EMAILS = ['wn7corporation@gmail.com', 'suporte@direitoprime.com.br', 'wn7juridico@gmail.com', 'reisecomerc@gmail.com'];
+const ADMIN_EMAILS = ['wn7corporation@gmail.com', 'suporte@direitoprime.com.br', 'wn7juridico@gmail.com'];
 
 interface Row {
   key: string;
