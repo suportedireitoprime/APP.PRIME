@@ -204,7 +204,7 @@ async function montarTrial(admin: any, userId: string, payload: any) {
     : 'Ainda sem histórico de navegação registrado.';
 
   const texto = [
-    '💎 *NOVA ASSINATURA TESTE*',
+    '💎💎💎💎💎 *NOVA ASSINATURA TESTE*',
     '',
     `👤 *Nome:* ${nome}`,
     `✉️ *E-mail:* ${info.email || '—'}`,

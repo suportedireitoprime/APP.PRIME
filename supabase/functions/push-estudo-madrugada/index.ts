@@ -16,11 +16,10 @@ Deno.serve(async (req) => {
   try {
     let reqBody: any = {};
     try { reqBody = await req.clone().json(); } catch(e) {}
-    const automation_key = reqBody.automation_key || "push-aleatorio-video";
+    const automation_key = reqBody.automation_key || "push-estudo-madrugada";
     
-    // Fallback if no specific video table is found
-    const title = `📺 Fim de Tarde de Foco: Sua videoaula recomendada de hoje`;
-    const body = `Assista agora a esta aula estratégica e garanta mais uma etapa vencida no dia.`;
+    const title = `🦉 Hórus Coruja: Seu companheiro da madrugada!`;
+    const body = `Sem sono ou querendo ganhar tempo? Vem testar seus conhecimentos e revisar tópicos. O sucesso é daqueles que não param.`;
     const url = `/aprender`;
 
     const { data: campaign } = await admin
@@ -31,7 +30,7 @@ Deno.serve(async (req) => {
         url,
         audience: { all: true },
         status: "sending",
-        tipo: "video",
+        tipo: "geral",
         automation_key,
       })
       .select("id")

@@ -14,7 +14,9 @@ Deno.serve(async (req) => {
   );
 
   try {
-    const automation_key = "push-aleatorio-audio";
+    let reqBody: any = {};
+    try { reqBody = await req.clone().json(); } catch(e) {}
+    const automation_key = reqBody.automation_key || "push-aleatorio-audio";
     
     const { data: allIds } = await admin.from("audioaulas_itens").select("id");
     if (!allIds || allIds.length === 0) {
@@ -36,7 +38,7 @@ Deno.serve(async (req) => {
     const cursoTitulo = (item.audioaulas_cursos as any)?.titulo || "Curso Especial";
     const title = `🎧 Coloque o fone de ouvido: Uma audioaula surpresa para sua tarde`;
     const body = `Revisão de ${cursoTitulo}: ${item.titulo}. Aproveite para revisar enquanto faz outras atividades.`;
-    const url = `/aprender`;
+    const url = `/audioaulas?play_id=${item.id}`;
 
     const { data: campaign } = await admin
       .from("push_campaigns")

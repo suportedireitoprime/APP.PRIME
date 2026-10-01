@@ -1,5 +1,5 @@
-import { useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useRef, useEffect } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import AudioaulasBottomNav from '@/components/audioaulas/AudioaulasBottomNav';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
@@ -21,6 +21,20 @@ const Audioaulas = () => {
 
   const isDesktop = useIsDesktop();
   const state = useAudioaulas(areaAtual);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Handle deep link from push notifications
+  useEffect(() => {
+    const playId = searchParams.get('play_id');
+    if (playId && state.aulas.length > 0 && !state.loading) {
+      const aulaToPlay = state.aulas.find(a => String(a.id) === String(playId));
+      if (aulaToPlay) {
+        state.handleTocarAula(aulaToPlay);
+        // Remove play_id from url to prevent looping on reload
+        setSearchParams({}, { replace: true });
+      }
+    }
+  }, [searchParams, state.aulas, state.loading]);
 
   const content = (
     <div className={`w-full bg-zinc-950 text-foreground relative ${isDesktop ? 'rounded-2xl pb-12 min-h-[700px] border border-white/5 overflow-hidden' : 'min-h-screen pb-40'}`}>

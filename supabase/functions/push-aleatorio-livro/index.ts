@@ -16,12 +16,11 @@ Deno.serve(async (req) => {
   try {
     let reqBody: any = {};
     try { reqBody = await req.clone().json(); } catch(e) {}
-    const automation_key = reqBody.automation_key || "push-aleatorio-video";
+    const automation_key = reqBody.automation_key || "push-aleatorio-livro";
     
-    // Fallback if no specific video table is found
-    const title = `📺 Fim de Tarde de Foco: Sua videoaula recomendada de hoje`;
-    const body = `Assista agora a esta aula estratégica e garanta mais uma etapa vencida no dia.`;
-    const url = `/aprender`;
+    const title = `📚 Hora da Leitura: Sugestão de Doutrina da Tarde`;
+    const body = `Separamos algumas leituras essenciais. Abra a biblioteca e aproveite o horário para atualizar seus estudos!`;
+    const url = `/biblioteca`;
 
     const { data: campaign } = await admin
       .from("push_campaigns")
@@ -31,7 +30,7 @@ Deno.serve(async (req) => {
         url,
         audience: { all: true },
         status: "sending",
-        tipo: "video",
+        tipo: "livro",
         automation_key,
       })
       .select("id")
