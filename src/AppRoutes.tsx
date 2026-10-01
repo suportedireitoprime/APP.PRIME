@@ -113,6 +113,7 @@ const AdminNarracaoLeis = lazy(() => import('./pages/AdminNarracaoLeis.tsx'));
 const AdminSimulados = lazy(() => import("./pages/AdminSimulados.tsx"));
 const FerramentasSimulados = lazy(() => import("./pages/FerramentasSimulados.tsx"));
 const FerramentasSimuladosResolver = lazy(() => import("./pages/FerramentasSimuladosResolver.tsx"));
+const AdminMetricasAds = lazy(() => import("./pages/AdminMetricasAds.tsx"));
 import { supabase } from "@/integrations/supabase/client";
 
 // Lazy loaded
@@ -1336,6 +1337,7 @@ function AnimatedRoutes() {
           
           <Route path="/compressao-imagens" element={<ProtectedRoute><PageTransition><CompressaoImagens /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-funcoes" element={<ProtectedRoute><PageTransition><AdminFuncoes /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-metricas-ads" element={<ProtectedRoute><PageTransition><AdminMetricasAds /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-instagram-posts" element={<ProtectedRoute><PageTransition><AdminInstagramPosts /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-avaliacao-loja" element={<ProtectedRoute><PageTransition><AdminAvaliacaoLoja /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-funcoes-assinantes" element={<ProtectedRoute><PageTransition><AdminFuncoesAssinantes /></PageTransition></ProtectedRoute>} />

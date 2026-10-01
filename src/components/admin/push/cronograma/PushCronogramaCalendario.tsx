@@ -22,28 +22,28 @@ export function PushCronogramaCalendario({
 }: PushCronogramaCalendarioProps) {
   return (
     <div className="bg-card/80 backdrop-blur-md p-3.5 rounded-2xl border border-border/70 shadow-sm space-y-2.5">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-primary" />
-          <span className="text-xs font-semibold text-foreground uppercase tracking-wider">
-            Linha do Tempo de Disparos
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Clock className="w-4 h-4 text-primary shrink-0" />
+          <span className="text-xs font-semibold text-foreground uppercase tracking-wider line-clamp-1">
+            Linha do Tempo
           </span>
           {isToday && (
-            <Badge className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] animate-pulse">
+            <Badge className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] animate-pulse shrink-0 whitespace-nowrap">
               AO VIVO (HOJE)
             </Badge>
           )}
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-auto">
           <Button
             size="sm"
             variant={isToday ? "default" : "outline"}
-            className="h-7 text-xs px-2.5 rounded-lg"
+            className="h-7 text-xs px-2.5 rounded-lg shrink-0"
             onClick={() => setDataFiltro(new Date())}
           >
             Hoje ({new Date().getDate()})
           </Button>
-          <Button size="sm" variant="ghost" className="h-7 text-xs px-2" onClick={onRefresh} disabled={loading}>
+          <Button size="sm" variant="ghost" className="h-7 text-xs px-2 shrink-0" onClick={onRefresh} disabled={loading}>
             {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
           </Button>
         </div>
@@ -70,11 +70,6 @@ export function PushCronogramaCalendario({
                   : "bg-background/60 border-border/60 text-muted-foreground hover:bg-secondary hover:text-foreground"
               }`}
             >
-              {eHoje && (
-                <span className="absolute -top-1.5 px-1.5 py-0.2 bg-emerald-500 text-[8px] font-black text-black rounded-full uppercase tracking-tighter">
-                  Hoje
-                </span>
-              )}
               <div className={`text-[10px] font-bold ${selecionado ? "text-primary-foreground" : "text-muted-foreground"}`}>
                 {diaSemana}
               </div>

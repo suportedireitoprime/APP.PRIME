@@ -238,6 +238,7 @@ export const appEvents = {
         num_items: 1,
         items: [{ item_id: p.plano, item_name: `Premium ${p.plano}`, price: planValue(p.plano) }],
       },
+      db: true,
     });
     void logDb("trial_click", { plano: p.plano, metodo: p.metodo });
   },

@@ -46,7 +46,7 @@ export default function PushCronogramaTab() {
       inicio.setHours(0, 0, 0, 0);
       const fim = new Date(dataFiltro);
       fim.setHours(23, 59, 59, 999);
-      const [campRes, logRes, eventsRes, boletinsRes] = await Promise.all([
+      const [campRes, logRes, boletinsRes] = await Promise.all([
         supabase
           .from("push_campaigns")
           .select(
@@ -62,11 +62,6 @@ export default function PushCronogramaTab() {
           .gte("created_at", inicio.toISOString())
           .order("created_at", { ascending: false })
           .limit(200),
-        supabase
-          .from("push_events")
-          .select("event_type")
-          .gte("created_at", inicio.toISOString())
-          .lte("created_at", fim.toISOString()),
         // Buscar também boletins para compensar a falta de push_campaigns
         supabase
           .from("boletins_juridicos")
@@ -76,7 +71,7 @@ export default function PushCronogramaTab() {
       ]);
       setCampanhas((campRes.data ?? []) as CampaignRow[]);
       setLogs((logRes.data ?? []) as LogRow[]);
-      setPushEvents(eventsRes.data ?? []);
+      setPushEvents([]);
       
       const boletins = boletinsRes?.data ?? [];
       setBoletinsData(boletins);
@@ -106,82 +101,107 @@ export default function PushCronogramaTab() {
 
   const eventos = useMemo(() => {
     const lista: EventoView[] = [];
+    const campanhasUsadas = new Set<string>();
+    const boletinsUsados = new Set<string>();
 
     for (const ev of EVENTOS_FIXOS) {
-      const camp = campanhas.find(
+      const matchingCamps = campanhas.filter(
         (c) =>
           c.automation_key === ev.automation_key &&
           (c.status === "sent" || c.status === "sending" || c.status === "completed" || c.status === "failed"),
       );
+
       const skipLog = logs.find((l) => l.tipo === ev.automation_key && l.status === "skipped");
       
-      // Checar boletins para 09:00 e 21:00
-      let boletim: any = null;
+      let matchingBoletins: any[] = [];
       if (ev.automation_key === "boletim_juridico_diario") {
-        boletim = boletinsData.find((b: any) => b.tipo !== "noticias" && b.status === "pronto");
+        matchingBoletins = boletinsData.filter((b: any) => b.tipo !== "noticias" && b.status === "pronto");
       } else if (ev.automation_key === "boletim_noticias_diario") {
-        boletim = boletinsData.find((b: any) => b.tipo === "noticias" && b.status === "pronto");
+        matchingBoletins = boletinsData.filter((b: any) => b.tipo === "noticias" && b.status === "pronto");
       }
 
-      let status: EventoView["status"] = "previsto";
-      let badge: string | undefined;
-      let sent_count = 0;
-      let failed_count = 0;
-      let opened_count = 0;
-      let realTitle = ev.titulo_exemplo;
-      let realBody = ev.corpo_exemplo;
-      let realImage = ev.capa_default;
-      let campaignId: string | undefined;
-      let errorMsg: string | undefined;
+      if (matchingCamps.length === 0 && matchingBoletins.length === 0) {
+        let status: EventoView["status"] = skipLog ? "agendado" : "previsto";
+        let badge = skipLog ? "Disparo Ativo" : undefined;
+        lista.push({
+          ...ev,
+          label: padHora(ev.hora, ev.minuto),
+          status,
+          badge,
+          sent_count: 0,
+          failed_count: 0,
+          opened_count: 0,
+          realTitle: ev.titulo_exemplo,
+          realBody: ev.corpo_exemplo,
+          realImage: ev.capa_default,
+        });
+      } else {
+        for (const camp of matchingCamps) {
+          campanhasUsadas.add(camp.id);
+          const d = new Date(camp.scheduled_at ?? camp.next_run_at ?? camp.created_at);
+          const hora = d.getHours();
+          const minuto = d.getMinutes();
+          const failed_count = camp.failed_count ?? 0;
+          const sent_count = camp.sent_count ?? 0;
+          
+          let status: EventoView["status"] = "enviado";
+          let badge = failed_count > 0 ? `${sent_count} enviados • ${failed_count} falhas` : `${sent_count} disparos entregues`;
+          let errorMsg = undefined;
+          
+          if (camp.status === "failed" || (sent_count === 0 && failed_count > 0)) {
+            status = "erro";
+            badge = `${failed_count} falha${failed_count === 1 ? "" : "s"}`;
+            errorMsg = `Falha no disparo FCM. ${failed_count} aparelho(s) rejeitaram a mensagem ou token expirado.`;
+          }
 
-      if (camp) {
-        campaignId = camp.id;
-        failed_count = camp.failed_count ?? 0;
-        sent_count = camp.sent_count ?? 0;
-        opened_count = camp.opened_count ?? 0;
-        if (camp.title) realTitle = camp.title;
-        if (camp.body) realBody = camp.body;
-        if (camp.image_url) realImage = camp.image_url;
-
-        if (camp.status === "failed" || (sent_count === 0 && failed_count > 0)) {
-          status = "erro";
-          badge = `${failed_count} falha${failed_count === 1 ? "" : "s"}`;
-          errorMsg = `Falha no disparo FCM. ${failed_count} aparelho(s) rejeitaram a mensagem ou token expirado.`;
-        } else {
-          status = "enviado";
-          badge =
-            failed_count > 0
-              ? `${sent_count} enviados · ${failed_count} falhas`
-              : `${sent_count} disparos entregues`;
+          lista.push({
+            ...ev,
+            hora,
+            minuto,
+            label: padHora(hora, minuto),
+            status,
+            badge,
+            sent_count,
+            failed_count,
+            opened_count: camp.opened_count ?? 0,
+            realTitle: camp.title || ev.titulo_exemplo,
+            realBody: camp.body || ev.corpo_exemplo,
+            realImage: camp.image_url || ev.capa_default,
+            campaignId: camp.id,
+            errorMsg,
+          });
         }
-      } else if (boletim) {
-        // Mock a successful campaign based on the boletim existing
-        status = "enviado";
-        badge = "Boletim Gerado & Notificado";
-      } else if (skipLog) {
-        status = "agendado";
-        badge = "Disparo Ativo";
-      }
 
-      lista.push({
-        ...ev,
-        label: padHora(ev.hora, ev.minuto),
-        status,
-        badge,
-        sent_count,
-        failed_count,
-        opened_count,
-        realTitle,
-        realBody,
-        realImage,
-        campaignId,
-        errorMsg,
-      });
+        if (matchingCamps.length === 0) {
+          for (const bol of matchingBoletins) {
+            if (boletinsUsados.has(bol.id)) continue;
+            boletinsUsados.add(bol.id);
+            const d = new Date(bol.created_at || new Date().setHours(ev.hora, ev.minuto));
+            const hora = d.getHours();
+            const minuto = d.getMinutes();
+            lista.push({
+              ...ev,
+              hora,
+              minuto,
+              label: padHora(hora, minuto),
+              status: "enviado",
+              badge: "Boletim Gerado & Notificado",
+              sent_count: 0,
+              failed_count: 0,
+              opened_count: 0,
+              realTitle: ev.titulo_exemplo,
+              realBody: ev.corpo_exemplo,
+              realImage: ev.capa_default,
+            });
+          }
+        }
+      }
     }
 
     // Campanhas manuais
     for (const c of campanhas) {
-      if (c.automation_key && EVENTOS_FIXOS.some((e) => e.automation_key === c.automation_key)) continue;
+      if (campanhasUsadas.has(c.id)) continue;
+      
       const d =
         c.status === "scheduled"
           ? new Date(c.next_run_at ?? c.scheduled_at ?? c.created_at)
@@ -195,7 +215,7 @@ export default function PushCronogramaTab() {
         automation_key: c.automation_key || "manual",
         nome: c.title,
         descricao: c.body,
-        emoji: c.emoji || "📨",
+        emoji: c.emoji || "📱",
         canal: "app",
         publico: "Segmentação personalizada",
         regra: c.status === "scheduled" ? "Campanha agendada manualmente" : "Disparo manual finalizado",
@@ -229,14 +249,12 @@ export default function PushCronogramaTab() {
       campanhasSent = 0,
       comErro = 0;
 
-    for (const ev of pushEvents) {
-      if (ev.event_type === "sent") enviadas++;
-      else if (ev.event_type === "failed") falhas++;
-      else if (ev.event_type === "opened") abertas++;
-      else if (ev.event_type === "delivered") entregues++;
-    }
-
     for (const c of campanhas) {
+      enviadas += c.sent_count ?? 0;
+      falhas += c.failed_count ?? 0;
+      abertas += c.opened_count ?? 0;
+      entregues += c.delivered_count ?? 0;
+
       if ((c.sent_count ?? 0) > 0) campanhasSent++;
       if (c.status === "failed" || ((c.sent_count ?? 0) === 0 && (c.failed_count ?? 0) > 0)) comErro++;
     }
@@ -244,7 +262,7 @@ export default function PushCronogramaTab() {
     const taxaAbertura = enviadas > 0 ? Math.round((abertas / enviadas) * 100) : 0;
     const taxaEntrega = enviadas > 0 ? Math.round(((enviadas - falhas) / enviadas) * 100) : 100;
     return { enviadas, falhas, abertas, entregues, campanhasSent, comErro, taxaAbertura, taxaEntrega };
-  }, [campanhas, pushEvents]);
+  }, [campanhas]);
 
   const proximoIdx = eventos.findIndex(
     (e) => (e.status === "previsto" || e.status === "agendado") && e.hora + e.minuto / 60 >= horaAtual,

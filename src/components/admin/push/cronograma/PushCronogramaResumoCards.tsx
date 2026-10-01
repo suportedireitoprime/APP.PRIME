@@ -21,11 +21,11 @@ interface PushCronogramaResumoCardsProps {
 
 export function PushCronogramaResumoCards({ resumo, onSelectReport }: PushCronogramaResumoCardsProps) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+    <div className="flex overflow-x-auto md:grid md:grid-cols-4 gap-2.5 pb-2 snap-x hide-scrollbar">
       <button
         type="button"
         onClick={() => onSelectReport("enviadas")}
-        className="text-left outline-none rounded-2xl focus:ring-2 focus:ring-primary/40 transition-all hover:scale-[1.01] active:scale-[0.98]"
+        className="w-[140px] min-w-[140px] md:w-auto shrink-0 snap-center text-left outline-none rounded-2xl focus:ring-2 focus:ring-primary/40 transition-all hover:scale-[1.01] active:scale-[0.98]"
       >
         <Card className="p-2.5 h-full border-border/70 bg-card/60 backdrop-blur hover:border-primary/50 transition-colors flex flex-col justify-between">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -48,7 +48,7 @@ export function PushCronogramaResumoCards({ resumo, onSelectReport }: PushCronog
       <button
         type="button"
         onClick={() => onSelectReport("abertas")}
-        className="text-left outline-none rounded-2xl focus:ring-2 focus:ring-emerald-500/40 transition-all hover:scale-[1.01] active:scale-[0.98]"
+        className="w-[140px] min-w-[140px] md:w-auto shrink-0 snap-center text-left outline-none rounded-2xl focus:ring-2 focus:ring-emerald-500/40 transition-all hover:scale-[1.01] active:scale-[0.98]"
       >
         <Card className="p-2.5 h-full border-emerald-500/30 bg-emerald-500/5 backdrop-blur hover:border-emerald-500/60 transition-colors flex flex-col justify-between">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -69,7 +69,7 @@ export function PushCronogramaResumoCards({ resumo, onSelectReport }: PushCronog
       <button
         type="button"
         onClick={() => onSelectReport("entregues")}
-        className="text-left outline-none rounded-2xl focus:ring-2 focus:ring-sky-500/40 transition-all hover:scale-[1.01] active:scale-[0.98]"
+        className="w-[140px] min-w-[140px] md:w-auto shrink-0 snap-center text-left outline-none rounded-2xl focus:ring-2 focus:ring-sky-500/40 transition-all hover:scale-[1.01] active:scale-[0.98]"
       >
         <Card className="p-2.5 h-full border-border/70 bg-card/60 backdrop-blur hover:border-sky-500/50 transition-colors flex flex-col justify-between">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -90,7 +90,7 @@ export function PushCronogramaResumoCards({ resumo, onSelectReport }: PushCronog
       <button
         type="button"
         onClick={() => onSelectReport("falhas")}
-        className="text-left outline-none rounded-2xl focus:ring-2 focus:ring-red-500/40 transition-all hover:scale-[1.01] active:scale-[0.98]"
+        className="w-[140px] min-w-[140px] md:w-auto shrink-0 snap-center text-left outline-none rounded-2xl focus:ring-2 focus:ring-red-500/40 transition-all hover:scale-[1.01] active:scale-[0.98]"
       >
         <Card
           className={`p-2.5 h-full backdrop-blur transition-colors flex flex-col justify-between ${

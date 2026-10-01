@@ -24,6 +24,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-horus': () => import('./AdminHorus'),
   '/admin-horus-template': () => import('./AdminHorusTemplate'),
   '/admin-triagem': () => import('./AdminTriagem'),
+  '/admin-metricas-ads': () => import('./AdminMetricasAds'),
 
   '/admin-atualizacao': () => import('./AdminAtualizacao'),
   '/admin-native-assets': () => import('./AdminNativeAssets'),
@@ -146,6 +147,16 @@ const CATEGORIES: Category[] = [
     route: '/admin-instagram-posts',
     items: [
       { id: 'instagram-posts', label: 'Instagram Posts', icon: ImageIcon, desc: 'Gerar carrosséis com IA no padrão Vade Mecum', route: '/admin-instagram-posts' },
+    ],
+  },
+  {
+    id: 'ads-metrics',
+    title: 'Métricas Google Ads',
+    desc: 'Monitoramento de conversões em tempo real',
+    icon: Target,
+    route: '/admin-metricas-ads',
+    items: [
+      { id: 'admin-metricas-ads', label: 'Métricas Google Ads', icon: Target, desc: 'Eventos disparados em tempo real', route: '/admin-metricas-ads' },
     ],
   },
   {

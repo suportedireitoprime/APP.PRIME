@@ -15,7 +15,9 @@ interface PushProgramadasSectionProps {
 }
 
 export function PushProgramadasSection({ campaigns, onRefresh }: PushProgramadasSectionProps) {
-  const [programadasView, setProgramadasView] = useState<"cronograma" | "funcoes">("cronograma");
+  const scheduledCampaigns = campaigns.filter(
+    (c) => c.status === "scheduled" || c.status === "sending"
+  );
 
   async function cancelCampaign(id: string) {
     await supabase.from("push_campaigns").update({ status: "cancelled" }).eq("id", id);
@@ -28,76 +30,53 @@ export function PushProgramadasSection({ campaigns, onRefresh }: PushProgramadas
     onRefresh();
   }
 
-  const scheduledCampaigns = campaigns.filter(
-    (c) => c.status === "scheduled" || c.status === "sending"
-  );
-
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-1 p-1 bg-muted/40 rounded-lg">
-        <button
-          onClick={() => setProgramadasView("cronograma")}
-          className={`text-xs font-medium py-2 rounded-md transition-colors ${
-            programadasView === "cronograma"
-              ? "bg-background shadow-sm text-foreground"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          Cronograma
-        </button>
-        <button
-          onClick={() => setProgramadasView("funcoes")}
-          className={`text-xs font-medium py-2 rounded-md transition-colors ${
-            programadasView === "funcoes"
-              ? "bg-background shadow-sm text-foreground"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          Funções
-        </button>
-      </div>
+    <div className="space-y-6">
+      {/* 1. Cronograma Timeline (Minimalista) */}
+      <PushCronogramaTab />
 
-      {programadasView === "cronograma" && <PushCronogramaTab />}
-
-      {programadasView === "funcoes" && (
-        <>
-          <div className="text-xs uppercase tracking-wider text-muted-foreground pt-2">Automações padrão</div>
-          <PushAutomacoesTab />
-          <div className="flex items-center justify-between pt-4">
-            <div className="text-xs uppercase tracking-wider text-muted-foreground">Campanhas agendadas</div>
-            <Button size="sm" variant="ghost" onClick={onRefresh}>
-              <RefreshCw className="w-3 h-3 mr-1" />
-              Atualizar
-            </Button>
-          </div>
-          {scheduledCampaigns.length === 0 && (
-            <p className="text-center text-muted-foreground text-sm py-8">Nenhuma campanha agendada</p>
-          )}
+      {/* 2. Campanhas Agendadas (Timeline do que está programado) */}
+      <div className="space-y-4 pt-4 border-t border-border/40">
+        <div className="flex items-center justify-between">
+          <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Campanhas Agendadas</div>
+          <Button size="sm" variant="ghost" onClick={onRefresh}>
+            <RefreshCw className="w-3 h-3 mr-1" />
+            Atualizar
+          </Button>
+        </div>
+        
+        {scheduledCampaigns.length === 0 && (
+          <p className="text-center text-muted-foreground text-sm py-8">Nenhuma campanha agendada manualmente</p>
+        )}
+        
+        <div className="grid gap-3">
           {scheduledCampaigns.map((c) => (
-            <Card key={c.id} className="p-3">
+            <Card key={c.id} className="p-3 bg-muted/20 border-border/50">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium text-sm">{c.title}</div>
-                  <div className="text-xs text-muted-foreground line-clamp-2">{c.body}</div>
-                  <div className="text-xs mt-1">
-                    <Badge variant="outline">{c.status}</Badge>{" "}
-                    {c.next_run_at && new Date(c.next_run_at).toLocaleString("pt-BR")}
-                    {c.recurrence?.type && ` · ${c.recurrence.type}`}
+                  <div className="font-medium text-sm text-foreground">{c.title}</div>
+                  <div className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{c.body}</div>
+                  <div className="flex items-center gap-2 text-xs mt-2">
+                    <Badge variant="outline" className="bg-background">{c.status}</Badge>
+                    <span className="text-muted-foreground">
+                      {c.next_run_at && new Date(c.next_run_at).toLocaleString("pt-BR")}
+                      {c.recurrence?.type && ` · ${c.recurrence.type}`}
+                    </span>
                   </div>
                 </div>
-                <div className="flex flex-col gap-1">
-                  <Button size="sm" variant="secondary" onClick={() => runNow(c.id)}>
-                    Rodar
+                <div className="flex flex-col gap-1.5 shrink-0">
+                  <Button size="sm" variant="secondary" onClick={() => runNow(c.id)} className="text-xs h-7">
+                    Rodar agora
                   </Button>
-                  <Button size="sm" variant="destructive" onClick={() => cancelCampaign(c.id)}>
+                  <Button size="sm" variant="destructive" onClick={() => cancelCampaign(c.id)} className="text-xs h-7">
                     Cancelar
                   </Button>
                 </div>
               </div>
             </Card>
           ))}
-        </>
-      )}
+        </div>
+      </div>
     </div>
   );
 }

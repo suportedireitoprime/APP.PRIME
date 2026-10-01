@@ -41,16 +41,17 @@ export const PromoHeaderBanner = memo(function PromoHeaderBanner({
       } else {
         const createdAt = user?.created_at ? new Date(user.created_at).getTime() : Date.now();
         const age = Date.now() - createdAt;
-        // Se a conta tem menos de 24h, termina 24h a partir do cadastro; senão 24h a partir do acesso
+        // A promoção de 24h é exclusiva para as primeiras 24h após o cadastro
         if (age < 24 * 60 * 60 * 1000) {
           exp = createdAt + 24 * 60 * 60 * 1000;
+          localStorage.setItem(key, String(exp));
         } else {
-          exp = Date.now() + 24 * 60 * 60 * 1000;
+          exp = 0; // Para contas antigas, a promoção já expirou
+          localStorage.setItem(key, '0');
         }
-        localStorage.setItem(key, String(exp));
       }
     } catch {
-      exp = Date.now() + 24 * 60 * 60 * 1000;
+      exp = 0;
     }
     return exp;
   }, [getPromoKey, user]);
