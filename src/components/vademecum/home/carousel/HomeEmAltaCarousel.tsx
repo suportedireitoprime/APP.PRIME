@@ -165,15 +165,29 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
     [navigate, onSelectItem]
   );
 
+  const scrollToIndex = useCallback((idx: number, behavior: ScrollBehavior = 'smooth') => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const child = el.children[idx] as HTMLElement | undefined;
+    if (!child) return;
+    const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
+    el.scrollTo({ left: target, behavior });
+  }, []);
+
   const handleScroll = useCallback(() => {
     const el = scrollerRef.current;
     if (!el) return;
-    const cardWidth = el.firstElementChild
-      ? (el.firstElementChild as HTMLElement).offsetWidth + 10
-      : 155;
-    const idx = Math.round(el.scrollLeft / cardWidth);
-    setActiveIndex(Math.max(0, Math.min(displayItems.length - 1, idx)));
-  }, [displayItems.length]);
+    const center = el.scrollLeft + el.clientWidth / 2;
+    let best = 0;
+    let bestDist = Infinity;
+    for (let i = 0; i < el.children.length; i++) {
+      const child = el.children[i] as HTMLElement;
+      const mid = child.offsetLeft + child.clientWidth / 2;
+      const dist = Math.abs(mid - center);
+      if (dist < bestDist) { bestDist = dist; best = i; }
+    }
+    setActiveIndex(best);
+  }, []);
 
   const pauseAutoplay = useCallback(() => {
     isInteractingRef.current = true;
@@ -188,16 +202,8 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
 
     const interval = setInterval(() => {
       if (isInteractingRef.current || document.hidden) return;
-      const el = scrollerRef.current;
-      if (!el) return;
-      const cardWidth = el.firstElementChild
-        ? (el.firstElementChild as HTMLElement).offsetWidth + 10
-        : 155;
       const nextIndex = (activeIndex + 1) % displayItems.length;
-      el.scrollTo({
-        left: nextIndex * cardWidth,
-        behavior: 'smooth',
-      });
+      scrollToIndex(nextIndex);
       setActiveIndex(nextIndex);
     }, AUTOPLAY_MS);
 
@@ -205,7 +211,7 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
       clearInterval(interval);
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [activeIndex, displayItems.length]);
+  }, [activeIndex, displayItems.length, scrollToIndex]);
 
   return (
     <section className="space-y-3">
@@ -238,7 +244,7 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
         onScroll={handleScroll}
         onPointerDown={pauseAutoplay}
         onTouchStart={pauseAutoplay}
-        className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-4 sm:px-6 md:px-8 lg:px-12 flex gap-2.5 sm:gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 pt-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50vw-74px)] sm:px-[calc(50vw-81px)] flex gap-2.5 sm:gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 pt-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
         {displayItems.map((item, i) => {
           const isActive = i === activeIndex;
@@ -263,8 +269,18 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
             <button
               key={item.id}
               type="button"
-              onClick={() => handleOpenItem(item)}
-              className="snap-start shrink-0 min-w-[138px] max-w-[148px] sm:min-w-[152px] sm:max-w-[162px] h-[116px] sm:h-[122px] active:scale-[0.96] text-left cursor-pointer focus-visible:outline-none relative flex flex-col shadow-md rounded-2xl group transition-all"
+              onClick={() => {
+                if (!isActive) {
+                  pauseAutoplay();
+                  scrollToIndex(i);
+                  setActiveIndex(i);
+                } else {
+                  handleOpenItem(item);
+                }
+              }}
+              className={`snap-center shrink-0 min-w-[138px] max-w-[148px] sm:min-w-[152px] sm:max-w-[162px] h-[116px] sm:h-[122px] text-left cursor-pointer focus-visible:outline-none relative flex flex-col shadow-md rounded-2xl group transition-all duration-500 ease-out ${
+                isActive ? 'scale-100 opacity-100 z-10' : 'scale-[0.92] opacity-60 z-0'
+              }`}
             >
               <div 
                 className={`absolute inset-0 rounded-2xl overflow-hidden pointer-events-none transition-all duration-300 ${isActive ? 'shadow-xl' : 'shadow-md group-hover:opacity-100 opacity-95'}`}
