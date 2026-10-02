@@ -336,7 +336,7 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
               </div>
 
               {coverImage && (
-                <div className={`absolute right-0 w-auto h-[105px] max-w-none pointer-events-none z-10 transition-all duration-500 ease-out origin-bottom ${isActive ? 'scale-[1.15] -top-6 drop-shadow-[0_12px_24px_rgba(0,0,0,0.7)]' : 'scale-100 -top-4 drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)]'}`}>
+                <div className={`absolute right-0 w-auto h-[105px] max-w-none pointer-events-none z-10 transition-all duration-500 ease-out origin-bottom ${isActive ? 'scale-[1.06] -top-5 drop-shadow-[0_12px_24px_rgba(0,0,0,0.7)]' : 'scale-100 -top-4 drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)]'}`}>
                   <img
                     src={coverImage}
                     alt={`Capa ${item.sigla}`}
