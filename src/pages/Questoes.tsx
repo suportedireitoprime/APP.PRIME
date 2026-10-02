@@ -186,18 +186,7 @@ const Questoes = () => {
             </div>
           </motion.section>
 
-          {/* ── Decks de Questões (Master Deck: Matérias em Trilhas) ───────────────────── */}
-          <motion.section variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }} className="pt-2">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="h-4 w-1 rounded-full bg-primary" />
-              <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                Matérias em Trilhas ({materiasAreas.length})
-              </p>
-            </div>
-            {materiasAreas && materiasAreas.length > 0 && (
-              <QuestoesMasterDeck areas={materiasAreas} />
-            )}
-          </motion.section>
+
           </motion.div>
         </div>
       </div>
