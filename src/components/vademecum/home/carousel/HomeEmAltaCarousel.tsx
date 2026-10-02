@@ -342,18 +342,6 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
                     alt={`Capa ${item.sigla}`}
                     className="h-full w-auto object-contain"
                   />
-                  {isActive && (
-                    <div 
-                      className="absolute inset-0 z-20 animate-image-glow pointer-events-none" 
-                      style={{
-                        WebkitMaskImage: `url(${coverImage})`,
-                        WebkitMaskSize: 'contain',
-                        WebkitMaskRepeat: 'no-repeat',
-                        WebkitMaskPosition: 'right center',
-                        background: 'linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.7) 50%, transparent 80%)'
-                      }}
-                    />
-                  )}
                 </div>
               )}
 
