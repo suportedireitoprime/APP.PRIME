@@ -79,12 +79,12 @@ export const JURI_OPCOES = [
 
 export type EmAltaCat = Cat & { route: string; emBreve?: boolean };
 export const EMALTA_CATS: EmAltaCat[] = [
-  { id: 'ea-biblioteca',  label: 'Biblioteca',     sublabel: 'Obras',       icon: Library,     color: '#FACC15', route: '/bibliotecas' },
-  { id: 'ea-resumos',     label: 'Resumos',        sublabel: 'Anotações',   icon: NotebookPen, color: '#38BDF8', route: '/resumos-juridicos' },
-  { id: 'ea-videoaulas',  label: 'Videoaulas',     sublabel: 'Aulas',       icon: Video,       color: '#EF4444', route: '/videoaulas' },
-  { id: 'ea-audioaulas',  label: 'Audioaulas',     sublabel: 'Podcasts',    icon: Headphones,  color: '#EC4899', route: '/audioaulas' },
-  { id: 'ea-mapas',       label: 'Mapas Mentais',  sublabel: 'Esquemas',    icon: Brain,       color: '#A855F7', route: '/mapas-mentais' },
-  { id: 'ea-dicionario',  label: 'Dicionário',     sublabel: 'Termos',      icon: BookA,       color: '#F97316', route: '/ferramentas/dicionario' },
+  { id: 'ea-biblioteca',  label: 'Biblioteca',     sublabel: 'Obras',       icon: Library,     color: '#FFE600', route: '/bibliotecas' },
+  { id: 'ea-resumos',     label: 'Resumos',        sublabel: 'Anotações',   icon: NotebookPen, color: '#00D0FF', route: '/resumos-juridicos' },
+  { id: 'ea-videoaulas',  label: 'Videoaulas',     sublabel: 'Aulas',       icon: Video,       color: '#FF2A2A', route: '/videoaulas' },
+  { id: 'ea-audioaulas',  label: 'Audioaulas',     sublabel: 'Podcasts',    icon: Headphones,  color: '#FF007F', route: '/audioaulas' },
+  { id: 'ea-mapas',       label: 'Mapas Mentais',  sublabel: 'Esquemas',    icon: Brain,       color: '#B026FF', route: '/mapas-mentais' },
+  { id: 'ea-dicionario',  label: 'Dicionário',     sublabel: 'Termos',      icon: BookA,       color: '#FF8C00', route: '/ferramentas/dicionario' },
 ];
 
 export const FAST_PILLS_ITEMS = [
