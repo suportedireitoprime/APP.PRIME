@@ -1,5 +1,5 @@
 import { memo, Suspense, useState } from 'react';
-import { ChevronRight, ScrollText, BookMarked } from 'lucide-react';
+import { ChevronRight, ScrollText, BookMarked, Landmark, Scale, Briefcase, Car, Users, Search, Target, Shield, Coins, Heart, ShieldAlert, Plane, Trees, Flame } from 'lucide-react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import HomeCard from '@/components/vademecum/home/HomeCard';
 import HomeEmAltaCarousel from '@/components/vademecum/home/carousel/HomeEmAltaCarousel';
@@ -22,6 +22,25 @@ function getAreaDisplayLabel(label: string): string {
   if (label === 'Criança, Idoso e PCD') return label;
   return `Direito ${label}`;
 }
+
+const getLawIcon = (id: string) => {
+  if (id === 'cf88') return Landmark;
+  if (id === 'cp' || id === 'cpp') return ShieldAlert;
+  if (id === 'cc' || id === 'cpc') return Users;
+  if (id === 'clt') return Briefcase;
+  if (id === 'cdc') return Search;
+  if (id === 'ctn') return Coins;
+  if (id === 'ctb') return Car;
+  if (id === 'ce') return Target;
+  if (id === 'eca') return Heart;
+  if (id === 'ei' || id === 'epd') return Users;
+  if (id === 'cpm' || id === 'cppm') return Shield;
+  if (id === 'cflor' || id === 'cagua' || id === 'cmin') return Trees;
+  if (id === 'cba') return Plane;
+  if (id === 'ccom') return Briefcase;
+  if (id === 'ctel') return Flame;
+  return BookMarked;
+};
 
 const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar, onOpenLei, onOpenJurisprudencia }: HomeTabEmAltaProps) => {
   const [activeTab, setActiveTab] = useState('todas');
@@ -125,7 +144,7 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar, onOpenLei, onOpenJurispr
           ))}
 
           {activeTab !== 'todas' && activeTab !== 'jurisprudencia' && LEIS_CATALOG.filter(l => l.tipo === activeTab).map((lei, i) => {
-            const LawIcon = BookMarked;
+            const LawIcon = getLawIcon(lei.id);
             
             let displayLabel = lei.sigla || lei.nome;
             let displaySublabel = lei.nome;

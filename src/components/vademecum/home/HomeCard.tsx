@@ -58,7 +58,7 @@ const HomeCardImpl = ({
     data-track={dataTrack}
     data-track-name={dataTrackName}
     data-track-section={dataTrackSection}
-    className={`group relative flex h-[100px] min-h-[100px] w-full min-w-0 flex-row items-center justify-between overflow-hidden p-3.5 ${
+    className={`group relative flex h-auto min-h-[120px] w-full min-w-0 flex-row items-center justify-between overflow-hidden py-4 pl-3.5 ${
       badge ? 'pr-[90px]' : hideChevron ? 'pr-3.5' : 'pr-8'
     } rounded-2xl shadow-sm hover:shadow-md transition-all focus-visible:outline-none text-left active:scale-[0.97] border border-border/80 bg-zinc-800/80 hover:bg-zinc-700/80 ${className}`}
     style={style}
@@ -85,11 +85,11 @@ const HomeCardImpl = ({
       </div>
       
       <div className="flex-1 min-w-0 flex flex-col justify-center">
-        <p className={titleClassName || `line-clamp-2 font-display text-[14.5px] xs:text-[16px] sm:text-[17px] font-bold leading-tight tracking-tighter ${solidColor ? 'text-foreground' : 'text-foreground'}`}>
+        <p className={titleClassName || `font-display text-[14.5px] xs:text-[16px] sm:text-[17px] font-bold leading-tight tracking-tighter ${solidColor ? 'text-foreground' : 'text-foreground'}`}>
           {label}
         </p>
         {!solidColor && sublabel && (
-          <p className="font-body text-[11px] xs:text-[11.5px] leading-snug mt-0.5 line-clamp-1 text-muted-foreground">
+          <p className="font-body text-[11px] xs:text-[11.5px] leading-snug mt-0.5 text-muted-foreground">
             {sublabel}
           </p>
         )}
