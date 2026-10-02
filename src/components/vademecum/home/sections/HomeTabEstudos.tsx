@@ -16,14 +16,6 @@ const HomeAprenderCarousel = lazyWithRetry(() => import('@/components/vademecum/
 import { AprenderCarouselSkeleton } from '@/components/vademecum/home/aprender/chunks';
 import { GRID_CATS, EMALTA_CATS, Cat } from './homeSectionsData';
 import HomeEmAltaCarousel from '@/components/vademecum/home/carousel/HomeEmAltaCarousel';
-// Função para decidir o carrossel de forma determinística (por horário)
-// Isso evita trocas erráticas a cada navegação, garantindo que o cache funcione e o carregamento seja instantâneo.
-function getTopCarouselType(): 'noticias' | 'livros' {
-  const hour = new Date().getHours();
-  // Das 00:00 às 17:59 exibe Notícias. Das 18:00 às 23:59 exibe Livros.
-  return (hour >= 18 || hour < 6) ? 'livros' : 'noticias';
-}
-
 interface HomeTabEstudosProps {
   emAltaLeis?: boolean;
   hideBlog?: boolean;
@@ -50,12 +42,6 @@ const HomeTabEstudos = ({
 
   const firstName = user?.user_metadata?.full_name?.split(' ')[0] || user?.user_metadata?.nome?.split(' ')[0] || 'Doutor(a)';
 
-  const [topCarousel] = useState<'noticias' | 'livros'>(() => {
-    return getTopCarouselType();
-  });
-
-
-
   return (
     <motion.div
       key="estudos"
@@ -70,15 +56,11 @@ const HomeTabEstudos = ({
         <HomeEmAltaCarousel />
       </div>
 
-      {/* Carrossel de Notícias Jurídicas ou Livros logo abaixo */}
+      {/* Carrossel de Biblioteca Jurídica fixo */}
       {!hideNoticias && (
         <div className="pt-2 pb-2 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
           <Suspense fallback={<div className="h-48 bg-muted/20 animate-pulse rounded-xl mx-4" />}>
-            {topCarousel === 'noticias' ? (
-              <HomeNoticiasCarousel onOpenChange={onNewsOpenChange} autoplay={noticiasAutoplay} />
-            ) : (
-              <HomeLivrosCarousel />
-            )}
+            <HomeLivrosCarousel />
           </Suspense>
         </div>
       )}

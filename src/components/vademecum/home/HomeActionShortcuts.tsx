@@ -50,11 +50,11 @@ const HomeActionShortcuts = () => {
             )}
 
             <Icon
-              className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110"
+              className="w-[22px] h-[22px] shrink-0 transition-transform duration-200 group-hover:scale-110"
               style={{ color: item.color, filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
               strokeWidth={2}
             />
-            <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
+            <span className="font-body text-white text-[12px] sm:text-[13px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
               {item.label}
             </span>
           </button>
