@@ -11,11 +11,10 @@ import type { QuickActionType } from '@/components/vademecum/sheets/VadeMecumQui
 
 interface VadeMecumHeroProps {
   onOpenMenu?: () => void;
-  onOpenSearch?: () => void;
   onSelectQuickAction?: (action: QuickActionType) => void;
 }
 
-const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onOpenSearch, onSelectQuickAction }) => {
+const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onSelectQuickAction }) => {
 
   return (
     <>
@@ -69,20 +68,17 @@ const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onOpenSearch,
         </header>
 
         {/* Conteúdo: Logo à esquerda — centralizado na área vermelha */}
-        <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[100px]">
+        <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[120px]">
           <VadeMecumHeroBrand />
         </div>
 
         {/* ── 4 Botões de Ação Rápida ────────────────── */}
-        <div className="relative z-10 px-3 sm:px-5 pt-2 pb-2">
+        <div className="relative z-10 px-3 sm:px-5 pt-3 pb-6">
           <VadeMecumQuickActions onSelectQuickAction={onSelectQuickAction} />
         </div>
 
 
-        {/* Barra de Pesquisa */}
-        <div className="relative z-10 px-4 sm:px-6 w-full pb-5">
-          <VadeMecumSearchBar onBuscar={onOpenSearch || (() => {})} />
-        </div>
+
       </div>
     </>
   );

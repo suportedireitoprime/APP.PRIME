@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Landmark, Gavel, Scale, FileText, ShieldAlert, Briefcase, CircleDollarSign, ShoppingCart, Baby, BookMarked, Settings2, LucideIcon } from 'lucide-react';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { leiPath } from '@/lib/legislacaoSlugs';
+import { getLeiColor, shade } from '@/lib/leiTheme';
 import { haptic } from '@/lib/nativeHaptics';
 import CarouselDots from './CarouselDots';
 import { useEmAltaConfig } from '@/hooks/useEmAltaConfig';
@@ -213,7 +214,7 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
         <div className="min-w-0 flex-1">
           <h3 className="font-display text-foreground text-[17px] sm:text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
             <span className="w-1 h-5 rounded-full bg-primary shrink-0" />
-            <span className="truncate">EM ALTA</span>
+            <span className="truncate">LEIS EM ALTA</span>
           </h3>
           <p className="font-body text-muted-foreground text-[12px] sm:text-[12.5px] leading-snug ml-3 truncate">
             As leis e normas mais acessadas no momento
@@ -237,49 +238,65 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
         onScroll={handleScroll}
         onPointerDown={pauseAutoplay}
         onTouchStart={pauseAutoplay}
-        className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-4 sm:px-6 md:px-8 lg:px-12 flex gap-2.5 sm:gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-4 sm:px-6 md:px-8 lg:px-12 flex gap-2.5 sm:gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 pt-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
         {displayItems.map((item, i) => {
           const isActive = i === activeIndex;
           const Icon = item.icon;
+          const baseColor = getLeiColor(item.id, item.tipo);
+
+          let coverImage = null;
+          if (item.id === 'cdc') coverImage = '/assets/cdc-girl.webp';
+          else if (item.id === 'clt') coverImage = '/assets/cdc-worker.webp';
+          else if (item.id === 'cpp') coverImage = '/assets/cpp-court.png';
+          else if (item.id === 'cpc') coverImage = '/assets/cpc-lawyer.webp';
+          else if (item.id === 'cc') coverImage = '/assets/cc-couple.webp';
+          else if (item.id === 'cf88') coverImage = '/assets/cf88-cover.webp';
+          else if (['cp', 'lep'].includes(item.id)) coverImage = '/assets/homem-preso-novo.webp';
+          else if (item.id === 'ctn') coverImage = '/assets/ctn-taxes.png';
+          else if (item.id === 'eca') coverImage = '/assets/eca-kids.png';
+          else if (item.id === 'eoab') coverImage = '/assets/eoab-woman-fixed.webp';
+          else if (item.id === 'epd') coverImage = '/assets/epd-wheelchair.webp';
+          else if (item.id === 'ce') coverImage = '/assets/ce-vote.webp';
 
           return (
             <button
               key={item.id}
               type="button"
               onClick={() => handleOpenItem(item)}
-              className="snap-start shrink-0 w-[145px] sm:w-[155px] h-[130px] sm:h-[138px] active:scale-[0.97] text-left cursor-pointer focus-visible:outline-none"
+              className="snap-start shrink-0 min-w-[138px] max-w-[148px] sm:min-w-[152px] sm:max-w-[162px] h-[116px] sm:h-[122px] active:scale-[0.96] text-left cursor-pointer focus-visible:outline-none relative flex flex-col shadow-md rounded-2xl group transition-all"
             >
-              <div
-                className={`relative w-full h-full overflow-hidden rounded-2xl transition-all duration-300 flex flex-col justify-between p-3.5 transform-gpu will-change-transform bg-brand-gradient ${
-                  isActive
-                    ? 'opacity-100 shadow-xl shadow-red-950/60'
-                    : 'opacity-90 shadow-md hover:opacity-100'
-                }`}
+              <div 
+                className={`absolute inset-0 rounded-2xl overflow-hidden pointer-events-none transition-all duration-300 ${isActive ? 'shadow-xl' : 'shadow-md group-hover:opacity-100 opacity-95'}`}
+                style={{ background: `linear-gradient(135deg, ${baseColor} 0%, ${shade(baseColor, -0.3)} 100%)` }}
               >
-                {/* SVG Marca d'água no fundo (igual em legislação, cor branca) */}
-                <div className="absolute -right-2.5 -bottom-2.5 w-[76px] h-[76px] pointer-events-none opacity-[0.16] text-white">
-                  <Icon className="w-full h-full" strokeWidth={1.3} />
-                </div>
+                <Icon
+                  className="absolute -right-2 -bottom-2 w-20 h-20 sm:w-22 sm:h-22 text-white/[0.15] drop-shadow-md group-hover:scale-105 group-hover:text-white/[0.2] transition-all duration-300"
+                  strokeWidth={1.3}
+                />
+                <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-white/10 blur-xl group-hover:bg-white/20 transition-all" />
+              </div>
 
-                {/* Topo do Card: Ícone SVG Branco e Sigla/Badge */}
-                <div className="flex items-center justify-between gap-1 relative z-10">
-                  <div className="w-9 h-9 rounded-xl bg-white/15 backdrop-blur-md flex items-center justify-center shrink-0 border border-white/20 shadow-sm">
-                    <Icon className="w-5 h-5 text-white" strokeWidth={1.6} />
-                  </div>
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider text-white bg-black/40 backdrop-blur-sm border border-white/10">
+              {coverImage && (
+                <img
+                  src={coverImage}
+                  alt={`Capa ${item.sigla}`}
+                  className="absolute -top-4 right-0 h-[105px] w-auto max-w-none object-contain pointer-events-none z-10 drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] group-hover:drop-shadow-[0_12px_20px_rgba(0,0,0,0.7)] group-hover:scale-105 transition-all duration-300"
+                />
+              )}
+
+              <div className="relative z-20 flex flex-col justify-between w-full h-full p-3 pointer-events-none">
+                <div className="flex justify-between items-start">
+                  <Icon
+                    className="w-5 h-5 sm:w-5.5 sm:h-5.5 text-white shrink-0 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] group-hover:scale-110 transition-transform duration-200"
+                    strokeWidth={1.8}
+                  />
+                </div>
+                
+                <div className="flex justify-between items-end mt-auto">
+                  <span className="font-display text-white text-[24px] sm:text-[26px] font-black tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
                     {item.sigla}
                   </span>
-                </div>
-
-                {/* Base do Card: Título da Lei e Sublabel */}
-                <div className="relative z-10 flex flex-col justify-end mt-2">
-                  <p className="font-display text-white text-[13.5px] sm:text-[14px] font-bold leading-tight line-clamp-2 drop-shadow-sm uppercase">
-                    {item.title}
-                  </p>
-                  <p className="font-body text-white/80 text-[10.5px] leading-snug mt-1 truncate">
-                    {item.sublabel}
-                  </p>
                 </div>
               </div>
             </button>

@@ -293,7 +293,23 @@ export const AI_FEATURES_REGISTRY: AiFeatureDefinition[] = [
 
 const STORAGE_KEY_ROUTING = 'omniroute_ai_feature_routing_v2';
 const OMNIROUTE_DEFAULT_BASE_URL = 'https://omniroute-production-fb57.up.railway.app/v1';
-const OMNIROUTE_DEFAULT_API_KEY = 'sk-03fcfd719bf0cc25-19fbd7-028392e5';
+
+let cachedOmniRouteKey: string | null = null;
+
+export async function getOmniRouteApiKey(): Promise<string> {
+  if (cachedOmniRouteKey) return cachedOmniRouteKey;
+  try {
+    const { data, error } = await supabase.functions.invoke('get-omniroute-key');
+    if (!error && data?.key) {
+      cachedOmniRouteKey = data.key;
+      return cachedOmniRouteKey;
+    }
+  } catch (err) {
+    console.error('Erro ao buscar OMNIROUTE_API_KEY do Supabase:', err);
+  }
+  // Fallback para fallback de localStorage se houver
+  return localStorage.getItem('omniroute_test_api_key') || '';
+}
 
 /** Carrega todas as preferências do localStorage */
 export function getAiFeaturesRouting(): Record<AiFeatureKey, AiFeatureConfig> {
@@ -351,7 +367,7 @@ export async function executeAiTask(options: {
   const { featureKey, prompt, systemPrompt, imageBase64, audioBlob } = options;
   const config = getAiFeaturesRouting()[featureKey];
   const baseUrl = localStorage.getItem('omniroute_test_base_url') || OMNIROUTE_DEFAULT_BASE_URL;
-  const apiKey = localStorage.getItem('omniroute_test_api_key') || OMNIROUTE_DEFAULT_API_KEY;
+  const apiKey = await getOmniRouteApiKey();
 
   const start = performance.now();
 

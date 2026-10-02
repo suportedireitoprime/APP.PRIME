@@ -18,7 +18,7 @@ const HomeActionShortcuts = () => {
   const shortcutBadges = useShortcutBadges();
 
   return (
-    <div className="grid grid-cols-4 gap-2 mx-1 mt-1">
+    <div className="flex items-center justify-between gap-2 mx-1 mt-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-3xl p-2 shadow-2xl">
       {SHORTCUT_ITEMS.map((item, index) => {
         const Icon = item.icon;
         const badgeCount = item.badgeKey ? shortcutBadges.counts[item.badgeKey] : 0;
@@ -39,11 +39,11 @@ const HomeActionShortcuts = () => {
               navigate(item.to);
             }}
             style={{ '--shimmer-delay': `${index * 150}ms` } as React.CSSProperties}
-            className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-2 text-center min-h-[48px] select-none cursor-pointer overflow-hidden"
+            className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
           >
             {badgeCount > 0 && item.badgeColor && (
               <span
-                className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-white text-[10px] font-bold leading-none flex items-center justify-center border border-white/20 shadow z-10"
+                className="absolute top-1 right-2 min-w-[16px] h-[16px] px-1 rounded-full text-white text-[9px] font-bold leading-none flex items-center justify-center border border-white/20 shadow z-10"
                 style={{ backgroundColor: item.badgeColor }}
               >
                 {badgeCount > 99 ? '99+' : badgeCount}
@@ -51,11 +51,11 @@ const HomeActionShortcuts = () => {
             )}
 
             <Icon
-              className="w-5 h-5 shrink-0 transition-all group-hover:scale-110"
-              style={{ color: item.color }}
+              className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110"
+              style={{ color: item.color, filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
               strokeWidth={2}
             />
-            <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
+            <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
               {item.label}
             </span>
           </button>

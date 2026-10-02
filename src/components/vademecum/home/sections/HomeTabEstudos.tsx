@@ -1,9 +1,10 @@
 import { Suspense, memo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, ListChecks } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
+import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import HomeCard from '@/components/vademecum/home/HomeCard';
 import HomeTresPoderes from './HomeTresPoderes';
 import HomeLeiSecaBar from './HomeLeiSecaBar';
@@ -14,7 +15,7 @@ import HomeLivrosCarousel from '@/components/ferramentas/FerramentasLivrosCarros
 const HomeAprenderCarousel = lazyWithRetry(() => import('@/components/vademecum/home/aprender/HomeAprenderCarousel'));
 import { AprenderCarouselSkeleton } from '@/components/vademecum/home/aprender/chunks';
 import { GRID_CATS, EMALTA_CATS, Cat } from './homeSectionsData';
-import HomeHorusBannerCarousel from '@/components/vademecum/home/carousel/HomeHorusBannerCarousel';
+import HomeEmAltaCarousel from '@/components/vademecum/home/carousel/HomeEmAltaCarousel';
 // Função para decidir o carrossel de forma determinística (por horário)
 // Isso evita trocas erráticas a cada navegação, garantindo que o cache funcione e o carregamento seja instantâneo.
 function getTopCarouselType(): 'noticias' | 'livros' {
@@ -64,9 +65,9 @@ const HomeTabEstudos = ({
       transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
       className="space-y-6"
     >
-      {/* Carrossel Em Alta (Antigo Horus Banner) no topo */}
+      {/* Carrossel Em Alta no topo */}
       <div className="pt-2">
-        <HomeHorusBannerCarousel />
+        <HomeEmAltaCarousel />
       </div>
 
       {/* Carrossel de Notícias Jurídicas ou Livros logo abaixo */}
@@ -107,9 +108,56 @@ const HomeTabEstudos = ({
           ))}
         </div>
       ) : (
-        <div className="flex flex-col gap-3 pt-2">
-          <div className="mb-1 relative z-10 flex items-start justify-between gap-3">
-            <div>
+        <div className="flex flex-col gap-6 pt-2">
+          
+          {/* Seção Praticar */}
+          <div className="flex flex-col gap-3">
+            <div className="mb-1 relative z-10 flex items-start justify-between gap-3">
+              <div>
+                <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 uppercase tracking-widest">
+                  <span className="w-1 h-5 rounded-full bg-[#E11D48]" />
+                  Praticar
+                </h3>
+                <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3">
+                  Treine com flashcards e questões inéditas
+                </p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4">
+              <HomeCard
+                icon={FlashcardsIcon}
+                label="Flashcards"
+                sublabel="Revisão espaçada"
+                color="#FFFFFF"
+                iconStrokeWidth={1.5}
+                delay={0}
+                className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
+                onClick={() => navigate('/flashcards')}
+                data-track="home_card_click"
+                data-track-name="Flashcards"
+                data-track-section="praticar"
+              />
+              <HomeCard
+                icon={ListChecks}
+                label="Questões"
+                sublabel="Treino focado"
+                color="#FFFFFF"
+                iconStrokeWidth={1.5}
+                delay={0.05}
+                className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
+                onClick={() => navigate('/questoes')}
+                data-track="home_card_click"
+                data-track-name="Questões"
+                data-track-section="praticar"
+              />
+            </div>
+          </div>
+
+          {/* Seção Estudos Livre */}
+          <div className="flex flex-col gap-3">
+            <div className="mb-1 relative z-10 flex items-start justify-between gap-3">
+              <div>
               <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 uppercase tracking-widest">
                 <span className="w-1 h-5 rounded-full bg-[#E11D48]" />
                 Estudos Livre
@@ -149,6 +197,7 @@ const HomeTabEstudos = ({
                 data-track-section="estudos"
               />
             ))}
+          </div>
           </div>
 
           {/* Aprender em Carrossel 3D */}

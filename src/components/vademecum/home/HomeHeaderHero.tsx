@@ -223,24 +223,18 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBa
         </header>
 
         {/* Conteúdo: Logo à esquerda — centralizado na área vermelha com recuo idêntico ao Vade Mecum */}
-        <div className={`relative z-10 transition-all duration-300 flex-1 flex flex-col justify-start min-h-[100px] ${
-          hasTopBanner ? 'pt-2 sm:pt-3' : 'pt-8 sm:pt-10'
+        <div className={`relative z-10 transition-all duration-300 flex-1 flex flex-col justify-start min-h-[120px] ${
+          hasTopBanner ? 'pt-3 sm:pt-4' : 'pt-10 sm:pt-12'
         }`}>
           <HomeBrandBanner />
         </div>
 
         {/* Atalhos RÃ¡pidos: APRENDER, FLASHCARDS, QUESTÃ•ES, ME EXPLIQUE â€” dentro do painel */}
-        <div className="relative z-10 px-3 sm:px-5 pt-2 pb-2">
+        <div className="relative z-10 px-3 sm:px-5 pt-3 pb-5">
           <HomeActionShortcuts />
         </div>
 
-        {/* Barra de Pesquisa */}
-        <div className="relative z-10 px-4 sm:px-6 w-full pb-5">
-          <HomeSearchButton onOpenSearch={() => {
-            if (onOpenSearch) onOpenSearch();
-            else setSearchOpen(true);
-          }} />
-        </div>
+
       </div>
 
       <Suspense fallback={null}>

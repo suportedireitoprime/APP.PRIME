@@ -184,6 +184,8 @@ const MobileHomeSections = ({
             setCategoryOpen(cat);
           }}
           onSelectRadar={handle}
+          onOpenLei={handle}
+          onOpenJurisprudencia={() => handle('jurisprudencia')}
         />
       )}
 

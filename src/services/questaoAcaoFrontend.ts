@@ -1,14 +1,10 @@
-// Gera os recursos de IA de uma questão (comentário, alternativas erradas, mini-aula,
-// flashcards, lei seca, pegadinhas, mapa mental, Cornell, termos) com cache no banco.
-// Body: { questaoId?: string, questao?: QuestaoInline, tipo: AcaoTipo, forcar?: boolean }
-import { corsHeaders, json, adminClient } from "../_shared/questoes-sheets.ts";
+import { getOmniRouteApiKey } from './aiGatewayService';
+import type { AcaoTipo } from '../hooks/useQuestaoAcao';
 
 const GATEWAY = "https://omniroute-production-fb57.up.railway.app/v1/chat/completions";
 const MODEL = "openai/gpt-4o-mini";
 
-type Tipo =
-  | "comentario" | "lei-erradas" | "aula" | "flashcards"
-  | "lei" | "pegadinhas" | "mapa" | "cornell" | "termos" | "me-explique";
+type Tipo = AcaoTipo | 'me-explique';
 
 const TIPOS: Tipo[] = [
   "comentario", "lei-erradas", "aula", "flashcards",
@@ -88,13 +84,16 @@ function hashChave(texto: string) {
 }
 
 const FALLBACK_MODEL = "gemini-3.1-flash-lite";
-const MAX_RETRIES = 3;
+const MAX_RETRIES = 2;
 
 async function chamarApi(model: string, tipo: Tipo, questao: any) {
+  const apiKey = await getOmniRouteApiKey();
+  if (!apiKey) throw new Error("Chave do OmniRoute não encontrada. Configure-a no painel de administração.");
+
   const r = await fetch(GATEWAY, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${Deno.env.get('OMNIROUTE_API_KEY')}`,
+      Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -120,7 +119,9 @@ async function chamarApi(model: string, tipo: Tipo, questao: any) {
   }
 }
 
-async function gerar(tipo: Tipo, questao: any) {
+export async function gerarQuestaoAcaoFrontend(tipo: Tipo, questao: any) {
+  if (!questao || !tipo) throw new Error("Parâmetros inválidos para gerarQuestaoAcaoFrontend");
+  
   const modelos = [MODEL, FALLBACK_MODEL];
   for (const modelo of modelos) {
     for (let tentativa = 0; tentativa < MAX_RETRIES; tentativa++) {
@@ -145,60 +146,3 @@ async function gerar(tipo: Tipo, questao: any) {
   }
   throw new Error("Todos os modelos estão indisponíveis no momento. Tente novamente em alguns segundos.");
 }
-
-Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-
-  try {
-    const body = await req.json().catch(() => ({}));
-    const tipo = String(body?.tipo ?? "") as Tipo;
-    if (!TIPOS.includes(tipo)) return json({ error: "tipo inválido" }, 400);
-
-    const admin = adminClient();
-    let questao: any = body?.questao ?? null;
-    let chave = "";
-
-    if (body?.questaoId) {
-      const { data } = await admin.from("questoes").select("*").eq("id", body.questaoId).maybeSingle();
-      if (!data) return json({ error: "Questão não encontrada" }, 404);
-      questao = data;
-      chave = `q:${data.id}`;
-    } else {
-      if (!questao?.enunciado) return json({ error: "questao ou questaoId obrigatório" }, 400);
-      chave = hashChave(String(questao.enunciado));
-    }
-
-    // Versão do prompt: invalida cache antigo de comentário/alternativas erradas.
-    if (tipo === "comentario" || tipo === "lei-erradas") chave = `${chave}|v2`;
-
-
-    if (!body?.forcar) {
-      const { data: cache } = await admin
-        .from("questoes_acoes_cache")
-        .select("payload")
-        .eq("chave", chave)
-        .eq("tipo", tipo)
-        .maybeSingle();
-      if (cache?.payload) return json({ ok: true, payload: cache.payload, cache: true });
-    }
-
-    const payload = await gerar(tipo, questao);
-
-    const { error: upErr } = await admin
-      .from("questoes_acoes_cache")
-      .upsert({ chave, tipo, payload }, { onConflict: "chave,tipo" });
-    if (upErr) console.error("[questao-acao-ia] cache", upErr.message);
-
-    // O comentário também alimenta a coluna da questão, quando ela existe no banco.
-    if (tipo === "comentario" && body?.questaoId && payload?.texto) {
-      await admin.from("questoes")
-        .update({ comentario_ia: payload.texto, comentario_ia_gerado_em: new Date().toISOString() })
-        .eq("id", body.questaoId);
-    }
-
-    return json({ ok: true, payload, cache: false });
-  } catch (e) {
-    console.error("[questao-acao-ia]", e);
-    return json({ error: String((e as Error)?.message ?? e) }, 500);
-  }
-});

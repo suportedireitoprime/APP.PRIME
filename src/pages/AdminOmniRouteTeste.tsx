@@ -53,6 +53,7 @@ import {
   getAiFeaturesRouting,
   updateAiFeatureConfig,
   executeAiTask,
+  getOmniRouteApiKey,
   AiFeatureKey,
   AiFeatureDefinition,
   AiProviderType
@@ -207,6 +208,20 @@ export default function AdminOmniRouteTeste() {
     ANTIGRAVITY_TEXT_MODELS.map((m) => m.id)
   );
   const [showConfig, setShowConfig] = useState(false);
+
+  // Busca a key do Supabase caso o usuário não tenha sobrescrito manualmente
+  useEffect(() => {
+    async function loadKey() {
+      const stored = localStorage.getItem(STORAGE_KEYS.API_KEY);
+      if (!stored) {
+        const key = await getOmniRouteApiKey();
+        if (key && key !== DEFAULT_API_KEY) {
+          setApiKey(key);
+        }
+      }
+    }
+    loadKey();
+  }, []);
 
   // Tab Principal de Alternância ('texto' | 'imagem' | 'visao' | 'audio')
   type MainTabType = 'texto' | 'imagem' | 'visao' | 'audio';

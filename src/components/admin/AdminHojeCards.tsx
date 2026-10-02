@@ -166,14 +166,16 @@ const ProviderTag = ({ provider }: { provider?: string | null }) => {
 };
 
 const getHojeBrasilia = (): Date => {
-  const agora = new Date();
-  const spStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(agora);
-  const [ano, mes, dia] = spStr.split('-').map(Number);
-  return new Date(ano, mes - 1, dia);
+  const spStr = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+  const [mes, dia, ano] = spStr.split('/');
+  return new Date(Number(ano), Number(mes) - 1, Number(dia));
 };
 
 const isoDate = (d: Date) => {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(d);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 };
 
 const getBrasiliaDayRange = (datas: Date[]) => {

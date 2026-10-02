@@ -17,6 +17,7 @@ import cf88 from '@/assets/lei-cover-cf88.webp';
 import cc from '@/assets/lei-cover-cc.webp';
 import clt from '@/assets/lei-cover-clt.webp';
 import cdc from '@/assets/lei-cover-cdc.webp';
+import cpp from '@/assets/lei-cover-cpp.png';
 import defaultCover from '@/assets/lei-cover-default.webp';
 // Thematic covers per estatuto/lei — mantêm o brasão da República ao fundo.
 import eca from '@/assets/lei-cover-eca.webp';
@@ -26,7 +27,7 @@ import eir from '@/assets/lei-cover-eir.webp';
 import ec from '@/assets/lei-cover-ec.webp';
 import ed from '@/assets/lei-cover-ed.webp';
 import eoab from '@/assets/lei-cover-eoab.webp';
-import ctn from '@/assets/lei-cover-ctn.webp';
+import ctn from '@/assets/lei-cover-ctn.png';
 
 const isNative =
   typeof window !== 'undefined' && Capacitor.isNativePlatform();
@@ -45,6 +46,7 @@ export const COVERS = {
   ed,
   eoab,
   ctn,
+  cpp,
   default: defaultCover,
 } as const;
 

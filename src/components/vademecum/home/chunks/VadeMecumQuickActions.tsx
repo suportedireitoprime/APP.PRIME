@@ -23,41 +23,41 @@ const VadeMecumQuickActions: React.FC<VadeMecumQuickActionsProps> = ({ onSelectQ
   };
 
   return (
-    <div className="grid grid-cols-4 gap-2 mx-1 mt-1">
+    <div className="flex items-center justify-between gap-2 mx-1 mt-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-3xl p-2 shadow-2xl">
       <button 
         onClick={() => handleAction('favoritos', '/vade-mecum/favoritos')} 
-        className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-2 text-center min-h-[48px] cursor-pointer"
+        className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
         aria-label="Abrir Favoritos"
       >
-        <Heart className="w-5 h-5 text-white/70 group-hover:text-white group-hover:scale-110 transition-all" strokeWidth={2} />
-        <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">Favoritos</span>
+        <Heart className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110" style={{ color: '#F43F5E', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} strokeWidth={2} />
+        <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">Favoritos</span>
       </button>
       
       <button 
         onClick={() => handleAction('anotacoes', '/vade-mecum/anotacoes')} 
-        className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-2 text-center min-h-[48px] cursor-pointer"
+        className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
         aria-label="Abrir Anotações"
       >
-        <NotebookPen className="w-5 h-5 text-white/70 group-hover:text-white group-hover:scale-110 transition-all" strokeWidth={2} />
-        <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">Anotações</span>
+        <NotebookPen className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110" style={{ color: '#60A5FA', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} strokeWidth={2} />
+        <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">Anotações</span>
       </button>
 
       <button 
         onClick={() => handleAction('historico', '/vade-mecum/recentes')} 
-        className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-2 text-center min-h-[48px] cursor-pointer"
+        className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
         aria-label="Abrir Novidades"
       >
-        <Sparkles className="w-5 h-5 text-white/70 group-hover:text-white group-hover:scale-110 transition-all" strokeWidth={2} />
-        <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">Novidades</span>
+        <Sparkles className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110" style={{ color: '#FBBF24', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} strokeWidth={2} />
+        <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">Novidades</span>
       </button>
 
       <button 
         onClick={() => handleAction('radares', '/radares')} 
-        className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-2 text-center min-h-[48px] cursor-pointer"
+        className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
         aria-label="Abrir Radares"
       >
-        <Radar className="w-5 h-5 text-white/70 group-hover:text-white group-hover:scale-110 transition-all" strokeWidth={2} />
-        <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">Radares</span>
+        <Radar className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110" style={{ color: '#A78BFA', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} strokeWidth={2} />
+        <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">Radares</span>
       </button>
     </div>
   );

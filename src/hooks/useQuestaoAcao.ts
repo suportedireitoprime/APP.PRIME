@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { gerarQuestaoAcaoFrontend } from '@/services/questaoAcaoFrontend';
 
 export type AcaoTipo =
   | 'comentario' | 'lei-erradas' | 'aula' | 'flashcards'
@@ -28,10 +29,52 @@ function hashKey(q: QuestaoInline) {
 }
 
 async function fetchAcao(body: Record<string, any>) {
-  const { data, error } = await supabase.functions.invoke('questao-acao-ia', { body });
-  if (error) throw error;
-  if ((data as any)?.error) throw new Error((data as any).error);
-  return (data as any)?.payload;
+  // Substitui a Edge Function por execução no Frontend para usar o OmniRoute diretamente
+  const tipo = body.tipo as AcaoTipo;
+  const questaoId = body.questaoId;
+  const questaoInline = body.questao;
+
+  let chave = "";
+  if (questaoId) {
+    chave = `q:${questaoId}`;
+  } else if (questaoInline?.enunciado) {
+    const s = questaoInline.enunciado;
+    let h = 0;
+    for (let i = 0; i < s.length; i++) h = (Math.imul(h, 31) + s.charCodeAt(i)) | 0;
+    chave = `h:${h}`;
+  }
+
+  if (tipo === "comentario" || tipo === "lei-erradas") chave = `${chave}|v2`;
+
+  if (chave) {
+    // Busca no cache primeiro
+    const { data: cache } = await supabase
+      .from("questoes_acoes_cache")
+      .select("payload")
+      .eq("chave", chave)
+      .eq("tipo", tipo)
+      .maybeSingle();
+
+    if (cache?.payload) return cache.payload;
+  }
+
+  // Se não tem cache, gera via frontend
+  let questaoData = questaoInline;
+  if (questaoId && !questaoData) {
+    const { data } = await supabase.from("questoes").select("*").eq("id", questaoId).maybeSingle();
+    if (data) questaoData = data;
+  }
+
+  if (!questaoData) throw new Error("Questão não encontrada para geração de conteúdo");
+
+  const payload = await gerarQuestaoAcaoFrontend(tipo, questaoData);
+
+  // Tenta salvar no cache (pode falhar se RLS bloquear, mas não deve quebrar a UI)
+  if (chave && payload) {
+    supabase.from("questoes_acoes_cache").upsert({ chave, tipo, payload }, { onConflict: "chave,tipo" }).then();
+  }
+
+  return payload;
 }
 
 function chaveDe(source: string | QuestaoInline) {

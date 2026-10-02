@@ -2,7 +2,6 @@ import { useState, useEffect, Suspense } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import VadeMecumHero from '@/components/vademecum/home/VadeMecumHero';
 import MobileHomeSections from '@/components/vademecum/home/MobileHomeSections';
-import VadeMecumBottomNav from '@/components/vademecum/navigation/VadeMecumBottomNav';
 import VadeMecumSearchBar from '@/components/vademecum/home/chunks/VadeMecumSearchBar';
 import VadeMecumFavoritos from './VadeMecumFavoritos';
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
@@ -159,7 +158,7 @@ const VadeMecum = () => {
             <BuscaLeisOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
           </Suspense>
         )}
-        <VadeMecumBottomNav hidden={buscaOpen || activeQuickSheet !== null} />
+        {/* Menu de rodapé removido conforme solicitado */}
 
         <VadeMecumQuickActionSheet
           activeSheet={activeQuickSheet}

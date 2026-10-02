@@ -121,11 +121,7 @@ export const QuestoesMasterDeck: React.FC<QuestoesMasterDeckProps> = memo(({ are
   return (
     <div className="w-full space-y-5 select-none mt-2">
       <div className="relative w-full -mx-2 sm:mx-0 px-2 sm:px-0 pt-2 pb-2 flex flex-col items-center select-none overflow-visible">
-        {/* Glow de fundo */}
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[460px] h-[300px] sm:h-[460px] rounded-full pointer-events-none opacity-25 blur-[90px] transition-colors duration-700"
-          style={{ backgroundColor: activeAccentColor }}
-        />
+
 
         <div className="relative flex items-center justify-center w-full max-w-full h-[330px] sm:h-[390px] md:h-[420px] overflow-visible">
           {ativo > 0 && (
@@ -189,7 +185,7 @@ export const QuestoesMasterDeck: React.FC<QuestoesMasterDeckProps> = memo(({ are
                   <div
                     className={cn(
                       "w-[160px] h-[230px] sm:w-[190px] sm:h-[275px] md:w-[210px] md:h-[305px] rounded-[20px] p-3 sm:p-4 flex flex-col justify-between select-none relative overflow-hidden transition-all duration-300",
-                      frente ? "border-2 border-white/40 shadow-2xl" : "border border-white/20 shadow-black/80"
+                      frente ? "shadow-2xl" : "shadow-black/80"
                     )}
                     style={{
                       backgroundColor: palette.primary,
@@ -208,7 +204,7 @@ export const QuestoesMasterDeck: React.FC<QuestoesMasterDeckProps> = memo(({ are
 
                     <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent pointer-events-none z-0" />
                     <div className="absolute inset-0 -translate-x-[150%] group-hover:translate-x-[150%] bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-[-25deg] transition-transform duration-1000 ease-in-out pointer-events-none z-10" />
-                    <div className="absolute inset-1.5 rounded-[16px] border border-white/20 pointer-events-none z-10" />
+
                     <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.04] to-white/[0.14] pointer-events-none z-10" />
 
                     {/* Tag no topo */}
