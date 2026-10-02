@@ -120,6 +120,7 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
   const navigate = useNavigate();
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isReady, setIsReady] = useState(false);
   const isInteractingRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -148,6 +149,12 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
     }).filter(Boolean) as EmAltaItem[];
   }, [config]);
 
+  const loopedItems = useMemo(() => {
+    if (displayItems.length === 0) return [];
+    // 4 copies to allow smooth scrolling back and forth without hitting the edge quickly
+    return [...displayItems, ...displayItems, ...displayItems, ...displayItems];
+  }, [displayItems]);
+
   const handleOpenItem = useCallback(
     (item: EmAltaItem) => {
       haptic.selection();
@@ -174,6 +181,18 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
     el.scrollTo({ left: target, behavior });
   }, []);
 
+  useEffect(() => {
+    if (displayItems.length > 0 && !isReady) {
+      const initialIndex = displayItems.length; // Start at the second block
+      setActiveIndex(initialIndex);
+      // Timeout is needed so the DOM has rendered the padding and cards
+      setTimeout(() => {
+        scrollToIndex(initialIndex, 'auto');
+        setIsReady(true);
+      }, 50);
+    }
+  }, [displayItems.length, isReady, scrollToIndex]);
+
   const handleScroll = useCallback(() => {
     const el = scrollerRef.current;
     if (!el) return;
@@ -186,8 +205,30 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
       const dist = Math.abs(mid - center);
       if (dist < bestDist) { bestDist = dist; best = i; }
     }
+
+    const N = displayItems.length;
+    if (N > 0) {
+      if (best <= 1) {
+        const jumpTo = best + N * 2;
+        const child = el.children[jumpTo] as HTMLElement;
+        if (child) {
+          el.scrollTo({ left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2, behavior: 'auto' });
+          setActiveIndex(jumpTo);
+          return;
+        }
+      } else if (best >= loopedItems.length - 2) {
+        const jumpTo = best - N * 2;
+        const child = el.children[jumpTo] as HTMLElement;
+        if (child) {
+          el.scrollTo({ left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2, behavior: 'auto' });
+          setActiveIndex(jumpTo);
+          return;
+        }
+      }
+    }
+
     setActiveIndex(best);
-  }, []);
+  }, [displayItems.length, loopedItems.length]);
 
   const pauseAutoplay = useCallback(() => {
     isInteractingRef.current = true;
@@ -198,11 +239,11 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
   }, []);
 
   useEffect(() => {
-    if (displayItems.length <= 1) return;
+    if (displayItems.length <= 1 || !isReady) return;
 
     const interval = setInterval(() => {
       if (isInteractingRef.current || document.hidden) return;
-      const nextIndex = (activeIndex + 1) % displayItems.length;
+      const nextIndex = activeIndex + 1;
       scrollToIndex(nextIndex);
       setActiveIndex(nextIndex);
     }, AUTOPLAY_MS);
@@ -245,8 +286,9 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
         onPointerDown={pauseAutoplay}
         onTouchStart={pauseAutoplay}
         className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50vw-74px)] sm:px-[calc(50vw-81px)] flex gap-2.5 sm:gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 pt-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        style={{ visibility: isReady ? 'visible' : 'hidden' }}
       >
-        {displayItems.map((item, i) => {
+        {loopedItems.map((item, i) => {
           const isActive = i === activeIndex;
           const Icon = item.icon;
           const baseColor = getLeiColor(item.id, item.tipo);
@@ -267,7 +309,7 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
 
           return (
             <button
-              key={item.id}
+              key={`${item.id}-${i}`}
               type="button"
               onClick={() => {
                 if (!isActive) {
@@ -321,7 +363,7 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
       </div>
 
       {/* Indicador de Paginação */}
-      <CarouselDots total={displayItems.length} activeIndex={activeIndex} />
+      <CarouselDots total={displayItems.length} activeIndex={displayItems.length > 0 ? activeIndex % displayItems.length : 0} />
 
       <HomeEmAltaCustomizer 
         isOpen={isCustomizerOpen}
