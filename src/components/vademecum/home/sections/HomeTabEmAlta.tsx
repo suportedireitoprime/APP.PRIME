@@ -2,7 +2,7 @@ import { memo, Suspense, useState } from 'react';
 import { ChevronRight, ScrollText, BookMarked, Landmark, Scale, Briefcase, Car, Users, Search, Target, Shield, Coins, Heart, ShieldAlert, Plane, Trees, Flame } from 'lucide-react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import HomeCard from '@/components/vademecum/home/HomeCard';
-import HomeEmAltaCarousel from '@/components/vademecum/home/carousel/HomeEmAltaCarousel';
+import HomeAtalhosLeisCarousel from '@/components/vademecum/home/carousel/HomeAtalhosLeisCarousel';
 import { AREA_CATS, RADAR_CATS, Cat, AreaCat } from './homeSectionsData';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 
@@ -47,8 +47,8 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar, onOpenLei, onOpenJurispr
 
   return (
     <div className="space-y-6 pb-8">
-      {/* 1. CARROSSEL EM ALTA (DESIGN VERMELHO DO CARROSSEL DE LIVROS) */}
-      <HomeEmAltaCarousel />
+      {/* 1. CARROSSEL DE ATALHOS/FAVORITOS DE LEIS */}
+      <HomeAtalhosLeisCarousel onOpenLei={onOpenLei || (() => {})} />
 
       {/* 2. LEGISLAÇÃO BRASILEIRA — ÁREAS DO DIREITO (COM ABAS) */}
       <section className="space-y-3 px-1 pt-2">
