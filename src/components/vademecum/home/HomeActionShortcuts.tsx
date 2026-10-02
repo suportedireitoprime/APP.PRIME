@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GraduationCap, MessageCircleQuestion, Bot, Monitor } from 'lucide-react';
+import { GraduationCap, MessageCircleQuestion, Bird, Monitor } from 'lucide-react';
 import { useShortcutBadges } from '@/hooks/useShortcutBadges';
 import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
 import { haptic } from '@/lib/nativeHaptics';
@@ -8,7 +8,7 @@ import { haptic } from '@/lib/nativeHaptics';
 const SHORTCUT_ITEMS = [
   { label: 'Aprender',    icon: GraduationCap,         to: '/aprender',         color: '#FACC15', badgeColor: null, badgeKey: null, prefetch: 'aprender' as PrefetchKey },
   { label: 'Me Explique', icon: MessageCircleQuestion, to: '/me-explique',      color: '#F97316', badgeColor: null, badgeKey: null, prefetch: 'meExplique' as PrefetchKey },
-  { label: 'Assistente',  icon: Bot,                   to: '/assistente-horus', color: '#A855F7', badgeColor: null, badgeKey: null, prefetch: 'horus' as PrefetchKey },
+  { label: 'Assistente',  icon: Bird,                  to: '/assistente-horus', color: '#A855F7', badgeColor: null, badgeKey: null, prefetch: 'horus' as PrefetchKey },
   { label: 'Desktop',     icon: Monitor,               to: '/desktop',          color: '#38BDF8', badgeColor: null, badgeKey: null, prefetch: 'desktop' as PrefetchKey },
 ];
 
