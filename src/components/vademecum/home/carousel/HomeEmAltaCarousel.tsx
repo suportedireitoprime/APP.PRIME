@@ -336,11 +336,25 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
               </div>
 
               {coverImage && (
-                <img
-                  src={coverImage}
-                  alt={`Capa ${item.sigla}`}
-                  className={`absolute right-0 h-[105px] w-auto max-w-none object-contain pointer-events-none z-10 transition-all duration-500 ease-out origin-bottom ${isActive ? 'animate-image-glow scale-[1.15] -top-6 drop-shadow-[0_12px_24px_rgba(0,0,0,0.7)]' : 'scale-100 -top-4 drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)]'}`}
-                />
+                <div className={`absolute right-0 w-auto h-[105px] max-w-none pointer-events-none z-10 transition-all duration-500 ease-out origin-bottom ${isActive ? 'scale-[1.15] -top-6 drop-shadow-[0_12px_24px_rgba(0,0,0,0.7)]' : 'scale-100 -top-4 drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)]'}`}>
+                  <img
+                    src={coverImage}
+                    alt={`Capa ${item.sigla}`}
+                    className="h-full w-auto object-contain"
+                  />
+                  {isActive && (
+                    <div 
+                      className="absolute inset-0 z-20 animate-image-glow pointer-events-none" 
+                      style={{
+                        WebkitMaskImage: `url(${coverImage})`,
+                        WebkitMaskSize: 'contain',
+                        WebkitMaskRepeat: 'no-repeat',
+                        WebkitMaskPosition: 'right center',
+                        background: 'linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.7) 50%, transparent 80%)'
+                      }}
+                    />
+                  )}
+                </div>
               )}
 
               <div className="relative z-20 flex flex-col justify-between w-full h-full p-3 pointer-events-none">
