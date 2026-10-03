@@ -27,7 +27,7 @@ const Aprender = () => {
 
   const { modulesMap } = useAprenderAreaModulesMap();
   const activeTab = 'aulas';
-  const [aulasViewMode, setAulasViewMode] = useState<'decks' | 'lista'>('decks');
+  const [aulasViewMode, setAulasViewMode] = useState<'decks' | 'lista'>('lista');
   const [lembretesOpen, setLembretesOpen] = useState(false);
 
   // Hook isolado que gerencia dados, cache em memória/local e métricas
