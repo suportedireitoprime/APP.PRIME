@@ -19,7 +19,7 @@ const WEBHOOK_EVENTS = [
 ];
 
 // Status transitórios da Evolution GO: 403/463 (sessão ocupada / rate limit) e 5xx.
-const RETRYABLE_STATUS = new Set([403, 408, 425, 429, 463, 500, 502, 503, 504]);
+const RETRYABLE_STATUS = new Set([403, 404, 408, 425, 429, 463, 500, 502, 503, 504]);
 const MAX_RETRIES = 3;
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -424,7 +424,7 @@ export const evolution = {
     let lastError: unknown = null;
     for (const payload of payloads) {
       try {
-        const response = await req(`/send/text`, {
+        const response = await req(`/message/sendText/${INSTANCE}`, {
           method: "POST",
           headers,
           body: JSON.stringify(payload),

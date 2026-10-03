@@ -376,24 +376,74 @@ async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessa
   }
 
   if (!premium && !isTrial) {
-    const blockMsg = 
-      `Seu período de teste gratuito de 3 dias acabou! ⏳\n\n` +
-      `Espero que tenha gostado de conversar comigo. Para continuar tirando dúvidas e enviando áudios, imagens e PDFs, você precisa assinar um plano.\n\n` +
-      `1️⃣ Abra o app ou site *Vade Mecum*\n` +
-      `2️⃣ Vá em *Perfil → Assinaturas*\n` +
-      `3️⃣ Escolha o plano ideal para você 🚀`;
-
-    try {
-      await evolution.sendText(parsed.remoteJid || parsed.from, blockMsg);
-      await logOutbound(admin, parsed, "sent", null, { agent: "trial_expired_gate" });
-    } catch (e) {
-      await logOutbound(admin, parsed, "failed", String((e as any)?.message || e), { agent: "trial_expired_gate" });
+    // Fallback: se não encontrou plano e não tem linked_user_id, tenta busca direta
+    // por telefone em asaas_subscriptions.customer_phone (último recurso)
+    let fallbackPremium = false;
+    if (!userRow?.linked_user_id) {
+      try {
+        const phoneDigits = String(parsed.from).replace(/\D/g, "");
+        const phoneVariants = [phoneDigits];
+        if (phoneDigits.length >= 10) phoneVariants.push(phoneDigits.slice(-11), phoneDigits.slice(-10));
+        if (phoneDigits.startsWith("55") && phoneDigits.length === 13) {
+          phoneVariants.push("55" + phoneDigits.slice(2, 4) + phoneDigits.slice(5));
+        }
+        if (phoneDigits.startsWith("55") && phoneDigits.length === 12) {
+          phoneVariants.push("55" + phoneDigits.slice(2, 4) + "9" + phoneDigits.slice(4));
+        }
+        for (const variant of phoneVariants) {
+          const { data: asaasFallback } = await admin
+            .from("asaas_subscriptions")
+            .select("status, user_id")
+            .ilike("customer_phone", `%${variant}%`)
+            .in("status", ["ACTIVE", "ACTIVE_GRACE"])
+            .limit(1)
+            .maybeSingle();
+          if (asaasFallback) {
+            fallbackPremium = true;
+            // Auto-heal: vincular o user_id encontrado
+            if (asaasFallback.user_id && userRow?.id) {
+              await admin.from("horus_whatsapp_users")
+                .update({ linked_user_id: asaasFallback.user_id, linked_at: new Date().toISOString(), onboarding_state: "ativo" })
+                .eq("id", userRow.id);
+            }
+            console.log("horus-webhook fallback premium match via asaas phone", { phone: parsed.from, variant });
+            break;
+          }
+        }
+      } catch (e) {
+        console.warn("horus-webhook fallback asaas phone check fail", String((e as any)?.message || e));
+      }
     }
-    await admin.from("horus_conversations").insert([
-      { phone_e164: parsed.from, role: "user", content: parsed.media ? `[${parsed.media.type}]` : String(parsed.text || "[msg]") },
-      { phone_e164: parsed.from, role: "assistant", content: blockMsg },
-    ]);
-    return;
+
+    if (!fallbackPremium) {
+      const blockMsg = 
+        `Seu período de teste gratuito de 3 dias acabou! ⏳\n\n` +
+        `Espero que tenha gostado de conversar comigo. Para continuar tirando dúvidas e enviando áudios, imagens e PDFs, você precisa assinar um plano.\n\n` +
+        `1️⃣ Abra o app ou site *Vade Mecum*\n` +
+        `2️⃣ Vá em *Perfil → Assinaturas*\n` +
+        `3️⃣ Escolha o plano ideal para você 🚀`;
+
+      let sendOk = false;
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          await evolution.sendText(parsed.remoteJid || parsed.from, blockMsg);
+          await logOutbound(admin, parsed, "sent", null, { agent: "trial_expired_gate" });
+          sendOk = true;
+          break;
+        } catch (e) {
+          console.warn(`horus-webhook trial gate sendText attempt ${attempt + 1} failed`, String((e as any)?.message || e));
+          if (attempt === 0) await new Promise(r => setTimeout(r, 2000));
+        }
+      }
+      if (!sendOk) {
+        await logOutbound(admin, parsed, "failed", "all_attempts_exhausted", { agent: "trial_expired_gate", needs_manual_retry: true });
+      }
+      await admin.from("horus_conversations").insert([
+        { phone_e164: parsed.from, role: "user", content: parsed.media ? `[${parsed.media.type}]` : String(parsed.text || "[msg]") },
+        { phone_e164: parsed.from, role: "assistant", content: blockMsg },
+      ]);
+      return;
+    }
   }
 
   if (parsed.media) {

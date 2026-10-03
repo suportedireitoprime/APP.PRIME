@@ -109,19 +109,62 @@ async function resolveUserPlanInternal(
   if (!effectiveUserId && phone) {
     const digits = String(phone).replace(/\D/g, "");
     if (digits) {
-      const variants = [digits];
-      if (digits.length >= 10) variants.push(digits.slice(-11), digits.slice(-9));
-      if (digits.length >= 11) variants.push("55" + digits.slice(-11));
+      // Gera TODAS as variantes de número brasileiro possíveis
+      const variantsSet = new Set<string>([digits]);
+      // Sem código do país (últimos 11, 10, 9, 8 dígitos)
+      if (digits.length >= 10) variantsSet.add(digits.slice(-11));
+      if (digits.length >= 10) variantsSet.add(digits.slice(-10));
+      if (digits.length >= 9) variantsSet.add(digits.slice(-9));
+      if (digits.length >= 8) variantsSet.add(digits.slice(-8));
+      // Com código do país 55
+      if (digits.length >= 10 && !digits.startsWith("55")) variantsSet.add("55" + digits.slice(-11));
+      if (digits.length >= 11) variantsSet.add("55" + digits.slice(-11));
+      // Variantes com/sem 9º dígito (celulares brasileiros)
+      if (digits.startsWith("55") && digits.length === 13) {
+        // 55 + DDD(2) + 9 + número(8) → tira o 9
+        variantsSet.add("55" + digits.slice(2, 4) + digits.slice(5));
+        variantsSet.add(digits.slice(2, 4) + digits.slice(5));
+      }
+      if (digits.startsWith("55") && digits.length === 12) {
+        // 55 + DDD(2) + número(8) → adiciona o 9
+        variantsSet.add("55" + digits.slice(2, 4) + "9" + digits.slice(4));
+        variantsSet.add(digits.slice(2, 4) + "9" + digits.slice(4));
+      }
+      if (!digits.startsWith("55")) {
+        if (digits.length === 11) {
+          // DDD(2) + 9 + número(8) → tira o 9
+          variantsSet.add(digits.slice(0, 2) + digits.slice(3));
+          variantsSet.add("55" + digits);
+          variantsSet.add("55" + digits.slice(0, 2) + digits.slice(3));
+        }
+        if (digits.length === 10) {
+          // DDD(2) + número(8) → adiciona o 9
+          variantsSet.add(digits.slice(0, 2) + "9" + digits.slice(2));
+          variantsSet.add("55" + digits);
+          variantsSet.add("55" + digits.slice(0, 2) + "9" + digits.slice(2));
+        }
+      }
+      const variants = Array.from(variantsSet).filter(Boolean);
 
       const { data: profiles } = await admin
         .from("profiles")
         .select("id, email, telefone, whatsapp_number, is_premium")
         .or(variants.map((v) => `telefone.ilike.%${v}%,whatsapp_number.ilike.%${v}%`).join(","))
-        .limit(1);
+        .limit(5);
 
-      if (profiles && profiles.length > 0) {
-        effectiveUserId = profiles[0].id;
-        if (profiles[0].email && ADMIN_EMAILS.includes(profiles[0].email.toLowerCase().trim())) {
+      // Filtra match real com comparação numérica bidirecional
+      const bestProfile = (profiles || []).find((p: any) => {
+        const t = String(p.telefone || "").replace(/\D/g, "");
+        const w = String(p.whatsapp_number || "").replace(/\D/g, "");
+        return variants.some((v) =>
+          (t && (t === v || t.endsWith(v) || v.endsWith(t))) ||
+          (w && (w === v || w.endsWith(v) || v.endsWith(w)))
+        );
+      });
+
+      if (bestProfile) {
+        effectiveUserId = bestProfile.id;
+        if (bestProfile.email && ADMIN_EMAILS.includes(bestProfile.email.toLowerCase().trim())) {
           return {
             isPremium: true,
             plano: "pro",
