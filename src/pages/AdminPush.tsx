@@ -22,7 +22,7 @@ interface PushCampaign {
   created_at: string;
 }
 
-type ViewState = 'menu' | 'dashboard' | 'manual' | 'robos' | 'laboratorio';
+type ViewState = 'menu' | 'dashboard' | 'manual' | 'robos' | 'laboratorio' | 'templates';
 
 export default function AdminPush() {
   const navigate = useNavigate();
@@ -112,6 +112,7 @@ export default function AdminPush() {
       case 'manual': return { title: "Mensagem Manual", subtitle: "Criar e agendar novos alertas" };
       case 'robos': return { title: "Robôs & Automações", subtitle: "Programação diária dos disparos automáticos" };
       case 'laboratorio': return { title: "Laboratório", subtitle: "Discussão de novas funções" };
+      case 'templates': return { title: "Templates", subtitle: "Modelos pré-configurados de disparo" };
       default: return { title: "Notificação Push Nova", subtitle: "Crie e gerencie seus alertas" };
     }
   };
@@ -132,6 +133,7 @@ export default function AdminPush() {
           <div className="grid gap-3">
             {[
               { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, desc: 'Acompanhar agendamentos e histórico' },
+              { id: 'templates', label: 'Templates', icon: Database, desc: 'Modelos de horários e conteúdos para disparo' },
               { id: 'manual', label: 'Mensagem Manual', icon: Send, desc: 'Criar e agendar novos pushs avulsos' },
               { id: 'robos', label: 'Robôs & Automações', icon: Bot, desc: 'Guia de programação diária dos disparos' },
               { id: 'laboratorio', label: 'Laboratório', icon: FlaskConical, desc: 'Discutir novas funções de notificação' }
@@ -155,6 +157,78 @@ export default function AdminPush() {
             ))}
           </div>
         )}
+
+        {view === 'templates' && (() => {
+          const template2Horas = [
+            { time: '08:00', name: 'Novas Leis do Dia', desc: 'Disparo de novas leis cadastradas. Caso não tenha, não será enviado para a pessoa.', emoji: '📜' },
+            { time: '10:00', name: 'Boletins Informativos', desc: 'Disparo de boletins jurídicos. Caso não tenha, não será enviado.', emoji: '📰' },
+            { time: '12:00', name: 'Áudio-aula Explicativa', desc: 'Áudio aleatório com explicação jurídica, citando o nome da pessoa na notificação para ser persuasivo.', emoji: '🎧' },
+            { time: '14:00', name: 'Questão Prática', desc: 'Uma questão aleatória para a pessoa poder resolver e praticar.', emoji: '📝' },
+            { time: '16:00', name: 'Sugestão de Leitura', desc: 'Um livro sugerido para a pessoa poder ler durante a tarde.', emoji: '📚' },
+            { time: '18:00', name: 'Áudio-aula Explicativa', desc: 'Áudio aleatório com explicação jurídica, citando o nome da pessoa.', emoji: '🎧' },
+            { time: '20:00', name: 'Questão Prática', desc: 'Mais uma questão para fixar o conhecimento à noite.', emoji: '📝' },
+            { time: '22:00', name: 'Áudio-aula Explicativa', desc: 'Áudio aleatório curto antes de dormir, focado em revisão.', emoji: '🎧' },
+          ];
+
+          return (
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+              
+              <div className="flex items-center justify-between bg-zinc-900/40 p-2 rounded-xl border border-border/30">
+                <Select defaultValue="2horas">
+                  <SelectTrigger className="w-full sm:w-[300px] border-none bg-transparent shadow-none focus:ring-0">
+                    <SelectValue placeholder="Selecione o Template" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2horas">A cada 2 horas (8 Pushes)</SelectItem>
+                    <SelectItem value="7por_dia">7 notificações por dia</SelectItem>
+                    <SelectItem value="9por_dia">9 notificações por dia</SelectItem>
+                    <SelectItem value="10por_dia">10 notificações por dia</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button 
+                  onClick={() => toast.success("Template 'A cada 2 horas' ativado com sucesso!")} 
+                  className="shrink-0 rounded-lg hidden sm:flex"
+                >
+                  Ativar Template
+                </Button>
+              </div>
+
+              <div className="space-y-4 pt-2">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-sm uppercase tracking-wider font-bold text-muted-foreground flex items-center gap-2">
+                    <Database className="w-4 h-4 text-primary" /> Cronograma do Template
+                  </h2>
+                  <Button 
+                    onClick={() => toast.success("Template 'A cada 2 horas' ativado com sucesso!")} 
+                    className="h-8 text-xs sm:hidden"
+                  >
+                    Ativar
+                  </Button>
+                </div>
+                
+                <div className="relative border-l-2 border-primary/20 ml-4 space-y-6 py-2">
+                  {template2Horas.map((item, i) => (
+                    <div key={i} className="relative pl-6">
+                      <div className="absolute w-3 h-3 bg-primary rounded-full -left-[7px] top-1.5 shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
+                      <Card className="p-4 border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors cursor-default">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xs font-bold text-primary flex items-center gap-1.5">
+                            <Clock className="w-3.5 h-3.5" />
+                            {item.time}
+                          </span>
+                        </div>
+                        <h3 className="font-semibold text-foreground text-base pr-2 flex items-center gap-2">
+                          <span>{item.emoji}</span> {item.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">{item.desc}</p>
+                      </Card>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {view === 'manual' && (
           <Card className="p-5 border-border/50 bg-zinc-900/40 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-300">
