@@ -249,7 +249,7 @@ const BottomNav = () => {
             }`}
             aria-label="Flashcards"
           >
-            <Layers className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/flashcards') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+            <ScrollText className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/flashcards') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
             <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Flashcards</span>
           </button>
 
@@ -296,7 +296,7 @@ const BottomNav = () => {
             <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center text-white/80 hover:text-white md:text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Vade Mecum</span>
           </button>
 
-          {/* Slot 4: Aprender */}
+          {/* Slot 4: Aulas */}
           <button
             onPointerDown={() => prefetchRoute('aprender')}
             onMouseEnter={() => prefetchRoute('aprender')}
@@ -306,10 +306,10 @@ const BottomNav = () => {
             className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
               location.pathname.startsWith('/aprender') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
             }`}
-            aria-label="Aprender"
+            aria-label="Aulas"
           >
             <GraduationCap className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${location.pathname.startsWith('/aprender') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
-            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Aprender</span>
+            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Aulas</span>
           </button>
 
           {/* Slot 5: Pesquisar */}
@@ -320,7 +320,7 @@ const BottomNav = () => {
             className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative text-white/80 hover:text-white md:hover:bg-white/10`}
             aria-label="Pesquisar"
           >
-            <Search className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md drop-shadow-sm`} strokeWidth={1.5} />
+            <Search className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md drop-shadow-sm -scale-x-100`} strokeWidth={1.5} />
             <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Pesquisar</span>
           </button>
 
