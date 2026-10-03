@@ -115,7 +115,7 @@ const IndexDesktop = () => {
 
   return (
     <div className="h-dvh bg-zinc-950 flex flex-col relative overflow-hidden">
-      <div className="absolute inset-0 z-0 opacity-60">
+      <div className="absolute inset-0 z-0 opacity-50 pointer-events-none">
         <ShapeGrid 
           speed={0.5} 
           squareSize={40}

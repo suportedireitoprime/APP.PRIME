@@ -114,14 +114,14 @@ const IndexMobile = () => {
 
   return (
     <div className="min-h-dvh bg-[#0D0D0D] pb-[calc(7rem+var(--sai-bottom))] md:pb-0 md:pl-[90px] transition-all relative overflow-hidden">
-      <div className="fixed inset-0 pointer-events-none z-0">
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-50">
         <ShapeGrid 
           speed={0.5} 
           squareSize={40}
-          direction='diagonal'
-          borderColor='rgba(255, 255, 255, 0.08)'
-          hoverFillColor='rgba(255, 255, 255, 0.12)'
-          shape='square'
+          direction="diagonal"
+          borderColor="rgba(255, 255, 255, 0.05)"
+          hoverFillColor="rgba(255, 255, 255, 0.1)"
+          shape="square"
           hoverTrailAmount={5}
         />
       </div>

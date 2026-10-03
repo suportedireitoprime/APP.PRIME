@@ -58,7 +58,7 @@ const HomeCardImpl = ({
     data-track={dataTrack}
     data-track-name={dataTrackName}
     data-track-section={dataTrackSection}
-    className={`group relative flex h-auto min-h-[120px] w-full min-w-0 flex-row items-center justify-between overflow-hidden py-4 pl-3.5 ${
+    className={`group relative flex h-auto min-h-[105px] w-full min-w-0 flex-row items-center justify-between overflow-hidden py-3.5 pl-3.5 ${
       badge ? 'pr-[90px]' : hideChevron ? 'pr-3.5' : 'pr-8'
     } rounded-2xl shadow-sm hover:shadow-md transition-all focus-visible:outline-none text-left active:scale-[0.97] border border-border/80 bg-zinc-800/80 hover:bg-zinc-700/80 ${className}`}
     style={style}
