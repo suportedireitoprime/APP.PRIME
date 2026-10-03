@@ -308,6 +308,7 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
           else if (item.id === 'ce') coverImage = '/assets/ce-vote.webp';
           else if (item.id === 'eir') coverImage = '/assets/eir-woman.png';
           else if (item.id === 'ei') coverImage = '/assets/ei-idoso.png';
+          else if (item.id === 'eind') coverImage = '/assets/eind-indio.png';
 
           return (
             <button
