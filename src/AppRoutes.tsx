@@ -147,6 +147,7 @@ const ModoAula = lazy(() => import("./pages/ModoAula.tsx"));
 const ModoAulaSessao = lazy(() => import("./pages/ModoAulaSessao.tsx"));
 const ModoAulaAula = lazy(() => import("./pages/ModoAulaAula.tsx"));
 const MeExplique = lazy(routePrefetch.meExplique);
+const ChatJuridico = lazy(() => import("./pages/ChatJuridico.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const Configuracoes = lazy(() => import("./pages/Configuracoes.tsx"));
 const AgendaCamara = lazy(() => import("./pages/tres-poderes/AgendaCamara.tsx"));
@@ -1410,6 +1411,7 @@ function AnimatedRoutes() {
           <Route path="/modo-aula/aula/:id" element={<ProtectedRoute><PageTransition><ModoAulaAula /></PageTransition></ProtectedRoute>} />
           <Route path="/modo-aula/disciplina/:id" element={<ProtectedRoute><PageTransition><ModoAula /></PageTransition></ProtectedRoute>} />
           <Route path="/me-explique" element={<ProtectedRoute><PageTransition instant><MeExplique /></PageTransition></ProtectedRoute>} />
+          <Route path="/chat-juridico" element={<ProtectedRoute><PageTransition instant><ChatJuridico /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/plano-estudos" element={<ProtectedRoute><PageTransition><PlanoEstudos /></PageTransition></ProtectedRoute>} />
           <Route path="/leis-cantadas" element={<ProtectedRoute><PageTransition><LeisCantadas /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-leis-cantadas" element={<ProtectedRoute><PageTransition><AdminLeisCantadas /></PageTransition></ProtectedRoute>} />
