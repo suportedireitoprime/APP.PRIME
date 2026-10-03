@@ -12,8 +12,6 @@ import HomeApresentacoesTimeline from './HomeApresentacoesTimeline';
 import { toast } from '@/hooks/use-toast';
 import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
 import HomeLivrosCarousel from '@/components/ferramentas/FerramentasLivrosCarrossel';
-const HomeAprenderCarousel = lazyWithRetry(() => import('@/components/vademecum/home/aprender/HomeAprenderCarousel'));
-import { AprenderCarouselSkeleton } from '@/components/vademecum/home/aprender/chunks';
 import { GRID_CATS, EMALTA_CATS, Cat } from './homeSectionsData';
 import HomeEmAltaCarousel from '@/components/vademecum/home/carousel/HomeEmAltaCarousel';
 interface HomeTabEstudosProps {
@@ -181,15 +179,6 @@ const HomeTabEstudos = ({
             ))}
           </div>
           </div>
-
-          {/* Aprender em Carrossel 3D */}
-          {!hideBlog && (
-            <div className="pt-6 pb-0">
-              <Suspense fallback={<AprenderCarouselSkeleton />}>
-                <HomeAprenderCarousel hideBlog={hideBlog} />
-              </Suspense>
-            </div>
-          )}
 
           {/* SeÃ§Ã£o Lei Seca com TÃ­tulo, Risquinho Vermelho e DescriÃ§Ã£o */}
           <div className="pt-2 flex flex-col gap-2.5">
