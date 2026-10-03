@@ -582,12 +582,7 @@ const QuestoesArea = () => {
                               {/* Overlay para Contraste do Topo e Rodapé, mantendo o centro limpo para a ilustração */}
                               <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/90 via-black/10 to-[#0d0f12]/50 pointer-events-none z-0" />
 
-                              {/* Cabeçalho da Carta: Tag Deck no Lado Esquerdo */}
-                              <div className="flex items-center justify-start z-[1] w-full pt-1">
-                                <span className="inline-flex items-center text-[9.5px] sm:text-[11px] font-bold uppercase tracking-wider px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full backdrop-blur-md bg-black/50 text-white/95 border border-white/20 shadow-sm whitespace-nowrap">
-                                  <span>{item.badgeLabel}</span>
-                                </span>
-                              </div>
+                              {/* Cabeçalho da Carta: Tag Deck no Lado Esquerdo removida a pedido */}
 
                               {/* Centro da Carta: Ícone de Player (Destaque Elegante para Iniciar o Deck) */}
                               <div className="my-auto py-2 z-[1] w-full flex items-center justify-center">
@@ -690,12 +685,12 @@ const QuestoesArea = () => {
                                   {item.badgeLabel}
                                 </span>
                                 <span className="w-1 h-1 rounded-full bg-white/25" />
-                                <span className="text-[9.5px] sm:text-[11px] font-light text-zinc-400">
-                                  {item.displayTotal} questões
+                                <span className="text-[10px] sm:text-[12px] font-light text-zinc-400">
+                                  {item.displayTotal} {item.displayLabel}
                                 </span>
                               </div>
 
-                              <h3 className="font-sans font-light text-[13.5px] xs:text-[15px] sm:text-[17px] md:text-[19px] lg:text-[20px] leading-snug break-words text-zinc-100 group-hover:text-amber-200 transition-colors drop-shadow-sm line-clamp-3 sm:line-clamp-4">
+                              <h3 className="font-sans font-medium text-[16px] xs:text-[18px] sm:text-[20px] md:text-[22px] lg:text-[23px] leading-[1.3] break-words text-zinc-100 group-hover:text-amber-200 transition-colors drop-shadow-md line-clamp-3 sm:line-clamp-4 mt-1">
                                 {item.titulo}
                               </h3>
                             </div>
