@@ -125,6 +125,11 @@ const MobileHomeSections = ({
         navigate('/jurisprudencia');
         return;
       }
+      const lei = LEIS_CATALOG.find((l) => l.id === id);
+      if (lei) {
+        navigate(leiPath(lei));
+        return;
+      }
       const cat = ALL_CATS.find((c) => c.id === id);
       if (cat) {
         const leisDaCategoria = LEIS_CATALOG.filter((l) => l.tipo === id);
