@@ -237,34 +237,36 @@ const BottomNav = () => {
       >
         <div className="max-w-lg mx-auto px-1 pt-3.5 pb-3.5 md:max-w-2xl md:px-2 md:py-8 md:h-full md:flex md:flex-col md:justify-center md:gap-6">
         <div className="grid grid-cols-5 items-end md:grid-cols-1 md:items-stretch md:gap-6">
-          {/* Slot 1: Blog */}
+          {/* Slot 1: Flashcards */}
           <button
-            onPointerDown={() => prefetchRoute('blog')}
-            onMouseEnter={() => prefetchRoute('blog')}
-            onClick={() => { haptic.selection(); startTransition(() => navigate('/blog')); }}
+            onPointerDown={() => prefetchRoute('flashcards')}
+            onMouseEnter={() => prefetchRoute('flashcards')}
+            onClick={() => { haptic.selection(); startTransition(() => navigate('/flashcards')); }}
             data-track="bottom_nav_click"
-            data-track-destino="blog"
+            data-track-destino="flashcards"
             className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
-              path.startsWith('/blog') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
+              path.startsWith('/flashcards') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
             }`}
-            aria-label="Blog"
+            aria-label="Flashcards"
           >
-            <ScrollText className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/blog') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
-            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Blog</span>
+            <Layers className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/flashcards') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Flashcards</span>
           </button>
 
-          {/* Slot 2: Atualizações / Giro */}
+          {/* Slot 2: Questões */}
           <button
-            onClick={() => { haptic.selection(); startTransition(() => navigate('/atualizacoes')); }}
+            onPointerDown={() => prefetchRoute('questoes')}
+            onMouseEnter={() => prefetchRoute('questoes')}
+            onClick={() => { haptic.selection(); startTransition(() => navigate('/questoes')); }}
             data-track="bottom_nav_click"
-            data-track-destino="atualizacoes"
+            data-track-destino="questoes"
             className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
-              path.startsWith('/atualizacoes') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
+              path.startsWith('/questoes') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
             }`}
-            aria-label="Giro Jurídico"
+            aria-label="Questões"
           >
-            <Flame className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/atualizacoes') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
-            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Giro Jurídico</span>
+            <ListChecks className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/questoes') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Questões</span>
           </button>
 
           {/* Slot 3: Vade Mecum (destaque flutuante central no mobile, normal no tablet) */}
@@ -294,36 +296,32 @@ const BottomNav = () => {
             <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center text-white/80 hover:text-white md:text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Vade Mecum</span>
           </button>
 
-          {/* Slot 4: Ferramentas */}
+          {/* Slot 4: Aprender */}
           <button
-            onPointerDown={() => prefetchRoute('ferramentas')}
-            onMouseEnter={() => prefetchRoute('ferramentas')}
-            onClick={() => { haptic.selection(); startTransition(() => navigate('/ferramentas')); }}
+            onPointerDown={() => prefetchRoute('aprender')}
+            onMouseEnter={() => prefetchRoute('aprender')}
+            onClick={() => { haptic.selection(); startTransition(() => navigate('/aprender')); }}
             data-track="bottom_nav_click"
-            data-track-destino="ferramentas"
+            data-track-destino="aprender"
             className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
-              location.pathname.startsWith('/ferramentas') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
+              location.pathname.startsWith('/aprender') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
             }`}
-            aria-label="Ferramentas"
+            aria-label="Aprender"
           >
-            <Gavel className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${location.pathname.startsWith('/ferramentas') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
-            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Ferramentas</span>
+            <GraduationCap className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${location.pathname.startsWith('/aprender') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Aprender</span>
           </button>
 
-          {/* Slot 5: Pílulas */}
+          {/* Slot 5: Pesquisar */}
           <button
-            onPointerDown={() => prefetchRoute('pilulas')}
-            onMouseEnter={() => prefetchRoute('pilulas')}
-            onClick={() => { haptic.selection(); startTransition(() => navigate('/pilulas')); }}
+            onClick={() => { haptic.selection(); setSearchOpen(true); }}
             data-track="bottom_nav_click"
-            data-track-destino="pilulas"
-            className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
-              path.startsWith('/pilulas') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
-            }`}
-            aria-label="Pílulas"
+            data-track-destino="pesquisar"
+            className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative text-white/80 hover:text-white md:hover:bg-white/10`}
+            aria-label="Pesquisar"
           >
-            <Pill className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/pilulas') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
-            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Pílulas</span>
+            <Search className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md drop-shadow-sm`} strokeWidth={1.5} />
+            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Pesquisar</span>
           </button>
 
           {/* Slot 6: Me Explique (Apenas Desktop) */}
