@@ -219,9 +219,9 @@ const BottomNav = () => {
       aria-label="Navegação principal"
       role="navigation"
       data-bottom-nav
-      className={`fixed z-50  bg-black transition-all duration-300 ease-out 
-        bottom-0 left-0 right-0 
-        md:top-0 md:bottom-0 md:right-auto md:w-[90px] md:border-r md:border-white/10
+      className={`fixed z-50 transition-all duration-300 ease-out 
+        bottom-0 left-0 right-0 bg-[#1C1C1E] backdrop-blur-md border-t border-white/10 rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)]
+        md:top-0 md:bottom-0 md:right-auto md:w-[90px] md:border-t-0 md:rounded-none md:bg-black/95 md:shadow-none md:border-r md:border-white/10
         ${hideNav ? 'translate-y-[140%] md:-translate-x-[140%] md:translate-y-0 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'}`}
     >
       {/* Degradê escuro subindo do rodapé para dar profundidade no mobile */}
@@ -233,10 +233,10 @@ const BottomNav = () => {
       <div 
         onPointerDown={handleNavWarmup}
         onTouchStart={handleNavWarmup}
-        className="relative z-10 bg-bottomnav-gradient border-t border-white/10 rounded-t-2xl md:border-t-0 md:rounded-none md:h-full md:bg-none md:bg-black/95 shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)] md:shadow-none pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] md:pb-0"
+        className="relative z-10 pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] md:pb-0 md:h-full"
       >
-        <div className="max-w-2xl mx-auto px-1 xs:px-2 py-1.5 md:py-8 md:h-full md:flex md:flex-col md:justify-center md:gap-6">
-        <div className="grid grid-cols-5 md:grid-cols-1 items-stretch md:gap-6">
+        <div className="max-w-lg mx-auto px-1 pt-3.5 pb-3.5 md:max-w-2xl md:px-2 md:py-8 md:h-full md:flex md:flex-col md:justify-center md:gap-6">
+        <div className="grid grid-cols-5 items-end md:grid-cols-1 md:items-stretch md:gap-6">
           {/* Slot 1: Blog */}
           <button
             onPointerDown={() => prefetchRoute('blog')}
@@ -244,13 +244,13 @@ const BottomNav = () => {
             onClick={() => { haptic.selection(); startTransition(() => navigate('/blog')); }}
             data-track="bottom_nav_click"
             data-track-destino="blog"
-            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
-              path.startsWith('/blog') ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
+            className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
+              path.startsWith('/blog') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
             }`}
             aria-label="Blog"
           >
-            <ScrollText className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/blog') ? 'scale-110' : ''}`} strokeWidth={1.2} />
-            <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Blog</span>
+            <ScrollText className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/blog') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Blog</span>
           </button>
 
           {/* Slot 2: Atualizações / Giro */}
@@ -258,13 +258,13 @@ const BottomNav = () => {
             onClick={() => { haptic.selection(); startTransition(() => navigate('/atualizacoes')); }}
             data-track="bottom_nav_click"
             data-track-destino="atualizacoes"
-            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer ${
-              path.startsWith('/atualizacoes') ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
+            className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
+              path.startsWith('/atualizacoes') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
             }`}
             aria-label="Giro Jurídico"
           >
-            <Flame className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/atualizacoes') ? 'scale-110' : ''}`} strokeWidth={1.2} />
-            <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Giro Jurídico</span>
+            <Flame className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/atualizacoes') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Giro Jurídico</span>
           </button>
 
           {/* Slot 3: Vade Mecum (destaque flutuante central no mobile, normal no tablet) */}
@@ -274,7 +274,7 @@ const BottomNav = () => {
             onClick={() => { haptic.selection(); if (!path.startsWith('/vade-mecum')) startTransition(() => navigate('/vade-mecum')); }}
             data-track="bottom_nav_click"
             data-track-destino="vade-mecum"
-            className="relative flex flex-col items-center justify-end gap-1 py-1.5 md:py-3 md:justify-center md:rounded-xl md:hover:bg-white/10 active:opacity-70 transition-transform duration-100 touch-manipulation cursor-pointer"
+            className="relative flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl md:hover:bg-white/10 active:opacity-70 transition-transform duration-100 touch-manipulation cursor-pointer"
             aria-label="Vade Mecum"
           >
             <span
@@ -290,27 +290,24 @@ const BottomNav = () => {
               />
             </span>
             {/* Spacer invisível ocupando o mesmo espaço do ícone dos outros slots no mobile */}
-            <span aria-hidden className="w-8 h-8 xs:w-9 xs:h-9 md:hidden" />
-            <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-white md:text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Vade Mecum</span>
+            <span aria-hidden className="w-7 h-7 sm:w-8 sm:h-8 md:hidden" />
+            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center text-white/80 hover:text-white md:text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Vade Mecum</span>
           </button>
 
           {/* Slot 4: Ferramentas */}
           <button
             onPointerDown={() => prefetchRoute('ferramentas')}
             onMouseEnter={() => prefetchRoute('ferramentas')}
-            onClick={() => {
-              haptic.light();
-              startTransition(() => navigate('/ferramentas'));
-            }}
+            onClick={() => { haptic.selection(); startTransition(() => navigate('/ferramentas')); }}
             data-track="bottom_nav_click"
             data-track-destino="ferramentas"
-            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer ${
-              location.pathname.startsWith('/ferramentas') ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
+            className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
+              location.pathname.startsWith('/ferramentas') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
             }`}
             aria-label="Ferramentas"
           >
-            <Gavel className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform text-white/90 drop-shadow-md ${location.pathname.startsWith('/ferramentas') ? 'scale-110' : ''}`} strokeWidth={1.2} />
-            <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Ferramentas</span>
+            <Gavel className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${location.pathname.startsWith('/ferramentas') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Ferramentas</span>
           </button>
 
           {/* Slot 5: Pílulas */}
@@ -320,13 +317,13 @@ const BottomNav = () => {
             onClick={() => { haptic.selection(); startTransition(() => navigate('/pilulas')); }}
             data-track="bottom_nav_click"
             data-track-destino="pilulas"
-            className={`flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer ${
-              path.startsWith('/pilulas') ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
+            className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
+              path.startsWith('/pilulas') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
             }`}
             aria-label="Pílulas"
           >
-            <Pill className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/pilulas') ? 'scale-110' : ''}`} strokeWidth={1.2} />
-            <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Pílulas</span>
+            <Pill className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/pilulas') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Pílulas</span>
           </button>
 
           {/* Slot 6: Me Explique (Apenas Desktop) */}
@@ -336,13 +333,13 @@ const BottomNav = () => {
             onClick={() => { haptic.selection(); startTransition(() => navigate('/me-explique')); }}
             data-track="bottom_nav_click"
             data-track-destino="me-explique"
-            className={`hidden md:flex flex-col items-center justify-center gap-1 py-1.5 md:py-3 rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer ${
-              path.startsWith('/me-explique') ? 'text-amber-400 bg-amber-500/10 ring-1 ring-amber-500/25 shadow-sm' : 'text-white/80 hover:bg-white/10 hover:text-amber-300'
+            className={`hidden md:flex flex-col items-center justify-center gap-1.5 py-1.5 md:py-3 rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
+              path.startsWith('/me-explique') ? 'text-amber-400 md:bg-amber-500/10 md:ring-1 md:ring-amber-500/25 md:shadow-sm' : 'text-white/80 hover:bg-white/10 hover:text-amber-300'
             }`}
             aria-label="Me Explique"
           >
-            <Bot className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/me-explique') ? 'scale-110 text-amber-400' : ''}`} strokeWidth={1.2} />
-            <span className="font-body text-[11.5px] xs:text-[12.5px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Me Explique</span>
+            <Bot className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/me-explique') ? 'scale-110 text-amber-400' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Me Explique</span>
           </button>
         </div>
       </div>
