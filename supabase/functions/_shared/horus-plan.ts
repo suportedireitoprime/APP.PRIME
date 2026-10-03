@@ -234,7 +234,8 @@ async function resolveUserPlanInternal(
       .maybeSingle();
 
     if (asaas) {
-      const notExpired = !asaas.expires_at || new Date(asaas.expires_at).getTime() > Date.now();
+      // Adicionada tolerância de 7 dias para expiração caso o status continue ACTIVE mas o webhook de renovação tenha atrasado.
+      const notExpired = !asaas.expires_at || new Date(asaas.expires_at).getTime() + (7 * 24 * 60 * 60 * 1000) > Date.now();
       if (notExpired) {
         return {
           isPremium: true,
@@ -261,7 +262,7 @@ async function resolveUserPlanInternal(
       .maybeSingle();
 
     if (play) {
-      const notExpired = !play.expires_at || new Date(play.expires_at).getTime() > Date.now();
+      const notExpired = !play.expires_at || new Date(play.expires_at).getTime() + (7 * 24 * 60 * 60 * 1000) > Date.now();
       if (notExpired) {
         return {
           isPremium: true,
@@ -288,7 +289,7 @@ async function resolveUserPlanInternal(
       .maybeSingle();
 
     if (apple) {
-      const notExpired = !apple.expires_at || new Date(apple.expires_at).getTime() > Date.now();
+      const notExpired = !apple.expires_at || new Date(apple.expires_at).getTime() + (7 * 24 * 60 * 60 * 1000) > Date.now();
       if (notExpired) {
         return {
           isPremium: true,

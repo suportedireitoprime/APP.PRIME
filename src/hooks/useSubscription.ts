@@ -175,13 +175,14 @@ export function useSubscription(options: Options = {}): SubscriptionState {
     const fetchOnce = async (skipStoreSync = false): Promise<boolean> => {
       try {
         const nowIso = new Date().toISOString();
+        const graceIso = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
         // 1. Paralelizar a busca de cancelamentos e das assinaturas ativas em todas as lojas
         const [cancelRes, playRes, appleRes, legadoRes, profileRes] = await Promise.all([
           supabase.from('assinatura_cancelamentos' as any).select('canceled_at').eq('user_id', user.id).maybeSingle(),
-          supabase.from('play_subscriptions').select('product_id, status, expires_at').eq('user_id', user.id).in('status', ACTIVE_STATUSES).or(`expires_at.is.null,expires_at.gt.${nowIso}`).order('expires_at', { ascending: false }).limit(1).maybeSingle(),
-          supabase.from('apple_subscriptions').select('product_id, status, expires_at, start_time').eq('user_id', user.id).in('status', ['active', 'in_grace']).or(`expires_at.is.null,expires_at.gt.${nowIso}`).order('expires_at', { ascending: false }).limit(1).maybeSingle(),
-          supabase.from('asaas_subscriptions' as any).select('plano, status, expires_at, started_at').eq('user_id', user.id).in('status', ['ACTIVE', 'ACTIVE_GRACE']).or(`expires_at.is.null,expires_at.gt.${nowIso}`).limit(1).maybeSingle(),
+          supabase.from('play_subscriptions').select('product_id, status, expires_at').eq('user_id', user.id).in('status', ACTIVE_STATUSES).or(`expires_at.is.null,expires_at.gt.${graceIso}`).order('expires_at', { ascending: false }).limit(1).maybeSingle(),
+          supabase.from('apple_subscriptions').select('product_id, status, expires_at, start_time').eq('user_id', user.id).in('status', ['active', 'in_grace']).or(`expires_at.is.null,expires_at.gt.${graceIso}`).order('expires_at', { ascending: false }).limit(1).maybeSingle(),
+          supabase.from('asaas_subscriptions' as any).select('plano, status, expires_at, started_at').eq('user_id', user.id).in('status', ['ACTIVE', 'ACTIVE_GRACE']).or(`expires_at.is.null,expires_at.gt.${graceIso}`).limit(1).maybeSingle(),
           supabase.from('profiles').select('is_premium').eq('id', user.id).maybeSingle()
         ]);
 
