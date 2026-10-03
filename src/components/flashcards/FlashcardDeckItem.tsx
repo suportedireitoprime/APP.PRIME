@@ -20,18 +20,7 @@ export const FlashcardDeckItem = memo(({ item, i, palette, isLast, coverUrl }: a
           onTouchStart={item.onPrefetch}
           className="relative shrink-0 w-[140px] xs:w-[155px] sm:w-[185px] md:w-[210px] h-[215px] xs:h-[235px] sm:h-[265px] md:h-[290px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
         >
-          {/* Medalhão de Milestone / Nó da Trilha Centralizado no Topo (Estável e Elegante) */}
-          <div
-            className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-30 flex items-center justify-center rounded-full w-8 h-8 sm:w-8.5 sm:h-8.5 border-2 border-white/70 text-white font-bold text-xs shadow-xl transition-transform duration-300 group-hover:scale-110"
-            style={{
-              backgroundColor: palette.primary,
-              boxShadow: palette.nodeBoxShadow,
-            }}
-          >
-            <span className="font-sans font-bold text-[11px] sm:text-xs">
-              {item.ordemStr}
-            </span>
-          </div>
+
 
           {/* ── CARTA 1 (Traseira/Fundo - Menor e mais escura) ── */}
           <div
@@ -218,7 +207,7 @@ export const FlashcardDeckItem = memo(({ item, i, palette, isLast, coverUrl }: a
               )}
             >
               <span
-                className="text-[9.5px] sm:text-[11px] font-normal uppercase tracking-wider"
+                className="text-[12px] sm:text-[14px] font-bold uppercase tracking-wider"
                 style={{ color: palette.primary }}
               >
                 {item.badgeLabel}

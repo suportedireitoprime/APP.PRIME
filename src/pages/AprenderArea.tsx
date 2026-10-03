@@ -16,7 +16,7 @@ import {
   setCachedModuloData,
 } from '@/lib/aprenderAreaLoader';
 import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
-import { BookOpenText, GraduationCap, ListChecks, Layers, ArrowRight, Play } from 'lucide-react';
+import { BookOpenText, GraduationCap, ListChecks, Layers, ArrowRight, Play, Search } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
@@ -448,6 +448,16 @@ const AprenderArea = () => {
   }, [isFlash, temasFlashcards, modulosOrdenados, aulas, progresso, activeTab, area?.nome, officialFlashcardArea, effectiveAreaName, slug, navigate, data?.area, totalFlashcardsArea, user?.id, palette]);
 
 
+  const filteredItems = useMemo(() => {
+    if (!searchTerm) return itemsToRender;
+    const term = searchTerm.toLowerCase();
+    return itemsToRender.filter(item => 
+      item.titulo.toLowerCase().includes(term) ||
+      (item.badgeLabel && item.badgeLabel.toLowerCase().includes(term))
+    );
+  }, [itemsToRender, searchTerm]);
+
+
   // Capa oficial ilustrada da matéria
   const coverInfo = area ? (getAreaCover(area.nome) || getAreaCover(area.slug)) : (slug ? getAreaCover(slug) : null);
   const coverUrl = coverInfo?.cover || "/images/gamificacao/deusa_temis_vazada.webp";
@@ -503,11 +513,48 @@ const AprenderArea = () => {
           <>
             {/* Top Bar Selecione o Módulo */}
             <div className="flex items-center justify-between mb-4 w-full min-w-0">
-              <div className="flex items-center gap-2 min-w-0">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
                 <BookOpenText className="w-5 h-5 shrink-0" style={{ color: palette.primary }} />
                 <h2 className="text-xs sm:text-sm font-normal font-sans uppercase tracking-widest text-white truncate">
                   Selecione o Módulo
                 </h2>
+              </div>
+
+              {/* Barra de Pesquisa Expansível */}
+              <div className="relative flex items-center justify-end z-20 shrink-0">
+                <div 
+                  className={cn(
+                    "flex items-center bg-black/40 border transition-all duration-300 overflow-hidden rounded-full",
+                    isSearchExpanded 
+                      ? "w-[160px] sm:w-[200px] border-white/20 px-3 opacity-100" 
+                      : "w-8 h-8 sm:w-9 sm:h-9 border-transparent opacity-80 cursor-pointer justify-center hover:bg-white/10"
+                  )}
+                  onClick={() => !isSearchExpanded && setIsSearchExpanded(true)}
+                >
+                  <Search 
+                    className={cn(
+                      "text-white/70 shrink-0 cursor-pointer transition-all",
+                      isSearchExpanded ? "w-4 h-4 mr-2" : "w-4 h-4"
+                    )} 
+                    onClick={(e) => {
+                      if (isSearchExpanded) {
+                        e.stopPropagation();
+                        setIsSearchExpanded(false);
+                        setSearchTerm('');
+                      }
+                    }}
+                  />
+                  {isSearchExpanded && (
+                    <input
+                      autoFocus
+                      type="text"
+                      placeholder="Pesquisar..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full bg-transparent border-none outline-none text-[13px] text-white placeholder:text-white/40 py-1.5"
+                    />
+                  )}
+                </div>
               </div>
             </div>
             {/* Barra de progresso geral da área */}
@@ -570,7 +617,7 @@ const AprenderArea = () => {
                 </div>
 
                 <div className="w-full min-w-0 relative z-[2] flex flex-col">
-                  {itemsToRender.map((item, i) => {
+                  {filteredItems.map((item, i) => {
                     const isLeft = i % 2 === 0;
 
                     return (
@@ -589,18 +636,7 @@ const AprenderArea = () => {
                             onTouchStart={(item as any).onPrefetch}
                             className="relative shrink-0 w-[140px] xs:w-[155px] sm:w-[185px] md:w-[210px] h-[215px] xs:h-[235px] sm:h-[265px] md:h-[290px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
                           >
-                            {/* Medalhão de Milestone / Nó da Trilha Centralizado no Topo (Estável e Elegante) */}
-                            <div
-                              className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-30 flex items-center justify-center rounded-full w-8 h-8 sm:w-8.5 sm:h-8.5 border-2 border-white/70 text-white font-bold text-xs shadow-xl transition-transform duration-300 group-hover:scale-110"
-                              style={{
-                                backgroundColor: palette.primary,
-                                boxShadow: palette.nodeBoxShadow,
-                              }}
-                            >
-                              <span className="font-sans font-bold text-[11px] sm:text-xs">
-                                {item.ordemStr}
-                              </span>
-                            </div>
+
 
                             {/* ── CARTA 1 (Traseira/Fundo - Menor e mais escura) ── */}
                             <div
@@ -787,7 +823,7 @@ const AprenderArea = () => {
                                 )}
                               >
                                 <span
-                                  className="text-[9.5px] sm:text-[11px] font-normal uppercase tracking-wider"
+                                  className="text-[12px] sm:text-[14px] font-bold uppercase tracking-wider"
                                   style={{ color: palette.primary }}
                                 >
                                   {item.badgeLabel}
@@ -806,7 +842,7 @@ const AprenderArea = () => {
                         </div>
 
                         {/* Conector Serpenteante de Trilha em Zigue-Zague Conectando Suavemente de Deck a Deck */}
-                        {i < itemsToRender.length - 1 && (
+                        {i < filteredItems.length - 1 && (
                           <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-16 sm:h-20 -my-1.5 sm:-my-2 pointer-events-none z-[5] overflow-visible">
                             <svg
                               className="w-full h-full overflow-visible"

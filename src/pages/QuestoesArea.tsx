@@ -15,7 +15,7 @@ import {
   setCachedModuloData,
 } from '@/lib/aprenderAreaLoader';
 import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
-import { BookOpenText, GraduationCap, ListChecks, Layers, ArrowRight, Play, Check } from 'lucide-react';
+import { BookOpenText, GraduationCap, ListChecks, Layers, ArrowRight, Play, Check, Search } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
@@ -330,6 +330,15 @@ const QuestoesArea = () => {
     });
   }, [temasQuestoes, progressoLocal, slug, effectiveAreaName, area?.nome, modulosOrdenados, navigate]);
 
+  const filteredItems = useMemo(() => {
+    if (!searchTerm) return itemsToRender;
+    const term = searchTerm.toLowerCase();
+    return itemsToRender.filter(item => 
+      item.titulo.toLowerCase().includes(term) ||
+      (item.badgeLabel && item.badgeLabel.toLowerCase().includes(term))
+    );
+  }, [itemsToRender, searchTerm]);
+
   const totalQuestoesArea = useMemo(() => {
     return itemsToRender.reduce((acc, t) => acc + (t.displayTotal || 0), 0);
   }, [itemsToRender]);
@@ -396,11 +405,48 @@ const QuestoesArea = () => {
           <>
             {/* Top Bar Selecione o Módulo */}
             <div className="flex items-center justify-between mb-4 w-full min-w-0">
-              <div className="flex items-center gap-2 min-w-0">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
                 <BookOpenText className="w-5 h-5 shrink-0" style={{ color: palette.primary }} />
                 <h2 className="text-xs sm:text-sm font-normal font-sans uppercase tracking-widest text-white truncate">
                   Praticar por Tópico
                 </h2>
+              </div>
+
+              {/* Barra de Pesquisa Expansível */}
+              <div className="relative flex items-center justify-end z-20 shrink-0">
+                <div 
+                  className={cn(
+                    "flex items-center bg-black/40 border transition-all duration-300 overflow-hidden rounded-full",
+                    isSearchExpanded 
+                      ? "w-[160px] sm:w-[200px] border-white/20 px-3 opacity-100" 
+                      : "w-8 h-8 sm:w-9 sm:h-9 border-transparent opacity-80 cursor-pointer justify-center hover:bg-white/10"
+                  )}
+                  onClick={() => !isSearchExpanded && setIsSearchExpanded(true)}
+                >
+                  <Search 
+                    className={cn(
+                      "text-white/70 shrink-0 cursor-pointer transition-all",
+                      isSearchExpanded ? "w-4 h-4 mr-2" : "w-4 h-4"
+                    )} 
+                    onClick={(e) => {
+                      if (isSearchExpanded) {
+                        e.stopPropagation();
+                        setIsSearchExpanded(false);
+                        setSearchTerm('');
+                      }
+                    }}
+                  />
+                  {isSearchExpanded && (
+                    <input
+                      autoFocus
+                      type="text"
+                      placeholder="Pesquisar..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full bg-transparent border-none outline-none text-[13px] text-white placeholder:text-white/40 py-1.5"
+                    />
+                  )}
+                </div>
               </div>
             </div>
 
@@ -458,7 +504,7 @@ const QuestoesArea = () => {
                 </div>
 
                 <div className="w-full min-w-0 relative z-[2] flex flex-col">
-                  {itemsToRender.map((item, i) => {
+                  {filteredItems.map((item, i) => {
                     const isLeft = i % 2 === 0;
 
                     return (
@@ -679,7 +725,7 @@ const QuestoesArea = () => {
                                 )}
                               >
                                 <span
-                                  className="text-[9.5px] sm:text-[11px] font-normal uppercase tracking-wider"
+                                  className="text-[12px] sm:text-[14px] font-bold uppercase tracking-wider"
                                   style={{ color: palette.primary }}
                                 >
                                   {item.badgeLabel}
@@ -698,7 +744,7 @@ const QuestoesArea = () => {
                         </div>
 
                         {/* Conector Serpenteante de Trilha em Zigue-Zague Conectando Suavemente de Deck a Deck */}
-                        {i < itemsToRender.length - 1 && (
+                        {i < filteredItems.length - 1 && (
                           <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-16 sm:h-20 -my-1.5 sm:-my-2 pointer-events-none z-[5] overflow-visible">
                             <svg
                               className="w-full h-full overflow-visible"

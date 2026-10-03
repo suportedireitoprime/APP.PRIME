@@ -16,7 +16,7 @@ import {
   setCachedModuloData,
 } from '@/lib/aprenderAreaLoader';
 import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
-import { BookOpenText, GraduationCap, ListChecks, Layers, ArrowRight, Play } from 'lucide-react';
+import { BookOpenText, GraduationCap, ListChecks, Layers, ArrowRight, Play, Search } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
@@ -420,6 +420,15 @@ const FlashcardsArea = () => {
       };
     });
   }, [isFlash, temasFlashcards, modulosOrdenados, aulas, progresso, activeTab, area?.nome, officialFlashcardArea, effectiveAreaName, slug, navigate, data?.area, totalFlashcardsArea, user?.id, palette]);
+
+  const filteredItems = useMemo(() => {
+    if (!searchTerm) return itemsToRender;
+    const term = searchTerm.toLowerCase();
+    return itemsToRender.filter(item => 
+      item.titulo.toLowerCase().includes(term) ||
+      (item.badgeLabel && item.badgeLabel.toLowerCase().includes(term))
+    );
+  }, [itemsToRender, searchTerm]);
 
 
   // Capa oficial ilustrada da matéria
