@@ -33,7 +33,7 @@ const LIVROS_CATALOGADOS_REAIS: LivroReal[] = [
     titulo: 'O Espírito das Leis',
     autor: 'Montesquieu',
     categoria: 'Teoria do Estado',
-    capa: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.jpg',
+    capa: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.webp',
     sobre: 'A formulação clássica da separação dos Três Poderes (Executivo, Legislativo e Judiciário) e moderação política.',
   },
   {
@@ -41,7 +41,7 @@ const LIVROS_CATALOGADOS_REAIS: LivroReal[] = [
     titulo: 'Teoria Pura do Direito',
     autor: 'Hans Kelsen',
     categoria: 'Teoria do Direito',
-    capa: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg',
+    capa: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.webp',
     sobre: 'Obra fundamental da Teoria do Direito Positivo, a pirâmide de normas e o conceito da Norma Fundamental.',
   },
   {
@@ -49,7 +49,7 @@ const LIVROS_CATALOGADOS_REAIS: LivroReal[] = [
     titulo: 'A Luta pelo Direito',
     autor: 'Rudolf von Ihering',
     categoria: 'Filosofia do Direito',
-    capa: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_luta_pelo_direito_manual.jpg',
+    capa: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_luta_pelo_direito_manual.webp',
     sobre: 'O Direito não é mero conceito abstrato, mas uma conquista viva que exige defesa constante de quem o possui.',
   },
   {
@@ -57,7 +57,7 @@ const LIVROS_CATALOGADOS_REAIS: LivroReal[] = [
     titulo: 'Sobre a Liberdade',
     autor: 'John Stuart Mill',
     categoria: 'Filosofia Política',
-    capa: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/sobre_a_liberdade_manual.jpg',
+    capa: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/sobre_a_liberdade_manual.webp',
     sobre: 'Ensaio clássico sobre os limites legítimos do poder da sociedade e do Estado sobre a liberdade do indivíduo.',
   },
   {
@@ -65,7 +65,7 @@ const LIVROS_CATALOGADOS_REAIS: LivroReal[] = [
     titulo: 'Dos Delitos e das Penas',
     autor: 'Cesare Beccaria',
     categoria: 'Direito Penal Clássico',
-    capa: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_luta_pelo_direito_manual.jpg',
+    capa: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_luta_pelo_direito_manual.webp',
     sobre: 'Obra fundadora do Direito Penal moderno, proporcionalidade das sanções, abolição da tortura e clareza das leis.',
   },
   {
@@ -73,7 +73,7 @@ const LIVROS_CATALOGADOS_REAIS: LivroReal[] = [
     titulo: 'A Arte da Guerra',
     autor: 'Sun Tzu',
     categoria: 'Estratégia & Liderança',
-    capa: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_arte_da_guerra_manual.jpg',
+    capa: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_arte_da_guerra_manual.webp',
     sobre: 'Tratado milenar sobre estratégia, antecipação, disciplina, persuasão e resolução inteligente de conflitos.',
   },
   {
@@ -81,7 +81,7 @@ const LIVROS_CATALOGADOS_REAIS: LivroReal[] = [
     titulo: 'O Príncipe',
     autor: 'Nicolau Maquiavel',
     categoria: 'Ciência Política',
-    capa: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.jpg',
+    capa: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.webp',
     sobre: 'Análise realista sobre conquista, conservação e exercício do poder pelo governante.',
   },
   {
@@ -89,7 +89,7 @@ const LIVROS_CATALOGADOS_REAIS: LivroReal[] = [
     titulo: 'O Leviatã',
     autor: 'Thomas Hobbes',
     categoria: 'Filosofia Política',
-    capa: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_luta_pelo_direito_manual.jpg',
+    capa: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_luta_pelo_direito_manual.webp',
     sobre: 'O pacto social, o estado de natureza humana e a necessidade de um poder soberano para manter a ordem.',
   },
   {
@@ -97,7 +97,7 @@ const LIVROS_CATALOGADOS_REAIS: LivroReal[] = [
     titulo: 'O Mundo Assombrado pelos Demônios',
     autor: 'Carl Sagan',
     categoria: 'Pensamento Crítico',
-    capa: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_mundo_assombrado_pelos_demonios_manual.jpg',
+    capa: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_mundo_assombrado_pelos_demonios_manual.webp',
     sobre: 'Ciência como vela na escuridão, ceticismo metodológico e detecção de falácias argumentativas.',
   },
 ];
@@ -131,7 +131,7 @@ export const MeExpliqueLivrosView: React.FC<Props> = ({ onVoltar }) => {
             titulo: r.livro || 'Sem título',
             autor: r.autor || 'Autor Clássico',
             categoria: r.area || 'Clássicos do Direito',
-            capa: r.imagem || 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.jpg',
+            capa: r.imagem || 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.webp',
             sobre: r.sobre || 'Obra clássica essencial para compreensão do pensamento jurídico.',
           }));
 
@@ -283,7 +283,7 @@ export const MeExpliqueLivrosView: React.FC<Props> = ({ onVoltar }) => {
                     onError={(e) => {
                       // Fallback elegante se a imagem falhar
                       (e.currentTarget as HTMLImageElement).src =
-                        'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.jpg';
+                        'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.webp';
                     }}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
@@ -330,3 +330,4 @@ export const MeExpliqueLivrosView: React.FC<Props> = ({ onVoltar }) => {
     </div>
   );
 };
+

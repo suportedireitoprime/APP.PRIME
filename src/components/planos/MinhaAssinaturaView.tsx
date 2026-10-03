@@ -96,7 +96,7 @@ export default function MinhaAssinaturaView({ plano, expiresAt, startedAt, sourc
   const isMensal = /mensal|month/i.test(plano ?? '');
   const isApple = source === 'apple' || Capacitor.getPlatform() === 'ios';
   
-  const imgCapa = isVitalicio ? '/vitalicio_premium_v2.jpg' : (isAnual ? '/anual_premium.webp' : '/mensal_premium.webp');
+  const imgCapa = isVitalicio ? '/vitalicio_premium_v2.webp' : (isAnual ? '/anual_premium.webp' : '/mensal_premium.webp');
 
   const preco = isAnual ? (isApple ? 'R$ 238,80/ano' : 'R$ 119.90/ano') : 'R$ 29,90/mês';
   const equivalente = isAnual ? (isApple ? 'Equivalente a R$ 19,90/mês' : 'Equivalente a R$ 16,66/mês') : null;
@@ -258,4 +258,5 @@ function InfoLine({
     </div>
   );
 }
+
 

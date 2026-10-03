@@ -296,19 +296,19 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
           let coverImage = null;
           if (item.id === 'cdc') coverImage = '/assets/cdc-girl.webp';
           else if (item.id === 'clt') coverImage = '/assets/cdc-worker.webp';
-          else if (item.id === 'cpp') coverImage = '/assets/cpp-court.png';
+          else if (item.id === 'cpp') coverImage = '/assets/cpp-court.webp';
           else if (item.id === 'cpc') coverImage = '/assets/cpc-lawyer.webp';
           else if (item.id === 'cc') coverImage = '/assets/cc-couple.webp';
           else if (item.id === 'cf88') coverImage = '/assets/cf88-cover.webp';
-          else if (item.id === 'ctb') coverImage = '/assets/ctb-traffic.png';
+          else if (item.id === 'ctb') coverImage = '/assets/ctb-traffic.webp';
           else if (['cp', 'lep'].includes(item.id)) coverImage = '/assets/homem-preso-novo.webp';
-          else if (item.id === 'ctn') coverImage = '/assets/ctn-taxes.png';
-          else if (item.id === 'eca') coverImage = '/assets/eca-kids.png';
+          else if (item.id === 'ctn') coverImage = '/assets/ctn-taxes.webp';
+          else if (item.id === 'eca') coverImage = '/assets/eca-kids.webp';
           else if (item.id === 'eoab') coverImage = '/assets/eoab-woman-fixed.webp';
           else if (item.id === 'epd') coverImage = '/assets/epd-wheelchair.webp';
           else if (item.id === 'ce') coverImage = '/assets/ce-vote.webp';
-          else if (item.id === 'eir') coverImage = '/assets/eir-woman.png';
-          else if (item.id === 'ei') coverImage = '/assets/ei-idoso.png';
+          else if (item.id === 'eir') coverImage = '/assets/eir-woman.webp';
+          else if (item.id === 'ei') coverImage = '/assets/ei-idoso.webp';
           else if (item.id === 'eind') coverImage = '/assets/eind-indio.png';
 
           return (
@@ -381,3 +381,4 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
 };
 
 export default memo(HomeEmAltaCarousel);
+

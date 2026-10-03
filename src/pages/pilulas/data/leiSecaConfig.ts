@@ -19,7 +19,7 @@ export const CONFIG_MAP: Record<LeiSecaSlug, LeiConfig> = {
     slug: 'cp',
     title: 'Código Penal',
     subtitle: 'Ouça a explicação dos artigos penais',
-    cover: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg'),
+    cover: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.webp'),
     colorClasses: 'bg-[#FF3B30]/15 text-[#FF3B30]',
     textColorClass: 'text-[#FF3B30]',
     progressColorClass: 'bg-[#FF3B30]',
@@ -71,3 +71,4 @@ export const CONFIG_MAP: Record<LeiSecaSlug, LeiConfig> = {
     inputFocusClass: 'focus:border-orange-500/50'
   }
 };
+

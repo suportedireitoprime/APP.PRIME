@@ -27,7 +27,7 @@ export default function ResumosJuridicosTemas() {
   const navigate = useNavigate();
   
   const areaCover = useMemo(() => {
-    return getAreaCover(decodedArea)?.cover || "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg";
+    return getAreaCover(decodedArea)?.cover || "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.webp";
   }, [decodedArea]);
 
   const palette = useMemo(() => getAreaThemePalette(decodedArea), [decodedArea]);
@@ -533,3 +533,4 @@ export default function ResumosJuridicosTemas() {
     </div>
   );
 }
+

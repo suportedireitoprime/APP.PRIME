@@ -1,4 +1,4 @@
-import coverCpArtigos from '@/assets/covers/cp_artigos_v2.jpg';
+import coverCpArtigos from '@/assets/covers/cp_artigos_v2.webp';
 
 export interface SubtemaItem {
   id: string;
@@ -58,3 +58,4 @@ export async function getResumosCatalog(): Promise<AreaItem[]> {
 
   return [];
 }
+

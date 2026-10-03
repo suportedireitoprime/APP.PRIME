@@ -17,7 +17,7 @@ import cf88 from '@/assets/lei-cover-cf88.webp';
 import cc from '@/assets/lei-cover-cc.webp';
 import clt from '@/assets/lei-cover-clt.webp';
 import cdc from '@/assets/lei-cover-cdc.webp';
-import cpp from '@/assets/lei-cover-cpp.png';
+import cpp from '@/assets/lei-cover-cpp.webp';
 import defaultCover from '@/assets/lei-cover-default.webp';
 // Thematic covers per estatuto/lei — mantêm o brasão da República ao fundo.
 import eca from '@/assets/lei-cover-eca.webp';
@@ -27,7 +27,7 @@ import eir from '@/assets/lei-cover-eir.webp';
 import ec from '@/assets/lei-cover-ec.webp';
 import ed from '@/assets/lei-cover-ed.webp';
 import eoab from '@/assets/lei-cover-eoab.webp';
-import ctn from '@/assets/lei-cover-ctn.png';
+import ctn from '@/assets/lei-cover-ctn.webp';
 
 const isNative =
   typeof window !== 'undefined' && Capacitor.isNativePlatform();
@@ -60,7 +60,7 @@ const CDN_WARMUP_URLS: readonly string[] = [
 ];
 
 export const PILULAS_COVERS: readonly string[] = [
-  'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg',
+  'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.webp',
   '/pilulas/cf_portrait.webp',
   '/pilulas/cc_portrait.webp',
   '/pilulas/cpp_portrait.webp',
@@ -76,11 +76,11 @@ export const PILULAS_COVERS: readonly string[] = [
   '/pilulas/ministros/fux.webp',
   '/pilulas/ministros/marques.webp',
   '/pilulas/ministros/barroso.webp',
-  'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_luta_pelo_direito_manual.jpg',
-  'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/sobre_a_liberdade_manual.jpg',
-  'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_arte_da_guerra_manual.jpg',
-  'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.jpg',
-  'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_mundo_assombrado_pelos_demonios_manual.jpg'
+  'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_luta_pelo_direito_manual.webp',
+  'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/sobre_a_liberdade_manual.webp',
+  'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_arte_da_guerra_manual.webp',
+  'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.webp',
+  'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_mundo_assombrado_pelos_demonios_manual.webp'
 ];
 
 type IdleWindow = Window & {
@@ -130,3 +130,4 @@ export function warmCoverCache() {
     }
   });
 }
+

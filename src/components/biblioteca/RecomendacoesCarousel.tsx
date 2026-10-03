@@ -22,11 +22,11 @@ const shuffle = <T,>(arr: T[]): T[] => {
   return copy;
 };
 
-import coverCpArtigos from '@/assets/covers/cp_artigos_v2.jpg';
-import coverSobreALiberdade from '@/assets/covers/sobre_a_liberdade_manual.jpg';
-import coverOEspiritoDasLeis from '@/assets/covers/o_espirito_das_leis_manual.jpg';
-import coverAArteDaGuerra from '@/assets/covers/a_arte_da_guerra_manual.jpg';
-import coverALutaPeloDireito from '@/assets/covers/a_luta_pelo_direito_manual.jpg';
+import coverCpArtigos from '@/assets/covers/cp_artigos_v2.webp';
+import coverSobreALiberdade from '@/assets/covers/sobre_a_liberdade_manual.webp';
+import coverOEspiritoDasLeis from '@/assets/covers/o_espirito_das_leis_manual.webp';
+import coverAArteDaGuerra from '@/assets/covers/a_arte_da_guerra_manual.webp';
+import coverALutaPeloDireito from '@/assets/covers/a_luta_pelo_direito_manual.webp';
 
 const FALLBACK_CLASSICOS: LivroNormalizado[] = [
   {
@@ -626,3 +626,4 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
 };
 
 export default memo(RecomendacoesCarousel);
+

@@ -66,6 +66,7 @@ export function styleForArea(area: string): { icon: LucideIcon; color: string } 
   return { icon: FileText, color: "#e5c34a" };
 }
 
-import coverCpArtigos from '@/assets/covers/cp_artigos_v2.jpg';
+import coverCpArtigos from '@/assets/covers/cp_artigos_v2.webp';
 
 export const CAPA_PADRAO_RESUMOS = coverCpArtigos;
+
