@@ -300,6 +300,7 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
           else if (item.id === 'cpc') coverImage = '/assets/cpc-lawyer.webp';
           else if (item.id === 'cc') coverImage = '/assets/cc-couple.webp';
           else if (item.id === 'cf88') coverImage = '/assets/cf88-cover.webp';
+          else if (item.id === 'ctb') coverImage = '/assets/ctb-traffic.jpg';
           else if (['cp', 'lep'].includes(item.id)) coverImage = '/assets/homem-preso-novo.webp';
           else if (item.id === 'ctn') coverImage = '/assets/ctn-taxes.png';
           else if (item.id === 'eca') coverImage = '/assets/eca-kids.png';
