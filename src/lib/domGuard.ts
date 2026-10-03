@@ -15,7 +15,7 @@ if (typeof window !== 'undefined' && typeof Node === 'function' && Node.prototyp
       }
       return child;
     }
-    return originalRemoveChild.apply(this, arguments as any) as T;
+    return originalRemoveChild.call(this, child) as T;
   };
 
   const originalInsertBefore = Node.prototype.insertBefore;
@@ -26,7 +26,7 @@ if (typeof window !== 'undefined' && typeof Node === 'function' && Node.prototyp
       }
       return newNode;
     }
-    return originalInsertBefore.apply(this, arguments as any) as T;
+    return originalInsertBefore.call(this, newNode, referenceNode) as T;
   };
 }
 

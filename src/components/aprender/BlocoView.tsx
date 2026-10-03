@@ -87,7 +87,7 @@ const MenuSuspensoAccordion = ({ items }: { items: any[] }) => {
                     ...badgeComponents
                   }}
                 >
-                  {normalizarMarkdown(item.conteudo || '').replace(/[\uFFFD\u26A0\uFE0F🚨💡📌🛑📝]/g, '')}
+                  {normalizarMarkdown(item.conteudo || '').replace(/(?:[\uFFFD\u26A0🚨💡📌🛑📝]|\uFE0F)/gu, '')}
                 </ReactMarkdown>
               </div>
             </AccordionContent>

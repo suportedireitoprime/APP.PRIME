@@ -655,6 +655,7 @@ export default function RadarConcursos() {
         </section>
 
         {/* 4. CONFIGURAÇÃO DE NOTIFICAÇÕES COMPACTA NO RODAPÉ - OCULTADA TEMPORARIAMENTE */}
+        {/* eslint-disable-next-line no-constant-binary-expression */}
         {false && (
         <section className="bg-card/70 border border-emerald-500/25 rounded-3xl p-4 sm:p-5 shadow-md space-y-3.5 mt-12 sm:mt-16 relative">
           <img src={horusAsset} alt="Hórus" className="absolute -top-6 right-2 sm:-top-8 sm:right-6 w-20 h-20 sm:w-24 sm:h-24 drop-shadow-2xl z-20 pointer-events-none" />

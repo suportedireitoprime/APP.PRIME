@@ -50,7 +50,7 @@ export type LinhaLetra = { texto: string; secao: boolean };
 export function removerEmojis(texto: string): string {
   return texto
     .replace(
-      /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{1F1E6}-\u{1F1FF}\u{FE00}-\u{FE0F}\u{200D}\u{2190}-\u{21FF}\u{2300}-\u{23FF}]/gu,
+      /(?:[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{1F1E6}-\u{1F1FF}\u{2190}-\u{21FF}\u{2300}-\u{23FF}]|[\u{FE00}-\u{FE0F}]|\u{200D})/gu,
       ""
     )
     .replace(/\s{2,}/g, " ")
