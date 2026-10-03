@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Loader2, Search, Send, Ban, Phone } from 'lucide-react';
+import { Loader2, Search, Send, Ban, Phone, AlertTriangle, Wrench } from 'lucide-react';
 import { toast } from 'sonner';
 import {  formatDistanceToNow  } from "@/lib/dateUtils";
 
@@ -32,13 +32,17 @@ export function HorusConversasTab() {
     const list = usersData || [];
     if (list.length) {
       const phones = list.map((u: any) => u.phone_e164);
-      const { data: counts } = await supabase.from('horus_conversations').select('phone_e164, created_at, content').in('phone_e164', phones).order('created_at', { ascending: false }).limit(1000);
+      const [{ data: counts }, { data: errors }] = await Promise.all([
+        supabase.from('horus_conversations').select('phone_e164, created_at, content').in('phone_e164', phones).order('created_at', { ascending: false }).limit(1000),
+        supabase.from('horus_outbound_log').select('phone_e164, status').eq('status', 'failed').in('phone_e164', phones)
+      ]);
       const byPhone: Record<string, { count: number; last?: any }> = {};
       (counts || []).forEach((c: any) => {
         if (!byPhone[c.phone_e164]) byPhone[c.phone_e164] = { count: 0, last: c };
         byPhone[c.phone_e164].count++;
       });
-      setUsers(list.map((u: any) => ({ ...u, ...(byPhone[u.phone_e164] || { count: 0 }) })));
+      const errSet = new Set((errors || []).map(e => e.phone_e164));
+      setUsers(list.map((u: any) => ({ ...u, ...(byPhone[u.phone_e164] || { count: 0 }), has_error: errSet.has(u.phone_e164) })));
     } else setUsers([]);
     setLoading(false);
   }
@@ -69,6 +73,17 @@ export function HorusConversasTab() {
     if (open?.id === u.id) setOpen({ ...u, blocked: !u.blocked });
   }
 
+  async function autoHeal(u: User) {
+    let newPhone = u.phone_e164;
+    if (newPhone.length === 10 || newPhone.length === 11) {
+      newPhone = '55' + newPhone;
+    }
+    const { error } = await supabase.from('horus_whatsapp_users').update({ phone_e164: newPhone }).eq('id', u.id);
+    if (error) { toast.error(error.message); return; }
+    toast.success('Número corrigido para E.164!');
+    load();
+  }
+
   const filtered = users.filter((u) => !query || u.phone_e164.includes(query));
 
   if (loading) return <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin" /></div>;
@@ -90,10 +105,16 @@ export function HorusConversasTab() {
               <div className="min-w-0 flex-1">
                 <p className="font-display text-sm flex items-center gap-2">
                   <span>{u.display_name ? u.display_name : `+${u.phone_e164}`}</span>
+                  {u.has_error && <AlertTriangle className="w-4 h-4 text-destructive" title="Falha de Envio (Evolution)" />}
                   {u.linked_user_id ? (
                     <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-500">Cadastrado</span>
                   ) : (
                     <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-500">Sem cadastro</span>
+                  )}
+                  {u.phone_e164 && (u.phone_e164.length === 10 || u.phone_e164.length === 11) && (
+                    <Button variant="outline" size="sm" className="h-5 text-[10px] px-2 py-0 ml-2" onClick={(e) => { e.stopPropagation(); autoHeal(u); }}>
+                      <Wrench className="w-3 h-3 mr-1" /> Auto-Heal
+                    </Button>
                   )}
                 </p>
                 {u.display_name && <p className="font-body text-[10px] text-muted-foreground">+{u.phone_e164}</p>}

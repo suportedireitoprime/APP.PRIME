@@ -588,7 +588,7 @@ async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessa
     const pedido = detectarPedidoMaterial(parsed.text);
     const escolha = pedido?.tipo ?? detectarEscolha(parsed.text);
     if (escolha) {
-      const hist = await loadHistory(admin, parsed.from, 8);
+      const hist = await loadHistory(admin, parsed.from, 20);
       let idxOferta = -1;
       for (let i = hist.length - 1; i >= 0; i--) {
         if (hist[i].role === "assistant" && textoTemOferta(hist[i].content)) { idxOferta = i; break; }
@@ -910,7 +910,7 @@ function pickAgent(agents: any[], text: string, isLinked: boolean) {
   return fallback || agents[0];
 }
 
-async function loadHistory(admin: any, phone: string, limit: number = 8) {
+async function loadHistory(admin: any, phone: string, limit: number = 20) {
   const { data } = await admin
     .from("horus_conversations")
     .select("role, content, created_at")
