@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Newspaper, Speech, Bird, MessageSquare } from 'lucide-react';
+import { Newspaper, Speech, Bird, Gavel } from 'lucide-react';
 import { useShortcutBadges } from '@/hooks/useShortcutBadges';
 import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
 import { haptic } from '@/lib/nativeHaptics';
@@ -9,7 +9,7 @@ const SHORTCUT_ITEMS = [
   { label: 'Blog',        icon: Newspaper,             to: '/blog',             color: '#FACC15', badgeColor: null, badgeKey: null, prefetch: 'blog' as PrefetchKey },
   { label: 'Me Explique', icon: Speech,                to: '/me-explique',      color: '#F97316', badgeColor: null, badgeKey: null, prefetch: 'meExplique' as PrefetchKey },
   { label: 'Assistente',  icon: Bird,                  to: '/assistente-horus', color: '#A855F7', badgeColor: null, badgeKey: null, prefetch: 'horus' as PrefetchKey },
-  { label: 'Chat', icon: MessageSquare,       to: '/chat-juridico',    color: '#38BDF8', badgeColor: null, badgeKey: null, prefetch: 'chatJuridico' as PrefetchKey },
+  { label: 'Ferramentas', icon: Gavel,                 to: '/ferramentas',      color: '#38BDF8', badgeColor: null, badgeKey: null, prefetch: 'ferramentas' as PrefetchKey },
 ];
 
 const HomeActionShortcuts = () => {
