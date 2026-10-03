@@ -121,7 +121,7 @@ export default function AdminPush() {
       }
 
       return {
-        title: `[TEMPLATE] ${item.name}`,
+        title: item.name,
         body: item.desc,
         status: "scheduled",
         next_run_at: d.toISOString()
@@ -352,7 +352,7 @@ export default function AdminPush() {
                   </Select>
                 </div>
                 
-                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none snap-x">
+                <div className="flex gap-2 overflow-x-hidden pb-2 snap-x max-w-full justify-start md:justify-center">
                   {Array.from({ length: 7 }).map((_, i) => {
                     const d = new Date();
                     d.setDate(d.getDate() - i);
@@ -393,9 +393,36 @@ export default function AdminPush() {
               {/* TIMELINE DO DIA */}
               {agendadosDoDia.length > 0 && (
                 <div className="space-y-4 pt-2">
-                  <h2 className="text-sm uppercase tracking-wider font-bold text-muted-foreground flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-primary" /> Agendados {isToday ? 'para Hoje' : ''}
-                  </h2>
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-sm uppercase tracking-wider font-bold text-muted-foreground flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-primary" /> Agendados {isToday ? 'para Hoje' : ''}
+                    </h2>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="h-7 text-xs border-primary/50 text-primary hover:bg-primary/10"
+                      onClick={() => {
+                        toast.success("Teste iniciado! Disparando pushes a cada 1 minuto no celular admin...");
+                        
+                        const sorted = [...agendadosDoDia].sort((a,b) => (a.next_run_at || "").localeCompare(b.next_run_at || ""));
+                        
+                        sorted.forEach((c, i) => {
+                          setTimeout(async () => {
+                            await supabase.functions.invoke('push-testar-admin', {
+                              body: {
+                                automation_key: "template_test",
+                                title: c.title,
+                                body: c.body
+                              }
+                            });
+                          }, i * 60000); // 1 minuto de intervalo entre cada
+                        });
+                      }}
+                    >
+                      <Bot className="w-3.5 h-3.5 mr-1.5" />
+                      Testar Disparos
+                    </Button>
+                  </div>
                   <div className="relative border-l-2 border-primary/20 ml-4 space-y-6 py-2">
                     {agendadosDoDia.map(c => (
                       <div key={c.id} className="relative pl-6">
@@ -411,7 +438,7 @@ export default function AdminPush() {
                             </span>
                             <Badge variant="outline" className="text-primary border-primary/30 text-[10px] h-5 bg-primary/10">Agendado</Badge>
                           </div>
-                          <h3 className="font-semibold text-foreground text-base pr-2">{c.title}</h3>
+                          <h3 className="font-semibold text-foreground text-base pr-2 uppercase">{c.title.replace('[TEMPLATE] ', '')}</h3>
                           <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">{c.body}</p>
                         </Card>
                       </div>
@@ -452,7 +479,7 @@ export default function AdminPush() {
                           </span>
                           {getStatusBadge(c.status)}
                         </div>
-                        <h3 className="font-semibold text-foreground text-base pr-2">{c.title}</h3>
+                        <h3 className="font-semibold text-foreground text-base pr-2 uppercase">{c.title.replace('[TEMPLATE] ', '')}</h3>
                         <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">{c.body}</p>
                       </Card>
                     </div>

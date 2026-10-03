@@ -349,12 +349,9 @@ Deno.serve(async (req) => {
               sound: "default",
               default_vibrate_timings: true,
               default_light_settings: true,
-              // Ícone monocromático (V branco) e cor de accent amarela (#FFD500)
-              // — o Android pinta o ícone pequeno na status bar com essa cor.
-              // O recurso `notification_icon` é instalado pelo workflow Android
-              // (step "FCM default notification icon + color").
-              icon: "notification_icon",
-              color: "#FFD500",
+              // Ícone monocromático (balança da justiça) e cor vermelha
+              icon: "ic_stat_justice",
+              color: "#E60023",
               ...(payload.image ? { image: payload.image } : {}),
             },
           };
