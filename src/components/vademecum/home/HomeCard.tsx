@@ -75,8 +75,8 @@ const HomeCardImpl = ({
       </div>
     )}
     
-    <div className="flex items-center gap-2.5 w-full min-w-0 z-10">
-      <div className="relative shrink-0 flex items-center justify-center p-1">
+    <div className="flex flex-col items-start gap-3 w-full min-w-0 z-10 h-full justify-between">
+      <div className="relative shrink-0 flex items-start justify-start p-1">
         <Icon
           className={`relative transition-transform duration-300 group-hover:scale-110 group-active:opacity-70 group-active:-translate-y-1 ${iconClassName || 'w-7 h-7 xs:w-8 xs:h-8'}`}
           style={{ color: color, ...iconStyle }}
@@ -84,7 +84,7 @@ const HomeCardImpl = ({
         />
       </div>
       
-      <div className="flex-1 min-w-0 flex flex-col justify-center">
+      <div className="flex-1 min-w-0 flex flex-col justify-end w-full">
         <p className={titleClassName || `font-display text-[14.5px] xs:text-[16px] sm:text-[17px] font-bold leading-tight tracking-tighter ${solidColor ? 'text-foreground' : 'text-foreground'}`}>
           {label}
         </p>
