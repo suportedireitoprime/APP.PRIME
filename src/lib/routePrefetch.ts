@@ -13,6 +13,7 @@ export const routePrefetch = {
   meuEspaco: () => import("@/pages/MeuEspaco.tsx"),
   biblioteca: () => import("@/pages/Bibliotecas.tsx"),
   assistenteHorus: () => import("@/pages/AssistenteHorus.tsx"),
+  chatJuridico: () => import("@/pages/ChatJuridico.tsx"),
   resumosJuridicos: () => import("@/pages/resumos-juridicos/ResumosJuridicosAreas.tsx"),
   modoOffline: () => import("@/pages/ModoOffline.tsx"),
   tematica: () => import("@/pages/TematicaJuridica.tsx"),
