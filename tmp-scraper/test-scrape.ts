@@ -127,7 +127,7 @@ function stripPlanaltoAnnotations(s: string): string {
 }
 
 function removePlanaltoAnnotationBlocks(s: string): string {
-  return s.replace(PLANALTO_NOTE_BLOCK_RE, (match) => match.replace(/\n/g, " "));
+  return s.replace(PLANALTO_NOTE_BLOCK_RE, " ");
 }
 
 // Normaliza rótulo de hierarquia para CAIXA ALTA no campo `numero`
@@ -249,7 +249,7 @@ function extractBlocos(html: string): Bloco[] {
   // Em páginas como a Lei de Drogas, o HTML quebra "(Redação dada pela\nLei nº...)"
   // em duas linhas; se não limpar aqui, o parser confunde a anotação com o
   // nome oficial do CAPÍTULO/SEÇÃO.
-  body = removePlanaltoAnnotationBlocks(body);
+  // body = removePlanaltoAnnotationBlocks(body);
 
   const linhasBrutas = body
     .split(/\n/)

@@ -9,7 +9,7 @@ const SHORTCUT_ITEMS = [
   { label: 'Aprender',    icon: GraduationCap,         to: '/aprender',         color: '#FACC15', badgeColor: null, badgeKey: null, prefetch: 'aprender' as PrefetchKey },
   { label: 'Me Explique', icon: Speech,                to: '/me-explique',      color: '#F97316', badgeColor: null, badgeKey: null, prefetch: 'meExplique' as PrefetchKey },
   { label: 'Assistente',  icon: Bird,                  to: '/assistente-horus', color: '#A855F7', badgeColor: null, badgeKey: null, prefetch: 'horus' as PrefetchKey },
-  { label: 'Chat Jurídico', icon: MessageSquare,       to: '/chat-juridico',    color: '#38BDF8', badgeColor: null, badgeKey: null, prefetch: 'chatJuridico' as PrefetchKey },
+  { label: 'Chat', icon: MessageSquare,       to: '/chat-juridico',    color: '#38BDF8', badgeColor: null, badgeKey: null, prefetch: 'chatJuridico' as PrefetchKey },
 ];
 
 const HomeActionShortcuts = () => {

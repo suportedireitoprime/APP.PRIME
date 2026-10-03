@@ -252,7 +252,7 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
       clearInterval(interval);
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [activeIndex, displayItems.length, scrollToIndex]);
+  }, [activeIndex, displayItems.length, scrollToIndex, isReady]);
 
   return (
     <section className="space-y-3">
