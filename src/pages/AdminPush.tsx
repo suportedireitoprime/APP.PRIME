@@ -206,8 +206,14 @@ export default function AdminPush() {
 
         {view === 'dashboard' && (() => {
           const hojeStr = new Date().toISOString().split('T')[0];
-          const agendadosHoje = campaigns.filter(c => c.status === 'scheduled' && c.next_run_at?.startsWith(hojeStr));
-          const historicoGeral = campaigns.filter(c => !(c.status === 'scheduled' && c.next_run_at?.startsWith(hojeStr)));
+          const isToday = selectedDate === hojeStr;
+          
+          const agendadosDoDia = campaigns.filter(c => c.status === 'scheduled' && c.next_run_at?.startsWith(selectedDate));
+          const historicoDoDia = campaigns.filter(c => {
+            const isAgendado = c.status === 'scheduled' && c.next_run_at?.startsWith(selectedDate);
+            const dateToCompare = c.next_run_at || c.created_at;
+            return dateToCompare.startsWith(selectedDate) && !isAgendado;
+          });
 
           return (
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -264,14 +270,14 @@ export default function AdminPush() {
                 ))}
               </div>
 
-              {/* TIMELINE HOJE */}
-              {agendadosHoje.length > 0 && (
+              {/* TIMELINE DO DIA */}
+              {agendadosDoDia.length > 0 && (
                 <div className="space-y-4 pt-2">
                   <h2 className="text-sm uppercase tracking-wider font-bold text-muted-foreground flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-primary" /> Agendados para Hoje
+                    <Clock className="w-4 h-4 text-primary" /> Agendados {isToday ? 'para Hoje' : ''}
                   </h2>
                   <div className="relative border-l-2 border-primary/20 ml-4 space-y-6 py-2">
-                    {agendadosHoje.map(c => (
+                    {agendadosDoDia.map(c => (
                       <div key={c.id} className="relative pl-6">
                         <div className="absolute w-3 h-3 bg-primary rounded-full -left-[7px] top-1.5 shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
                         <Card 
@@ -306,13 +312,13 @@ export default function AdminPush() {
                 </div>
 
                 <div className="relative border-l-2 border-border/20 ml-4 space-y-6 py-2">
-                  {historicoGeral.length === 0 && !loading && (
+                  {historicoDoDia.length === 0 && !loading && (
                     <div className="text-center py-10 text-muted-foreground text-sm border border-dashed border-border/50 rounded-xl bg-zinc-900/10 ml-4">
-                      Nenhum histórico encontrado
+                      Nenhum histórico encontrado para este dia
                     </div>
                   )}
 
-                  {historicoGeral.map(c => (
+                  {historicoDoDia.map(c => (
                     <div key={c.id} className="relative pl-6">
                       <div className="absolute w-3 h-3 bg-border rounded-full -left-[7px] top-1.5" />
                       <Card 
