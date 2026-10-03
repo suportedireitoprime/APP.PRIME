@@ -115,16 +115,8 @@ const IndexDesktop = () => {
 
   return (
     <div className="h-dvh bg-zinc-950 flex flex-col relative overflow-hidden">
-      <div className="absolute inset-0 z-0 opacity-50 pointer-events-none">
-        <ShapeGrid 
-          speed={0.5} 
-          squareSize={40}
-          direction='diagonal'
-          borderColor='rgba(255, 255, 255, 0.05)'
-          hoverFillColor='rgba(255, 255, 255, 0.1)'
-          shape='square'
-          hoverTrailAmount={5}
-        />
+      <div className="absolute inset-0 z-0">
+        <ShapeGrid />
       </div>
       <div className="relative z-10 flex h-full w-full min-h-0 overflow-hidden">
         <DesktopOnboardingOverlay />

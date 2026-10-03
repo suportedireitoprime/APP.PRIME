@@ -82,16 +82,8 @@ const VadeMecum = () => {
   if (isDesktop) {
     return (
       <div className="min-h-dvh bg-hero-panel flex flex-col theme-vademecum relative overflow-hidden">
-        <div className="fixed inset-0 pointer-events-none z-0">
-          <ShapeGrid 
-            speed={0.5} 
-            squareSize={40}
-            direction="diagonal"
-            borderColor="rgba(255, 255, 255, 0.08)"
-            hoverFillColor="rgba(255, 255, 255, 0.12)"
-            shape="square"
-            hoverTrailAmount={5}
-          />
+        <div className="fixed inset-0 z-0">
+          <ShapeGrid />
         </div>
         <div className="flex flex-1 min-h-0 relative z-10">
           <DesktopSidebar 
