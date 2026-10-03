@@ -122,7 +122,7 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
                 <div>
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <Zap className="w-4 h-4 text-emerald-400 fill-emerald-400" />
-                    <h3 className="font-display font-black text-emerald-400 text-base uppercase tracking-wider">Anual no PIX</h3>
+                    <h3 className="font-display font-black text-emerald-400 text-base uppercase tracking-wider">Promoção Vitalícia</h3>
                   </div>
                   <p className="font-body text-[11px] font-semibold text-muted-foreground line-through">De R$ 199,90</p>
                 </div>
@@ -139,7 +139,7 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
               </p>
               
               <div className="w-full pt-1 flex items-center justify-center">
-                <TypewriterText messages={["Acesso anual completo no PIX", "Desconto exclusivo de boas-vindas", "Economize R$ 50 no PIX"]} className="text-[11px] font-bold text-emerald-400" />
+                <TypewriterText messages={["Acesso para sempre com desconto", "Desconto exclusivo de boas-vindas", "Economize R$ 50 no PIX"]} className="text-[11px] font-bold text-emerald-400" />
               </div>
             </button>
           )}
@@ -319,4 +319,5 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
     </div>
   );
 }
+
 

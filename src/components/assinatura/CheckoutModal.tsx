@@ -924,7 +924,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                           >
                           {[1,2,3,4,5,6,7,8,9,10,11,12].map(num => {
                             // Cálculo sem juros no display (absorvidos pela operação)
-                            const totalWithTax = 199.90;
+                            const totalWithTax = activePlan === 'vitalicio' ? 249.90 : 119.90;
                             const installmentValue = totalWithTax / num;
 
                             return (
@@ -1029,3 +1029,4 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     </Dialog>
   );
 };
+

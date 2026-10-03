@@ -392,7 +392,7 @@ const PremiumGate = ({
   // Mensalidade do plano anual — a App Store exige o patamar de R$ 19,90.
   const isIOS = useMemo(() => Capacitor.getPlatform() === 'ios', []);
   const [mensalidade, setMensalidade] = useState(isIOS ? '19,90' : '16,66');
-  const [totalAnual, setTotalAnual] = useState(isIOS ? 'total R$ 238,80/ano' : 'total R$ 199,90/ano');
+  const [totalAnual, setTotalAnual] = useState(isIOS ? 'total R$ 238,80/ano' : 'total R$ 119,90/ano');
   const [economia, setEconomia] = useState(isIOS ? '33%' : '44%');
 
   useEffect(() => {
@@ -738,4 +738,5 @@ const PremiumGate = ({
 };
 
 export default PremiumGate;
+
 

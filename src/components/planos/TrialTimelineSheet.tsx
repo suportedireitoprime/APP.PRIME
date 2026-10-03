@@ -29,7 +29,7 @@ export function TrialTimelineSheet({ open, onOpenChange, plan, onConfirm, loadin
       ? 'R$ 29,90/mês'
       : isIOS
         ? '12x de R$ 19,90 (R$ 238,80/ano)'
-        : '12x de R$ 16,66 (R$ 199,90/ano)';
+        : '12x de R$ 16,66 (R$ 119,90/ano)';
 
   const steps = [
     {
@@ -136,3 +136,4 @@ export function TrialTimelineSheet({ open, onOpenChange, plan, onConfirm, loadin
     </Sheet>
   );
 }
+

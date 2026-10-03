@@ -139,3 +139,4 @@ export function HorusPromoModal({ open, timeLeft, onClose, onRedeem }: HorusProm
     </AnimatePresence>
   );
 }
+

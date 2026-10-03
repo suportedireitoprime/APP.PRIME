@@ -112,7 +112,7 @@ export default function Assinatura() {
   
   const [devSheetOpen, setDevSheetOpen] = useState(false);
   const [paymentMethodSheetOpen, setPaymentMethodSheetOpen] = useState(false);
-  const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_pix' | 'anual_regular_pix' | null>(null);
+  const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'promocao' | 'anual_regular_pix' | null>(null);
 
   const handleBack = () => {
     if (showWelcome) return closeWelcome();
@@ -142,7 +142,7 @@ export default function Assinatura() {
     setDevSheetOpen(false);
   };
 
-  const startPurchase = async (plano: 'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_pix' | 'anual_regular_pix') => {
+  const startPurchase = async (plano: 'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'promocao' | 'anual_regular_pix') => {
     track('subscription_started', { plano, metodo: 'asaas', source: 'planos_page' });
     import('@/lib/appEvents')
       .then(({ appEvents }) => {
@@ -311,7 +311,7 @@ export default function Assinatura() {
           open={showHorusPromo}
           timeLeft={timeLeft}
           onClose={() => { setShowHorusPromo(false); setHasClosedPromo(true); }}
-          onRedeem={() => { setShowHorusPromo(false); setHasClosedPromo(true); setTab('promocao'); startPurchase('anual_pix'); }}
+          onRedeem={() => { setShowHorusPromo(false); setHasClosedPromo(true); setTab('promocao'); startPurchase('promocao'); }}
         />
 
         {!showHorusPromo && hasClosedPromo && isNewUser && tab !== 'promocao' && (
@@ -400,7 +400,7 @@ export default function Assinatura() {
               <Button
                 onClick={() => {
                   if (tab === 'promocao') {
-                     startPurchase('anual_pix');
+                     startPurchase('promocao');
                   } else if (tab === 'anual') {
                      setPaymentMethodSheetOpen(true);
                   } else if (tab === 'vitalicio') {
@@ -416,7 +416,7 @@ export default function Assinatura() {
                 }`}
               >
                 <span className="flex items-center justify-center gap-2">
-                  {tab === 'promocao' ? 'ASSINAR ANUAL NO PIX' : tab === 'vitalicio' ? 'ADQUIRIR VITALÍCIO' : tab === 'anual' ? 'ASSINAR ANUAL' : 'ASSINAR MENSAL'}
+                  {tab === 'promocao' ? 'ADQUIRIR VITAL�CIO PROMO' : tab === 'vitalicio' ? 'ADQUIRIR VITALÍCIO' : tab === 'anual' ? 'ASSINAR ANUAL' : 'ASSINAR MENSAL'}
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
                 </span>
               </Button>
@@ -533,3 +533,4 @@ export default function Assinatura() {
     </div>
   );
 }
+

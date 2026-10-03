@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
     const today = new Date().toISOString().split('T')[0];
 
     const isCreditCard = !!creditCard;
-    const isVitalicio = plan === 'vitalicio' || plan === 'vitalicio_pix';
+    const isVitalicio = plan === 'vitalicio' || plan === 'vitalicio_pix' || plan === 'promocao';
     const isPixPlan = plan === 'vitalicio_pix' || plan === 'anual_pix' || plan === 'anual_regular_pix' || plan === 'promocao';
     const billingType = isPixPlan ? 'PIX' : (isCreditCard ? 'CREDIT_CARD' : 'UNDEFINED');
     const isInstallment = installmentCount && installmentCount > 1;
@@ -110,11 +110,11 @@ Deno.serve(async (req) => {
 
     if (isVitalicio || isInstallment) {
       // Cobrança avulsa / parcelada via /payments (sem recorrência anual para Vitalício)
-      let baseValue = 199.90;
+      let baseValue = 119.90;
       if (plan === 'vitalicio') {
-        baseValue = 280.00;
+        baseValue = 249.90;
       } else if (plan === 'vitalicio_pix') {
-        baseValue = 280.00;
+        baseValue = 249.90;
       } else if (plan === 'anual_pix' || plan === 'promocao') {
         baseValue = 149.90;
       }
@@ -129,7 +129,7 @@ Deno.serve(async (req) => {
           totalWithTax = Number(((baseValue + 0.29) / (1 - taxRate)).toFixed(2));
         }
       
-      const isPromo = plan === 'anual_pix' || plan === 'promocao';
+      const isPromo = plan === 'promocao';
       const paymentPayload: any = {
         customer: customerId,
         billingType: billingType,
@@ -169,7 +169,7 @@ Deno.serve(async (req) => {
         subPayload.cycle = 'MONTHLY';
         subPayload.description = 'Mensal Estudos Jurídicos';
       } else if (plan === 'anual' || plan === 'anual_regular_pix') {
-        subPayload.value = 199.90;
+        subPayload.value = 119.90;
         subPayload.cycle = 'YEARLY';
         subPayload.description = 'Anual Estudos Jurídicos';
       } else if (plan === 'anual_pix' || plan === 'promocao') {
@@ -228,7 +228,7 @@ Deno.serve(async (req) => {
         );
 
         const isAnualPlan = plan === 'anual' || plan === 'anual_pix' || plan === 'anual_regular_pix' || plan === 'promocao' || plan === 'vitalicio' || plan === 'vitalicio_pix';
-        const planoFinal = plan === 'mensal' ? 'mensal' : (plan === 'vitalicio' || plan === 'vitalicio_pix' ? 'vitalicio' : (plan === 'promocao' ? 'anual_promocional' : 'anual'));
+        const planoFinal = plan === 'mensal' ? 'mensal' : (plan === 'vitalicio' || plan === 'vitalicio_pix' || plan === 'promocao' ? 'vitalicio' : 'anual');
         const diasCiclo = isAnualPlan ? 370 : 34;
         const now = new Date();
         const expiresAt = new Date(now.getTime() + diasCiclo * 24 * 3600 * 1000).toISOString();
@@ -268,7 +268,7 @@ Deno.serve(async (req) => {
           event_name: 'purchase',
           metadata: {
             plano: planoFinal,
-            value: sub.value || (isAnualPlan ? 199.90 : 29.90),
+            value: sub.value || (isAnualPlan ? 119.90 : 29.90),
             currency: 'BRL',
             source: 'asaas_checkout_direct',
             payment_id: sub.id,
@@ -297,4 +297,6 @@ Deno.serve(async (req) => {
     });
   }
 });
+
+
 
