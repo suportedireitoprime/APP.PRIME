@@ -360,7 +360,7 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
                 <div className="flex justify-between items-end mt-auto">
                   <div className="flex flex-col">
                     <span className="font-display text-white text-[24px] sm:text-[26px] font-black tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] leading-none">
-                      {item.sigla}
+                      {item.id === 'ei' ? 'IDOSO' : item.sigla}
                     </span>
                     <span className="text-white/80 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest mt-1.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
                       {item.tipo === 'codigo' ? 'Código' : item.tipo === 'estatuto' ? 'Estatuto' : item.tipo === 'constituicao' ? 'Constituição' : 'Lei'}
