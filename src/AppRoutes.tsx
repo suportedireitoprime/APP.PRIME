@@ -103,7 +103,7 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword.tsx"));
 const QuestoesHistorico = lazy(() => import('@/pages/QuestoesHistorico'));
 const AdminFuncoes = lazy(() => import("./pages/AdminFuncoes.tsx"));
 const AdminPush = lazy(() => import("./pages/AdminPush.tsx"));
-const AdminPushSection = lazy(() => import("./pages/AdminPushSection.tsx"));
+
 const AdminPilulas = lazy(() => import("./pages/AdminPilulas.tsx"));
 const AdminResumoLivroAudioEditar = lazy(() => import("./pages/AdminResumoLivroAudioEditar.tsx"));
 const AdminErrosQuestoes = lazy(() => import("./pages/AdminErrosQuestoes.tsx"));
@@ -1372,7 +1372,7 @@ function AnimatedRoutes() {
           <Route path="/admin-jurisprudencia" element={<ProtectedRoute><PageTransition><AdminJurisprudencia /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-push" element={<ProtectedRoute><PageTransition><AdminPush /></PageTransition></ProtectedRoute>} />
 
-          <Route path="/admin-push/:section" element={<ProtectedRoute><PageTransition><AdminPushSection /></PageTransition></ProtectedRoute>} />
+
           <Route path="/admin-horus" element={<ProtectedRoute><PageTransition><AdminHorus /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-horus-template" element={<ProtectedRoute><PageTransition><AdminHorusTemplate /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-triagem" element={<ProtectedRoute><PageTransition><AdminTriagem /></PageTransition></ProtectedRoute>} />
