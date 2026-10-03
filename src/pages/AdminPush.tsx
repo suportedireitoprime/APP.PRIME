@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Send, Clock, Trash2, CheckCircle2, XCircle, RefreshCw, LayoutDashboard, Database, FlaskConical, ChevronRight } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface PushCampaign {
   id: string;
@@ -208,40 +209,54 @@ export default function AdminPush() {
           return (
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
               
-              {/* DATES */}
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none snap-x">
-                {Array.from({ length: 7 }).map((_, i) => {
-                  const d = new Date();
-                  d.setDate(d.getDate() - (6 - i));
-                  const dateStr = d.toISOString().split('T')[0];
-                  const isSelected = dateStr === selectedDate;
-                  return (
-                    <button 
-                      key={dateStr}
-                      onClick={() => setSelectedDate(dateStr)}
-                      className={`flex flex-col items-center justify-center min-w-[72px] p-2 rounded-2xl transition-all snap-center ${isSelected ? 'bg-primary text-primary-foreground shadow-md scale-105' : 'bg-zinc-900/40 text-muted-foreground hover:bg-zinc-900/80 border border-border/40 scale-100'}`}
-                    >
-                      <span className="text-[10px] uppercase font-semibold tracking-wider">
-                        {new Intl.DateTimeFormat('pt-BR', { weekday: 'short' }).format(d).replace('.', '')}
-                      </span>
-                      <span className="text-xl font-bold mt-0.5">{d.getDate()}</span>
-                    </button>
-                  )
-                })}
+              {/* DATES & MONTH FILTER */}
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <Select defaultValue="outubro_2026">
+                    <SelectTrigger className="w-[160px] bg-zinc-900/40 border-border/40 font-semibold uppercase tracking-wider text-xs">
+                      <SelectValue placeholder="Mês" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="outubro_2026">Outubro 2026</SelectItem>
+                      <SelectItem value="setembro_2026">Setembro 2026</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none snap-x">
+                  {Array.from({ length: 7 }).map((_, i) => {
+                    const d = new Date();
+                    d.setDate(d.getDate() - i);
+                    const dateStr = d.toISOString().split('T')[0];
+                    const isSelected = dateStr === selectedDate;
+                    return (
+                      <button 
+                        key={dateStr}
+                        onClick={() => setSelectedDate(dateStr)}
+                        className={`flex flex-col items-center justify-center min-w-[72px] p-2 rounded-2xl transition-all snap-center ${isSelected ? 'bg-primary text-primary-foreground shadow-md scale-105' : 'bg-zinc-900/40 text-muted-foreground hover:bg-zinc-900/80 border border-border/40 scale-100'}`}
+                      >
+                        <span className="text-[10px] uppercase font-semibold tracking-wider">
+                          {new Intl.DateTimeFormat('pt-BR', { weekday: 'short' }).format(d).replace('.', '')}
+                        </span>
+                        <span className="text-xl font-bold mt-0.5">{d.getDate()}</span>
+                      </button>
+                    )
+                  })}
+                </div>
               </div>
 
               {/* STATS */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
                 {[
                   { label: 'Enviados', value: campaigns.filter(c => c.status === 'sent').length, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-                  { label: 'Recebidos', value: 0, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-                  { label: 'Abertos', value: 0, color: 'text-purple-400', bg: 'bg-purple-500/10' },
+                  { label: 'Recebidos', value: 0, color: 'text-zinc-400', bg: 'bg-zinc-500/10' },
+                  { label: 'Abertos', value: 0, color: 'text-zinc-400', bg: 'bg-zinc-500/10' },
                   { label: 'Erros', value: campaigns.filter(c => c.status === 'cancelled').length, color: 'text-red-400', bg: 'bg-red-500/10' },
                 ].map(stat => (
-                  <Card key={stat.label} className="p-4 bg-zinc-900/30 border-border/30 flex flex-col items-center justify-center text-center relative overflow-hidden group">
+                  <Card key={stat.label} className="p-2 sm:p-4 bg-zinc-900/30 border-border/30 flex flex-col items-center justify-center text-center relative overflow-hidden group">
                     <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${stat.bg}`} />
-                    <div className="text-xs font-medium text-muted-foreground mb-1 uppercase tracking-wider relative z-10">{stat.label}</div>
-                    <div className={`text-3xl font-bold font-display ${stat.color} relative z-10`}>{stat.value}</div>
+                    <div className="text-[9px] sm:text-xs font-medium text-muted-foreground mb-1 uppercase tracking-wider relative z-10 truncate w-full">{stat.label}</div>
+                    <div className={`text-2xl sm:text-3xl font-bold font-display ${stat.color} relative z-10`}>{stat.value}</div>
                   </Card>
                 ))}
               </div>
