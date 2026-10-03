@@ -1,13 +1,13 @@
 import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GraduationCap, MessageCircle, Bird, MessageSquare } from 'lucide-react';
+import { GraduationCap, Speech, Bird, MessageSquare } from 'lucide-react';
 import { useShortcutBadges } from '@/hooks/useShortcutBadges';
 import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
 import { haptic } from '@/lib/nativeHaptics';
 
 const SHORTCUT_ITEMS = [
   { label: 'Aprender',    icon: GraduationCap,         to: '/aprender',         color: '#FACC15', badgeColor: null, badgeKey: null, prefetch: 'aprender' as PrefetchKey },
-  { label: 'Me Explique', icon: MessageCircle,         to: '/me-explique',      color: '#F97316', badgeColor: null, badgeKey: null, prefetch: 'meExplique' as PrefetchKey },
+  { label: 'Me Explique', icon: Speech,                to: '/me-explique',      color: '#F97316', badgeColor: null, badgeKey: null, prefetch: 'meExplique' as PrefetchKey },
   { label: 'Assistente',  icon: Bird,                  to: '/assistente-horus', color: '#A855F7', badgeColor: null, badgeKey: null, prefetch: 'horus' as PrefetchKey },
   { label: 'Chat Jurídico', icon: MessageSquare,       to: '/chat-juridico',    color: '#38BDF8', badgeColor: null, badgeKey: null, prefetch: 'chatJuridico' as PrefetchKey },
 ];
