@@ -9,8 +9,6 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Send, Clock, Trash2, CheckCircle2, XCircle, RefreshCw } from "lucide-react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 
 interface PushCampaign {
   id: string;
@@ -177,7 +175,7 @@ export default function AdminPush() {
                   <div className="flex items-center gap-2 mb-1">
                     {getStatusBadge(c.status)}
                     <span className="text-xs text-muted-foreground">
-                      {c.next_run_at ? format(new Date(c.next_run_at), "dd/MM/yy 'às' HH:mm", { locale: ptBR }) : '-'}
+                      {c.next_run_at ? new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(c.next_run_at)).replace(',', ' às') : '-'}
                     </span>
                   </div>
                   <h3 className="font-medium text-foreground truncate">{c.title}</h3>
