@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
     try {
       const pushRes = await admin.functions.invoke("send-push", {
         body: {
-          title: `[TESTE] ${title}`,
+          title: title,
           body: message,
           url,
           audience: { emails: ADMIN_EMAILS },
