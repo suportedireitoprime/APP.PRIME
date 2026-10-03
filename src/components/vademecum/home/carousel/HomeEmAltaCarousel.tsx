@@ -316,13 +316,9 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
               key={`${item.id}-${i}`}
               type="button"
               onClick={() => {
-                if (!isActive) {
-                  pauseAutoplay();
-                  scrollToIndex(i);
-                  setActiveIndex(i);
-                } else {
-                  handleOpenItem(item);
-                }
+                pauseAutoplay();
+                setActiveIndex(i);
+                handleOpenItem(item);
               }}
               className={`snap-center shrink-0 min-w-[138px] max-w-[148px] sm:min-w-[152px] sm:max-w-[162px] h-[116px] sm:h-[122px] text-left cursor-pointer focus-visible:outline-none relative flex flex-col shadow-md rounded-2xl group transition-all duration-500 ease-out ${
                 isActive ? 'scale-100 opacity-100 z-10' : 'scale-[0.92] opacity-60 z-0'

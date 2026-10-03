@@ -248,9 +248,11 @@ export function sanitizeLegalArticleText(text: string): string {
 
   // 3. Quebra em linhas e remove trailing órfãos (marcadores vazios, notas ou epígrafes sem dispositivo)
   const lines = sanitized.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const isStructuralNode = lines.length > 0 && /^(?:LIVRO|PARTE|T[ÍI]TULO|CAP[ÍI]TULO|SE[ÇC][ÃA]O|SUBSE[ÇC][ÃA]O)\b/i.test(lines[0]);
+
   while (lines.length > 0) {
     const last = lines[lines.length - 1];
-    if (isLineEmptyMarker(last) || isLineEpigrafe(last) || LEGAL_NOTE_ONLY_RE.test(last)) {
+    if (isLineEmptyMarker(last) || (!isStructuralNode && isLineEpigrafe(last)) || LEGAL_NOTE_ONLY_RE.test(last)) {
       lines.pop();
     } else {
       break;
@@ -264,7 +266,7 @@ export function sanitizeLegalArticleText(text: string): string {
     if (isLineEmptyMarker(current)) {
       continue;
     }
-    if (isLineEpigrafe(current)) {
+    if (!isStructuralNode && isLineEpigrafe(current)) {
       const next = lines[i + 1];
       if (!next || isLineEpigrafe(next) || isLineEmptyMarker(next) || LEGAL_NOTE_ONLY_RE.test(next)) {
         continue;
