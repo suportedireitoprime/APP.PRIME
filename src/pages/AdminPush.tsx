@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Send, Clock, Trash2, CheckCircle2, XCircle, RefreshCw, LayoutDashboard, Database, FlaskConical, ChevronRight } from "lucide-react";
+import { Send, Clock, Trash2, CheckCircle2, XCircle, RefreshCw, LayoutDashboard, Database, FlaskConical, ChevronRight, Bot } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -22,7 +22,7 @@ interface PushCampaign {
   created_at: string;
 }
 
-type ViewState = 'menu' | 'dashboard' | 'manual' | 'banco' | 'laboratorio';
+type ViewState = 'menu' | 'dashboard' | 'manual' | 'robos' | 'laboratorio';
 
 export default function AdminPush() {
   const navigate = useNavigate();
@@ -110,7 +110,7 @@ export default function AdminPush() {
     switch (view) {
       case 'dashboard': return { title: "Dashboard", subtitle: "Histórico e métricas de campanhas" };
       case 'manual': return { title: "Mensagem Manual", subtitle: "Criar e agendar novos alertas" };
-      case 'banco': return { title: "Banco de Notificações", subtitle: "Novas funções para triagem" };
+      case 'robos': return { title: "Robôs & Automações", subtitle: "Programação diária dos disparos automáticos" };
       case 'laboratorio': return { title: "Laboratório", subtitle: "Discussão de novas funções" };
       default: return { title: "Notificação Push Nova", subtitle: "Crie e gerencie seus alertas" };
     }
@@ -133,7 +133,7 @@ export default function AdminPush() {
             {[
               { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, desc: 'Acompanhar agendamentos e histórico' },
               { id: 'manual', label: 'Mensagem Manual', icon: Send, desc: 'Criar e agendar novos pushs avulsos' },
-              { id: 'banco', label: 'Banco de Notificações', icon: Database, desc: 'Adicionar nova função na triagem' },
+              { id: 'robos', label: 'Robôs & Automações', icon: Bot, desc: 'Guia de programação diária dos disparos' },
               { id: 'laboratorio', label: 'Laboratório', icon: FlaskConical, desc: 'Discutir novas funções de notificação' }
             ].map(item => (
               <Card 
@@ -407,15 +407,66 @@ export default function AdminPush() {
           );
         })()}
 
-        {view === 'banco' && (
-          <Card className="p-10 text-center border-dashed border-border/50 bg-transparent animate-in fade-in slide-in-from-bottom-4 duration-300">
-            <Database className="w-12 h-12 mx-auto text-muted-foreground mb-4 opacity-40" />
-            <h3 className="text-xl font-bold text-foreground">Banco de Notificações</h3>
-            <p className="text-sm text-muted-foreground max-w-sm mx-auto mt-2 leading-relaxed">
-              Aqui você poderá colocar uma função nova que vai entrar direto na triagem e gerenciar o pool de notificações.
-            </p>
-          </Card>
-        )}
+        {view === 'robos' && (() => {
+          const robosSchedule = [
+            { time: '00:00', name: 'Explicações CF88', desc: 'Geração e disparo automático de estudos da Constituição.', emoji: '📜', active: true },
+            { time: '01:00', name: 'Explicações CP/CC/CPC', desc: 'Disparo noturno focado em códigos principais.', emoji: '⚖️', active: true },
+            { time: '02:00', name: 'Explicações CLT/CDC/CTN', desc: 'Disparo noturno focado em legislação complementar.', emoji: '💼', active: true },
+            { time: '04:00', name: 'Rastreador: Resenha Diária', desc: 'Busca por novas leis, despachos e diários oficiais (1º ciclo).', emoji: '🔍', active: true },
+            { time: '07:00', name: 'Rastreador: Resenha Diária', desc: 'Busca por novas leis, despachos e diários oficiais (2º ciclo).', emoji: '🔍', active: true },
+            { time: '08:00', name: 'Blog Push: Manhã', desc: 'Boletim diário com notícias jurídicas e atualizações.', emoji: '📰', active: true },
+            { time: '10:00', name: 'Rastreador: Resenha Diária', desc: 'Busca por novas leis e diários oficiais (3º ciclo).', emoji: '🔍', active: true },
+            { time: '13:00', name: 'Blog Push: Tarde', desc: 'Segundo boletim de notícias do dia.', emoji: '☕', active: false },
+            { time: '13:00', name: 'Rastreador: Resenha Diária', desc: 'Busca por novas leis e diários oficiais (4º ciclo).', emoji: '🔍', active: true },
+            { time: '16:00', name: 'Rastreador: Resenha Diária', desc: 'Busca por novas leis e diários oficiais (5º ciclo).', emoji: '🔍', active: true },
+            { time: '19:00', name: 'Blog Push: Noite', desc: 'Fechamento do expediente e síntese do dia.', emoji: '🌙', active: false },
+            { time: '19:00', name: 'Rastreador: Resenha Diária', desc: 'Busca por novas leis e diários oficiais (6º ciclo).', emoji: '🔍', active: true },
+            { time: '22:00', name: 'Rastreador: Resenha Diária', desc: 'Busca por novas leis e diários oficiais (7º ciclo).', emoji: '🔍', active: true },
+          ];
+
+          return (
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+              <div className="text-center space-y-2 mb-8">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 border border-primary/20">
+                  <Bot className="w-8 h-8 text-primary" />
+                </div>
+                <h2 className="text-xl font-bold font-display">Programação dos Robôs</h2>
+                <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                  Guia fixo de horários em que os robôs do sistema acordam para gerar e enviar campanhas push automáticas.
+                </p>
+              </div>
+
+              <div className="relative border-l-2 border-border/30 ml-4 space-y-8 py-2">
+                {robosSchedule.map((robo, i) => (
+                  <div key={i} className={`relative pl-8 ${!robo.active ? 'opacity-50 grayscale' : ''}`}>
+                    <div className={`absolute w-4 h-4 rounded-full -left-[9px] top-1.5 flex items-center justify-center ${robo.active ? 'bg-primary shadow-[0_0_12px_rgba(var(--primary),0.6)]' : 'bg-muted-foreground'}`}>
+                      <div className="w-1.5 h-1.5 bg-background rounded-full" />
+                    </div>
+                    
+                    <div className="flex items-start gap-4">
+                      <div className="pt-0.5">
+                        <Badge variant="outline" className={`font-mono text-xs ${robo.active ? 'text-primary border-primary/30 bg-primary/5' : 'text-muted-foreground'}`}>
+                          {robo.time}
+                        </Badge>
+                      </div>
+                      <div className="flex-1 -mt-1">
+                        <Card className="p-4 bg-zinc-900/40 border-border/30 hover:bg-zinc-900/60 transition-colors">
+                          <div className="flex items-center justify-between gap-2 mb-1.5">
+                            <h3 className="font-semibold text-foreground flex items-center gap-2">
+                              <span>{robo.emoji}</span> {robo.name}
+                            </h3>
+                            {!robo.active && <Badge variant="secondary" className="text-[10px] h-5">Pausado</Badge>}
+                          </div>
+                          <p className="text-sm text-muted-foreground leading-relaxed">{robo.desc}</p>
+                        </Card>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
 
         {view === 'laboratorio' && (
           <Card className="p-10 text-center border-dashed border-border/50 bg-transparent animate-in fade-in slide-in-from-bottom-4 duration-300">
