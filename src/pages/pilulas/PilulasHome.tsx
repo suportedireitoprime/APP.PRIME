@@ -45,7 +45,7 @@ export default function PilulasHome() {
 
   return (
     <div className="min-h-screen bg-[#0D0D0D] overflow-x-hidden pb-20">
-      <div className="absolute inset-0 z-0">
+      <div className="fixed inset-0 z-0">
         <ShapeGrid 
           speed={0.5} 
           squareSize={40}
