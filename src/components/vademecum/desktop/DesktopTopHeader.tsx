@@ -1,13 +1,16 @@
-import { useState, memo } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, Scale, Gavel, BookOpen, Landmark, Feather, ScrollText, Bird } from 'lucide-react';
+import { Bell, Scale, Gavel, BookOpen, Landmark, Feather, ScrollText, Bird, Heart } from 'lucide-react';
+import { pickAsset } from '@/lib/assetUrl';
 import primeLogoAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
 import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
-import { pickAsset, srcOf } from '@/lib/assetUrl';
-
-const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 import NotificationsSheet, { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
-import DesktopToolsMenu from '@/components/vademecum/desktop/DesktopToolsMenu';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { getFavoritos, type Favorito } from '@/lib/leisFavoritos';
+import { useEffect } from 'react';
+
+const primeLogo = pickAsset(primeLogoBundled, primeLogoAsset.url);
 
 // Ícones decorativos flutuando ao fundo — bem discretos, low-opacity.
 const BACKDROP_ICONS = [
@@ -23,54 +26,61 @@ const BACKDROP_ICONS = [
 interface Props {
   onSearchClick?: () => void;
   onAssistenteClick?: () => void;
-  isTransparent?: boolean;
 }
 
-const DesktopTopHeader = memo(({ onAssistenteClick, isTransparent }: Props) => {
+const DesktopTopHeader = ({ onAssistenteClick }: Props) => {
   const navigate = useNavigate();
   const [notifOpen, setNotifOpen] = useState(false);
   const unreadCount = useUnreadNotifCount();
 
+  const [favoritos, setFavoritos] = useState<Favorito[]>([]);
+
+  useEffect(() => {
+    const carregarFavoritos = () => {
+      setFavoritos(getFavoritos().slice(0, 5));
+    };
+    carregarFavoritos();
+    window.addEventListener('LEIS_FAVORITOS_UPDATED', carregarFavoritos);
+    return () => window.removeEventListener('LEIS_FAVORITOS_UPDATED', carregarFavoritos);
+  }, []);
+
   return (
-    <div className={`w-full overflow-hidden ${isTransparent ? 'bg-transparent border-none' : 'border-b border-primary/30'}`} style={{ height: 104 }}>
-      {!isTransparent && (
-        <>
-          {/* Degradê amarelo subindo do rodapé */}
-          <div className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/35 to-transparent pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-transparent pointer-events-none" />
-        </>
-      )}
+    <div className="sticky top-0 z-40 w-full overflow-hidden border-b border-primary/30" style={{ height: 104 }}>
+      {/* Degradê amarelo subindo do rodapé */}
+      <div className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/35 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-transparent pointer-events-none" />
 
       {/* Elementos jurídicos decorativos */}
-      {!isTransparent && (
-        <div className="absolute inset-0 pointer-events-none">
-          {BACKDROP_ICONS.map(({ Icon, top, left, size, rot }, i) => (
-            <div
-              key={i}
-              className="absolute text-primary-foreground/15"
-              style={{ top, left, transform: `rotate(${rot}deg)` }}
-            >
-              <Icon size={size} strokeWidth={1.5} />
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="absolute inset-0 pointer-events-none">
+        {BACKDROP_ICONS.map(({ Icon, top, left, size, rot }, i) => (
+          <div
+            key={i}
+            className="absolute text-primary-foreground/15"
+            style={{ top, left, transform: `rotate(${rot}deg)` }}
+          >
+            <Icon size={size} strokeWidth={1.5} />
+          </div>
+        ))}
+      </div>
 
       {/* Conteúdo */}
-      <div className="relative z-10 h-full w-full px-8 xl:px-14 flex items-center gap-6">
+      <div className="relative z-10 h-full max-w-7xl mx-auto px-8 xl:px-12 flex items-center gap-6">
         {/* Logo + wordmark */}
         <button
           onClick={() => navigate('/')}
           className="flex items-center gap-3 shrink-0 group"
         >
-          <div className="relative w-14 h-14">
-            <img src={primeLogo} alt="Estudos Jurídicos" className="w-full h-full object-contain drop-shadow-md" />
+          <div className="relative">
+            <div className="absolute inset-0 blur-xl bg-primary/40 rounded-full scale-125" />
+            <div className="relative w-14 h-14 rounded-2xl overflow-hidden shadow-xl border-2 border-primary-foreground/20 bg-background/40">
+              <img src={primeLogo} alt="Direito Prime" className="w-full h-full object-cover" />
+            </div>
           </div>
-          <div className="flex flex-col items-start leading-none justify-center mt-1">
-            <span className="font-serif italic text-3xl font-bold text-white tracking-tight drop-shadow-sm">
-              Estudos Jurídicos
+          <div className="flex flex-col items-start leading-tight">
+            <span className="font-display text-xl font-bold text-white tracking-tight drop-shadow-sm">
+              Direito Prime
             </span>
-            <span className="font-body text-[10px] uppercase tracking-[0.24em] text-white/80 mt-1 pl-1">
+            <span className="font-body text-[11px] uppercase tracking-[0.24em] text-white/90">
               Uso Profissional
             </span>
           </div>
@@ -79,41 +89,104 @@ const DesktopTopHeader = memo(({ onAssistenteClick, isTransparent }: Props) => {
         {/* Espaço flexível */}
         <div className="flex-1" />
 
-        {/* Todas as funções */}
-        <DesktopToolsMenu />
+        {/* Favoritos Rápidos */}
+        <Popover>
+          <Tooltip delayDuration={300}>
+            <TooltipTrigger asChild>
+              <PopoverTrigger asChild>
+                <button
+                  className="relative shrink-0 w-11 h-11 rounded-xl bg-neutral-900/70 backdrop-blur border border-primary-foreground/40 hover:border-primary-foreground/70 hover:bg-neutral-900 flex items-center justify-center transition-colors group"
+                  aria-label="Favoritos"
+                >
+                  <Heart className="w-5 h-5 text-primary drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)] group-hover:scale-110 transition-transform" />
+                </button>
+              </PopoverTrigger>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Favoritos Rápidos</TooltipContent>
+          </Tooltip>
+          <PopoverContent align="end" className="w-80 p-0 border-primary/20 shadow-2xl overflow-hidden bg-background">
+            <div className="p-3 bg-card border-b border-border flex items-center justify-between">
+              <h4 className="font-display font-bold text-sm flex items-center gap-2">
+                <Heart className="w-4 h-4 text-primary fill-primary" />
+                Últimos Favoritos
+              </h4>
+            </div>
+            <div className="max-h-[300px] overflow-y-auto p-2 flex flex-col gap-1">
+              {favoritos.length === 0 ? (
+                <p className="text-sm text-muted-foreground p-4 text-center">Nenhum artigo favoritado ainda.</p>
+              ) : (
+                favoritos.map((fav) => (
+                  <button
+                    key={fav.id}
+                    onClick={() => navigate(`/lei/${fav.lei_id}?artigo=${fav.artigo_id}`)}
+                    className="flex flex-col text-left p-3 rounded-xl hover:bg-secondary/60 transition-colors"
+                  >
+                    <span className="font-display font-bold text-sm text-foreground mb-1 line-clamp-1">{fav.artigo_label || fav.artigo_id}</span>
+                    <span className="font-body text-xs text-muted-foreground line-clamp-2">{fav.lei_nome}</span>
+                  </button>
+                ))
+              )}
+            </div>
+            {favoritos.length > 0 && (
+              <div className="p-2 bg-card border-t border-border">
+                <button 
+                  onClick={() => document.dispatchEvent(new CustomEvent('OPEN_FAVORITOS_MODAL'))}
+                  className="w-full py-2 text-xs font-bold text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                >
+                  Ver todos os favoritos
+                </button>
+              </div>
+            )}
+          </PopoverContent>
+        </Popover>
 
         {/* Assistente Horus */}
-        <button
-          onClick={() => onAssistenteClick ? onAssistenteClick() : navigate('/assistente-horus')}
-          className="relative shrink-0 w-11 h-11 rounded-xl bg-white/10 backdrop-blur-md border border-white/25 hover:bg-white/20 hover:border-white/40 flex items-center justify-center transition-colors group"
-          aria-label="Assistente Horus"
-          title="Assistente Horus"
-        >
-          <Bird className="w-5 h-5 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)] group-hover:scale-110 transition-transform" />
-        </button>
-
+        <Tooltip delayDuration={300}>
+          <TooltipTrigger asChild>
+            <button
+              onClick={() => onAssistenteClick ? onAssistenteClick() : navigate('/assistente-horus')}
+              className="relative shrink-0 w-11 h-11 rounded-xl bg-neutral-900/70 backdrop-blur border border-primary-foreground/40 hover:border-primary-foreground/70 hover:bg-neutral-900 flex items-center justify-center transition-colors group"
+              aria-label="Assistente Horus"
+            >
+              <Bird className="w-5 h-5 text-primary drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)] group-hover:scale-110 transition-transform" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="flex items-center gap-2">
+            Assistente Horus
+            <span className="text-xs text-muted-foreground bg-white/10 px-1.5 py-0.5 rounded">Alt+A</span>
+          </TooltipContent>
+        </Tooltip>
 
         {/* Botão de notificações */}
-        <button
-          onClick={() => setNotifOpen(true)}
-          className="relative shrink-0 w-11 h-11 rounded-xl bg-white/10 backdrop-blur-md border border-white/25 hover:bg-white/20 hover:border-white/40 flex items-center justify-center transition-colors group"
-          aria-label={unreadCount > 0 ? `Notificações (${unreadCount} novas)` : 'Notificações'}
-        >
-          <Bell className="w-5 h-5 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)] group-hover:scale-110 transition-transform" />
-          {unreadCount > 0 && (
-            <span
-              className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1.5 rounded-full bg-white text-primary text-[10px] font-black flex items-center justify-center border-2 border-white/70 shadow-lg"
-              aria-hidden
+        <Tooltip delayDuration={300}>
+          <TooltipTrigger asChild>
+            <button
+              onClick={() => setNotifOpen(true)}
+              className="relative shrink-0 w-11 h-11 rounded-xl bg-neutral-900/70 backdrop-blur border border-primary-foreground/40 hover:border-primary-foreground/70 hover:bg-neutral-900 flex items-center justify-center transition-colors group"
+              aria-label={unreadCount > 0 ? `Notificações (${unreadCount} novas)` : 'Notificações'}
             >
-              {unreadCount > 99 ? '99+' : unreadCount}
-            </span>
-          )}
-        </button>
+              <Bell className="w-5 h-5 text-primary drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)] group-hover:scale-110 transition-transform" />
+              {unreadCount > 0 && (
+                <span
+                  className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1.5 rounded-full bg-primary text-neutral-900 text-[10px] font-black flex items-center justify-center border-2 border-neutral-900 shadow-lg"
+                  aria-hidden
+                >
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            {unreadCount > 0 ? `Notificações (${unreadCount})` : 'Notificações'}
+          </TooltipContent>
+        </Tooltip>
       </div>
 
       <NotificationsSheet open={notifOpen} onClose={() => setNotifOpen(false)} />
     </div>
   );
-});
+};
 
 export default DesktopTopHeader;
+
+

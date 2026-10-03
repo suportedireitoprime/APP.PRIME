@@ -28,6 +28,7 @@ import ShapeGrid from '@/components/ui/ShapeGrid';
 import HomeTresPoderes from '@/components/vademecum/home/sections/HomeTresPoderes';
 import HomeApresentacoesTimeline from '@/components/vademecum/home/sections/HomeApresentacoesTimeline';
 import NotificationsSheet, { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
+import DesktopTopHeader from '@/components/vademecum/desktop/DesktopTopHeader';
 
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 
@@ -125,7 +126,7 @@ const IndexDesktop = () => {
           <div className="flex flex-col flex-1 h-full min-w-0 relative overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
           
             <div className={`border-b border-white/5 transition-colors duration-300 bg-transparent`}>
-
+              <DesktopTopHeader onAssistenteClick={() => setAssistenteOpen(true)} />
               <DesktopBreadcrumb />
             </div>
             
