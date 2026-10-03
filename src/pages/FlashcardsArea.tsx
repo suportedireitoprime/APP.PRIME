@@ -41,6 +41,8 @@ const FlashcardsArea = () => {
   const initial = slug ? getCachedAprenderArea(slug, user?.id ?? null) : undefined;
   const [data, setData] = useState<AprenderAreaData | null>(initial ?? null);
   const [loading, setLoading] = useState(!initial);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Lazy Render / Windowing State (Item 11)
   const [visibleCount, setVisibleCount] = useState(8);

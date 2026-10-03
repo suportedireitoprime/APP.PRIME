@@ -41,6 +41,8 @@ const QuestoesArea = () => {
   const initial = slug ? getCachedAprenderArea(slug, user?.id ?? null) : undefined;
   const [data, setData] = useState<AprenderAreaData | null>(initial ?? null);
   const [loading, setLoading] = useState(!initial);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     if (!data || !moduloIdParam) return;
