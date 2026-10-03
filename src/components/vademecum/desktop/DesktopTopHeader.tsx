@@ -78,7 +78,7 @@ const DesktopTopHeader = ({ onAssistenteClick }: Props) => {
           </div>
           <div className="flex flex-col items-start leading-tight">
             <span className="font-display text-xl font-bold text-white tracking-tight drop-shadow-sm">
-              Direito Prime
+              Estudos Jurídicos
             </span>
             <span className="font-body text-[11px] uppercase tracking-[0.24em] text-white/90">
               Uso Profissional

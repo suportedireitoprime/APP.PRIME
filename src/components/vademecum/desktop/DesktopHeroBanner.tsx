@@ -81,7 +81,7 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
             </div>
             <div className="flex flex-col items-start leading-none justify-center mt-1">
               <span className="font-serif italic text-3xl font-bold text-white tracking-tight drop-shadow-sm">
-                Estudos Jurídicos
+                Direito Prime
               </span>
               <span className="font-body text-[10px] uppercase tracking-[0.24em] text-white/80 mt-1.5 pl-1">
                 Uso Profissional
