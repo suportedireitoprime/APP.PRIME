@@ -24,6 +24,7 @@ type ViewState = 'menu' | 'dashboard' | 'manual' | 'banco' | 'laboratorio';
 export default function AdminPush() {
   const navigate = useNavigate();
   const [view, setView] = useState<ViewState>('menu');
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   
   const [campaigns, setCampaigns] = useState<PushCampaign[]>([]);
   const [loading, setLoading] = useState(false);
@@ -199,51 +200,135 @@ export default function AdminPush() {
           </Card>
         )}
 
-        {view === 'dashboard' && (
-          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm uppercase tracking-wider font-bold text-muted-foreground">Histórico e Agendamentos</h2>
-              <Button size="icon" variant="ghost" onClick={loadCampaigns} disabled={loading} className="w-8 h-8">
-                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-              </Button>
-            </div>
+        {view === 'dashboard' && (() => {
+          const hojeStr = new Date().toISOString().split('T')[0];
+          const agendadosHoje = campaigns.filter(c => c.status === 'scheduled' && c.next_run_at?.startsWith(hojeStr));
+          const historicoGeral = campaigns.filter(c => !(c.status === 'scheduled' && c.next_run_at?.startsWith(hojeStr)));
 
-            <div className="grid gap-3">
-              {campaigns.length === 0 && !loading && (
-                <div className="text-center py-10 text-muted-foreground text-sm border border-dashed border-border/50 rounded-xl">
-                  Nenhuma notificação encontrada
+          return (
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
+              
+              {/* DATES */}
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none snap-x">
+                {Array.from({ length: 7 }).map((_, i) => {
+                  const d = new Date();
+                  d.setDate(d.getDate() - (6 - i));
+                  const dateStr = d.toISOString().split('T')[0];
+                  const isSelected = dateStr === selectedDate;
+                  return (
+                    <button 
+                      key={dateStr}
+                      onClick={() => setSelectedDate(dateStr)}
+                      className={`flex flex-col items-center justify-center min-w-[72px] p-2 rounded-2xl transition-all snap-center ${isSelected ? 'bg-primary text-primary-foreground shadow-md scale-105' : 'bg-zinc-900/40 text-muted-foreground hover:bg-zinc-900/80 border border-border/40 scale-100'}`}
+                    >
+                      <span className="text-[10px] uppercase font-semibold tracking-wider">
+                        {new Intl.DateTimeFormat('pt-BR', { weekday: 'short' }).format(d).replace('.', '')}
+                      </span>
+                      <span className="text-xl font-bold mt-0.5">{d.getDate()}</span>
+                    </button>
+                  )
+                })}
+              </div>
+
+              {/* STATS */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {[
+                  { label: 'Enviados', value: campaigns.filter(c => c.status === 'sent').length, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+                  { label: 'Recebidos', value: 0, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+                  { label: 'Abertos', value: 0, color: 'text-purple-400', bg: 'bg-purple-500/10' },
+                  { label: 'Erros', value: campaigns.filter(c => c.status === 'cancelled').length, color: 'text-red-400', bg: 'bg-red-500/10' },
+                ].map(stat => (
+                  <Card key={stat.label} className="p-4 bg-zinc-900/30 border-border/30 flex flex-col items-center justify-center text-center relative overflow-hidden group">
+                    <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${stat.bg}`} />
+                    <div className="text-xs font-medium text-muted-foreground mb-1 uppercase tracking-wider relative z-10">{stat.label}</div>
+                    <div className={`text-3xl font-bold font-display ${stat.color} relative z-10`}>{stat.value}</div>
+                  </Card>
+                ))}
+              </div>
+
+              {/* TIMELINE HOJE */}
+              {agendadosHoje.length > 0 && (
+                <div className="space-y-4 pt-2">
+                  <h2 className="text-sm uppercase tracking-wider font-bold text-muted-foreground flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-primary" /> Agendados para Hoje
+                  </h2>
+                  <div className="relative border-l-2 border-primary/20 ml-4 space-y-6 py-2">
+                    {agendadosHoje.map(c => (
+                      <div key={c.id} className="relative pl-6">
+                        <div className="absolute w-3 h-3 bg-primary rounded-full -left-[7px] top-1.5 shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
+                        <Card className="p-4 border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors">
+                          <div className="flex items-center justify-between gap-2 mb-2">
+                            <span className="text-xs font-bold text-primary flex items-center gap-1.5">
+                              <Clock className="w-3.5 h-3.5" />
+                              {new Intl.DateTimeFormat('pt-BR', { timeStyle: 'short' }).format(new Date(c.next_run_at!))}
+                            </span>
+                            <Badge variant="outline" className="text-primary border-primary/30 text-[10px] h-5 bg-primary/10">Agendado</Badge>
+                          </div>
+                          <h3 className="font-semibold text-foreground text-base">{c.title}</h3>
+                          <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">{c.body}</p>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-red-400 hover:text-red-300 hover:bg-red-400/10 mt-3 h-8 px-3 -ml-2"
+                            onClick={() => handleCancel(c.id)}
+                          >
+                            <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+                            Cancelar Envio
+                          </Button>
+                        </Card>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
-              {campaigns.map(c => (
-                <Card key={c.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-border/40 bg-zinc-900/20 hover:bg-zinc-900/40 transition-colors">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      {getStatusBadge(c.status)}
-                      <span className="text-xs text-muted-foreground">
-                        {c.next_run_at ? new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(c.next_run_at)).replace(',', ' às') : '-'}
-                      </span>
+              {/* HISTORICO GERAL */}
+              <div className="space-y-4 pt-4 border-t border-border/10">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-sm uppercase tracking-wider font-bold text-muted-foreground">Histórico Geral</h2>
+                  <Button size="icon" variant="ghost" onClick={loadCampaigns} disabled={loading} className="w-8 h-8">
+                    <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                  </Button>
+                </div>
+
+                <div className="grid gap-3">
+                  {historicoGeral.length === 0 && !loading && (
+                    <div className="text-center py-10 text-muted-foreground text-sm border border-dashed border-border/50 rounded-xl bg-zinc-900/10">
+                      Nenhum histórico encontrado
                     </div>
-                    <h3 className="font-medium text-foreground truncate">{c.title}</h3>
-                    <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">{c.body}</p>
-                  </div>
-                  
-                  {c.status === 'scheduled' && (
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="text-red-400 hover:text-red-300 hover:bg-red-400/10 self-end sm:self-center shrink-0"
-                      onClick={() => handleCancel(c.id)}
-                    >
-                      <Trash2 className="w-4 h-4 mr-1.5" />
-                      Cancelar
-                    </Button>
                   )}
-                </Card>
-              ))}
+
+                  {historicoGeral.map(c => (
+                    <Card key={c.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-border/40 bg-zinc-900/20 hover:bg-zinc-900/40 transition-colors">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          {getStatusBadge(c.status)}
+                          <span className="text-xs text-muted-foreground font-medium">
+                            {c.next_run_at ? new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(c.next_run_at)).replace(',', ' às') : '-'}
+                          </span>
+                        </div>
+                        <h3 className="font-medium text-foreground truncate">{c.title}</h3>
+                        <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">{c.body}</p>
+                      </div>
+                      
+                      {c.status === 'scheduled' && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="text-red-400 hover:text-red-300 hover:bg-red-400/10 self-end sm:self-center shrink-0"
+                          onClick={() => handleCancel(c.id)}
+                        >
+                          <Trash2 className="w-4 h-4 mr-1.5" />
+                          Cancelar
+                        </Button>
+                      )}
+                    </Card>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {view === 'banco' && (
           <Card className="p-10 text-center border-dashed border-border/50 bg-transparent animate-in fade-in slide-in-from-bottom-4 duration-300">
