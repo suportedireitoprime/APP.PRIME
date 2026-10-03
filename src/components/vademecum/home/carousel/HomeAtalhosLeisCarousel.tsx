@@ -319,12 +319,16 @@ function HomeAtalhosLeisCarousel({ onOpenLei }: Props) {
             else if (lei.id === 'cpc') coverImage = '/assets/cpc-lawyer.webp';
             else if (lei.id === 'cc') coverImage = '/assets/cc-couple.webp';
             else if (lei.id === 'cf88') coverImage = '/assets/cf88-cover.webp';
+            else if (lei.id === 'ctb') coverImage = '/assets/ctb-traffic.webp';
             else if (['cp', 'lep'].includes(lei.id)) coverImage = '/assets/homem-preso-novo.webp';
             else if (lei.id === 'ctn') coverImage = '/assets/ctn-taxes.webp';
             else if (lei.id === 'eca') coverImage = '/assets/eca-kids.webp';
-            else if (lei.id === 'eoab') coverImage = '/assets/eoab-woman.webp';
+            else if (lei.id === 'eoab') coverImage = '/assets/eoab-woman-fixed.webp';
             else if (lei.id === 'epd') coverImage = '/assets/epd-wheelchair.webp';
             else if (lei.id === 'ce') coverImage = '/assets/ce-vote.webp';
+            else if (lei.id === 'eir') coverImage = '/assets/eir-woman.webp';
+            else if (lei.id === 'ei') coverImage = '/assets/ei-idoso.png';
+            else if (lei.id === 'eind') coverImage = '/assets/eind-indio.png';
 
             return (
               <button

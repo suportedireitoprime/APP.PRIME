@@ -198,15 +198,15 @@ const FEATURES: Record<PremiumFeatureKey, FeatureInfo> = {
     icon: Bot,
   },
   chat_juridico: {
-    title: 'Chat Jurídico Ilimitado',
+    title: 'Chat Ilimitado',
     description: 'No plano gratuito é 1 interação por dia.',
     pitch: 'Pesquise teses, estruture peças e tire dúvidas sem contar mensagens.',
-    horusQuote: 'Pesquise teses e tire dúvidas sem limites comigo no Chat Jurídico Prime!',
+    horusQuote: 'Pesquise teses e tire dúvidas sem limites comigo no Chat Prime!',
     icon: MessageCircle,
   },
   chat_web: {
     title: 'Pesquisar na Internet',
-    description: 'Busca em tempo real dentro do Chat Jurídico.',
+    description: 'Busca em tempo real dentro do Chat.',
     pitch: 'Jurisprudência e notícias atualizadas no minuto em que você precisa.',
     horusQuote: 'Consulte informações e jurisprudências em tempo real na web através do Prime!',
     icon: Sparkles,

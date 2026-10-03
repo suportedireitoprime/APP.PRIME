@@ -56,7 +56,7 @@ const MENU_CATEGORIES: MenuCategory[] = [
       { id: 'questoes', label: 'Questões', icon: ListChecks, route: '/questoes', prefetchKey: 'questoes' },
       { id: 'flashcards', label: 'Flashcards', icon: Layers, route: '/flashcards', prefetchKey: 'flashcards' },
       { id: 'me-explique', label: 'Me Explique (IA)', icon: Camera, route: '/me-explique', prefetchKey: 'meExplique', badge: 'IA', badgeColor: RED_BADGE_STYLE },
-      { id: 'chat-juridico', label: 'Chat Jurídico', icon: MessageCircle, route: 'chat', badge: 'IA', badgeColor: RED_BADGE_STYLE },
+      { id: 'chat-juridico', label: 'Chat', icon: MessageCircle, route: 'chat', badge: 'IA', badgeColor: RED_BADGE_STYLE },
     ]
   },
   {

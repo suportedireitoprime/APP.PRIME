@@ -8,7 +8,7 @@ export default function ChatJuridico() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = 'Chat Jurídico | Direito Prime';
+    document.title = 'Chat | Direito Prime';
   }, []);
 
   return (

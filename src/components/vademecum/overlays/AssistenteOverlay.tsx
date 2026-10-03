@@ -586,7 +586,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
       const doc = (
         <Document>
           <Page size="A4" style={pdfStyles.page}>
-            <PdfText style={pdfStyles.h}>Resposta do Chat Jurídico</PdfText>
+            <PdfText style={pdfStyles.h}>Resposta do Chat</PdfText>
             {stripMd(msg.content)
               .split('\n')
               .map((p, i) => (
@@ -673,7 +673,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
   };
 
   const openShare = (msg: Message) => {
-    const body = `📚 *Chat Jurídico*\n\n${msg.content.slice(0, 3800)}`;
+    const body = `📚 *Chat*\n\n${msg.content.slice(0, 3800)}`;
     setShareText(body);
   };
 

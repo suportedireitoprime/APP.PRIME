@@ -126,7 +126,7 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
                 { label: 'Aprender', icon: GraduationCap, route: '/aprender', color: '#FACC15' },
                 { label: 'Flashcards', icon: FlashcardsIcon, route: '/flashcards', color: '#34D399' },
                 { label: 'Questões', icon: ListChecks, route: '/questoes', color: '#F87171' },
-                { label: 'Chat Jurídico', icon: MessageSquare, route: '/chat-juridico', color: '#F97316' }
+                { label: 'Chat', icon: MessageSquare, route: '/chat-juridico', color: '#F97316' }
               ].map((btn, i) => (
                 <button
                   key={i}

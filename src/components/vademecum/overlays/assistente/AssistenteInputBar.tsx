@@ -170,7 +170,7 @@ export const AssistenteInputBar: React.FC<AssistenteInputBarProps> = ({
         {!isDesktop && (
           <div className="text-center mt-2.5 px-4">
             <p className="text-[10px] text-muted-foreground/60 font-body tracking-wider">
-              O Chat Jurídico pode cometer erros. Considere verificar as fontes.
+              O Chat pode cometer erros. Considere verificar as fontes.
             </p>
           </div>
         )}

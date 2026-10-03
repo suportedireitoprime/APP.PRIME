@@ -40,7 +40,7 @@ export const AssistenteMobileHeader: React.FC<AssistenteMobileHeaderProps> = ({
 
       <div className="flex flex-col items-center z-10">
         <span className="text-[14px] sm:text-[15px] font-semibold text-foreground tracking-wide">
-          Chat Jurídico
+          Chat
         </span>
         <button
           onClick={() => {

@@ -32,7 +32,7 @@ export const AssistenteSidebarDesktop: React.FC<AssistenteSidebarDesktopProps> =
         </div>
         <div className="flex-1">
           <p className="font-display text-sm font-bold text-foreground leading-tight">
-            Chat Jurídico
+            Chat
           </p>
           <p className="text-[10px] text-muted-foreground">Assistente Jurídico • IA</p>
         </div>
