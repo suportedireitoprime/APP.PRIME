@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect } from 'react';
+import React, { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Scale, ChevronRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
@@ -12,67 +12,14 @@ const LEI_SECA_HINTS = [
   'Artigos comentados e simulados...',
 ];
 
-const STATIC_HINT = 'Artigos comentados e simulados...';
+const STATIC_HINT = 'Pratique Códigos e Leis';
 
 const TypingLeiSecaHint = memo(() => {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [text, setText] = useState('');
-  const [hintIndex, setHintIndex] = useState(0);
-  const [phase, setPhase] = useState<'typing' | 'erasing'>('typing');
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReducedMotion(mediaQuery.matches);
-    const handleMotionChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
-    mediaQuery.addEventListener?.('change', handleMotionChange);
-
-    const handleVisibility = () => {
-      setIsVisible(!document.hidden);
-    };
-    document.addEventListener('visibilitychange', handleVisibility);
-
-    return () => {
-      mediaQuery.removeEventListener?.('change', handleMotionChange);
-      document.removeEventListener('visibilitychange', handleVisibility);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (prefersReducedMotion || !isVisible) return;
-
-    const current = LEI_SECA_HINTS[hintIndex] || LEI_SECA_HINTS[0];
-    let timer: ReturnType<typeof setTimeout>;
-
-    if (phase === 'typing') {
-      if (text.length < current.length) {
-        timer = setTimeout(() => setText(current.slice(0, text.length + 1)), 75);
-      } else {
-        timer = setTimeout(() => setPhase('erasing'), 1800);
-      }
-    } else if (phase === 'erasing') {
-      if (text.length > 0) {
-        timer = setTimeout(() => setText(text.slice(0, text.length - 1)), 35);
-      } else {
-        setHintIndex((i) => (i + 1) % LEI_SECA_HINTS.length);
-        setPhase('typing');
-      }
-    }
-
-    return () => clearTimeout(timer);
-  }, [text, hintIndex, phase, prefersReducedMotion, isVisible]);
-
-  if (prefersReducedMotion) {
-    return <span className="text-white/70">{STATIC_HINT}</span>;
-  }
-
   return (
     <>
       <span className="sr-only">{STATIC_HINT}</span>
       <span className="inline-flex items-center text-white/75" aria-hidden="true">
-        {text}
-        <span className="ml-0.5 inline-block w-[2px] h-[12px] bg-primary animate-pulse" />
+        {STATIC_HINT}
       </span>
     </>
   );

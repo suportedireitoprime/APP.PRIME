@@ -180,7 +180,6 @@ const HomeTabEstudos = ({
           </div>
           </div>
 
-          {/* SeÃ§Ã£o Lei Seca com TÃ­tulo, Risquinho Vermelho e DescriÃ§Ã£o */}
           <div className="pt-2 flex flex-col gap-2.5">
             <div className="mb-0.5 relative z-10 flex items-start justify-between gap-3">
               <div>
@@ -189,7 +188,7 @@ const HomeTabEstudos = ({
                   Lei Seca
                 </h3>
                 <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3">
-                  Pratique artigos comentados, simulados e questÃµes
+                  Pratique artigos comentados, simulados e questões
                 </p>
               </div>
             </div>
