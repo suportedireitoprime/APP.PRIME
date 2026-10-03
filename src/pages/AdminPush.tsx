@@ -97,6 +97,50 @@ export default function AdminPush() {
     }
   };
 
+  const handleActivateTemplate = async () => {
+    setSubmitting(true);
+    const template2Horas = [
+      { time: '08:00', name: 'Novas Leis do Dia', desc: 'Disparo de novas leis cadastradas. Caso não tenha, não será enviado para a pessoa.' },
+      { time: '10:00', name: 'Boletins Informativos', desc: 'Disparo de boletins jurídicos. Caso não tenha, não será enviado.' },
+      { time: '12:00', name: 'Áudio-aula Explicativa', desc: 'Áudio aleatório com explicação jurídica, citando o nome da pessoa na notificação para ser persuasivo.' },
+      { time: '14:00', name: 'Questão Prática', desc: 'Uma questão aleatória para a pessoa poder resolver e praticar.' },
+      { time: '16:00', name: 'Sugestão de Leitura', desc: 'Um livro sugerido para a pessoa poder ler durante a tarde.' },
+      { time: '18:00', name: 'Áudio-aula Explicativa', desc: 'Áudio aleatório com explicação jurídica, citando o nome da pessoa.' },
+      { time: '20:00', name: 'Questão Prática', desc: 'Mais uma questão para fixar o conhecimento à noite.' },
+      { time: '22:00', name: 'Áudio-aula Explicativa', desc: 'Áudio aleatório curto antes de dormir, focado em revisão.' },
+    ];
+    
+    const pushesToInsert = template2Horas.map(item => {
+      const d = new Date();
+      const [h, m] = item.time.split(':');
+      d.setHours(parseInt(h, 10), parseInt(m, 10), 0, 0);
+      
+      // Se a hora já passou, agenda para o dia seguinte
+      if (d.getTime() < Date.now()) {
+        d.setDate(d.getDate() + 1);
+      }
+
+      return {
+        title: `[TEMPLATE] ${item.name}`,
+        body: item.desc,
+        status: "scheduled",
+        next_run_at: d.toISOString()
+      };
+    });
+
+    const { error } = await supabase.from("push_campaigns").insert(pushesToInsert);
+    
+    if (error) {
+      toast.error("Erro ao ativar template no banco de dados");
+    } else {
+      toast.success("Template 'A cada 2 horas' ativado com sucesso!");
+      loadCampaigns(); 
+      setView('dashboard'); 
+    }
+    setSubmitting(false);
+  };
+
+
   const getStatusBadge = (status: string) => {
     switch(status) {
       case 'sent': return <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20"><CheckCircle2 className="w-3 h-3 mr-1"/> Enviado</Badge>;
@@ -186,10 +230,11 @@ export default function AdminPush() {
                   </SelectContent>
                 </Select>
                 <Button 
-                  onClick={() => toast.success("Template 'A cada 2 horas' ativado com sucesso!")} 
+                  onClick={handleActivateTemplate} 
+                  disabled={submitting}
                   className="shrink-0 rounded-lg hidden sm:flex"
                 >
-                  Ativar Template
+                  {submitting ? "Ativando..." : "Ativar Template"}
                 </Button>
               </div>
 
@@ -199,10 +244,11 @@ export default function AdminPush() {
                     <Database className="w-4 h-4 text-primary" /> Cronograma do Template
                   </h2>
                   <Button 
-                    onClick={() => toast.success("Template 'A cada 2 horas' ativado com sucesso!")} 
+                    onClick={handleActivateTemplate} 
+                    disabled={submitting}
                     className="h-8 text-xs sm:hidden"
                   >
-                    Ativar
+                    {submitting ? "Ativando..." : "Ativar"}
                   </Button>
                 </div>
                 
