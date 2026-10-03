@@ -2,7 +2,7 @@ import { useState, useEffect, Suspense, startTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Flame, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, User, ArrowLeftRight, MicVocal, Pill, BookMarked, Microscope, Stethoscope, Podcast, Crown } from 'lucide-react';
+import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Flame, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, User, ArrowLeftRight, MicVocal, Pill, BookMarked, Microscope, Stethoscope, Podcast, Crown, ListChecks } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import MentorOverlay from '@/components/vademecum/overlays/MentorOverlay';
 import AssistenteOverlay from '@/components/vademecum/overlays/AssistenteOverlay';
