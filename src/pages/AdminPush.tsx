@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Send, Clock, Trash2, CheckCircle2, XCircle, RefreshCw, LayoutDashboard, Database, FlaskConical, ChevronRight } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface PushCampaign {
   id: string;
@@ -26,6 +28,7 @@ export default function AdminPush() {
   const navigate = useNavigate();
   const [view, setView] = useState<ViewState>('menu');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedCampaign, setSelectedCampaign] = useState<PushCampaign | null>(null);
   
   const [campaigns, setCampaigns] = useState<PushCampaign[]>([]);
   const [loading, setLoading] = useState(false);
@@ -271,7 +274,10 @@ export default function AdminPush() {
                     {agendadosHoje.map(c => (
                       <div key={c.id} className="relative pl-6">
                         <div className="absolute w-3 h-3 bg-primary rounded-full -left-[7px] top-1.5 shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
-                        <Card className="p-4 border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors">
+                        <Card 
+                          className="p-4 border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors cursor-pointer"
+                          onClick={() => setSelectedCampaign(c)}
+                        >
                           <div className="flex items-center justify-between gap-2 mb-2">
                             <span className="text-xs font-bold text-primary flex items-center gap-1.5">
                               <Clock className="w-3.5 h-3.5" />
@@ -279,17 +285,8 @@ export default function AdminPush() {
                             </span>
                             <Badge variant="outline" className="text-primary border-primary/30 text-[10px] h-5 bg-primary/10">Agendado</Badge>
                           </div>
-                          <h3 className="font-semibold text-foreground text-base">{c.title}</h3>
-                          <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">{c.body}</p>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="text-red-400 hover:text-red-300 hover:bg-red-400/10 mt-3 h-8 px-3 -ml-2"
-                            onClick={() => handleCancel(c.id)}
-                          >
-                            <Trash2 className="w-3.5 h-3.5 mr-1.5" />
-                            Cancelar Envio
-                          </Button>
+                          <h3 className="font-semibold text-foreground text-base pr-2">{c.title}</h3>
+                          <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">{c.body}</p>
                         </Card>
                       </div>
                     ))}
@@ -300,47 +297,106 @@ export default function AdminPush() {
               {/* HISTORICO GERAL */}
               <div className="space-y-4 pt-4 border-t border-border/10">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-sm uppercase tracking-wider font-bold text-muted-foreground">Histórico Geral</h2>
+                  <h2 className="text-sm uppercase tracking-wider font-bold text-muted-foreground flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-muted-foreground" /> Histórico Geral
+                  </h2>
                   <Button size="icon" variant="ghost" onClick={loadCampaigns} disabled={loading} className="w-8 h-8">
                     <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                   </Button>
                 </div>
 
-                <div className="grid gap-3">
+                <div className="relative border-l-2 border-border/20 ml-4 space-y-6 py-2">
                   {historicoGeral.length === 0 && !loading && (
-                    <div className="text-center py-10 text-muted-foreground text-sm border border-dashed border-border/50 rounded-xl bg-zinc-900/10">
+                    <div className="text-center py-10 text-muted-foreground text-sm border border-dashed border-border/50 rounded-xl bg-zinc-900/10 ml-4">
                       Nenhum histórico encontrado
                     </div>
                   )}
 
                   {historicoGeral.map(c => (
-                    <Card key={c.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-border/40 bg-zinc-900/20 hover:bg-zinc-900/40 transition-colors">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1.5">
-                          {getStatusBadge(c.status)}
-                          <span className="text-xs text-muted-foreground font-medium">
-                            {c.next_run_at ? new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(c.next_run_at)).replace(',', ' às') : '-'}
+                    <div key={c.id} className="relative pl-6">
+                      <div className="absolute w-3 h-3 bg-border rounded-full -left-[7px] top-1.5" />
+                      <Card 
+                        className="p-4 border-border/20 bg-zinc-900/20 hover:bg-zinc-900/40 transition-colors cursor-pointer"
+                        onClick={() => setSelectedCampaign(c)}
+                      >
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <span className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
+                            <Clock className="w-3.5 h-3.5" />
+                            {c.next_run_at ? new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(c.next_run_at)).replace(',', ' às') : new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(c.created_at)).replace(',', ' às')}
                           </span>
+                          {getStatusBadge(c.status)}
                         </div>
-                        <h3 className="font-medium text-foreground truncate">{c.title}</h3>
-                        <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">{c.body}</p>
-                      </div>
-                      
-                      {c.status === 'scheduled' && (
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="text-red-400 hover:text-red-300 hover:bg-red-400/10 self-end sm:self-center shrink-0"
-                          onClick={() => handleCancel(c.id)}
-                        >
-                          <Trash2 className="w-4 h-4 mr-1.5" />
-                          Cancelar
-                        </Button>
-                      )}
-                    </Card>
+                        <h3 className="font-semibold text-foreground text-base pr-2">{c.title}</h3>
+                        <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">{c.body}</p>
+                      </Card>
+                    </div>
                   ))}
                 </div>
               </div>
+
+              {/* SHEET DETAILS */}
+              <Sheet open={!!selectedCampaign} onOpenChange={(open) => !open && setSelectedCampaign(null)}>
+                <SheetContent side="bottom" className="h-[80vh] sm:h-[85vh] rounded-t-[2rem] border-t border-border/50 bg-background/95 backdrop-blur-xl p-0 flex flex-col">
+                  {selectedCampaign && (
+                    <>
+                      <SheetHeader className="p-6 pb-4 border-b border-border/20 text-left shrink-0 pt-8">
+                        <div className="flex items-center justify-between mb-3">
+                          {getStatusBadge(selectedCampaign.status)}
+                          <span className="text-sm text-muted-foreground flex items-center gap-1.5">
+                            <Clock className="w-4 h-4" />
+                            {selectedCampaign.next_run_at ? new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(selectedCampaign.next_run_at)).replace(',', ' às') : 'Imediato'}
+                          </span>
+                        </div>
+                        <SheetTitle className="text-2xl font-bold font-display leading-tight">{selectedCampaign.title}</SheetTitle>
+                      </SheetHeader>
+                      
+                      <ScrollArea className="flex-1 p-6">
+                        <div className="space-y-6 pb-10">
+                          <div>
+                            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-2">
+                              <Send className="w-3.5 h-3.5" /> Mensagem
+                            </h4>
+                            <p className="text-base text-foreground leading-relaxed bg-zinc-900/40 p-5 rounded-2xl border border-border/30 whitespace-pre-wrap">
+                              {selectedCampaign.body}
+                            </p>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="bg-zinc-900/40 p-5 rounded-2xl border border-border/30 flex flex-col items-center justify-center text-center relative overflow-hidden">
+                              <div className="absolute inset-0 bg-blue-500/5" />
+                              <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 relative z-10">Quem Recebeu</h4>
+                              <p className="text-3xl font-bold text-foreground font-display relative z-10">0</p>
+                              <p className="text-xs text-muted-foreground mt-0.5 relative z-10">Usuários</p>
+                            </div>
+                            <div className="bg-zinc-900/40 p-5 rounded-2xl border border-border/30 flex flex-col items-center justify-center text-center relative overflow-hidden">
+                              <div className="absolute inset-0 bg-purple-500/5" />
+                              <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 relative z-10">Quem Abriu</h4>
+                              <p className="text-3xl font-bold text-foreground font-display relative z-10">0</p>
+                              <p className="text-xs text-muted-foreground mt-0.5 relative z-10">Leituras</p>
+                            </div>
+                          </div>
+
+                          {selectedCampaign.status === 'scheduled' && (
+                            <div className="pt-6 mt-6 border-t border-border/10">
+                              <Button 
+                                variant="destructive" 
+                                className="w-full h-12 text-base rounded-xl"
+                                onClick={() => {
+                                  handleCancel(selectedCampaign.id);
+                                  setSelectedCampaign(null);
+                                }}
+                              >
+                                <Trash2 className="w-5 h-5 mr-2" />
+                                Cancelar Agendamento
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </ScrollArea>
+                    </>
+                  )}
+                </SheetContent>
+              </Sheet>
             </div>
           );
         })()}
