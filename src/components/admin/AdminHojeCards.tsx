@@ -378,12 +378,17 @@ export function AdminHojeCards() {
             // totalTrial += m.trial || 0; // Ignorado, vamos usar apenas subUsers.size
             totalPaywall = Math.max(totalPaywall, m.paywall || 0);
             totalViuPlanos = Math.max(totalViuPlanos, m.checkout || 0);
+          } else {
+            console.error('[ADMIN DEBUG] metrica rejected:', res.reason);
           }
         });
+      } else {
+        console.error('[ADMIN DEBUG] metricasResults rejected:', metricasResults);
       }
       
       // Store raw response in a ref for debug rendering
       (window as any)._adminRpcDebug = rawRpcResponse;
+      console.log('[ADMIN DEBUG] rawRpcResponse:', rawRpcResponse, '| totalCadastros:', totalCadastros, '| totalOnline:', totalOnline, '| list5m:', (list5m as any[])?.length, '| listOnline:', (listOnline as any[])?.length);
 
       try {
         const { startIso, endIso } = getBrasiliaDayRange(datas);
