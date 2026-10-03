@@ -321,6 +321,18 @@ async function handleIncomingMessage(admin: any, body: any) {
   if (!parsed) return;
   if (parsed.fromMe) return;
 
+  // Ignora mensagens automáticas de WhatsApp Business (Item 5)
+  const lowerText = parsed.text.toLowerCase();
+  if (
+    lowerText.includes("esta é uma conta comercial") || 
+    lowerText.includes("obrigado por entrar em contato") || 
+    lowerText.includes("obrigado pelo contato") ||
+    lowerText.includes("mensagem automática")
+  ) {
+    console.log("horus-webhook ignoring business auto-reply", { phone: parsed.from });
+    return;
+  }
+
   // Dedup: se já processamos esse messageId, ignora silenciosamente
   if (parsed.id && parsed.id !== "") {
     if (_processedIds.has(parsed.id)) {
@@ -358,6 +370,34 @@ async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessa
   const userRow = await ensureUser(admin, parsed.from, pushName);
   if (userRow?.blocked) {
     console.log("horus-webhook skip: blocked", { phone: parsed.from });
+    return;
+  }
+
+  // 1a) Comando especial #VINCULAR (Item 17)
+  if (parsed.text.toUpperCase().startsWith("#VINCULAR")) {
+    const email = parsed.text.split(" ")[1]?.trim();
+    if (!email) {
+      await evolution.sendText(parsed.remoteJid || parsed.from, "❌ Digite o comando assim: *#VINCULAR seue-mail@gmail.com* (coloque o e-mail que você usou para comprar).").catch(() => {});
+      return;
+    }
+    
+    // Busca assinatura Asaas pelo email fornecido
+    const { data: asaasFallback } = await admin
+      .from("asaas_subscriptions")
+      .select("status, user_id")
+      .ilike("customer_email", email)
+      .in("status", ["ACTIVE", "ACTIVE_GRACE"])
+      .limit(1)
+      .maybeSingle();
+
+    if (asaasFallback && asaasFallback.user_id && userRow?.id) {
+      await admin.from("horus_whatsapp_users")
+        .update({ linked_user_id: asaasFallback.user_id, linked_at: new Date().toISOString(), onboarding_state: "ativo" })
+        .eq("id", userRow.id);
+      await evolution.sendText(parsed.remoteJid || parsed.from, "✅ *Conta vinculada com sucesso!* Identifiquei sua assinatura. Pode mandar sua dúvida jurídica!").catch(() => {});
+    } else {
+      await evolution.sendText(parsed.remoteJid || parsed.from, "⚠️ Não encontrei uma assinatura Asaas ativa para esse e-mail. Se comprou via *Google Play* ou *Apple*, o vínculo é automático se o número do celular no app for igual ao seu WhatsApp. Ajuste no app se necessário.").catch(() => {});
+    }
     return;
   }
 
@@ -421,7 +461,8 @@ async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessa
         `Espero que tenha gostado de conversar comigo. Para continuar tirando dúvidas e enviando áudios, imagens e PDFs, você precisa assinar um plano.\n\n` +
         `1️⃣ Abra o app ou site *Vade Mecum*\n` +
         `2️⃣ Vá em *Perfil → Assinaturas*\n` +
-        `3️⃣ Escolha o plano ideal para você 🚀`;
+        `3️⃣ Escolha o plano ideal para você 🚀\n\n` +
+        `_Já é assinante e recebeu isso por engano? Digite_ *#VINCULAR seue-mail@aqui.com* _para eu arrumar seu acesso imediatamente!_`;
 
       let sendOk = false;
       for (let attempt = 0; attempt < 2; attempt++) {

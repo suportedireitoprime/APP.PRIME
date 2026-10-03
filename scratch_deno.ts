@@ -6,54 +6,78 @@ const supabase = createClient(
 );
 
 async function run() {
-  const { data: convos } = await supabase.from('horus_conversations').select('phone_e164, role, content, created_at').order('created_at', { ascending: false }).limit(300);
-  
-  if (!convos || convos.length === 0) { console.log('No conversations found.'); return; }
-  const uniquePhones = [...new Set(convos.map(c => c.phone_e164))];
-  
-  // Find which ones are premium by checking horus_whatsapp_users or profiles?
-  let profiles = [];
-  const chunkSize = 20;
-  for (let i = 0; i < uniquePhones.length; i += chunkSize) {
-    const chunk = uniquePhones.slice(i, i + chunkSize);
-    const phoneFilter = chunk.map(p => `telefone.ilike.%${p}%`).join(',');
-    if (phoneFilter) {
-       const { data } = await supabase.from('profiles').select('telefone, whatsapp_number, is_premium').or(phoneFilter);
-       if (data) profiles.push(...data);
+  // Check if these phones have ANY asaas subscription (by name or phone)
+  const phones = [
+    { phone: "559180774280", name: "MARCIO DIAS" },
+    { phone: "556196319205", name: "Nercino Filho" },
+    { phone: "554584029540", name: "Theta Reis" },
+  ];
+
+  for (const p of phones) {
+    console.log(`\n--- ${p.name} (${p.phone}) ---`);
+    
+    // Search asaas by phone variants
+    const digits = p.phone.replace(/\D/g, "");
+    const shortPhone = digits.slice(-9);
+    const { data: asaas } = await supabase
+      .from("asaas_subscriptions")
+      .select("id, user_id, status, customer_phone, customer_email, customer_name, plano")
+      .or(`customer_phone.ilike.%${shortPhone}%,customer_name.ilike.%${p.name.split(" ")[0]}%`)
+      .limit(5);
+    
+    if (asaas && asaas.length > 0) {
+      console.log("  Asaas matches:", asaas);
+    } else {
+      console.log("  Nenhuma assinatura Asaas encontrada");
+    }
+
+    // Search play subscriptions by checking profiles table for phone
+    const { data: playProfiles } = await supabase
+      .from("profiles")
+      .select("id, display_name, email, telefone, whatsapp_number, is_premium")
+      .or(`display_name.ilike.%${p.name.split(" ")[0]}%`)
+      .limit(5);
+    
+    if (playProfiles && playProfiles.length > 0) {
+      console.log("  Profile matches by name:", playProfiles.map(pp => ({
+        id: pp.id,
+        name: pp.display_name,
+        email: pp.email,
+        tel: pp.telefone,
+        wa: pp.whatsapp_number,
+        premium: pp.is_premium,
+      })));
+    } else {
+      console.log("  Nenhum profile encontrado pelo nome");
     }
   }
-  
-  const premiumProfiles = profiles.filter(p => p.is_premium);
-  console.log('Found', uniquePhones.length, 'unique phones in last 300 messages');
-  console.log('Profiles with these phones:', premiumProfiles.length, 'premium profiles found');
-  
-  // Match phones to premium profiles
-  const premiumPhones = uniquePhones.filter(phone => {
-    return premiumProfiles.some(p => {
-      const pTel = (p.telefone || '').replace(/\D/g, '');
-      const pWa = (p.whatsapp_number || '').replace(/\D/g, '');
-      const tPhone = phone.replace(/\D/g, '');
-      return pTel.includes(tPhone) || tPhone.includes(pTel) || pWa.includes(tPhone) || tPhone.includes(pWa);
-    });
-  });
 
-  console.log('Premium Phones found:', premiumPhones);
+  // Also check Case 3 (Wesley) - why Evolution 404
+  console.log("\n--- Caso 3: Wesley (5511991897603) - Erros recentes ---");
+  const { data: errors } = await supabase
+    .from("horus_outbound_log")
+    .select("status, error, kind, tipo, created_at")
+    .eq("phone_e164", "5511991897603")
+    .eq("status", "failed")
+    .order("created_at", { ascending: false })
+    .limit(10);
+  console.log("Últimos erros:", errors);
 
-  for (const p of premiumPhones) {
-    const userConvos = convos.filter(c => c.phone_e164 === p);
-    console.log('\n--- Premium Phone: ' + p + ' ---');
-    for (const c of userConvos.reverse()) {
-      console.log('[' + c.role + '] (' + c.created_at + '): ' + c.content.substring(0, 100).replace(/\n/g, ' '));
-    }
-  }
+  // Case 4 (Ketyy) - check if premium
+  console.log("\n--- Caso 4: Ketyy (5527997757900) - Status premium ---");
+  const { data: ketyProfile } = await supabase
+    .from("profiles")
+    .select("id, display_name, is_premium")
+    .eq("id", "5ddd147c-b4f6-4ced-be35-6cb7896b06d3")
+    .maybeSingle();
+  console.log("Profile Ketyy:", ketyProfile);
 
-  // Also check outbound logs for errors for these phones
-  for (const p of premiumPhones) {
-    const { data: logs } = await supabase.from('horus_outbound_log').select('status, error, created_at').eq('phone_e164', p).eq('status', 'failed').order('created_at', { ascending: false }).limit(5);
-    if (logs && logs.length > 0) {
-      console.log('\n--- Errors for Premium Phone: ' + p + ' ---');
-      console.log(logs);
-    }
-  }
+  const { data: ketySub } = await supabase
+    .from("asaas_subscriptions")
+    .select("status, plano, expires_at")
+    .eq("user_id", "5ddd147c-b4f6-4ced-be35-6cb7896b06d3")
+    .limit(3);
+  console.log("Assinaturas Ketyy:", ketySub);
 }
+
 run();
