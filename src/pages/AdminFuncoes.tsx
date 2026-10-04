@@ -48,6 +48,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-erros-questoes': () => import('./AdminErrosQuestoes'),
   '/admin-simulados': () => import('./AdminSimulados'),
   '/admin-jurisprudencia': () => import('./AdminJurisprudencia'),
+  '/admin-geracao-funcoes': () => import('./AdminGeracaoFuncoes'),
   '/admin-mapeamento-leis': () => import('./AdminMapeamentoLeis'),
   '/admin-narracao-leis': () => import('./AdminNarracaoLeis'),
   '/admin-radares-leis': () => import('./AdminRadaresLeis'),
@@ -234,6 +235,7 @@ const CATEGORIES: Category[] = [
       { id: 'admin-questoes', label: 'Questões — Editar', icon: ListChecks, desc: 'Buscar mais questões, novos cargos e importar do Google Sheets', route: '/admin-questoes' },
       { id: 'admin-erros-questoes', label: 'Reportes de Erro', icon: ShieldAlert, desc: 'Visualizar e resolver erros em questões reportados por alunos', route: '/admin-erros-questoes' },
       { id: 'admin-simulados', label: 'Simulados — Editar', icon: FileSpreadsheet, desc: 'Importar simulados, gabaritos e provas do Google Sheets', route: '/admin-simulados' },
+      { id: 'admin-geracao-funcoes', label: 'Geração de Funções (IA)', icon: Sparkles, desc: 'Gerar resumos, grifos e leis secas em lote para questões usando IA', route: '/admin-geracao-funcoes' },
     ],
   },
   {
