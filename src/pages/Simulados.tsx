@@ -97,14 +97,14 @@ export default function Simulados() {
               <button 
                 key={exam.id}
                 onClick={() => navigate('/ferramentas/simulados', { state: { category: exam.name } })}
-                className="w-full bg-card rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 flex items-center justify-between p-4 sm:p-5 hover:bg-muted/30 text-left group shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98]"
+                className="w-full mt-2 relative bg-card rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 flex items-center justify-between p-4 sm:p-5 hover:bg-muted/30 text-left group shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98]"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0">
+                  <div className="w-12 h-12 shrink-0 relative">
                     {exam.name.toLowerCase().includes('juiz') || exam.name.toLowerCase().includes('direito') ? (
-                      <img src="/assets/praticar-juiz.png" alt="Juiz" className="w-full h-full object-contain object-left drop-shadow-md" />
+                      <img src="/assets/praticar-juiz.png" alt="Juiz" className="absolute bottom-[-10px] left-[-8px] h-[95px] w-auto max-w-none object-contain object-bottom drop-shadow-xl pointer-events-none z-20" />
                     ) : (
-                      <img src="/assets/eoab-woman-fixed.webp" alt="OAB" className="w-full h-full object-contain object-left drop-shadow-md scale-125 origin-center" />
+                      <img src="/assets/eoab-woman-fixed.webp" alt="OAB" className="absolute bottom-[-10px] left-[-8px] h-[95px] w-auto max-w-none object-contain object-bottom drop-shadow-xl pointer-events-none z-20" />
                     )}
                   </div>
                   <div>
@@ -112,7 +112,7 @@ export default function Simulados() {
                       {exam.name}
                     </h3>
                     <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 font-medium">
-                      {exam.simulados.length} {exam.simulados.length === 1 ? 'prova cadastrada' : 'provas cadastradas'}
+                      {exam.simulados.length} {exam.simulados.length === 1 ? 'simulado disponível' : 'simulados disponíveis'}
                     </p>
                   </div>
                 </div>

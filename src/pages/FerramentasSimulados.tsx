@@ -284,7 +284,7 @@ export default function FerramentasSimulados() {
                         </div>
                       ) : (
                         <div className="absolute right-0 sm:right-2 bottom-0 h-[170px] sm:h-[190px] z-20 pointer-events-none drop-shadow-2xl flex items-end">
-                          <img src="/assets/eoab-woman-fixed.webp" alt="OAB" className="w-auto h-[120%] object-contain object-bottom origin-bottom scale-110" />
+                          <img src="/assets/eoab-woman-fixed.webp" alt="OAB" className="w-auto h-full object-contain object-bottom" />
                         </div>
                       )}
                       
@@ -316,7 +316,7 @@ export default function FerramentasSimulados() {
                             {sim.exam?.name || 'Sem título'}
                           </h4>
                           <p className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 uppercase tracking-wider font-semibold">
-                            SIMULADO <ChevronRight className="w-3.5 h-3.5 opacity-50" />
+                            SIMULADO {sim.prova_url && !sim.prova_url.startsWith('http') ? `- ${sim.prova_url.toUpperCase()}` : ''} <ChevronRight className="w-3.5 h-3.5 opacity-50" />
                           </p>
                         </div>
                       </div>
