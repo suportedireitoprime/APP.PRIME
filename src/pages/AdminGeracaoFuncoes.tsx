@@ -23,8 +23,13 @@ const TIPOS_ACAO: { id: AcaoTipo; label: string }[] = [
 export default function AdminGeracaoFuncoes() {
   const navigate = useNavigate();
   const [loadingStats, setLoadingStats] = useState(true);
-  const [disciplinas, setDisciplinas] = useState<{ disciplina: string; count: number }[]>([]);
-  const [selectedDisciplina, setSelectedDisciplina] = useState<string>('');
+  
+  // Fontes:
+  const [bancoGeralCount, setBancoGeralCount] = useState(0);
+  const [simuladosList, setSimuladosList] = useState<any[]>([]);
+  
+  // Seleção
+  const [fonteSelecionada, setFonteSelecionada] = useState<string>('geral'); // 'geral' ou simulado_id
   
   // Opções de Geração
   const [selectedTipos, setSelectedTipos] = useState<Set<AcaoTipo>>(new Set(['grifo', 'lei', 'comentario']));
@@ -38,29 +43,40 @@ export default function AdminGeracaoFuncoes() {
   const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    carregarEstatisticas();
+    carregarFontes();
   }, []);
 
-  async function carregarEstatisticas() {
+  async function carregarFontes() {
     setLoadingStats(true);
     try {
-      const { data, error } = await supabase.rpc('get_questoes_disciplinas_count');
-      if (error) {
-        // Fallback case no rpc doesn't exist
-        const { data: d2, error: e2 } = await supabase.from('questoes').select('disciplina');
-        if (e2) throw e2;
-        const counts = d2.reduce((acc: any, cur) => {
-          const d = cur.disciplina || 'Sem disciplina';
-          acc[d] = (acc[d] || 0) + 1;
-          return acc;
-        }, {});
-        const arrayCounts = Object.entries(counts).map(([d, c]) => ({ disciplina: d, count: c as number }));
-        setDisciplinas(arrayCounts.sort((a, b) => b.count - a.count));
-      } else {
-        setDisciplinas(data || []);
-      }
+      // 1. Contagem do banco geral
+      const { count } = await supabase.from('questoes').select('*', { count: 'exact', head: true });
+      setBancoGeralCount(count || 0);
+
+      // 2. Simulados
+      const { data: exams, error } = await supabase
+        .from('simulado_exams')
+        .select(`
+          id, 
+          name, 
+          simulados (id, year, simulado_questions(count))
+        `);
+      if (error) throw error;
+      
+      const list: any[] = [];
+      exams.forEach(exam => {
+        exam.simulados?.forEach(sim => {
+          list.push({
+            id: sim.id,
+            name: `${exam.name} - ${sim.year}`,
+            count: sim.simulado_questions?.[0]?.count || 0
+          });
+        });
+      });
+      setSimuladosList(list.sort((a, b) => b.count - a.count));
+
     } catch (e: any) {
-      toast.error('Erro ao carregar estatísticas: ' + e.message);
+      toast.error('Erro ao carregar fontes: ' + e.message);
     } finally {
       setLoadingStats(false);
     }
@@ -73,6 +89,14 @@ export default function AdminGeracaoFuncoes() {
     setSelectedTipos(next);
   };
 
+  function hashKey(enunciado: string) {
+    let h = 0;
+    for (let i = 0; i < enunciado.length; i++) {
+      h = (Math.imul(h, 31) + enunciado.charCodeAt(i)) | 0;
+    }
+    return String(h);
+  }
+
   async function iniciarGeracao() {
     if (selectedTipos.size === 0) return toast.error('Selecione pelo menos um tipo de recurso para gerar.');
 
@@ -81,41 +105,69 @@ export default function AdminGeracaoFuncoes() {
     const signal = abortControllerRef.current.signal;
 
     try {
-      // 1. Fetch questions to process
-      setCurrentQuestionInfo('Buscando questões no banco...');
-      let query = supabase.from('questoes').select('*');
-      if (selectedDisciplina && selectedDisciplina !== 'Todas') {
-        query = query.eq('disciplina', selectedDisciplina);
+      setCurrentQuestionInfo('Buscando questões...');
+      let questoesToProcess: any[] = [];
+
+      if (fonteSelecionada === 'geral') {
+        const { data, error } = await supabase.from('questoes').select('*');
+        if (error) throw error;
+        questoesToProcess = data.map(q => ({
+          id: q.id,
+          isSimulado: false,
+          qInfo: `Geral Q${q.id}`,
+          mapped: q
+        }));
+      } else {
+        const { data, error } = await supabase.from('simulado_questions').select('*').eq('simulado_id', fonteSelecionada);
+        if (error) throw error;
+        questoesToProcess = data.map(q => {
+          const mapped = {
+            enunciado: q.text,
+            alt_a: q.options?.A || '',
+            alt_b: q.options?.B || '',
+            alt_c: q.options?.C || '',
+            alt_d: q.options?.D || '',
+            alt_e: q.options?.E || '',
+            gabarito: q.gabarito,
+            disciplina: q.disciplina,
+            assunto: q.assunto,
+            comentario: q.correct_comment
+          };
+          return {
+            id: q.id,
+            isSimulado: true,
+            qInfo: `Simulado Q${q.id}`,
+            mapped,
+            chaveBase: `h:${hashKey(q.text || '')}`
+          };
+        });
       }
-      
-      const { data: questoes, error } = await query;
-      if (error) throw error;
-      if (!questoes || questoes.length === 0) {
+
+      if (questoesToProcess.length === 0) {
         toast.info('Nenhuma questão encontrada para a seleção.');
         setIsGenerating(false);
         return;
       }
 
-      const total = questoes.length;
+      const total = questoesToProcess.length;
       setProgress({ current: 0, total, success: 0, errors: 0 });
 
       let successCount = 0;
       let errorCount = 0;
 
-      for (let i = 0; i < questoes.length; i++) {
+      for (let i = 0; i < total; i++) {
         if (signal.aborted) break;
         
-        const q = questoes[i];
-        setCurrentQuestionInfo(`Q${q.id} - ${q.disciplina} (${i + 1}/${total})`);
+        const item = questoesToProcess[i];
+        setCurrentQuestionInfo(`${item.qInfo} (${i + 1}/${total})`);
         
-        const chave = `q:${q.id}`;
         let qHasError = false;
 
         for (const tipo of Array.from(selectedTipos)) {
           if (signal.aborted) break;
 
-          let tipoChave = chave;
-          if (tipo === 'comentario' || tipo === 'lei-erradas') tipoChave = `${chave}|v2`;
+          let tipoChave = item.isSimulado ? item.chaveBase : `q:${item.id}`;
+          if (tipo === 'comentario' || tipo === 'lei-erradas') tipoChave = `${tipoChave}|v2`;
 
           if (soFaltantes) {
             const { data: cache } = await supabase
@@ -124,21 +176,20 @@ export default function AdminGeracaoFuncoes() {
               .eq('chave', tipoChave)
               .eq('tipo', tipo)
               .maybeSingle();
-            if (cache) continue; // Pula pois já existe
+            if (cache) continue;
           }
 
-          setCurrentQuestionInfo(`Q${q.id} - Gerando ${tipo}...`);
+          setCurrentQuestionInfo(`${item.qInfo} - Gerando ${tipo}...`);
           try {
-            const payload = await gerarQuestaoAcaoFrontend(tipo, q);
+            const payload = await gerarQuestaoAcaoFrontend(tipo, item.mapped);
             if (payload) {
               await supabase.from("questoes_acoes_cache").upsert({ chave: tipoChave, tipo, payload }, { onConflict: "chave,tipo" });
             }
           } catch (e) {
-            console.error(`Erro ao gerar ${tipo} para ${q.id}:`, e);
+            console.error(`Erro ao gerar ${tipo} para ${item.qInfo}:`, e);
             qHasError = true;
           }
           
-          // Delay to prevent hitting rate limits too harshly
           await new Promise(r => setTimeout(r, 1000));
         }
 
@@ -167,7 +218,7 @@ export default function AdminGeracaoFuncoes() {
     }
   }
 
-  const tempoEstimadoSegundos = progress.total > 0 ? (progress.total * selectedTipos.size * 3) : 0; // ~3s por recurso
+  const tempoEstimadoSegundos = progress.total > 0 ? (progress.total * selectedTipos.size * 3) : 0;
   const tempoEstimadoFormatado = tempoEstimadoSegundos > 0 
     ? (tempoEstimadoSegundos > 60 ? `${Math.ceil(tempoEstimadoSegundos / 60)} min` : `${tempoEstimadoSegundos} seg`) 
     : '--';
@@ -185,17 +236,19 @@ export default function AdminGeracaoFuncoes() {
           
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-semibold mb-2 block">Matéria / Disciplina alvo</label>
+              <label className="text-sm font-semibold mb-2 block">Selecione a Fonte das Questões</label>
               <select 
-                value={selectedDisciplina} 
-                onChange={e => setSelectedDisciplina(e.target.value)}
+                value={fonteSelecionada} 
+                onChange={e => setFonteSelecionada(e.target.value)}
                 disabled={isGenerating || loadingStats}
                 className="w-full bg-background border border-input rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
               >
-                <option value="">Todas as matérias</option>
-                {disciplinas.map(d => (
-                  <option key={d.disciplina} value={d.disciplina}>{d.disciplina} ({d.count} questões)</option>
-                ))}
+                <option value="geral">Todas as questões do Banco Geral ({bancoGeralCount})</option>
+                <optgroup label="Simulados">
+                  {simuladosList.map(sim => (
+                    <option key={sim.id} value={sim.id}>{sim.name} ({sim.count} questões)</option>
+                  ))}
+                </optgroup>
               </select>
             </div>
 
