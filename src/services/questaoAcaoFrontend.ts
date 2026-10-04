@@ -84,29 +84,50 @@ function hashChave(texto: string) {
 }
 
 const FALLBACK_MODEL = "antigravity/gemini-3.6-flash";
-const MAX_RETRIES = 2;
+const MAX_RETRIES = 1; // 1 tentativa por modelo → máx ~24s total
+const TIMEOUT_MS = 12_000; // 12s por chamada
+
+/** Cria um AbortController com timeout manual (compatível com qualquer WebView) */
+function criarAbortComTimeout(ms: number) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  return { signal: controller.signal, limpar: () => clearTimeout(timer) };
+}
 
 async function chamarApi(model: string, tipo: Tipo, questao: any) {
   const apiKey = await getOmniRouteApiKey();
   if (!apiKey) throw new Error("Chave do OmniRoute não encontrada. Configure-a no painel de administração.");
 
-  const r = await fetch(GATEWAY, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model,
-      ...(model.startsWith("openai/") ? { reasoning_effort: "none" } : {}),
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: `${BASE}\n\n${INSTRUCOES[tipo]}` },
-        { role: "user", content: montarPrompt(questao) },
-      ],
-    }),
-    signal: typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? AbortSignal.timeout(15000) : undefined,
-  });
+  const { signal, limpar } = criarAbortComTimeout(TIMEOUT_MS);
+
+  let r: Response;
+  try {
+    r = await fetch(GATEWAY, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        ...(model.startsWith("openai/") ? { reasoning_effort: "none" } : {}),
+        response_format: { type: "json_object" },
+        messages: [
+          { role: "system", content: `${BASE}\n\n${INSTRUCOES[tipo]}` },
+          { role: "user", content: montarPrompt(questao) },
+        ],
+      }),
+      signal,
+    });
+  } catch (err: any) {
+    limpar();
+    if (err?.name === 'AbortError') {
+      throw new Error("overloaded"); // timeout → trata como overloaded para fallback
+    }
+    throw err;
+  }
+  limpar();
+
   const txt = await r.text();
   if (!r.ok) throw new Error(`[${r.status}] ${txt.slice(0, 400)}`);
   const data = JSON.parse(txt);
@@ -129,11 +150,8 @@ export async function gerarQuestaoAcaoFrontend(tipo: Tipo, questao: any) {
       try {
         return await chamarApi(modelo, tipo, questao);
       } catch (e) {
-        let msg = String((e as Error)?.message ?? "");
-        if (e instanceof Error && e.name === 'TimeoutError') {
-           msg = "overloaded"; // Trata timeout como overloaded para fazer retry ou fallback
-        }
-        const isOverloaded = msg.includes("overloaded") || msg.includes("503") || msg.includes("529") || msg.includes("rate");
+        const msg = String((e as Error)?.message ?? "");
+        const isOverloaded = msg.includes("overloaded") || msg.includes("503") || msg.includes("529") || msg.includes("rate") || msg.includes("AbortError");
         if (isOverloaded && tentativa < MAX_RETRIES - 1) {
           const delay = 1000 * (tentativa + 1);
           console.warn(`[questao-acao-ia] ${modelo} tentativa ${tentativa + 1} falhou (overloaded), retry em ${delay}ms`);
