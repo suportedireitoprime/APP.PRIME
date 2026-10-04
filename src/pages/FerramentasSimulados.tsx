@@ -187,22 +187,32 @@ export default function FerramentasSimulados() {
                   <div className={`w-full sm:w-1/2 pl-14 sm:pl-0 ${isEven ? 'sm:pr-10' : 'sm:pl-10'}`}>
                     <button 
                       onClick={() => setSelectedSimulado(sim)}
-                      className="flex flex-col bg-card rounded-2xl border border-border overflow-hidden hover:border-primary/50 transition-all hover:shadow-lg hover:-translate-y-1 active:scale-[0.98] group text-left relative w-full"
+                      className="flex flex-col rounded-2xl hover:shadow-lg hover:-translate-y-1 active:scale-[0.98] group text-left relative w-full h-[140px] transition-all"
                     >
-                      {/* Efeito de deck empilhado visual sutil */}
-                      <div className="absolute top-0 right-0 w-20 h-20 bg-primary/5 rounded-bl-[100%] transition-transform group-hover:scale-110" />
+                      {/* Background isolado para manter o border-radius e clipping interno (sem cortar a imagem externa) */}
+                      <div className="absolute inset-0 bg-card rounded-2xl border border-border overflow-hidden group-hover:border-primary/50 transition-colors">
+                        {/* Efeito de deck empilhado visual sutil */}
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-primary/5 rounded-bl-[100%] transition-transform group-hover:scale-110" />
+                      </div>
+                      
+                      {/* Imagem 3D vazada (só aparece se for juiz/magistratura) */}
+                      {sim.exam?.name?.toLowerCase().includes('juiz') && (
+                        <div className="absolute right-2 -top-8 w-24 sm:w-28 z-20 pointer-events-none drop-shadow-xl">
+                          <img src="/assets/praticar-juiz.png" alt="Juiz" className="w-full h-auto object-contain" />
+                        </div>
+                      )}
                       
                       <div className="p-5 flex-1 flex flex-col items-start w-full relative z-10">
                         <div className="flex justify-between items-start mb-4 w-full">
-                          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-sm">
+                          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-sm relative z-30">
                             <span className="text-sm font-black tracking-tighter">
                               {sim.year || 'ND'}
                             </span>
                           </div>
                         </div>
                         
-                        <div className="mt-auto w-full">
-                          <h4 className="font-display font-bold text-sm sm:text-lg leading-tight text-foreground mb-1.5 group-hover:text-primary transition-colors line-clamp-2">
+                        <div className="mt-auto w-full relative z-30">
+                          <h4 className="font-display font-bold text-sm sm:text-lg leading-tight text-foreground mb-1.5 group-hover:text-primary transition-colors line-clamp-2 max-w-[65%]">
                             {sim.exam?.name || 'Sem título'}
                           </h4>
                           <p className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 uppercase tracking-wider font-semibold">
