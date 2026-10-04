@@ -125,13 +125,12 @@ export default function FerramentasSimuladosResolver() {
   return (
     <div className="theme-questoes min-h-screen bg-background pb-[calc(8.5rem+var(--sai-bottom))]">
       <PageHeader
-        title={simulado.exam?.name || 'Simulado'}
-        subtitle={rodando ? mmss : 'Simulado concluído'}
+        title={rodando ? mmss : 'Simulado concluído'}
         leading={
           rodando ? (
             <button
               onClick={() => setShowConfirmModal(true)}
-              className="text-[15px] font-bold text-rose-500 hover:text-rose-400 transition-colors"
+              className="h-[38px] px-4 rounded-full bg-muted border border-border text-[13px] font-bold text-muted-foreground hover:bg-muted/80 hover:text-foreground transition-all flex items-center justify-center shadow-sm"
             >
               Encerrar
             </button>
