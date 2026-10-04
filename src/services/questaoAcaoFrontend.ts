@@ -105,6 +105,7 @@ async function chamarApi(model: string, tipo: Tipo, questao: any) {
         { role: "user", content: montarPrompt(questao) },
       ],
     }),
+    signal: typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? AbortSignal.timeout(15000) : undefined,
   });
   const txt = await r.text();
   if (!r.ok) throw new Error(`[${r.status}] ${txt.slice(0, 400)}`);
@@ -128,7 +129,10 @@ export async function gerarQuestaoAcaoFrontend(tipo: Tipo, questao: any) {
       try {
         return await chamarApi(modelo, tipo, questao);
       } catch (e) {
-        const msg = String((e as Error)?.message ?? "");
+        let msg = String((e as Error)?.message ?? "");
+        if (e instanceof Error && e.name === 'TimeoutError') {
+           msg = "overloaded"; // Trata timeout como overloaded para fazer retry ou fallback
+        }
         const isOverloaded = msg.includes("overloaded") || msg.includes("503") || msg.includes("529") || msg.includes("rate");
         if (isOverloaded && tentativa < MAX_RETRIES - 1) {
           const delay = 1000 * (tentativa + 1);
