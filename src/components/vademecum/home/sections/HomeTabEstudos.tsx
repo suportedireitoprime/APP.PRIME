@@ -144,7 +144,7 @@ const HomeTabEstudos = ({
                 </p>
               </div>
             </div>
-            <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 pt-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 pt-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               {PRATICAR_FUNCTIONS.map((item) => (
                 <button
                   key={item.id}
@@ -153,10 +153,10 @@ const HomeTabEstudos = ({
                     haptic.selection();
                     navigate(item.path);
                   }}
-                  className="snap-center shrink-0 min-w-[152px] max-w-[162px] h-[122px] relative flex flex-col shadow-md rounded-2xl group transition-all duration-300 text-left cursor-pointer overflow-hidden focus-visible:outline-none hover:-translate-y-1"
+                  className="snap-center shrink-0 min-w-[152px] max-w-[162px] h-[122px] relative flex flex-col shadow-md rounded-2xl group transition-all duration-300 text-left cursor-pointer focus-visible:outline-none hover:-translate-y-1"
                 >
                   <div 
-                    className="absolute inset-0 rounded-2xl pointer-events-none transition-all duration-300 shadow-md group-hover:opacity-100 opacity-95"
+                    className="absolute inset-0 rounded-2xl pointer-events-none transition-all duration-300 shadow-md group-hover:opacity-100 opacity-95 overflow-hidden"
                     style={{ background: `linear-gradient(135deg, ${item.color} 0%, ${shade(item.color, -0.3)} 100%)` }}
                   >
                     <item.icon
