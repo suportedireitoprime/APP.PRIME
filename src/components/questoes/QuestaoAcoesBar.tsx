@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence } from 'framer-motion';
 import {
-  BookOpen, Layers, Scale, AlertTriangle, Sparkles, ChevronRight, BookOpenText, BookA, Highlighter
+  Layers, Scale, AlertTriangle, Sparkles, ChevronRight, BookOpenText, BookA, Highlighter
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { AcaoTipo } from '@/hooks/useQuestaoAcao';
@@ -110,9 +110,8 @@ export function QuestaoAcoesBar({
             : 'scrollbar-none -mx-1 flex w-full snap-x snap-mandatory items-stretch gap-1 overflow-x-auto px-1',
         )}
       >
-        <RailBtn icon={BookOpen} label="Aula" onClick={() => setAba('aula')} />
-        <RailBtn icon={Layers} label="Flashcards" onClick={() => setAba('flashcards')} />
         <RailBtn icon={BookOpenText} label="Resumos" onClick={() => setSeletor('resumos')} />
+        <RailBtn icon={Layers} label="Flashcards" onClick={() => setAba('flashcards')} />
         <RailBtn icon={BookA} label="Termos" onClick={() => setAba('termos')} />
         <RailBtn icon={Highlighter} label="Grifo" onClick={() => setAba('grifo')} />
         <RailBtn icon={AlertTriangle} label="Pegadinhas" onClick={() => setAba('pegadinhas')} />
