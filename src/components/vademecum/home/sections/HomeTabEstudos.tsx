@@ -1,6 +1,6 @@
 import { Suspense, memo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronRight, ListChecks } from 'lucide-react';
+import { ChevronRight, ListChecks, Layers, FileQuestion, Timer, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
@@ -12,6 +12,47 @@ import HomeApresentacoesTimeline from './HomeApresentacoesTimeline';
 import { toast } from '@/hooks/use-toast';
 import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
 import HomeLivrosCarousel from '@/components/ferramentas/FerramentasLivrosCarrossel';
+import { shade } from '@/lib/leiTheme';
+import { haptic } from '@/lib/nativeHaptics';
+
+const PRATICAR_FUNCTIONS = [
+  {
+    id: 'flashcards',
+    title: 'Flashcards',
+    subtitle: 'Revisão ativa',
+    icon: Layers,
+    color: '#3b82f6', // blue
+    image: '/assets/praticar-flashcards.webp',
+    path: '/flashcards',
+  },
+  {
+    id: 'questoes',
+    title: 'Questões',
+    subtitle: 'Teste de fixação',
+    icon: FileQuestion,
+    color: '#10b981', // emerald
+    image: '/assets/praticar-questoes.webp',
+    path: '/questoes',
+  },
+  {
+    id: 'simulados',
+    title: 'Simulados',
+    subtitle: 'Treino real',
+    icon: Timer,
+    color: '#8b5cf6', // violet
+    image: '/assets/praticar-simulados.webp',
+    path: '/simulados',
+  },
+  {
+    id: 'leiseca',
+    title: 'Lei Seca',
+    subtitle: 'Tiro ao alvo',
+    icon: Target,
+    color: '#f43f5e', // rose
+    image: '/assets/praticar-leiseca.webp',
+    path: '/praticar',
+  }
+];
 import { GRID_CATS, EMALTA_CATS, Cat } from './homeSectionsData';
 import HomeEmAltaCarousel from '@/components/vademecum/home/carousel/HomeEmAltaCarousel';
 interface HomeTabEstudosProps {
@@ -105,32 +146,58 @@ const HomeTabEstudos = ({
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4">
-              <HomeCard
-                icon={FlashcardsIcon}
-                label="Flashcards"
-                sublabel="Revisão espaçada"
-                color="#00FFAA"
-                iconStrokeWidth={1.5}
-                delay={0}
-                className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
-                onClick={() => navigate('/flashcards')}
-                data-track="home_card_click"
-                data-track-name="Flashcards"
-                data-track-section="praticar"
-              />
-              <HomeCard
-                icon={ListChecks}
-                label="Questões"
-                sublabel="Treino focado"
-                color="#FF4D00"
-                iconStrokeWidth={1.5}
-                delay={0.05}
-                className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
-                onClick={() => navigate('/questoes')}
-                data-track="home_card_click"
-                data-track-name="Questões"
-                data-track-section="praticar"
-              />
+              {PRATICAR_FUNCTIONS.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    haptic.selection();
+                    navigate(item.path);
+                  }}
+                  className="relative flex flex-col shadow-md rounded-2xl group transition-all duration-300 w-full h-[116px] sm:h-[122px] text-left cursor-pointer overflow-hidden focus-visible:outline-none hover:-translate-y-1"
+                >
+                  <div 
+                    className="absolute inset-0 rounded-2xl pointer-events-none transition-all duration-300 shadow-md group-hover:opacity-100 opacity-95"
+                    style={{ background: `linear-gradient(135deg, ${item.color} 0%, ${shade(item.color, -0.3)} 100%)` }}
+                  >
+                    <item.icon
+                      className="absolute -right-2 -bottom-2 w-20 h-20 text-white/[0.15] drop-shadow-md group-hover:scale-105 group-hover:text-white/[0.2] transition-all duration-300"
+                      strokeWidth={1.3}
+                    />
+                    <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-white/10 blur-xl group-hover:bg-white/20 transition-all" />
+                  </div>
+
+                  {item.image && (
+                    <div className="absolute right-0 w-auto h-[105px] max-w-none pointer-events-none z-10 transition-all duration-300 origin-bottom group-hover:scale-[1.06] -top-4 drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] group-hover:-top-5 group-hover:drop-shadow-[0_12px_24px_rgba(0,0,0,0.7)]">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="h-full w-auto object-contain"
+                      />
+                    </div>
+                  )}
+
+                  <div className="relative z-20 flex flex-col justify-between w-full h-full p-3 pointer-events-none">
+                    <div className="flex justify-between items-start">
+                      <item.icon
+                        className="w-5 h-5 text-white shrink-0 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] group-hover:scale-110 transition-transform duration-200"
+                        strokeWidth={1.8}
+                      />
+                    </div>
+                    
+                    <div className="flex justify-between items-end mt-auto">
+                      <div className="flex flex-col">
+                        <span className="font-display text-white text-[16px] sm:text-[18px] font-black tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] leading-none">
+                          {item.title}
+                        </span>
+                        <span className="text-white/80 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest mt-1.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+                          {item.subtitle}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
 
