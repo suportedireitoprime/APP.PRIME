@@ -23,6 +23,7 @@ import {
   QuestaoReportDrawer,
 } from './chunks';
 import { QuestaoAcoesBar } from './QuestaoAcoesBar';
+import { playPaperSlideSound } from '@/lib/paperSound';
 
 const db = supabase as any;
 
@@ -129,10 +130,12 @@ const ResolverPadrao = ({
           setSwipeDir(1);
           setIdx((i) => i + 1);
           haptic.selection?.();
+          playPaperSlideSound();
         } else if (info.offset.x > 0 && idx > 0) {
           setSwipeDir(-1);
           setIdx((i) => i - 1);
           haptic.selection?.();
+          playPaperSlideSound();
         }
       }
     },
@@ -353,13 +356,16 @@ const ResolverPadrao = ({
           responder();
         } else if (resp && idx < questoes.length - 1) {
           setIdx((i) => i + 1);
+          playPaperSlideSound();
         }
       } else if (e.key === 'ArrowRight' && idx < questoes.length - 1) {
         e.preventDefault();
         setIdx((i) => i + 1);
+        playPaperSlideSound();
       } else if (e.key === 'ArrowLeft' && idx > 0) {
         e.preventDefault();
         setIdx((i) => i - 1);
+        playPaperSlideSound();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -490,7 +496,10 @@ const ResolverPadrao = ({
               idxAtual={idx}
               respostas={respostas}
               questoesIdMap={questoes.map((q) => q.id)}
-              onSelect={setIdx}
+              onSelect={(i) => {
+                setIdx(i);
+                playPaperSlideSound();
+              }}
               className="grid-cols-5 gap-2"
             />
           </div>
@@ -525,7 +534,10 @@ const ResolverPadrao = ({
           }
           setComentarioAberto(true);
         }}
-        onProximaQuestao={() => setIdx((i) => i + 1)}
+        onProximaQuestao={() => {
+          setIdx((i) => i + 1);
+          playPaperSlideSound();
+        }}
         onNovoBloco={onNovoBloco}
       />
 
@@ -542,7 +554,10 @@ const ResolverPadrao = ({
         idxAtual={idx}
         respostas={respostas}
         questoesIdMap={questoes.map((q) => q.id)}
-        onSelect={setIdx}
+        onSelect={(i) => {
+          setIdx(i);
+          playPaperSlideSound();
+        }}
       />
     </div>
   );
