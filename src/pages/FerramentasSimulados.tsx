@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { PlayCircle, Search, FileText, FileSignature, GraduationCap, Scale, ChevronRight, ArrowLeft, History, BarChart3, ExternalLink, ChevronDown, ChevronUp, Info } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -23,8 +23,9 @@ interface SimuladoItem {
 
 export default function FerramentasSimulados() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(location.state?.category || null);
   const [selectedSimulado, setSelectedSimulado] = useState<SimuladoItem | null>(null);
   const [isStarting, setIsStarting] = useState(false);
   const [previewPdfUrl, setPreviewPdfUrl] = useState<string | null>(null);
@@ -225,11 +226,11 @@ export default function FerramentasSimulados() {
                 className="w-full bg-card rounded-2xl border border-border hover:border-primary/30 transition-all duration-300 flex items-center justify-between p-4 sm:p-5 hover:bg-muted/30 text-left"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center bg-primary/10 text-primary">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center shrink-0">
                     {category.toLowerCase().includes('juiz') || category.toLowerCase().includes('direito') ? (
-                      <Scale className="w-6 h-6 sm:w-7 sm:h-7" />
+                      <img src="/src/assets/hero-figures/09-judge.webp" alt="Juiz" className="w-full h-full object-contain object-left drop-shadow-md" />
                     ) : (
-                      <GraduationCap className="w-6 h-6 sm:w-7 sm:h-7" />
+                      <img src="/src/assets/lei-cover-eoab.webp" alt="OAB" className="w-full h-full object-contain object-left drop-shadow-md" />
                     )}
                   </div>
                   <div>

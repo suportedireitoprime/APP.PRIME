@@ -96,12 +96,16 @@ export default function Simulados() {
             {categorias?.map((exam) => (
               <button 
                 key={exam.id}
-                onClick={() => navigate('/ferramentas/simulados')}
+                onClick={() => navigate('/ferramentas/simulados', { state: { category: exam.name } })}
                 className="w-full bg-card rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 flex items-center justify-between p-4 sm:p-5 hover:bg-muted/30 text-left group shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98]"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-primary/10 text-primary shrink-0">
-                    <FileSignature className="w-6 h-6" />
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0">
+                    {exam.name.toLowerCase().includes('juiz') || exam.name.toLowerCase().includes('direito') ? (
+                      <img src="/src/assets/hero-figures/09-judge.webp" alt="Juiz" className="w-full h-full object-contain object-left drop-shadow-md" />
+                    ) : (
+                      <img src="/src/assets/lei-cover-eoab.webp" alt="OAB" className="w-full h-full object-contain object-left drop-shadow-md" />
+                    )}
                   </div>
                   <div>
                     <h3 className="font-display font-bold text-base sm:text-lg text-foreground tracking-tight group-hover:text-primary transition-colors">
