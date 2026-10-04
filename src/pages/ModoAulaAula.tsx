@@ -127,7 +127,11 @@ export default function ModoAulaAula() {
     if (!mesmoTrecho) el.src = trechos[idx].url;
     const aplicar = () => { el.currentTime = offset; void el.play().then(() => setTocando(true)).catch(() => {}); };
     if (mesmoTrecho && el.readyState >= 1) aplicar();
-    else el.addEventListener('loadedmetadata', aplicar, { once: true });
+    else {
+      el.addEventListener('loadedmetadata', aplicar, { once: true });
+      // Remove listener se desmontar ou recarregar antes do evento disparar
+      return () => el.removeEventListener('loadedmetadata', aplicar);
+    }
   }, [trechos, duracaoTotal]);
 
   const alternarPlay = () => {
