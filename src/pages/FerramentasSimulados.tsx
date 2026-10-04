@@ -285,10 +285,24 @@ export default function FerramentasSimulados() {
                       
                       <div className="p-5 flex-1 flex flex-col items-start w-full relative z-10">
                         <div className="flex justify-between items-start mb-4 w-full">
-                          <div className="flex items-center text-primary relative z-30">
+                          <div className="flex items-center text-primary relative z-30 gap-2">
                             <span className="text-xl sm:text-2xl font-black tracking-tighter drop-shadow-sm">
                               {sim.year || 'ND'}
                             </span>
+                            {/* "Bandeira" (Badge do Estado) */}
+                            {(() => {
+                              const ufMatch = sim.exam?.name?.match(/TJ([A-Z]{2})/i);
+                              if (ufMatch) {
+                                return (
+                                  <div className="flex items-center justify-center bg-zinc-800 border border-white/10 rounded overflow-hidden shadow-sm h-5 sm:h-6 px-1.5 gap-1">
+                                    <span className="text-[10px] sm:text-[11px] font-bold text-zinc-300 tracking-wider">
+                                      🇧🇷 {ufMatch[1].toUpperCase()}
+                                    </span>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            })()}
                           </div>
                         </div>
                         
@@ -549,42 +563,42 @@ export default function FerramentasSimulados() {
               A Carreira de Juiz de Direito Substituto
             </h2>
             <p className="text-zinc-400 text-sm leading-relaxed mb-8">
-              Conheça tudo sobre uma das carreiras mais respeitadas e almejadas da Magistratura Estadual.
+              Conheça tudo sobre uma das carreiras mais respeitadas, desafiadoras e almejadas da Magistratura Estadual Brasileira.
             </p>
 
             <div className="space-y-8">
               {/* Seção 1 */}
               <section>
-                <h3 className="text-sm font-bold uppercase tracking-widest text-primary mb-3">O que é?</h3>
+                <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-primary mb-3">O que é?</h3>
                 <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-4 text-sm text-zinc-300 leading-relaxed space-y-3">
                   <p>
-                    O Juiz de Direito Substituto é a porta de entrada para a carreira da Magistratura Estadual. Ele atua suprindo as necessidades de diferentes varas e comarcas, cobrindo férias, licenças ou auxiliando juízes titulares.
+                    O <strong>Juiz de Direito Substituto</strong> representa a porta de entrada vitalícia para a carreira da Magistratura Estadual. Após a posse, ele atua suprindo as necessidades jurisdicionais de diversas varas e comarcas, seja cobrindo férias, licenças médicas, vacâncias temporárias ou auxiliando juízes titulares em varas congestionadas.
                   </p>
                   <p>
-                    Apesar de "substituto", ele possui as <strong>mesmas garantias, deveres e poderes judicantes</strong> de um juiz titular.
+                    Apesar da nomenclatura "substituto", ele possui as <strong>exatamente as mesmas garantias constitucionais, deveres e poderes judicantes</strong> de um juiz titular. Suas sentenças, decisões e condução de audiências têm o mesmo peso e autoridade perante a lei.
                   </p>
                 </div>
               </section>
 
               {/* Seção 2 */}
               <section>
-                <h3 className="text-sm font-bold uppercase tracking-widest text-primary mb-3">Linha do Tempo</h3>
+                <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-primary mb-3">Linha do Tempo</h3>
                 <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-4">
                   <div className="relative pl-6 border-l border-zinc-800 space-y-6">
                     <div className="relative">
-                      <div className="absolute w-3 h-3 bg-primary rounded-full -left-[1.90rem] top-1.5" />
-                      <h4 className="text-white font-semibold text-sm">Aprovação no Concurso</h4>
-                      <p className="text-xs text-zinc-400 mt-1">Ingresso como Juiz Substituto nas entrâncias iniciais.</p>
+                      <div className="absolute w-3 h-3 bg-primary rounded-full -left-[1.90rem] top-1.5 shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
+                      <h4 className="text-white font-display uppercase tracking-[0.15em] text-[13px] font-bold">Aprovação no Concurso</h4>
+                      <p className="text-xs text-zinc-400 mt-1.5 leading-relaxed">Posse e ingresso imediato como Juiz Substituto nas entrâncias iniciais, passando obrigatoriamente por curso de formação na Escola da Magistratura.</p>
                     </div>
                     <div className="relative">
                       <div className="absolute w-3 h-3 bg-zinc-700 rounded-full -left-[1.90rem] top-1.5 border-2 border-[#0a0a0a]" />
-                      <h4 className="text-white font-semibold text-sm">Juiz de Direito (Titular)</h4>
-                      <p className="text-xs text-zinc-400 mt-1">Promoção por antiguidade ou merecimento para assumir uma vara específica.</p>
+                      <h4 className="text-white font-display uppercase tracking-[0.15em] text-[13px] font-bold">Juiz de Direito (Titular)</h4>
+                      <p className="text-xs text-zinc-400 mt-1.5 leading-relaxed">Promoção alcançada por critérios alternados de antiguidade ou merecimento, assumindo a titularidade definitiva de uma vara específica (Ex: 1ª Vara Cível).</p>
                     </div>
                     <div className="relative">
                       <div className="absolute w-3 h-3 bg-zinc-700 rounded-full -left-[1.90rem] top-1.5 border-2 border-[#0a0a0a]" />
-                      <h4 className="text-white font-semibold text-sm">Desembargador</h4>
-                      <p className="text-xs text-zinc-400 mt-1">Promoção ao Tribunal de Justiça (2ª Instância).</p>
+                      <h4 className="text-white font-display uppercase tracking-[0.15em] text-[13px] font-bold">Desembargador</h4>
+                      <p className="text-xs text-zinc-400 mt-1.5 leading-relaxed">O ápice da carreira no estado. Promoção ao Tribunal de Justiça (2ª Instância), julgando recursos colegiados em Câmaras ou Turmas.</p>
                     </div>
                   </div>
                 </div>
@@ -592,33 +606,48 @@ export default function FerramentasSimulados() {
 
               {/* Seção 3 */}
               <section>
-                <h3 className="text-sm font-bold uppercase tracking-widest text-primary mb-3">Salário e Benefícios</h3>
-                <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-4 text-sm text-zinc-300">
-                  <p className="mb-3">
-                    A remuneração inicial (subsídio) varia conforme o Estado, mas gira em torno de <strong>R$ 32.000 a R$ 34.000</strong> brutos.
+                <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-primary mb-3">Salário e Benefícios</h3>
+                <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-4 text-sm text-zinc-300 space-y-3">
+                  <p>
+                    A remuneração inicial (subsídio) varia conforme a legislação estadual, mas atualmente a média nacional gira em torno de <strong>R$ 32.000 a R$ 35.000</strong> brutos mensais para o cargo inicial.
                   </p>
                   <p>
-                    Além do subsídio, os juízes podem receber benefícios (dependendo do TJ e da legislação local) como auxílio-moradia, auxílio-alimentação e auxílio-saúde.
+                    Além do subsídio principal garantido por lei, os magistrados possuem direito a diversas indenizações e benefícios (variáveis por TJ), que comumente incluem:
                   </p>
+                  <ul className="list-disc list-inside space-y-1.5 text-xs text-zinc-400 ml-2">
+                    <li>Auxílio-moradia (quando aplicável);</li>
+                    <li>Auxílio-alimentação e Auxílio-saúde;</li>
+                    <li>Gratificação por acúmulo de acervo/jurisdição;</li>
+                    <li>Férias de 60 dias anuais (conversíveis em pecúnia quando imperiosa necessidade);</li>
+                  </ul>
                 </div>
               </section>
 
               {/* Seção 4 */}
               <section>
-                <h3 className="text-sm font-bold uppercase tracking-widest text-primary mb-3">Requisitos (O que precisa?)</h3>
+                <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-primary mb-3">Requisitos (O que precisa?)</h3>
                 <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-4">
-                  <ul className="space-y-3">
+                  <ul className="space-y-4">
                     <li className="flex items-start gap-3">
                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
-                      <span className="text-sm text-zinc-300">Bacharelado em Direito reconhecido pelo MEC.</span>
+                      <div>
+                        <span className="text-[13px] font-bold text-white">Formação Acadêmica</span>
+                        <p className="text-xs text-zinc-400 mt-1">Ser Bacharel em Direito por instituição oficialmente reconhecida pelo MEC.</p>
+                      </div>
                     </li>
                     <li className="flex items-start gap-3">
                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
-                      <span className="text-sm text-zinc-300">Mínimo de <strong>3 anos de atividade jurídica</strong> após a colação de grau (comprovada até a inscrição definitiva).</span>
+                      <div>
+                        <span className="text-[13px] font-bold text-white">Prática Jurídica</span>
+                        <p className="text-xs text-zinc-400 mt-1">Comprovar no mínimo <strong>3 anos de atividade jurídica</strong> após a colação de grau (documentada na fase da inscrição definitiva).</p>
+                      </div>
                     </li>
                     <li className="flex items-start gap-3">
                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
-                      <span className="text-sm text-zinc-300">Aprovação nas 5 fases do rigoroso concurso público.</span>
+                      <div>
+                        <span className="text-[13px] font-bold text-white">Aprovação nas 5 Fases do Concurso</span>
+                        <p className="text-xs text-zinc-400 mt-1">1. Prova Objetiva; 2. Provas Escritas (Discursiva e Sentenças); 3. Sindicância, Saúde e Psicotécnico; 4. Prova Oral; 5. Avaliação de Títulos.</p>
+                      </div>
                     </li>
                   </ul>
                 </div>
@@ -626,24 +655,29 @@ export default function FerramentasSimulados() {
 
               {/* Seção 5 */}
               <section>
-                <h3 className="text-sm font-bold uppercase tracking-widest text-red-400 mb-3">O que NÃO pode fazer (Vedações)</h3>
+                <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-red-400 mb-3">Vedações (O que NÃO pode fazer)</h3>
                 <div className="bg-red-950/20 border border-red-900/30 rounded-2xl p-4">
+                  <p className="text-xs text-zinc-400 mb-3">O cargo exige dedicação integral, sendo expressamente proibido pela Constituição (LOMAN):</p>
                   <ul className="space-y-3">
                     <li className="flex items-start gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
-                      <span className="text-sm text-zinc-300">Exercer a advocacia.</span>
+                      <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0 shadow-[0_0_5px_rgba(239,68,68,0.8)]" />
+                      <span className="text-[13px] text-zinc-300">Exercer, ainda que em disponibilidade, outro cargo ou função, salvo <strong>uma única de magistério</strong>.</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
-                      <span className="text-sm text-zinc-300">Exercer qualquer outro cargo ou função, exceto <strong>uma</strong> de magistério.</span>
+                      <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0 shadow-[0_0_5px_rgba(239,68,68,0.8)]" />
+                      <span className="text-[13px] text-zinc-300">Exercer a advocacia sob qualquer hipótese.</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
-                      <span className="text-sm text-zinc-300">Dedicar-se a atividade político-partidária.</span>
+                      <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0 shadow-[0_0_5px_rgba(239,68,68,0.8)]" />
+                      <span className="text-[13px] text-zinc-300">Dedicar-se a atividade político-partidária (filiação partidária é proibida).</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
-                      <span className="text-sm text-zinc-300">Receber honorários, custas ou participações em processos.</span>
+                      <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0 shadow-[0_0_5px_rgba(239,68,68,0.8)]" />
+                      <span className="text-[13px] text-zinc-300">Receber honorários, percentagens, custas ou participações em processos.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0 shadow-[0_0_5px_rgba(239,68,68,0.8)]" />
+                      <span className="text-[13px] text-zinc-300">Exercer o comércio ou participar de sociedade comercial empresarial (exceto como mero acionista).</span>
                     </li>
                   </ul>
                 </div>
