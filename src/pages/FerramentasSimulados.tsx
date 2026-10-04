@@ -277,10 +277,14 @@ export default function FerramentasSimulados() {
                         <div className="absolute top-0 right-0 w-20 h-20 bg-primary/5 rounded-bl-[100%] transition-transform group-hover:scale-110" />
                       </div>
                       
-                      {/* Imagem 3D vazada (só aparece se for juiz/magistratura) */}
-                      {sim.exam?.name?.toLowerCase().includes('juiz') && (
+                      {/* Imagens 3D vazadas */}
+                      {sim.exam?.name?.toLowerCase().includes('juiz') ? (
                         <div className="absolute right-0 sm:right-2 bottom-0 h-[170px] sm:h-[190px] z-20 pointer-events-none drop-shadow-2xl flex items-end">
                           <img src="/assets/praticar-juiz.png" alt="Juiz" className="w-auto h-full object-contain object-bottom" />
+                        </div>
+                      ) : (
+                        <div className="absolute right-0 sm:right-2 bottom-0 h-[170px] sm:h-[190px] z-20 pointer-events-none drop-shadow-2xl flex items-end">
+                          <img src="/assets/eoab-woman-fixed.webp" alt="OAB" className="w-auto h-[120%] object-contain object-bottom origin-bottom scale-110" />
                         </div>
                       )}
                       

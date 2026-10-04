@@ -14,7 +14,7 @@ export default function Simulados() {
     <PageHeader
       title="Simulados"
       subtitle="Provas e Cadernos"
-      onBack={() => navigate(-1)}
+      onBack={() => navigate('/ferramentas')}
     />
   );
 
@@ -62,7 +62,7 @@ export default function Simulados() {
       <div className="relative z-10 p-4 sm:p-6 lg:p-8 space-y-6 max-w-[1200px] mx-auto pb-[calc(7rem+var(--sai-bottom))] lg:pb-8">
         
         <button 
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/ferramentas')}
           className="hidden sm:flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors font-medium mb-4"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -102,9 +102,9 @@ export default function Simulados() {
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0">
                     {exam.name.toLowerCase().includes('juiz') || exam.name.toLowerCase().includes('direito') ? (
-                      <img src="/src/assets/hero-figures/09-judge.webp" alt="Juiz" className="w-full h-full object-contain object-left drop-shadow-md" />
+                      <img src="/assets/praticar-juiz.png" alt="Juiz" className="w-full h-full object-contain object-left drop-shadow-md" />
                     ) : (
-                      <img src="/src/assets/lei-cover-eoab.webp" alt="OAB" className="w-full h-full object-contain object-left drop-shadow-md" />
+                      <img src="/assets/eoab-woman-fixed.webp" alt="OAB" className="w-full h-full object-contain object-left drop-shadow-md scale-125 origin-center" />
                     )}
                   </div>
                   <div>
