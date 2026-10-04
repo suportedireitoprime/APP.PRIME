@@ -66,8 +66,8 @@ export function TamanhoTextoFab({ fs, setFs }: { fs: number; setFs: (n: number) 
 function formatarComentario(texto: string | undefined): string {
   if (!texto) return '';
   return texto
-    // Add newlines before (A) Incorreta, (B) Incorreta, etc. and bold them
-    .replace(/\(([A-E])\)\s*(Incorreta|Correta|Correto|Incorreto)[\.:-]?/g, '\n\n**($1) $2:**')
+    // Add newlines before (A) Incorreta, (A), (B) e (C) Incorretas, etc. and bold them
+    .replace(/((?:\([A-E]\)(?:,\s*|\s+e\s+)*)+)\s*(Incorret[ao]s?|Corret[ao]s?)[\.:-]?/gi, '\n\n**$1 $2:** ')
     // Highlight Súmulas
     .replace(/(Súmula\s+\d+\s+do\s+[A-Z]+)/gi, '**$1**')
     // Highlight Articles
