@@ -268,6 +268,7 @@ const TesesSTF = lazy(() => import("./pages/TesesTribunal.tsx").then(m => ({ def
 const PesquisasProntasTema = lazy(() => import("./pages/PesquisasProntasTema.tsx"));
 const AdminPesquisasProntas = lazy(() => import("./pages/AdminPesquisasProntas.tsx"));
 const AdminQuestoes = lazy(() => import("./pages/AdminQuestoes.tsx"));
+const AdminGeracaoFuncoes = lazy(() => import("./pages/AdminGeracaoFuncoes.tsx"));
 const Questoes = lazy(() => import("./pages/Questoes.tsx"));
 const Simulados = lazy(() => import("./pages/Simulados.tsx"));
 const QuestoesAreas = lazy(() => import("./pages/QuestoesAreas.tsx"));
@@ -1326,6 +1327,7 @@ function AnimatedRoutes() {
           <Route path="/questoes/desempenho" element={<ProtectedRoute><PageTransition instant><QuestoesDesempenho /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/historico" element={<ProtectedRoute><PageTransition instant><QuestoesHistorico /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-questoes" element={<ProtectedRoute><PageTransition><AdminQuestoes /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-geracao-funcoes" element={<ProtectedRoute><PageTransition><AdminGeracaoFuncoes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-simulados" element={<ProtectedRoute><PageTransition><AdminSimulados /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/pilulas" element={<ProtectedRoute><PageTransition><AdminPilulas /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/resumo-livro-audio" element={<ProtectedRoute><PageTransition><AdminResumoLivroAudioEditar /></PageTransition></ProtectedRoute>} />
