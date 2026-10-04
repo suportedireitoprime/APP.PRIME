@@ -33,10 +33,17 @@ function NativeBackButtonHandler() {
 
 // Boot GA4 o mais cedo possível (Consent Mode v2 default = denied).
 if (typeof window !== "undefined") {
-  initAnalytics();
-  initNavTelemetry();
-  import("@/lib/enableMouseDragScroll").then((m) => m.enableMouseDragScroll());
-  import("@/lib/appMetrics").then((m) => m.startAppMetrics());
+  const scheduleAnalytics = () => {
+    initAnalytics();
+    initNavTelemetry();
+    import("@/lib/enableMouseDragScroll").then((m) => m.enableMouseDragScroll());
+    import("@/lib/appMetrics").then((m) => m.startAppMetrics());
+  };
+  if ('requestIdleCallback' in window) {
+    (window as any).requestIdleCallback(scheduleAnalytics, { timeout: 3000 });
+  } else {
+    setTimeout(scheduleAnalytics, 1500);
+  }
 }
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
