@@ -87,11 +87,11 @@ async function fetchAcaoInner(body: Record<string, any>) {
   return payload;
 }
 
-/** Wrapper com timeout global de 30s para garantir que nunca trave */
+/** Wrapper com timeout global de 15s para garantir que nunca trave */
 async function fetchAcao(body: Record<string, any>) {
-  const GLOBAL_TIMEOUT = 30_000;
+  const GLOBAL_TIMEOUT = 15_000;
   const timeout = new Promise<never>((_, reject) =>
-    setTimeout(() => reject(new Error('Tempo limite excedido (30s). A IA pode estar sobrecarregada. Tente novamente.')), GLOBAL_TIMEOUT),
+    setTimeout(() => reject(new Error('Tempo limite excedido (15s). A IA pode estar sobrecarregada. Tente novamente.')), GLOBAL_TIMEOUT),
   );
   return Promise.race([fetchAcaoInner(body), timeout]);
 }
@@ -116,7 +116,7 @@ export function useQuestaoAcao(
     enabled: !!source && enabled,
     staleTime: 1000 * 60 * 60,
     gcTime: 1000 * 60 * 60 * 2,
-    retry: 1,
+    retry: 0,
   });
 }
 
