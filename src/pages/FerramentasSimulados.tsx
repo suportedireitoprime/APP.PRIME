@@ -172,7 +172,7 @@ export default function FerramentasSimulados() {
         ) : (
           <div className="relative py-4 max-w-3xl mx-auto animate-in fade-in slide-in-from-right-4 duration-300">
             {/* Linha vertical central */}
-            <div className="absolute left-[24px] sm:left-1/2 top-4 bottom-4 w-1 bg-border/50 sm:-translate-x-1/2 rounded-full" />
+            <div className="absolute left-[24px] sm:left-1/2 top-4 bottom-4 w-1 bg-border/50 -translate-x-1/2 rounded-full" />
             
             {groupedSimulados[selectedCategory]?.map((sim, index) => {
               // No desktop intercala direita/esquerda. No mobile todos ficam na direita da linha.
@@ -197,15 +197,15 @@ export default function FerramentasSimulados() {
                       
                       {/* Imagem 3D vazada (só aparece se for juiz/magistratura) */}
                       {sim.exam?.name?.toLowerCase().includes('juiz') && (
-                        <div className="absolute right-2 sm:right-4 bottom-0 w-[110px] sm:w-[140px] z-20 pointer-events-none drop-shadow-2xl flex items-end">
-                          <img src="/assets/praticar-juiz.png" alt="Juiz" className="w-full h-auto object-contain object-bottom" style={{ maxHeight: '140%' }} />
+                        <div className="absolute right-0 sm:right-2 bottom-0 h-[170px] sm:h-[190px] z-20 pointer-events-none drop-shadow-2xl flex items-end">
+                          <img src="/assets/praticar-juiz.png" alt="Juiz" className="w-auto h-full object-contain object-bottom" />
                         </div>
                       )}
                       
                       <div className="p-5 flex-1 flex flex-col items-start w-full relative z-10">
                         <div className="flex justify-between items-start mb-4 w-full">
-                          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-sm relative z-30">
-                            <span className="text-sm font-black tracking-tighter">
+                          <div className="flex items-center text-primary relative z-30">
+                            <span className="text-xl sm:text-2xl font-black tracking-tighter drop-shadow-sm">
                               {sim.year || 'ND'}
                             </span>
                           </div>
