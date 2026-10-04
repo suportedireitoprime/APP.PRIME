@@ -105,12 +105,19 @@ const identificarLeiPorTexto = (text: string) => {
 };
 
 const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
-  const [query, setQuery] = useState('');  const debouncedQuery = useDebounce(query, 300);
+  const [query, setQuery] = useState('');  
+  const [forceInstant, setForceInstant] = useState(false);
+  const debouncedQueryRaw = useDebounce(query, 300);
+  const debouncedQuery = forceInstant ? query : debouncedQueryRaw;
+  
   const [activeTab, setActiveTab] = useState<UnifiedTab>('tudo');
   
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-  const voice = useVoiceInput((text) => setQuery((prev) => (prev ? prev + ' ' : '') + text));
+  const voice = useVoiceInput((text) => {
+    setForceInstant(false);
+    setQuery((prev) => (prev ? prev + ' ' : '') + text);
+  });
   const [favVersion, setFavVersion] = useState(0);
 
   useEffect(() => {
@@ -123,6 +130,7 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
     if (open) {
       document.body.style.overflow = 'hidden';
       setQuery('');
+      setForceInstant(false);
       window.dispatchEvent(new CustomEvent('direitoprime:bottom-nav-visibility', { detail: { hidden: true } }));
     } else {
       document.body.style.overflow = '';
@@ -137,7 +145,10 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
   useEffect(() => {
     const handler = (e: Event) => {
       const s = (e as CustomEvent<string>).detail;
-      if (typeof s === 'string') setQuery(s);
+      if (typeof s === 'string') {
+        setForceInstant(true);
+        setQuery(s);
+      }
     };
     window.addEventListener('search:sugestao', handler);
     return () => window.removeEventListener('search:sugestao', handler);
