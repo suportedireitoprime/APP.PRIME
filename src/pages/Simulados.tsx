@@ -102,9 +102,9 @@ export default function Simulados() {
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 shrink-0 relative">
                     {exam.name.toLowerCase().includes('juiz') || exam.name.toLowerCase().includes('direito') ? (
-                      <img src="/assets/praticar-juiz.png" alt="Juiz" className="absolute bottom-[-10px] left-[-8px] h-[95px] w-auto max-w-none object-contain object-bottom drop-shadow-xl pointer-events-none z-20" />
+                      <img src="/assets/praticar-juiz.png" alt="Juiz" className="absolute bottom-[-10px] left-[-16px] h-[95px] w-auto max-w-none object-contain object-bottom drop-shadow-xl pointer-events-none z-20" />
                     ) : (
-                      <img src="/assets/eoab-woman-fixed.webp" alt="OAB" className="absolute bottom-[-10px] left-[-8px] h-[95px] w-auto max-w-none object-contain object-bottom drop-shadow-xl pointer-events-none z-20" />
+                      <img src="/assets/eoab-woman-fixed.webp" alt="OAB" className="absolute bottom-[-10px] left-[-16px] h-[95px] w-auto max-w-none object-contain object-bottom drop-shadow-xl pointer-events-none z-20" />
                     )}
                   </div>
                   <div>
