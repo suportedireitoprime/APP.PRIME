@@ -27,7 +27,10 @@ export const OPCOES_RESUMOS: SeletorOpcao[] = [
 
 export function PainelAcao({ source, tipo }: { source: Fonte; tipo: AcaoTipo }) {
   const { data, isLoading, error, refetch } = useQuestaoAcao(source, tipo, true);
-  if (isLoading) return <Carregando label={`Gerando ${TITULOS[tipo].toLowerCase()}…`} />;
+  if (isLoading) {
+    const loadingText = tipo === 'lei' ? 'Consultando lei seca…' : `Gerando ${TITULOS[tipo].toLowerCase()}…`;
+    return <Carregando label={loadingText} />;
+  }
   if (error || !data) return <Erro msg={error?.message} onRetry={() => refetch()} />;
 
   if (tipo === 'aula') {
