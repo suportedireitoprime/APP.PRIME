@@ -4,6 +4,7 @@ import type { Questao } from '@/hooks/useQuestoes';
 import { QuestaoAcoesBar } from '@/components/questoes/QuestaoAcoesBar';
 import { cn } from '@/lib/utils';
 import { haptic } from '@/lib/nativeHaptics';
+import { QuestaoReportDrawer } from './QuestaoReportDrawer';
 
 interface QuestaoEnunciadoCardProps {
   atual: Questao;
@@ -82,6 +83,17 @@ export function QuestaoEnunciadoCard({
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/30 to-transparent skew-x-12 z-0"
               />
             </button>
+            <QuestaoReportDrawer 
+              questaoId={atual.id} 
+              trigger={
+                <button
+                  aria-label="Reportar Erro"
+                  className="relative flex h-10 w-10 items-center justify-center rounded-full border border-rose-500/30 bg-rose-500/10 text-rose-500 transition-colors hover:bg-rose-500/20 active:opacity-70"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                </button>
+              }
+            />
           </div>
         </div>
 

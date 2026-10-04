@@ -106,7 +106,7 @@ export function QuestaoAcoesBar({
           layout === 'vertical'
             ? 'flex flex-col gap-2 w-full'
             : layout === 'grid'
-            ? 'grid grid-cols-3 sm:grid-cols-4 gap-2 w-full'
+            ? 'grid grid-cols-3 gap-2 w-full'
             : 'scrollbar-none -mx-1 flex w-full snap-x snap-mandatory items-stretch gap-1 overflow-x-auto px-1',
         )}
       >

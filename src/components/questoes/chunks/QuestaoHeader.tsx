@@ -6,7 +6,8 @@ interface QuestaoHeaderProps {
   streak: number;
   progresso: number;
   onBack?: () => void;
-  onReportarErro: () => void;
+  tempoNode?: React.ReactNode;
+  encerrarNode?: React.ReactNode;
 }
 
 export function QuestaoHeader({
@@ -14,7 +15,8 @@ export function QuestaoHeader({
   streak,
   progresso,
   onBack,
-  onReportarErro,
+  tempoNode,
+  encerrarNode,
 }: QuestaoHeaderProps) {
   return (
     <div className="sticky top-0 z-50 flex flex-col">
@@ -30,16 +32,16 @@ export function QuestaoHeader({
         ) : (
           <div className="h-10 w-10 shrink-0" />
         )}
-        <div className="flex-1 px-3 flex flex-col items-center justify-center">
-          <div className="flex items-center gap-2">
-            <p className="line-clamp-1 text-[16px] font-bold leading-tight">{disciplina || 'Questão'}</p>
+        <div className="flex-1 px-2 flex flex-col items-center justify-center min-w-0">
+          <div className="flex items-center gap-2 max-w-full">
+            <p className="truncate text-[16px] font-bold leading-tight">{disciplina || 'Questão'}</p>
             <AnimatePresence>
               {streak >= 3 && (
                 <motion.div
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0.8, opacity: 0 }}
-                  className="flex items-center gap-1 rounded-full bg-orange-500/20 px-2 py-0.5"
+                  className="flex items-center gap-1 rounded-full bg-orange-500/20 px-2 py-0.5 shrink-0"
                 >
                   <Trophy className="h-3 w-3 text-orange-500" />
                   <span className="text-[12px] font-bold text-orange-500">{streak}</span>
@@ -47,8 +49,11 @@ export function QuestaoHeader({
               )}
             </AnimatePresence>
           </div>
+          {tempoNode && <div className="mt-0.5">{tempoNode}</div>}
         </div>
-        <div className="h-10 w-10 shrink-0" />
+        <div className="flex shrink-0 items-center justify-end min-w-[40px]">
+          {encerrarNode || <div className="h-10 w-10 shrink-0" />}
+        </div>
       </div>
 
       {/* Barra de Progresso Viva */}

@@ -124,21 +124,6 @@ export default function FerramentasSimuladosResolver() {
 
   return (
     <div className="theme-questoes min-h-screen bg-background pb-[calc(8.5rem+var(--sai-bottom))]">
-      <PageHeader
-        title={rodando ? mmss : 'Simulado concluído'}
-        leading={
-          rodando ? (
-            <button
-              onClick={() => setShowConfirmModal(true)}
-              className="h-[38px] px-4 rounded-full bg-muted border border-border text-[13px] font-bold text-muted-foreground hover:bg-muted/80 hover:text-foreground transition-all flex items-center justify-center shadow-sm"
-            >
-              Encerrar
-            </button>
-          ) : undefined
-        }
-        onBack={rodando ? undefined : () => navigate('/ferramentas/simulados')}
-      />
-
       <div className="mx-auto w-full max-w-3xl flex-1 flex flex-col">
         {rodando ? (
           <>
@@ -149,6 +134,19 @@ export default function FerramentasSimuladosResolver() {
               onRegistrar={handleRegistrar}
               onNovoBloco={() => {}}
               vazioTexto="Não há questões cadastradas para este simulado."
+              tempoNode={
+                <div className="text-[14px] font-bold text-white/90 tabular-nums">
+                  {mmss}
+                </div>
+              }
+              encerrarNode={
+                <button
+                  onClick={() => setShowConfirmModal(true)}
+                  className="h-8 px-3 rounded-full bg-white/10 border border-white/20 text-[12px] font-bold text-white hover:bg-white/20 transition-all flex items-center justify-center shadow-sm whitespace-nowrap"
+                >
+                  Encerrar
+                </button>
+              }
             />
             <div className="px-4 pb-5">
               <button

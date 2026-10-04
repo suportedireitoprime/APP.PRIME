@@ -16,3 +16,11 @@ export function playPaperSlideSound(volume = 0.55) {
     // silencioso em caso de bloqueio de autoplay
   }
 }
+
+export function preloadPaperSlideSound() {
+  if (typeof window === 'undefined') return;
+  if (!paperAudio) {
+    paperAudio = new Audio('/sounds/mixkit-paper-slide-1530.wav');
+    paperAudio.preload = 'auto';
+  }
+}

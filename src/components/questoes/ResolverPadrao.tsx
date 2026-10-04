@@ -23,7 +23,7 @@ import {
   QuestaoReportDrawer,
 } from './chunks';
 import { QuestaoAcoesBar } from './QuestaoAcoesBar';
-import { playPaperSlideSound } from '@/lib/paperSound';
+import { playPaperSlideSound, preloadPaperSlideSound } from '@/lib/paperSound';
 
 const db = supabase as any;
 
@@ -74,6 +74,8 @@ type Props = {
   onBack?: () => void;
   vazioTexto?: string;
   sessaoId?: string | null;
+  tempoNode?: React.ReactNode;
+  encerrarNode?: React.ReactNode;
 };
 
 /** Player padrão de resolução: seleção → Responder → feedback → comentário + recursos. */
@@ -86,6 +88,8 @@ const ResolverPadrao = ({
   onBack,
   vazioTexto,
   sessaoId,
+  tempoNode,
+  encerrarNode,
 }: Props) => {
   const { user } = useAuth();
   const [idx, setIdx] = useState(0);
@@ -110,8 +114,9 @@ const ResolverPadrao = ({
   const resp = atual ? respostas[atual.id] : undefined;
   const correta = letraGabarito(atual?.gabarito_oficial);
 
-  // Flush da fila offline ao montar e quando a rede voltar
+  // Flush da fila offline ao montar e quando a rede voltar, além de pré-carregar áudio
   useEffect(() => {
+    preloadPaperSlideSound();
     flushRespostaQueue();
     const handleOnline = () => flushRespostaQueue();
     window.addEventListener('online', handleOnline);
@@ -421,19 +426,12 @@ const ResolverPadrao = ({
 
   const progresso = questoes.length > 0 ? (Object.keys(respostas).length / questoes.length) * 100 : 0;
 
-  const renderRightActionPortal = () => {
-    const el = document.getElementById('page-header-right-action');
-    if (!el) return null;
-    return createPortal(<QuestaoReportDrawer questaoId={atual.id} />, el);
-  };
-
   return (
     <div 
       ref={topoRef} 
       className={cn('flex min-h-screen flex-col bg-background', resp ? 'pb-[260px]' : 'pb-32')}
       style={{ '--tema-rgb': getDisciplinaColors(atual.disciplina) } as React.CSSProperties}
     >
-      {renderRightActionPortal()}
       {gateQuestoes.gateNode}
       {gateFuncoes.gateNode}
 
@@ -442,6 +440,8 @@ const ResolverPadrao = ({
         streak={streak}
         progresso={progresso}
         onBack={onBack}
+        tempoNode={tempoNode}
+        encerrarNode={encerrarNode}
       />
 
       <div
