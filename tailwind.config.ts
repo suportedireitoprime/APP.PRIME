@@ -89,6 +89,12 @@ export default {
       },
     },
     extend: {
+      borderRadius: {
+        lg: "1rem",
+        xl: "1rem",
+        "2xl": "1rem",
+        "3xl": "1.5rem",
+      },
       fontFamily: {
         display: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
         body: ['"Barlow"', 'system-ui', 'sans-serif'],
@@ -96,6 +102,7 @@ export default {
       },
       colors: {
         ...MONO_COLOR_ALIASES,
+        black: "#0d0f12",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

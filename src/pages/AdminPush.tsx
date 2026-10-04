@@ -12,6 +12,7 @@ import { Send, Clock, Trash2, CheckCircle2, XCircle, RefreshCw, LayoutDashboard,
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import ShapeGrid from '@/components/ui/ShapeGrid';
 
 interface PushCampaign {
   id: string;
@@ -188,7 +189,8 @@ export default function AdminPush() {
   });
 
   return (
-    <div className="min-h-dvh bg-background pb-12">
+    <div className="min-h-dvh bg-background pb-12 relative overflow-hidden">
+      <ShapeGrid />
       <PageHeader
         title={headerProps.title}
         subtitle={headerProps.subtitle}

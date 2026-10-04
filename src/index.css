@@ -20,6 +20,13 @@
   }
 }
 
+/* Item 4: Espaçamento de Tipografia em Títulos Uppercase */
+@layer base {
+  h1.uppercase, h2.uppercase, h3.uppercase, h4.uppercase, h5.uppercase, h6.uppercase, .uppercase-title {
+    @apply tracking-widest;
+  }
+}
+
 /* ============================================================
  * Edge-to-edge (Android 15+ / iOS notch)
  * Expõe --sai-* como alias de env(safe-area-inset-*). Componentes
