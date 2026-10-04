@@ -28,11 +28,13 @@ function hashKey(q: QuestaoInline) {
   return String(h);
 }
 
-async function fetchAcao(body: Record<string, any>) {
+async function fetchAcaoInner(body: Record<string, any>) {
   // Substitui a Edge Function por execução no Frontend para usar o OmniRoute diretamente
   const tipo = body.tipo as AcaoTipo;
   const questaoId = body.questaoId;
   const questaoInline = body.questao;
+
+  console.log('[fetchAcao] Início:', tipo, questaoId ? `id:${questaoId}` : 'inline');
 
   let chave = "";
   if (questaoId) {
@@ -48,6 +50,7 @@ async function fetchAcao(body: Record<string, any>) {
 
   if (chave) {
     // Busca no cache primeiro
+    console.log('[fetchAcao] Buscando cache…');
     const { data: cache } = await supabase
       .from("questoes_acoes_cache")
       .select("payload")
@@ -55,19 +58,26 @@ async function fetchAcao(body: Record<string, any>) {
       .eq("tipo", tipo)
       .maybeSingle();
 
-    if (cache?.payload) return cache.payload;
+    if (cache?.payload) {
+      console.log('[fetchAcao] Cache hit!');
+      return cache.payload;
+    }
+    console.log('[fetchAcao] Cache miss, gerando via IA…');
   }
 
   // Se não tem cache, gera via frontend
   let questaoData = questaoInline;
   if (questaoId && !questaoData) {
+    console.log('[fetchAcao] Buscando questão no Supabase…');
     const { data } = await supabase.from("questoes").select("*").eq("id", questaoId).maybeSingle();
     if (data) questaoData = data;
   }
 
   if (!questaoData) throw new Error("Questão não encontrada para geração de conteúdo");
 
+  console.log('[fetchAcao] Chamando gerarQuestaoAcaoFrontend…');
   const payload = await gerarQuestaoAcaoFrontend(tipo, questaoData);
+  console.log('[fetchAcao] Sucesso!');
 
   // Tenta salvar no cache (pode falhar se RLS bloquear, mas não deve quebrar a UI)
   if (chave && payload) {
@@ -75,6 +85,15 @@ async function fetchAcao(body: Record<string, any>) {
   }
 
   return payload;
+}
+
+/** Wrapper com timeout global de 30s para garantir que nunca trave */
+async function fetchAcao(body: Record<string, any>) {
+  const GLOBAL_TIMEOUT = 30_000;
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error('Tempo limite excedido (30s). A IA pode estar sobrecarregada. Tente novamente.')), GLOBAL_TIMEOUT),
+  );
+  return Promise.race([fetchAcaoInner(body), timeout]);
 }
 
 function chaveDe(source: string | QuestaoInline) {

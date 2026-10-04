@@ -299,15 +299,20 @@ let cachedOmniRouteKey: string | null = null;
 export async function getOmniRouteApiKey(): Promise<string> {
   if (cachedOmniRouteKey) return cachedOmniRouteKey;
   try {
-    const { data, error } = await supabase.functions.invoke('get-omniroute-key');
+    const edgeCall = supabase.functions.invoke('get-omniroute-key');
+    const timeout = new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout edge function')), 5000));
+    
+    // @ts-ignore
+    const { data, error } = await Promise.race([edgeCall, timeout]);
+    
     if (!error && data?.key) {
       cachedOmniRouteKey = data.key;
       return cachedOmniRouteKey;
     }
   } catch (err) {
-    console.error('Erro ao buscar OMNIROUTE_API_KEY do Supabase:', err);
+    console.warn('Fallback ativado: Erro ao buscar OMNIROUTE_API_KEY do Supabase:', err);
   }
-  // Fallback para fallback de localStorage se houver
+  // Fallback para localStorage se houver
   return localStorage.getItem('omniroute_test_api_key') || '';
 }
 
