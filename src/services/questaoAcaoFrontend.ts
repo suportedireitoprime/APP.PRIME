@@ -2,7 +2,7 @@ import { getOmniRouteApiKey } from './aiGatewayService';
 import type { AcaoTipo } from '../hooks/useQuestaoAcao';
 
 const GATEWAY = "https://omniroute-production-fb57.up.railway.app/v1/chat/completions";
-const MODEL = "antigravity/gemini-3.8-flash";
+const MODEL = "antigravity/gemini-3.7-flash-high";
 
 type Tipo = AcaoTipo | 'me-explique';
 
