@@ -29,6 +29,7 @@ export default function FerramentasSimulados() {
   const [isStarting, setIsStarting] = useState(false);
   const [previewPdfUrl, setPreviewPdfUrl] = useState<string | null>(null);
   const [previewPdfTitle, setPreviewPdfTitle] = useState<string>('');
+  const [showSobre, setShowSobre] = useState(false);
 
   const { data: simuladosList, isLoading } = useQuery({
     queryKey: ['simulados_list'],
@@ -499,9 +500,163 @@ export default function FerramentasSimulados() {
         </SheetContent>
       </Sheet>
 
+      {/* Menu Inferior Dock */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#0D0D0D] pb-[max(env(safe-area-inset-bottom),16px)] pt-3 border-t border-white/5">
+        <div className="mx-auto max-w-md px-4">
+          <div className="bg-zinc-900/90 backdrop-blur-md border border-white/10 rounded-2xl flex items-center justify-between p-1.5 shadow-lg">
+            <button className="flex flex-col items-center gap-1.5 py-2 px-4 rounded-xl text-primary bg-white/5 w-1/3 transition-colors">
+              <GraduationCap className="w-5 h-5" />
+              <span className="text-[10px] font-semibold tracking-wide">Simulados</span>
+            </button>
+            <button 
+              onClick={() => toast.info('Estatísticas em breve!')}
+              className="flex flex-col items-center gap-1.5 py-2 px-4 rounded-xl text-zinc-400 hover:text-zinc-200 hover:bg-white/5 transition-colors w-1/3"
+            >
+              <BarChart3 className="w-5 h-5" />
+              <span className="text-[10px] font-semibold tracking-wide">Estatísticas</span>
+            </button>
+            <button 
+              onClick={() => {
+                try { haptic.selection(); } catch {}
+                setShowSobre(true);
+              }}
+              className="flex flex-col items-center gap-1.5 py-2 px-4 rounded-xl text-zinc-400 hover:text-zinc-200 hover:bg-white/5 transition-colors w-1/3"
+            >
+              <Info className="w-5 h-5" />
+              <span className="text-[10px] font-semibold tracking-wide">Sobre</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal Sobre a Carreira */}
+      <Sheet open={showSobre} onOpenChange={setShowSobre}>
+        <SheetContent side="bottom" className="rounded-none sm:rounded-t-3xl bg-[#0a0a0a] border-white/10 p-0 overflow-hidden flex flex-col h-[100dvh] sm:h-[90vh] sm:max-w-xl sm:mx-auto">
+          <div className="p-6 flex-1 overflow-y-auto pb-32">
+            <div className="flex justify-between items-center mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                <Scale className="w-6 h-6 text-primary" />
+              </div>
+              <button 
+                onClick={() => setShowSobre(false)}
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-900 border border-white/10 text-zinc-400 hover:text-white transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5 -rotate-90" />
+              </button>
+            </div>
+            
+            <h2 className="text-2xl font-display font-bold text-white mb-2 leading-tight">
+              A Carreira de Juiz de Direito Substituto
+            </h2>
+            <p className="text-zinc-400 text-sm leading-relaxed mb-8">
+              Conheça tudo sobre uma das carreiras mais respeitadas e almejadas da Magistratura Estadual.
+            </p>
+
+            <div className="space-y-8">
+              {/* Seção 1 */}
+              <section>
+                <h3 className="text-sm font-bold uppercase tracking-widest text-primary mb-3">O que é?</h3>
+                <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-4 text-sm text-zinc-300 leading-relaxed space-y-3">
+                  <p>
+                    O Juiz de Direito Substituto é a porta de entrada para a carreira da Magistratura Estadual. Ele atua suprindo as necessidades de diferentes varas e comarcas, cobrindo férias, licenças ou auxiliando juízes titulares.
+                  </p>
+                  <p>
+                    Apesar de "substituto", ele possui as <strong>mesmas garantias, deveres e poderes judicantes</strong> de um juiz titular.
+                  </p>
+                </div>
+              </section>
+
+              {/* Seção 2 */}
+              <section>
+                <h3 className="text-sm font-bold uppercase tracking-widest text-primary mb-3">Linha do Tempo</h3>
+                <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-4">
+                  <div className="relative pl-6 border-l border-zinc-800 space-y-6">
+                    <div className="relative">
+                      <div className="absolute w-3 h-3 bg-primary rounded-full -left-[1.90rem] top-1.5" />
+                      <h4 className="text-white font-semibold text-sm">Aprovação no Concurso</h4>
+                      <p className="text-xs text-zinc-400 mt-1">Ingresso como Juiz Substituto nas entrâncias iniciais.</p>
+                    </div>
+                    <div className="relative">
+                      <div className="absolute w-3 h-3 bg-zinc-700 rounded-full -left-[1.90rem] top-1.5 border-2 border-[#0a0a0a]" />
+                      <h4 className="text-white font-semibold text-sm">Juiz de Direito (Titular)</h4>
+                      <p className="text-xs text-zinc-400 mt-1">Promoção por antiguidade ou merecimento para assumir uma vara específica.</p>
+                    </div>
+                    <div className="relative">
+                      <div className="absolute w-3 h-3 bg-zinc-700 rounded-full -left-[1.90rem] top-1.5 border-2 border-[#0a0a0a]" />
+                      <h4 className="text-white font-semibold text-sm">Desembargador</h4>
+                      <p className="text-xs text-zinc-400 mt-1">Promoção ao Tribunal de Justiça (2ª Instância).</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Seção 3 */}
+              <section>
+                <h3 className="text-sm font-bold uppercase tracking-widest text-primary mb-3">Salário e Benefícios</h3>
+                <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-4 text-sm text-zinc-300">
+                  <p className="mb-3">
+                    A remuneração inicial (subsídio) varia conforme o Estado, mas gira em torno de <strong>R$ 32.000 a R$ 34.000</strong> brutos.
+                  </p>
+                  <p>
+                    Além do subsídio, os juízes podem receber benefícios (dependendo do TJ e da legislação local) como auxílio-moradia, auxílio-alimentação e auxílio-saúde.
+                  </p>
+                </div>
+              </section>
+
+              {/* Seção 4 */}
+              <section>
+                <h3 className="text-sm font-bold uppercase tracking-widest text-primary mb-3">Requisitos (O que precisa?)</h3>
+                <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-4">
+                  <ul className="space-y-3">
+                    <li className="flex items-start gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                      <span className="text-sm text-zinc-300">Bacharelado em Direito reconhecido pelo MEC.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                      <span className="text-sm text-zinc-300">Mínimo de <strong>3 anos de atividade jurídica</strong> após a colação de grau (comprovada até a inscrição definitiva).</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                      <span className="text-sm text-zinc-300">Aprovação nas 5 fases do rigoroso concurso público.</span>
+                    </li>
+                  </ul>
+                </div>
+              </section>
+
+              {/* Seção 5 */}
+              <section>
+                <h3 className="text-sm font-bold uppercase tracking-widest text-red-400 mb-3">O que NÃO pode fazer (Vedações)</h3>
+                <div className="bg-red-950/20 border border-red-900/30 rounded-2xl p-4">
+                  <ul className="space-y-3">
+                    <li className="flex items-start gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
+                      <span className="text-sm text-zinc-300">Exercer a advocacia.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
+                      <span className="text-sm text-zinc-300">Exercer qualquer outro cargo ou função, exceto <strong>uma</strong> de magistério.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
+                      <span className="text-sm text-zinc-300">Dedicar-se a atividade político-partidária.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
+                      <span className="text-sm text-zinc-300">Receber honorários, custas ou participações em processos.</span>
+                    </li>
+                  </ul>
+                </div>
+              </section>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+
     </DesktopPageLayout>
   );
 }
+
 
 
 
