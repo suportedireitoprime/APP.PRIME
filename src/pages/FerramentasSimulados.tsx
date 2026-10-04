@@ -5,7 +5,7 @@ import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import { PlayCircle, Search, FileText, FileSignature, GraduationCap, Scale, ChevronRight, ArrowLeft, History, BarChart3, ExternalLink } from 'lucide-react';
+import { PlayCircle, Search, FileText, FileSignature, GraduationCap, Scale, ChevronRight, ArrowLeft, History, BarChart3, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { haptic } from '@/utils/haptic';
 
@@ -45,6 +45,51 @@ export default function FerramentasSimulados() {
       return data as any[];
     }
   });
+
+  const { data: raioXData, isLoading: loadingRaioX } = useQuery({
+    queryKey: ['simulado_raiox', selectedSimulado?.id],
+    queryFn: async () => {
+      if (!selectedSimulado) return null;
+      const { data, error } = await supabase
+        .from('simulado_questions')
+        .select('disciplina, assunto')
+        .eq('simulado_id', selectedSimulado.id);
+        
+      if (error) throw error;
+      
+      const total = data.length;
+      if (total === 0) return [];
+      
+      const counts: Record<string, { count: number, assuntos: Record<string, number> }> = {};
+      
+      data.forEach((q: any) => {
+        const d = q.disciplina || 'Outras Disciplinas';
+        const a = q.assunto || 'Tópico Geral';
+        if (!counts[d]) counts[d] = { count: 0, assuntos: {} };
+        counts[d].count++;
+        if (!counts[d].assuntos[a]) counts[d].assuntos[a] = 0;
+        counts[d].assuntos[a]++;
+      });
+      
+      return Object.entries(counts)
+        .map(([name, info]) => ({
+          name,
+          percent: Math.round((info.count / total) * 100),
+          count: info.count,
+          assuntos: Object.entries(info.assuntos)
+            .map(([assunto, c]) => ({ name: assunto, count: c as number, percent: Math.round((c as number / info.count) * 100) }))
+            .sort((a, b) => b.count - a.count)
+        }))
+        .sort((a, b) => b.count - a.count);
+    },
+    enabled: !!selectedSimulado
+  });
+
+  const [expandedRaioX, setExpandedRaioX] = useState<Record<string, boolean>>({});
+  const toggleRaioX = (name: string) => {
+    try { haptic.selection(); } catch {}
+    setExpandedRaioX(prev => ({ ...prev, [name]: !prev[name] }));
+  };
 
   const filteredSimulados = simuladosList?.filter((sim) => {
     const examName = sim.exam?.name || '';
@@ -342,24 +387,54 @@ export default function FerramentasSimulados() {
                 <BarChart3 className="w-4 h-4 text-primary" /> Raio-X do Simulado
               </h4>
               <div className="space-y-3">
-                {[
-                  { name: 'Direito Constitucional', percent: 20 },
-                  { name: 'Direito Administrativo', percent: 18 },
-                  { name: 'Direito Civil', percent: 15 },
-                  { name: 'Direito Penal', percent: 15 },
-                  { name: 'Processo Civil', percent: 12 },
-                  { name: 'Outros', percent: 20 },
-                ].map((item, i) => (
-                  <div key={i} className="bg-card border border-border/50 rounded-xl p-3.5 flex flex-col gap-2.5">
-                    <div className="flex justify-between items-center">
-                      <span className="text-[13px] font-semibold text-zinc-200 leading-tight">{item.name}</span>
-                      <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md">{item.percent}%</span>
-                    </div>
-                    <div className="w-full h-1.5 bg-black/40 rounded-full overflow-hidden">
-                      <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${item.percent}%` }} />
-                    </div>
+                {loadingRaioX ? (
+                  <div className="flex justify-center py-4">
+                    <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                   </div>
-                ))}
+                ) : raioXData && raioXData.length > 0 ? (
+                  raioXData.map((item, i) => {
+                    const isExpanded = expandedRaioX[item.name];
+                    return (
+                      <div key={i} className="bg-card border border-border/50 rounded-xl overflow-hidden">
+                        <button 
+                          onClick={() => toggleRaioX(item.name)}
+                          className="w-full p-3.5 flex flex-col gap-2.5 hover:bg-white/[0.02] transition-colors text-left"
+                        >
+                          <div className="flex justify-between items-center w-full">
+                            <span className="text-[13px] font-semibold text-zinc-200 leading-tight pr-4">
+                              {item.name}
+                            </span>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md">{item.percent}%</span>
+                              {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                            </div>
+                          </div>
+                          <div className="w-full h-1.5 bg-black/40 rounded-full overflow-hidden">
+                            <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${item.percent}%` }} />
+                          </div>
+                        </button>
+                        
+                        {/* Dropdown de Assuntos */}
+                        {isExpanded && (
+                          <div className="px-3.5 pb-3.5 pt-1 space-y-2 border-t border-border/30 bg-black/20">
+                            {item.assuntos.map((assunto, j) => (
+                              <div key={j} className="flex justify-between items-center py-1">
+                                <span className="text-xs text-zinc-400 line-clamp-2 pr-2">
+                                  • {assunto.name}
+                                </span>
+                                <span className="text-[10px] text-zinc-500 font-medium shrink-0">
+                                  {assunto.count} {assunto.count === 1 ? 'Q' : 'Qs'} ({assunto.percent}%)
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p className="text-xs text-muted-foreground text-center py-4">Sem informações de raio-x para este simulado.</p>
+                )}
               </div>
             </div>
           </div>
@@ -427,6 +502,7 @@ export default function FerramentasSimulados() {
     </DesktopPageLayout>
   );
 }
+
 
 
 
