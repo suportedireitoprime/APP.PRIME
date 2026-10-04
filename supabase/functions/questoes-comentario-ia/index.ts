@@ -3,7 +3,7 @@
 import { corsHeaders, json, adminClient, exigirAdmin } from "../_shared/questoes-sheets.ts";
 
 const GATEWAY = "https://openrouter.ai/api/v1/chat/completions";
-const MODEL = "openai/gpt-4o-mini"; // or another model? Let's use gpt-4o-mini as a safe fast option. Wait, the user said "omni-route", which could mean "google/gemini-flash-1.5"? Or "openai/gpt-4o-mini"?
+const MODEL = "antigravity/gemini-3.8-flash";
 
 const SYSTEM = `Você é professor de cursinho jurídico e comenta questões de concurso.
 

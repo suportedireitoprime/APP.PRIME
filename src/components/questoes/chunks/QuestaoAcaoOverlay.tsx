@@ -133,7 +133,7 @@ export function Carregando({ label }: { label: string }) {
 }
 
 export function Erro({ onRetry, msg }: { onRetry: () => void; msg?: any }) {
-  const textoErro = typeof msg === 'object' ? JSON.stringify(msg) : String(msg || 'Erro desconhecido');
+  const textoErro = typeof msg === 'object' ? JSON.stringify(msg, Object.getOwnPropertyNames(msg)) : String(msg || 'Erro desconhecido');
   return (
     <div className="flex flex-col items-center gap-3 py-8 text-center px-4">
       <p className="text-sm text-destructive">Não foi possível gerar o conteúdo.</p>

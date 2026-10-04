@@ -471,6 +471,13 @@ Deno.serve(async (req) => {
         ok_count: ok,
         fail_count: fail
       });
+
+      if (!payload.is_worker) {
+        await supabase.from("push_campaigns").update({
+          status: "sent",
+          last_run_at: new Date().toISOString()
+        }).eq("id", payload.campaign_id);
+      }
     }
 
     // Espelha no canal do WhatsApp (Horus). Não roda em envio de teste por token ou se for worker.

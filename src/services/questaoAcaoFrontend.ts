@@ -2,7 +2,7 @@ import { getOmniRouteApiKey } from './aiGatewayService';
 import type { AcaoTipo } from '../hooks/useQuestaoAcao';
 
 const GATEWAY = "https://omniroute-production-fb57.up.railway.app/v1/chat/completions";
-const MODEL = "openai/gpt-4o-mini";
+const MODEL = "antigravity/gemini-3.8-flash";
 
 type Tipo = AcaoTipo | 'me-explique';
 
@@ -83,7 +83,7 @@ function hashChave(texto: string) {
   return `h:${h}`;
 }
 
-const FALLBACK_MODEL = "gemini-3.1-flash-lite";
+const FALLBACK_MODEL = "antigravity/gemini-3.6-flash";
 const MAX_RETRIES = 2;
 
 async function chamarApi(model: string, tipo: Tipo, questao: any) {

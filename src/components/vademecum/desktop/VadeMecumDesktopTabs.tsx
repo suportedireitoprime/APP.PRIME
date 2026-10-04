@@ -1,13 +1,12 @@
 import React, { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Scale, Library, Gavel, GraduationCap, MessageSquare, BookOpenText } from 'lucide-react';
+import { Scale, Library, Gavel, GraduationCap, MessageSquare, BookOpenText, Newspaper } from 'lucide-react';
 
 export const DESKTOP_TABS = [
   { id: 'legislacao', label: 'Legislação', icon: Scale, route: '/' },
   { id: 'biblioteca', label: 'Biblioteca', icon: Library, route: '/bibliotecas' },
+  { id: 'blog', label: 'Blog', icon: Newspaper, route: '/blog' },
   { id: 'ferramentas', label: 'Ferramentas', icon: Gavel, route: '/ferramentas' },
-  { id: 'aprender', label: 'Aprender', icon: GraduationCap, route: '/aprender' },
-  { id: 'chat', label: 'Chat', icon: MessageSquare, route: '/assistente-horus' },
   { id: 'vademecum', label: 'Vade Mecum', icon: BookOpenText, route: '/vade-mecum' },
 ] as const;
 

@@ -94,13 +94,29 @@ export async function dispararPushBoletim(args: NotifyBoletimArgs) {
     const title = tipo === "noticias" ? "Boletim de Notícias" : "Boletim Jurídico do dia";
     const body = `${totalCenas} ${labelUnidade} • ${Math.round(duracaoS)}s — toque para ouvir`;
     const url = `${automation.default_url || `/${path}`}/${boletimId}`;
+    const emojiToUse = pushEmoji || automation.emoji || (tipo === "noticias" ? "📰" : "🎬");
+
+    const { data: campaign } = await supa
+      .from("push_campaigns")
+      .insert({
+        title: `${emojiToUse} ${title}`.trim(),
+        body,
+        url,
+        audience: automation.audience || { all: true },
+        status: "sending",
+        tipo: `boletim_${tipo}`,
+        automation_key: automationKey,
+      })
+      .select("id")
+      .single();
 
     const { data: resp, error } = await supa.functions.invoke("send-push", {
       body: {
+        campaign_id: campaign?.id,
         title,
         body,
         url,
-        emoji: pushEmoji || automation.emoji || (tipo === "noticias" ? "📰" : "🎬"),
+        emoji: emojiToUse,
         image: capaUrl,
         audience: automation.audience || { all: true },
         personalize: true,
@@ -113,6 +129,9 @@ export async function dispararPushBoletim(args: NotifyBoletimArgs) {
     });
     if (error) {
       console.warn(`[push] send-push falhou (${automationKey}):`, error.message);
+      if (campaign?.id) {
+        await supa.from("push_campaigns").update({ status: "failed" }).eq("id", campaign.id);
+      }
       return;
     }
     console.log(`[push] send-push ok (${automationKey}):`, JSON.stringify(resp));

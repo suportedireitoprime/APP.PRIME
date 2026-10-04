@@ -20,6 +20,10 @@ interface PushCampaign {
   status: string;
   next_run_at?: string;
   created_at: string;
+  sent_count?: number;
+  delivered_count?: number;
+  opened_count?: number;
+  failed_count?: number;
 }
 
 type ViewState = 'menu' | 'dashboard' | 'manual' | 'robos' | 'laboratorio' | 'templates';
@@ -27,8 +31,12 @@ type ViewState = 'menu' | 'dashboard' | 'manual' | 'robos' | 'laboratorio' | 'te
 export default function AdminPush() {
   const navigate = useNavigate();
   const [view, setView] = useState<ViewState>('menu');
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  });
   const [selectedCampaign, setSelectedCampaign] = useState<PushCampaign | null>(null);
+  const [selectedEventType, setSelectedEventType] = useState<'delivered' | 'opened' | null>(null);
   
   const [campaigns, setCampaigns] = useState<PushCampaign[]>([]);
   const [loading, setLoading] = useState(false);
@@ -43,9 +51,9 @@ export default function AdminPush() {
     setLoading(true);
     const { data, error } = await supabase
       .from("push_campaigns")
-      .select("id, title, body, status, next_run_at, created_at")
+      .select("id, title, body, status, next_run_at, created_at, sent_count, delivered_count, opened_count, failed_count")
       .order("created_at", { ascending: false })
-      .limit(30);
+      .limit(200);
       
     if (error) {
       toast.error("Erro ao carregar campanhas");
@@ -108,6 +116,7 @@ export default function AdminPush() {
       { time: '18:00', name: 'Áudio-aula Explicativa', desc: 'Áudio aleatório com explicação jurídica, citando o nome da pessoa.' },
       { time: '20:00', name: 'Questão Prática', desc: 'Mais uma questão para fixar o conhecimento à noite.' },
       { time: '22:00', name: 'Áudio-aula Explicativa', desc: 'Áudio aleatório curto antes de dormir, focado em revisão.' },
+      { time: '00:00', name: 'Notícias da Madrugada', desc: 'Resumo das novidades jurídicas da madrugada.' },
     ];
     
     const pushesToInsert = template2Horas.map(item => {
@@ -163,6 +172,21 @@ export default function AdminPush() {
 
   const headerProps = getHeaderProps();
 
+  const getLocalDateStr = (d: Date | string) => {
+    const dateObj = typeof d === 'string' ? new Date(d) : d;
+    return dateObj.getFullYear() + '-' + String(dateObj.getMonth() + 1).padStart(2, '0') + '-' + String(dateObj.getDate()).padStart(2, '0');
+  };
+
+  const hojeStr = getLocalDateStr(new Date());
+  const isToday = selectedDate === hojeStr;
+  
+  const agendadosDoDia = campaigns.filter(c => c.status === 'scheduled' && c.next_run_at && getLocalDateStr(c.next_run_at) === selectedDate);
+  const historicoDoDia = campaigns.filter(c => {
+    const isAgendado = c.status === 'scheduled' && c.next_run_at && getLocalDateStr(c.next_run_at) === selectedDate;
+    const dateToCompare = c.next_run_at || c.created_at;
+    return getLocalDateStr(dateToCompare) === selectedDate && !isAgendado;
+  });
+
   return (
     <div className="min-h-dvh bg-background pb-12">
       <PageHeader
@@ -212,6 +236,7 @@ export default function AdminPush() {
             { time: '18:00', name: 'Áudio-aula Explicativa', desc: 'Áudio aleatório com explicação jurídica, citando o nome da pessoa.', emoji: '🎧' },
             { time: '20:00', name: 'Questão Prática', desc: 'Mais uma questão para fixar o conhecimento à noite.', emoji: '📝' },
             { time: '22:00', name: 'Áudio-aula Explicativa', desc: 'Áudio aleatório curto antes de dormir, focado em revisão.', emoji: '🎧' },
+            { time: '00:00', name: 'Notícias da Madrugada', desc: 'Resumo das novidades jurídicas da madrugada.', emoji: '🌙' },
           ];
 
           return (
@@ -325,16 +350,6 @@ export default function AdminPush() {
         )}
 
         {view === 'dashboard' && (() => {
-          const hojeStr = new Date().toISOString().split('T')[0];
-          const isToday = selectedDate === hojeStr;
-          
-          const agendadosDoDia = campaigns.filter(c => c.status === 'scheduled' && c.next_run_at?.startsWith(selectedDate));
-          const historicoDoDia = campaigns.filter(c => {
-            const isAgendado = c.status === 'scheduled' && c.next_run_at?.startsWith(selectedDate);
-            const dateToCompare = c.next_run_at || c.created_at;
-            return dateToCompare.startsWith(selectedDate) && !isAgendado;
-          });
-
           return (
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
               
@@ -356,7 +371,7 @@ export default function AdminPush() {
                   {Array.from({ length: 7 }).map((_, i) => {
                     const d = new Date();
                     d.setDate(d.getDate() - i);
-                    const dateStr = d.toISOString().split('T')[0];
+                    const dateStr = getLocalDateStr(d);
                     const isSelected = dateStr === selectedDate;
                     return (
                       <button 
@@ -377,12 +392,16 @@ export default function AdminPush() {
               {/* STATS */}
               <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
                 {[
-                  { label: 'Enviados', value: campaigns.filter(c => c.status === 'sent').length, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-                  { label: 'Recebidos', value: 0, color: 'text-zinc-400', bg: 'bg-zinc-500/10' },
-                  { label: 'Abertos', value: 0, color: 'text-zinc-400', bg: 'bg-zinc-500/10' },
-                  { label: 'Erros', value: campaigns.filter(c => c.status === 'cancelled').length, color: 'text-red-400', bg: 'bg-red-500/10' },
+                  { label: 'Enviados', value: historicoDoDia.reduce((acc, c) => acc + (c.sent_count || 0), 0), color: 'text-emerald-400', bg: 'bg-emerald-500/10', type: null },
+                  { label: 'Recebidos', value: historicoDoDia.reduce((acc, c) => acc + (c.delivered_count || 0), 0), color: 'text-zinc-400', bg: 'bg-zinc-500/10', type: 'delivered' as const },
+                  { label: 'Abertos', value: historicoDoDia.reduce((acc, c) => acc + (c.opened_count || 0), 0), color: 'text-zinc-400', bg: 'bg-zinc-500/10', type: 'opened' as const },
+                  { label: 'Erros', value: historicoDoDia.reduce((acc, c) => acc + (c.failed_count || 0), 0), color: 'text-red-400', bg: 'bg-red-500/10', type: null },
                 ].map(stat => (
-                  <Card key={stat.label} className="p-2 sm:p-4 bg-zinc-900/30 border-border/30 flex flex-col items-center justify-center text-center relative overflow-hidden group">
+                  <Card 
+                    key={stat.label} 
+                    className={`p-2 sm:p-4 bg-zinc-900/30 border-border/30 flex flex-col items-center justify-center text-center relative overflow-hidden group ${stat.type ? 'cursor-pointer hover:border-border/50' : ''}`}
+                    onClick={() => stat.type && setSelectedEventType(stat.type)}
+                  >
                     <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${stat.bg}`} />
                     <div className="text-[9px] sm:text-xs font-medium text-muted-foreground mb-1 uppercase tracking-wider relative z-10 truncate w-full">{stat.label}</div>
                     <div className={`text-2xl sm:text-3xl font-bold font-display ${stat.color} relative z-10`}>{stat.value}</div>
@@ -390,100 +409,86 @@ export default function AdminPush() {
                 ))}
               </div>
 
-              {/* TIMELINE DO DIA */}
-              {agendadosDoDia.length > 0 && (
-                <div className="space-y-4 pt-2">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-sm uppercase tracking-wider font-bold text-muted-foreground flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-primary" /> Agendados {isToday ? 'para Hoje' : ''}
-                    </h2>
+
+              {/* TIMELINE UNIFICADA DO DIA */}
+              <div className="space-y-4 pt-4 border-t border-border/10">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-sm uppercase tracking-wider font-bold text-muted-foreground flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-muted-foreground" /> Linha do Tempo
+                  </h2>
+                  <div className="flex items-center gap-2">
                     <Button 
                       size="sm" 
                       variant="outline" 
                       className="h-7 text-xs border-primary/50 text-primary hover:bg-primary/10"
                       onClick={() => {
                         toast.success("Teste iniciado! Disparando pushes a cada 1 minuto no celular admin...");
-                        
                         const sorted = [...agendadosDoDia].sort((a,b) => (a.next_run_at || "").localeCompare(b.next_run_at || ""));
-                        
                         sorted.forEach((c, i) => {
                           setTimeout(async () => {
-                            await supabase.functions.invoke('push-testar-admin', {
-                              body: {
-                                automation_key: "template_test",
-                                title: c.title,
-                                body: c.body
-                              }
-                            });
-                          }, i * 60000); // 1 minuto de intervalo entre cada
+                            await supabase.functions.invoke('push-testar-admin', { body: { automation_key: "template_test", title: c.title, body: c.body }});
+                          }, i * 60000);
                         });
                       }}
                     >
-                      <Bot className="w-3.5 h-3.5 mr-1.5" />
-                      Testar Disparos
+                      <Bot className="w-3.5 h-3.5 mr-1.5" /> Testar
+                    </Button>
+                    <Button size="icon" variant="ghost" onClick={loadCampaigns} disabled={loading} className="w-8 h-8">
+                      <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                     </Button>
                   </div>
-                  <div className="relative border-l-2 border-primary/20 ml-4 space-y-6 py-2">
-                    {agendadosDoDia.map(c => (
-                      <div key={c.id} className="relative pl-6">
-                        <div className="absolute w-3 h-3 bg-primary rounded-full -left-[7px] top-1.5 shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
-                        <Card 
-                          className="p-4 border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors cursor-pointer"
-                          onClick={() => setSelectedCampaign(c)}
-                        >
-                          <div className="flex items-center justify-between gap-2 mb-2">
-                            <span className="text-xs font-bold text-primary flex items-center gap-1.5">
-                              <Clock className="w-3.5 h-3.5" />
-                              {new Intl.DateTimeFormat('pt-BR', { timeStyle: 'short' }).format(new Date(c.next_run_at!))}
-                            </span>
-                            <Badge variant="outline" className="text-primary border-primary/30 text-[10px] h-5 bg-primary/10">Agendado</Badge>
-                          </div>
-                          <h3 className="font-semibold text-foreground text-base pr-2 uppercase">{c.title.replace('[TEMPLATE] ', '')}</h3>
-                          <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">{c.body}</p>
-                        </Card>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* HISTORICO GERAL */}
-              <div className="space-y-4 pt-4 border-t border-border/10">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-sm uppercase tracking-wider font-bold text-muted-foreground flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-muted-foreground" /> Histórico Geral
-                  </h2>
-                  <Button size="icon" variant="ghost" onClick={loadCampaigns} disabled={loading} className="w-8 h-8">
-                    <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-                  </Button>
                 </div>
 
                 <div className="relative border-l-2 border-border/20 ml-4 space-y-6 py-2">
-                  {historicoDoDia.length === 0 && !loading && (
+                  {[...agendadosDoDia, ...historicoDoDia].length === 0 && !loading && (
                     <div className="text-center py-10 text-muted-foreground text-sm border border-dashed border-border/50 rounded-xl bg-zinc-900/10 ml-4">
-                      Nenhum histórico encontrado para este dia
+                      Nenhuma notificação encontrada para este dia
                     </div>
                   )}
 
-                  {historicoDoDia.map(c => (
-                    <div key={c.id} className="relative pl-6">
-                      <div className="absolute w-3 h-3 bg-border rounded-full -left-[7px] top-1.5" />
-                      <Card 
-                        className="p-4 border-border/20 bg-zinc-900/20 hover:bg-zinc-900/40 transition-colors cursor-pointer"
-                        onClick={() => setSelectedCampaign(c)}
-                      >
-                        <div className="flex items-center justify-between gap-2 mb-2">
-                          <span className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
-                            <Clock className="w-3.5 h-3.5" />
-                            {c.next_run_at ? new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(c.next_run_at)).replace(',', ' às') : new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(c.created_at)).replace(',', ' às')}
-                          </span>
-                          {getStatusBadge(c.status)}
-                        </div>
-                        <h3 className="font-semibold text-foreground text-base pr-2 uppercase">{c.title.replace('[TEMPLATE] ', '')}</h3>
-                        <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">{c.body}</p>
-                      </Card>
-                    </div>
-                  ))}
+                  {[...agendadosDoDia, ...historicoDoDia].sort((a,b) => (a.next_run_at || a.created_at).localeCompare(b.next_run_at || b.created_at)).map(c => {
+                    const isPending = c.status === 'scheduled';
+                    const isFailed = c.status === 'failed';
+                    const isSent = !isPending && !isFailed;
+                    
+                    const dotColor = isFailed ? 'bg-red-500' : isSent ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-zinc-600';
+                    const borderColor = isFailed ? 'border-red-500/20' : isSent ? 'border-emerald-500/20' : 'border-zinc-500/20';
+                    const bgColor = isFailed ? 'bg-red-500/5 hover:bg-red-500/10' : isSent ? 'bg-emerald-500/5 hover:bg-emerald-500/10' : 'bg-zinc-900/20 hover:bg-zinc-900/40';
+                    const badgeText = isPending ? 'Agendado' : isFailed ? 'Erro' : (c.status === 'sending' ? 'Enviando' : 'Enviado');
+                    const badgeColor = isFailed ? 'text-red-400 border-red-400/30 bg-red-400/10' : isSent ? 'text-emerald-400 border-emerald-400/30 bg-emerald-400/10' : 'text-zinc-400 border-zinc-400/30 bg-zinc-400/10';
+
+                    return (
+                      <div key={c.id} className="relative pl-6">
+                        <div className={`absolute w-3 h-3 rounded-full -left-[7px] top-1.5 ${dotColor}`} />
+                        <Card 
+                          className={`p-4 transition-colors cursor-pointer ${borderColor} ${bgColor}`}
+                          onClick={() => setSelectedCampaign(c)}
+                        >
+                          <div className="flex items-center justify-between gap-2 mb-2">
+                            <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                              <Clock className="w-3.5 h-3.5 opacity-70" />
+                              {new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(c.next_run_at || c.created_at))}
+                            </span>
+                            <Badge variant="outline" className={`text-[10px] h-5 ${badgeColor}`}>
+                              {isSent ? <CheckCircle2 className="w-3 h-3 mr-1" /> : isPending ? <Clock className="w-3 h-3 mr-1" /> : <AlertCircle className="w-3 h-3 mr-1" />}
+                              {badgeText}
+                            </Badge>
+                          </div>
+                          <h3 className="font-semibold text-foreground text-base pr-2 uppercase">{c.title.replace('[TEMPLATE] ', '')}</h3>
+                          <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">{c.body}</p>
+                          
+                          {/* Status bar */}
+                          {(c.sent_count > 0 || c.delivered_count > 0 || c.opened_count > 0) && (
+                            <div className="mt-4 flex items-center gap-4 text-xs font-medium border-t border-border/10 pt-3">
+                              {c.sent_count > 0 && <span className="text-emerald-400 flex items-center gap-1"><ArrowUpRight className="w-3.5 h-3.5" /> {c.sent_count} envios</span>}
+                              {c.delivered_count > 0 && <span className="text-blue-400 flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> {c.delivered_count} entregues</span>}
+                              {c.opened_count > 0 && <span className="text-purple-400 flex items-center gap-1"><Eye className="w-3.5 h-3.5" /> {c.opened_count} abertos</span>}
+                            </div>
+                          )}
+                        </Card>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -518,13 +523,13 @@ export default function AdminPush() {
                             <div className="bg-zinc-900/40 p-5 rounded-2xl border border-border/30 flex flex-col items-center justify-center text-center relative overflow-hidden">
                               <div className="absolute inset-0 bg-blue-500/5" />
                               <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 relative z-10">Quem Recebeu</h4>
-                              <p className="text-3xl font-bold text-foreground font-display relative z-10">0</p>
+                              <p className="text-3xl font-bold text-foreground font-display relative z-10">{selectedCampaign.delivered_count || 0}</p>
                               <p className="text-xs text-muted-foreground mt-0.5 relative z-10">Usuários</p>
                             </div>
                             <div className="bg-zinc-900/40 p-5 rounded-2xl border border-border/30 flex flex-col items-center justify-center text-center relative overflow-hidden">
                               <div className="absolute inset-0 bg-purple-500/5" />
                               <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 relative z-10">Quem Abriu</h4>
-                              <p className="text-3xl font-bold text-foreground font-display relative z-10">0</p>
+                              <p className="text-3xl font-bold text-foreground font-display relative z-10">{selectedCampaign.opened_count || 0}</p>
                               <p className="text-xs text-muted-foreground mt-0.5 relative z-10">Leituras</p>
                             </div>
                           </div>
@@ -626,6 +631,96 @@ export default function AdminPush() {
         )}
 
       </div>
+
+      <PushEventsModal 
+        date={selectedDate} 
+        type={selectedEventType} 
+        campaigns={historicoDoDia} 
+        onClose={() => setSelectedEventType(null)} 
+      />
     </div>
+  );
+}
+
+function PushEventsModal({ date, type, campaigns, onClose }: { date: string, type: 'delivered' | 'opened' | null, campaigns: PushCampaign[], onClose: () => void }) {
+  const [loading, setLoading] = useState(false);
+  const [users, setUsers] = useState<{ id: string, name: string, email: string, campaign_title: string, created_at: string }[]>([]);
+
+  useEffect(() => {
+    if (!type || campaigns.length === 0) return;
+    
+    async function loadEvents() {
+      setLoading(true);
+      try {
+        const campaignIds = campaigns.map(c => c.id);
+        const { data, error } = await supabase
+          .from('push_events')
+          .select(`
+            created_at,
+            campaign_id,
+            user_id,
+            profiles ( id, nome, email )
+          `)
+          .in('campaign_id', campaignIds)
+          .eq('event_type', type)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        
+        const mapped = (data || []).filter(e => e.profiles).map(e => ({
+          id: e.user_id,
+          name: (e.profiles as any)?.nome || 'Sem Nome',
+          email: (e.profiles as any)?.email || '',
+          campaign_title: campaigns.find(c => c.id === e.campaign_id)?.title || 'Desconhecida',
+          created_at: e.created_at
+        }));
+        setUsers(mapped);
+      } catch (err) {
+        console.error("Erro ao carregar eventos:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadEvents();
+  }, [type, campaigns]);
+
+  return (
+    <Sheet open={!!type} onOpenChange={(open) => !open && onClose()}>
+      <SheetContent side="right" className="w-full sm:max-w-md border-l border-border/50 bg-background/95 backdrop-blur-xl p-0 flex flex-col">
+        <SheetHeader className="p-6 pb-2 text-left">
+          <SheetTitle className="text-xl font-bold flex items-center gap-2">
+            {type === 'opened' ? <Eye className="w-5 h-5 text-purple-400" /> : <CheckCircle2 className="w-5 h-5 text-blue-400" />}
+            Usuários que {type === 'opened' ? 'Abriram' : 'Receberam'}
+          </SheetTitle>
+          <p className="text-sm text-muted-foreground">Em {new Intl.DateTimeFormat('pt-BR').format(new Date(date + 'T12:00:00'))}</p>
+        </SheetHeader>
+        
+        <ScrollArea className="flex-1 p-6">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20 gap-4">
+              <RefreshCw className="w-8 h-8 animate-spin text-primary opacity-50" />
+              <span className="text-sm font-medium text-muted-foreground animate-pulse">Carregando usuários...</span>
+            </div>
+          ) : users.length === 0 ? (
+            <div className="text-center py-20 text-muted-foreground border border-dashed border-border/50 rounded-xl bg-zinc-900/10">
+              Nenhum registro encontrado.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {users.map((u, i) => (
+                <div key={`${u.id}-${i}`} className="p-3 rounded-xl border border-border/10 bg-zinc-900/30">
+                  <div className="font-bold text-sm text-foreground">{u.name}</div>
+                  <div className="text-xs text-muted-foreground">{u.email}</div>
+                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/5 text-[10px]">
+                    <span className="truncate max-w-[150px] text-zinc-500">{u.campaign_title.replace('[TEMPLATE] ', '')}</span>
+                    <span className="text-zinc-500">{new Intl.DateTimeFormat('pt-BR', { timeStyle: 'short' }).format(new Date(u.created_at))}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </ScrollArea>
+      </SheetContent>
+    </Sheet>
   );
 }

@@ -1,6 +1,6 @@
 import { startTransition } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Scale, BookOpen, Gavel, Library, MessageSquare, BookOpenText } from 'lucide-react';
+import { Scale, BookOpen, Gavel, Library, MessageSquare, BookOpenText, Newspaper } from 'lucide-react';
 import DesktopHeroBanner from '@/components/vademecum/desktop/DesktopHeroBanner';
 
 import { useIsDesktop } from '@/hooks/use-desktop';
@@ -9,9 +9,8 @@ import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
 const TABS: Array<{ id: string; label: string; icon: any; path: string; prefetch?: PrefetchKey }> = [
   { id: 'legislacao', label: 'Legislação', icon: Scale, path: '/' },
   { id: 'biblioteca', label: 'Biblioteca', icon: Library, path: '/bibliotecas' },
+  { id: 'blog', label: 'Blog', icon: Newspaper, path: '/blog', prefetch: 'blog' },
   { id: 'ferramentas', label: 'Ferramentas', icon: Gavel, path: '/ferramentas', prefetch: 'ferramentas' },
-  { id: 'aprender', label: 'Aprender', icon: BookOpen, path: '/aprender', prefetch: 'aprender' },
-  { id: 'chat', label: 'Chat', icon: MessageSquare, path: '/assistente-horus' },
   { id: 'vademecum', label: 'Vade Mecum', icon: BookOpenText, path: '/vade-mecum' },
 ];
 

@@ -131,7 +131,7 @@ export function ComentarioInner({ source }: { source: Fonte }) {
               ]}
             />
           )}
-          {error && !isLoading && <Erro onRetry={() => refetch()} />}
+          {error && !isLoading && <Erro msg={error} onRetry={() => refetch()} />}
           {!isLoading && !error && (hasPrePopulatedComments || data) && (
             <div className="space-y-3">
               <Md texto={hasPrePopulatedComments ? formatarComentario((source as any).gabarito_comentado) : data.texto} className={mdClass} />
@@ -168,7 +168,7 @@ export function ComentarioInner({ source }: { source: Fonte }) {
               ]}
             />
           )}
-          {erradasQ.error && !erradasQ.isLoading && <Erro onRetry={() => erradasQ.refetch()} />}
+          {erradasQ.error && !erradasQ.isLoading && <Erro msg={erradasQ.error} onRetry={() => erradasQ.refetch()} />}
           {!erradasQ.isLoading && !erradasQ.error && erradas.length === 0 && !hasPrePopulatedComments && erradasQ.data && (
             <p className="rounded-xl border border-border bg-background p-4 text-sm text-muted-foreground">
               Não foi possível identificar alternativas erradas para explicar.

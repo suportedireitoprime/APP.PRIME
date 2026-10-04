@@ -1,4 +1,4 @@
-import { Sparkles, MessageSquare, Layers, HelpCircle, GraduationCap, Bell, Search, Book, Library, FileText, MonitorPlay, Headphones, ChevronRight, Bot, ListChecks, BookA } from 'lucide-react';
+import { Sparkles, MessageSquare, Layers, HelpCircle, GraduationCap, Bell, Search, Book, Library, FileText, MonitorPlay, Headphones, ChevronRight, Bot, ListChecks, BookA, Gavel, Newspaper } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { AprenderDeckStacked, useAprenderItems } from '@/components/vademecum/home/aprender/chunks';
 import { useNavigate } from 'react-router-dom';
@@ -123,10 +123,10 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick, onNoti
 
             <div className="grid grid-cols-4 gap-3">
               {[
-                { label: 'Aprender', icon: GraduationCap, route: '/aprender', color: '#FACC15' },
+                { label: 'Blog', icon: Newspaper, route: '/blog', color: '#FACC15' },
                 { label: 'Flashcards', icon: FlashcardsIcon, route: '/flashcards', color: '#34D399' },
                 { label: 'Questões', icon: ListChecks, route: '/questoes', color: '#F87171' },
-                { label: 'Chat', icon: MessageSquare, route: '/chat-juridico', color: '#F97316' }
+                { label: 'Ferramentas', icon: Gavel, route: '/ferramentas', color: '#F97316' }
               ].map((btn, i) => (
                 <button
                   key={i}

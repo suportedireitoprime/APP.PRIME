@@ -4,7 +4,7 @@
 import { corsHeaders, json, adminClient } from "../_shared/questoes-sheets.ts";
 
 const GATEWAY = "https://omniroute-production-fb57.up.railway.app/v1/chat/completions";
-const MODEL = "openai/gpt-4o-mini";
+const MODEL = "antigravity/gemini-3.8-flash";
 
 type Tipo =
   | "comentario" | "lei-erradas" | "aula" | "flashcards"
