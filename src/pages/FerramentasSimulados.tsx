@@ -5,7 +5,7 @@ import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import { PlayCircle, Search, FileText, FileSignature, GraduationCap, Scale, ChevronRight, ArrowLeft, History, BarChart3 } from 'lucide-react';
+import { PlayCircle, Search, FileText, FileSignature, GraduationCap, Scale, ChevronRight, ArrowLeft, History, BarChart3, ExternalLink } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { haptic } from '@/utils/haptic';
 
@@ -27,6 +27,8 @@ export default function FerramentasSimulados() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedSimulado, setSelectedSimulado] = useState<SimuladoItem | null>(null);
   const [isStarting, setIsStarting] = useState(false);
+  const [previewPdfUrl, setPreviewPdfUrl] = useState<string | null>(null);
+  const [previewPdfTitle, setPreviewPdfTitle] = useState<string>('');
 
   const { data: simuladosList, isLoading } = useQuery({
     queryKey: ['simulados_list'],
@@ -74,6 +76,14 @@ export default function FerramentasSimulados() {
     try { haptic.selection(); } catch {}
     if (!url) return;
     window.open(url, '_blank');
+  };
+
+  const handlePreviewPdf = (e: React.MouseEvent, url: string, title: string) => {
+    e.stopPropagation();
+    try { haptic.selection(); } catch {}
+    if (!url) return;
+    setPreviewPdfUrl(url);
+    setPreviewPdfTitle(title);
   };
 
   const handleStartSimulado = () => {
@@ -297,21 +307,21 @@ export default function FerramentasSimulados() {
 
               <div className="grid grid-cols-3 gap-2">
                  <button 
-                   onClick={(e) => selectedSimulado && handleDownload(e, selectedSimulado.prova_url)} 
+                   onClick={(e) => selectedSimulado && handlePreviewPdf(e, selectedSimulado.prova_url, 'Prova')} 
                    disabled={!selectedSimulado?.prova_url}
                    className="bg-zinc-900/50 hover:bg-zinc-900 disabled:opacity-50 text-foreground py-3.5 rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all font-medium text-[11px] sm:text-xs border border-white/5 hover:border-white/10 shadow-sm"
                  >
                    <FileText className="w-4 h-4 text-zinc-400" /> Ver Prova
                  </button>
                  <button 
-                   onClick={(e) => selectedSimulado && handleDownload(e, selectedSimulado.gabarito_url)} 
+                   onClick={(e) => selectedSimulado && handlePreviewPdf(e, selectedSimulado.gabarito_url, 'Gabarito')} 
                    disabled={!selectedSimulado?.gabarito_url}
                    className="bg-zinc-900/50 hover:bg-zinc-900 disabled:opacity-50 text-foreground py-3.5 rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all font-medium text-[11px] sm:text-xs border border-white/5 hover:border-white/10 shadow-sm"
                  >
                    <FileText className="w-4 h-4 text-emerald-500/80" /> Gabarito
                  </button>
                  <button 
-                   onClick={(e) => selectedSimulado && handleDownload(e, selectedSimulado.edital_url)} 
+                   onClick={(e) => selectedSimulado && handlePreviewPdf(e, selectedSimulado.edital_url, 'Edital')} 
                    disabled={!selectedSimulado?.edital_url}
                    className="bg-zinc-900/50 hover:bg-zinc-900 disabled:opacity-50 text-foreground py-3.5 rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all font-medium text-[11px] sm:text-xs border border-white/5 hover:border-white/10 shadow-sm"
                  >
@@ -381,8 +391,42 @@ export default function FerramentasSimulados() {
         </div>
       )}
 
+      {/* Modal Preview de PDF */}
+      <Sheet open={!!previewPdfUrl} onOpenChange={(open) => !open && setPreviewPdfUrl(null)}>
+        <SheetContent side="bottom" className="rounded-none sm:rounded-t-3xl bg-card border-border p-0 overflow-hidden flex flex-col h-[100dvh] sm:h-[90vh] sm:max-w-4xl sm:mx-auto">
+          <div className="flex justify-between items-center p-4 border-b border-white/5 bg-zinc-950">
+            <h3 className="font-display font-bold text-lg text-white">Visualização: {previewPdfTitle}</h3>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => previewPdfUrl && window.open(previewPdfUrl, '_blank')}
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white transition-colors"
+                title="Abrir em nova guia"
+              >
+                <ExternalLink className="w-5 h-5" />
+              </button>
+              <button 
+                onClick={() => setPreviewPdfUrl(null)}
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+          <div className="flex-1 w-full bg-zinc-950/50">
+            {previewPdfUrl && (
+              <iframe 
+                src={`${previewPdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+                className="w-full h-full border-none"
+                title={previewPdfTitle}
+              />
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
+
     </DesktopPageLayout>
   );
 }
+
 
 
