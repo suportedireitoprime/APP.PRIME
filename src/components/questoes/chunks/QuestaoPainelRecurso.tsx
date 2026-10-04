@@ -1,4 +1,4 @@
-import { AlertTriangle, NotebookPen, Workflow } from 'lucide-react';
+import { AlertTriangle, NotebookPen, Workflow, FileText, Search, AlertCircle, Scale as ScaleIcon } from 'lucide-react';
 import { useQuestaoAcao, type AcaoTipo, type QuestaoInline } from '@/hooks/useQuestaoAcao';
 import { Md, Carregando, Erro } from './QuestaoAcaoOverlay';
 import { Flashcards } from './QuestaoFlashcards';
@@ -91,8 +91,33 @@ export function PainelAcao({ source, tipo }: { source: Fonte; tipo: AcaoTipo }) 
   }
 
   if (tipo === 'mapa') return <Md texto={data.markdown} />;
-  
-  if (tipo === 'grifo') return <Md texto={data.markdown} />;
+  if (tipo === 'grifo') {
+    const itens = data.destaques ?? [];
+    return (
+      <div className="space-y-3">
+        {itens.map((d: any, i: number) => {
+          let Icon = FileText;
+          let iconColor = "text-primary";
+          let bgColor = "bg-primary/10";
+          if (d.tipo === 'analise') { Icon = Search; iconColor = "text-blue-500"; bgColor = "bg-blue-500/10"; }
+          if (d.tipo === 'atencao') { Icon = AlertCircle; iconColor = "text-amber-500"; bgColor = "bg-amber-500/10"; }
+          if (d.tipo === 'regra') { Icon = ScaleIcon; iconColor = "text-emerald-500"; bgColor = "bg-emerald-500/10"; }
+          
+          return (
+            <div key={i} className="rounded-xl border border-border bg-background p-4 flex gap-4">
+              <div className={`mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full ${bgColor}`}>
+                <Icon className={`h-4 w-4 ${iconColor}`} />
+              </div>
+              <div className="flex-1">
+                <p className="mb-1 text-sm font-bold text-foreground">{d.titulo}</p>
+                <Md texto={d.texto} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
 
   if (tipo === 'cornell') {
     return (
