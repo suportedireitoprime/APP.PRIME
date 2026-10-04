@@ -1,7 +1,7 @@
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, ChevronRight, Loader2, Target, Layers, FileQuestion, Timer } from 'lucide-react';
+import { Search, ChevronRight, Loader2, Target } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
@@ -9,47 +9,6 @@ import PraticarHeroPanel from '@/components/praticar/PraticarHeroPanel';
 import { agruparPorArea, getPraticarAreaCover, LeiSimples } from '@/lib/praticarAreas';
 import { useAuth } from '@/hooks/useAuth';
 import { isAdminEmail } from '@/lib/adminEmails';
-import { shade } from '@/lib/leiTheme';
-import { haptic } from '@/lib/nativeHaptics';
-
-const PRATICAR_FUNCTIONS = [
-  {
-    id: 'flashcards',
-    title: 'Flashcards',
-    subtitle: 'Revisão ativa',
-    icon: Layers,
-    color: '#3b82f6', // blue
-    image: '/assets/praticar-flashcards.webp',
-    path: '/flashcards',
-  },
-  {
-    id: 'questoes',
-    title: 'Questões',
-    subtitle: 'Teste de fixação',
-    icon: FileQuestion,
-    color: '#10b981', // emerald
-    image: '/assets/praticar-questoes.webp',
-    path: '/questoes',
-  },
-  {
-    id: 'simulados',
-    title: 'Simulados',
-    subtitle: 'Treino real',
-    icon: Timer,
-    color: '#8b5cf6', // violet
-    image: '/assets/praticar-simulados.webp',
-    path: '/simulados',
-  },
-  {
-    id: 'leiseca',
-    title: 'Lei Seca',
-    subtitle: 'Tiro ao alvo',
-    icon: Target,
-    color: '#f43f5e', // rose
-    image: '/assets/praticar-leiseca.webp',
-    path: '#leiseca',
-  }
-];
 
 export default function Praticar() {
   const navigate = useNavigate();
@@ -102,67 +61,6 @@ export default function Praticar() {
       />
 
       <div className="px-4 sm:px-6 py-4 space-y-4">
-        {/* Funções Principais (Cards) */}
-        <div className="grid grid-cols-2 gap-3 mb-2">
-          {PRATICAR_FUNCTIONS.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => {
-                haptic.selection();
-                if (item.path.startsWith('#')) {
-                  const el = document.getElementById(item.path.replace('#', ''));
-                  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                } else {
-                  navigate(item.path);
-                }
-              }}
-              className="relative flex flex-col shadow-md rounded-2xl group transition-all duration-300 w-full h-[116px] sm:h-[122px] text-left cursor-pointer overflow-hidden focus-visible:outline-none hover:-translate-y-1"
-            >
-              <div 
-                className="absolute inset-0 rounded-2xl pointer-events-none transition-all duration-300 shadow-md group-hover:opacity-100 opacity-95"
-                style={{ background: `linear-gradient(135deg, ${item.color} 0%, ${shade(item.color, -0.3)} 100%)` }}
-              >
-                <item.icon
-                  className="absolute -right-2 -bottom-2 w-20 h-20 text-white/[0.15] drop-shadow-md group-hover:scale-105 group-hover:text-white/[0.2] transition-all duration-300"
-                  strokeWidth={1.3}
-                />
-                <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-white/10 blur-xl group-hover:bg-white/20 transition-all" />
-              </div>
-
-              {item.image && (
-                <div className="absolute right-0 w-auto h-[105px] max-w-none pointer-events-none z-10 transition-all duration-300 origin-bottom group-hover:scale-[1.06] -top-4 drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] group-hover:-top-5 group-hover:drop-shadow-[0_12px_24px_rgba(0,0,0,0.7)]">
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="h-full w-auto object-contain"
-                  />
-                </div>
-              )}
-
-              <div className="relative z-20 flex flex-col justify-between w-full h-full p-3 pointer-events-none">
-                <div className="flex justify-between items-start">
-                  <item.icon
-                    className="w-5 h-5 text-white shrink-0 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] group-hover:scale-110 transition-transform duration-200"
-                    strokeWidth={1.8}
-                  />
-                </div>
-                
-                <div className="flex justify-between items-end mt-auto">
-                  <div className="flex flex-col">
-                    <span className="font-display text-white text-[16px] sm:text-[18px] font-black tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] leading-none">
-                      {item.title}
-                    </span>
-                    <span className="text-white/80 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest mt-1.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
-                      {item.subtitle}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
-
         {/* Pesquisa */}
         <div className="relative">
           <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -202,7 +100,7 @@ export default function Praticar() {
           </div>
         ) : (
           <>
-            <h2 id="leiseca" className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground pt-3 border-t border-border/50">
+            <h2 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground pt-1">
               Por área do direito
             </h2>
             <div className="grid grid-cols-2 gap-3">
