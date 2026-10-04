@@ -32,8 +32,21 @@ export default function ResumosJuridicosTemas() {
 
   const palette = useMemo(() => getAreaThemePalette(decodedArea), [decodedArea]);
 
-  const [rows, setRows] = useState<Row[]>(() => temasCache.get(decodedArea) || []);
-  const [loading, setLoading] = useState(!temasCache.has(decodedArea));
+  const [rows, setRows] = useState<Row[]>(() => {
+    if (temasCache.has(decodedArea)) return temasCache.get(decodedArea)!;
+    try {
+      const stored = localStorage.getItem(`resumos_temas_cache:${decodedArea}`);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          temasCache.set(decodedArea, parsed);
+          return parsed;
+        }
+      }
+    } catch {}
+    return [];
+  });
+  const [loading, setLoading] = useState(() => !temasCache.has(decodedArea));
   const [q, setQ] = useState("");
   const [ordem, setOrdem] = useState<Ordem>("crono");
   const [recentes, setRecentes] = useState(() => resumosLocal.recentes());

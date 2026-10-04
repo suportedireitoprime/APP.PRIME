@@ -1,23 +1,21 @@
-﻿// Capas ilustradas + paleta Ãºnica por Ã¡rea do direito.
+// Capas ilustradas + paleta única por área do direito.
 // Cada capa foi gerada com uma paleta dominante distinta; o `tint` abaixo
 // espelha essa paleta para tingir o card no `BibliotecaCategoria`.
 
 import {pickAsset, srcOf } from '@/lib/assetUrl';
 
-import administrativoAsset from '@/assets/biblioteca/areas/direito-administrativo.webp.asset.json';
-import administrativoBundled from '@/assets/biblioteca/areas/direito-administrativo.webp';
+import administrativoBundled from '@/assets/biblioteca/areas/direito-administrativo.png';
 import ambientalBundled from '@/assets/biblioteca/areas/direito-ambiental.webp';
-import civilBundled from '@/assets/biblioteca/areas/direito-civil.webp';
-import concorrencialBundled from '@/assets/biblioteca/areas/direito-concorrencial.webp';
-import constitucionalBundled from '@/assets/biblioteca/areas/direito-constitucional.webp';
-import desportivoBundled from '@/assets/biblioteca/areas/direito-desportivo.webp';
-import trabalhoBundled from '@/assets/biblioteca/areas/direito-do-trabalho.webp';
-import empresarialBundled from '@/assets/biblioteca/areas/direito-empresarial.webp';
-import financeiroBundled from '@/assets/biblioteca/areas/direito-financeiro.webp';
-import intPrivadoBundled from '@/assets/biblioteca/areas/direito-internacional-privado.webp';
-import intPublicoBundled from '@/assets/biblioteca/areas/direito-internacional-publico.webp';
-import penalAsset from '@/assets/biblioteca/areas/direito-penal.webp.asset.json';
-import penalBundled from '@/assets/biblioteca/areas/direito-penal.webp';
+import civilBundled from '@/assets/biblioteca/areas/direito-civil.png';
+import concorrencialBundled from '@/assets/biblioteca/areas/direito-concorrencial.png';
+import constitucionalBundled from '@/assets/biblioteca/areas/direito-constitucional.png';
+import desportivoBundled from '@/assets/biblioteca/areas/direito-desportivo.png';
+import trabalhoBundled from '@/assets/biblioteca/areas/direito-do-trabalho.png';
+import empresarialBundled from '@/assets/biblioteca/areas/direito-empresarial.png';
+import financeiroBundled from '@/assets/biblioteca/areas/direito-financeiro.png';
+import intPrivadoBundled from '@/assets/biblioteca/areas/direito-internacional-privado.png';
+import intPublicoBundled from '@/assets/biblioteca/areas/direito-internacional-publico.png';
+import penalBundled from '@/assets/biblioteca/areas/direito-penal.png';
 import previdenciarioBundled from '@/assets/biblioteca/areas/direito-previdenciario.webp';
 import procCivilBundled from '@/assets/biblioteca/areas/direito-processual-civil.webp';
 import procTrabalhoBundled from '@/assets/biblioteca/areas/direito-processual-do-trabalho.webp';
@@ -34,7 +32,7 @@ import praticaBundled from '@/assets/biblioteca/areas/pratica-profissional.webp'
 import revisaoOabBundled from '@/assets/biblioteca/areas/revisao-oab.webp';
 import teoriaBundled from '@/assets/biblioteca/areas/teoria-e-filosofia-do-direito.webp';
 
-const administrativo = pickAsset(administrativoBundled, srcOf(administrativoAsset));
+const administrativo = administrativoBundled;
 const ambiental = ambientalBundled;
 const civil = civilBundled;
 const concorrencial = concorrencialBundled;
@@ -45,7 +43,7 @@ const empresarial = empresarialBundled;
 const financeiro = financeiroBundled;
 const intPrivado = intPrivadoBundled;
 const intPublico = intPublicoBundled;
-const penal = pickAsset(penalBundled, srcOf(penalAsset));
+const penal = penalBundled;
 const previdenciario = previdenciarioBundled;
 const procCivil = procCivilBundled;
 const procTrabalho = procTrabalhoBundled;
@@ -68,7 +66,7 @@ export interface AreaCover {
   tint: string;
 }
 
-// key = Ã¡rea normalizada (lower, sem acento)
+// key = área normalizada (lower, sem acento)
 const MAP: Record<string, AreaCover> = {
   'direito administrativo': { cover: administrativo, tint: 'hsla(215, 55%, 42%, 0.85)' },
   'direito ambiental': { cover: ambiental, tint: 'hsla(104, 56%, 36%, 0.88)' },
@@ -113,14 +111,14 @@ export function getAreaCover(area: string | null | undefined): AreaCover | null 
   const key = norm(area);
   if (MAP[key]) return MAP[key];
 
-  // Busca por correspondÃªncia parcial de palavras-chave
+  // Busca por correspondência parcial de palavras-chave
   for (const k of Object.keys(MAP)) {
     if (key.includes(k) || (k.length > 5 && key.includes(k.replace(/^direito\s+/i, '')))) {
       return MAP[k];
     }
   }
 
-  // Fallback artÃ­stico padrÃ£o caso nÃ£o haja correspondÃªncia direta
+  // Fallback artístico padrão caso não haja correspondência direta
   return { cover: teoria, tint: 'hsla(229, 26%, 26%, 0.92)' };
 }
 

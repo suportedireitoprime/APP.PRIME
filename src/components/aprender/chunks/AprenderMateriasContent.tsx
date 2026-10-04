@@ -170,7 +170,15 @@ export const AprenderMateriasContent: React.FC<AprenderMateriasContentProps> = m
                   toast.info('Questões por trilha estarão disponíveis em breve!');
                 }
               }}
-              onPrefetch={() => prefetchAprenderArea(area.slug, uid)}
+              onPrefetch={() => {
+                prefetchAprenderArea(area.slug, uid);
+                // Pré-carrega o chunk da página para navegação instantânea (0ms)
+                if (isAulas) {
+                  import('@/pages/AprenderArea');
+                } else if (isFlashcards) {
+                  import('@/pages/FlashcardsArea');
+                }
+              }}
             />
           );
         })}

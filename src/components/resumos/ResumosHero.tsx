@@ -99,7 +99,7 @@ const ResumosHero = ({
 
   return (
     <div
-      className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20"
+      className="relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20"
       style={{
         transform: 'translateZ(0)',
         backgroundColor: '#0D0D0D',
@@ -123,28 +123,23 @@ const ResumosHero = ({
           shape='square'
           hoverTrailAmount={5}
         />
-      </div>
-
-      {/* Imagem de Fundo */}
-      <div className="absolute inset-0 z-0 pointer-events-none select-none">
-        <img 
-          src="/resumos-philosopher.webp" 
-          alt=""
-          className="w-full h-full object-cover opacity-90 object-center"
-        />
+      </div>      {/* Imagem de Fundo (contida no painel) */}
+      <div className="absolute top-[80px] right-0 bottom-0 left-0 z-0 pointer-events-none select-none overflow-hidden rounded-t-[36px]">
+        <img src="/resumos-philosopher.webp" alt="" className="w-full h-full object-cover opacity-90 object-center" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
       </div>
 
       {/* Overlay vermelho com gradiente estilo menu e sombra */}
       <div 
-        className="absolute inset-0 z-[1] pointer-events-none"
+        className="absolute top-[80px] right-0 bottom-0 left-0 z-[1] pointer-events-none"
         style={{ filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.8)) drop-shadow(8px 0 10px rgba(0,0,0,0.95))' }}
       >
         <div 
-          className="absolute inset-0 overflow-hidden"
-          style={{ clipPath: 'polygon(0 0, 47% 0, 36% 100%, 0% 100%)' }}
+          className="absolute inset-0 overflow-hidden rounded-tl-[36px]"
+          style={{ clipPath: 'polygon(0 -10%, 49% -10%, 36% 110%, 0% 110%)' }}
         >
           <div className="absolute inset-0 bg-hero-panel" />
+          
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
@@ -163,7 +158,7 @@ const ResumosHero = ({
       </div>
 
       {/* BotÃµes do topo absolutos */}
-      <header className="absolute top-0 right-0 left-0 z-30 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
+      <header className="fixed top-0 right-0 left-0 z-30 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
         <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center justify-between">
           <button
             onClick={() => { haptic.selection(); navigate('/'); }}

@@ -27,7 +27,7 @@ export default function ResumosJuridicosAreas() {
 
   return (
     <div className="min-h-dvh bg-[#0D0D0D] text-white overflow-x-hidden relative flex flex-col">
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.15]">
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
         <ShapeGrid />
       </div>
 

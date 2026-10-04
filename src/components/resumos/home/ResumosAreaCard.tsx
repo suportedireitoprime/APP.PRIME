@@ -20,11 +20,11 @@ export const ResumosAreaCard: React.FC<ResumosAreaCardProps> = ({ areaRow, onCli
       }}
       className="w-full flex items-center gap-3.5 px-3 py-3 min-h-[80px] text-left hover:bg-secondary/20 active:scale-[0.98] transition-all rounded-2xl bg-card border border-border hover:border-[#ef4444]/40 shadow-sm group overflow-hidden relative"
     >
-      <div className="w-14 h-[72px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
+      <div className="w-[60px] h-[72px] shrink-0 flex items-center justify-center">
         <img
           src={getAreaCover(areaRow.area)?.cover}
           alt={displayArea}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain rounded-[10px] drop-shadow-[0_5px_8px_rgba(0,0,0,0.9)]"
           loading="lazy"
         />
       </div>

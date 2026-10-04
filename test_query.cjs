@@ -1,25 +1,14 @@
-require('dotenv').config();
+﻿require('dotenv').config({ path: '.env.local' });
+require('dotenv').config({ path: '.env' });
 const { createClient } = require('@supabase/supabase-js');
-const supabase = createClient(process.env.VITE_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+
+const url = process.env.VITE_SUPABASE_URL || '';
+const key = process.env.VITE_SUPABASE_ANON_KEY || '';
+
+const supabase = createClient(url, key);
 
 async function run() {
-  const inicio = new Date();
-  inicio.setHours(0, 0, 0, 0);
-  const fim = new Date();
-  fim.setHours(23, 59, 59, 999);
-
-  const campRes = await supabase
-          .from("push_campaigns")
-          .select(
-            "id,title,status,automation_key,created_at"
-          )
-          .or(
-            `and(created_at.gte.${inicio.toISOString()},created_at.lte.${fim.toISOString()}),and(next_run_at.gte.${inicio.toISOString()},next_run_at.lte.${fim.toISOString()})`
-          )
-          .order("created_at", { ascending: true });
-
-  console.log("Error:", campRes.error);
-  console.log("Data count:", campRes.data?.length);
+  const { data, error } = await supabase.from('simulado_questions').select('subject').limit(5);
+  console.log('simulado_questions subjects:', data);
 }
-
 run();

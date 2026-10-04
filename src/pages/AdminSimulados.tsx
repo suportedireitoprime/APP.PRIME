@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Upload, FileSpreadsheet, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, Upload, FileSpreadsheet, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import * as XLSX from "xlsx";
 
 interface Simulado {
   id: string;
@@ -44,6 +45,7 @@ export default function AdminSimulados() {
         simulados (
           id,
           year,
+          prova_url,
           simulado_questions (count)
         )
       `)
@@ -59,6 +61,33 @@ export default function AdminSimulados() {
     fetchCategorias();
   }, []);
 
+  const handleDeleteCategoria = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    if (!confirm("Tem certeza que deseja excluir esta categoria e TODOS os seus simulados?")) return;
+    
+    try {
+      const { error } = await supabase.from("simulado_exams").delete().eq("id", id);
+      if (error) throw error;
+      toast.success("Categoria excluída com sucesso.");
+      fetchCategorias();
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao excluir categoria.");
+    }
+  };
+
+  const handleDeleteSimulado = async (id: string) => {
+    if (!confirm("Tem certeza que deseja excluir este simulado e TODAS as suas questões?")) return;
+    
+    try {
+      const { error } = await supabase.from("simulados").delete().eq("id", id);
+      if (error) throw error;
+      toast.success("Simulado excluído com sucesso.");
+      fetchCategorias();
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao excluir simulado.");
+    }
+  };
+
   const handleImport = async () => {
     if (!examName) {
       toast.error("Preencha o nome do concurso/profissão");
@@ -71,26 +100,100 @@ export default function AdminSimulados() {
 
     setLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Simular inserção no banco de dados para a categoria aparecer na listagem
-      const { data: examData, error: examError } = await supabase
-        .from("simulado_exams")
-        .insert({ name: examName })
-        .select()
-        .single();
-        
-      if (examError) throw examError;
-        
-      if (examData) {
-        const { error: simuladoError } = await supabase
-          .from("simulados")
-          .insert({ exam_id: examData.id, year: new Date().getFullYear(), prova_url: spreadsheetUrl });
-          
-        if (simuladoError) throw simuladoError;
+      const sheetIdMatch = spreadsheetUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+      if (!sheetIdMatch) {
+        throw new Error("Não foi possível extrair o ID da planilha do link fornecido.");
       }
       
-      toast.success("Simulado importado com sucesso (simulação)");
+      const sheetId = sheetIdMatch[1];
+      const exportUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=xlsx`;
+      
+      toast.info("Baixando planilha...");
+      const response = await fetch(exportUrl);
+      if (!response.ok) throw new Error("Falha ao baixar a planilha. Verifique se ela é pública.");
+      
+      const arrayBuffer = await response.arrayBuffer();
+      const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+      
+      toast.info(`Planilha lida! ${workbook.SheetNames.length} abas encontradas. Processando...`);
+
+      // Criar a Categoria (ex: "OAB")
+      const { data: examData, error: examError } = await supabase
+        .from("simulado_exams")
+        .select()
+        .eq('name', examName)
+        .maybeSingle();
+        
+      let examId = examData?.id;
+      if (!examId) {
+        const { data: newExam, error: newExamError } = await supabase
+          .from("simulado_exams")
+          .insert({ name: examName })
+          .select()
+          .single();
+        if (newExamError) throw newExamError;
+        examId = newExam.id;
+      }
+      
+      let totalQuestions = 0;
+      
+      // Para cada aba, criar um simulado (usando o nome da aba como representação de ano/edição)
+      for (const sheetName of workbook.SheetNames) {
+        const sheet = workbook.Sheets[sheetName];
+        const rows: any[] = XLSX.utils.sheet_to_json(sheet);
+        
+        if (rows.length === 0) continue;
+        
+        // Se o nome da aba for 2025.3, year será 2025. A string "2025.3" pode ser salva no prova_url pra diferenciar.
+        const parsedYear = parseInt(sheetName.split('.')[0]) || new Date().getFullYear();
+        
+        // Criar ou pegar o simulado (usando prova_url para guardar o nome da edição)
+        const { data: simData, error: simError } = await supabase
+          .from("simulados")
+          .insert({ 
+            exam_id: examId, 
+            year: parsedYear, 
+            prova_url: `Edição ${sheetName}`, // Guardando a edição na prova_url pra ser visível no Admin
+            gabarito_url: spreadsheetUrl // Guardamos o link original aqui
+          })
+          .select()
+          .single();
+          
+        if (simError) throw simError;
+        const simuladoId = simData.id;
+        
+        // Mapear questões
+        const questionsToInsert = rows.map((r, i) => {
+          return {
+            simulado_id: simuladoId,
+            disciplina: r.disciplina || '',
+            assunto: r.assunto || '',
+            text: r.texto_questao || '',
+            options: {
+              A: r.alternativa_a || '',
+              B: r.alternativa_b || '',
+              C: r.alternativa_c || '',
+              D: r.alternativa_d || '',
+              E: r.alternativa_e || ''
+            },
+            gabarito: r.resposta_correta || 'A',
+            correct_comment: r.comentario_correta || '',
+            incorrect_comment: r.comentario_incorretas || ''
+          };
+        });
+        
+        // Inserir questões no banco
+        if (questionsToInsert.length > 0) {
+          const { error: insertErr } = await supabase.from('simulado_questions').insert(questionsToInsert);
+          if (insertErr) {
+            console.error("Erro inserindo questões:", insertErr);
+            throw new Error(`Erro ao inserir questões da aba ${sheetName}.`);
+          }
+          totalQuestions += questionsToInsert.length;
+        }
+      }
+      
+      toast.success(`Importação concluída! ${totalQuestions} questões importadas de ${workbook.SheetNames.length} abas.`);
       setSpreadsheetUrl("");
       setExamName("");
       fetchCategorias();
@@ -184,6 +287,13 @@ export default function AdminSimulados() {
                       <div className="bg-primary/10 border border-primary/20 text-primary px-4 py-2 rounded-xl font-bold shadow-sm">
                         {cat.simulados?.length || 0} simulado(s)
                       </div>
+                      <button 
+                        onClick={(e) => handleDeleteCategoria(e, cat.id)}
+                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
+                        title="Excluir Categoria"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
                       {expandedCats[cat.id] ? <ChevronUp className="w-5 h-5 text-white/50" /> : <ChevronDown className="w-5 h-5 text-white/50" />}
                     </div>
                   </div>
@@ -191,10 +301,21 @@ export default function AdminSimulados() {
                     <div className="bg-black/20 border-t border-white/5 p-4 space-y-2">
                       {cat.simulados.sort((a, b) => b.year - a.year).map((sim) => (
                         <div key={sim.id} className="flex items-center justify-between bg-white/[0.02] p-3 rounded-xl border border-white/5">
-                          <span className="font-medium text-white/90">Ano {sim.year}</span>
-                          <span className="text-sm text-white/50 bg-white/5 px-3 py-1 rounded-lg">
-                            {sim.simulado_questions?.[0]?.count || 0} questões
+                          <span className="font-medium text-white/90">
+                            {sim.prova_url?.startsWith('Edição') ? sim.prova_url : `Ano ${sim.year}`}
                           </span>
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm text-white/50 bg-white/5 px-3 py-1 rounded-lg">
+                              {sim.simulado_questions?.[0]?.count || 0} questões
+                            </span>
+                            <button
+                              onClick={() => handleDeleteSimulado(sim.id)}
+                              className="w-8 h-8 flex items-center justify-center rounded-md bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
+                              title="Excluir Simulado"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>

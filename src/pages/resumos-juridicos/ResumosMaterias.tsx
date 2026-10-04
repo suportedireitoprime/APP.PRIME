@@ -76,7 +76,16 @@ function styleForArea(area: string) {
   return { icon: FileText, color: "#e5c34a" };
 }
 
-let areasCache: AreaRow[] | null = null;
+let areasCache: AreaRow[] | null = (() => {
+  try {
+    const stored = localStorage.getItem("resumos_areas_cache");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return null;
+})();
 
 export default function ResumosMaterias() {
   const navigate = useNavigate();
@@ -215,6 +224,7 @@ export default function ResumosMaterias() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: Math.min(i * 0.02, 0.3) }}
                     onClick={() => navigate(`/resumos-juridicos/${encodeURIComponent(r.area)}`)}
+                    onPointerEnter={() => import('./ResumosJuridicosTemas')}
                     className="flex items-center gap-4 p-5 sm:p-6 rounded-3xl bg-secondary/30 border border-white/5 hover:bg-secondary/50 hover:border-[#38bdf8]/40 transition-all text-left group"
                   >
                     <div className="w-14 h-14 rounded-2xl bg-[#38bdf8]/5 border border-[#38bdf8]/10 flex items-center justify-center group-hover:bg-[#38bdf8]/15 transition-colors">
