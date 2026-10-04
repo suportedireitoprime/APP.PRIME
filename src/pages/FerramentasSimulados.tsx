@@ -170,28 +170,33 @@ export default function FerramentasSimulados() {
             ))}
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4 animate-in fade-in slide-in-from-right-4 duration-300">
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 animate-in fade-in slide-in-from-right-4 duration-300">
             {groupedSimulados[selectedCategory]?.map((sim) => (
               <button 
                 key={sim.id} 
                 onClick={() => setSelectedSimulado(sim)}
-                className="flex flex-col bg-card rounded-xl border border-border overflow-hidden hover:border-primary/50 transition-all hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] group text-left"
+                className="flex flex-col bg-card rounded-2xl border border-border overflow-hidden hover:border-primary/50 transition-all hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] group text-left relative"
               >
-                <div className="p-5 flex-1 flex flex-col items-start w-full relative">
-                  <div className="flex justify-between items-center mb-4 w-full">
-                    <span className="text-sm font-bold px-3 py-1 bg-primary/15 text-primary rounded-lg">
-                      {sim.year || 'Ano ND'}
-                    </span>
-                    <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold flex items-center gap-1">
-                      Simulado <ChevronRight className="w-3 h-3 opacity-50" />
-                    </span>
+                {/* Efeito de deck empilhado visual sutil */}
+                <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-bl-[100%] transition-transform group-hover:scale-110" />
+                
+                <div className="p-4 flex-1 flex flex-col items-start w-full relative z-10">
+                  <div className="flex justify-between items-start mb-3 w-full">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-sm">
+                      <span className="text-xs font-black tracking-tighter">
+                        {sim.year ? `'${sim.year.toString().slice(-2)}` : 'ND'}
+                      </span>
+                    </div>
                   </div>
-                  <h4 className="font-display font-semibold text-base sm:text-lg leading-snug text-foreground mb-2 group-hover:text-primary transition-colors">
-                    {sim.exam?.name || 'Sem título'}
-                  </h4>
-                  <p className="text-xs text-muted-foreground flex items-center gap-1 mt-auto">
-                    <FileSignature className="w-3.5 h-3.5" /> Toque para abrir opções
-                  </p>
+                  
+                  <div className="mt-auto w-full">
+                    <h4 className="font-display font-bold text-[13px] sm:text-base leading-tight text-foreground mb-1 group-hover:text-primary transition-colors line-clamp-2">
+                      {sim.exam?.name || 'Sem título'}
+                    </h4>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 uppercase tracking-wider font-semibold">
+                      SIMULADO <ChevronRight className="w-3 h-3 opacity-50" />
+                    </p>
+                  </div>
                 </div>
               </button>
             ))}
