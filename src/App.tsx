@@ -143,6 +143,7 @@ const queryPersister = typeof window !== 'undefined'
       },
       key: 'rq-cache-v1',
       throttleTime: 1500,
+      maxAge: 24 * 60 * 60 * 1000,
     })
   : undefined;
 
